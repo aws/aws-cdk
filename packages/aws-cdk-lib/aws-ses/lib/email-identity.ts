@@ -2,6 +2,7 @@ import { Construct } from 'constructs';
 import { IConfigurationSet } from './configuration-set';
 import { undefinedIfNoKeys } from './private/utils';
 import { CfnEmailIdentity } from './ses.generated';
+import { Grant, IGrantable } from '../../aws-iam';
 import { IPublicHostedZone } from '../../aws-route53';
 import * as route53 from '../../aws-route53';
 import { IResource, Lazy, Resource, SecretValue, Stack } from '../../core';
@@ -326,6 +327,8 @@ export class EmailIdentity extends Resource implements IEmailIdentity {
 
   public readonly emailIdentityName: string;
 
+  public readonly emailIdentityArn: string;
+
   /**
    * The host name for the first token that you have to add to the
    * DNS configurationfor your domain
@@ -421,6 +424,12 @@ export class EmailIdentity extends Resource implements IEmailIdentity {
 
     this.emailIdentityName = identity.ref;
 
+    this.emailIdentityArn = this.stack.formatArn({
+      service: 'ses',
+      resource: 'identity',
+      resourceName: this.emailIdentityName,
+    });
+
     this.dkimDnsTokenName1 = identity.attrDkimDnsTokenName1;
     this.dkimDnsTokenName2 = identity.attrDkimDnsTokenName2;
     this.dkimDnsTokenName3 = identity.attrDkimDnsTokenName3;
@@ -433,6 +442,22 @@ export class EmailIdentity extends Resource implements IEmailIdentity {
       { name: this.dkimDnsTokenName2, value: this.dkimDnsTokenValue2 },
       { name: this.dkimDnsTokenName3, value: this.dkimDnsTokenValue3 },
     ];
+  }
+
+  /**
+   * Adds an IAM policy statement associated with this email identity to an IAM principal's policy.
+   *
+   * @param grantee the principal (no-op if undefined)
+   * @param actions the set of actions to allow
+   */
+  public grant(grantee: IGrantable, ...actions: string[]): Grant {
+    const resourceArns = [this.emailIdentityArn];
+    return Grant.addToPrincipal({
+      grantee,
+      actions,
+      resourceArns,
+      scope: this,
+    });
   }
 }
 
