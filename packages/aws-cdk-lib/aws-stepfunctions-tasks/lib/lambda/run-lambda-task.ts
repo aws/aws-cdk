@@ -128,5 +128,5 @@ export enum InvocationType {
   /**
    * TValidate parameter values and verify that the user or role has permission to invoke the function.
    */
-  DRY_RUN = 'DryRun'
+  DRY_RUN = 'DryRun',
 }

@@ -269,7 +269,7 @@ export enum LicenseModel {
   /**
    * General public license.
    */
-  GENERAL_PUBLIC_LICENSE = 'general-public-license'
+  GENERAL_PUBLIC_LICENSE = 'general-public-license',
 }
 
 /**
@@ -330,7 +330,7 @@ export enum StorageType {
    *
    * @see https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/CHAP_Storage.html#USER_PIOPS
    */
-  IO1 = 'io1'
+  IO1 = 'io1',
 }
 
 /**
@@ -345,7 +345,7 @@ export enum NetworkType {
   /**
    * Dual-stack network type.
    */
-  DUAL = 'DUAL'
+  DUAL = 'DUAL',
 }
 
 /**
@@ -743,6 +743,13 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
 
   public readonly connections: ec2.Connections;
 
+  /**
+   * The log group is created when `cloudwatchLogsExports` is set.
+   *
+   * Each export value will create a separate log group.
+   */
+  public readonly cloudwatchLogGroups: {[engine: string]: logs.ILogGroup};
+
   protected abstract readonly instanceType: ec2.InstanceType;
 
   protected readonly vpcPlacement?: ec2.SubnetSelection;
@@ -814,6 +821,7 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
       throw new Error(`The maximum ratio of storage throughput to IOPS is 0.25. Got ${props.storageThroughput/iops}.`);
     }
 
+    this.cloudwatchLogGroups = {};
     this.cloudwatchLogsExports = props.cloudwatchLogsExports;
     this.cloudwatchLogsRetention = props.cloudwatchLogsRetention;
     this.cloudwatchLogsRetentionRole = props.cloudwatchLogsRetentionRole;
@@ -828,7 +836,10 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
     if (props.domain) {
       this.domainId = props.domain;
       this.domainRole = props.domainRole || new iam.Role(this, 'RDSDirectoryServiceRole', {
-        assumedBy: new iam.ServicePrincipal('rds.amazonaws.com'),
+        assumedBy: new iam.CompositePrincipal(
+          new iam.ServicePrincipal('rds.amazonaws.com'),
+          new iam.ServicePrincipal('directoryservice.rds.amazonaws.com'),
+        ),
         managedPolicies: [
           iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonRDSDirectoryServiceAccess'),
         ],
@@ -890,11 +901,13 @@ abstract class DatabaseInstanceNew extends DatabaseInstanceBase implements IData
   protected setLogRetention() {
     if (this.cloudwatchLogsExports && this.cloudwatchLogsRetention) {
       for (const log of this.cloudwatchLogsExports) {
+        const logGroupName = `/aws/rds/instance/${this.instanceIdentifier}/${log}`;
         new logs.LogRetention(this, `LogRetention${log}`, {
-          logGroupName: `/aws/rds/instance/${this.instanceIdentifier}/${log}`,
+          logGroupName,
           retention: this.cloudwatchLogsRetention,
           role: this.cloudwatchLogsRetentionRole,
         });
+        this.cloudwatchLogGroups[log] = logs.LogGroup.fromLogGroupName(this, `LogGroup${this.instanceIdentifier}${log}`, logGroupName);
       }
     }
   }
@@ -1296,6 +1309,12 @@ export interface DatabaseInstanceReadReplicaProps extends DatabaseInstanceNewPro
    * @default - default master key if storageEncrypted is true, no key otherwise
    */
   readonly storageEncryptionKey?: kms.IKey;
+  /**
+   * The allocated storage size, specified in gibibytes (GiB).
+   *
+   * @default - The replica will inherit the allocated storage of the source database instance
+   */
+  readonly allocatedStorage?: number;
 }
 
 /**
@@ -1333,6 +1352,7 @@ export class DatabaseInstanceReadReplica extends DatabaseInstanceNew implements 
       kmsKeyId: props.storageEncryptionKey?.keyArn,
       storageEncrypted: props.storageEncryptionKey ? true : props.storageEncrypted,
       engine: shouldPassEngine ? props.sourceDatabaseInstance.engine?.engineType : undefined,
+      allocatedStorage: props.allocatedStorage?.toString(),
     });
 
     this.instanceType = props.instanceType;

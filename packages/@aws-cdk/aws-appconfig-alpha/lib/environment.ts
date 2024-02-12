@@ -94,7 +94,7 @@ export interface EnvironmentOptions {
    *
    * @default - A name is generated.
    */
-  readonly name?: string;
+  readonly environmentName?: string;
 
   /**
    * The description of the environment.
@@ -236,10 +236,10 @@ export class Environment extends EnvironmentBase {
 
   constructor(scope: Construct, id: string, props: EnvironmentProps) {
     super(scope, id, {
-      physicalName: props.name,
+      physicalName: props.environmentName,
     });
 
-    this.name = props.name || Names.uniqueResourceName(this, {
+    this.name = props.environmentName || Names.uniqueResourceName(this, {
       maxLength: 64,
       separator: '-',
     });
@@ -348,8 +348,11 @@ export abstract class Monitor {
    * @param monitorsProperty The monitors property.
    */
   public static fromCfnMonitorsProperty(monitorsProperty: CfnEnvironment.MonitorsProperty): Monitor {
+    if (monitorsProperty.alarmArn === undefined) {
+      throw new Error('You must specify an alarmArn property to use "fromCfnMonitorsProperty".');
+    }
     return {
-      alarmArn: monitorsProperty.alarmArn!,
+      alarmArn: monitorsProperty.alarmArn,
       alarmRoleArn: monitorsProperty.alarmRoleArn,
       monitorType: MonitorType.CFN_MONITORS_PROPERTY,
     };

@@ -92,6 +92,24 @@ test('deploy with configured log retention', () => {
   Template.fromStack(stack).hasResourceProperties('Custom::LogRetention', { RetentionInDays: 7 });
 });
 
+test('deploy with log group', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const bucket = new s3.Bucket(stack, 'Dest');
+
+  // WHEN
+  new s3deploy.BucketDeployment(stack, 'Deploy', {
+    sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
+    destinationBucket: bucket,
+    logGroup: new logs.LogGroup(stack, 'LogGroup', {
+      retention: logs.RetentionDays.ONE_WEEK,
+    }),
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Logs::LogGroup', { RetentionInDays: 7 });
+});
+
 test('deploy from local directory assets', () => {
   // GIVEN
   const app = new cdk.App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
@@ -1516,6 +1534,29 @@ test('DeployTimeSubstitutedFile can be used to add substitutions in a file', () 
 
   const result = app.synth();
   const content = readDataFile(result, deployment.objectKey);
+  expect(content).not.toContain('testMethod');
+  expect(content).toContain('changedTestMethodSuccess');
+  expect(content).not.toContain('mock');
+  expect(content).toContain('changedMockTypeSuccess');
+});
+
+test('DeployTimeSubstitutedFile can be used to add substitutions in a file with a defined destination key', () => {
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app, 'Test');
+  const bucket = new s3.Bucket(stack, 'Bucket');
+  const destinationKey = 'helloworld.yaml';
+  new s3deploy.DeployTimeSubstitutedFile(stack, 'MyFile', {
+    source: path.join(__dirname, 'file-substitution-test', 'sample-definition.yaml'),
+    destinationKey: destinationKey,
+    destinationBucket: bucket,
+    substitutions: {
+      testMethod: 'changedTestMethodSuccess',
+      mock: 'changedMockTypeSuccess',
+    },
+  });
+
+  const result = app.synth();
+  const content = readDataFile(result, destinationKey);
   expect(content).not.toContain('testMethod');
   expect(content).toContain('changedTestMethodSuccess');
   expect(content).not.toContain('mock');

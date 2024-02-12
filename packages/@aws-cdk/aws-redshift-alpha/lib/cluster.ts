@@ -253,7 +253,7 @@ export interface ClusterProps {
    *
    * @default true
    */
-  readonly encrypted?: boolean
+  readonly encrypted?: boolean;
 
   /**
    * The KMS key to use for encryption of data at rest.
@@ -340,14 +340,14 @@ export interface ClusterProps {
    *
    * @default RemovalPolicy.RETAIN
    */
-  readonly removalPolicy?: RemovalPolicy
+  readonly removalPolicy?: RemovalPolicy;
 
   /**
    * Whether to make cluster publicly accessible.
    *
    * @default false
    */
-  readonly publiclyAccessible?: boolean
+  readonly publiclyAccessible?: boolean;
 
   /**
    * If this flag is set, the cluster resizing type will be set to classic.
@@ -360,7 +360,7 @@ export interface ClusterProps {
    *
    * @default - Elastic resize type
    */
-  readonly classicResizing?: boolean
+  readonly classicResizing?: boolean;
 
   /**
    * The Elastic IP (EIP) address for the cluster.
@@ -369,13 +369,13 @@ export interface ClusterProps {
    *
    * @default - No Elastic IP
    */
-  readonly elasticIp?: string
+  readonly elasticIp?: string;
 
   /**
    * If this flag is set, the cluster will be rebooted when changes to the cluster's parameter group that require a restart to apply.
    * @default false
    */
-  readonly rebootForParameterChanges?: boolean
+  readonly rebootForParameterChanges?: boolean;
 
   /**
    * If this flag is set, Amazon Redshift forces all COPY and UNLOAD traffic between your cluster and your data repositories through your virtual private cloud (VPC).
@@ -384,7 +384,7 @@ export interface ClusterProps {
    *
    * @default - false
    */
-  readonly enhancedVpcRouting?: boolean
+  readonly enhancedVpcRouting?: boolean;
 }
 
 /**
@@ -713,7 +713,7 @@ export class Cluster extends ClusterBase {
     const rebootFunction = new lambda.SingletonFunction(this, 'RedshiftClusterRebooterFunction', {
       uuid: '511e207f-13df-4b8b-b632-c32b30b65ac2',
       runtime: lambda.Runtime.NODEJS_18_X,
-      code: lambda.Code.fromAsset(path.join(__dirname, '..', '..', 'custom-resource-handlers', 'dist', 'aws-redshift-alpha', 'cluster-parameter-change-reboot-handler')),
+      code: lambda.Code.fromAsset(path.join(__dirname, '..', 'custom-resource-handlers', 'dist', 'aws-redshift-alpha', 'cluster-parameter-change-reboot-handler')),
       handler: 'index.handler',
       timeout: Duration.seconds(900),
     });

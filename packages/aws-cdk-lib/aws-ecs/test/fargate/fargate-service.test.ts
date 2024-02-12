@@ -4,6 +4,7 @@ import * as appscaling from '../../../aws-applicationautoscaling';
 import * as cloudwatch from '../../../aws-cloudwatch';
 import * as ec2 from '../../../aws-ec2';
 import * as elbv2 from '../../../aws-elasticloadbalancingv2';
+import * as iam from '../../../aws-iam';
 import * as kms from '../../../aws-kms';
 import * as logs from '../../../aws-logs';
 import * as s3 from '../../../aws-s3';
@@ -15,6 +16,7 @@ import * as cxapi from '../../../cx-api';
 import { ECS_ARN_FORMAT_INCLUDES_CLUSTER_NAME } from '../../../cx-api';
 import * as ecs from '../../lib';
 import { DeploymentControllerType, LaunchType, PropagatedTagSource, ServiceConnectProps } from '../../lib/base/base-service';
+import { ServiceManagedVolume } from '../../lib/base/service-managed-volume';
 import { addDefaultCapacityProvider } from '../util';
 
 describe('fargate service', () => {
@@ -1351,6 +1353,8 @@ describe('fargate service', () => {
               ingressPortOverride: 1000,
               port: 80,
               dnsName: 'api',
+              idleTimeout: cdk.Duration.seconds(10),
+              perRequestTimeout: cdk.Duration.seconds(10),
             },
           ],
           namespace: 'cool',
@@ -1374,6 +1378,10 @@ describe('fargate service', () => {
                     DnsName: 'api',
                   },
                 ],
+                Timeout: {
+                  IdleTimeoutSeconds: 10,
+                  PerRequestTimeoutSeconds: 10,
+                },
               },
             ],
             LogConfiguration: {
@@ -1384,6 +1392,139 @@ describe('fargate service', () => {
             },
           },
         });
+      });
+
+      test('can set idleTimeout without perRequestTimeout', () => {
+        // WHEN
+        new cloudmap.HttpNamespace(stack, 'httpnamespace', {
+          name: 'cool',
+        });
+        service.enableServiceConnect({
+          services: [
+            {
+              portMappingName: 'api',
+              idleTimeout: cdk.Duration.seconds(10),
+            },
+          ],
+          namespace: 'cool',
+        });
+
+        Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+          ServiceConnectConfiguration: {
+            Enabled: true,
+            Namespace: 'cool',
+            Services: [
+              {
+                PortName: 'api',
+                Timeout: {
+                  IdleTimeoutSeconds: 10,
+                  PerRequestTimeoutSeconds: Match.absent(),
+                },
+              },
+            ],
+          },
+        });
+      });
+
+      test('can set perRequestTimeout without idleTimeout', () => {
+        // WHEN
+        new cloudmap.HttpNamespace(stack, 'httpnamespace', {
+          name: 'cool',
+        });
+        service.enableServiceConnect({
+          services: [
+            {
+              portMappingName: 'api',
+              perRequestTimeout: cdk.Duration.seconds(10),
+            },
+          ],
+          namespace: 'cool',
+        });
+
+        Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+          ServiceConnectConfiguration: {
+            Enabled: true,
+            Namespace: 'cool',
+            Services: [
+              {
+                PortName: 'api',
+                Timeout: {
+                  IdleTimeoutSeconds: Match.absent(),
+                  PerRequestTimeoutSeconds: 10,
+                },
+              },
+            ],
+          },
+        });
+      });
+
+      test('can set idleTimeout and perRequestTimeout to 0', () => {
+        // WHEN
+        new cloudmap.HttpNamespace(stack, 'httpnamespace', {
+          name: 'cool',
+        });
+        service.enableServiceConnect({
+          services: [
+            {
+              portMappingName: 'api',
+              idleTimeout: cdk.Duration.seconds(0),
+              perRequestTimeout: cdk.Duration.seconds(0),
+            },
+          ],
+          namespace: 'cool',
+        });
+
+        Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+          ServiceConnectConfiguration: {
+            Enabled: true,
+            Namespace: 'cool',
+            Services: [
+              {
+                PortName: 'api',
+                Timeout: {
+                  IdleTimeoutSeconds: 0,
+                  PerRequestTimeoutSeconds: 0,
+                },
+              },
+            ],
+          },
+        });
+      });
+
+      test('throws if idleTimeout is less than 1 second and not 0', () => {
+        // WHEN
+        new cloudmap.HttpNamespace(stack, 'httpnamespace', {
+          name: 'cool',
+        });
+        expect(() => {
+          service.enableServiceConnect({
+            services: [
+              {
+                portMappingName: 'api',
+                idleTimeout: cdk.Duration.millis(10),
+              },
+            ],
+            namespace: 'cool',
+          });
+        }).toThrow(/idleTimeout must be at least 1 second or 0 to disable it, got 10ms./);
+      });
+
+      test('throws if perRequestTimeout is less than 1 second and not 0', () => {
+        // WHEN
+        new cloudmap.HttpNamespace(stack, 'httpnamespace', {
+          name: 'cool',
+        });
+        expect(() => {
+          service.enableServiceConnect({
+            services: [
+              {
+                portMappingName: 'api',
+                perRequestTimeout: cdk.Duration.millis(10),
+              },
+            ],
+            namespace: 'cool',
+          });
+        }).toThrow(/perRequestTimeout must be at least 1 second or 0 to disable it, got 10ms./);
       });
 
       test('with no alias name', () => {
@@ -1449,6 +1590,553 @@ describe('fargate service', () => {
             ],
           },
         });
+      });
+    });
+  });
+
+  describe('When setting up a service volume configurations', ()=>{
+    let service: ecs.FargateService;
+    let stack: cdk.Stack;
+    let cluster: ecs.Cluster;
+    let taskDefinition: ecs.TaskDefinition;
+    let container: ecs.ContainerDefinition;
+    let role: iam.IRole;
+    let app: cdk.App;
+
+    beforeEach(() => {
+      // GIVEN
+      app = new cdk.App();
+      stack = new cdk.Stack(app);
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
+      role = new iam.Role(stack, 'Role', {
+        assumedBy: new iam.ServicePrincipal('ecs.amazonaws.com'),
+      });
+      container = taskDefinition.addContainer('web', {
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+      });
+      service = new ecs.FargateService(stack, 'FargateService', {
+        cluster,
+        taskDefinition,
+      });
+    });
+    test('success when adding a service volume', ()=> {
+      // WHEN
+      container.addMountPoints({
+        containerPath: '/var/lib',
+        readOnly: false,
+        sourceVolume: 'nginx-vol',
+      });
+
+      service.addVolume(new ServiceManagedVolume(stack, 'EBS Volume', {
+        name: 'nginx-vol',
+        managedEBSVolume: {
+          role: role,
+          size: cdk.Size.gibibytes(20),
+          fileSystemType: ecs.FileSystemType.XFS,
+          tagSpecifications: [{
+            tags: {
+              purpose: 'production',
+            },
+            propagateTags: ecs.EbsPropagatedTagSource.SERVICE,
+          }],
+        },
+      }));
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+        VolumeConfigurations: [
+          {
+            ManagedEBSVolume: {
+              RoleArn: { 'Fn::GetAtt': ['Role1ABCC5F0', 'Arn'] },
+              SizeInGiB: 20,
+              FilesystemType: 'xfs',
+              TagSpecifications: [
+                {
+                  PropagateTags: 'SERVICE',
+                  ResourceType: 'volume',
+                  Tags: [
+                    {
+                      Key: 'purpose',
+                      Value: 'production',
+                    },
+                  ],
+                },
+              ],
+            },
+            Name: 'nginx-vol',
+          },
+        ],
+      });
+    });
+
+    test('success when mounting via ServiceManagedVolume', () => {
+      // WHEN
+      const volume = new ServiceManagedVolume(stack, 'EBS Volume', {
+        name: 'nginx-vol',
+        managedEBSVolume: {
+          role: role,
+          size: cdk.Size.gibibytes(20),
+          tagSpecifications: [{
+            tags: {
+              purpose: 'production',
+            },
+            propagateTags: ecs.EbsPropagatedTagSource.SERVICE,
+          }],
+        },
+      });
+      taskDefinition.addVolume(volume);
+      service.addVolume(volume);
+      volume.mountIn(container, {
+        containerPath: '/var/lib',
+        readOnly: false,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+        VolumeConfigurations: [
+          {
+            ManagedEBSVolume: {
+              RoleArn: { 'Fn::GetAtt': ['Role1ABCC5F0', 'Arn'] },
+              SizeInGiB: 20,
+              TagSpecifications: [
+                {
+                  PropagateTags: 'SERVICE',
+                  ResourceType: 'volume',
+                  Tags: [
+                    {
+                      Key: 'purpose',
+                      Value: 'production',
+                    },
+                  ],
+                },
+              ],
+            },
+            Name: 'nginx-vol',
+          },
+        ],
+      });
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
+        ContainerDefinitions: [
+          {
+            MountPoints: [
+              {
+                ContainerPath: '/var/lib',
+                ReadOnly: false,
+                SourceVolume: 'nginx-vol',
+              },
+            ],
+          },
+        ],
+        Volumes: [
+          {
+            Name: 'nginx-vol',
+            ConfiguredAtLaunch: true,
+          },
+        ],
+      });
+    });
+
+    test('throw an error when multiple volume configurations are added to ECS service', ()=> {
+      // WHEN
+      container.addMountPoints({
+        containerPath: '/var/lib',
+        readOnly: false,
+        sourceVolume: 'nginx-vol',
+      });
+      const vol1 = new ServiceManagedVolume(stack, 'EBSVolume', {
+        name: 'nginx-vol',
+        managedEBSVolume: {
+          fileSystemType: ecs.FileSystemType.XFS,
+          size: cdk.Size.gibibytes(15),
+        },
+      });
+      const vol2 = new ServiceManagedVolume(stack, 'ebs1', {
+        name: 'ebs1',
+        managedEBSVolume: {
+          fileSystemType: ecs.FileSystemType.XFS,
+          size: cdk.Size.gibibytes(15),
+        },
+      });
+      service.addVolume(vol1);
+      service.addVolume(vol2);
+      expect(() => {
+        app.synth();
+      }).toThrow(/Only one EBS volume can be specified for 'volumeConfigurations', got: 2/);
+    });
+
+    test('create a default ebsrole when not provided', ()=> {
+      // WHEN
+      container.addMountPoints({
+        containerPath: '/var/lib',
+        readOnly: false,
+        sourceVolume: 'nginx-vol',
+      });
+
+      service.addVolume(new ServiceManagedVolume(stack, 'EBS Volume', {
+        name: 'nginx-vol',
+        managedEBSVolume: {
+          size: cdk.Size.gibibytes(20),
+          fileSystemType: ecs.FileSystemType.XFS,
+          tagSpecifications: [{
+            tags: {
+              purpose: 'production',
+            },
+            propagateTags: ecs.EbsPropagatedTagSource.SERVICE,
+          }],
+        },
+      }));
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+        VolumeConfigurations: [
+          {
+            ManagedEBSVolume: {
+              RoleArn: { 'Fn::GetAtt': ['EBSVolumeEBSRoleD38B9F31', 'Arn'] },
+              SizeInGiB: 20,
+              FilesystemType: 'xfs',
+              TagSpecifications: [
+                {
+                  PropagateTags: 'SERVICE',
+                  ResourceType: 'volume',
+                  Tags: [
+                    {
+                      Key: 'purpose',
+                      Value: 'production',
+                    },
+                  ],
+                },
+              ],
+            },
+            Name: 'nginx-vol',
+          },
+        ],
+      });
+    });
+
+    test('throw an error when both size and snapshotId are not provided', ()=> {
+      // WHEN
+      container.addMountPoints({
+        containerPath: '/var/lib',
+        readOnly: false,
+        sourceVolume: 'nginx-vol',
+      });
+
+      expect(() => {
+        service.addVolume(new ServiceManagedVolume(stack, 'EBSVolume', {
+          name: 'nginx-vol',
+          managedEBSVolume: {
+            fileSystemType: ecs.FileSystemType.XFS,
+          },
+        }));
+      }).toThrow("'size' or 'snapShotId' must be specified");
+    });
+
+    test('throw an error snapshot does not match pattern', ()=> {
+      // WHEN
+      container.addMountPoints({
+        containerPath: '/var/lib',
+        readOnly: false,
+        sourceVolume: 'nginx-vol',
+      });
+
+      expect(() => {
+        service.addVolume(new ServiceManagedVolume(stack, 'EBS Volume', {
+          name: 'nginx-vol',
+          managedEBSVolume: {
+            fileSystemType: ecs.FileSystemType.XFS,
+            snapShotId: 'snap-0d48decab5c493eee_',
+          },
+        }));
+      }).toThrow("'snapshotId' does match expected pattern. Expected 'snap-<hexadecmial value>' (ex: 'snap-05abe246af') or Token, got: snap-0d48decab5c493eee_");
+    });
+
+    test('success when snapshotId matches the pattern', ()=> {
+      // WHEN
+      container.addMountPoints({
+        containerPath: '/var/lib',
+        readOnly: false,
+        sourceVolume: 'nginx-vol',
+      });
+      const vol = new ServiceManagedVolume(stack, 'EBS Volume', {
+        name: 'nginx-vol',
+        managedEBSVolume: {
+          fileSystemType: ecs.FileSystemType.XFS,
+          snapShotId: 'snap-0d48decab5c493eee',
+        },
+      });
+      service.addVolume(vol);
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+        VolumeConfigurations: [
+          {
+            ManagedEBSVolume: {
+              RoleArn: { 'Fn::GetAtt': ['EBSVolumeEBSRoleD38B9F31', 'Arn'] },
+              SnapshotId: 'snap-0d48decab5c493eee',
+              FilesystemType: 'xfs',
+            },
+            Name: 'nginx-vol',
+          },
+        ],
+      });
+    });
+
+    test('throw an error when size is greater than 16384 for gp2', ()=> {
+      // WHEN
+      container.addMountPoints({
+        containerPath: '/var/lib',
+        readOnly: false,
+        sourceVolume: 'nginx-vol',
+      });
+
+      expect(() => {
+        service.addVolume(new ServiceManagedVolume(stack, 'EBS Volume', {
+          name: 'nginx-vol',
+          managedEBSVolume: {
+            fileSystemType: ecs.FileSystemType.XFS,
+            size: cdk.Size.gibibytes(16390),
+          },
+        }));
+      }).toThrow(/'gp2' volumes must have a size between 1 and 16384 GiB, got 16390 GiB/);
+    });
+
+    test('throw an error when size is less than 4 for volume type io1', ()=> {
+      // WHEN
+      container.addMountPoints({
+        containerPath: '/var/lib',
+        readOnly: false,
+        sourceVolume: 'nginx-vol',
+      });
+
+      expect(() => {
+        service.addVolume(new ServiceManagedVolume(stack, 'EBS Volume', {
+          name: 'nginx-vol',
+          managedEBSVolume: {
+            fileSystemType: ecs.FileSystemType.XFS,
+            volumeType: ec2.EbsDeviceVolumeType.IO1,
+            size: cdk.Size.gibibytes(0),
+          },
+        }));
+      }).toThrow(/'io1' volumes must have a size between 4 and 16384 GiB, got 0 GiB/);
+    });
+    test('throw an error when size is greater than 1024 for volume type standard', ()=> {
+      // WHEN
+      container.addMountPoints({
+        containerPath: '/var/lib',
+        readOnly: false,
+        sourceVolume: 'nginx-vol',
+      });
+
+      expect(() => {
+        service.addVolume(new ServiceManagedVolume(stack, 'EBS Volume', {
+          name: 'nginx-vol',
+          managedEBSVolume: {
+            fileSystemType: ecs.FileSystemType.XFS,
+            volumeType: ec2.EbsDeviceVolumeType.STANDARD,
+            size: cdk.Size.gibibytes(1500),
+          },
+        }));
+      }).toThrow(/'standard' volumes must have a size between 1 and 1024 GiB, got 1500 GiB/);
+    });
+
+    test('throw an error if throughput is configured for volumetype gp2', ()=> {
+      // WHEN
+      container.addMountPoints({
+        containerPath: '/var/lib',
+        readOnly: false,
+        sourceVolume: 'nginx-vol',
+      });
+
+      expect(() => {
+        service.addVolume(new ServiceManagedVolume(stack, 'EBS Volume', {
+          name: 'nginx-vol',
+          managedEBSVolume: {
+            fileSystemType: ecs.FileSystemType.XFS,
+            size: cdk.Size.gibibytes(10),
+            throughput: 0,
+          },
+        }));
+      }).toThrow(/'throughput' can only be configured with gp3 volume type, got gp2/);
+    });
+
+    test('throw an error if throughput is greater tahn 1000 for volume type gp3', ()=> {
+      // WHEN
+      container.addMountPoints({
+        containerPath: '/var/lib',
+        readOnly: false,
+        sourceVolume: 'nginx-vol',
+      });
+
+      expect(() => {
+        service.addVolume(new ServiceManagedVolume(stack, 'EBS Volume', {
+          name: 'nginx-vol',
+          managedEBSVolume: {
+            fileSystemType: ecs.FileSystemType.XFS,
+            volumeType: ec2.EbsDeviceVolumeType.GP3,
+            size: cdk.Size.gibibytes(10),
+            throughput: 10001,
+          },
+        }));
+      }).toThrow("'throughput' must be less than or equal to 1000 MiB/s, got 10001 MiB/s");
+    });
+
+    test('throw an error if throughput is greater tahn 1000 for volume type gp3', ()=> {
+      // WHEN
+      container.addMountPoints({
+        containerPath: '/var/lib',
+        readOnly: false,
+        sourceVolume: 'nginx-vol',
+      });
+
+      expect(() => {
+        service.addVolume(new ServiceManagedVolume(stack, 'EBS Volume', {
+          name: 'nginx-vol',
+          managedEBSVolume: {
+            fileSystemType: ecs.FileSystemType.XFS,
+            volumeType: ec2.EbsDeviceVolumeType.GP3,
+            size: cdk.Size.gibibytes(10),
+            throughput: 10001,
+          },
+        }));
+      }).toThrow("'throughput' must be less than or equal to 1000 MiB/s, got 10001 MiB/s");
+    });
+
+    test('throw an error if iops is not supported for volume type sc1', ()=> {
+      // WHEN
+      container.addMountPoints({
+        containerPath: '/var/lib',
+        readOnly: false,
+        sourceVolume: 'nginx-vol',
+      });
+
+      expect(() => {
+        service.addVolume(new ServiceManagedVolume(stack, 'EBSVolume', {
+          name: 'nginx-vol',
+          managedEBSVolume: {
+            fileSystemType: ecs.FileSystemType.XFS,
+            volumeType: ec2.EbsDeviceVolumeType.SC1,
+            size: cdk.Size.gibibytes(125),
+            iops: 0,
+          },
+        }));
+      }).toThrow(/'iops' cannot be specified with sc1, st1, gp2 and standard volume types, got sc1/);
+    });
+
+    test('throw an error if iops is not supported for volume type sc1', ()=> {
+      // WHEN
+      container.addMountPoints({
+        containerPath: '/var/lib',
+        readOnly: false,
+        sourceVolume: 'nginx-vol',
+      });
+
+      expect(() => {
+        service.addVolume(new ServiceManagedVolume(stack, 'EBSVolume', {
+          name: 'nginx-vol',
+          managedEBSVolume: {
+            fileSystemType: ecs.FileSystemType.XFS,
+            size: cdk.Size.gibibytes(125),
+            iops: 0,
+          },
+        }));
+      }).toThrow(/'iops' cannot be specified with sc1, st1, gp2 and standard volume types, got gp2/);
+    });
+
+    test('throw an error if if iops is required but not provided for volume type io2', ()=> {
+      // WHEN
+      container.addMountPoints({
+        containerPath: '/var/lib',
+        readOnly: false,
+        sourceVolume: 'nginx-vol',
+      });
+
+      expect(() => {
+        service.addVolume(new ServiceManagedVolume(stack, 'EBSVolume', {
+          name: 'nginx-vol',
+          managedEBSVolume: {
+            fileSystemType: ecs.FileSystemType.XFS,
+            volumeType: ec2.EbsDeviceVolumeType.IO2,
+            size: cdk.Size.gibibytes(125),
+          },
+        }));
+      }).toThrow(/'iops' must be specified with io1 or io2 volume types, got io2/);
+    });
+
+    test('throw an error if if iops is less than 100 for volume type io2', ()=> {
+      // WHEN
+      container.addMountPoints({
+        containerPath: '/var/lib',
+        readOnly: false,
+        sourceVolume: 'nginx-vol',
+      });
+
+      expect(() => {
+        service.addVolume(new ServiceManagedVolume(stack, 'EBSVolume', {
+          name: 'nginx-vol',
+          managedEBSVolume: {
+            fileSystemType: ecs.FileSystemType.XFS,
+            volumeType: ec2.EbsDeviceVolumeType.IO2,
+            size: cdk.Size.gibibytes(125),
+            iops: 0,
+          },
+        }));
+      }).toThrow("io2' volumes must have 'iops' between 100 and 256000, got 0");
+    });
+
+    test('throw an error if if iops is greater than 256000 for volume type io2', ()=> {
+      // WHEN
+      container.addMountPoints({
+        containerPath: '/var/lib',
+        readOnly: false,
+        sourceVolume: 'nginx-vol',
+      });
+
+      expect(() => {
+        service.addVolume(new ServiceManagedVolume(stack, 'EBSVolume', {
+          name: 'nginx-vol',
+          managedEBSVolume: {
+            fileSystemType: ecs.FileSystemType.XFS,
+            volumeType: ec2.EbsDeviceVolumeType.IO2,
+            size: cdk.Size.gibibytes(125),
+            iops: 256001,
+          },
+        }));
+      }).toThrow("io2' volumes must have 'iops' between 100 and 256000, got 256001");
+    });
+
+    test('success adding gp3 volume with throughput 0', ()=> {
+      // WHEN
+      container.addMountPoints({
+        containerPath: '/var/lib',
+        readOnly: false,
+        sourceVolume: 'nginx-vol',
+      });
+
+      service.addVolume(new ServiceManagedVolume(stack, 'EBSVolume', {
+        name: 'nginx-vol',
+        managedEBSVolume: {
+          fileSystemType: ecs.FileSystemType.XFS,
+          volumeType: ec2.EbsDeviceVolumeType.GP3,
+          size: cdk.Size.gibibytes(15),
+          throughput: 0,
+        },
+      }));
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+        VolumeConfigurations: [
+          {
+            ManagedEBSVolume: {
+              RoleArn: { 'Fn::GetAtt': ['EBSVolumeEBSRoleC27DD941', 'Arn'] },
+              SizeInGiB: 15,
+              FilesystemType: 'xfs',
+              VolumeType: 'gp3',
+              Throughput: 0,
+            },
+            Name: 'nginx-vol',
+          },
+        ],
       });
     });
   });
