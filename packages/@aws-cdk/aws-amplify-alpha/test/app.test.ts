@@ -113,6 +113,21 @@ test('create an app connected to a GitLab repository', () => {
       ],
       Version: '2012-10-17',
     },
+    ManagedPolicyArns: [
+      {
+        'Fn::Join': [
+          '',
+          [
+            'arn:',
+            {
+              Ref: 'AWS::Partition',
+            },
+            ':iam::aws:policy/AdministratorAccess-Amplify',
+          ],
+        ],
+      },
+    ],
+
   });
 });
 

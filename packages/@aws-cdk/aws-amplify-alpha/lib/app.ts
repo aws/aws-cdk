@@ -155,7 +155,7 @@ export interface AppProps {
    * The IAM service role to associate with the application. The App
    * implements IGrantable.
    *
-   * @default - a new role is created
+   * @default - a new role is created with the AdministratorAccess-Amplify managed policy attached
    */
   readonly role?: iam.IRole;
 
@@ -224,6 +224,7 @@ export class App extends Resource implements IApp, iam.IGrantable {
 
     const role = props.role || new iam.Role(this, 'Role', {
       assumedBy: new iam.ServicePrincipal('amplify.amazonaws.com'),
+      managedPolicies: [iam.ManagedPolicy.fromAwsManagedPolicyName('AdministratorAccess-Amplify')],
     });
     this.grantPrincipal = role;
 
@@ -239,7 +240,7 @@ export class App extends Resource implements IApp, iam.IGrantable {
         buildSpec: props.autoBranchCreation.buildSpec && props.autoBranchCreation.buildSpec.toBuildSpec(),
         enableAutoBranchCreation: true,
         enableAutoBuild: props.autoBranchCreation.autoBuild ?? true,
-        environmentVariables: Lazy.any({ produce: () => renderEnvironmentVariables(this.autoBranchEnvironmentVariables ) }, { omitEmptyArray: true }), // eslint-disable-line max-len
+        environmentVariables: Lazy.any({ produce: () => renderEnvironmentVariables(this.autoBranchEnvironmentVariables) }, { omitEmptyArray: true }), // eslint-disable-line max-len
         enablePullRequestPreview: props.autoBranchCreation.pullRequestPreview ?? true,
         pullRequestEnvironmentName: props.autoBranchCreation.pullRequestEnvironmentName,
         stage: props.autoBranchCreation.stage,
