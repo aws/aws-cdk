@@ -141,7 +141,8 @@
                     "customRules": [
                       {
                         "source": "/source",
-                        "target": "/target"
+                        "target": "/target",
+                        "status": "302"
                       }
                     ],
                     "iamServiceRole": {

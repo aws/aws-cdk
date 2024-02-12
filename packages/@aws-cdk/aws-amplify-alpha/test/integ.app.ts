@@ -31,6 +31,9 @@ class TestStack extends Stack {
     amplifyApp.addCustomRule({
       source: '/source',
       target: '/target',
+      // NOTE: This is optional according to the API but Cloudformation is breaking without it
+      // Resource handler returned message: "Invalid request provided: Status field in rewrite custom rules should not be empty
+      status: amplify.RedirectStatus.TEMPORARY_REDIRECT,
     });
 
     const mainBranch = amplifyApp.addBranch('main');

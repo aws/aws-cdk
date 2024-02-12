@@ -84,6 +84,7 @@
     "CustomRules": [
      {
       "Source": "/source",
+      "Status": "302",
       "Target": "/target"
      }
     ],
