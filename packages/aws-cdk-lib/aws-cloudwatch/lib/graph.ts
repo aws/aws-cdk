@@ -565,7 +565,6 @@ export enum TableSummaryColumn {
 export interface TableSummaryProps {
   /**
    * Summary columns
-   * @see TableSummary
    *
    * @default - No summary columns will be shown
    */
@@ -590,7 +589,6 @@ export interface TableSummaryProps {
  * Thresholds for highlighting cells in TableWidget
  */
 export class TableThreshold {
-
   /**
    * A threshold for highlighting and coloring cells above the specified value
    *
@@ -752,11 +750,9 @@ export interface TableWidgetProps extends MetricWidgetProps {
  */
 export class TableWidget extends ConcreteWidget {
 
-  private readonly props: TableWidgetProps;
-
   private readonly metrics: IMetric[];
 
-  constructor(props: TableWidgetProps) {
+  constructor(private readonly props: TableWidgetProps) {
     super(props.width || 6, props.height || 6);
 
     this.props = props;
