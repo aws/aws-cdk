@@ -128,7 +128,7 @@ import { BucketEncryption } from 'aws-cdk-lib/aws-s3';
 const app = new App({
   defaultStackSynthesizer: AppStagingSynthesizer.defaultResources({
     appId: 'my-app-id',
-    stagingBucketEncryption: BucketEncryption.S3_MANAGED
+    stagingBucketEncryption: BucketEncryption.S3_MANAGED,
   }),
 });
 
