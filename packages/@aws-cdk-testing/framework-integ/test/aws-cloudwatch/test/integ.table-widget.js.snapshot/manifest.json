@@ -1,28 +1,28 @@
 {
   "version": "36.0.0",
   "artifacts": {
-    "cdk-ses-email-identity-integ.assets": {
+    "TableWidget.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "cdk-ses-email-identity-integ.assets.json",
+        "file": "TableWidget.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "cdk-ses-email-identity-integ": {
+    "TableWidget": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "cdk-ses-email-identity-integ.template.json",
+        "templateFile": "TableWidget.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/8c1c73fb1dcf73cfd07d1697a478ad6e1fbe3673f2d10d7c35dbcaedc31ea460.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/82a79adc47ff443d7d7136e30219be4a553a4b7c1fbe6fb9b083dc945fe35137.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "cdk-ses-email-identity-integ.assets"
+          "TableWidget.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -31,97 +31,43 @@
         }
       },
       "dependencies": [
-        "cdk-ses-email-identity-integ.assets"
+        "TableWidget.assets"
       ],
       "metadata": {
-        "/cdk-ses-email-identity-integ/HostedZone/Resource": [
+        "/TableWidget/Dashboard/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "HostedZoneDB99F866"
+            "data": "Dashboard9E4231ED"
           }
         ],
-        "/cdk-ses-email-identity-integ/Function/ServiceRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "FunctionServiceRole675BB04A"
-          }
-        ],
-        "/cdk-ses-email-identity-integ/Function/ServiceRole/DefaultPolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "FunctionServiceRoleDefaultPolicy2F49994A"
-          }
-        ],
-        "/cdk-ses-email-identity-integ/Function/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "Function76856677"
-          }
-        ],
-        "/cdk-ses-email-identity-integ/EmailIdentity/DkimDnsToken1": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "EmailIdentityDkimDnsToken1BA32ACB3"
-          }
-        ],
-        "/cdk-ses-email-identity-integ/EmailIdentity/DkimDnsToken2": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "EmailIdentityDkimDnsToken2BBEBB8EC"
-          }
-        ],
-        "/cdk-ses-email-identity-integ/EmailIdentity/DkimDnsToken3": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "EmailIdentityDkimDnsToken3BB5E8A49"
-          }
-        ],
-        "/cdk-ses-email-identity-integ/EmailIdentity/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "EmailIdentity7187767D"
-          }
-        ],
-        "/cdk-ses-email-identity-integ/EmailIdentity/MailFromMxRecord/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "EmailIdentityMailFromMxRecordCEAAECD0"
-          }
-        ],
-        "/cdk-ses-email-identity-integ/EmailIdentity/MailFromTxtRecord/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "EmailIdentityMailFromTxtRecordE6B5E5D0"
-          }
-        ],
-        "/cdk-ses-email-identity-integ/BootstrapVersion": [
+        "/TableWidget/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/cdk-ses-email-identity-integ/CheckBootstrapVersion": [
+        "/TableWidget/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "cdk-ses-email-identity-integ"
+      "displayName": "TableWidget"
     },
-    "EmailIdentityIntegDefaultTestDeployAssert3F909307.assets": {
+    "TableWidgetTestDefaultTestDeployAssertA94EAD9F.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "EmailIdentityIntegDefaultTestDeployAssert3F909307.assets.json",
+        "file": "TableWidgetTestDefaultTestDeployAssertA94EAD9F.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "EmailIdentityIntegDefaultTestDeployAssert3F909307": {
+    "TableWidgetTestDefaultTestDeployAssertA94EAD9F": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "EmailIdentityIntegDefaultTestDeployAssert3F909307.template.json",
+        "templateFile": "TableWidgetTestDefaultTestDeployAssertA94EAD9F.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
@@ -130,7 +76,7 @@
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "EmailIdentityIntegDefaultTestDeployAssert3F909307.assets"
+          "TableWidgetTestDefaultTestDeployAssertA94EAD9F.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -139,23 +85,23 @@
         }
       },
       "dependencies": [
-        "EmailIdentityIntegDefaultTestDeployAssert3F909307.assets"
+        "TableWidgetTestDefaultTestDeployAssertA94EAD9F.assets"
       ],
       "metadata": {
-        "/EmailIdentityInteg/DefaultTest/DeployAssert/BootstrapVersion": [
+        "/TableWidgetTest/DefaultTest/DeployAssert/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/EmailIdentityInteg/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+        "/TableWidgetTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "EmailIdentityInteg/DefaultTest/DeployAssert"
+      "displayName": "TableWidgetTest/DefaultTest/DeployAssert"
     },
     "Tree": {
       "type": "cdk:tree",
