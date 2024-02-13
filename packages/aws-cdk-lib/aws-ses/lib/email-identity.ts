@@ -369,12 +369,12 @@ abstract class EmailIdentityBase extends Resource implements IEmailIdentity {
   /**
    * Permits an IAM principal the send email action.
    *
-   * Actions: SendEmail.
+   * Actions: SendEmail, SendRawEmail.
    *
    * @param grantee the principal to grant access to
    */
   public grantSendEmail(grantee: IGrantable): Grant {
-    return this.grant(grantee, 'ses:SendEmail');
+    return this.grant(grantee, 'ses:SendEmail', 'ses:SendRawEmail');
   }
 }
 

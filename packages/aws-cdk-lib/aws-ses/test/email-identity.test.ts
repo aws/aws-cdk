@@ -299,7 +299,10 @@ describe('grants', () => {
       PolicyDocument: {
         Statement: [
           {
-            Action: 'ses:SendEmail',
+            Action: [
+              'ses:SendEmail',
+              'ses:SendRawEmail',
+            ],
             Effect: 'Allow',
             Resource: {
               'Fn::Join': [
