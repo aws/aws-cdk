@@ -130,7 +130,7 @@ export interface EcsTaskProps extends TargetBaseProps {
     * Specifies the launch type on which your task is running. The launch type that you specify here
     * must match one of the launch type (compatibilities) of the target task.
     *
-    * @default - 'EC2' if `isEc2Compatible` for the `taskDefinition` is true , otherwise 'FARGATE'
+    * @default - 'EC2' if `isEc2Compatible` for the `taskDefinition` is true, otherwise 'FARGATE'
     */
   readonly launchType?: ecs.LaunchType;
 }
@@ -239,7 +239,8 @@ export class EcsTask implements events.IRuleTarget {
     }
 
     const assignPublicIp = (this.assignPublicIp ?? subnetSelection.subnetType === ec2.SubnetType.PUBLIC) ? 'ENABLED' : 'DISABLED';
-    const launchType = this.launchType ?? this.taskDefinition.isEc2Compatible ? 'EC2' : 'FARGATE';
+    const launchType = this.launchType ?? (this.taskDefinition.isEc2Compatible ? 'EC2' : 'FARGATE');
+
     if (assignPublicIp === 'ENABLED' && launchType !== 'FARGATE') {
       throw new Error('assignPublicIp is only supported for FARGATE tasks');
     };
