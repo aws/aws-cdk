@@ -5,12 +5,12 @@
    "Properties": {
     "DBSubnetGroupDescription": "Subnets for Database database",
     "SubnetIds": [
-     "subnet-06fd4260",
-     "subnet-63883242",
-     "subnet-a3521dee",
-     "subnet-88b40cd7",
-     "subnet-3a18db0b",
-     "subnet-1f760711"
+      {
+        "Ref": "VPCPrivateSubnet1Subnet8BCA10E0"
+      },
+      {
+        "Ref": "VPCPrivateSubnet2SubnetCFCDAA7A"
+      }
     ]
    },
    "UpdateReplacePolicy": "Retain",
@@ -27,7 +27,9 @@
       "IpProtocol": "-1"
      }
     ],
-    "VpcId": "vpc-196aa264"
+    "VpcId": {
+      "Ref": "VPCB9E5F0B4"
+    }
    },
    "UpdateReplacePolicy": "Retain",
    "DeletionPolicy": "Retain"
