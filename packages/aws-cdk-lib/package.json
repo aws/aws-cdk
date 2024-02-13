@@ -133,7 +133,7 @@
     "yaml": "1.10.2"
   },
   "devDependencies": {
-    "@aws-cdk/aws-service-spec": "^0.0.45",
+    "@aws-cdk/aws-service-spec": "^0.0.47",
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/custom-resource-handlers": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
@@ -498,7 +498,7 @@
   },
   "jsiiRosetta": {
     "exampleDependencies": {
-      "@aws-cdk/lambda-layer-kubectl-v28": "^2.0.0",
+      "@aws-cdk/lambda-layer-kubectl-v29": "^2.0.0",
       "cdk8s-plus-25": "^2.7.0",
       "@aws-cdk/aws-kinesisfirehose-alpha": "*",
       "@aws-cdk/aws-kinesisfirehose-destinations-alpha": "*"
