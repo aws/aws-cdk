@@ -127,6 +127,15 @@ export interface ContainerDefinitionOptions {
   readonly command?: string[];
 
   /**
+   * A list of ARNs in SSM or Amazon S3 to a credential spec (`CredSpec`) file that configures the container for Active Directory authentication.
+   *
+   * We recommend that you use this parameter instead of the `dockerSecurityOptions`. The maximum number of ARNs is 1.
+   *
+   * @default - No credential specs.
+   */
+  readonly credentialSpecs?: string[];
+
+  /**
    * The minimum number of CPU units to reserve for the container.
    *
    * @default - No minimum CPU units reserved.
@@ -794,6 +803,7 @@ export class ContainerDefinition extends Construct {
   public renderContainerDefinition(_taskDefinition?: TaskDefinition): CfnTaskDefinition.ContainerDefinitionProperty {
     return {
       command: this.props.command,
+      credentialSpecs: this.props.credentialSpecs,
       cpu: this.props.cpu,
       disableNetworking: this.props.disableNetworking,
       dependsOn: cdk.Lazy.any({ produce: () => this.containerDependencies.map(renderContainerDependency) }, { omitEmptyArray: true }),
