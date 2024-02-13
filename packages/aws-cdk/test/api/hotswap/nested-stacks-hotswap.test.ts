@@ -8,7 +8,6 @@ let mockUpdateLambdaCode: (params: Lambda.Types.UpdateFunctionCodeRequest) => La
 let mockPublishVersion: jest.Mock<Lambda.FunctionConfiguration, Lambda.PublishVersionRequest[]>;
 let hotswapMockSdkProvider: setup.HotswapMockSdkProvider;
 
-// TODO: more tests for parent vs child containing hotswappable changes
 describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hotswapMode) => {
   test('can hotswap a lambda function in a 1-level nested stack', async () => {
     // GIVEN
@@ -168,12 +167,12 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
     );
 
     // WHEN
-    oldRootStack.template.Resources.NestedStack.Properties.TemplateURL = 'https://www.amazon.com';
+    oldRootStack.template.Resources.ChildStack.Properties.TemplateURL = 'https://www.amazon.com';
     oldChildStack.template.Resources.GrandChildStack.Properties.TemplateURL = 'https://www.amazon.com';
 
     // write the new templates to disk
-    const newRootStack = testStack({ stackName: 'LambdaRoot', template: oldRootStack.template });
-    testStack({ stackName: 'ChildStack', template: oldChildStack.template });
+    const newRootStack = testStack({ stackName: oldRootStack.stackName, template: oldRootStack.template });
+    testStack({ stackName: oldChildStack.stackName, template: oldChildStack.template });
 
     const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, newRootStack);
 
@@ -847,7 +846,7 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
   });
 
   test('can hotswap a lambda function in a 2-level nested stack with dependency on an output of 2nd level sibling stack', async () => {
-    // GIVEN: RootStack has one child stack `FirstLevelRootStack` which further has two child stacks
+    // GIVEN: RootStack has one child stack `FirstLevelNestedStack` which further has two child stacks
     // `NestedLambdaStack` and `NestedSiblingStack`. `NestedLambdaStack` takes two parameters s3Key
     // and s3Bucket and use them for a Lambda function.
     // RootStack resolves s3Bucket from a root template parameter and passed to FirstLevelRootStack which
@@ -858,11 +857,11 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
       updateFunctionCode: mockUpdateLambdaCode,
     });
 
-    const rootStack = testStack({
+    const oldRootStack = testStack({
       stackName: 'RootStack',
       template: {
         Resources: {
-          FirstLevelRootStack: {
+          FirstLevelNestedStack: {
             Type: 'AWS::CloudFormation::Stack',
             Properties: {
               TemplateURL: 'https://www.magic-url.com',
@@ -886,8 +885,8 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
       },
     });
 
-    const firstLevelRootStack = testStack({
-      stackName: 'FirstLevelRootStack',
+    const oldFirstLevelNestedStack = testStack({
+      stackName: 'FirstLevelNestedStack',
       template: {
         Resources: {
           NestedLambdaStack: {
@@ -962,35 +961,36 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
       },
     });
 
-    setup.addTemplateToCloudFormationLookupMock(rootStack);
-    setup.addTemplateToCloudFormationLookupMock(firstLevelRootStack);
+    setup.addTemplateToCloudFormationLookupMock(oldRootStack);
+    setup.addTemplateToCloudFormationLookupMock(oldFirstLevelNestedStack);
     setup.addTemplateToCloudFormationLookupMock(nestedLambdaStack);
     setup.addTemplateToCloudFormationLookupMock(nestedSiblingStack);
 
-    setup.pushNestedStackResourceSummaries('RootStack',
-      setup.stackSummaryOf('FirstLevelRootStack', 'AWS::CloudFormation::Stack',
-        'arn:aws:cloudformation:bermuda-triangle-1337:123456789012:stack/FirstLevelRootStack/abcd',
+    setup.pushNestedStackResourceSummaries(oldRootStack.stackName,
+      setup.stackSummaryOf(oldFirstLevelNestedStack.stackName, 'AWS::CloudFormation::Stack',
+        `arn:aws:cloudformation:bermuda-triangle-1337:123456789012:stack/${oldFirstLevelNestedStack.stackName}/abcd`,
       ),
     );
-
-    setup.pushNestedStackResourceSummaries('FirstLevelRootStack',
-      setup.stackSummaryOf('NestedLambdaStack', 'AWS::CloudFormation::Stack',
-        'arn:aws:cloudformation:bermuda-triangle-1337:123456789012:stack/NestedLambdaStack/abcd',
+    setup.pushNestedStackResourceSummaries(oldFirstLevelNestedStack.stackName,
+      setup.stackSummaryOf(nestedLambdaStack.stackName, 'AWS::CloudFormation::Stack',
+        `arn:aws:cloudformation:bermuda-triangle-1337:123456789012:stack/${nestedLambdaStack.stackName}/abcd`,
       ),
-      setup.stackSummaryOf('NestedSiblingStack', 'AWS::CloudFormation::Stack',
-        'arn:aws:cloudformation:bermuda-triangle-1337:123456789012:stack/NestedSiblingStack/abcd',
+      setup.stackSummaryOf(nestedSiblingStack.stackName, 'AWS::CloudFormation::Stack',
+        `arn:aws:cloudformation:bermuda-triangle-1337:123456789012:stack/${nestedSiblingStack.stackName}/abcd`,
       ),
     );
-    setup.pushNestedStackResourceSummaries('NestedLambdaStack',
+    setup.pushNestedStackResourceSummaries(nestedLambdaStack.stackName,
       setup.stackSummaryOf('Func', 'AWS::Lambda::Function', 'nested-lambda-function'),
     );
-    setup.pushNestedStackResourceSummaries('NestedSiblingStack');
-    rootStack.template.Resources.FirstLevelRootStack.Properties.TemplateURL = 'https://www.amazon.com';
-    firstLevelRootStack.template.Resources.NestedLambdaStack.Properties.TemplateURL = 'https://www.amazon.com';
-    firstLevelRootStack.template.Resources.NestedSiblingStack.Properties.TemplateURL = 'https://www.amazon.com';
+    setup.pushNestedStackResourceSummaries(nestedSiblingStack.stackName);
+    oldRootStack.template.Resources.FirstLevelNestedStack.Properties.TemplateURL = 'https://www.amazon.com';
+    oldFirstLevelNestedStack.template.Resources.NestedLambdaStack.Properties.TemplateURL = 'https://www.amazon.com';
+    oldFirstLevelNestedStack.template.Resources.NestedSiblingStack.Properties.TemplateURL = 'https://www.amazon.com';
+    const newRootStack = testStack({ stackName: oldRootStack.stackName, template: oldRootStack.template });
+    testStack({ stackName: oldFirstLevelNestedStack.stackName, template: oldFirstLevelNestedStack.template });
 
     // WHEN
-    const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, rootStack, {
+    const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, newRootStack, {
       S3BucketParam: 'new-bucket',
     });
 

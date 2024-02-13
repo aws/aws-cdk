@@ -1,10 +1,10 @@
 import * as cxapi from '@aws-cdk/cx-api';
+import { MockSdkProvider } from './mock-sdk';
+import { Deployments } from '../../lib/api/deployments';
 import { CloudFormationStack, Template } from '../../lib/api/util/cloudformation';
+import { CdkToolkit } from '../../lib/cdk-toolkit';
 import { FakeCloudformationStack } from '../api/fake-cloudformation-stack';
 import { MockCloudExecutable, TestAssembly } from '../util';
-import { Deployments } from '../../lib/api/deployments';
-import { CdkToolkit } from '../../lib/cdk-toolkit';
-import { MockSdkProvider } from './mock-sdk';
 
 const STACK_NAME = 'withouterrors';
 const STACK_ID = 'stackId';

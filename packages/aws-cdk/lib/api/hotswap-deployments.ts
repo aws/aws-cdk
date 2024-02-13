@@ -95,6 +95,7 @@ export async function tryHotswapDeployment(
     }
   }
 
+  console.log(stackChanges.resources.changes);
   // apply the short-circuitable changes
   await applyAllHotswappableChanges(sdk, hotswappableChanges);
 

@@ -32,7 +32,8 @@
   },
   "Parameters": {
     "S3BucketParam": {
-      "Type": "String"
+      "Type": "String",
+      "Description": "S3 bucket for asset"
     }
   }
 }

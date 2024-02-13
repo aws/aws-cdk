@@ -1333,11 +1333,3 @@ function buildParameterMap(parameters: {
 
   return parameterMap;
 }
-
-class Foo {
-  private _magic: string | undefined;
-
-  get magic() {
-    return this._magic;
-  }
-}
