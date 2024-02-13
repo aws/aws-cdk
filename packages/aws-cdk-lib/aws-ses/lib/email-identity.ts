@@ -19,6 +19,13 @@ export interface IEmailIdentity extends IResource {
   readonly emailIdentityName: string;
 
   /**
+   * The ARN of the email identity
+   *
+   * @attribute
+   */
+  readonly emailIdentityArn: string;
+
+  /**
    * Adds an IAM policy statement associated with this email identity to an IAM principal's policy.
    *
    * @param grantee the principal (no-op if undefined)
@@ -329,10 +336,15 @@ export enum EasyDkimSigningKeyLength {
 }
 
 abstract class EmailIdentityBase extends Resource implements IEmailIdentity {
+  /**
+   * The name of the email identity
+   *
+   * @attribute
+   */
   public abstract readonly emailIdentityName: string;
 
   /**
-   * The ARN of the identity.
+   * The ARN of the email identity
    *
    * @attribute
    */
