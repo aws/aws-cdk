@@ -1,0 +1,101 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`lambda should grant pipe role invoke access 1`] = `
+{
+  "EnrichmentLambdaServiceRole72330D97": {
+    "Properties": {
+      "AssumeRolePolicyDocument": {
+        "Statement": [
+          {
+            "Action": "sts:AssumeRole",
+            "Effect": "Allow",
+            "Principal": {
+              "Service": "lambda.amazonaws.com",
+            },
+          },
+        ],
+        "Version": "2012-10-17",
+      },
+      "ManagedPolicyArns": [
+        {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition",
+              },
+              ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+            ],
+          ],
+        },
+      ],
+    },
+    "Type": "AWS::IAM::Role",
+  },
+  "MyPipeRoleCBC8E9AB": {
+    "Properties": {
+      "AssumeRolePolicyDocument": {
+        "Statement": [
+          {
+            "Action": "sts:AssumeRole",
+            "Effect": "Allow",
+            "Principal": {
+              "Service": "pipes.amazonaws.com",
+            },
+          },
+        ],
+        "Version": "2012-10-17",
+      },
+    },
+    "Type": "AWS::IAM::Role",
+  },
+}
+`;
+
+exports[`lambda should grant pipe role invoke access 2`] = `
+{
+  "MyPipeRoleDefaultPolicy31387C20": {
+    "Properties": {
+      "PolicyDocument": {
+        "Statement": [
+          {
+            "Action": "lambda:InvokeFunction",
+            "Effect": "Allow",
+            "Resource": [
+              {
+                "Fn::GetAtt": [
+                  "EnrichmentLambda3D6CE785",
+                  "Arn",
+                ],
+              },
+              {
+                "Fn::Join": [
+                  "",
+                  [
+                    {
+                      "Fn::GetAtt": [
+                        "EnrichmentLambda3D6CE785",
+                        "Arn",
+                      ],
+                    },
+                    ":*",
+                  ],
+                ],
+              },
+            ],
+          },
+        ],
+        "Version": "2012-10-17",
+      },
+      "PolicyName": "MyPipeRoleDefaultPolicy31387C20",
+      "Roles": [
+        {
+          "Ref": "MyPipeRoleCBC8E9AB",
+        },
+      ],
+    },
+    "Type": "AWS::IAM::Policy",
+  },
+}
+`;
