@@ -365,7 +365,16 @@ const replicationBucket = new s3.Bucket(replicationStack, 'ReplicationBucket', {
 
 ## Variables
 
-The library supports the CodePipeline Variables feature.
+Variables are key-value pairs that can be used to dynamically configure actions in your pipeline.
+
+There are two types of variables, Action-level variables and Pipeline-level variables. Action-level
+variables are produced when an action is executed. Pipeline-level variables are defined when the
+pipeline is created and resolved at pipeline run time. You specify the Pipeline-level variables
+when the pipeline is created, and you can provide values at the time of the pipeline execution.
+
+### Action-level variables
+
+The library supports action-level variables.
 Each action class that emits variables has a separate variables interface,
 accessed as a property of the action instance called `variables`.
 You instantiate the action class and assign it to a local variable;
@@ -413,11 +422,99 @@ new OtherAction({
 });
 ```
 
+The following is an actual code example.
+
+```ts
+declare const sourceAction: codepipeline_actions.S3SourceAction;
+declare const sourceOutput: codepipeline.Artifact;
+declare const deployBucket: s3.Bucket;
+
+new codepipeline.Pipeline(this, 'Pipeline', {
+  stages: [
+    {
+      stageName: 'Source',
+      actions: [sourceAction],
+    },
+    {
+      stageName: 'Deploy',
+      actions: [
+        new codepipeline_actions.S3DeployAction({
+          actionName: 'DeployAction',
+          // can reference the variables
+          objectKey: `${sourceAction.variables.versionId}.txt`,
+          input: sourceOutput,
+          bucket: deployBucket,
+        }),
+      ],
+    },
+  ],
+});
+```
+
 Check the documentation of the `aws-cdk-lib/aws-codepipeline-actions`
 for details on how to use the variables for each action class.
 
 See the [CodePipeline documentation](https://docs.aws.amazon.com/codepipeline/latest/userguide/reference-variables.html)
 for more details on how to use the variables feature.
+
+### Pipeline-level variables
+
+You can add one or more variables at the pipeline level. You can reference
+this value in the configuration of CodePipeline actions. You can add the
+variable names, default values, and descriptions when you create the pipeline.
+Variables are resolved at the time of execution.
+
+Note that using pipeline-level variables in any kind of Source action is not supported.
+Also, the variables can only be used with pipeline type V2.
+
+```ts
+declare const sourceAction: codepipeline_actions.S3SourceAction;
+declare const sourceOutput: codepipeline.Artifact;
+declare const deployBucket: s3.Bucket;
+
+// Pipeline-level variable
+const variable = new codepipeline.Variable({
+  variableName: 'bucket-var',
+  description: 'description',
+  defaultValue: 'sample',
+});
+
+new codepipeline.Pipeline(this, 'Pipeline', {
+  pipelineType: codepipeline.PipelineType.V2,
+  variables: [variable],
+  stages: [
+    {
+      stageName: 'Source',
+      actions: [sourceAction],
+    },
+    {
+      stageName: 'Deploy',
+      actions: [
+        new codepipeline_actions.S3DeployAction({
+          actionName: 'DeployAction',
+          // can reference the variables
+          objectKey: `${variable.reference()}.txt`,
+          input: sourceOutput,
+          bucket: deployBucket,
+        }),
+      ],
+    },
+  ],
+});
+```
+
+Or append a variable to an existing pipeline:
+
+```ts
+declare const pipeline: codepipeline.Pipeline;
+
+const variable = new codepipeline.Variable({
+  variableName: 'bucket-var',
+  description: 'description',
+  defaultValue: 'sample',
+});
+pipeline.addVariable(variable);
+```
 
 ## Events
 
@@ -479,3 +576,72 @@ const target = new chatbot.SlackChannelConfiguration(this, 'MySlackChannel', {
 declare const pipeline: codepipeline.Pipeline;
 const rule = pipeline.notifyOnExecutionStateChange('NotifyOnExecutionStateChange', target);
 ```
+
+## Trigger
+
+To trigger a pipeline with Git tags, specify the `triggers` property. When a Git tag is pushed,
+your pipeline starts. You can filter with glob patterns. The `tagsExcludes` takes priority over
+the `tagsIncludes`.
+
+The triggers can only be used with pipeline type V2.
+
+```ts
+declare const sourceAction: codepipeline_actions.CodeStarConnectionsSourceAction;
+declare const buildAction: codepipeline_actions.CodeBuildAction;
+
+new codepipeline.Pipeline(this, 'Pipeline', {
+  pipelineType: codepipeline.PipelineType.V2,
+  stages: [
+    {
+      stageName: 'Source',
+      actions: [sourceAction],
+    },
+    {
+      stageName: 'Build',
+      actions: [buildAction],
+    },
+  ],
+  triggers: [{
+    providerType: codepipeline.ProviderType.CODE_STAR_SOURCE_CONNECTION,
+    gitConfiguration: {
+      sourceAction,
+      pushFilter: [{
+        tagsExcludes: ['exclude1', 'exclude2'],
+        tagsIncludes: ['include*'],
+      }],
+    },
+  }],
+});
+```
+
+Or append a trigger to an existing pipeline:
+
+```ts
+declare const pipeline: codepipeline.Pipeline;
+declare const sourceAction: codepipeline_actions.CodeStarConnectionsSourceAction;
+
+pipeline.addTrigger({
+  providerType: codepipeline.ProviderType.CODE_STAR_SOURCE_CONNECTION,
+  gitConfiguration: {
+    sourceAction,
+    pushFilter: [{
+      tagsExcludes: ['exclude1', 'exclude2'],
+      tagsIncludes: ['include*'],
+    }],
+  },
+});
+```
+
+## Migrating a pipeline type from V1 to V2
+
+To migrate your pipeline type from V1 to V2, you just need to update the `pipelineType` property to `PipelineType.V2`.
+This migration does not cause replacement of your pipeline.
+
+```ts
+new codepipeline.Pipeline(this, 'Pipeline', {
+  pipelineType: codepipeline.PipelineType.V2, // here
+});
+```
+
+See the [CodePipeline documentation](https://docs.aws.amazon.com/codepipeline/latest/userguide/pipeline-types-planning.html)
+for more details on the differences between each type.
