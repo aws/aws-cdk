@@ -9,10 +9,12 @@ describe('ci', () => {
   integTest('output to stderr', withDefaultFixture(async (fixture) => {
     const deployOutput = await fixture.cdkDeploy('test-2', { captureStderr: true, onlyStderr: true });
     const diffOutput = await fixture.cdk(['diff', fixture.fullStackName('test-2')], { captureStderr: true, onlyStderr: true });
+    const listOutput = await fixture.cdkList('test-2', { captureStderr: true, onlyStderr: true });
     const destroyOutput = await fixture.cdkDestroy('test-2', { captureStderr: true, onlyStderr: true });
     expect(deployOutput).not.toEqual('');
     expect(destroyOutput).not.toEqual('');
     expect(diffOutput).not.toEqual('');
+    expect(listOutput).toEqual('');
   }));
   describe('ci=true', () => {
     integTest('output to stdout', withDefaultFixture(async (fixture) => {
@@ -30,10 +32,12 @@ describe('ci', () => {
 
       const deployOutput = await fixture.cdkDeploy('test-2', execOptions);
       const diffOutput = await fixture.cdk(['diff', fixture.fullStackName('test-2')], execOptions);
+      const listOutput = await fixture.cdkList('test-2', execOptions);
       const destroyOutput = await fixture.cdkDestroy('test-2', execOptions);
       expect(deployOutput).toEqual('');
       expect(destroyOutput).toEqual('');
       expect(diffOutput).toEqual('');
+      expect(listOutput).toEqual('');
     }));
   });
 });
@@ -87,6 +91,14 @@ integTest('Termination protection', withDefaultFixture(async (fixture) => {
   // Can update termination protection even though the change set doesn't contain changes
   await fixture.cdkDeploy(stackName, { modEnv: { TERMINATION_PROTECTION: 'FALSE' } });
   await fixture.cdkDestroy(stackName);
+}));
+
+integTest('cdk list', withDefaultFixture(async (fixture) => {
+  const list = await fixture.cdkList(['test-1', 'test-2']);
+
+  // Check that there are stacks in there
+  expect(list).toContain('test-1');
+  expect(list).toContain('test-2');
 }));
 
 integTest('cdk synth', withDefaultFixture(async (fixture) => {
