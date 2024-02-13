@@ -216,6 +216,7 @@ To grant a specific action to a principal use the `grant` method.
 For sending emails, `grantSendEmail` can be used instead:
 
 ```ts
+import * as iam from 'aws-cdk-lib/aws-iam';
 declare const user: iam.User;
 
 const identity = new ses.EmailIdentity(this, 'Identity', {
