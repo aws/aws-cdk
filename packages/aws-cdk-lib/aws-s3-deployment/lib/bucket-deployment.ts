@@ -602,6 +602,13 @@ export interface DeployTimeSubstitutedFileProps {
   readonly source: string;
 
   /**
+   * The object key in the destination bucket where the processed
+   * file would be written to.
+   * @default - Fingerprint of the file content would be used as object key
+   */
+  readonly destinationKey?: string;
+
+  /**
    * The S3 bucket to sync the contents of the zip file to.
    */
   readonly destinationBucket: s3.IBucket;
@@ -641,7 +648,7 @@ export class DeployTimeSubstitutedFile extends BucketDeployment {
       return props.substitutions[expr] ?? match;
     });
 
-    const objectKey = cdk.FileSystem.fingerprint(props.source);
+    const objectKey = props.destinationKey ?? cdk.FileSystem.fingerprint(props.source);
     const fileSource = Source.data(objectKey, fileData);
     const fullBucketDeploymentProps: BucketDeploymentProps = {
       prune: false,
