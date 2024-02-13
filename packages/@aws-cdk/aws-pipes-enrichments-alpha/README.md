@@ -17,7 +17,7 @@
 <!--END STABILITY BANNER-->
 
 
-EventBridge Pipes Enrichments let you create a enrichments for a EventBridge Pipe.
+EventBridge Pipes Enrichments let you create enrichments for an EventBridge Pipe.
 
 
 For more details see the service documentation:

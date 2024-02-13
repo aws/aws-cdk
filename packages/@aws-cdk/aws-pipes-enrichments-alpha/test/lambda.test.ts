@@ -70,7 +70,7 @@ describe('lambda', () => {
   });
 
   it('should grant pipe role invoke access', () => {
-  // ARRANGE
+    // ARRANGE
     const enrichment = new LambdaEnrichment(lambda);
 
     new Pipe(stack, 'MyPipe', {

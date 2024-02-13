@@ -26,6 +26,7 @@ export class LambdaEnrichment implements IEnrichment {
     this.enrichmentArn = lambda.functionArn;
     this.inputTransformation = props?.inputTransformation;
   }
+
   bind(pipe: IPipe): EnrichmentParametersConfig {
     return {
       enrichmentParameters: {
@@ -33,6 +34,7 @@ export class LambdaEnrichment implements IEnrichment {
       },
     };
   }
+
   grantInvoke(pipeRole: IRole): void {
     this.lambda.grantInvoke(pipeRole);
   }
