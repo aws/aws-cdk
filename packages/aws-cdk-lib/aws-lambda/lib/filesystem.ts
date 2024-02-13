@@ -23,7 +23,7 @@ export interface FileSystemConfig {
    *
    * @default - no dependency
    */
-  readonly dependency?: IDependable[]
+  readonly dependency?: IDependable[];
 
   /**
    * connections object used to allow ingress traffic from lambda function

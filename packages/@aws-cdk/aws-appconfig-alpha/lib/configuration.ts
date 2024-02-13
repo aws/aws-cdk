@@ -1,5 +1,4 @@
 import * as fs from 'fs';
-import * as mimeTypes from 'mime-types';
 import * as path from 'path';
 import { PhysicalName, Stack, ArnFormat, Names, RemovalPolicy } from 'aws-cdk-lib';
 import { CfnConfigurationProfile, CfnDeployment, CfnHostedConfigurationVersion } from 'aws-cdk-lib/aws-appconfig';
@@ -11,6 +10,7 @@ import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as sm from 'aws-cdk-lib/aws-secretsmanager';
 import * as ssm from 'aws-cdk-lib/aws-ssm';
 import { Construct, IConstruct } from 'constructs';
+import * as mimeTypes from 'mime-types';
 import { IApplication } from './application';
 import { DeploymentStrategy, IDeploymentStrategy, RolloutStrategy } from './deployment-strategy';
 import { IEnvironment } from './environment';
@@ -305,6 +305,9 @@ abstract class ConfigurationBase extends Construct implements IConfiguration, IE
    * Deploys the configuration to the specified environment.
    *
    * @param environment The environment to deploy the configuration to
+   * @deprecated Use `deployTo` as a property instead. We do not recommend
+   * creating resources in multiple stacks. If you want to do this still,
+   * please take a look into https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_appconfig.CfnDeployment.html.
    */
   public deploy(environment: IEnvironment) {
     new CfnDeployment(this, `Deployment${getHash(environment.name!)}`, {
