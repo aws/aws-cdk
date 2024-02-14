@@ -1,0 +1,12 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "TaskDefinitionContainerCredSpecs/DefaultTest": {
+      "stacks": [
+        "aws-ecs-task-definition-container-credentialSpecs"
+      ],
+      "assertionStack": "TaskDefinitionContainerCredSpecs/DefaultTest/DeployAssert",
+      "assertionStackName": "TaskDefinitionContainerCredSpecsDefaultTestDeployAssertF6677424"
+    }
+  }
+}
