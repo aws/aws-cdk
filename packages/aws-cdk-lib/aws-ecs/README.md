@@ -632,7 +632,7 @@ declare const taskExecutionRole: iam.Role;
 declare const taskDefinition: ecs.TaskDefinition;
 
 // A task execution role is needed, and it should have permissions to read from the S3 bucket or SSM parameter where the CredSpec file is stored.
-taskDefinition.executionRole = taskExecutionRole
+taskDefinition.executionRole = taskExecutionRole;
 
 taskDefinition.addContainer('gmsa-container', {
   image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
