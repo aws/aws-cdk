@@ -623,6 +623,26 @@ taskDefinition.addContainer('windowsservercore', {
 });
 ```
 
+### Using Windows authentication with gMSA
+
+Amazon ECS supports Active Directory authentication for Linux containers through a special kind of service account called a group Managed Service Account (gMSA). For more details, please see the [product documentation on how to implement on Windows containers](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/windows-gmsa.html), or this [blog post on how to implement on  Linux containers](https://aws.amazon.com/blogs/containers/using-windows-authentication-with-gmsa-on-linux-containers-on-amazon-ecs/).
+
+```ts
+declare const taskExecutionRole: iam.Role;
+declare const taskDefinition: ecs.TaskDefinition;
+
+// A task execution role is needed, and it should have permissions to read from the S3 bucket or SSM parameter where the CredSpec file is stored.
+taskDefinition.executionRole = taskExecutionRole
+
+taskDefinition.addContainer('gmsa-container', {
+  image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+  cpu: 128,
+  memoryLimitMiB: 256,
+  credentialSpecs: ['credentialspecdomainless:arn:aws:s3:::bucket_name/key_name'], 
+  // Valid values are: 'credentialspecdomainless:ARN' or 'credentialspec:ARN'
+});
+```
+
 ### Using Graviton2 with Fargate
 
 AWS Graviton2 supports AWS Fargate. For more details, please see this [blog post](https://aws.amazon.com/blogs/aws/announcing-aws-graviton2-support-for-aws-fargate-get-up-to-40-better-price-performance-for-your-serverless-containers/)
