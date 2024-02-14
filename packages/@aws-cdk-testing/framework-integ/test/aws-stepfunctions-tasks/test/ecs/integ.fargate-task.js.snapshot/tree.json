@@ -4,33 +4,33 @@
     "id": "App",
     "path": "",
     "children": {
-      "aws-ecs-integ2": {
-        "id": "aws-ecs-integ2",
-        "path": "aws-ecs-integ2",
+      "aws-sfn-tasks-ecs-fargate-task": {
+        "id": "aws-sfn-tasks-ecs-fargate-task",
+        "path": "aws-sfn-tasks-ecs-fargate-task",
         "children": {
           "FargateCluster": {
             "id": "FargateCluster",
-            "path": "aws-ecs-integ2/FargateCluster",
+            "path": "aws-sfn-tasks-ecs-fargate-task/FargateCluster",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "aws-ecs-integ2/FargateCluster/Resource",
+                "path": "aws-sfn-tasks-ecs-fargate-task/FargateCluster/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::ECS::Cluster",
                   "aws:cdk:cloudformation:props": {}
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-ecs.CfnCluster",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
                 }
               },
               "Vpc": {
                 "id": "Vpc",
-                "path": "aws-ecs-integ2/FargateCluster/Vpc",
+                "path": "aws-sfn-tasks-ecs-fargate-task/FargateCluster/Vpc",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "aws-ecs-integ2/FargateCluster/Vpc/Resource",
+                    "path": "aws-sfn-tasks-ecs-fargate-task/FargateCluster/Vpc/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::VPC",
                       "aws:cdk:cloudformation:props": {
@@ -41,29 +41,26 @@
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "aws-ecs-integ2/FargateCluster/Vpc"
+                            "value": "aws-sfn-tasks-ecs-fargate-task/FargateCluster/Vpc"
                           }
                         ]
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnVPC",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
                     }
                   },
                   "PublicSubnet1": {
                     "id": "PublicSubnet1",
-                    "path": "aws-ecs-integ2/FargateCluster/Vpc/PublicSubnet1",
+                    "path": "aws-sfn-tasks-ecs-fargate-task/FargateCluster/Vpc/PublicSubnet1",
                     "children": {
                       "Subnet": {
                         "id": "Subnet",
-                        "path": "aws-ecs-integ2/FargateCluster/Vpc/PublicSubnet1/Subnet",
+                        "path": "aws-sfn-tasks-ecs-fargate-task/FargateCluster/Vpc/PublicSubnet1/Subnet",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                           "aws:cdk:cloudformation:props": {
-                            "vpcId": {
-                              "Ref": "FargateClusterVpc377E8024"
-                            },
                             "availabilityZone": {
                               "Fn::Select": [
                                 0,
@@ -85,49 +82,52 @@
                               },
                               {
                                 "key": "Name",
-                                "value": "aws-ecs-integ2/FargateCluster/Vpc/PublicSubnet1"
+                                "value": "aws-sfn-tasks-ecs-fargate-task/FargateCluster/Vpc/PublicSubnet1"
                               }
-                            ]
+                            ],
+                            "vpcId": {
+                              "Ref": "FargateClusterVpc377E8024"
+                            }
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-ec2.CfnSubnet",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.3.0"
                         }
                       },
                       "Acl": {
                         "id": "Acl",
-                        "path": "aws-ecs-integ2/FargateCluster/Vpc/PublicSubnet1/Acl",
+                        "path": "aws-sfn-tasks-ecs-fargate-task/FargateCluster/Vpc/PublicSubnet1/Acl",
                         "constructInfo": {
-                          "fqn": "@aws-cdk/core.Resource",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.3.0"
                         }
                       },
                       "RouteTable": {
                         "id": "RouteTable",
-                        "path": "aws-ecs-integ2/FargateCluster/Vpc/PublicSubnet1/RouteTable",
+                        "path": "aws-sfn-tasks-ecs-fargate-task/FargateCluster/Vpc/PublicSubnet1/RouteTable",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                           "aws:cdk:cloudformation:props": {
-                            "vpcId": {
-                              "Ref": "FargateClusterVpc377E8024"
-                            },
                             "tags": [
                               {
                                 "key": "Name",
-                                "value": "aws-ecs-integ2/FargateCluster/Vpc/PublicSubnet1"
+                                "value": "aws-sfn-tasks-ecs-fargate-task/FargateCluster/Vpc/PublicSubnet1"
                               }
-                            ]
+                            ],
+                            "vpcId": {
+                              "Ref": "FargateClusterVpc377E8024"
+                            }
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-ec2.CfnRouteTable",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.3.0"
                         }
                       },
                       "RouteTableAssociation": {
                         "id": "RouteTableAssociation",
-                        "path": "aws-ecs-integ2/FargateCluster/Vpc/PublicSubnet1/RouteTableAssociation",
+                        "path": "aws-sfn-tasks-ecs-fargate-task/FargateCluster/Vpc/PublicSubnet1/RouteTableAssociation",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
                           "aws:cdk:cloudformation:props": {
@@ -140,33 +140,33 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-ec2.CfnSubnetRouteTableAssociation",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.3.0"
                         }
                       },
                       "DefaultRoute": {
                         "id": "DefaultRoute",
-                        "path": "aws-ecs-integ2/FargateCluster/Vpc/PublicSubnet1/DefaultRoute",
+                        "path": "aws-sfn-tasks-ecs-fargate-task/FargateCluster/Vpc/PublicSubnet1/DefaultRoute",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                           "aws:cdk:cloudformation:props": {
-                            "routeTableId": {
-                              "Ref": "FargateClusterVpcPublicSubnet1RouteTable1D7FA747"
-                            },
                             "destinationCidrBlock": "0.0.0.0/0",
                             "gatewayId": {
                               "Ref": "FargateClusterVpcIGW827638CB"
+                            },
+                            "routeTableId": {
+                              "Ref": "FargateClusterVpcPublicSubnet1RouteTable1D7FA747"
                             }
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-ec2.CfnRoute",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.3.0"
                         }
                       },
                       "EIP": {
                         "id": "EIP",
-                        "path": "aws-ecs-integ2/FargateCluster/Vpc/PublicSubnet1/EIP",
+                        "path": "aws-sfn-tasks-ecs-fargate-task/FargateCluster/Vpc/PublicSubnet1/EIP",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::EC2::EIP",
                           "aws:cdk:cloudformation:props": {
@@ -174,63 +174,60 @@
                             "tags": [
                               {
                                 "key": "Name",
-                                "value": "aws-ecs-integ2/FargateCluster/Vpc/PublicSubnet1"
+                                "value": "aws-sfn-tasks-ecs-fargate-task/FargateCluster/Vpc/PublicSubnet1"
                               }
                             ]
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-ec2.CfnEIP",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.3.0"
                         }
                       },
                       "NATGateway": {
                         "id": "NATGateway",
-                        "path": "aws-ecs-integ2/FargateCluster/Vpc/PublicSubnet1/NATGateway",
+                        "path": "aws-sfn-tasks-ecs-fargate-task/FargateCluster/Vpc/PublicSubnet1/NATGateway",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::EC2::NatGateway",
                           "aws:cdk:cloudformation:props": {
-                            "subnetId": {
-                              "Ref": "FargateClusterVpcPublicSubnet1SubnetB9C24BC7"
-                            },
                             "allocationId": {
                               "Fn::GetAtt": [
                                 "FargateClusterVpcPublicSubnet1EIPF91909D0",
                                 "AllocationId"
                               ]
                             },
+                            "subnetId": {
+                              "Ref": "FargateClusterVpcPublicSubnet1SubnetB9C24BC7"
+                            },
                             "tags": [
                               {
                                 "key": "Name",
-                                "value": "aws-ecs-integ2/FargateCluster/Vpc/PublicSubnet1"
+                                "value": "aws-sfn-tasks-ecs-fargate-task/FargateCluster/Vpc/PublicSubnet1"
                               }
                             ]
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-ec2.CfnNatGateway",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.3.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.PublicSubnet",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
                     }
                   },
                   "PublicSubnet2": {
                     "id": "PublicSubnet2",
-                    "path": "aws-ecs-integ2/FargateCluster/Vpc/PublicSubnet2",
+                    "path": "aws-sfn-tasks-ecs-fargate-task/FargateCluster/Vpc/PublicSubnet2",
                     "children": {
                       "Subnet": {
                         "id": "Subnet",
-                        "path": "aws-ecs-integ2/FargateCluster/Vpc/PublicSubnet2/Subnet",
+                        "path": "aws-sfn-tasks-ecs-fargate-task/FargateCluster/Vpc/PublicSubnet2/Subnet",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                           "aws:cdk:cloudformation:props": {
-                            "vpcId": {
-                              "Ref": "FargateClusterVpc377E8024"
-                            },
                             "availabilityZone": {
                               "Fn::Select": [
                                 1,
@@ -252,49 +249,52 @@
                               },
                               {
                                 "key": "Name",
-                                "value": "aws-ecs-integ2/FargateCluster/Vpc/PublicSubnet2"
+                                "value": "aws-sfn-tasks-ecs-fargate-task/FargateCluster/Vpc/PublicSubnet2"
                               }
-                            ]
+                            ],
+                            "vpcId": {
+                              "Ref": "FargateClusterVpc377E8024"
+                            }
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-ec2.CfnSubnet",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.3.0"
                         }
                       },
                       "Acl": {
                         "id": "Acl",
-                        "path": "aws-ecs-integ2/FargateCluster/Vpc/PublicSubnet2/Acl",
+                        "path": "aws-sfn-tasks-ecs-fargate-task/FargateCluster/Vpc/PublicSubnet2/Acl",
                         "constructInfo": {
-                          "fqn": "@aws-cdk/core.Resource",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.3.0"
                         }
                       },
                       "RouteTable": {
                         "id": "RouteTable",
-                        "path": "aws-ecs-integ2/FargateCluster/Vpc/PublicSubnet2/RouteTable",
+                        "path": "aws-sfn-tasks-ecs-fargate-task/FargateCluster/Vpc/PublicSubnet2/RouteTable",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                           "aws:cdk:cloudformation:props": {
-                            "vpcId": {
-                              "Ref": "FargateClusterVpc377E8024"
-                            },
                             "tags": [
                               {
                                 "key": "Name",
-                                "value": "aws-ecs-integ2/FargateCluster/Vpc/PublicSubnet2"
+                                "value": "aws-sfn-tasks-ecs-fargate-task/FargateCluster/Vpc/PublicSubnet2"
                               }
-                            ]
+                            ],
+                            "vpcId": {
+                              "Ref": "FargateClusterVpc377E8024"
+                            }
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-ec2.CfnRouteTable",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.3.0"
                         }
                       },
                       "RouteTableAssociation": {
                         "id": "RouteTableAssociation",
-                        "path": "aws-ecs-integ2/FargateCluster/Vpc/PublicSubnet2/RouteTableAssociation",
+                        "path": "aws-sfn-tasks-ecs-fargate-task/FargateCluster/Vpc/PublicSubnet2/RouteTableAssociation",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
                           "aws:cdk:cloudformation:props": {
@@ -307,33 +307,33 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-ec2.CfnSubnetRouteTableAssociation",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.3.0"
                         }
                       },
                       "DefaultRoute": {
                         "id": "DefaultRoute",
-                        "path": "aws-ecs-integ2/FargateCluster/Vpc/PublicSubnet2/DefaultRoute",
+                        "path": "aws-sfn-tasks-ecs-fargate-task/FargateCluster/Vpc/PublicSubnet2/DefaultRoute",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                           "aws:cdk:cloudformation:props": {
-                            "routeTableId": {
-                              "Ref": "FargateClusterVpcPublicSubnet2RouteTable1493C5D6"
-                            },
                             "destinationCidrBlock": "0.0.0.0/0",
                             "gatewayId": {
                               "Ref": "FargateClusterVpcIGW827638CB"
+                            },
+                            "routeTableId": {
+                              "Ref": "FargateClusterVpcPublicSubnet2RouteTable1493C5D6"
                             }
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-ec2.CfnRoute",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.3.0"
                         }
                       },
                       "EIP": {
                         "id": "EIP",
-                        "path": "aws-ecs-integ2/FargateCluster/Vpc/PublicSubnet2/EIP",
+                        "path": "aws-sfn-tasks-ecs-fargate-task/FargateCluster/Vpc/PublicSubnet2/EIP",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::EC2::EIP",
                           "aws:cdk:cloudformation:props": {
@@ -341,63 +341,60 @@
                             "tags": [
                               {
                                 "key": "Name",
-                                "value": "aws-ecs-integ2/FargateCluster/Vpc/PublicSubnet2"
+                                "value": "aws-sfn-tasks-ecs-fargate-task/FargateCluster/Vpc/PublicSubnet2"
                               }
                             ]
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-ec2.CfnEIP",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.3.0"
                         }
                       },
                       "NATGateway": {
                         "id": "NATGateway",
-                        "path": "aws-ecs-integ2/FargateCluster/Vpc/PublicSubnet2/NATGateway",
+                        "path": "aws-sfn-tasks-ecs-fargate-task/FargateCluster/Vpc/PublicSubnet2/NATGateway",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::EC2::NatGateway",
                           "aws:cdk:cloudformation:props": {
-                            "subnetId": {
-                              "Ref": "FargateClusterVpcPublicSubnet2Subnet24C0F9D8"
-                            },
                             "allocationId": {
                               "Fn::GetAtt": [
                                 "FargateClusterVpcPublicSubnet2EIPBBB24774",
                                 "AllocationId"
                               ]
                             },
+                            "subnetId": {
+                              "Ref": "FargateClusterVpcPublicSubnet2Subnet24C0F9D8"
+                            },
                             "tags": [
                               {
                                 "key": "Name",
-                                "value": "aws-ecs-integ2/FargateCluster/Vpc/PublicSubnet2"
+                                "value": "aws-sfn-tasks-ecs-fargate-task/FargateCluster/Vpc/PublicSubnet2"
                               }
                             ]
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-ec2.CfnNatGateway",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.3.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.PublicSubnet",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
                     }
                   },
                   "PrivateSubnet1": {
                     "id": "PrivateSubnet1",
-                    "path": "aws-ecs-integ2/FargateCluster/Vpc/PrivateSubnet1",
+                    "path": "aws-sfn-tasks-ecs-fargate-task/FargateCluster/Vpc/PrivateSubnet1",
                     "children": {
                       "Subnet": {
                         "id": "Subnet",
-                        "path": "aws-ecs-integ2/FargateCluster/Vpc/PrivateSubnet1/Subnet",
+                        "path": "aws-sfn-tasks-ecs-fargate-task/FargateCluster/Vpc/PrivateSubnet1/Subnet",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                           "aws:cdk:cloudformation:props": {
-                            "vpcId": {
-                              "Ref": "FargateClusterVpc377E8024"
-                            },
                             "availabilityZone": {
                               "Fn::Select": [
                                 0,
@@ -419,49 +416,52 @@
                               },
                               {
                                 "key": "Name",
-                                "value": "aws-ecs-integ2/FargateCluster/Vpc/PrivateSubnet1"
+                                "value": "aws-sfn-tasks-ecs-fargate-task/FargateCluster/Vpc/PrivateSubnet1"
                               }
-                            ]
+                            ],
+                            "vpcId": {
+                              "Ref": "FargateClusterVpc377E8024"
+                            }
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-ec2.CfnSubnet",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.3.0"
                         }
                       },
                       "Acl": {
                         "id": "Acl",
-                        "path": "aws-ecs-integ2/FargateCluster/Vpc/PrivateSubnet1/Acl",
+                        "path": "aws-sfn-tasks-ecs-fargate-task/FargateCluster/Vpc/PrivateSubnet1/Acl",
                         "constructInfo": {
-                          "fqn": "@aws-cdk/core.Resource",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.3.0"
                         }
                       },
                       "RouteTable": {
                         "id": "RouteTable",
-                        "path": "aws-ecs-integ2/FargateCluster/Vpc/PrivateSubnet1/RouteTable",
+                        "path": "aws-sfn-tasks-ecs-fargate-task/FargateCluster/Vpc/PrivateSubnet1/RouteTable",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                           "aws:cdk:cloudformation:props": {
-                            "vpcId": {
-                              "Ref": "FargateClusterVpc377E8024"
-                            },
                             "tags": [
                               {
                                 "key": "Name",
-                                "value": "aws-ecs-integ2/FargateCluster/Vpc/PrivateSubnet1"
+                                "value": "aws-sfn-tasks-ecs-fargate-task/FargateCluster/Vpc/PrivateSubnet1"
                               }
-                            ]
+                            ],
+                            "vpcId": {
+                              "Ref": "FargateClusterVpc377E8024"
+                            }
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-ec2.CfnRouteTable",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.3.0"
                         }
                       },
                       "RouteTableAssociation": {
                         "id": "RouteTableAssociation",
-                        "path": "aws-ecs-integ2/FargateCluster/Vpc/PrivateSubnet1/RouteTableAssociation",
+                        "path": "aws-sfn-tasks-ecs-fargate-task/FargateCluster/Vpc/PrivateSubnet1/RouteTableAssociation",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
                           "aws:cdk:cloudformation:props": {
@@ -474,49 +474,46 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-ec2.CfnSubnetRouteTableAssociation",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.3.0"
                         }
                       },
                       "DefaultRoute": {
                         "id": "DefaultRoute",
-                        "path": "aws-ecs-integ2/FargateCluster/Vpc/PrivateSubnet1/DefaultRoute",
+                        "path": "aws-sfn-tasks-ecs-fargate-task/FargateCluster/Vpc/PrivateSubnet1/DefaultRoute",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                           "aws:cdk:cloudformation:props": {
-                            "routeTableId": {
-                              "Ref": "FargateClusterVpcPrivateSubnet1RouteTable21B3CEAE"
-                            },
                             "destinationCidrBlock": "0.0.0.0/0",
                             "natGatewayId": {
                               "Ref": "FargateClusterVpcPublicSubnet1NATGateway5202D86A"
+                            },
+                            "routeTableId": {
+                              "Ref": "FargateClusterVpcPrivateSubnet1RouteTable21B3CEAE"
                             }
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-ec2.CfnRoute",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.3.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.PrivateSubnet",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
                     }
                   },
                   "PrivateSubnet2": {
                     "id": "PrivateSubnet2",
-                    "path": "aws-ecs-integ2/FargateCluster/Vpc/PrivateSubnet2",
+                    "path": "aws-sfn-tasks-ecs-fargate-task/FargateCluster/Vpc/PrivateSubnet2",
                     "children": {
                       "Subnet": {
                         "id": "Subnet",
-                        "path": "aws-ecs-integ2/FargateCluster/Vpc/PrivateSubnet2/Subnet",
+                        "path": "aws-sfn-tasks-ecs-fargate-task/FargateCluster/Vpc/PrivateSubnet2/Subnet",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                           "aws:cdk:cloudformation:props": {
-                            "vpcId": {
-                              "Ref": "FargateClusterVpc377E8024"
-                            },
                             "availabilityZone": {
                               "Fn::Select": [
                                 1,
@@ -538,49 +535,52 @@
                               },
                               {
                                 "key": "Name",
-                                "value": "aws-ecs-integ2/FargateCluster/Vpc/PrivateSubnet2"
+                                "value": "aws-sfn-tasks-ecs-fargate-task/FargateCluster/Vpc/PrivateSubnet2"
                               }
-                            ]
+                            ],
+                            "vpcId": {
+                              "Ref": "FargateClusterVpc377E8024"
+                            }
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-ec2.CfnSubnet",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.3.0"
                         }
                       },
                       "Acl": {
                         "id": "Acl",
-                        "path": "aws-ecs-integ2/FargateCluster/Vpc/PrivateSubnet2/Acl",
+                        "path": "aws-sfn-tasks-ecs-fargate-task/FargateCluster/Vpc/PrivateSubnet2/Acl",
                         "constructInfo": {
-                          "fqn": "@aws-cdk/core.Resource",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.3.0"
                         }
                       },
                       "RouteTable": {
                         "id": "RouteTable",
-                        "path": "aws-ecs-integ2/FargateCluster/Vpc/PrivateSubnet2/RouteTable",
+                        "path": "aws-sfn-tasks-ecs-fargate-task/FargateCluster/Vpc/PrivateSubnet2/RouteTable",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                           "aws:cdk:cloudformation:props": {
-                            "vpcId": {
-                              "Ref": "FargateClusterVpc377E8024"
-                            },
                             "tags": [
                               {
                                 "key": "Name",
-                                "value": "aws-ecs-integ2/FargateCluster/Vpc/PrivateSubnet2"
+                                "value": "aws-sfn-tasks-ecs-fargate-task/FargateCluster/Vpc/PrivateSubnet2"
                               }
-                            ]
+                            ],
+                            "vpcId": {
+                              "Ref": "FargateClusterVpc377E8024"
+                            }
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-ec2.CfnRouteTable",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.3.0"
                         }
                       },
                       "RouteTableAssociation": {
                         "id": "RouteTableAssociation",
-                        "path": "aws-ecs-integ2/FargateCluster/Vpc/PrivateSubnet2/RouteTableAssociation",
+                        "path": "aws-sfn-tasks-ecs-fargate-task/FargateCluster/Vpc/PrivateSubnet2/RouteTableAssociation",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
                           "aws:cdk:cloudformation:props": {
@@ -593,105 +593,105 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-ec2.CfnSubnetRouteTableAssociation",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.3.0"
                         }
                       },
                       "DefaultRoute": {
                         "id": "DefaultRoute",
-                        "path": "aws-ecs-integ2/FargateCluster/Vpc/PrivateSubnet2/DefaultRoute",
+                        "path": "aws-sfn-tasks-ecs-fargate-task/FargateCluster/Vpc/PrivateSubnet2/DefaultRoute",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                           "aws:cdk:cloudformation:props": {
-                            "routeTableId": {
-                              "Ref": "FargateClusterVpcPrivateSubnet2RouteTable7B7F9678"
-                            },
                             "destinationCidrBlock": "0.0.0.0/0",
                             "natGatewayId": {
                               "Ref": "FargateClusterVpcPublicSubnet2NATGatewayFFEC8ED2"
+                            },
+                            "routeTableId": {
+                              "Ref": "FargateClusterVpcPrivateSubnet2RouteTable7B7F9678"
                             }
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-ec2.CfnRoute",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.3.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.PrivateSubnet",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
                     }
                   },
                   "IGW": {
                     "id": "IGW",
-                    "path": "aws-ecs-integ2/FargateCluster/Vpc/IGW",
+                    "path": "aws-sfn-tasks-ecs-fargate-task/FargateCluster/Vpc/IGW",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::InternetGateway",
                       "aws:cdk:cloudformation:props": {
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "aws-ecs-integ2/FargateCluster/Vpc"
+                            "value": "aws-sfn-tasks-ecs-fargate-task/FargateCluster/Vpc"
                           }
                         ]
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnInternetGateway",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
                     }
                   },
                   "VPCGW": {
                     "id": "VPCGW",
-                    "path": "aws-ecs-integ2/FargateCluster/Vpc/VPCGW",
+                    "path": "aws-sfn-tasks-ecs-fargate-task/FargateCluster/Vpc/VPCGW",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::VPCGatewayAttachment",
                       "aws:cdk:cloudformation:props": {
-                        "vpcId": {
-                          "Ref": "FargateClusterVpc377E8024"
-                        },
                         "internetGatewayId": {
                           "Ref": "FargateClusterVpcIGW827638CB"
+                        },
+                        "vpcId": {
+                          "Ref": "FargateClusterVpc377E8024"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnVPCGatewayAttachment",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-ec2.Vpc",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-ecs.Cluster",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
             }
           },
           "TaskDef": {
             "id": "TaskDef",
-            "path": "aws-ecs-integ2/TaskDef",
+            "path": "aws-sfn-tasks-ecs-fargate-task/TaskDef",
             "children": {
               "TaskRole": {
                 "id": "TaskRole",
-                "path": "aws-ecs-integ2/TaskDef/TaskRole",
+                "path": "aws-sfn-tasks-ecs-fargate-task/TaskDef/TaskRole",
                 "children": {
                   "ImportTaskRole": {
                     "id": "ImportTaskRole",
-                    "path": "aws-ecs-integ2/TaskDef/TaskRole/ImportTaskRole",
+                    "path": "aws-sfn-tasks-ecs-fargate-task/TaskDef/TaskRole/ImportTaskRole",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Resource",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
                     }
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "aws-ecs-integ2/TaskDef/TaskRole/Resource",
+                    "path": "aws-sfn-tasks-ecs-fargate-task/TaskDef/TaskRole/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                       "aws:cdk:cloudformation:props": {
@@ -710,19 +710,19 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-iam.CfnRole",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-iam.Role",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
                 }
               },
               "Resource": {
                 "id": "Resource",
-                "path": "aws-ecs-integ2/TaskDef/Resource",
+                "path": "aws-sfn-tasks-ecs-fargate-task/TaskDef/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::ECS::TaskDefinition",
                   "aws:cdk:cloudformation:props": {
@@ -730,7 +730,7 @@
                       {
                         "essential": true,
                         "image": {
-                          "Fn::Sub": "${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}:7a4895bc694ae074467753dddb9a798e58f2f5eda62bcce5833d7d356b8a1da2"
+                          "Fn::Sub": "${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}:d87af9b5acc567118fa529d3d3b763098200a6446a5ca64aea987729efd52534"
                         },
                         "memory": 256,
                         "name": "TheContainer",
@@ -755,7 +755,7 @@
                         "Arn"
                       ]
                     },
-                    "family": "awsecsinteg2TaskDef1F38909D",
+                    "family": "awssfntasksecsfargatetaskTaskDefBB13BD5B",
                     "memory": "512",
                     "networkMode": "awsvpc",
                     "requiresCompatibilities": [
@@ -770,83 +770,83 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-ecs.CfnTaskDefinition",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
                 }
               },
               "TheContainer": {
                 "id": "TheContainer",
-                "path": "aws-ecs-integ2/TaskDef/TheContainer",
+                "path": "aws-sfn-tasks-ecs-fargate-task/TaskDef/TheContainer",
                 "children": {
                   "AssetImage": {
                     "id": "AssetImage",
-                    "path": "aws-ecs-integ2/TaskDef/TheContainer/AssetImage",
+                    "path": "aws-sfn-tasks-ecs-fargate-task/TaskDef/TheContainer/AssetImage",
                     "children": {
                       "Staging": {
                         "id": "Staging",
-                        "path": "aws-ecs-integ2/TaskDef/TheContainer/AssetImage/Staging",
+                        "path": "aws-sfn-tasks-ecs-fargate-task/TaskDef/TheContainer/AssetImage/Staging",
                         "constructInfo": {
-                          "fqn": "@aws-cdk/core.AssetStaging",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.3.0"
                         }
                       },
                       "Repository": {
                         "id": "Repository",
-                        "path": "aws-ecs-integ2/TaskDef/TheContainer/AssetImage/Repository",
+                        "path": "aws-sfn-tasks-ecs-fargate-task/TaskDef/TheContainer/AssetImage/Repository",
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-ecr.RepositoryBase",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.3.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ecr-assets.DockerImageAsset",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
                     }
                   },
                   "LogGroup": {
                     "id": "LogGroup",
-                    "path": "aws-ecs-integ2/TaskDef/TheContainer/LogGroup",
+                    "path": "aws-sfn-tasks-ecs-fargate-task/TaskDef/TheContainer/LogGroup",
                     "children": {
                       "Resource": {
                         "id": "Resource",
-                        "path": "aws-ecs-integ2/TaskDef/TheContainer/LogGroup/Resource",
+                        "path": "aws-sfn-tasks-ecs-fargate-task/TaskDef/TheContainer/LogGroup/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::Logs::LogGroup",
                           "aws:cdk:cloudformation:props": {}
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-logs.CfnLogGroup",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.3.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-logs.LogGroup",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-ecs.ContainerDefinition",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
                 }
               },
               "ExecutionRole": {
                 "id": "ExecutionRole",
-                "path": "aws-ecs-integ2/TaskDef/ExecutionRole",
+                "path": "aws-sfn-tasks-ecs-fargate-task/TaskDef/ExecutionRole",
                 "children": {
                   "ImportExecutionRole": {
                     "id": "ImportExecutionRole",
-                    "path": "aws-ecs-integ2/TaskDef/ExecutionRole/ImportExecutionRole",
+                    "path": "aws-sfn-tasks-ecs-fargate-task/TaskDef/ExecutionRole/ImportExecutionRole",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Resource",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
                     }
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "aws-ecs-integ2/TaskDef/ExecutionRole/Resource",
+                    "path": "aws-sfn-tasks-ecs-fargate-task/TaskDef/ExecutionRole/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                       "aws:cdk:cloudformation:props": {
@@ -865,17 +865,17 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-iam.CfnRole",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
                     }
                   },
                   "DefaultPolicy": {
                     "id": "DefaultPolicy",
-                    "path": "aws-ecs-integ2/TaskDef/ExecutionRole/DefaultPolicy",
+                    "path": "aws-sfn-tasks-ecs-fargate-task/TaskDef/ExecutionRole/DefaultPolicy",
                     "children": {
                       "Resource": {
                         "id": "Resource",
-                        "path": "aws-ecs-integ2/TaskDef/ExecutionRole/DefaultPolicy/Resource",
+                        "path": "aws-sfn-tasks-ecs-fargate-task/TaskDef/ExecutionRole/DefaultPolicy/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
                           "aws:cdk:cloudformation:props": {
@@ -942,51 +942,51 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-iam.CfnPolicy",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.3.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-iam.Policy",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-iam.Role",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-ecs.FargateTaskDefinition",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
             }
           },
           "Start": {
             "id": "Start",
-            "path": "aws-ecs-integ2/Start",
+            "path": "aws-sfn-tasks-ecs-fargate-task/Start",
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-stepfunctions.Pass",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
             }
           },
           "FargateTask": {
             "id": "FargateTask",
-            "path": "aws-ecs-integ2/FargateTask",
+            "path": "aws-sfn-tasks-ecs-fargate-task/FargateTask",
             "children": {
               "SecurityGroup": {
                 "id": "SecurityGroup",
-                "path": "aws-ecs-integ2/FargateTask/SecurityGroup",
+                "path": "aws-sfn-tasks-ecs-fargate-task/FargateTask/SecurityGroup",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "aws-ecs-integ2/FargateTask/SecurityGroup/Resource",
+                    "path": "aws-sfn-tasks-ecs-fargate-task/FargateTask/SecurityGroup/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
                       "aws:cdk:cloudformation:props": {
-                        "groupDescription": "aws-ecs-integ2/FargateTask/SecurityGroup",
+                        "groupDescription": "aws-sfn-tasks-ecs-fargate-task/FargateTask/SecurityGroup",
                         "securityGroupEgress": [
                           {
                             "cidrIp": "0.0.0.0/0",
@@ -1000,41 +1000,41 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-ec2.CfnSecurityGroup",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-ec2.SecurityGroup",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-stepfunctions.Task",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
             }
           },
           "StateMachine": {
             "id": "StateMachine",
-            "path": "aws-ecs-integ2/StateMachine",
+            "path": "aws-sfn-tasks-ecs-fargate-task/StateMachine",
             "children": {
               "Role": {
                 "id": "Role",
-                "path": "aws-ecs-integ2/StateMachine/Role",
+                "path": "aws-sfn-tasks-ecs-fargate-task/StateMachine/Role",
                 "children": {
                   "ImportRole": {
                     "id": "ImportRole",
-                    "path": "aws-ecs-integ2/StateMachine/Role/ImportRole",
+                    "path": "aws-sfn-tasks-ecs-fargate-task/StateMachine/Role/ImportRole",
                     "constructInfo": {
-                      "fqn": "@aws-cdk/core.Resource",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
                     }
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "aws-ecs-integ2/StateMachine/Role/Resource",
+                    "path": "aws-sfn-tasks-ecs-fargate-task/StateMachine/Role/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                       "aws:cdk:cloudformation:props": {
@@ -1053,17 +1053,17 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-iam.CfnRole",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
                     }
                   },
                   "DefaultPolicy": {
                     "id": "DefaultPolicy",
-                    "path": "aws-ecs-integ2/StateMachine/Role/DefaultPolicy",
+                    "path": "aws-sfn-tasks-ecs-fargate-task/StateMachine/Role/DefaultPolicy",
                     "children": {
                       "Resource": {
                         "id": "Resource",
-                        "path": "aws-ecs-integ2/StateMachine/Role/DefaultPolicy/Resource",
+                        "path": "aws-sfn-tasks-ecs-fargate-task/StateMachine/Role/DefaultPolicy/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
                           "aws:cdk:cloudformation:props": {
@@ -1142,34 +1142,28 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-iam.CfnPolicy",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.3.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-iam.Policy",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-iam.Role",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
                 }
               },
               "Resource": {
                 "id": "Resource",
-                "path": "aws-ecs-integ2/StateMachine/Resource",
+                "path": "aws-sfn-tasks-ecs-fargate-task/StateMachine/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::StepFunctions::StateMachine",
                   "aws:cdk:cloudformation:props": {
-                    "roleArn": {
-                      "Fn::GetAtt": [
-                        "StateMachineRoleB840431D",
-                        "Arn"
-                      ]
-                    },
                     "definitionString": {
                       "Fn::Join": [
                         "",
@@ -1207,39 +1201,99 @@
                           ":states:::ecs:runTask.sync\"}}}"
                         ]
                       ]
+                    },
+                    "roleArn": {
+                      "Fn::GetAtt": [
+                        "StateMachineRoleB840431D",
+                        "Arn"
+                      ]
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-stepfunctions.CfnStateMachine",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-stepfunctions.StateMachine",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
             }
           },
           "BootstrapVersion": {
             "id": "BootstrapVersion",
-            "path": "aws-ecs-integ2/BootstrapVersion",
+            "path": "aws-sfn-tasks-ecs-fargate-task/BootstrapVersion",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.CfnParameter",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
             }
           },
           "CheckBootstrapVersion": {
             "id": "CheckBootstrapVersion",
-            "path": "aws-ecs-integ2/CheckBootstrapVersion",
+            "path": "aws-sfn-tasks-ecs-fargate-task/CheckBootstrapVersion",
             "constructInfo": {
-              "fqn": "@aws-cdk/core.CfnRule",
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.3.0"
+        }
+      },
+      "SfnTasksEcsFargateTaskTest": {
+        "id": "SfnTasksEcsFargateTaskTest",
+        "path": "SfnTasksEcsFargateTaskTest",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "SfnTasksEcsFargateTaskTest/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "SfnTasksEcsFargateTaskTest/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "SfnTasksEcsFargateTaskTest/DefaultTest/DeployAssert",
+                "children": {
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "SfnTasksEcsFargateTaskTest/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "SfnTasksEcsFargateTaskTest/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
               "version": "0.0.0"
             }
           }
         },
         "constructInfo": {
-          "fqn": "@aws-cdk/core.Stack",
+          "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
           "version": "0.0.0"
         }
       },
@@ -1248,13 +1302,13 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.237"
+          "version": "10.3.0"
         }
       }
     },
     "constructInfo": {
-      "fqn": "@aws-cdk/core.App",
-      "version": "0.0.0"
+      "fqn": "constructs.Construct",
+      "version": "10.3.0"
     }
   }
 }

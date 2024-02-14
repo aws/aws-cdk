@@ -520,6 +520,302 @@ export class GraphWidget extends ConcreteWidget {
 }
 
 /**
+ * Layout for TableWidget
+ */
+export enum TableLayout {
+  /**
+   * Data points are laid out in columns
+   */
+  HORIZONTAL = 'horizontal',
+
+  /**
+   * Data points are laid out in rows
+   */
+  VERTICAL = 'vertical',
+}
+
+/**
+ * Standard table summary columns
+ */
+export enum TableSummaryColumn {
+  /**
+   * Minimum of all data points
+   */
+  MINIMUM = 'MIN',
+
+  /**
+   * Maximum of all data points
+   */
+  MAXIMUM = 'MAX',
+
+  /**
+   * Sum of all data points
+   */
+  SUM = 'SUM',
+
+  /**
+   * Average of all data points
+   */
+  AVERAGE = 'AVG',
+}
+
+/**
+ * Properties for TableWidget's summary columns
+ */
+export interface TableSummaryProps {
+  /**
+   * Summary columns
+   *
+   * @default - No summary columns will be shown
+   */
+  readonly columns?: TableSummaryColumn[];
+
+  /**
+   * Make the summary columns sticky, so that they remain in view while scrolling
+   *
+   * @default - false
+   */
+  readonly sticky?: boolean;
+
+  /**
+   * Prevent the columns of datapoints from being displayed, so that only the label and summary columns are displayed
+   *
+   * @default - false
+   */
+  readonly hideNonSummaryColumns?: boolean;
+}
+
+/**
+ * Thresholds for highlighting cells in TableWidget
+ */
+export class TableThreshold {
+  /**
+   * A threshold for highlighting and coloring cells above the specified value
+   *
+   * @param value lower bound of threshold range
+   * @param color cell color for values within threshold range
+   */
+  public static above(value: number, color?: string): TableThreshold {
+    return new TableThreshold(value, undefined, color, Shading.ABOVE);
+  }
+
+  /**
+   * A threshold for highlighting and coloring cells below the specified value
+   *
+   * @param value upper bound of threshold range
+   * @param color cell color for values within threshold range
+   */
+  public static below(value: number, color?: string): TableThreshold {
+    return new TableThreshold(value, undefined, color, Shading.BELOW);
+  }
+
+  /**
+   * A threshold for highlighting and coloring cells within the specified values
+   *
+   * @param lowerBound lower bound of threshold range
+   * @param upperBound upper bound of threshold range
+   * @param color cell color for values within threshold range
+   */
+  public static between(lowerBound: number, upperBound: number, color?: string): TableThreshold {
+    return new TableThreshold(lowerBound, upperBound, color);
+  }
+
+  private readonly lowerBound: number;
+  private readonly upperBound?: number;
+  private readonly color?: string;
+  private readonly comparator?: Shading;
+
+  private constructor(lowerBound: number, upperBound?: number, color?: string, comparator?: Shading) {
+    this.lowerBound = lowerBound;
+    this.upperBound = upperBound;
+    this.color = color;
+    this.comparator = comparator;
+  }
+
+  public toJson(): any {
+    if (this.upperBound) {
+      return [
+        { value: this.lowerBound, color: this.color },
+        { value: this.upperBound },
+      ];
+    }
+    return { value: this.lowerBound, color: this.color, fill: this.comparator };
+  }
+}
+
+/**
+ * Properties for a TableWidget
+ */
+export interface TableWidgetProps extends MetricWidgetProps {
+  /**
+   * Table layout
+   *
+   * @default - TableLayout.HORIZONTAL
+   */
+  readonly layout?: TableLayout;
+
+  /**
+   * Properties for displaying summary columns
+   *
+   * @default - no summary columns are shown
+   */
+  readonly summary?: TableSummaryProps;
+
+  /**
+   * Thresholds for highlighting table cells
+   *
+   * @default - No thresholds
+   */
+  readonly thresholds?: TableThreshold[];
+
+  /**
+   * Show the metrics units in the label column
+   *
+   * @default - false
+   */
+  readonly showUnitsInLabel?: boolean;
+
+  /**
+   * Metrics to display in the table
+   *
+   * @default - No metrics
+   */
+  readonly metrics?: IMetric[];
+
+  /**
+   * Whether the graph should show live data
+   *
+   * @default false
+   */
+  readonly liveData?: boolean;
+
+  /**
+   * Whether to show as many digits as can fit, before rounding.
+   *
+   * @default false
+   */
+  readonly fullPrecision?: boolean;
+
+  /**
+   * Whether to show the value from the entire time range. Only applicable for Bar and Pie charts.
+   *
+   * If false, values will be from the most recent period of your chosen time range;
+   * if true, shows the value from the entire time range.
+   *
+   * @default false
+   */
+  readonly setPeriodToTimeRange?: boolean;
+
+  /**
+   * The default period for all metrics in this widget.
+   * The period is the length of time represented by one data point on the graph.
+   * This default can be overridden within each metric definition.
+   *
+   * @default cdk.Duration.seconds(300)
+   */
+  readonly period?: cdk.Duration;
+
+  /**
+   * The default statistic to be displayed for each metric.
+   * This default can be overridden within the definition of each individual metric
+   *
+   * @default - The statistic for each metric is used
+   */
+  readonly statistic?: string;
+
+  /**
+   * The start of the time range to use for each widget independently from those of the dashboard.
+   * You can specify start without specifying end to specify a relative time range that ends with the current time.
+   * In this case, the value of start must begin with -P, and you can use M, H, D, W and M as abbreviations for
+   * minutes, hours, days, weeks and months. For example, -PT8H shows the last 8 hours and -P3M shows the last three months.
+   * You can also use start along with an end field, to specify an absolute time range.
+   * When specifying an absolute time range, use the ISO 8601 format. For example, 2018-12-17T06:00:00.000Z.
+   *
+   * @default When the dashboard loads, the start time will be the default time range.
+   */
+  readonly start?: string;
+
+  /**
+   * The end of the time range to use for each widget independently from those of the dashboard.
+   * If you specify a value for end, you must also specify a value for start.
+   * Specify an absolute time in the ISO 8601 format. For example, 2018-12-17T06:00:00.000Z.
+   *
+   * @default When the dashboard loads, the end date will be the current time.
+   */
+  readonly end?: string;
+}
+
+/**
+ * A dashboard widget that displays metrics
+ */
+export class TableWidget extends ConcreteWidget {
+
+  private readonly metrics: IMetric[];
+
+  constructor(private readonly props: TableWidgetProps) {
+    super(props.width || 6, props.height || 6);
+
+    this.props = props;
+    this.metrics = props.metrics ?? [];
+    this.copyMetricWarnings(...this.metrics);
+
+    if (props.end !== undefined && props.start === undefined) {
+      throw new Error('If you specify a value for end, you must also specify a value for start.');
+    }
+  }
+
+  /**
+   * Add another metric
+   *
+   * @param metric the metric to add
+   */
+  public addMetric(metric: IMetric) {
+    this.metrics.push(metric);
+    this.copyMetricWarnings(metric);
+  }
+
+  public toJson(): any[] {
+    const horizontalAnnotations = (this.props.thresholds ?? []).map(threshold => threshold.toJson());
+    const annotations = horizontalAnnotations.length > 0 ? ({
+      horizontal: horizontalAnnotations,
+    }) : undefined;
+    const metrics = allMetricsGraphJson(this.metrics, []);
+    return [{
+      type: 'metric',
+      width: this.width,
+      height: this.height,
+      x: this.x,
+      y: this.y,
+      properties: {
+        title: this.props.title,
+        view: 'table',
+        table: {
+          layout: this.props.layout ?? TableLayout.HORIZONTAL,
+          showTimeSeriesData: !(this.props.summary?.hideNonSummaryColumns ?? false),
+          stickySummary: this.props.summary?.sticky ?? false,
+          summaryColumns: this.props.summary?.columns ?? [],
+        },
+        region: this.props.region || cdk.Aws.REGION,
+        metrics: metrics.length > 0 ? metrics : undefined,
+        annotations,
+        yAxis: {
+          left: this.props.showUnitsInLabel ? {
+            showUnits: true,
+          } : undefined,
+        },
+        liveData: this.props.liveData,
+        singleValueFullPrecision: this.props.fullPrecision,
+        setPeriodToTimeRange: this.props.setPeriodToTimeRange,
+        period: this.props.period?.toSeconds(),
+        stat: this.props.statistic,
+        start: this.props.start,
+        end: this.props.end,
+      },
+    }];
+  }
+}
+
+/**
  * Properties for a SingleValueWidget
  */
 export interface SingleValueWidgetProps extends MetricWidgetProps {
