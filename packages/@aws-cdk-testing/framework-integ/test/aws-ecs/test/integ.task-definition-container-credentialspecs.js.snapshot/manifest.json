@@ -1,28 +1,28 @@
 {
   "version": "36.0.0",
   "artifacts": {
-    "aws-ecs-task-definition-container-credentialSpecs.assets": {
+    "aws-ecs-task-definition-container-credentialspecs.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "aws-ecs-task-definition-container-credentialSpecs.assets.json",
+        "file": "aws-ecs-task-definition-container-credentialspecs.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "aws-ecs-task-definition-container-credentialSpecs": {
+    "aws-ecs-task-definition-container-credentialspecs": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "aws-ecs-task-definition-container-credentialSpecs.template.json",
+        "templateFile": "aws-ecs-task-definition-container-credentialspecs.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/184e4ea1d959ae4cd3df56b95db3401fb40a42c0d7c9c6593626cae0383c2e46.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e13ec2c5e8f5dccc5e12ed71f0309c9db23435ce2e86e278d4f8770ad33f6152.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "aws-ecs-task-definition-container-credentialSpecs.assets"
+          "aws-ecs-task-definition-container-credentialspecs.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -31,41 +31,41 @@
         }
       },
       "dependencies": [
-        "aws-ecs-task-definition-container-credentialSpecs.assets"
+        "aws-ecs-task-definition-container-credentialspecs.assets"
       ],
       "metadata": {
-        "/aws-ecs-task-definition-container-credentialSpecs/task-execution-role/Resource": [
+        "/aws-ecs-task-definition-container-credentialspecs/task-execution-role/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "taskexecutionrole7BB27090"
           }
         ],
-        "/aws-ecs-task-definition-container-credentialSpecs/TaskDef/TaskRole/Resource": [
+        "/aws-ecs-task-definition-container-credentialspecs/TaskDef/TaskRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "TaskDefTaskRole1EDB4A67"
           }
         ],
-        "/aws-ecs-task-definition-container-credentialSpecs/TaskDef/Resource": [
+        "/aws-ecs-task-definition-container-credentialspecs/TaskDef/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "TaskDef54694570"
           }
         ],
-        "/aws-ecs-task-definition-container-credentialSpecs/BootstrapVersion": [
+        "/aws-ecs-task-definition-container-credentialspecs/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/aws-ecs-task-definition-container-credentialSpecs/CheckBootstrapVersion": [
+        "/aws-ecs-task-definition-container-credentialspecs/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "aws-ecs-task-definition-container-credentialSpecs"
+      "displayName": "aws-ecs-task-definition-container-credentialspecs"
     },
     "TaskDefinitionContainerCredSpecsDefaultTestDeployAssertF6677424.assets": {
       "type": "cdk:asset-manifest",

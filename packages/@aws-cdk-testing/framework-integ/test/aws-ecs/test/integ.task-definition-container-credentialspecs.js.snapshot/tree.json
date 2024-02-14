@@ -4,17 +4,17 @@
     "id": "App",
     "path": "",
     "children": {
-      "aws-ecs-task-definition-container-credentialSpecs": {
-        "id": "aws-ecs-task-definition-container-credentialSpecs",
-        "path": "aws-ecs-task-definition-container-credentialSpecs",
+      "aws-ecs-task-definition-container-credentialspecs": {
+        "id": "aws-ecs-task-definition-container-credentialspecs",
+        "path": "aws-ecs-task-definition-container-credentialspecs",
         "children": {
           "task-execution-role": {
             "id": "task-execution-role",
-            "path": "aws-ecs-task-definition-container-credentialSpecs/task-execution-role",
+            "path": "aws-ecs-task-definition-container-credentialspecs/task-execution-role",
             "children": {
               "Importtask-execution-role": {
                 "id": "Importtask-execution-role",
-                "path": "aws-ecs-task-definition-container-credentialSpecs/task-execution-role/Importtask-execution-role",
+                "path": "aws-ecs-task-definition-container-credentialspecs/task-execution-role/Importtask-execution-role",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.Resource",
                   "version": "0.0.0"
@@ -22,7 +22,7 @@
               },
               "Resource": {
                 "id": "Resource",
-                "path": "aws-ecs-task-definition-container-credentialSpecs/task-execution-role/Resource",
+                "path": "aws-ecs-task-definition-container-credentialspecs/task-execution-role/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                   "aws:cdk:cloudformation:props": {
@@ -64,7 +64,7 @@
                         ]
                       }
                     ],
-                    "roleName": "aws-ecs-task-definition-container-credentialSpecs-task-exec-role"
+                    "roleName": "aws-ecs-task-definition-container-credentialspecs-task-exec-role"
                   }
                 },
                 "constructInfo": {
@@ -80,15 +80,15 @@
           },
           "TaskDef": {
             "id": "TaskDef",
-            "path": "aws-ecs-task-definition-container-credentialSpecs/TaskDef",
+            "path": "aws-ecs-task-definition-container-credentialspecs/TaskDef",
             "children": {
               "TaskRole": {
                 "id": "TaskRole",
-                "path": "aws-ecs-task-definition-container-credentialSpecs/TaskDef/TaskRole",
+                "path": "aws-ecs-task-definition-container-credentialspecs/TaskDef/TaskRole",
                 "children": {
                   "ImportTaskRole": {
                     "id": "ImportTaskRole",
-                    "path": "aws-ecs-task-definition-container-credentialSpecs/TaskDef/TaskRole/ImportTaskRole",
+                    "path": "aws-ecs-task-definition-container-credentialspecs/TaskDef/TaskRole/ImportTaskRole",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
@@ -96,7 +96,7 @@
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "aws-ecs-task-definition-container-credentialSpecs/TaskDef/TaskRole/Resource",
+                    "path": "aws-ecs-task-definition-container-credentialspecs/TaskDef/TaskRole/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                       "aws:cdk:cloudformation:props": {
@@ -127,7 +127,7 @@
               },
               "Resource": {
                 "id": "Resource",
-                "path": "aws-ecs-task-definition-container-credentialSpecs/TaskDef/Resource",
+                "path": "aws-ecs-task-definition-container-credentialspecs/TaskDef/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::ECS::TaskDefinition",
                   "aws:cdk:cloudformation:props": {
@@ -149,7 +149,7 @@
                         "Arn"
                       ]
                     },
-                    "family": "awsecstaskdefinitioncontainercredentialSpecsTaskDef72FC8474",
+                    "family": "awsecstaskdefinitioncontainercredentialspecsTaskDefE15276BC",
                     "networkMode": "bridge",
                     "requiresCompatibilities": [
                       "EC2"
@@ -169,7 +169,7 @@
               },
               "Container": {
                 "id": "Container",
-                "path": "aws-ecs-task-definition-container-credentialSpecs/TaskDef/Container",
+                "path": "aws-ecs-task-definition-container-credentialspecs/TaskDef/Container",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_ecs.ContainerDefinition",
                   "version": "0.0.0"
@@ -183,7 +183,7 @@
           },
           "BootstrapVersion": {
             "id": "BootstrapVersion",
-            "path": "aws-ecs-task-definition-container-credentialSpecs/BootstrapVersion",
+            "path": "aws-ecs-task-definition-container-credentialspecs/BootstrapVersion",
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnParameter",
               "version": "0.0.0"
@@ -191,7 +191,7 @@
           },
           "CheckBootstrapVersion": {
             "id": "CheckBootstrapVersion",
-            "path": "aws-ecs-task-definition-container-credentialSpecs/CheckBootstrapVersion",
+            "path": "aws-ecs-task-definition-container-credentialspecs/CheckBootstrapVersion",
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnRule",
               "version": "0.0.0"

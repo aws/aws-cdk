@@ -3,7 +3,7 @@
   "testCases": {
     "TaskDefinitionContainerCredSpecs/DefaultTest": {
       "stacks": [
-        "aws-ecs-task-definition-container-credentialSpecs"
+        "aws-ecs-task-definition-container-credentialspecs"
       ],
       "assertionStack": "TaskDefinitionContainerCredSpecs/DefaultTest/DeployAssert",
       "assertionStackName": "TaskDefinitionContainerCredSpecsDefaultTestDeployAssertF6677424"
