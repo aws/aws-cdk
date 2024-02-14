@@ -131,3 +131,25 @@ new cloudfront.Distribution(this, 'Distribution', {
   defaultBehavior: { origin: new origins.RestApiOrigin(api, { originPath: '/custom-origin-path' }) },
 });
 ```
+
+## From a Lambda Function URL
+
+Lambda Function URLs enable direct invocation of Lambda functions via HTTP(S), without intermediaries. They can be set as CloudFront origins for streamlined function execution behind a CDN, leveraging caching and custom domains.
+
+```ts
+import * as lambda from 'aws-cdk-lib/aws-lambda';
+import * as cloudfront from 'aws-cdk-lib/aws-cloudfront';
+import * as origins from 'aws-cdk-lib/aws-cloudfront-origins';
+
+const fn = new lambda.Function(this, 'MyFunction', {
+  code: lambda.Code.fromInline('exports.handler = async () => {};'),
+  handler: 'index.handler',
+  runtime: lambda.Runtime.NODEJS_20_X,
+});
+
+const fnUrl = fn.addFunctionUrl({ authType: lambda.FunctionUrlAuthType.NONE });
+
+new cloudfront.Distribution(this, 'Distribution', {
+  defaultBehavior: { origin: new origins.FunctionUrlOrigin(fnUrl) },
+});
+```
