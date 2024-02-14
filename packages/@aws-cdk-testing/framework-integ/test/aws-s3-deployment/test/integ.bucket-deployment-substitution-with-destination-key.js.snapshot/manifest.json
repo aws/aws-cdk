@@ -1,0 +1,192 @@
+{
+  "version": "36.0.0",
+  "artifacts": {
+    "test-s3-deploy-substitution-with-destination-key.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "test-s3-deploy-substitution-with-destination-key.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "test-s3-deploy-substitution-with-destination-key": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "test-s3-deploy-substitution-with-destination-key.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c4e448da715de1b8a04821c3906da5a83a13705b3b466e854878d68ffd8220f7.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "test-s3-deploy-substitution-with-destination-key.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "test-s3-deploy-substitution-with-destination-key.assets"
+      ],
+      "metadata": {
+        "/test-s3-deploy-substitution-with-destination-key/Hello/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "HelloServiceRole1E55EA16"
+          }
+        ],
+        "/test-s3-deploy-substitution-with-destination-key/Hello/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Hello4A628BD4"
+          }
+        ],
+        "/test-s3-deploy-substitution-with-destination-key/substitution-bucket/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "substitutionbucket13A1BF4A"
+          }
+        ],
+        "/test-s3-deploy-substitution-with-destination-key/Deployment/AwsCliLayer/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DeploymentAwsCliLayerB82B26A3"
+          }
+        ],
+        "/test-s3-deploy-substitution-with-destination-key/Deployment/CustomResource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DeploymentCustomResource47E8B2E6"
+          }
+        ],
+        "/test-s3-deploy-substitution-with-destination-key/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRole89A01265"
+          }
+        ],
+        "/test-s3-deploy-substitution-with-destination-key/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRoleDefaultPolicy88902FDF"
+          }
+        ],
+        "/test-s3-deploy-substitution-with-destination-key/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C81C01536"
+          }
+        ],
+        "/test-s3-deploy-substitution-with-destination-key/Exports/Output{\"Fn::GetAtt\":[\"Hello4A628BD4\",\"Arn\"]}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputFnGetAttHello4A628BD4ArnADD0C428"
+          }
+        ],
+        "/test-s3-deploy-substitution-with-destination-key/Exports/Output{\"Ref\":\"substitutionbucket13A1BF4A\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefsubstitutionbucket13A1BF4A62538792"
+          }
+        ],
+        "/test-s3-deploy-substitution-with-destination-key/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/test-s3-deploy-substitution-with-destination-key/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "test-s3-deploy-substitution-with-destination-key"
+    },
+    "deploytimesubstitutionwithdestinationkeyintegtestDefaultTestDeployAssertDE132BF7.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "deploytimesubstitutionwithdestinationkeyintegtestDefaultTestDeployAssertDE132BF7.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "deploytimesubstitutionwithdestinationkeyintegtestDefaultTestDeployAssertDE132BF7": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "deploytimesubstitutionwithdestinationkeyintegtestDefaultTestDeployAssertDE132BF7.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/61964d0b780d7bd3cd00d031ab940050962f555cd77869a350d7d9d4c233a032.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "deploytimesubstitutionwithdestinationkeyintegtestDefaultTestDeployAssertDE132BF7.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "test-s3-deploy-substitution-with-destination-key",
+        "deploytimesubstitutionwithdestinationkeyintegtestDefaultTestDeployAssertDE132BF7.assets"
+      ],
+      "metadata": {
+        "/deploy-time-substitution-with-destination-key-integ-test/DefaultTest/DeployAssert/AwsApiCallS3getObjectaf52051900cc4c873cddd7ff562c5173/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallS3getObjectaf52051900cc4c873cddd7ff562c5173"
+          }
+        ],
+        "/deploy-time-substitution-with-destination-key-integ-test/DefaultTest/DeployAssert/AwsApiCallS3getObjectaf52051900cc4c873cddd7ff562c5173/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsAwsApiCallS3getObjectaf52051900cc4c873cddd7ff562c5173"
+          }
+        ],
+        "/deploy-time-substitution-with-destination-key-integ-test/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+          }
+        ],
+        "/deploy-time-substitution-with-destination-key-integ-test/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+          }
+        ],
+        "/deploy-time-substitution-with-destination-key-integ-test/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/deploy-time-substitution-with-destination-key-integ-test/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "deploy-time-substitution-with-destination-key-integ-test/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}

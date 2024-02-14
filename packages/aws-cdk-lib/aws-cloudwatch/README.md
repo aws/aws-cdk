@@ -496,6 +496,92 @@ dashboard.addWidgets(new cloudwatch.GraphWidget({
 }));
 ```
 
+### Table Widget
+
+A `TableWidget` can display any number of metrics in tabular form.
+
+```ts
+declare const dashboard: cloudwatch.Dashboard;
+declare const executionCountMetric: cloudwatch.Metric;
+
+dashboard.addWidgets(new cloudwatch.TableWidget({
+  title: "Executions",
+  metrics: [executionCountMetric],
+}));
+```
+
+The `layout` property can be used to invert the rows and columns of the table.
+The default `cloudwatch.TableLayout.HORIZONTAL` means that metrics are shown in rows and datapoints in columns.
+`cloudwatch.TableLayout.VERTICAL` means that metrics are shown in columns and datapoints in rows.
+
+```ts
+declare const dashboard: cloudwatch.Dashboard;
+
+dashboard.addWidgets(new cloudwatch.TableWidget({
+  // ...
+  
+  layout: cloudwatch.TableLayout.VERTICAL,
+}));
+```
+
+The `summary` property allows customizing the table to show summary columns (`columns` sub property),
+whether to make the summary columns sticky remaining in view while scrolling (`sticky` sub property),
+and to optionally only present summary columns (`hideNonSummaryColumns` sub property).
+
+```ts
+declare const dashboard: cloudwatch.Dashboard;
+
+dashboard.addWidgets(new cloudwatch.TableWidget({
+  // ...
+  
+  summary: {
+    columns: [cloudwatch.TableSummaryColumn.AVERAGE],
+    hideNonSummaryColumns: true,
+    sticky: true,
+  },
+}));
+```
+
+The `thresholds` property can be used to highlight cells with a color when the datapoint value falls within the threshold.
+
+```ts
+declare const dashboard: cloudwatch.Dashboard;
+
+dashboard.addWidgets(new cloudwatch.TableWidget({
+  // ...
+  
+  thresholds: [
+    cloudwatch.TableThreshold.above(1000, cloudwatch.Color.RED),
+    cloudwatch.TableThreshold.between(500, 1000, cloudwatch.Color.ORANGE),
+    cloudwatch.TableThreshold.below(500, cloudwatch.Color.GREEN),
+  ],
+}));
+```
+
+The `showUnitsInLabel` property can be used to display what unit is associated with a metric in the label column.
+
+```ts
+declare const dashboard: cloudwatch.Dashboard;
+
+dashboard.addWidgets(new cloudwatch.TableWidget({
+  // ...
+
+  showUnitsInLabel: true,
+}));
+```
+
+The `fullPrecision` property can be used to show as many digits as can fit in a cell, before rounding.
+
+```ts
+declare const dashboard: cloudwatch.Dashboard;
+
+dashboard.addWidgets(new cloudwatch.TableWidget({
+  // ...
+
+  fullPrecision: true,
+}));
+```
+
 ### Gauge widget
 
 Gauge graph requires the max and min value of the left Y axis, if no value is informed the limits will be from 0 to 100.

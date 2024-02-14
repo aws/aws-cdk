@@ -6,18 +6,118 @@
     "Name": "cdk.dev."
    }
   },
+  "FunctionServiceRole675BB04A": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "FunctionServiceRoleDefaultPolicy2F49994A": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "ses:SendEmail",
+        "ses:SendRawEmail"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":ses:",
+          {
+           "Ref": "AWS::Region"
+          },
+          ":",
+          {
+           "Ref": "AWS::AccountId"
+          },
+          ":identity/",
+          {
+           "Ref": "EmailIdentity7187767D"
+          }
+         ]
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "FunctionServiceRoleDefaultPolicy2F49994A",
+    "Roles": [
+     {
+      "Ref": "FunctionServiceRole675BB04A"
+     }
+    ]
+   }
+  },
+  "Function76856677": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "ab3156800c2f322f16da8bff913172139189a387dd64a4e622f82a790561fd4d.zip"
+    },
+    "FunctionName": "email-sending-lambda",
+    "Handler": "index.lambda_handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "FunctionServiceRole675BB04A",
+      "Arn"
+     ]
+    },
+    "Runtime": "python3.11"
+   },
+   "DependsOn": [
+    "FunctionServiceRoleDefaultPolicy2F49994A",
+    "FunctionServiceRole675BB04A"
+   ]
+  },
   "EmailIdentityDkimDnsToken1BA32ACB3": {
    "Type": "AWS::Route53::RecordSet",
    "Properties": {
+    "HostedZoneId": {
+     "Ref": "HostedZoneDB99F866"
+    },
     "Name": {
      "Fn::GetAtt": [
       "EmailIdentity7187767D",
       "DkimDNSTokenName1"
      ]
-    },
-    "Type": "CNAME",
-    "HostedZoneId": {
-     "Ref": "HostedZoneDB99F866"
     },
     "ResourceRecords": [
      {
@@ -27,21 +127,21 @@
       ]
      }
     ],
-    "TTL": "1800"
+    "TTL": "1800",
+    "Type": "CNAME"
    }
   },
   "EmailIdentityDkimDnsToken2BBEBB8EC": {
    "Type": "AWS::Route53::RecordSet",
    "Properties": {
+    "HostedZoneId": {
+     "Ref": "HostedZoneDB99F866"
+    },
     "Name": {
      "Fn::GetAtt": [
       "EmailIdentity7187767D",
       "DkimDNSTokenName2"
      ]
-    },
-    "Type": "CNAME",
-    "HostedZoneId": {
-     "Ref": "HostedZoneDB99F866"
     },
     "ResourceRecords": [
      {
@@ -51,21 +151,21 @@
       ]
      }
     ],
-    "TTL": "1800"
+    "TTL": "1800",
+    "Type": "CNAME"
    }
   },
   "EmailIdentityDkimDnsToken3BB5E8A49": {
    "Type": "AWS::Route53::RecordSet",
    "Properties": {
+    "HostedZoneId": {
+     "Ref": "HostedZoneDB99F866"
+    },
     "Name": {
      "Fn::GetAtt": [
       "EmailIdentity7187767D",
       "DkimDNSTokenName3"
      ]
-    },
-    "Type": "CNAME",
-    "HostedZoneId": {
-     "Ref": "HostedZoneDB99F866"
     },
     "ResourceRecords": [
      {
@@ -75,7 +175,8 @@
       ]
      }
     ],
-    "TTL": "1800"
+    "TTL": "1800",
+    "Type": "CNAME"
    }
   },
   "EmailIdentity7187767D": {
@@ -90,11 +191,10 @@
   "EmailIdentityMailFromMxRecordCEAAECD0": {
    "Type": "AWS::Route53::RecordSet",
    "Properties": {
-    "Name": "mail.cdk.dev.",
-    "Type": "MX",
     "HostedZoneId": {
      "Ref": "HostedZoneDB99F866"
     },
+    "Name": "mail.cdk.dev.",
     "ResourceRecords": [
      {
       "Fn::Join": [
@@ -109,21 +209,22 @@
       ]
      }
     ],
-    "TTL": "1800"
+    "TTL": "1800",
+    "Type": "MX"
    }
   },
   "EmailIdentityMailFromTxtRecordE6B5E5D0": {
    "Type": "AWS::Route53::RecordSet",
    "Properties": {
-    "Name": "mail.cdk.dev.",
-    "Type": "TXT",
     "HostedZoneId": {
      "Ref": "HostedZoneDB99F866"
     },
+    "Name": "mail.cdk.dev.",
     "ResourceRecords": [
      "\"v=spf1 include:amazonses.com ~all\""
     ],
-    "TTL": "1800"
+    "TTL": "1800",
+    "Type": "TXT"
    }
   }
  },

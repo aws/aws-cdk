@@ -1,5 +1,5 @@
 {
-  "version": "35.0.0",
+  "version": "36.0.0",
   "artifacts": {
     "awsappconfigextensionMyApplicationappconfigextensionDefaultTestDeployAssert64BA6C4E.assets": {
       "type": "cdk:asset-manifest",
@@ -66,7 +66,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/02bbe1ffe7441a077ae005cb5c2021e9fa0695eaf317fee128db4b28b2919512.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a4f22807b445e94aa9052ebdd44c6cfce2d3479cdede016c64f821562394d574.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -208,10 +208,10 @@
             "data": "HostedConfiguration257746B4"
           }
         ],
-        "/aws-appconfig-extension/HostedConfiguration/DeploymentA86BA": [
+        "/aws-appconfig-extension/HostedConfiguration/Deployment9D5FC": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "HostedConfigurationDeploymentA86BAE6C77C59"
+            "data": "HostedConfigurationDeployment9D5FCC2741866"
           }
         ],
         "/aws-appconfig-extension/BootstrapVersion": [
@@ -224,6 +224,15 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
+          }
+        ],
+        "HostedConfigurationDeploymentawsappconfigextensionMyApplicationMyEnv0FA5092F8D4EFA96": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "HostedConfigurationDeploymentawsappconfigextensionMyApplicationMyEnv0FA5092F8D4EFA96",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },

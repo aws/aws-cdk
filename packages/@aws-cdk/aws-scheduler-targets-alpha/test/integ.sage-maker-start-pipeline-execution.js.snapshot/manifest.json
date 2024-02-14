@@ -1,0 +1,257 @@
+{
+  "version": "36.0.0",
+  "artifacts": {
+    "aws-cdk-scheduler-targets-sagemaker-start-pipeline-execution.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "aws-cdk-scheduler-targets-sagemaker-start-pipeline-execution.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "aws-cdk-scheduler-targets-sagemaker-start-pipeline-execution": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-cdk-scheduler-targets-sagemaker-start-pipeline-execution.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/fa479854f30bf33d4667034a3b110207ddf63bb1c87eb57a86a7b833b9713461.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "aws-cdk-scheduler-targets-sagemaker-start-pipeline-execution.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "aws-cdk-scheduler-targets-sagemaker-start-pipeline-execution.assets"
+      ],
+      "metadata": {
+        "/aws-cdk-scheduler-targets-sagemaker-start-pipeline-execution/Pipeline/SourceBucket/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PipelineSourceBucket23FDFC28"
+          }
+        ],
+        "/aws-cdk-scheduler-targets-sagemaker-start-pipeline-execution/Pipeline/SourceBucket/Policy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PipelineSourceBucketPolicy017B174D"
+          }
+        ],
+        "/aws-cdk-scheduler-targets-sagemaker-start-pipeline-execution/Pipeline/SourceBucket/AutoDeleteObjectsCustomResource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PipelineSourceBucketAutoDeleteObjectsCustomResource041F2E1E"
+          }
+        ],
+        "/aws-cdk-scheduler-targets-sagemaker-start-pipeline-execution/Pipeline/OutputBucket/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PipelineOutputBucket98EA5F71"
+          }
+        ],
+        "/aws-cdk-scheduler-targets-sagemaker-start-pipeline-execution/Pipeline/OutputBucket/Policy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PipelineOutputBucketPolicy4566E5A8"
+          }
+        ],
+        "/aws-cdk-scheduler-targets-sagemaker-start-pipeline-execution/Pipeline/OutputBucket/AutoDeleteObjectsCustomResource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PipelineOutputBucketAutoDeleteObjectsCustomResource0CB6E67C"
+          }
+        ],
+        "/aws-cdk-scheduler-targets-sagemaker-start-pipeline-execution/Pipeline/SageMakerPipelineRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PipelineSageMakerPipelineRole7D1FE5F8"
+          }
+        ],
+        "/aws-cdk-scheduler-targets-sagemaker-start-pipeline-execution/Pipeline/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PipelineC660917D"
+          }
+        ],
+        "/aws-cdk-scheduler-targets-sagemaker-start-pipeline-execution/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
+          }
+        ],
+        "/aws-cdk-scheduler-targets-sagemaker-start-pipeline-execution/Custom::S3AutoDeleteObjectsCustomResourceProvider/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F"
+          }
+        ],
+        "/aws-cdk-scheduler-targets-sagemaker-start-pipeline-execution/Schedule/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Schedule83A77FD1"
+          }
+        ],
+        "/aws-cdk-scheduler-targets-sagemaker-start-pipeline-execution/SchedulerRoleForTarget-1441a7/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SchedulerRoleForTarget1441a743A31888"
+          }
+        ],
+        "/aws-cdk-scheduler-targets-sagemaker-start-pipeline-execution/SchedulerRoleForTarget-1441a7/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SchedulerRoleForTarget1441a7DefaultPolicy885B6BFD"
+          }
+        ],
+        "/aws-cdk-scheduler-targets-sagemaker-start-pipeline-execution/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/aws-cdk-scheduler-targets-sagemaker-start-pipeline-execution/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "aws-cdk-scheduler-targets-sagemaker-start-pipeline-execution"
+    },
+    "integrationtestsagemakerstartpipelineexecutionDefaultTestDeployAssert19EB5121.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "integrationtestsagemakerstartpipelineexecutionDefaultTestDeployAssert19EB5121.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "integrationtestsagemakerstartpipelineexecutionDefaultTestDeployAssert19EB5121": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "integrationtestsagemakerstartpipelineexecutionDefaultTestDeployAssert19EB5121.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c684d4c491cd78afa609ab0d8b3360d273a36cea49ec2ac32a2feb248ba3a77f.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "integrationtestsagemakerstartpipelineexecutionDefaultTestDeployAssert19EB5121.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "integrationtestsagemakerstartpipelineexecutionDefaultTestDeployAssert19EB5121.assets"
+      ],
+      "metadata": {
+        "/integrationtest-sagemaker-start-pipeline-execution/DefaultTest/DeployAssert/AwsApiCallSagemakerlistPipelineExecutions71b9b02a221fe0cb2da3392cc58e78d8/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallSagemakerlistPipelineExecutions71b9b02a221fe0cb2da3392cc58e78d8"
+          }
+        ],
+        "/integrationtest-sagemaker-start-pipeline-execution/DefaultTest/DeployAssert/AwsApiCallSagemakerlistPipelineExecutions71b9b02a221fe0cb2da3392cc58e78d8/WaitFor/IsCompleteProvider/Invoke": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallSagemakerlistPipelineExecutions71b9b02a221fe0cb2da3392cc58e78d8WaitForIsCompleteProviderInvokeA40A6D41"
+          }
+        ],
+        "/integrationtest-sagemaker-start-pipeline-execution/DefaultTest/DeployAssert/AwsApiCallSagemakerlistPipelineExecutions71b9b02a221fe0cb2da3392cc58e78d8/WaitFor/TimeoutProvider/Invoke": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallSagemakerlistPipelineExecutions71b9b02a221fe0cb2da3392cc58e78d8WaitForTimeoutProviderInvoke9C08DD8A"
+          }
+        ],
+        "/integrationtest-sagemaker-start-pipeline-execution/DefaultTest/DeployAssert/AwsApiCallSagemakerlistPipelineExecutions71b9b02a221fe0cb2da3392cc58e78d8/WaitFor/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallSagemakerlistPipelineExecutions71b9b02a221fe0cb2da3392cc58e78d8WaitForRoleF48AB004"
+          }
+        ],
+        "/integrationtest-sagemaker-start-pipeline-execution/DefaultTest/DeployAssert/AwsApiCallSagemakerlistPipelineExecutions71b9b02a221fe0cb2da3392cc58e78d8/WaitFor/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallSagemakerlistPipelineExecutions71b9b02a221fe0cb2da3392cc58e78d8WaitFor14AB1043"
+          }
+        ],
+        "/integrationtest-sagemaker-start-pipeline-execution/DefaultTest/DeployAssert/AwsApiCallSagemakerlistPipelineExecutions71b9b02a221fe0cb2da3392cc58e78d8/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsAwsApiCallSagemakerlistPipelineExecutions71b9b02a221fe0cb2da3392cc58e78d8"
+          }
+        ],
+        "/integrationtest-sagemaker-start-pipeline-execution/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+          }
+        ],
+        "/integrationtest-sagemaker-start-pipeline-execution/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+          }
+        ],
+        "/integrationtest-sagemaker-start-pipeline-execution/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction76b3e830a873425f8453eddd85c86925Role918961BB"
+          }
+        ],
+        "/integrationtest-sagemaker-start-pipeline-execution/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction76b3e830a873425f8453eddd85c86925Handler81461ECE"
+          }
+        ],
+        "/integrationtest-sagemaker-start-pipeline-execution/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aRoleB84BD8CE"
+          }
+        ],
+        "/integrationtest-sagemaker-start-pipeline-execution/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aHandlerADF3E6EA"
+          }
+        ],
+        "/integrationtest-sagemaker-start-pipeline-execution/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/integrationtest-sagemaker-start-pipeline-execution/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "integrationtest-sagemaker-start-pipeline-execution/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}
