@@ -1,0 +1,70 @@
+{
+ "Resources": {
+  "EnvVarTestAPI42E272CE": {
+   "Type": "AWS::AppSync::GraphQLApi",
+   "Properties": {
+    "AuthenticationType": "AWS_IAM",
+    "EnvironmentVariables": {
+     "after": "good",
+     "overwrite": "true",
+     "purpose": "testing",
+     "queue": {
+      "Ref": "Queue4A7E3555"
+     }
+    },
+    "Name": "env-var-test-api"
+   }
+  },
+  "EnvVarTestAPISchemaE1209B84": {
+   "Type": "AWS::AppSync::GraphQLSchema",
+   "Properties": {
+    "ApiId": {
+     "Fn::GetAtt": [
+      "EnvVarTestAPI42E272CE",
+      "ApiId"
+     ]
+    },
+    "Definition": "type test {\n  version: String!\n}\ntype Query {\n  getTests: [test]!\n}\ntype Mutation {\n  addTest(version: String!): test\n}\n"
+   }
+  },
+  "Queue4A7E3555": {
+   "Type": "AWS::SQS::Queue",
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

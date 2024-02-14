@@ -8,7 +8,7 @@ import { IUserPool } from '../../aws-cognito';
 import { ManagedPolicy, Role, IRole, ServicePrincipal, Grant, IGrantable } from '../../aws-iam';
 import { IFunction } from '../../aws-lambda';
 import { ILogGroup, LogGroup, LogRetention, RetentionDays } from '../../aws-logs';
-import { ArnFormat, CfnResource, Duration, Expiration, FeatureFlags, IResolvable, Stack } from '../../core';
+import { ArnFormat, CfnResource, Duration, Expiration, FeatureFlags, IResolvable, Lazy, Stack } from '../../core';
 import * as cxapi from '../../cx-api';
 
 /**
@@ -442,6 +442,13 @@ export interface GraphqlApiProps {
    * @default IntrospectionConfig.ENABLED
    */
   readonly introspectionConfig?: IntrospectionConfig;
+
+  /**
+   * Environment variables that are available to resolvers and functions at run time.
+   *
+   * @default - no environment variables
+   */
+  readonly environmentVariables?: { [key: string]: string };
 }
 
 /**
@@ -587,6 +594,11 @@ export class GraphqlApi extends GraphqlApiBase {
   public readonly name: string;
 
   /**
+   * the API's environment variables
+   */
+  public readonly environmentVariables: { [key: string]: string } = {};
+
+  /**
    * the schema attached to this api (only available for GraphQL APIs, not available for merged APIs)
    */
   public get schema(): ISchema {
@@ -657,12 +669,18 @@ export class GraphqlApi extends GraphqlApiBase {
       mergedApiExecutionRoleArn: this.mergedApiExecutionRole?.roleArn,
       apiType: this.definition.sourceApiOptions ? 'MERGED' : undefined,
       introspectionConfig: props.introspectionConfig,
+      environmentVariables: Lazy.any({ produce: () => this.renderEnvironmentVariables() }),
     });
 
     this.apiId = this.api.attrApiId;
     this.arn = this.api.attrArn;
     this.graphqlUrl = this.api.attrGraphQlUrl;
     this.name = this.api.name;
+
+    const env = { ...props.environmentVariables };
+    for (const [key, value] of Object.entries(env)) {
+      this.addEnvironmentVariable(key, value);
+    }
 
     if (this.definition.schema) {
       this.schemaResource = new CfnGraphQLSchema(this, 'Schema', this.definition.schema.bind(this));
@@ -716,7 +734,41 @@ export class GraphqlApi extends GraphqlApiBase {
     } else {
       this.logGroup = LogGroup.fromLogGroupName(this, 'LogGroup', logGroupName);
     }
+  }
 
+  /**
+   * Adds an environment variable to this GraphQL API.
+   * @param key The environment variable key.
+   * @param value The environment variable's value.
+   */
+  public addEnvironmentVariable(key: string, value: string): this {
+
+    // There are a few rules you must follow when creating keys and values:
+    //   - Keys must begin with a letter.
+    //   - Keys must be at least two characters long.
+    //   - Keys can only contain letters, numbers, and the underscore character (_).
+    //   - Values can be up to 512 characters long.
+
+    if (!key.match(/^[a-zA-Z]/) || key.length < 2 || !key.match(/^\w+$/) || key.length > 512) {
+      throw new Error(`The environment variable key '${key}' is invalid. See https://docs.aws.amazon.com/appsync/latest/devguide/environmental-variables.html.`);
+    }
+    this.environmentVariables[key] = value;
+    return this;
+  }
+
+  private renderEnvironmentVariables() {
+    if (!this.environmentVariables || Object.keys(this.environmentVariables).length === 0) {
+      return undefined;
+    }
+
+    const variables: { [key: string]: string } = {};
+    const keys = Object.keys(this.environmentVariables).sort();
+
+    for (const key of keys) {
+      variables[key] = this.environmentVariables[key];
+    }
+
+    return variables ;
   }
 
   private setupSourceApiAssociations() {
