@@ -628,11 +628,8 @@ taskDefinition.addContainer('windowsservercore', {
 Amazon ECS supports Active Directory authentication for Linux containers through a special kind of service account called a group Managed Service Account (gMSA). For more details, please see the [product documentation on how to implement on Windows containers](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/windows-gmsa.html), or this [blog post on how to implement on  Linux containers](https://aws.amazon.com/blogs/containers/using-windows-authentication-with-gmsa-on-linux-containers-on-amazon-ecs/).
 
 ```ts
-declare const taskExecutionRole: iam.Role;
+// Make sure the task definition's execution role has permissions to read from the S3 bucket or SSM parameter where the CredSpec file is stored.
 declare const taskDefinition: ecs.TaskDefinition;
-
-// A task execution role is needed, and it should have permissions to read from the S3 bucket or SSM parameter where the CredSpec file is stored.
-taskDefinition.executionRole = taskExecutionRole;
 
 taskDefinition.addContainer('gmsa-container', {
   image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
