@@ -598,10 +598,11 @@ export interface JobProps {
 
   /**
    * Enables the collection of metrics for job profiling.
+   * Equivalent to a job parameter `--enable-metrics`.
    *
    * @default - no profiling metrics emitted.
    *
-   * @see `--enable-metrics` at https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-glue-arguments.html
+   * @see https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-glue-arguments.html
    */
   readonly enableProfilingMetrics? :boolean;
 
@@ -889,8 +890,8 @@ export class Job extends JobBase {
 }
 
 /**
- * Create a CloudWatch Metric that's based on Glue Job events
- * {@see https://docs.aws.amazon.com/AmazonCloudWatch/latest/events/EventTypes.html#glue-event-types}
+ * Create a CloudWatch Metric that's based on Glue Job events.
+ * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/events/EventTypes.html#glue-event-types
  * The metric has namespace = 'AWS/Events', metricName = 'TriggeredRules' and RuleName = rule.ruleName dimension.
  *
  * @param rule for use in setting RuleName dimension value

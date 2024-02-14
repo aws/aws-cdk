@@ -169,10 +169,11 @@ interface PythonExecutableProps {
   /**
    * Additional Python files that AWS Glue adds to the Python path before executing your script.
    * Only individual files are supported, directories are not supported.
+   * Equivalent to a job parameter `--extra-py-files`.
    *
    * @default - no extra python files and argument is not set
    *
-   * @see `--extra-py-files` in https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-glue-arguments.html
+   * @see https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-glue-arguments.html
    */
   readonly extraPythonFiles?: Code[];
 }
@@ -185,10 +186,11 @@ interface RayExecutableProps {
 
   /**
    * Additional Python modules that AWS Glue adds to the Python path before executing your script.
+   * Equivalent to a job parameter `--s3-py-modules`.
    *
    * @default - no extra python files and argument is not set
    *
-   * @see `--s3-py-modules` in https://docs.aws.amazon.com/glue/latest/dg/author-job-ray-job-parameters.html
+   * @see https://docs.aws.amazon.com/glue/latest/dg/author-job-ray-job-parameters.html
    */
   readonly s3PythonModules?: Code[];
 }
@@ -215,10 +217,11 @@ interface SharedJobExecutableProps {
   /**
    * Additional files, such as configuration files that AWS Glue copies to the working directory of your script before executing it.
    * Only individual files are supported, directories are not supported.
+   * Equivalent to a job parameter `--extra-files`.
    *
    * @default [] - no extra files are copied to the working directory
    *
-   * @see `--extra-files` in https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-glue-arguments.html
+   * @see https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-glue-arguments.html
    */
   readonly extraFiles?: Code[];
 }
@@ -227,19 +230,21 @@ interface SharedSparkJobExecutableProps extends SharedJobExecutableProps {
   /**
    * Additional Java .jar files that AWS Glue adds to the Java classpath before executing your script.
    * Only individual files are supported, directories are not supported.
+   * Equivalent to a job parameter `--extra-jars`.
    *
    * @default [] - no extra jars are added to the classpath
    *
-   * @see `--extra-jars` in https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-glue-arguments.html
+   * @see https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-glue-arguments.html
    */
   readonly extraJars?: Code[];
 
   /**
    * Setting this value to true prioritizes the customer's extra JAR files in the classpath.
+   * Equivalent to a job parameter `--user-jars-first`.
    *
    * @default false - priority is not given to user-provided jars
    *
-   * @see `--user-jars-first` in https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-glue-arguments.html
+   * @see https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-glue-arguments.html
    */
   readonly extraJarsFirst?: boolean;
 }
@@ -250,8 +255,9 @@ interface SharedSparkJobExecutableProps extends SharedJobExecutableProps {
 export interface ScalaJobExecutableProps extends SharedSparkJobExecutableProps {
   /**
    * The fully qualified Scala class name that serves as the entry point for the job.
+   * Equivalent to a job parameter `--class`.
    *
-   * @see `--class` in https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-glue-arguments.html
+   * @see https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-glue-arguments.html
    */
   readonly className: string;
 }
@@ -429,8 +435,9 @@ export interface JobExecutableConfig {
 
   /**
    * The language of the job (Scala or Python).
+   * Equivalent to a job parameter `--job-language`.
    *
-   * @see `--job-language` in https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-glue-arguments.html
+   * @see https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-glue-arguments.html
    */
   readonly language: JobLanguage;
 
@@ -460,55 +467,61 @@ export interface JobExecutableConfig {
 
   /**
    * The Scala class that serves as the entry point for the job. This applies only if your the job langauage is Scala.
+   * Equivalent to a job parameter `--class`.
    *
    * @default - no scala className specified
    *
-   * @see `--class` in https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-glue-arguments.html
+   * @see https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-glue-arguments.html
    */
   readonly className?: string;
 
   /**
    * Additional Java .jar files that AWS Glue adds to the Java classpath before executing your script.
+   * Equivalent to a job parameter `--extra-jars`.
    *
    * @default - no extra jars specified.
    *
-   * @see `--extra-jars` in https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-glue-arguments.html
+   * @see https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-glue-arguments.html
    */
   readonly extraJars?: Code[];
 
   /**
    * Additional Python files that AWS Glue adds to the Python path before executing your script.
+   * Equivalent to a job parameter `--extra-py-files`.
    *
    * @default - no extra python files specified.
    *
-   * @see `--extra-py-files` in https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-glue-arguments.html
+   * @see https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-glue-arguments.html
    */
   readonly extraPythonFiles?: Code[];
 
   /**
    * Additional Python modules that AWS Glue adds to the Python path before executing your script.
+   * Equivalent to a job parameter `--s3-py-modules`.
    *
    * @default - no extra python files specified.
    *
-   * @see `--s3-py-modules` in https://docs.aws.amazon.com/glue/latest/dg/author-job-ray-job-parameters.html
+   * @see https://docs.aws.amazon.com/glue/latest/dg/author-job-ray-job-parameters.html
    */
   readonly s3PythonModules?: Code[];
 
   /**
    * Additional files, such as configuration files that AWS Glue copies to the working directory of your script before executing it.
+   * Equivalent to a job parameter `--extra-files`.
    *
    * @default - no extra files specified.
    *
-   * @see `--extra-files` in https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-glue-arguments.html
+   * @see https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-glue-arguments.html
    */
   readonly extraFiles?: Code[];
 
   /**
    * Setting this value to true prioritizes the customer's extra JAR files in the classpath.
+   * Equivalent to a job parameter `--user-jars-first`.
    *
    * @default - extra jars are not prioritized.
    *
-   * @see `--user-jars-first` in https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-glue-arguments.html
+   * @see https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-glue-arguments.html
    */
   readonly extraJarsFirst?: boolean;
 }
