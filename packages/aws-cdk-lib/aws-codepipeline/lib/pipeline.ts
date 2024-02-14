@@ -195,7 +195,8 @@ export interface PipelineProps {
   /**
    * Type of the pipeline.
    *
-   * @default - PipelineType.V1
+   * @default - PipelineType.V2 if the feature flag `CODEPIPELINE_DEFAULT_PIPELINE_TYPE_TO_V2`
+   * is true, PipelineType.V1 otherwise
    *
    * @see https://docs.aws.amazon.com/codepipeline/latest/userguide/pipeline-types-planning.html
    */
@@ -489,11 +490,11 @@ export class Pipeline extends PipelineBase {
       assumedBy: new iam.ServicePrincipal('codepipeline.amazonaws.com'),
     });
 
-    // TODO: Change the default value of `pipelineType` to V2 under a feature flag.
-    if (props.pipelineType === undefined) {
+    const isDefaultV2 = FeatureFlags.of(this).isEnabled(cxapi.CODEPIPELINE_DEFAULT_PIPELINE_TYPE_TO_V2);
+    if (!isDefaultV2 && props.pipelineType === undefined) {
       Annotations.of(this).addWarningV2('@aws-cdk/aws-codepipeline:unspecifiedPipelineType', 'V1 pipeline type is implicitly selected when `pipelineType` is not set. If you want to use V2 type, set `PipelineType.V2`.');
     }
-    this.pipelineType = props.pipelineType ?? PipelineType.V1;
+    this.pipelineType = props.pipelineType ?? (isDefaultV2 ? PipelineType.V2 : PipelineType.V1);
 
     this.codePipeline = new CfnPipeline(this, 'Resource', {
       artifactStore: Lazy.any({ produce: () => this.renderArtifactStoreProperty() }),
@@ -502,7 +503,7 @@ export class Pipeline extends PipelineBase {
       disableInboundStageTransitions: Lazy.any({ produce: () => this.renderDisabledTransitions() }, { omitEmptyArray: true }),
       roleArn: this.role.roleArn,
       restartExecutionOnUpdate: props && props.restartExecutionOnUpdate,
-      pipelineType: props.pipelineType,
+      pipelineType: props.pipelineType ?? (isDefaultV2 ? PipelineType.V2 : undefined),
       variables: Lazy.any({ produce: () => this.renderVariables() }, { omitEmptyArray: true }),
       triggers: Lazy.any({ produce: () => this.renderTriggers() }, { omitEmptyArray: true }),
       name: this.physicalName,

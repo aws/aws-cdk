@@ -65,6 +65,7 @@ Flags come in three types:
 | [@aws-cdk/aws-codepipeline-actions:useNewDefaultBranchForCodeCommitSource](#aws-cdkaws-codepipeline-actionsusenewdefaultbranchforcodecommitsource) | When enabled, the CodeCommit source action is using the default branch name 'main'. | 2.103.1 | (fix) |
 | [@aws-cdk/aws-cloudwatch-actions:changeLambdaPermissionLogicalIdForLambdaAction](#aws-cdkaws-cloudwatch-actionschangelambdapermissionlogicalidforlambdaaction) | When enabled, the logical ID of a Lambda permission for a Lambda action includes an alarm ID. | 2.124.0 | (fix) |
 | [@aws-cdk/aws-codepipeline:crossAccountKeysDefaultValueToFalse](#aws-cdkaws-codepipelinecrossaccountkeysdefaultvaluetofalse) | Enables Pipeline to set the default value for crossAccountKeys to false. | V2NEXT | (default) |
+| [@aws-cdk/aws-codepipeline:defaultPipelineTypeToV2](#aws-cdkaws-codepipelinedefaultpipelinetypetov2) | Enables Pipeline to set the default pipeline type to V2. | V2NEXT | (default) |
 
 <!-- END table -->
 
@@ -120,7 +121,8 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/aws-rds:preventRenderingDeprecatedCredentials": true,
     "@aws-cdk/aws-codepipeline-actions:useNewDefaultBranchForCodeCommitSource": true,
     "@aws-cdk/aws-cloudwatch-actions:changeLambdaPermissionLogicalIdForLambdaAction": true,
-    "@aws-cdk/aws-codepipeline:crossAccountKeysDefaultValueToFalse": true
+    "@aws-cdk/aws-codepipeline:crossAccountKeysDefaultValueToFalse": true,
+    "@aws-cdk/aws-codepipeline:defaultPipelineTypeToV2": true
   }
 }
 ```
@@ -1229,6 +1231,22 @@ construct, the construct automatically defaults the value of this property to fa
 | V2NEXT | `false` | `true` |
 
 **Compatibility with old behavior:** Pass `crossAccountKeys: true` to `Pipeline` construct to restore the previous behavior.
+
+
+### @aws-cdk/aws-codepipeline:defaultPipelineTypeToV2
+
+*Enables Pipeline to set the default pipeline type to V2.* (default)
+
+When this feature flag is enabled, and the `pipelineType` property is not provided in a `Pipeline`
+construct, the construct automatically defaults the value of this property to `PipelineType.V2`.
+
+
+| Since | Default | Recommended |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| V2NEXT | `false` | `true` |
+
+**Compatibility with old behavior:** Pass `pipelineType: PipelineType.V1` to `Pipeline` construct to restore the previous behavior.
 
 
 <!-- END details -->
