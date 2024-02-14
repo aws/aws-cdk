@@ -4,7 +4,7 @@ import { App, RemovalPolicy, SecretValue, Stack } from 'aws-cdk-lib';
 import * as cpactions from 'aws-cdk-lib/aws-codepipeline-actions';
 
 const app = new App({
-  context: {
+  postCliContext: {
     '@aws-cdk/aws-codepipeline:defaultPipelineTypeToV2': false,
   },
 });

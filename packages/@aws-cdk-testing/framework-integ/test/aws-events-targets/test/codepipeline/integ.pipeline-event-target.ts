@@ -32,7 +32,7 @@ class MockAction implements codepipeline.IAction {
 }
 
 const app = new cdk.App({
-  context: {
+  postCliContext: {
     '@aws-cdk/aws-codepipeline:defaultPipelineTypeToV2': false,
   },
 });

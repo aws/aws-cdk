@@ -77,7 +77,7 @@ export class StackSetPipelineStack extends Stack {
 }
 
 const app = new App({
-  context: {
+  postCliContext: {
     '@aws-cdk/aws-codepipeline:defaultPipelineTypeToV2': false,
   },
 });

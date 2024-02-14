@@ -8,7 +8,7 @@ import { S3SourceAction, CodeBuildAction } from 'aws-cdk-lib/aws-codepipeline-ac
 
 const app = new App({
   treeMetadata: false,
-  context: {
+  postCliContext: {
     '@aws-cdk/aws-codepipeline:defaultPipelineTypeToV2': false,
   },
 });
