@@ -27,7 +27,12 @@ describe('list', () => {
   test('stacks with no dependencies', async () => {
     // GIVEN
     const toolkit = new CdkToolkit({
-      cloudExecutable,
+      cloudExecutable: new MockCloudExecutable({
+        stacks: [
+          MockStack.MOCK_STACK_A,
+          MockStack.MOCK_STACK_B,
+        ],
+      }),
       configuration: cloudExecutable.configuration,
       sdkProvider: cloudExecutable.sdkProvider,
       deployments: new Deployments({ sdkProvider: new MockSdkProvider() }),
