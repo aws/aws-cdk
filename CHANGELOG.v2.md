@@ -16,7 +16,7 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### Bug Fixes
 
-* **lambda:** [@deprecated](https://github.com/deprecated) tag to deprecated runtimes ([#29081](https://github.com/aws/aws-cdk/issues/29081)) ([2503f68](https://github.com/aws/aws-cdk/commit/2503f6855b6b0dad73c6fafc51f81f66354e2822))
+* **lambda:** @deprecated tag to deprecated runtimes ([#29081](https://github.com/aws/aws-cdk/issues/29081)) ([2503f68](https://github.com/aws/aws-cdk/commit/2503f6855b6b0dad73c6fafc51f81f66354e2822))
 * **stepfunctions-tasks:** missing permissions for running tasks on ecs ([#27891](https://github.com/aws/aws-cdk/issues/27891)) ([683d595](https://github.com/aws/aws-cdk/commit/683d5958b91747cedd746b96845a2169411d847a)), closes [#27803](https://github.com/aws/aws-cdk/issues/27803)
 
 ## [2.127.0](https://github.com/aws/aws-cdk/compare/v2.126.0...v2.127.0) (2024-02-09)
