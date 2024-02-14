@@ -28,15 +28,11 @@ export interface FunctionUrlOriginProps extends cloudfront.OriginProps {
  * An Origin for a Lambda Function URL.
  */
 export class FunctionUrlOrigin extends cloudfront.OriginBase {
-  props: any;
-  constructor(lambdaFunctionUrl: lambda.IFunctionUrl, props: FunctionUrlOriginProps = {}) {
+  constructor(lambdaFunctionUrl: lambda.IFunctionUrl, private readonly props: FunctionUrlOriginProps = {}) {
     // Lambda Function URL is of the form 'https://<lambda-id>.lambda-url.<region>.on.aws/'
     // No need to split URL as we do with REST API, the entire URL is needed
-    super(lambdaFunctionUrl.url, {
-      ...props,
-    });
-
-    this.props = props;
+    const domainName = cdk.Fn.select(2, cdk.Fn.split('/', lambdaFunctionUrl.url));
+    super(domainName, props);
 
     validateSecondsInRangeOrUndefined('readTimeout', 1, 180, props.readTimeout);
     validateSecondsInRangeOrUndefined('keepaliveTimeout', 1, 180, props.keepaliveTimeout);

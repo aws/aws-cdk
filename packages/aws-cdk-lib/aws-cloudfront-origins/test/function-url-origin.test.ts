@@ -25,9 +25,14 @@ test('Correctly renders the origin for a Lambda Function URL', () => {
   expect(stack.resolve(originBindConfig.originProperty)).toEqual({
     id: 'StackOriginLambdaFunctionURL',
     domainName: {
-      'Fn::GetAtt': [
-        'MyFunctionFunctionUrlFF6DE78C',
-        'FunctionUrl',
+      'Fn::Select': [
+        2,
+        {
+          'Fn::Split': [
+            '/',
+            { 'Fn::GetAtt': ['MyFunctionFunctionUrlFF6DE78C', 'FunctionUrl'] },
+          ],
+        },
       ],
     },
     customOriginConfig: {
