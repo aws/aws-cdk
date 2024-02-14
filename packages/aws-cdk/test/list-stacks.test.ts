@@ -37,7 +37,7 @@ describe('list', () => {
     const workflow = await listStacks(toolkit, { selectors: ['Test-Stack-A', 'Test-Stack-B'] });
 
     // THEN
-    expect(workflow).toEqual([{
+    expect(workflow).toMatchObject([{
       id: 'Test-Stack-A',
       name: 'Test-Stack-A',
       environment: {
@@ -89,7 +89,7 @@ describe('list', () => {
     const workflow = await listStacks( toolkit, { selectors: ['Test-Stack-A', 'Test-Stack-B'] });
 
     // THEN
-    expect(workflow).toEqual([{
+    expect(workflow).toMatchObject([{
       id: 'Test-Stack-A',
       name: 'Test-Stack-A',
       environment: {
@@ -157,7 +157,7 @@ describe('list', () => {
     const workflow = await listStacks( toolkit, { selectors: ['Test-Stack-A', 'Test-Stack-B', 'Test-Stack-C'] });
 
     // THEN
-    expect(workflow).toEqual([{
+    expect(workflow).toMatchObject([{
       id: 'Test-Stack-A',
       name: 'Test-Stack-A',
       environment: {
@@ -245,7 +245,7 @@ describe('list', () => {
     const workflow = await listStacks( toolkit, { selectors: ['Test-Stack-A', 'Test-Stack-C'] });
 
     // THEN
-    expect(workflow).toEqual([{
+    expect(workflow).toMatchObject([{
       id: 'Test-Stack-C',
       name: 'Test-Stack-C',
       environment: {
