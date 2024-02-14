@@ -76,7 +76,11 @@ export class StackSetPipelineStack extends Stack {
   }
 }
 
-const app = new App();
+const app = new App({
+  context: {
+    '@aws-cdk/aws-codepipeline:defaultPipelineTypeToV2': false,
+  },
+});
 const stack = new StackSetPipelineStack(app, 'StackSetPipelineStack');
 new IntegTest(app, 'StackSetPipelineStackInteg', {
   testCases: [stack],

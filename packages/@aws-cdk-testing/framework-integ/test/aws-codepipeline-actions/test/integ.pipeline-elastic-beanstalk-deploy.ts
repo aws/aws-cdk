@@ -21,7 +21,11 @@ import * as cpactions from 'aws-cdk-lib/aws-codepipeline-actions';
  * 5. Manually delete the 'aws-cdk-codepipeline-elastic-beanstalk-deploy' stack
  */
 
-const app = new App();
+const app = new App({
+  context: {
+    '@aws-cdk/aws-codepipeline:defaultPipelineTypeToV2': false,
+  },
+});
 
 const stack = new Stack(app, 'aws-cdk-codepipeline-elastic-beanstalk-deploy');
 

@@ -3,8 +3,11 @@ import * as s3 from 'aws-cdk-lib/aws-s3';
 import { App, RemovalPolicy, SecretValue, Stack } from 'aws-cdk-lib';
 import * as cpactions from 'aws-cdk-lib/aws-codepipeline-actions';
 
-const app = new App();
-
+const app = new App({
+  context: {
+    '@aws-cdk/aws-codepipeline:defaultPipelineTypeToV2': false,
+  },
+});
 const stack = new Stack(app, 'aws-cdk-codepipeline-alexa-deploy');
 
 const bucket = new s3.Bucket(stack, 'PipelineBucket', {

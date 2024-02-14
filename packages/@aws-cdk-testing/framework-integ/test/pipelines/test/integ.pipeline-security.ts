@@ -100,6 +100,7 @@ export class TestCdkStack extends Stack {
 const app = new App({
   context: {
     '@aws-cdk/core:newStyleStackSynthesis': 'true',
+    '@aws-cdk/aws-codepipeline:defaultPipelineTypeToV2': false,
   },
 });
 const stack = new TestCdkStack(app, 'PipelineSecurityStack', {

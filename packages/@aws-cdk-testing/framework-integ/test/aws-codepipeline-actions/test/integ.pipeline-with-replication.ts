@@ -8,6 +8,9 @@ import { S3SourceAction, CodeBuildAction } from 'aws-cdk-lib/aws-codepipeline-ac
 
 const app = new App({
   treeMetadata: false,
+  context: {
+    '@aws-cdk/aws-codepipeline:defaultPipelineTypeToV2': false,
+  },
 });
 const stack1 = new Stack(app, 'integ-pipeline-producer-stack', {
   env: {

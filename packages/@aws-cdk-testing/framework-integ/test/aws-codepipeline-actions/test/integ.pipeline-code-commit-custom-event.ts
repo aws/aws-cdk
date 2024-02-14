@@ -2,15 +2,18 @@ import * as codecommit from 'aws-cdk-lib/aws-codecommit';
 import * as codepipeline from 'aws-cdk-lib/aws-codepipeline';
 import * as cdk from 'aws-cdk-lib';
 import * as cpactions from 'aws-cdk-lib/aws-codepipeline-actions';
-import { CODECOMMIT_SOURCE_ACTION_DEFAULT_BRANCH_NAME } from 'aws-cdk-lib/cx-api';
+import { CODECOMMIT_SOURCE_ACTION_DEFAULT_BRANCH_NAME, CODEPIPELINE_DEFAULT_PIPELINE_TYPE_TO_V2 } from 'aws-cdk-lib/cx-api';
 import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { LambdaFunction } from 'aws-cdk-lib/aws-events-targets';
 import { Code, Runtime, Function } from 'aws-cdk-lib/aws-lambda';
 import { PolicyStatement } from 'aws-cdk-lib/aws-iam';
 import * as path from 'path';
 
-const defaultBranchFeatureFlag = { [CODECOMMIT_SOURCE_ACTION_DEFAULT_BRANCH_NAME]: true };
-const app = new cdk.App({ postCliContext: defaultBranchFeatureFlag });
+const defaultFeatureFlag = {
+  [CODECOMMIT_SOURCE_ACTION_DEFAULT_BRANCH_NAME]: true,
+  [CODEPIPELINE_DEFAULT_PIPELINE_TYPE_TO_V2]: false,
+};
+const app = new cdk.App({ postCliContext: defaultFeatureFlag });
 
 const stack = new cdk.Stack(app, 'aws-cdk-codepipeline-codecommit-custom-event');
 const branch = 'test-branch';

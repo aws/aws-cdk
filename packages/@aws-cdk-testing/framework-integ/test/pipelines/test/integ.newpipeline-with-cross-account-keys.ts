@@ -53,8 +53,11 @@ class AppStage extends Stage {
   }
 }
 
-const app = new App();
-
+const app = new App({
+  context: {
+    '@aws-cdk/aws-codepipeline:defaultPipelineTypeToV2': false,
+  },
+});
 const stack = new PipelineStack(app, 'PipelineStack');
 
 new integ.IntegTest(app, 'LambdaTest', {

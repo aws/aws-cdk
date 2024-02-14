@@ -81,6 +81,7 @@ class CdkpipelinesDemoPipelineStack extends Stack {
 const app = new App({
   context: {
     '@aws-cdk/core:newStyleStackSynthesis': 'true',
+    '@aws-cdk/aws-codepipeline:defaultPipelineTypeToV2': false,
   },
 });
 

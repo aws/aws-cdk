@@ -6,7 +6,11 @@ import * as lambda from '../../aws-lambda';
 import * as cdk from '../../core';
 import * as codepipeline_actions from '../lib';
 
-const app = new cdk.App();
+const app = new cdk.App({
+  context: {
+    '@aws-cdk/aws-codepipeline:defaultPipelineTypeToV2': false,
+  },
+});
 
 /// !show
 const lambdaStack = new cdk.Stack(app, 'LambdaStack');

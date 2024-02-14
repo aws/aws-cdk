@@ -31,7 +31,11 @@ class MockAction implements codepipeline.IAction {
   }
 }
 
-const app = new cdk.App();
+const app = new cdk.App({
+  context: {
+    '@aws-cdk/aws-codepipeline:defaultPipelineTypeToV2': false,
+  },
+});
 const stack = new cdk.Stack(app, 'pipeline-events');
 
 const repo = new codecommit.Repository(stack, 'Repo', {

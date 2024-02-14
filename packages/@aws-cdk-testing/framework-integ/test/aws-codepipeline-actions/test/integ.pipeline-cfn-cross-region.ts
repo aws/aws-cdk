@@ -3,7 +3,11 @@ import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as cdk from 'aws-cdk-lib';
 import * as cpactions from 'aws-cdk-lib/aws-codepipeline-actions';
 
-const app = new cdk.App();
+const app = new cdk.App({
+  context: {
+    '@aws-cdk/aws-codepipeline:defaultPipelineTypeToV2': false,
+  },
+});
 
 const region = 'us-west-2'; // hardcode the region
 const stack = new cdk.Stack(app, 'aws-cdk-codepipeline-cloudformation-cross-region', {

@@ -7,7 +7,11 @@ import { App, RemovalPolicy, Stack } from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as cpactions from 'aws-cdk-lib/aws-codepipeline-actions';
 
-const app = new App();
+const app = new App({
+  context: {
+    '@aws-cdk/aws-codepipeline:defaultPipelineTypeToV2': false,
+  },
+});
 const bucketStack = new Stack(app, 'BucketStack');
 const bucket = new s3.Bucket(bucketStack, 'Bucket', {
   removalPolicy: RemovalPolicy.DESTROY,
