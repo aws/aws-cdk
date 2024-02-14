@@ -1,6 +1,5 @@
 # AWS AppSync Construct Library
 
-
 The `aws-cdk-lib/aws-appsync` package contains constructs for building flexible
 APIs that use GraphQL.
 
@@ -86,7 +85,44 @@ demoDS.createResolver('QueryGetDemosConsistentResolver', {
 });
 ```
 
+### Environment variables
 
+You can use environmental variables to adjust your AWS AppSync resolvers' and functions' behavior without updating your code. Environmental variables are pairs of strings stored with your API configuration that are made available to your resolvers and functions to leverage at runtime.
+
+```ts
+const api = new appsync.GraphqlApi(this, 'Api', {
+  name: 'demo',
+  definition: appsync.Definition.fromFile(path.join(__dirname, 'schema.graphql')),
+  authorizationConfig: {
+    defaultAuthorization: {
+      authorizationType: appsync.AuthorizationType.IAM,
+    },
+  },
+  environmentVariables: {
+    debug: 'false',
+    tableName: 'users',
+  }
+});
+```
+
+You can add an environment variable to your created API.
+
+```ts
+api.addEnvironmentVariable('stage', 'production')
+```
+
+You can overwrite an existing variable
+
+```ts
+api.addEnvironmentVariable('debug', 'false')
+```
+
+You can reference other construct values
+
+```ts
+const queue = new sqs.Queue(stack, 'queue');
+api.addEnvironmentVariable('url', queue.queueUrl);
+```
 
 ### Aurora Serverless
 
@@ -233,6 +269,7 @@ httpDs.createResolver('MutationCallStepFunctionResolver', {
 ```
 
 ### EventBridge
+
 Integrating AppSync with EventBridge enables developers to use EventBridge rules to route commands for GraphQL mutations
 that need to perform any one of a variety of asynchronous tasks. More broadly, it enables teams to expose an event bus
 as a part of a GraphQL schema.
@@ -367,6 +404,7 @@ ds.createResolver('QueryGetTestsResolver', {
 ```
 
 ## Merged APIs
+
 AppSync supports [Merged APIs](https://docs.aws.amazon.com/appsync/latest/devguide/merged-api.html) which can be used to merge multiple source APIs into a single API.
 
 ```ts
@@ -532,9 +570,9 @@ sources and resolvers, an `apiId` is sufficient.
 
 ## Private APIs
 
-By default all AppSync GraphQL APIs are public and can be accessed from the internet. 
-For customers that want to limit access to be from their VPC, the optional API `visibility` property can be set to `Visibility.PRIVATE` 
-at creation time. To explicitly create a public API, the `visibility` property should be set to `Visibility.GLOBAL`. 
+By default all AppSync GraphQL APIs are public and can be accessed from the internet.
+For customers that want to limit access to be from their VPC, the optional API `visibility` property can be set to `Visibility.PRIVATE`
+at creation time. To explicitly create a public API, the `visibility` property should be set to `Visibility.GLOBAL`.
 If visibility is not set, the service will default to `GLOBAL`.
 
 CDK stack file `app-stack.ts`:
@@ -547,8 +585,8 @@ const api = new appsync.GraphqlApi(this, 'api', {
 });
 ```
 
-See [documentation](https://docs.aws.amazon.com/appsync/latest/devguide/using-private-apis.html) 
-for more details about Private APIs 
+See [documentation](https://docs.aws.amazon.com/appsync/latest/devguide/using-private-apis.html)
+for more details about Private APIs
 
 ## Authorization
 
