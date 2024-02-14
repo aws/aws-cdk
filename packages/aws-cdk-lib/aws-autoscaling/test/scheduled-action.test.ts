@@ -104,7 +104,7 @@ describeDeprecated('scheduled action', () => {
                 'AZRebalance',
                 'AlarmNotification',
                 'ScheduledActions',
-                'InstanceRefresh'
+                'InstanceRefresh',
               ],
             },
             AutoScalingScheduledAction: {
