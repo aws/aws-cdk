@@ -935,9 +935,9 @@
                   "version": "0.0.0"
                 }
               },
-              "DeploymentA86BA": {
-                "id": "DeploymentA86BA",
-                "path": "aws-appconfig-extension/HostedConfiguration/DeploymentA86BA",
+              "Deployment9D5FC": {
+                "id": "Deployment9D5FC",
+                "path": "aws-appconfig-extension/HostedConfiguration/Deployment9D5FC",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::AppConfig::Deployment",
                   "aws:cdk:cloudformation:props": {

@@ -240,6 +240,7 @@
     "docs-public-apis:aws-cdk-lib.aws_cloudtrail.InsightType.value",
     "docs-public-apis:aws-cdk-lib.aws_cloudwatch.DefaultValue.val",
     "docs-public-apis:aws-cdk-lib.aws_cloudwatch.Values.toJson",
+    "docs-public-apis:aws-cdk-lib.aws_cloudwatch.TableThreshold.toJson",
     "docs-public-apis:aws-cdk-lib.aws_codebuild.Artifacts.s3",
     "docs-public-apis:aws-cdk-lib.aws_codebuild.BuildSpec.fromObject",
     "docs-public-apis:aws-cdk-lib.aws_codebuild.Cache.none",

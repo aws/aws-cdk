@@ -1,0 +1,136 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "TableWidget": {
+        "id": "TableWidget",
+        "path": "TableWidget",
+        "children": {
+          "Dashboard": {
+            "id": "Dashboard",
+            "path": "TableWidget/Dashboard",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "TableWidget/Dashboard/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::CloudWatch::Dashboard",
+                  "aws:cdk:cloudformation:props": {
+                    "dashboardBody": {
+                      "Fn::Join": [
+                        "",
+                        [
+                          "{\"widgets\":[{\"type\":\"metric\",\"width\":12,\"height\":12,\"x\":0,\"y\":0,\"properties\":{\"title\":\"Table\",\"view\":\"table\",\"table\":{\"layout\":\"horizontal\",\"showTimeSeriesData\":true,\"stickySummary\":false,\"summaryColumns\":[]},\"region\":\"",
+                          {
+                            "Ref": "AWS::Region"
+                          },
+                          "\",\"metrics\":[[\"CDK/Test\",\"Metric\",{\"stat\":\"Minimum\"}]],\"annotations\":{\"horizontal\":[{\"value\":1000,\"color\":\"#d62728\",\"fill\":\"above\"},[{\"value\":500,\"color\":\"#ff7f0e\"},{\"value\":1000}],{\"value\":500,\"color\":\"#2ca02c\",\"fill\":\"below\"}]},\"yAxis\":{\"left\":{\"showUnits\":true}},\"singleValueFullPrecision\":true,\"period\":60}}]}"
+                        ]
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_cloudwatch.CfnDashboard",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_cloudwatch.Dashboard",
+              "version": "0.0.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "TableWidget/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "TableWidget/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnRule",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "TableWidgetTest": {
+        "id": "TableWidgetTest",
+        "path": "TableWidgetTest",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "TableWidgetTest/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "TableWidgetTest/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "TableWidgetTest/DefaultTest/DeployAssert",
+                "children": {
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "TableWidgetTest/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "TableWidgetTest/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnRule",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.3.0"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "aws-cdk-lib.App",
+      "version": "0.0.0"
+    }
+  }
+}

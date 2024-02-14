@@ -1,0 +1,13 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "codepipeline-with-pipeline-variables-test/DefaultTest": {
+      "stacks": [
+        "aws-cdk-codepipeline-with-pipeline-variables"
+      ],
+      "diffAssets": true,
+      "assertionStack": "codepipeline-with-pipeline-variables-test/DefaultTest/DeployAssert",
+      "assertionStackName": "codepipelinewithpipelinevariablestestDefaultTestDeployAssert9ACAEAAB"
+    }
+  }
+}

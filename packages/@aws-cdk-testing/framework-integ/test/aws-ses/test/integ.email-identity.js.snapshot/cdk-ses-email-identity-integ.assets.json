@@ -1,7 +1,20 @@
 {
-  "version": "20.0.0",
+  "version": "36.0.0",
   "files": {
-    "3461fb122e984a82b0e44e4b1b516ea2f581c705cce4e8f99d2001a9407cd2fa": {
+    "ab3156800c2f322f16da8bff913172139189a387dd64a4e622f82a790561fd4d": {
+      "source": {
+        "path": "asset.ab3156800c2f322f16da8bff913172139189a387dd64a4e622f82a790561fd4d",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "ab3156800c2f322f16da8bff913172139189a387dd64a4e622f82a790561fd4d.zip",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "8c1c73fb1dcf73cfd07d1697a478ad6e1fbe3673f2d10d7c35dbcaedc31ea460": {
       "source": {
         "path": "cdk-ses-email-identity-integ.template.json",
         "packaging": "file"
@@ -9,7 +22,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "3461fb122e984a82b0e44e4b1b516ea2f581c705cce4e8f99d2001a9407cd2fa.json",
+          "objectKey": "8c1c73fb1dcf73cfd07d1697a478ad6e1fbe3673f2d10d7c35dbcaedc31ea460.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

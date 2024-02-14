@@ -1,14 +1,12 @@
 {
-  "version": "30.0.0",
+  "version": "36.0.0",
   "testCases": {
-    "integ.fargate-task": {
+    "SfnTasksEcsFargateTaskTest/DefaultTest": {
       "stacks": [
-        "aws-ecs-integ2"
+        "aws-sfn-tasks-ecs-fargate-task"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": true
+      "assertionStack": "SfnTasksEcsFargateTaskTest/DefaultTest/DeployAssert",
+      "assertionStackName": "SfnTasksEcsFargateTaskTestDefaultTestDeployAssert83C8E074"
     }
-  },
-  "synthContext": {},
-  "enableLookups": false
+  }
 }

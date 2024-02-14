@@ -203,8 +203,6 @@ abstract class ConfigurationBase extends Construct implements IConfiguration, IE
     });
   }
 
-  protected abstract getDeploymentHash(environment: IEnvironment): string;
-
   /**
    * Adds an extension defined by the action point and event destination
    * and also creates an extension association to the configuration profile.
@@ -312,8 +310,7 @@ abstract class ConfigurationBase extends Construct implements IConfiguration, IE
    * please take a look into https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_appconfig.CfnDeployment.html.
    */
   public deploy(environment: IEnvironment) {
-    const logicalId = `Deployment${this.getDeploymentHash(environment)}`;
-    new CfnDeployment(this, logicalId, {
+    new CfnDeployment(this, `Deployment${getHash(environment.name!)}`, {
       applicationId: this.application.applicationId,
       configurationProfileId: this.configurationProfileId,
       deploymentStrategyId: this.deploymentStrategy!.deploymentStrategyId,
@@ -485,16 +482,6 @@ export class HostedConfiguration extends ConfigurationBase {
     this.addExistingEnvironmentsToApplication();
     this.deployConfigToEnvironments();
   }
-
-  protected getDeploymentHash(environment: IEnvironment): string {
-    const combinedString = `
-      ${this.application!.name!}
-      ${this.name!}
-      ${environment.name!}
-      ${this.content}
-    `;
-    return getHash(combinedString);
-  }
 }
 
 /**
@@ -624,17 +611,6 @@ export class SourcedConfiguration extends ConfigurationBase {
 
     this.addExistingEnvironmentsToApplication();
     this.deployConfigToEnvironments();
-  }
-
-  protected getDeploymentHash(environment: IEnvironment): string {
-    const combinedString = `
-      ${this.application!.name!}
-      ${this.name!}
-      ${environment.name!}
-      ${this.versionNumber}
-      ${this.location.type}
-    `;
-    return getHash(combinedString);
   }
 
   private getPolicyForRole(): iam.PolicyDocument {

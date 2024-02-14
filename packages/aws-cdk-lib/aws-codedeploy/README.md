@@ -90,6 +90,9 @@ const deploymentGroup = new codedeploy.ServerDeploymentGroup(this, 'CodeDeployDe
   // whether to ignore failure to fetch the status of alarms from CloudWatch
   // default: false
   ignorePollAlarmsFailure: false,
+  // whether to skip the step of checking CloudWatch alarms during the deployment process
+  // default: false
+  ignoreAlarmConfiguration: false,
   // auto-rollback configuration
   autoRollback: {
     failedDeployment: true, // default: true
