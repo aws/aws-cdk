@@ -178,6 +178,7 @@ scaling take over at night:
 
 ```ts
 declare const resource: SomeScalableResource;
+declare const TimeZone: TimeZone;
 
 const capacity = resource.autoScaleCapacity({
   minCapacity: 1,
@@ -187,11 +188,13 @@ const capacity = resource.autoScaleCapacity({
 capacity.scaleOnSchedule('PrescaleInTheMorning', {
   schedule: appscaling.Schedule.cron({ hour: '8', minute: '0' }),
   minCapacity: 20,
+  timeZone: TimeZone.AMERICA_DENVER,
 });
 
 capacity.scaleOnSchedule('AllowDownscalingAtNight', {
   schedule: appscaling.Schedule.cron({ hour: '20', minute: '0' }),
-  minCapacity: 1
+  minCapacity: 1,
+  timeZone: TimeZone.AMERICA_DENVER,
 });
 ```
 
