@@ -620,7 +620,7 @@ describe('auto scaling group', () => {
           'MinSuccessfulInstancesPercent': 50,
           'WaitOnResourceSignals': true,
           'PauseTime': 'PT5M45S',
-          'SuspendProcesses': ['HealthCheck', 'ReplaceUnhealthy', 'AZRebalance', 'AlarmNotification', 'ScheduledActions'],
+          'SuspendProcesses': ['HealthCheck', 'ReplaceUnhealthy', 'AZRebalance', 'AlarmNotification', 'ScheduledActions', 'InstanceRefresh'],
         },
       },
     });
