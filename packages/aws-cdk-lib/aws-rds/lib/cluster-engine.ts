@@ -918,10 +918,10 @@ export class AuroraPostgresEngineVersion {
   public static readonly VER_15_4 = AuroraPostgresEngineVersion.of('15.4', '15', { s3Import: true, s3Export: true });
   /** Version "15.5". */
   public static readonly VER_15_5 = AuroraPostgresEngineVersion.of('15.5', '15', { s3Import: true, s3Export: true });
-  /** Version "16.0".
-   * Version 16.0 is available in preview environment as of November 15, 2023.
-   */
+  /** Version "16.0". */
   public static readonly VER_16_0 = AuroraPostgresEngineVersion.of('16.0', '16', { s3Import: true, s3Export: true });
+  /** Version "16.1". */
+  public static readonly VER_16_1 = AuroraPostgresEngineVersion.of('16.1', '16', { s3Import: true, s3Export: true });
 
   /**
    * Create a new AuroraPostgresEngineVersion with an arbitrary version.
