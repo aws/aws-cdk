@@ -37,7 +37,7 @@ describe('list', () => {
     const workflow = await listStacks(toolkit, { selectors: ['Test-Stack-A', 'Test-Stack-B'] });
 
     // THEN
-    expect(workflow).toMatchObject([{
+    expect(JSON.stringify(workflow)).toEqual(JSON.stringify([{
       id: 'Test-Stack-A',
       name: 'Test-Stack-A',
       environment: {
@@ -56,7 +56,7 @@ describe('list', () => {
         name: 'aws://123456789012/bermuda-triangle-1',
       },
       dependencies: [],
-    }]);
+    }]));
   });
 
   test('stacks with dependent stacks', async () => {
@@ -89,7 +89,7 @@ describe('list', () => {
     const workflow = await listStacks( toolkit, { selectors: ['Test-Stack-A', 'Test-Stack-B'] });
 
     // THEN
-    expect(workflow).toMatchObject([{
+    expect(JSON.stringify(workflow)).toEqual(JSON.stringify([{
       id: 'Test-Stack-A',
       name: 'Test-Stack-A',
       environment: {
@@ -111,7 +111,7 @@ describe('list', () => {
         id: 'Test-Stack-A',
         dependencies: [],
       }],
-    }]);
+    }]));
   });
 
   test('stacks with nested dependencies', async () => {
@@ -157,7 +157,7 @@ describe('list', () => {
     const workflow = await listStacks( toolkit, { selectors: ['Test-Stack-A', 'Test-Stack-B', 'Test-Stack-C'] });
 
     // THEN
-    expect(workflow).toMatchObject([{
+    expect(JSON.stringify(workflow)).toEqual(JSON.stringify([{
       id: 'Test-Stack-A',
       name: 'Test-Stack-A',
       environment: {
@@ -195,7 +195,7 @@ describe('list', () => {
           dependencies: [],
         }],
       }],
-    }]);
+    }]));
   });
 
   // In the context of stacks with cross-stack or cross-region references,
@@ -245,7 +245,7 @@ describe('list', () => {
     const workflow = await listStacks( toolkit, { selectors: ['Test-Stack-A', 'Test-Stack-C'] });
 
     // THEN
-    expect(workflow).toMatchObject([{
+    expect(JSON.stringify(workflow)).toEqual(JSON.stringify([{
       id: 'Test-Stack-C',
       name: 'Test-Stack-C',
       environment: {
@@ -267,7 +267,7 @@ describe('list', () => {
         id: 'Test-Stack-C',
         dependencies: [],
       }],
-    }]);
+    }]));
   });
 
   test('stacks with circular dependencies should error out', async () => {
