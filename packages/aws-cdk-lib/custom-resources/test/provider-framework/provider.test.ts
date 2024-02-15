@@ -1,4 +1,4 @@
-import { Template } from '../../../assertions';
+import { Template, Match } from '../../../assertions';
 import * as ec2 from '../../../aws-ec2';
 import * as iam from '../../../aws-iam';
 import * as kms from '../../../aws-kms';
@@ -417,6 +417,34 @@ describe('role', () => {
           'Arn',
         ],
       },
+    });
+  });
+
+  it('provider function can check if the user lambda is active', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    new cr.Provider(stack, 'MyProvider', {
+      onEventHandler: new lambda.Function(stack, 'MyHandler', {
+        code: new lambda.InlineCode('foo'),
+        handler: 'index.onEvent',
+        runtime: lambda.Runtime.NODEJS_LATEST,
+      }),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: Match.arrayWith([
+          {
+            Action: 'lambda:GetFunction',
+            Effect: 'Allow',
+            Resource: { 'Fn::GetAtt': ['MyHandler6B74D312', 'Arn'] },
+          },
+        ]),
+      },
+      Roles: [{ Ref: 'MyProviderframeworkonEventServiceRole8761E48D' }],
     });
   });
 });

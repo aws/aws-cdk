@@ -250,6 +250,13 @@ export class Provider extends Construct implements ICustomResourceProvider {
     fn.addEnvironment(consts.USER_ON_EVENT_FUNCTION_ARN_ENV, this.onEventHandler.functionArn);
     this.onEventHandler.grantInvoke(fn);
 
+    // the waiter calls GetFunction to check if the user Lambda function is Active
+    fn.addToRolePolicy(new iam.PolicyStatement({
+      effect: iam.Effect.ALLOW,
+      actions: ['lambda:GetFunction'],
+      resources: [this.onEventHandler.functionArn],
+    }));
+
     if (this.isCompleteHandler) {
       fn.addEnvironment(consts.USER_IS_COMPLETE_FUNCTION_ARN_ENV, this.isCompleteHandler.functionArn);
       this.isCompleteHandler.grantInvoke(fn);
