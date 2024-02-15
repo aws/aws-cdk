@@ -4,7 +4,7 @@ import { Schedule } from './schedule';
 import { BasicStepScalingPolicyProps, StepScalingPolicy } from './step-scaling-policy';
 import { BasicTargetTrackingScalingPolicyProps, TargetTrackingScalingPolicy } from './target-tracking-scaling-policy';
 import * as iam from '../../aws-iam';
-import { IResource, Lazy, Resource, withResolved } from '../../core';
+import { IResource, Lazy, Resource, TimeZone, withResolved } from '../../core';
 
 export interface IScalableTarget extends IResource {
   /**
@@ -161,6 +161,7 @@ export class ScalableTarget extends Resource implements IScalableTarget {
         maxCapacity: action.maxCapacity,
         minCapacity: action.minCapacity,
       },
+      timezone: action.timeZone?.timezoneName,
     });
   }
 
@@ -225,6 +226,14 @@ export interface ScalingSchedule {
    * @default No new maximum capacity
    */
   readonly maxCapacity?: number;
+
+  /**
+   * The time zone used when referring to the date and time of a scheduled action,
+   * when the scheduled action uses an at or cron expression.
+   *
+   * @default - UTC
+   */
+  readonly timeZone?: TimeZone;
 }
 
 /**
