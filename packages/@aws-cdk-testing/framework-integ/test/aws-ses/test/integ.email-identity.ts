@@ -3,6 +3,8 @@ import { App, Stack, StackProps } from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import { Construct } from 'constructs';
 import * as ses from 'aws-cdk-lib/aws-ses';
+import { Code, Function, Runtime } from 'aws-cdk-lib/aws-lambda';
+import * as path from 'path';
 
 class TestStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
@@ -12,10 +14,19 @@ class TestStack extends Stack {
       zoneName: 'cdk.dev',
     });
 
-    new ses.EmailIdentity(this, 'EmailIdentity', {
+    const lambdaFunction = new Function(this, 'Function', {
+      functionName: 'email-sending-lambda',
+      runtime: Runtime.PYTHON_3_11,
+      code: Code.fromAsset(path.join(__dirname, 'fixtures', 'send-email')),
+      handler: 'index.lambda_handler',
+    });
+
+    const emailIdentity = new ses.EmailIdentity(this, 'EmailIdentity', {
       identity: ses.Identity.publicHostedZone(hostedZone),
       mailFromDomain: 'mail.cdk.dev',
     });
+
+    emailIdentity.grantSendEmail(lambdaFunction);
   }
 }
 
