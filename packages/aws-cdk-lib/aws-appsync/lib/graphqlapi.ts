@@ -664,7 +664,7 @@ export class GraphqlApi extends GraphqlApiBase {
         this.addEnvironmentVariable(key, value);
       });
     }
-    this.validateEnvironmentVariables();
+    this.node.addValidation({ validate: () => this.validateEnvironmentVariables() });
 
     this.api = new CfnGraphQLApi(this, 'Resource', {
       name: props.name,
@@ -888,16 +888,12 @@ export class GraphqlApi extends GraphqlApiBase {
   }
 
   private validateEnvironmentVariables() {
-    this.node.addValidation( {
-      validate: () => {
-        const errors: string[] = [];
-        const entries = Object.entries(this.environmentVariables);
-        if (entries.length > 50) {
-          errors.push(`Only 50 environment variables can be set, got ${entries.length}`);
-        }
-        return errors;
-      },
-    });
+    const errors: string[] = [];
+    const entries = Object.entries(this.environmentVariables);
+    if (entries.length > 50) {
+      errors.push(`Only 50 environment variables can be set, got ${entries.length}`);
+    }
+    return errors;
   }
 
   private renderEnvironmentVariables() {
