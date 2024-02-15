@@ -1429,7 +1429,7 @@ EBS volume for the bastion host can be encrypted like:
 const host = new ec2.BastionHostLinux(this, 'BastionHost', {
   vpc,
   blockDevices: [{
-    deviceName: 'EBSBastionHost',
+    deviceName: '/dev/sdh',
     volume: ec2.BlockDeviceVolume.ebs(10, {
       encrypted: true,
     }),
