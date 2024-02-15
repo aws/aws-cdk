@@ -1,5 +1,5 @@
 {
-  "version": "31.0.0",
+  "version": "36.0.0",
   "artifacts": {
     "aws-ecs-integ-fargate.assets": {
       "type": "cdk:asset-manifest",
@@ -14,10 +14,11 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "aws-ecs-integ-fargate.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f54d2ab12d74af5412f68984953da28f5db17e8b02e7df30a6e02393dbdc1da1.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/30d5be7ac25ebbd7994b77d7e33734c651e48cbcf69a08d2fdcf9fc72434a08f.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -177,6 +178,54 @@
             "data": "TaskDefSecurityGroupD50E7CF0"
           }
         ],
+        "/aws-ecs-integ-fargate/TaskDefWithCompatibility/TaskRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TaskDefWithCompatibilityTaskRole233D6358"
+          }
+        ],
+        "/aws-ecs-integ-fargate/TaskDefWithCompatibility/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TaskDefWithCompatibilityAFDDF969"
+          }
+        ],
+        "/aws-ecs-integ-fargate/TaskDefWithCompatibility/TheContainer/LogGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TaskDefWithCompatibilityTheContainerLogGroupA62F8DA6"
+          }
+        ],
+        "/aws-ecs-integ-fargate/TaskDefWithCompatibility/ExecutionRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TaskDefWithCompatibilityExecutionRoleF80BA4E1"
+          }
+        ],
+        "/aws-ecs-integ-fargate/TaskDefWithCompatibility/ExecutionRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TaskDefWithCompatibilityExecutionRoleDefaultPolicy75636292"
+          }
+        ],
+        "/aws-ecs-integ-fargate/TaskDefWithCompatibility/EventsRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TaskDefWithCompatibilityEventsRole9344E984"
+          }
+        ],
+        "/aws-ecs-integ-fargate/TaskDefWithCompatibility/EventsRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TaskDefWithCompatibilityEventsRoleDefaultPolicyC12E5A3B"
+          }
+        ],
+        "/aws-ecs-integ-fargate/TaskDefWithCompatibility/SecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TaskDefWithCompatibilitySecurityGroup608AC6F4"
+          }
+        ],
         "/aws-ecs-integ-fargate/Rule/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -211,6 +260,7 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "EcsFargateTestDefaultTestDeployAssert36341BFB.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
