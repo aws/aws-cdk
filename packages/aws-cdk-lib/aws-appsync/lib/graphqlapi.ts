@@ -874,6 +874,9 @@ export class GraphqlApi extends GraphqlApiBase {
    * Add an environment variable to the construct.
    */
   public addEnvironmentVariable(key: string, value: string) {
+    if (this.definition.sourceApiOptions) {
+      throw new Error('Environment variables are not supported for merged APIs');
+    }
     if (!Token.isUnresolved(key) && !/^[A-Za-z]+\w*$/.test(key)) {
       throw new Error(`Key '${key}' must begin with a letter and can only contain letters, numbers, and underscores`);
     }

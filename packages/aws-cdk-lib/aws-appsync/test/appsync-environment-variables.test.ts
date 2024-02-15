@@ -224,6 +224,56 @@ describe('environment variables', () => {
     // THEN
     expect(error).toMatch(/Only 50 environment variables can be set, got 51/);
   });
+
+  test('throws if environment variables are set on merged API', () => {
+    // GIVEN
+    const source = new appsync.GraphqlApi(stack, 'source', {
+      name: 'source',
+      definition: appsync.Definition.fromSchema(appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.test.graphql'))),
+    });
+
+    // THEN
+    expect(() => {
+      new appsync.GraphqlApi(stack, 'api', {
+        name: 'api',
+        definition: appsync.Definition.fromSourceApis({
+          sourceApis: [
+            {
+              sourceApi: source,
+            },
+          ],
+        }),
+        environmentVariables: {
+          EnvKey1: 'non-empty-1',
+        },
+      });
+    }).toThrow(/Environment variables are not supported for merged APIs/);
+  });
+
+  test('throws if environment variables are set by addEnvironmentVariable method on merged API', () => {
+    // GIVEN
+    const source = new appsync.GraphqlApi(stack, 'source', {
+      name: 'source',
+      definition: appsync.Definition.fromSchema(appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.test.graphql'))),
+    });
+
+    // WHEN
+    const api = new appsync.GraphqlApi(stack, 'api', {
+      name: 'api',
+      definition: appsync.Definition.fromSourceApis({
+        sourceApis: [
+          {
+            sourceApi: source,
+          },
+        ],
+      }),
+    });
+
+    // THEN
+    expect(() => {
+      api.addEnvironmentVariable('EnvKey1', 'non-empty-1');
+    }).toThrow(/Environment variables are not supported for merged APIs/);
+  });
 });
 
 function validate(construct: IConstruct): string[] {
