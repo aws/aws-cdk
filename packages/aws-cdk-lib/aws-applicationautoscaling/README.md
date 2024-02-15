@@ -177,8 +177,8 @@ The following example scales the fleet out in the morning, and lets natural
 scaling take over at night:
 
 ```ts
+import { TimeZone } from 'aws-cdk-lib';
 declare const resource: SomeScalableResource;
-declare const TimeZone: TimeZone;
 
 const capacity = resource.autoScaleCapacity({
   minCapacity: 1,
@@ -208,7 +208,7 @@ import * as lambda from 'aws-cdk-lib/aws-lambda';
 declare const code: lambda.Code;
 
 const handler = new lambda.Function(this, 'MyFunction', {
-  runtime: lambda.Runtime.PYTHON_3_7,
+  runtime: lambda.Runtime.PYTHON_3_12,
   handler: 'index.handler',
   code,
 
