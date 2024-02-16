@@ -256,6 +256,19 @@ export class Runtime {
   public static readonly SYNTHETICS_PYTHON_SELENIUM_2_0 = new Runtime('syn-python-selenium-2.0', RuntimeFamily.PYTHON);
 
   /**
+   * `syn-python-selenium-2.1` includes the following:
+   * - Lambda runtime Python 3.8
+   * - Selenium version 4.15.1
+   * - Chromium version 111.0.5563.146
+   *
+   * New Features:
+   * - **Updated versions of the bundled libraries in Chromium**: The Chromium and Selenium dependencies are updated to new versions.
+   *
+   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_python_selenium.html#CloudWatch_Synthetics_runtimeversion-syn-python-selenium-2.0
+   */
+  public static readonly SYNTHETICS_PYTHON_SELENIUM_2_1 = new Runtime('syn-python-selenium-2.1', RuntimeFamily.PYTHON);
+
+  /**
     * @param name The name of the runtime version
     * @param family The Lambda runtime family
     */
