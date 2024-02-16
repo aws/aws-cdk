@@ -130,7 +130,9 @@ export interface ContainerDefinitionOptions {
   /**
    * A list of ARNs in SSM or Amazon S3 to a credential spec (`CredSpec`) file that configures the container for Active Directory authentication.
    *
-   * We recommend that you use this parameter instead of the `dockerSecurityOptions`. Only the first entry on this array is used. This may be expanded in the future.
+   * We recommend that you use this parameter instead of the `dockerSecurityOptions`.
+   *
+   * Currently, only one credential spec is allowed per container definition.
    *
    * @default - No credential specs.
    */
@@ -555,6 +557,10 @@ export class ContainerDefinition extends Construct {
 
     if (props.credentialSpecs) {
       this.credentialSpecs = [];
+
+      if (props.credentialSpecs.length > 1) {
+        throw new Error('Only one credential spec is allowed per container definition.');
+      }
 
       for (const credSpec of props.credentialSpecs) {
         this.credentialSpecs.push(credSpec.bind());
