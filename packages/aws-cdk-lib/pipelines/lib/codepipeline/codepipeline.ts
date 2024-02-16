@@ -254,6 +254,15 @@ export interface CodePipelineProps {
    * @default - no cross region replication buckets.
    */
   readonly crossRegionReplicationBuckets?: { [region: string]: s3.IBucket };
+
+  /**
+   * Type of the pipeline.
+   *
+   * @default - PipelineType.V1
+   *
+   * @see https://docs.aws.amazon.com/codepipeline/latest/userguide/pipeline-types-planning.html
+   */
+  readonly pipelineType?: cp.PipelineType;
 }
 
 /**
@@ -476,6 +485,7 @@ export class CodePipeline extends PipelineBase {
         role: this.props.role,
         enableKeyRotation: this.props.enableKeyRotation,
         artifactBucket: this.props.artifactBucket,
+        pipelineType: this.props.pipelineType,
       });
     }
 
