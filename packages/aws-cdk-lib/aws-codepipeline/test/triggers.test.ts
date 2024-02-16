@@ -247,7 +247,7 @@ describe('triggers', () => {
           },
         }],
       });
-    }).toThrow(/maximum length of tagsExcludes for sourceAction with name 'CodeStarConnectionsSourceAction' is 8, got 9/);
+    }).toThrow(/maximum length of tagsExcludes in pushFilter for sourceAction with name 'CodeStarConnectionsSourceAction' is 8, got 9/);
   });
 
   test('throw if length of excludes is greater than 8', () => {
@@ -265,7 +265,7 @@ describe('triggers', () => {
           },
         }],
       });
-    }).toThrow(/maximum length of tagsIncludes for sourceAction with name 'CodeStarConnectionsSourceAction' is 8, got 9/);
+    }).toThrow(/maximum length of tagsIncludes in pushFilter for sourceAction with name 'CodeStarConnectionsSourceAction' is 8, got 9/);
   });
 
   test('empty pushFilter for trigger is set to undefined', () => {

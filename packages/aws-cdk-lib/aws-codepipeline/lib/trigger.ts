@@ -30,6 +30,58 @@ export interface GitPushFilter {
    * @default - no tags.
    */
   readonly tagsIncludes?: string[];
+
+  /**
+   * The list of patterns of Git branches that, when a commit is pushed, are
+   * to be excluded from starting the pipeline.
+   *
+   * You can filter with glob patterns. The `branchesExcludes` takes priority
+   * over the `branchesIncludes`.
+   *
+   * Maximum length of this array is 8.
+   *
+   * @default - no branches.
+   */
+  readonly branchesExcludes?: string[];
+
+  /**
+   * The list of patterns of Git branches that, when a commit is pushed, are
+   * to be included as criteria that starts the pipeline.
+   *
+   * You can filter with glob patterns. The `branchesExcludes` takes priority
+   * over the `branchesIncludes`.
+   *
+   * Maximum length of this array is 8.
+   *
+   * @default - no branches.
+   */
+  readonly branchesIncludes?: string[];
+
+  /**
+   * The list of patterns of Git repository file paths that, when a commit is pushed,
+   * are to be excluded from starting the pipeline.
+   *
+   * You can filter with glob patterns. The `filePathsExcludes` takes priority
+   * over the `filePathsIncludes`.
+   *
+   * Maximum length of this array is 8.
+   *
+   * @default - no filePaths.
+   */
+  readonly filePathsExcludes?: string[];
+
+  /**
+   * The list of patterns of Git repository file paths that, when a commit is pushed,
+   * are to be included as criteria that starts the pipeline.
+   *
+   * You can filter with glob patterns. The `filePathsExcludes` takes priority
+   * over the `filePathsIncludes`.
+   *
+   * Maximum length of this array is 8.
+   *
+   * @default - no filePaths.
+   */
+  readonly filePathsIncludes?: string[];
 }
 
 /**
@@ -117,10 +169,22 @@ export class Trigger {
 
       pushFilter?.forEach(filter => {
         if (filter.tagsExcludes && filter.tagsExcludes.length > 8) {
-          throw new Error(`maximum length of tagsExcludes for sourceAction with name '${sourceAction.actionProperties.actionName}' is 8, got ${filter.tagsExcludes.length}`);
+          throw new Error(`maximum length of tagsExcludes in pushFilter for sourceAction with name '${sourceAction.actionProperties.actionName}' is 8, got ${filter.tagsExcludes.length}`);
         }
         if (filter.tagsIncludes && filter.tagsIncludes.length > 8) {
-          throw new Error(`maximum length of tagsIncludes for sourceAction with name '${sourceAction.actionProperties.actionName}' is 8, got ${filter.tagsIncludes.length}`);
+          throw new Error(`maximum length of tagsIncludes in pushFilter for sourceAction with name '${sourceAction.actionProperties.actionName}' is 8, got ${filter.tagsIncludes.length}`);
+        }
+        if (filter.branchesExcludes && filter.branchesExcludes.length > 8) {
+          throw new Error(`maximum length of branchesExcludes in pushFilter for sourceAction with name '${sourceAction.actionProperties.actionName}' is 8, got ${filter.branchesExcludes.length}`);
+        }
+        if (filter.branchesIncludes && filter.branchesIncludes.length > 8) {
+          throw new Error(`maximum length of branchesIncludes in pushFilter for sourceAction with name '${sourceAction.actionProperties.actionName}' is 8, got ${filter.branchesIncludes.length}`);
+        }
+        if (filter.filePathsExcludes && filter.filePathsExcludes.length > 8) {
+          throw new Error(`maximum length of filePathsExcludes in pushFilter for sourceAction with name '${sourceAction.actionProperties.actionName}' is 8, got ${filter.filePathsExcludes.length}`);
+        }
+        if (filter.filePathsIncludes && filter.filePathsIncludes.length > 8) {
+          throw new Error(`maximum length of filePathsIncludes in pushFilter for sourceAction with name '${sourceAction.actionProperties.actionName}' is 8, got ${filter.filePathsIncludes.length}`);
         }
       });
     }
@@ -143,7 +207,17 @@ export class Trigger {
           excludes: filter.tagsExcludes?.length ? filter.tagsExcludes : undefined,
           includes: filter.tagsIncludes?.length ? filter.tagsIncludes : undefined,
         };
-        return { tags };
+        const branches: CfnPipeline.GitBranchFilterCriteriaProperty | undefined = {
+          // set to undefined if empty array because CloudFormation does not accept empty array
+          excludes: filter.branchesExcludes?.length ? filter.branchesExcludes : undefined,
+          includes: filter.branchesIncludes?.length ? filter.branchesIncludes : undefined,
+        };
+        const filePaths: CfnPipeline.GitFilePathFilterCriteriaProperty | undefined = {
+          // set to undefined if empty array because CloudFormation does not accept empty array
+          excludes: filter.filePathsExcludes?.length ? filter.filePathsExcludes : undefined,
+          includes: filter.filePathsIncludes?.length ? filter.filePathsIncludes : undefined,
+        };
+        return { tags, branches, filePaths };
       });
 
       gitConfiguration = {
