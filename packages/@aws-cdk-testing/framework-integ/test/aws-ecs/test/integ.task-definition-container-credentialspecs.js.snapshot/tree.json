@@ -8,6 +8,109 @@
         "id": "aws-ecs-task-definition-container-credentialspecs",
         "path": "aws-ecs-task-definition-container-credentialspecs",
         "children": {
+          "s3-bucket": {
+            "id": "s3-bucket",
+            "path": "aws-ecs-task-definition-container-credentialspecs/s3-bucket",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-ecs-task-definition-container-credentialspecs/s3-bucket/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::S3::Bucket",
+                  "aws:cdk:cloudformation:props": {
+                    "bucketEncryption": {
+                      "serverSideEncryptionConfiguration": [
+                        {
+                          "serverSideEncryptionByDefault": {
+                            "sseAlgorithm": "AES256"
+                          }
+                        }
+                      ]
+                    },
+                    "publicAccessBlockConfiguration": {
+                      "blockPublicAcls": true,
+                      "blockPublicPolicy": true,
+                      "ignorePublicAcls": true,
+                      "restrictPublicBuckets": true
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3.CfnBucket",
+                  "version": "0.0.0"
+                }
+              },
+              "Policy": {
+                "id": "Policy",
+                "path": "aws-ecs-task-definition-container-credentialspecs/s3-bucket/Policy",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-ecs-task-definition-container-credentialspecs/s3-bucket/Policy/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::S3::BucketPolicy",
+                      "aws:cdk:cloudformation:props": {
+                        "bucket": {
+                          "Ref": "s3bucket64CB25AF"
+                        },
+                        "policyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "s3:*",
+                              "Condition": {
+                                "Bool": {
+                                  "aws:SecureTransport": "false"
+                                }
+                              },
+                              "Effect": "Deny",
+                              "Principal": {
+                                "AWS": "*"
+                              },
+                              "Resource": [
+                                {
+                                  "Fn::GetAtt": [
+                                    "s3bucket64CB25AF",
+                                    "Arn"
+                                  ]
+                                },
+                                {
+                                  "Fn::Join": [
+                                    "",
+                                    [
+                                      {
+                                        "Fn::GetAtt": [
+                                          "s3bucket64CB25AF",
+                                          "Arn"
+                                        ]
+                                      },
+                                      "/*"
+                                    ]
+                                  ]
+                                }
+                              ]
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_s3.CfnBucketPolicy",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3.BucketPolicy",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_s3.Bucket",
+              "version": "0.0.0"
+            }
+          },
           "task-execution-role": {
             "id": "task-execution-role",
             "path": "aws-ecs-task-definition-container-credentialspecs/task-execution-role",
@@ -134,13 +237,51 @@
                     "containerDefinitions": [
                       {
                         "credentialSpecs": [
-                          "credentialspecdomainless:arn:aws:s3:::bucket_name/key_name"
+                          {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "credentialspec:",
+                                {
+                                  "Fn::GetAtt": [
+                                    "s3bucket64CB25AF",
+                                    "Arn"
+                                  ]
+                                },
+                                "/credSpec"
+                              ]
+                            ]
+                          }
                         ],
                         "essential": true,
                         "image": "public.ecr.aws/ecs-sample-image/amazon-ecs-sample:latest",
                         "memory": 512,
                         "memoryReservation": 32,
-                        "name": "Container"
+                        "name": "DomainJoinedContainer"
+                      },
+                      {
+                        "credentialSpecs": [
+                          {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "credentialspecdomainless:",
+                                {
+                                  "Fn::GetAtt": [
+                                    "s3bucket64CB25AF",
+                                    "Arn"
+                                  ]
+                                },
+                                "/credSpecDomainless"
+                              ]
+                            ]
+                          }
+                        ],
+                        "essential": true,
+                        "image": "public.ecr.aws/ecs-sample-image/amazon-ecs-sample:latest",
+                        "memory": 512,
+                        "memoryReservation": 32,
+                        "name": "DomainlessContainer"
                       }
                     ],
                     "executionRoleArn": {
@@ -167,9 +308,17 @@
                   "version": "0.0.0"
                 }
               },
-              "Container": {
-                "id": "Container",
-                "path": "aws-ecs-task-definition-container-credentialspecs/TaskDef/Container",
+              "DomainJoinedContainer": {
+                "id": "DomainJoinedContainer",
+                "path": "aws-ecs-task-definition-container-credentialspecs/TaskDef/DomainJoinedContainer",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_ecs.ContainerDefinition",
+                  "version": "0.0.0"
+                }
+              },
+              "DomainlessContainer": {
+                "id": "DomainlessContainer",
+                "path": "aws-ecs-task-definition-container-credentialspecs/TaskDef/DomainlessContainer",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_ecs.ContainerDefinition",
                   "version": "0.0.0"

@@ -66,7 +66,7 @@ export class DomainJoinedCredentialSpec extends CredentialSpec {
   /**
    * Prefix Id for this type of CredSpec.
    */
-  public static readonly PrefixId = 'credentialspec';
+  public static readonly PREFIX_ID = 'credentialspec';
 
   /**
    * Loads the CredSpec from a S3 bucket object.
@@ -91,7 +91,7 @@ export class DomainJoinedCredentialSpec extends CredentialSpec {
   }
 
   constructor(fileLocation: string) {
-    super(DomainJoinedCredentialSpec.PrefixId, fileLocation);
+    super(DomainJoinedCredentialSpec.PREFIX_ID, fileLocation);
   }
 }
 
@@ -102,7 +102,7 @@ export class DomainlessCredentialSpec extends CredentialSpec {
   /**
    * Prefix Id for this type of CredSpec.
    */
-  public static readonly PrefixId = 'credentialspecdomainless';
+  public static readonly PREFIX_ID = 'credentialspecdomainless';
 
   /**
    * Loads the CredSpec from a S3 bucket object.
@@ -127,7 +127,7 @@ export class DomainlessCredentialSpec extends CredentialSpec {
   }
 
   constructor(fileLocation: string) {
-    super(DomainlessCredentialSpec.PrefixId, fileLocation);
+    super(DomainlessCredentialSpec.PREFIX_ID, fileLocation);
   }
 }
 

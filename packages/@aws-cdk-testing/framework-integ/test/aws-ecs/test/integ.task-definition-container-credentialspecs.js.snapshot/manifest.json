@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e13ec2c5e8f5dccc5e12ed71f0309c9db23435ce2e86e278d4f8770ad33f6152.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/57c984709d3d3d24477b3086ebc7d9112578f89c8a1d18da0f6a1827977bed8b.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -34,6 +34,18 @@
         "aws-ecs-task-definition-container-credentialspecs.assets"
       ],
       "metadata": {
+        "/aws-ecs-task-definition-container-credentialspecs/s3-bucket/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "s3bucket64CB25AF"
+          }
+        ],
+        "/aws-ecs-task-definition-container-credentialspecs/s3-bucket/Policy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "s3bucketPolicyF7E91061"
+          }
+        ],
         "/aws-ecs-task-definition-container-credentialspecs/task-execution-role/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -49,7 +61,10 @@
         "/aws-ecs-task-definition-container-credentialspecs/TaskDef/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "TaskDef54694570"
+            "data": "TaskDef54694570",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-ecs-task-definition-container-credentialspecs/BootstrapVersion": [
