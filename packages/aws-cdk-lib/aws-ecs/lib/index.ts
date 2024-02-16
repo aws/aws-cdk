@@ -8,6 +8,7 @@ export * from './container-image';
 export * from './amis';
 export * from './cluster';
 export * from './environment-file';
+export * from './credential-spec';
 export * from './firelens-log-router';
 export * from './placement';
 
