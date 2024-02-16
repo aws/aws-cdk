@@ -11,7 +11,10 @@ export interface FunctionUrlOriginProps extends cloudfront.OriginProps {
    * Specifies how long, in seconds, CloudFront waits for a response from the origin.
    * The valid range is from 1 to 180 seconds, inclusive.
    *
-   * @default cdk.Duration.seconds(30)
+   * Note that values over 60 seconds are possible only after a limit increase request for the origin response timeout quota
+   * has been approved in the target account; otherwise, values over 60 seconds will produce an error at deploy time.
+   *
+   * @default Duration.seconds(30)
    */
   readonly readTimeout?: cdk.Duration;
 
@@ -19,7 +22,10 @@ export interface FunctionUrlOriginProps extends cloudfront.OriginProps {
    * Specifies how long, in seconds, CloudFront persists its connection to the origin.
    * The valid range is from 1 to 180 seconds, inclusive.
    *
-   * @default cdk.Duration.seconds(5)
+   * Note that values over 60 seconds are possible only after a limit increase request for the origin response timeout quota
+   * has been approved in the target account; otherwise, values over 60 seconds will produce an error at deploy time.
+   *
+   * @default Duration.seconds(5)
    */
   readonly keepaliveTimeout?: cdk.Duration;
 }
