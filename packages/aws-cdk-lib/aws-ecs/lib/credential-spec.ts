@@ -8,18 +8,12 @@ export class CredentialSpec {
   /**
    * Get the ARN for an S3 object.
    */
-  protected static arnForS3Object(bucket: IBucket, key: string, objectVersion?: string) {
-    let keyPattern = key;
-
+  protected static arnForS3Object(bucket: IBucket, key: string) {
     if (!key) {
       throw new Error('key is undefined');
     }
 
-    if (objectVersion) {
-      keyPattern += `/${objectVersion}`;
-    }
-
-    return bucket.arnForObjects(keyPattern);
+    return bucket.arnForObjects(key);
   }
 
   /**
@@ -51,7 +45,7 @@ export class CredentialSpec {
    * Called when the container is initialized to allow this object to bind
    * to the stack.
    */
-  public bind(): ICredentialSpecConfig {
+  public bind(): CredentialSpecConfig {
     return {
       typePrefix: this.prefixId,
       location: this.fileLocation,
@@ -73,11 +67,10 @@ export class DomainJoinedCredentialSpec extends CredentialSpec {
    *
    * @param bucket The S3 bucket
    * @param key The object key
-   * @param objectVersion Optional S3 object version
    * @returns CredSpec with it's locations set to the S3 object's ARN.
    */
-  public static fromS3Bucket(bucket: IBucket, key: string, objectVersion?: string) {
-    return new DomainJoinedCredentialSpec(CredentialSpec.arnForS3Object(bucket, key, objectVersion));
+  public static fromS3Bucket(bucket: IBucket, key: string) {
+    return new DomainJoinedCredentialSpec(CredentialSpec.arnForS3Object(bucket, key));
   }
 
   /**
@@ -109,11 +102,10 @@ export class DomainlessCredentialSpec extends CredentialSpec {
    *
    * @param bucket The S3 bucket
    * @param key The object key
-   * @param objectVersion Optional S3 object version
    * @returns CredSpec with it's locations set to the S3 object's ARN.
    */
-  public static fromS3Bucket(bucket: IBucket, key: string, objectVersion?: string) {
-    return new DomainlessCredentialSpec(CredentialSpec.arnForS3Object(bucket, key, objectVersion));
+  public static fromS3Bucket(bucket: IBucket, key: string) {
+    return new DomainlessCredentialSpec(CredentialSpec.arnForS3Object(bucket, key));
   }
 
   /**
@@ -134,7 +126,7 @@ export class DomainlessCredentialSpec extends CredentialSpec {
 /**
  * Configuration for a credential specification (CredSpec) used for a ECS container.
  */
-export interface ICredentialSpecConfig {
+export interface CredentialSpecConfig {
   /**
    * Prefix used for the CredSpec string.
    */

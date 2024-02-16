@@ -1,7 +1,7 @@
 import { Construct } from 'constructs';
 import { NetworkMode, TaskDefinition } from './base/task-definition';
 import { ContainerImage, ContainerImageConfig } from './container-image';
-import { CredentialSpec, ICredentialSpecConfig } from './credential-spec';
+import { CredentialSpec, CredentialSpecConfig } from './credential-spec';
 import { CfnTaskDefinition } from './ecs.generated';
 import { EnvironmentFile, EnvironmentFileConfig } from './environment-file';
 import { LinuxParameters } from './linux-parameters';
@@ -473,7 +473,7 @@ export class ContainerDefinition extends Construct {
   /**
    * The crdential specifications for this container.
    */
-  public readonly credentialSpecs?: ICredentialSpecConfig[];
+  public readonly credentialSpecs?: CredentialSpecConfig[];
 
   /**
    * The name of the image referenced by this container.
@@ -936,7 +936,7 @@ function renderEnvironmentFiles(partition: string, environmentFiles: Environment
   return ret;
 }
 
-function renderCredentialSpec(credSpec: ICredentialSpecConfig): string {
+function renderCredentialSpec(credSpec: CredentialSpecConfig): string {
   if (!credSpec.location) {
     throw Error('CredentialSpec must specify a valid location or ARN');
   }

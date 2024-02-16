@@ -21,15 +21,6 @@ describe('credential spec', () => {
     });
 
     describe('fromS3Bucket', () => {
-      test('fails if key name is empty', () => {
-        // GIVEN
-        const stack = new cdk.Stack();
-        const bucket = new s3.Bucket(stack, 'bucket');
-
-        // THEN
-        expect(() => ecs.DomainJoinedCredentialSpec.fromS3Bucket(bucket, '')).toThrow(/key is undefined/);
-      });
-
       test('returns a valid version-less S3 object ARN as location', () => {
         // GIVEN
         const stack = new cdk.Stack();
@@ -46,13 +37,12 @@ describe('credential spec', () => {
         // GIVEN
         const stack = new cdk.Stack();
         const objectKey = 'credSpec';
-        const objectVersion = 'xwghdvg2672';
         const bucket = new s3.Bucket(stack, 'bucket');
-        const credSpec = ecs.DomainJoinedCredentialSpec.fromS3Bucket(bucket, objectKey, objectVersion);
+        const credSpec = ecs.DomainJoinedCredentialSpec.fromS3Bucket(bucket, objectKey);
         const containerDefinition = defineContainerDefinition(stack, credSpec);
 
         // THEN
-        expect(containerDefinition.credentialSpecs?.at(0)?.location).toEqual(bucket.arnForObjects(`${objectKey}/${objectVersion}`));
+        expect(containerDefinition.credentialSpecs?.at(0)?.location).toEqual(bucket.arnForObjects(objectKey));
       });
     });
 
@@ -112,13 +102,12 @@ describe('credential spec', () => {
         // GIVEN
         const stack = new cdk.Stack();
         const objectKey = 'credSpec';
-        const objectVersion = 'xwghdvg2672';
         const bucket = new s3.Bucket(stack, 'bucket');
-        const credSpec = ecs.DomainlessCredentialSpec.fromS3Bucket(bucket, objectKey, objectVersion);
+        const credSpec = ecs.DomainlessCredentialSpec.fromS3Bucket(bucket, objectKey);
         const containerDefinition = defineContainerDefinition(stack, credSpec);
 
         // THEN
-        expect(containerDefinition.credentialSpecs?.at(0)?.location).toEqual(bucket.arnForObjects(`${objectKey}/${objectVersion}`));
+        expect(containerDefinition.credentialSpecs?.at(0)?.location).toEqual(bucket.arnForObjects(objectKey));
       });
     });
 
