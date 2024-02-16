@@ -1,0 +1,12 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "AutoScalingUpdatePolicyTest/DefaultTest": {
+      "stacks": [
+        "aws-cdk-autoscaling-update-policy"
+      ],
+      "assertionStack": "AutoScalingUpdatePolicyTest/DefaultTest/DeployAssert",
+      "assertionStackName": "AutoScalingUpdatePolicyTestDefaultTestDeployAssert35BEDF6F"
+    }
+  }
+}
