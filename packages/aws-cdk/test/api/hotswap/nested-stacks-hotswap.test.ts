@@ -49,7 +49,7 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
               FunctionName: 'my-function',
             },
             Metadata: {
-              'aws:asset:path': 'old-path',
+              'aws:asset:path': 'old-lambda-path',
             },
           },
         },
@@ -117,7 +117,7 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
               FunctionName: 'child-function',
             },
             Metadata: {
-              'aws:asset:path': 'old-path',
+              'aws:asset:path': 'old-lambda-path',
             },
           },
           GrandChildStack: {
@@ -148,7 +148,7 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
               FunctionName: 'my-function',
             },
             Metadata: {
-              'aws:asset:path': 'old-path',
+              'aws:asset:path': 'old-lambda-path',
             },
           },
         },
@@ -221,7 +221,7 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
               FunctionName: 'root-function',
             },
             Metadata: {
-              'aws:asset:path': 'old-path',
+              'aws:asset:path': 'old-lambda-path',
             },
           },
         },
@@ -243,7 +243,7 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
               FunctionName: 'my-function',
             },
             Metadata: {
-              'aws:asset:path': 'old-path',
+              'aws:asset:path': 'old-lambda-path',
             },
           },
         },
@@ -310,7 +310,7 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
               FunctionName: 'root-function',
             },
             Metadata: {
-              'aws:asset:path': 'old-path',
+              'aws:asset:path': 'old-lambda-path',
             },
           },
         },
@@ -333,7 +333,7 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
               FunctionName: 'my-function',
             },
             Metadata: {
-              'aws:asset:path': 'old-path',
+              'aws:asset:path': 'old-lambda-path',
             },
           },
         },
@@ -405,7 +405,7 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
               FunctionName: 'root-function',
             },
             Metadata: {
-              'aws:asset:path': 'old-path',
+              'aws:asset:path': 'old-lambda-path',
             },
           },
         },
@@ -427,7 +427,7 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
               FunctionName: 'my-function',
             },
             Metadata: {
-              'aws:asset:path': 'old-path',
+              'aws:asset:path': 'old-lambda-path',
             },
           },
         },
@@ -489,7 +489,7 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
               FunctionName: 'root-function',
             },
             Metadata: {
-              'aws:asset:path': 'old-path',
+              'aws:asset:path': 'old-lambda-path',
             },
           },
         },
@@ -557,7 +557,7 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
               FunctionName: 'root-function',
             },
             Metadata: {
-              'aws:asset:path': 'old-path',
+              'aws:asset:path': 'old-lambda-path',
             },
           },
           FutureNestedStack: {
@@ -570,7 +570,7 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
               FunctionName: 'spooky-function',
             },
             Metadata: {
-              'aws:asset:path': 'old-path',
+              'aws:asset:path': 'old-lambda-path',
             },
           },
         },
@@ -631,7 +631,7 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
         },
       },
       Metadata: {
-        'aws:asset:path': 'old-path',
+        'aws:asset:path': 'old-lambda-path',
       },
     };
 
@@ -729,7 +729,7 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
     oldChildStack.template.Resources.GrandChildStackB.Properties.TemplateURL = 'https://www.amazon.com';
 
     const newRootStack = testStack({ stackName: oldRootStack.stackName, template: oldRootStack.template });
-    testStack({ stackName: oldChildStack.stackName, template: oldChildStack.template });
+    //testStack({ stackName: oldChildStack.stackName, template: oldChildStack.template });
 
     const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(hotswapMode, newRootStack);
 
@@ -815,7 +815,7 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
               FunctionName: 'my-function',
             },
             Metadata: {
-              'aws:asset:path': 'old-path',
+              'aws:asset:path': 'old-lambda-path',
             },
           },
         },
@@ -944,7 +944,7 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
           },
         },
         Metadata: {
-          'aws:asset:path': 'old-path',
+          'aws:asset:path': 'old-lambda-path',
         },
       },
     });
@@ -954,9 +954,6 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
       template: {
         Outputs: {
           NestedOutput: { Value: 's3-key-value-from-output' },
-        },
-        Metadata: {
-          'aws:asset:path': 'old-path',
         },
       },
     });
@@ -1067,7 +1064,7 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
               FunctionName: 'my-function',
             },
             Metadata: {
-              'aws:asset:path': 'old-path',
+              'aws:asset:path': 'old-lambda-path',
             },
           },
         },
@@ -1166,7 +1163,7 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
               FunctionName: 'my-function',
             },
             Metadata: {
-              'aws:asset:path': 'old-path',
+              'aws:asset:path': 'old-lambda-path',
             },
           },
           GrandChildStack: {
@@ -1197,7 +1194,7 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
               FunctionName: 'my-function',
             },
             Metadata: {
-              'aws:asset:path': 'old-path',
+              'aws:asset:path': 'old-lambda-path',
             },
           },
         },

@@ -3,7 +3,7 @@
     "NestedLambdaStack": {
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
-        "TemplateURL": "https://www.magic-url.com",
+        "TemplateURL": "https://www.amazon.com",
         "Parameters": {
           "referenceToS3BucketParam": {
             "Ref": "S3BucketParam"
@@ -23,7 +23,7 @@
     "NestedSiblingStack": {
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
-        "TemplateURL": "https://www.magic-url.com"
+        "TemplateURL": "https://www.amazon.com"
       },
       "Metadata": {
         "aws:asset:path": "one-output-stack.nested.template.json"

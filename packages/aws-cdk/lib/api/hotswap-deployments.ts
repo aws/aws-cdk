@@ -78,7 +78,7 @@ export async function tryHotswapDeployment(
     partition: (await sdk.currentAccount()).partition,
     urlSuffix: (region) => sdk.getEndpointSuffix(region),
     sdk,
-    nestedStackNames: currentTemplate.nestedStacks,
+    nestedStacks: currentTemplate.nestedStacks,
   });
 
   const stackChanges = cfn_diff.fullDiff(currentTemplate.deployedRootTemplate, stackArtifact.template);

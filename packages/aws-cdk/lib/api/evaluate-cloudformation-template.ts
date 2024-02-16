@@ -102,7 +102,7 @@ export interface EvaluateCloudFormationTemplateProps {
   readonly partition: string;
   readonly urlSuffix: (region: string) => string;
   readonly sdk: ISDK;
-  readonly nestedStackNames?: { [nestedStackLogicalId: string]: NestedStackTemplates };
+  readonly nestedStacks?: { [nestedStackLogicalId: string]: NestedStackTemplates };
 }
 
 export class EvaluateCloudFormationTemplate {
@@ -136,7 +136,7 @@ export class EvaluateCloudFormationTemplate {
     this.sdk = props.sdk;
 
     // We need names of nested stack so we can evaluate cross stack references
-    this.nestedStacks = props.nestedStackNames ?? {};
+    this.nestedStacks = props.nestedStacks ?? {};
 
     // The current resources of the Stack.
     // We need them to figure out the physical name of a resource in case it wasn't specified by the user.
@@ -163,7 +163,7 @@ export class EvaluateCloudFormationTemplate {
       partition: this.partition,
       urlSuffix: this.urlSuffix,
       sdk: this.sdk,
-      nestedStackNames: this.nestedStacks,
+      nestedStacks: this.nestedStacks,
     });
   }
 
@@ -386,17 +386,15 @@ export class EvaluateCloudFormationTemplate {
     }
 
     if (foundResource.ResourceType == 'AWS::CloudFormation::Stack' && attribute?.startsWith('Outputs.')) {
-      // need to resolve attributes from another stack's Output section
-      const dependantStackName = this.findNestedStack(logicalId, this.nestedStacks);
-      if (!dependantStackName) {
+      const dependantStack = this.findNestedStack(logicalId, this.nestedStacks);
+      if (!dependantStack || !dependantStack.physicalName) {
         //this is a newly created nested stack and cannot be hotswapped
         return undefined;
       }
-      const dependantStackTemplate = this.template.Resources[logicalId];
       const evaluateCfnTemplate = await this.createNestedEvaluateCloudFormationTemplate(
-        dependantStackName,
-        this.nestedStacks[logicalId].generatedTemplate,
-        dependantStackTemplate.newValue?.Properties?.Parameters);
+        dependantStack.physicalName,
+        dependantStack.generatedTemplate,
+        dependantStack.generatedTemplate.Parameters!);
 
       // Split Outputs.<refName> into 'Outputs' and '<refName>' and recursively call evaluate
       return evaluateCfnTemplate.evaluateCfnExpression({ 'Fn::GetAtt': attribute.split(/\.(.*)/s) });
@@ -406,14 +404,14 @@ export class EvaluateCloudFormationTemplate {
     return this.formatResourceAttribute(foundResource, attribute);
   }
 
-  private findNestedStack(logicalId: string, nestedStackNames: {
+  private findNestedStack(logicalId: string, nestedStacks: {
     [nestedStackLogicalId: string]: NestedStackTemplates;
-  }): string | undefined {
-    for (const [nestedStackLogicalId, { nestedStackTemplates, physicalName }] of Object.entries(nestedStackNames)) {
+  }): NestedStackTemplates | undefined {
+    for (const nestedStackLogicalId of Object.keys(nestedStacks)) {
       if (nestedStackLogicalId === logicalId) {
-        return physicalName;
+        return nestedStacks[nestedStackLogicalId];
       }
-      const checkInNestedChildStacks = this.findNestedStack(logicalId, nestedStackTemplates);
+      const checkInNestedChildStacks = this.findNestedStack(logicalId, nestedStacks[nestedStackLogicalId].nestedStackTemplates);
       if (checkInNestedChildStacks) return checkInNestedChildStacks;
     }
     return undefined;
