@@ -1,58 +1,60 @@
-import { Construct } from 'constructs';
 import { IBucket } from '../../aws-s3';
 import { IParameter } from '../../aws-ssm';
 
 /**
- * Constructs for (CredSpec) files.
+ * Base construct for a credential specification (CredSpec).
  */
-export abstract class CredentialSpec {
+export class CredentialSpec {
   /**
    * Get the ARN for an S3 object.
    */
-  protected static getArnFromS3Bucket(bucket: IBucket, key: string, objectVersion?: string) {
-    if (!bucket.bucketName) {
-      throw new Error('bucketName is undefined for the provided bucket');
+  protected static arnForS3Object(bucket: IBucket, key: string, objectVersion?: string) {
+    let keyPattern = key;
+
+    if (!key) {
+      throw new Error('key is undefined');
     }
 
-    return bucket.arnForObjects(`${key}/${objectVersion}`);
+    if (objectVersion) {
+      keyPattern += `/${objectVersion}`;
+    }
+
+    return bucket.arnForObjects(keyPattern);
   }
 
   /**
    * Get the ARN for a SSM parameter.
    */
-  protected static getArnFromSsmParameter(parameter: IParameter) {
+  protected static arnForSsmParameter(parameter: IParameter) {
     return parameter.parameterArn;
   }
 
   /**
+   * Prefix string based on the type of CredSpec.
+   */
+  public prefixId: string;
+
+  /**
    * Location or ARN from where to retrieve the CredSpec file.
    */
-  protected readonly credSpecLocation: string;
+  public fileLocation: string;
 
   /**
-   * @param credSpecFileLocation Location or ARN from where to retrieve the CredSpec file
+   * @param fileLocation Location or ARN from where to retrieve the CredSpec file
    */
-  constructor(credSpecFileLocation: string) {
-    this.credSpecLocation = credSpecFileLocation;
+  constructor(prefixId: string, fileLocation: string) {
+    this.prefixId = prefixId;
+    this.fileLocation = fileLocation;
   }
-
-  /**
-   * Get the prefix string based on the type of CredSpec.
-   *
-   * @returns Prefix string.
-   */
-  protected abstract getCredSpecTypePrefix(): string;
 
   /**
    * Called when the container is initialized to allow this object to bind
    * to the stack.
-   *
-   * @param scope The binding scope
    */
-  public bind(scope: Construct): CredentialSpecConfig {
+  public bind(): ICredentialSpecConfig {
     return {
-      typePrefix: this.getCredSpecTypePrefix(),
-      location: this.credSpecLocation,
+      typePrefix: this.prefixId,
+      location: this.fileLocation,
     };
   }
 }
@@ -62,6 +64,11 @@ export abstract class CredentialSpec {
  */
 export class DomainJoinedCredentialSpec extends CredentialSpec {
   /**
+   * Prefix Id for this type of CredSpec.
+   */
+  public static readonly PrefixId = 'credentialspec';
+
+  /**
    * Loads the CredSpec from a S3 bucket object.
    *
    * @param bucket The S3 bucket
@@ -70,7 +77,7 @@ export class DomainJoinedCredentialSpec extends CredentialSpec {
    * @returns CredSpec with it's locations set to the S3 object's ARN.
    */
   public static fromS3Bucket(bucket: IBucket, key: string, objectVersion?: string) {
-    return new DomainJoinedCredentialSpec(CredentialSpec.getArnFromS3Bucket(bucket, key, objectVersion));
+    return new DomainJoinedCredentialSpec(CredentialSpec.arnForS3Object(bucket, key, objectVersion));
   }
 
   /**
@@ -80,15 +87,11 @@ export class DomainJoinedCredentialSpec extends CredentialSpec {
    * @returns CredSpec with it's locations set to the SSM parameter's ARN.
    */
   public static fromSsmParameter(parameter: IParameter) {
-    return new DomainJoinedCredentialSpec(CredentialSpec.getArnFromSsmParameter(parameter));
+    return new DomainJoinedCredentialSpec(CredentialSpec.arnForSsmParameter(parameter));
   }
 
-  constructor(credSpecFileLocation: string) {
-    super(credSpecFileLocation);
-  }
-
-  protected override getCredSpecTypePrefix() {
-    return 'credentialspec';
+  constructor(fileLocation: string) {
+    super(DomainJoinedCredentialSpec.PrefixId, fileLocation);
   }
 }
 
@@ -97,6 +100,11 @@ export class DomainJoinedCredentialSpec extends CredentialSpec {
  */
 export class DomainlessCredentialSpec extends CredentialSpec {
   /**
+   * Prefix Id for this type of CredSpec.
+   */
+  public static readonly PrefixId = 'credentialspecdomainless';
+
+  /**
    * Loads the CredSpec from a S3 bucket object.
    *
    * @param bucket The S3 bucket
@@ -105,7 +113,7 @@ export class DomainlessCredentialSpec extends CredentialSpec {
    * @returns CredSpec with it's locations set to the S3 object's ARN.
    */
   public static fromS3Bucket(bucket: IBucket, key: string, objectVersion?: string) {
-    return new DomainlessCredentialSpec(CredentialSpec.getArnFromS3Bucket(bucket, key, objectVersion));
+    return new DomainlessCredentialSpec(CredentialSpec.arnForS3Object(bucket, key, objectVersion));
   }
 
   /**
@@ -115,29 +123,25 @@ export class DomainlessCredentialSpec extends CredentialSpec {
    * @returns CredSpec with it's locations set to the SSM parameter's ARN.
    */
   public static fromSsmParameter(parameter: IParameter) {
-    return new DomainlessCredentialSpec(CredentialSpec.getArnFromSsmParameter(parameter));
+    return new DomainlessCredentialSpec(CredentialSpec.arnForSsmParameter(parameter));
   }
 
-  constructor(credSpecFileLocation: string) {
-    super(credSpecFileLocation);
-  }
-
-  protected override getCredSpecTypePrefix() {
-    return 'credentialspecdomainless';
+  constructor(fileLocation: string) {
+    super(DomainlessCredentialSpec.PrefixId, fileLocation);
   }
 }
 
 /**
  * Configuration for a credential specification (CredSpec) used for a ECS container.
  */
-export interface CredentialSpecConfig {
+export interface ICredentialSpecConfig {
   /**
    * Prefix used for the CredSpec string.
    */
-  typePrefix: string;
+  readonly typePrefix: string;
 
   /**
    * Location of the CredSpec file.
    */
-  location: string;
+  readonly location: string;
 }

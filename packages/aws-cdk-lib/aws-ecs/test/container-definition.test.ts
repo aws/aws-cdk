@@ -465,7 +465,7 @@ describe('container definition', () => {
         memoryReservationMiB: 512,
         containerName: 'Example Container',
         command: ['CMD-SHELL'],
-        credentialSpecs: ['credentialspecdomainless:arn:aws:s3:::bucket_name/key_name'],
+        credentialSpecs: [new ecs.DomainlessCredentialSpec('arn:aws:s3:::bucket_name/key_name')],
         cpu: 128,
         disableNetworking: true,
         dnsSearchDomains: ['example.com'],

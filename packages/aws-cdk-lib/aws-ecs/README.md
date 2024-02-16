@@ -629,14 +629,14 @@ Amazon ECS supports Active Directory authentication for Linux containers through
 
 ```ts
 // Make sure the task definition's execution role has permissions to read from the S3 bucket or SSM parameter where the CredSpec file is stored.
+declare const bucket: s3.Bucket;
 declare const taskDefinition: ecs.TaskDefinition;
 
 taskDefinition.addContainer('gmsa-container', {
   image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
   cpu: 128,
   memoryLimitMiB: 256,
-  credentialSpecs: ['credentialspecdomainless:arn:aws:s3:::bucket_name/key_name'], 
-  // Valid values are: 'credentialspecdomainless:ARN' or 'credentialspec:ARN'
+  credentialSpecs: [ecs.DomainlessCredentialSpec.fromS3Bucket(bucket, 'credSpec')],
 });
 ```
 
