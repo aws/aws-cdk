@@ -1495,7 +1495,7 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
       }
     }
 
-    const ipv6AllowedForDualStack = props.ipv6AllowedForDualStack ?? false;
+    const ipv6AllowedForDualStack = props.ipv6AllowedForDualStack;
     const allowPublicSubnet = props.allowPublicSubnet ?? false;
     const selectedSubnets = props.vpc.selectSubnets(props.vpcSubnets);
     const publicSubnetIds = new Set(props.vpc.publicSubnets.map(s => s.subnetId));
@@ -1510,7 +1510,7 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
     // List can't be empty here, if we got this far you intended to put your Lambda
     // in subnets. We're going to guarantee that we get the nice error message by
     // making VpcNetwork do the selection again.
-    if (props.ipv6AllowedForDualStack) {
+    if (props.ipv6AllowedForDualStack !== undefined) {
       return {
         ipv6AllowedForDualStack: ipv6AllowedForDualStack,
         subnetIds: selectedSubnets.subnetIds,

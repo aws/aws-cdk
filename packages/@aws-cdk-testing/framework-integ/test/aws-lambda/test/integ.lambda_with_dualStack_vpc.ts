@@ -7,19 +7,19 @@ const app = new App();
 const stack = new Stack(app, 'DualStackVpc');
 
 const natProvider = ec2.NatProvider.gateway();
-const vpc = new ec2.Vpc(stack, 'DualStackProtocolVpc', {
+const vpc = new ec2.Vpc(stack, 'DualStackVpc', {
   ipProtocol: ec2.IpProtocol.DUAL_STACK,
   subnetConfiguration: [
     {
-      name: 'Pub1',
+      name: 'Ipv6Public1',
       subnetType: ec2.SubnetType.PUBLIC,
     },
     {
-      name: 'Pub2',
+      name: 'Ipv6Public2',
       subnetType: ec2.SubnetType.PUBLIC,
     },
     {
-      name: 'Priv1',
+      name: 'Ipv6Private1',
       subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS,
     },
   ],

@@ -1087,19 +1087,19 @@ import * as ec2 from 'aws-cdk-lib/aws-ec2';
 const natProvider = ec2.NatProvider.gateway();
 
 // create dual-stack VPC
-const vpc = new ec2.Vpc(this, 'DualStackProtocolVpc', {
+const vpc = new ec2.Vpc(this, 'DualStackVpc', {
   ipProtocol: ec2.IpProtocol.DUAL_STACK,
   subnetConfiguration: [
     {
-      name: 'Pub1',
+      name: 'Ipv6Public1',
       subnetType: ec2.SubnetType.PUBLIC,
     },
     {
-      name: 'Pub2',
+      name: 'Ipv6Public2',
       subnetType: ec2.SubnetType.PUBLIC,
     },
     {
-      name: 'Priv1',
+      name: 'Ipv6Private1',
       subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS,
     },
   ],
