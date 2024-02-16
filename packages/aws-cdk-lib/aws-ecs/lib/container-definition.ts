@@ -1,6 +1,7 @@
 import { Construct } from 'constructs';
 import { NetworkMode, TaskDefinition } from './base/task-definition';
 import { ContainerImage, ContainerImageConfig } from './container-image';
+import { CredentialSpec, CredentialSpecConfig } from './credential-spec';
 import { CfnTaskDefinition } from './ecs.generated';
 import { EnvironmentFile, EnvironmentFileConfig } from './environment-file';
 import { LinuxParameters } from './linux-parameters';
@@ -133,7 +134,7 @@ export interface ContainerDefinitionOptions {
    *
    * @default - No credential specs.
    */
-  readonly credentialSpecs?: string[];
+  readonly credentialSpecs?: CredentialSpec[];
 
   /**
    * The minimum number of CPU units to reserve for the container.
@@ -470,6 +471,11 @@ export class ContainerDefinition extends Construct {
   public readonly logDriverConfig?: LogDriverConfig;
 
   /**
+   * The crdential specifications for this container.
+   */
+  public readonly credentialSpecs?: CredentialSpecConfig[];
+
+  /**
    * The name of the image referenced by this container.
    */
   public readonly imageName: string;
@@ -544,6 +550,14 @@ export class ContainerDefinition extends Construct {
 
       for (const environmentFile of props.environmentFiles) {
         this.environmentFiles.push(environmentFile.bind(this));
+      }
+    }
+
+    if (props.credentialSpecs) {
+      this.credentialSpecs = [];
+
+      for (const credSpec of props.credentialSpecs) {
+        this.credentialSpecs.push(credSpec.bind(this));
       }
     }
 
@@ -803,7 +817,7 @@ export class ContainerDefinition extends Construct {
   public renderContainerDefinition(_taskDefinition?: TaskDefinition): CfnTaskDefinition.ContainerDefinitionProperty {
     return {
       command: this.props.command,
-      credentialSpecs: this.props.credentialSpecs,
+      credentialSpecs: this.credentialSpecs && this.credentialSpecs.map(renderCredentialSpec),
       cpu: this.props.cpu,
       disableNetworking: this.props.disableNetworking,
       dependsOn: cdk.Lazy.any({ produce: () => this.containerDependencies.map(renderContainerDependency) }, { omitEmptyArray: true }),
@@ -920,6 +934,14 @@ function renderEnvironmentFiles(partition: string, environmentFiles: Environment
     });
   }
   return ret;
+}
+
+function renderCredentialSpec(credSpec: CredentialSpecConfig): string {
+  if (!credSpec.location) {
+    throw Error('CredentialSpec must specify a valid location or ARN');
+  }
+
+  return `${credSpec.typePrefix}:${credSpec.location}`;
 }
 
 function renderHealthCheck(hc: HealthCheck): CfnTaskDefinition.HealthCheckProperty {
