@@ -103,8 +103,6 @@ export interface GitConfiguration {
    * The field where the repository event that will start the pipeline,
    * such as pushing Git tags, is specified with details.
    *
-   * Git tags is the only supported event type.
-   *
    * The length must be less than or equal to 3.
    *
    * @default - no filter.
