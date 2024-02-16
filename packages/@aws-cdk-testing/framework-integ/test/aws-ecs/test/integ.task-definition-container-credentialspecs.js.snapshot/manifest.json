@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/57c984709d3d3d24477b3086ebc7d9112578f89c8a1d18da0f6a1827977bed8b.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/15b792b5a8db7ad07b3634fb52b565ba733387c368ab58c412b388fcaad71f2a.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -34,16 +34,22 @@
         "aws-ecs-task-definition-container-credentialspecs.assets"
       ],
       "metadata": {
-        "/aws-ecs-task-definition-container-credentialspecs/s3-bucket/Resource": [
+        "/aws-ecs-task-definition-container-credentialspecs/bucket/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "s3bucket64CB25AF"
+            "data": "bucket43879C71"
           }
         ],
-        "/aws-ecs-task-definition-container-credentialspecs/s3-bucket/Policy/Resource": [
+        "/aws-ecs-task-definition-container-credentialspecs/bucket/Policy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "s3bucketPolicyF7E91061"
+            "data": "bucketPolicy638F945D"
+          }
+        ],
+        "/aws-ecs-task-definition-container-credentialspecs/parameter/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "parameter76C24FC7"
           }
         ],
         "/aws-ecs-task-definition-container-credentialspecs/task-execution-role/Resource": [
@@ -77,6 +83,24 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
+          }
+        ],
+        "s3bucket64CB25AF": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "s3bucket64CB25AF",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "s3bucketPolicyF7E91061": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "s3bucketPolicyF7E91061",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },

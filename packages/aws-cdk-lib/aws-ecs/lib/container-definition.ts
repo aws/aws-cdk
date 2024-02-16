@@ -130,7 +130,7 @@ export interface ContainerDefinitionOptions {
   /**
    * A list of ARNs in SSM or Amazon S3 to a credential spec (`CredSpec`) file that configures the container for Active Directory authentication.
    *
-   * We recommend that you use this parameter instead of the `dockerSecurityOptions`. The maximum number of ARNs is 1.
+   * We recommend that you use this parameter instead of the `dockerSecurityOptions`. Only the first entry on this array is used. This may be expanded in the future.
    *
    * @default - No credential specs.
    */

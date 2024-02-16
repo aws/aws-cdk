@@ -6,7 +6,7 @@ import { IParameter } from '../../aws-ssm';
  */
 export class CredentialSpec {
   /**
-   * Get the ARN for an S3 object.
+   * Helper method to generate the ARN for a S3 object. Used to avoid duplication of logic in derived classes.
    */
   protected static arnForS3Object(bucket: IBucket, key: string) {
     if (!key) {
@@ -17,7 +17,7 @@ export class CredentialSpec {
   }
 
   /**
-   * Get the ARN for a SSM parameter.
+   * Helper method to generate the ARN for a SSM parameter. Used to avoid duplication of logic in derived classes.
    */
   protected static arnForSsmParameter(parameter: IParameter) {
     return parameter.parameterArn;
@@ -26,17 +26,17 @@ export class CredentialSpec {
   /**
    * Prefix string based on the type of CredSpec.
    */
-  public prefixId: string;
+  public readonly prefixId: string;
 
   /**
    * Location or ARN from where to retrieve the CredSpec file.
    */
-  public fileLocation: string;
+  public readonly fileLocation: string;
 
   /**
    * @param fileLocation Location or ARN from where to retrieve the CredSpec file
    */
-  constructor(prefixId: string, fileLocation: string) {
+  public constructor(prefixId: string, fileLocation: string) {
     this.prefixId = prefixId;
     this.fileLocation = fileLocation;
   }
@@ -58,11 +58,6 @@ export class CredentialSpec {
  */
 export class DomainJoinedCredentialSpec extends CredentialSpec {
   /**
-   * Prefix Id for this type of CredSpec.
-   */
-  public static readonly PREFIX_ID = 'credentialspec';
-
-  /**
    * Loads the CredSpec from a S3 bucket object.
    *
    * @param bucket The S3 bucket
@@ -83,8 +78,8 @@ export class DomainJoinedCredentialSpec extends CredentialSpec {
     return new DomainJoinedCredentialSpec(CredentialSpec.arnForSsmParameter(parameter));
   }
 
-  constructor(fileLocation: string) {
-    super(DomainJoinedCredentialSpec.PREFIX_ID, fileLocation);
+  public constructor(fileLocation: string) {
+    super('credentialspec', fileLocation);
   }
 }
 
@@ -92,11 +87,6 @@ export class DomainJoinedCredentialSpec extends CredentialSpec {
  * Credential specification for domainless gMSA.
  */
 export class DomainlessCredentialSpec extends CredentialSpec {
-  /**
-   * Prefix Id for this type of CredSpec.
-   */
-  public static readonly PREFIX_ID = 'credentialspecdomainless';
-
   /**
    * Loads the CredSpec from a S3 bucket object.
    *
@@ -118,8 +108,8 @@ export class DomainlessCredentialSpec extends CredentialSpec {
     return new DomainlessCredentialSpec(CredentialSpec.arnForSsmParameter(parameter));
   }
 
-  constructor(fileLocation: string) {
-    super(DomainlessCredentialSpec.PREFIX_ID, fileLocation);
+  public constructor(fileLocation: string) {
+    super('credentialspecdomainless', fileLocation);
   }
 }
 

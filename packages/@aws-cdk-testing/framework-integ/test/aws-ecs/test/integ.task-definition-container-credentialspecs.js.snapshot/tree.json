@@ -8,13 +8,13 @@
         "id": "aws-ecs-task-definition-container-credentialspecs",
         "path": "aws-ecs-task-definition-container-credentialspecs",
         "children": {
-          "s3-bucket": {
-            "id": "s3-bucket",
-            "path": "aws-ecs-task-definition-container-credentialspecs/s3-bucket",
+          "bucket": {
+            "id": "bucket",
+            "path": "aws-ecs-task-definition-container-credentialspecs/bucket",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "aws-ecs-task-definition-container-credentialspecs/s3-bucket/Resource",
+                "path": "aws-ecs-task-definition-container-credentialspecs/bucket/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::S3::Bucket",
                   "aws:cdk:cloudformation:props": {
@@ -42,16 +42,16 @@
               },
               "Policy": {
                 "id": "Policy",
-                "path": "aws-ecs-task-definition-container-credentialspecs/s3-bucket/Policy",
+                "path": "aws-ecs-task-definition-container-credentialspecs/bucket/Policy",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "aws-ecs-task-definition-container-credentialspecs/s3-bucket/Policy/Resource",
+                    "path": "aws-ecs-task-definition-container-credentialspecs/bucket/Policy/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::S3::BucketPolicy",
                       "aws:cdk:cloudformation:props": {
                         "bucket": {
-                          "Ref": "s3bucket64CB25AF"
+                          "Ref": "bucket43879C71"
                         },
                         "policyDocument": {
                           "Statement": [
@@ -69,7 +69,7 @@
                               "Resource": [
                                 {
                                   "Fn::GetAtt": [
-                                    "s3bucket64CB25AF",
+                                    "bucket43879C71",
                                     "Arn"
                                   ]
                                 },
@@ -79,7 +79,7 @@
                                     [
                                       {
                                         "Fn::GetAtt": [
-                                          "s3bucket64CB25AF",
+                                          "bucket43879C71",
                                           "Arn"
                                         ]
                                       },
@@ -108,6 +108,31 @@
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_s3.Bucket",
+              "version": "0.0.0"
+            }
+          },
+          "parameter": {
+            "id": "parameter",
+            "path": "aws-ecs-task-definition-container-credentialspecs/parameter",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-ecs-task-definition-container-credentialspecs/parameter/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::SSM::Parameter",
+                  "aws:cdk:cloudformation:props": {
+                    "type": "String",
+                    "value": "Sample CredSpec"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_ssm.CfnParameter",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_ssm.StringParameter",
               "version": "0.0.0"
             }
           },
@@ -241,14 +266,22 @@
                             "Fn::Join": [
                               "",
                               [
-                                "credentialspec:",
+                                "credentialspec:arn:",
                                 {
-                                  "Fn::GetAtt": [
-                                    "s3bucket64CB25AF",
-                                    "Arn"
-                                  ]
+                                  "Ref": "AWS::Partition"
                                 },
-                                "/credSpec"
+                                ":ssm:",
+                                {
+                                  "Ref": "AWS::Region"
+                                },
+                                ":",
+                                {
+                                  "Ref": "AWS::AccountId"
+                                },
+                                ":parameter/",
+                                {
+                                  "Ref": "parameter76C24FC7"
+                                }
                               ]
                             ]
                           }
@@ -268,7 +301,7 @@
                                 "credentialspecdomainless:",
                                 {
                                   "Fn::GetAtt": [
-                                    "s3bucket64CB25AF",
+                                    "bucket43879C71",
                                     "Arn"
                                   ]
                                 },
