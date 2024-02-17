@@ -1,3 +1,5 @@
+import { FieldUtils } from '../../fields';
+
 /**
  * Interface for ItemBatcher configuration properties
  */
@@ -71,7 +73,7 @@ export class ItemBatcher {
       ...(this.props.maxItemsPerBatchPath && { MaxItemsPerBatchPath: this.props.maxItemsPerBatchPath }),
       ...(this.props.maxInputBytesPerBatch && { MaxInputBytesPerBatch: this.props.maxInputBytesPerBatch }),
       ...(this.props.maxInputBytesPerBatchPath && { MaxInputBytesPerBatchPath: this.props.maxInputBytesPerBatchPath }),
-      ...(this.props.batchInput && { BatchInput: this.props.batchInput }),
+      ...(this.props.batchInput && { BatchInput: FieldUtils.renderObject(this.props.batchInput) }),
     };
   }
 

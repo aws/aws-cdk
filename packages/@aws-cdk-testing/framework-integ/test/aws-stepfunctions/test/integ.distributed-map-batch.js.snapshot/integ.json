@@ -1,0 +1,12 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "DistributedMapBatchInput/DefaultTest": {
+      "stacks": [
+        "aws-stepfunctions-distributed-map-batch-input-integ"
+      ],
+      "assertionStack": "DistributedMapBatchInput/DefaultTest/DeployAssert",
+      "assertionStackName": "DistributedMapBatchInputDefaultTestDeployAssert0D5186B1"
+    }
+  }
+}
