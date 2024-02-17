@@ -225,6 +225,9 @@ export class Trigger {
       }
 
       pullRequestFilter?.forEach(filter => {
+        if (!filter.branchesExcludes && !filter.branchesIncludes && (filter.filePathsExcludes || filter.filePathsIncludes)) {
+          throw new Error(`cannot specify filePaths without branches in pullRequestFilter for sourceAction with name '${sourceAction.actionProperties.actionName}'`);
+        }
         if (filter.branchesExcludes && filter.branchesExcludes.length > 8) {
           throw new Error(`maximum length of branchesExcludes in pullRequestFilter for sourceAction with name '${sourceAction.actionProperties.actionName}' is 8, got ${filter.branchesExcludes.length}`);
         }
