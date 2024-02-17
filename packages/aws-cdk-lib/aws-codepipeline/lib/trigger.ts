@@ -87,7 +87,7 @@ export interface GitPullRequestFilter {
    * @default - no filePaths.
    */
   readonly filePathsIncludes?: string[];
-  
+
   /**
    * The field that specifies which pull request events to filter on (opened, updated, closed)
    * for the trigger configuration.
