@@ -166,6 +166,12 @@ export class Trigger {
       }
 
       pushFilter?.forEach(filter => {
+        if ((filter.tagsExcludes || filter.tagsIncludes) && (filter.branchesExcludes || filter.branchesIncludes)) {
+          throw new Error(`cannot specify both tags and branches in pushFilter for sourceAction with name '${sourceAction.actionProperties.actionName}'`);
+        }
+        if (!filter.branchesExcludes && !filter.branchesIncludes && (filter.filePathsExcludes || filter.filePathsIncludes)) {
+          throw new Error(`cannot specify filePaths without branches in pushFilter for sourceAction with name '${sourceAction.actionProperties.actionName}'`);
+        }
         if (filter.tagsExcludes && filter.tagsExcludes.length > 8) {
           throw new Error(`maximum length of tagsExcludes in pushFilter for sourceAction with name '${sourceAction.actionProperties.actionName}' is 8, got ${filter.tagsExcludes.length}`);
         }

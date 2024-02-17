@@ -566,9 +566,40 @@ describe('triggers', () => {
     }).toThrow(/maximum length of filePathsIncludes in pushFilter for sourceAction with name 'CodeStarConnectionsSourceAction' is 8, got 9/);
   });
 
-  // TODO: implements and add tests
-  // 1. tags and branches (with filePaths) are mutually exclusive
-  // 2. filePaths without branches is not allowed
+  test('throw if tags and branches are specified', () => {
+    expect(() => {
+      new codepipeline.Pipeline(stack, 'Pipeline', {
+        pipelineType: codepipeline.PipelineType.V2,
+        triggers: [{
+          providerType: codepipeline.ProviderType.CODE_STAR_SOURCE_CONNECTION,
+          gitConfiguration: {
+            sourceAction,
+            pushFilter: [{
+              tagsExcludes: ['exclude1', 'exclude2'],
+              branchesExcludes: ['exclude1', 'exclude2'],
+            }],
+          },
+        }],
+      });
+    }).toThrow(/cannot specify both tags and branches in pushFilter for sourceAction with name 'CodeStarConnectionsSourceAction'/);
+  });
+
+  test('throw if filePaths without branches is specified', () => {
+    expect(() => {
+      new codepipeline.Pipeline(stack, 'Pipeline', {
+        pipelineType: codepipeline.PipelineType.V2,
+        triggers: [{
+          providerType: codepipeline.ProviderType.CODE_STAR_SOURCE_CONNECTION,
+          gitConfiguration: {
+            sourceAction,
+            pushFilter: [{
+              filePathsExcludes: ['exclude1', 'exclude2'],
+            }],
+          },
+        }],
+      });
+    }).toThrow(/cannot specify filePaths without branches in pushFilter for sourceAction with name 'CodeStarConnectionsSourceAction'/);
+  });
 
   test('empty pushFilter for trigger is set to undefined', () => {
     const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
