@@ -536,6 +536,32 @@ describe('', () => {
     });
 
     test.each([
+      [codepipeline.ExecutionMode.SUPERSEDED, 'SUPERSEDED'],
+      [codepipeline.ExecutionMode.QUEUED, 'QUEUED'],
+      [codepipeline.ExecutionMode.PARALLEL, 'PARALLEL'],
+    ])('can specify execution mode %s', (type, expected) => {
+      const stack = new cdk.Stack();
+      const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
+        executionMode: type,
+      });
+
+      const sourceArtifact = new codepipeline.Artifact();
+      const sourceActions = [new FakeSourceAction({
+        actionName: 'FakeSource',
+        output: sourceArtifact,
+      })];
+      const buildActions = [new FakeBuildAction({
+        actionName: 'FakeBuild',
+        input: sourceArtifact,
+      })];
+      testPipelineSetup(pipeline, sourceActions, buildActions);
+
+      Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
+        PipelineType: expected,
+      });
+    });
+
+    test.each([
       [codepipeline.PipelineType.V1, 'V1'],
       [codepipeline.PipelineType.V2, 'V2'],
     ])('can specify pipeline type %s', (type, expected) => {

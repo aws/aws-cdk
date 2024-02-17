@@ -109,6 +109,24 @@ export enum PipelineType {
   V2 = 'V2',
 }
 
+/**
+ * Execution mode.
+ */
+export enum ExecutionMode {
+  /**
+   * QUEUED mode
+   */
+  QUEUED = 'QUEUED',
+  /**
+   * SUPERSEDED mode
+   */
+  SUPERSEDED = 'SUPERSEDED',
+  /**
+   * PARALLEL mode
+   */
+  PARALLEL = 'PARALLEL',
+}
+
 export interface PipelineProps {
   /**
    * The S3 bucket used by this Pipeline to store artifacts.
@@ -224,6 +242,14 @@ export interface PipelineProps {
    * @default - No triggers
    */
   readonly triggers?: TriggerProps[];
+
+  /**
+   * The method that the pipeline will use to handle multiple executions.
+   *
+   * @default - ExecutionMode.SUPERSEDED
+   */
+  readonly executionMode?: ExecutionMode;
+
 }
 
 abstract class PipelineBase extends Resource implements IPipeline {
@@ -505,6 +531,7 @@ export class Pipeline extends PipelineBase {
       pipelineType: props.pipelineType,
       variables: Lazy.any({ produce: () => this.renderVariables() }, { omitEmptyArray: true }),
       triggers: Lazy.any({ produce: () => this.renderTriggers() }, { omitEmptyArray: true }),
+      executionMode: props.executionMode,
       name: this.physicalName,
     });
 

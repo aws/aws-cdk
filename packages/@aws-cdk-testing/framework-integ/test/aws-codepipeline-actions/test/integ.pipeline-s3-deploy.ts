@@ -40,6 +40,7 @@ const otherDeployBucket = new s3.Bucket(stack, 'OtherDeployBucket', {
 
 const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
   artifactBucket: bucket,
+  executionMode: codepipeline.ExecutionMode.SUPERSEDED,
   stages: [
     {
       stageName: 'Source',
