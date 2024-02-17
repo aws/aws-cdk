@@ -38,7 +38,9 @@ topicAddPolicy.addToResourcePolicy(new PolicyStatement({
   principals: [new ServicePrincipal('s3.amazonaws.com')],
   actions: ['sns:Publish'],
   resources: [topicAddPolicy.topicArn],
-}), true);
+}), {
+  enforceSsl: true,
+});
 
 new IntegTest(app, 'SNSTopicPolicyInteg', {
   testCases: [stack],

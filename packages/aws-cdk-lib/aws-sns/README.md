@@ -238,12 +238,12 @@ Similiarly for `addToResourcePolicy`, you can enforce SSL by setting the `enforc
 const topic = new Topic(stack, 'TopicAddPolicy');
 
 topic.addToResourcePolicy(new PolicyStatement({
-    principals: [new ServicePrincipal('s3.amazonaws.com')],
-    actions: ['sns:Publish'],
-    resources: [topic.topicArn],
-  }), 
-  true, // enforceSsl
-);
+  principals: [new ServicePrincipal('s3.amazonaws.com')],
+  actions: ['sns:Publish'],
+  resources: [topic.topicArn],
+}), {
+  enforceSsl: true,
+});
 ```
 
 ## Delivery status logging

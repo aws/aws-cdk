@@ -196,7 +196,9 @@ describe('Topic', () => {
       resources: ['*'],
       actions: ['sns:*'],
       principals: [new iam.ArnPrincipal('arn')],
-    }), true);
+    }), {
+      enforceSsl: true,
+    });
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::SNS::TopicPolicy', {

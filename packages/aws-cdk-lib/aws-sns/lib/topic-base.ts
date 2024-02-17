@@ -51,12 +51,26 @@ export interface ITopic extends IResource, notifications.INotificationRuleTarget
    * will be automatically created upon the first call to `addToResourcePolicy`. If
    * the topic is imported (`Topic.import`), then this is a no-op.
    */
-  addToResourcePolicy(statement: iam.PolicyStatement, enforceSsl?: boolean): iam.AddToResourcePolicyResult;
+  addToResourcePolicy(statement: iam.PolicyStatement, addToResourcePolicyProps?: AddToResourcePolicyProps): iam.AddToResourcePolicyResult;
 
   /**
    * Grant topic publishing permissions to the given identity
    */
   grantPublish(identity: iam.IGrantable): iam.Grant;
+}
+
+/**
+ * Properties for adding a resource policy
+ */
+export interface AddToResourcePolicyProps {
+  /**
+   * Adds a statement to enforce encryption of data in transit when publishing to the topic.
+   *
+   * For more information, see https://docs.aws.amazon.com/sns/latest/dg/sns-security-best-practices.html#enforce-encryption-data-in-transit.
+   *
+   * @default false
+   */
+  readonly enforceSsl?: boolean;
 }
 
 /**
@@ -125,7 +139,7 @@ export abstract class TopicBase extends Resource implements ITopic {
    * will be automatically created upon the first call to `addToResourcePolicy`. If
    * the topic is imported (`Topic.import`), then this is a no-op.
    */
-  public addToResourcePolicy(statement: iam.PolicyStatement, enforceSsl?: boolean): iam.AddToResourcePolicyResult {
+  public addToResourcePolicy(statement: iam.PolicyStatement, addToResourcePolicyProps?: AddToResourcePolicyProps): iam.AddToResourcePolicyResult {
     if (!this.policy && this.autoCreatePolicy) {
       this.policy = new TopicPolicy(this, 'Policy', { topics: [this] });
     }
@@ -133,8 +147,10 @@ export abstract class TopicBase extends Resource implements ITopic {
     if (this.policy) {
       this.policy.document.addStatements(statement);
 
-      if (enforceSsl) {
-        this.policy.document.addStatements(this.createSslPolicyDocument());
+      if (addToResourcePolicyProps) {
+        if (addToResourcePolicyProps.enforceSsl) {
+          this.policy.document.addStatements(this.createSslPolicyDocument());
+        }
       }
       return { statementAdded: true, policyDependable: this.policy };
     }
