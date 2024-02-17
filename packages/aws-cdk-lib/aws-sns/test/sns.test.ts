@@ -197,7 +197,7 @@ describe('Topic', () => {
       actions: ['sns:*'],
       principals: [new iam.ArnPrincipal('arn')],
     }), {
-      enforceSsl: true,
+      enforceSSL: true,
     });
 
     // THEN
@@ -334,7 +334,7 @@ describe('Topic', () => {
     // WHEN
     new sns.TopicPolicy(stack, 'TopicPolicy', {
       topics: [topic],
-      enforceSsl: true,
+      enforceSSL: true,
     });
 
     // THEN

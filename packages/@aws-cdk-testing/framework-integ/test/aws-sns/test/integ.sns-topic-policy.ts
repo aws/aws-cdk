@@ -26,7 +26,7 @@ const policyDocument = new PolicyDocument({
 new TopicPolicy(stack, 'TopicPolicy', {
   topics: [topic],
   policyDocument,
-  enforceSsl: true,
+  enforceSSL: true,
 });
 
 const topicAddPolicy = new Topic(stack, 'TopicAddPolicy', {
@@ -39,7 +39,7 @@ topicAddPolicy.addToResourcePolicy(new PolicyStatement({
   actions: ['sns:Publish'],
   resources: [topicAddPolicy.topicArn],
 }), {
-  enforceSsl: true,
+  enforceSSL: true,
 });
 
 new IntegTest(app, 'SNSTopicPolicyInteg', {

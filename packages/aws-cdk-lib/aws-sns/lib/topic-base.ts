@@ -70,7 +70,7 @@ export interface AddToResourcePolicyProps {
    *
    * @default false
    */
-  readonly enforceSsl?: boolean;
+  readonly enforceSSL?: boolean;
 }
 
 /**
@@ -147,7 +147,7 @@ export abstract class TopicBase extends Resource implements ITopic {
     if (this.policy) {
       this.policy.document.addStatements(statement);
 
-      if (addToResourcePolicyProps?.enforceSsl) {
+      if (addToResourcePolicyProps?.enforceSSL) {
         this.policy.document.addStatements(this.createSslPolicyDocument());
       }
       return { statementAdded: true, policyDependable: this.policy };

@@ -379,7 +379,7 @@ describe('bucket', () => {
     });
   });
 
-  test('enforceSsl can be enabled', () => {
+  test('enforceSSL can be enabled', () => {
     const stack = new cdk.Stack();
     new s3.Bucket(stack, 'MyBucket', { enforceSSL: true });
 

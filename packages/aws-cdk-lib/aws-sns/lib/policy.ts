@@ -26,7 +26,7 @@ export interface TopicPolicyProps {
    *
    * @default false
    */
-  readonly enforceSsl?: boolean;
+  readonly enforceSSL?: boolean;
 }
 
 /**
@@ -60,7 +60,7 @@ export class TopicPolicy extends Resource {
 
     this.document = props.policyDocument ?? this.document;
 
-    if (props.enforceSsl) {
+    if (props.enforceSSL) {
       props.topics.map(t => this.document.addStatements(this.createSslPolicyDocument(t.topicArn)));
     }
 
