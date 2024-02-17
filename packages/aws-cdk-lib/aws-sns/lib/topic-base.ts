@@ -48,10 +48,10 @@ export interface ITopic extends IResource, notifications.INotificationRuleTarget
    * Adds a statement to the IAM resource policy associated with this topic.
    *
    * If this topic was created in this stack (`new Topic`), a topic policy
-   * will be automatically created upon the first call to `addToPolicy`. If
+   * will be automatically created upon the first call to `addToResourcePolicy`. If
    * the topic is imported (`Topic.import`), then this is a no-op.
    */
-  addToResourcePolicy(statement: iam.PolicyStatement): iam.AddToResourcePolicyResult;
+  addToResourcePolicy(statement: iam.PolicyStatement, enforceSsl?: boolean): iam.AddToResourcePolicyResult;
 
   /**
    * Grant topic publishing permissions to the given identity
@@ -122,19 +122,41 @@ export abstract class TopicBase extends Resource implements ITopic {
    * Adds a statement to the IAM resource policy associated with this topic.
    *
    * If this topic was created in this stack (`new Topic`), a topic policy
-   * will be automatically created upon the first call to `addToPolicy`. If
+   * will be automatically created upon the first call to `addToResourcePolicy`. If
    * the topic is imported (`Topic.import`), then this is a no-op.
    */
-  public addToResourcePolicy(statement: iam.PolicyStatement): iam.AddToResourcePolicyResult {
+  public addToResourcePolicy(statement: iam.PolicyStatement, enforceSsl?: boolean): iam.AddToResourcePolicyResult {
     if (!this.policy && this.autoCreatePolicy) {
       this.policy = new TopicPolicy(this, 'Policy', { topics: [this] });
     }
 
     if (this.policy) {
       this.policy.document.addStatements(statement);
+
+      if (enforceSsl) {
+        this.policy.document.addStatements(this.createSslPolicyDocument());
+      }
       return { statementAdded: true, policyDependable: this.policy };
     }
     return { statementAdded: false };
+  }
+
+  /**
+   * Adds a statement to enforce encryption of data in transit when publishing to the topic.
+   *
+   * For more information, see https://docs.aws.amazon.com/sns/latest/dg/sns-security-best-practices.html#enforce-encryption-data-in-transit.
+   */
+  protected createSslPolicyDocument(): iam.PolicyStatement {
+    return new iam.PolicyStatement ({
+      sid: 'AllowPublishThroughSSLOnly',
+      actions: ['sns:Publish'],
+      effect: iam.Effect.DENY,
+      resources: [this.topicArn],
+      conditions: {
+        Bool: { 'aws:SecureTransport': 'false' },
+      },
+      principals: [new iam.AnyPrincipal()],
+    });
   }
 
   /**

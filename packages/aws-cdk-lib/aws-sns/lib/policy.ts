@@ -1,7 +1,7 @@
 import { Construct } from 'constructs';
 import { CfnTopicPolicy } from './sns.generated';
 import { ITopic } from './topic-base';
-import { PolicyDocument } from '../../aws-iam';
+import { AnyPrincipal, Effect, PolicyDocument, PolicyStatement } from '../../aws-iam';
 import { Resource } from '../../core';
 
 /**
@@ -12,12 +12,21 @@ export interface TopicPolicyProps {
    * The set of topics this policy applies to.
    */
   readonly topics: ITopic[];
+
   /**
    * IAM policy document to apply to topic(s).
    * @default empty policy document
    */
   readonly policyDocument?: PolicyDocument;
 
+  /**
+   * Adds a statement to enforce encryption of data in transit when publishing to the topic.
+   *
+   * For more information, see https://docs.aws.amazon.com/sns/latest/dg/sns-security-best-practices.html#enforce-encryption-data-in-transit.
+   *
+   * @default false
+   */
+  readonly enforceSsl?: boolean;
 }
 
 /**
@@ -51,9 +60,31 @@ export class TopicPolicy extends Resource {
 
     this.document = props.policyDocument ?? this.document;
 
+    if (props.enforceSsl) {
+      props.topics.map(t => this.document.addStatements(this.createSslPolicyDocument(t.topicArn)));
+    }
+
     new CfnTopicPolicy(this, 'Resource', {
       policyDocument: this.document,
       topics: props.topics.map(t => t.topicArn),
+    });
+  }
+
+  /**
+   * Adds a statement to enforce encryption of data in transit when publishing to the topic.
+   *
+   * For more information, see https://docs.aws.amazon.com/sns/latest/dg/sns-security-best-practices.html#enforce-encryption-data-in-transit.
+   */
+  protected createSslPolicyDocument(topicArn: string): PolicyStatement {
+    return new PolicyStatement ({
+      sid: 'AllowPublishThroughSSLOnly',
+      actions: ['sns:Publish'],
+      effect: Effect.DENY,
+      resources: [topicArn],
+      conditions: {
+        Bool: { 'aws:SecureTransport': 'false' },
+      },
+      principals: [new AnyPrincipal()],
     });
   }
 }

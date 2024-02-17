@@ -186,6 +186,49 @@ describe('Topic', () => {
 
   });
 
+  test('can add a policy to the topic enforcing ssl', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const topic = new sns.Topic(stack, 'Topic');
+
+    // WHEN
+    topic.addToResourcePolicy(new iam.PolicyStatement({
+      resources: ['*'],
+      actions: ['sns:*'],
+      principals: [new iam.ArnPrincipal('arn')],
+    }), true);
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::SNS::TopicPolicy', {
+      PolicyDocument: {
+        Version: '2012-10-17',
+        Statement: [
+          {
+            'Sid': '0',
+            'Action': 'sns:*',
+            'Effect': 'Allow',
+            'Principal': { 'AWS': 'arn' },
+            'Resource': '*',
+          },
+          {
+            'Sid': 'AllowPublishThroughSSLOnly',
+            'Action': 'sns:Publish',
+            'Effect': 'Deny',
+            'Resource': {
+              'Ref': 'TopicBFC7AF6E',
+            },
+            'Condition': {
+              'Bool': {
+                'aws:SecureTransport': 'false',
+              },
+            },
+            'Principal': { 'AWS': '*' },
+          },
+        ],
+      },
+    });
+  });
+
   test('give publishing permissions', () => {
     // GIVEN
     const stack = new cdk.Stack();
@@ -268,6 +311,47 @@ describe('Topic', () => {
             'Effect': 'Allow',
             'Principal': { 'AWS': 'arn' },
             'Sid': '0',
+          },
+        ],
+        'Version': '2012-10-17',
+      },
+      'Topics': [
+        {
+          'Ref': 'MyTopic86869434',
+        },
+      ],
+    });
+
+  });
+
+  test('Create topic policty and enfore ssl', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const topic = new sns.Topic(stack, 'MyTopic');
+
+    // WHEN
+    new sns.TopicPolicy(stack, 'TopicPolicy', {
+      topics: [topic],
+      enforceSsl: true,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::SNS::TopicPolicy', {
+      'PolicyDocument': {
+        'Statement': [
+          {
+            'Sid': 'AllowPublishThroughSSLOnly',
+            'Action': 'sns:Publish',
+            'Effect': 'Deny',
+            'Resource': {
+              'Ref': 'MyTopic86869434',
+            },
+            'Condition': {
+              'Bool': {
+                'aws:SecureTransport': 'false',
+              },
+            },
+            'Principal': { 'AWS': '*' },
           },
         ],
         'Version': '2012-10-17',
