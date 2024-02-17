@@ -235,10 +235,10 @@ const topicPolicy = new sns.TopicPolicy(this, 'Policy', {
 Similiarly for `addToResourcePolicy`, you can enforce SSL by setting the `enforceSsl` flag:
 
 ```ts
-const topic = new Topic(stack, 'TopicAddPolicy');
+const topic = new sns.Topic(this, 'TopicAddPolicy');
 
-topic.addToResourcePolicy(new PolicyStatement({
-  principals: [new ServicePrincipal('s3.amazonaws.com')],
+topic.addToResourcePolicy(new iam.PolicyStatement({
+  principals: [new iam.ServicePrincipal('s3.amazonaws.com')],
   actions: ['sns:Publish'],
   resources: [topic.topicArn],
 }), {
