@@ -31,9 +31,7 @@
         }
        },
        "Effect": "Deny",
-       "Principal": {
-        "AWS": "*"
-       },
+       "Principal": "*",
        "Resource": {
         "Ref": "TopicBFC7AF6E"
        },
@@ -80,9 +78,7 @@
         }
        },
        "Effect": "Deny",
-       "Principal": {
-        "AWS": "*"
-       },
+       "Principal": "*",
        "Resource": {
         "Ref": "TopicAddPolicy7DB03706"
        },

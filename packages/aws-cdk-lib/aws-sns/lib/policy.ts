@@ -1,7 +1,7 @@
 import { Construct } from 'constructs';
 import { CfnTopicPolicy } from './sns.generated';
 import { ITopic } from './topic-base';
-import { AnyPrincipal, Effect, PolicyDocument, PolicyStatement } from '../../aws-iam';
+import { Effect, PolicyDocument, PolicyStatement, StarPrincipal } from '../../aws-iam';
 import { Resource } from '../../core';
 
 /**
@@ -84,7 +84,7 @@ export class TopicPolicy extends Resource {
       conditions: {
         Bool: { 'aws:SecureTransport': 'false' },
       },
-      principals: [new AnyPrincipal()],
+      principals: [new StarPrincipal()],
     });
   }
 }

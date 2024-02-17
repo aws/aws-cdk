@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/b1390a5f843d7508bec6d19884338f36f34ac9ca5d1b6e1de9d01cf72d46d441.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/14fdbf9da76c6d2a9fd9d7ecce1e6fb899d1bd67a967d68ab86428209e729203.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -49,10 +49,7 @@
         "/SNSTopicPolicyStack/TopicAddPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "TopicAddPolicy7DB03706",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "TopicAddPolicy7DB03706"
           }
         ],
         "/SNSTopicPolicyStack/TopicAddPolicy/Policy/Resource": [

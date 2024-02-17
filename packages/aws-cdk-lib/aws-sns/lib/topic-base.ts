@@ -169,7 +169,7 @@ export abstract class TopicBase extends Resource implements ITopic {
       conditions: {
         Bool: { 'aws:SecureTransport': 'false' },
       },
-      principals: [new iam.AnyPrincipal()],
+      principals: [new iam.StarPrincipal()],
     });
   }
 
