@@ -147,10 +147,8 @@ export abstract class TopicBase extends Resource implements ITopic {
     if (this.policy) {
       this.policy.document.addStatements(statement);
 
-      if (addToResourcePolicyProps) {
-        if (addToResourcePolicyProps.enforceSsl) {
-          this.policy.document.addStatements(this.createSslPolicyDocument());
-        }
+      if (addToResourcePolicyProps?.enforceSsl) {
+        this.policy.document.addStatements(this.createSslPolicyDocument());
       }
       return { statementAdded: true, policyDependable: this.policy };
     }
