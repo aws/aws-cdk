@@ -228,7 +228,7 @@ const policyDocument = new iam.PolicyDocument({
 const topicPolicy = new sns.TopicPolicy(this, 'Policy', {
   topics: [topic],
   policyDocument,
-  true, // enforceSsl
+  enforceSsl: true,
 });
 ```
 
