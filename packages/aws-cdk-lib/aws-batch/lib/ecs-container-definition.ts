@@ -1057,6 +1057,11 @@ export class EcsFargateContainerDefinition extends EcsContainerDefinitionBase im
     this.fargateCpuArchitecture = props.fargateCpuArchitecture;
     this.fargateOperatingSystemFamily = props.fargateOperatingSystemFamily;
 
+    if (this.fargateOperatingSystemFamily?._operatingSystemFamily.toLowerCase().includes('windows') && this.readonlyRootFilesystem) {
+      // see https://kubernetes.io/docs/concepts/windows/intro/
+      throw new Error('Readonly root filesystem is not possible on Windows; write access is required for registry & system processes to run inside the container');
+    }
+
     // validates ephemeralStorageSize is within limits
     if (props.ephemeralStorageSize) {
       if (props.ephemeralStorageSize.toGibibytes() > 200) {

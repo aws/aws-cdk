@@ -1067,4 +1067,14 @@ describe('Fargate containers', () => {
       }),
     })).toThrow("ECS Fargate container 'EcsFargateContainer2' specifies 'ephemeralStorageSize' at 201 > 200 GB");
   });
+
+  test('readonlyRootFilesystem can\'t be true with Windows family', () => {
+    expect(() => new EcsJobDefinition(stack, 'ECSJobDefn', {
+      container: new EcsFargateContainerDefinition(stack, 'EcsFargateContainer', {
+        ...defaultContainerProps,
+        readonlyRootFilesystem: true,
+        fargateOperatingSystemFamily: ecs.OperatingSystemFamily.WINDOWS_SERVER_2004_CORE,
+      }),
+    })).toThrow('Readonly root filesystem is not possible on Windows; write access is required for registry & system processes to run inside the container');
+  });
 });
