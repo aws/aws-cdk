@@ -604,6 +604,9 @@ describe('Distributed Map State', () => {
       itemBatcher: new stepfunctions.ItemBatcher({
         maxItemsPerBatchPath: stepfunctions.JsonPath.stringAt('$.maxItemsPerBatch'),
         maxInputBytesPerBatchPath: stepfunctions.JsonPath.stringAt('$.maxInputBytesPerBatch'),
+        batchInput: {
+          TestBatchInput: stepfunctions.JsonPath.stringAt('$.testBatchInput'),
+        },
       }),
     });
     map.itemProcessor(new stepfunctions.Pass(stack, 'Pass State'));
@@ -632,6 +635,9 @@ describe('Distributed Map State', () => {
           ToleratedFailurePercentagePath: '$.toleratedFailurePercentage',
           ToleratedFailureCountPath: '$.toleratedFailureCount',
           ItemBatcher: {
+            BatchInput: {
+              'TestBatchInput.$': '$.testBatchInput',
+            },
             MaxItemsPerBatchPath: '$.maxItemsPerBatch',
             MaxInputBytesPerBatchPath: '$.maxInputBytesPerBatch',
           },
