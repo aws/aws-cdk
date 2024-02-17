@@ -219,7 +219,7 @@ const policyDocument = new iam.PolicyDocument({
   statements: [
     new iam.PolicyStatement({
       actions: ["sns:Publish"],
-      principals: [new iam.AccountPrincipal('111111111111')],
+      principals: [new ServicePrincipal('s3.amazonaws.com')],
       resources: [topic.topicArn],
     }),
   ],
