@@ -521,6 +521,14 @@ export class Pipeline extends PipelineBase {
     }
     this.pipelineType = props.pipelineType ?? PipelineType.V1;
 
+    if (
+      props.executionMode
+      && [ExecutionMode.QUEUED, ExecutionMode.PARALLEL].includes(props.executionMode)
+      && this.pipelineType !== PipelineType.V2
+    ) {
+      throw new Error(`${props.executionMode} execution mode can only be used with V2 pipelines, \`PipelineType.V2\` must be specified for \`pipelineType\``);
+    }
+
     this.codePipeline = new CfnPipeline(this, 'Resource', {
       artifactStore: Lazy.any({ produce: () => this.renderArtifactStoreProperty() }),
       artifactStores: Lazy.any({ produce: () => this.renderArtifactStoresProperty() }),
