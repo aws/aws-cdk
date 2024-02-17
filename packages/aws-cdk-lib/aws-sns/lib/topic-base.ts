@@ -148,7 +148,7 @@ export abstract class TopicBase extends Resource implements ITopic {
       this.policy.document.addStatements(statement);
 
       if (addToResourcePolicyProps?.enforceSSL) {
-        this.policy.document.addStatements(this.createSslPolicyDocument());
+        this.policy.document.addStatements(this.createSSLPolicyDocument());
       }
       return { statementAdded: true, policyDependable: this.policy };
     }
@@ -160,7 +160,7 @@ export abstract class TopicBase extends Resource implements ITopic {
    *
    * For more information, see https://docs.aws.amazon.com/sns/latest/dg/sns-security-best-practices.html#enforce-encryption-data-in-transit.
    */
-  protected createSslPolicyDocument(): iam.PolicyStatement {
+  protected createSSLPolicyDocument(): iam.PolicyStatement {
     return new iam.PolicyStatement ({
       sid: 'AllowPublishThroughSSLOnly',
       actions: ['sns:Publish'],

@@ -61,7 +61,7 @@ export class TopicPolicy extends Resource {
     this.document = props.policyDocument ?? this.document;
 
     if (props.enforceSSL) {
-      props.topics.map(t => this.document.addStatements(this.createSslPolicyDocument(t.topicArn)));
+      props.topics.map(t => this.document.addStatements(this.createSSLPolicyDocument(t.topicArn)));
     }
 
     new CfnTopicPolicy(this, 'Resource', {
@@ -75,7 +75,7 @@ export class TopicPolicy extends Resource {
    *
    * For more information, see https://docs.aws.amazon.com/sns/latest/dg/sns-security-best-practices.html#enforce-encryption-data-in-transit.
    */
-  protected createSslPolicyDocument(topicArn: string): PolicyStatement {
+  protected createSSLPolicyDocument(topicArn: string): PolicyStatement {
     return new PolicyStatement ({
       sid: 'AllowPublishThroughSSLOnly',
       actions: ['sns:Publish'],

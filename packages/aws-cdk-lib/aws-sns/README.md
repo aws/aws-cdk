@@ -210,7 +210,7 @@ const topicPolicy = new sns.TopicPolicy(this, 'Policy', {
 
 ### Enforce encryption of data in transit when publishing to a topic
 
-You can enforce SSL when creating a topic policy by setting the `enforceSsl` flag:
+You can enforce SSL when creating a topic policy by setting the `enforceSSL` flag:
 
 ```ts
 const topic = new sns.Topic(this, 'Topic');
@@ -228,11 +228,11 @@ const policyDocument = new iam.PolicyDocument({
 const topicPolicy = new sns.TopicPolicy(this, 'Policy', {
   topics: [topic],
   policyDocument,
-  enforceSsl: true,
+  enforceSSL: true,
 });
 ```
 
-Similiarly for `addToResourcePolicy`, you can enforce SSL by setting the `enforceSsl` flag:
+Similiarly for `addToResourcePolicy`, you can enforce SSL by setting the `enforceSSL` flag:
 
 ```ts
 const topic = new sns.Topic(this, 'TopicAddPolicy');
@@ -242,7 +242,7 @@ topic.addToResourcePolicy(new iam.PolicyStatement({
   actions: ['sns:Publish'],
   resources: [topic.topicArn],
 }), {
-  enforceSsl: true,
+  enforceSSL: true,
 });
 ```
 
