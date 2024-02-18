@@ -28,7 +28,7 @@ describe('triggers', () => {
     });
   });
 
-  test('can specify triggers with tags', () => {
+  test('can specify triggers with tags in pushFilter', () => {
     const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
       pipelineType: codepipeline.PipelineType.V2,
       triggers: [{
@@ -62,7 +62,7 @@ describe('triggers', () => {
     });
   });
 
-  test('can specify triggers with branches', () => {
+  test('can specify triggers with branches in pushFilter', () => {
     const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
       pipelineType: codepipeline.PipelineType.V2,
       triggers: [{
@@ -96,7 +96,7 @@ describe('triggers', () => {
     });
   });
 
-  test('can specify triggers with branches and file paths', () => {
+  test('can specify triggers with branches and file paths in pushFilter', () => {
     const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
       pipelineType: codepipeline.PipelineType.V2,
       triggers: [{
@@ -238,7 +238,7 @@ describe('triggers', () => {
     });
   });
 
-  test('empty tagsExcludes for trigger is set to undefined', () => {
+  test('empty tagsExcludes in pushFilter for trigger is set to undefined', () => {
     const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
       pipelineType: codepipeline.PipelineType.V2,
       triggers: [{
@@ -272,7 +272,7 @@ describe('triggers', () => {
     });
   });
 
-  test('empty tagsIncludes for trigger is set to undefined', () => {
+  test('empty tagsIncludes in pushFilter for trigger is set to undefined', () => {
     const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
       pipelineType: codepipeline.PipelineType.V2,
       triggers: [{
@@ -306,7 +306,7 @@ describe('triggers', () => {
     });
   });
 
-  test('empty branchesExcludes for trigger is set to undefined', () => {
+  test('empty branchesExcludes in pushFilter for trigger is set to undefined', () => {
     const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
       pipelineType: codepipeline.PipelineType.V2,
       triggers: [{
@@ -340,7 +340,7 @@ describe('triggers', () => {
     });
   });
 
-  test('empty branchesIncludes for trigger is set to undefined', () => {
+  test('empty branchesIncludes in pushFilter for trigger is set to undefined', () => {
     const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
       pipelineType: codepipeline.PipelineType.V2,
       triggers: [{
@@ -374,7 +374,7 @@ describe('triggers', () => {
     });
   });
 
-  test('empty filePathsExcludes for trigger is set to undefined', () => {
+  test('empty filePathsExcludes in pushFilter for trigger is set to undefined', () => {
     const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
       pipelineType: codepipeline.PipelineType.V2,
       triggers: [{
@@ -414,7 +414,7 @@ describe('triggers', () => {
     });
   });
 
-  test('empty filePathsIncludes for trigger is set to undefined', () => {
+  test('empty filePathsIncludes in pushFilter for trigger is set to undefined', () => {
     const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
       pipelineType: codepipeline.PipelineType.V2,
       triggers: [{
@@ -454,7 +454,7 @@ describe('triggers', () => {
     });
   });
 
-  test('throw if length of tagsExcludes is greater than 8', () => {
+  test('throw if length of tagsExcludes in pushFilter is greater than 8', () => {
     expect(() => {
       new codepipeline.Pipeline(stack, 'Pipeline', {
         pipelineType: codepipeline.PipelineType.V2,
@@ -472,7 +472,7 @@ describe('triggers', () => {
     }).toThrow(/maximum length of tagsExcludes in pushFilter for sourceAction with name 'CodeStarConnectionsSourceAction' is 8, got 9/);
   });
 
-  test('throw if length of tagsIncludes is greater than 8', () => {
+  test('throw if length of tagsIncludes in pushFilter is greater than 8', () => {
     expect(() => {
       new codepipeline.Pipeline(stack, 'Pipeline', {
         pipelineType: codepipeline.PipelineType.V2,
@@ -490,7 +490,7 @@ describe('triggers', () => {
     }).toThrow(/maximum length of tagsIncludes in pushFilter for sourceAction with name 'CodeStarConnectionsSourceAction' is 8, got 9/);
   });
 
-  test('throw if length of branchesExcludes is greater than 8', () => {
+  test('throw if length of branchesExcludes in pushFilter is greater than 8', () => {
     expect(() => {
       new codepipeline.Pipeline(stack, 'Pipeline', {
         pipelineType: codepipeline.PipelineType.V2,
@@ -508,7 +508,7 @@ describe('triggers', () => {
     }).toThrow(/maximum length of branchesExcludes in pushFilter for sourceAction with name 'CodeStarConnectionsSourceAction' is 8, got 9/);
   });
 
-  test('throw if length of branchesIncludes is greater than 8', () => {
+  test('throw if length of branchesIncludes in pushFilter is greater than 8', () => {
     expect(() => {
       new codepipeline.Pipeline(stack, 'Pipeline', {
         pipelineType: codepipeline.PipelineType.V2,
@@ -526,7 +526,7 @@ describe('triggers', () => {
     }).toThrow(/maximum length of branchesIncludes in pushFilter for sourceAction with name 'CodeStarConnectionsSourceAction' is 8, got 9/);
   });
 
-  test('throw if length of filePathsExcludes is greater than 8', () => {
+  test('throw if length of filePathsExcludes in pushFilter is greater than 8', () => {
     expect(() => {
       new codepipeline.Pipeline(stack, 'Pipeline', {
         pipelineType: codepipeline.PipelineType.V2,
@@ -546,7 +546,7 @@ describe('triggers', () => {
     }).toThrow(/maximum length of filePathsExcludes in pushFilter for sourceAction with name 'CodeStarConnectionsSourceAction' is 8, got 9/);
   });
 
-  test('throw if length of filePathsIncludes is greater than 8', () => {
+  test('throw if length of filePathsIncludes in pushFilter is greater than 8', () => {
     expect(() => {
       new codepipeline.Pipeline(stack, 'Pipeline', {
         pipelineType: codepipeline.PipelineType.V2,
@@ -566,7 +566,7 @@ describe('triggers', () => {
     }).toThrow(/maximum length of filePathsIncludes in pushFilter for sourceAction with name 'CodeStarConnectionsSourceAction' is 8, got 9/);
   });
 
-  test('throw if tags and branches are specified', () => {
+  test('throw if tags and branches are specified in pushFilter', () => {
     expect(() => {
       new codepipeline.Pipeline(stack, 'Pipeline', {
         pipelineType: codepipeline.PipelineType.V2,
@@ -584,7 +584,7 @@ describe('triggers', () => {
     }).toThrow(/cannot specify both tags and branches in pushFilter for sourceAction with name 'CodeStarConnectionsSourceAction'/);
   });
 
-  test('throw if filePaths without branches is specified', () => {
+  test('throw if filePaths without branches is specified in pushFilter', () => {
     expect(() => {
       new codepipeline.Pipeline(stack, 'Pipeline', {
         pipelineType: codepipeline.PipelineType.V2,
