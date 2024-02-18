@@ -1,3 +1,4 @@
+import { pull } from 'lodash';
 import { IAction } from './action';
 import { CfnPipeline } from './codepipeline.generated';
 
@@ -204,6 +205,12 @@ export class Trigger {
       }
 
       const pushFilter = this.props.gitConfiguration.pushFilter;
+      const pullRequestFilter = this.props.gitConfiguration.pullRequestFilter;
+
+      if (pushFilter !== undefined && pullRequestFilter !== undefined) {
+        throw new Error(`cannot specify both pushFilter and pullRequestFilter for sourceAction with name '${sourceAction.actionProperties.actionName}'`);
+      }
+
       if (pushFilter !== undefined && pushFilter.length > 3) {
         throw new Error(`length of pushFilter for sourceAction with name '${sourceAction.actionProperties.actionName}' must be less than or equal to 3, got ${pushFilter.length}`);
       }
@@ -217,7 +224,6 @@ export class Trigger {
         }
       });
 
-      const pullRequestFilter = this.props.gitConfiguration.pullRequestFilter;
       if (pullRequestFilter !== undefined && pullRequestFilter.length > 3) {
         throw new Error(`length of pullRequestFilter for sourceAction with name '${sourceAction.actionProperties.actionName}' must be less than or equal to 3, got ${pullRequestFilter.length}`);
       }

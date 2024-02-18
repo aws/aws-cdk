@@ -832,6 +832,32 @@ describe('triggers', () => {
     }).toThrow(/length of pullRequestFilter for sourceAction with name 'CodeStarConnectionsSourceAction' must be less than or equal to 3, got 4/);;
   });
 
+  test('throw if both pushFilter and pullRequestFilter are specified', () => {
+    expect(() => {
+      new codepipeline.Pipeline(stack, 'Pipeline', {
+        pipelineType: codepipeline.PipelineType.V2,
+        triggers: [{
+          providerType: codepipeline.ProviderType.CODE_STAR_SOURCE_CONNECTION,
+          gitConfiguration: {
+            sourceAction,
+            pushFilter: [
+              {
+                tagsExcludes: ['exclude1'],
+                tagsIncludes: ['include1'],
+              },
+            ],
+            pullRequestFilter: [
+              {
+                branchesExcludes: ['exclude1'],
+                branchesIncludes: ['include1'],
+              },
+            ],
+          },
+        }],
+      });
+    }).toThrow(/cannot specify both pushFilter and pullRequestFilter for sourceAction with name 'CodeStarConnectionsSourceAction' must be less than or equal to 3, got 4/);;
+  });
+
   test('throw if provider of sourceAction is not \'CodeStarSourceConnection\'', () => {
     const fakeAction = new FakeSourceAction({
       actionName: 'FakeSource',
