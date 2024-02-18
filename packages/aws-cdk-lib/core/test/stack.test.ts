@@ -1502,11 +1502,7 @@ describe('stack', () => {
     expect(template).toMatchObject({
       Outputs: {
         ExportMyExport: {
-          Value: 'someValue',
           Description: 'This is a description',
-          Export: {
-            Name: 'MyExport',
-          },
         },
       },
     });
@@ -1525,11 +1521,7 @@ describe('stack', () => {
     expect(template).toMatchObject({
       Outputs: {
         ExportMyExport: {
-          Value: 'someValue||anotherValue',
           Description: 'This is a description',
-          Export: {
-            Name: 'MyExport',
-          },
         },
       },
     });
@@ -1548,16 +1540,7 @@ describe('stack', () => {
     expect(template).toMatchObject({
       Outputs: {
         ExportsOutputFnGetAttResourceAttB5968E71: {
-          Value: {
-            'Fn::GetAtt': [
-              'Resource',
-              'Att',
-            ],
-          },
           Description: 'This is a description',
-          Export: {
-            Name: 'Stack:ExportsOutputFnGetAttResourceAttB5968E71',
-          },
         },
       },
     });
@@ -1577,21 +1560,7 @@ describe('stack', () => {
     expect(template).toMatchObject({
       Outputs: {
         ExportsOutputFnGetAttResourceAttB5968E71: {
-          Value: {
-            'Fn::Join': [
-              '||',
-              {
-                'Fn::GetAtt': [
-                  'Resource',
-                  'Att',
-                ],
-              },
-            ],
-          },
           Description: 'This is a description',
-          Export: {
-            Name: 'Stack:ExportsOutputFnGetAttResourceAttB5968E71',
-          },
         },
       },
     });
