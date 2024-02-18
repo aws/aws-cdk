@@ -494,6 +494,42 @@ describe('triggers', () => {
     });
   });
 
+  test('empty events in pullRequestFilter for trigger is set to undefined', () => {
+    const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
+      pipelineType: codepipeline.PipelineType.V2,
+      triggers: [{
+        providerType: codepipeline.ProviderType.CODE_STAR_SOURCE_CONNECTION,
+        gitConfiguration: {
+          sourceAction,
+          pullRequestFilter: [{
+            branchesExcludes: ['exclude1', 'exclude2'],
+            branchesIncludes: ['include1', 'include2'],
+            events: [],
+          }],
+        },
+      }],
+    });
+
+    testPipelineSetup(pipeline, [sourceAction], [buildAction]);
+
+    Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
+      PipelineType: 'V2',
+      Triggers: [{
+        GitConfiguration: {
+          SourceActionName: 'CodeStarConnectionsSourceAction',
+          PullRequest: [{
+            Branches: {
+              Excludes: ['exclude1', 'exclude2'],
+              Includes: ['include1', 'include2'],
+            },
+            Events: Match.absent(),
+          }],
+        },
+        ProviderType: 'CodeStarSourceConnection',
+      }],
+    });
+  });
+
   test('throw if length of tagsExcludes in pushFilter is greater than 8', () => {
     expect(() => {
       new codepipeline.Pipeline(stack, 'Pipeline', {
