@@ -1800,7 +1800,8 @@ export class Cluster extends ClusterBase {
       spotInterruptHandler: options.spotInterruptHandler,
     });
 
-    if (nodeTypeForInstanceType(options.instanceType) === NodeType.INFERENTIA) {
+    if (nodeTypeForInstanceType(options.instanceType) === NodeType.INFERENTIA ||
+    nodeTypeForInstanceType(options.instanceType) === NodeType.TRAINIUM ) {
       this.addNeuronDevicePlugin();
     }
 
@@ -1821,7 +1822,12 @@ export class Cluster extends ClusterBase {
       options?.instanceType,
       ...options?.instanceTypes ?? [],
     ].some(i => i && nodeTypeForInstanceType(i) === NodeType.INFERENTIA);
-    if (hasInferentiaInstanceType) {
+    const hasTrainiumInstanceType = [
+      options?.instanceType,
+      ...options?.instanceTypes ?? [],
+    ].some(i => i && nodeTypeForInstanceType(i) === NodeType.TRAINIUM);
+
+    if (hasInferentiaInstanceType || hasTrainiumInstanceType) {
       this.addNeuronDevicePlugin();
     }
     return new Nodegroup(this, `Nodegroup${id}`, {
@@ -2373,6 +2379,7 @@ export class EksOptimizedImage implements ec2.IMachineImage {
         'amazon-linux-2/' : 'amazon-linux-2-arm64/' : '')
       + (this.nodeType === NodeType.GPU ? 'amazon-linux-2-gpu/' : '')
       + (this.nodeType === NodeType.INFERENTIA ? 'amazon-linux-2-gpu/' : '')
+      + (this.nodeType === NodeType.TRAINIUM ? 'amazon-linux-2-gpu/' : '')
       + 'recommended/image_id';
   }
 
@@ -2410,6 +2417,11 @@ export enum NodeType {
    * Inferentia instances
    */
   INFERENTIA = 'INFERENTIA',
+
+  /**
+   * Trainium instances
+   */
+  TRAINIUM = 'TRAINIUM',
 }
 
 /**
@@ -2473,7 +2485,8 @@ export enum MachineImageType {
 function nodeTypeForInstanceType(instanceType: ec2.InstanceType) {
   return INSTANCE_TYPES.gpu.includes(instanceType.toString().substring(0, 2)) ? NodeType.GPU :
     INSTANCE_TYPES.inferentia.includes(instanceType.toString().substring(0, 4)) ? NodeType.INFERENTIA :
-      NodeType.STANDARD;
+      INSTANCE_TYPES.trainium.includes(instanceType.toString().substring(0, 4)) ? NodeType.TRAINIUM :
+        NodeType.STANDARD;
 }
 
 function cpuArchForInstanceType(instanceType: ec2.InstanceType) {
