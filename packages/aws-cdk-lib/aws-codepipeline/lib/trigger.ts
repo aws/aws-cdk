@@ -92,8 +92,6 @@ export interface GitPullRequestFilter {
    * The field that specifies which pull request events to filter on (opened, updated, closed)
    * for the trigger configuration.
    *
-   * Maximum length of this array is 3.
-   *
    * @default - no events.
    */
   readonly events?: GitPullRequestEvent[];
@@ -228,6 +226,9 @@ export class Trigger {
         if (!filter.branchesExcludes && !filter.branchesIncludes && (filter.filePathsExcludes || filter.filePathsIncludes)) {
           throw new Error(`cannot specify filePaths without branches in pullRequestFilter for sourceAction with name '${sourceAction.actionProperties.actionName}'`);
         }
+        if (!filter.branchesExcludes && !filter.branchesIncludes && filter.events) {
+          throw new Error(`cannot specify events without branches in pullRequestFilter for sourceAction with name '${sourceAction.actionProperties.actionName}'`);
+        }
         if (filter.branchesExcludes && filter.branchesExcludes.length > 8) {
           throw new Error(`maximum length of branchesExcludes in pullRequestFilter for sourceAction with name '${sourceAction.actionProperties.actionName}' is 8, got ${filter.branchesExcludes.length}`);
         }
@@ -239,9 +240,6 @@ export class Trigger {
         }
         if (filter.filePathsIncludes && filter.filePathsIncludes.length > 8) {
           throw new Error(`maximum length of filePathsIncludes in pullRequestFilter for sourceAction with name '${sourceAction.actionProperties.actionName}' is 8, got ${filter.filePathsIncludes.length}`);
-        }
-        if (filter.events && filter.events.length > 3) {
-          throw new Error(`maximum length of events in pullRequestFilter for sourceAction with name '${sourceAction.actionProperties.actionName}' is 3, got ${filter.events.length}`);
         }
       });
     }
@@ -279,7 +277,7 @@ export class Trigger {
           includes: filter.filePathsIncludes?.length ? filter.filePathsIncludes : undefined,
         };
         // set to undefined if empty array because CloudFormation does not accept empty array
-        const events: string[] | undefined = filter.events?.length ? filter.events : undefined;
+        const events: string[] | undefined = filter.events?.length ? Array.from(new Set(filter.events)) : undefined;
         return { branches, filePaths, events };
       });
 
