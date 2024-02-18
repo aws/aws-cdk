@@ -1489,6 +1489,114 @@ describe('stack', () => {
     });
   });
 
+  test('exports with name can include description', () => {
+    const app = new App();
+    const stack = new Stack(app, 'Stack');
+
+    stack.exportValue('someValue', {
+      name: 'MyExport',
+      description: 'This is a description',
+    });
+
+    const template = app.synth().getStackByName(stack.stackName).template;
+    expect(template).toMatchObject({
+      Outputs: {
+        ExportMyExport: {
+          Value: 'someValue',
+          Description: 'This is a description',
+          Export: {
+            Name: 'MyExport',
+          },
+        },
+      },
+    });
+  });
+
+  test('list exports with name can include description', () => {
+    const app = new App();
+    const stack = new Stack(app, 'Stack');
+
+    stack.exportStringListValue(['someValue', 'anotherValue'], {
+      name: 'MyExport',
+      description: 'This is a description',
+    });
+
+    const template = app.synth().getStackByName(stack.stackName).template;
+    expect(template).toMatchObject({
+      Outputs: {
+        ExportMyExport: {
+          Value: 'someValue||anotherValue',
+          Description: 'This is a description',
+          Export: {
+            Name: 'MyExport',
+          },
+        },
+      },
+    });
+  });
+
+  test('exports without name can include description', () => {
+    const app = new App();
+    const stack = new Stack(app, 'Stack');
+
+    const resource = new CfnResource(stack, 'Resource', { type: 'AWS::Resource' });
+    stack.exportValue(resource.getAtt('Att'), {
+      description: 'This is a description',
+    });
+
+    const template = app.synth().getStackByName(stack.stackName).template;
+    expect(template).toMatchObject({
+      Outputs: {
+        ExportsOutputFnGetAttResourceAttB5968E71: {
+          Value: {
+            'Fn::GetAtt': [
+              'Resource',
+              'Att',
+            ],
+          },
+          Description: 'This is a description',
+          Export: {
+            Name: 'Stack:ExportsOutputFnGetAttResourceAttB5968E71',
+          },
+        },
+      },
+    });
+  });
+
+  test('list exports without name can include description', () => {
+    const app = new App();
+    const stack = new Stack(app, 'Stack');
+
+    const resource = new CfnResource(stack, 'Resource', { type: 'AWS::Resource' });
+    (resource as any).attrAtt = ['Foo', 'Bar'];
+    stack.exportStringListValue(resource.getAtt('Att', ResolutionTypeHint.STRING_LIST), {
+      description: 'This is a description',
+    });
+
+    const template = app.synth().getStackByName(stack.stackName).template;
+    expect(template).toMatchObject({
+      Outputs: {
+        ExportsOutputFnGetAttResourceAttB5968E71: {
+          Value: {
+            'Fn::Join': [
+              '||',
+              {
+                'Fn::GetAtt': [
+                  'Resource',
+                  'Att',
+                ],
+              },
+            ],
+          },
+          Description: 'This is a description',
+          Export: {
+            Name: 'Stack:ExportsOutputFnGetAttResourceAttB5968E71',
+          },
+        },
+      },
+    });
+  });
+
   test('CfnSynthesisError is ignored when preparing cross references', () => {
     // GIVEN
     const app = new App();
