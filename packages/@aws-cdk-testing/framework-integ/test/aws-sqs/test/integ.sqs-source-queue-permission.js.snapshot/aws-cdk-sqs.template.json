@@ -2,11 +2,21 @@
  "Resources": {
   "SourceQueue1F4BBA4BB": {
    "Type": "AWS::SQS::Queue",
+   "Properties": {
+    "RedriveAllowPolicy": {
+      "redrivePermission": "allowAll"
+    }
+   },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
   "SourceQueue22481CB5A": {
    "Type": "AWS::SQS::Queue",
+   "Properties": {
+    "RedriveAllowPolicy": {
+      "redrivePermission": "denyAll"
+    }
+   },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
