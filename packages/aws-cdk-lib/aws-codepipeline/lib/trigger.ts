@@ -92,7 +92,7 @@ export interface GitPullRequestFilter {
    * The field that specifies which pull request events to filter on (opened, updated, closed)
    * for the trigger configuration.
    *
-   * @default - no events.
+   * @default - all events.
    */
   readonly events?: GitPullRequestEvent[];
 }
