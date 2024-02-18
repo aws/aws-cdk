@@ -655,20 +655,33 @@ File paths can also be specified along with the branches to start the pipeline.
 You can filter with glob patterns. The `filePathsExcludes` takes priority over the `filePathsIncludes`.
 
 ```ts
-declare const pipeline: codepipeline.Pipeline;
 declare const sourceAction: codepipeline_actions.CodeStarConnectionsSourceAction;
+declare const buildAction: codepipeline_actions.CodeBuildAction;
 
-pipeline.addTrigger({
-  providerType: codepipeline.ProviderType.CODE_STAR_SOURCE_CONNECTION,
-  gitConfiguration: {
-    sourceAction,
-    pushFilter: [{
-      branchesExcludes: ['exclude1', 'exclude2'],
-      branchesIncludes: ['include1', 'include2'],
-      filePathsExcludes: ['/path/to/exclude1', '/path/to/exclude2'],
-      filePathsIncludes: ['/path/to/include1', '/path/to/include1'],
-    }],
-  },
+new codepipeline.Pipeline(this, 'Pipeline', {
+  pipelineType: codepipeline.PipelineType.V2,
+  stages: [
+    {
+      stageName: 'Source',
+      actions: [sourceAction],
+    },
+    {
+      stageName: 'Build',
+      actions: [buildAction],
+    },
+  ],
+  triggers: [{
+    providerType: codepipeline.ProviderType.CODE_STAR_SOURCE_CONNECTION,
+    gitConfiguration: {
+      sourceAction,
+      pushFilter: [{
+        branchesExcludes: ['exclude1', 'exclude2'],
+        branchesIncludes: ['include1', 'include2'],
+        filePathsExcludes: ['/path/to/exclude1', '/path/to/exclude2'],
+        filePathsIncludes: ['/path/to/include1', '/path/to/include1'],
+      }],
+    },
+  }],
 });
 ```
 
