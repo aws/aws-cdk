@@ -7,9 +7,9 @@ import { CloudFormationStack, Template } from './util/cloudformation';
 
 export interface NestedStackTemplates {
   readonly physicalName: string | undefined;
-  readonly deployedTemplate: Template
-  readonly generatedTemplate: Template
-  readonly nestedStackTemplates: { [nestedStackLogicalId: string]: NestedStackTemplates}
+  readonly deployedTemplate: Template;
+  readonly generatedTemplate: Template;
+  readonly nestedStackTemplates: { [nestedStackLogicalId: string]: NestedStackTemplates};
 }
 
 export interface RootTemplateWithNestedStacks {

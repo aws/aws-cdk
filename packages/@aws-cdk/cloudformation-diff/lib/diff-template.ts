@@ -52,7 +52,7 @@ export function fullDiff(
   normalize(newTemplate);
   const theDiff = diffTemplate(currentTemplate, newTemplate);
   if (changeSet) {
-    filterFalsePositivies(theDiff, changeSet);
+    filterFalsePositives(theDiff, changeSet);
     addImportInformation(theDiff, changeSet);
   }
 
@@ -218,7 +218,7 @@ function addImportInformation(diff: types.TemplateDiff, changeSet: CloudFormatio
   });
 }
 
-function filterFalsePositivies(diff: types.TemplateDiff, changeSet: CloudFormation.DescribeChangeSetOutput) {
+function filterFalsePositives(diff: types.TemplateDiff, changeSet: CloudFormation.DescribeChangeSetOutput) {
   const replacements = findResourceReplacements(changeSet);
   diff.resources.forEachDifference((logicalId: string, change: types.ResourceDifference) => {
     change.forEachDifference((type: 'Property' | 'Other', name: string, value: types.Difference<any> | types.PropertyDifference<any>) => {

@@ -15,7 +15,7 @@ let toolkit: CdkToolkit;
 
 describe('imports', () => {
   beforeEach(() => {
-    jest.spyOn(cfn, 'createDiffChangeSet').mockImplementation(async () => {
+    jest.spyOn(cfn, 'createDiffChangeSet').mockImplementationOnce(async () => {
       return {
         Changes: [
           {
@@ -70,8 +70,8 @@ describe('imports', () => {
     // Default implementations
     cloudFormation.readCurrentTemplateWithNestedStacks.mockImplementation((_stackArtifact: CloudFormationStackArtifact) => {
       return Promise.resolve({
-        deployedTemplate: {},
-        nestedStackCount: 0,
+        deployedRootTemplate: {},
+        nestedStacks: {},
       });
     });
     cloudFormation.deployStack.mockImplementation((options) => Promise.resolve({
@@ -486,6 +486,7 @@ describe('nested stacks', () => {
     const exitCode = await toolkit.diff({
       stackNames: ['Parent'],
       stream: buffer,
+      changeSet: false,
     });
 
     // THEN
