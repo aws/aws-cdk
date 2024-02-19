@@ -256,7 +256,7 @@ export class Environment extends EnvironmentBase {
         return {
           alarmArn: monitor.alarmArn,
           ...(monitor.monitorType === MonitorType.CLOUDWATCH
-            ? { alarmRoleArn: monitor.alarmRoleArn || this.createAlarmRole().roleArn }
+            ? { alarmRoleArn: monitor.alarmRoleArn || this.createOrGetAlarmRole().roleArn }
             : { alarmRoleArn: monitor.alarmRoleArn }),
         };
       }),
@@ -274,7 +274,7 @@ export class Environment extends EnvironmentBase {
     this.application.addExistingEnvironment(this);
   }
 
-  private createAlarmRole(): iam.IRole {
+  private createOrGetAlarmRole(): iam.IRole {
     const logicalId = 'Role';
     const existingRole = this.node.tryFindChild(logicalId) as iam.IRole;
     if (existingRole) {
