@@ -16,7 +16,7 @@ import { print, warning } from './logging';
  * @param context     lines of context to use in arbitrary JSON diff
  * @param quiet       silences \'There were no differences\' messages
  *
- * @returns the count of differences that were rendered.
+ * @returns the number of stacks in this stack tree that have differences, including the top-level root stack
  */
 export function printStackDiff(
   oldTemplate: any,
@@ -51,7 +51,9 @@ export function printStackDiff(
     });
   }
 
+  let stackDiffCount = 0;
   if (!diff.isEmpty) {
+    stackDiffCount++;
     cfnDiff.formatDifferences(stream, diff, {
       ...logicalIdMapFromTemplate(oldTemplate),
       ...buildLogicalToPathMap(newTemplate),
@@ -73,7 +75,7 @@ export function printStackDiff(
     }
 
     (newTemplate as any)._template = nestedStack.generatedTemplate;
-    printStackDiff(
+    stackDiffCount += printStackDiff(
       nestedStack.deployedTemplate,
       newTemplate,
       strict,
@@ -85,7 +87,7 @@ export function printStackDiff(
     );
   }
 
-  return diff.differenceCount;
+  return stackDiffCount;
 }
 
 export enum RequireApproval {

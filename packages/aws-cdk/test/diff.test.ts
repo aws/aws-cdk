@@ -59,13 +59,11 @@ describe('non-nested stacks', () => {
         return Promise.resolve({
           deployedRootTemplate: { resource: 'D' },
           nestedStacks: {},
-          nestedStackCount: 0,
         });
       }
       return Promise.resolve({
         deployedRootTemplate: {},
         nestedStacks: {},
-        nestedStackCount: 0,
       });
     });
     cloudFormation.deployStack.mockImplementation((options) => Promise.resolve({
@@ -242,6 +240,12 @@ describe('nested stacks', () => {
               TemplateURL: 'changed-child-url-old',
             },
           },
+          UnchangedChild: {
+            Type: 'AWS::CloudFormation::Stack',
+            Properties: {
+              TemplateURL: 'changed-child-url-constant',
+            },
+          },
         };
         return Promise.resolve({
           deployedRootTemplate: {
@@ -264,9 +268,14 @@ describe('nested stacks', () => {
                   TemplateURL: 'changed-child-url-new',
                 },
               },
+              UnchangedChild: {
+                Type: 'AWS::CloudFormation::Stack',
+                Properties: {
+                  TemplateURL: 'changed-child-url-constant',
+                },
+              },
             },
           },
-          nestedStackCount: 5,
           nestedStacks: {
             AdditionChild: {
               deployedTemplate: {
@@ -371,7 +380,6 @@ describe('nested stacks', () => {
       return Promise.resolve({
         deployedRootTemplate: {},
         nestedStacks: {},
-        nestedStackCount: 0,
       });
     });
   });

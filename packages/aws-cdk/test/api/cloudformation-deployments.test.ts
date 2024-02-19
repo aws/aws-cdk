@@ -246,12 +246,10 @@ test('readCurrentTemplateWithNestedStacks() can handle non-Resources in the temp
   );
 
   // WHEN
-  const nestedStackCount = (await deployments.readCurrentTemplateWithNestedStacks(rootStack)).nestedStackCount;
   const deployedTemplate = (await deployments.readCurrentTemplateWithNestedStacks(rootStack)).deployedRootTemplate;
   const nestedStacks = (await deployments.readCurrentTemplateWithNestedStacks(rootStack)).nestedStacks;
 
   // THEN
-  expect(nestedStackCount).toEqual(1);
   expect(deployedTemplate).toEqual({
     Resources: {
       NestedStack: {
@@ -461,12 +459,10 @@ test('readCurrentTemplateWithNestedStacks() with a 3-level nested + sibling stru
   );
 
   // WHEN
-  const nestedStackCount = (await deployments.readCurrentTemplateWithNestedStacks(rootStack)).nestedStackCount;
   const deployedTemplate = (await deployments.readCurrentTemplateWithNestedStacks(rootStack)).deployedRootTemplate;
   const nestedStacks = (await deployments.readCurrentTemplateWithNestedStacks(rootStack)).nestedStacks;
 
   // THEN
-  expect(nestedStackCount).toEqual(3);
   expect(deployedTemplate).toEqual({
     Resources: {
       NestedStack: {
@@ -637,12 +633,10 @@ test('readCurrentTemplateWithNestedStacks() on an undeployed parent stack with a
   });
 
   // WHEN
-  const nestedStackCount = (await deployments.readCurrentTemplateWithNestedStacks(rootStack)).nestedStackCount;
   const deployedTemplate = (await deployments.readCurrentTemplateWithNestedStacks(rootStack)).deployedRootTemplate;
   const nestedStacks = (await deployments.readCurrentTemplateWithNestedStacks(rootStack)).nestedStacks;
 
   // THEN
-  expect(nestedStackCount).toEqual(2);
   expect(deployedTemplate).toEqual({});
   expect(nestedStacks).toEqual({
     NestedStack: {
@@ -835,12 +829,10 @@ test('readCurrentTemplateWithNestedStacks() succesfully ignores stacks without m
   ));
 
   // WHEN
-  const nestedStackCount = (await deployments.readCurrentTemplateWithNestedStacks(rootStack)).nestedStackCount;
   const deployedTemplate = (await deployments.readCurrentTemplateWithNestedStacks(rootStack)).deployedRootTemplate;
   const nestedStacks = (await deployments.readCurrentTemplateWithNestedStacks(rootStack)).nestedStacks;
 
   // THEN
-  expect(nestedStackCount).toEqual(1);
   expect(deployedTemplate).toEqual({
     Resources: {
       WithMetadata: {
