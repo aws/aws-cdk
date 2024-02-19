@@ -245,6 +245,7 @@ test('esbuild bundling with esbuild options', () => {
       '--resolve-extensions': '.ts,.js',
       '--splitting': true,
       '--keep-names': '',
+      '--out-extension': '.js=.mjs',
     },
   });
 
@@ -264,7 +265,7 @@ test('esbuild bundling with esbuild options', () => {
           '--log-level=silent --keep-names --tsconfig=/asset-input/lib/custom-tsconfig.ts',
           '--metafile=/asset-output/index.meta.json --banner:js="/* comments */" --footer:js="/* comments */"',
           '--main-fields=module,main --inject:./my-shim.js',
-          '--log-limit="0" --resolve-extensions=".ts,.js" --splitting --keep-names',
+          '--log-limit="0" --resolve-extensions=".ts,.js" --splitting --keep-names --out-extension:".js=.mjs"',
         ].join(' '),
       ],
     }),
