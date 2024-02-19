@@ -63,9 +63,13 @@ export function printStackDiff(
     print(chalk.yellow(`Omitted ${filteredChangesCount} changes because they are likely mangled non-ASCII characters. Use --strict to print them.`));
   }
 
-  for (const nestedStack of Object.values(nestedStackTemplates ?? {})) {
+  for (const nestedStackLogicalId of Object.keys(nestedStackTemplates ?? {})) {
+    if (!nestedStackTemplates) {
+      break;
+    }
+    const nestedStack = nestedStackTemplates[nestedStackLogicalId];
     if (!quiet) {
-      stream.write(format('Stack %s\n', chalk.bold(nestedStack.physicalName)));
+      stream.write(format('Stack %s\n', chalk.bold(nestedStack.physicalName ?? nestedStackLogicalId)));
     }
 
     (newTemplate as any)._template = nestedStack.generatedTemplate;

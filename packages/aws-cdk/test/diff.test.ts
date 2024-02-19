@@ -7,6 +7,7 @@ import { instanceMockFrom, MockCloudExecutable } from './util';
 import { Deployments } from '../lib/api/deployments';
 import { CdkToolkit } from '../lib/cdk-toolkit';
 import * as cfn from '../lib/api/util/cloudformation';
+import { NestedStackTemplates } from '../lib/api/nested-stack-helpers';
 
 let cloudExecutable: MockCloudExecutable;
 let cloudFormation: jest.Mocked<Deployments>;
@@ -265,7 +266,7 @@ describe('nested stacks', () => {
               },
             },
           },
-          nestedStackCount: 3,
+          nestedStackCount: 5,
           nestedStacks: {
             AdditionChild: {
               deployedTemplate: {
@@ -333,6 +334,37 @@ describe('nested stacks', () => {
               nestedStackTemplates: {},
               physicalName: 'ChangedChild',
             },
+            newChild: {
+              deployedTemplate: {},
+              generatedTemplate: {
+                Resources: {
+                  SomeResource: {
+                    Type: 'AWS::Something',
+                    Properties: {
+                      Prop: 'new-value',
+                    },
+                  },
+                },
+              },
+              nestedStackTemplates: {
+                newGrandChild: {
+                  deployedTemplate: {},
+                  generatedTemplate: {
+                    Resources: {
+                      SomeResource: {
+                        Type: 'AWS::Something',
+                        Properties: {
+                          Prop: 'new-value',
+                        },
+                      },
+                    },
+                  },
+                  physicalName: undefined,
+                  nestedStackTemplates: {},
+                } as NestedStackTemplates,
+              },
+              physicalName: undefined,
+            },
           },
         });
       }
@@ -344,7 +376,7 @@ describe('nested stacks', () => {
     });
   });
 
-  test('diff can diff nested stacks', async () => {
+  test('diff can diff nested stacks and display the nested stack logical ID if has not been deployed or otherwise has no physical name', async () => {
     // GIVEN
     const buffer = new StringWritable();
 
@@ -391,8 +423,16 @@ Resources
      ├─ [-] old-value
      └─ [+] new-value
 
+Stack newChild
+Resources
+[+] AWS::Something SomeResource
 
-✨  Number of stacks with differences: 4`);
+Stack newGrandChild
+Resources
+[+] AWS::Something SomeResource
+
+
+✨  Number of stacks with differences: 6`);
 
     expect(exitCode).toBe(0);
   });
@@ -446,8 +486,16 @@ Resources
      ├─ [-] old-value
      └─ [+] new-value
 
+Stack newChild
+Resources
+[+] AWS::Something SomeResource
 
-✨  Number of stacks with differences: 4`);
+Stack newGrandChild
+Resources
+[+] AWS::Something SomeResource
+
+
+✨  Number of stacks with differences: 6`);
 
     expect(exitCode).toBe(0);
     expect(changeSetSpy).not.toHaveBeenCalled();
