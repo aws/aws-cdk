@@ -1,6 +1,7 @@
 import { Annotations, Match, Template } from '../../assertions';
 import * as ec2 from '../../aws-ec2';
 import { ManagedPolicy, Role, ServicePrincipal } from '../../aws-iam';
+import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as logs from '../../aws-logs';
 import * as s3 from '../../aws-s3';
@@ -3080,7 +3081,7 @@ describe('cluster', () => {
     const vpc = new ec2.Vpc(stack, 'VPC');
 
     // WHEN
-    new DatabaseCluster(stack, 'Database', {
+    const cluster = new DatabaseCluster(stack, 'Database', {
       engine: DatabaseClusterEngine.AURORA,
       credentials: {
         username: 'admin',
@@ -3115,6 +3116,9 @@ describe('cluster', () => {
       LogGroupName: { 'Fn::Join': ['', ['/aws/rds/cluster/', { Ref: 'DatabaseB269D8BB' }, '/general']] },
       RetentionInDays: 90,
     });
+    expect(Object.keys(cluster.cloudwatchLogGroups).length).toEqual(2);
+    expect(cluster.cloudwatchLogGroups.error.logGroupName).toEqual(`/aws/rds/cluster/${cluster.clusterIdentifier}/error`);
+    expect(cluster.cloudwatchLogGroups.general.logGroupName).toEqual(`/aws/rds/cluster/${cluster.clusterIdentifier}/general`);
   });
 
   test('throws if given unsupported CloudWatch log exports', () => {
@@ -3969,6 +3973,83 @@ describe('cluster', () => {
           },
         }],
       },
+    });
+  });
+
+  test('setup kerberos authentication with domainRole', () => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    const role = new iam.Role(stack, 'Role', {
+      roleName: 'directoryServiceRoleName',
+      assumedBy: new iam.CompositePrincipal(
+        new iam.ServicePrincipal('rds.amazonaws.com'),
+        new iam.ServicePrincipal('directoryservice.rds.amazonaws.com'),
+      ),
+      managedPolicies: [
+        iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonRDSDirectoryServiceAccess'),
+      ],
+    });
+
+    // WHEN
+    new DatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.auroraPostgres({ version: AuroraPostgresEngineVersion.VER_14_3 }),
+      instanceProps: { vpc },
+      domain: 'domain.com',
+      domainRole: role,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBCluster', {
+      DBClusterParameterGroupName: 'default.aurora-postgresql14',
+      Domain: 'domain.com',
+      DomainIAMRoleName: { Ref: 'Role1ABCC5F0' },
+    });
+  });
+
+  test('setup kerberos authentication without domainRole', () => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new DatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.auroraPostgres({ version: AuroraPostgresEngineVersion.VER_14_3 }),
+      instanceProps: { vpc },
+      domain: 'domain.com',
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBCluster', {
+      DBClusterParameterGroupName: 'default.aurora-postgresql14',
+      Domain: 'domain.com',
+      DomainIAMRoleName: {
+        Ref: 'DatabaseRDSClusterDirectoryServiceRole6E1B0FFE',
+      },
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
+      AssumeRolePolicyDocument: {
+        Statement: [{
+          Action: 'sts:AssumeRole',
+          Effect: 'Allow',
+          Principal: {
+            Service: 'rds.amazonaws.com',
+          },
+        }, {
+          Action: 'sts:AssumeRole',
+          Effect: 'Allow',
+          Principal: {
+            Service: 'directoryservice.rds.amazonaws.com',
+          },
+        }],
+        Version: '2012-10-17',
+      },
+      ManagedPolicyArns: [
+        {
+          'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::aws:policy/service-role/AmazonRDSDirectoryServiceAccess']],
+        },
+      ],
     });
   });
 });

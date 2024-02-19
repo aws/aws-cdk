@@ -1,3 +1,4 @@
+import { IConstruct } from 'constructs';
 import { FakeBuildAction } from './fake-build-action';
 import { FakeSourceAction } from './fake-source-action';
 import { Match, Template } from '../../assertions';
@@ -7,7 +8,7 @@ import * as codepipeline from '../lib';
 /* eslint-disable quote-props */
 
 describe('variables', () => {
-  describe('Pipeline Variables', () => {
+  describe('action-level variables', () => {
     test('uses the passed namespace when its passed when constructing the Action', () => {
       const stack = new cdk.Stack();
       const sourceArtifact = new codepipeline.Artifact();
@@ -154,4 +155,227 @@ describe('variables', () => {
       });
     });
   });
+
+  describe('pipeline-level variables', () => {
+    let stack: cdk.Stack;
+    let sourceArtifact: codepipeline.Artifact;
+    let sourceActions: codepipeline.Action[];
+    let buildActions: codepipeline.Action[];
+    let variable1: codepipeline.Variable;
+    let variable2: codepipeline.Variable;
+
+    beforeEach(() => {
+      stack = new cdk.Stack();
+      sourceArtifact = new codepipeline.Artifact();
+      sourceActions = [new FakeSourceAction({
+        actionName: 'FakeSource',
+        output: sourceArtifact,
+      })];
+      buildActions = [new FakeBuildAction({
+        actionName: 'FakeBuild',
+        input: sourceArtifact,
+      })];
+      variable1 = new codepipeline.Variable({
+        variableName: 'var-name-1',
+        description: 'description',
+        defaultValue: 'default-value',
+      });
+      variable2 = new codepipeline.Variable({
+        variableName: 'var-name-2',
+        description: 'description',
+        defaultValue: 'default-value',
+      });
+    });
+
+    test('can specify pipeline-level variables', () => {
+      const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
+        pipelineType: codepipeline.PipelineType.V2,
+        variables: [variable1],
+      });
+
+      testPipelineSetup(pipeline, sourceActions, buildActions);
+
+      Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
+        PipelineType: 'V2',
+        Variables: [{
+          Name: 'var-name-1',
+          Description: 'description',
+          DefaultValue: 'default-value',
+        }],
+      });
+    });
+
+    test('can specify pipeline-level multiple variables', () => {
+      const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
+        pipelineType: codepipeline.PipelineType.V2,
+        variables: [variable1, variable2],
+      });
+
+      testPipelineSetup(pipeline, sourceActions, buildActions);
+
+      Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
+        PipelineType: 'V2',
+        Variables: [
+          {
+            Name: 'var-name-1',
+            Description: 'description',
+            DefaultValue: 'default-value',
+          },
+          {
+            Name: 'var-name-2',
+            Description: 'description',
+            DefaultValue: 'default-value',
+          },
+        ],
+      });
+    });
+
+    test('can specify pipeline-level variables by addVariable method', () => {
+      const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
+        pipelineType: codepipeline.PipelineType.V2,
+      });
+      pipeline.addVariable(variable1);
+
+      testPipelineSetup(pipeline, sourceActions, buildActions);
+
+      Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
+        PipelineType: 'V2',
+        Variables: [{
+          Name: 'var-name-1',
+          Description: 'description',
+          DefaultValue: 'default-value',
+        }],
+      });
+    });
+
+    test('can reference in a format `#{variables.${this.variableName}}`', () => {
+      expect(variable1.reference()).toEqual('#{variables.var-name-1}');
+    });
+
+    test('validate if pipeline-level variables are specified when pipelineType is not set to V2', () => {
+      const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
+        variables: [variable1],
+      });
+
+      testPipelineSetup(pipeline, sourceActions, buildActions);
+
+      const errors = validate(stack);
+
+      expect(errors.length).toEqual(1);
+      const error = errors[0];
+      expect(error).toMatch(/Pipeline variables can only be used with V2 pipelines, `PipelineType.V2` must be specified for `pipelineType`/);
+    });
+
+    test('validate if pipeline-level variables are specified when pipelineType is not set to V2 and addVariable method is used', () => {
+      const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {});
+      pipeline.addVariable(variable1);
+
+      testPipelineSetup(pipeline, sourceActions, buildActions);
+
+      const errors = validate(stack);
+
+      expect(errors.length).toEqual(1);
+      const error = errors[0];
+      expect(error).toMatch(/Pipeline variables can only be used with V2 pipelines, `PipelineType.V2` must be specified for `pipelineType`/);
+    });
+
+    test('throw if name for pipeline-level variable uses invalid character', () => {
+      expect(() => {
+        new codepipeline.Variable({
+          variableName: 'var name',
+          description: 'description',
+          defaultValue: 'default-value',
+        });
+      }).toThrow('Variable name must match regular expression: /^[A-Za-z0-9@\\-_]{1,128}$/, got \'var name\'');
+    });
+
+    test('throw if length of name for pipeline-level variable is less than 1', () => {
+      expect(() => {
+        new codepipeline.Variable({
+          variableName: '',
+          description: 'description',
+          defaultValue: 'default-value',
+        });
+      }).toThrow('Variable name must match regular expression: /^[A-Za-z0-9@\\-_]{1,128}$/, got \'\'');
+    });
+
+    test('throw if length of name for pipeline-level variable is greater than 128', () => {
+      expect(() => {
+        new codepipeline.Variable({
+          variableName: 'a'.repeat(129),
+          description: 'description',
+          defaultValue: 'default-value',
+        });
+      }).toThrow(`Variable name must match regular expression: /^[A-Za-z0-9@\\-_]{1,128}$/, got '${'a'.repeat(129)}'`);
+    });
+
+    test('throw if length of default value for pipeline-level variable is less than 1', () => {
+      expect(() => {
+        new codepipeline.Variable({
+          variableName: 'var-name-1',
+          description: 'description',
+          defaultValue: '',
+        });
+      }).toThrow(/Default value for variable 'var-name-1' must be between 1 and 1000 characters long, got 0/);
+    });
+
+    test('throw if length of default value for pipeline-level variable is greater than 1000', () => {
+      expect(() => {
+        new codepipeline.Variable({
+          variableName: 'var-name-1',
+          description: 'description',
+          defaultValue: 'a'.repeat(1001),
+        });
+      }).toThrow(/Default value for variable 'var-name-1' must be between 1 and 1000 characters long, got 1001/);
+    });
+
+    test('throw if length of description for pipeline-level variable is greater than 200', () => {
+      expect(() => {
+        new codepipeline.Variable({
+          variableName: 'var-name-1',
+          description: 'a'.repeat(201),
+          defaultValue: 'default',
+        });
+      }).toThrow(/Description for variable 'var-name-1' must not be greater than 200 characters long, got 201/);
+    });
+
+    test('throw if variable with duplicate name added to the Pipeline', () => {
+      const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
+        variables: [variable1],
+      });
+      const duplicated = new codepipeline.Variable({
+        variableName: 'var-name-1',
+        description: 'description-dummy',
+        defaultValue: 'default-dummy',
+      });
+      expect(() => {
+        pipeline.addVariable(duplicated);
+      }).toThrow(/Variable with duplicate name 'var-name-1' added to the Pipeline/);
+    });
+  });
 });
+
+function validate(construct: IConstruct): string[] {
+  try {
+    (construct.node.root as cdk.App).synth();
+    return [];
+  } catch (err: any) {
+    if (!('message' in err) || !err.message.startsWith('Validation failed')) {
+      throw err;
+    }
+    return err.message.split('\n').slice(1);
+  }
+}
+
+// Adding 2 stages with actions so pipeline validation will pass
+function testPipelineSetup(pipeline: codepipeline.Pipeline, sourceActions?: codepipeline.IAction[], buildActions?: codepipeline.IAction[]) {
+  pipeline.addStage({
+    stageName: 'Source',
+    actions: sourceActions,
+  });
+
+  pipeline.addStage({
+    stageName: 'Build',
+    actions: buildActions,
+  });
+}

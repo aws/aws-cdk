@@ -70,6 +70,7 @@ myTopic.addSubscription(new subscriptions.LambdaSubscription(fn, {
     color: sns.SubscriptionFilter.stringFilter({
       allowlist: ['red', 'orange'],
       matchPrefixes: ['bl'],
+      matchSuffixes: ['ue'],
     }),
     size: sns.SubscriptionFilter.stringFilter({
       denylist: ['small', 'medium'],
@@ -248,3 +249,22 @@ topic.addLoggingConfig({
 ```
 
 Note that valid values for `successFeedbackSampleRate` are integer between 0-100.
+
+## Archive Policy
+
+Message archiving provides the ability to archive a single copy of all messages published to your topic.
+You can store published messages within your topic by enabling the message archive policy on the topic, which enables message archiving for all subscriptions linked to that topic.
+Messages can be archived for a minimum of one day to a maximum of 365 days.
+
+Example with a archive policy for SQS:
+
+```ts
+declare const role: iam.Role;
+const topic = new sns.Topic(this, 'MyTopic', {
+  fifo: true,
+  messageRetentionPeriodInDays: 7,
+});
+```
+
+**Note**: The `messageRetentionPeriodInDays` property is only available for FIFO topics.
+

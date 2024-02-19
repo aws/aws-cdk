@@ -1,6 +1,7 @@
 import { Construct } from 'constructs';
 import { NetworkMode, TaskDefinition } from './base/task-definition';
 import { ContainerImage, ContainerImageConfig } from './container-image';
+import { CredentialSpec, CredentialSpecConfig } from './credential-spec';
 import { CfnTaskDefinition } from './ecs.generated';
 import { EnvironmentFile, EnvironmentFileConfig } from './environment-file';
 import { LinuxParameters } from './linux-parameters';
@@ -125,6 +126,17 @@ export interface ContainerDefinitionOptions {
    * @default - CMD value built into container image.
    */
   readonly command?: string[];
+
+  /**
+   * A list of ARNs in SSM or Amazon S3 to a credential spec (`CredSpec`) file that configures the container for Active Directory authentication.
+   *
+   * We recommend that you use this parameter instead of the `dockerSecurityOptions`.
+   *
+   * Currently, only one credential spec is allowed per container definition.
+   *
+   * @default - No credential specs.
+   */
+  readonly credentialSpecs?: CredentialSpec[];
 
   /**
    * The minimum number of CPU units to reserve for the container.
@@ -461,6 +473,11 @@ export class ContainerDefinition extends Construct {
   public readonly logDriverConfig?: LogDriverConfig;
 
   /**
+   * The crdential specifications for this container.
+   */
+  public readonly credentialSpecs?: CredentialSpecConfig[];
+
+  /**
    * The name of the image referenced by this container.
    */
   public readonly imageName: string;
@@ -535,6 +552,18 @@ export class ContainerDefinition extends Construct {
 
       for (const environmentFile of props.environmentFiles) {
         this.environmentFiles.push(environmentFile.bind(this));
+      }
+    }
+
+    if (props.credentialSpecs) {
+      this.credentialSpecs = [];
+
+      if (props.credentialSpecs.length > 1) {
+        throw new Error('Only one credential spec is allowed per container definition.');
+      }
+
+      for (const credSpec of props.credentialSpecs) {
+        this.credentialSpecs.push(credSpec.bind());
       }
     }
 
@@ -794,6 +823,7 @@ export class ContainerDefinition extends Construct {
   public renderContainerDefinition(_taskDefinition?: TaskDefinition): CfnTaskDefinition.ContainerDefinitionProperty {
     return {
       command: this.props.command,
+      credentialSpecs: this.credentialSpecs && this.credentialSpecs.map(renderCredentialSpec),
       cpu: this.props.cpu,
       disableNetworking: this.props.disableNetworking,
       dependsOn: cdk.Lazy.any({ produce: () => this.containerDependencies.map(renderContainerDependency) }, { omitEmptyArray: true }),
@@ -912,6 +942,14 @@ function renderEnvironmentFiles(partition: string, environmentFiles: Environment
   return ret;
 }
 
+function renderCredentialSpec(credSpec: CredentialSpecConfig): string {
+  if (!credSpec.location) {
+    throw Error('CredentialSpec must specify a valid location or ARN');
+  }
+
+  return `${credSpec.typePrefix}:${credSpec.location}`;
+}
+
 function renderHealthCheck(hc: HealthCheck): CfnTaskDefinition.HealthCheckProperty {
   if (hc.interval?.toSeconds() !== undefined) {
     if (5 > hc.interval?.toSeconds() || hc.interval?.toSeconds() > 300) {
@@ -988,17 +1026,17 @@ export interface Ulimit {
    *
    * For more information, see [UlimitName](https://docs.aws.amazon.com/cdk/api/latest/typescript/api/aws-ecs/ulimitname.html#aws_ecs_UlimitName).
    */
-  readonly name: UlimitName,
+  readonly name: UlimitName;
 
   /**
    * The soft limit for the ulimit type.
    */
-  readonly softLimit: number,
+  readonly softLimit: number;
 
   /**
    * The hard limit for the ulimit type.
    */
-  readonly hardLimit: number,
+  readonly hardLimit: number;
 }
 
 /**
@@ -1019,7 +1057,7 @@ export enum UlimitName {
   RTPRIO = 'rtprio',
   RTTIME = 'rttime',
   SIGPENDING = 'sigpending',
-  STACK = 'stack'
+  STACK = 'stack',
 }
 
 function renderUlimit(ulimit: Ulimit): CfnTaskDefinition.UlimitProperty {
@@ -1348,42 +1386,48 @@ export interface ScratchSpace {
   /**
    * The path on the container to mount the scratch volume at.
    */
-  readonly containerPath: string,
+  readonly containerPath: string;
   /**
    * Specifies whether to give the container read-only access to the scratch volume.
    *
    * If this value is true, the container has read-only access to the scratch volume.
    * If this value is false, then the container can write to the scratch volume.
    */
-  readonly readOnly: boolean,
-  readonly sourcePath: string,
+  readonly readOnly: boolean;
+  readonly sourcePath: string;
   /**
    * The name of the scratch volume to mount. Must be a volume name referenced in the name parameter of task definition volume.
    */
-  readonly name: string,
+  readonly name: string;
 }
 
 /**
- * The details of data volume mount points for a container.
+ * The base details of where a volume will be mounted within a container
  */
-export interface MountPoint {
+export interface BaseMountPoint {
   /**
    * The path on the container to mount the host volume at.
    */
-  readonly containerPath: string,
+  readonly containerPath: string;
   /**
    * Specifies whether to give the container read-only access to the volume.
    *
    * If this value is true, the container has read-only access to the volume.
    * If this value is false, then the container can write to the volume.
    */
-  readonly readOnly: boolean,
+  readonly readOnly: boolean;
+}
+
+/**
+ * The details of data volume mount points for a container.
+ */
+export interface MountPoint extends BaseMountPoint {
   /**
    * The name of the volume to mount.
    *
    * Must be a volume name referenced in the name parameter of task definition volume.
    */
-  readonly sourceVolume: string,
+  readonly sourceVolume: string;
 }
 
 function renderMountPoint(mp: MountPoint): CfnTaskDefinition.MountPointProperty {
@@ -1401,7 +1445,7 @@ export interface VolumeFrom {
   /**
    * The name of another container within the same task definition from which to mount volumes.
    */
-  readonly sourceContainer: string,
+  readonly sourceContainer: string;
 
   /**
    * Specifies whether the container has read-only access to the volume.
@@ -1409,7 +1453,7 @@ export interface VolumeFrom {
    * If this value is true, the container has read-only access to the volume.
    * If this value is false, then the container can write to the volume.
    */
-  readonly readOnly: boolean,
+  readonly readOnly: boolean;
 }
 
 function renderVolumeFrom(vf: VolumeFrom): CfnTaskDefinition.VolumeFromProperty {

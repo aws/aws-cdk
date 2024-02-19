@@ -297,7 +297,7 @@ export interface DatabaseProxyProps extends DatabaseProxyOptions {
   /**
    * DB proxy target: Instance or Cluster
    */
-  readonly proxyTarget: ProxyTarget
+  readonly proxyTarget: ProxyTarget;
 }
 
 /**
@@ -457,6 +457,9 @@ export class DatabaseProxy extends DatabaseProxyBase
 
     for (const secret of props.secrets) {
       secret.grantRead(role);
+      if (secret.encryptionKey) {
+        secret.encryptionKey.grantDecrypt(role);
+      }
     }
 
     const securityGroups = props.securityGroups ?? [

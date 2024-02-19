@@ -1,7 +1,7 @@
 import { Construct } from 'constructs';
 import { State } from './state';
 import { Chain } from '..';
-import { CatchProps, IChainable, INextable } from '../types';
+import { CatchProps, IChainable, INextable, RetryProps } from '../types';
 
 /**
  * Properties for defining a custom state definition
@@ -35,6 +35,17 @@ export class CustomState extends State implements IChainable, INextable {
   }
 
   /**
+   * Add retry configuration for this state
+   *
+   * This controls if and how the execution will be retried if a particular
+   * error occurs.
+   */
+  public addRetry(props: RetryProps = {}): CustomState {
+    super._addRetry(props);
+    return this;
+  }
+
+  /**
    * Add a recovery handler for this state
    *
    * When a particular error occurs, execution will continue at the error
@@ -57,10 +68,17 @@ export class CustomState extends State implements IChainable, INextable {
    * Returns the Amazon States Language object for this state
    */
   public toStateJson(): object {
-    return {
+    const state = {
       ...this.renderNextEnd(),
       ...this.stateJson,
       ...this.renderRetryCatch(),
     };
+
+    // merge the Retry filed defined in the stateJson into the state
+    if (Array.isArray(this.stateJson.Retry)) {
+      state.Retry = [...state.Retry, ...this.stateJson.Retry];
+    }
+
+    return state;
   }
 }

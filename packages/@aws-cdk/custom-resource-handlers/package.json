@@ -5,7 +5,7 @@
   "version": "0.0.0",
   "scripts": {
     "build": "tsc -b && node scripts/generate.js",
-    "integ": "integ-runner",
+    "integ": "integ-runner --language javascript",
     "lint": "cdk-lint",
     "package": "cdk-package",
     "awslint": "cdk-awslint",
@@ -45,17 +45,17 @@
     "@aws-sdk/client-eks": "3.421.0",
     "@aws-sdk/client-sts": "3.421.0",
     "@aws-sdk/node-http-handler": "^3.370.0",
-    "@smithy/util-stream": "^2.0.23",
-    "@types/jest": "^29.5.11",
-    "aws-sdk-client-mock": "^3.0.0",
-    "aws-sdk-client-mock-jest": "^3.0.0",
+    "@smithy/util-stream": "^2.1.1",
+    "@types/jest": "^29.5.12",
+    "aws-sdk-client-mock": "^3.0.1",
+    "aws-sdk-client-mock-jest": "^3.0.1",
     "aws-sdk-mock": "5.8.0",
     "@cdklabs/typewriter": "^0.0.3",
     "jest": "^29.7.0",
     "sinon": "^9.2.4",
-    "nock": "^13.4.0",
+    "nock": "^13.5.1",
     "fs-extra": "^11.2.0",
-    "esbuild": "^0.19.9"
+    "esbuild": "^0.20.0"
   },
   "dependencies": {
     "@aws-cdk/asset-node-proxy-agent-v6": "^2.0.1",
@@ -63,7 +63,7 @@
     "@aws-sdk/client-synthetics": "3.421.0",
     "@aws-sdk/client-ecr": "3.421.0",
     "@aws-sdk/client-s3": "3.421.0",
-    "aws-sdk": "^2.1517.0"
+    "aws-sdk": "^2.1557.0"
   },
   "repository": {
     "url": "https://github.com/aws/aws-cdk.git",

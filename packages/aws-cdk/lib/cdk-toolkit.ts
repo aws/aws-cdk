@@ -15,11 +15,11 @@ import { Deployments } from './api/deployments';
 import { HotswapMode } from './api/hotswap/common';
 import { findCloudWatchLogGroups } from './api/logs/find-cloudwatch-logs';
 import { CloudWatchLogEventMonitor } from './api/logs/logs-monitor';
-import { createDiffChangeSet } from './api/util/cloudformation';
+import { createDiffChangeSet, ResourcesToImport } from './api/util/cloudformation';
 import { StackActivityProgress } from './api/util/cloudformation/stack-activity-monitor';
-import { generateCdkApp, generateStack, readFromPath, readFromStack, setEnvironment, validateSourceOptions } from './commands/migrate';
+import { generateCdkApp, generateStack, readFromPath, readFromStack, setEnvironment, parseSourceOptions, generateTemplate, FromScan, TemplateSourceOptions, GenerateTemplateOutput, CfnTemplateGeneratorProvider, writeMigrateJsonFile, buildGenertedTemplateOutput, buildCfnClient, appendWarningsToReadme, isThereAWarning } from './commands/migrate';
 import { printSecurityDiff, printStackDiff, RequireApproval } from './diff';
-import { ResourceImporter } from './import';
+import { ResourceImporter, removeNonImportResources } from './import';
 import { data, debug, error, highlight, print, success, warning, withCorkedLogging } from './logging';
 import { deserializeStructure, serializeStructure } from './serialize';
 import { Configuration, PROJECT_CONFIG } from './settings';
@@ -162,6 +162,11 @@ export class CdkToolkit {
         const currentTemplate = templateWithNestedStacks.deployedRootTemplate;
         const nestedStacks = templateWithNestedStacks.nestedStacks;
 
+        const resourcesToImport = await this.tryGetResources(await this.props.deployments.resolveEnvironment(stack));
+        if (resourcesToImport) {
+          removeNonImportResources(stack);
+        }
+
         const changeSet = options.changeSet ? await createDiffChangeSet({
           stack,
           uuid: uuid.v4(),
@@ -169,8 +174,13 @@ export class CdkToolkit {
           willExecute: false,
           sdkProvider: this.props.sdkProvider,
           parameters: Object.assign({}, parameterMap['*'], parameterMap[stacks.firstStack.stackName]),
+          resourcesToImport,
           stream,
         }) : undefined;
+
+        if (resourcesToImport) {
+          stream.write('Parameters and rules created during migration do not affect resource configuration.\n');
+        }
 
         const stackCount =
         options.securityOnly
@@ -200,9 +210,18 @@ export class CdkToolkit {
     }
 
     const startSynthTime = new Date().getTime();
-    const stackCollection = await this.selectStacksForDeploy(options.selector, options.exclusively, options.cacheCloudAssembly);
+    const stackCollection = await this.selectStacksForDeploy(options.selector, options.exclusively,
+      options.cacheCloudAssembly, options.ignoreNoStacks);
     const elapsedSynthTime = new Date().getTime() - startSynthTime;
     print('\n✨  Synthesis time: %ss\n', formatTime(elapsedSynthTime));
+
+    if (stackCollection.stackCount === 0) {
+      // eslint-disable-next-line no-console
+      console.error('This app contains no stacks');
+      return;
+    }
+
+    await this.tryMigrateResources(stackCollection, options);
 
     const requireApproval = options.requireApproval ?? RequireApproval.Broadening;
 
@@ -317,6 +336,7 @@ export class CdkToolkit {
           hotswap: options.hotswap,
           extraUserAgent: options.extraUserAgent,
           assetParallelism: options.assetParallelism,
+          ignoreNoStacks: options.ignoreNoStacks,
         });
 
         const message = result.noOp
@@ -404,7 +424,7 @@ export class CdkToolkit {
     const rootDir = path.dirname(path.resolve(PROJECT_CONFIG));
     debug("root directory used for 'watch' is: %s", rootDir);
 
-    const watchSettings: { include?: string | string[], exclude: string | string [] } | undefined =
+    const watchSettings: { include?: string | string[]; exclude: string | string [] } | undefined =
         this.props.configuration.settings.get(['watch']);
     if (!watchSettings) {
       throw new Error("Cannot use the 'watch' command without specifying at least one directory to monitor. " +
@@ -491,7 +511,7 @@ export class CdkToolkit {
   }
 
   public async import(options: ImportOptions) {
-    const stacks = await this.selectStacksForDeploy(options.selector, true, true);
+    const stacks = await this.selectStacksForDeploy(options.selector, true, true, false);
 
     if (stacks.stackCount > 1) {
       throw new Error(`Stack selection is ambiguous, please choose a specific stack for import [${stacks.stackArtifacts.map(x => x.id).join(', ')}]`);
@@ -537,9 +557,7 @@ export class CdkToolkit {
     // Import the resources according to the given mapping
     print('%s: importing resources into stack...', chalk.bold(stack.displayName));
     const tags = tagsForStack(stack);
-    await resourceImporter.importResources(actualImport, {
-      stack,
-      deployName: stack.stackName,
+    await resourceImporter.importResourcesFromMap(actualImport, {
       roleArn: options.roleArn,
       toolkitStackName: options.toolkitStackName,
       tags,
@@ -595,7 +613,7 @@ export class CdkToolkit {
     }
   }
 
-  public async list(selectors: string[], options: { long?: boolean, json?: boolean } = { }): Promise<number> {
+  public async list(selectors: string[], options: { long?: boolean; json?: boolean } = { }): Promise<number> {
     const stacks = await this.selectStacksForList(selectors);
 
     // if we are in "long" mode, emit the array as-is (JSON/YAML)
@@ -715,21 +733,82 @@ export class CdkToolkit {
    * @param options Options for CDK app creation
    */
   public async migrate(options: MigrateOptions): Promise<void> {
-    warning('This is an experimental feature and development on it is still in progress. We make no guarantees about the outcome or stability of the functionality.');
+    warning('This command is an experimental feature.');
     const language = options.language?.toLowerCase() ?? 'typescript';
+    const environment = setEnvironment(options.account, options.region);
+    let generateTemplateOutput: GenerateTemplateOutput | undefined;
+    let cfn: CfnTemplateGeneratorProvider | undefined;
+    let templateToDelete: string | undefined;
 
     try {
-      validateSourceOptions(options.fromPath, options.fromStack);
-      const template = readFromPath(options.fromPath) ||
-        await readFromStack(options.stackName, this.props.sdkProvider, setEnvironment(options.account, options.region));
-      const stack = generateStack(template!, options.stackName, language);
+      // if neither fromPath nor fromStack is provided, generate a template using cloudformation
+      const scanType = parseSourceOptions(options.fromPath, options.fromStack, options.stackName).source;
+      if (scanType == TemplateSourceOptions.SCAN) {
+        generateTemplateOutput = await generateTemplate({
+          stackName: options.stackName,
+          filters: options.filter,
+          fromScan: options.fromScan,
+          sdkProvider: this.props.sdkProvider,
+          environment: environment,
+        });
+        templateToDelete = generateTemplateOutput.templateId;
+      } else if (scanType == TemplateSourceOptions.PATH) {
+        const templateBody = readFromPath(options.fromPath!);
+
+        const parsedTemplate = deserializeStructure(templateBody);
+        const templateId = parsedTemplate.Metadata?.TemplateId?.toString();
+        if (templateId) {
+          // if we have a template id, we can call describe generated template to get the resource identifiers
+          // resource metadata, and template source to generate the template
+          cfn = new CfnTemplateGeneratorProvider(await buildCfnClient(this.props.sdkProvider, environment));
+          const generatedTemplateSummary = await cfn.describeGeneratedTemplate(templateId);
+          generateTemplateOutput = buildGenertedTemplateOutput(generatedTemplateSummary, templateBody, generatedTemplateSummary.GeneratedTemplateId!);
+        } else {
+          generateTemplateOutput = {
+            migrateJson: {
+              templateBody: templateBody,
+              source: 'localfile',
+            },
+          };
+        }
+      } else if (scanType == TemplateSourceOptions.STACK) {
+        const template = await readFromStack(options.stackName, this.props.sdkProvider, environment);
+        if (!template) {
+          throw new Error(`No template found for stack-name: ${options.stackName}`);
+        }
+        generateTemplateOutput = {
+          migrateJson: {
+            templateBody: template,
+            source: options.stackName,
+          },
+        };
+      } else {
+        // We shouldn't ever get here, but just in case.
+        throw new Error(`Invalid source option provided: ${scanType}`);
+      }
+      const stack = generateStack(generateTemplateOutput.migrateJson.templateBody, options.stackName, language);
       success(' ⏳  Generating CDK app for %s...', chalk.blue(options.stackName));
       await generateCdkApp(options.stackName, stack!, language, options.outputPath, options.compress);
+      if (generateTemplateOutput) {
+        writeMigrateJsonFile(options.outputPath, options.stackName, generateTemplateOutput.migrateJson);
+      }
+      if (isThereAWarning(generateTemplateOutput)) {
+        warning(' ⚠️  Some resources could not be migrated completely. Please review the README.md file for more information.');
+        appendWarningsToReadme(`${path.join(options.outputPath ?? process.cwd(), options.stackName)}/README.md`, generateTemplateOutput.resources!);
+      }
     } catch (e) {
-      error(' ❌  Migrate failed for `%s`: %s', chalk.blue(options.stackName), (e as Error).message);
+      error(' ❌  Migrate failed for `%s`: %s', options.stackName, (e as Error).message);
       throw e;
+    } finally {
+      if (templateToDelete) {
+        if (!cfn) {
+          cfn = new CfnTemplateGeneratorProvider(await buildCfnClient(this.props.sdkProvider, environment));
+        }
+        if (!process.env.MIGRATE_INTEG_TEST) {
+          await cfn.deleteGeneratedTemplate(templateToDelete);
+        }
+      }
     }
-
   }
 
   private async selectStacksForList(patterns: string[]) {
@@ -741,11 +820,13 @@ export class CdkToolkit {
     return stacks;
   }
 
-  private async selectStacksForDeploy(selector: StackSelector, exclusively?: boolean, cacheCloudAssembly?: boolean): Promise<StackCollection> {
+  private async selectStacksForDeploy(selector: StackSelector, exclusively?: boolean,
+    cacheCloudAssembly?: boolean, ignoreNoStacks?: boolean): Promise<StackCollection> {
     const assembly = await this.assembly(cacheCloudAssembly);
     const stacks = await assembly.selectStacks(selector, {
       extend: exclusively ? ExtendedStackSelection.None : ExtendedStackSelection.Upstream,
       defaultBehavior: DefaultSelection.OnlySingle,
+      ignoreNoStacks,
     });
 
     this.validateStacksSelected(stacks, selector.patterns);
@@ -828,7 +909,7 @@ export class CdkToolkit {
     return this.props.cloudExecutable.synthesize(cacheCloudAssembly);
   }
 
-  private patternsArrayForWatch(patterns: string | string[] | undefined, options: { rootDir: string, returnRootDirIfEmpty: boolean }): string[] {
+  private patternsArrayForWatch(patterns: string | string[] | undefined, options: { rootDir: string; returnRootDirIfEmpty: boolean }): string[] {
     const patternsArray: string[] = patterns !== undefined
       ? (Array.isArray(patterns) ? patterns : [patterns])
       : [];
@@ -869,6 +950,64 @@ export class CdkToolkit {
       toolkitStackName: options.toolkitStackName,
       stackName: assetNode.parentStack.stackName,
     }));
+  }
+
+  /**
+   * Checks to see if a migrate.json file exists. If it does and the source is either `filepath` or
+   * is in the same environment as the stack deployment, a new stack is created and the resources are
+   * migrated to the stack using an IMPORT changeset. The normal deployment will resume after this is complete
+   * to add back in any outputs and the CDKMetadata.
+   */
+  private async tryMigrateResources(stacks: StackCollection, options: DeployOptions): Promise<void> {
+    const stack = stacks.stackArtifacts[0];
+    const migrateDeployment = new ResourceImporter(stack, this.props.deployments);
+    const resourcesToImport = await this.tryGetResources(await migrateDeployment.resolveEnvironment());
+
+    if (resourcesToImport) {
+      print('%s: creating stack for resource migration...', chalk.bold(stack.displayName));
+      print('%s: importing resources into stack...', chalk.bold(stack.displayName));
+
+      await this.performResourceMigration(migrateDeployment, resourcesToImport, options);
+
+      fs.rmSync('migrate.json');
+      print('%s: applying CDKMetadata and Outputs to stack (if applicable)...', chalk.bold(stack.displayName));
+    }
+  }
+
+  /**
+   * Creates a new stack with just the resources to be migrated
+   */
+  private async performResourceMigration(migrateDeployment: ResourceImporter, resourcesToImport: ResourcesToImport, options: DeployOptions) {
+    const startDeployTime = new Date().getTime();
+    let elapsedDeployTime = 0;
+
+    // Initial Deployment
+    await migrateDeployment.importResourcesFromMigrate(resourcesToImport, {
+      roleArn: options.roleArn,
+      toolkitStackName: options.toolkitStackName,
+      deploymentMethod: options.deploymentMethod,
+      usePreviousParameters: true,
+      progress: options.progress,
+      rollback: options.rollback,
+    });
+
+    elapsedDeployTime = new Date().getTime() - startDeployTime;
+    print('\n✨  Resource migration time: %ss\n', formatTime(elapsedDeployTime));
+  }
+
+  private async tryGetResources(environment: cxapi.Environment): Promise<ResourcesToImport | undefined> {
+    try {
+      const migrateFile = fs.readJsonSync('migrate.json', { encoding: 'utf-8' });
+      const sourceEnv = (migrateFile.Source as string).split(':');
+      if (sourceEnv[0] === 'localfile' ||
+        (sourceEnv[4] === environment.account && sourceEnv[3] === environment.region)) {
+        return migrateFile.Resources;
+      }
+    } catch (e) {
+      // Nothing to do
+    }
+
+    return undefined;
   }
 }
 
@@ -1159,6 +1298,13 @@ export interface DeployOptions extends CfnDeployOptions, WatchOptions {
    * @default AssetBuildTime.ALL_BEFORE_DEPLOY
    */
   readonly assetBuildTime?: AssetBuildTime;
+
+  /**
+   * Whether to deploy if the app contains no stacks.
+   *
+   * @default false
+   */
+  readonly ignoreNoStacks?: boolean;
 }
 
 export interface ImportOptions extends CfnDeployOptions {
@@ -1209,7 +1355,7 @@ export interface DestroyOptions {
   /**
    * Whether the destroy request came from a deploy.
    */
-  fromDeploy?: boolean
+  fromDeploy?: boolean;
 
   /**
    * Whether we are on a CI system
@@ -1267,6 +1413,20 @@ export interface MigrateOptions {
    * @default - Uses the default region for the credentials in use by the user.
    */
   readonly region?: string;
+
+  /**
+   * Filtering criteria used to select the resources to be included in the generated CDK app.
+   *
+   * @default - Include all resources
+   */
+  readonly filter?: string[];
+
+  /**
+   * Whether to initiate a new account scan for generating the CDK app.
+   *
+   * @default false
+   */
+  readonly fromScan?: FromScan;
 
   /**
    * Whether to zip the generated cdk app folder.

@@ -277,6 +277,20 @@ cluster.addCapacity('graviton-cluster', {
 });
 ```
 
+### Amazon Linux 2 (Neuron) Instances
+
+To launch Amazon EC2 Inf1, Trn1 or Inf2 instances, you can use the Amazon ECS optimized Amazon Linux 2 (Neuron) AMI. It comes pre-configured with AWS Inferentia and AWS Trainium drivers and the AWS Neuron runtime for Docker which makes running machine learning inference workloads easier on Amazon ECS.
+
+```ts
+declare const cluster: ecs.Cluster;
+
+cluster.addCapacity('neuron-cluster', {
+  minCapacity: 2,
+  instanceType: new ec2.InstanceType('inf1.xlarge'),
+  machineImage: ecs.EcsOptimizedImage.amazonLinux2(ecs.AmiHardwareType.NEURON),
+});
+```
+
 ### Spot Instances
 
 To add spot instances into the cluster, you must specify the `spotPrice` in the `ecs.AddCapacityOptions` and optionally enable the `spotInstanceDraining` property.
@@ -609,6 +623,44 @@ taskDefinition.addContainer('windowsservercore', {
 });
 ```
 
+### Using Windows authentication with gMSA
+
+Amazon ECS supports Active Directory authentication for Linux containers through a special kind of service account called a group Managed Service Account (gMSA). For more details, please see the [product documentation on how to implement on Windows containers](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/windows-gmsa.html), or this [blog post on how to implement on  Linux containers](https://aws.amazon.com/blogs/containers/using-windows-authentication-with-gmsa-on-linux-containers-on-amazon-ecs/).
+
+There are two types of CredentialSpecs, domained-join or domainless. Both types support creation from a S3 bucket, a SSM parameter, or by directly specifying a location for the file in the constructor.
+
+A domian-joined gMSA container looks like:
+
+```ts
+// Make sure the task definition's execution role has permissions to read from the S3 bucket or SSM parameter where the CredSpec file is stored.
+declare const parameter: ssm.IParameter;
+declare const taskDefinition: ecs.TaskDefinition;
+
+// Domain-joined gMSA container from a SSM parameter
+taskDefinition.addContainer('gmsa-domain-joined-container', {
+  image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+  cpu: 128,
+  memoryLimitMiB: 256,
+  credentialSpecs: [ecs.DomainJoinedCredentialSpec.fromSsmParameter(parameter)],
+});
+```
+
+A domianless gMSA container looks like:
+
+```ts
+// Make sure the task definition's execution role has permissions to read from the S3 bucket or SSM parameter where the CredSpec file is stored.
+declare const bucket: s3.Bucket;
+declare const taskDefinition: ecs.TaskDefinition;
+
+// Domainless gMSA container from a S3 bucket object.
+taskDefinition.addContainer('gmsa-domainless-container', {
+  image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+  cpu: 128,
+  memoryLimitMiB: 256,
+  credentialSpecs: [ecs.DomainlessCredentialSpec.fromS3Bucket(bucket, 'credSpec')],
+});
+```
+
 ### Using Graviton2 with Fargate
 
 AWS Graviton2 supports AWS Fargate. For more details, please see this [blog post](https://aws.amazon.com/blogs/aws/announcing-aws-graviton2-support-for-aws-fargate-get-up-to-40-better-price-performance-for-your-serverless-containers/)
@@ -693,9 +745,13 @@ new ecs.ExternalService(this, 'Service', {
 ### Deployment circuit breaker and rollback
 
 Amazon ECS [deployment circuit breaker](https://aws.amazon.com/tw/blogs/containers/announcing-amazon-ecs-deployment-circuit-breaker/)
-automatically rolls back unhealthy service deployments without the need for manual intervention. Use `circuitBreaker` to enable
-deployment circuit breaker and optionally enable `rollback` for automatic rollback. See [Using the deployment circuit breaker](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/deployment-type-ecs.html)
-for more details.
+automatically rolls back unhealthy service deployments, eliminating the need for manual intervention.
+
+Use `circuitBreaker` to enable the deployment circuit breaker which determines whether a service deployment
+will fail if the service can't reach a steady state.
+You can optionally enable `rollback` for automatic rollback.
+
+See [Using the deployment circuit breaker](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/deployment-type-ecs.html) for more details.
 
 ```ts
 declare const cluster: ecs.Cluster;
@@ -703,7 +759,10 @@ declare const taskDefinition: ecs.TaskDefinition;
 const service = new ecs.FargateService(this, 'Service', {
   cluster,
   taskDefinition,
-  circuitBreaker: { rollback: true },
+  circuitBreaker: {
+    enable: true,
+    rollback: true
+  },
 });
 ```
 
@@ -1359,7 +1418,7 @@ rather manage scaling behavior yourself set `enableManagedScaling` to `false`.
 
 Additionally [Managed Termination Protection](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/cluster-auto-scaling.html#managed-termination-protection) is enabled by default to
 prevent scale-in behavior from terminating instances that have non-daemon tasks
-running on them. This is ideal for tasks that should be ran to completion. If your
+running on them. This is ideal for tasks that can be run to completion. If your
 tasks are safe to interrupt then this protection can be disabled by setting
 `enableManagedTerminationProtection` to `false`. Managed Scaling must be enabled for
 Managed Termination Protection to work.
@@ -1371,6 +1430,11 @@ Managed Termination Protection to work.
 > Provider. If you'd rather not disable Managed Termination Protection, you can [manually
 > delete the Auto Scaling Group](https://docs.aws.amazon.com/autoscaling/ec2/userguide/as-process-shutdown.html).
 > For other workarounds, see [this GitHub issue](https://github.com/aws/aws-cdk/issues/18179).
+
+Managed instance draining facilitates graceful termination of Amazon ECS instances.
+This allows your service workloads to stop safely and be rescheduled to non-terminating instances.
+Infrastructure maintenance and updates are preformed without disruptions to workloads.
+To use managed instance draining, set enableManagedDraining to true.
 
 ```ts
 declare const vpc: ec2.Vpc;
@@ -1624,6 +1688,115 @@ const customService = new ecs.FargateService(this, 'CustomizedService', {
     ],
   },
 });
+```
+
+To set a timeout for service connect, use `idleTimeout` and `perRequestTimeout`.
+
+**Note**: If `idleTimeout` is set to a time that is less than `perRequestTimeout`, the connection will close when
+the `idleTimeout` is reached and not the `perRequestTimeout`.
+
+```ts
+declare const cluster: ecs.Cluster;
+declare const taskDefinition: ecs.TaskDefinition;
+
+const service = new ecs.FargateService(this, 'Service', {
+  cluster,
+  taskDefinition,
+  serviceConnectConfiguration: {
+    services: [
+      {
+        portMappingName: 'api',
+        idleTimeout: Duration.minutes(5),
+        perRequestTimeout: Duration.minutes(5),
+      },
+    ],
+  },
+});
+```
+
+> Visit [Amazon ECS support for configurable timeout for services running with Service Connect](https://aws.amazon.com/about-aws/whats-new/2024/01/amazon-ecs-configurable-timeout-service-connect/) for more details.
+
+## ServiceManagedVolume
+
+Amazon ECS now supports the attachment of Amazon Elastic Block Store (EBS) volumes to ECS tasks,
+allowing you to utilize persistent, high-performance block storage with your ECS services. 
+This feature supports various use cases, such as using EBS volumes as extended ephemeral storage or 
+loading data from EBS snapshots. 
+You can also specify `encrypted: true` so that ECS will manage the KMS key. If you want to use your own KMS key, you may do so by providing both `encrypted: true` and `kmsKeyId`.
+
+You can only attach a single volume for each task in the ECS Service.
+
+To add an empty EBS Volume to an ECS Service, call service.addVolume().
+
+```ts
+declare const cluster: ecs.Cluster;
+const taskDefinition = new ecs.FargateTaskDefinition(this, 'TaskDef');
+
+const container = taskDefinition.addContainer('web', {
+  image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+  portMappings: [{
+    containerPort: 80,
+    protocol: ecs.Protocol.TCP,
+  }],
+});
+
+const volume = new ecs.ServiceManagedVolume(this, 'EBSVolume', {
+  name: 'ebs1',
+  managedEBSVolume: {
+    size: Size.gibibytes(15),
+    volumeType: ec2.EbsDeviceVolumeType.GP3,
+    fileSystemType: ecs.FileSystemType.XFS,
+    tagSpecifications: [{
+      tags: {
+        purpose: 'production',
+      },
+      propagateTags: ecs.EbsPropagatedTagSource.SERVICE,
+    }],
+  },
+});
+
+volume.mountIn(container, {
+  containerPath: '/var/lib',
+  readOnly: false,
+});
+
+taskDefinition.addVolume(volume);
+
+const service = new ecs.FargateService(this, 'FargateService', {
+  cluster,
+  taskDefinition,
+});
+
+service.addVolume(volume);
+```
+
+To create an EBS volume from an existing snapshot by specifying the `snapShotId` while adding a volume to the service.
+
+```ts
+declare const container: ecs.ContainerDefinition;
+declare const cluster: ecs.Cluster;
+declare const taskDefinition: ecs.TaskDefinition;
+
+const volumeFromSnapshot = new ecs.ServiceManagedVolume(this, 'EBSVolume', {
+  name: 'nginx-vol',
+  managedEBSVolume: {
+    snapShotId: 'snap-066877671789bd71b',
+    volumeType: ec2.EbsDeviceVolumeType.GP3,
+    fileSystemType: ecs.FileSystemType.XFS,
+  },
+});
+
+volumeFromSnapshot.mountIn(container, {
+  containerPath: '/var/lib',
+  readOnly: false,
+});
+taskDefinition.addVolume(volumeFromSnapshot);
+const service = new ecs.FargateService(this, 'FargateService', {
+  cluster,
+  taskDefinition,
+});
+
+service.addVolume(volumeFromSnapshot);
 ```
 
 ## Enable pseudo-terminal (TTY) allocation

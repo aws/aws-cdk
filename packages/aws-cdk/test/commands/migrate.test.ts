@@ -2,8 +2,9 @@ import { exec as _exec } from 'child_process';
 import * as os from 'os';
 import * as path from 'path';
 import { promisify } from 'util';
+import { CloudFormation } from 'aws-sdk';
 import * as fs from 'fs-extra';
-import { generateCdkApp, generateStack, readFromPath, readFromStack, setEnvironment, validateSourceOptions } from '../../lib/commands/migrate';
+import { generateCdkApp, generateStack, readFromPath, readFromStack, setEnvironment, parseSourceOptions, generateTemplate, TemplateSourceOptions, GenerateTemplateOptions, FromScan } from '../../lib/commands/migrate';
 import { MockSdkProvider, MockedObject, SyncHandlerSubsetOf } from '../util/mock-sdk';
 
 const exec = promisify(_exec);
@@ -19,6 +20,7 @@ describe('Migrate Function Tests', () => {
   const stackPath = [...testResourcePath, 'stacks'];
 
   const validTemplatePath = path.join(...templatePath, 's3-template.json');
+  const emptyTemplatePath = path.join(...templatePath, 'empty-template.yml');
   const validTemplate = readFromPath(validTemplatePath)!;
 
   beforeEach(async () => {
@@ -29,28 +31,28 @@ describe('Migrate Function Tests', () => {
     sdkProvider.stubCloudFormation(cfnMocks as any);
   });
 
-  test('validateSourceOptions throws if both --from-path and --from-stack is provided', () => {
-    expect(() => validateSourceOptions('any-value', true)).toThrowError('Only one of `--from-path` or `--from-stack` may be provided.');
+  test('parseSourceOptions throws if both --from-path and --from-stack is provided', () => {
+    expect(() => parseSourceOptions('any-value', true, 'my-awesome-stack')).toThrowError('Only one of `--from-path` or `--from-stack` may be provided.');
   });
 
-  test('validateSourceOptions throws if neither --from-path or --from-stack is provided', () => {
-    expect(() => validateSourceOptions(undefined, undefined)).toThrowError('Either `--from-path` or `--from-stack` must be used to provide the source of the CloudFormation template.');
+  test('parseSourceOptions returns from-scan when neither --from-path or --from-stack are provided', () => {
+    expect(parseSourceOptions(undefined, undefined, 'my-stack-name')).toStrictEqual({ source: TemplateSourceOptions.SCAN });
   });
 
-  test('validateSourceOptions does not throw when only --from-path is supplied', () => {
-    expect(() => validateSourceOptions('any-value', false)).not.toThrow();
+  test('parseSourceOptions does not throw when only --from-path is supplied', () => {
+    expect(parseSourceOptions('my-file-path', undefined, 'my-stack-name')).toStrictEqual({ source: TemplateSourceOptions.PATH, templatePath: 'my-file-path' });
   });
 
-  test('validateSourceOptions does now throw when only --from-stack is provided', () => {
-    expect(() => validateSourceOptions(undefined, true)).not.toThrow();
+  test('parseSourceOptions does now throw when only --from-stack is provided', () => {
+    expect(parseSourceOptions(undefined, true, 'my-stack-name')).toStrictEqual({ source: TemplateSourceOptions.STACK, stackName: 'my-stack-name' });
   });
 
   test('readFromPath produces a string representation of the template at a given path', () => {
     expect(readFromPath(validTemplatePath)).toEqual(fs.readFileSync(validTemplatePath, 'utf8'));
   });
 
-  test('readFromPath returns undefined when template file is not provided', () => {
-    expect(readFromPath()).toEqual(undefined);
+  test('readFromPath throws error when template file is empty', () => {
+    expect(() => readFromPath(emptyTemplatePath)).toThrow(`\'${emptyTemplatePath}\' is an empty file.`);
   });
 
   test('readFromPath throws error when template file does not exist at a given path', () => {
@@ -152,6 +154,18 @@ describe('Migrate Function Tests', () => {
     expect(replacedStack).toEqual(fs.readFileSync(path.join(...stackPath, 's3-stack.ts'), 'utf8'));
   });
 
+  cliTest('generateCdkApp adds cdk-migrate key in context', async (workDir) => {
+    const stack = generateStack(validTemplate, 'GoodTypeScript', 'typescript');
+    await generateCdkApp('GoodTypeScript', stack, 'typescript', workDir);
+
+    // cdk.json exist in the correct spot
+    expect(fs.pathExistsSync(path.join(workDir, 'GoodTypeScript', 'cdk.json'))).toBeTruthy();
+
+    // cdk.json has "cdk-migrate" : true in context
+    const cdkJson = fs.readJsonSync(path.join(workDir, 'GoodTypeScript', 'cdk.json'), 'utf8');
+    expect(cdkJson.context['cdk-migrate']).toBeTruthy();
+  });
+
   cliTest('generateCdkApp generates the expected cdk app when called for python', async (workDir) => {
     const stack = generateStack(validTemplate, 'GoodPython', 'python');
     await generateCdkApp('GoodPython', stack, 'python', workDir);
@@ -215,7 +229,7 @@ describe('Migrate Function Tests', () => {
 
     expect(fs.pathExists(path.join(workDir, 's3.go'))).toBeTruthy();
     const app = fs.readFileSync(path.join(workDir, 'GoodGo', 'good_go.go'), 'utf8').split('\n');
-    expect(app.map(line => line.match(/func NewGoodGoStack\(scope constructs.Construct, id string, props GoodGoStackProps\) \*GoodGoStack \{/)).filter(line => line).length).toEqual(1);
+    expect(app.map(line => line.match(/func NewGoodGoStack\(scope constructs.Construct, id string, props \*GoodGoStackProps\) \*GoodGoStack \{/)).filter(line => line).length).toEqual(1);
     expect(app.map(line => line.match(/    NewGoodGoStack\(app, "GoodGo", &GoodGoStackProps\{/)));
   });
 
@@ -253,3 +267,220 @@ async function withTempDir(cb: (dir: string) => void | Promise<any>) {
     await fs.remove(tmpDir);
   }
 }
+
+describe('generateTemplate', () => {
+  let sdkProvider: MockSdkProvider;
+  let cloudFormationMocks: MockedObject<SyncHandlerSubsetOf<AWS.CloudFormation>>;
+  const sampleResource = {
+    ResourceType: 'AWS::S3::Bucket',
+    ManagedByStack: true,
+    ResourceIdentifier: { 'my-key': 'my-bucket' },
+    LogicalResourceId: 'my-bucket',
+  };
+  const sampleResource2 = {
+    ResourceType: 'AWS::EC2::Instance',
+    ResourceIdentifier: {
+      instanceId: 'i-1234567890abcdef0',
+    },
+    LogicalResourceId: 'my-ec2-instance',
+    ManagedByStack: true,
+  };
+  const stackName = 'my-stack';
+  const environment = setEnvironment('123456789012', 'us-east-1');
+  const scanId = 'fake-scan-id';
+  const defaultExpectedResult = {
+    migrateJson: {
+      resources: [
+        {
+          LogicalResourceId: 'my-bucket',
+          ResourceIdentifier: { 'my-key': 'my-bucket' },
+          ResourceType: 'AWS::S3::Bucket',
+        },
+        {
+          LogicalResourceId: 'my-ec2-instance',
+          ResourceIdentifier: { instanceId: 'i-1234567890abcdef0' },
+          ResourceType: 'AWS::EC2::Instance',
+        },
+      ],
+      source: 'template-arn',
+      templateBody: 'template-body',
+    },
+    resources: [
+      {
+        LogicalResourceId: 'my-bucket',
+        ManagedByStack: true,
+        ResourceIdentifier: {
+          'my-key': 'my-bucket',
+        },
+        ResourceType: 'AWS::S3::Bucket',
+      },
+      {
+        LogicalResourceId: 'my-ec2-instance',
+        ManagedByStack: true,
+        ResourceIdentifier: {
+          instanceId: 'i-1234567890abcdef0',
+        },
+        ResourceType: 'AWS::EC2::Instance',
+      },
+    ],
+  };
+
+  beforeEach(() => {
+    sdkProvider = new MockSdkProvider();
+    cloudFormationMocks = {
+      startResourceScan: jest.fn(),
+      listResourceScans: jest.fn(),
+      describeResourceScan: jest.fn(),
+      listResourceScanResources: jest.fn(),
+      createGeneratedTemplate: jest.fn(),
+      describeGeneratedTemplate: jest.fn(),
+      getGeneratedTemplate: jest.fn(),
+      listResourceScanRelatedResources: jest.fn(),
+      config: {
+        getCredentials: jest.fn(),
+        getToken: jest.fn(),
+        loadFromPath: jest.fn(),
+        update: jest.fn(),
+        getPromisesDependency: jest.fn(),
+        setPromisesDependency: jest.fn(),
+        customUserAgent: 'cdk-migrate',
+      },
+    };
+
+    sdkProvider.stubCloudFormation(cloudFormationMocks as any);
+  });
+
+  test('generateTemplate successfully generates template with a new scan', async () => {
+    const resourceScanSummaries = [{ ResourceScanId: scanId, Status: 'COMPLETE', PercentageCompleted: 100 }];
+
+    cloudFormationMocks.startResourceScan!.mockReturnValue({ ResourceScanId: scanId });
+    cloudFormationMocks.listResourceScans!.mockReturnValue({ ResourceScanSummaries: resourceScanSummaries });
+    cloudFormationMocks.describeResourceScan!.mockReturnValue({ Status: 'COMPLETED' });
+    cloudFormationMocks.listResourceScanResources!.mockReturnValue({ Resources: [sampleResource2] });
+    cloudFormationMocks.createGeneratedTemplate!.mockReturnValue({ GeneratedTemplateId: 'template-arn' });
+    cloudFormationMocks.describeGeneratedTemplate!.mockReturnValue({ Status: 'COMPLETE', Resources: [sampleResource, sampleResource2] });
+    cloudFormationMocks.getGeneratedTemplate!.mockReturnValue({ TemplateBody: 'template-body' });
+    cloudFormationMocks.listResourceScanRelatedResources!.mockReturnValue({ RelatedResources: [sampleResource] });
+
+    const opts: GenerateTemplateOptions = {
+      stackName: stackName,
+      filters: [],
+      fromScan: FromScan.NEW,
+      sdkProvider: sdkProvider,
+      environment: environment,
+    };
+
+    const template = await generateTemplate(opts);
+    expect(template).toEqual(defaultExpectedResult);
+  });
+
+  test('generateTemplate successfully defaults to latest scan instead of starting a new one', async () => {
+    const resourceScanSummaryComplete = [{ ResourceScanId: scanId, Status: 'COMPLETE', PercentageCompleted: 100 }];
+    const resourceScanSummaryInProgress = [{ ResourceScanId: scanId, Status: 'IN_PROGRESS', PercentageCompleted: 50 }];
+
+    cloudFormationMocks.startResourceScan!.mockImplementation(() => { throw new Error('No >:('); });
+    cloudFormationMocks.listResourceScans!.mockReturnValueOnce({ ResourceScanSummaries: resourceScanSummaryInProgress });
+    cloudFormationMocks.listResourceScans!.mockReturnValueOnce({ ResourceScanSummaries: resourceScanSummaryComplete });
+    cloudFormationMocks.describeResourceScan!.mockReturnValue({ Status: 'COMPLETED' });
+    cloudFormationMocks.listResourceScanResources!.mockReturnValue({ Resources: [sampleResource2] });
+    cloudFormationMocks.createGeneratedTemplate!.mockReturnValue({ GeneratedTemplateId: 'template-arn' });
+    cloudFormationMocks.describeGeneratedTemplate!.mockReturnValue({ Status: 'COMPLETE', Resources: [sampleResource, sampleResource2] });
+    cloudFormationMocks.getGeneratedTemplate!.mockReturnValue({ TemplateBody: 'template-body' });
+    cloudFormationMocks.listResourceScanRelatedResources!.mockReturnValue({ RelatedResources: [sampleResource2] });
+
+    const opts = {
+      stackName: stackName,
+      filters: [],
+      newScan: true,
+      sdkProvider: sdkProvider,
+      environment: environment,
+    };
+    const template = await generateTemplate(opts);
+    expect(template).toEqual(defaultExpectedResult);
+  });
+
+  test('generateTemplate throws an error when from-scan most-recent is passed but no scans are found.', async () => {
+    const resourceScanSummaries: CloudFormation.ResourceScanSummary[] = [];
+
+    cloudFormationMocks.listResourceScans!.mockReturnValue({ ResourceScanSummaries: resourceScanSummaries });
+
+    const opts: GenerateTemplateOptions = {
+      stackName: stackName,
+      filters: [],
+      fromScan: FromScan.MOST_RECENT,
+      sdkProvider: sdkProvider,
+      environment: environment,
+    };
+    await expect(generateTemplate(opts)).rejects.toThrow('No scans found. Please either start a new scan with the `--from-scan` new or do not specify a `--from-scan` option.');
+  });
+
+  test('generateTemplate throws an error when an invalid key is passed in the filters', async () => {
+    const resourceScanSummaries = [{ ResourceScanId: scanId, Status: 'COMPLETE', PercentageCompleted: 100 }];
+
+    cloudFormationMocks.startResourceScan!.mockReturnValue({ ResourceScanId: scanId });
+    cloudFormationMocks.listResourceScans!.mockReturnValue({ ResourceScanSummaries: resourceScanSummaries });
+    cloudFormationMocks.describeResourceScan!.mockReturnValue({ Status: 'COMPLETED' });
+    cloudFormationMocks.listResourceScanResources!.mockReturnValue({ Resources: [sampleResource2] });
+    cloudFormationMocks.createGeneratedTemplate!.mockReturnValue({ GeneratedTemplateId: 'template-arn' });
+    cloudFormationMocks.describeGeneratedTemplate!.mockReturnValue({ Status: 'COMPLETE' });
+    cloudFormationMocks.getGeneratedTemplate!.mockReturnValue({ TemplateBody: 'template-body' });
+    cloudFormationMocks.listResourceScanRelatedResources!.mockReturnValue({ RelatedResources: [sampleResource] });
+
+    const opts: GenerateTemplateOptions = {
+      stackName: stackName,
+      filters: ['invalid-key=invalid-value'],
+      fromScan: FromScan.MOST_RECENT,
+      sdkProvider: sdkProvider,
+      environment: environment,
+    };
+    await expect(generateTemplate(opts)).rejects.toThrow('Invalid filter: invalid-key');
+  });
+
+  test('generateTemplate defaults to starting a new scan when no options are provided', async () => {
+    const resourceScanSummaryComplete = [{ ResourceScanId: scanId, Status: 'COMPLETE', PercentageCompleted: 100 }];
+    const resourceScanSummaryInProgress = [{ ResourceScanId: scanId, Status: 'IN_PROGRESS', PercentageCompleted: 50 }];
+
+    cloudFormationMocks.startResourceScan!.mockReturnValue({ ResourceScanId: scanId });
+    cloudFormationMocks.listResourceScans!.mockReturnValueOnce({ ResourceScanSummaries: undefined });
+    cloudFormationMocks.listResourceScans!.mockReturnValueOnce({ ResourceScanSummaries: resourceScanSummaryInProgress });
+    cloudFormationMocks.listResourceScans!.mockReturnValueOnce({ ResourceScanSummaries: resourceScanSummaryComplete });
+    cloudFormationMocks.describeResourceScan!.mockReturnValue({ Status: 'COMPLETED' });
+    cloudFormationMocks.listResourceScanResources!.mockReturnValue({ Resources: [sampleResource2] });
+    cloudFormationMocks.createGeneratedTemplate!.mockReturnValue({ GeneratedTemplateId: 'template-arn' });
+    cloudFormationMocks.describeGeneratedTemplate!.mockReturnValue({ Status: 'COMPLETE', Resources: [sampleResource, sampleResource2] });
+    cloudFormationMocks.getGeneratedTemplate!.mockReturnValue({ TemplateBody: 'template-body' });
+    cloudFormationMocks.listResourceScanRelatedResources!.mockReturnValue({ RelatedResources: [sampleResource] });
+
+    const opts: GenerateTemplateOptions = {
+      stackName: stackName,
+      sdkProvider: sdkProvider,
+      environment: environment,
+    };
+    const template = await generateTemplate(opts);
+    expect(template).toEqual(defaultExpectedResult);
+    expect(cloudFormationMocks.startResourceScan).toHaveBeenCalled();
+  });
+
+  test('generateTemplate successfully generates templates with valid filter options', async () => {
+    const resourceScanSummaries = [{ ResourceScanId: scanId, Status: 'COMPLETE', PercentageCompleted: 100 }];
+
+    cloudFormationMocks.startResourceScan!.mockReturnValue({ ResourceScanId: scanId });
+    cloudFormationMocks.listResourceScans!.mockReturnValue({ ResourceScanSummaries: resourceScanSummaries });
+    cloudFormationMocks.describeResourceScan!.mockReturnValue({ Status: 'COMPLETED' });
+    cloudFormationMocks.listResourceScanResources!.mockReturnValue({ Resources: [sampleResource2] });
+    cloudFormationMocks.createGeneratedTemplate!.mockReturnValue({ GeneratedTemplateId: 'template-arn' });
+    cloudFormationMocks.describeGeneratedTemplate!.mockReturnValue({ Status: 'COMPLETE', Resources: [sampleResource, sampleResource2] });
+    cloudFormationMocks.getGeneratedTemplate!.mockReturnValue({ TemplateBody: 'template-body' });
+    cloudFormationMocks.listResourceScanRelatedResources!.mockReturnValue({ RelatedResources: [sampleResource] });
+
+    const opts: GenerateTemplateOptions = {
+      stackName: stackName,
+      filters: ['type=AWS::S3::Bucket,identifier={"my-key":"my-bucket"}', 'type=AWS::EC2::Instance'],
+      sdkProvider: sdkProvider,
+      environment: environment,
+    };
+    const template = await generateTemplate(opts);
+    expect(template).toEqual(defaultExpectedResult);
+  });
+
+});
