@@ -1,0 +1,51 @@
+- [ ] [Metadata](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/metadata-section-structure.html)
+- [ ] [Paramters](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/parameters-section-structure.html)
+- [ ] [Rules](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/rules-section-structure.html)
+  - [ ] Fn::And
+  - [ ] Fn::Contains
+  - [ ] Fn::EachMemberEquals
+  - [ ] Fn::EachMemberIn
+  - [ ] Fn::Equals
+  - [ ] Fn::If
+  - [ ] Fn::Not
+  - [ ] Fn::Or
+  - [ ] Fn::RefAll
+  - [ ] Fn::ValueOf
+  - [ ] Fn::ValueOfAll
+- [ ] [Mappings](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/mappings-section-structure.html)
+  - [ ] Fn::FindInMap
+- [ ] [Conditions](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/conditions-section-structure.html)
+  - [ ] Fn::And
+  - [ ] Fn::Equals
+  - [ ] Fn::ForEach
+  - [ ] Fn::If
+  - [ ] Fn::Not
+  - [ ] Fn::Or
+- [ ] [Outputs](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/outputs-section-structure.html)
+- [x] Resources
+  - [x] Resource Type
+  - [x] Resource Properties
+- [ ] [Intrinsic Functions](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference.html)
+  - [ ] Fn::Base64
+  - [ ] Fn::Cidr
+  - [ ] Fn::ForEach
+  - [x] Fn::GetAtt
+  - [ ] Fn::GetAZs
+  - [ ] Fn::ImportValue
+  - [ ] Fn::Join
+  - [ ] Fn::Length
+  - [ ] Fn::Select
+  - [ ] Fn::Split
+  - [ ] Fn::Sub
+  - [ ] Fn::ToJsonString
+  - [ ] Fn::Transform
+  - [X] Ref
+- [ ] Pseudo Parameters
+  - [ ] AWS::AccountId
+  - [ ] AWS::NotificationARNs
+  - [ ] AWS::NoValue
+  - [ ] AWS::Partition
+  - [ ] AWS::Region
+  - [ ] AWS::StackId
+  - [ ] AWS::StackName
+  - [ ] AWS::URLSuffix
