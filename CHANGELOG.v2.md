@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.128.0](https://github.com/aws/aws-cdk/compare/v2.127.0...v2.128.0) (2024-02-14)
+
+
+### Features
+
+* **cloudwatch:** add `TableWidget` ([#29078](https://github.com/aws/aws-cdk/issues/29078)) ([4599aa3](https://github.com/aws/aws-cdk/commit/4599aa3c4502e5e5e5fb7434913f7ce9a6468547)), closes [#28975](https://github.com/aws/aws-cdk/issues/28975)
+* **codedeploy:** ignoreAlarmConfiguration parameter to Deployment Groups ([#26957](https://github.com/aws/aws-cdk/issues/26957)) ([e890e89](https://github.com/aws/aws-cdk/commit/e890e89e9fbe46c9f93ef2a16c26bd9a06694ca6))
+* **codepipeline:** pipeline type v2 with pipeline-level variables and triggers ([#28538](https://github.com/aws/aws-cdk/issues/28538)) ([40ffe2b](https://github.com/aws/aws-cdk/commit/40ffe2ba8c3cd46d4096bbb93210d4aa6952953c)), closes [#28476](https://github.com/aws/aws-cdk/issues/28476) [#28694](https://github.com/aws/aws-cdk/issues/28694)
+* **ses:** `grant` methods to `IEmailIdentity` ([#29084](https://github.com/aws/aws-cdk/issues/29084)) ([c3c771c](https://github.com/aws/aws-cdk/commit/c3c771c6f6f6790f2298a85a549bded640d2e35b)), closes [#29083](https://github.com/aws/aws-cdk/issues/29083)
+* allow overriding the filename of the processed file after substitution ([#29029](https://github.com/aws/aws-cdk/issues/29029)) ([88decc6](https://github.com/aws/aws-cdk/commit/88decc6060732a6e2c1dd4b349b62c6df849ff07)), closes [#28450](https://github.com/aws/aws-cdk/issues/28450)
+
+
+### Bug Fixes
+
+* **lambda:** @deprecated tag to deprecated runtimes ([#29081](https://github.com/aws/aws-cdk/issues/29081)) ([2503f68](https://github.com/aws/aws-cdk/commit/2503f6855b6b0dad73c6fafc51f81f66354e2822))
+* **stepfunctions-tasks:** missing permissions for running tasks on ecs ([#27891](https://github.com/aws/aws-cdk/issues/27891)) ([683d595](https://github.com/aws/aws-cdk/commit/683d5958b91747cedd746b96845a2169411d847a)), closes [#27803](https://github.com/aws/aws-cdk/issues/27803)
+
 ## [2.127.0](https://github.com/aws/aws-cdk/compare/v2.126.0...v2.127.0) (2024-02-09)
 
 ### Features
