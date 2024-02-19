@@ -280,18 +280,10 @@ export class Environment extends EnvironmentBase {
     if (existingRole) {
       return existingRole;
     }
-    const alarmArn = monitor.isCompositeAlarm
-      ? this.stack.formatArn({
-        service: 'cloudwatch',
-        resource: 'alarm',
-        resourceName: '*',
-        arnFormat: ArnFormat.COLON_RESOURCE_NAME,
-      })
-      : monitor.alarmArn;
     const policy = new iam.PolicyStatement({
       effect: iam.Effect.ALLOW,
       actions: ['cloudwatch:DescribeAlarms'],
-      resources: [alarmArn],
+      resources: [monitor.isCompositeAlarm ? '*' : monitor.alarmArn],
     });
     const document = new iam.PolicyDocument({
       statements: [policy],
