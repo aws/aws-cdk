@@ -148,13 +148,13 @@
             "id": "MyEnvironment",
             "path": "aws-appconfig-environment/MyEnvironment",
             "children": {
-              "Role0": {
-                "id": "Role0",
-                "path": "aws-appconfig-environment/MyEnvironment/Role0",
+              "Role": {
+                "id": "Role",
+                "path": "aws-appconfig-environment/MyEnvironment/Role",
                 "children": {
-                  "ImportRole0": {
-                    "id": "ImportRole0",
-                    "path": "aws-appconfig-environment/MyEnvironment/Role0/ImportRole0",
+                  "ImportRole": {
+                    "id": "ImportRole",
+                    "path": "aws-appconfig-environment/MyEnvironment/Role/ImportRole",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
@@ -162,7 +162,7 @@
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "aws-appconfig-environment/MyEnvironment/Role0/Resource",
+                    "path": "aws-appconfig-environment/MyEnvironment/Role/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                       "aws:cdk:cloudformation:props": {
@@ -186,89 +186,7 @@
                                 {
                                   "Action": "cloudwatch:DescribeAlarms",
                                   "Effect": "Allow",
-                                  "Resource": {
-                                    "Fn::GetAtt": [
-                                      "MyAlarm696658B6",
-                                      "Arn"
-                                    ]
-                                  }
-                                }
-                              ],
-                              "Version": "2012-10-17"
-                            }
-                          }
-                        ]
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_iam.Role",
-                  "version": "0.0.0"
-                }
-              },
-              "RoleCompositeAlarm": {
-                "id": "RoleCompositeAlarm",
-                "path": "aws-appconfig-environment/MyEnvironment/RoleCompositeAlarm",
-                "children": {
-                  "ImportRoleCompositeAlarm": {
-                    "id": "ImportRoleCompositeAlarm",
-                    "path": "aws-appconfig-environment/MyEnvironment/RoleCompositeAlarm/ImportRoleCompositeAlarm",
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.Resource",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "Resource": {
-                    "id": "Resource",
-                    "path": "aws-appconfig-environment/MyEnvironment/RoleCompositeAlarm/Resource",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
-                      "aws:cdk:cloudformation:props": {
-                        "assumeRolePolicyDocument": {
-                          "Statement": [
-                            {
-                              "Action": "sts:AssumeRole",
-                              "Effect": "Allow",
-                              "Principal": {
-                                "Service": "appconfig.amazonaws.com"
-                              }
-                            }
-                          ],
-                          "Version": "2012-10-17"
-                        },
-                        "policies": [
-                          {
-                            "policyName": "AllowAppConfigMonitorAlarmPolicy",
-                            "policyDocument": {
-                              "Statement": [
-                                {
-                                  "Action": "cloudwatch:DescribeAlarms",
-                                  "Effect": "Allow",
-                                  "Resource": {
-                                    "Fn::Join": [
-                                      "",
-                                      [
-                                        "arn:",
-                                        {
-                                          "Ref": "AWS::Partition"
-                                        },
-                                        ":cloudwatch:",
-                                        {
-                                          "Ref": "AWS::Region"
-                                        },
-                                        ":",
-                                        {
-                                          "Ref": "AWS::AccountId"
-                                        },
-                                        ":alarm:*"
-                                      ]
-                                    ]
-                                  }
+                                  "Resource": "*"
                                 }
                               ],
                               "Version": "2012-10-17"
@@ -308,7 +226,7 @@
                         },
                         "alarmRoleArn": {
                           "Fn::GetAtt": [
-                            "MyEnvironmentRole01C8C013F",
+                            "MyEnvironmentRoleC08961D3",
                             "Arn"
                           ]
                         }
@@ -336,7 +254,7 @@
                         },
                         "alarmRoleArn": {
                           "Fn::GetAtt": [
-                            "MyEnvironmentRoleCompositeAlarm8C2A0542",
+                            "MyEnvironmentRoleC08961D3",
                             "Arn"
                           ]
                         }

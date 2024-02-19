@@ -252,11 +252,11 @@ export class Environment extends EnvironmentBase {
       applicationId: this.applicationId,
       name: this.name,
       description: this.description,
-      monitors: this.monitors?.map((monitor, index) => {
+      monitors: this.monitors?.map((monitor) => {
         return {
           alarmArn: monitor.alarmArn,
           ...(monitor.monitorType === MonitorType.CLOUDWATCH
-            ? { alarmRoleArn: monitor.alarmRoleArn || this.createAlarmRole(monitor, index).roleArn }
+            ? { alarmRoleArn: monitor.alarmRoleArn || this.createAlarmRole().roleArn }
             : { alarmRoleArn: monitor.alarmRoleArn }),
         };
       }),
@@ -274,8 +274,8 @@ export class Environment extends EnvironmentBase {
     this.application.addExistingEnvironment(this);
   }
 
-  private createAlarmRole(monitor: Monitor, index: number): iam.IRole {
-    const logicalId = monitor.isCompositeAlarm ? 'RoleCompositeAlarm' : `Role${index}`;
+  private createAlarmRole(): iam.IRole {
+    const logicalId = 'Role';
     const existingRole = this.node.tryFindChild(logicalId) as iam.IRole;
     if (existingRole) {
       return existingRole;
@@ -283,7 +283,7 @@ export class Environment extends EnvironmentBase {
     const policy = new iam.PolicyStatement({
       effect: iam.Effect.ALLOW,
       actions: ['cloudwatch:DescribeAlarms'],
-      resources: [monitor.isCompositeAlarm ? '*' : monitor.alarmArn],
+      resources: ['*'],
     });
     const document = new iam.PolicyDocument({
       statements: [policy],
@@ -330,7 +330,6 @@ export abstract class Monitor {
       alarmArn: alarm.alarmArn,
       alarmRoleArn: alarmRole?.roleArn,
       monitorType: MonitorType.CLOUDWATCH,
-      isCompositeAlarm: alarm instanceof cloudwatch.CompositeAlarm,
     };
   }
 
