@@ -5,9 +5,10 @@ import * as ec2 from '../../../aws-ec2';
 import { MachineImage } from '../../../aws-ec2';
 import * as ecs from '../../../aws-ecs';
 import { AsgCapacityProvider } from '../../../aws-ecs';
-import { ApplicationLoadBalancer, ApplicationProtocol, NetworkLoadBalancer } from '../../../aws-elasticloadbalancingv2';
+import { ApplicationLoadBalancer, ApplicationProtocol, NetworkLoadBalancer, SslPolicy } from '../../../aws-elasticloadbalancingv2';
 import * as iam from '../../../aws-iam';
 import * as route53 from '../../../aws-route53';
+import * as cloudmap from '../../../aws-servicediscovery';
 import * as cdk from '../../../core';
 import * as ecsPatterns from '../../lib';
 
@@ -809,6 +810,629 @@ describe('ApplicationLoadBalancedFargateService', () => {
       maxHealthyPercent: 70,
     })).toThrow(/must be less than/);
   });
+
+  test('test Fargate loadbalanced construct', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+
+    // WHEN
+    new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'Service', {
+      cluster,
+      taskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry('test'),
+        environment: {
+          TEST_ENVIRONMENT_VARIABLE1: 'test environment variable 1 value',
+          TEST_ENVIRONMENT_VARIABLE2: 'test environment variable 2 value',
+        },
+        dockerLabels: { label1: 'labelValue1', label2: 'labelValue2' },
+        entryPoint: ['echo', 'running-on-fargate'],
+        command: ['/bin/bash'],
+      },
+      desiredCount: 2,
+    });
+
+    // THEN - stack contains a load balancer and a service
+    Template.fromStack(stack).resourceCountIs('AWS::ElasticLoadBalancingV2::LoadBalancer', 1);
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
+      ContainerDefinitions: [
+        Match.objectLike({
+          Environment: [
+            {
+              Name: 'TEST_ENVIRONMENT_VARIABLE1',
+              Value: 'test environment variable 1 value',
+            },
+            {
+              Name: 'TEST_ENVIRONMENT_VARIABLE2',
+              Value: 'test environment variable 2 value',
+            },
+          ],
+          LogConfiguration: {
+            LogDriver: 'awslogs',
+            Options: {
+              'awslogs-group': { Ref: 'ServiceTaskDefwebLogGroup2A898F61' },
+              'awslogs-stream-prefix': 'Service',
+              'awslogs-region': { Ref: 'AWS::Region' },
+            },
+          },
+          DockerLabels: {
+            label1: 'labelValue1',
+            label2: 'labelValue2',
+          },
+          EntryPoint: ['echo', 'running-on-fargate'],
+          Command: ['/bin/bash'],
+        }),
+      ],
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+      DesiredCount: 2,
+      LaunchType: 'FARGATE',
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::Listener', {
+      Port: 80,
+      Protocol: 'HTTP',
+    });
+  });
+
+  test('test Fargate loadbalanced construct opting out of log driver creation', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+
+    // WHEN
+    new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'Service', {
+      cluster,
+      taskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry('test'),
+        enableLogging: false,
+        environment: {
+          TEST_ENVIRONMENT_VARIABLE1: 'test environment variable 1 value',
+          TEST_ENVIRONMENT_VARIABLE2: 'test environment variable 2 value',
+        },
+      },
+      desiredCount: 2,
+    });
+
+    // THEN - stack contains a load balancer and a service
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
+      ContainerDefinitions: [
+        Match.objectLike({
+          Environment: [
+            {
+              Name: 'TEST_ENVIRONMENT_VARIABLE1',
+              Value: 'test environment variable 1 value',
+            },
+            {
+              Name: 'TEST_ENVIRONMENT_VARIABLE2',
+              Value: 'test environment variable 2 value',
+            },
+          ],
+          LogConfiguration: Match.absent(),
+        }),
+      ],
+    });
+  });
+
+  test('test Fargate loadbalanced construct with TLS', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+    const zone = new route53.PublicHostedZone(stack, 'HostedZone', { zoneName: 'example.com' });
+
+    // WHEN
+    new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'Service', {
+      cluster,
+      taskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry('test'),
+      },
+      domainName: 'api.example.com',
+      domainZone: zone,
+      certificate: Certificate.fromCertificateArn(stack, 'Cert', 'helloworld'),
+      sslPolicy: SslPolicy.TLS12_EXT,
+    });
+
+    // THEN - stack contains a load balancer and a service
+    Template.fromStack(stack).resourceCountIs('AWS::ElasticLoadBalancingV2::LoadBalancer', 1);
+
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::Listener', {
+      Port: 443,
+      Protocol: 'HTTPS',
+      Certificates: [{
+        CertificateArn: 'helloworld',
+      }],
+      SslPolicy: SslPolicy.TLS12_EXT,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::TargetGroup', {
+      Port: 80,
+      Protocol: 'HTTP',
+      TargetType: 'ip',
+      VpcId: {
+        Ref: 'VPCB9E5F0B4',
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+      LaunchType: 'FARGATE',
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Route53::RecordSet', {
+      Name: 'api.example.com.',
+      HostedZoneId: {
+        Ref: 'HostedZoneDB99F866',
+      },
+      Type: 'A',
+      AliasTarget: {
+        HostedZoneId: { 'Fn::GetAtt': ['ServiceLBE9A1ADBC', 'CanonicalHostedZoneID'] },
+        DNSName: { 'Fn::Join': ['', ['dualstack.', { 'Fn::GetAtt': ['ServiceLBE9A1ADBC', 'DNSName'] }]] },
+      },
+    });
+  });
+
+  test('test Fargateloadbalanced construct with TLS and default certificate', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+    const zone = new route53.PublicHostedZone(stack, 'HostedZone', { zoneName: 'example.com' });
+
+    // WHEN
+    new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'Service', {
+      cluster,
+      taskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry('test'),
+      },
+      domainName: 'api.example.com',
+      domainZone: zone,
+      protocol: ApplicationProtocol.HTTPS,
+    });
+
+    // THEN - stack contains a load balancer, a service, and a certificate
+    Template.fromStack(stack).hasResourceProperties('AWS::CertificateManager::Certificate', {
+      DomainName: 'api.example.com',
+      DomainValidationOptions: [
+        {
+          DomainName: 'api.example.com',
+          HostedZoneId: {
+            Ref: 'HostedZoneDB99F866',
+          },
+        },
+      ],
+      ValidationMethod: 'DNS',
+    });
+
+    Template.fromStack(stack).resourceCountIs('AWS::ElasticLoadBalancingV2::LoadBalancer', 1);
+
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::Listener', {
+      Port: 443,
+      Protocol: 'HTTPS',
+      Certificates: [{
+        CertificateArn: {
+          Ref: 'ServiceCertificateA7C65FE6',
+        },
+      }],
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+      LaunchType: 'FARGATE',
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Route53::RecordSet', {
+      Name: 'api.example.com.',
+      HostedZoneId: {
+        Ref: 'HostedZoneDB99F866',
+      },
+      Type: 'A',
+      AliasTarget: {
+        HostedZoneId: { 'Fn::GetAtt': ['ServiceLBE9A1ADBC', 'CanonicalHostedZoneID'] },
+        DNSName: { 'Fn::Join': ['', ['dualstack.', { 'Fn::GetAtt': ['ServiceLBE9A1ADBC', 'DNSName'] }]] },
+      },
+    });
+  });
+
+  test('errors when setting domainName but not domainZone', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+
+    // THEN
+    expect(() => {
+      new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'Service', {
+        cluster,
+        taskImageOptions: {
+          image: ecs.ContainerImage.fromRegistry('test'),
+        },
+        domainName: 'api.example.com',
+      });
+    }).toThrow();
+  });
+
+  test('errors when setting both HTTP protocol and certificate', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+
+    // THEN
+    expect(() => {
+      new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'Service', {
+        cluster,
+        taskImageOptions: {
+          image: ecs.ContainerImage.fromRegistry('test'),
+        },
+        protocol: ApplicationProtocol.HTTP,
+        certificate: Certificate.fromCertificateArn(stack, 'Cert', 'helloworld'),
+      });
+    }).toThrow();
+  });
+
+  test('errors when setting both HTTP protocol and redirectHTTP', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+
+    // THEN
+    expect(() => {
+      new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'Service', {
+        cluster,
+        taskImageOptions: {
+          image: ecs.ContainerImage.fromRegistry('test'),
+        },
+        protocol: ApplicationProtocol.HTTP,
+        redirectHTTP: true,
+      });
+    }).toThrow();
+  });
+
+  test('does not throw errors when not setting HTTPS protocol but certificate for redirectHTTP', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+    const zone = new route53.PublicHostedZone(stack, 'HostedZone', { zoneName: 'example.com' });
+
+    // THEN
+    new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'Service', {
+      cluster,
+      taskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry('test'),
+      },
+      domainName: 'api.example.com',
+      domainZone: zone,
+      redirectHTTP: true,
+      certificate: Certificate.fromCertificateArn(stack, 'Cert', 'helloworld'),
+    });
+  });
+
+  test('errors when setting HTTPS protocol but not domain name', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+
+    // THEN
+    expect(() => {
+      new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'Service', {
+        cluster,
+        taskImageOptions: {
+          image: ecs.ContainerImage.fromRegistry('test'),
+        },
+        protocol: ApplicationProtocol.HTTPS,
+      });
+    }).toThrow();
+  });
+
+  test('errors when idleTimeout is over 4000 seconds', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+
+    // THEN
+    expect(() => {
+      new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'Service', {
+        cluster,
+        taskImageOptions: {
+          image: ecs.ContainerImage.fromRegistry('test'),
+          enableLogging: false,
+          environment: {
+            TEST_ENVIRONMENT_VARIABLE1: 'test environment variable 1 value',
+            TEST_ENVIRONMENT_VARIABLE2: 'test environment variable 2 value',
+          },
+          logDriver: new ecs.AwsLogDriver({
+            streamPrefix: 'TestStream',
+          }),
+        },
+        idleTimeout: cdk.Duration.seconds(5000),
+        desiredCount: 2,
+      });
+    }).toThrowError();
+  });
+
+  test('errors when idleTimeout is under 1 seconds', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+
+    // THEN
+    expect(() => {
+      new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'Service', {
+        cluster,
+        taskImageOptions: {
+          image: ecs.ContainerImage.fromRegistry('test'),
+          enableLogging: false,
+          environment: {
+            TEST_ENVIRONMENT_VARIABLE1: 'test environment variable 1 value',
+            TEST_ENVIRONMENT_VARIABLE2: 'test environment variable 2 value',
+          },
+          logDriver: new ecs.AwsLogDriver({
+            streamPrefix: 'TestStream',
+          }),
+        },
+        idleTimeout: cdk.Duration.seconds(0),
+        desiredCount: 2,
+      });
+    }).toThrowError();
+  });
+
+  test('passes when idleTimeout is between 1 and 4000 seconds', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+
+    // THEN
+    expect(() => {
+      new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'Service', {
+        cluster,
+        taskImageOptions: {
+          image: ecs.ContainerImage.fromRegistry('test'),
+          enableLogging: false,
+          environment: {
+            TEST_ENVIRONMENT_VARIABLE1: 'test environment variable 1 value',
+            TEST_ENVIRONMENT_VARIABLE2: 'test environment variable 2 value',
+          },
+          logDriver: new ecs.AwsLogDriver({
+            streamPrefix: 'TestStream',
+          }),
+        },
+        idleTimeout: cdk.Duration.seconds(4000),
+        desiredCount: 2,
+      });
+    }).toBeTruthy();
+  });
+
+  test('idletime is undefined when not set', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+
+    // WHEN
+    new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'Service', {
+      cluster,
+      taskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry('test'),
+        enableLogging: false,
+        environment: {
+          TEST_ENVIRONMENT_VARIABLE1: 'test environment variable 1 value',
+          TEST_ENVIRONMENT_VARIABLE2: 'test environment variable 2 value',
+        },
+        logDriver: new ecs.AwsLogDriver({
+          streamPrefix: 'TestStream',
+        }),
+      },
+      desiredCount: 2,
+    });
+
+    // THEN - stack contains default LoadBalancer Attributes
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+      LoadBalancerAttributes: [
+        {
+          Key: 'deletion_protection.enabled',
+          Value: 'false',
+        },
+      ],
+    });
+  });
+
+  test('test Fargate loadbalanced construct with optional log driver input', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+
+    // WHEN
+    new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'Service', {
+      cluster,
+      taskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry('test'),
+        enableLogging: false,
+        environment: {
+          TEST_ENVIRONMENT_VARIABLE1: 'test environment variable 1 value',
+          TEST_ENVIRONMENT_VARIABLE2: 'test environment variable 2 value',
+        },
+        logDriver: new ecs.AwsLogDriver({
+          streamPrefix: 'TestStream',
+        }),
+      },
+      desiredCount: 2,
+    });
+
+    // THEN - stack contains a load balancer and a service
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
+      ContainerDefinitions: [
+        Match.objectLike({
+          Environment: [
+            {
+              Name: 'TEST_ENVIRONMENT_VARIABLE1',
+              Value: 'test environment variable 1 value',
+            },
+            {
+              Name: 'TEST_ENVIRONMENT_VARIABLE2',
+              Value: 'test environment variable 2 value',
+            },
+          ],
+          LogConfiguration: {
+            LogDriver: 'awslogs',
+            Options: {
+              'awslogs-group': { Ref: 'ServiceTaskDefwebLogGroup2A898F61' },
+              'awslogs-stream-prefix': 'TestStream',
+              'awslogs-region': { Ref: 'AWS::Region' },
+            },
+          },
+        }),
+      ],
+    });
+  });
+
+  test('test Fargate loadbalanced construct with logging enabled', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+
+    // WHEN
+    new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'Service', {
+      cluster,
+      taskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry('test'),
+        enableLogging: true,
+        environment: {
+          TEST_ENVIRONMENT_VARIABLE1: 'test environment variable 1 value',
+          TEST_ENVIRONMENT_VARIABLE2: 'test environment variable 2 value',
+        },
+      },
+      desiredCount: 2,
+    });
+
+    // THEN - stack contains a load balancer and a service
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
+      ContainerDefinitions: [
+        Match.objectLike({
+          Environment: [
+            {
+              Name: 'TEST_ENVIRONMENT_VARIABLE1',
+              Value: 'test environment variable 1 value',
+            },
+            {
+              Name: 'TEST_ENVIRONMENT_VARIABLE2',
+              Value: 'test environment variable 2 value',
+            },
+          ],
+          LogConfiguration: {
+            LogDriver: 'awslogs',
+            Options: {
+              'awslogs-group': { Ref: 'ServiceTaskDefwebLogGroup2A898F61' },
+              'awslogs-stream-prefix': 'Service',
+              'awslogs-region': { Ref: 'AWS::Region' },
+            },
+          },
+        }),
+      ],
+    });
+  });
+
+  test('test Fargate loadbalanced construct with both image and taskDefinition provided', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+
+    const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
+    taskDefinition.addContainer('web', {
+      image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+      memoryLimitMiB: 512,
+    });
+
+    // WHEN
+    expect(() => new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'Service', {
+      cluster,
+      taskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry('test'),
+        enableLogging: true,
+        environment: {
+          TEST_ENVIRONMENT_VARIABLE1: 'test environment variable 1 value',
+          TEST_ENVIRONMENT_VARIABLE2: 'test environment variable 2 value',
+        },
+      },
+      desiredCount: 2,
+      taskDefinition,
+    })).toThrow();
+  });
+
+  test('test Fargate application loadbalanced construct with taskDefinition provided', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+
+    const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
+    const container = taskDefinition.addContainer('passedTaskDef', {
+      image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+      memoryLimitMiB: 512,
+    });
+    container.addPortMappings({
+      containerPort: 80,
+    });
+
+    // WHEN
+    new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'Service', {
+      cluster,
+      taskDefinition,
+      desiredCount: 2,
+      memoryLimitMiB: 1024,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
+      ContainerDefinitions: [
+        Match.objectLike({
+          Image: 'amazon/amazon-ecs-sample',
+          Memory: 512,
+          Name: 'passedTaskDef',
+          PortMappings: [
+            {
+              ContainerPort: 80,
+              Protocol: 'tcp',
+            },
+          ],
+        }),
+      ],
+    });
+  });
+
+  test('ALBFargate - having *HealthyPercent properties', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+
+    // WHEN
+    new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'ALB123Service', {
+      cluster,
+      taskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+      },
+      minHealthyPercent: 100,
+      maxHealthyPercent: 200,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+      DeploymentConfiguration: {
+        MinimumHealthyPercent: 100,
+        MaximumPercent: 200,
+      },
+    });
+  });
 });
 
 describe('NetworkLoadBalancedFargateService', () => {
@@ -1295,6 +1919,107 @@ describe('NetworkLoadBalancedFargateService', () => {
           Weight: 2,
         },
       ]),
+    });
+  });
+
+  test('creates AWS Cloud Map service for Private DNS namespace with network load balanced fargate service', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+    const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+    cluster.addAsgCapacityProvider(new AsgCapacityProvider(stack, 'DefaultAutoScalingGroupProvider', {
+      autoScalingGroup: new AutoScalingGroup(stack, 'DefaultAutoScalingGroup', {
+        vpc,
+        instanceType: new ec2.InstanceType('t2.micro'),
+        machineImage: MachineImage.latestAmazonLinux(),
+      }),
+    }));
+
+    // WHEN
+    cluster.addDefaultCloudMapNamespace({
+      name: 'foo.com',
+      type: cloudmap.NamespaceType.DNS_PRIVATE,
+    });
+
+    new ecsPatterns.NetworkLoadBalancedFargateService(stack, 'Service', {
+      cluster,
+      taskImageOptions: {
+        containerPort: 8000,
+        image: ecs.ContainerImage.fromRegistry('hello'),
+      },
+      cloudMapOptions: {
+        name: 'myApp',
+      },
+      memoryLimitMiB: 512,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+      ServiceRegistries: [
+        {
+          RegistryArn: {
+            'Fn::GetAtt': [
+              'ServiceCloudmapServiceDE76B29D',
+              'Arn',
+            ],
+          },
+        },
+      ],
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::ServiceDiscovery::Service', {
+      DnsConfig: {
+        DnsRecords: [
+          {
+            TTL: 60,
+            Type: 'A',
+          },
+        ],
+        NamespaceId: {
+          'Fn::GetAtt': [
+            'EcsClusterDefaultServiceDiscoveryNamespaceB0971B2F',
+            'Id',
+          ],
+        },
+        RoutingPolicy: 'MULTIVALUE',
+      },
+      HealthCheckCustomConfig: {
+        FailureThreshold: 1,
+      },
+      Name: 'myApp',
+      NamespaceId: {
+        'Fn::GetAtt': [
+          'EcsClusterDefaultServiceDiscoveryNamespaceB0971B2F',
+          'Id',
+        ],
+      },
+    });
+  });
+
+  test('having *HealthyPercent properties', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+
+    // WHEN
+    new ecsPatterns.NetworkLoadBalancedFargateService(stack, 'Service', {
+      cluster,
+      memoryLimitMiB: 1024,
+      taskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+      },
+      desiredCount: 1,
+      minHealthyPercent: 100,
+      maxHealthyPercent: 200,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+      DeploymentConfiguration: {
+        MinimumHealthyPercent: 100,
+        MaximumPercent: 200,
+      },
     });
   });
 });
