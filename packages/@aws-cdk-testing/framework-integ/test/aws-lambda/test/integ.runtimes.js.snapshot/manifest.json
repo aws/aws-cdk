@@ -1,28 +1,28 @@
 {
   "version": "36.0.0",
   "artifacts": {
-    "aws-appconfig-environment.assets": {
+    "aws-cdk-lambda-runtime-management.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "aws-appconfig-environment.assets.json",
+        "file": "aws-cdk-lambda-runtime-management.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "aws-appconfig-environment": {
+    "aws-cdk-lambda-runtime-management": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "aws-appconfig-environment.template.json",
+        "templateFile": "aws-cdk-lambda-runtime-management.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/6ec3a45c455c20f3072a3622b3e548aa72a4c1b8e5a1fac757962194d9f1c82d.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/0b5d2fcad307870038cfd281c114626e26399f8e8640f09d0012b0b142d45dad.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "aws-appconfig-environment.assets"
+          "aws-cdk-lambda-runtime-management.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -31,106 +31,49 @@
         }
       },
       "dependencies": [
-        "aws-appconfig-environment.assets"
+        "aws-cdk-lambda-runtime-management.assets"
       ],
       "metadata": {
-        "/aws-appconfig-environment/MyApplicationForEnv/Resource": [
+        "/aws-cdk-lambda-runtime-management/Lambda/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyApplicationForEnv1F597ED9"
+            "data": "LambdaServiceRoleA8ED4D3B"
           }
         ],
-        "/aws-appconfig-environment/StartDeploymentCallCountAlarm/Resource": [
+        "/aws-cdk-lambda-runtime-management/Lambda/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "StartDeploymentCallCountAlarm6846E07B"
+            "data": "LambdaD247545B"
           }
         ],
-        "/aws-appconfig-environment/MyRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyRoleF48FFE04"
-          }
-        ],
-        "/aws-appconfig-environment/MyCompositeAlarm/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyCompositeAlarm0F045229"
-          }
-        ],
-        "/aws-appconfig-environment/MyEnvironment/Role1963C/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyEnvironmentRole1963C404EAE3E"
-          }
-        ],
-        "/aws-appconfig-environment/MyEnvironment/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyEnvironment465E4DEA"
-          }
-        ],
-        "/aws-appconfig-environment/MyDeploymentStrategy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyDeploymentStrategy60D31FB0"
-          }
-        ],
-        "/aws-appconfig-environment/MyConfig/ConfigurationProfile": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyConfigConfigurationProfileCF3951C3"
-          }
-        ],
-        "/aws-appconfig-environment/MyConfig/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyConfigFA92D419"
-          }
-        ],
-        "/aws-appconfig-environment/MyConfig/Deployment1963C": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyConfigDeployment1963CC374E8A4"
-          }
-        ],
-        "/aws-appconfig-environment/BootstrapVersion": [
+        "/aws-cdk-lambda-runtime-management/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/aws-appconfig-environment/CheckBootstrapVersion": [
+        "/aws-cdk-lambda-runtime-management/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
-        ],
-        "MyConfigDeployment36077E0B58611": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyConfigDeployment36077E0B58611",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
         ]
       },
-      "displayName": "aws-appconfig-environment"
+      "displayName": "aws-cdk-lambda-runtime-management"
     },
-    "appconfigenvironmentDefaultTestDeployAssert75BD28E7.assets": {
+    "lambdaruntimemanagementDefaultTestDeployAssertDE680AF3.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "appconfigenvironmentDefaultTestDeployAssert75BD28E7.assets.json",
+        "file": "lambdaruntimemanagementDefaultTestDeployAssertDE680AF3.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "appconfigenvironmentDefaultTestDeployAssert75BD28E7": {
+    "lambdaruntimemanagementDefaultTestDeployAssertDE680AF3": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "appconfigenvironmentDefaultTestDeployAssert75BD28E7.template.json",
+        "templateFile": "lambdaruntimemanagementDefaultTestDeployAssertDE680AF3.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
@@ -139,7 +82,7 @@
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "appconfigenvironmentDefaultTestDeployAssert75BD28E7.assets"
+          "lambdaruntimemanagementDefaultTestDeployAssertDE680AF3.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -148,23 +91,23 @@
         }
       },
       "dependencies": [
-        "appconfigenvironmentDefaultTestDeployAssert75BD28E7.assets"
+        "lambdaruntimemanagementDefaultTestDeployAssertDE680AF3.assets"
       ],
       "metadata": {
-        "/appconfig-environment/DefaultTest/DeployAssert/BootstrapVersion": [
+        "/lambda-runtime-management/DefaultTest/DeployAssert/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/appconfig-environment/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+        "/lambda-runtime-management/DefaultTest/DeployAssert/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "appconfig-environment/DefaultTest/DeployAssert"
+      "displayName": "lambda-runtime-management/DefaultTest/DeployAssert"
     },
     "Tree": {
       "type": "cdk:tree",

@@ -1,28 +1,28 @@
 {
   "version": "36.0.0",
   "artifacts": {
-    "aws-appconfig-environment.assets": {
+    "SNSTopicPolicyStack.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "aws-appconfig-environment.assets.json",
+        "file": "SNSTopicPolicyStack.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "aws-appconfig-environment": {
+    "SNSTopicPolicyStack": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "aws-appconfig-environment.template.json",
+        "templateFile": "SNSTopicPolicyStack.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/6ec3a45c455c20f3072a3622b3e548aa72a4c1b8e5a1fac757962194d9f1c82d.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/14fdbf9da76c6d2a9fd9d7ecce1e6fb899d1bd67a967d68ab86428209e729203.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "aws-appconfig-environment.assets"
+          "SNSTopicPolicyStack.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -31,106 +31,61 @@
         }
       },
       "dependencies": [
-        "aws-appconfig-environment.assets"
+        "SNSTopicPolicyStack.assets"
       ],
       "metadata": {
-        "/aws-appconfig-environment/MyApplicationForEnv/Resource": [
+        "/SNSTopicPolicyStack/Topic/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyApplicationForEnv1F597ED9"
+            "data": "TopicBFC7AF6E"
           }
         ],
-        "/aws-appconfig-environment/StartDeploymentCallCountAlarm/Resource": [
+        "/SNSTopicPolicyStack/TopicPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "StartDeploymentCallCountAlarm6846E07B"
+            "data": "TopicPolicyA24B096F"
           }
         ],
-        "/aws-appconfig-environment/MyRole/Resource": [
+        "/SNSTopicPolicyStack/TopicAddPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyRoleF48FFE04"
+            "data": "TopicAddPolicy7DB03706"
           }
         ],
-        "/aws-appconfig-environment/MyCompositeAlarm/Resource": [
+        "/SNSTopicPolicyStack/TopicAddPolicy/Policy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyCompositeAlarm0F045229"
+            "data": "TopicAddPolicyAEA24A5A"
           }
         ],
-        "/aws-appconfig-environment/MyEnvironment/Role1963C/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyEnvironmentRole1963C404EAE3E"
-          }
-        ],
-        "/aws-appconfig-environment/MyEnvironment/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyEnvironment465E4DEA"
-          }
-        ],
-        "/aws-appconfig-environment/MyDeploymentStrategy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyDeploymentStrategy60D31FB0"
-          }
-        ],
-        "/aws-appconfig-environment/MyConfig/ConfigurationProfile": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyConfigConfigurationProfileCF3951C3"
-          }
-        ],
-        "/aws-appconfig-environment/MyConfig/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyConfigFA92D419"
-          }
-        ],
-        "/aws-appconfig-environment/MyConfig/Deployment1963C": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyConfigDeployment1963CC374E8A4"
-          }
-        ],
-        "/aws-appconfig-environment/BootstrapVersion": [
+        "/SNSTopicPolicyStack/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/aws-appconfig-environment/CheckBootstrapVersion": [
+        "/SNSTopicPolicyStack/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
-        ],
-        "MyConfigDeployment36077E0B58611": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyConfigDeployment36077E0B58611",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
         ]
       },
-      "displayName": "aws-appconfig-environment"
+      "displayName": "SNSTopicPolicyStack"
     },
-    "appconfigenvironmentDefaultTestDeployAssert75BD28E7.assets": {
+    "SNSTopicPolicyIntegDefaultTestDeployAssert005CA6BA.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "appconfigenvironmentDefaultTestDeployAssert75BD28E7.assets.json",
+        "file": "SNSTopicPolicyIntegDefaultTestDeployAssert005CA6BA.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "appconfigenvironmentDefaultTestDeployAssert75BD28E7": {
+    "SNSTopicPolicyIntegDefaultTestDeployAssert005CA6BA": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "appconfigenvironmentDefaultTestDeployAssert75BD28E7.template.json",
+        "templateFile": "SNSTopicPolicyIntegDefaultTestDeployAssert005CA6BA.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
@@ -139,7 +94,7 @@
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "appconfigenvironmentDefaultTestDeployAssert75BD28E7.assets"
+          "SNSTopicPolicyIntegDefaultTestDeployAssert005CA6BA.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -148,23 +103,23 @@
         }
       },
       "dependencies": [
-        "appconfigenvironmentDefaultTestDeployAssert75BD28E7.assets"
+        "SNSTopicPolicyIntegDefaultTestDeployAssert005CA6BA.assets"
       ],
       "metadata": {
-        "/appconfig-environment/DefaultTest/DeployAssert/BootstrapVersion": [
+        "/SNSTopicPolicyInteg/DefaultTest/DeployAssert/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/appconfig-environment/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+        "/SNSTopicPolicyInteg/DefaultTest/DeployAssert/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "appconfig-environment/DefaultTest/DeployAssert"
+      "displayName": "SNSTopicPolicyInteg/DefaultTest/DeployAssert"
     },
     "Tree": {
       "type": "cdk:tree",
