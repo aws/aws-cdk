@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/0841e5b6bea7f11cc94ed8c4639ec49d7cb3bc3d5c7790998e14d28219e39cec.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/6afa45453deaae682fd55ba374003665d94033d226fe588e5133286b5ee03615.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -40,10 +40,10 @@
             "data": "MyApplicationForEnv1F597ED9"
           }
         ],
-        "/aws-appconfig-environment/MyAlarm/Resource": [
+        "/aws-appconfig-environment/StartDeploymentCallCountAlarm/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyAlarm696658B6"
+            "data": "StartDeploymentCallCountAlarm6846E07B"
           }
         ],
         "/aws-appconfig-environment/MyRole/Resource": [
@@ -70,6 +70,30 @@
             "data": "MyEnvironment465E4DEA"
           }
         ],
+        "/aws-appconfig-environment/MyDeploymentStrategy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyDeploymentStrategy60D31FB0"
+          }
+        ],
+        "/aws-appconfig-environment/MyConfig/ConfigurationProfile": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyConfigConfigurationProfileCF3951C3"
+          }
+        ],
+        "/aws-appconfig-environment/MyConfig/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyConfigFA92D419"
+          }
+        ],
+        "/aws-appconfig-environment/MyConfig/Deployment36077": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyConfigDeployment36077E0B58611"
+          }
+        ],
         "/aws-appconfig-environment/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
@@ -80,6 +104,15 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
+          }
+        ],
+        "MyAlarm696658B6": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyAlarm696658B6",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ],
         "MyEnvironmentRole01C8C013F": [

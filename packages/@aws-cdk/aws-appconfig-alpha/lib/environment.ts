@@ -280,6 +280,9 @@ export class Environment extends EnvironmentBase {
     if (existingRole) {
       return existingRole;
     }
+    // this scope is fine for cloudwatch:DescribeAlarms since it is readonly
+    // and it is required for composite alarms
+    // https://docs.aws.amazon.com/AmazonCloudWatch/latest/APIReference/API_DescribeAlarms.html
     const policy = new iam.PolicyStatement({
       effect: iam.Effect.ALLOW,
       actions: ['cloudwatch:DescribeAlarms'],
