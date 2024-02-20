@@ -9,60 +9,55 @@ import { listStacks } from '../lib/list-stacks';
 let cloudExecutable: MockCloudExecutable;
 let bootstrapper: jest.Mocked<Bootstrapper>;
 
-beforeEach(() => {
-  jest.resetAllMocks();
-
-  bootstrapper = instanceMockFrom(Bootstrapper);
-  bootstrapper.bootstrapEnvironment.mockResolvedValue({ noOp: false, outputs: {} } as any);
-
-  cloudExecutable = new MockCloudExecutable({
-    stacks: [
-      MockStack.MOCK_STACK_A,
-      MockStack.MOCK_STACK_B,
-    ],
-  });
-});
-
 describe('list', () => {
-  // test('stacks with no dependencies', async () => {
-  //   // GIVEN
-  //   const toolkit = new CdkToolkit({
-  //     cloudExecutable: new MockCloudExecutable({
-  //       stacks: [
-  //         MockStack.MOCK_STACK_A,
-  //         MockStack.MOCK_STACK_B,
-  //       ],
-  //     }),
-  //     configuration: cloudExecutable.configuration,
-  //     sdkProvider: cloudExecutable.sdkProvider,
-  //     deployments: new Deployments({ sdkProvider: new MockSdkProvider() }),
-  //   });
+  beforeEach(() => {
+    jest.resetAllMocks();
 
-  //   // WHEN
-  //   const workflow = await listStacks(toolkit, { selectors: ['Test-Stack-A', 'Test-Stack-B'] });
+    bootstrapper = instanceMockFrom(Bootstrapper);
+    bootstrapper.bootstrapEnvironment.mockResolvedValue({ noOp: false, outputs: {} } as any);
 
-  //   // THEN
-  //   expect(JSON.stringify(workflow)).toEqual(JSON.stringify([{
-  //     id: 'Test-Stack-A',
-  //     name: 'Test-Stack-A',
-  //     environment: {
-  //       account: '123456789012',
-  //       region: 'bermuda-triangle-1',
-  //       name: 'aws://123456789012/bermuda-triangle-1',
-  //     },
-  //     dependencies: [],
-  //   },
-  //   {
-  //     id: 'Test-Stack-B',
-  //     name: 'Test-Stack-B',
-  //     environment: {
-  //       account: '123456789012',
-  //       region: 'bermuda-triangle-1',
-  //       name: 'aws://123456789012/bermuda-triangle-1',
-  //     },
-  //     dependencies: [],
-  //   }]));
-  // });
+    cloudExecutable = new MockCloudExecutable({
+      stacks: [
+        MockStack.MOCK_STACK_A,
+        MockStack.MOCK_STACK_B,
+      ],
+    });
+  });
+
+  test('stacks with no dependencies', async () => {
+    // GIVEN
+    const toolkit = new CdkToolkit({
+      cloudExecutable,
+      configuration: cloudExecutable.configuration,
+      sdkProvider: cloudExecutable.sdkProvider,
+      deployments: new Deployments({ sdkProvider: new MockSdkProvider() }),
+    });
+
+    // WHEN
+    const workflow = await listStacks(toolkit, { selectors: ['Test-Stack-A', 'Test-Stack-B'] });
+
+    // THEN
+    expect(JSON.stringify(workflow)).toEqual(JSON.stringify([{
+      id: 'Test-Stack-A',
+      name: 'Test-Stack-A',
+      environment: {
+        account: '123456789012',
+        region: 'bermuda-triangle-1',
+        name: 'aws://123456789012/bermuda-triangle-1',
+      },
+      dependencies: [],
+    },
+    {
+      id: 'Test-Stack-B',
+      name: 'Test-Stack-B',
+      environment: {
+        account: '123456789012',
+        region: 'bermuda-triangle-1',
+        name: 'aws://123456789012/bermuda-triangle-1',
+      },
+      dependencies: [],
+    }]));
+  });
 
   test('stacks with dependent stacks', async () => {
     // GIVEN
