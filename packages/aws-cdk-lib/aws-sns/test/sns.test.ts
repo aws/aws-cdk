@@ -189,16 +189,16 @@ describe('Topic', () => {
   test('can add a policy to the topic enforcing ssl', () => {
     // GIVEN
     const stack = new cdk.Stack();
-    const topic = new sns.Topic(stack, 'Topic');
+    const topic = new sns.Topic(stack, 'Topic', {
+      enforceSSL: true,
+    });
 
     // WHEN
     topic.addToResourcePolicy(new iam.PolicyStatement({
       resources: ['*'],
       actions: ['sns:*'],
       principals: [new iam.ArnPrincipal('arn')],
-    }), {
-      enforceSSL: true,
-    });
+    }));
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::SNS::TopicPolicy', {

@@ -51,26 +51,12 @@ export interface ITopic extends IResource, notifications.INotificationRuleTarget
    * will be automatically created upon the first call to `addToResourcePolicy`. If
    * the topic is imported (`Topic.import`), then this is a no-op.
    */
-  addToResourcePolicy(statement: iam.PolicyStatement, addToResourcePolicyProps?: AddToResourcePolicyProps): iam.AddToResourcePolicyResult;
+  addToResourcePolicy(statement: iam.PolicyStatement): iam.AddToResourcePolicyResult;
 
   /**
    * Grant topic publishing permissions to the given identity
    */
   grantPublish(identity: iam.IGrantable): iam.Grant;
-}
-
-/**
- * Properties for adding a resource policy
- */
-export interface AddToResourcePolicyProps {
-  /**
-   * Adds a statement to enforce encryption of data in transit when publishing to the topic.
-   *
-   * For more information, see https://docs.aws.amazon.com/sns/latest/dg/sns-security-best-practices.html#enforce-encryption-data-in-transit.
-   *
-   * @default false
-   */
-  readonly enforceSSL?: boolean;
 }
 
 /**
@@ -91,6 +77,11 @@ export abstract class TopicBase extends Resource implements ITopic {
    * Set by subclasses.
    */
   protected abstract readonly autoCreatePolicy: boolean;
+
+  /**
+   * Adds a statement to enforce encryption of data in transit when publishing to the topic.
+   */
+  protected enforceSSL?: boolean;
 
   private policy?: TopicPolicy;
 
@@ -139,7 +130,7 @@ export abstract class TopicBase extends Resource implements ITopic {
    * will be automatically created upon the first call to `addToResourcePolicy`. If
    * the topic is imported (`Topic.import`), then this is a no-op.
    */
-  public addToResourcePolicy(statement: iam.PolicyStatement, addToResourcePolicyProps?: AddToResourcePolicyProps): iam.AddToResourcePolicyResult {
+  public addToResourcePolicy(statement: iam.PolicyStatement): iam.AddToResourcePolicyResult {
     if (!this.policy && this.autoCreatePolicy) {
       this.policy = new TopicPolicy(this, 'Policy', { topics: [this] });
     }
@@ -147,7 +138,7 @@ export abstract class TopicBase extends Resource implements ITopic {
     if (this.policy) {
       this.policy.document.addStatements(statement);
 
-      if (addToResourcePolicyProps?.enforceSSL) {
+      if (this.enforceSSL) {
         this.policy.document.addStatements(this.createSSLPolicyDocument());
       }
       return { statementAdded: true, policyDependable: this.policy };

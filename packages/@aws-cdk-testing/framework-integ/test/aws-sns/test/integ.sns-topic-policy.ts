@@ -32,15 +32,14 @@ new TopicPolicy(stack, 'TopicPolicy', {
 const topicAddPolicy = new Topic(stack, 'TopicAddPolicy', {
   topicName: 'topicAddPolicy',
   displayName: 'topicDisplayNameAddPolicy',
+  enforceSSL: true,
 });
 
 topicAddPolicy.addToResourcePolicy(new PolicyStatement({
   principals: [new ServicePrincipal('s3.amazonaws.com')],
   actions: ['sns:Publish'],
   resources: [topicAddPolicy.topicArn],
-}), {
-  enforceSSL: true,
-});
+}));
 
 new IntegTest(app, 'SNSTopicPolicyInteg', {
   testCases: [stack],

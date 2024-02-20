@@ -232,18 +232,18 @@ const topicPolicy = new sns.TopicPolicy(this, 'Policy', {
 });
 ```
 
-Similiarly for `addToResourcePolicy`, you can enforce SSL by setting the `enforceSSL` flag:
+Similiarly you can enforce SSL by setting the `enforceSSL` flag on the topic:
 
 ```ts
-const topic = new sns.Topic(this, 'TopicAddPolicy');
+const topic = new sns.Topic(this, 'TopicAddPolicy', {
+  enforceSSL: true,
+});
 
 topic.addToResourcePolicy(new iam.PolicyStatement({
   principals: [new iam.ServicePrincipal('s3.amazonaws.com')],
   actions: ['sns:Publish'],
   resources: [topic.topicArn],
-}), {
-  enforceSSL: true,
-});
+}));
 ```
 
 ## Delivery status logging
