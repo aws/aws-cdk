@@ -120,6 +120,23 @@ export enum ThroughputMode {
 }
 
 /**
+ * The status of the file system's replication overwrite protection.
+ *
+ * @see https://docs.aws.amazon.com/ja_jp/AWSCloudFormation/latest/UserGuide/aws-properties-efs-filesystem-filesystemprotection.html
+ */
+export enum ReplicationOverwriteProtection {
+  /**
+   * Enable the filesystem's replication overwrite protection.
+   */
+  ENABLED = 'ENABLED',
+
+  /**
+   * Disable the filesystem's replication overwrite protection.
+   */
+  DISABLED = 'DISABLED',
+}
+
+/**
  * Represents an Amazon EFS file system
  */
 export interface IFileSystem extends ec2.IConnectable, iam.IResourceWithPolicy {
@@ -297,6 +314,16 @@ export interface FileSystemProps {
    * @link https://docs.aws.amazon.com/efs/latest/ug/availability-durability.html#file-system-type
    */
   readonly oneZone?: boolean;
+
+  /**
+   * Whether to enable the filesystem's replication overwrite protection or not.
+   * Set false if you want to create a read-only filesystem for use as a replication destination.
+   *
+   * @see https://docs.aws.amazon.com/efs/latest/ug/replication-use-cases.html#replicate-existing-destination
+   *
+   * @default ReplicationOverwriteProtection.ENABLED
+   */
+  readonly replicationOverwriteProtection?: ReplicationOverwriteProtection;
 }
 
 /**
@@ -548,6 +575,10 @@ export class FileSystem extends FileSystemBase {
 
     const oneZoneAzName = props.vpc.availabilityZones[0];
 
+    const fileSystemProtection = props.replicationOverwriteProtection !== undefined ? {
+      replicationOverwriteProtection: props.replicationOverwriteProtection,
+    } : undefined;
+
     this._resource = new CfnFileSystem(this, 'Resource', {
       encrypted: encrypted,
       kmsKeyId: props.kmsKey?.keyArn,
@@ -578,6 +609,7 @@ export class FileSystem extends FileSystemBase {
           return this._fileSystemPolicy;
         },
       }),
+      fileSystemProtection,
       availabilityZoneName: props.oneZone ? oneZoneAzName : undefined,
     });
     this._resource.applyRemovalPolicy(props.removalPolicy);

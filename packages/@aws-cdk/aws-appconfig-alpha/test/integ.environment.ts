@@ -64,6 +64,7 @@ const env = new Environment(stack, 'MyEnvironment', {
   ],
 });
 
+
 // ensure the service can track the monitors in the environment
 new HostedConfiguration(stack, 'MyConfig', {
   application: appForEnv,
@@ -76,6 +77,10 @@ new HostedConfiguration(stack, 'MyConfig', {
   }),
   deployTo: [env],
 });
+
+/* resource deployment alone is sufficient because we already have the
+   corresponding resource handler tests to assert that resources can be
+   used after created */
 
 new IntegTest(app, 'appconfig-environment', {
   testCases: [stack],
