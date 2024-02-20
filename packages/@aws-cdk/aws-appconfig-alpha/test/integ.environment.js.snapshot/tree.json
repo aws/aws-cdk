@@ -180,13 +180,13 @@
             "id": "MyEnvironment",
             "path": "aws-appconfig-environment/MyEnvironment",
             "children": {
-              "Role": {
-                "id": "Role",
-                "path": "aws-appconfig-environment/MyEnvironment/Role",
+              "Role1963C": {
+                "id": "Role1963C",
+                "path": "aws-appconfig-environment/MyEnvironment/Role1963C",
                 "children": {
-                  "ImportRole": {
-                    "id": "ImportRole",
-                    "path": "aws-appconfig-environment/MyEnvironment/Role/ImportRole",
+                  "ImportRole1963C": {
+                    "id": "ImportRole1963C",
+                    "path": "aws-appconfig-environment/MyEnvironment/Role1963C/ImportRole1963C",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
@@ -194,7 +194,7 @@
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "aws-appconfig-environment/MyEnvironment/Role/Resource",
+                    "path": "aws-appconfig-environment/MyEnvironment/Role1963C/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                       "aws:cdk:cloudformation:props": {
@@ -258,7 +258,7 @@
                         },
                         "alarmRoleArn": {
                           "Fn::GetAtt": [
-                            "MyEnvironmentRoleC08961D3",
+                            "MyEnvironmentRole1963C404EAE3E",
                             "Arn"
                           ]
                         }
@@ -286,7 +286,7 @@
                         },
                         "alarmRoleArn": {
                           "Fn::GetAtt": [
-                            "MyEnvironmentRoleC08961D3",
+                            "MyEnvironmentRole1963C404EAE3E",
                             "Arn"
                           ]
                         }

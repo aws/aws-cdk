@@ -5,6 +5,7 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import { Construct } from 'constructs';
 import { IApplication } from './application';
 import { ActionPoint, IEventDestination, ExtensionOptions, IExtension, IExtensible, ExtensibleBase } from './extension';
+import { getHash } from './private/hash';
 
 /**
  * Attributes of an existing AWS AppConfig environment to import it.
@@ -275,7 +276,8 @@ export class Environment extends EnvironmentBase {
   }
 
   private createOrGetAlarmRole(): iam.IRole {
-    const logicalId = 'Role';
+    // the name is guaranteed to be set in line 243
+    const logicalId = `Role${getHash(this.name!)}`;
     const existingRole = this.node.tryFindChild(logicalId) as iam.IRole;
     if (existingRole) {
       return existingRole;

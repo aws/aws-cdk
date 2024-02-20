@@ -88,7 +88,7 @@
     }
    }
   },
-  "MyEnvironmentRoleC08961D3": {
+  "MyEnvironmentRole1963C404EAE3E": {
    "Type": "AWS::IAM::Role",
    "Properties": {
     "AssumeRolePolicyDocument": {
@@ -137,7 +137,7 @@
       },
       "AlarmRoleArn": {
        "Fn::GetAtt": [
-        "MyEnvironmentRoleC08961D3",
+        "MyEnvironmentRole1963C404EAE3E",
         "Arn"
        ]
       }
@@ -165,7 +165,7 @@
       },
       "AlarmRoleArn": {
        "Fn::GetAtt": [
-        "MyEnvironmentRoleC08961D3",
+        "MyEnvironmentRole1963C404EAE3E",
         "Arn"
        ]
       }

@@ -140,7 +140,7 @@ describe('environment', () => {
           },
           AlarmRoleArn: {
             'Fn::GetAtt': [
-              'MyEnvironmentRoleC08961D3',
+              'MyEnvironmentRole1E6113D2F07A1',
               'Arn',
             ],
           },
@@ -267,7 +267,7 @@ describe('environment', () => {
           },
           AlarmRoleArn: {
             'Fn::GetAtt': [
-              'MyEnvironmentRoleC08961D3',
+              'MyEnvironmentRole1E6113D2F07A1',
               'Arn',
             ],
           },
@@ -339,7 +339,7 @@ describe('environment', () => {
           },
           AlarmRoleArn: {
             'Fn::GetAtt': [
-              'MyEnvironmentRoleC08961D3',
+              'MyEnvironmentRole1E6113D2F07A1',
               'Arn',
             ],
           },
@@ -353,7 +353,7 @@ describe('environment', () => {
           },
           AlarmRoleArn: {
             'Fn::GetAtt': [
-              'MyEnvironmentRoleC08961D3',
+              'MyEnvironmentRole1E6113D2F07A1',
               'Arn',
             ],
           },
@@ -438,7 +438,7 @@ describe('environment', () => {
           },
           AlarmRoleArn: {
             'Fn::GetAtt': [
-              'MyEnvironmentRoleC08961D3',
+              'MyEnvironmentRole1E6113D2F07A1',
               'Arn',
             ],
           },
@@ -452,7 +452,7 @@ describe('environment', () => {
           },
           AlarmRoleArn: {
             'Fn::GetAtt': [
-              'MyEnvironmentRoleC08961D3',
+              'MyEnvironmentRole1E6113D2F07A1',
               'Arn',
             ],
           },
@@ -466,7 +466,7 @@ describe('environment', () => {
           },
           AlarmRoleArn: {
             'Fn::GetAtt': [
-              'MyEnvironmentRoleC08961D3',
+              'MyEnvironmentRole1E6113D2F07A1',
               'Arn',
             ],
           },
