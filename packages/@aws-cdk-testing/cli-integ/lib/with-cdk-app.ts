@@ -343,16 +343,6 @@ export class TestFixture extends ShellHelper {
     ], options);
   }
 
-  public async cdkList(stackNames: string | string[], options: CdkCliOptions = {}) {
-    stackNames = typeof stackNames === 'string' ? [stackNames] : stackNames;
-
-    return this.cdk([
-      'list',
-      ...(options.options ?? []),
-      ...this.fullStackName(stackNames),
-    ], options);
-  }
-
   public async cdkDestroy(stackNames: string | string[], options: CdkCliOptions = {}) {
     stackNames = typeof stackNames === 'string' ? [stackNames] : stackNames;
 
