@@ -46,7 +46,7 @@
     "@aws-sdk/client-sts": "3.421.0",
     "@aws-sdk/node-http-handler": "^3.370.0",
     "@smithy/util-stream": "^2.1.1",
-    "@types/jest": "^29.5.11",
+    "@types/jest": "^29.5.12",
     "aws-sdk-client-mock": "^3.0.1",
     "aws-sdk-client-mock-jest": "^3.0.1",
     "aws-sdk-mock": "5.8.0",
@@ -63,7 +63,7 @@
     "@aws-sdk/client-synthetics": "3.421.0",
     "@aws-sdk/client-ecr": "3.421.0",
     "@aws-sdk/client-s3": "3.421.0",
-    "aws-sdk": "^2.1547.0"
+    "aws-sdk": "^2.1557.0"
   },
   "repository": {
     "url": "https://github.com/aws/aws-cdk.git",

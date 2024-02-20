@@ -22,7 +22,7 @@ export interface UserPoolIdentityProviderSamlProps extends UserPoolIdentityProvi
    *
    * @default - no identifiers used
    */
-  readonly identifiers?: string[]
+  readonly identifiers?: string[];
 
   /**
    * The SAML metadata.

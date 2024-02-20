@@ -44,8 +44,8 @@ describe('appconfig', () => {
   });
 
   test('get lambda layer arn', () => {
-    expect(Application.getLambdaLayerVersionArn('us-east-1')).toEqual('arn:aws:lambda:us-east-1:027255383542:layer:AWS-AppConfig-Extension:110');
-    expect(Application.getLambdaLayerVersionArn('us-east-1', Platform.ARM_64)).toEqual('arn:aws:lambda:us-east-1:027255383542:layer:AWS-AppConfig-Extension-Arm64:43');
+    expect(Application.getLambdaLayerVersionArn('us-east-1')).toEqual('arn:aws:lambda:us-east-1:027255383542:layer:AWS-AppConfig-Extension:128');
+    expect(Application.getLambdaLayerVersionArn('us-east-1', Platform.ARM_64)).toEqual('arn:aws:lambda:us-east-1:027255383542:layer:AWS-AppConfig-Extension-Arm64:61');
   });
 
   test('add agent to ecs', () => {

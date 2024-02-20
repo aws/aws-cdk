@@ -32,9 +32,12 @@ are as follows:
 To get started, update your CDK App with a new `defaultStackSynthesizer`:
 
 ```ts
+import { BucketEncryption } from 'aws-cdk-lib/aws-s3';
+
 const app = new App({
   defaultStackSynthesizer: AppStagingSynthesizer.defaultResources({
     appId: 'my-app-id', // put a unique id here
+    stagingBucketEncryption: BucketEncryption.S3_MANAGED,
   }),
 });
 ```
@@ -94,9 +97,12 @@ synthesizer will create a new Staging Stack in each environment the CDK App is d
 its staging resources. To use this kind of synthesizer, use `AppStagingSynthesizer.defaultResources()`.
 
 ```ts
+import { BucketEncryption } from 'aws-cdk-lib/aws-s3';
+
 const app = new App({
   defaultStackSynthesizer: AppStagingSynthesizer.defaultResources({
     appId: 'my-app-id',
+    stagingBucketEncryption: BucketEncryption.S3_MANAGED,
 
     // The following line is optional. By default it is assumed you have bootstrapped in the same
     // region(s) as the stack(s) you are deploying.
@@ -117,8 +123,13 @@ source code. As part of the `DefaultStagingStack`, an S3 bucket and IAM role wil
 used to upload the asset to S3.
 
 ```ts
+import { BucketEncryption } from 'aws-cdk-lib/aws-s3';
+
 const app = new App({
-  defaultStackSynthesizer: AppStagingSynthesizer.defaultResources({ appId: 'my-app-id' }),
+  defaultStackSynthesizer: AppStagingSynthesizer.defaultResources({
+    appId: 'my-app-id',
+    stagingBucketEncryption: BucketEncryption.S3_MANAGED,
+  }),
 });
 
 const stack = new Stack(app, 'my-stack');
@@ -138,9 +149,12 @@ You can customize some or all of the roles you'd like to use in the synthesizer 
 if all you need is to supply custom roles (and not change anything else in the `DefaultStagingStack`):
 
 ```ts
+import { BucketEncryption } from 'aws-cdk-lib/aws-s3';
+
 const app = new App({
   defaultStackSynthesizer: AppStagingSynthesizer.defaultResources({
     appId: 'my-app-id',
+    stagingBucketEncryption: BucketEncryption.S3_MANAGED,
     deploymentIdentities: DeploymentIdentities.specifyRoles({
       cloudFormationExecutionRole: BootstrapRole.fromRoleArn('arn:aws:iam::123456789012:role/Execute'),
       deploymentRole: BootstrapRole.fromRoleArn('arn:aws:iam::123456789012:role/Deploy'),
@@ -158,9 +172,12 @@ and `CloudFormationExecutionRole` in the
 [bootstrap template](https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk/lib/api/bootstrap/bootstrap-template.yaml).
 
 ```ts
+import { BucketEncryption } from 'aws-cdk-lib/aws-s3';
+
 const app = new App({
   defaultStackSynthesizer: AppStagingSynthesizer.defaultResources({
     appId: 'my-app-id',
+    stagingBucketEncryption: BucketEncryption.S3_MANAGED,
     deploymentIdentities: DeploymentIdentities.cliCredentials(),
   }),
 });
@@ -171,9 +188,12 @@ assumable by the deployment role. You can also specify an existing IAM role for 
 `fileAssetPublishingRole` or `imageAssetPublishingRole`:
 
 ```ts
+import { BucketEncryption } from 'aws-cdk-lib/aws-s3';
+
 const app = new App({
   defaultStackSynthesizer: AppStagingSynthesizer.defaultResources({
     appId: 'my-app-id',
+    stagingBucketEncryption: BucketEncryption.S3_MANAGED,
     fileAssetPublishingRole: BootstrapRole.fromRoleArn('arn:aws:iam::123456789012:role/S3Access'),
     imageAssetPublishingRole: BootstrapRole.fromRoleArn('arn:aws:iam::123456789012:role/ECRAccess'),
   }),
@@ -213,7 +233,7 @@ import { Asset } from 'aws-cdk-lib/aws-s3-assets';
 declare const stack: Stack;
 const asset = new Asset(stack, 'deploy-time-asset', {
   deployTime: true,
-  path: path.join(__dirname, './deploy-time-asset'),
+  path: path.join(__dirname, 'deploy-time-asset'),
 });
 ```
 
@@ -223,9 +243,12 @@ to a previous version of an application just by doing a CloudFormation deploymen
 template, without rebuilding and republishing assets.
 
 ```ts
+import { BucketEncryption } from 'aws-cdk-lib/aws-s3';
+
 const app = new App({
   defaultStackSynthesizer: AppStagingSynthesizer.defaultResources({
     appId: 'my-app-id',
+    stagingBucketEncryption: BucketEncryption.S3_MANAGED,
     deployTimeFileAssetLifetime: Duration.days(100),
   }),
 });
@@ -241,9 +264,12 @@ purged.
 To change the number of revisions stored, use `imageAssetVersionCount`:
 
 ```ts
+import { BucketEncryption } from 'aws-cdk-lib/aws-s3';
+
 const app = new App({
   defaultStackSynthesizer: AppStagingSynthesizer.defaultResources({
     appId: 'my-app-id',
+    stagingBucketEncryption: BucketEncryption.S3_MANAGED,
     imageAssetVersionCount: 10,
   }),
 });
@@ -257,9 +283,12 @@ or `emptyOnDelete` turned on. This creates custom resources under the hood to fa
 cleanup. To turn this off, specify `autoDeleteStagingAssets: false`.
 
 ```ts
+import { BucketEncryption } from 'aws-cdk-lib/aws-s3';
+
 const app = new App({
   defaultStackSynthesizer: AppStagingSynthesizer.defaultResources({
     appId: 'my-app-id',
+    stagingBucketEncryption: BucketEncryption.S3_MANAGED,
     autoDeleteStagingAssets: false,
   }),
 });
@@ -267,19 +296,20 @@ const app = new App({
 
 ### Staging Bucket Encryption
 
-By default, the staging resources will be stored in an S3 Bucket with KMS encryption. To use
-SSE-S3, set `stagingBucketEncryption` to `BucketEncryption.S3_MANAGED`.
+You must explicitly specify the encryption type for the staging bucket via the `stagingBucketEncryption` property. In
+future versions of this package, the default will be `BucketEncryption.S3_MANAGED`.
 
-```ts
-import { BucketEncryption } from 'aws-cdk-lib/aws-s3';
+In previous versions of this package, the default was to use KMS encryption for the staging bucket. KMS keys cost
+$1/month, which could result in unexpected costs for users who are not aware of this. As we stabilize this module
+we intend to make the default S3-managed encryption, which is free. However, the migration path from KMS to S3
+managed encryption for existing buckets is not straightforward. Therefore, for now, this property is required.
 
-const app = new App({
-  defaultStackSynthesizer: AppStagingSynthesizer.defaultResources({
-    appId: 'my-app-id',
-    stagingBucketEncryption: BucketEncryption.S3_MANAGED,
-  }),
-});
-```
+If you have an existing staging bucket encrypted with a KMS key, you will likely want to set this property to
+`BucketEncryption.KMS`. If you are creating a new staging bucket, you can set this property to
+`BucketEncryption.S3_MANAGED` to avoid the cost of a KMS key.
+
+You can learn more about choosing a bucket encryption type in the
+[S3 documentation](https://docs.aws.amazon.com/AmazonS3/latest/userguide/serv-side-encryption.html).
 
 ## Using a Custom Staging Stack per Environment
 

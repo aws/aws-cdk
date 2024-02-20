@@ -11,7 +11,7 @@ import { ContainerDefinition } from '../container-definition';
 export enum GelfCompressionType {
   GZIP = 'gzip',
   ZLIB = 'zlib',
-  NONE = 'none'
+  NONE = 'none',
 }
 
 /**

@@ -40,11 +40,11 @@
     "@aws-cdk/eslint-plugin": "0.0.0",
     "@types/fs-extra": "^9.0.13",
     "@types/glob": "^7.2.0",
-    "@types/jest": "^29.5.11",
-    "@types/semver": "^7.5.6",
+    "@types/jest": "^29.5.12",
+    "@types/semver": "^7.5.7",
     "@types/yargs": "^15.0.19",
-    "@typescript-eslint/eslint-plugin": "^6.20.0",
-    "@typescript-eslint/parser": "^6.20.0",
+    "@typescript-eslint/eslint-plugin": "^6.21.0",
+    "@typescript-eslint/parser": "^6.21.0",
     "eslint": "^7.32.0",
     "eslint-import-resolver-node": "^0.3.9",
     "eslint-import-resolver-typescript": "^2.7.1",
@@ -66,7 +66,7 @@
     "fs-extra": "^9.1.0",
     "glob": "^7.2.3",
     "npm-bundled": "^1.1.2",
-    "semver": "^7.5.4",
+    "semver": "^7.6.0",
     "yargs": "^16.2.0"
   }
 }

@@ -418,7 +418,7 @@ export abstract class TableBaseV2 extends Resource implements ITableV2 {
    * @param grantee the principal (no-op if undefined)
    * @param options options for keyActions, tableActions, and streamActions
    */
-  private combinedGrant(grantee: IGrantable, options: { keyActions?: string[], tableActions?: string[], streamActions?: string[] }) {
+  private combinedGrant(grantee: IGrantable, options: { keyActions?: string[]; tableActions?: string[]; streamActions?: string[] }) {
     if (options.keyActions && this.encryptionKey) {
       this.encryptionKey.grant(grantee, ...options.keyActions);
     }

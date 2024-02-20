@@ -104,7 +104,7 @@ interface PolicyReportRole {
    *
    * @default - no managed policy ARNs
    */
-  readonly managedPolicyArns?: string[],
+  readonly managedPolicyArns?: string[];
 
   /**
    * The managed policy statements that have been attached to the role
@@ -233,7 +233,7 @@ export class PolicySynthesizer extends Construct {
   private renderManagedPoliciesForRole(
     rolePath: string,
     managedPolicies: any[],
-  ): { policyArns: string[], policyStatements: string[] } {
+  ): { policyArns: string[]; policyStatements: string[] } {
     const policyStatements: string[] = [];
     // managed policies that have roles attached to the policy
     Object.values(this.managedPolicyReport).forEach(value => {
