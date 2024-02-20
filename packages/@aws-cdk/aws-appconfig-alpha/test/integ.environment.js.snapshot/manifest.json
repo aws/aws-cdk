@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/6afa45453deaae682fd55ba374003665d94033d226fe588e5133286b5ee03615.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/6ec3a45c455c20f3072a3622b3e548aa72a4c1b8e5a1fac757962194d9f1c82d.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -88,10 +88,10 @@
             "data": "MyConfigFA92D419"
           }
         ],
-        "/aws-appconfig-environment/MyConfig/Deployment36077": [
+        "/aws-appconfig-environment/MyConfig/Deployment1963C": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyConfigDeployment36077E0B58611"
+            "data": "MyConfigDeployment1963CC374E8A4"
           }
         ],
         "/aws-appconfig-environment/BootstrapVersion": [
@@ -106,19 +106,10 @@
             "data": "CheckBootstrapVersion"
           }
         ],
-        "MyAlarm696658B6": [
+        "MyConfigDeployment36077E0B58611": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyAlarm696658B6",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "MyEnvironmentRole01C8C013F": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyEnvironmentRoleC08961D3",
+            "data": "MyConfigDeployment36077E0B58611",
             "trace": [
               "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
             ]

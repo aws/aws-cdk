@@ -209,7 +209,7 @@
    "UpdateReplacePolicy": "Retain",
    "DeletionPolicy": "Retain"
   },
-  "MyConfigDeployment36077E0B58611": {
+  "MyConfigDeployment1963CC374E8A4": {
    "Type": "AWS::AppConfig::Deployment",
    "Properties": {
     "ApplicationId": {

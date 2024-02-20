@@ -377,9 +377,9 @@
                   "version": "0.0.0"
                 }
               },
-              "Deployment36077": {
-                "id": "Deployment36077",
-                "path": "aws-appconfig-environment/MyConfig/Deployment36077",
+              "Deployment1963C": {
+                "id": "Deployment1963C",
+                "path": "aws-appconfig-environment/MyConfig/Deployment1963C",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::AppConfig::Deployment",
                   "aws:cdk:cloudformation:props": {
