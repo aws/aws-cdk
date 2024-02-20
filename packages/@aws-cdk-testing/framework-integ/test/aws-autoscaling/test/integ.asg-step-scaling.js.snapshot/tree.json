@@ -1067,6 +1067,181 @@
                   "fqn": "constructs.Construct",
                   "version": "10.3.0"
                 }
+              },
+              "StepScalingWithDefaultAdjustmentType": {
+                "id": "StepScalingWithDefaultAdjustmentType",
+                "path": "autoscaling-step-scaling/ASG/StepScalingWithDefaultAdjustmentType",
+                "children": {
+                  "LowerPolicy": {
+                    "id": "LowerPolicy",
+                    "path": "autoscaling-step-scaling/ASG/StepScalingWithDefaultAdjustmentType/LowerPolicy",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "autoscaling-step-scaling/ASG/StepScalingWithDefaultAdjustmentType/LowerPolicy/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::AutoScaling::ScalingPolicy",
+                          "aws:cdk:cloudformation:props": {
+                            "adjustmentType": "ChangeInCapacity",
+                            "autoScalingGroupName": {
+                              "Ref": "ASG46ED3070"
+                            },
+                            "metricAggregationType": "Maximum",
+                            "policyType": "StepScaling",
+                            "stepAdjustments": [
+                              {
+                                "metricIntervalUpperBound": 0,
+                                "scalingAdjustment": -1
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "constructs.Construct",
+                          "version": "10.3.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
+                    }
+                  },
+                  "LowerAlarm": {
+                    "id": "LowerAlarm",
+                    "path": "autoscaling-step-scaling/ASG/StepScalingWithDefaultAdjustmentType/LowerAlarm",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "autoscaling-step-scaling/ASG/StepScalingWithDefaultAdjustmentType/LowerAlarm/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::CloudWatch::Alarm",
+                          "aws:cdk:cloudformation:props": {
+                            "alarmActions": [
+                              {
+                                "Ref": "ASGStepScalingWithDefaultAdjustmentTypeLowerPolicyA6C1EA33"
+                              }
+                            ],
+                            "alarmDescription": "Lower threshold scaling alarm",
+                            "comparisonOperator": "LessThanOrEqualToThreshold",
+                            "datapointsToAlarm": 5,
+                            "dimensions": [
+                              {
+                                "name": "AutoScalingGroupName",
+                                "value": {
+                                  "Ref": "ASG46ED3070"
+                                }
+                              }
+                            ],
+                            "evaluationPeriods": 10,
+                            "metricName": "DiskWriteOps",
+                            "namespace": "AWS/EC2",
+                            "period": 300,
+                            "statistic": "Average",
+                            "threshold": 100
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "constructs.Construct",
+                          "version": "10.3.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
+                    }
+                  },
+                  "UpperPolicy": {
+                    "id": "UpperPolicy",
+                    "path": "autoscaling-step-scaling/ASG/StepScalingWithDefaultAdjustmentType/UpperPolicy",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "autoscaling-step-scaling/ASG/StepScalingWithDefaultAdjustmentType/UpperPolicy/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::AutoScaling::ScalingPolicy",
+                          "aws:cdk:cloudformation:props": {
+                            "adjustmentType": "ChangeInCapacity",
+                            "autoScalingGroupName": {
+                              "Ref": "ASG46ED3070"
+                            },
+                            "metricAggregationType": "Maximum",
+                            "policyType": "StepScaling",
+                            "stepAdjustments": [
+                              {
+                                "metricIntervalLowerBound": 0,
+                                "metricIntervalUpperBound": 200,
+                                "scalingAdjustment": 1
+                              },
+                              {
+                                "metricIntervalLowerBound": 200,
+                                "scalingAdjustment": 2
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "constructs.Construct",
+                          "version": "10.3.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
+                    }
+                  },
+                  "UpperAlarm": {
+                    "id": "UpperAlarm",
+                    "path": "autoscaling-step-scaling/ASG/StepScalingWithDefaultAdjustmentType/UpperAlarm",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "autoscaling-step-scaling/ASG/StepScalingWithDefaultAdjustmentType/UpperAlarm/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::CloudWatch::Alarm",
+                          "aws:cdk:cloudformation:props": {
+                            "alarmActions": [
+                              {
+                                "Ref": "ASGStepScalingWithDefaultAdjustmentTypeUpperPolicy08CC2D99"
+                              }
+                            ],
+                            "alarmDescription": "Upper threshold scaling alarm",
+                            "comparisonOperator": "GreaterThanOrEqualToThreshold",
+                            "datapointsToAlarm": 5,
+                            "dimensions": [
+                              {
+                                "name": "AutoScalingGroupName",
+                                "value": {
+                                  "Ref": "ASG46ED3070"
+                                }
+                              }
+                            ],
+                            "evaluationPeriods": 10,
+                            "metricName": "DiskWriteOps",
+                            "namespace": "AWS/EC2",
+                            "period": 300,
+                            "statistic": "Average",
+                            "threshold": 300
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "constructs.Construct",
+                          "version": "10.3.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
               }
             },
             "constructInfo": {
