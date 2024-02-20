@@ -1,8 +1,8 @@
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { App, Duration, PhysicalName, Stack } from 'aws-cdk-lib';
+import { Application, ConfigurationContent, DeploymentStrategy, Environment, HostedConfiguration, Monitor, RolloutStrategy } from '../lib';
 import { Alarm, ComparisonOperator, CompositeAlarm, Metric, TreatMissingData } from 'aws-cdk-lib/aws-cloudwatch';
 import { Role, ServicePrincipal, Effect, PolicyStatement, PolicyDocument } from 'aws-cdk-lib/aws-iam';
-import { Application, ConfigurationContent, DeploymentStrategy, Environment, HostedConfiguration, Monitor, RolloutStrategy } from '../lib';
 
 const app = new App();
 
