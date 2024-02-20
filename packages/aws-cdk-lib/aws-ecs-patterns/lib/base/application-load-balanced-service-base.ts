@@ -7,7 +7,7 @@ import {
 } from '../../../aws-ecs';
 import {
   ApplicationListener, ApplicationLoadBalancer, ApplicationProtocol, ApplicationProtocolVersion, ApplicationTargetGroup,
-  IApplicationLoadBalancer, ListenerCertificate, ListenerAction, AddApplicationTargetsProps, SslPolicy,
+  IApplicationLoadBalancer, ListenerCertificate, ListenerAction, AddApplicationTargetsProps, SslPolicy, IpAddressType,
 } from '../../../aws-elasticloadbalancingv2';
 import { IRole } from '../../../aws-iam';
 import { ARecord, IHostedZone, RecordTarget, CnameRecord } from '../../../aws-route53';
@@ -277,6 +277,13 @@ export interface ApplicationLoadBalancedServiceBaseProps {
    * @default - CloudFormation sets idle timeout to 60 seconds
    */
   readonly idleTimeout?: Duration;
+
+  /**
+    * The type of IP addresses to use
+    *
+    * @default IpAddressType.IPV4
+    */
+  readonly ipAddressType?: IpAddressType;
 }
 
 export interface ApplicationLoadBalancedTaskImageOptions {
@@ -480,6 +487,7 @@ export abstract class ApplicationLoadBalancedServiceBase extends Construct {
       loadBalancerName: props.loadBalancerName,
       internetFacing,
       idleTimeout: props.idleTimeout,
+      ipAddressType: props.ipAddressType ?? IpAddressType.IPV4,
     };
 
     const loadBalancer = props.loadBalancer ?? new ApplicationLoadBalancer(this, 'LB', lbProps);

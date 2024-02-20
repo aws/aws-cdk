@@ -1,0 +1,329 @@
+{
+  "version": "36.0.0",
+  "artifacts": {
+    "aws-ecs-integ-alb-ec2-ipaddress-type.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "aws-ecs-integ-alb-ec2-ipaddress-type.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "aws-ecs-integ-alb-ec2-ipaddress-type": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-ecs-integ-alb-ec2-ipaddress-type.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/20e5a7b121f0fba6f90f1cd727816d8f386e9b5d9efb7b36dc69f1c8b8f00e79.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "aws-ecs-integ-alb-ec2-ipaddress-type.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "aws-ecs-integ-alb-ec2-ipaddress-type.assets"
+      ],
+      "metadata": {
+        "/aws-ecs-integ-alb-ec2-ipaddress-type/Vpc/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Vpc8378EB38"
+          }
+        ],
+        "/aws-ecs-integ-alb-ec2-ipaddress-type/Vpc/ipv6cidr": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Vpcipv6cidr40D3CB78"
+          }
+        ],
+        "/aws-ecs-integ-alb-ec2-ipaddress-type/Vpc/subnetSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcsubnetSubnet1SubnetD7EE7F4B"
+          }
+        ],
+        "/aws-ecs-integ-alb-ec2-ipaddress-type/Vpc/subnetSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcsubnetSubnet1RouteTableFCEF3434"
+          }
+        ],
+        "/aws-ecs-integ-alb-ec2-ipaddress-type/Vpc/subnetSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcsubnetSubnet1RouteTableAssociation49889A10"
+          }
+        ],
+        "/aws-ecs-integ-alb-ec2-ipaddress-type/Vpc/subnetSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcsubnetSubnet1DefaultRoute1CD4A179"
+          }
+        ],
+        "/aws-ecs-integ-alb-ec2-ipaddress-type/Vpc/subnetSubnet1/DefaultRoute6": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcsubnetSubnet1DefaultRoute60CE59656"
+          }
+        ],
+        "/aws-ecs-integ-alb-ec2-ipaddress-type/Vpc/subnetSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcsubnetSubnet2Subnet68A672B0"
+          }
+        ],
+        "/aws-ecs-integ-alb-ec2-ipaddress-type/Vpc/subnetSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcsubnetSubnet2RouteTable381C885D"
+          }
+        ],
+        "/aws-ecs-integ-alb-ec2-ipaddress-type/Vpc/subnetSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcsubnetSubnet2RouteTableAssociationA34731A5"
+          }
+        ],
+        "/aws-ecs-integ-alb-ec2-ipaddress-type/Vpc/subnetSubnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcsubnetSubnet2DefaultRoute7113387A"
+          }
+        ],
+        "/aws-ecs-integ-alb-ec2-ipaddress-type/Vpc/subnetSubnet2/DefaultRoute6": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcsubnetSubnet2DefaultRoute6BA963B3C"
+          }
+        ],
+        "/aws-ecs-integ-alb-ec2-ipaddress-type/Vpc/IGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcIGWD7BA715C"
+          }
+        ],
+        "/aws-ecs-integ-alb-ec2-ipaddress-type/Vpc/VPCGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcVPCGWBF912B6E"
+          }
+        ],
+        "/aws-ecs-integ-alb-ec2-ipaddress-type/Vpc/EIGW6": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcEIGW61416F369"
+          }
+        ],
+        "/aws-ecs-integ-alb-ec2-ipaddress-type/Ec2Cluster/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Ec2ClusterEE43E89D"
+          }
+        ],
+        "/aws-ecs-integ-alb-ec2-ipaddress-type/Ec2Cluster/Ec2Cluster": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Ec2Cluster56240A3A"
+          }
+        ],
+        "/aws-ecs-integ-alb-ec2-ipaddress-type/SecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SecurityGroupDD263621"
+          }
+        ],
+        "/aws-ecs-integ-alb-ec2-ipaddress-type/AutoScalingGroup/InstanceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AutoScalingGroupInstanceRoleDC70D128"
+          }
+        ],
+        "/aws-ecs-integ-alb-ec2-ipaddress-type/AutoScalingGroup/InstanceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AutoScalingGroupInstanceRoleDefaultPolicy3DF09528"
+          }
+        ],
+        "/aws-ecs-integ-alb-ec2-ipaddress-type/AutoScalingGroup/InstanceProfile": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AutoScalingGroupInstanceProfile342FAC7C"
+          }
+        ],
+        "/aws-ecs-integ-alb-ec2-ipaddress-type/AutoScalingGroup/LaunchConfig": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AutoScalingGroupLaunchConfigDEEB160C"
+          }
+        ],
+        "/aws-ecs-integ-alb-ec2-ipaddress-type/AutoScalingGroup/ASG": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AutoScalingGroupASG804C35BE"
+          }
+        ],
+        "/aws-ecs-integ-alb-ec2-ipaddress-type/SsmParameterValue:--aws--service--ecs--optimized-ami--amazon-linux-2--recommended--image_id:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SsmParameterValueawsserviceecsoptimizedamiamazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
+          }
+        ],
+        "/aws-ecs-integ-alb-ec2-ipaddress-type/CapacityProvier/CapacityProvier": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CapacityProvier480DE32F"
+          }
+        ],
+        "/aws-ecs-integ-alb-ec2-ipaddress-type/AlbEc2ServiceWithIpAddressType/LB/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AlbEc2ServiceWithIpAddressTypeLB4ACC4DCB"
+          }
+        ],
+        "/aws-ecs-integ-alb-ec2-ipaddress-type/AlbEc2ServiceWithIpAddressType/LB/SecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AlbEc2ServiceWithIpAddressTypeLBSecurityGroup253CCD3B"
+          }
+        ],
+        "/aws-ecs-integ-alb-ec2-ipaddress-type/AlbEc2ServiceWithIpAddressType/LB/PublicListener/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AlbEc2ServiceWithIpAddressTypeLBPublicListener38369855"
+          }
+        ],
+        "/aws-ecs-integ-alb-ec2-ipaddress-type/AlbEc2ServiceWithIpAddressType/LB/PublicListener/ECSGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AlbEc2ServiceWithIpAddressTypeLBPublicListenerECSGroupB7F719FA"
+          }
+        ],
+        "/aws-ecs-integ-alb-ec2-ipaddress-type/AlbEc2ServiceWithIpAddressType/LoadBalancerDNS": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AlbEc2ServiceWithIpAddressTypeLoadBalancerDNSC060163A"
+          }
+        ],
+        "/aws-ecs-integ-alb-ec2-ipaddress-type/AlbEc2ServiceWithIpAddressType/ServiceURL": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AlbEc2ServiceWithIpAddressTypeServiceURLA6257E82"
+          }
+        ],
+        "/aws-ecs-integ-alb-ec2-ipaddress-type/AlbEc2ServiceWithIpAddressType/TaskDef/TaskRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AlbEc2ServiceWithIpAddressTypeTaskDefTaskRole42A79F47"
+          }
+        ],
+        "/aws-ecs-integ-alb-ec2-ipaddress-type/AlbEc2ServiceWithIpAddressType/TaskDef/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AlbEc2ServiceWithIpAddressTypeTaskDef85DA39B6"
+          }
+        ],
+        "/aws-ecs-integ-alb-ec2-ipaddress-type/AlbEc2ServiceWithIpAddressType/TaskDef/web/LogGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AlbEc2ServiceWithIpAddressTypeTaskDefwebLogGroupA37E6BA2"
+          }
+        ],
+        "/aws-ecs-integ-alb-ec2-ipaddress-type/AlbEc2ServiceWithIpAddressType/TaskDef/ExecutionRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AlbEc2ServiceWithIpAddressTypeTaskDefExecutionRole9108C167"
+          }
+        ],
+        "/aws-ecs-integ-alb-ec2-ipaddress-type/AlbEc2ServiceWithIpAddressType/TaskDef/ExecutionRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AlbEc2ServiceWithIpAddressTypeTaskDefExecutionRoleDefaultPolicyA9A60FCA"
+          }
+        ],
+        "/aws-ecs-integ-alb-ec2-ipaddress-type/AlbEc2ServiceWithIpAddressType/Service/Service": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AlbEc2ServiceWithIpAddressTypeServiceC3989FD3"
+          }
+        ],
+        "/aws-ecs-integ-alb-ec2-ipaddress-type/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/aws-ecs-integ-alb-ec2-ipaddress-type/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "aws-ecs-integ-alb-ec2-ipaddress-type"
+    },
+    "AlbEc2ServiceWithIpAddressTypeDefaultTestDeployAssert74ED7478.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "AlbEc2ServiceWithIpAddressTypeDefaultTestDeployAssert74ED7478.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "AlbEc2ServiceWithIpAddressTypeDefaultTestDeployAssert74ED7478": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "AlbEc2ServiceWithIpAddressTypeDefaultTestDeployAssert74ED7478.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "AlbEc2ServiceWithIpAddressTypeDefaultTestDeployAssert74ED7478.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "AlbEc2ServiceWithIpAddressTypeDefaultTestDeployAssert74ED7478.assets"
+      ],
+      "metadata": {
+        "/AlbEc2ServiceWithIpAddressType/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/AlbEc2ServiceWithIpAddressType/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "AlbEc2ServiceWithIpAddressType/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}

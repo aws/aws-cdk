@@ -1,0 +1,12 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "AlbEc2ServiceWithIpAddressType/DefaultTest": {
+      "stacks": [
+        "aws-ecs-integ-alb-ec2-ipaddress-type"
+      ],
+      "assertionStack": "AlbEc2ServiceWithIpAddressType/DefaultTest/DeployAssert",
+      "assertionStackName": "AlbEc2ServiceWithIpAddressTypeDefaultTestDeployAssert74ED7478"
+    }
+  }
+}

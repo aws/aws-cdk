@@ -1,0 +1,293 @@
+{
+  "version": "36.0.0",
+  "artifacts": {
+    "aws-ecs-integ-alb-fargate-ipaddress-type.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "aws-ecs-integ-alb-fargate-ipaddress-type.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "aws-ecs-integ-alb-fargate-ipaddress-type": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-ecs-integ-alb-fargate-ipaddress-type.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e9a40b056ea9fe89c62fb4bc405065f4b1ca097c13b0efb5398ec20eea8aeadf.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "aws-ecs-integ-alb-fargate-ipaddress-type.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "aws-ecs-integ-alb-fargate-ipaddress-type.assets"
+      ],
+      "metadata": {
+        "/aws-ecs-integ-alb-fargate-ipaddress-type/Vpc/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Vpc8378EB38"
+          }
+        ],
+        "/aws-ecs-integ-alb-fargate-ipaddress-type/Vpc/ipv6cidr": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Vpcipv6cidr40D3CB78"
+          }
+        ],
+        "/aws-ecs-integ-alb-fargate-ipaddress-type/Vpc/subnetSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcsubnetSubnet1SubnetD7EE7F4B"
+          }
+        ],
+        "/aws-ecs-integ-alb-fargate-ipaddress-type/Vpc/subnetSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcsubnetSubnet1RouteTableFCEF3434"
+          }
+        ],
+        "/aws-ecs-integ-alb-fargate-ipaddress-type/Vpc/subnetSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcsubnetSubnet1RouteTableAssociation49889A10"
+          }
+        ],
+        "/aws-ecs-integ-alb-fargate-ipaddress-type/Vpc/subnetSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcsubnetSubnet1DefaultRoute1CD4A179"
+          }
+        ],
+        "/aws-ecs-integ-alb-fargate-ipaddress-type/Vpc/subnetSubnet1/DefaultRoute6": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcsubnetSubnet1DefaultRoute60CE59656"
+          }
+        ],
+        "/aws-ecs-integ-alb-fargate-ipaddress-type/Vpc/subnetSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcsubnetSubnet2Subnet68A672B0"
+          }
+        ],
+        "/aws-ecs-integ-alb-fargate-ipaddress-type/Vpc/subnetSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcsubnetSubnet2RouteTable381C885D"
+          }
+        ],
+        "/aws-ecs-integ-alb-fargate-ipaddress-type/Vpc/subnetSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcsubnetSubnet2RouteTableAssociationA34731A5"
+          }
+        ],
+        "/aws-ecs-integ-alb-fargate-ipaddress-type/Vpc/subnetSubnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcsubnetSubnet2DefaultRoute7113387A"
+          }
+        ],
+        "/aws-ecs-integ-alb-fargate-ipaddress-type/Vpc/subnetSubnet2/DefaultRoute6": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcsubnetSubnet2DefaultRoute6BA963B3C"
+          }
+        ],
+        "/aws-ecs-integ-alb-fargate-ipaddress-type/Vpc/IGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcIGWD7BA715C"
+          }
+        ],
+        "/aws-ecs-integ-alb-fargate-ipaddress-type/Vpc/VPCGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcVPCGWBF912B6E"
+          }
+        ],
+        "/aws-ecs-integ-alb-fargate-ipaddress-type/Vpc/EIGW6": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcEIGW61416F369"
+          }
+        ],
+        "/aws-ecs-integ-alb-fargate-ipaddress-type/FargateCluster/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateCluster7CCD5F93"
+          }
+        ],
+        "/aws-ecs-integ-alb-fargate-ipaddress-type/AlbFargateServiceWithIpAddressType/LB/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AlbFargateServiceWithIpAddressTypeLBCE394873"
+          }
+        ],
+        "/aws-ecs-integ-alb-fargate-ipaddress-type/AlbFargateServiceWithIpAddressType/LB/SecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AlbFargateServiceWithIpAddressTypeLBSecurityGroupABFDD71D"
+          }
+        ],
+        "/aws-ecs-integ-alb-fargate-ipaddress-type/AlbFargateServiceWithIpAddressType/LB/SecurityGroup/to awsecsintegalbfargateipaddresstypeAlbFargateServiceWithIpAddressTypeServiceSecurityGroup7A256EDF:80": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AlbFargateServiceWithIpAddressTypeLBSecurityGrouptoawsecsintegalbfargateipaddresstypeAlbFargateServiceWithIpAddressTypeServiceSecurityGroup7A256EDF80F99C5371"
+          }
+        ],
+        "/aws-ecs-integ-alb-fargate-ipaddress-type/AlbFargateServiceWithIpAddressType/LB/PublicListener/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AlbFargateServiceWithIpAddressTypeLBPublicListenerDEFD8F32"
+          }
+        ],
+        "/aws-ecs-integ-alb-fargate-ipaddress-type/AlbFargateServiceWithIpAddressType/LB/PublicListener/ECSGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AlbFargateServiceWithIpAddressTypeLBPublicListenerECSGroupCC9504F8"
+          }
+        ],
+        "/aws-ecs-integ-alb-fargate-ipaddress-type/AlbFargateServiceWithIpAddressType/LoadBalancerDNS": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AlbFargateServiceWithIpAddressTypeLoadBalancerDNSC214E681"
+          }
+        ],
+        "/aws-ecs-integ-alb-fargate-ipaddress-type/AlbFargateServiceWithIpAddressType/ServiceURL": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AlbFargateServiceWithIpAddressTypeServiceURLB3223DD8"
+          }
+        ],
+        "/aws-ecs-integ-alb-fargate-ipaddress-type/AlbFargateServiceWithIpAddressType/TaskDef/TaskRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AlbFargateServiceWithIpAddressTypeTaskDefTaskRoleB00CC46A"
+          }
+        ],
+        "/aws-ecs-integ-alb-fargate-ipaddress-type/AlbFargateServiceWithIpAddressType/TaskDef/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AlbFargateServiceWithIpAddressTypeTaskDef0E6428AA"
+          }
+        ],
+        "/aws-ecs-integ-alb-fargate-ipaddress-type/AlbFargateServiceWithIpAddressType/TaskDef/web/LogGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AlbFargateServiceWithIpAddressTypeTaskDefwebLogGroup541BAEDD"
+          }
+        ],
+        "/aws-ecs-integ-alb-fargate-ipaddress-type/AlbFargateServiceWithIpAddressType/TaskDef/ExecutionRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AlbFargateServiceWithIpAddressTypeTaskDefExecutionRoleFEA98929"
+          }
+        ],
+        "/aws-ecs-integ-alb-fargate-ipaddress-type/AlbFargateServiceWithIpAddressType/TaskDef/ExecutionRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AlbFargateServiceWithIpAddressTypeTaskDefExecutionRoleDefaultPolicy7D1A5C28"
+          }
+        ],
+        "/aws-ecs-integ-alb-fargate-ipaddress-type/AlbFargateServiceWithIpAddressType/Service/Service": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AlbFargateServiceWithIpAddressTypeServiceD7BE693C"
+          }
+        ],
+        "/aws-ecs-integ-alb-fargate-ipaddress-type/AlbFargateServiceWithIpAddressType/Service/SecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AlbFargateServiceWithIpAddressTypeServiceSecurityGroupF1A097B2"
+          }
+        ],
+        "/aws-ecs-integ-alb-fargate-ipaddress-type/AlbFargateServiceWithIpAddressType/Service/SecurityGroup/from awsecsintegalbfargateipaddresstypeAlbFargateServiceWithIpAddressTypeLBSecurityGroup1615CDEC:80": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AlbFargateServiceWithIpAddressTypeServiceSecurityGroupfromawsecsintegalbfargateipaddresstypeAlbFargateServiceWithIpAddressTypeLBSecurityGroup1615CDEC80F5060FF5"
+          }
+        ],
+        "/aws-ecs-integ-alb-fargate-ipaddress-type/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/aws-ecs-integ-alb-fargate-ipaddress-type/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "aws-ecs-integ-alb-fargate-ipaddress-type"
+    },
+    "AlbFargateServiceWithIpAddressTypeDefaultTestDeployAssert318C3DE7.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "AlbFargateServiceWithIpAddressTypeDefaultTestDeployAssert318C3DE7.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "AlbFargateServiceWithIpAddressTypeDefaultTestDeployAssert318C3DE7": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "AlbFargateServiceWithIpAddressTypeDefaultTestDeployAssert318C3DE7.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "AlbFargateServiceWithIpAddressTypeDefaultTestDeployAssert318C3DE7.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "AlbFargateServiceWithIpAddressTypeDefaultTestDeployAssert318C3DE7.assets"
+      ],
+      "metadata": {
+        "/AlbFargateServiceWithIpAddressType/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/AlbFargateServiceWithIpAddressType/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "AlbFargateServiceWithIpAddressType/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}

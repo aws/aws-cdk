@@ -1,0 +1,12 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "AlbFargateServiceWithIpAddressType/DefaultTest": {
+      "stacks": [
+        "aws-ecs-integ-alb-fargate-ipaddress-type"
+      ],
+      "assertionStack": "AlbFargateServiceWithIpAddressType/DefaultTest/DeployAssert",
+      "assertionStackName": "AlbFargateServiceWithIpAddressTypeDefaultTestDeployAssert318C3DE7"
+    }
+  }
+}

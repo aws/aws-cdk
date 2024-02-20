@@ -1094,3 +1094,39 @@ const scheduledFargateTask = new ecsPatterns.ScheduledFargateTask(this, 'Schedul
   ],
 });
 ```
+
+### Create dualstack load balancer
+
+You can create dualstack load balancer by setting `ipAddressType` to `IpAddressType.DUAL_STACK` as shown below:
+
+```ts
+const vpc = new ec2.Vpc(stack, 'Vpc', {
+  maxAzs: 2,
+  restrictDefaultSecurityGroup: false,
+  ipProtocol: ec2.IpProtocol.DUAL_STACK,
+  subnetConfiguration: [
+    {
+      name: 'subnet',
+      subnetType: ec2.SubnetType.PUBLIC,
+      mapPublicIpOnLaunch: true,
+      ipv6AssignAddressOnCreation: true,
+    },
+  ],
+});
+const cluster = new ecs.Cluster(stack, 'FargateCluster', { vpc });
+
+new ecsPatterns.ApplicationLoadBalancedFargateService(
+  stack,
+  'AlbFargateServiceWithIpAddressType',
+  {
+    cluster,
+    memoryLimitMiB: 512,
+    cpu: 256,
+    taskImageOptions: {
+      image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+    },
+    ipAddressType: IpAddressType.DUAL_STACK,
+    assignPublicIp: true,
+  },
+);
+```
