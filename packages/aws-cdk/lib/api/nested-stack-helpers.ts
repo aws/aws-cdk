@@ -18,7 +18,7 @@ export interface RootTemplateWithNestedStacks {
 }
 
 /**
- * Reads the currently deployed template from CloudFormation and adds a
+ * Reads the currently deployed template and all of its nested stack templates from CloudFormation.
  */
 export async function loadCurrentTemplateWithNestedStacks(
   rootStackArtifact: cxapi.CloudFormationStackArtifact, sdk: ISDK,
