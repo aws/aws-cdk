@@ -186,7 +186,7 @@ describe('Topic', () => {
 
   });
 
-  test('can add a policy to the topic enforcing ssl', () => {
+  test('can enforce ssl when creating the topic', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const topic = new sns.Topic(stack, 'Topic', {
