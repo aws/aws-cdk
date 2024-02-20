@@ -67,6 +67,15 @@ export interface TopicProps {
    * @default - do not archive messages
    */
   readonly messageRetentionPeriodInDays?: number;
+
+  /**
+   * Adds a statement to enforce encryption of data in transit when publishing to the topic.
+   *
+   * For more information, see https://docs.aws.amazon.com/sns/latest/dg/sns-security-best-practices.html#enforce-encryption-data-in-transit.
+   *
+   * @default false
+   */
+  readonly enforceSSL?: boolean;
 }
 
 /**
@@ -173,6 +182,8 @@ export class Topic extends TopicBase {
     super(scope, id, {
       physicalName: props.topicName,
     });
+
+    this.enforceSSL = props.enforceSSL;
 
     if (props.contentBasedDeduplication && !props.fifo) {
       throw new Error('Content based deduplication can only be enabled for FIFO SNS topics.');
