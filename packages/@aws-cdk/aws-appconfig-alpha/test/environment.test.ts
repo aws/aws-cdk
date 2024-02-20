@@ -140,7 +140,7 @@ describe('environment', () => {
           },
           AlarmRoleArn: {
             'Fn::GetAtt': [
-              'MyEnvironmentRole01C8C013F',
+              'MyEnvironmentRole1E6113D2F07A1',
               'Arn',
             ],
           },
@@ -154,12 +154,7 @@ describe('environment', () => {
             Statement: [
               {
                 Effect: iam.Effect.ALLOW,
-                Resource: {
-                  'Fn::GetAtt': [
-                    'Alarm7103F465',
-                    'Arn',
-                  ],
-                },
+                Resource: '*',
                 Action: 'cloudwatch:DescribeAlarms',
               },
             ],
@@ -272,7 +267,7 @@ describe('environment', () => {
           },
           AlarmRoleArn: {
             'Fn::GetAtt': [
-              'MyEnvironmentRoleCompositeAlarm8C2A0542',
+              'MyEnvironmentRole1E6113D2F07A1',
               'Arn',
             ],
           },
@@ -286,20 +281,7 @@ describe('environment', () => {
             Statement: [
               {
                 Effect: iam.Effect.ALLOW,
-                Resource: {
-                  'Fn::Join': [
-                    '',
-                    [
-                      'arn:',
-                      { Ref: 'AWS::Partition' },
-                      ':cloudwatch:',
-                      { Ref: 'AWS::Region' },
-                      ':',
-                      { Ref: 'AWS::AccountId' },
-                      ':alarm:*',
-                    ],
-                  ],
-                },
+                Resource: '*',
                 Action: 'cloudwatch:DescribeAlarms',
               },
             ],
@@ -357,7 +339,7 @@ describe('environment', () => {
           },
           AlarmRoleArn: {
             'Fn::GetAtt': [
-              'MyEnvironmentRoleCompositeAlarm8C2A0542',
+              'MyEnvironmentRole1E6113D2F07A1',
               'Arn',
             ],
           },
@@ -371,7 +353,7 @@ describe('environment', () => {
           },
           AlarmRoleArn: {
             'Fn::GetAtt': [
-              'MyEnvironmentRoleCompositeAlarm8C2A0542',
+              'MyEnvironmentRole1E6113D2F07A1',
               'Arn',
             ],
           },
@@ -385,20 +367,7 @@ describe('environment', () => {
             Statement: [
               {
                 Effect: iam.Effect.ALLOW,
-                Resource: {
-                  'Fn::Join': [
-                    '',
-                    [
-                      'arn:',
-                      { Ref: 'AWS::Partition' },
-                      ':cloudwatch:',
-                      { Ref: 'AWS::Region' },
-                      ':',
-                      { Ref: 'AWS::AccountId' },
-                      ':alarm:*',
-                    ],
-                  ],
-                },
+                Resource: '*',
                 Action: 'cloudwatch:DescribeAlarms',
               },
             ],
@@ -409,7 +378,7 @@ describe('environment', () => {
     });
   });
 
-  test('environment with monitors with two alarms', () => {
+  test('environment with monitors with multiple alarms', () => {
     const stack = new cdk.Stack();
     const app = new Application(stack, 'MyAppConfig');
     const alarm1 = new Alarm(stack, 'Alarm1', {
@@ -432,17 +401,28 @@ describe('environment', () => {
         },
       ),
     });
+    const alarm3 = new Alarm(stack, 'Alarm3', {
+      threshold: 5,
+      evaluationPeriods: 5,
+      metric: new Metric(
+        {
+          namespace: 'aws',
+          metricName: 'myMetric',
+        },
+      ),
+    });
     new Environment(stack, 'MyEnvironment', {
       environmentName: 'TestEnv',
       application: app,
       monitors: [
         Monitor.fromCloudWatchAlarm(alarm1),
         Monitor.fromCloudWatchAlarm(alarm2),
+        Monitor.fromCloudWatchAlarm(alarm3),
       ],
     });
 
-    Template.fromStack(stack).resourceCountIs('AWS::CloudWatch::Alarm', 2);
-    Template.fromStack(stack).resourceCountIs('AWS::IAM::Role', 2);
+    Template.fromStack(stack).resourceCountIs('AWS::CloudWatch::Alarm', 3);
+    Template.fromStack(stack).resourceCountIs('AWS::IAM::Role', 1);
     Template.fromStack(stack).hasResourceProperties('AWS::AppConfig::Environment', {
       Name: 'TestEnv',
       ApplicationId: {
@@ -458,7 +438,7 @@ describe('environment', () => {
           },
           AlarmRoleArn: {
             'Fn::GetAtt': [
-              'MyEnvironmentRole01C8C013F',
+              'MyEnvironmentRole1E6113D2F07A1',
               'Arn',
             ],
           },
@@ -472,7 +452,21 @@ describe('environment', () => {
           },
           AlarmRoleArn: {
             'Fn::GetAtt': [
-              'MyEnvironmentRole135A2CEE4',
+              'MyEnvironmentRole1E6113D2F07A1',
+              'Arn',
+            ],
+          },
+        },
+        {
+          AlarmArn: {
+            'Fn::GetAtt': [
+              'Alarm32341D8D9',
+              'Arn',
+            ],
+          },
+          AlarmRoleArn: {
+            'Fn::GetAtt': [
+              'MyEnvironmentRole1E6113D2F07A1',
               'Arn',
             ],
           },
