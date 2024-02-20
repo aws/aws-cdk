@@ -314,3 +314,20 @@ test('when introspectionConfig is set it should be used when creating the API', 
     IntrospectionConfig: 'DISABLED',
   });
 });
+
+test('when query depth limits are set, they should be used on API', () => {
+  // WHEN
+  new appsync.GraphqlApi(stack, 'query-depth-limits', {
+    authorizationConfig: {},
+    name: 'query-depth-limits',
+    schema: appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.test.graphql')),
+    queryDepthLimit: 2,
+    resolverCountLimit: 2,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::AppSync::GraphQLApi', {
+    QueryDepthLimit: 2,
+    ResolverCountLimit: 2,
+  });
+});

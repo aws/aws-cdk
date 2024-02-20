@@ -442,6 +442,20 @@ export interface GraphqlApiProps {
    * @default IntrospectionConfig.ENABLED
    */
   readonly introspectionConfig?: IntrospectionConfig;
+
+  /**
+   * A number indicating the maximum depth resolvers should be accepted when handling queries.
+   *
+   * @default - No Limit
+   */
+  readonly queryDepthLimit?: number;
+
+  /**
+   * A number indicating the maximum number of resolvers that should be accepted when handling queries.
+   *
+   * @default - No Limit
+   */
+  readonly resolverCountLimit?: number;
 }
 
 /**
@@ -657,6 +671,8 @@ export class GraphqlApi extends GraphqlApiBase {
       mergedApiExecutionRoleArn: this.mergedApiExecutionRole?.roleArn,
       apiType: this.definition.sourceApiOptions ? 'MERGED' : undefined,
       introspectionConfig: props.introspectionConfig,
+      queryDepthLimit: props.queryDepthLimit,
+      resolverCountLimit: props.resolverCountLimit,
     });
 
     this.apiId = this.api.attrApiId;
