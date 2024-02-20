@@ -8,11 +8,6 @@ export type PropertyMap = {[key: string]: any };
 
 export type ResourceReplacements = { [logicalId: string]: ResourceReplacement };
 
-export interface NestedStackNames {
-  readonly nestedStackPhysicalName: string | undefined;
-  readonly nestedChildStackNames: { [logicalId: string]: NestedStackNames };
-}
-
 export interface ResourceReplacement {
   resourceReplaced: boolean;
   propertiesReplaced: { [propertyName: string]: ChangeSetReplacement };
