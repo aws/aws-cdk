@@ -115,7 +115,8 @@
     "punycode",
     "semver",
     "table",
-    "yaml"
+    "yaml",
+    "mime-types"
   ],
   "dependencies": {
     "@aws-cdk/asset-awscli-v1": "^2.2.202",
@@ -130,7 +131,8 @@
     "punycode": "^2.3.1",
     "semver": "^7.6.0",
     "table": "^6.8.1",
-    "yaml": "1.10.2"
+    "yaml": "1.10.2",
+    "mime-types": "^2.1.35"
   },
   "devDependencies": {
     "@aws-cdk/aws-service-spec": "^0.0.47",
@@ -162,6 +164,7 @@
     "@types/jest": "^29.5.12",
     "@types/lodash": "^4.14.202",
     "@types/punycode": "^2.1.4",
+    "@types/mime-types": "^2.1.4",
     "@aws-cdk/lazify": "0.0.0",
     "aws-sdk": "^2.1557.0",
     "aws-sdk-client-mock": "^3.0.1",
