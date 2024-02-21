@@ -1075,6 +1075,49 @@ const fn = new lambda.Function(this, 'MyLambda', {
 });
 ```
 
+## IPv6 support
+
+You can configure IPv6 connectivity for lambda function by setting `Ipv6AllowedForDualStack` to true. 
+It allows Lambda functions to specify whether the IPv6 traffic should be allowed when using dual-stack VPCs. 
+To access IPv6 network using Lambda, Dual-stack VPC is required. Using dual-stack VPC a function communicates with subnet over either of IPv4 or IPv6.
+
+```ts
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
+
+const natProvider = ec2.NatProvider.gateway();
+
+// create dual-stack VPC
+const vpc = new ec2.Vpc(this, 'DualStackVpc', {
+  ipProtocol: ec2.IpProtocol.DUAL_STACK,
+  subnetConfiguration: [
+    {
+      name: 'Ipv6Public1',
+      subnetType: ec2.SubnetType.PUBLIC,
+    },
+    {
+      name: 'Ipv6Public2',
+      subnetType: ec2.SubnetType.PUBLIC,
+    },
+    {
+      name: 'Ipv6Private1',
+      subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS,
+    },
+  ],
+  natGatewayProvider: natProvider,
+});
+
+const natGatewayId = natProvider.configuredGateways[0].gatewayId;
+(vpc.privateSubnets[0] as ec2.PrivateSubnet).addIpv6Nat64Route(natGatewayId);
+
+const fn = new lambda.Function(this, 'Lambda_with_IPv6_VPC', {
+  code: new lambda.InlineCode('def main(event, context): pass'),
+  handler: 'index.main',
+  runtime: lambda.Runtime.PYTHON_3_9,
+  vpc,
+  ipv6AllowedForDualStack: true,
+});
+```
+
 ## Ephemeral Storage
 
 You can configure ephemeral storage on a function to control the amount of storage it gets for reading
