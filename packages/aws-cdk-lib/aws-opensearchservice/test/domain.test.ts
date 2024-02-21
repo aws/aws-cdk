@@ -846,6 +846,90 @@ each([testedOpenSearchVersions]).describe('log groups', (engineVersion) => {
       },
     });
   });
+
+  test('can disable application logs', () => {
+    new Domain(stack, 'Domain1', {
+      version: engineVersion,
+      logging: {
+        appLogEnabled: false,
+      },
+    });
+
+    Template.fromStack(stack).resourceCountIs('Custom::CloudwatchLogResourcePolicy', 0);
+    Template.fromStack(stack).hasResourceProperties('AWS::OpenSearchService::Domain', {
+      LogPublishingOptions: {
+        ES_APPLICATION_LOGS: {
+          Enabled: false,
+        },
+        AUDIT_LOGS: Match.absent(),
+        SEARCH_SLOW_LOGS: Match.absent(),
+        INDEX_SLOW_LOGS: Match.absent(),
+      },
+    });
+  });
+
+  test('can disable audit logs', () => {
+    new Domain(stack, 'Domain1', {
+      version: engineVersion,
+      logging: {
+        auditLogEnabled: false,
+      },
+    });
+
+    Template.fromStack(stack).resourceCountIs('Custom::CloudwatchLogResourcePolicy', 0);
+    Template.fromStack(stack).hasResourceProperties('AWS::OpenSearchService::Domain', {
+      LogPublishingOptions: {
+        ES_APPLICATION_LOGS: Match.absent(),
+        AUDIT_LOGS: {
+          Enabled: false,
+        },
+        SEARCH_SLOW_LOGS: Match.absent(),
+        INDEX_SLOW_LOGS: Match.absent(),
+      },
+    });
+  });
+
+  test('can disable slow search logs', () => {
+    new Domain(stack, 'Domain1', {
+      version: engineVersion,
+      logging: {
+        slowSearchLogEnabled: false,
+      },
+    });
+
+    Template.fromStack(stack).resourceCountIs('Custom::CloudwatchLogResourcePolicy', 0);
+    Template.fromStack(stack).hasResourceProperties('AWS::OpenSearchService::Domain', {
+      LogPublishingOptions: {
+        ES_APPLICATION_LOGS: Match.absent(),
+        AUDIT_LOGS: Match.absent(),
+        SEARCH_SLOW_LOGS: {
+          Enabled: false,
+        },
+        INDEX_SLOW_LOGS: Match.absent(),
+      },
+    });
+  });
+
+  test('can disable slow index logs', () => {
+    new Domain(stack, 'Domain1', {
+      version: engineVersion,
+      logging: {
+        slowIndexLogEnabled: false,
+      },
+    });
+
+    Template.fromStack(stack).resourceCountIs('Custom::CloudwatchLogResourcePolicy', 0);
+    Template.fromStack(stack).hasResourceProperties('AWS::OpenSearchService::Domain', {
+      LogPublishingOptions: {
+        ES_APPLICATION_LOGS: Match.absent(),
+        AUDIT_LOGS: Match.absent(),
+        SEARCH_SLOW_LOGS: Match.absent(),
+        INDEX_SLOW_LOGS: {
+          Enabled: false,
+        },
+      },
+    });
+  });
 });
 
 each(testedOpenSearchVersions).describe('grants', (engineVersion) => {
