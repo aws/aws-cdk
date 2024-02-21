@@ -446,7 +446,7 @@ export interface GraphqlApiProps {
   /**
    * A number indicating the maximum depth resolvers should be accepted when handling queries.
    * Value must be withing range of 0 to 75
-   * 
+   *
    * @default - The default value is 0 (or unspecified) which indicates no maximum depth.
    */
   readonly queryDepthLimit?: number;
@@ -454,7 +454,7 @@ export interface GraphqlApiProps {
   /**
    * A number indicating the maximum number of resolvers that should be accepted when handling queries.
    * Value must be withing range of 0 to 10000
-   * 
+   *
    * @default - The default value is 0 (or unspecified), which will set the limit to 10000
    */
   readonly resolverCountLimit?: number;
