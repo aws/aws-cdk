@@ -39,7 +39,7 @@ const myDatabaseCluster = new rds.DatabaseCluster(this, 'DatabaseCluster', {
 });
 const myServerlessCluster = new rds.ServerlessCluster(this, 'ServerlessCluster', {
   engine: rds.DatabaseClusterEngine.AURORA_POSTGRESQL,
-  parameterGroup: rds.ParameterGroup.fromParameterGroupName(this, 'ParameterGroup', 'default.aurora-postgresql10'),
+  parameterGroup: rds.ParameterGroup.fromParameterGroupName(this, 'ParameterGroup', 'default.aurora-postgresql11'),
   vpc,
 });
 const myCoolConstruct = new Construct(this, 'MyCoolConstruct');
