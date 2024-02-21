@@ -363,6 +363,8 @@ export interface ResponseHeadersContentSecurityPolicy {
 
   /**
    * A Boolean that determines whether CloudFront includes the -Report-Only suffix in the Content-Security-Policy HTTP response header.
+   *
+   * @default - not report only
    */
   readonly reportOnly?: boolean;
 }
