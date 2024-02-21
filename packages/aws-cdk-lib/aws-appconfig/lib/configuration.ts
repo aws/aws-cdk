@@ -302,26 +302,6 @@ abstract class ConfigurationBase extends Construct implements IConfiguration, IE
     this.extensible.addExtension(extension);
   }
 
-  /**
-   * Deploys the configuration to the specified environment.
-   *
-   * @param environment The environment to deploy the configuration to
-   * @deprecated Use `deployTo` as a property instead. We do not recommend
-   * creating resources in multiple stacks. If you want to do this still,
-   * please take a look into https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_appconfig.CfnDeployment.html.
-   */
-  public deploy(environment: IEnvironment) {
-    new CfnDeployment(this, `Deployment${getHash(environment.name!)}`, {
-      applicationId: this.application.applicationId,
-      configurationProfileId: this.configurationProfileId,
-      deploymentStrategyId: this.deploymentStrategy!.deploymentStrategyId,
-      environmentId: environment.environmentId,
-      configurationVersion: this.versionNumber!,
-      description: this.description,
-      kmsKeyIdentifier: this.deploymentKey?.keyArn,
-    });
-  }
-
   protected addExistingEnvironmentsToApplication() {
     this.deployTo?.forEach((environment) => {
       if (!this.application.environments.includes(environment)) {
@@ -339,7 +319,15 @@ abstract class ConfigurationBase extends Construct implements IConfiguration, IE
       if ((this.deployTo && !this.deployTo.includes(environment))) {
         return;
       }
-      this.deploy(environment);
+      new CfnDeployment(this, `Deployment${getHash(environment.name!)}`, {
+        applicationId: this.application.applicationId,
+        configurationProfileId: this.configurationProfileId,
+        deploymentStrategyId: this.deploymentStrategy!.deploymentStrategyId,
+        environmentId: environment.environmentId,
+        configurationVersion: this.versionNumber!,
+        description: this.description,
+        kmsKeyIdentifier: this.deploymentKey?.keyArn,
+      });
     });
   }
 }
