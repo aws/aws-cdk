@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.129.0](https://github.com/aws/aws-cdk/compare/v2.128.0...v2.129.0) (2024-02-21)
+
+
+### Features
+
+* update L1 CloudFormation resource definitions ([#29191](https://github.com/aws/aws-cdk/issues/29191)) ([c579e3c](https://github.com/aws/aws-cdk/commit/c579e3cdfa425fe4e58fc20a653d32d32f943ca9)), closes [/docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-fleet-attribute-based-instance-type-selection.html#ec2](https://github.com/aws//docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-fleet-attribute-based-instance-type-selection.html/issues/ec2) [/docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-fleet-attribute-based-instance-type-selection.html#ec2](https://github.com/aws//docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-fleet-attribute-based-instance-type-selection.html/issues/ec2) [/docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-launchtemplate.html#aws-resource-ec2](https://github.com/aws//docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-launchtemplate.html/issues/aws-resource-ec2) [/docs.aws.amazon.com/kendra/latest/dg/ds-schemas.html#ds-s3](https://github.com/aws//docs.aws.amazon.com/kendra/latest/dg/ds-schemas.html/issues/ds-s3)
+* **applicationautoscaling:** timezone for ScheduledAction ([#29116](https://github.com/aws/aws-cdk/issues/29116)) ([8694125](https://github.com/aws/aws-cdk/commit/869412535f564d5b36cf7cc5356aa38a381d02f1)), closes [#22645](https://github.com/aws/aws-cdk/issues/22645) [#27754](https://github.com/aws/aws-cdk/issues/27754) [#27052](https://github.com/aws/aws-cdk/issues/27052) [#21181](https://github.com/aws/aws-cdk/issues/21181) [/github.com/aws/aws-cdk/blob/256cca4017a80f8643c5f5a5999a2ce0383eebf0/packages/aws-cdk-lib/aws-autoscaling/lib/scheduled-action.ts#L21](https://github.com/aws//github.com/aws/aws-cdk/blob/256cca4017a80f8643c5f5a5999a2ce0383eebf0/packages/aws-cdk-lib/aws-autoscaling/lib/scheduled-action.ts/issues/L21) [#27105](https://github.com/aws/aws-cdk/issues/27105)
+* **cloudfront-origin:** adding FunctionUrlOrigin ([#29101](https://github.com/aws/aws-cdk/issues/29101)) ([2b0ed53](https://github.com/aws/aws-cdk/commit/2b0ed53bfe85a59e9334883a667c88fb9e3f5bc0))
+* **ecs:** credentialSpecs in ContainerDefinitionOptions ([#29085](https://github.com/aws/aws-cdk/issues/29085)) ([e92dbec](https://github.com/aws/aws-cdk/commit/e92dbec0e5fb51bad6037d01d6131c9ab4ce3f55))
+* **events-targets:** `launchType` property for ECS task ([#29069](https://github.com/aws/aws-cdk/issues/29069)) ([b4daf84](https://github.com/aws/aws-cdk/commit/b4daf84cf8a90ef38e3a2328df6271bdaf19de01)), closes [#28990](https://github.com/aws/aws-cdk/issues/28990)
+* **lambda:**  Add `Ipv6AllowedforDualStack` support for Lambda function ([#28928](https://github.com/aws/aws-cdk/issues/28928)) ([90caad9](https://github.com/aws/aws-cdk/commit/90caad953147c2c15022898f40b49a8d44997f6e))
+* **lambda:** adding .net 8 (dotnet8) lambda runtime support  ([#29178](https://github.com/aws/aws-cdk/issues/29178)) ([74335f6](https://github.com/aws/aws-cdk/commit/74335f63b7be81ede07e1ae2e24e7f59ed44beef))
+* **rds:** support Aurora MySQL 3.05.2 ([#29166](https://github.com/aws/aws-cdk/issues/29166)) ([da0b82c](https://github.com/aws/aws-cdk/commit/da0b82c21e1ddd3c301db8f98e39767e07ff32fc))
+* **sns:** enforce ssl with topic policy ([#29144](https://github.com/aws/aws-cdk/issues/29144)) ([a75f447](https://github.com/aws/aws-cdk/commit/a75f447d6dc9ad8b1b00a7faebdd8aadc3d25e28)), closes [#29142](https://github.com/aws/aws-cdk/issues/29142)
+* **synthetics:** latest canary runtimes for NodeJS, Python ([#29132](https://github.com/aws/aws-cdk/issues/29132)) ([3c122a4](https://github.com/aws/aws-cdk/commit/3c122a435c9d8ee3012859c05a5acf4864e9030a)), closes [#29135](https://github.com/aws/aws-cdk/issues/29135)
+
 ## [2.128.0](https://github.com/aws/aws-cdk/compare/v2.127.0...v2.128.0) (2024-02-14)
 
 
