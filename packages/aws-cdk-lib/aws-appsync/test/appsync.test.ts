@@ -315,11 +315,11 @@ test('when introspectionConfig is set it should be used when creating the API', 
   });
 });
 
-test('when query depth limits are set, they should be used on API', () => {
+test('when query limits are set, they should be used on API', () => {
   // WHEN
-  new appsync.GraphqlApi(stack, 'query-depth-limits', {
+  new appsync.GraphqlApi(stack, 'query-limits', {
     authorizationConfig: {},
-    name: 'query-depth-limits',
+    name: 'query-limits',
     schema: appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.test.graphql')),
     queryDepthLimit: 2,
     resolverCountLimit: 2,
@@ -330,4 +330,44 @@ test('when query depth limits are set, they should be used on API', () => {
     QueryDepthLimit: 2,
     ResolverCountLimit: 2,
   });
+});
+
+test('when query depth limit is out of range, it throws an error', () => {
+
+  const errorString = 'You must specify a query depth limit between 0 and 75.'
+
+  const buildWithLimit = (name, queryDepthLimit) => {
+    new appsync.GraphqlApi(stack, name, {
+      authorizationConfig: {},
+      name: 'query-limits',
+      schema: appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.test.graphql')),
+      queryDepthLimit
+    });
+  }
+
+  expect(() => buildWithLimit('query-limit-low', -1)).toThrow(errorString)
+  expect(() => buildWithLimit('query-limit-min', 0)).not.toThrow(errorString)
+  expect(() => buildWithLimit('query-limit-max', 75)).not.toThrow(errorString)
+  expect(() => buildWithLimit('query-limit-high', 76)).toThrow(errorString)
+
+});
+
+test('when resolver limit is out of range, it throws an error', () => {
+
+  const errorString = 'You must specify a resolver count limit between 0 and 10000.'
+
+  const buildWithLimit = (name, resolverCountLimit) => {
+    new appsync.GraphqlApi(stack, name, {
+      authorizationConfig: {},
+      name: 'query-limits',
+      schema: appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.test.graphql')),
+      resolverCountLimit
+    });
+  }
+
+  expect(() => buildWithLimit('resolver-limit-low', -1)).toThrow(errorString)
+  expect(() => buildWithLimit('resolver-limit-min', 0)).not.toThrow(errorString)
+  expect(() => buildWithLimit('resolver-limit-max', 10000)).not.toThrow(errorString)
+  expect(() => buildWithLimit('resolver-limit-high', 10001)).toThrow(errorString)
+
 });

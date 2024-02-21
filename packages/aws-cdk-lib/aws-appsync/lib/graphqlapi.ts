@@ -445,15 +445,17 @@ export interface GraphqlApiProps {
 
   /**
    * A number indicating the maximum depth resolvers should be accepted when handling queries.
-   *
-   * @default - No Limit
+   * Value must be withing range of 0 to 75
+   * 
+   * @default - The default value is 0 (or unspecified) which indicates no maximum depth.
    */
   readonly queryDepthLimit?: number;
 
   /**
    * A number indicating the maximum number of resolvers that should be accepted when handling queries.
-   *
-   * @default - No Limit
+   * Value must be withing range of 0 to 10000
+   * 
+   * @default - The default value is 0 (or unspecified), which will set the limit to 10000
    */
   readonly resolverCountLimit?: number;
 }
@@ -652,6 +654,13 @@ export class GraphqlApi extends GraphqlApiBase {
     if ((props.schema !== undefined) === (props.definition !== undefined)) {
       throw new Error('You cannot specify both properties schema and definition.');
     }
+    if (props.queryDepthLimit !== undefined && (props.queryDepthLimit < 0 || props.queryDepthLimit > 75)) {
+      throw new Error('You must specify a query depth limit between 0 and 75.');
+    }
+    if (props.resolverCountLimit !== undefined && (props.resolverCountLimit < 0 || props.resolverCountLimit > 10000)) {
+      throw new Error('You must specify a resolver count limit between 0 and 10000.');
+    }
+
     this.definition = props.schema ? Definition.fromSchema(props.schema) : props.definition!;
 
     if (this.definition.sourceApiOptions) {
