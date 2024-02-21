@@ -494,7 +494,7 @@ describe('configuration', () => {
         }),
       }),
       application: app,
-      content: ConfigurationContent.fromFile('test/config.json'),
+      content: ConfigurationContent.fromFile('aws-appconfig/test/config.json'),
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::AppConfig::ConfigurationProfile', {
@@ -878,7 +878,7 @@ describe('configuration', () => {
       application: app,
       validators: [
         JsonSchemaValidator.fromInline(validatorContent),
-        JsonSchemaValidator.fromFile('test/schema.json'),
+        JsonSchemaValidator.fromFile('aws-appconfig/test/schema.json'),
       ],
       content: ConfigurationContent.fromInlineText('This is my content'),
       deploymentStrategy: new DeploymentStrategy(stack, 'MyDeploymentStrategy', {
