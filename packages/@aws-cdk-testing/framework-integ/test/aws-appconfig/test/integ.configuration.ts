@@ -67,6 +67,15 @@ new HostedConfiguration(stack, 'MyHostedConfig', {
   deploymentStrategy,
 });
 
+// create basic config profile from add config version from file
+const hostedEnvFromJson = appConfigApp.addEnvironment('HostedEnvFromJson');
+new HostedConfiguration(stack, 'MyHostedConfigFromJson', {
+  application: appConfigApp,
+  content: ConfigurationContent.fromInlineText('This is the configuration content'),
+  deployTo: [hostedEnvFromJson],
+  deploymentStrategy,
+});
+
 const hostedEnvFromYaml = appConfigApp.addEnvironment('HostedEnvFromYaml');
 new HostedConfiguration(stack, 'MyHostedConfigFromYaml', {
   application: appConfigApp,
