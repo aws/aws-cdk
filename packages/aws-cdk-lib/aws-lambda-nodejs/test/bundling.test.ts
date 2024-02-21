@@ -333,6 +333,28 @@ test('esbuild bundling without aws-sdk v3 when use greater than or equal Runtime
   });
 });
 
+test('esbuild bundling includes aws-sdk', () => {
+  Bundling.bundle(stack, {
+    entry,
+    projectRoot,
+    depsLockFilePath,
+    runtime: Runtime.NODEJS_18_X,
+    architecture: Architecture.X86_64,
+    useAwsSdk: true,
+  });
+
+  // Correctly bundles with esbuild
+  expect(Code.fromAsset).toHaveBeenCalledWith(path.dirname(depsLockFilePath), {
+    assetHashType: AssetHashType.OUTPUT,
+    bundling: expect.objectContaining({
+      command: [
+        'bash', '-c',
+        `esbuild --bundle "/asset-input/lib/handler.ts" --target=${STANDARD_TARGET} --platform=node --outfile="/asset-output/index.js"`,
+      ],
+    }),
+  });
+});
+
 test('esbuild bundling source map inline', () => {
   Bundling.bundle(stack, {
     entry,

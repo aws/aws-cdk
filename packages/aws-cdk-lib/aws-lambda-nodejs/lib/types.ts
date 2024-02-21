@@ -176,10 +176,18 @@ export interface BundlingOptions extends DockerRunOptions {
    * A list of modules that should be considered as externals (already available
    * in the runtime).
    *
-   * @default - ['aws-sdk'] if the runtime is <= Node.js 16.x, ['@aws-sdk/*'] if Node.js 18.x,
-   * [] if using a variable runtime version such as NODEJS_LATEST.
+   * @default - no replacements are made
    */
   readonly externalModules?: string[];
+
+  /**
+   * Includes AWS SDK in the bundle asset.
+   *
+   * @default - false
+   * if `true` the `aws-sdk` will be included in the asset bundle and not be
+   * resolved to the Lambda provided bundle.
+   */
+  readonly useAwsSdk?: boolean;
 
   /**
    * A list of modules that should be installed instead of bundled. Modules are

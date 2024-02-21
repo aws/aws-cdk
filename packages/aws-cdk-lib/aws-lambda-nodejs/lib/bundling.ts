@@ -130,7 +130,9 @@ export class Bundling implements cdk.BundlingOptions {
     const versionedExternals = isV2Runtime ? ['aws-sdk'] : ['@aws-sdk/*'];
     // Don't automatically externalize any dependencies when using a `latest` runtime which may
     // update versions in the future.
-    const defaultExternals = props.runtime?.isVariable ? [] : versionedExternals;
+    // Don't automatically externalize aws sdk if `useAwsSdk` is true so it can be
+    // include in the bundle asset
+    const defaultExternals = props.runtime?.isVariable || props.useAwsSdk ? [] : versionedExternals;
     const externals = props.externalModules ?? defaultExternals;
 
     // Warn users if they are trying to rely on global versions of the SDK that aren't available in
@@ -263,7 +265,7 @@ export class Bundling implements cdk.BundlingOptions {
 
       // Create dummy package.json, copy lock file if any and then install
       depsCommand = chain([
-        isPnpm ? osCommand.write(pathJoin(options.outputDir, 'pnpm-workspace.yaml'), ''): '', // Ensure node_modules directory is installed locally by creating local 'pnpm-workspace.yaml' file
+        isPnpm ? osCommand.write(pathJoin(options.outputDir, 'pnpm-workspace.yaml'), '') : '', // Ensure node_modules directory is installed locally by creating local 'pnpm-workspace.yaml' file
         osCommand.writeJson(pathJoin(options.outputDir, 'package.json'), { dependencies }),
         osCommand.copy(lockFilePath, pathJoin(options.outputDir, this.packageManager.lockFile)),
         osCommand.changeDirectory(options.outputDir),
@@ -342,7 +344,7 @@ interface BundlingCommandOptions {
  * OS agnostic command
  */
 class OsCommand {
-  constructor(private readonly osPlatform: NodeJS.Platform) {}
+  constructor(private readonly osPlatform: NodeJS.Platform) { }
 
   public write(filePath: string, data: string): string {
     if (this.osPlatform === 'win32') {
@@ -393,7 +395,7 @@ function chain(commands: string[]): string {
  * Platform specific path join
  */
 function osPathJoin(platform: NodeJS.Platform) {
-  return function(...paths: string[]): string {
+  return function (...paths: string[]): string {
     const joined = path.join(...paths);
     // If we are on win32 but need posix style paths
     if (os.platform() === 'win32' && platform !== 'win32') {
@@ -445,7 +447,7 @@ function isSdkV2Runtime(runtime: Runtime): boolean {
     Runtime.NODEJS_16_X,
   ];
 
-  return sdkV2RuntimeList.some((r) => {return r.family === runtime.family && r.name === runtime.name;});
+  return sdkV2RuntimeList.some((r) => { return r.family === runtime.family && r.name === runtime.name; });
 }
 
 /**
@@ -461,5 +463,5 @@ function isEsmRuntime(runtime: Runtime): boolean {
     Runtime.NODEJS_12_X,
   ];
 
-  return !unsupportedRuntimes.some((r) => {return r.family === runtime.family && r.name === runtime.name;});
+  return !unsupportedRuntimes.some((r) => { return r.family === runtime.family && r.name === runtime.name; });
 }
