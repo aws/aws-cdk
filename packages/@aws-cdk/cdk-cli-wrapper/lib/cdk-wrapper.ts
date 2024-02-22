@@ -57,14 +57,14 @@ export interface SynthFastOptions {
    *
    * @default cdk.out
    */
-  readonly output?: string,
+  readonly output?: string;
 
   /**
    * Additional context
    *
    * @default - no additional context
    */
-  readonly context?: Record<string, string>,
+  readonly context?: Record<string, string>;
 
   /**
    * Additional environment variables to set in the
@@ -72,7 +72,7 @@ export interface SynthFastOptions {
    *
    * @default - no additional env
    */
-  readonly env?: { [name: string]: string; },
+  readonly env?: { [name: string]: string };
 }
 
 /**
@@ -86,7 +86,7 @@ export interface Environment {
    *
    * @jsii ignore
    */
-  [key: string]: string | undefined
+  [key: string]: string | undefined;
 }
 
 /**
@@ -97,7 +97,7 @@ export interface CdkCliWrapperOptions {
   /**
    * The directory to run the cdk commands from
    */
-  readonly directory: string,
+  readonly directory: string;
 
   /**
    * Additional environment variables to set
@@ -106,7 +106,7 @@ export interface CdkCliWrapperOptions {
    *
    * @default - no additional env vars
    */
-  readonly env?: { [name: string]: string },
+  readonly env?: { [name: string]: string };
 
   /**
    * The path to the cdk executable
@@ -129,7 +129,7 @@ export interface CdkCliWrapperOptions {
  */
 export class CdkCliWrapper implements ICdk {
   private readonly directory: string;
-  private readonly env?: { [name: string]: string | undefined; };
+  private readonly env?: { [name: string]: string | undefined };
   private readonly cdk: string;
   private readonly showOutput: boolean;
 

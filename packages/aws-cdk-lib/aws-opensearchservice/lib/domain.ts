@@ -172,6 +172,7 @@ export interface LoggingOptions {
   /**
    * Specify if slow search logging should be set up.
    * Requires Elasticsearch version 5.1 or later or OpenSearch version 1.0 or later.
+   * An explicit `false` is required when disabling it from `true`.
    *
    * @default - false
    */
@@ -187,6 +188,7 @@ export interface LoggingOptions {
   /**
    * Specify if slow index logging should be set up.
    * Requires Elasticsearch version 5.1 or later or OpenSearch version 1.0 or later.
+   * An explicit `false` is required when disabling it from `true`.
    *
    * @default - false
    */
@@ -202,6 +204,7 @@ export interface LoggingOptions {
   /**
    * Specify if Amazon OpenSearch Service application logging should be set up.
    * Requires Elasticsearch version 5.1 or later or OpenSearch version 1.0 or later.
+   * An explicit `false` is required when disabling it from `true`.
    *
    * @default - false
    */
@@ -1624,7 +1627,7 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
         }
         // Enforce minimum & maximum IOPS:
         // https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-ebs-volume.html
-        const iopsRanges: { [key: string]: { Min: number, Max: number } } = {};
+        const iopsRanges: { [key: string]: { Min: number; Max: number } } = {};
         iopsRanges[ec2.EbsDeviceVolumeType.GENERAL_PURPOSE_SSD_GP3] = { Min: 3000, Max: 16000 };
         iopsRanges[ec2.EbsDeviceVolumeType.PROVISIONED_IOPS_SSD] = { Min: 100, Max: 64000 };
         iopsRanges[ec2.EbsDeviceVolumeType.PROVISIONED_IOPS_SSD_IO2] = { Min: 100, Max: 64000 };
@@ -2101,7 +2104,7 @@ function extractNameFromEndpoint(domainEndpoint: string) {
  *
  * @param version The engine version object
  */
-function parseVersion(version: EngineVersion): { versionNum: number, isElasticsearchVersion: boolean } {
+function parseVersion(version: EngineVersion): { versionNum: number; isElasticsearchVersion: boolean } {
   const elasticsearchPrefix = 'Elasticsearch_';
   const openSearchPrefix = 'OpenSearch_';
   const isElasticsearchVersion = version.version.startsWith(elasticsearchPrefix);

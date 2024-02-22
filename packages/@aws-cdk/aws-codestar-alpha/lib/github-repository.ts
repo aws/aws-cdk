@@ -10,12 +10,12 @@ export interface IGitHubRepository extends cdk.IResource {
   /**
    * the repository owner
    */
-  readonly owner: string
+  readonly owner: string;
 
   /**
    * the repository name
    */
-  readonly repo: string
+  readonly repo: string;
 }
 
 /**

@@ -804,8 +804,8 @@ export class Stream extends StreamBase {
    * user's configuration.
    */
   private parseEncryption(props: StreamProps): {
-    streamEncryption?: CfnStream.StreamEncryptionProperty | IResolvable
-    encryptionKey?: kms.IKey
+    streamEncryption?: CfnStream.StreamEncryptionProperty | IResolvable;
+    encryptionKey?: kms.IKey;
   } {
 
     // if encryption properties are not set, default to KMS in regions where KMS is available
@@ -883,7 +883,7 @@ export enum StreamEncryption {
   /**
    * Server-side encryption with a master key managed by Amazon Kinesis
    */
-  MANAGED = 'MANAGED'
+  MANAGED = 'MANAGED',
 }
 
 /**
@@ -900,5 +900,5 @@ export enum StreamMode {
    * Specify the on-demand capacity mode. The stream will autoscale and be billed according to the
    * volume of data ingested and retrieved.
    */
-  ON_DEMAND = 'ON_DEMAND'
+  ON_DEMAND = 'ON_DEMAND',
 }

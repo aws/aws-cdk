@@ -342,7 +342,7 @@ export interface AutoBranchCreation {
    *
    * @default - application build spec
    */
-  readonly buildSpec?: codebuild.BuildSpec
+  readonly buildSpec?: codebuild.BuildSpec;
 
   /**
    * Whether to enable auto building for the auto created branch
@@ -430,7 +430,7 @@ export interface CustomRuleOptions {
    *
    * @see https://docs.aws.amazon.com/amplify/latest/userguide/redirects.html
    */
-  readonly target: string
+  readonly target: string;
 
   /**
    * The status code for a URL rewrite or redirect rule.

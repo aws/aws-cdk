@@ -835,7 +835,7 @@ export interface ApplicationProps {
    *
    * @default 1
    */
-  readonly parallelismPerKpu?: number
+  readonly parallelismPerKpu?: number;
 
   /**
    * Determines if Flink snapshots are enabled.
@@ -905,7 +905,7 @@ class Import extends ApplicationBase {
   public readonly applicationName: string;
   public readonly applicationArn: string;
 
-  constructor(scope: Construct, id: string, attrs: { applicationArn: string, securityGroups?: ec2.ISecurityGroup[] }) {
+  constructor(scope: Construct, id: string, attrs: { applicationArn: string; securityGroups?: ec2.ISecurityGroup[] }) {
     super(scope, id);
 
     // Imported applications have no associated role or grantPrincipal
