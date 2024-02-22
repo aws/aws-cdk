@@ -1772,7 +1772,7 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
 
       logGroups.push(this.auditLogGroup);
       logPublishing.AUDIT_LOGS = {
-        enabled: this.auditLogGroup != null,
+        enabled: true,
         cloudWatchLogsLogGroupArn: this.auditLogGroup?.logGroupArn,
       };
     } else if (props.logging?.auditLogEnabled === false) {
