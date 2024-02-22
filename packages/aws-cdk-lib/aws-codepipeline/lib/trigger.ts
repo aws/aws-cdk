@@ -206,21 +206,24 @@ export class Trigger {
       const pushFilter = this.props.gitConfiguration.pushFilter;
 
       const push: CfnPipeline.GitPushFilterProperty[] | undefined = pushFilter?.map(filter => {
-        const tags: CfnPipeline.GitTagFilterCriteriaProperty | undefined = {
-          // set to undefined if empty array because CloudFormation does not accept empty array
-          excludes: filter.tagsExcludes?.length ? filter.tagsExcludes : undefined,
-          includes: filter.tagsIncludes?.length ? filter.tagsIncludes : undefined,
-        };
-        const branches: CfnPipeline.GitBranchFilterCriteriaProperty | undefined = {
-          // set to undefined if empty array because CloudFormation does not accept empty array
-          excludes: filter.branchesExcludes?.length ? filter.branchesExcludes : undefined,
-          includes: filter.branchesIncludes?.length ? filter.branchesIncludes : undefined,
-        };
-        const filePaths: CfnPipeline.GitFilePathFilterCriteriaProperty | undefined = {
-          // set to undefined if empty array because CloudFormation does not accept empty array
-          excludes: filter.filePathsExcludes?.length ? filter.filePathsExcludes : undefined,
-          includes: filter.filePathsIncludes?.length ? filter.filePathsIncludes : undefined,
-        };
+        const tags: CfnPipeline.GitTagFilterCriteriaProperty | undefined =
+          filter.tagsExcludes?.length || filter.tagsIncludes?.length ? {
+            // set to undefined if empty array because CloudFormation does not accept empty array
+            excludes: filter.tagsExcludes?.length ? filter.tagsExcludes : undefined,
+            includes: filter.tagsIncludes?.length ? filter.tagsIncludes : undefined,
+          } : undefined;
+        const branches: CfnPipeline.GitBranchFilterCriteriaProperty | undefined =
+          filter.branchesExcludes?.length || filter.branchesIncludes?.length ? {
+            // set to undefined if empty array because CloudFormation does not accept empty array
+            excludes: filter.branchesExcludes?.length ? filter.branchesExcludes : undefined,
+            includes: filter.branchesIncludes?.length ? filter.branchesIncludes : undefined,
+          } : undefined;
+        const filePaths: CfnPipeline.GitFilePathFilterCriteriaProperty | undefined =
+          filter.filePathsExcludes?.length || filter.filePathsIncludes?.length ? {
+            // set to undefined if empty array because CloudFormation does not accept empty array
+            excludes: filter.filePathsExcludes?.length ? filter.filePathsExcludes : undefined,
+            includes: filter.filePathsIncludes?.length ? filter.filePathsIncludes : undefined,
+          } : undefined;
         return { tags, branches, filePaths };
       });
 
