@@ -1,0 +1,82 @@
+{
+ "Resources": {
+  "Domain66AC69E0": {
+   "Type": "AWS::OpenSearchService::Domain",
+   "Properties": {
+    "ClusterConfig": {
+     "DedicatedMasterEnabled": false,
+     "InstanceCount": 1,
+     "InstanceType": "r5.large.search",
+     "MultiAZWithStandbyEnabled": false,
+     "ZoneAwarenessEnabled": false
+    },
+    "DomainEndpointOptions": {
+     "EnforceHTTPS": false,
+     "TLSSecurityPolicy": "Policy-Min-TLS-1-0-2019-07"
+    },
+    "EBSOptions": {
+     "EBSEnabled": true,
+     "VolumeSize": 10,
+     "VolumeType": "gp2"
+    },
+    "EncryptionAtRestOptions": {
+     "Enabled": false
+    },
+    "EngineVersion": "OpenSearch_2.11",
+    "LogPublishingOptions": {
+     "SEARCH_SLOW_LOGS": {
+      "Enabled": false
+     },
+     "INDEX_SLOW_LOGS": {
+      "Enabled": false
+     },
+     "ES_APPLICATION_LOGS": {
+      "Enabled": false
+     },
+     "AUDIT_LOGS": {
+      "Enabled": false
+     }
+    },
+    "NodeToNodeEncryptionOptions": {
+     "Enabled": false
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

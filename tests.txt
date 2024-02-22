@@ -447,6 +447,7 @@ aws-opensearchservice/test/integ.opensearch.js
 aws-opensearchservice/test/integ.opensearch.ultrawarm.js
 aws-opensearchservice/test/integ.opensearch.unsignedbasicauth.js
 aws-opensearchservice/test/integ.opensearch.vpc.js
+aws-opensearchservice/test/integ.opensearch.disable-logging.js
 aws-rds/test/integ.cluster-dual.js
 aws-rds/test/integ.cluster-rotation.lit.js
 aws-rds/test/integ.cluster-s3.js
