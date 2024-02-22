@@ -1,38 +1,36 @@
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';;
 import { instanceMockFrom, MockCloudExecutable, TestStackArtifact } from './util';
-import { MockSdkProvider } from './util/mock-sdk';
 import { Bootstrapper } from '../lib/api/bootstrap';
 import { Deployments } from '../lib/api/deployments';
 import { CdkToolkit } from '../lib/cdk-toolkit';
 import { listStacks } from '../lib/list-stacks';
 
-let cloudExecutable: MockCloudExecutable;
-let bootstrapper: jest.Mocked<Bootstrapper>;
-
-beforeEach(() => {
-  jest.resetAllMocks();
-
-  bootstrapper = instanceMockFrom(Bootstrapper);
-  bootstrapper.bootstrapEnvironment.mockResolvedValue({ noOp: false, outputs: {} } as any);
-
-  cloudExecutable = new MockCloudExecutable({
-    stacks: [
-      MockStack.MOCK_STACK_A,
-      MockStack.MOCK_STACK_B,
-    ],
-  });
-});
-
 describe('list', () => {
+  let cloudExecutable: MockCloudExecutable;
+  let cloudFormation: jest.Mocked<Deployments>;
+  let bootstrapper: jest.Mocked<Bootstrapper>;
 
-  // eslint-disable-next-line jest/no-disabled-tests
-  test.skip('stacks with no dependencies', async () => {
+  beforeEach(() => {
+    jest.resetAllMocks();
+
+    bootstrapper = instanceMockFrom(Bootstrapper);
+    bootstrapper.bootstrapEnvironment.mockResolvedValue({ noOp: false, outputs: {} } as any);
+
+    cloudExecutable = new MockCloudExecutable({
+      stacks: [
+        MockStack.MOCK_STACK_A,
+        MockStack.MOCK_STACK_B,
+      ],
+    });
+  });
+
+  test('stacks with no dependencies', async () => {
     // GIVEN
     const toolkit = new CdkToolkit({
       cloudExecutable,
       configuration: cloudExecutable.configuration,
       sdkProvider: cloudExecutable.sdkProvider,
-      deployments: new Deployments({ sdkProvider: new MockSdkProvider() }),
+      deployments: cloudFormation,
     });
 
     // WHEN
@@ -84,7 +82,7 @@ describe('list', () => {
       }),
       configuration: cloudExecutable.configuration,
       sdkProvider: cloudExecutable.sdkProvider,
-      deployments: new Deployments({ sdkProvider: new MockSdkProvider() }),
+      deployments: cloudFormation,
     });
 
     // WHEN
@@ -152,7 +150,7 @@ describe('list', () => {
       }),
       configuration: cloudExecutable.configuration,
       sdkProvider: cloudExecutable.sdkProvider,
-      deployments: new Deployments({ sdkProvider: new MockSdkProvider() }),
+      deployments: cloudFormation,
     });
 
     // WHEN
@@ -240,7 +238,7 @@ describe('list', () => {
       }),
       configuration: cloudExecutable.configuration,
       sdkProvider: cloudExecutable.sdkProvider,
-      deployments: new Deployments({ sdkProvider: new MockSdkProvider() }),
+      deployments: cloudFormation,
     });
 
     // WHEN
@@ -307,7 +305,7 @@ describe('list', () => {
       }),
       configuration: cloudExecutable.configuration,
       sdkProvider: cloudExecutable.sdkProvider,
-      deployments: new Deployments({ sdkProvider: new MockSdkProvider() }),
+      deployments: cloudFormation,
     });
 
     // WHEN
