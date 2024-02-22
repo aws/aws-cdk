@@ -78,7 +78,8 @@ export abstract class NatProvider {
    *
    * @see https://docs.aws.amazon.com/vpc/latest/userguide/VPC_NAT_Instance.html
    *
-   * @deprecated use instanceV2
+   * @deprecated use instanceV2. 'instance' is deprecated since NatInstanceProvider
+   * uses a instance image that has reached EOL on Dec 31 2023
    */
   public static instance(props: NatInstanceProps): NatInstanceProvider {
     return new NatInstanceProvider(props);
@@ -299,7 +300,8 @@ class NatGatewayProvider extends NatProvider {
 /**
  * NAT provider which uses NAT Instances
  *
- * @deprecated use NatInstanceProviderV2
+ * @deprecated use NatInstanceProviderV2. NatInstanceProvider is deprecated since
+ * the instance image used has reached EOL on Dec 31 2023
  */
 export class NatInstanceProvider extends NatProvider implements IConnectable {
   private gateways: PrefSet<Instance> = new PrefSet<Instance>();
@@ -323,7 +325,7 @@ export class NatInstanceProvider extends NatProvider implements IConnectable {
       (this.props.allowAllTraffic ?? true ? NatTrafficDirection.INBOUND_AND_OUTBOUND : NatTrafficDirection.OUTBOUND_ONLY);
 
     // Create the NAT instances. They can share a security group and a Role.
-    const machineImage = this.props.machineImage || new NatInstanceImage();
+    const machineImage = this.props.machineImage ?? new NatInstanceImage();
     this._securityGroup = this.props.securityGroup ?? new SecurityGroup(options.vpc, 'NatSecurityGroup', {
       vpc: options.vpc,
       description: 'Security Group for NAT instances',
@@ -454,7 +456,9 @@ export class NatInstanceProviderV2 extends NatProvider implements IConnectable {
     const defaultDirection = this.props.defaultAllowedTraffic ??
       (this.props.allowAllTraffic ?? true ? NatTrafficDirection.INBOUND_AND_OUTBOUND : NatTrafficDirection.OUTBOUND_ONLY);
 
-    // Create the NAT instances. They can share a security group and a Role.
+    // Create the NAT instances. They can share a security group and a Role. The new NAT instance created uses latest
+    // Amazon Linux 2023 image. This is important since the original NatInstanceProvider uses an instance image that has
+    // reached EOL on Dec 31 2023
     const machineImage = this.props.machineImage || new AmazonLinuxImage({ generation: AmazonLinuxGeneration.AMAZON_LINUX_2023 });
     this._securityGroup = this.props.securityGroup ?? new SecurityGroup(options.vpc, 'NatSecurityGroup', {
       vpc: options.vpc,
