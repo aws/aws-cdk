@@ -88,6 +88,17 @@ export class OperatingSystemFamily {
    * @param _operatingSystemFamily The operating system family.
    */
   private constructor(public readonly _operatingSystemFamily: string) { }
+
+  /**
+   * Returns true if the operating system family is Windows
+   */
+  public isWindows(): boolean {
+    if (this._operatingSystemFamily?.toLowerCase().includes('windows')) {
+      return true;
+    }
+    return false;
+  }
+
 }
 
 /**
@@ -108,3 +119,4 @@ export interface RuntimePlatform {
    */
   readonly operatingSystemFamily?: OperatingSystemFamily;
 }
+
