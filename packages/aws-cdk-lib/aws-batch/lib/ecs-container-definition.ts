@@ -703,6 +703,13 @@ abstract class EcsContainerDefinitionBase extends Construct implements IEcsConta
     };
   }
 
+  protected isWindows(operatingSystemFamily?: string): boolean {
+    if (operatingSystemFamily?.toLowerCase().includes('windows')) {
+      return true;
+    }
+    return false;
+  }
+
   public addVolume(volume: EcsVolume): void {
     this.volumes.push(volume);
   }
@@ -1057,7 +1064,7 @@ export class EcsFargateContainerDefinition extends EcsContainerDefinitionBase im
     this.fargateCpuArchitecture = props.fargateCpuArchitecture;
     this.fargateOperatingSystemFamily = props.fargateOperatingSystemFamily;
 
-    if (this.fargateOperatingSystemFamily?._operatingSystemFamily.toLowerCase().includes('windows') && this.readonlyRootFilesystem) {
+    if (this.isWindows(this.fargateOperatingSystemFamily?._operatingSystemFamily) && this.readonlyRootFilesystem) {
       // see https://kubernetes.io/docs/concepts/windows/intro/
       throw new Error('Readonly root filesystem is not possible on Windows; write access is required for registry & system processes to run inside the container');
     }
@@ -1076,7 +1083,9 @@ export class EcsFargateContainerDefinition extends EcsContainerDefinitionBase im
    * @internal
    */
   public _renderContainerDefinition(): CfnJobDefinition.ContainerPropertiesProperty {
-    return {
+    const operatingSystemFamily = this.fargateOperatingSystemFamily?._operatingSystemFamily;
+
+    let containerDef = {
       ...super._renderContainerDefinition(),
       ephemeralStorage: this.ephemeralStorageSize? {
         sizeInGiB: this.ephemeralStorageSize?.toGibibytes(),
@@ -1089,9 +1098,16 @@ export class EcsFargateContainerDefinition extends EcsContainerDefinitionBase im
       },
       runtimePlatform: {
         cpuArchitecture: this.fargateCpuArchitecture?._cpuArchitecture,
-        operatingSystemFamily: this.fargateOperatingSystemFamily?._operatingSystemFamily,
+        operatingSystemFamily,
       },
     };
+
+    // readonlyRootFilesystem isn't applicable to Windows, see https://kubernetes.io/docs/concepts/windows/intro/
+    if (this.isWindows(operatingSystemFamily)) {
+      containerDef.readonlyRootFilesystem = undefined;
+    }
+
+    return containerDef;
   };
 }
 

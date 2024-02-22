@@ -2,7 +2,7 @@ import * as path from 'path';
 import { capitalizePropertyNames } from './utils';
 import { Size, Stack } from '../..';
 import * as cdk from '../..';
-import { Template } from '../../assertions';
+import { Match, Template } from '../../assertions';
 import { Vpc } from '../../aws-ec2';
 import * as ecr from '../../aws-ecr';
 import { DockerImageAsset } from '../../aws-ecr-assets';
@@ -1076,5 +1076,22 @@ describe('Fargate containers', () => {
         fargateOperatingSystemFamily: ecs.OperatingSystemFamily.WINDOWS_SERVER_2004_CORE,
       }),
     })).toThrow('Readonly root filesystem is not possible on Windows; write access is required for registry & system processes to run inside the container');
+  });
+
+  test('readonlyRootFilesystem is undefined with Windows family', () => {
+    // WHEN
+    new EcsJobDefinition(stack, 'ECSJobDefn', {
+      container: new EcsFargateContainerDefinition(stack, 'EcsFargateContainer', {
+        ...defaultContainerProps,
+        fargateOperatingSystemFamily: ecs.OperatingSystemFamily.WINDOWS_SERVER_2004_CORE,
+      }),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Batch::JobDefinition', {
+      ContainerProperties: {
+        ReadonlyRootFilesystem: Match.absent(),
+      },
+    });
   });
 });
