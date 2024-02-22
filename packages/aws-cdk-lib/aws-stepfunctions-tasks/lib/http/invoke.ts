@@ -40,14 +40,14 @@ export interface HttpInvokeProps extends sfn.TaskStateBaseProps {
 
   /**
    * The API endpoint to call, relative to `apiRoot`.
-   * @example TaskInput.fromText("path/to/resource")
+   * @example sfn.TaskInput.fromText("path/to/resource")
    *
    */
   readonly apiEndpoint: sfn.TaskInput;
 
   /**
    * The HTTP method to use.
-   * @example TaskInput.fromText("GET")
+   * @example sfn.TaskInput.fromText("GET")
    *
    */
   readonly method: sfn.TaskInput;
@@ -69,7 +69,7 @@ export interface HttpInvokeProps extends sfn.TaskStateBaseProps {
    * The headers to send to the HTTP endpoint.
    *
    * @default - No additional headers are added to the request.
-   * @example TaskInput.fromObject({ 'Content-Type': 'application/json' })
+   * @example sfn.TaskInput.fromObject({ 'Content-Type': 'application/json' })
    */
   readonly headers?: sfn.TaskInput;
 
