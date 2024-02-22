@@ -447,9 +447,6 @@ export class StateMachine extends StateMachineBase {
     if (definitionBody instanceof ChainDefinitionBody) {
       graph = new StateGraph(definitionBody.chainable.startState, 'State Machine definition');
       graph.timeout = props.timeout;
-      for (const statement of graph.policyStatements) {
-        this.addToRolePolicy(statement);
-      }
     }
 
     const resource = new CfnStateMachine(this, 'Resource', {
@@ -725,7 +722,10 @@ export class ChainDefinitionBody extends DefinitionBody {
     super();
   }
 
-  public bind(scope: Construct, _sfnPrincipal: iam.IPrincipal, sfnProps: StateMachineProps, graph?: StateGraph): DefinitionConfig {
+  public bind(scope: Construct, sfnPrincipal: iam.IPrincipal, sfnProps: StateMachineProps, graph?: StateGraph): DefinitionConfig {
+    for (const statement of graph!.policyStatements) {
+      sfnPrincipal.addToPrincipalPolicy(statement);
+    }
     const graphJson = graph!.toGraphJson();
     return {
       definitionString: Stack.of(scope).toJsonString({ ...graphJson, Comment: sfnProps.comment }),
