@@ -1,4 +1,5 @@
 import { App } from 'aws-cdk-lib';
+import { BucketEncryption } from 'aws-cdk-lib/aws-s3';
 import { testWithXRepos } from './util';
 import { DefaultStagingStack } from '../lib';
 
@@ -16,6 +17,7 @@ describe('default staging stack', () => {
       expect(() => new DefaultStagingStack(app, 'stack', {
         appId: 'a'.repeat(21),
         qualifier: 'qualifier',
+        stagingBucketEncryption: BucketEncryption.S3_MANAGED,
       })).toThrowError(/appId expected no more than 20 characters but got 21 characters./);
     });
 
@@ -24,6 +26,7 @@ describe('default staging stack', () => {
       expect(() => new DefaultStagingStack(app, 'stack', {
         appId: 'ABCDEF',
         qualifier: 'qualifier',
+        stagingBucketEncryption: BucketEncryption.S3_MANAGED,
       })).toThrowError(/appId only accepts lowercase characters./);
     });
 
@@ -32,6 +35,7 @@ describe('default staging stack', () => {
       expect(() => new DefaultStagingStack(app, 'stack', {
         appId: 'ca$h',
         qualifier: 'qualifier',
+        stagingBucketEncryption: BucketEncryption.S3_MANAGED,
       })).toThrowError(/appId expects only letters, numbers, and dashes \('-'\)/);
     });
 
@@ -41,6 +45,7 @@ describe('default staging stack', () => {
       expect(() => new DefaultStagingStack(app, 'stack', {
         appId,
         qualifier: 'qualifier',
+        stagingBucketEncryption: BucketEncryption.S3_MANAGED,
       })).toThrowError([
         `appId ${appId} has errors:`,
         'appId expected no more than 20 characters but got 40 characters.',

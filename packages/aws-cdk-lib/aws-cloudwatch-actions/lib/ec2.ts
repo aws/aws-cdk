@@ -21,7 +21,7 @@ export enum Ec2InstanceAction {
   /**
    * Reboot the instance
    */
-  REBOOT = 'reboot'
+  REBOOT = 'reboot',
 }
 
 /**
