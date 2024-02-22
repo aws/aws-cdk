@@ -172,6 +172,7 @@ export interface LoggingOptions {
   /**
    * Specify if slow search logging should be set up.
    * Requires Elasticsearch version 5.1 or later or OpenSearch version 1.0 or later.
+   * An explicit `false` is required when disabling it from `true`.
    *
    * @default - false
    */
@@ -187,6 +188,7 @@ export interface LoggingOptions {
   /**
    * Specify if slow index logging should be set up.
    * Requires Elasticsearch version 5.1 or later or OpenSearch version 1.0 or later.
+   * An explicit `false` is required when disabling it from `true`.
    *
    * @default - false
    */
@@ -202,6 +204,7 @@ export interface LoggingOptions {
   /**
    * Specify if Amazon OpenSearch Service application logging should be set up.
    * Requires Elasticsearch version 5.1 or later or OpenSearch version 1.0 or later.
+   * An explicit `false` is required when disabling it from `true`.
    *
    * @default - false
    */
