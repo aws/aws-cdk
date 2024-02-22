@@ -1,0 +1,49 @@
+# The basics
+*.ts
+*.tgz
+*.snk
+!*.d.ts
+!*.js
+test/
+**/test/**
+
+# Coverage
+coverage
+.nyc_output
+.nycrc
+
+# Build gear
+build-tools
+dist
+!custom-resource-handlers/dist/
+!core/lib/dist/
+scripts
+.LAST_BUILD
+.LAST_PACKAGE
+
+tsconfig.json
+*.tsbuildinfo
+
+!.jsii
+!.jsii.gz
+.eslintrc.js
+
+# exclude cdk artifacts
+**/cdk.out
+junit.xml
+!*.lit.ts
+
+# exclude additional documention
+core/adr/
+
+# keep class map for cloudformation-include
+!cloudformation-include/cfn-types-2-classes.json
+
+# exclude source maps as they only work locally
+*.map
+
+# Nested node_modules
+aws-certificatemanager/lambda-packages/dns_validated_certificate_handler/node_modules
+
+# awslint config
+awslint.json

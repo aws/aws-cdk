@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "java": {
+      "package": "software.amazon.awscdkv3.services.sns"
+    },
+    "dotnet": {
+      "namespace": "Amazon.CDKv3.AWS.Sns"
+    },
+    "python": {
+      "module": "aws_cdk_v3.aws_sns"
+    }
+  }
+}

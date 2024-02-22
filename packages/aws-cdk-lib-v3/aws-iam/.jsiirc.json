@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "java": {
+      "package": "software.amazon.awscdkv3.services.iam"
+    },
+    "dotnet": {
+      "namespace": "Amazon.CDKv3.AWS.Iam"
+    },
+    "python": {
+      "module": "aws_cdk_v3.aws_iam"
+    }
+  }
+}

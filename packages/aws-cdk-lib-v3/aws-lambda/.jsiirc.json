@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "java": {
+      "package": "software.amazon.awscdkv3.services.lambda"
+    },
+    "dotnet": {
+      "namespace": "Amazon.CDKv3.AWS.Lambda"
+    },
+    "python": {
+      "module": "aws_cdk_v3.aws_lambda"
+    }
+  }
+}

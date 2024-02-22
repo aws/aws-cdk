@@ -1,0 +1,708 @@
+{
+  "alexa-ask": [
+    "Alexa::ASK"
+  ],
+  "aws-accessanalyzer": [
+    "AWS::AccessAnalyzer"
+  ],
+  "aws-acmpca": [
+    "AWS::ACMPCA"
+  ],
+  "aws-amazonmq": [
+    "AWS::AmazonMQ"
+  ],
+  "aws-amplify": [
+    "AWS::Amplify"
+  ],
+  "aws-amplifyuibuilder": [
+    "AWS::AmplifyUIBuilder"
+  ],
+  "aws-apigateway": [
+    "AWS::ApiGateway"
+  ],
+  "aws-apigatewayv2": [
+    "AWS::ApiGatewayV2"
+  ],
+  "aws-appconfig": [
+    "AWS::AppConfig"
+  ],
+  "aws-appflow": [
+    "AWS::AppFlow"
+  ],
+  "aws-appintegrations": [
+    "AWS::AppIntegrations"
+  ],
+  "aws-applicationautoscaling": [
+    "AWS::ApplicationAutoScaling"
+  ],
+  "aws-applicationinsights": [
+    "AWS::ApplicationInsights"
+  ],
+  "aws-appmesh": [
+    "AWS::AppMesh"
+  ],
+  "aws-apprunner": [
+    "AWS::AppRunner"
+  ],
+  "aws-appstream": [
+    "AWS::AppStream"
+  ],
+  "aws-appsync": [
+    "AWS::AppSync"
+  ],
+  "aws-aps": [
+    "AWS::APS"
+  ],
+  "aws-arczonalshift": [
+    "AWS::ARCZonalShift"
+  ],
+  "aws-athena": [
+    "AWS::Athena"
+  ],
+  "aws-auditmanager": [
+    "AWS::AuditManager"
+  ],
+  "aws-autoscaling": [
+    "AWS::AutoScaling"
+  ],
+  "aws-autoscalingplans": [
+    "AWS::AutoScalingPlans"
+  ],
+  "aws-b2bi": [
+    "AWS::B2BI"
+  ],
+  "aws-backup": [
+    "AWS::Backup"
+  ],
+  "aws-backupgateway": [
+    "AWS::BackupGateway"
+  ],
+  "aws-batch": [
+    "AWS::Batch"
+  ],
+  "aws-billingconductor": [
+    "AWS::BillingConductor"
+  ],
+  "aws-budgets": [
+    "AWS::Budgets"
+  ],
+  "aws-cassandra": [
+    "AWS::Cassandra"
+  ],
+  "aws-ce": [
+    "AWS::CE"
+  ],
+  "aws-certificatemanager": [
+    "AWS::CertificateManager"
+  ],
+  "aws-chatbot": [
+    "AWS::Chatbot"
+  ],
+  "aws-cleanrooms": [
+    "AWS::CleanRooms"
+  ],
+  "aws-cloud9": [
+    "AWS::Cloud9"
+  ],
+  "aws-cloudformation": [
+    "AWS::CloudFormation"
+  ],
+  "aws-cloudfront": [
+    "AWS::CloudFront"
+  ],
+  "aws-cloudtrail": [
+    "AWS::CloudTrail"
+  ],
+  "aws-cloudwatch": [
+    "AWS::CloudWatch"
+  ],
+  "aws-codeartifact": [
+    "AWS::CodeArtifact"
+  ],
+  "aws-codebuild": [
+    "AWS::CodeBuild"
+  ],
+  "aws-codecommit": [
+    "AWS::CodeCommit"
+  ],
+  "aws-codedeploy": [
+    "AWS::CodeDeploy"
+  ],
+  "aws-codeguruprofiler": [
+    "AWS::CodeGuruProfiler"
+  ],
+  "aws-codegurureviewer": [
+    "AWS::CodeGuruReviewer"
+  ],
+  "aws-codepipeline": [
+    "AWS::CodePipeline"
+  ],
+  "aws-codestar": [
+    "AWS::CodeStar"
+  ],
+  "aws-codestarconnections": [
+    "AWS::CodeStarConnections"
+  ],
+  "aws-codestarnotifications": [
+    "AWS::CodeStarNotifications"
+  ],
+  "aws-cognito": [
+    "AWS::Cognito"
+  ],
+  "aws-comprehend": [
+    "AWS::Comprehend"
+  ],
+  "aws-config": [
+    "AWS::Config"
+  ],
+  "aws-connect": [
+    "AWS::Connect"
+  ],
+  "aws-connectcampaigns": [
+    "AWS::ConnectCampaigns"
+  ],
+  "aws-controltower": [
+    "AWS::ControlTower"
+  ],
+  "aws-cur": [
+    "AWS::CUR"
+  ],
+  "aws-customerprofiles": [
+    "AWS::CustomerProfiles"
+  ],
+  "aws-databrew": [
+    "AWS::DataBrew"
+  ],
+  "aws-datapipeline": [
+    "AWS::DataPipeline"
+  ],
+  "aws-datasync": [
+    "AWS::DataSync"
+  ],
+  "aws-datazone": [
+    "AWS::DataZone"
+  ],
+  "aws-dax": [
+    "AWS::DAX"
+  ],
+  "aws-detective": [
+    "AWS::Detective"
+  ],
+  "aws-devicefarm": [
+    "AWS::DeviceFarm"
+  ],
+  "aws-devopsguru": [
+    "AWS::DevOpsGuru"
+  ],
+  "aws-directoryservice": [
+    "AWS::DirectoryService"
+  ],
+  "aws-dlm": [
+    "AWS::DLM"
+  ],
+  "aws-dms": [
+    "AWS::DMS"
+  ],
+  "aws-docdb": [
+    "AWS::DocDB"
+  ],
+  "aws-docdbelastic": [
+    "AWS::DocDBElastic"
+  ],
+  "aws-dynamodb": [
+    "AWS::DynamoDB"
+  ],
+  "aws-ec2": [
+    "AWS::EC2"
+  ],
+  "aws-ecr": [
+    "AWS::ECR"
+  ],
+  "aws-ecs": [
+    "AWS::ECS"
+  ],
+  "aws-efs": [
+    "AWS::EFS"
+  ],
+  "aws-eks": [
+    "AWS::EKS"
+  ],
+  "aws-elasticache": [
+    "AWS::ElastiCache"
+  ],
+  "aws-elasticbeanstalk": [
+    "AWS::ElasticBeanstalk"
+  ],
+  "aws-elasticloadbalancing": [
+    "AWS::ElasticLoadBalancing"
+  ],
+  "aws-elasticloadbalancingv2": [
+    "AWS::ElasticLoadBalancingV2"
+  ],
+  "aws-elasticsearch": [
+    "AWS::Elasticsearch"
+  ],
+  "aws-emr": [
+    "AWS::EMR"
+  ],
+  "aws-emrcontainers": [
+    "AWS::EMRContainers"
+  ],
+  "aws-emrserverless": [
+    "AWS::EMRServerless"
+  ],
+  "aws-entityresolution": [
+    "AWS::EntityResolution"
+  ],
+  "aws-events": [
+    "AWS::Events"
+  ],
+  "aws-eventschemas": [
+    "AWS::EventSchemas"
+  ],
+  "aws-evidently": [
+    "AWS::Evidently"
+  ],
+  "aws-finspace": [
+    "AWS::FinSpace"
+  ],
+  "aws-fis": [
+    "AWS::FIS"
+  ],
+  "aws-fms": [
+    "AWS::FMS"
+  ],
+  "aws-forecast": [
+    "AWS::Forecast"
+  ],
+  "aws-frauddetector": [
+    "AWS::FraudDetector"
+  ],
+  "aws-fsx": [
+    "AWS::FSx"
+  ],
+  "aws-gamelift": [
+    "AWS::GameLift"
+  ],
+  "aws-globalaccelerator": [
+    "AWS::GlobalAccelerator"
+  ],
+  "aws-glue": [
+    "AWS::Glue"
+  ],
+  "aws-grafana": [
+    "AWS::Grafana"
+  ],
+  "aws-greengrass": [
+    "AWS::Greengrass"
+  ],
+  "aws-greengrassv2": [
+    "AWS::GreengrassV2"
+  ],
+  "aws-groundstation": [
+    "AWS::GroundStation"
+  ],
+  "aws-guardduty": [
+    "AWS::GuardDuty"
+  ],
+  "aws-healthimaging": [
+    "AWS::HealthImaging"
+  ],
+  "aws-healthlake": [
+    "AWS::HealthLake"
+  ],
+  "aws-iam": [
+    "AWS::IAM"
+  ],
+  "aws-identitystore": [
+    "AWS::IdentityStore"
+  ],
+  "aws-imagebuilder": [
+    "AWS::ImageBuilder"
+  ],
+  "aws-inspector": [
+    "AWS::Inspector"
+  ],
+  "aws-inspectorv2": [
+    "AWS::InspectorV2"
+  ],
+  "aws-internetmonitor": [
+    "AWS::InternetMonitor"
+  ],
+  "aws-iot": [
+    "AWS::IoT"
+  ],
+  "aws-iot1click": [
+    "AWS::IoT1Click"
+  ],
+  "aws-iotanalytics": [
+    "AWS::IoTAnalytics"
+  ],
+  "aws-iotcoredeviceadvisor": [
+    "AWS::IoTCoreDeviceAdvisor"
+  ],
+  "aws-iotevents": [
+    "AWS::IoTEvents"
+  ],
+  "aws-iotfleethub": [
+    "AWS::IoTFleetHub"
+  ],
+  "aws-iotfleetwise": [
+    "AWS::IoTFleetWise"
+  ],
+  "aws-iotsitewise": [
+    "AWS::IoTSiteWise"
+  ],
+  "aws-iotthingsgraph": [
+    "AWS::IoTThingsGraph"
+  ],
+  "aws-iottwinmaker": [
+    "AWS::IoTTwinMaker"
+  ],
+  "aws-iotwireless": [
+    "AWS::IoTWireless"
+  ],
+  "aws-ivs": [
+    "AWS::IVS"
+  ],
+  "aws-ivschat": [
+    "AWS::IVSChat"
+  ],
+  "aws-kafkaconnect": [
+    "AWS::KafkaConnect"
+  ],
+  "aws-kendra": [
+    "AWS::Kendra"
+  ],
+  "aws-kendraranking": [
+    "AWS::KendraRanking"
+  ],
+  "aws-kinesis": [
+    "AWS::Kinesis"
+  ],
+  "aws-kinesisanalytics": [
+    "AWS::KinesisAnalytics",
+    "AWS::KinesisAnalyticsV2"
+  ],
+  "aws-kinesisanalyticsv2": [
+    "AWS::KinesisAnalyticsV2"
+  ],
+  "aws-kinesisfirehose": [
+    "AWS::KinesisFirehose"
+  ],
+  "aws-kinesisvideo": [
+    "AWS::KinesisVideo"
+  ],
+  "aws-kms": [
+    "AWS::KMS"
+  ],
+  "aws-lakeformation": [
+    "AWS::LakeFormation"
+  ],
+  "aws-lambda": [
+    "AWS::Lambda"
+  ],
+  "aws-lex": [
+    "AWS::Lex"
+  ],
+  "aws-licensemanager": [
+    "AWS::LicenseManager"
+  ],
+  "aws-lightsail": [
+    "AWS::Lightsail"
+  ],
+  "aws-location": [
+    "AWS::Location"
+  ],
+  "aws-logs": [
+    "AWS::Logs"
+  ],
+  "aws-lookoutequipment": [
+    "AWS::LookoutEquipment"
+  ],
+  "aws-lookoutmetrics": [
+    "AWS::LookoutMetrics"
+  ],
+  "aws-lookoutvision": [
+    "AWS::LookoutVision"
+  ],
+  "aws-m2": [
+    "AWS::M2"
+  ],
+  "aws-macie": [
+    "AWS::Macie"
+  ],
+  "aws-managedblockchain": [
+    "AWS::ManagedBlockchain"
+  ],
+  "aws-mediaconnect": [
+    "AWS::MediaConnect"
+  ],
+  "aws-mediaconvert": [
+    "AWS::MediaConvert"
+  ],
+  "aws-medialive": [
+    "AWS::MediaLive"
+  ],
+  "aws-mediapackage": [
+    "AWS::MediaPackage"
+  ],
+  "aws-mediapackagev2": [
+    "AWS::MediaPackageV2"
+  ],
+  "aws-mediastore": [
+    "AWS::MediaStore"
+  ],
+  "aws-mediatailor": [
+    "AWS::MediaTailor"
+  ],
+  "aws-memorydb": [
+    "AWS::MemoryDB"
+  ],
+  "aws-msk": [
+    "AWS::MSK"
+  ],
+  "aws-mwaa": [
+    "AWS::MWAA"
+  ],
+  "aws-neptune": [
+    "AWS::Neptune"
+  ],
+  "aws-neptunegraph": [
+    "AWS::NeptuneGraph"
+  ],
+  "aws-networkfirewall": [
+    "AWS::NetworkFirewall"
+  ],
+  "aws-networkmanager": [
+    "AWS::NetworkManager"
+  ],
+  "aws-nimblestudio": [
+    "AWS::NimbleStudio"
+  ],
+  "aws-oam": [
+    "AWS::Oam"
+  ],
+  "aws-omics": [
+    "AWS::Omics"
+  ],
+  "aws-opensearchserverless": [
+    "AWS::OpenSearchServerless"
+  ],
+  "aws-opensearchservice": [
+    "AWS::OpenSearchService"
+  ],
+  "aws-opsworks": [
+    "AWS::OpsWorks"
+  ],
+  "aws-opsworkscm": [
+    "AWS::OpsWorksCM"
+  ],
+  "aws-organizations": [
+    "AWS::Organizations"
+  ],
+  "aws-osis": [
+    "AWS::OSIS"
+  ],
+  "aws-panorama": [
+    "AWS::Panorama"
+  ],
+  "aws-pcaconnectorad": [
+    "AWS::PCAConnectorAD"
+  ],
+  "aws-personalize": [
+    "AWS::Personalize"
+  ],
+  "aws-pinpoint": [
+    "AWS::Pinpoint"
+  ],
+  "aws-pinpointemail": [
+    "AWS::PinpointEmail"
+  ],
+  "aws-pipes": [
+    "AWS::Pipes"
+  ],
+  "aws-proton": [
+    "AWS::Proton"
+  ],
+  "aws-qldb": [
+    "AWS::QLDB"
+  ],
+  "aws-quicksight": [
+    "AWS::QuickSight"
+  ],
+  "aws-ram": [
+    "AWS::RAM"
+  ],
+  "aws-rds": [
+    "AWS::RDS"
+  ],
+  "aws-redshift": [
+    "AWS::Redshift"
+  ],
+  "aws-redshiftserverless": [
+    "AWS::RedshiftServerless"
+  ],
+  "aws-refactorspaces": [
+    "AWS::RefactorSpaces"
+  ],
+  "aws-rekognition": [
+    "AWS::Rekognition"
+  ],
+  "aws-resiliencehub": [
+    "AWS::ResilienceHub"
+  ],
+  "aws-resourceexplorer2": [
+    "AWS::ResourceExplorer2"
+  ],
+  "aws-resourcegroups": [
+    "AWS::ResourceGroups"
+  ],
+  "aws-robomaker": [
+    "AWS::RoboMaker"
+  ],
+  "aws-rolesanywhere": [
+    "AWS::RolesAnywhere"
+  ],
+  "aws-route53": [
+    "AWS::Route53"
+  ],
+  "aws-route53recoverycontrol": [
+    "AWS::Route53RecoveryControl"
+  ],
+  "aws-route53recoveryreadiness": [
+    "AWS::Route53RecoveryReadiness"
+  ],
+  "aws-route53resolver": [
+    "AWS::Route53Resolver"
+  ],
+  "aws-rum": [
+    "AWS::RUM"
+  ],
+  "aws-s3": [
+    "AWS::S3"
+  ],
+  "aws-s3express": [
+    "AWS::S3Express"
+  ],
+  "aws-s3objectlambda": [
+    "AWS::S3ObjectLambda"
+  ],
+  "aws-s3outposts": [
+    "AWS::S3Outposts"
+  ],
+  "aws-sagemaker": [
+    "AWS::SageMaker"
+  ],
+  "aws-sam": [
+    "AWS::Serverless"
+  ],
+  "aws-scheduler": [
+    "AWS::Scheduler"
+  ],
+  "aws-sdb": [
+    "AWS::SDB"
+  ],
+  "aws-secretsmanager": [
+    "AWS::SecretsManager"
+  ],
+  "aws-securityhub": [
+    "AWS::SecurityHub"
+  ],
+  "aws-servicecatalog": [
+    "AWS::ServiceCatalog"
+  ],
+  "aws-servicecatalogappregistry": [
+    "AWS::ServiceCatalogAppRegistry"
+  ],
+  "aws-servicediscovery": [
+    "AWS::ServiceDiscovery"
+  ],
+  "aws-ses": [
+    "AWS::SES"
+  ],
+  "aws-shield": [
+    "AWS::Shield"
+  ],
+  "aws-signer": [
+    "AWS::Signer"
+  ],
+  "aws-simspaceweaver": [
+    "AWS::SimSpaceWeaver"
+  ],
+  "aws-sns": [
+    "AWS::SNS"
+  ],
+  "aws-sqs": [
+    "AWS::SQS"
+  ],
+  "aws-ssm": [
+    "AWS::SSM"
+  ],
+  "aws-ssmcontacts": [
+    "AWS::SSMContacts"
+  ],
+  "aws-ssmguiconnect": [
+    "AWS::SSMGuiConnect"
+  ],
+  "aws-ssmincidents": [
+    "AWS::SSMIncidents"
+  ],
+  "aws-sso": [
+    "AWS::SSO"
+  ],
+  "aws-stepfunctions": [
+    "AWS::StepFunctions"
+  ],
+  "aws-supportapp": [
+    "AWS::SupportApp"
+  ],
+  "aws-synthetics": [
+    "AWS::Synthetics"
+  ],
+  "aws-systemsmanagersap": [
+    "AWS::SystemsManagerSAP"
+  ],
+  "aws-timestream": [
+    "AWS::Timestream"
+  ],
+  "aws-transfer": [
+    "AWS::Transfer"
+  ],
+  "aws-verifiedpermissions": [
+    "AWS::VerifiedPermissions"
+  ],
+  "aws-voiceid": [
+    "AWS::VoiceID"
+  ],
+  "aws-vpclattice": [
+    "AWS::VpcLattice"
+  ],
+  "aws-waf": [
+    "AWS::WAF"
+  ],
+  "aws-wafregional": [
+    "AWS::WAFRegional"
+  ],
+  "aws-wafv2": [
+    "AWS::WAFv2"
+  ],
+  "aws-wisdom": [
+    "AWS::Wisdom"
+  ],
+  "aws-workspaces": [
+    "AWS::WorkSpaces"
+  ],
+  "aws-workspacesthinclient": [
+    "AWS::WorkSpacesThinClient"
+  ],
+  "aws-workspacesweb": [
+    "AWS::WorkSpacesWeb"
+  ],
+  "aws-xray": [
+    "AWS::XRay"
+  ],
+  "core": [
+    "AWS::CloudFormation"
+  ]
+}

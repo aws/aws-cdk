@@ -1014,6 +1014,8 @@ export class MustUseCDKBuild extends ValidationRule {
   public validate(pkg: PackageJson): void {
     if (!shouldUseCDKBuildTools(pkg)) { return; }
 
+    if (pkg.packageName == 'aws-cdk-lib-v3') {return; }
+
     expectJSON(this.name, pkg, 'scripts.build', 'cdk-build');
 
     // cdk-build will write a hash file that we have to ignore.
@@ -1682,6 +1684,7 @@ export class UbergenPackageVisibility extends ValidationRule {
     '@aws-cdk/cx-api',
     '@aws-cdk/region-info',
     'aws-cdk-lib',
+    'aws-cdk-lib-v3',
     'aws-cdk',
     'awslint',
     'cdk',
