@@ -1,3 +1,4 @@
+/// !cdk-integ *
 import * as path from 'path';
 import { Runtime, IFunction } from 'aws-cdk-lib/aws-lambda';
 import { App, Stack, StackProps } from 'aws-cdk-lib';
@@ -65,7 +66,7 @@ const sdkV3testCase = new SdkV3TestStack(app, 'cdk-integ-lambda-nodejs-dependenc
 const sdkV3BundledSdk = new SdkV3BundledStack(app, 'cdk-integ-lambda-nodejs-dependencies-for-sdk-v3-bundled');
 
 const integ = new IntegTest(app, 'LambdaDependencies', {
-  testCases: [sdkV2testCase, sdkV3testCase],
+  testCases: [sdkV2testCase, sdkV3testCase, sdkV3BundledSdk],
 });
 
 for (const testCase of [sdkV2testCase, sdkV3testCase, sdkV3BundledSdk]) {
