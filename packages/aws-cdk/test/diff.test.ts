@@ -6,10 +6,105 @@ import { CloudFormationStackArtifact } from '@aws-cdk/cx-api';
 import { instanceMockFrom, MockCloudExecutable } from './util';
 import { Deployments } from '../lib/api/deployments';
 import { CdkToolkit } from '../lib/cdk-toolkit';
+import * as cfn from '../lib/api/util/cloudformation';
 
 let cloudExecutable: MockCloudExecutable;
 let cloudFormation: jest.Mocked<Deployments>;
 let toolkit: CdkToolkit;
+
+describe('imports', () => {
+  beforeEach(() => {
+    jest.spyOn(cfn, 'createDiffChangeSet').mockImplementation(async () => {
+      return {
+        Changes: [
+          {
+            ResourceChange: {
+              Action: 'Import',
+              LogicalResourceId: 'Queue',
+            },
+          },
+          {
+            ResourceChange: {
+              Action: 'Import',
+              LogicalResourceId: 'Bucket',
+            },
+          },
+          {
+            ResourceChange: {
+              Action: 'Import',
+              LogicalResourceId: 'Queue2',
+            },
+          },
+        ],
+      };
+    });
+    cloudExecutable = new MockCloudExecutable({
+      stacks: [{
+        stackName: 'A',
+        template: {
+          Resources: {
+            Queue: {
+              Type: 'AWS::SQS::Queue',
+            },
+            Queue2: {
+              Type: 'AWS::SQS::Queue',
+            },
+            Bucket: {
+              Type: 'AWS::S3::Bucket',
+            },
+          },
+        },
+      }],
+    });
+
+    cloudFormation = instanceMockFrom(Deployments);
+
+    toolkit = new CdkToolkit({
+      cloudExecutable,
+      deployments: cloudFormation,
+      configuration: cloudExecutable.configuration,
+      sdkProvider: cloudExecutable.sdkProvider,
+    });
+
+    // Default implementations
+    cloudFormation.readCurrentTemplateWithNestedStacks.mockImplementation((_stackArtifact: CloudFormationStackArtifact) => {
+      return Promise.resolve({
+        deployedTemplate: {},
+        nestedStackCount: 0,
+      });
+    });
+    cloudFormation.deployStack.mockImplementation((options) => Promise.resolve({
+      noOp: true,
+      outputs: {},
+      stackArn: '',
+      stackArtifact: options.stack,
+    }));
+  });
+
+  test('imports', async () => {
+    // GIVEN
+    const buffer = new StringWritable();
+
+    // WHEN
+    const exitCode = await toolkit.diff({
+      stackNames: ['A'],
+      stream: buffer,
+      changeSet: true,
+    });
+
+    // THEN
+    const plainTextOutput = buffer.data.replace(/\x1B\[[0-?]*[ -/]*[@-~]/g, '');
+    expect(plainTextOutput).toContain(`Stack A
+Resources
+[←] AWS::SQS::Queue Queue import
+[←] AWS::SQS::Queue Queue2 import
+[←] AWS::S3::Bucket Bucket import
+`);
+
+    expect(buffer.data.trim()).toContain('✨  Number of stacks with differences: 1');
+    expect(exitCode).toBe(0);
+  });
+});
 
 describe('non-nested stacks', () => {
   beforeEach(() => {
@@ -331,6 +426,46 @@ Resources
 ✨  Number of stacks with differences: 4`);
 
     expect(exitCode).toBe(0);
+  });
+
+  test('diff falls back to non-changeset diff for nested stacks', async () => {
+    // GIVEN
+    const changeSetSpy = jest.spyOn(cfn, 'waitForChangeSet');
+    const buffer = new StringWritable();
+
+    // WHEN
+    const exitCode = await toolkit.diff({
+      stackNames: ['Parent'],
+      stream: buffer,
+      changeSet: true,
+    });
+
+    // THEN
+    const plainTextOutput = buffer.data.replace(/\x1B\[[0-?]*[ -/]*[@-~]/g, '')
+      .replace(/[ \t]+$/mg, '');
+    expect(plainTextOutput.trim()).toEqual(`Stack Parent
+Resources
+[~] AWS::CloudFormation::Stack AdditionChild
+ └─ [~] Resources
+     └─ [~] .SomeResource:
+         └─ [+] Added: .Properties
+[~] AWS::CloudFormation::Stack DeletionChild
+ └─ [~] Resources
+     └─ [~] .SomeResource:
+         └─ [-] Removed: .Properties
+[~] AWS::CloudFormation::Stack ChangedChild
+ └─ [~] Resources
+     └─ [~] .SomeResource:
+         └─ [~] .Properties:
+             └─ [~] .Prop:
+                 ├─ [-] old-value
+                 └─ [+] new-value
+
+
+✨  Number of stacks with differences: 4`);
+
+    expect(exitCode).toBe(0);
+    expect(changeSetSpy).not.toHaveBeenCalled();
   });
 });
 

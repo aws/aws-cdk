@@ -24,7 +24,7 @@ export class DataProtectionPolicy {
     const description = this.dataProtectionPolicyProps.description || 'cdk generated data protection policy';
     const version = '2021-06-01';
 
-    const findingsDestination: FindingsDestination = {};
+    const findingsDestination: PolicyFindingsDestination = {};
     if (this.dataProtectionPolicyProps.logGroupAuditDestination) {
       findingsDestination.cloudWatchLogs = {
         logGroup: this.dataProtectionPolicyProps.logGroupAuditDestination.logGroupName,
@@ -43,21 +43,30 @@ export class DataProtectionPolicy {
       };
     }
 
-    const identifierArns: string[] = [];
+    const identifiers: string[] = [];
+    const customDataIdentifiers: PolicyCustomDataIdentifier[] = [];
     for (let identifier of this.dataProtectionPolicyProps.identifiers) {
-      identifierArns.push(Stack.of(_scope).formatArn({
-        resource: 'data-identifier',
-        region: '',
-        account: 'aws',
-        service: 'dataprotection',
-        resourceName: identifier.toString(),
-      }));
+      if (identifier instanceof CustomDataIdentifier) {
+        identifiers.push(identifier.name);
+        customDataIdentifiers.push({
+          name: identifier.name,
+          regex: identifier.regex,
+        });
+      } else {
+        identifiers.push(Stack.of(_scope).formatArn({
+          resource: 'data-identifier',
+          region: '',
+          account: 'aws',
+          service: 'dataprotection',
+          resourceName: identifier.name,
+        }));
+      }
     };
 
     const statement = [
       {
         sid: 'audit-statement-cdk',
-        dataIdentifier: identifierArns,
+        dataIdentifier: identifiers,
         operation: {
           audit: {
             findingsDestination: findingsDestination,
@@ -66,7 +75,7 @@ export class DataProtectionPolicy {
       },
       {
         sid: 'redact-statement-cdk',
-        dataIdentifier: identifierArns,
+        dataIdentifier: identifiers,
         operation: {
           deidentify: {
             maskConfig: {},
@@ -74,32 +83,45 @@ export class DataProtectionPolicy {
         },
       },
     ];
-    return { name, description, version, statement };
+
+    const configuration: PolicyConfiguration = {
+      customDataIdentifier: customDataIdentifiers,
+    };
+    return { name, description, version, configuration, statement };
   }
 }
 
-interface FindingsDestination {
-  cloudWatchLogs?: CloudWatchLogsDestination;
-  firehose?: FirehoseDestination;
-  s3?: S3Destination;
+interface PolicyConfiguration {
+  customDataIdentifier?: PolicyCustomDataIdentifier[];
 }
 
-interface CloudWatchLogsDestination {
+interface PolicyCustomDataIdentifier {
+  name: string;
+  regex: string;
+}
+
+interface PolicyFindingsDestination {
+  cloudWatchLogs?: PolicyCloudWatchLogsDestination;
+  firehose?: PolicyFirehoseDestination;
+  s3?: PolicyS3Destination;
+}
+
+interface PolicyCloudWatchLogsDestination {
   logGroup: string;
 }
 
-interface FirehoseDestination {
+interface PolicyFirehoseDestination {
   deliveryStream: string;
 }
 
-interface S3Destination {
+interface PolicyS3Destination {
   bucket: string;
 }
 
 /**
  * Interface representing a data protection policy
  */
-export interface DataProtectionPolicyConfig {
+interface DataProtectionPolicyConfig {
   /**
    * Name of the data protection policy
    *
@@ -118,6 +140,11 @@ export interface DataProtectionPolicyConfig {
    * Version of the data protection policy
    */
   readonly version: string;
+
+  /**
+   * Configuration of the data protection policy. Currently supports custom data identifiers
+   */
+  readonly configuration: PolicyConfiguration;
 
   /**
    * Statements within the data protection policy. Must contain one Audit and one Redact statement
@@ -144,8 +171,10 @@ export interface DataProtectionPolicyProps {
   readonly description?: string;
 
   /**
-   * List of data protection identifiers. Must be in the following list: https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/protect-sensitive-log-data-types.html
+   * List of data protection identifiers.
    *
+   * Managed data identifiers must be in the following list: https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/CWL-managed-data-identifiers.html
+   * Custom data identifiers must have a valid regex defined: https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/CWL-custom-data-identifiers.html#custom-data-identifiers-constraints
    */
   readonly identifiers: DataIdentifier[];
 
@@ -274,9 +303,35 @@ export class DataIdentifier {
   public static readonly VEHICLEIDENTIFICATIONNUMBER = new DataIdentifier('VehicleIdentificationNumber');
   public static readonly ZIPCODE_US = new DataIdentifier('ZipCode-US');
 
-  constructor(private readonly identifier: string) { }
+  /**
+   * Create a managed data identifier not in the list of static members. This is used to maintain forward compatibility, in case a new managed identifier is supported but not updated in CDK yet.
+   * @param name - name of the identifier.
+   */
+  constructor(public readonly name: string) { }
 
   public toString(): string {
-    return this.identifier;
+    return this.name;
+  }
+}
+
+/**
+ * A custom data identifier. Include a custom data identifier name and regular expression in the JSON policy used to define the data protection policy.
+ */
+export class CustomDataIdentifier extends DataIdentifier {
+  /**
+   * Create a custom data identifier.
+   * @param name - the name of the custom data identifier. This cannot share the same name as a managed data identifier.
+   * @param regex - the regular expresssion to detect and mask log events for.
+   */
+  constructor(public readonly name: string, public readonly regex: string) {
+    super(name);
+  }
+
+  /**
+   * String representation of a CustomDataIdentifier
+   * @returns the name and RegEx of the custom data identifier
+   */
+  public toString(): string {
+    return `${this.name}: ${this.regex}`;
   }
 }

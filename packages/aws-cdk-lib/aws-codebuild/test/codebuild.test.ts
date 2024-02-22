@@ -1617,6 +1617,24 @@ test('using ComputeType.Small with a Windows image fails validation', () => {
   }).toThrow(/Windows images do not support the 'BUILD_GENERAL1_SMALL' compute type/);
 });
 
+test('using ComputeType.XLarge with a Windows image fails validation', () => {
+  const stack = new cdk.Stack();
+  const invalidEnvironment: codebuild.BuildEnvironment = {
+    buildImage: codebuild.WindowsBuildImage.WIN_SERVER_CORE_2019_BASE,
+    computeType: codebuild.ComputeType.X_LARGE,
+  };
+
+  expect(() => {
+    new codebuild.Project(stack, 'MyProject', {
+      source: codebuild.Source.s3({
+        bucket: new s3.Bucket(stack, 'MyBucket'),
+        path: 'path',
+      }),
+      environment: invalidEnvironment,
+    });
+  }).toThrow(/Windows images do not support the 'BUILD_GENERAL1_XLARGE' compute type/);
+});
+
 test('using ComputeType.X2Large with a Windows image fails validation', () => {
   const stack = new cdk.Stack();
   const invalidEnvironment: codebuild.BuildEnvironment = {
@@ -1808,8 +1826,8 @@ test('badge support test', () => {
   const stack = new cdk.Stack();
 
   interface BadgeValidationTestCase {
-    source: codebuild.Source,
-    allowsBadge: boolean
+    source: codebuild.Source;
+    allowsBadge: boolean;
   }
 
   const repo = new codecommit.Repository(stack, 'MyRepo', {

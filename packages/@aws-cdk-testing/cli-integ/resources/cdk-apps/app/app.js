@@ -65,7 +65,7 @@ class YourStack extends cdk.Stack {
   }
 }
 
-class ImportableStack extends cdk.Stack {
+class MigrateStack extends cdk.Stack {
   constructor(parent, id, props) {
     super(parent, id, props);
 
@@ -77,11 +77,50 @@ class ImportableStack extends cdk.Stack {
       new cdk.CfnOutput(this, 'QueueName', {
         value: queue.queueName,
       });
+
+      new cdk.CfnOutput(this, 'QueueUrl', {
+        value: queue.queueUrl,
+      });
+      
       new cdk.CfnOutput(this, 'QueueLogicalId', {
         value: queue.node.defaultChild.logicalId,
       });
     }
+    if (process.env.SAMPLE_RESOURCES) {
+      const myTopic = new sns.Topic(this, 'migratetopic1', {
+        removalPolicy: cdk.RemovalPolicy.DESTROY,
+      });
+      cdk.Tags.of(myTopic).add('tag1', 'value1');
+      const myTopic2 = new sns.Topic(this, 'migratetopic2', {
+        removalPolicy: cdk.RemovalPolicy.DESTROY,
+      });
+      cdk.Tags.of(myTopic2).add('tag2', 'value2');
+      const myQueue = new sqs.Queue(this, 'migratequeue1', {
+        removalPolicy: cdk.RemovalPolicy.DESTROY,
+      });
+      cdk.Tags.of(myQueue).add('tag3', 'value3');
+    }
+    if (process.env.LAMBDA_RESOURCES) {
+      const myFunction = new lambda.Function(this, 'migratefunction1', {
+        code: lambda.Code.fromInline('console.log("hello world")'),
+        handler: 'index.handler',
+        runtime: lambda.Runtime.NODEJS_18_X,
+      });
+      cdk.Tags.of(myFunction).add('lambda-tag', 'lambda-value');
 
+      const myFunction2 = new lambda.Function(this, 'migratefunction2', {
+        code: lambda.Code.fromInline('console.log("hello world2")'),
+        handler: 'index.handler',
+        runtime: lambda.Runtime.NODEJS_18_X,
+      });
+      cdk.Tags.of(myFunction2).add('lambda-tag', 'lambda-value');
+    }
+  }
+}
+
+class ImportableStack extends MigrateStack {
+  constructor(parent, id, props) {
+    super(parent, id, props);
     new cdk.CfnWaitConditionHandle(this, 'Handle');
   }
 }
@@ -470,6 +509,8 @@ switch (stackSet) {
 
     new ImportableStack(app, `${stackPrefix}-importable-stack`);
 
+    new MigrateStack(app, `${stackPrefix}-migrate-stack`);
+
     new ExportValueStack(app, `${stackPrefix}-export-value-stack`);
 
     new BundlingStage(app, `${stackPrefix}-bundling-stage`);
@@ -490,6 +531,9 @@ switch (stackSet) {
   case 'stage-with-errors':
     const stage = new StageWithError(app, `${stackPrefix}-stage-with-errors`);
     stage.synth({ validateOnSynthesis: true });
+    break;
+
+  case 'stage-with-no-stacks':
     break;
 
   default:

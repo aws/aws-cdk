@@ -113,7 +113,7 @@ export interface BranchOptions {
    *
    * @default - no asset
    */
-  readonly asset?: Asset
+  readonly asset?: Asset;
 
   /**
    * Enables performance mode for the branch.
@@ -233,7 +233,7 @@ class AmplifyAssetDeploymentProvider extends NestedStack {
       this,
       'amplify-asset-deployment-on-event',
       {
-        entry: path.join(__dirname, '..', '..', 'custom-resource-handlers', 'dist', 'aws-amplify-alpha', 'asset-deployment-handler', 'index.js'),
+        entry: path.join(__dirname, '..', 'custom-resource-handlers', 'dist', 'aws-amplify-alpha', 'asset-deployment-handler', 'index.js'),
         handler: 'onEvent',
         initialPolicy: [
           new iam.PolicyStatement({
@@ -254,7 +254,7 @@ class AmplifyAssetDeploymentProvider extends NestedStack {
       this,
       'amplify-asset-deployment-is-complete',
       {
-        entry: path.join(__dirname, '..', '..', 'custom-resource-handlers', 'dist', 'aws-amplify-alpha', 'asset-deployment-handler', 'index.js'),
+        entry: path.join(__dirname, '..', 'custom-resource-handlers', 'dist', 'aws-amplify-alpha', 'asset-deployment-handler', 'index.js'),
         handler: 'isComplete',
         initialPolicy: [
           new iam.PolicyStatement({

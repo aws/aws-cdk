@@ -1,5 +1,5 @@
 {
-  "version": "34.0.0",
+  "version": "36.0.0",
   "files": {
     "2ec8ad9e91dcd6e7ad6a5c84ffc6c9c05c408aca3b26ceb2816d81043e6c4dc3": {
       "source": {
@@ -53,7 +53,7 @@
         }
       }
     },
-    "4831e86071470caad838e9a1e194f9af7a31ea636fb5eaaa7444df685bc174a4": {
+    "a084e2781e9799cdbf79f61a1e48791de68f996748cbf9a82d4df5ebe1259373": {
       "source": {
         "path": "canary-one.template.json",
         "packaging": "file"
@@ -61,7 +61,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "4831e86071470caad838e9a1e194f9af7a31ea636fb5eaaa7444df685bc174a4.json",
+          "objectKey": "a084e2781e9799cdbf79f61a1e48791de68f996748cbf9a82d4df5ebe1259373.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

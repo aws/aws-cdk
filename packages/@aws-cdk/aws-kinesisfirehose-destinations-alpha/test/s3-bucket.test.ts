@@ -407,19 +407,12 @@ describe('S3 destination', () => {
     });
 
     it('validates bufferingInterval', () => {
-      expect(() => new firehose.DeliveryStream(stack, 'DeliveryStream', {
-        destinations: [new firehosedestinations.S3Bucket(bucket, {
-          bufferingInterval: cdk.Duration.seconds(30),
-          bufferingSize: cdk.Size.mebibytes(1),
-        })],
-      })).toThrowError('Buffering interval must be between 60 and 900 seconds. Buffering interval provided was 30 seconds.');
-
       expect(() => new firehose.DeliveryStream(stack, 'DeliveryStream2', {
         destinations: [new firehosedestinations.S3Bucket(bucket, {
           bufferingInterval: cdk.Duration.minutes(16),
           bufferingSize: cdk.Size.mebibytes(1),
         })],
-      })).toThrowError('Buffering interval must be between 60 and 900 seconds. Buffering interval provided was 960 seconds.');
+      })).toThrowError('Buffering interval must be less than 900 seconds. Buffering interval provided was 960 seconds.');
     });
 
     it('validates bufferingSize', () => {

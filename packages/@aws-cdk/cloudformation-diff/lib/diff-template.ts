@@ -1,3 +1,6 @@
+// The SDK is only used to reference `DescribeChangeSetOutput`, so the SDK is added as a devDependency.
+// The SDK should not make network calls here
+import type { CloudFormation } from 'aws-sdk';
 import * as impl from './diff';
 import * as types from './diff/types';
 import { deepEqual, diffKeyedEntities, unionOf } from './diff/util';
@@ -33,12 +36,34 @@ const DIFF_HANDLERS: HandlerRegistry = {
  *
  * @param currentTemplate the current state of the stack.
  * @param newTemplate     the target state of the stack.
+ * @param changeSet       the change set for this stack.
  *
  * @returns a +types.TemplateDiff+ object that represents the changes that will happen if
  *      a stack which current state is described by +currentTemplate+ is updated with
  *      the template +newTemplate+.
  */
-export function diffTemplate(currentTemplate: { [key: string]: any }, newTemplate: { [key: string]: any }): types.TemplateDiff {
+export function fullDiff(
+  currentTemplate: { [key: string]: any },
+  newTemplate: { [key: string]: any },
+  changeSet?: CloudFormation.DescribeChangeSetOutput,
+): types.TemplateDiff {
+
+  normalize(currentTemplate);
+  normalize(newTemplate);
+  const theDiff = diffTemplate(currentTemplate, newTemplate);
+  if (changeSet) {
+    filterFalsePositivies(theDiff, changeSet);
+    addImportInformation(theDiff, changeSet);
+  }
+
+  return theDiff;
+}
+
+function diffTemplate(
+  currentTemplate: { [key: string]: any },
+  newTemplate: { [key: string]: any },
+): types.TemplateDiff {
+
   // Base diff
   const theDiff = calculateTemplateDiff(currentTemplate, newTemplate);
 
@@ -105,7 +130,6 @@ function calculateTemplateDiff(currentTemplate: { [key: string]: any }, newTempl
     const handler: DiffHandler = DIFF_HANDLERS[key]
                   || ((_diff, oldV, newV) => unknown[key] = impl.diffUnknown(oldV, newV));
     handler(differences, oldValue, newValue);
-
   }
   if (Object.keys(unknown).length > 0) {
     differences.unknown = new types.DifferenceCollection(unknown);
@@ -183,4 +207,114 @@ function deepCopy(x: any): any {
   }
 
   return x;
+}
+
+function addImportInformation(diff: types.TemplateDiff, changeSet: CloudFormation.DescribeChangeSetOutput) {
+  const imports = findResourceImports(changeSet);
+  diff.resources.forEachDifference((logicalId: string, change: types.ResourceDifference) => {
+    if (imports.includes(logicalId)) {
+      change.isImport = true;
+    }
+  });
+}
+
+function filterFalsePositivies(diff: types.TemplateDiff, changeSet: CloudFormation.DescribeChangeSetOutput) {
+  const replacements = findResourceReplacements(changeSet);
+  diff.resources.forEachDifference((logicalId: string, change: types.ResourceDifference) => {
+    change.forEachDifference((type: 'Property' | 'Other', name: string, value: types.Difference<any> | types.PropertyDifference<any>) => {
+      if (type === 'Property') {
+        if (!replacements[logicalId]) {
+          (value as types.PropertyDifference<any>).changeImpact = types.ResourceImpact.NO_CHANGE;
+          (value as types.PropertyDifference<any>).isDifferent = false;
+          return;
+        }
+        switch (replacements[logicalId].propertiesReplaced[name]) {
+          case 'Always':
+            (value as types.PropertyDifference<any>).changeImpact = types.ResourceImpact.WILL_REPLACE;
+            break;
+          case 'Never':
+            (value as types.PropertyDifference<any>).changeImpact = types.ResourceImpact.WILL_UPDATE;
+            break;
+          case 'Conditionally':
+            (value as types.PropertyDifference<any>).changeImpact = types.ResourceImpact.MAY_REPLACE;
+            break;
+          case undefined:
+            (value as types.PropertyDifference<any>).changeImpact = types.ResourceImpact.NO_CHANGE;
+            (value as types.PropertyDifference<any>).isDifferent = false;
+            break;
+          // otherwise, defer to the changeImpact from `diffTemplate`
+        }
+      } else if (type === 'Other') {
+        switch (name) {
+          case 'Metadata':
+            change.setOtherChange('Metadata', new types.Difference<string>(value.newValue, value.newValue));
+            break;
+        }
+      }
+    });
+  });
+}
+
+function findResourceImports(changeSet: CloudFormation.DescribeChangeSetOutput): string[] {
+  const importedResourceLogicalIds = [];
+  for (const resourceChange of changeSet.Changes ?? []) {
+    if (resourceChange.ResourceChange?.Action === 'Import') {
+      importedResourceLogicalIds.push(resourceChange.ResourceChange.LogicalResourceId!);
+    }
+  }
+
+  return importedResourceLogicalIds;
+}
+
+function findResourceReplacements(changeSet: CloudFormation.DescribeChangeSetOutput): types.ResourceReplacements {
+  const replacements: types.ResourceReplacements = {};
+  for (const resourceChange of changeSet.Changes ?? []) {
+    const propertiesReplaced: { [propName: string]: types.ChangeSetReplacement } = {};
+    for (const propertyChange of resourceChange.ResourceChange?.Details ?? []) {
+      if (propertyChange.Target?.Attribute === 'Properties') {
+        const requiresReplacement = propertyChange.Target.RequiresRecreation === 'Always';
+        if (requiresReplacement && propertyChange.Evaluation === 'Static') {
+          propertiesReplaced[propertyChange.Target.Name!] = 'Always';
+        } else if (requiresReplacement && propertyChange.Evaluation === 'Dynamic') {
+          // If Evaluation is 'Dynamic', then this may cause replacement, or it may not.
+          // see 'Replacement': https://docs.aws.amazon.com/AWSCloudFormation/latest/APIReference/API_ResourceChange.html
+          propertiesReplaced[propertyChange.Target.Name!] = 'Conditionally';
+        } else {
+          propertiesReplaced[propertyChange.Target.Name!] = propertyChange.Target.RequiresRecreation as types.ChangeSetReplacement;
+        }
+      }
+    }
+    replacements[resourceChange.ResourceChange?.LogicalResourceId!] = {
+      resourceReplaced: resourceChange.ResourceChange?.Replacement === 'True',
+      propertiesReplaced,
+    };
+  }
+
+  return replacements;
+}
+
+function normalize(template: any) {
+  if (typeof template === 'object') {
+    for (const key of (Object.keys(template ?? {}))) {
+      if (key === 'Fn::GetAtt' && typeof template[key] === 'string') {
+        template[key] = template[key].split('.');
+        continue;
+      } else if (key === 'DependsOn') {
+        if (typeof template[key] === 'string') {
+          template[key] = [template[key]];
+        } else if (Array.isArray(template[key])) {
+          template[key] = template[key].sort();
+        }
+        continue;
+      }
+
+      if (Array.isArray(template[key])) {
+        for (const element of (template[key])) {
+          normalize(element);
+        }
+      } else {
+        normalize(template[key]);
+      }
+    }
+  }
 }

@@ -151,6 +151,56 @@ new route53.ARecord(this, 'ARecordGeoLocationDefault', {
 });
 ```
 
+To enable [weighted routing](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/routing-policy-weighted.html), use the `weight` parameter:
+
+```ts
+declare const myZone: route53.HostedZone;
+
+new route53.ARecord(this, 'ARecordWeighted1', {
+  zone: myZone,
+  target: route53.RecordTarget.fromIpAddresses('1.2.3.4'),
+  weight: 10,
+});
+```
+
+To enable [latency based routing](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/routing-policy-latency.html), use the `region` parameter:
+
+```ts
+declare const myZone: route53.HostedZone;
+
+new route53.ARecord(this, 'ARecordLatency1', {
+  zone: myZone,
+  target: route53.RecordTarget.fromIpAddresses('1.2.3.4'),
+  region: 'us-east-1',
+});
+```
+
+To enable [multivalue answer routing](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/routing-policy-multivalue.html), use the `multivalueAnswer` parameter:
+
+```ts
+declare const myZone: route53.HostedZone;
+
+new route53.ARecord(this, 'ARecordMultiValue1', {
+  zone: myZone,
+  target: route53.RecordTarget.fromIpAddresses('1.2.3.4'),
+  multiValueAnswer: true,
+});
+```
+
+To specify a unique identifier to differentiate among multiple resource record sets that have the same combination of name and type, use the `setIdentifier` parameter:
+
+```ts
+declare const myZone: route53.HostedZone;
+
+new route53.ARecord(this, 'ARecordWeighted1', {
+  zone: myZone,
+  target: route53.RecordTarget.fromIpAddresses('1.2.3.4'),
+  weight: 10,
+  setIdentifier: 'weighted-record-id',
+});
+```
+**Warning** It is not possible to specify `setIdentifier` for a simple routing policy.
+
 Constructs are available for A, AAAA, CAA, CNAME, MX, NS, SRV and TXT records.
 
 Use the `CaaAmazonRecord` construct to easily restrict certificate authorities
@@ -182,7 +232,7 @@ new route53.ARecord(this, 'ARecord', {
 ### Cross Account Zone Delegation
 
 If you want to have your root domain hosted zone in one account and your subdomain hosted
-zone in a diferent one, you can use `CrossAccountZoneDelegationRecord` to set up delegation
+zone in a different one, you can use `CrossAccountZoneDelegationRecord` to set up delegation
 between them.
 
 In the account containing the parent hosted zone:
@@ -196,6 +246,36 @@ const crossAccountRole = new iam.Role(this, 'CrossAccountRole', {
   roleName: 'MyDelegationRole',
   // The other account
   assumedBy: new iam.AccountPrincipal('12345678901'),
+  // You can scope down this role policy to be least privileged.
+  // If you want the other account to be able to manage specific records,
+  // you can scope down by resource and/or normalized record names
+  inlinePolicies: {
+    crossAccountPolicy: new iam.PolicyDocument({
+      statements: [
+        new iam.PolicyStatement({
+          sid: 'ListHostedZonesByName',
+          effect: iam.Effect.ALLOW,
+          actions: ['route53:ListHostedZonesByName'],
+          resources: ['*'],
+        }),
+        new iam.PolicyStatement({
+          sid: 'GetHostedZoneAndChangeResourceRecordSet',
+          effect: iam.Effect.ALLOW,
+          actions: ['route53:GetHostedZone', 'route53:ChangeResourceRecordSet'],
+          // This example assumes the RecordSet subdomain.somexample.com
+          // is contained in the HostedZone
+          resources: ['arn:aws:route53:::hostedzone/HZID00000000000000000'],
+          conditions: {
+            'ForAllValues:StringLike': {
+              'route53:ChangeResourceRecordSetsNormalizedRecordNames': [
+                'subdomain.someexample.com',
+              ],
+            },
+          },
+        }),
+      ],
+    }),
+  },
 });
 parentZone.grantDelegation(crossAccountRole);
 ```

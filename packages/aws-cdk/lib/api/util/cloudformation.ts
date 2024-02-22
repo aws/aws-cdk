@@ -1,8 +1,12 @@
 import { SSMPARAM_NO_INVALIDATE } from '@aws-cdk/cx-api';
+import * as cxapi from '@aws-cdk/cx-api';
 import { CloudFormation } from 'aws-sdk';
 import { StackStatus } from './cloudformation/stack-status';
+import { makeBodyParameterAndUpload, TemplateBodyParameter } from './template-body-parameter';
 import { debug } from '../../logging';
 import { deserializeStructure } from '../../serialize';
+import { SdkProvider } from '../aws-auth';
+import { Deployments } from '../deployments';
 
 export type Template = {
   Parameters?: Record<string, TemplateParameter>;
@@ -278,6 +282,129 @@ export async function waitForChangeSet(
   }
 
   return ret;
+}
+
+export type PrepareChangeSetOptions = {
+  stack: cxapi.CloudFormationStackArtifact;
+  deployments: Deployments;
+  uuid: string;
+  willExecute: boolean;
+  sdkProvider: SdkProvider;
+  stream: NodeJS.WritableStream;
+  parameters: { [name: string]: string | undefined };
+  resourcesToImport?: ResourcesToImport;
+}
+
+export type CreateChangeSetOptions = {
+  cfn: CloudFormation;
+  changeSetName: string;
+  willExecute: boolean;
+  exists: boolean;
+  uuid: string;
+  stack: cxapi.CloudFormationStackArtifact;
+  bodyParameter: TemplateBodyParameter;
+  parameters: { [name: string]: string | undefined };
+  resourcesToImport?: ResourcesToImport;
+  role?: string;
+}
+
+/**
+ * Create a changeset for a diff operation
+ */
+export async function createDiffChangeSet(options: PrepareChangeSetOptions): Promise<CloudFormation.DescribeChangeSetOutput | undefined> {
+  // `options.stack` has been modified to include any nested stack templates directly inline with its own template, under a special `NestedTemplate` property.
+  // Thus the parent template's Resources section contains the nested template's CDK metadata check, which uses Fn::Equals.
+  // This causes CreateChangeSet to fail with `Template Error: Fn::Equals cannot be partially collapsed`.
+  for (const resource of Object.values((options.stack.template.Resources ?? {}))) {
+    if ((resource as any).Type === 'AWS::CloudFormation::Stack') {
+      // eslint-disable-next-line no-console
+      debug('This stack contains one or more nested stacks, falling back to template-only diff...');
+
+      return undefined;
+    }
+  }
+
+  return uploadBodyParameterAndCreateChangeSet(options);
+}
+
+async function uploadBodyParameterAndCreateChangeSet(options: PrepareChangeSetOptions): Promise<CloudFormation.DescribeChangeSetOutput | undefined> {
+  try {
+    const preparedSdk = (await options.deployments.prepareSdkWithDeployRole(options.stack));
+    const bodyParameter = await makeBodyParameterAndUpload(
+      options.stack,
+      preparedSdk.resolvedEnvironment,
+      preparedSdk.envResources,
+      options.sdkProvider,
+      preparedSdk.stackSdk,
+    );
+    const cfn = preparedSdk.stackSdk.cloudFormation();
+    const exists = (await CloudFormationStack.lookup(cfn, options.stack.stackName, false)).exists;
+
+    const executionRoleArn = preparedSdk.cloudFormationRoleArn;
+    options.stream.write('Hold on while we create a read-only change set to get a diff with accurate replacement information (use --no-change-set to use a less accurate but faster template-only diff)\n');
+
+    return await createChangeSet({
+      cfn,
+      changeSetName: 'cdk-diff-change-set',
+      stack: options.stack,
+      exists,
+      uuid: options.uuid,
+      willExecute: options.willExecute,
+      bodyParameter,
+      parameters: options.parameters,
+      resourcesToImport: options.resourcesToImport,
+      role: executionRoleArn,
+    });
+  } catch (e: any) {
+    debug(e.message);
+    options.stream.write('Could not create a change set, will base the diff on template differences (run again with -v to see the reason)\n');
+
+    return undefined;
+  }
+}
+
+async function createChangeSet(options: CreateChangeSetOptions): Promise<CloudFormation.DescribeChangeSetOutput> {
+  await cleanupOldChangeset(options.exists, options.changeSetName, options.stack.stackName, options.cfn);
+
+  debug(`Attempting to create ChangeSet with name ${options.changeSetName} for stack ${options.stack.stackName}`);
+
+  const templateParams = TemplateParameters.fromTemplate(options.stack.template);
+  const stackParams = templateParams.supplyAll(options.parameters);
+
+  const changeSet = await options.cfn.createChangeSet({
+    StackName: options.stack.stackName,
+    ChangeSetName: options.changeSetName,
+    ChangeSetType: options.resourcesToImport ? 'IMPORT' : options.exists ? 'UPDATE' : 'CREATE',
+    Description: `CDK Changeset for diff ${options.uuid}`,
+    ClientToken: `diff${options.uuid}`,
+    TemplateURL: options.bodyParameter.TemplateURL,
+    TemplateBody: options.bodyParameter.TemplateBody,
+    Parameters: stackParams.apiParameters,
+    ResourcesToImport: options.resourcesToImport,
+    RoleARN: options.role,
+    Capabilities: ['CAPABILITY_IAM', 'CAPABILITY_NAMED_IAM', 'CAPABILITY_AUTO_EXPAND'],
+  }).promise();
+
+  debug('Initiated creation of changeset: %s; waiting for it to finish creating...', changeSet.Id);
+  // Fetching all pages if we'll execute, so we can have the correct change count when monitoring.
+  const createdChangeSet = await waitForChangeSet(options.cfn, options.stack.stackName, options.changeSetName, { fetchAll: options.willExecute });
+  await cleanupOldChangeset(options.exists, options.changeSetName, options.stack.stackName, options.cfn);
+
+  return createdChangeSet;
+}
+
+export async function cleanupOldChangeset(stackExists: boolean, changeSetName: string, stackName: string, cfn: CloudFormation) {
+  if (stackExists) {
+    // Delete any existing change sets generated by CDK since change set names must be unique.
+    // The delete request is successful as long as the stack exists (even if the change set does not exist).
+    debug(`Removing existing change set with name ${changeSetName} if it exists`);
+    await cfn.deleteChangeSet({ StackName: stackName, ChangeSetName: changeSetName }).promise();
+  } else {
+    // delete the stack since creating a changeset for a stack that doesn't exist leaves that stack in a REVIEW_IN_PROGRESS state
+    // that prevents other changesets from being created, even after the changeset has been deleted.
+    debug(`Removing stack with name ${stackName}`);
+    await cfn.deleteStack({ StackName: stackName }).promise();
+  }
 }
 
 /**

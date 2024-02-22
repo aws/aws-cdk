@@ -81,7 +81,7 @@ export async function tryHotswapDeployment(
     nestedStackNames: currentTemplate.nestedStackNames,
   });
 
-  const stackChanges = cfn_diff.diffTemplate(currentTemplate.deployedTemplate, stackArtifact.template);
+  const stackChanges = cfn_diff.fullDiff(currentTemplate.deployedTemplate, stackArtifact.template);
   const { hotswappableChanges, nonHotswappableChanges } = await classifyResourceChanges(
     stackChanges, evaluateCfnTemplate, sdk, currentTemplate.nestedStackNames,
   );
@@ -247,7 +247,7 @@ async function findNestedHotswappableChanges(
     nestedStackName, change.newValue?.Properties?.NestedTemplate, change.newValue?.Properties?.Parameters,
   );
 
-  const nestedDiff = cfn_diff.diffTemplate(
+  const nestedDiff = cfn_diff.fullDiff(
     change.oldValue?.Properties?.NestedTemplate, change.newValue?.Properties?.NestedTemplate,
   );
 

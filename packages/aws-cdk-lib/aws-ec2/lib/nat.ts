@@ -37,12 +37,12 @@ export interface GatewayConfig {
   /**
    * Availability Zone
    */
-  readonly az: string
+  readonly az: string;
 
   /**
    * Identity of gateway spawned by the provider
    */
-  readonly gatewayId: string
+  readonly gatewayId: string;
 }
 
 /**
@@ -172,7 +172,7 @@ export interface NatInstanceProps {
    * Name of SSH keypair to grant access to instance
    *
    * @default - No SSH access will be possible.
-   * @deprecated - Use `keyPair` instead.
+   * @deprecated - Use `keyPair` instead - https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_ec2-readme.html#using-an-existing-ec2-key-pair
    */
   readonly keyName?: string;
 

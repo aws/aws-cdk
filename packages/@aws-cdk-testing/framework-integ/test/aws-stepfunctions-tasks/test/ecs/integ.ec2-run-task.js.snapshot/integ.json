@@ -1,14 +1,12 @@
 {
-  "version": "32.0.0",
+  "version": "36.0.0",
   "testCases": {
-    "integ.ec2-run-task": {
+    "SfnTasksEcsEc2RunTaskTest/DefaultTest": {
       "stacks": [
-        "aws-sfn-tasks-ecs-ec2-integ"
+        "aws-sfn-tasks-ecs-run-task"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": true
+      "assertionStack": "SfnTasksEcsEc2RunTaskTest/DefaultTest/DeployAssert",
+      "assertionStackName": "SfnTasksEcsEc2RunTaskTestDefaultTestDeployAssert2569343D"
     }
-  },
-  "synthContext": {},
-  "enableLookups": false
+  }
 }

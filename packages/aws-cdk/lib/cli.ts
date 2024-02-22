@@ -22,7 +22,7 @@ import { CdkToolkit, AssetBuildTime } from '../lib/cdk-toolkit';
 import { realHandler as context } from '../lib/commands/context';
 import { realHandler as docs } from '../lib/commands/docs';
 import { realHandler as doctor } from '../lib/commands/doctor';
-import { MIGRATE_SUPPORTED_LANGUAGES } from '../lib/commands/migrate';
+import { MIGRATE_SUPPORTED_LANGUAGES, getMigrateScanType } from '../lib/commands/migrate';
 import { RequireApproval } from '../lib/diff';
 import { availableInitLanguages, cliInit, printAvailableTemplates } from '../lib/init';
 import { data, debug, error, print, setLogLevel, setCI } from '../lib/logging';
@@ -172,7 +172,8 @@ async function parseCommandLineArguments(args: string[]) {
       })
       .option('concurrency', { type: 'number', desc: 'Maximum number of simultaneous deployments (dependency permitting) to execute.', default: 1, requiresArg: true })
       .option('asset-parallelism', { type: 'boolean', desc: 'Whether to build/publish assets in parallel' })
-      .option('asset-prebuild', { type: 'boolean', desc: 'Whether to build all assets before deploying the first stack (useful for failing Docker builds)', default: true }),
+      .option('asset-prebuild', { type: 'boolean', desc: 'Whether to build all assets before deploying the first stack (useful for failing Docker builds)', default: true })
+      .option('ignore-no-stacks', { type: 'boolean', desc: 'Whether to deploy if the app contains no stacks', default: false }),
     )
     .command('import [STACK]', 'Import existing resource(s) into the given STACK', (yargs: Argv) => yargs
       .option('execute', { type: 'boolean', desc: 'Whether to execute ChangeSet (--no-execute will NOT execute the ChangeSet)', default: true })
@@ -262,7 +263,8 @@ async function parseCommandLineArguments(args: string[]) {
       .option('security-only', { type: 'boolean', desc: 'Only diff for broadened security changes', default: false })
       .option('fail', { type: 'boolean', desc: 'Fail with exit code 1 in case of diff' })
       .option('processed', { type: 'boolean', desc: 'Whether to compare against the template with Transforms already processed', default: false })
-      .option('quiet', { type: 'boolean', alias: 'q', desc: 'Do not print stack name and default message when there is no diff to stdout', default: false }))
+      .option('quiet', { type: 'boolean', alias: 'q', desc: 'Do not print stack name and default message when there is no diff to stdout', default: false })
+      .option('change-set', { type: 'boolean', desc: 'Whether to create a changeset to analyze resource replacements. In this mode, diff will use the deploy role instead of the lookup role.', default: true }))
     .command('metadata [STACK]', 'Returns all metadata associated with this stack')
     .command(['acknowledge [ID]', 'ack [ID]'], 'Acknowledge a notice so that it does not show up anymore')
     .command('notices', 'Returns a list of relevant notices')
@@ -279,6 +281,21 @@ async function parseCommandLineArguments(args: string[]) {
       .option('from-path', { type: 'string', desc: 'The path to the CloudFormation template to migrate. Use this for locally stored templates' })
       .option('from-stack', { type: 'boolean', desc: 'Use this flag to retrieve the template for an existing CloudFormation stack' })
       .option('output-path', { type: 'string', desc: 'The output path for the migrated CDK app' })
+      .option('from-scan', {
+        type: 'string',
+        desc: 'Determines if a new scan should be created, or the last successful existing scan should be used ' +
+          '\n options are "new" or "most-recent"',
+      })
+      .option('filter', {
+        type: 'array',
+        desc: 'Filters the resource scan based on the provided criteria in the following format: "key1=value1,key2=value2"' +
+          '\n This field can be passed multiple times for OR style filtering: ' +
+          '\n filtering options: ' +
+          '\n resource-identifier: A key-value pair that identifies the target resource. i.e. {"ClusterName", "myCluster"}' +
+          '\n resource-type-prefix: A string that represents a type-name prefix. i.e. "AWS::DynamoDB::"' +
+          '\n tag-key: a string that matches resources with at least one tag with the provided key. i.e. "myTagKey"' +
+          '\n tag-value: a string that matches resources with at least one tag with the provided value. i.e. "myTagValue"',
+      })
       .option('compress', { type: 'boolean', desc: 'Use this flag to zip the generated CDK app' }),
     )
     .command('context', 'Manage cached context values', (yargs: Argv) => yargs
@@ -313,16 +330,17 @@ if (!process.stdout.isTTY) {
 export async function exec(args: string[], synthesizer?: Synthesizer): Promise<number | void> {
   const argv = await parseCommandLineArguments(args);
 
+  if (argv.verbose) {
+    setLogLevel(argv.verbose);
+  }
+
   if (argv.debug) {
     enableSourceMapSupport();
   }
 
-  if (argv.verbose) {
-    setLogLevel(argv.verbose);
-
-    if (argv.verbose > 2) {
-      enableTracing(true);
-    }
+  // Debug should always imply tracing
+  if (argv.debug || argv.verbose > 2) {
+    enableTracing(true);
   }
 
   if (argv.ci) {
@@ -495,6 +513,7 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
           stream: args.ci ? process.stdout : undefined,
           compareAgainstProcessedTemplate: args.processed,
           quiet: args.quiet,
+          changeSet: args['change-set'],
         });
 
       case 'bootstrap':
@@ -583,6 +602,7 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
           concurrency: args.concurrency,
           assetParallelism: configuration.settings.get(['assetParallelism']),
           assetBuildTime: configuration.settings.get(['assetPrebuild']) ? AssetBuildTime.ALL_BEFORE_DEPLOY : AssetBuildTime.JUST_IN_TIME,
+          ignoreNoStacks: args.ignoreNoStacks,
         });
 
       case 'import':
@@ -674,6 +694,8 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
           fromStack: args['from-stack'],
           language: args.language,
           outputPath: args['output-path'],
+          fromScan: getMigrateScanType(args['from-scan']),
+          filter: args.filter,
           account: args.account,
           region: args.region,
           compress: args.compress,

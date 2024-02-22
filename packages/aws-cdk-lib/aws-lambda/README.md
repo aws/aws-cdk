@@ -166,14 +166,14 @@ new lambda.Function(this, 'Lambda', {
   code: new lambda.InlineCode('foo'),
   handler: 'index.handler',
   runtime: lambda.Runtime.NODEJS_18_X,
-  logFormat: lambda.LogFormat.JSON,
+  loggingFormat: lambda.LoggingFormat.JSON,
   systemLogLevel: lambda.SystemLogLevel.INFO,
   applicationLogLevel: lambda.ApplicationLogLevel.INFO,
   logGroup: logGroup,
 });
 ```
 
-To use `applicationLogLevel` and/or `systemLogLevel` you must set `logFormat` to `LogFormat.JSON`.
+To use `applicationLogLevel` and/or `systemLogLevel` you must set `loggingFormat` to `LoggingFormat.JSON`.
 
 ## Resource-based Policies
 
@@ -988,21 +988,44 @@ See [the AWS documentation](https://docs.aws.amazon.com/lambda/latest/dg/invocat
 
 ## Log Group
 
-Lambda functions automatically create a log group with the name `/aws/lambda/<function-name>` upon first execution with
+By default, Lambda functions automatically create a log group with the name `/aws/lambda/<function-name>` upon first execution with
 log data set to never expire.
+This is convenient, but prevents you from changing any of the properties of this auto-created log group using the AWS CDK.
+For example you cannot set log retention or assign a data protection policy.
 
-The `logRetention` property can be used to set a different expiration period.
+To fully customize the logging behavior of your Lambda function, create a `logs.LogGroup` ahead of time and use the `logGroup` property to instruct the Lambda function to send logs to it.
+This way you can use the full features set supported by Amazon CloudWatch Logs.
 
-It is possible to obtain the function's log group as a `logs.ILogGroup` by calling the `logGroup` property of the
-`Function` construct.
+```ts
+import { LogGroup } from 'aws-cdk-lib/aws-logs';
+
+const myLogGroup = new LogGroup(this, 'MyLogGroupWithLogGroupName', {
+  logGroupName: 'customLogGroup',
+});
+
+new lambda.Function(this, 'Lambda', {
+  code: new lambda.InlineCode('foo'),
+  handler: 'index.handler',
+  runtime: lambda.Runtime.NODEJS_18_X,
+  logGroup: myLogGroup,
+});
+```
+
+Providing a user-controlled log group was rolled out to commercial regions on 2023-11-16.
+If you are deploying to another type of region, please check regional availability first.
+
+### Legacy Log Retention
+
+As an alternative to providing a custom, user controlled log group, the legacy `logRetention` property can be used to set a different expiration period.
+This feature uses a Custom Resource to change the log retention of the automatically created log group.
 
 By default, CDK uses the AWS SDK retry options when creating a log group. The `logRetentionRetryOptions` property
 allows you to customize the maximum number of retries and base backoff duration.
 
-*Note* that, if either `logRetention` is set or `logGroup` property is called, a [CloudFormation custom
+*Note* that a [CloudFormation custom
 resource](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cfn-customresource.html) is added
 to the stack that pre-creates the log group as part of the stack deployment, if it already doesn't exist, and sets the
-correct log retention period (never expire, by default).
+correct log retention period (never expire, by default). This Custom Resource will also create a log group to log events of the custom resource. The log retention period for this addtional log group is hard-coded to 1 day.
 
 *Further note* that, if the log group already exists and the `logRetention` is not set, the custom resource will reset
 the log retention to never expire even if it was configured with a different value.
@@ -1052,6 +1075,49 @@ const fn = new lambda.Function(this, 'MyLambda', {
 });
 ```
 
+## IPv6 support
+
+You can configure IPv6 connectivity for lambda function by setting `Ipv6AllowedForDualStack` to true. 
+It allows Lambda functions to specify whether the IPv6 traffic should be allowed when using dual-stack VPCs. 
+To access IPv6 network using Lambda, Dual-stack VPC is required. Using dual-stack VPC a function communicates with subnet over either of IPv4 or IPv6.
+
+```ts
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
+
+const natProvider = ec2.NatProvider.gateway();
+
+// create dual-stack VPC
+const vpc = new ec2.Vpc(this, 'DualStackVpc', {
+  ipProtocol: ec2.IpProtocol.DUAL_STACK,
+  subnetConfiguration: [
+    {
+      name: 'Ipv6Public1',
+      subnetType: ec2.SubnetType.PUBLIC,
+    },
+    {
+      name: 'Ipv6Public2',
+      subnetType: ec2.SubnetType.PUBLIC,
+    },
+    {
+      name: 'Ipv6Private1',
+      subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS,
+    },
+  ],
+  natGatewayProvider: natProvider,
+});
+
+const natGatewayId = natProvider.configuredGateways[0].gatewayId;
+(vpc.privateSubnets[0] as ec2.PrivateSubnet).addIpv6Nat64Route(natGatewayId);
+
+const fn = new lambda.Function(this, 'Lambda_with_IPv6_VPC', {
+  code: new lambda.InlineCode('def main(event, context): pass'),
+  handler: 'index.main',
+  runtime: lambda.Runtime.PYTHON_3_9,
+  vpc,
+  ipv6AllowedForDualStack: true,
+});
+```
+
 ## Ephemeral Storage
 
 You can configure ephemeral storage on a function to control the amount of storage it gets for reading
@@ -1082,8 +1148,7 @@ A typical use case of this function is when a higher level construct needs to de
 needs to guarantee that the function is declared once. However, a user of this higher level construct can declare it any
 number of times and with different properties. Using `SingletonFunction` here with a fixed `uuid` will guarantee this.
 
-For example, the `LogRetention` construct requires only one single lambda function for all different log groups whose
-retention it seeks to manage.
+For example, the `AwsCustomResource` construct requires only one single lambda function for all api calls that are made.
 
 ## Bundling Asset Code
 

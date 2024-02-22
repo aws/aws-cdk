@@ -1,12 +1,14 @@
 export * from './base/base-service';
 export * from './base/scalable-task-count';
 export * from './base/task-definition';
+export * from './base/service-managed-volume';
 
 export * from './container-definition';
 export * from './container-image';
 export * from './amis';
 export * from './cluster';
 export * from './environment-file';
+export * from './credential-spec';
 export * from './firelens-log-router';
 export * from './placement';
 
