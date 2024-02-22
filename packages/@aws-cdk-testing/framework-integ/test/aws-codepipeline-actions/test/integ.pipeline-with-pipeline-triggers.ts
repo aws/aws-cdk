@@ -14,15 +14,16 @@ if (connectionArn === 'MOCK') {
   cdk.Annotations.of(stack).addWarningV2('integ:connection-arn', 'You must specify a valid connection ARN in the CONNECTION_ARN environment variable');
 }
 
-const sourceOutput = new codepipeline.Artifact();
-const sourceAction = new cpactions.CodeStarConnectionsSourceAction({
+const sourceOutput1 = new codepipeline.Artifact();
+const sourceAction1 = new cpactions.CodeStarConnectionsSourceAction({
   actionName: 'CodeStarConnectionsSourceAction',
-  output: sourceOutput,
+  output: sourceOutput1,
   connectionArn,
   owner: 'go-to-k',
-  repo: 'cdk-pipelines-demo',
+  repo: 'cdk-codepipeline-demo-1',
 });
 
+// for push filter with tags
 new codepipeline.Pipeline(stack, 'Pipeline', {
   pipelineName: 'my-pipeline',
   pipelineType: codepipeline.PipelineType.V2,
@@ -30,7 +31,7 @@ new codepipeline.Pipeline(stack, 'Pipeline', {
   stages: [
     {
       stageName: 'Source',
-      actions: [sourceAction],
+      actions: [sourceAction1],
     },
     {
       stageName: 'Build',
@@ -38,10 +39,10 @@ new codepipeline.Pipeline(stack, 'Pipeline', {
         new cpactions.CodeBuildAction({
           actionName: 'CodeBuild',
           project: new codebuild.PipelineProject(stack, 'MyProject'),
-          input: sourceOutput,
+          input: sourceOutput1,
           outputs: [new codepipeline.Artifact()],
           environmentVariables: {
-            CommitId: { value: sourceAction.variables.commitId },
+            CommitId: { value: sourceAction1.variables.commitId },
           },
         }),
       ],
@@ -50,10 +51,59 @@ new codepipeline.Pipeline(stack, 'Pipeline', {
   triggers: [{
     providerType: codepipeline.ProviderType.CODE_STAR_SOURCE_CONNECTION,
     gitConfiguration: {
-      sourceAction,
+      sourceAction: sourceAction1,
       pushFilter: [{
         tagsExcludes: ['exclude1', 'exclude2'],
         tagsIncludes: ['include1', 'include2'],
+      }],
+    },
+  }],
+});
+
+const sourceOutput2 = new codepipeline.Artifact();
+const sourceAction2 = new cpactions.CodeStarConnectionsSourceAction({
+  actionName: 'CodeStarConnectionsSourceAction2',
+  output: sourceOutput2,
+  connectionArn,
+  owner: 'go-to-k',
+  repo: 'cdk-codepipeline-demo-2',
+});
+
+// for pull request filter with branches and file paths
+new codepipeline.Pipeline(stack, 'Pipeline2', {
+  pipelineName: 'my-pipeline2',
+  pipelineType: codepipeline.PipelineType.V2,
+  crossAccountKeys: true,
+  stages: [
+    {
+      stageName: 'Source',
+      actions: [sourceAction2],
+    },
+    {
+      stageName: 'Build',
+      actions: [
+        new cpactions.CodeBuildAction({
+          actionName: 'CodeBuild2',
+          project: new codebuild.PipelineProject(stack, 'MyProject2'),
+          input: sourceOutput2,
+          outputs: [new codepipeline.Artifact()],
+          environmentVariables: {
+            CommitId: { value: sourceAction2.variables.commitId },
+          },
+        }),
+      ],
+    },
+  ],
+  triggers: [{
+    providerType: codepipeline.ProviderType.CODE_STAR_SOURCE_CONNECTION,
+    gitConfiguration: {
+      sourceAction: sourceAction2,
+      pullRequestFilter: [{
+        branchesExcludes: ['exclude1', 'exclude2'],
+        branchesIncludes: ['include1', 'include2'],
+        filePathsExcludes: ['/path/to/exclude1', '/path/to/exclude2'],
+        filePathsIncludes: ['/path/to/include1', '/path/to/include2'],
+        events: [codepipeline.GitPullRequestEvent.OPEN, codepipeline.GitPullRequestEvent.UPDATED],
       }],
     },
   }],
@@ -64,7 +114,10 @@ const integrationTest = new IntegTest(app, 'codepipeline-with-pipeline-triggers-
   diffAssets: true,
 });
 
-const awsApiCall = integrationTest.assertions.awsApiCall('CodePipeline', 'getPipeline', { name: 'my-pipeline' });
-awsApiCall.assertAtPath('pipeline.name', ExpectedResult.stringLikeRegexp('my-pipeline'));
+const awsApiCall1 = integrationTest.assertions.awsApiCall('CodePipeline', 'getPipeline', { name: 'my-pipeline' });
+awsApiCall1.assertAtPath('pipeline.name', ExpectedResult.stringLikeRegexp('my-pipeline'));
+
+const awsApiCall2 = integrationTest.assertions.awsApiCall('CodePipeline', 'getPipeline', { name: 'my-pipeline2' });
+awsApiCall2.assertAtPath('pipeline.name', ExpectedResult.stringLikeRegexp('my-pipeline2'));
 
 app.synth();
