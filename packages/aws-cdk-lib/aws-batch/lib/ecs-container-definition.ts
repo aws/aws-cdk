@@ -1076,8 +1076,6 @@ export class EcsFargateContainerDefinition extends EcsContainerDefinitionBase im
    * @internal
    */
   public _renderContainerDefinition(): CfnJobDefinition.ContainerPropertiesProperty {
-    const operatingSystemFamily = this.fargateOperatingSystemFamily?._operatingSystemFamily;
-
     let containerDef = {
       ...super._renderContainerDefinition(),
       ephemeralStorage: this.ephemeralStorageSize? {
@@ -1091,7 +1089,7 @@ export class EcsFargateContainerDefinition extends EcsContainerDefinitionBase im
       },
       runtimePlatform: {
         cpuArchitecture: this.fargateCpuArchitecture?._cpuArchitecture,
-        operatingSystemFamily,
+        operatingSystemFamily: this.fargateOperatingSystemFamily?._operatingSystemFamily,
       },
     };
 
