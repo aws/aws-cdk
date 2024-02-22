@@ -855,7 +855,7 @@ describe('triggers', () => {
           },
         }],
       });
-    }).toThrow(/cannot specify both pushFilter and pullRequestFilter for sourceAction with name 'CodeStarConnectionsSourceAction' must be less than or equal to 3, got 4/);;
+    }).toThrow(/cannot specify both pushFilter and pullRequestFilter for sourceAction with name 'CodeStarConnectionsSourceAction'/);;
   });
 
   test('throw if provider of sourceAction is not \'CodeStarSourceConnection\'', () => {
