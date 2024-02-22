@@ -55,8 +55,6 @@ describe('triggers', () => {
               Excludes: ['exclude1', 'exclude2'],
               Includes: ['include1', 'include2'],
             },
-            Branches: Match.absent(),
-            FilePaths: Match.absent(),
           }],
         },
         ProviderType: 'CodeStarSourceConnection',
@@ -87,12 +85,10 @@ describe('triggers', () => {
         GitConfiguration: {
           SourceActionName: 'CodeStarConnectionsSourceAction',
           Push: [{
-            Tags: Match.absent(),
             Branches: {
               Excludes: ['exclude1', 'exclude2'],
               Includes: ['include1', 'include2'],
             },
-            FilePaths: Match.absent(),
           }],
         },
         ProviderType: 'CodeStarSourceConnection',
@@ -125,7 +121,6 @@ describe('triggers', () => {
         GitConfiguration: {
           SourceActionName: 'CodeStarConnectionsSourceAction',
           Push: [{
-            Tags: Match.absent(),
             Branches: {
               Excludes: ['exclude1', 'exclude2'],
               Includes: ['include1', 'include2'],
@@ -190,8 +185,6 @@ describe('triggers', () => {
                 Excludes: ['exclude1', 'exclude2'],
                 Includes: ['include1', 'include2'],
               },
-              Branches: Match.absent(),
-              FilePaths: Match.absent(),
             }],
           },
           ProviderType: 'CodeStarSourceConnection',
@@ -238,8 +231,6 @@ describe('triggers', () => {
               Excludes: ['exclude1', 'exclude2'],
               Includes: ['include1', 'include2'],
             },
-            Branches: Match.absent(),
-            FilePaths: Match.absent(),
           }],
         },
         ProviderType: 'CodeStarSourceConnection',
@@ -274,8 +265,6 @@ describe('triggers', () => {
               Excludes: Match.absent(),
               Includes: ['include1', 'include2'],
             },
-            Branches: Match.absent(),
-            FilePaths: Match.absent(),
           }],
         },
         ProviderType: 'CodeStarSourceConnection',
@@ -310,8 +299,6 @@ describe('triggers', () => {
               Excludes: ['excluded1', 'excluded2'],
               Includes: Match.absent(),
             },
-            Branches: Match.absent(),
-            FilePaths: Match.absent(),
           }],
         },
         ProviderType: 'CodeStarSourceConnection',
@@ -342,12 +329,10 @@ describe('triggers', () => {
         GitConfiguration: {
           SourceActionName: 'CodeStarConnectionsSourceAction',
           Push: [{
-            Tags: Match.absent(),
             Branches: {
               Excludes: Match.absent(),
               Includes: ['include1', 'include2'],
             },
-            FilePaths: Match.absent(),
           }],
         },
         ProviderType: 'CodeStarSourceConnection',
@@ -378,12 +363,10 @@ describe('triggers', () => {
         GitConfiguration: {
           SourceActionName: 'CodeStarConnectionsSourceAction',
           Push: [{
-            Tags: Match.absent(),
             Branches: {
               Excludes: ['excluded1', 'excluded2'],
               Includes: Match.absent(),
             },
-            FilePaths: Match.absent(),
           }],
         },
         ProviderType: 'CodeStarSourceConnection',
@@ -416,7 +399,6 @@ describe('triggers', () => {
         GitConfiguration: {
           SourceActionName: 'CodeStarConnectionsSourceAction',
           Push: [{
-            Tags: Match.absent(),
             Branches: {
               Excludes: ['exclude1', 'exclude2'],
               Includes: ['include1', 'include2'],
@@ -457,7 +439,6 @@ describe('triggers', () => {
         GitConfiguration: {
           SourceActionName: 'CodeStarConnectionsSourceAction',
           Push: [{
-            Tags: Match.absent(),
             Branches: {
               Excludes: ['exclude1', 'exclude2'],
               Includes: ['include1', 'include2'],
