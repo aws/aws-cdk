@@ -249,7 +249,6 @@ export interface PipelineProps {
    * @default - ExecutionMode.SUPERSEDED
    */
   readonly executionMode?: ExecutionMode;
-
 }
 
 abstract class PipelineBase extends Resource implements IPipeline {
