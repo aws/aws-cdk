@@ -158,7 +158,6 @@ describe('State Machine', () => {
     });
 
     // THEN
-    stack;
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: [
