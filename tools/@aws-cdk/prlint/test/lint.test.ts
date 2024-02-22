@@ -1039,6 +1039,71 @@ describe('integration tests required on features', () => {
     });
   });
 
+  describe('with existing Exemption Request comment', () => {
+    test('valid exemption request comment', async () => {
+      const issue: Subset<linter.GitHubPr> = {
+        number: 1,
+        title: 'fix: some title',
+        body: '',
+        labels: [{ name: 'pr-linter/exempt-test' }],
+        user: {
+          login: 'author',
+        },
+      };
+      const prLinter = configureMock(issue, undefined, ['Exemption Request']);
+      await expect(prLinter.validatePullRequestTarget(SHA)).rejects.toThrow(
+        'The pull request linter fails with the following errors:' +
+        '\n\n\t❌ Fixes must contain a change to an integration test file and the resulting snapshot.' +
+        '\n\n<b>PRs must pass status checks before we can provide a meaningful review.</b>\n\n' +
+        'If you would like to request an exemption from the status checks or clarification on feedback,' +
+        ' please leave a comment on this PR containing `Exemption Request` and/or `Clarification Request`.' +
+        '\n\n✅ A exemption request has been requested. Please wait for a maintainer\'s review.',
+      );
+    });
+
+    test('valid exemption request with additional context', async () => {
+      const issue: Subset<linter.GitHubPr> = {
+        number: 1,
+        title: 'fix: some title',
+        body: '',
+        labels: [{ name: 'pr-linter/exempt-test' }],
+        user: {
+          login: 'author',
+        },
+      };
+      const prLinter = configureMock(issue, undefined, ['Exemption Request: \nThe reason is blah blah blah.']);
+      await expect(prLinter.validatePullRequestTarget(SHA)).rejects.toThrow(
+        'The pull request linter fails with the following errors:' +
+        '\n\n\t❌ Fixes must contain a change to an integration test file and the resulting snapshot.' +
+        '\n\n<b>PRs must pass status checks before we can provide a meaningful review.</b>\n\n' +
+        'If you would like to request an exemption from the status checks or clarification on feedback,' +
+        ' please leave a comment on this PR containing `Exemption Request` and/or `Clarification Request`.' +
+        '\n\n✅ A exemption request has been requested. Please wait for a maintainer\'s review.',
+      );
+    });
+
+    test('valid exemption request with middle exemption request', async () => {
+      const issue: Subset<linter.GitHubPr> = {
+        number: 1,
+        title: 'fix: some title',
+        body: '',
+        labels: [{ name: 'pr-linter/exempt-test' }],
+        user: {
+          login: 'author',
+        },
+      };
+      const prLinter = configureMock(issue, undefined, ['Random content - Exemption Request - hello world']);
+      await expect(prLinter.validatePullRequestTarget(SHA)).rejects.toThrow(
+        'The pull request linter fails with the following errors:' +
+        '\n\n\t❌ Fixes must contain a change to an integration test file and the resulting snapshot.' +
+        '\n\n<b>PRs must pass status checks before we can provide a meaningful review.</b>\n\n' +
+        'If you would like to request an exemption from the status checks or clarification on feedback,' +
+        ' please leave a comment on this PR containing `Exemption Request` and/or `Clarification Request`.' +
+        '\n\n✅ A exemption request has been requested. Please wait for a maintainer\'s review.',
+      );
+    });
+  });
+
   describe('metadata file changed', () => {
     const files: linter.GitHubFile[] = [{
       filename: 'packages/aws-cdk-lib/region-info/build-tools/metadata.ts',
@@ -1074,7 +1139,7 @@ describe('integration tests required on features', () => {
   });
 });
 
-function configureMock(pr: Subset<linter.GitHubPr>, prFiles?: linter.GitHubFile[]): linter.PullRequestLinter {
+function configureMock(pr: Subset<linter.GitHubPr>, prFiles?: linter.GitHubFile[], existingComments?: string[]): linter.PullRequestLinter {
   const pullsClient = {
     get(_props: { _owner: string, _repo: string, _pull_number: number, _user: { _login: string} }) {
       return { data: pr };
@@ -1103,7 +1168,11 @@ function configureMock(pr: Subset<linter.GitHubPr>, prFiles?: linter.GitHubFile[
     deleteComment() {},
 
     listComments() {
-      return { data: [{ id: 1212121212, user: { login: 'aws-cdk-automation' }, body: 'The pull request linter fails with the following errors:' }] };
+      const data = [{ id: 1212121212, user: { login: 'aws-cdk-automation' }, body: 'The pull request linter fails with the following errors:' }];
+      if (existingComments) {
+        existingComments.forEach(comment => data.push({ id: 1212121211, user: { login: 'aws-cdk-automation' }, body: comment }));
+      }
+      return { data };
     },
 
     removeLabel: mockRemoveLabel,

@@ -250,7 +250,7 @@ export class PullRequestLinter {
    * @param existingReview The review created by a previous run of the linter.
    */
   private async createOrUpdatePRLinterReview(failureMessages: string[], existingReview?: Review): Promise<void> {
-    const body = `The pull request linter fails with the following errors:${this.formatErrors(failureMessages)}`
+    let body = `The pull request linter fails with the following errors:${this.formatErrors(failureMessages)}`
       + '<b>PRs must pass status checks before we can provide a meaningful review.</b>\n\n'
       + 'If you would like to request an exemption from the status checks or clarification on feedback,'
       + ' please leave a comment on this PR containing `Exemption Request` and/or `Clarification Request`.';
@@ -265,6 +265,10 @@ export class PullRequestLinter {
       });
     }
 
+    const comments = await this.client.issues.listComments(this.issueParams);
+    if (comments.data.find(comment => comment.body?.includes("Exemption Request"))) {
+      body += '\n\n✅ A exemption request has been requested. Please wait for a maintainer\'s review.';
+    }
     await this.client.issues.createComment({
       ...this.issueParams,
       body,
@@ -735,7 +739,6 @@ function validateTitleLowercase(pr: GitHubPr): TestResult {
   const result = new TestResult();
   const start = pr.title.indexOf(':');
   const firstLetter = pr.title.charAt(start + 2);
-  console.log(firstLetter, firstLetter.toLocaleLowerCase());
   result.assessFailure(
     firstLetter !== firstLetter.toLocaleLowerCase(),
     'The first word of the pull request title should not be capitalized. If the title starts with a CDK construct, it should be in backticks "``".',
