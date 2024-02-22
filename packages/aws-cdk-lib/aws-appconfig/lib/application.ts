@@ -72,7 +72,7 @@ export interface IApplication extends cdk.IResource {
   /**
    * Returns the list of associated environments.
    */
-  get environments(): IEnvironment[];
+  environments(): IEnvironment[];
 
   /**
    * Adds an extension defined by the action point and event destination
@@ -204,7 +204,7 @@ abstract class ApplicationBase extends cdk.Resource implements IApplication, IEx
     this._environments.push(environment);
   }
 
-  get environments(): IEnvironment[] {
+  public environments(): IEnvironment[] {
     return this._environments;
   }
 
