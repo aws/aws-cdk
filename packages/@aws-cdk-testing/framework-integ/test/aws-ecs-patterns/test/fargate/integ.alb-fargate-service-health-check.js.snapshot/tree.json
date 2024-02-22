@@ -665,6 +665,7 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
                       "aws:cdk:cloudformation:props": {
+                        "ipAddressType": "ipv4",
                         "loadBalancerAttributes": [
                           {
                             "key": "deletion_protection.enabled",
