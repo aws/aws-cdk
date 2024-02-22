@@ -2,6 +2,32 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.129.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.128.0-alpha.0...v2.129.0-alpha.0) (2024-02-21)
+
+
+### Bug Fixes
+
+* **appconfig:** scope generated alarm role policy to '*' for composite alarm support ([#29171](https://github.com/aws/aws-cdk/issues/29171)) ([c17879d](https://github.com/aws/aws-cdk/commit/c17879dd8dab526695e69c6faf8345292634ba24))
+
+## [2.128.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.127.0-alpha.0...v2.128.0-alpha.0) (2024-02-14)
+
+
+### ⚠ BREAKING CHANGES TO EXPERIMENTAL FEATURES
+
+* **app-staging-synthesizer-alpha:** `stagingBucketEncryption` property is now required. For existing apps, specify `BucketEncryption.KMS` to retain existing behavior. For new apps, choose the bucket encryption that makes most sense for your use case. `BucketEncryption.S3_MANAGED` is available and is intended to be the default when this module is stabilized.
+
+### Features
+
+* **app-staging-synthesizer-alpha:** require passing `stagingBucketEncryption` and note that we intend to default to `S3_MANAGED` in the future ([#28978](https://github.com/aws/aws-cdk/issues/28978)) ([fc8b955](https://github.com/aws/aws-cdk/commit/fc8b95528f97704588329abaa33cf45b07273b9e)), closes [#28815](https://github.com/aws/aws-cdk/issues/28815) [#28903](https://github.com/aws/aws-cdk/issues/28903) [/github.com/aws/aws-cdk/pull/28978#issuecomment-1930007176](https://github.com/aws//github.com/aws/aws-cdk/pull/28978/issues/issuecomment-1930007176)
+* **pipes-enrichments:** new EventBridge Pipes enrichments alpha module ([#29063](https://github.com/aws/aws-cdk/issues/29063)) ([5a54ec5](https://github.com/aws/aws-cdk/commit/5a54ec5923eaf580b32184a84caed118945e3f6d))
+* **pipes-targets:** new EventBridge Pipes targets alpha module  ([#29057](https://github.com/aws/aws-cdk/issues/29057)) ([9419f54](https://github.com/aws/aws-cdk/commit/9419f547569ef7ec4c8b9de19498cb10b3d6c30c))
+* **scheduler-targets-alpha:** `SageMakerStartPipelineExecution` Target ([#28927](https://github.com/aws/aws-cdk/issues/28927)) ([db260b0](https://github.com/aws/aws-cdk/commit/db260b091b6328b36cd8a541a5ab55048839daa6)), closes [#27457](https://github.com/aws/aws-cdk/issues/27457)
+
+
+### Bug Fixes
+
+* **appconfig:** deployment recreated on every cdk deployment ([#28782](https://github.com/aws/aws-cdk/issues/28782)) ([a21731c](https://github.com/aws/aws-cdk/commit/a21731c9b1f34525433fbee668ebb2321debf5b8))
+
 ## [2.127.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.126.0-alpha.0...v2.127.0-alpha.0) (2024-02-09)
 
 
