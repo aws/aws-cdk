@@ -1,7 +1,7 @@
 {
   "targets": {
     "dotnet": {
-      "namespace": "Amazon.CDK.AWS.Apigatewayv2"
+      "namespace": "Amazon.CDK.AWS.APIGatewayV2"
     },
     "java": {
       "package": "software.amazon.awscdk.services.apigatewayv2"
