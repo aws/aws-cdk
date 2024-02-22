@@ -119,4 +119,3 @@ export interface RuntimePlatform {
    */
   readonly operatingSystemFamily?: OperatingSystemFamily;
 }
-
