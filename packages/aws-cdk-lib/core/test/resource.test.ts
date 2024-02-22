@@ -541,6 +541,44 @@ describe('resource', () => {
       });
     });
 
+    test('addOverride(p, undefined) will respect empty trees', () => {
+      // GIVEN
+      const stack = new Stack();
+
+      const r = new CfnResource(stack, 'MyResource', { type: 'AWS::Resource::Type' });
+
+      // WHEN
+      r.addPropertyOverride('Tree.Exists', 42);
+      r.addPropertyOverride('Tree.Does.Exist', {
+        Action: {
+          Block: {},
+        },
+      });
+
+      // THEN
+      expect(toCloudFormation(stack)).toEqual({
+        Resources:
+        {
+          MyResource:
+          {
+            Type: 'AWS::Resource::Type',
+            Properties: {
+              Tree: {
+                Exists: 42,
+                Does: {
+                  Exist: {
+                    Action: {
+                      Block: {},
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      });
+    });
+
     test('addDeletionOverride(p) and addPropertyDeletionOverride(pp) are sugar for `undefined`', () => {
       // GIVEN
       const stack = new Stack();

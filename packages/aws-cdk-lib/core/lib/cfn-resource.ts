@@ -651,11 +651,11 @@ function deepMerge(target: any, ...sources: any[]) {
     }
 
     for (const key of Object.keys(source)) {
-      if (key === '__proto__' || key === 'constructor') {
+      const value = source[key];
+      if (key === '__proto__' || key === 'constructor' || value == null || value == undefined) {
         continue;
       }
-
-      const value = source[key];
+      
       if (typeof(value) === 'object' && value != null && !Array.isArray(value)) {
         // if the value at the target is not an object, override it with an
         // object so we can continue the recursion
@@ -724,7 +724,7 @@ function deepMerge(target: any, ...sources: any[]) {
         // eventual value we assigned is `undefined`, and there are no
         // sibling concrete values alongside, so we can delete this tree.
         const output = target[key];
-        if (typeof(output) === 'object' && Object.keys(output).length === 0) {
+        if (output === null || output === undefined) {
           delete target[key];
         }
       } else if (value === undefined) {
