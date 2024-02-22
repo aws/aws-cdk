@@ -7,10 +7,6 @@ import { TypeConverter } from './type-converter';
 import { attributePropertyName, cloudFormationDocLink, propertyNameFromCloudFormation } from '../naming';
 import { splitDocumentation } from '../util';
 
-// Depends on https://github.com/aws/aws-cdk/pull/25610
-// Eanbling this feature since PR 25610 was merged.
-export const HAS_25610 = true;
-
 // This convenience typewriter builder is used all over the place
 const $this = $E(expr.this_());
 
@@ -22,7 +18,7 @@ export class ResourceDecider {
     const taggability = resourceTaggabilityStyle(resource);
     return taggability?.style === 'legacy'
       ? [CDK_CORE.ITaggable]
-      : taggability?.style === 'modern' && HAS_25610
+      : taggability?.style === 'modern'
         ? [CDK_CORE.ITaggableV2]
         : [];
   }
@@ -52,10 +48,8 @@ export class ResourceDecider {
             this.handleTagPropertyLegacy(name, prop, this.taggability.variant);
             continue;
           case 'modern':
-            if (HAS_25610) {
-              this.handleTagPropertyModern(name, prop, this.taggability.variant);
-              continue;
-            }
+            this.handleTagPropertyModern(name, prop, this.taggability.variant);
+            continue;
         }
       } else {
         this.handleTypeHistoryTypes(prop);
@@ -163,11 +157,11 @@ export class ResourceDecider {
           new CDK_CORE.TagManager(
             this.tagManagerVariant(variant),
             expr.lit(this.resource.cloudFormationType),
-            HAS_25610 ? expr.UNDEFINED : $E(props)[originalName],
+            $E(props)[originalName],
             expr.object({ tagPropertyName: expr.lit(originalName) }),
           ),
         cfnValueToRender: {
-          [originalName]: $this.tags.renderTags(...(HAS_25610 ? [$this[rawTagsPropName]] : [])),
+          [originalName]: $this.tags.renderTags(),
         },
       },
       {
@@ -222,7 +216,7 @@ export class ResourceDecider {
             expr.object({ tagPropertyName: expr.lit(originalName) }),
           ),
         cfnValueToRender: {
-          [originalName]: $this.cdkTagManager.renderTags(),
+          [originalName]: $this.cdkTagManager.renderTags($this[originalName]),
         },
       },
       {
