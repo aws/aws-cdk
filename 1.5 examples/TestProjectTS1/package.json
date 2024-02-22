@@ -20,8 +20,8 @@
     "typescript": "~5.2.2"
   },
   "dependencies": {
-    "aws-cdk-lib": "file:/Volumes/workplace/aws-cdk/dist/js/aws-cdk-lib@0.0.0.jsii.tgz",
-    "aws-cdk-lib-v3": "file:/Volumes/workplace/aws-cdk/dist/js/aws-cdk-lib-v3@0.0.0.jsii.tgz",
+    "aws-cdk-lib": "file:../../dist/js/aws-cdk-lib@0.0.0.jsii.tgz",
+    "aws-cdk-lib-v3": "file:../../dist/js/aws-cdk-lib-v3@0.0.0.jsii.tgz",
     "constructs": "^10.0.0",
     "source-map-support": "^0.5.21"
   }
