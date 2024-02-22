@@ -216,7 +216,7 @@ export class ResourceDecider {
             expr.object({ tagPropertyName: expr.lit(originalName) }),
           ),
         cfnValueToRender: {
-          [originalName]: $this.cdkTagManager.renderTags($this[originalName]),
+          [originalName]: $this.cdkTagManager.renderTags(),
         },
       },
       {
