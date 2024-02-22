@@ -32,15 +32,25 @@ export enum ArrayEncodingFormat {
  */
 export interface HttpInvokeProps extends sfn.TaskStateBaseProps {
   /**
-   * The API apiEndpoint to call.
+   * Permissions are granted to call all resources under this path.
+   * @example "https://api.example.com"
+   *
    */
-  readonly apiEndpoint: string;
+  readonly apiRoot: string;
+
+  /**
+   * The API endpoint to call, relative to `apiRoot`.
+   * @example TaskInput.fromText("path/to/resource")
+   *
+   */
+  readonly apiEndpoint: sfn.TaskInput;
 
   /**
    * The HTTP method to use.
+   * @example TaskInput.fromText("GET")
    *
    */
-  readonly method: string;
+  readonly method: sfn.TaskInput;
 
   /**
    * The EventBridge Connection to use for authentication.
@@ -51,34 +61,37 @@ export interface HttpInvokeProps extends sfn.TaskStateBaseProps {
   /**
    * The body to send to the HTTP endpoint.
    *
-   * @default - No body.
+   * @default - No body is sent with the request.
    */
-  readonly body?: string;
+  readonly body?: sfn.TaskInput;
 
   /**
    * The headers to send to the HTTP endpoint.
    *
-   * @default - No headers.
+   * @default - No additional headers are added to the request.
+   * @example TaskInput.fromObject({ 'Content-Type': 'application/json' })
    */
-  readonly headers?: { [key: string]: string };
+  readonly headers?: sfn.TaskInput;
 
   /**
    * The query string parameters to send to the HTTP endpoint.
    *
-   * @default - No query string parameters.
+   * @default - No query string parameters are sent in the request.
    */
-  readonly queryStringParameters?: { [key: string]: string };
+  readonly queryStringParameters?: sfn.TaskInput;
 
   /**
-   * Whether to URL-encode the request body.
-   * If set to true, also sets 'content-type' header to 'application/x-www-form-urlencoded'
+   * When `true`, the HTTP request body is the URL-encoded form data of the `RequestBody` field.
+   * When `false` (default), the HTTP request body is the JSON-serialized `RequestBody` field.
+   * If set to `true`, also sets 'content-type' header to 'application/x-www-form-urlencoded'.
    *
    * @default - No encoding.
    */
   readonly urlEncodeBody?: boolean;
 
   /**
-   * The format of the array encoding if urlEncodeBody is set to true.
+   * The format of the array encoding.
+   * Only used if `urlEncodeBody` is `true`.
    *
    * @default - ArrayEncodingFormat.INDICES
    */
@@ -100,57 +113,68 @@ export class HttpInvoke extends sfn.TaskStateBase {
   ) {
     super(scope, id, props);
 
-    this.taskPolicies = [
+    this.taskPolicies = this.buildTaskPolicyStatements();
+  }
+
+  /**
+   * Provides the HTTP Invoke service integration task configuration.
+  */
+  /**
+   * @internal
+  */
+  protected _renderTask(): any {
+    return {
+      Resource: integrationResourceArn('http', 'invoke'),
+      Parameters: sfn.FieldUtils.renderObject(this.buildTaskParameters()),
+    };
+  }
+
+  protected buildTaskPolicyStatements(): iam.PolicyStatement[] {
+    return [
       new iam.PolicyStatement({
         actions: ['events:RetrieveConnectionCredentials'],
-        resources: [props.connection.connectionArn],
+        resources: [this.props.connection.connectionArn],
       }),
       new iam.PolicyStatement({
         actions: ['secretsmanager:GetSecretValue', 'secretsmanager:DescribeSecret'],
-        resources: [props.connection.connectionSecretArn],
+        resources: [this.props.connection.connectionSecretArn],
       }),
       new iam.PolicyStatement({
         actions: ['states:InvokeHTTPEndpoint'],
         resources: ['*'],
         conditions: {
           StringLike: {
-            'states:HTTPEndpoint': props.apiEndpoint,
+            'states:HTTPEndpoint': `${this.props.apiRoot}*`,
           },
         },
       }),
     ];
   }
 
-  /**
-   * Provides the HTTP Invoke service integration task configuration.
-   */
-  /**
-   * @internal
-   */
-  protected _renderTask(): any {
+  private buildTaskParameters() {
+    let headers: { [key: string]: string }| undefined = this.props.headers?.value;
+
+    if (this.props.urlEncodeBody) {
+      headers = { ...headers, 'Content-Type': 'application/x-www-form-urlencoded' };
+    }
+
+    const urlEncodeTransform = {
+      RequestBodyEncoding: 'URL_ENCODED',
+      RequestEncodingOptions: this.props.arrayEncodingFormat == null ? undefined : {
+        ArrayFormat: this.props.arrayEncodingFormat,
+      },
+    };
+
     return {
-      Resource: integrationResourceArn('http', 'invoke'),
-      Parameters: sfn.FieldUtils.renderObject({
-        Method: this.props.method,
-        ApiEndpoint: this.props.apiEndpoint,
-        Authentication: {
-          ConnectionArn: this.props.connection.connectionArn,
-        },
-        RequestBody: this.props.body,
-        Headers: this.props.headers,
-        QueryParameters: this.props.queryStringParameters,
-        Transform:
-          this.props.urlEncodeBody != null
-            ? {
-              RequestBodyEncoding: 'URL_ENCODED',
-              RequestEncodingOptions: {
-                ArrayFormat:
-                  this.props.arrayEncodingFormat ??
-                  ArrayEncodingFormat.INDICES,
-              },
-            }
-            : undefined,
-      }),
+      ApiEndpoint: `${this.props.apiRoot}/${this.props.apiEndpoint.value}`,
+      Authentication: {
+        ConnectionArn: this.props.connection.connectionArn,
+      },
+      Method: this.props.method.value,
+      Headers: headers,
+      RequestBody: this.props.body?.value,
+      QueryParameters: this.props.queryStringParameters?.value,
+      Transform: this.props.urlEncodeBody ? urlEncodeTransform : undefined,
     };
   }
 }

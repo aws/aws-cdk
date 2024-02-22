@@ -1080,13 +1080,14 @@ const connection = new events.Connection(this, 'Connection', {
 });
 
 new tasks.HttpInvoke(this, 'Invoke HTTP API', {
-  apiEndpoint: 'https://api.example.com',
+  apiRoot: 'https://api.example.com',
+  apiEndpoint: sfn.TaskInput.fromText('https://api.example.com/path/to/resource'),
   arrayEncodingFormat: tasks.ArrayEncodingFormat.BRACKETS,
-  body: JSON.stringify({ foo: 'bar' }),
+  body: sfn.TaskInput.fromObject({ foo: 'bar' }),
   connection,
-  headers: { 'Content-Type': 'application/json' },
-  method: 'POST',
-  queryStringParameters: { id: '123' },
+  headers: sfn.TaskInput.fromObject({ 'Content-Type': 'application/json' }),
+  method: sfn.TaskInput.fromText('POST'),
+  queryStringParameters: sfn.TaskInput.fromObject({ id: '123' }),
   urlEncodeBody: true,
 });
 ```

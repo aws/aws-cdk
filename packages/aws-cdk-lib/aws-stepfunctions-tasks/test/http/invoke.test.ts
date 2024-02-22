@@ -1,4 +1,5 @@
 import * as events from '../../../aws-events';
+import * as sfn from '../../../aws-stepfunctions';
 import * as cdk from '../../../core';
 import * as lib from '../../lib';
 
@@ -36,13 +37,14 @@ describe('AWS::StepFunctions::Tasks::HttpInvoke', () => {
 
   test('invoke with default props', () => {
     const task = new lib.HttpInvoke(stack, 'Task', {
-      apiEndpoint: 'https://api.example.com',
+      apiRoot: 'https://api.example.com',
+      apiEndpoint: sfn.TaskInput.fromText('path/to/resource'),
       connection,
-      method: 'POST',
+      method: sfn.TaskInput.fromText('POST'),
     });
 
     expectTaskWithParameters(task, {
-      ApiEndpoint: 'https://api.example.com',
+      ApiEndpoint: 'https://api.example.com/path/to/resource',
       Authentication: {
         ConnectionArn: stack.resolve(connection.connectionArn),
       },
@@ -50,62 +52,38 @@ describe('AWS::StepFunctions::Tasks::HttpInvoke', () => {
     });
   });
 
-  test('invoke with request body', () => {
+  test('invoke with all props', () => {
     const task = new lib.HttpInvoke(stack, 'Task', {
-      apiEndpoint: 'https://api.example.com',
-      body: JSON.stringify({ foo: 'bar' }),
+      apiRoot: 'https://api.example.com',
+      apiEndpoint: sfn.TaskInput.fromText('path/to/resource'),
       connection,
-      method: 'POST',
+      headers: sfn.TaskInput.fromObject({
+        'custom-header': 'custom-value',
+      }),
+      method: sfn.TaskInput.fromText('POST'),
+      arrayEncodingFormat: lib.ArrayEncodingFormat.BRACKETS,
+      urlEncodeBody: true,
+      queryStringParameters: sfn.TaskInput.fromObject({
+        foo: 'bar',
+      }),
     });
 
     expectTaskWithParameters(task, {
-      ApiEndpoint: 'https://api.example.com',
-      Authentication: {
-        ConnectionArn: stack.resolve(connection.connectionArn),
-      },
-      Method: 'POST',
-      RequestBody: JSON.stringify({ foo: 'bar' }),
-    });
-  });
-
-  test('invoke with headers', () => {
-    const task = new lib.HttpInvoke(stack, 'Task', {
-      apiEndpoint: 'https://api.example.com',
-      connection,
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      method: 'POST',
-    });
-
-    expectTaskWithParameters(task, {
-      ApiEndpoint: 'https://api.example.com',
+      ApiEndpoint: 'https://api.example.com/path/to/resource',
       Authentication: {
         ConnectionArn: stack.resolve(connection.connectionArn),
       },
       Method: 'POST',
       Headers: {
-        'Content-Type': 'application/json',
+        'custom-header': 'custom-value',
+        'Content-Type': 'application/x-www-form-urlencoded',
       },
-    });
-  });
-
-  test('invoke with query string parameters', () => {
-    const task = new lib.HttpInvoke(stack, 'Task', {
-      apiEndpoint: 'https://api.example.com',
-      connection,
-      method: 'POST',
-      queryStringParameters: {
-        foo: 'bar',
+      Transform: {
+        RequestBodyEncoding: 'URL_ENCODED',
+        RequestEncodingOptions: {
+          ArrayFormat: lib.ArrayEncodingFormat.BRACKETS,
+        },
       },
-    });
-
-    expectTaskWithParameters(task, {
-      ApiEndpoint: 'https://api.example.com',
-      Authentication: {
-        ConnectionArn: stack.resolve(connection.connectionArn),
-      },
-      Method: 'POST',
       QueryParameters: {
         foo: 'bar',
       },
@@ -114,47 +92,24 @@ describe('AWS::StepFunctions::Tasks::HttpInvoke', () => {
 
   test('invoke with request body encoding and default arrayEncodingFormat', () => {
     const task = new lib.HttpInvoke(stack, 'Task', {
-      apiEndpoint: 'https://api.example.com',
-      method: 'POST',
+      apiRoot: 'https://api.example.com',
+      apiEndpoint: sfn.TaskInput.fromText('path/to/resource'),
+      method: sfn.TaskInput.fromText('POST'),
       connection,
       urlEncodeBody: true,
     });
 
     expectTaskWithParameters(task, {
-      ApiEndpoint: 'https://api.example.com',
+      ApiEndpoint: 'https://api.example.com/path/to/resource',
       Authentication: {
         ConnectionArn: stack.resolve(connection.connectionArn),
       },
       Method: 'POST',
+      Headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
       Transform: {
         RequestBodyEncoding: 'URL_ENCODED',
-        RequestEncodingOptions: {
-          ArrayFormat: lib.ArrayEncodingFormat.INDICES,
-        },
-      },
-    });
-  });
-
-  test('invoke with request body encoding and arrayEncodingFormat', () => {
-    const task = new lib.HttpInvoke(stack, 'Task', {
-      apiEndpoint: 'https://api.example.com',
-      arrayEncodingFormat: lib.ArrayEncodingFormat.BRACKETS,
-      connection,
-      method: 'POST',
-      urlEncodeBody: true,
-    });
-
-    expectTaskWithParameters(task, {
-      ApiEndpoint: 'https://api.example.com',
-      Authentication: {
-        ConnectionArn: stack.resolve(connection.connectionArn),
-      },
-      Method: 'POST',
-      Transform: {
-        RequestBodyEncoding: 'URL_ENCODED',
-        RequestEncodingOptions: {
-          ArrayFormat: lib.ArrayEncodingFormat.BRACKETS,
-        },
       },
     });
   });

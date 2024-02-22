@@ -323,7 +323,7 @@
             {
              "Ref": "IntegRestApiDeploymentStageprod29E2686A"
             },
-            "/test"
+            "/*"
            ]
           ]
          }
@@ -354,7 +354,7 @@
        {
         "Ref": "AWS::Partition"
        },
-       ":states:::http:invoke\",\"Parameters\":{\"Method\":\"GET\",\"ApiEndpoint\":\"https://",
+       ":states:::http:invoke\",\"Parameters\":{\"ApiEndpoint\":\"https://",
        {
         "Ref": "IntegRestApiF8B59B0D"
        },
@@ -370,14 +370,14 @@
        {
         "Ref": "IntegRestApiDeploymentStageprod29E2686A"
        },
-       "/test\",\"Authentication\":{\"ConnectionArn\":\"",
+       "///test\",\"Authentication\":{\"ConnectionArn\":\"",
        {
         "Fn::GetAtt": [
          "Connection07624BCD",
          "Arn"
         ]
        },
-       "\"}}}},\"TimeoutSeconds\":30}"
+       "\"},\"Method\":\"GET\"}}},\"TimeoutSeconds\":30}"
       ]
      ]
     },

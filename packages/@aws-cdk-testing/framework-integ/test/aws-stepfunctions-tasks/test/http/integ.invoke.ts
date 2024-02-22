@@ -64,9 +64,10 @@ const connection = new events.Connection(stack, 'Connection', {
 });
 
 const httpInvokeTask = new tasks.HttpInvoke(stack, 'Invoke HTTP Endpoint', {
-  apiEndpoint: api.urlForPath('/test'),
+  apiRoot: api.urlForPath('/'),
+  apiEndpoint: sfn.TaskInput.fromText('/test'),
   connection,
-  method: 'GET',
+  method: sfn.TaskInput.fromText('GET'),
 });
 
 const sm = new sfn.StateMachine(stack, 'StateMachine', {
