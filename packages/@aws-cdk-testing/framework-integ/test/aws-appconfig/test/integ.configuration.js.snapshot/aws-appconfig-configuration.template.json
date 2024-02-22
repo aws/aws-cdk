@@ -33,15 +33,6 @@
     "Name": "awsappconfigconfiguration-MyAppConfig-HostedEnvFromYaml-BB2C802A"
    }
   },
-  "MyAppConfigEnvDeployLater26FA1032": {
-   "Type": "AWS::AppConfig::Environment",
-   "Properties": {
-    "ApplicationId": {
-     "Ref": "MyAppConfigB4B63E75"
-    },
-    "Name": "awsappconfigconfiguration-MyAppConfig-EnvDeployLater-91038922"
-   }
-  },
   "MyAppConfigParameterEnvD769FB19": {
    "Type": "AWS::AppConfig::Environment",
    "Properties": {
@@ -230,26 +221,6 @@
     },
     "EnvironmentId": {
      "Ref": "MyAppConfigHostedEnvFromJson9E6E36C4"
-    }
-   }
-  },
-  "MyHostedConfigFromJsonDeploymentFA00BC528601D": {
-   "Type": "AWS::AppConfig::Deployment",
-   "Properties": {
-    "ApplicationId": {
-     "Ref": "MyAppConfigB4B63E75"
-    },
-    "ConfigurationProfileId": {
-     "Ref": "MyHostedConfigFromJsonConfigurationProfile863E1E42"
-    },
-    "ConfigurationVersion": {
-     "Ref": "MyHostedConfigFromJsonD8CF9BE4"
-    },
-    "DeploymentStrategyId": {
-     "Ref": "MyDeployStrategy062CAEA2"
-    },
-    "EnvironmentId": {
-     "Ref": "MyAppConfigEnvDeployLater26FA1032"
     }
    }
   },
@@ -634,7 +605,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "3fb6287214999ddeafa7cd0e3e58bc5144c8678bb720f3b5e45e8fd32f333eb3.zip"
+     "S3Key": "3322b7049fb0ed2b7cbb644a2ada8d1116ff80c32dca89e6ada846b5de26f961.zip"
     },
     "Description": "/opt/awscli/aws"
    }

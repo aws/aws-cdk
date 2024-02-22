@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/5bc35f77ae043e1325ceeade89e9fee2699ca6ab9bc6110050755ee43ca14c88.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/bc60e6498e01ff2afc7280330547559fc0e8c9c15f5ff05fc560ea731f76277e.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -56,12 +56,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "MyAppConfigHostedEnvFromYaml82D3D1B2"
-          }
-        ],
-        "/aws-appconfig-configuration/MyAppConfig/EnvDeployLater/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyAppConfigEnvDeployLater26FA1032"
           }
         ],
         "/aws-appconfig-configuration/MyAppConfig/ParameterEnv/Resource": [
@@ -152,12 +146,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "MyHostedConfigFromJsonDeployment3AC6ED5A2933B"
-          }
-        ],
-        "/aws-appconfig-configuration/MyHostedConfigFromJson/DeploymentFA00B": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyHostedConfigFromJsonDeploymentFA00BC528601D"
           }
         ],
         "/aws-appconfig-configuration/MyHostedConfigFromYaml/ConfigurationProfile": [
@@ -352,6 +340,12 @@
             "data": "MyConfigFromSecretWithKey6F08D343"
           }
         ],
+        "/aws-appconfig-configuration/MyPipeline": [
+          {
+            "type": "aws:cdk:warning",
+            "data": "V1 pipeline type is implicitly selected when `pipelineType` is not set. If you want to use V2 type, set `PipelineType.V2`. [ack: @aws-cdk/aws-codepipeline:unspecifiedPipelineType]"
+          }
+        ],
         "/aws-appconfig-configuration/MyPipeline/ArtifactsBucketEncryptionKey/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -442,55 +436,19 @@
             "data": "CheckBootstrapVersion"
           }
         ],
-        "MyHostedConfigDeploymentawsappconfigconfigurationMyAppConfigHostedEnvD1EED3BE0F97C0D3": [
+        "MyAppConfigEnvDeployLater26FA1032": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyHostedConfigDeploymentawsappconfigconfigurationMyAppConfigHostedEnvD1EED3BE0F97C0D3",
+            "data": "MyAppConfigEnvDeployLater26FA1032",
             "trace": [
               "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
             ]
           }
         ],
-        "MyHostedConfigFromJsonDeploymentawsappconfigconfigurationMyAppConfigHostedEnvFromJson140D2DDD244BF117": [
+        "MyHostedConfigFromJsonDeploymentFA00BC528601D": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyHostedConfigFromJsonDeploymentawsappconfigconfigurationMyAppConfigHostedEnvFromJson140D2DDD244BF117",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "MyHostedConfigFromJsonDeploymentawsappconfigconfigurationMyAppConfigEnvDeployLater91038922BE3B2B72": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyHostedConfigFromJsonDeploymentawsappconfigconfigurationMyAppConfigEnvDeployLater91038922BE3B2B72",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "MyHostedConfigFromYamlDeploymentawsappconfigconfigurationMyAppConfigHostedEnvFromYamlBB2C802A4CD2FE75": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyHostedConfigFromYamlDeploymentawsappconfigconfigurationMyAppConfigHostedEnvFromYamlBB2C802A4CD2FE75",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "MyConfigFromParameterDeploymentawsappconfigconfigurationMyAppConfigParameterEnv803E803A981AE384": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyConfigFromParameterDeploymentawsappconfigconfigurationMyAppConfigParameterEnv803E803A981AE384",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "MyConfigFromDocumentDeploymentawsappconfigconfigurationMyAppConfigDocumentEnv5B0DCEC50DD481E9": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyConfigFromDocumentDeploymentawsappconfigconfigurationMyAppConfigDocumentEnv5B0DCEC50DD481E9",
+            "data": "MyHostedConfigFromJsonDeploymentFA00BC528601D",
             "trace": [
               "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
             ]
