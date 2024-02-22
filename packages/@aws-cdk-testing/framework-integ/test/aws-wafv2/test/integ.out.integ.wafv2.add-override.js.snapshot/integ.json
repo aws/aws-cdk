@@ -1,0 +1,12 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "CfnWebACL/DefaultTest": {
+      "stacks": [
+        "aws-cdk-aws-wafv2"
+      ],
+      "assertionStack": "CfnWebACL/DefaultTest/DeployAssert",
+      "assertionStackName": "CfnWebACLDefaultTestDeployAssert76664006"
+    }
+  }
+}

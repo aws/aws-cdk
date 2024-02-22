@@ -640,6 +640,16 @@ const MERGE_EXCLUDE_KEYS: string[] = [
   'Fn::Or',
 ];
 
+// Availabe wafv2 empty objects
+// https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-wafv2-webacl-ruleaction.html
+const DELETE_MERGE_EXCLUDE_KEYS: string[] = [
+  'Action',
+  'Block',
+  'Captcha',
+  'Challenge',
+  'Count',
+];
+
 /**
  * Merges `source` into `target`, overriding any existing values.
  * `null`s will cause a value to be deleted.
@@ -651,11 +661,10 @@ function deepMerge(target: any, ...sources: any[]) {
     }
 
     for (const key of Object.keys(source)) {
-      const value = source[key];
-      if (key === '__proto__' || key === 'constructor' || value == null || value == undefined) {
+      if (key === '__proto__' || key === 'constructor') {
         continue;
       }
-      
+      const value = source[key];
       if (typeof(value) === 'object' && value != null && !Array.isArray(value)) {
         // if the value at the target is not an object, override it with an
         // object so we can continue the recursion
@@ -724,8 +733,21 @@ function deepMerge(target: any, ...sources: any[]) {
         // eventual value we assigned is `undefined`, and there are no
         // sibling concrete values alongside, so we can delete this tree.
         const output = target[key];
-        if (output === null || output === undefined) {
-          delete target[key];
+        if (typeof(output) === 'object' && Object.keys(output).length === 0) {
+          /*
+          * some empty trees are needed in some edge cases
+          * ie: wafv2 Rules (for Action, OverrideAction, etc...)
+          *
+          * {
+          *  ...,
+          *  'Action': {
+          *    'Block': {}
+          *  }
+          *}
+          */
+          if (!DELETE_MERGE_EXCLUDE_KEYS.includes(key)) {
+            delete target[key];
+          }
         }
       } else if (value === undefined) {
         delete target[key];

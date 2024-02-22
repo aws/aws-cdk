@@ -1,0 +1,109 @@
+{
+ "Resources": {
+  "CfnWebACL": {
+   "Type": "AWS::WAFv2::WebACL",
+   "Properties": {
+    "DefaultAction": {
+     "Block": {}
+    },
+    "Description": "My Web Application Firewall",
+    "Name": "MyWebACL",
+    "Rules": [
+     {
+      "Action": {
+       "Block": {}
+      },
+      "Name": "MyRuleObject",
+      "Priority": 0,
+      "Statement": {
+       "ByteMatchStatement": {
+        "FieldToMatch": {
+         "SingleHeader": {
+          "name": "User-Agent"
+         }
+        },
+        "PositionalConstraint": "EXACTLY",
+        "SearchString": "MyCustomUserAgent",
+        "TextTransformations": [
+         {
+          "Priority": 0,
+          "Type": "NONE"
+         }
+        ]
+       }
+      },
+      "VisibilityConfig": {
+       "CloudWatchMetricsEnabled": true,
+       "MetricName": "MyRuleObjectMetrics",
+       "SampledRequestsEnabled": true
+      }
+     },
+     {
+      "Action": {
+       "Block": {}
+      },
+      "Name": "MyJsonPlainRule",
+      "Priority": 1,
+      "Statement": {
+       "ByteMatchStatement": {
+        "FieldToMatch": {
+         "SingleHeader": {
+          "name": "Other-User-Agent"
+         }
+        },
+        "positionalConstraint": "EXACTLY",
+        "searchString": "MyCustomOtherUserAgent",
+        "textTransformations": [
+         {
+          "priority": 0,
+          "type": "NONE"
+         }
+        ]
+       }
+      }
+     }
+    ],
+    "Scope": "CLOUDFRONT",
+    "VisibilityConfig": {
+     "CloudWatchMetricsEnabled": true,
+     "MetricName": "MyWebACLMetric",
+     "SampledRequestsEnabled": true
+    }
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

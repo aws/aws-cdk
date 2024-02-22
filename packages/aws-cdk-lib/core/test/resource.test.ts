@@ -541,7 +541,7 @@ describe('resource', () => {
       });
     });
 
-    test('addOverride(p, undefined) will respect empty trees', () => {
+    test('addOverride(p, {object: {object: {}}}) will respect empty trees', () => {
       // GIVEN
       const stack = new Stack();
 
