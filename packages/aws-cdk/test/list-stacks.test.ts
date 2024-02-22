@@ -6,7 +6,7 @@ import { CdkToolkit } from '../lib/cdk-toolkit';
 import { listStacks } from '../lib/list-stacks';
 
 describe('list', () => {
-  let cloudExecutable: MockCloudExecutable;
+  let mockCloudExecutable: MockCloudExecutable;
   let cloudFormation: jest.Mocked<Deployments>;
   let bootstrapper: jest.Mocked<Bootstrapper>;
 
@@ -16,7 +16,7 @@ describe('list', () => {
     bootstrapper = instanceMockFrom(Bootstrapper);
     bootstrapper.bootstrapEnvironment.mockResolvedValue({ noOp: false, outputs: {} } as any);
 
-    cloudExecutable = new MockCloudExecutable({
+    mockCloudExecutable = new MockCloudExecutable({
       stacks: [
         MockStack.MOCK_STACK_A,
         MockStack.MOCK_STACK_B,
@@ -27,9 +27,9 @@ describe('list', () => {
   test('stacks with no dependencies', async () => {
     // GIVEN
     const toolkit = new CdkToolkit({
-      cloudExecutable,
-      configuration: cloudExecutable.configuration,
-      sdkProvider: cloudExecutable.sdkProvider,
+      cloudExecutable: mockCloudExecutable,
+      configuration: mockCloudExecutable.configuration,
+      sdkProvider: mockCloudExecutable.sdkProvider,
       deployments: cloudFormation,
     });
 
@@ -80,8 +80,8 @@ describe('list', () => {
           },
         ],
       }),
-      configuration: cloudExecutable.configuration,
-      sdkProvider: cloudExecutable.sdkProvider,
+      configuration: mockCloudExecutable.configuration,
+      sdkProvider: mockCloudExecutable.sdkProvider,
       deployments: cloudFormation,
     });
 
@@ -148,8 +148,8 @@ describe('list', () => {
           },
         ],
       }),
-      configuration: cloudExecutable.configuration,
-      sdkProvider: cloudExecutable.sdkProvider,
+      configuration: mockCloudExecutable.configuration,
+      sdkProvider: mockCloudExecutable.sdkProvider,
       deployments: cloudFormation,
     });
 
@@ -236,8 +236,8 @@ describe('list', () => {
           MockStack.MOCK_STACK_C,
         ],
       }),
-      configuration: cloudExecutable.configuration,
-      sdkProvider: cloudExecutable.sdkProvider,
+      configuration: mockCloudExecutable.configuration,
+      sdkProvider: mockCloudExecutable.sdkProvider,
       deployments: cloudFormation,
     });
 
@@ -303,8 +303,8 @@ describe('list', () => {
           },
         ],
       }),
-      configuration: cloudExecutable.configuration,
-      sdkProvider: cloudExecutable.sdkProvider,
+      configuration: mockCloudExecutable.configuration,
+      sdkProvider: mockCloudExecutable.sdkProvider,
       deployments: cloudFormation,
     });
 
