@@ -1,0 +1,248 @@
+{
+  "version": "36.0.0",
+  "artifacts": {
+    "awsappconfigextensionMyApplicationappconfigextensionDefaultTestDeployAssert64BA6C4E.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "awsappconfigextensionMyApplicationappconfigextensionDefaultTestDeployAssert64BA6C4E.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "awsappconfigextensionMyApplicationappconfigextensionDefaultTestDeployAssert64BA6C4E": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "awsappconfigextensionMyApplicationappconfigextensionDefaultTestDeployAssert64BA6C4E.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "awsappconfigextensionMyApplicationappconfigextensionDefaultTestDeployAssert64BA6C4E.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "awsappconfigextensionMyApplicationappconfigextensionDefaultTestDeployAssert64BA6C4E.assets"
+      ],
+      "metadata": {
+        "/aws-appconfig-extension/MyApplication/appconfig-extension/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/aws-appconfig-extension/MyApplication/appconfig-extension/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "aws-appconfig-extension/MyApplication/appconfig-extension/DefaultTest/DeployAssert"
+    },
+    "aws-appconfig-extension.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "aws-appconfig-extension.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "aws-appconfig-extension": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-appconfig-extension.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a4f22807b445e94aa9052ebdd44c6cfce2d3479cdede016c64f821562394d574.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "aws-appconfig-extension.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "aws-appconfig-extension.assets"
+      ],
+      "metadata": {
+        "/aws-appconfig-extension/MyFunction/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyFunctionServiceRole3C357FF2"
+          }
+        ],
+        "/aws-appconfig-extension/MyFunction/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyFunction3BAA72D1"
+          }
+        ],
+        "/aws-appconfig-extension/MyFunction/AppConfigPermission": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyFunctionAppConfigPermission673BEA35"
+          }
+        ],
+        "/aws-appconfig-extension/MyApplication/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyApplication5C63EC1D"
+          }
+        ],
+        "/aws-appconfig-extension/MyApplication/AssociationResource3FA55": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyApplicationAssociationResource3FA55E02ED1FB"
+          }
+        ],
+        "/aws-appconfig-extension/MyApplication/AssociationResourceBAC86": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyApplicationAssociationResourceBAC86D18B66DB"
+          }
+        ],
+        "/aws-appconfig-extension/MyApplication/AssociationResource7F3E1": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyApplicationAssociationResource7F3E1F71FC034"
+          }
+        ],
+        "/aws-appconfig-extension/MyApplication/AssociationResource689DE": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyApplicationAssociationResource689DE159F9BFC"
+          }
+        ],
+        "/aws-appconfig-extension/MyApplication/MyEnv/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyApplicationMyEnv55DE3293"
+          }
+        ],
+        "/aws-appconfig-extension/MyLambdaExtension/RoleBC958/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyLambdaExtensionRoleBC958D3F13B04"
+          }
+        ],
+        "/aws-appconfig-extension/MyLambdaExtension/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyLambdaExtensionAFA1476A"
+          }
+        ],
+        "/aws-appconfig-extension/MyQueue/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyQueueE6CA6235"
+          }
+        ],
+        "/aws-appconfig-extension/MyQueueExtension/Role63F19/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyQueueExtensionRole63F1970B4A7A6"
+          }
+        ],
+        "/aws-appconfig-extension/MyQueueExtension/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyQueueExtension872C5D27"
+          }
+        ],
+        "/aws-appconfig-extension/MyTopic/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyTopic86869434"
+          }
+        ],
+        "/aws-appconfig-extension/MyTopicExtension/Role39BF2/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyTopicExtensionRole39BF2474FECA3"
+          }
+        ],
+        "/aws-appconfig-extension/MyTopicExtension/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyTopicExtension9B6DF691"
+          }
+        ],
+        "/aws-appconfig-extension/MyEventBusExtension/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyEventBusExtensionADFE2273"
+          }
+        ],
+        "/aws-appconfig-extension/MyDeployStrategy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyDeployStrategy062CAEA2"
+          }
+        ],
+        "/aws-appconfig-extension/HostedConfiguration/ConfigurationProfile": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "HostedConfigurationConfigurationProfile3AB17BEA"
+          }
+        ],
+        "/aws-appconfig-extension/HostedConfiguration/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "HostedConfiguration257746B4"
+          }
+        ],
+        "/aws-appconfig-extension/HostedConfiguration/Deployment9D5FC": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "HostedConfigurationDeployment9D5FCC2741866"
+          }
+        ],
+        "/aws-appconfig-extension/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/aws-appconfig-extension/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ],
+        "HostedConfigurationDeploymentawsappconfigextensionMyApplicationMyEnv0FA5092F8D4EFA96": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "HostedConfigurationDeploymentawsappconfigextensionMyApplicationMyEnv0FA5092F8D4EFA96",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ]
+      },
+      "displayName": "aws-appconfig-extension"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}
