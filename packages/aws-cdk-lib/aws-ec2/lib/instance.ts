@@ -438,11 +438,13 @@ export class Instance extends Resource implements IInstance {
         groupSet: securityGroupsToken,
         privateIpAddress: props.privateIpAddress,
       }] : undefined;
-    this.attachedNetworkInterfaces = [new class DummyNetworkInterface extends Resource implements INetworkInterface {
-      constructor(readonly connections: Connections, instance: Instance) { super(instance, 'DummyNetworkInterface'); }
-      get networkInterfaceId(): string { throw new Error('An ID of network interface that created automatically by an EC2 instance can not be retrieved'); }
-      attachToInstance(): void { }
-    }(this.connections, this)];
+    this.attachedNetworkInterfaces = [
+      new class DummyNetworkInterface extends Resource implements INetworkInterface {
+        constructor(readonly connections: Connections, instance: Instance) { super(instance, 'DummyNetworkInterface'); }
+        get networkInterfaceId(): string { throw new Error('An ID of network interface that created automatically by an EC2 instance can not be retrieved'); }
+        attachToInstance(): void { }
+      }(this.connections, this),
+    ];
 
     if (props.keyPair && !props.keyPair._isOsCompatible(imageConfig.osType)) {
       throw new Error(`${props.keyPair.type} keys are not compatible with the chosen AMI`);
