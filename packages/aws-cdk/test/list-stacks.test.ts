@@ -125,6 +125,66 @@ describe('list', () => {
     }]));
   });
 
+  // In the context where we have a display name set to hieraricalId/stackName
+  // we would need to pass in the displayName to list the stacks.
+  test('stacks with dependent stacks and have display name set to hieraricalId/stackName', async () => {
+    let cloudExecutable = new MockCloudExecutable({
+      stacks: [
+        MockStack.MOCK_STACK_A,
+        {
+          stackName: 'Test-Stack-B',
+          template: { Resources: { TemplateName: 'Test-Stack-B' } },
+          env: 'aws://123456789012/bermuda-triangle-1',
+          metadata: {
+            '/Test-Stack-B': [
+              {
+                type: cxschema.ArtifactMetadataEntryType.STACK_TAGS,
+              },
+            ],
+          },
+          depends: ['Test-Stack-A'],
+          displayName: 'Test-Stack-A/Test-Stack-B',
+        },
+      ],
+    });
+
+    // GIVEN
+    const toolkit = new CdkToolkit({
+      cloudExecutable,
+      configuration: cloudExecutable.configuration,
+      sdkProvider: cloudExecutable.sdkProvider,
+      deployments: cloudFormation,
+    });
+
+    // WHEN
+    const workflow = await listStacks( toolkit, { selectors: ['Test-Stack-A', 'Test-Stack-A/Test-Stack-B'] });
+
+    // THEN
+    expect(JSON.stringify(workflow)).toEqual(JSON.stringify([{
+      id: 'Test-Stack-A',
+      name: 'Test-Stack-A',
+      environment: {
+        account: '123456789012',
+        region: 'bermuda-triangle-1',
+        name: 'aws://123456789012/bermuda-triangle-1',
+      },
+      dependencies: [],
+    },
+    {
+      id: 'Test-Stack-B',
+      name: 'Test-Stack-B',
+      environment: {
+        account: '123456789012',
+        region: 'bermuda-triangle-1',
+        name: 'aws://123456789012/bermuda-triangle-1',
+      },
+      dependencies: [{
+        id: 'Test-Stack-A',
+        dependencies: [],
+      }],
+    }]));
+  });
+
   test('stacks with nested dependencies', async () => {
     let cloudExecutable = new MockCloudExecutable({
       stacks: [

@@ -102,9 +102,13 @@ export class CloudAssembly {
   public async selectStacks(selector: StackSelector, options: SelectStacksOptions): Promise<StackCollection> {
     const asm = this.assembly;
     const topLevelStacks = asm.stacks;
+    // eslint-disable-next-line no-console
+    console.log('---Top level stacks--- :'+topLevelStacks);
     const stacks = semver.major(asm.version) < 10 ? asm.stacks : asm.stacksRecursively;
     const allTopLevel = selector.allTopLevel ?? false;
     const patterns = sanitizePatterns(selector.patterns);
+    // eslint-disable-next-line no-console
+    console.log('---Patterns--- :'+ patterns);
 
     if (stacks.length === 0) {
       if (options.ignoreNoStacks) {
