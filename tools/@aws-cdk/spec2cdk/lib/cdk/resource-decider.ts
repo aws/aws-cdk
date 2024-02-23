@@ -7,9 +7,6 @@ import { TypeConverter } from './type-converter';
 import { attributePropertyName, cloudFormationDocLink, propertyNameFromCloudFormation } from '../naming';
 import { splitDocumentation } from '../util';
 
-// Depends on https://github.com/aws/aws-cdk/pull/25610
-export const HAS_25610 = false;
-
 // This convenience typewriter builder is used all over the place
 const $this = $E(expr.this_());
 
@@ -21,7 +18,7 @@ export class ResourceDecider {
     const taggability = resourceTaggabilityStyle(resource);
     return taggability?.style === 'legacy'
       ? [CDK_CORE.ITaggable]
-      : taggability?.style === 'modern' && HAS_25610
+      : taggability?.style === 'modern'
         ? [CDK_CORE.ITaggableV2]
         : [];
   }
@@ -51,10 +48,8 @@ export class ResourceDecider {
             this.handleTagPropertyLegacy(name, prop, this.taggability.variant);
             continue;
           case 'modern':
-            if (HAS_25610) {
-              this.handleTagPropertyModern(name, prop, this.taggability.variant);
-              continue;
-            }
+            this.handleTagPropertyModern(name, prop, this.taggability.variant);
+            continue;
         }
       } else {
         this.handleTypeHistoryTypes(prop);
@@ -158,15 +153,15 @@ export class ResourceDecider {
             summary: 'Tag Manager which manages the tags for this resource',
           },
         },
-        initializer: (props: Expression) =>
+        initializer: (_: Expression) =>
           new CDK_CORE.TagManager(
             this.tagManagerVariant(variant),
             expr.lit(this.resource.cloudFormationType),
-            HAS_25610 ? expr.UNDEFINED : $E(props)[originalName],
+            expr.UNDEFINED,
             expr.object({ tagPropertyName: expr.lit(originalName) }),
           ),
         cfnValueToRender: {
-          [originalName]: $this.tags.renderTags(...(HAS_25610 ? [$this[rawTagsPropName]] : [])),
+          [originalName]: $this.tags.renderTags($this[rawTagsPropName]),
         },
       },
       {
@@ -184,7 +179,7 @@ export class ResourceDecider {
 
   private handleTagPropertyModern(cfnName: string, prop: Property, variant: TagVariant) {
     const originalName = propertyNameFromCloudFormation(cfnName);
-    const originalType = this.converter.makeTypeResolvable(this.converter.typeFromProperty(prop));
+    const originalType = this.converter.typeFromProperty(prop);
 
     this.propsProperties.push({
       propertySpec: {
@@ -213,15 +208,15 @@ export class ResourceDecider {
             summary: 'Tag Manager which manages the tags for this resource',
           },
         },
-        initializer: (props: Expression) =>
+        initializer: (_: Expression) =>
           new CDK_CORE.TagManager(
             this.tagManagerVariant(variant),
             expr.lit(this.resource.cloudFormationType),
-            HAS_25610 ? expr.UNDEFINED : $E(props)[originalName],
+            expr.UNDEFINED,
             expr.object({ tagPropertyName: expr.lit(originalName) }),
           ),
         cfnValueToRender: {
-          [originalName]: $this.tags.renderTags(...(HAS_25610 ? [$this[originalName]] : [])),
+          [originalName]: $this.cdkTagManager.renderTags($this[originalName]),
         },
       },
       {
