@@ -166,14 +166,14 @@ new lambda.Function(this, 'Lambda', {
   code: new lambda.InlineCode('foo'),
   handler: 'index.handler',
   runtime: lambda.Runtime.NODEJS_18_X,
-  logFormat: lambda.LogFormat.JSON,
+  loggingFormat: lambda.LoggingFormat.JSON,
   systemLogLevel: lambda.SystemLogLevel.INFO,
   applicationLogLevel: lambda.ApplicationLogLevel.INFO,
   logGroup: logGroup,
 });
 ```
 
-To use `applicationLogLevel` and/or `systemLogLevel` you must set `logFormat` to `LogFormat.JSON`.
+To use `applicationLogLevel` and/or `systemLogLevel` you must set `loggingFormat` to `LoggingFormat.JSON`.
 
 ## Resource-based Policies
 
@@ -1011,6 +1011,25 @@ new lambda.Function(this, 'Lambda', {
 });
 ```
 
+Providing a user-controlled log group was rolled out to commercial regions on 2023-11-16.
+If you are deploying to another type of region, please check regional availability first.
+
+### Legacy Log Retention
+
+As an alternative to providing a custom, user controlled log group, the legacy `logRetention` property can be used to set a different expiration period.
+This feature uses a Custom Resource to change the log retention of the automatically created log group.
+
+By default, CDK uses the AWS SDK retry options when creating a log group. The `logRetentionRetryOptions` property
+allows you to customize the maximum number of retries and base backoff duration.
+
+*Note* that a [CloudFormation custom
+resource](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cfn-customresource.html) is added
+to the stack that pre-creates the log group as part of the stack deployment, if it already doesn't exist, and sets the
+correct log retention period (never expire, by default). This Custom Resource will also create a log group to log events of the custom resource. The log retention period for this addtional log group is hard-coded to 1 day.
+
+*Further note* that, if the log group already exists and the `logRetention` is not set, the custom resource will reset
+the log retention to never expire even if it was configured with a different value.
+
 ## FileSystem Access
 
 You can configure a function to mount an Amazon Elastic File System (Amazon EFS) to a
@@ -1053,6 +1072,49 @@ const fn = new lambda.Function(this, 'MyLambda', {
   handler: 'index.handler',
   code: lambda.Code.fromAsset(path.join(__dirname, 'lambda-handler')),
   vpc,
+});
+```
+
+## IPv6 support
+
+You can configure IPv6 connectivity for lambda function by setting `Ipv6AllowedForDualStack` to true. 
+It allows Lambda functions to specify whether the IPv6 traffic should be allowed when using dual-stack VPCs. 
+To access IPv6 network using Lambda, Dual-stack VPC is required. Using dual-stack VPC a function communicates with subnet over either of IPv4 or IPv6.
+
+```ts
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
+
+const natProvider = ec2.NatProvider.gateway();
+
+// create dual-stack VPC
+const vpc = new ec2.Vpc(this, 'DualStackVpc', {
+  ipProtocol: ec2.IpProtocol.DUAL_STACK,
+  subnetConfiguration: [
+    {
+      name: 'Ipv6Public1',
+      subnetType: ec2.SubnetType.PUBLIC,
+    },
+    {
+      name: 'Ipv6Public2',
+      subnetType: ec2.SubnetType.PUBLIC,
+    },
+    {
+      name: 'Ipv6Private1',
+      subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS,
+    },
+  ],
+  natGatewayProvider: natProvider,
+});
+
+const natGatewayId = natProvider.configuredGateways[0].gatewayId;
+(vpc.privateSubnets[0] as ec2.PrivateSubnet).addIpv6Nat64Route(natGatewayId);
+
+const fn = new lambda.Function(this, 'Lambda_with_IPv6_VPC', {
+  code: new lambda.InlineCode('def main(event, context): pass'),
+  handler: 'index.main',
+  runtime: lambda.Runtime.PYTHON_3_9,
+  vpc,
+  ipv6AllowedForDualStack: true,
 });
 ```
 

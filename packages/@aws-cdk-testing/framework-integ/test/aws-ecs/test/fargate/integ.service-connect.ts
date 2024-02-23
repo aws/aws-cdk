@@ -70,6 +70,8 @@ class ServiceConnect extends cdk.Stack {
           portMappingName: 'api',
           dnsName: 'api',
           port: 80,
+          idleTimeout: cdk.Duration.seconds(30),
+          perRequestTimeout: cdk.Duration.seconds(30),
         },
       ],
       namespace: ns.namespaceArn,

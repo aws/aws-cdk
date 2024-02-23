@@ -111,9 +111,11 @@ export interface TaskStateBaseProps {
 
   /**
    * AWS Step Functions integrates with services directly in the Amazon States Language.
-   * You can control these AWS services using service integration patterns
+   * You can control these AWS services using service integration patterns.
    *
-   * @see https://docs.aws.amazon.com/step-functions/latest/dg/connect-to-resource.html#connect-wait-token
+   * Depending on the AWS Service, the Service Integration Pattern availability will vary.
+   *
+   * @see https://docs.aws.amazon.com/step-functions/latest/dg/connect-supported-services.html
    *
    * @default - `IntegrationPattern.REQUEST_RESPONSE` for most tasks.
    * `IntegrationPattern.RUN_JOB` for the following exceptions:
@@ -407,7 +409,7 @@ export enum IntegrationPattern {
    *
    * @see https://docs.aws.amazon.com/step-functions/latest/dg/connect-to-resource.html#connect-wait-token
    */
-  WAIT_FOR_TASK_TOKEN = 'WAIT_FOR_TASK_TOKEN'
+  WAIT_FOR_TASK_TOKEN = 'WAIT_FOR_TASK_TOKEN',
 }
 
 /**
