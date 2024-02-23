@@ -3,15 +3,11 @@ import index
 import os
 import unittest
 import json
-import sys
-import traceback
 import logging
-import botocore
 import tempfile
 from botocore.vendored import requests
 from botocore.exceptions import ClientError
-from unittest.mock import MagicMock
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 
 # set TEST_AWSCLI_PATH to point to the "aws" stub we have here
 scriptdir=os.path.dirname(os.path.realpath(__file__))
@@ -19,7 +15,7 @@ os.environ['TEST_AWSCLI_PATH'] = os.path.join(scriptdir, 'aws')
 
 class TestHandler(unittest.TestCase):
     def setUp(self):
-        logger = logging.getLogger()
+        self.logger = logging.getLogger()
 
         # clean up old aws.out file (from previous runs)
         try: os.remove("aws.out")
@@ -28,6 +24,18 @@ class TestHandler(unittest.TestCase):
     def test_invalid_request(self):
         resp = invoke_handler("Create", {}, expected_status="FAILED")
         self.assertEqual(resp["Reason"], "missing request resource property 'SourceBucketNames'. props: {}")
+
+    def test_error_logger(self):
+        with patch.object(self.logger, 'error') as error_logger_mock:
+            invoke_handler("Create", {}, expected_status="FAILED")
+            error_logger_mock.assert_called_once_with('| cfn_error: b"missing request resource property \'SourceBucketNames\'. props: {}"')
+
+    def test_error_logger_encoding_input(self):
+        with patch.object(self.logger, 'error') as error_logger_mock:
+            invoke_handler("Create", {
+                "Test": "random%0D%0A%5BINFO%5D%20hacking"
+            }, expected_status="FAILED")
+            error_logger_mock.assert_called_once_with('| cfn_error: b"missing request resource property \'SourceBucketNames\'. props: {\'Test\': \'random%0D%0A%5BINFO%5D%20hacking\'}"')
 
     def test_create_update(self):
         invoke_handler("Create", {
