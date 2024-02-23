@@ -844,6 +844,41 @@ integTest('cdk ls', withDefaultFixture(async (fixture) => {
   }
 }));
 
+integTest('cdk ls --show-dependencies', withDefaultFixture(async (fixture) => {
+  const listing = await fixture.cdk(['ls --show-dependencies'], { captureStderr: false });
+
+  const expectedStacks = [
+    {
+      id: 'order-providing',
+      dependencies: [],
+    },
+    {
+      id: 'order-consuming',
+      dependencies: [{
+        id: 'order-providing',
+        dependencies: [],
+      }],
+    },
+  ];
+
+  // for (const stack of expectedStacks) {
+  //   for (const dependency of stack.dependencies) {
+  //     expect(listing.indexOf(stack.id)).toBeGreaterThan(listing.indexOf(dependency.id));
+  //   }
+  // }
+
+  for (const stack of expectedStacks) {
+    expect(listing).toContain(fixture.fullStackName(stack.id));
+    for (const dependency of stack.dependencies) {
+      expect(listing).toContain(fixture.fullStackName(dependency.id));
+    }
+  }
+
+  // for (const stack of expectedStacks) {
+  //   expect(listing).toContain(JSON.stringify(stack));
+  // }
+}));
+
 integTest('synthing a stage with errors leads to failure', withDefaultFixture(async (fixture) => {
   const output = await fixture.cdk(['synth'], {
     allowErrExit: true,

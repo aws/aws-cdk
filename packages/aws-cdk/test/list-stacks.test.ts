@@ -6,7 +6,6 @@ import { CdkToolkit } from '../lib/cdk-toolkit';
 import { listStacks } from '../lib/list-stacks';
 
 describe('list', () => {
-  let mockCloudExecutable: MockCloudExecutable;
   let cloudFormation: jest.Mocked<Deployments>;
   let bootstrapper: jest.Mocked<Bootstrapper>;
 
@@ -15,27 +14,31 @@ describe('list', () => {
 
     bootstrapper = instanceMockFrom(Bootstrapper);
     bootstrapper.bootstrapEnvironment.mockResolvedValue({ noOp: false, outputs: {} } as any);
-
-    mockCloudExecutable = new MockCloudExecutable({
-      stacks: [
-        MockStack.MOCK_STACK_A,
-        MockStack.MOCK_STACK_B,
-      ],
-    });
   });
 
-  // eslint-disable-next-line jest/no-disabled-tests
-  test.skip('stacks with no dependencies', async () => {
+  test('stacks with no dependencies', async () => {
+    let cloudExecutable = new MockCloudExecutable({
+      stacks: [
+        MockStack.MOCK_STACK_A,
+        {
+          stackName: 'Test-Stack-B',
+          template: { Resources: { TemplateName: 'Test-Stack-B' } },
+          env: 'aws://123456789012/bermuda-triangle-1',
+          metadata: {
+            '/Test-Stack-B': [
+              {
+                type: cxschema.ArtifactMetadataEntryType.STACK_TAGS,
+              },
+            ],
+          },
+        },
+      ],
+    });
     // GIVEN
     const toolkit = new CdkToolkit({
-      cloudExecutable: new MockCloudExecutable({
-        stacks: [
-          MockStack.MOCK_STACK_A,
-          MockStack.MOCK_STACK_B,
-        ],
-      }),
-      configuration: mockCloudExecutable.configuration,
-      sdkProvider: mockCloudExecutable.sdkProvider,
+      cloudExecutable,
+      configuration: cloudExecutable.configuration,
+      sdkProvider: cloudExecutable.sdkProvider,
       deployments: cloudFormation,
     });
 
@@ -66,28 +69,30 @@ describe('list', () => {
   });
 
   test('stacks with dependent stacks', async () => {
+    let cloudExecutable = new MockCloudExecutable({
+      stacks: [
+        MockStack.MOCK_STACK_A,
+        {
+          stackName: 'Test-Stack-B',
+          template: { Resources: { TemplateName: 'Test-Stack-B' } },
+          env: 'aws://123456789012/bermuda-triangle-1',
+          metadata: {
+            '/Test-Stack-B': [
+              {
+                type: cxschema.ArtifactMetadataEntryType.STACK_TAGS,
+              },
+            ],
+          },
+          depends: ['Test-Stack-A'],
+        },
+      ],
+    });
+
     // GIVEN
     const toolkit = new CdkToolkit({
-      cloudExecutable: new MockCloudExecutable({
-        stacks: [
-          MockStack.MOCK_STACK_A,
-          {
-            stackName: 'Test-Stack-B',
-            template: { Resources: { TemplateName: 'Test-Stack-B' } },
-            env: 'aws://123456789012/bermuda-triangle-1',
-            metadata: {
-              '/Test-Stack-B': [
-                {
-                  type: cxschema.ArtifactMetadataEntryType.STACK_TAGS,
-                },
-              ],
-            },
-            depends: ['Test-Stack-A'],
-          },
-        ],
-      }),
-      configuration: mockCloudExecutable.configuration,
-      sdkProvider: mockCloudExecutable.sdkProvider,
+      cloudExecutable,
+      configuration: cloudExecutable.configuration,
+      sdkProvider: cloudExecutable.sdkProvider,
       deployments: cloudFormation,
     });
 
@@ -121,41 +126,43 @@ describe('list', () => {
   });
 
   test('stacks with nested dependencies', async () => {
+    let cloudExecutable = new MockCloudExecutable({
+      stacks: [
+        MockStack.MOCK_STACK_A,
+        {
+          stackName: 'Test-Stack-B',
+          template: { Resources: { TemplateName: 'Test-Stack-B' } },
+          env: 'aws://123456789012/bermuda-triangle-1',
+          metadata: {
+            '/Test-Stack-B': [
+              {
+                type: cxschema.ArtifactMetadataEntryType.STACK_TAGS,
+              },
+            ],
+          },
+          depends: ['Test-Stack-A'],
+        },
+        {
+          stackName: 'Test-Stack-C',
+          template: { Resources: { TemplateName: 'Test-Stack-B' } },
+          env: 'aws://123456789012/bermuda-triangle-1',
+          metadata: {
+            '/Test-Stack-B': [
+              {
+                type: cxschema.ArtifactMetadataEntryType.STACK_TAGS,
+              },
+            ],
+          },
+          depends: ['Test-Stack-B'],
+        },
+      ],
+    });
+
     // GIVEN
     const toolkit = new CdkToolkit({
-      cloudExecutable: new MockCloudExecutable({
-        stacks: [
-          MockStack.MOCK_STACK_A,
-          {
-            stackName: 'Test-Stack-B',
-            template: { Resources: { TemplateName: 'Test-Stack-B' } },
-            env: 'aws://123456789012/bermuda-triangle-1',
-            metadata: {
-              '/Test-Stack-B': [
-                {
-                  type: cxschema.ArtifactMetadataEntryType.STACK_TAGS,
-                },
-              ],
-            },
-            depends: ['Test-Stack-A'],
-          },
-          {
-            stackName: 'Test-Stack-C',
-            template: { Resources: { TemplateName: 'Test-Stack-B' } },
-            env: 'aws://123456789012/bermuda-triangle-1',
-            metadata: {
-              '/Test-Stack-B': [
-                {
-                  type: cxschema.ArtifactMetadataEntryType.STACK_TAGS,
-                },
-              ],
-            },
-            depends: ['Test-Stack-B'],
-          },
-        ],
-      }),
-      configuration: mockCloudExecutable.configuration,
-      sdkProvider: mockCloudExecutable.sdkProvider,
+      cloudExecutable,
+      configuration: cloudExecutable.configuration,
+      sdkProvider: cloudExecutable.sdkProvider,
       deployments: cloudFormation,
     });
 
@@ -210,40 +217,42 @@ describe('list', () => {
   // This involves handling the establishment of cross-references between stacks or nested stacks
   // and generating assets for nested stack templates as necessary.
   test('stacks with cross stack referencing', async () => {
-    // GIVEN
-    const toolkit = new CdkToolkit({
-      cloudExecutable: new MockCloudExecutable({
-        stacks: [
-          {
-            stackName: 'Test-Stack-A',
-            template: {
-              Resources: {
-                MyBucket1Reference: {
-                  Type: 'AWS::CloudFormation::Stack',
-                  Properties: {
-                    TemplateURL: 'XXXXXXXXXXXXXXXXXXXXXXXXX',
-                    Parameters: {
-                      BucketName: { 'Fn::GetAtt': ['MyBucket1', 'Arn'] },
-                    },
+    let cloudExecutable = new MockCloudExecutable({
+      stacks: [
+        {
+          stackName: 'Test-Stack-A',
+          template: {
+            Resources: {
+              MyBucket1Reference: {
+                Type: 'AWS::CloudFormation::Stack',
+                Properties: {
+                  TemplateURL: 'XXXXXXXXXXXXXXXXXXXXXXXXX',
+                  Parameters: {
+                    BucketName: { 'Fn::GetAtt': ['MyBucket1', 'Arn'] },
                   },
                 },
               },
             },
-            env: 'aws://123456789012/bermuda-triangle-1',
-            metadata: {
-              '/Test-Stack-A': [
-                {
-                  type: cxschema.ArtifactMetadataEntryType.STACK_TAGS,
-                },
-              ],
-            },
-            depends: ['Test-Stack-C'],
           },
-          MockStack.MOCK_STACK_C,
-        ],
-      }),
-      configuration: mockCloudExecutable.configuration,
-      sdkProvider: mockCloudExecutable.sdkProvider,
+          env: 'aws://123456789012/bermuda-triangle-1',
+          metadata: {
+            '/Test-Stack-A': [
+              {
+                type: cxschema.ArtifactMetadataEntryType.STACK_TAGS,
+              },
+            ],
+          },
+          depends: ['Test-Stack-C'],
+        },
+        MockStack.MOCK_STACK_C,
+      ],
+    });
+
+    // GIVEN
+    const toolkit = new CdkToolkit({
+      cloudExecutable,
+      configuration: cloudExecutable.configuration,
+      sdkProvider: cloudExecutable.sdkProvider,
       deployments: cloudFormation,
     });
 
@@ -277,40 +286,42 @@ describe('list', () => {
   });
 
   test('stacks with circular dependencies should error out', async () => {
+    let cloudExecutable = new MockCloudExecutable({
+      stacks: [
+        {
+          stackName: 'Test-Stack-A',
+          template: { Resources: { TemplateName: 'Test-Stack-A' } },
+          env: 'aws://123456789012/bermuda-triangle-1',
+          metadata: {
+            '/Test-Stack-A': [
+              {
+                type: cxschema.ArtifactMetadataEntryType.STACK_TAGS,
+              },
+            ],
+          },
+          depends: ['Test-Stack-B'],
+        },
+        {
+          stackName: 'Test-Stack-B',
+          template: { Resources: { TemplateName: 'Test-Stack-B' } },
+          env: 'aws://123456789012/bermuda-triangle-1',
+          metadata: {
+            '/Test-Stack-B': [
+              {
+                type: cxschema.ArtifactMetadataEntryType.STACK_TAGS,
+              },
+            ],
+          },
+          depends: ['Test-Stack-A'],
+        },
+      ],
+    });
+
     // GIVEN
     const toolkit = new CdkToolkit({
-      cloudExecutable: new MockCloudExecutable({
-        stacks: [
-          {
-            stackName: 'Test-Stack-A',
-            template: { Resources: { TemplateName: 'Test-Stack-A' } },
-            env: 'aws://123456789012/bermuda-triangle-1',
-            metadata: {
-              '/Test-Stack-A': [
-                {
-                  type: cxschema.ArtifactMetadataEntryType.STACK_TAGS,
-                },
-              ],
-            },
-            depends: ['Test-Stack-B'],
-          },
-          {
-            stackName: 'Test-Stack-B',
-            template: { Resources: { TemplateName: 'Test-Stack-B' } },
-            env: 'aws://123456789012/bermuda-triangle-1',
-            metadata: {
-              '/Test-Stack-B': [
-                {
-                  type: cxschema.ArtifactMetadataEntryType.STACK_TAGS,
-                },
-              ],
-            },
-            depends: ['Test-Stack-A'],
-          },
-        ],
-      }),
-      configuration: mockCloudExecutable.configuration,
-      sdkProvider: mockCloudExecutable.sdkProvider,
+      cloudExecutable,
+      configuration: cloudExecutable.configuration,
+      sdkProvider: cloudExecutable.sdkProvider,
       deployments: cloudFormation,
     });
 
@@ -328,19 +339,6 @@ class MockStack {
     env: 'aws://123456789012/bermuda-triangle-1',
     metadata: {
       '/Test-Stack-A': [
-        {
-          type: cxschema.ArtifactMetadataEntryType.STACK_TAGS,
-        },
-      ],
-    },
-    displayName: 'Test-Stack-A-Display-Name',
-  };
-  public static readonly MOCK_STACK_B: TestStackArtifact = {
-    stackName: 'Test-Stack-B',
-    template: { Resources: { TemplateName: 'Test-Stack-B' } },
-    env: 'aws://123456789012/bermuda-triangle-1',
-    metadata: {
-      '/Test-Stack-B': [
         {
           type: cxschema.ArtifactMetadataEntryType.STACK_TAGS,
         },
