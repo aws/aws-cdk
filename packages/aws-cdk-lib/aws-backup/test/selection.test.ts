@@ -176,7 +176,7 @@ test('fromConstruct', () => {
 
       new rds.ServerlessCluster(this, 'ServerlessCluster', {
         engine: rds.DatabaseClusterEngine.AURORA_POSTGRESQL,
-        parameterGroup: rds.ParameterGroup.fromParameterGroupName(stack, 'ParameterGroup', 'default.aurora-postgresql10'),
+        parameterGroup: rds.ParameterGroup.fromParameterGroupName(stack, 'ParameterGroup', 'default.aurora-postgresql11'),
         vpc,
       });
     }
@@ -611,7 +611,7 @@ test('fromRdsServerlessCluster', () => {
   const vpc = new ec2.Vpc(stack, 'Vpc');
   const newCluster = new rds.ServerlessCluster(stack, 'New', {
     engine: rds.DatabaseClusterEngine.AURORA_POSTGRESQL,
-    parameterGroup: rds.ParameterGroup.fromParameterGroupName(stack, 'ParameterGroup', 'default.aurora-postgresql10'),
+    parameterGroup: rds.ParameterGroup.fromParameterGroupName(stack, 'ParameterGroup', 'default.aurora-postgresql11'),
     vpc,
   });
   const existingCluster = rds.ServerlessCluster.fromServerlessClusterAttributes(stack, 'Existing', {
