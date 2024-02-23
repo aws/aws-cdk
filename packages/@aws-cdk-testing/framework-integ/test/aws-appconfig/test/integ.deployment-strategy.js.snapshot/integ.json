@@ -1,0 +1,12 @@
+{
+  "version": "32.0.0",
+  "testCases": {
+    "appconfig-deployment-strategy/DefaultTest": {
+      "stacks": [
+        "aws-appconfig-deployment-strategy"
+      ],
+      "assertionStack": "appconfig-deployment-strategy/DefaultTest/DeployAssert",
+      "assertionStackName": "appconfigdeploymentstrategyDefaultTestDeployAssert3CECE452"
+    }
+  }
+}
