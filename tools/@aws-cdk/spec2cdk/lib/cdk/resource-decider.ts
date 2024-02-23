@@ -153,15 +153,15 @@ export class ResourceDecider {
             summary: 'Tag Manager which manages the tags for this resource',
           },
         },
-        initializer: (props: Expression) =>
+        initializer: (_: Expression) =>
           new CDK_CORE.TagManager(
             this.tagManagerVariant(variant),
             expr.lit(this.resource.cloudFormationType),
-            $E(props)[originalName],
+            expr.UNDEFINED,
             expr.object({ tagPropertyName: expr.lit(originalName) }),
           ),
         cfnValueToRender: {
-          [originalName]: $this.tags.renderTags(),
+          [originalName]: $this.tags.renderTags($this[rawTagsPropName]),
         },
       },
       {
@@ -208,15 +208,15 @@ export class ResourceDecider {
             summary: 'Tag Manager which manages the tags for this resource',
           },
         },
-        initializer: (props: Expression) =>
+        initializer: (_: Expression) =>
           new CDK_CORE.TagManager(
             this.tagManagerVariant(variant),
             expr.lit(this.resource.cloudFormationType),
-            $E(props)[originalName],
+            expr.UNDEFINED,
             expr.object({ tagPropertyName: expr.lit(originalName) }),
           ),
         cfnValueToRender: {
-          [originalName]: $this.cdkTagManager.renderTags(),
+          [originalName]: $this.cdkTagManager.renderTags($this[originalName]),
         },
       },
       {
