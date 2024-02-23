@@ -21,7 +21,7 @@ describe('Code', () => {
     test('with valid bucket name and key and bound by job sets the right path and grants the job permissions to read from it', () => {
       bucket = s3.Bucket.fromBucketName(stack, 'Bucket', 'bucketname');
       script = glue.Code.fromBucket(bucket, key);
-      new glue.Job(stack, 'Job1', {
+      new glue.JobLegacy(stack, 'Job1', {
         executable: glue.JobExecutable.pythonShell({
           glueVersion: glue.GlueVersion.V1_0,
           pythonVersion: glue.PythonVersion.THREE,
@@ -93,7 +93,7 @@ describe('Code', () => {
     });
 
     test("with valid and existing file path and bound to job sets job's script location and permissions stack metadata", () => {
-      new glue.Job(stack, 'Job1', {
+      new glue.JobLegacy(stack, 'Job1', {
         executable: glue.JobExecutable.pythonShell({
           glueVersion: glue.GlueVersion.V1_0,
           pythonVersion: glue.PythonVersion.THREE,
@@ -205,14 +205,14 @@ describe('Code', () => {
     });
 
     test('used in more than 1 job in the same stack should be reused', () => {
-      new glue.Job(stack, 'Job1', {
+      new glue.JobLegacy(stack, 'Job1', {
         executable: glue.JobExecutable.pythonShell({
           glueVersion: glue.GlueVersion.V1_0,
           pythonVersion: glue.PythonVersion.THREE,
           script,
         }),
       });
-      new glue.Job(stack, 'Job2', {
+      new glue.JobLegacy(stack, 'Job2', {
         executable: glue.JobExecutable.pythonShell({
           glueVersion: glue.GlueVersion.V1_0,
           pythonVersion: glue.PythonVersion.THREE,
@@ -285,7 +285,7 @@ describe('Code', () => {
     });
 
     test('throws if trying to rebind in another stack', () => {
-      new glue.Job(stack, 'Job1', {
+      new glue.JobLegacy(stack, 'Job1', {
         executable: glue.JobExecutable.pythonShell({
           glueVersion: glue.GlueVersion.V1_0,
           pythonVersion: glue.PythonVersion.THREE,
@@ -294,7 +294,7 @@ describe('Code', () => {
       });
       const differentStack = new cdk.Stack();
 
-      expect(() => new glue.Job(differentStack, 'Job2', {
+      expect(() => new glue.JobLegacy(differentStack, 'Job2', {
         executable: glue.JobExecutable.pythonShell({
           glueVersion: glue.GlueVersion.V1_0,
           pythonVersion: glue.PythonVersion.THREE,

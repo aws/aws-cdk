@@ -1,164 +1,5 @@
 import { Code } from './code';
-
-/**
- * AWS Glue version determines the versions of Apache Spark and Python that are available to the job.
- *
- * @see https://docs.aws.amazon.com/glue/latest/dg/add-job.html.
- *
- * If you need to use a GlueVersion that doesn't exist as a static member, you
- * can instantiate a `GlueVersion` object, e.g: `GlueVersion.of('1.5')`.
- */
-export class GlueVersion {
-  /**
-   * Glue version using Spark 2.2.1 and Python 2.7
-   */
-  public static readonly V0_9 = new GlueVersion('0.9');
-
-  /**
-   * Glue version using Spark 2.4.3, Python 2.7 and Python 3.6
-   */
-  public static readonly V1_0 = new GlueVersion('1.0');
-
-  /**
-   * Glue version using Spark 2.4.3 and Python 3.7
-   */
-  public static readonly V2_0 = new GlueVersion('2.0');
-
-  /**
-   * Glue version using Spark 3.1.1 and Python 3.7
-   */
-  public static readonly V3_0 = new GlueVersion('3.0');
-
-  /**
-   * Glue version using Spark 3.3.0 and Python 3.10
-   */
-  public static readonly V4_0 = new GlueVersion('4.0');
-
-  /**
-   * Custom Glue version
-   * @param version custom version
-   */
-  public static of(version: string): GlueVersion {
-    return new GlueVersion(version);
-  }
-
-  /**
-   * The name of this GlueVersion, as expected by Job resource.
-   */
-  public readonly name: string;
-
-  private constructor(name: string) {
-    this.name = name;
-  }
-}
-
-/**
- * Runtime language of the Glue job
- */
-export enum JobLanguage {
-  /**
-   * Scala
-   */
-  SCALA = 'scala',
-
-  /**
-   * Python
-   */
-  PYTHON = 'python',
-}
-
-/**
- * Python version
- */
-export enum PythonVersion {
-  /**
-   * Python 2 (the exact version depends on GlueVersion and JobCommand used)
-   */
-  TWO = '2',
-
-  /**
-   * Python 3 (the exact version depends on GlueVersion and JobCommand used)
-   */
-  THREE = '3',
-
-  /**
-   * Python 3.9 (the exact version depends on GlueVersion and JobCommand used)
-   */
-  THREE_NINE = '3.9',
-}
-
-/**
- * AWS Glue runtime determines the runtime engine of the job.
- *
- */
-export class Runtime {
-  /**
-   * Runtime for a Glue for Ray 2.4.
-   */
-  public static readonly RAY_TWO_FOUR = new Runtime('Ray2.4');
-
-  /**
-   * Custom runtime
-   * @param runtime custom runtime
-   */
-  public static of(runtime: string): Runtime {
-    return new Runtime(runtime);
-  }
-
-  /**
-   * The name of this Runtime.
-   */
-  public readonly name: string;
-
-  private constructor(name: string) {
-    this.name = name;
-  }
-}
-
-/**
- * The job type.
- *
- * If you need to use a JobType that doesn't exist as a static member, you
- * can instantiate a `JobType` object, e.g: `JobType.of('other name')`.
- */
-export class JobType {
-  /**
-   * Command for running a Glue Spark job.
-   */
-  public static readonly ETL = new JobType('glueetl');
-
-  /**
-   * Command for running a Glue Spark streaming job.
-   */
-  public static readonly STREAMING = new JobType('gluestreaming');
-
-  /**
-   * Command for running a Glue python shell job.
-   */
-  public static readonly PYTHON_SHELL = new JobType('pythonshell');
-
-  /**
-   * Command for running a Glue Ray job.
-   */
-  public static readonly RAY = new JobType('glueray');
-
-  /**
-   * Custom type name
-   * @param name type name
-   */
-  public static of(name: string): JobType {
-    return new JobType(name);
-  }
-
-  /**
-   * The name of this JobType, as expected by Job resource.
-   */
-  public readonly name: string;
-
-  private constructor(name: string) {
-    this.name = name;
-  }
-}
+import { GlueVersion, JobType, PythonVersion, Runtime, JobLanguage } from './constants';
 
 interface PythonExecutableProps {
   /**
@@ -350,40 +191,40 @@ export class JobExecutable {
   private config: JobExecutableConfig;
 
   private constructor(config: JobExecutableConfig) {
-    const glueVersion = config.glueVersion.name;
-    const type = config.type.name;
-    if (JobType.PYTHON_SHELL.name === type) {
+    const glueVersion = config.glueVersion;
+    const type = config.type;
+    if (JobType.PYTHON_SHELL === type) {
       if (config.language !== JobLanguage.PYTHON) {
         throw new Error('Python shell requires the language to be set to Python');
       }
-      if ([GlueVersion.V0_9.name, GlueVersion.V4_0.name].includes(glueVersion)) {
+      if ([GlueVersion.V0_9, GlueVersion.V4_0].includes(glueVersion)) {
         throw new Error(`Specified GlueVersion ${glueVersion} does not support Python Shell`);
       }
     }
-    if (JobType.RAY.name === type) {
+    if (JobType.RAY === type) {
       if (config.language !== JobLanguage.PYTHON) {
         throw new Error('Ray requires the language to be set to Python');
       }
-      if ([GlueVersion.V0_9.name, GlueVersion.V1_0.name, GlueVersion.V2_0.name, GlueVersion.V3_0.name].includes(glueVersion)) {
+      if ([GlueVersion.V0_9, GlueVersion.V1_0, GlueVersion.V2_0, GlueVersion.V3_0].includes(glueVersion)) {
         throw new Error(`Specified GlueVersion ${glueVersion} does not support Ray`);
       }
     }
-    if (config.extraJarsFirst && [GlueVersion.V0_9.name, GlueVersion.V1_0.name].includes(glueVersion)) {
+    if (config.extraJarsFirst && [GlueVersion.V0_9, GlueVersion.V1_0].includes(glueVersion)) {
       throw new Error(`Specified GlueVersion ${glueVersion} does not support extraJarsFirst`);
     }
-    if (config.pythonVersion === PythonVersion.TWO && ![GlueVersion.V0_9.name, GlueVersion.V1_0.name].includes(glueVersion)) {
+    if (config.pythonVersion === PythonVersion.TWO && ![GlueVersion.V0_9, GlueVersion.V1_0].includes(glueVersion)) {
       throw new Error(`Specified GlueVersion ${glueVersion} does not support PythonVersion ${config.pythonVersion}`);
     }
     if (JobLanguage.PYTHON !== config.language && config.extraPythonFiles) {
       throw new Error('extraPythonFiles is not supported for languages other than JobLanguage.PYTHON');
     }
-    if (config.pythonVersion === PythonVersion.THREE_NINE && type !== JobType.PYTHON_SHELL.name && type !== JobType.RAY.name) {
+    if (config.pythonVersion === PythonVersion.THREE_NINE && type !== JobType.PYTHON_SHELL && type !== JobType.RAY) {
       throw new Error('Specified PythonVersion PythonVersion.THREE_NINE is only supported for JobType Python Shell and Ray');
     }
-    if (config.pythonVersion === PythonVersion.THREE && type === JobType.RAY.name) {
+    if (config.pythonVersion === PythonVersion.THREE && type === JobType.RAY) {
       throw new Error('Specified PythonVersion PythonVersion.THREE is not supported for Ray');
     }
-    if (config.runtime === undefined && type === JobType.RAY.name) {
+    if (config.runtime === undefined && type === JobType.RAY) {
       throw new Error('Runtime is required for Ray jobs.');
     }
     this.config = config;

@@ -24,7 +24,7 @@ const stack = new cdk.Stack(app, 'aws-glue-job-python-shell');
 
 const script = glue.Code.fromAsset(path.join(__dirname, 'job-script', 'hello_world.py'));
 
-new glue.Job(stack, 'ShellJob', {
+new glue.JobLegacy(stack, 'ShellJob', {
   jobName: 'ShellJob',
   executable: glue.JobExecutable.pythonShell({
     glueVersion: glue.GlueVersion.V1_0,
@@ -41,7 +41,7 @@ new glue.Job(stack, 'ShellJob', {
   maxCapacity: 0.0625,
 });
 
-new glue.Job(stack, 'ShellJob39', {
+new glue.JobLegacy(stack, 'ShellJob39', {
   jobName: 'ShellJob39',
   executable: glue.JobExecutable.pythonShell({
     glueVersion: glue.GlueVersion.V3_0,

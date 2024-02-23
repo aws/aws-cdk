@@ -5,155 +5,19 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import * as logs from 'aws-cdk-lib/aws-logs';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as cdk from 'aws-cdk-lib/core';
-import * as constructs from 'constructs';
-import { Code, GlueVersion, JobExecutable, JobExecutableConfig, JobType } from '.';
+import { Code } from '.';
+import { JobExecutable, JobExecutableConfig } from './job-executable';
 import { IConnection } from './connection';
 import { CfnJob } from 'aws-cdk-lib/aws-glue';
 import { ISecurityConfiguration } from './security-configuration';
-
-/**
- * The type of predefined worker that is allocated when a job runs.
- *
- * If you need to use a WorkerType that doesn't exist as a static member, you
- * can instantiate a `WorkerType` object, e.g: `WorkerType.of('other type')`.
- */
-export class WorkerType {
-  /**
-   * Each worker provides 4 vCPU, 16 GB of memory and a 50GB disk, and 2 executors per worker.
-   */
-  public static readonly STANDARD = new WorkerType('Standard');
-
-  /**
-   * Each worker maps to 1 DPU (4 vCPU, 16 GB of memory, 64 GB disk), and provides 1 executor per worker. Suitable for memory-intensive jobs.
-   */
-  public static readonly G_1X = new WorkerType('G.1X');
-
-  /**
-   * Each worker maps to 2 DPU (8 vCPU, 32 GB of memory, 128 GB disk), and provides 1 executor per worker. Suitable for memory-intensive jobs.
-   */
-  public static readonly G_2X = new WorkerType('G.2X');
-
-  /**
-   * Each worker maps to 4 DPU (16 vCPU, 64 GB of memory, 256 GB disk), and provides 1 executor per worker. We recommend this worker type for jobs whose workloads contain your most demanding transforms, aggregations, joins, and queries. This worker type is available only for AWS Glue version 3.0 or later jobs.
-   */
-  public static readonly G_4X = new WorkerType('G.4X');
-
-  /**
-   * Each worker maps to 8 DPU (32 vCPU, 128 GB of memory, 512 GB disk), and provides 1 executor per worker. We recommend this worker type for jobs whose workloads contain your most demanding transforms, aggregations, joins, and queries. This worker type is available only for AWS Glue version 3.0 or later jobs.
-   */
-  public static readonly G_8X = new WorkerType('G.8X');
-
-  /**
-   * Each worker maps to 0.25 DPU (2 vCPU, 4 GB of memory, 64 GB disk), and provides 1 executor per worker. Suitable for low volume streaming jobs.
-   */
-  public static readonly G_025X = new WorkerType('G.025X');
-
-  /**
-   * Each worker maps to 2 high-memory DPU [M-DPU] (8 vCPU, 64 GB of memory, 128 GB disk). Supported in Ray jobs.
-   */
-  public static readonly Z_2X = new WorkerType('Z.2X');
-
-  /**
-   * Custom worker type
-   * @param workerType custom worker type
-   */
-  public static of(workerType: string): WorkerType {
-    return new WorkerType(workerType);
-  }
-
-  /**
-   * The name of this WorkerType, as expected by Job resource.
-   */
-  public readonly name: string;
-
-  private constructor(name: string) {
-    this.name = name;
-  }
-}
-
-/**
- * Job states emitted by Glue to CloudWatch Events.
- *
- * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/events/EventTypes.html#glue-event-types for more information.
- */
-export enum JobState {
-  /**
-   * State indicating job run succeeded
-   */
-  SUCCEEDED = 'SUCCEEDED',
-
-  /**
-   * State indicating job run failed
-   */
-  FAILED = 'FAILED',
-
-  /**
-   * State indicating job run timed out
-   */
-  TIMEOUT = 'TIMEOUT',
-
-  /**
-   * State indicating job is starting
-   */
-  STARTING = 'STARTING',
-
-  /**
-   * State indicating job is running
-   */
-  RUNNING = 'RUNNING',
-
-  /**
-   * State indicating job is stopping
-   */
-  STOPPING = 'STOPPING',
-
-  /**
-   * State indicating job stopped
-   */
-  STOPPED = 'STOPPED',
-}
-
-/**
- * The Glue CloudWatch metric type.
- *
- * @see https://docs.aws.amazon.com/glue/latest/dg/monitoring-awsglue-with-cloudwatch-metrics.html
- */
-export enum MetricType {
-  /**
-   * A value at a point in time.
-   */
-  GAUGE = 'gauge',
-
-  /**
-   * An aggregate number.
-   */
-  COUNT = 'count',
-}
-
-/**
- * The ExecutionClass whether the job is run with a standard or flexible execution class.
- *
- * @see https://docs.aws.amazon.com/glue/latest/dg/aws-glue-api-jobs-job.html#aws-glue-api-jobs-job-Job
- * @see https://docs.aws.amazon.com/glue/latest/dg/add-job.html
- */
-export enum ExecutionClass {
-  /**
-   * The flexible execution class is appropriate for time-insensitive jobs whose start
-   * and completion times may vary.
-   */
-  FLEX = 'FLEX',
-
-  /**
-   * The standard execution class is ideal for time-sensitive workloads that require fast job
-   * startup and dedicated resources.
-   */
-  STANDARD = 'STANDARD',
-}
+import { JobType, JobState, MetricType, ExecutionClass, WorkerType } from './constants';
+import { Construct } from 'constructs';
+import { SparkUIProps, SparkUILoggingLocation } from './jobs/spark-ui-utils';
 
 /**
  * Interface representing a created or an imported `Job`.
  */
-export interface IJob extends cdk.IResource, iam.IGrantable {
+export interface IJobLegacy extends cdk.IResource, iam.IGrantable {
   /**
    * The name of the job.
    * @attribute
@@ -172,13 +36,6 @@ export interface IJob extends cdk.IResource, iam.IGrantable {
    * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/events/EventTypes.html#glue-event-types
    */
   onEvent(id: string, options?: events.OnEventOptions): events.Rule;
-
-  /**
-   * Defines a CloudWatch event rule triggered when this job moves to the input jobState.
-   *
-   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/events/EventTypes.html#glue-event-types
-   */
-  onStateChange(id: string, jobState: JobState, options?: events.OnEventOptions): events.Rule;
 
   /**
    * Defines a CloudWatch event rule triggered when this job moves to the SUCCEEDED state.
@@ -228,7 +85,7 @@ export interface IJob extends cdk.IResource, iam.IGrantable {
   metricTimeout(props?: cloudwatch.MetricOptions): cloudwatch.Metric;
 }
 
-abstract class JobBase extends cdk.Resource implements IJob {
+abstract class JobBaseLegacy extends cdk.Resource implements IJobLegacy {
 
   public abstract readonly jobArn: string;
   public abstract readonly jobName: string;
@@ -265,7 +122,7 @@ abstract class JobBase extends cdk.Resource implements IJob {
    * @param jobState the job state.
    * @param options optional event options.
    */
-  public onStateChange(id: string, jobState: JobState, options: events.OnEventOptions = {}): events.Rule {
+  protected onStateChange(id: string, jobState: JobState, options: events.OnEventOptions = {}): events.Rule {
     const rule = this.onEvent(id, {
       description: `Rule triggered when Glue job ${this.jobName} is in ${jobState} state`,
       ...options,
@@ -370,62 +227,12 @@ abstract class JobBase extends cdk.Resource implements IJob {
 }
 
 /**
- * Properties for enabling Spark UI monitoring feature for Spark-based Glue jobs.
- *
- * @see https://docs.aws.amazon.com/glue/latest/dg/monitor-spark-ui-jobs.html
- * @see https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-glue-arguments.html
- */
-export interface SparkUIProps {
-  /**
-   * Enable Spark UI.
-   */
-  readonly enabled: boolean;
-
-  /**
-   * The bucket where the Glue job stores the logs.
-   *
-   * @default - a new bucket will be created.
-   */
-  readonly bucket?: s3.IBucket;
-
-  /**
-   * The path inside the bucket (objects prefix) where the Glue job stores the logs.
-   * Use format `'foo/bar/'`
-   *
-   * @default - the logs will be written at the root of the bucket
-   */
-  readonly prefix?: string;
-}
-
-/**
- * The Spark UI logging location.
- *
- * @see https://docs.aws.amazon.com/glue/latest/dg/monitor-spark-ui-jobs.html
- * @see https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-glue-arguments.html
- */
-export interface SparkUILoggingLocation {
-  /**
-   * The bucket where the Glue job stores the logs.
-   *
-   * @default - a new bucket will be created.
-   */
-  readonly bucket: s3.IBucket;
-
-  /**
-   * The path inside the bucket (objects prefix) where the Glue job stores the logs.
-   *
-   * @default - the logs will be written at the root of the bucket
-   */
-  readonly prefix?: string;
-}
-
-/**
  * Properties for enabling Continuous Logging for Glue Jobs.
  *
  * @see https://docs.aws.amazon.com/glue/latest/dg/monitor-continuous-logging-enable.html
  * @see https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-glue-arguments.html
  */
-export interface ContinuousLoggingProps {
+export interface ContinuousLoggingPropsLegacy {
   /**
    * Enable continouous logging.
    */
@@ -465,7 +272,7 @@ export interface ContinuousLoggingProps {
 /**
  * Attributes for importing `Job`.
  */
-export interface JobAttributes {
+export interface JobLegacyAttributes {
   /**
    * The name of the job.
    */
@@ -482,7 +289,7 @@ export interface JobAttributes {
 /**
  * Construction properties for `Job`.
  */
-export interface JobProps {
+export interface JobLegacyProps {
   /**
    * The job's executable properties.
    */
@@ -623,7 +430,7 @@ export interface JobProps {
    * @see https://docs.aws.amazon.com/glue/latest/dg/monitor-continuous-logging-enable.html
    * @see https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-glue-arguments.html
    */
-  readonly continuousLogging?: ContinuousLoggingProps;
+  readonly continuousLogging?: ContinuousLoggingPropsLegacy;
 
   /**
    * The ExecutionClass whether the job is run with a standard or flexible execution class.
@@ -638,8 +445,9 @@ export interface JobProps {
 
 /**
  * A Glue Job.
+ * @resource AWS::Glue::Job
  */
-export class Job extends JobBase {
+export class JobLegacy extends JobBaseLegacy {
   /**
    * Creates a Glue Job
    *
@@ -647,8 +455,8 @@ export class Job extends JobBase {
    * @param id The construct's id.
    * @param attrs Import attributes
    */
-  public static fromJobAttributes(scope: constructs.Construct, id: string, attrs: JobAttributes): IJob {
-    class Import extends JobBase {
+  public static fromJobLegacyAttributes(scope: Construct, id: string, attrs: JobLegacyAttributes): IJobLegacy {
+    class Import extends JobBaseLegacy {
       public readonly jobName = attrs.jobName;
       public readonly jobArn = jobArn(scope, attrs.jobName);
       public readonly grantPrincipal = attrs.role ?? new iam.UnknownPrincipal({ resource: this });
@@ -685,7 +493,7 @@ export class Job extends JobBase {
    */
   public readonly sparkUILoggingLocation?: SparkUILoggingLocation;
 
-  constructor(scope: constructs.Construct, id: string, props: JobProps) {
+  constructor(scope: Construct, id: string, props: JobLegacyProps) {
     super(scope, id, {
       physicalName: props.jobName,
     });
@@ -698,7 +506,7 @@ export class Job extends JobBase {
     });
     this.grantPrincipal = this.role;
 
-    const sparkUI = props.sparkUI?.enabled ? this.setupSparkUI(executable, this.role, props.sparkUI) : undefined;
+    const sparkUI = props.sparkUI ? this.setupSparkUI(executable, this.role, props.sparkUI) : undefined;;
     this.sparkUILoggingLocation = sparkUI?.location;
     const continuousLoggingArgs = props.continuousLogging?.enabled ? this.setupContinuousLogging(this.role, props.continuousLogging) : {};
     const profilingMetricsArgs = props.enableProfilingMetrics ? { '--enable-metrics': '' } : {};
@@ -711,49 +519,51 @@ export class Job extends JobBase {
       ...this.checkNoReservedArgs(props.defaultArguments),
     };
 
-    if (props.executionClass === ExecutionClass.FLEX) {
-      if (executable.type !== JobType.ETL) {
-        throw new Error('FLEX ExecutionClass is only available for JobType.ETL jobs');
-      }
-      if ([GlueVersion.V0_9, GlueVersion.V1_0, GlueVersion.V2_0].includes(executable.glueVersion)) {
-        throw new Error('FLEX ExecutionClass is only available for GlueVersion 3.0 or later');
-      }
-      if (props.workerType && (props.workerType !== WorkerType.G_1X && props.workerType !== WorkerType.G_2X)) {
-        throw new Error('FLEX ExecutionClass is only available for WorkerType G_1X or G_2X');
-      }
-    }
+    // TODO: Implement these validations as interface contracts
 
-    let maxCapacity = props.maxCapacity;
-    if (maxCapacity !== undefined && (props.workerType && props.workerCount !== undefined)) {
-      throw new Error('maxCapacity cannot be used when setting workerType and workerCount');
-    }
-    if (executable.type !== JobType.PYTHON_SHELL) {
-      if (maxCapacity !== undefined && ![GlueVersion.V0_9, GlueVersion.V1_0].includes(executable.glueVersion)) {
-        throw new Error('maxCapacity cannot be used when GlueVersion 2.0 or later');
-      }
-    } else {
-      // max capacity validation for python shell jobs (defaults to 0.0625)
-      maxCapacity = maxCapacity ?? 0.0625;
-      if (maxCapacity !== 0.0625 && maxCapacity !== 1) {
-        throw new Error(`maxCapacity value must be either 0.0625 or 1 for JobType.PYTHON_SHELL jobs, received ${maxCapacity}`);
-      }
-    }
-    if ((!props.workerType && props.workerCount !== undefined) || (props.workerType && props.workerCount === undefined)) {
-      throw new Error('Both workerType and workerCount must be set');
-    }
+    // if (props.executionClass === ExecutionClass.FLEX) {
+    //   if (executable.type !== JobType.ETL) {
+    //     throw new Error('FLEX ExecutionClass is only available for JobType.ETL jobs');
+    //   }
+    //   if ([GlueVersion.V0_9, GlueVersion.V1_0, GlueVersion.V2_0].includes(executable.glueVersion)) {
+    //     throw new Error('FLEX ExecutionClass is only available for GlueVersion 3.0 or later');
+    //   }
+    //   if (props.workerType && (props.workerType !== WorkerType.G_1X && props.workerType !== WorkerType.G_2X)) {
+    //     throw new Error('FLEX ExecutionClass is only available for WorkerType G_1X or G_2X');
+    //   }
+    // }
+
+    // let maxCapacity = props.maxCapacity;
+    // if (maxCapacity !== undefined && (props.workerType && props.workerCount !== undefined)) {
+    //   throw new Error('maxCapacity cannot be used when setting workerType and workerCount');
+    // }
+    // if (executable.type !== JobType.PYTHON_SHELL) {
+    //   if (maxCapacity !== undefined && ![GlueVersion.V0_9, GlueVersion.V1_0].includes(executable.glueVersion)) {
+    //     throw new Error('maxCapacity cannot be used when GlueVersion 2.0 or later');
+    //   }
+    // } else {
+    //   // max capacity validation for python shell jobs (defaults to 0.0625)
+    //   maxCapacity = maxCapacity ?? 0.0625;
+    //   if (maxCapacity !== 0.0625 && maxCapacity !== 1) {
+    //     throw new Error(`maxCapacity value must be either 0.0625 or 1 for JobType.PYTHON_SHELL jobs, received ${maxCapacity}`);
+    //   }
+    // }
+    // if ((!props.workerType && props.workerCount !== undefined) || (props.workerType && props.workerCount === undefined)) {
+    //   throw new Error('Both workerType and workerCount must be set');
+    // }
 
     const jobResource = new CfnJob(this, 'Resource', {
       name: props.jobName,
       description: props.description,
       role: this.role.roleArn,
       command: {
-        name: executable.type.name,
+        name: executable.type,
         scriptLocation: this.codeS3ObjectUrl(executable.script),
         pythonVersion: executable.pythonVersion,
-        runtime: executable.runtime ? executable.runtime.name : undefined,
+        runtime: executable.runtime ? executable.runtime : undefined,
       },
-      glueVersion: executable.glueVersion.name,
-      workerType: props.workerType?.name,
+      glueVersion: executable.glueVersion,
+      workerType: props.workerType,
       numberOfWorkers: props.workerCount,
       maxCapacity: props.maxCapacity,
       maxRetries: props.maxRetries,
@@ -859,7 +669,7 @@ export class Job extends JobBase {
     return prefix !== undefined ? `${prefix}*` : undefined;
   }
 
-  private setupContinuousLogging(role: iam.IRole, props: ContinuousLoggingProps) {
+  private setupContinuousLogging(role: iam.IRole, props: ContinuousLoggingPropsLegacy) {
     const args: {[key: string]: string} = {
       '--enable-continuous-cloudwatch-log': 'true',
       '--enable-continuous-log-filter': (props.quiet ?? true).toString(),
@@ -908,7 +718,7 @@ function metricRule(rule: events.IRule, props?: cloudwatch.MetricOptions): cloud
  * @param scope
  * @param jobName
  */
-function jobArn(scope: constructs.Construct, jobName: string) : string {
+function jobArn(scope: Construct, jobName: string) : string {
   return cdk.Stack.of(scope).formatArn({
     service: 'glue',
     resource: 'job',
