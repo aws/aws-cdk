@@ -186,6 +186,51 @@ describe('Topic', () => {
 
   });
 
+  test('can enforce ssl when creating the topic', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const topic = new sns.Topic(stack, 'Topic', {
+      enforceSSL: true,
+    });
+
+    // WHEN
+    topic.addToResourcePolicy(new iam.PolicyStatement({
+      resources: ['*'],
+      actions: ['sns:*'],
+      principals: [new iam.ArnPrincipal('arn')],
+    }));
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::SNS::TopicPolicy', {
+      PolicyDocument: {
+        Version: '2012-10-17',
+        Statement: [
+          {
+            'Sid': '0',
+            'Action': 'sns:*',
+            'Effect': 'Allow',
+            'Principal': { 'AWS': 'arn' },
+            'Resource': '*',
+          },
+          {
+            'Sid': 'AllowPublishThroughSSLOnly',
+            'Action': 'sns:Publish',
+            'Effect': 'Deny',
+            'Resource': {
+              'Ref': 'TopicBFC7AF6E',
+            },
+            'Condition': {
+              'Bool': {
+                'aws:SecureTransport': 'false',
+              },
+            },
+            'Principal': '*',
+          },
+        ],
+      },
+    });
+  });
+
   test('give publishing permissions', () => {
     // GIVEN
     const stack = new cdk.Stack();
@@ -268,6 +313,47 @@ describe('Topic', () => {
             'Effect': 'Allow',
             'Principal': { 'AWS': 'arn' },
             'Sid': '0',
+          },
+        ],
+        'Version': '2012-10-17',
+      },
+      'Topics': [
+        {
+          'Ref': 'MyTopic86869434',
+        },
+      ],
+    });
+
+  });
+
+  test('Create topic policy and enforce ssl', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const topic = new sns.Topic(stack, 'MyTopic');
+
+    // WHEN
+    new sns.TopicPolicy(stack, 'TopicPolicy', {
+      topics: [topic],
+      enforceSSL: true,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::SNS::TopicPolicy', {
+      'PolicyDocument': {
+        'Statement': [
+          {
+            'Sid': 'AllowPublishThroughSSLOnly',
+            'Action': 'sns:Publish',
+            'Effect': 'Deny',
+            'Resource': {
+              'Ref': 'MyTopic86869434',
+            },
+            'Condition': {
+              'Bool': {
+                'aws:SecureTransport': 'false',
+              },
+            },
+            'Principal': '*',
           },
         ],
         'Version': '2012-10-17',
@@ -607,5 +693,50 @@ describe('Topic', () => {
 
     // THEN
     expect(() => app.synth()).toThrow(/Success feedback sample rate must be an integer between 0 and 100/);
+  });
+
+  describe('message retention period', () => {
+    test('specify message retention period in days', () => {
+      // GIVEN
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app);
+
+      // WHEN
+      new sns.Topic(stack, 'MyTopic', {
+        fifo: true,
+        messageRetentionPeriodInDays: 10,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::SNS::Topic', {
+        ArchivePolicy: {
+          MessageRetentionPeriod: 10,
+        },
+        FifoTopic: true,
+      });
+    });
+
+    test.each([0, 366, 12.3, NaN])('throw error if message retention period is invalid value "%s"', (days) => {
+      // GIVEN
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app);
+
+      // THEN
+      expect(() => new sns.Topic(stack, 'MyTopic', {
+        fifo: true,
+        messageRetentionPeriodInDays: days,
+      })).toThrow(/`messageRetentionPeriodInDays` must be an integer between 1 and 365/);
+    });
+
+    test('throw error when specify messageRetentionPeriodInDays to standard topic', () => {
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app);
+
+      expect(
+        () => new sns.Topic(stack, 'MyTopic', {
+          messageRetentionPeriodInDays: 12,
+        }),
+      ).toThrow('`messageRetentionPeriodInDays` is only valid for FIFO SNS topics');
+    });
   });
 });

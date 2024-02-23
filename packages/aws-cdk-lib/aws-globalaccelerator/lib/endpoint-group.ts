@@ -92,7 +92,7 @@ export interface EndpointGroupOptions {
    *
    * @default - No overrides
    */
-  readonly portOverrides?: PortOverride[]
+  readonly portOverrides?: PortOverride[];
 
   /**
    * Initial list of endpoints for this group

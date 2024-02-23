@@ -173,8 +173,8 @@ export interface IntegrationTestsDiscoveryOptions {
    * If the app command contains {filePath}, the test file names will be substituted at that place in the command for each run.
    */
   readonly testCases: {
-    [app: string]: string[]
-  }
+    [app: string]: string[];
+  };
 }
 
 /**
@@ -199,10 +199,10 @@ export class IntegrationTests {
    */
   public async fromCliOptions(options: {
     app?: string;
-    exclude?: boolean,
-    language?: string[],
-    testRegex?: string[],
-    tests?: string[],
+    exclude?: boolean;
+    language?: string[];
+    testRegex?: string[];
+    tests?: string[];
   }): Promise<IntegTest[]> {
     const baseOptions = {
       tests: options.tests,
@@ -253,7 +253,7 @@ export class IntegrationTests {
    */
   private getLanguagePreset(language: string) {
     const languagePresets: {
-      [language: string]: [string, string[]]
+      [language: string]: [string, string[]];
     } = {
       javascript: ['node {filePath}', ['^integ\\..*\\.js$']],
       typescript: ['node -r ts-node/register {filePath}', ['^integ\\.(?!.*\\.d\\.ts$).*\\.ts$']],
