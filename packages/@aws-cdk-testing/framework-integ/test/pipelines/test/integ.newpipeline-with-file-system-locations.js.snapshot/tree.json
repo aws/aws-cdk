@@ -798,7 +798,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.CustomResourceProvider",
+              "fqn": "aws-cdk-lib.CustomResourceProviderBase",
               "version": "0.0.0"
             }
           },
@@ -1135,6 +1135,7 @@
                             "Ref": "PipelineArtifactsBucketAEA9A052"
                           }
                         },
+                        "pipelineType": "V1",
                         "restartExecutionOnUpdate": true,
                         "roleArn": {
                           "Fn::GetAtt": [
@@ -1491,13 +1492,13 @@
                         },
                         "constructInfo": {
                           "fqn": "constructs.Construct",
-                          "version": "10.2.70"
+                          "version": "10.3.0"
                         }
                       }
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.2.70"
+                      "version": "10.3.0"
                     }
                   },
                   "Build": {
@@ -1963,13 +1964,13 @@
                         },
                         "constructInfo": {
                           "fqn": "constructs.Construct",
-                          "version": "10.2.70"
+                          "version": "10.3.0"
                         }
                       }
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.2.70"
+                      "version": "10.3.0"
                     }
                   },
                   "Assets": {
@@ -1981,13 +1982,13 @@
                         "path": "PipelinesFileSystemLocations/Pipeline/Pipeline/Assets/FileAsset1",
                         "constructInfo": {
                           "fqn": "constructs.Construct",
-                          "version": "10.2.70"
+                          "version": "10.3.0"
                         }
                       }
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.2.70"
+                      "version": "10.3.0"
                     }
                   },
                   "Beta": {
@@ -1999,13 +2000,13 @@
                         "path": "PipelinesFileSystemLocations/Pipeline/Pipeline/Beta/Deploy",
                         "constructInfo": {
                           "fqn": "constructs.Construct",
-                          "version": "10.2.70"
+                          "version": "10.3.0"
                         }
                       }
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.2.70"
+                      "version": "10.3.0"
                     }
                   },
                   "MutableRolearn:${AWS::Partition}:iam::${AWS::AccountId}:role--cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}": {
@@ -2025,7 +2026,7 @@
                         "path": "PipelinesFileSystemLocations/Pipeline/Pipeline/arn:${AWS::Partition}:iam::${AWS::AccountId}:role--cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}/8389e75f-0810-4838-bf64-d6f85a95cf83",
                         "constructInfo": {
                           "fqn": "constructs.Construct",
-                          "version": "10.2.70"
+                          "version": "10.3.0"
                         }
                       }
                     },
@@ -2611,7 +2612,7 @@
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.70"
+                  "version": "10.3.0"
                 }
               }
             },
@@ -2717,7 +2718,7 @@
                 "path": "cdk-integ-codepipeline-with-file-system-locations/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.70"
+                  "version": "10.3.0"
                 }
               },
               "DeployAssert": {
@@ -2763,7 +2764,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.2.70"
+          "version": "10.3.0"
         }
       }
     },

@@ -836,6 +836,17 @@ new CfnOutput(this, 'OutputName', {
 });
 ```
 
+You can also use the `exportValue` method to export values as stack outputs:
+
+```ts
+declare const stack: Stack;
+
+stack.exportValue(myBucket.bucketName, {
+  name: 'TheAwesomeBucket',
+  description: 'The name of an S3 bucket',
+});
+```
+
 [cfn-stack-output]: https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/outputs-section-structure.html
 
 ### Parameters
