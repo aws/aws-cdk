@@ -77,7 +77,7 @@ import * as cloudtrail from 'aws-cdk-lib/aws-cloudtrail';
 const myKeyAlias = kms.Alias.fromAliasName(this, 'myKey', 'alias/aws/s3');
 const trail = new cloudtrail.Trail(this, 'myCloudTrail', {
   sendToCloudWatchLogs: true,
-  kmsKey: myKeyAlias,
+  encryptionKey: myKeyAlias,
 });
 ```
 
