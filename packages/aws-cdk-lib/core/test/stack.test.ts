@@ -1489,6 +1489,83 @@ describe('stack', () => {
     });
   });
 
+  test('exports with name can include description', () => {
+    const app = new App();
+    const stack = new Stack(app, 'Stack');
+
+    stack.exportValue('someValue', {
+      name: 'MyExport',
+      description: 'This is a description',
+    });
+
+    const template = app.synth().getStackByName(stack.stackName).template;
+    expect(template).toMatchObject({
+      Outputs: {
+        ExportMyExport: {
+          Description: 'This is a description',
+        },
+      },
+    });
+  });
+
+  test('list exports with name can include description', () => {
+    const app = new App();
+    const stack = new Stack(app, 'Stack');
+
+    stack.exportStringListValue(['someValue', 'anotherValue'], {
+      name: 'MyExport',
+      description: 'This is a description',
+    });
+
+    const template = app.synth().getStackByName(stack.stackName).template;
+    expect(template).toMatchObject({
+      Outputs: {
+        ExportMyExport: {
+          Description: 'This is a description',
+        },
+      },
+    });
+  });
+
+  test('exports without name can include description', () => {
+    const app = new App();
+    const stack = new Stack(app, 'Stack');
+
+    const resource = new CfnResource(stack, 'Resource', { type: 'AWS::Resource' });
+    stack.exportValue(resource.getAtt('Att'), {
+      description: 'This is a description',
+    });
+
+    const template = app.synth().getStackByName(stack.stackName).template;
+    expect(template).toMatchObject({
+      Outputs: {
+        ExportsOutputFnGetAttResourceAttB5968E71: {
+          Description: 'This is a description',
+        },
+      },
+    });
+  });
+
+  test('list exports without name can include description', () => {
+    const app = new App();
+    const stack = new Stack(app, 'Stack');
+
+    const resource = new CfnResource(stack, 'Resource', { type: 'AWS::Resource' });
+    (resource as any).attrAtt = ['Foo', 'Bar'];
+    stack.exportStringListValue(resource.getAtt('Att', ResolutionTypeHint.STRING_LIST), {
+      description: 'This is a description',
+    });
+
+    const template = app.synth().getStackByName(stack.stackName).template;
+    expect(template).toMatchObject({
+      Outputs: {
+        ExportsOutputFnGetAttResourceAttB5968E71: {
+          Description: 'This is a description',
+        },
+      },
+    });
+  });
+
   test('CfnSynthesisError is ignored when preparing cross references', () => {
     // GIVEN
     const app = new App();
