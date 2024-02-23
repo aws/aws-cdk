@@ -1306,9 +1306,14 @@ export class AsgCapacityProvider extends Construct {
       this.autoScalingGroup.protectNewInstancesFromScaleIn();
     }
 
+    const capacityProviderNameRegex = /^(?!aws|ecs|fargate).+/gm;
     if (props.capacityProviderName) {
-      if (!(/^(?!aws|ecs|fargate).+/gm.test(props.capacityProviderName))) {
+      if (!(capacityProviderNameRegex.test(props.capacityProviderName))) {
         throw new Error(`Invalid Capacity Provider Name: ${props.capacityProviderName}, If a name is specified, it cannot start with aws, ecs, or fargate.`);
+      }
+    } else {
+      if (!(capacityProviderNameRegex.test(Stack.of(this).stackName))) {
+        throw new Error(`Invalid Capacity Provider Name: ${Stack.of(this).stackName}, No name was specified, the stack name cannot start with aws, ecs, or fargate.`);
       }
     }
 
