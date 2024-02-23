@@ -83,7 +83,7 @@ export class Ipv4Assign {
    * @param prefixes The prefixes must be end with /28
    * @see https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-prefix-eni.html#ec2-prefix-basics
    * @example
-   * Ipv4Assign.fromPrefixes('10.0.0.0/28', '10.1.0.0/28');
+   * ec2.Ipv4Assign.fromPrefixes('10.0.0.0/28', '10.1.0.0/28');
    */
   public static fromPrefixes(...prefixes: string[]): Ipv4Assign {
     const cidrBlocks = prefixes.map((prefix) => new CidrBlock(prefix));

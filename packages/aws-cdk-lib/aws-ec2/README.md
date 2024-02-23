@@ -2226,7 +2226,7 @@ declare const vpc: ec2.IVpc;
 
 new ec2.NetworkInterface(this, 'NetworkInterface', {
   vpc,
-  ipv4: Ipv4Assign.fromPrefixes('10.0.0.0/28', '10.1.0.0/28')
+  ipv4: ec2.Ipv4Assign.fromPrefixes('10.0.0.0/28', '10.1.0.0/28')
     .addPrimaryAddress('10.0.0.10'),
 });
 ```
