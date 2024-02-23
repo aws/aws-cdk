@@ -1118,6 +1118,55 @@ describe('changeset', () => {
     expect(differences.resources.differenceCount).toBe(1);
   });
 
+  test('SAM Resources are rendered with changeset diffs', () => {
+    // GIVEN
+    const currentTemplate = {
+      Resources: {
+        ServerlessFunction: {
+          Type: 'AWS::Serverless::Function',
+          Properties: {
+            CodeUri: 's3://bermuda-triangle-1337-bucket/old-handler.zip',
+          },
+        },
+      },
+    };
+
+    // WHEN
+    const newTemplate = {
+      Resources: {
+        ServerlessFunction: {
+          Type: 'AWS::Serverless::Function',
+          Properties: {
+            CodeUri: 's3://bermuda-triangle-1337-bucket/new-handler.zip',
+          },
+        },
+      },
+    };
+
+    let differences = fullDiff(currentTemplate, newTemplate, {
+      Changes: [
+        {
+          Type: 'Resource',
+          ResourceChange: {
+            Action: 'Modify',
+            LogicalResourceId: 'ServerlessFunction',
+            ResourceType: 'AWS::Lambda::Function', // The SAM transform is applied before the changeset is created, so the changeset has a Lambda resource here!
+            Replacement: 'False',
+            Details: [{
+              Evaluation: 'Direct',
+              Target: {
+                Attribute: 'Properties',
+                Name: 'Code',
+                RequiresRecreation: 'Never',
+              },
+            }],
+          },
+        },
+      ],
+    });
+    expect(differences.resources.differenceCount).toBe(1);
+  });
+
   test('imports are respected for new stacks', async () => {
     // GIVEN
     const currentTemplate = {};
