@@ -24,7 +24,7 @@ export enum NetworkInterfaceType {
    * Trunk type. This type uses for ENI trunking.
    * @see https://docs.aws.amazon.com/AmazonECS/latest/bestpracticesguide/networking-networkmode-awsvpc.html#networking-networkmode-awsvpc-enitrunking
    */
-  TRUNK = 'trunk'
+  TRUNK = 'trunk',
 }
 
 type OmitFunction<T> = {
@@ -269,7 +269,7 @@ export interface NetworkInterfaceAttributes {
    *
    * @default - No assign security groups.
    */
-  readonly securityGroups?: ISecurityGroup[]
+  readonly securityGroups?: ISecurityGroup[];
 }
 /**
  * Creates an Amazon EC2 network interface within a VPC.
