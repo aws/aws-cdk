@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.130.0](https://github.com/aws/aws-cdk/compare/v2.129.0...v2.130.0) (2024-02-23)
+
+
+### Features
+
+* **appconfig:** graduate to stable 🚀 ([#29188](https://github.com/aws/aws-cdk/issues/29188)) ([7feabc1](https://github.com/aws/aws-cdk/commit/7feabc1796cef3bd120af92525b49fe34fb7fd19))
+* **bedrock:** stabilityai model ([#29210](https://github.com/aws/aws-cdk/issues/29210)) ([6c17ca5](https://github.com/aws/aws-cdk/commit/6c17ca5dbd00ed94ce41beeafe81383a97c5564c))
+
+
+### Bug Fixes
+
+* **custom-resources-handlers:** s3 deployment handler log injection vulnerability ([#28599](https://github.com/aws/aws-cdk/issues/28599)) ([83aa395](https://github.com/aws/aws-cdk/commit/83aa3956ad035f534a7d96374844085919be3e8a)), closes [#28469](https://github.com/aws/aws-cdk/issues/28469)
+* **pipelines:** generates warning since CDK 2.128.0 due to addition of v2 pipeline support in aws-codepipeline ([#29199](https://github.com/aws/aws-cdk/issues/29199)) ([eca1bcf](https://github.com/aws/aws-cdk/commit/eca1bcf0b8a449d07692e6363cefa149b1fe0ce4)), closes [#29190](https://github.com/aws/aws-cdk/issues/29190) [/github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/pipelines/lib/codepipeline/codepipeline.ts#L467-L480](https://github.com/aws//github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/pipelines/lib/codepipeline/codepipeline.ts/issues/L467-L480)
+
 ## [2.129.0](https://github.com/aws/aws-cdk/compare/v2.128.0...v2.129.0) (2024-02-21)
 
 
