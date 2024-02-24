@@ -128,7 +128,9 @@ export interface TrailProps {
    */
   readonly isOrganizationTrail?: boolean;
 
-  /** The orgId
+  /** The orgId. 
+   * 
+   * Required when `isOrganizationTrail` is set to true to attach the necessary permissions.
    *
    * @default - No orgId
    */
