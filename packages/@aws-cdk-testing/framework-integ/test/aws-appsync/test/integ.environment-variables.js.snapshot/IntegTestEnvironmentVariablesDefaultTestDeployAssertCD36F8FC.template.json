@@ -1,20 +1,4 @@
 {
- "Outputs": {
-  "ExportMyExportValue": {
-   "Description": "This is a description for MyExportValue",
-   "Value": "someValue",
-   "Export": {
-    "Name": "MyExportValue"
-   }
-  },
-  "ExportMyExportStringListValue": {
-   "Description": "This is a description for MyExportStringListValue",
-   "Value": "someValue||anotherValue",
-   "Export": {
-    "Name": "MyExportStringListValue"
-   }
-  }
- },
  "Parameters": {
   "BootstrapVersion": {
    "Type": "AWS::SSM::Parameter::Value<String>",

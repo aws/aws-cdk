@@ -1,28 +1,28 @@
 {
   "version": "36.0.0",
   "artifacts": {
-    "Stack.assets": {
+    "AppSyncEnvironmentVariables.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "Stack.assets.json",
+        "file": "AppSyncEnvironmentVariables.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "Stack": {
+    "AppSyncEnvironmentVariables": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "Stack.template.json",
-        "terminationProtection": true,
+        "templateFile": "AppSyncEnvironmentVariables.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/ada73ce032944e5c142954c37e515edb7a1b5203f3a1599365be93987f283142.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/ba980a08a405c501c84615d3ef6311627a0b3662fc43c917e9b52e1c0cc0db59.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "Stack.assets"
+          "AppSyncEnvironmentVariables.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -31,49 +31,55 @@
         }
       },
       "dependencies": [
-        "Stack.assets"
+        "AppSyncEnvironmentVariables.assets"
       ],
       "metadata": {
-        "/Stack/ExportMyExportValue": [
+        "/AppSyncEnvironmentVariables/Api/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ExportMyExportValue"
+            "data": "ApiF70053CD"
           }
         ],
-        "/Stack/ExportMyExportStringListValue": [
+        "/AppSyncEnvironmentVariables/Api/Schema": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ExportMyExportStringListValue"
+            "data": "ApiSchema510EECD7"
           }
         ],
-        "/Stack/BootstrapVersion": [
+        "/AppSyncEnvironmentVariables/Api/DefaultApiKey": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ApiDefaultApiKeyF991C37B"
+          }
+        ],
+        "/AppSyncEnvironmentVariables/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/Stack/CheckBootstrapVersion": [
+        "/AppSyncEnvironmentVariables/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "Stack"
+      "displayName": "AppSyncEnvironmentVariables"
     },
-    "stackDefaultTestDeployAssert0386B0AD.assets": {
+    "IntegTestEnvironmentVariablesDefaultTestDeployAssertCD36F8FC.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "stackDefaultTestDeployAssert0386B0AD.assets.json",
+        "file": "IntegTestEnvironmentVariablesDefaultTestDeployAssertCD36F8FC.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "stackDefaultTestDeployAssert0386B0AD": {
+    "IntegTestEnvironmentVariablesDefaultTestDeployAssertCD36F8FC": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "stackDefaultTestDeployAssert0386B0AD.template.json",
+        "templateFile": "IntegTestEnvironmentVariablesDefaultTestDeployAssertCD36F8FC.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
@@ -82,7 +88,7 @@
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "stackDefaultTestDeployAssert0386B0AD.assets"
+          "IntegTestEnvironmentVariablesDefaultTestDeployAssertCD36F8FC.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -91,23 +97,23 @@
         }
       },
       "dependencies": [
-        "stackDefaultTestDeployAssert0386B0AD.assets"
+        "IntegTestEnvironmentVariablesDefaultTestDeployAssertCD36F8FC.assets"
       ],
       "metadata": {
-        "/stack/DefaultTest/DeployAssert/BootstrapVersion": [
+        "/IntegTestEnvironmentVariables/DefaultTest/DeployAssert/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/stack/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+        "/IntegTestEnvironmentVariables/DefaultTest/DeployAssert/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "stack/DefaultTest/DeployAssert"
+      "displayName": "IntegTestEnvironmentVariables/DefaultTest/DeployAssert"
     },
     "Tree": {
       "type": "cdk:tree",
