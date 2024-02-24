@@ -175,6 +175,11 @@ export abstract class GraphqlApiBase extends Resource implements IGraphqlApi {
   public abstract readonly apiId: string;
 
   /**
+   * The GraphQL endpoint ARN
+   */
+  public abstract readonly graphQLEndpointArn: string;
+
+  /**
    * the ARN of the API
    */
   public abstract readonly arn: string;

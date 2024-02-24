@@ -61,6 +61,11 @@ export interface RuleTargetConfig {
   readonly retryPolicy?: CfnRule.RetryPolicyProperty;
 
   /**
+   * Contains the GraphQL operation to be parsed and executed, if the event target is an AWS AppSync API.
+   */
+  readonly appSyncParameters?: CfnRule.AppSyncParametersProperty;
+
+  /**
    * The Amazon ECS task definition and task count to use, if the event target
    * is an Amazon ECS task.
    */
