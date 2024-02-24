@@ -128,6 +128,12 @@ export interface TrailProps {
    */
   readonly isOrganizationTrail?: boolean;
 
+  /** The orgId
+   *
+   * @default - No orgId
+   */
+  readonly orgId?: string;
+
   /**
    * A JSON string that contains the insight types you want to log on a trail.
    *
@@ -261,6 +267,22 @@ export class Trail extends Resource {
         StringEquals: { 's3:x-amz-acl': 'bucket-owner-full-control' },
       },
     }));
+
+    if (props.isOrganizationTrail) {
+      this.s3bucket.addToResourcePolicy(new iam.PolicyStatement({
+        resources: [this.s3bucket.arnForObjects(
+          `AWSLogs/${props.orgId}/*`,
+        )],
+        actions: ['s3:PutObject'],
+        principals: [cloudTrailPrincipal],
+        conditions: {
+          StringEquals: {
+            's3:x-amz-acl': 'bucket-owner-full-control',
+            'aws:SourceArn': `arn:${this.stack.partition}:cloudtrail:${this.s3bucket.stack.region}:${this.s3bucket.stack.account}:trail/${props.trailName}`,
+          },
+        },
+      }));
+    }
 
     this.topic = props.snsTopic;
     if (this.topic) {
