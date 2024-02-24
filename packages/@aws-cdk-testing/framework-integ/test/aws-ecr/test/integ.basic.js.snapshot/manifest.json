@@ -1,5 +1,5 @@
 {
-  "version": "35.0.0",
+  "version": "36.0.0",
   "artifacts": {
     "aws-ecr-integ-stack.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/830646461dc1fed84d30409177199864dfe0b167864b2fcdca22f4b9aad8a063.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/af3377e6e3d575073bc8b4d7e7dacd1c1b33dfc0c606091f6e6ce84b4ff183ca.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -64,6 +64,30 @@
             "data": "RepositoryURI"
           }
         ],
+        "/aws-ecr-integ-stack/RepoOnEvent/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RepoOnEvent13B6ADDB"
+          }
+        ],
+        "/aws-ecr-integ-stack/RepoOnEvent/OnEventTargetLambda/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RepoOnEventOnEventTargetLambda2934FA99"
+          }
+        ],
+        "/aws-ecr-integ-stack/LambdaFunction/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaFunctionServiceRoleC555A460"
+          }
+        ],
+        "/aws-ecr-integ-stack/LambdaFunction/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaFunctionBF21E41F"
+          }
+        ],
         "/aws-ecr-integ-stack/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
@@ -74,6 +98,15 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
+          }
+        ],
+        "RepoOnEventTargetLambdaBD80F099": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RepoOnEventTargetLambdaBD80F099",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },
