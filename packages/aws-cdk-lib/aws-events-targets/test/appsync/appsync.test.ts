@@ -17,7 +17,7 @@ beforeEach(() => {
 
 test('use AppSync GraphQL API as an event rule target', () => {
 
-  const graphQLOperation = 'mutation Publish($message: String!){ publish(message: $message) { event } }'
+  const graphQLOperation = 'mutation Publish($message: String!){ publish(message: $message) { event } }';
   const rule = new events.Rule(stack, 'Rule', {
     schedule: events.Schedule.rate(cdk.Duration.minutes(1)),
   });
