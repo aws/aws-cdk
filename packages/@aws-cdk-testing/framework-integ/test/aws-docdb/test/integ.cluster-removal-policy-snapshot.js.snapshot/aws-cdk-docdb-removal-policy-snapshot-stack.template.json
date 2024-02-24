@@ -542,8 +542,8 @@
     "VPCPublicSubnet2DefaultRouteB7481BBA",
     "VPCPublicSubnet2RouteTableAssociation5A808732"
    ],
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
   }
  },
  "Parameters": {
