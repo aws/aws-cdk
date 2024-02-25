@@ -284,8 +284,12 @@ export class Trigger {
             excludes: filter.filePathsExcludes?.length ? filter.filePathsExcludes : undefined,
             includes: filter.filePathsIncludes?.length ? filter.filePathsIncludes : undefined,
           } : undefined;
-        // set to undefined if empty array because CloudFormation does not accept empty array
-        const events: string[] | undefined = filter.events?.length ? Array.from(new Set(filter.events)) : undefined;
+        // set to all events if empty array or undefined because CloudFormation does not accept empty array and undefined
+        const events: string[] = filter.events?.length ? Array.from(new Set(filter.events)) : [
+          GitPullRequestEvent.OPEN,
+          GitPullRequestEvent.UPDATED,
+          GitPullRequestEvent.CLOSED,
+        ];
         return { branches, filePaths, events };
       });
 

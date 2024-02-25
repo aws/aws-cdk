@@ -494,7 +494,42 @@ describe('triggers', () => {
     });
   });
 
-  test('empty events in pullRequestFilter for trigger is set to undefined', () => {
+  test('undefined events in pullRequestFilter for trigger is set to all events', () => {
+    const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
+      pipelineType: codepipeline.PipelineType.V2,
+      triggers: [{
+        providerType: codepipeline.ProviderType.CODE_STAR_SOURCE_CONNECTION,
+        gitConfiguration: {
+          sourceAction,
+          pullRequestFilter: [{
+            branchesExcludes: ['exclude1', 'exclude2'],
+            branchesIncludes: ['include1', 'include2'],
+          }],
+        },
+      }],
+    });
+
+    testPipelineSetup(pipeline, [sourceAction], [buildAction]);
+
+    Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
+      PipelineType: 'V2',
+      Triggers: [{
+        GitConfiguration: {
+          SourceActionName: 'CodeStarConnectionsSourceAction',
+          PullRequest: [{
+            Branches: {
+              Excludes: ['exclude1', 'exclude2'],
+              Includes: ['include1', 'include2'],
+            },
+            Events: ['OPEN', 'UPDATED', 'CLOSED'],
+          }],
+        },
+        ProviderType: 'CodeStarSourceConnection',
+      }],
+    });
+  });
+
+  test('empty events in pullRequestFilter for trigger is set to all events', () => {
     const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
       pipelineType: codepipeline.PipelineType.V2,
       triggers: [{
@@ -522,7 +557,7 @@ describe('triggers', () => {
               Excludes: ['exclude1', 'exclude2'],
               Includes: ['include1', 'include2'],
             },
-            Events: Match.absent(),
+            Events: ['OPEN', 'UPDATED', 'CLOSED'],
           }],
         },
         ProviderType: 'CodeStarSourceConnection',
