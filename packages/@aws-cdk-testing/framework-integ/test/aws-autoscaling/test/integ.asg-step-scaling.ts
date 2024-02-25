@@ -37,7 +37,6 @@ asg.scaleOnMetric('StepScalingWithDefaultAdjustmentType', {
     { lower: 300, change: +1 },
     { lower: 500, change: +2 },
   ],
-  // adjustmentType: autoscaling.AdjustmentType.CHANGE_IN_CAPACITY, // adjustmentType is set to CHANGE_IN_CAPACITY by default
   evaluationPeriods: 10,
   datapointsToAlarm: 5,
   metricAggregationType: autoscaling.MetricAggregationType.MAXIMUM,
