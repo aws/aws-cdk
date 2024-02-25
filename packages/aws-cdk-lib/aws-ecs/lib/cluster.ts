@@ -859,9 +859,9 @@ class ImportedCluster extends Resource implements ICluster {
   public readonly hasEc2Capacity: boolean;
 
   /**
-   * Autoscaling group of the cluster
+   * The autoscaling group added to the cluster if capacity is associated to the cluster
    */
-  readonly autoscalingGroup?: autoscaling.IAutoScalingGroup;
+  public readonly autoscalingGroup?: autoscaling.IAutoScalingGroup;
 
   /**
    * Cloudmap namespace created in the cluster
