@@ -756,3 +756,20 @@ const api = new appsync.GraphqlApi(this, 'api', {
   introspectionConfig: appsync.IntrospectionConfig.DISABLED,
 });
 ```
+
+## Environment Variables
+
+To use environment variables in resolvers, you can use the `environmentVariables` property and
+the `addEnvironmentVariable` method.
+
+```ts
+const api = new appsync.GraphqlApi(this, 'api', {
+  name: 'api',
+  definition: appsync.Definition.fromFile(path.join(__dirname, 'appsync.schema.graphql')),
+  environmentVariables: {
+    EnvKey1: 'non-empty-1',
+  },  
+});
+
+api.addEnvironmentVariable('EnvKey2', 'non-empty-2');
+```
