@@ -208,6 +208,44 @@ const topicPolicy = new sns.TopicPolicy(this, 'Policy', {
 });
 ```
 
+### Enforce encryption of data in transit when publishing to a topic
+
+You can enforce SSL when creating a topic policy by setting the `enforceSSL` flag:
+
+```ts
+const topic = new sns.Topic(this, 'Topic');
+const policyDocument = new iam.PolicyDocument({
+  assignSids: true,
+  statements: [
+    new iam.PolicyStatement({
+      actions: ["sns:Publish"],
+      principals: [new iam.ServicePrincipal('s3.amazonaws.com')],
+      resources: [topic.topicArn],
+    }),
+  ],
+});
+
+const topicPolicy = new sns.TopicPolicy(this, 'Policy', {
+  topics: [topic],
+  policyDocument,
+  enforceSSL: true,
+});
+```
+
+Similiarly you can enforce SSL by setting the `enforceSSL` flag on the topic:
+
+```ts
+const topic = new sns.Topic(this, 'TopicAddPolicy', {
+  enforceSSL: true,
+});
+
+topic.addToResourcePolicy(new iam.PolicyStatement({
+  principals: [new iam.ServicePrincipal('s3.amazonaws.com')],
+  actions: ['sns:Publish'],
+  resources: [topic.topicArn],
+}));
+```
+
 ## Delivery status logging
 
 Amazon SNS provides support to log the delivery status of notification messages sent to topics with the following Amazon SNS endpoints:
