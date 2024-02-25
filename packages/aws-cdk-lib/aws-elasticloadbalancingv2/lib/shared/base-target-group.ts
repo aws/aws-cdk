@@ -361,6 +361,7 @@ export abstract class TargetGroupBase extends Construct implements ITargetGroup 
 
     if (intervalSeconds && timeoutSeconds) {
       if (intervalSeconds < timeoutSeconds) {
+        // see https://docs.aws.amazon.com/elasticloadbalancing/2012-06-01/APIReference/API_HealthCheck.html
         ret.push('Health check interval must be greater than the timeout; received interval ' +
         `${intervalSeconds}, timeout ${timeoutSeconds}.`);
       }
