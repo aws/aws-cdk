@@ -566,6 +566,23 @@ describe('triggers', () => {
     }).toThrow(/maximum length of filePathsIncludes in pushFilter for sourceAction with name 'CodeStarConnectionsSourceAction' is 8, got 9/);
   });
 
+  test('throw if filePaths without branches is specified in pushFilter', () => {
+    expect(() => {
+      new codepipeline.Pipeline(stack, 'Pipeline', {
+        pipelineType: codepipeline.PipelineType.V2,
+        triggers: [{
+          providerType: codepipeline.ProviderType.CODE_STAR_SOURCE_CONNECTION,
+          gitConfiguration: {
+            sourceAction,
+            pushFilter: [{
+              filePathsExcludes: ['exclude1', 'exclude2'],
+            }],
+          },
+        }],
+      });
+    }).toThrow(/cannot specify filePaths without branches in pushFilter for sourceAction with name 'CodeStarConnectionsSourceAction'/);
+  });
+
   test('throw if tags and branches are specified in pushFilter', () => {
     expect(() => {
       new codepipeline.Pipeline(stack, 'Pipeline', {
@@ -584,7 +601,7 @@ describe('triggers', () => {
     }).toThrow(/cannot specify both tags and branches in pushFilter for sourceAction with name 'CodeStarConnectionsSourceAction'/);
   });
 
-  test('throw if filePaths without branches is specified in pushFilter', () => {
+  test('throw if neither tags nor branches are specified in pushFilter', () => {
     expect(() => {
       new codepipeline.Pipeline(stack, 'Pipeline', {
         pipelineType: codepipeline.PipelineType.V2,
@@ -592,13 +609,11 @@ describe('triggers', () => {
           providerType: codepipeline.ProviderType.CODE_STAR_SOURCE_CONNECTION,
           gitConfiguration: {
             sourceAction,
-            pushFilter: [{
-              filePathsExcludes: ['exclude1', 'exclude2'],
-            }],
+            pushFilter: [{}],
           },
         }],
       });
-    }).toThrow(/cannot specify filePaths without branches in pushFilter for sourceAction with name 'CodeStarConnectionsSourceAction'/);
+    }).toThrow(/must specify either tags or branches in pushFilter for sourceAction with name 'CodeStarConnectionsSourceAction'/);
   });
 
   test('empty pushFilter for trigger is set to undefined', () => {
