@@ -206,14 +206,16 @@ export class Trigger {
       const pushFilter = this.props.gitConfiguration.pushFilter;
       const pullRequestFilter = this.props.gitConfiguration.pullRequestFilter;
 
-      if (pushFilter !== undefined && pullRequestFilter !== undefined) {
-        throw new Error(`cannot specify both pushFilter and pullRequestFilter for sourceAction with name '${sourceAction.actionProperties.actionName}'`);
+      if (pushFilter?.length && pullRequestFilter?.length) {
+        throw new Error(`cannot specify both pushFilter and pullRequestFilter for the trigger with sourceAction with name '${sourceAction.actionProperties.actionName}'`);
+      }
+      if (!pushFilter?.length && !pullRequestFilter?.length) {
+        throw new Error(`must specify either pushFilter or pullRequestFilter for the trigger with sourceAction with name '${sourceAction.actionProperties.actionName}'`);
       }
 
       if (pushFilter !== undefined && pushFilter.length > 3) {
         throw new Error(`length of pushFilter for sourceAction with name '${sourceAction.actionProperties.actionName}' must be less than or equal to 3, got ${pushFilter.length}`);
       }
-
       pushFilter?.forEach(filter => {
         if (filter.tagsExcludes && filter.tagsExcludes.length > 8) {
           throw new Error(`maximum length of tagsExcludes in pushFilter for sourceAction with name '${sourceAction.actionProperties.actionName}' is 8, got ${filter.tagsExcludes.length}`);
@@ -226,7 +228,6 @@ export class Trigger {
       if (pullRequestFilter !== undefined && pullRequestFilter.length > 3) {
         throw new Error(`length of pullRequestFilter for sourceAction with name '${sourceAction.actionProperties.actionName}' must be less than or equal to 3, got ${pullRequestFilter.length}`);
       }
-
       pullRequestFilter?.forEach(filter => {
         if (!filter.branchesExcludes && !filter.branchesIncludes && (filter.filePathsExcludes || filter.filePathsIncludes)) {
           throw new Error(`cannot specify filePaths without branches in pullRequestFilter for sourceAction with name '${sourceAction.actionProperties.actionName}'`);

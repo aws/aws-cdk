@@ -724,6 +724,11 @@ describe('triggers', () => {
         gitConfiguration: {
           sourceAction,
           pushFilter: [],
+          pullRequestFilter: [
+            {
+              branchesExcludes: ['exclude1'],
+            },
+          ],
         },
       }],
     });
@@ -749,6 +754,11 @@ describe('triggers', () => {
         providerType: codepipeline.ProviderType.CODE_STAR_SOURCE_CONNECTION,
         gitConfiguration: {
           sourceAction,
+          pushFilter: [
+            {
+              tagsExcludes: ['exclude1'],
+            },
+          ],
           pullRequestFilter: [],
         },
       }],
@@ -855,7 +865,37 @@ describe('triggers', () => {
           },
         }],
       });
-    }).toThrow(/cannot specify both pushFilter and pullRequestFilter for sourceAction with name 'CodeStarConnectionsSourceAction'/);;
+    }).toThrow(/cannot specify both pushFilter and pullRequestFilter for the trigger with sourceAction with name 'CodeStarConnectionsSourceAction'/);;
+  });
+
+  test('throw if neither pushFilter nor pullRequestFilter are specified', () => {
+    expect(() => {
+      new codepipeline.Pipeline(stack, 'Pipeline', {
+        pipelineType: codepipeline.PipelineType.V2,
+        triggers: [{
+          providerType: codepipeline.ProviderType.CODE_STAR_SOURCE_CONNECTION,
+          gitConfiguration: {
+            sourceAction,
+          },
+        }],
+      });
+    }).toThrow(/must specify either pushFilter or pullRequestFilter for the trigger with sourceAction with name 'CodeStarConnectionsSourceAction'/);;
+  });
+
+  test('throw if both pushFilter and pullRequestFilter are empty arrays', () => {
+    expect(() => {
+      new codepipeline.Pipeline(stack, 'Pipeline', {
+        pipelineType: codepipeline.PipelineType.V2,
+        triggers: [{
+          providerType: codepipeline.ProviderType.CODE_STAR_SOURCE_CONNECTION,
+          gitConfiguration: {
+            sourceAction,
+            pushFilter: [],
+            pullRequestFilter: [],
+          },
+        }],
+      });
+    }).toThrow(/must specify either pushFilter or pullRequestFilter for the trigger with sourceAction with name 'CodeStarConnectionsSourceAction'/);;
   });
 
   test('throw if provider of sourceAction is not \'CodeStarSourceConnection\'', () => {
@@ -899,6 +939,10 @@ describe('triggers', () => {
         providerType: codepipeline.ProviderType.CODE_STAR_SOURCE_CONNECTION,
         gitConfiguration: {
           sourceAction,
+          pushFilter: [{
+            tagsExcludes: ['exclude1', 'exclude2'],
+            tagsIncludes: ['include1', 'include2'],
+          }],
         },
       });
     }).toThrow(/Trigger with duplicate source action 'CodeStarConnectionsSourceAction' added to the Pipeline/);
