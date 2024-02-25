@@ -229,11 +229,8 @@ export class Trigger {
         throw new Error(`length of pullRequestFilter for sourceAction with name '${sourceAction.actionProperties.actionName}' must be less than or equal to 3, got ${pullRequestFilter.length}`);
       }
       pullRequestFilter?.forEach(filter => {
-        if (!filter.branchesExcludes && !filter.branchesIncludes && (filter.filePathsExcludes || filter.filePathsIncludes)) {
-          throw new Error(`cannot specify filePaths without branches in pullRequestFilter for sourceAction with name '${sourceAction.actionProperties.actionName}'`);
-        }
-        if (!filter.branchesExcludes && !filter.branchesIncludes && filter.events) {
-          throw new Error(`cannot specify events without branches in pullRequestFilter for sourceAction with name '${sourceAction.actionProperties.actionName}'`);
+        if (!filter.branchesExcludes && !filter.branchesIncludes) {
+          throw new Error(`must specify branches in pullRequestFilter for sourceAction with name '${sourceAction.actionProperties.actionName}'`);
         }
         if (filter.branchesExcludes && filter.branchesExcludes.length > 8) {
           throw new Error(`maximum length of branchesExcludes in pullRequestFilter for sourceAction with name '${sourceAction.actionProperties.actionName}' is 8, got ${filter.branchesExcludes.length}`);

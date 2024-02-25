@@ -677,7 +677,7 @@ describe('triggers', () => {
     }).toThrow(/maximum length of filePathsIncludes in pullRequestFilter for sourceAction with name 'CodeStarConnectionsSourceAction' is 8, got 9/);
   });
 
-  test('throw if filePaths without branches is specified in pullRequestFilter', () => {
+  test('throw if branches is not specified in pullRequestFilter', () => {
     expect(() => {
       new codepipeline.Pipeline(stack, 'Pipeline', {
         pipelineType: codepipeline.PipelineType.V2,
@@ -685,30 +685,11 @@ describe('triggers', () => {
           providerType: codepipeline.ProviderType.CODE_STAR_SOURCE_CONNECTION,
           gitConfiguration: {
             sourceAction,
-            pullRequestFilter: [{
-              filePathsExcludes: ['exclude1', 'exclude2'],
-            }],
+            pullRequestFilter: [{}],
           },
         }],
       });
-    }).toThrow(/cannot specify filePaths without branches in pullRequestFilter for sourceAction with name 'CodeStarConnectionsSourceAction'/);
-  });
-
-  test('throw if events without branches is specified in pullRequestFilter', () => {
-    expect(() => {
-      new codepipeline.Pipeline(stack, 'Pipeline', {
-        pipelineType: codepipeline.PipelineType.V2,
-        triggers: [{
-          providerType: codepipeline.ProviderType.CODE_STAR_SOURCE_CONNECTION,
-          gitConfiguration: {
-            sourceAction,
-            pullRequestFilter: [{
-              events: [codepipeline.GitPullRequestEvent.OPEN],
-            }],
-          },
-        }],
-      });
-    }).toThrow(/cannot specify events without branches in pullRequestFilter for sourceAction with name 'CodeStarConnectionsSourceAction'/);
+    }).toThrow(/must specify branches in pullRequestFilter for sourceAction with name 'CodeStarConnectionsSourceAction'/);
   });
 
   test('can eliminate duplicates events in pullRequestFilter', () => {
