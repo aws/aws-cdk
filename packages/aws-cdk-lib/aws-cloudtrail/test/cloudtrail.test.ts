@@ -268,7 +268,7 @@ describe('cloudtrail', () => {
               },
               Effect: 'Deny',
               Principal: {
-                'AWS': '*',
+                AWS: '*',
               },
               Resource: [
                 {
@@ -287,7 +287,7 @@ describe('cloudtrail', () => {
                           'Arn',
                         ],
                       },
-                      '/*'
+                      '/*',
                     ],
                   ],
                 },
@@ -343,7 +343,7 @@ describe('cloudtrail', () => {
                       [
                         'arn:',
                         {
-                          'Ref': 'AWS::Partition',
+                          Ref: 'AWS::Partition',
                         },
                         ':cloudtrail:us-east-1:123456789012:trail/trailname123',
                       ],
