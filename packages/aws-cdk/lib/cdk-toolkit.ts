@@ -891,7 +891,7 @@ export class CdkToolkit {
   /**
    * Validate the stacks for errors and warnings according to the CLI's current settings
    */
-  public validateStacks(stacks: StackCollection) {
+  private validateStacks(stacks: StackCollection) {
     stacks.processMetadataMessages({
       ignoreErrors: this.props.ignoreErrors,
       strict: this.props.strict,
@@ -902,7 +902,7 @@ export class CdkToolkit {
   /**
    * Validate that if a user specified a stack name there exists at least 1 stack selected
    */
-  public validateStacksSelected(stacks: StackCollection, stackNames: string[]) {
+  private validateStacksSelected(stacks: StackCollection, stackNames: string[]) {
     if (stackNames.length != 0 && stacks.stackCount == 0) {
       throw new Error(`No stacks match the name(s) ${stackNames}`);
     }
