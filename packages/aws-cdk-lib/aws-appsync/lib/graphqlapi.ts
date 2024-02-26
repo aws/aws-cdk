@@ -8,7 +8,7 @@ import { IUserPool } from '../../aws-cognito';
 import { ManagedPolicy, Role, IRole, ServicePrincipal, Grant, IGrantable } from '../../aws-iam';
 import { IFunction } from '../../aws-lambda';
 import { ILogGroup, LogGroup, LogRetention, RetentionDays } from '../../aws-logs';
-import { ArnFormat, CfnResource, Duration, Expiration, FeatureFlags, IResolvable, Stack } from '../../core';
+import { ArnFormat, CfnResource, Duration, Expiration, FeatureFlags, IResolvable, Lazy, Stack, Token } from '../../core';
 import * as cxapi from '../../cx-api';
 
 /**
@@ -458,6 +458,20 @@ export interface GraphqlApiProps {
    * @default - The default value is 0 (or unspecified), which will set the limit to 10000
    */
   readonly resolverCountLimit?: number;
+
+  /** 
+   * A map containing the list of resources with their properties and environment variables.
+   *
+   * There are a few rules you must follow when creating keys and values:
+   *   - Keys must begin with a letter.
+   *   - Keys must be between 2 and 64 characters long.
+   *   - Keys can only contain letters, numbers, and the underscore character (_).
+   *   - Values can be up to 512 characters long.
+   *   - You can configure up to 50 key-value pairs in a GraphQL API.
+   *
+   * @default - No environment variables.
+   */
+  readonly environmentVariables?: { [key: string]: string };
 }
 
 /**
@@ -635,6 +649,7 @@ export class GraphqlApi extends GraphqlApiBase {
   private apiKeyResource?: CfnApiKey;
   private domainNameResource?: CfnDomainName;
   private mergedApiExecutionRole?: IRole;
+  private environmentVariables: { [key: string]: string } = {};
 
   constructor(scope: Construct, id: string, props: GraphqlApiProps) {
     super(scope, id);
@@ -667,6 +682,13 @@ export class GraphqlApi extends GraphqlApiBase {
       this.setupMergedApiExecutionRole(this.definition.sourceApiOptions);
     }
 
+    if (props.environmentVariables !== undefined) {
+      Object.entries(props.environmentVariables).forEach(([key, value]) => {
+        this.addEnvironmentVariable(key, value);
+      });
+    }
+    this.node.addValidation({ validate: () => this.validateEnvironmentVariables() });
+
     this.api = new CfnGraphQLApi(this, 'Resource', {
       name: props.name,
       authenticationType: defaultMode.authorizationType,
@@ -682,6 +704,7 @@ export class GraphqlApi extends GraphqlApiBase {
       introspectionConfig: props.introspectionConfig,
       queryDepthLimit: props.queryDepthLimit,
       resolverCountLimit: props.resolverCountLimit,
+      environmentVariables: Lazy.any({ produce: () => this.renderEnvironmentVariables() }),
     });
 
     this.apiId = this.api.attrApiId;
@@ -870,6 +893,39 @@ export class GraphqlApi extends GraphqlApiBase {
       construct.addDependency(this.schemaResource);
     };
     return true;
+  }
+
+  /**
+   * Add an environment variable to the construct.
+   */
+  public addEnvironmentVariable(key: string, value: string) {
+    if (this.definition.sourceApiOptions) {
+      throw new Error('Environment variables are not supported for merged APIs');
+    }
+    if (!Token.isUnresolved(key) && !/^[A-Za-z]+\w*$/.test(key)) {
+      throw new Error(`Key '${key}' must begin with a letter and can only contain letters, numbers, and underscores`);
+    }
+    if (!Token.isUnresolved(key) && (key.length < 2 || key.length > 64)) {
+      throw new Error(`Key '${key}' must be between 2 and 64 characters long, got ${key.length}`);
+    }
+    if (!Token.isUnresolved(value) && value.length > 512) {
+      throw new Error(`Value for '${key}' is too long. Values can be up to 512 characters long, got ${value.length}`);
+    }
+
+    this.environmentVariables[key] = value;
+  }
+
+  private validateEnvironmentVariables() {
+    const errors: string[] = [];
+    const entries = Object.entries(this.environmentVariables);
+    if (entries.length > 50) {
+      errors.push(`Only 50 environment variables can be set, got ${entries.length}`);
+    }
+    return errors;
+  }
+
+  private renderEnvironmentVariables() {
+    return Object.entries(this.environmentVariables).length > 0 ? this.environmentVariables : undefined;
   }
 
   private setupLogConfig(config?: LogConfig) {

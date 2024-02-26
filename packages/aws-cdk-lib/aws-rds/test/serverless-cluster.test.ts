@@ -20,7 +20,7 @@ describe('serverless cluster', () => {
         username: 'admin',
         password: cdk.SecretValue.unsafePlainText('tooshort'),
       },
-      parameterGroup: ParameterGroup.fromParameterGroupName(stack, 'ParameterGroup', 'default.aurora-postgresql10'),
+      parameterGroup: ParameterGroup.fromParameterGroupName(stack, 'ParameterGroup', 'default.aurora-postgresql11'),
     });
 
     // THEN
@@ -28,7 +28,7 @@ describe('serverless cluster', () => {
       Properties: {
         Engine: 'aurora-postgresql',
         CopyTagsToSnapshot: true,
-        DBClusterParameterGroupName: 'default.aurora-postgresql10',
+        DBClusterParameterGroupName: 'default.aurora-postgresql11',
         DBSubnetGroupName: {
           Ref: 'ServerlessDatabaseSubnets5643CD76',
         },
@@ -113,13 +113,13 @@ describe('serverless cluster', () => {
       engine: DatabaseClusterEngine.AURORA_POSTGRESQL,
       vpc,
       securityGroups: [sg],
-      parameterGroup: ParameterGroup.fromParameterGroupName(stack, 'ParameterGroup', 'default.aurora-postgresql10'),
+      parameterGroup: ParameterGroup.fromParameterGroupName(stack, 'ParameterGroup', 'default.aurora-postgresql11'),
     });
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBCluster', {
       Engine: 'aurora-postgresql',
-      DBClusterParameterGroupName: 'default.aurora-postgresql10',
+      DBClusterParameterGroupName: 'default.aurora-postgresql11',
       EngineMode: 'serverless',
       DBSubnetGroupName: { Ref: 'DatabaseSubnets56F17B9A' },
       MasterUsername: {
@@ -892,7 +892,7 @@ describe('serverless cluster', () => {
     // WHEN
     new ServerlessCluster(stack, 'Database', {
       engine: DatabaseClusterEngine.AURORA,
-      parameterGroup: ParameterGroup.fromParameterGroupName(stack, 'ParameterGroup', 'default.aurora-postgresql10'),
+      parameterGroup: ParameterGroup.fromParameterGroupName(stack, 'ParameterGroup', 'default.aurora-postgresql11'),
     });
 
     // THEN
@@ -909,7 +909,7 @@ describe('serverless cluster', () => {
     new ServerlessCluster(stack, 'Database', {
       engine: DatabaseClusterEngine.AURORA_POSTGRESQL,
       copyTagsToSnapshot: false,
-      parameterGroup: ParameterGroup.fromParameterGroupName(stack, 'ParameterGroup', 'default.aurora-postgresql10'),
+      parameterGroup: ParameterGroup.fromParameterGroupName(stack, 'ParameterGroup', 'default.aurora-postgresql11'),
     });
 
     // THEN
@@ -926,7 +926,7 @@ describe('serverless cluster', () => {
     new ServerlessCluster(stack, 'Database', {
       engine: DatabaseClusterEngine.AURORA_POSTGRESQL,
       copyTagsToSnapshot: true,
-      parameterGroup: ParameterGroup.fromParameterGroupName(stack, 'ParameterGroup', 'default.aurora-postgresql10'),
+      parameterGroup: ParameterGroup.fromParameterGroupName(stack, 'ParameterGroup', 'default.aurora-postgresql11'),
     });
 
     // THEN

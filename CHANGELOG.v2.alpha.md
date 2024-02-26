@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.130.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.129.0-alpha.0...v2.130.0-alpha.0) (2024-02-23)
+
+## [2.129.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.128.0-alpha.0...v2.129.0-alpha.0) (2024-02-21)
+
+
+### Bug Fixes
+
+* **appconfig:** scope generated alarm role policy to '*' for composite alarm support ([#29171](https://github.com/aws/aws-cdk/issues/29171)) ([c17879d](https://github.com/aws/aws-cdk/commit/c17879dd8dab526695e69c6faf8345292634ba24))
+
 ## [2.128.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.127.0-alpha.0...v2.128.0-alpha.0) (2024-02-14)
 
 
