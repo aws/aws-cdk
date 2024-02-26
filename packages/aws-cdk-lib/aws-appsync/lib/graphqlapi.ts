@@ -459,7 +459,7 @@ export interface GraphqlApiProps {
    */
   readonly resolverCountLimit?: number;
 
-  /** 
+  /**
    * A map containing the list of resources with their properties and environment variables.
    *
    * There are a few rules you must follow when creating keys and values:
