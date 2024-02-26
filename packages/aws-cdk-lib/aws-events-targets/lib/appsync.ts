@@ -23,15 +23,15 @@ export interface AppSyncGraphQLAPIProps extends TargetBaseProps {
    * The role to assume before invoking the target
    * (i.e., the pipeline) when the given rule is triggered.
    *
-   * @default - a new role will be created
+   * @default - a new role with permissions to access mutations will be created
    */
   readonly eventRole?: iam.IRole;
 
   /**
-   * The GraphQL fields that the rule should be granted access to
+   * The GraphQL mutation fields that the rule should be granted access to. Used if a role is not provided.
    * @default - empty array
    */
-  readonly fields?: string[];
+  readonly mutationFields?: string[];
 
 }
 
@@ -56,7 +56,7 @@ export class AppSync implements events.IRuleTarget {
 
     // if a role was not provided, attach a permission
     if (!this.props.eventRole) {
-      this.appsyncApi.grantMutation(role, ...(this.props.fields ?? []));
+      this.appsyncApi.grantMutation(role, ...(this.props.mutationFields ?? []));
     }
 
     return {

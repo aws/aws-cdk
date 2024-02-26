@@ -28,7 +28,7 @@ test('use AppSync GraphQL API as an event rule target', () => {
     variables: events.RuleTargetInput.fromObject({
       message: events.EventField.fromPath('$.detail'),
     }),
-    fields: ['publish'],
+    mutationFields: ['publish'],
   }));
 
   // THEN
