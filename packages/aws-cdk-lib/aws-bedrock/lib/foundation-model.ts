@@ -5,7 +5,7 @@ import { ArnFormat, Stack } from '../../core';
 /**
  * The model identifiers for the Bedrock base foundation models.
  *
- * @see https://docs.aws.amazon.com/bedrock/latest/userguide/model-ids-arns.html
+ * @see https://docs.aws.amazon.com/bedrock/latest/userguide/model-ids.html
  */
 export class FoundationModelIdentifier {
   /** Base model "ai21.j2-mid-v1". */
@@ -55,6 +55,12 @@ export class FoundationModelIdentifier {
 
   /** Base model "meta.llama2-70b-chat-v1". */
   public static readonly META_LLAMA_2_CHAT_70B_V1 = new FoundationModelIdentifier('meta.llama2-70b-chat-v1');
+
+  /** Base model "stability.stable-diffusion-xl-v0". */
+  public static readonly STABILITY_STABLE_DIFFUSION_XL_V0 = new FoundationModelIdentifier('stability.stable-diffusion-xl-v0');
+
+  /** Base model "stability.stable-diffusion-xl-v1". */
+  public static readonly STABILITY_STABLE_DIFFUSION_XL_V1 = new FoundationModelIdentifier('stability.stable-diffusion-xl-v1');
 
   /**
    * Constructor for foundation model identifier

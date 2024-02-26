@@ -1,0 +1,131 @@
+{
+  "version": "36.0.0",
+  "artifacts": {
+    "SNSTopicPolicyStack.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "SNSTopicPolicyStack.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "SNSTopicPolicyStack": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "SNSTopicPolicyStack.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/14fdbf9da76c6d2a9fd9d7ecce1e6fb899d1bd67a967d68ab86428209e729203.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "SNSTopicPolicyStack.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "SNSTopicPolicyStack.assets"
+      ],
+      "metadata": {
+        "/SNSTopicPolicyStack/Topic/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TopicBFC7AF6E"
+          }
+        ],
+        "/SNSTopicPolicyStack/TopicPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TopicPolicyA24B096F"
+          }
+        ],
+        "/SNSTopicPolicyStack/TopicAddPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TopicAddPolicy7DB03706"
+          }
+        ],
+        "/SNSTopicPolicyStack/TopicAddPolicy/Policy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TopicAddPolicyAEA24A5A"
+          }
+        ],
+        "/SNSTopicPolicyStack/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/SNSTopicPolicyStack/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "SNSTopicPolicyStack"
+    },
+    "SNSTopicPolicyIntegDefaultTestDeployAssert005CA6BA.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "SNSTopicPolicyIntegDefaultTestDeployAssert005CA6BA.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "SNSTopicPolicyIntegDefaultTestDeployAssert005CA6BA": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "SNSTopicPolicyIntegDefaultTestDeployAssert005CA6BA.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "SNSTopicPolicyIntegDefaultTestDeployAssert005CA6BA.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "SNSTopicPolicyIntegDefaultTestDeployAssert005CA6BA.assets"
+      ],
+      "metadata": {
+        "/SNSTopicPolicyInteg/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/SNSTopicPolicyInteg/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "SNSTopicPolicyInteg/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}

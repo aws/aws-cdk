@@ -79,6 +79,38 @@ describe('scalable target', () => {
     });
   });
 
+  test('set timzone in scaleOnSchedule()', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const target = createScalableTarget(stack);
+
+    // WHEN
+    target.scaleOnSchedule('ScaleUp', {
+      schedule: appscaling.Schedule.cron({
+        hour: '8',
+        day: '1',
+      }),
+      maxCapacity: 50,
+      minCapacity: 1,
+      timeZone: cdk.TimeZone.AMERICA_DENVER,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ApplicationAutoScaling::ScalableTarget', {
+      ScheduledActions: [
+        {
+          ScalableTargetAction: {
+            MaxCapacity: 50,
+            MinCapacity: 1,
+          },
+          Schedule: 'cron(* 8 1 * ? *)',
+          ScheduledActionName: 'ScaleUp',
+          Timezone: 'America/Denver',
+        },
+      ],
+    });
+  });
+
   test('scheduled scaling shows warning when minute is not defined in cron', () => {
     // GIVEN
     const stack = new cdk.Stack();

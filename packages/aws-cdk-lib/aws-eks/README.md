@@ -657,7 +657,7 @@ new eks.Cluster(this, 'HelloEKS', {
 });
 ```
 
-> Note: Isolated VPCs (i.e with no internet access) are not currently supported. See https://github.com/aws/aws-cdk/issues/12171
+> Note: Isolated VPCs (i.e with no internet access) are not fully supported. See https://github.com/aws/aws-cdk/issues/12171. Check out [this aws-cdk-example](https://github.com/aws-samples/aws-cdk-examples/tree/master/java/eks/private-cluster) for reference.
 
 If you do not specify a VPC, one will be created on your behalf, which you can then access via `cluster.vpc`. The cluster VPC will be associated to any EKS managed capacity (i.e Managed Node Groups and Fargate Profiles).
 

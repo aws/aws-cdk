@@ -19,7 +19,7 @@ jobs:
           persist-credentials: false
       - name: Find changed cli files
         id: changed-cli-files
-        uses: tj-actions/changed-files@90a06d6ba9543371ab4df8eeca0be07ca6054959
+        uses: tj-actions/changed-files@3f54ebb830831fc121d3263c1857cfbdc310cdb9
         with:
           base_sha: ${{ github.event.pull_request.base.sha }}
           files_yaml: |
@@ -46,7 +46,7 @@ jobs:
           git config --global user.email 'aws-cdk-automation@users.noreply.github.com'
           git push --force --atomic https://github.com/${{ github.repository }}.git FETCH_HEAD:test-main-pipeline
       - name: Explain next steps
-        uses: thollander/actions-comment-pull-request@1d3973dc4b8e1399c0620d3f2b1aa5e795465308
+        uses: thollander/actions-comment-pull-request@fabd468d3a1a0b97feee5f6b9e499eab0dd903f6
         with:
           message: |
             :arrow_right: **PR build request submitted to `test-main-pipeline`** :arrow_left:

@@ -1204,6 +1204,7 @@ export class Stack extends Construct implements ITaggable {
       new CfnOutput(this, `Export${options.name}`, {
         value: exportedValue,
         exportName: options.name,
+        description: options.description,
       });
       return Fn.importValue(options.name);
     }
@@ -1215,6 +1216,7 @@ export class Stack extends Construct implements ITaggable {
       new CfnOutput(exportsScope, id, {
         value: Token.asString(exportable),
         exportName,
+        description: options.description,
       });
     }
 
@@ -1253,6 +1255,7 @@ export class Stack extends Construct implements ITaggable {
       new CfnOutput(this, `Export${options.name}`, {
         value: Fn.join(STRING_LIST_REFERENCE_DELIMITER, exportedValue),
         exportName: options.name,
+        description: options.description,
       });
       return Fn.split(STRING_LIST_REFERENCE_DELIMITER, Fn.importValue(options.name));
     }
@@ -1268,6 +1271,7 @@ export class Stack extends Construct implements ITaggable {
         // (string lists are invalid)
         value: Fn.join(STRING_LIST_REFERENCE_DELIMITER, Token.asList(exportable)),
         exportName,
+        description: options.description,
       });
     }
 
@@ -1766,6 +1770,13 @@ export interface ExportValueOptions {
    * @default - A name is automatically chosen
    */
   readonly name?: string;
+
+  /**
+   * The description of the outputs
+   *
+   * @default - No description
+   */
+  readonly description?: string;
 }
 
 function count(xs: string[]): Record<string, number> {
