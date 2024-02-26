@@ -51,10 +51,6 @@ export async function listStacks(toolkit: CdkToolkit, options: ListStacksOptions
     defaultBehavior: DefaultSelection.AllStacks,
   });
 
-  toolkit.validateStacksSelected(stacks, options.selectors);
-
-  toolkit.validateStacks(stacks);
-
   function calculateStackDependencies(collectionOfStacks: StackCollection): StackDetails[] {
     const allData: StackDetails[] = [];
 
