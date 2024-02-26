@@ -25,5 +25,5 @@ class TestStack extends Stack {
 }
 
 const app = new App();
-new TestStack(app, 'cdkinteg-opensearch-with-logging-disabled');
+new TestStack(app, 'cdk-integ-opensearch-with-logging-disabled');
 app.synth();
