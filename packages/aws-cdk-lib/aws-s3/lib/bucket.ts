@@ -1973,11 +1973,11 @@ export class Bucket extends BucketBase {
 
     if (props.serverAccessLogsBucket instanceof Bucket) {
       props.serverAccessLogsBucket.allowLogDelivery(this, props.serverAccessLogsPrefix);
-      // It is possible that `serverAccessLogsBucket` was specified but is some other `IBucket`
-      // that cannot have the ACLs or bucket policy applied. In that scenario, we should only
-      // setup log delivery permissions to `this` if a bucket was not specified at all, as documented.
-      // For example, we should not allow log delivery to `this` if given an imported bucket or
-      // another situation that causes `instanceof` to fail
+    // It is possible that `serverAccessLogsBucket` was specified but is some other `IBucket`
+    // that cannot have the ACLs or bucket policy applied. In that scenario, we should only
+    // setup log delivery permissions to `this` if a bucket was not specified at all, as documented.
+    // For example, we should not allow log delivery to `this` if given an imported bucket or
+    // another situation that causes `instanceof` to fail
     } else if (!props.serverAccessLogsBucket && props.serverAccessLogsPrefix) {
       this.allowLogDelivery(this, props.serverAccessLogsPrefix);
     } else if (props.serverAccessLogsBucket) {
@@ -2231,7 +2231,7 @@ export class Bucket extends BucketBase {
     function parseLifecycleRule(rule: LifecycleRule): CfnBucket.RuleProperty {
       const enabled = rule.enabled ?? true;
       if ((rule.expiredObjectDeleteMarker)
-        && (rule.expiration || rule.expirationDate || self.parseTagFilters(rule.tagFilters))) {
+      && (rule.expiration || rule.expirationDate || self.parseTagFilters(rule.tagFilters))) {
         // ExpiredObjectDeleteMarker cannot be specified with ExpirationInDays, ExpirationDate, or TagFilters.
         throw new Error('ExpiredObjectDeleteMarker cannot be specified with expiration, ExpirationDate, or TagFilters.');
       }
@@ -2356,7 +2356,7 @@ export class Bucket extends BucketBase {
     }
 
     if (accessControlRequiresObjectOwnership && this.objectOwnership === ObjectOwnership.BUCKET_OWNER_ENFORCED) {
-      throw new Error(`objectOwnership must be set to "${ObjectOwnership.OBJECT_WRITER}" when accessControl is "${this.accessControl}"`);
+      throw new Error (`objectOwnership must be set to "${ObjectOwnership.OBJECT_WRITER}" when accessControl is "${this.accessControl}"`);
     }
 
     return {
