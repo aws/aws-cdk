@@ -697,14 +697,14 @@ export interface CommonProjectProps {
    *
    * @default - no queue timeout is set
    */
-  readonly queuedTimeout?: Duration
+  readonly queuedTimeout?: Duration;
 
   /**
    * Maximum number of concurrent builds. Minimum value is 1 and maximum is account build limit.
    *
    * @default - no explicit limit is set
    */
-  readonly concurrentBuildLimit?: number
+  readonly concurrentBuildLimit?: number;
 
   /**
    * Add the permissions necessary for debugging builds with SSM Session Manager
@@ -1593,7 +1593,7 @@ export enum ImagePullPrincipalType {
    * SERVICE_ROLE specifies that AWS CodeBuild uses the project's role when pulling the image.
    * The role will be granted pull permissions on the ECR repository hosting the image.
    */
-  SERVICE_ROLE = 'SERVICE_ROLE'
+  SERVICE_ROLE = 'SERVICE_ROLE',
 }
 
 export interface BuildEnvironment {

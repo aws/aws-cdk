@@ -289,7 +289,7 @@ test('Running a Fargate Task', () => {
         {
           Action: 'ecs:RunTask',
           Effect: 'Allow',
-          Resource: {
+          Resource: [{
             'Fn::Join': [
               '',
               [
@@ -308,6 +308,26 @@ test('Running a Fargate Task', () => {
               ],
             ],
           },
+          {
+            'Fn::Join': [
+              '',
+              [
+                'arn:',
+                { 'Fn::Select': [1, { 'Fn::Split': [':', { 'Ref': 'TD49C78F36' }] }] },
+                ':',
+                { 'Fn::Select': [2, { 'Fn::Split': [':', { 'Ref': 'TD49C78F36' }] }] },
+                ':',
+                { 'Fn::Select': [3, { 'Fn::Split': [':', { 'Ref': 'TD49C78F36' }] }] },
+                ':',
+                { 'Fn::Select': [4, { 'Fn::Split': [':', { 'Ref': 'TD49C78F36' }] }] },
+                ':',
+                { 'Fn::Select': [0, { 'Fn::Split': ['/', { 'Fn::Select': [5, { 'Fn::Split': [':', { 'Ref': 'TD49C78F36' }] }] }] }] },
+                '/',
+                { 'Fn::Select': [1, { 'Fn::Split': ['/', { 'Fn::Select': [5, { 'Fn::Split': [':', { 'Ref': 'TD49C78F36' }] }] }] }] },
+                ':*',
+              ],
+            ],
+          }],
         },
         {
           Action: ['ecs:StopTask', 'ecs:DescribeTasks'],
@@ -411,7 +431,7 @@ test('Running an EC2 Task with bridge network', () => {
         {
           Action: 'ecs:RunTask',
           Effect: 'Allow',
-          Resource: {
+          Resource: [{
             'Fn::Join': [
               '',
               [
@@ -430,6 +450,26 @@ test('Running an EC2 Task with bridge network', () => {
               ],
             ],
           },
+          {
+            'Fn::Join': [
+              '',
+              [
+                'arn:',
+                { 'Fn::Select': [1, { 'Fn::Split': [':', { 'Ref': 'TD49C78F36' }] }] },
+                ':',
+                { 'Fn::Select': [2, { 'Fn::Split': [':', { 'Ref': 'TD49C78F36' }] }] },
+                ':',
+                { 'Fn::Select': [3, { 'Fn::Split': [':', { 'Ref': 'TD49C78F36' }] }] },
+                ':',
+                { 'Fn::Select': [4, { 'Fn::Split': [':', { 'Ref': 'TD49C78F36' }] }] },
+                ':',
+                { 'Fn::Select': [0, { 'Fn::Split': ['/', { 'Fn::Select': [5, { 'Fn::Split': [':', { 'Ref': 'TD49C78F36' }] }] }] }] },
+                '/',
+                { 'Fn::Select': [1, { 'Fn::Split': ['/', { 'Fn::Select': [5, { 'Fn::Split': [':', { 'Ref': 'TD49C78F36' }] }] }] }] },
+                ':*',
+              ],
+            ],
+          }],
         },
         {
           Action: ['ecs:StopTask', 'ecs:DescribeTasks'],

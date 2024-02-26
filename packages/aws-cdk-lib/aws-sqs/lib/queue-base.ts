@@ -339,5 +339,5 @@ export enum QueueEncryption {
    * To learn more about SSE-SQS on Amazon SQS, please visit the
    * [Amazon SQS documentation](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-server-side-encryption.html).
    */
-  SQS_MANAGED = 'SQS_MANAGED'
+  SQS_MANAGED = 'SQS_MANAGED',
 }

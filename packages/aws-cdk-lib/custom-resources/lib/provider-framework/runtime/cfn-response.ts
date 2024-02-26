@@ -18,7 +18,7 @@ export interface CloudFormationEventContext {
   PhysicalResourceId?: string;
   LogicalResourceId: string;
   ResponseURL: string;
-  Data?: any
+  Data?: any;
 }
 
 export async function submitResponse(status: 'SUCCESS' | 'FAILED', event: CloudFormationEventContext, options: CloudFormationResponseOptions = { }) {

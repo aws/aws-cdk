@@ -1330,6 +1330,38 @@ describe('vpc', () => {
 
       Template.fromStack(stack).resourceCountIs('Custom::VpcRestrictDefaultSG', 0);
     });
+
+    test.each(
+      [
+        {
+          subnetType: SubnetType.PRIVATE_ISOLATED,
+        },
+        {
+          subnetType: SubnetType.PRIVATE_WITH_EGRESS,
+          additionalSubnetConfig: [{ subnetType: SubnetType.PUBLIC, name: 'public' }],
+        },
+        {
+          subnetType: SubnetType.PUBLIC,
+        },
+      ],
+    )('subnet has dependent on the CIDR block when ipv6AssignAddressOnCreation is set to true, ', (testData) => {
+      const stack = getTestStack();
+      new Vpc(stack, 'TheVPC', {
+        ipProtocol: IpProtocol.DUAL_STACK,
+        maxAzs: 1,
+        subnetConfiguration: [
+          {
+            subnetType: testData.subnetType,
+            name: 'subnetName',
+            ipv6AssignAddressOnCreation: true,
+          },
+          ...testData.additionalSubnetConfig ?? [],
+        ],
+      });
+      Template.fromStack(stack).hasResource('AWS::EC2::Subnet', {
+        DependsOn: ['TheVPCipv6cidrF3E84E30'],
+      });
+    });
   });
 
   describe('fromVpcAttributes', () => {
@@ -2482,13 +2514,13 @@ function getTestStack(): Stack {
   return new Stack(undefined, 'TestStack', { env: { account: '123456789012', region: 'us-east-1' } });
 }
 
-function toCfnTags(tags: any): Array<{Key: string, Value: string}> {
+function toCfnTags(tags: any): Array<{Key: string; Value: string}> {
   return Object.keys(tags).map( key => {
     return { Key: key, Value: tags[key] };
   });
 }
 
-function hasTags(expectedTags: Array<{Key: string, Value: string}>) {
+function hasTags(expectedTags: Array<{Key: string; Value: string}>) {
   return {
     Properties: {
       Tags: Match.arrayWith(expectedTags),

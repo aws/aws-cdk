@@ -16,7 +16,7 @@ describe(AppStagingSynthesizer, () => {
 
   beforeEach(() => {
     app = new App({
-      defaultStackSynthesizer: AppStagingSynthesizer.defaultResources({ appId: APP_ID }),
+      defaultStackSynthesizer: AppStagingSynthesizer.defaultResources({ appId: APP_ID, stagingBucketEncryption: BucketEncryption.S3_MANAGED }),
     });
     stack = new Stack(app, 'Stack', {
       env: {
@@ -63,7 +63,7 @@ describe(AppStagingSynthesizer, () => {
 
   test('stack template is in the asset manifest - environment tokens', () => {
     const app2 = new App({
-      defaultStackSynthesizer: AppStagingSynthesizer.defaultResources({ appId: APP_ID }),
+      defaultStackSynthesizer: AppStagingSynthesizer.defaultResources({ appId: APP_ID, stagingBucketEncryption: BucketEncryption.S3_MANAGED }),
     });
     const accountToken = Token.asString('111111111111');
     const regionToken = Token.asString('us-east-2');
@@ -253,6 +253,7 @@ describe(AppStagingSynthesizer, () => {
         defaultStackSynthesizer: AppStagingSynthesizer.defaultResources({
           appId: APP_ID,
           deployTimeFileAssetLifetime: Duration.days(1),
+          stagingBucketEncryption: BucketEncryption.KMS,
         }),
       });
       stack = new Stack(app, 'Stack', {
@@ -277,7 +278,6 @@ describe(AppStagingSynthesizer, () => {
             Status: 'Enabled',
           }]),
         },
-        // When stagingBucketEncryption is not specified, it should be KMS for backwards compatibility
         BucketEncryption: {
           ServerSideEncryptionConfiguration: [
             {
@@ -470,6 +470,7 @@ describe(AppStagingSynthesizer, () => {
       defaultStackSynthesizer: AppStagingSynthesizer.defaultResources({
         appId: APP_ID,
         imageAssetVersionCount: 1,
+        stagingBucketEncryption: BucketEncryption.S3_MANAGED,
       }),
     });
     stack = new Stack(app, 'Stack', {
@@ -513,6 +514,7 @@ describe(AppStagingSynthesizer, () => {
       defaultStackSynthesizer: AppStagingSynthesizer.defaultResources({
         appId: APP_ID,
         autoDeleteStagingAssets: false,
+        stagingBucketEncryption: BucketEncryption.S3_MANAGED,
       }),
     });
     stack = new Stack(app, 'Stack', {
@@ -544,6 +546,7 @@ describe(AppStagingSynthesizer, () => {
       defaultStackSynthesizer: AppStagingSynthesizer.defaultResources({
         appId: APP_ID,
         stagingStackNamePrefix: prefix,
+        stagingBucketEncryption: BucketEncryption.S3_MANAGED,
       }),
     });
     stack = new Stack(app, 'Stack', {
@@ -573,6 +576,7 @@ describe(AppStagingSynthesizer, () => {
     expect(() => new App({
       defaultStackSynthesizer: AppStagingSynthesizer.defaultResources({
         appId: Lazy.string({ produce: () => 'appId' }),
+        stagingBucketEncryption: BucketEncryption.S3_MANAGED,
       }),
     })).toThrowError(/AppStagingSynthesizer property 'appId' may not contain tokens;/);
   });

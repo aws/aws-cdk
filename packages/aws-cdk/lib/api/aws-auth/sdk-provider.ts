@@ -520,7 +520,7 @@ export interface CredentialsOptions {
  */
 type ObtainBaseCredentialsResult =
   { source: 'correctDefault'; credentials: AWS.Credentials }
-  | { source: 'plugin'; pluginName: string, credentials: AWS.Credentials }
+  | { source: 'plugin'; pluginName: string; credentials: AWS.Credentials }
   | { source: 'incorrectDefault'; credentials: AWS.Credentials; accountId: string; unusedPlugins: string[] }
   | { source: 'none'; unusedPlugins: string[] };
 

@@ -246,7 +246,7 @@ async function getImdsV2Token(metadataService: AWS.MetadataService): Promise<str
  */
 async function getRegionFromImds(metadataService: AWS.MetadataService, token: string | undefined): Promise<string> {
   debug('Retrieving the AWS region from the IMDS.');
-  let options: { method?: string | undefined; headers?: { [key: string]: string; } | undefined; } = {};
+  let options: { method?: string | undefined; headers?: { [key: string]: string } | undefined } = {};
   if (token) {
     options = { headers: { 'x-aws-ec2-metadata-token': token } };
   }

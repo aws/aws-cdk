@@ -331,7 +331,7 @@ class PipelineDouble extends cdk.Resource implements codepipeline.IPipeline {
   public readonly role: iam.Role;
   public readonly artifactBucket: s3.IBucket;
 
-  constructor(scope: Construct, id: string, { pipelineName, role }: { pipelineName?: string, role: iam.Role }) {
+  constructor(scope: Construct, id: string, { pipelineName, role }: { pipelineName?: string; role: iam.Role }) {
     super(scope, id);
     this.pipelineName = pipelineName || 'TestPipeline';
     this.pipelineArn = cdk.Stack.of(this).formatArn({ service: 'codepipeline', resource: 'pipeline', resourceName: this.pipelineName });
@@ -405,7 +405,7 @@ class StageDouble implements codepipeline.IStage {
     throw new Error('StageDouble is not a real construct');
   }
 
-  constructor({ name, pipeline, actions }: { name?: string, pipeline: PipelineDouble, actions: codepipeline.IAction[] }) {
+  constructor({ name, pipeline, actions }: { name?: string; pipeline: PipelineDouble; actions: codepipeline.IAction[] }) {
     this.stageName = name || 'TestStage';
     this.pipeline = pipeline;
 

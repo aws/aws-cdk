@@ -1283,18 +1283,28 @@ test('with publish additional metrics', () => {
 });
 
 describe('Distribution metrics tests', () => {
-  const metrics = [
-    { name: 'OriginLatency', method: 'metricOriginLatency', additionalMetricsRequired: true, errorMetricName: 'Origin latency' },
-    { name: 'CacheHitRate', method: 'metricCacheHitRate', additionalMetricsRequired: true, errorMetricName: 'Cache hit rate' },
+  const additionalMetrics = [
+    { name: 'OriginLatency', method: 'metricOriginLatency', statistic: 'Average', additionalMetricsRequired: true, errorMetricName: 'Origin latency' },
+    { name: 'CacheHitRate', method: 'metricCacheHitRate', statistic: 'Average', additionalMetricsRequired: true, errorMetricName: 'Cache hit rate' },
     ...['401', '403', '404', '502', '503', '504'].map(errorCode => ({
       name: `${errorCode}ErrorRate`,
       method: `metric${errorCode}ErrorRate`,
+      statistic: 'Average',
       additionalMetricsRequired: true,
       errorMetricName: `${errorCode} error rate`,
     })),
   ];
 
-  test.each(metrics)('get %s metric', (metric) => {
+  const defaultMetrics = [
+    { name: 'Requests', method: 'metricRequests', statistic: 'Sum', additionalMetricsRequired: false, errorMetricName: '' },
+    { name: 'BytesDownloaded', method: 'metricBytesDownloaded', statistic: 'Sum', additionalMetricsRequired: false, errorMetricName: '' },
+    { name: 'BytesUploaded', method: 'metricBytesUploaded', statistic: 'Sum', additionalMetricsRequired: false, errorMetricName: '' },
+    { name: 'TotalErrorRate', method: 'metricTotalErrorRate', statistic: 'Average', additionalMetricsRequired: false, errorMetricName: '' },
+    { name: '4xxErrorRate', method: 'metric4xxErrorRate', statistic: 'Average', additionalMetricsRequired: false, errorMetricName: '' },
+    { name: '5xxErrorRate', method: 'metric5xxErrorRate', statistic: 'Average', additionalMetricsRequired: false, errorMetricName: '' },
+  ];
+
+  test.each(additionalMetrics.concat(defaultMetrics))('get %s metric', (metric) => {
     const origin = defaultOrigin();
     const dist = new Distribution(stack, 'MyDist', {
       defaultBehavior: { origin },
@@ -1307,12 +1317,12 @@ describe('Distribution metrics tests', () => {
       namespace: 'AWS/CloudFront',
       metricName: metric.name,
       dimensions: { DistributionId: dist.distributionId },
-      statistic: 'Average',
+      statistic: metric.statistic,
       period: Duration.minutes(5),
     }));
   });
 
-  test.each(metrics)('throw error when trying to get %s metric without publishing additional metrics', (metric) => {
+  test.each(additionalMetrics)('throw error when trying to get %s metric without publishing additional metrics', (metric) => {
     const origin = defaultOrigin();
     const dist = new Distribution(stack, 'MyDist', {
       defaultBehavior: { origin },
