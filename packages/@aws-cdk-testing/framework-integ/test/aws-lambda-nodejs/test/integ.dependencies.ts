@@ -54,7 +54,7 @@ class SdkV3BundledStack extends Stack {
       entry: path.join(__dirname, 'integ-handlers/dependencies-sdk-v3.ts'),
       runtime: Runtime.NODEJS_18_X,
       bundling: {
-        useAwsSdk: true,
+        bundleAwsSDK: true,
       },
     });
   }

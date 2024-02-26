@@ -340,7 +340,7 @@ test('esbuild bundling includes aws-sdk', () => {
     depsLockFilePath,
     runtime: Runtime.NODEJS_18_X,
     architecture: Architecture.X86_64,
-    useAwsSdk: true,
+    bundleAwsSDK: true,
   });
 
   // Correctly bundles with esbuild
