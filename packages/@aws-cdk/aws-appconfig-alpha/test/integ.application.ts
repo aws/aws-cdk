@@ -9,10 +9,15 @@ const stack = new Stack(app, 'aws-appconfig-application');
 
 new Application(stack, 'MyAppConfig', {
   description: 'This is my application for testing',
+  applicationName: 'MySampleApplication',
 });
 
 const taskDef = new FargateTaskDefinition(stack, 'MyTaskDef');
 Application.addAgentToEcs(taskDef);
+
+/* resource deployment alone is sufficient because we already have the
+   corresponding resource handler tests to assert that resources can be
+   used after created */
 
 new IntegTest(app, 'appconfig-application', {
   testCases: [stack],
