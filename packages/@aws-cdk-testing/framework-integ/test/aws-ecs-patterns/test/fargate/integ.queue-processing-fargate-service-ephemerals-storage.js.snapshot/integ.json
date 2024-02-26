@@ -1,0 +1,12 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "queueProcessingFargateServiceWithCustomEphemeralStorageTest/DefaultTest": {
+      "stacks": [
+        "aws-ecs-patterns-queue-ephemeral-storage"
+      ],
+      "assertionStack": "queueProcessingFargateServiceWithCustomEphemeralStorageTest/DefaultTest/DeployAssert",
+      "assertionStackName": "queueProcessingFargateServiceWithCustomEphemeralStorageTestDefaultTestDeployAssert916D9DD4"
+    }
+  }
+}

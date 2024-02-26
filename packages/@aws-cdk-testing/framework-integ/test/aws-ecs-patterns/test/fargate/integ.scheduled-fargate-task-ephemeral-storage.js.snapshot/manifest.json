@@ -1,0 +1,245 @@
+{
+  "version": "36.0.0",
+  "artifacts": {
+    "aws-fargate-integ-scheduled-ephemeral-storage.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "aws-fargate-integ-scheduled-ephemeral-storage.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "aws-fargate-integ-scheduled-ephemeral-storage": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-fargate-integ-scheduled-ephemeral-storage.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/1fa04ff810aab302be0692f81b717b907b2d12bbe39ac1f9aa5a19d801c48d64.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "aws-fargate-integ-scheduled-ephemeral-storage.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "aws-fargate-integ-scheduled-ephemeral-storage.assets"
+      ],
+      "metadata": {
+        "/aws-fargate-integ-scheduled-ephemeral-storage/Vpc/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Vpc8378EB38"
+          }
+        ],
+        "/aws-fargate-integ-scheduled-ephemeral-storage/Vpc/PublicSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet1Subnet5C2D37C4"
+          }
+        ],
+        "/aws-fargate-integ-scheduled-ephemeral-storage/Vpc/PublicSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet1RouteTable6C95E38E"
+          }
+        ],
+        "/aws-fargate-integ-scheduled-ephemeral-storage/Vpc/PublicSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet1RouteTableAssociation97140677"
+          }
+        ],
+        "/aws-fargate-integ-scheduled-ephemeral-storage/Vpc/PublicSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet1DefaultRoute3DA9E72A"
+          }
+        ],
+        "/aws-fargate-integ-scheduled-ephemeral-storage/Vpc/PublicSubnet1/EIP": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet1EIPD7E02669"
+          }
+        ],
+        "/aws-fargate-integ-scheduled-ephemeral-storage/Vpc/PublicSubnet1/NATGateway": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet1NATGateway4D7517AA"
+          }
+        ],
+        "/aws-fargate-integ-scheduled-ephemeral-storage/Vpc/PrivateSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet1Subnet536B997A"
+          }
+        ],
+        "/aws-fargate-integ-scheduled-ephemeral-storage/Vpc/PrivateSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet1RouteTableB2C5B500"
+          }
+        ],
+        "/aws-fargate-integ-scheduled-ephemeral-storage/Vpc/PrivateSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet1RouteTableAssociation70C59FA6"
+          }
+        ],
+        "/aws-fargate-integ-scheduled-ephemeral-storage/Vpc/PrivateSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet1DefaultRouteBE02A9ED"
+          }
+        ],
+        "/aws-fargate-integ-scheduled-ephemeral-storage/Vpc/IGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcIGWD7BA715C"
+          }
+        ],
+        "/aws-fargate-integ-scheduled-ephemeral-storage/Vpc/VPCGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcVPCGWBF912B6E"
+          }
+        ],
+        "/aws-fargate-integ-scheduled-ephemeral-storage/FargateCluster/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FargateCluster7CCD5F93"
+          }
+        ],
+        "/aws-fargate-integ-scheduled-ephemeral-storage/ScheduledFargateTaskWithCustomEphemeralStorage/ScheduledEventRule/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ScheduledFargateTaskWithCustomEphemeralStorageScheduledEventRuleF2571741"
+          }
+        ],
+        "/aws-fargate-integ-scheduled-ephemeral-storage/ScheduledFargateTaskWithCustomEphemeralStorage/ScheduledTaskDef/TaskRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ScheduledFargateTaskWithCustomEphemeralStorageScheduledTaskDefTaskRoleF60D3B2A"
+          }
+        ],
+        "/aws-fargate-integ-scheduled-ephemeral-storage/ScheduledFargateTaskWithCustomEphemeralStorage/ScheduledTaskDef/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ScheduledFargateTaskWithCustomEphemeralStorageScheduledTaskDef5ED0AEF9"
+          }
+        ],
+        "/aws-fargate-integ-scheduled-ephemeral-storage/ScheduledFargateTaskWithCustomEphemeralStorage/ScheduledTaskDef/ScheduledContainer/LogGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ScheduledFargateTaskWithCustomEphemeralStorageScheduledTaskDefScheduledContainerLogGroup2AF9161D"
+          }
+        ],
+        "/aws-fargate-integ-scheduled-ephemeral-storage/ScheduledFargateTaskWithCustomEphemeralStorage/ScheduledTaskDef/ExecutionRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ScheduledFargateTaskWithCustomEphemeralStorageScheduledTaskDefExecutionRoleD33742F9"
+          }
+        ],
+        "/aws-fargate-integ-scheduled-ephemeral-storage/ScheduledFargateTaskWithCustomEphemeralStorage/ScheduledTaskDef/ExecutionRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ScheduledFargateTaskWithCustomEphemeralStorageScheduledTaskDefExecutionRoleDefaultPolicyC539B783"
+          }
+        ],
+        "/aws-fargate-integ-scheduled-ephemeral-storage/ScheduledFargateTaskWithCustomEphemeralStorage/ScheduledTaskDef/EventsRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ScheduledFargateTaskWithCustomEphemeralStorageScheduledTaskDefEventsRole028E8D59"
+          }
+        ],
+        "/aws-fargate-integ-scheduled-ephemeral-storage/ScheduledFargateTaskWithCustomEphemeralStorage/ScheduledTaskDef/EventsRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ScheduledFargateTaskWithCustomEphemeralStorageScheduledTaskDefEventsRoleDefaultPolicyB5035379"
+          }
+        ],
+        "/aws-fargate-integ-scheduled-ephemeral-storage/ScheduledFargateTaskWithCustomEphemeralStorage/ScheduledTaskDef/SecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ScheduledFargateTaskWithCustomEphemeralStorageScheduledTaskDefSecurityGroup75646D4F"
+          }
+        ],
+        "/aws-fargate-integ-scheduled-ephemeral-storage/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/aws-fargate-integ-scheduled-ephemeral-storage/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "aws-fargate-integ-scheduled-ephemeral-storage"
+    },
+    "scheduledFargateTaskWithCustomEphemeralStorageTestDefaultTestDeployAssert54AD4992.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "scheduledFargateTaskWithCustomEphemeralStorageTestDefaultTestDeployAssert54AD4992.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "scheduledFargateTaskWithCustomEphemeralStorageTestDefaultTestDeployAssert54AD4992": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "scheduledFargateTaskWithCustomEphemeralStorageTestDefaultTestDeployAssert54AD4992.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "scheduledFargateTaskWithCustomEphemeralStorageTestDefaultTestDeployAssert54AD4992.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "scheduledFargateTaskWithCustomEphemeralStorageTestDefaultTestDeployAssert54AD4992.assets"
+      ],
+      "metadata": {
+        "/scheduledFargateTaskWithCustomEphemeralStorageTest/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/scheduledFargateTaskWithCustomEphemeralStorageTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "scheduledFargateTaskWithCustomEphemeralStorageTest/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}

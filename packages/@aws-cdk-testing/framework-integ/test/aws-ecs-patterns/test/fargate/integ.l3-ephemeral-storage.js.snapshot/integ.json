@@ -1,0 +1,12 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "l3FargateWithCustomEphemeralStorageTest/DefaultTest": {
+      "stacks": [
+        "aws-ecs-integ-lb-fargate-ephemeral-storage"
+      ],
+      "assertionStack": "l3FargateWithCustomEphemeralStorageTest/DefaultTest/DeployAssert",
+      "assertionStackName": "l3FargateWithCustomEphemeralStorageTestDefaultTestDeployAssertDB3305A0"
+    }
+  }
+}

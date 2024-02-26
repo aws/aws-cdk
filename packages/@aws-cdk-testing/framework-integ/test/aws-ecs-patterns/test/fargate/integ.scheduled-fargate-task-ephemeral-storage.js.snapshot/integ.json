@@ -1,0 +1,12 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "scheduledFargateTaskWithCustomEphemeralStorageTest/DefaultTest": {
+      "stacks": [
+        "aws-fargate-integ-scheduled-ephemeral-storage"
+      ],
+      "assertionStack": "scheduledFargateTaskWithCustomEphemeralStorageTest/DefaultTest/DeployAssert",
+      "assertionStackName": "scheduledFargateTaskWithCustomEphemeralStorageTestDefaultTestDeployAssert54AD4992"
+    }
+  }
+}

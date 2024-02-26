@@ -1,0 +1,19 @@
+{
+  "version": "36.0.0",
+  "files": {
+    "12a83d1aa87346a3e32c7d07c722c675c3a3b3a4e05bd1896e90c441f70cb7fb": {
+      "source": {
+        "path": "aws-ecs-integ-lb-fargate-ephemeral-storage.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "12a83d1aa87346a3e32c7d07c722c675c3a3b3a4e05bd1896e90c441f70cb7fb.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

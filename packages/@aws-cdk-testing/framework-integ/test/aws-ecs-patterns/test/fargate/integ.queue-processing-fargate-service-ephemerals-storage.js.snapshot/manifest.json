@@ -1,0 +1,371 @@
+{
+  "version": "36.0.0",
+  "artifacts": {
+    "aws-ecs-patterns-queue-ephemeral-storage.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "aws-ecs-patterns-queue-ephemeral-storage.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "aws-ecs-patterns-queue-ephemeral-storage": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-ecs-patterns-queue-ephemeral-storage.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/bd6a7a0d3704b985e87db613576af71fe64e9b84e58dc7e5b6b8f8757f3a1653.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "aws-ecs-patterns-queue-ephemeral-storage.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "aws-ecs-patterns-queue-ephemeral-storage.assets"
+      ],
+      "metadata": {
+        "/aws-ecs-patterns-queue-ephemeral-storage/VPC/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCB9E5F0B4"
+          }
+        ],
+        "/aws-ecs-patterns-queue-ephemeral-storage/VPC/PublicSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet1SubnetB4246D30"
+          }
+        ],
+        "/aws-ecs-patterns-queue-ephemeral-storage/VPC/PublicSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet1RouteTableFEE4B781"
+          }
+        ],
+        "/aws-ecs-patterns-queue-ephemeral-storage/VPC/PublicSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet1RouteTableAssociation0B0896DC"
+          }
+        ],
+        "/aws-ecs-patterns-queue-ephemeral-storage/VPC/PublicSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet1DefaultRoute91CEF279"
+          }
+        ],
+        "/aws-ecs-patterns-queue-ephemeral-storage/VPC/PublicSubnet1/EIP": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet1EIP6AD938E8"
+          }
+        ],
+        "/aws-ecs-patterns-queue-ephemeral-storage/VPC/PublicSubnet1/NATGateway": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet1NATGatewayE0556630"
+          }
+        ],
+        "/aws-ecs-patterns-queue-ephemeral-storage/VPC/PublicSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet2Subnet74179F39"
+          }
+        ],
+        "/aws-ecs-patterns-queue-ephemeral-storage/VPC/PublicSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet2RouteTable6F1A15F1"
+          }
+        ],
+        "/aws-ecs-patterns-queue-ephemeral-storage/VPC/PublicSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet2RouteTableAssociation5A808732"
+          }
+        ],
+        "/aws-ecs-patterns-queue-ephemeral-storage/VPC/PublicSubnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet2DefaultRouteB7481BBA"
+          }
+        ],
+        "/aws-ecs-patterns-queue-ephemeral-storage/VPC/PublicSubnet2/EIP": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet2EIP4947BC00"
+          }
+        ],
+        "/aws-ecs-patterns-queue-ephemeral-storage/VPC/PublicSubnet2/NATGateway": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPublicSubnet2NATGateway3C070193"
+          }
+        ],
+        "/aws-ecs-patterns-queue-ephemeral-storage/VPC/PrivateSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPrivateSubnet1Subnet8BCA10E0"
+          }
+        ],
+        "/aws-ecs-patterns-queue-ephemeral-storage/VPC/PrivateSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPrivateSubnet1RouteTableBE8A6027"
+          }
+        ],
+        "/aws-ecs-patterns-queue-ephemeral-storage/VPC/PrivateSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPrivateSubnet1RouteTableAssociation347902D1"
+          }
+        ],
+        "/aws-ecs-patterns-queue-ephemeral-storage/VPC/PrivateSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPrivateSubnet1DefaultRouteAE1D6490"
+          }
+        ],
+        "/aws-ecs-patterns-queue-ephemeral-storage/VPC/PrivateSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPrivateSubnet2SubnetCFCDAA7A"
+          }
+        ],
+        "/aws-ecs-patterns-queue-ephemeral-storage/VPC/PrivateSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPrivateSubnet2RouteTable0A19E10E"
+          }
+        ],
+        "/aws-ecs-patterns-queue-ephemeral-storage/VPC/PrivateSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPrivateSubnet2RouteTableAssociation0C73D413"
+          }
+        ],
+        "/aws-ecs-patterns-queue-ephemeral-storage/VPC/PrivateSubnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCPrivateSubnet2DefaultRouteF4F5CFD2"
+          }
+        ],
+        "/aws-ecs-patterns-queue-ephemeral-storage/VPC/IGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCIGWB7E252D3"
+          }
+        ],
+        "/aws-ecs-patterns-queue-ephemeral-storage/VPC/VPCGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VPCVPCGW99B986DC"
+          }
+        ],
+        "/aws-ecs-patterns-queue-ephemeral-storage/QueueProcessingServiceWithCustomEphemeralStorage/EcsProcessingDeadLetterQueue/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "QueueProcessingServiceWithCustomEphemeralStorageEcsProcessingDeadLetterQueue16100E31"
+          }
+        ],
+        "/aws-ecs-patterns-queue-ephemeral-storage/QueueProcessingServiceWithCustomEphemeralStorage/EcsProcessingQueue/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "QueueProcessingServiceWithCustomEphemeralStorageEcsProcessingQueueDB255AB5"
+          }
+        ],
+        "/aws-ecs-patterns-queue-ephemeral-storage/QueueProcessingServiceWithCustomEphemeralStorage/SQSDeadLetterQueue": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "QueueProcessingServiceWithCustomEphemeralStorageSQSDeadLetterQueue174BD1DD"
+          }
+        ],
+        "/aws-ecs-patterns-queue-ephemeral-storage/QueueProcessingServiceWithCustomEphemeralStorage/SQSDeadLetterQueueArn": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "QueueProcessingServiceWithCustomEphemeralStorageSQSDeadLetterQueueArnF4ABB0BA"
+          }
+        ],
+        "/aws-ecs-patterns-queue-ephemeral-storage/QueueProcessingServiceWithCustomEphemeralStorage/SQSQueue": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "QueueProcessingServiceWithCustomEphemeralStorageSQSQueueF86B74ED"
+          }
+        ],
+        "/aws-ecs-patterns-queue-ephemeral-storage/QueueProcessingServiceWithCustomEphemeralStorage/SQSQueueArn": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "QueueProcessingServiceWithCustomEphemeralStorageSQSQueueArn124AA9E7"
+          }
+        ],
+        "/aws-ecs-patterns-queue-ephemeral-storage/QueueProcessingServiceWithCustomEphemeralStorage/QueueProcessingTaskDef/TaskRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "QueueProcessingServiceWithCustomEphemeralStorageQueueProcessingTaskDefTaskRole39BC6092"
+          }
+        ],
+        "/aws-ecs-patterns-queue-ephemeral-storage/QueueProcessingServiceWithCustomEphemeralStorage/QueueProcessingTaskDef/TaskRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "QueueProcessingServiceWithCustomEphemeralStorageQueueProcessingTaskDefTaskRoleDefaultPolicy4FC7C94A"
+          }
+        ],
+        "/aws-ecs-patterns-queue-ephemeral-storage/QueueProcessingServiceWithCustomEphemeralStorage/QueueProcessingTaskDef/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "QueueProcessingServiceWithCustomEphemeralStorageQueueProcessingTaskDefF9D53797"
+          }
+        ],
+        "/aws-ecs-patterns-queue-ephemeral-storage/QueueProcessingServiceWithCustomEphemeralStorage/QueueProcessingTaskDef/QueueProcessingContainer/LogGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "QueueProcessingServiceWithCustomEphemeralStorageQueueProcessingTaskDefQueueProcessingContainerLogGroup809EAE18"
+          }
+        ],
+        "/aws-ecs-patterns-queue-ephemeral-storage/QueueProcessingServiceWithCustomEphemeralStorage/QueueProcessingTaskDef/ExecutionRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "QueueProcessingServiceWithCustomEphemeralStorageQueueProcessingTaskDefExecutionRole09D97D49"
+          }
+        ],
+        "/aws-ecs-patterns-queue-ephemeral-storage/QueueProcessingServiceWithCustomEphemeralStorage/QueueProcessingTaskDef/ExecutionRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "QueueProcessingServiceWithCustomEphemeralStorageQueueProcessingTaskDefExecutionRoleDefaultPolicyBA2B9B65"
+          }
+        ],
+        "/aws-ecs-patterns-queue-ephemeral-storage/QueueProcessingServiceWithCustomEphemeralStorage/QueueProcessingFargateService/Service": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "QueueProcessingServiceWithCustomEphemeralStorageQueueProcessingFargateServiceCD4458F4"
+          }
+        ],
+        "/aws-ecs-patterns-queue-ephemeral-storage/QueueProcessingServiceWithCustomEphemeralStorage/QueueProcessingFargateService/SecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "QueueProcessingServiceWithCustomEphemeralStorageQueueProcessingFargateServiceSecurityGroupAC767FB7"
+          }
+        ],
+        "/aws-ecs-patterns-queue-ephemeral-storage/QueueProcessingServiceWithCustomEphemeralStorage/QueueProcessingFargateService/TaskCount/Target/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "QueueProcessingServiceWithCustomEphemeralStorageQueueProcessingFargateServiceTaskCountTarget8C823E5D"
+          }
+        ],
+        "/aws-ecs-patterns-queue-ephemeral-storage/QueueProcessingServiceWithCustomEphemeralStorage/QueueProcessingFargateService/TaskCount/Target/CpuScaling/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "QueueProcessingServiceWithCustomEphemeralStorageQueueProcessingFargateServiceTaskCountTargetCpuScaling80F2128F"
+          }
+        ],
+        "/aws-ecs-patterns-queue-ephemeral-storage/QueueProcessingServiceWithCustomEphemeralStorage/QueueProcessingFargateService/TaskCount/Target/QueueMessagesVisibleScaling/LowerPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "QueueProcessingServiceWithCustomEphemeralStorageQueueProcessingFargateServiceTaskCountTargetQueueMessagesVisibleScalingLowerPolicy388891F8"
+          }
+        ],
+        "/aws-ecs-patterns-queue-ephemeral-storage/QueueProcessingServiceWithCustomEphemeralStorage/QueueProcessingFargateService/TaskCount/Target/QueueMessagesVisibleScaling/LowerAlarm/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "QueueProcessingServiceWithCustomEphemeralStorageQueueProcessingFargateServiceTaskCountTargetQueueMessagesVisibleScalingLowerAlarm7C22ADEE"
+          }
+        ],
+        "/aws-ecs-patterns-queue-ephemeral-storage/QueueProcessingServiceWithCustomEphemeralStorage/QueueProcessingFargateService/TaskCount/Target/QueueMessagesVisibleScaling/UpperPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "QueueProcessingServiceWithCustomEphemeralStorageQueueProcessingFargateServiceTaskCountTargetQueueMessagesVisibleScalingUpperPolicy3953FC26"
+          }
+        ],
+        "/aws-ecs-patterns-queue-ephemeral-storage/QueueProcessingServiceWithCustomEphemeralStorage/QueueProcessingFargateService/TaskCount/Target/QueueMessagesVisibleScaling/UpperAlarm/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "QueueProcessingServiceWithCustomEphemeralStorageQueueProcessingFargateServiceTaskCountTargetQueueMessagesVisibleScalingUpperAlarm1419F6DE"
+          }
+        ],
+        "/aws-ecs-patterns-queue-ephemeral-storage/EcsDefaultClusterMnL3mNNYNVPC/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EcsDefaultClusterMnL3mNNYNVPC9C1EC7A3"
+          }
+        ],
+        "/aws-ecs-patterns-queue-ephemeral-storage/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/aws-ecs-patterns-queue-ephemeral-storage/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "aws-ecs-patterns-queue-ephemeral-storage"
+    },
+    "queueProcessingFargateServiceWithCustomEphemeralStorageTestDefaultTestDeployAssert916D9DD4.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "queueProcessingFargateServiceWithCustomEphemeralStorageTestDefaultTestDeployAssert916D9DD4.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "queueProcessingFargateServiceWithCustomEphemeralStorageTestDefaultTestDeployAssert916D9DD4": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "queueProcessingFargateServiceWithCustomEphemeralStorageTestDefaultTestDeployAssert916D9DD4.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "queueProcessingFargateServiceWithCustomEphemeralStorageTestDefaultTestDeployAssert916D9DD4.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "queueProcessingFargateServiceWithCustomEphemeralStorageTestDefaultTestDeployAssert916D9DD4.assets"
+      ],
+      "metadata": {
+        "/queueProcessingFargateServiceWithCustomEphemeralStorageTest/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/queueProcessingFargateServiceWithCustomEphemeralStorageTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "queueProcessingFargateServiceWithCustomEphemeralStorageTest/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}
