@@ -1231,4 +1231,32 @@ describe('changeset', () => {
     expect(differences.resources.differenceCount).toBe(1);
     expect(differences.resources.get('BucketResource').changeImpact === ResourceImpact.WILL_IMPORT);
   });
+
+  test('does not do changeset checks for new stack', async () => {
+    // GIVEN
+    const currentTemplate = {};
+
+    // WHEN
+    const newTemplate = {
+      Resources: {
+        NewResource: {
+          Type: 'AWS::Something::Resource',
+        },
+      },
+    };
+
+    let differences = fullDiff(currentTemplate, newTemplate, {
+      Changes: [
+        {
+          Type: 'Resource',
+          ResourceChange: {
+            Action: 'Import',
+            LogicalResourceId: 'BucketResource',
+          },
+        },
+      ],
+    });
+    expect(differences.resources.differenceCount).toBe(1);
+    expect(differences.resources.get('NewResource').changeImpact === ResourceImpact.WILL_IMPORT);
+  });
 });
