@@ -98,7 +98,7 @@ export enum OidcAttributeRequestMethod {
 }
 
 /**
- * Represents a identity provider that integrates with OpenID Connect
+ * Represents an identity provider that integrates with OpenID Connect
  * @resource AWS::Cognito::UserPoolIdentityProvider
  */
 export class UserPoolIdentityProviderOidc extends UserPoolIdentityProviderBase {
