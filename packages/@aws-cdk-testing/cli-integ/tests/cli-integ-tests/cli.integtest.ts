@@ -844,39 +844,141 @@ integTest('cdk ls', withDefaultFixture(async (fixture) => {
   }
 }));
 
-integTest('cdk ls --show-dependencies', withDefaultFixture(async (fixture) => {
-  const listing = await fixture.cdk(['ls --show-dependencies'], { captureStderr: false });
+/**
+ * Type to store stack dependencies recursively
+ */
+export type DependencyDetails = {
+  id: string;
+  dependencies: DependencyDetails[];
+};
+
+export type StackDetails = {
+  id: string;
+  dependencies: DependencyDetails[];
+};
+
+integTest('cdk ls --show-dependencies --json', withDefaultFixture(async (fixture) => {
+  const listing = await fixture.cdk(['ls --show-dependencies --json'], { captureStderr: false });
 
   const expectedStacks = [
+    {
+      id: 'test-1',
+      dependencies: [],
+    },
     {
       id: 'order-providing',
       dependencies: [],
     },
     {
       id: 'order-consuming',
-      dependencies: [{
-        id: 'order-providing',
-        dependencies: [],
-      }],
+      dependencies: [
+        {
+          id: 'order-providing',
+          dependencies: [],
+        },
+      ],
+    },
+    {
+      id: 'with-nested-stack',
+      dependencies: [],
+    },
+    {
+      id: 'list-stacks',
+      dependencies: [
+        {
+          id: 'liststacksDependentStack',
+          dependencies: [
+            {
+              id: 'liststacksDependentStackInnerDependentStack',
+              dependencies: [],
+            },
+          ],
+        },
+      ],
+    },
+    {
+      id: 'list-multiple-dependent-stacks',
+      dependencies: [
+        {
+          id: 'listmultipledependentstacksDependentStack1',
+          dependencies: [],
+        },
+        {
+          id: 'listmultipledependentstacksDependentStack2',
+          dependencies: [],
+        },
+      ],
     },
   ];
 
-  // for (const stack of expectedStacks) {
-  //   for (const dependency of stack.dependencies) {
-  //     expect(listing.indexOf(stack.id)).toBeGreaterThan(listing.indexOf(dependency.id));
-  //   }
-  // }
+  function validateStackDependencies(stack: StackDetails) {
+    // eslint-disable-next-line no-console
+    console.log('--here--'+ stack.id);
+    expect(listing).toContain(stack.id);
+
+    function validateDependencies(dependencies: DependencyDetails[]) {
+      for (const dependency of dependencies) {
+        // eslint-disable-next-line no-console
+        console.log('--Im here--'+ dependency.id);
+        expect(listing).toContain(dependency.id);
+        if (dependency.dependencies.length > 0) {
+          validateDependencies(dependency.dependencies);
+        }
+      }
+    }
+
+    if (stack.dependencies.length > 0) {
+      validateDependencies(stack.dependencies);
+    }
+  }
+
+  for (const stack of expectedStacks) {
+    validateStackDependencies(stack);
+  }
+}));
+
+integTest('cdk ls --show-dependencies --json --long', withDefaultFixture(async (fixture) => {
+  const listing = await fixture.cdk(['ls --show-dependencies --json --long'], { captureStderr: false });
+
+  const expectedStacks = [
+    {
+      id: 'order-providing',
+      name: 'order-providing',
+      enviroment: {
+        account: 'unknown-account',
+        region: 'unknown-region',
+        name: 'aws://unknown-account/unknown-region',
+      },
+      dependencies: [],
+    },
+    {
+      id: 'order-consuming',
+      name: 'order-consuming',
+      enviroment: {
+        account: 'unknown-account',
+        region: 'unknown-region',
+        name: 'aws://unknown-account/unknown-region',
+      },
+      dependencies: [
+        {
+          id: 'order-providing',
+          dependencies: [],
+        },
+      ],
+    },
+  ];
 
   for (const stack of expectedStacks) {
     expect(listing).toContain(fixture.fullStackName(stack.id));
+    expect(listing).toContain(fixture.fullStackName(stack.name));
+    expect(listing).toContain(stack.enviroment.account);
+    expect(listing).toContain(stack.enviroment.name);
+    expect(listing).toContain(stack.enviroment.region);
     for (const dependency of stack.dependencies) {
       expect(listing).toContain(fixture.fullStackName(dependency.id));
     }
   }
 
-  // for (const stack of expectedStacks) {
-  //   expect(listing).toContain(JSON.stringify(stack));
-  // }
 }));
 
 integTest('synthing a stage with errors leads to failure', withDefaultFixture(async (fixture) => {
