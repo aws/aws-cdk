@@ -37,6 +37,7 @@ const pass = new Pass(stack, 'pass', {
     format1: JsonPath.format('Hi my name is {}.', JsonPath.stringAt('$.Name')),
     format2: JsonPath.format(JsonPath.stringAt('$.Format'), JsonPath.stringAt('$.Name')),
     format3: JsonPath.format('Hello\n{}', JsonPath.stringAt('$.Name')),
+    format4: JsonPath.format("Hello ' \\{ \\} \\ {}\nWelcome", JsonPath.stringAt('$.Name')),
     stringToJson1: JsonPath.stringToJson(JsonPath.stringAt('$.Str')),
     jsonToString1: JsonPath.jsonToString(JsonPath.objectAt('$.Obj')),
   },
@@ -49,10 +50,48 @@ const stateMachine = new StateMachine(stack, 'StateMachine', {
 const integ = new IntegTest(app, 'StateMachineIntrinsicsTest', {
   testCases: [stack],
 });
-integ.assertions.awsApiCall('StepFunctions', 'describeStateMachine', {
+
+const res = integ.assertions.awsApiCall('StepFunctions', 'startExecution', {
   stateMachineArn: stateMachine.stateMachineArn,
+  input: JSON.stringify({
+    Id: 'abcd',
+    inputArray: [1, 2, 3, 4],
+    chunkSize: 2,
+    lookingFor: 3,
+    start: 1,
+    end: 10,
+    step: 2,
+    index: 1,
+    input: 'hello world',
+    base64: 'aGVsbG8gd29ybGQ=',
+    Data: 'More input data',
+    Algorithm: 'SHA-256',
+    Obj: {
+      Hello: 'World',
+    },
+    Obj1: {
+      How: 'Are You',
+    },
+    Obj2: {
+      Hi: 'There',
+    },
+    value1: 100,
+    inputString: 'Hello World',
+    splitter: ' ',
+    Name: 'Jane',
+    Format: "You're welcome, {}.",
+    Str: JSON.stringify({ Hello: 'World' }),
+  }),
+});
+const executionArn = res.getAttString('executionArn');
+
+integ.assertions.awsApiCall('StepFunctions', 'describeExecution', {
+  executionArn,
 }).expect(ExpectedResult.objectLike({
-  status: 'ACTIVE',
-}));
+  status: 'SUCCEEDED',
+})).waitForAssertions({
+  totalTimeout: cdk.Duration.seconds(10),
+  interval: cdk.Duration.seconds(3),
+});
 
 app.synth();
