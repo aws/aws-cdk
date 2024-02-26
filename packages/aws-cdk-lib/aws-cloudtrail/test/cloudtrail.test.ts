@@ -255,121 +255,120 @@ describe('cloudtrail', () => {
 
       Template.fromStack(stack).resourceCountIs('AWS::CloudTrail::Trail', 1);
       Template.fromStack(stack).resourceCountIs('AWS::S3::Bucket', 1);
-      console.log(JSON.stringify(Template.fromStack(stack)));
       Template.fromStack(stack).hasResourceProperties('AWS::S3::BucketPolicy', {
         Bucket: { Ref: 'TrailS30071F172' },
         PolicyDocument: {
           Statement: [
             {
-              "Action": "s3:*",
-              "Condition": {
-                "Bool": {
-                  "aws:SecureTransport": "false"
-                }
+              Action: 's3:*',
+              Condition: {
+                Bool: {
+                  'aws:SecureTransport': 'false',
+                },
               },
-              "Effect": "Deny",
-              "Principal": {
-                "AWS": "*"
+              Effect: 'Deny',
+              Principal: {
+                'AWS': '*',
               },
-              "Resource": [
+              Resource: [
                 {
-                  "Fn::GetAtt": [
-                    "TrailS30071F172",
-                    "Arn"
-                  ]
+                  'Fn::GetAtt': [
+                    'TrailS30071F172',
+                    'Arn',
+                  ],
                 },
                 {
-                  "Fn::Join": [
-                    "",
+                  'Fn::Join': [
+                    '',
                     [
                       {
-                        "Fn::GetAtt": [
-                          "TrailS30071F172",
-                          "Arn"
-                        ]
+                        'Fn::GetAtt': [
+                          'TrailS30071F172',
+                          'Arn',
+                        ],
                       },
-                      "/*"
-                    ]
-                  ]
-                }
-              ]
+                      '/*'
+                    ],
+                  ],
+                },
+              ],
             },
             {
-              "Action": "s3:GetBucketAcl",
-              "Effect": "Allow",
-              "Principal": {
-                "Service": "cloudtrail.amazonaws.com"
+              Action: 's3:GetBucketAcl',
+              Effect: 'Allow',
+              Principal: {
+                Service: 'cloudtrail.amazonaws.com',
               },
-              "Resource": {
-                "Fn::GetAtt": [
-                  "TrailS30071F172",
-                  "Arn"
-                ]
-              }
+              Resource: {
+                'Fn::GetAtt': [
+                  'TrailS30071F172',
+                  'Arn',
+                ],
+              },
             },
             {
-              "Action": "s3:PutObject",
-              "Condition": {
-                "StringEquals": {
-                  "s3:x-amz-acl": "bucket-owner-full-control"
-                }
+              Action: 's3:PutObject',
+              Condition: {
+                StringEquals: {
+                  's3:x-amz-acl': 'bucket-owner-full-control',
+                },
               },
-              "Effect": "Allow",
-              "Principal": {
-                "Service": "cloudtrail.amazonaws.com"
+              Effect: 'Allow',
+              Principal: {
+                Service: 'cloudtrail.amazonaws.com',
               },
-              "Resource": {
-                "Fn::Join": [
-                  "",
+              Resource: {
+                'Fn::Join': [
+                  '',
                   [
                     {
-                      "Fn::GetAtt": [
-                        "TrailS30071F172",
-                        "Arn"
-                      ]
+                      'Fn::GetAtt': [
+                        'TrailS30071F172',
+                        'Arn',
+                      ],
                     },
-                    "/AWSLogs/123456789012/*"
-                  ]
-                ]
-              }
+                    '/AWSLogs/123456789012/*',
+                  ],
+                ],
+              },
             },
             {
-              "Action": "s3:PutObject",
-              "Condition": {
-                "StringEquals": {
-                  "s3:x-amz-acl": "bucket-owner-full-control",
-                  "aws:SourceArn": {
-                    "Fn::Join": [
-                      "",
+              Action: 's3:PutObject',
+              Condition: {
+                StringEquals: {
+                  's3:x-amz-acl': 'bucket-owner-full-control',
+                  'aws:SourceArn': {
+                    'Fn::Join': [
+                      '',
                       [
-                        "arn:",
+                        'arn:',
                         {
-                          "Ref": "AWS::Partition"
+                          'Ref': 'AWS::Partition',
                         },
-                        ":cloudtrail:us-east-1:123456789012:trail/trailname123"
-                      ]
-                    ]
-                  }
-                }
+                        ':cloudtrail:us-east-1:123456789012:trail/trailname123',
+                      ],
+                    ],
+                  },
+                },
               },
-              "Effect": "Allow",
-              "Principal": {
-                "Service": "cloudtrail.amazonaws.com"
+              Effect: 'Allow',
+              Principal: {
+                Service: 'cloudtrail.amazonaws.com',
               },
-              "Resource": {
-                "Fn::Join": [
-                  "",
+              Resource: {
+                'Fn::Join': [
+                  '',
                   [
                     {
-                      "Fn::GetAtt": [
-                        "TrailS30071F172",
-                        "Arn"
-                      ]
+                      'Fn::GetAtt': [
+                        'TrailS30071F172',
+                        'Arn',
+                      ],
                     },
-                    "/AWSLogs/o-xxxxxxxxx/*"
-                  ]
-                ]
-              }
+                    '/AWSLogs/o-xxxxxxxxx/*',
+                  ],
+                ],
+              },
             },
           ],
           Version: '2012-10-17',
