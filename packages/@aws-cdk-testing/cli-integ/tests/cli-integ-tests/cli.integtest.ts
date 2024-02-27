@@ -912,14 +912,10 @@ integTest('cdk ls --show-dependencies --json', withDefaultFixture(async (fixture
   ];
 
   function validateStackDependencies(stack: StackDetails) {
-    // eslint-disable-next-line no-console
-    console.log('--here--'+ stack.id);
     expect(listing).toContain(stack.id);
 
     function validateDependencies(dependencies: DependencyDetails[]) {
       for (const dependency of dependencies) {
-        // eslint-disable-next-line no-console
-        console.log('--Im here--'+ dependency.id);
         expect(listing).toContain(dependency.id);
         if (dependency.dependencies.length > 0) {
           validateDependencies(dependency.dependencies);
