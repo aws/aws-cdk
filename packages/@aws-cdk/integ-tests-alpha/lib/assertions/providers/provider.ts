@@ -75,6 +75,14 @@ class LambdaFunctionProvider extends Construct {
       },
     });
 
+    const logGroup = new CfnResource(this, 'LogGroup', {
+      type: 'AWS::Logs::LogGroup',
+      properties: {
+        LogGroupName: `/aws/lambda/${id}`,
+        RetentionInDays: '14',
+      },
+    });
+
     const handler = new CfnResource(this, 'Handler', {
       type: 'AWS::Lambda::Function',
       properties: {
@@ -86,6 +94,9 @@ class LambdaFunctionProvider extends Construct {
         Timeout: Duration.minutes(2).toSeconds(),
         Handler: props?.handler ?? 'index.handler',
         Role: role.getAtt('Arn'),
+        LoggingConfig: {
+          LogGroup: logGroup.ref,
+        },
       },
     });
 
