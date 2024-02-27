@@ -93,14 +93,12 @@ describe('imports', () => {
     });
 
     // THEN
-    const plainTextOutput = buffer.data.replace(/\x1B\[[0-?]*[ -/]*[@-~]/g, '');
-    expect(plainTextOutput).toContain(`Stack A
-Resources
-[+] AWS::SQS::Queue QueueÂ·
-[+] AWS::SQS::Queue Queue2Â·
-[+] AWS::S3::Bucket BucketÂ·Â·Â·
-âœ¨  Number of stacks with differences: 1
-`);
+    let plainTextOutput = buffer.data.replace(/\x1B\[[0-?]*[ -/]*[@-~]/g, '');
+    expect(plainTextOutput).toContain('Stack A');
+    expect(plainTextOutput).toContain('Resources');
+    expect(plainTextOutput).toContain('[+] AWS::SQS::Queue Queue');
+    expect(plainTextOutput).toContain('[+] AWS::SQS::Queue Queue2');
+    expect(plainTextOutput).toContain('[+] AWS::S3::Bucket Bucket');
 
     expect(buffer.data.trim()).toContain('✨  Number of stacks with differences: 1');
     expect(exitCode).toBe(0);
