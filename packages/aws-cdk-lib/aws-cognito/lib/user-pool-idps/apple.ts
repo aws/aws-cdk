@@ -33,7 +33,7 @@ export interface UserPoolIdentityProviderAppleProps extends UserPoolIdentityProv
 }
 
 /**
- * Represents a identity provider that integrates with 'Apple'
+ * Represents an identity provider that integrates with Apple
  * @resource AWS::Cognito::UserPoolIdentityProvider
  */
 export class UserPoolIdentityProviderApple extends UserPoolIdentityProviderBase {
