@@ -15,10 +15,14 @@ describe('AwsApiCall', () => {
     // THEN
     const template = Template.fromStack(deplossert.scope);
     template.resourceCountIs('AWS::Lambda::Function', 1);
+    template.resourceCountIs('AWS::Logs::LogGroup', 1);
     template.hasResourceProperties('Custom::DeployAssert@SdkCallMyServiceMyApi', {
       service: 'MyService',
       api: 'MyApi',
       parameters: Match.absent(),
+    });
+    template.hasResourceProperties('AWS::Logs::LogGroup', {
+      RetentionInDays: '14',
     });
   });
 
