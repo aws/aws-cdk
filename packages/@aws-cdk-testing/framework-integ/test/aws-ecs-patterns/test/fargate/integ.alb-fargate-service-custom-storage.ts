@@ -5,10 +5,10 @@ import { ApplicationLoadBalancedFargateService } from 'aws-cdk-lib/aws-ecs-patte
 import { ContainerImage } from 'aws-cdk-lib/aws-ecs';
 
 const app = new App();
-const stack = new Stack(app, 'aws-ecs-patterns-alb-health-check');
+const stack = new Stack(app, 'aws-ecs-patterns-alb-with-custom-storage');
 const vpc = new ec2.Vpc(stack, 'VPC', { restrictDefaultSecurityGroup: false });
 
-new ApplicationLoadBalancedFargateService(stack, 'HealthCheckALBService', {
+new ApplicationLoadBalancedFargateService(stack, 'ALBServiceWithCustomStorage', {
   vpc,
   memoryLimitMiB: 512,
   ephemeralStorageGiB: 35,
@@ -23,7 +23,7 @@ new ApplicationLoadBalancedFargateService(stack, 'HealthCheckALBService', {
   },
 });
 
-new integ.IntegTest(app, 'healthCheckApplicationLoadBalancedFargateServiceTest', {
+new integ.IntegTest(app, 'ApplicationLoadBalancedFargateServiceCustomStorageTest', {
   testCases: [stack],
 });
 
