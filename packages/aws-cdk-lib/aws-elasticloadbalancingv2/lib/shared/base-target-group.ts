@@ -360,8 +360,9 @@ export abstract class TargetGroupBase extends Construct implements ITargetGroup 
     const timeoutSeconds = this.healthCheck.timeout?.toSeconds();
 
     if (intervalSeconds && timeoutSeconds) {
-      if (intervalSeconds <= timeoutSeconds) {
-        ret.push('Health check interval must be greater than the timeout; received interval ' +
+      if (intervalSeconds < timeoutSeconds) {
+        // < instead of <= for backwards compatibility, see discussion in https://github.com/aws/aws-cdk/pull/26031
+        ret.push('Health check interval must be greater than or equal to the timeout; received interval ' +
         `${intervalSeconds}, timeout ${timeoutSeconds}.`);
       }
     }
