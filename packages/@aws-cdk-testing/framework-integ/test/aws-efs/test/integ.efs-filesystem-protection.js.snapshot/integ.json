@@ -1,0 +1,12 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "test-efs-protection-integ-test/DefaultTest": {
+      "stacks": [
+        "test-efs-protection-integ"
+      ],
+      "assertionStack": "test-efs-protection-integ-test/DefaultTest/DeployAssert",
+      "assertionStackName": "testefsprotectionintegtestDefaultTestDeployAssertC510DC4F"
+    }
+  }
+}

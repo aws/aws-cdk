@@ -40,14 +40,14 @@
     "@aws-cdk/pkglint": "0.0.0",
     "@types/jest": "^29.5.12",
     "@types/node": "18.11.19",
-    "@types/semver": "^7.5.6",
+    "@types/semver": "^7.5.7",
     "@types/yarnpkg__lockfile": "^1.1.9",
     "jest": "^29.7.0",
     "typescript": "~5.1.6"
   },
   "dependencies": {
     "@yarnpkg/lockfile": "^1.1.0",
-    "semver": "^7.5.4"
+    "semver": "^7.6.0"
   },
   "keywords": [
     "aws",
