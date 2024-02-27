@@ -263,6 +263,9 @@ export class Match implements IResolvable {
  *   300.0, and 3.0e2 are not considered equal.
  *
  * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/events/CloudWatchEventsandEventPatterns.html
+ *
+ * For custom events, some optional properties are required. For more information, see
+ * [Minimum information needed for a valid custom event](https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-events-structure.html#eb-custom-event).
  */
 export interface EventPattern {
   /**
