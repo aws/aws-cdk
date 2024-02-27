@@ -1318,7 +1318,13 @@ export class Service extends cdk.Resource implements iam.IGrantable {
       assumedBy: new iam.ServicePrincipal('build.apprunner.amazonaws.com'),
     });
     accessRole.addToPrincipalPolicy(new iam.PolicyStatement({
-      actions: ['ecr:GetAuthorizationToken'],
+      actions: [        
+        'ecr:BatchCheckLayerAvailability',
+        'ecr:BatchGetImage',
+        'ecr:DescribeImages',
+        'ecr:GetAuthorizationToken',
+        'ecr:GetDownloadUrlForLayer',
+      ],
       resources: ['*'],
     }));
     this.accessRole = accessRole;
