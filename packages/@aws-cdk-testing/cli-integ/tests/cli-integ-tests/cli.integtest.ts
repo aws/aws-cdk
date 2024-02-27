@@ -847,12 +847,12 @@ integTest('cdk ls', withDefaultFixture(async (fixture) => {
 /**
  * Type to store stack dependencies recursively
  */
-export type DependencyDetails = {
+type DependencyDetails = {
   id: string;
   dependencies: DependencyDetails[];
 };
 
-export type StackDetails = {
+type StackDetails = {
   id: string;
   dependencies: DependencyDetails[];
 };
