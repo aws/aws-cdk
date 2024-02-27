@@ -1100,10 +1100,10 @@ const scheduledFargateTask = new ecsPatterns.ScheduledFargateTask(this, 'Schedul
 You can pass a custom ephemeral storage (21GiB - 200GiB) to ECS Fargate tasks on Fargate Platform Version 1.4.0 or later. 
 
 ```ts
-const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 2, restrictDefaultSecurityGroup: false });
-const cluster = new ecs.Cluster(stack, 'FargateCluster', { vpc });
+const vpc = new ec2.Vpc(this, 'Vpc', { maxAzs: 2, restrictDefaultSecurityGroup: false });
+const cluster = new ecs.Cluster(this, 'FargateCluster', { vpc });
 
-new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'ALBFargateServiceWithCustomEphemeralStorage', {
+const applicationLoadBalancedFargateService = new ecsPatterns.ApplicationLoadBalancedFargateService(this, 'ALBFargateServiceWithCustomEphemeralStorage', {
   cluster,
   memoryLimitMiB: 1024,
   cpu: 512,
@@ -1113,7 +1113,7 @@ new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'ALBFargateServiceW
   },
 });
 
-new ecsPatterns.NetworkLoadBalancedFargateService(stack, 'NLBFargateServiceWithCustomEphemeralStorage', {
+const networkLoadBalancedFargateService = new ecsPatterns.NetworkLoadBalancedFargateService(this, 'NLBFargateServiceWithCustomEphemeralStorage', {
   cluster,
   memoryLimitMiB: 1024,
   cpu: 512,
