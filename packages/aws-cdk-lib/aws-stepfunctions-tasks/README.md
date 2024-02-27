@@ -1097,7 +1097,7 @@ new tasks.GlueStartJobRun(this, 'Task', {
 
 ### StartCrawlerRun
 
-You can call the `startCrawler` API from a `Task` state through AWS SDK service integrations.
+You can call the [`StartCrawler`](https://docs.aws.amazon.com/glue/latest/dg/aws-glue-api-crawler-crawling.html#aws-glue-api-crawler-crawling-StartCrawler) API from a `Task` state through AWS SDK service integrations.
 
 ```ts
 new tasks.GlueStartCrawlerRun(this, 'Task', {
