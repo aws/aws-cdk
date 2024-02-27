@@ -11,7 +11,7 @@ import * as kms from '../../aws-kms';
 import * as logs from '../../aws-logs';
 import * as s3 from '../../aws-s3';
 import * as cloudmap from '../../aws-servicediscovery';
-import { Duration, IResource, Resource, Stack, Aspects, ArnFormat, IAspect, Token } from '../../core';
+import { Duration, IResource, Resource, Stack, Aspects, ArnFormat, IAspect, Token, Names } from '../../core';
 
 const CLUSTER_SYMBOL = Symbol.for('@aws-cdk/aws-ecs/lib/cluster.Cluster');
 
@@ -1288,6 +1288,7 @@ export class AsgCapacityProvider extends Construct {
 
   constructor(scope: Construct, id: string, props: AsgCapacityProviderProps) {
     super(scope, id);
+    let capacityProviderName = props.capacityProviderName;
     this.autoScalingGroup = props.autoScalingGroup as autoscaling.AutoScalingGroup;
     this.machineImageType = props.machineImageType ?? MachineImageType.AMAZON_LINUX_2;
     this.canContainersAccessInstanceRole = props.canContainersAccessInstanceRole;
@@ -1307,13 +1308,16 @@ export class AsgCapacityProvider extends Construct {
     }
 
     const capacityProviderNameRegex = /^(?!aws|ecs|fargate).+/gm;
-    if (props.capacityProviderName) {
-      if (!(capacityProviderNameRegex.test(props.capacityProviderName))) {
-        throw new Error(`Invalid Capacity Provider Name: ${props.capacityProviderName}, If a name is specified, it cannot start with aws, ecs, or fargate.`);
+    if (capacityProviderName) {
+      if (!(capacityProviderNameRegex.test(capacityProviderName))) {
+        throw new Error(`Invalid Capacity Provider Name: ${capacityProviderName}, If a name is specified, it cannot start with aws, ecs, or fargate.`);
       }
     } else {
       if (!(capacityProviderNameRegex.test(Stack.of(this).stackName))) {
-        throw new Error(`Invalid Capacity Provider Name: ${Stack.of(this).stackName}, No name was specified, the stack name cannot start with aws, ecs, or fargate.`);
+        // name cannot start with 'aws|ecs|fargate', so append 'cp-'
+        // 255 is the max length, subtract 3 because of 'cp-'
+        // if the regex condition isn't met, CFN will name the capacity provider
+        capacityProviderName = 'cp-' + Names.uniqueResourceName(this, { maxLength: 252, allowedSpecialCharacters: '-_' });
       }
     }
 
@@ -1324,7 +1328,7 @@ export class AsgCapacityProvider extends Construct {
     }
 
     const capacityProvider = new CfnCapacityProvider(this, id, {
-      name: props.capacityProviderName,
+      name: capacityProviderName,
       autoScalingGroupProvider: {
         autoScalingGroupArn: this.autoScalingGroup.autoScalingGroupName,
         managedScaling: props.enableManagedScaling === false ? undefined : {

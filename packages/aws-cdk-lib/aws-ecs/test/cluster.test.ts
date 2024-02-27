@@ -2980,13 +2980,14 @@ test('throws when ASG Capacity Provider with no capacityProviderName but stack n
 
   expect(() => {
     // WHEN Capacity Provider when stack name starts with ecs.
-    const capacityProviderAl2 = new ecs.AsgCapacityProvider(stack, 'provideral2-2', {
+    const capacityProvider = new ecs.AsgCapacityProvider(stack, 'provideral2-2', {
       autoScalingGroup: autoScalingGroupAl2,
       enableManagedTerminationProtection: false,
     });
 
-    cluster.addAsgCapacityProvider(capacityProviderAl2);
-  }).toThrow(/Invalid Capacity Provider Name: ecscp, No name was specified, the stack name cannot start with aws, ecs, or fargate./);
+    cluster.addAsgCapacityProvider(capacityProvider);
+
+  }).not.toThrow();
 });
 
 test('throws when InstanceWarmupPeriod is less than 0', () => {
