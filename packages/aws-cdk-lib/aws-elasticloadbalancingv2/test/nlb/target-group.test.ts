@@ -160,7 +160,7 @@ describe('tests', () => {
 
     expect(() => {
       app.synth();
-    }).toThrow('Health check interval must be greater than the timeout; received interval 10, timeout 20.');
+    }).toThrow('Health check interval must be greater than or equal to the timeout; received interval 10, timeout 20.');
   });
 
   test('targetGroupName unallowed: more than 32 characters', () => {

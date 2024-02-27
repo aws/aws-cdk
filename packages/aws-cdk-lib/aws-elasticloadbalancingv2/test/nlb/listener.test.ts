@@ -408,7 +408,7 @@ describe('tests', () => {
     // THEN
     const validationErrors: string[] = targetGroup.node.validate();
     expect(validationErrors).toEqual([
-      'Health check interval must be greater than the timeout; received interval 30, timeout 40.',
+      'Health check interval must be greater than or equal to the timeout; received interval 30, timeout 40.',
     ]);
   });
 
