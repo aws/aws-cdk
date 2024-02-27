@@ -1245,18 +1245,8 @@ describe('changeset', () => {
       },
     };
 
-    let differences = fullDiff(currentTemplate, newTemplate, {
-      Changes: [
-        {
-          Type: 'Resource',
-          ResourceChange: {
-            Action: 'Import',
-            LogicalResourceId: 'BucketResource',
-          },
-        },
-      ],
-    });
+    let differences = fullDiff(currentTemplate, newTemplate);
     expect(differences.resources.differenceCount).toBe(1);
-    expect(differences.resources.get('NewResource').changeImpact === ResourceImpact.WILL_IMPORT);
+    expect(differences.resources.get('NewResource').changeImpact).toBe(ResourceImpact.WILL_CREATE);
   });
 });
