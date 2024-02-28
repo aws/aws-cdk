@@ -1,0 +1,12 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "stepfunctions-integration-integ-test/DefaultTest": {
+      "stacks": [
+        "stepfunctions-integration"
+      ],
+      "assertionStack": "stepfunctions-integration-integ-test/DefaultTest/DeployAssert",
+      "assertionStackName": "stepfunctionsintegrationintegtestDefaultTestDeployAssert09AC4C77"
+    }
+  }
+}
