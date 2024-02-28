@@ -1,0 +1,1008 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "aws-appconfig-extension": {
+        "id": "aws-appconfig-extension",
+        "path": "aws-appconfig-extension",
+        "children": {
+          "MyFunction": {
+            "id": "MyFunction",
+            "path": "aws-appconfig-extension/MyFunction",
+            "children": {
+              "ServiceRole": {
+                "id": "ServiceRole",
+                "path": "aws-appconfig-extension/MyFunction/ServiceRole",
+                "children": {
+                  "ImportServiceRole": {
+                    "id": "ImportServiceRole",
+                    "path": "aws-appconfig-extension/MyFunction/ServiceRole/ImportServiceRole",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-appconfig-extension/MyFunction/ServiceRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "lambda.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "managedPolicyArns": [
+                          {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+                              ]
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-appconfig-extension/MyFunction/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
+                  "aws:cdk:cloudformation:props": {
+                    "code": {
+                      "zipFile": "def handler(event, context):\n\tprint('The function has been invoked.')"
+                    },
+                    "handler": "index.handler",
+                    "role": {
+                      "Fn::GetAtt": [
+                        "MyFunctionServiceRole3C357FF2",
+                        "Arn"
+                      ]
+                    },
+                    "runtime": "python3.8"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
+                  "version": "0.0.0"
+                }
+              },
+              "AppConfigPermission": {
+                "id": "AppConfigPermission",
+                "path": "aws-appconfig-extension/MyFunction/AppConfigPermission",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
+                  "aws:cdk:cloudformation:props": {
+                    "action": "lambda:InvokeFunction",
+                    "functionName": {
+                      "Fn::GetAtt": [
+                        "MyFunction3BAA72D1",
+                        "Arn"
+                      ]
+                    },
+                    "principal": "appconfig.amazonaws.com"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_lambda.CfnPermission",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_lambda.Function",
+              "version": "0.0.0"
+            }
+          },
+          "MyApplication": {
+            "id": "MyApplication",
+            "path": "aws-appconfig-extension/MyApplication",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-appconfig-extension/MyApplication/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::AppConfig::Application",
+                  "aws:cdk:cloudformation:props": {
+                    "name": "AppForExtensionTest"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_appconfig.CfnApplication",
+                  "version": "0.0.0"
+                }
+              },
+              "AssociationResource3FA55": {
+                "id": "AssociationResource3FA55",
+                "path": "aws-appconfig-extension/MyApplication/AssociationResource3FA55",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::AppConfig::ExtensionAssociation",
+                  "aws:cdk:cloudformation:props": {
+                    "extensionIdentifier": {
+                      "Fn::GetAtt": [
+                        "MyLambdaExtensionAFA1476A",
+                        "Id"
+                      ]
+                    },
+                    "extensionVersionNumber": {
+                      "Fn::GetAtt": [
+                        "MyLambdaExtensionAFA1476A",
+                        "VersionNumber"
+                      ]
+                    },
+                    "resourceIdentifier": {
+                      "Fn::Join": [
+                        "",
+                        [
+                          "arn:",
+                          {
+                            "Ref": "AWS::Partition"
+                          },
+                          ":appconfig:",
+                          {
+                            "Ref": "AWS::Region"
+                          },
+                          ":",
+                          {
+                            "Ref": "AWS::AccountId"
+                          },
+                          ":application/",
+                          {
+                            "Ref": "MyApplication5C63EC1D"
+                          }
+                        ]
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_appconfig.CfnExtensionAssociation",
+                  "version": "0.0.0"
+                }
+              },
+              "AssociationResourceBAC86": {
+                "id": "AssociationResourceBAC86",
+                "path": "aws-appconfig-extension/MyApplication/AssociationResourceBAC86",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::AppConfig::ExtensionAssociation",
+                  "aws:cdk:cloudformation:props": {
+                    "extensionIdentifier": {
+                      "Fn::GetAtt": [
+                        "MyQueueExtension872C5D27",
+                        "Id"
+                      ]
+                    },
+                    "extensionVersionNumber": {
+                      "Fn::GetAtt": [
+                        "MyQueueExtension872C5D27",
+                        "VersionNumber"
+                      ]
+                    },
+                    "resourceIdentifier": {
+                      "Fn::Join": [
+                        "",
+                        [
+                          "arn:",
+                          {
+                            "Ref": "AWS::Partition"
+                          },
+                          ":appconfig:",
+                          {
+                            "Ref": "AWS::Region"
+                          },
+                          ":",
+                          {
+                            "Ref": "AWS::AccountId"
+                          },
+                          ":application/",
+                          {
+                            "Ref": "MyApplication5C63EC1D"
+                          }
+                        ]
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_appconfig.CfnExtensionAssociation",
+                  "version": "0.0.0"
+                }
+              },
+              "AssociationResource7F3E1": {
+                "id": "AssociationResource7F3E1",
+                "path": "aws-appconfig-extension/MyApplication/AssociationResource7F3E1",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::AppConfig::ExtensionAssociation",
+                  "aws:cdk:cloudformation:props": {
+                    "extensionIdentifier": {
+                      "Fn::GetAtt": [
+                        "MyTopicExtension9B6DF691",
+                        "Id"
+                      ]
+                    },
+                    "extensionVersionNumber": {
+                      "Fn::GetAtt": [
+                        "MyTopicExtension9B6DF691",
+                        "VersionNumber"
+                      ]
+                    },
+                    "resourceIdentifier": {
+                      "Fn::Join": [
+                        "",
+                        [
+                          "arn:",
+                          {
+                            "Ref": "AWS::Partition"
+                          },
+                          ":appconfig:",
+                          {
+                            "Ref": "AWS::Region"
+                          },
+                          ":",
+                          {
+                            "Ref": "AWS::AccountId"
+                          },
+                          ":application/",
+                          {
+                            "Ref": "MyApplication5C63EC1D"
+                          }
+                        ]
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_appconfig.CfnExtensionAssociation",
+                  "version": "0.0.0"
+                }
+              },
+              "AssociationResource689DE": {
+                "id": "AssociationResource689DE",
+                "path": "aws-appconfig-extension/MyApplication/AssociationResource689DE",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::AppConfig::ExtensionAssociation",
+                  "aws:cdk:cloudformation:props": {
+                    "extensionIdentifier": {
+                      "Fn::GetAtt": [
+                        "MyEventBusExtensionADFE2273",
+                        "Id"
+                      ]
+                    },
+                    "extensionVersionNumber": {
+                      "Fn::GetAtt": [
+                        "MyEventBusExtensionADFE2273",
+                        "VersionNumber"
+                      ]
+                    },
+                    "parameters": {
+                      "testParam": "true"
+                    },
+                    "resourceIdentifier": {
+                      "Fn::Join": [
+                        "",
+                        [
+                          "arn:",
+                          {
+                            "Ref": "AWS::Partition"
+                          },
+                          ":appconfig:",
+                          {
+                            "Ref": "AWS::Region"
+                          },
+                          ":",
+                          {
+                            "Ref": "AWS::AccountId"
+                          },
+                          ":application/",
+                          {
+                            "Ref": "MyApplication5C63EC1D"
+                          }
+                        ]
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_appconfig.CfnExtensionAssociation",
+                  "version": "0.0.0"
+                }
+              },
+              "MyEnv": {
+                "id": "MyEnv",
+                "path": "aws-appconfig-extension/MyApplication/MyEnv",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-appconfig-extension/MyApplication/MyEnv/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::AppConfig::Environment",
+                      "aws:cdk:cloudformation:props": {
+                        "applicationId": {
+                          "Ref": "MyApplication5C63EC1D"
+                        },
+                        "name": "awsappconfigextension-MyApplication-MyEnv-0FA5092F"
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_appconfig.CfnEnvironment",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-appconfig-alpha.Environment",
+                  "version": "0.0.0"
+                }
+              },
+              "appconfig-extension": {
+                "id": "appconfig-extension",
+                "path": "aws-appconfig-extension/MyApplication/appconfig-extension",
+                "children": {
+                  "DefaultTest": {
+                    "id": "DefaultTest",
+                    "path": "aws-appconfig-extension/MyApplication/appconfig-extension/DefaultTest",
+                    "children": {
+                      "Default": {
+                        "id": "Default",
+                        "path": "aws-appconfig-extension/MyApplication/appconfig-extension/DefaultTest/Default",
+                        "constructInfo": {
+                          "fqn": "constructs.Construct",
+                          "version": "10.3.0"
+                        }
+                      },
+                      "DeployAssert": {
+                        "id": "DeployAssert",
+                        "path": "aws-appconfig-extension/MyApplication/appconfig-extension/DefaultTest/DeployAssert",
+                        "children": {
+                          "BootstrapVersion": {
+                            "id": "BootstrapVersion",
+                            "path": "aws-appconfig-extension/MyApplication/appconfig-extension/DefaultTest/DeployAssert/BootstrapVersion",
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.CfnParameter",
+                              "version": "0.0.0"
+                            }
+                          },
+                          "CheckBootstrapVersion": {
+                            "id": "CheckBootstrapVersion",
+                            "path": "aws-appconfig-extension/MyApplication/appconfig-extension/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.CfnRule",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.Stack",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-appconfig-alpha.Application",
+              "version": "0.0.0"
+            }
+          },
+          "MyLambdaExtension": {
+            "id": "MyLambdaExtension",
+            "path": "aws-appconfig-extension/MyLambdaExtension",
+            "children": {
+              "RoleBC958": {
+                "id": "RoleBC958",
+                "path": "aws-appconfig-extension/MyLambdaExtension/RoleBC958",
+                "children": {
+                  "ImportRoleBC958": {
+                    "id": "ImportRoleBC958",
+                    "path": "aws-appconfig-extension/MyLambdaExtension/RoleBC958/ImportRoleBC958",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-appconfig-extension/MyLambdaExtension/RoleBC958/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "appconfig.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "policies": [
+                          {
+                            "policyName": "AllowAppConfigInvokeExtensionEventSourcePolicy",
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": [
+                                    "lambda:InvokeAsync",
+                                    "lambda:InvokeFunction"
+                                  ],
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::GetAtt": [
+                                      "MyFunction3BAA72D1",
+                                      "Arn"
+                                    ]
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-appconfig-extension/MyLambdaExtension/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::AppConfig::Extension",
+                  "aws:cdk:cloudformation:props": {
+                    "actions": {
+                      "PRE_CREATE_HOSTED_CONFIGURATION_VERSION": [
+                        {
+                          "Name": "awsappconfigextension-MyLambdaExtension-68C15290-0",
+                          "Uri": {
+                            "Fn::GetAtt": [
+                              "MyFunction3BAA72D1",
+                              "Arn"
+                            ]
+                          },
+                          "RoleArn": {
+                            "Fn::GetAtt": [
+                              "MyLambdaExtensionRoleBC958D3F13B04",
+                              "Arn"
+                            ]
+                          }
+                        }
+                      ],
+                      "ON_DEPLOYMENT_START": [
+                        {
+                          "Name": "awsappconfigextension-MyLambdaExtension-68C15290-0",
+                          "Uri": {
+                            "Fn::GetAtt": [
+                              "MyFunction3BAA72D1",
+                              "Arn"
+                            ]
+                          },
+                          "RoleArn": {
+                            "Fn::GetAtt": [
+                              "MyLambdaExtensionRoleBC958D3F13B04",
+                              "Arn"
+                            ]
+                          }
+                        }
+                      ]
+                    },
+                    "name": "awsappconfigextension-MyLambdaExtension-68C15290"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_appconfig.CfnExtension",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-appconfig-alpha.Extension",
+              "version": "0.0.0"
+            }
+          },
+          "MyQueue": {
+            "id": "MyQueue",
+            "path": "aws-appconfig-extension/MyQueue",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-appconfig-extension/MyQueue/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::SQS::Queue",
+                  "aws:cdk:cloudformation:props": {}
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_sqs.CfnQueue",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_sqs.Queue",
+              "version": "0.0.0"
+            }
+          },
+          "MyQueueExtension": {
+            "id": "MyQueueExtension",
+            "path": "aws-appconfig-extension/MyQueueExtension",
+            "children": {
+              "Role63F19": {
+                "id": "Role63F19",
+                "path": "aws-appconfig-extension/MyQueueExtension/Role63F19",
+                "children": {
+                  "ImportRole63F19": {
+                    "id": "ImportRole63F19",
+                    "path": "aws-appconfig-extension/MyQueueExtension/Role63F19/ImportRole63F19",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-appconfig-extension/MyQueueExtension/Role63F19/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "appconfig.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "policies": [
+                          {
+                            "policyName": "AllowAppConfigInvokeExtensionEventSourcePolicy",
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": "sqs:SendMessage",
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::GetAtt": [
+                                      "MyQueueE6CA6235",
+                                      "Arn"
+                                    ]
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-appconfig-extension/MyQueueExtension/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::AppConfig::Extension",
+                  "aws:cdk:cloudformation:props": {
+                    "actions": {
+                      "ON_DEPLOYMENT_START": [
+                        {
+                          "Name": "awsappconfigextension-MyQueueExtension-EF6112FA-0",
+                          "Uri": {
+                            "Fn::GetAtt": [
+                              "MyQueueE6CA6235",
+                              "Arn"
+                            ]
+                          },
+                          "RoleArn": {
+                            "Fn::GetAtt": [
+                              "MyQueueExtensionRole63F1970B4A7A6",
+                              "Arn"
+                            ]
+                          }
+                        }
+                      ]
+                    },
+                    "name": "awsappconfigextension-MyQueueExtension-EF6112FA"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_appconfig.CfnExtension",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-appconfig-alpha.Extension",
+              "version": "0.0.0"
+            }
+          },
+          "MyTopic": {
+            "id": "MyTopic",
+            "path": "aws-appconfig-extension/MyTopic",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-appconfig-extension/MyTopic/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::SNS::Topic",
+                  "aws:cdk:cloudformation:props": {}
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_sns.CfnTopic",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_sns.Topic",
+              "version": "0.0.0"
+            }
+          },
+          "MyTopicExtension": {
+            "id": "MyTopicExtension",
+            "path": "aws-appconfig-extension/MyTopicExtension",
+            "children": {
+              "Role39BF2": {
+                "id": "Role39BF2",
+                "path": "aws-appconfig-extension/MyTopicExtension/Role39BF2",
+                "children": {
+                  "ImportRole39BF2": {
+                    "id": "ImportRole39BF2",
+                    "path": "aws-appconfig-extension/MyTopicExtension/Role39BF2/ImportRole39BF2",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-appconfig-extension/MyTopicExtension/Role39BF2/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "appconfig.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "policies": [
+                          {
+                            "policyName": "AllowAppConfigInvokeExtensionEventSourcePolicy",
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": "sns:Publish",
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Ref": "MyTopic86869434"
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-appconfig-extension/MyTopicExtension/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::AppConfig::Extension",
+                  "aws:cdk:cloudformation:props": {
+                    "actions": {
+                      "ON_DEPLOYMENT_START": [
+                        {
+                          "Name": "awsappconfigextension-MyTopicExtension-37440DA2-0",
+                          "Uri": {
+                            "Ref": "MyTopic86869434"
+                          },
+                          "RoleArn": {
+                            "Fn::GetAtt": [
+                              "MyTopicExtensionRole39BF2474FECA3",
+                              "Arn"
+                            ]
+                          }
+                        }
+                      ]
+                    },
+                    "name": "awsappconfigextension-MyTopicExtension-37440DA2"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_appconfig.CfnExtension",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-appconfig-alpha.Extension",
+              "version": "0.0.0"
+            }
+          },
+          "MyEventBus": {
+            "id": "MyEventBus",
+            "path": "aws-appconfig-extension/MyEventBus",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.Resource",
+              "version": "0.0.0"
+            }
+          },
+          "MyEventBusExtension": {
+            "id": "MyEventBusExtension",
+            "path": "aws-appconfig-extension/MyEventBusExtension",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-appconfig-extension/MyEventBusExtension/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::AppConfig::Extension",
+                  "aws:cdk:cloudformation:props": {
+                    "actions": {
+                      "ON_DEPLOYMENT_START": [
+                        {
+                          "Name": "MyEventBusPreHostedConfigVersionAction",
+                          "Uri": {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":events:",
+                                {
+                                  "Ref": "AWS::Region"
+                                },
+                                ":",
+                                {
+                                  "Ref": "AWS::AccountId"
+                                },
+                                ":event-bus/default"
+                              ]
+                            ]
+                          },
+                          "Description": "My event bus action"
+                        }
+                      ]
+                    },
+                    "name": "awsappconfigextension-MyEventBusExtension-39114CFE",
+                    "parameters": {
+                      "testParam": {
+                        "required": true
+                      },
+                      "testNotRequiredParam": {
+                        "required": false
+                      }
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_appconfig.CfnExtension",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-appconfig-alpha.Extension",
+              "version": "0.0.0"
+            }
+          },
+          "MyDeployStrategy": {
+            "id": "MyDeployStrategy",
+            "path": "aws-appconfig-extension/MyDeployStrategy",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-appconfig-extension/MyDeployStrategy/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::AppConfig::DeploymentStrategy",
+                  "aws:cdk:cloudformation:props": {
+                    "deploymentDurationInMinutes": 0,
+                    "growthFactor": 100,
+                    "growthType": "LINEAR",
+                    "name": "awsappconfigextension-MyDeployStrategy-61F99D9B",
+                    "replicateTo": "NONE"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_appconfig.CfnDeploymentStrategy",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-appconfig-alpha.DeploymentStrategy",
+              "version": "0.0.0"
+            }
+          },
+          "HostedConfiguration": {
+            "id": "HostedConfiguration",
+            "path": "aws-appconfig-extension/HostedConfiguration",
+            "children": {
+              "ConfigurationProfile": {
+                "id": "ConfigurationProfile",
+                "path": "aws-appconfig-extension/HostedConfiguration/ConfigurationProfile",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::AppConfig::ConfigurationProfile",
+                  "aws:cdk:cloudformation:props": {
+                    "applicationId": {
+                      "Ref": "MyApplication5C63EC1D"
+                    },
+                    "locationUri": "hosted",
+                    "name": "awsappconfigextension-HostedConfiguration-15AED6EE"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_appconfig.CfnConfigurationProfile",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-appconfig-extension/HostedConfiguration/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::AppConfig::HostedConfigurationVersion",
+                  "aws:cdk:cloudformation:props": {
+                    "applicationId": {
+                      "Ref": "MyApplication5C63EC1D"
+                    },
+                    "configurationProfileId": {
+                      "Ref": "HostedConfigurationConfigurationProfile3AB17BEA"
+                    },
+                    "content": "This is my configuration content",
+                    "contentType": "application/json"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_appconfig.CfnHostedConfigurationVersion",
+                  "version": "0.0.0"
+                }
+              },
+              "Deployment9D5FC": {
+                "id": "Deployment9D5FC",
+                "path": "aws-appconfig-extension/HostedConfiguration/Deployment9D5FC",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::AppConfig::Deployment",
+                  "aws:cdk:cloudformation:props": {
+                    "applicationId": {
+                      "Ref": "MyApplication5C63EC1D"
+                    },
+                    "configurationProfileId": {
+                      "Ref": "HostedConfigurationConfigurationProfile3AB17BEA"
+                    },
+                    "configurationVersion": {
+                      "Ref": "HostedConfiguration257746B4"
+                    },
+                    "deploymentStrategyId": {
+                      "Ref": "MyDeployStrategy062CAEA2"
+                    },
+                    "environmentId": {
+                      "Ref": "MyApplicationMyEnv55DE3293"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_appconfig.CfnDeployment",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-appconfig-alpha.HostedConfiguration",
+              "version": "0.0.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "aws-appconfig-extension/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "aws-appconfig-extension/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnRule",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.3.0"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "aws-cdk-lib.App",
+      "version": "0.0.0"
+    }
+  }
+}

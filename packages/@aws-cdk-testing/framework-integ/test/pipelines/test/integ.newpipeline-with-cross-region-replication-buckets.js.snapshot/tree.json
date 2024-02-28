@@ -792,6 +792,7 @@
                             }
                           }
                         ],
+                        "pipelineType": "V1",
                         "restartExecutionOnUpdate": true,
                         "roleArn": {
                           "Fn::GetAtt": [

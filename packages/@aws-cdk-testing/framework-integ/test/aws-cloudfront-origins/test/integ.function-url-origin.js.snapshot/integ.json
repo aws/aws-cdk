@@ -1,0 +1,12 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "rest-api-origin/DefaultTest": {
+      "stacks": [
+        "integ-cloudfront-function-url-origin"
+      ],
+      "assertionStack": "rest-api-origin/DefaultTest/DeployAssert",
+      "assertionStackName": "restapioriginDefaultTestDeployAssert6BBA15BA"
+    }
+  }
+}

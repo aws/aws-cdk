@@ -632,7 +632,7 @@ Use the `grant` function for more granular authorization.
 const role = new iam.Role(this, 'Role', {
   assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
 });
-declare const api: appsync.GraphqlApi;
+declare const api: appsync.IGraphqlApi;
 
 api.grant(role, appsync.IamResource.custom('types/Mutation/fields/updateExample'), 'appsync:GraphQL');
 ```
@@ -658,7 +658,7 @@ These include:
 - grantSubscription (use to grant access to Subscription fields)
 
 ```ts
-declare const api: appsync.GraphqlApi;
+declare const api: appsync.IGraphqlApi;
 declare const role: iam.Role;
 
 // For generic types
@@ -755,4 +755,21 @@ const api = new appsync.GraphqlApi(this, 'api', {
   definition: appsync.Definition.fromFile(path.join(__dirname, 'appsync.schema.graphql')),
   introspectionConfig: appsync.IntrospectionConfig.DISABLED,
 });
+```
+
+## Environment Variables
+
+To use environment variables in resolvers, you can use the `environmentVariables` property and
+the `addEnvironmentVariable` method.
+
+```ts
+const api = new appsync.GraphqlApi(this, 'api', {
+  name: 'api',
+  definition: appsync.Definition.fromFile(path.join(__dirname, 'appsync.schema.graphql')),
+  environmentVariables: {
+    EnvKey1: 'non-empty-1',
+  },  
+});
+
+api.addEnvironmentVariable('EnvKey2', 'non-empty-2');
 ```

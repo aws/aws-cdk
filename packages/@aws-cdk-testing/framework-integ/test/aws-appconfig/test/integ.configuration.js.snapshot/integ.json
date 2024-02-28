@@ -1,0 +1,19 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "appconfig-configuration/DefaultTest": {
+      "stacks": [
+        "aws-appconfig-configuration"
+      ],
+      "cdkCommandOptions": {
+        "destroy": {
+          "args": {
+            "force": true
+          }
+        }
+      },
+      "assertionStack": "appconfig-configuration/DefaultTest/DeployAssert",
+      "assertionStackName": "appconfigconfigurationDefaultTestDeployAssert6752CD38"
+    }
+  }
+}

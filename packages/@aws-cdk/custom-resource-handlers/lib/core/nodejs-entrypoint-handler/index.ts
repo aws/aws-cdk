@@ -107,10 +107,11 @@ async function submitResponse(status: 'SUCCESS' | 'FAILED', event: Response) {
     Data: event.Data,
   };
 
-  external.log('submit response to cloudformation', json);
+  const parsedUrl = url.parse(event.ResponseURL);
+  const loggingSafeUrl = `${parsedUrl.protocol}//${parsedUrl.hostname}/${parsedUrl.pathname}?***`;
+  external.log('submit response to cloudformation', loggingSafeUrl, json);
 
   const responseBody = JSON.stringify(json);
-  const parsedUrl = url.parse(event.ResponseURL);
   const req = {
     hostname: parsedUrl.hostname,
     path: parsedUrl.path,
@@ -128,12 +129,19 @@ async function submitResponse(status: 'SUCCESS' | 'FAILED', event: Response) {
   await withRetries(retryOptions, external.sendHttpRequest)(req, responseBody);
 }
 
-async function defaultSendHttpRequest(options: https.RequestOptions, responseBody: string): Promise<void> {
-  return new Promise((resolve, reject) => {
+async function defaultSendHttpRequest(options: https.RequestOptions, requestBody: string): Promise<void> {
+  return new Promise<void>((resolve, reject) => {
     try {
-      const request = https.request(options, _ => resolve());
+      const request = https.request(options, (response) => {
+        response.resume(); // Consume the response but don't care about it
+        if (!response.statusCode || response.statusCode >= 400) {
+          reject(new Error(`Unsuccessful HTTP response: ${response.statusCode}`));
+        } else {
+          resolve();
+        }
+      });
       request.on('error', reject);
-      request.write(responseBody);
+      request.write(requestBody);
       request.end();
     } catch (e) {
       reject(e);

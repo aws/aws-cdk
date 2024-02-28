@@ -16,14 +16,14 @@ describe('database secret manager', () => {
       engine: DatabaseClusterEngine.AURORA_POSTGRESQL,
       vpc,
       credentials: Credentials.fromSecret(existingSecret),
-      parameterGroup: ParameterGroup.fromParameterGroupName(stack, 'ParameterGroup', 'default.aurora-postgresql10'),
+      parameterGroup: ParameterGroup.fromParameterGroupName(stack, 'ParameterGroup', 'default.aurora-postgresql11'),
     });
 
     // THEN
     Template.fromStack(stack).hasResource('AWS::RDS::DBCluster', {
       Properties: {
         Engine: 'aurora-postgresql',
-        DBClusterParameterGroupName: 'default.aurora-postgresql10',
+        DBClusterParameterGroupName: 'default.aurora-postgresql11',
         DBSubnetGroupName: {
           Ref: 'ServerlessDatabaseSubnets5643CD76',
         },
