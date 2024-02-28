@@ -2,6 +2,7 @@ import { App, Stack, StackProps } from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import { Construct } from 'constructs';
 import * as sfn from 'aws-cdk-lib/aws-stepfunctions';
+import * as iam from 'aws-cdk-lib/aws-iam';
 import * as cdk from 'aws-cdk-lib';
 import * as tasks from 'aws-cdk-lib/aws-stepfunctions-tasks';
 import { STANDARD_NODEJS_RUNTIME } from '../../config';
@@ -16,6 +17,13 @@ import { STANDARD_NODEJS_RUNTIME } from '../../config';
 class TestStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
+
+    const customExecutionRole = new iam.Role(this, 'Role', {
+      assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+    });
+    customExecutionRole.addManagedPolicy(
+      iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSLambdaBasicExecutionRole'),
+    );
 
     const sum = new tasks.EvaluateExpression(this, 'Sum', {
       expression: '$.a + $.b',
@@ -32,6 +40,7 @@ class TestStack extends Stack {
       expression: '(new Date()).toUTCString()',
       resultPath: '$.now',
       runtime: STANDARD_NODEJS_RUNTIME,
+      role: customExecutionRole,
     });
 
     const statemachine = new sfn.StateMachine(this, 'StateMachine', {
