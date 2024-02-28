@@ -418,12 +418,12 @@ function toTarget(runtime: Runtime): string {
 
 function toCliArgs(esbuildArgs: { [key: string]: string | boolean }): string {
   const args = new Array<string>();
-  const ls = ['--alias', '--drop', '--pure', '--log-override', '--out-extension'];
+  const reSpecifiedKeys = ['--alias', '--drop', '--pure', '--log-override', '--out-extension'];
 
   for (const [key, value] of Object.entries(esbuildArgs)) {
     if (value === true || value === '') {
       args.push(key);
-    } else if (ls.includes(key)) {
+    } else if (reSpecifiedKeys.includes(key)) {
       args.push(`${key}:"${value}"`);
     } else if (value) {
       args.push(`${key}="${value}"`);
