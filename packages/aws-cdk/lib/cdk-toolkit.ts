@@ -29,6 +29,7 @@ import { Concurrency, WorkGraph } from './util/work-graph';
 import { WorkGraphBuilder } from './util/work-graph-builder';
 import { AssetBuildNode, AssetPublishNode, StackNode } from './util/work-graph-types';
 import { environmentsFromDescriptors, globEnvironmentsFromStacks, looksLikeGlob } from '../lib/api/cxapp/environments';
+import { CloudFormation } from 'aws-sdk';
 
 export interface CdkToolkitProps {
 
@@ -167,7 +168,12 @@ export class CdkToolkit {
           removeNonImportResources(stack);
         }
 
-        const changeSet = options.changeSet ? await createDiffChangeSet({
+        let resourcesToImportLogicalIds = new Set<string>();
+        resourcesToImport?.forEach((value: CloudFormation.ResourceToImport, _index: number, _array: CloudFormation.ResourceToImport[]) => {
+          resourcesToImportLogicalIds.add(value.LogicalResourceId);
+        });
+
+        let changeSet = options.changeSet ? await createDiffChangeSet({
           stack,
           uuid: uuid.v4(),
           deployments: this.props.deployments,
@@ -177,6 +183,12 @@ export class CdkToolkit {
           resourcesToImport,
           stream,
         }) : undefined;
+
+        changeSet?.Changes?.forEach((value: CloudFormation.Change, _index: number, _array: CloudFormation.Change[]) => {
+          if (resourcesToImportLogicalIds.has(value.ResourceChange?.LogicalResourceId!)) {
+            value.ResourceChange!.Action = 'Import';
+          }
+        });
 
         if (resourcesToImport) {
           stream.write('Parameters and rules created during migration do not affect resource configuration.\n');
