@@ -12,6 +12,6 @@ jobs:
     if: ${{ (github.event.issue.pull_request) && (github.event.issue.state == 'open') }}
     runs-on: ubuntu-latest
     steps:
-      - uses: TheRealAmazonKendra/pr-linter-exemption-labeler@main
+      - uses: cdklabs/pr-linter-exemption-labeler@main
         with:
           github-token: ${{ secrets.PROJEN_GITHUB_TOKEN }}
