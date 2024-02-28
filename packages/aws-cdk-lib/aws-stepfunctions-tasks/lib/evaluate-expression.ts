@@ -118,9 +118,13 @@ function createEvalFn(props: EvaluateExpressionProps, scope: Construct) {
     [NO_RUNTIME]: '41256dc5-4457-4273-8ed9-17bc818694e5',
   };
 
-  const uuid = nodeJsGuids[props.runtime?.name ?? NO_RUNTIME];
+  let uuid = nodeJsGuids[props.runtime?.name ?? NO_RUNTIME];
   if (!uuid) {
     throw new Error(`The runtime ${props.runtime?.name} is currently not supported.`);
+  }
+
+  if (props.role) {
+    uuid += props.role.node.addr;
   }
 
   return new EvalNodejsSingletonFunction(scope, 'EvalFunction', {

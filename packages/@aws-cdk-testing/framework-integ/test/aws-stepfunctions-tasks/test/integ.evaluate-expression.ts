@@ -18,10 +18,10 @@ class TestStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
-    const customExecutionRole = new iam.Role(this, 'Role', {
+    const customRole = new iam.Role(this, 'Role', {
       assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
     });
-    customExecutionRole.addManagedPolicy(
+    customRole.addManagedPolicy(
       iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSLambdaBasicExecutionRole'),
     );
 
@@ -40,7 +40,7 @@ class TestStack extends Stack {
       expression: '(new Date()).toUTCString()',
       resultPath: '$.now',
       runtime: STANDARD_NODEJS_RUNTIME,
-      role: customExecutionRole,
+      role: customRole,
     });
 
     const statemachine = new sfn.StateMachine(this, 'StateMachine', {

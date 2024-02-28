@@ -8,6 +8,63 @@
         "id": "cdk-sfn-evaluate-expression-integ",
         "path": "cdk-sfn-evaluate-expression-integ",
         "children": {
+          "Role": {
+            "id": "Role",
+            "path": "cdk-sfn-evaluate-expression-integ/Role",
+            "children": {
+              "ImportRole": {
+                "id": "ImportRole",
+                "path": "cdk-sfn-evaluate-expression-integ/Role/ImportRole",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Resource",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "cdk-sfn-evaluate-expression-integ/Role/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                  "aws:cdk:cloudformation:props": {
+                    "assumeRolePolicyDocument": {
+                      "Statement": [
+                        {
+                          "Action": "sts:AssumeRole",
+                          "Effect": "Allow",
+                          "Principal": {
+                            "Service": "lambda.amazonaws.com"
+                          }
+                        }
+                      ],
+                      "Version": "2012-10-17"
+                    },
+                    "managedPolicyArns": [
+                      {
+                        "Fn::Join": [
+                          "",
+                          [
+                            "arn:",
+                            {
+                              "Ref": "AWS::Partition"
+                            },
+                            ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+                          ]
+                        ]
+                      }
+                    ]
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_iam.Role",
+              "version": "0.0.0"
+            }
+          },
           "Sum": {
             "id": "Sum",
             "path": "cdk-sfn-evaluate-expression-integ/Sum",
@@ -302,6 +359,69 @@
               "version": "0.0.0"
             }
           },
+          "Eval078d40d3fb4e4d5394a79c46fc11fe02c8a668594084f451de67fa4c045d43f069a30c4067": {
+            "id": "Eval078d40d3fb4e4d5394a79c46fc11fe02c8a668594084f451de67fa4c045d43f069a30c4067",
+            "path": "cdk-sfn-evaluate-expression-integ/Eval078d40d3fb4e4d5394a79c46fc11fe02c8a668594084f451de67fa4c045d43f069a30c4067",
+            "children": {
+              "Code": {
+                "id": "Code",
+                "path": "cdk-sfn-evaluate-expression-integ/Eval078d40d3fb4e4d5394a79c46fc11fe02c8a668594084f451de67fa4c045d43f069a30c4067/Code",
+                "children": {
+                  "Stage": {
+                    "id": "Stage",
+                    "path": "cdk-sfn-evaluate-expression-integ/Eval078d40d3fb4e4d5394a79c46fc11fe02c8a668594084f451de67fa4c045d43f069a30c4067/Code/Stage",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.AssetStaging",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "AssetBucket": {
+                    "id": "AssetBucket",
+                    "path": "cdk-sfn-evaluate-expression-integ/Eval078d40d3fb4e4d5394a79c46fc11fe02c8a668594084f451de67fa4c045d43f069a30c4067/Code/AssetBucket",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_s3.BucketBase",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "cdk-sfn-evaluate-expression-integ/Eval078d40d3fb4e4d5394a79c46fc11fe02c8a668594084f451de67fa4c045d43f069a30c4067/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
+                  "aws:cdk:cloudformation:props": {
+                    "code": {
+                      "s3Bucket": {
+                        "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+                      },
+                      "s3Key": "b8cec122f25692e8b194663d25a2ee5e0b65e55df966120791d6a3ddc08fc136.zip"
+                    },
+                    "handler": "index.handler",
+                    "role": {
+                      "Fn::GetAtt": [
+                        "Role1ABCC5F0",
+                        "Arn"
+                      ]
+                    },
+                    "runtime": "nodejs18.x"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_lambda.Function",
+              "version": "0.0.0"
+            }
+          },
           "Wait": {
             "id": "Wait",
             "path": "cdk-sfn-evaluate-expression-integ/Wait",
@@ -375,6 +495,12 @@
                                     },
                                     {
                                       "Fn::GetAtt": [
+                                        "Eval078d40d3fb4e4d5394a79c46fc11fe02c8a668594084f451de67fa4c045d43f069a30c4067FA9F429C",
+                                        "Arn"
+                                      ]
+                                    },
+                                    {
+                                      "Fn::GetAtt": [
                                         "Eval41256dc5445742738ed917bc818694e54EB1134F",
                                         "Arn"
                                       ]
@@ -386,6 +512,20 @@
                                           {
                                             "Fn::GetAtt": [
                                               "Eval078d40d3fb4e4d5394a79c46fc11fe029D0ED2B4",
+                                              "Arn"
+                                            ]
+                                          },
+                                          ":*"
+                                        ]
+                                      ]
+                                    },
+                                    {
+                                      "Fn::Join": [
+                                        "",
+                                        [
+                                          {
+                                            "Fn::GetAtt": [
+                                              "Eval078d40d3fb4e4d5394a79c46fc11fe02c8a668594084f451de67fa4c045d43f069a30c4067FA9F429C",
                                               "Arn"
                                             ]
                                           },
@@ -464,7 +604,7 @@
                           "\",\"Parameters\":{\"expression\":\"$.c * 2\",\"expressionAttributeValues\":{\"$.c.$\":\"$.c\"}}},\"Wait\":{\"Type\":\"Wait\",\"SecondsPath\":\"$.d\",\"Next\":\"Now\"},\"Now\":{\"End\":true,\"Type\":\"Task\",\"ResultPath\":\"$.now\",\"Resource\":\"",
                           {
                             "Fn::GetAtt": [
-                              "Eval078d40d3fb4e4d5394a79c46fc11fe029D0ED2B4",
+                              "Eval078d40d3fb4e4d5394a79c46fc11fe02c8a668594084f451de67fa4c045d43f069a30c4067FA9F429C",
                               "Arn"
                             ]
                           },
@@ -534,7 +674,7 @@
                 "path": "EvaluateExpressionInteg/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.70"
+                  "version": "10.3.0"
                 }
               },
               "DeployAssert": {
@@ -580,7 +720,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.2.70"
+          "version": "10.3.0"
         }
       }
     },

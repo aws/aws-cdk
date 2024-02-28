@@ -105,35 +105,28 @@ test('With Node.js 18.x', () => {
   });
 });
 
-test('With imported role', () => {
+test('With created role', () => {
   // WHEN
   const role = new iam.Role(stack, 'Role', {
     assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
     roleName: 'role-for-test',
   });
-  const task = new tasks.EvaluateExpression(stack, 'Task', {
+
+  const taskWithoutRole = new tasks.EvaluateExpression(stack, 'TaskWithoutRole', {
+    expression: '$.a + $.b',
+  });
+
+  const taskWithRole = new tasks.EvaluateExpression(stack, 'TaskWithRole', {
     expression: '$.a + $.b',
     role,
   });
+
   new sfn.StateMachine(stack, 'SM', {
-    definitionBody: sfn.DefinitionBody.fromChainable(task),
+    definitionBody: sfn.DefinitionBody.fromChainable(taskWithRole.next(taskWithoutRole)),
   });
 
   // THEN
-  Template.fromStack(stack).hasResourceProperties('AWS::StepFunctions::StateMachine', {
-    DefinitionString: {
-      'Fn::Join': [
-        '',
-        [
-          '{"StartAt":"Task","States":{"Task":{"End":true,"Type":"Task","Resource":"',
-          {
-            'Fn::GetAtt': ['Eval41256dc5445742738ed917bc818694e54EB1134F', 'Arn'],
-          },
-          '","Parameters":{"expression":"$.a + $.b","expressionAttributeValues":{"$.a.$":"$.a","$.b.$":"$.b"}}}}}',
-        ],
-      ],
-    },
-  });
+  Template.fromStack(stack).resourceCountIs('AWS::Lambda::Function', 2);
 
   Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
     Runtime: 'nodejs18.x',
@@ -153,5 +146,5 @@ test('With imported role', () => {
       ],
     },
   },
-  1);
+  2);
 });
