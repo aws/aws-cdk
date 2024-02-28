@@ -1,0 +1,239 @@
+{
+  "version": "36.0.0",
+  "artifacts": {
+    "stepfunctions-integration.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "stepfunctions-integration.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "stepfunctions-integration": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "stepfunctions-integration.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/19e42465a3a7d7c94541f96a140ab7bdb71eb54da666c1b3c1bc9f3a03c310a2.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "stepfunctions-integration.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "stepfunctions-integration.assets"
+      ],
+      "metadata": {
+        "/stepfunctions-integration/RouteStateMachine/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RouteStateMachineRoleF32EE107"
+          }
+        ],
+        "/stepfunctions-integration/RouteStateMachine/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RouteStateMachineC11CAF3B"
+          }
+        ],
+        "/stepfunctions-integration/ExpressStateMachine/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExpressStateMachineRole4C3738D2"
+          }
+        ],
+        "/stepfunctions-integration/ExpressStateMachine/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExpressStateMachineE90FFF22"
+          }
+        ],
+        "/stepfunctions-integration/Api/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ApiF70053CD"
+          }
+        ],
+        "/stepfunctions-integration/Api/DefaultStage/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ApiDefaultStage189A7074"
+          }
+        ],
+        "/stepfunctions-integration/Api/POST--default/InvokeRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ApiPOSTdefaultInvokeRole9137E4F5"
+          }
+        ],
+        "/stepfunctions-integration/Api/POST--default/InvokeRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ApiPOSTdefaultInvokeRoleDefaultPolicy603C0AF3"
+          }
+        ],
+        "/stepfunctions-integration/Api/POST--default/Integration/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ApiPOSTdefaultIntegration15333EAA"
+          }
+        ],
+        "/stepfunctions-integration/Api/POST--default/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ApiPOSTdefault1EEA0D1D"
+          }
+        ],
+        "/stepfunctions-integration/Api/POST--start/InvokeRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ApiPOSTstartInvokeRoleA9D6BD6A"
+          }
+        ],
+        "/stepfunctions-integration/Api/POST--start/InvokeRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ApiPOSTstartInvokeRoleDefaultPolicy495BCE0C"
+          }
+        ],
+        "/stepfunctions-integration/Api/POST--start/Integration/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ApiPOSTstartIntegration373B2B85"
+          }
+        ],
+        "/stepfunctions-integration/Api/POST--start/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ApiPOSTstartB39FD25E"
+          }
+        ],
+        "/stepfunctions-integration/Api/POST--start-sync/InvokeRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ApiPOSTstartsyncInvokeRoleC429A7AB"
+          }
+        ],
+        "/stepfunctions-integration/Api/POST--start-sync/InvokeRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ApiPOSTstartsyncInvokeRoleDefaultPolicy244CA8B0"
+          }
+        ],
+        "/stepfunctions-integration/Api/POST--start-sync/Integration/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ApiPOSTstartsyncIntegrationB86BBC38"
+          }
+        ],
+        "/stepfunctions-integration/Api/POST--start-sync/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ApiPOSTstartsync3659F9A0"
+          }
+        ],
+        "/stepfunctions-integration/Api/POST--stop/InvokeRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ApiPOSTstopInvokeRoleB9DFDAA9"
+          }
+        ],
+        "/stepfunctions-integration/Api/POST--stop/InvokeRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ApiPOSTstopInvokeRoleDefaultPolicy4B17C921"
+          }
+        ],
+        "/stepfunctions-integration/Api/POST--stop/Integration/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ApiPOSTstopIntegrationDA24B606"
+          }
+        ],
+        "/stepfunctions-integration/Api/POST--stop/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ApiPOSTstopBDBE4015"
+          }
+        ],
+        "/stepfunctions-integration/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/stepfunctions-integration/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "stepfunctions-integration"
+    },
+    "stepfunctionsintegrationintegtestDefaultTestDeployAssert09AC4C77.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "stepfunctionsintegrationintegtestDefaultTestDeployAssert09AC4C77.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "stepfunctionsintegrationintegtestDefaultTestDeployAssert09AC4C77": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "stepfunctionsintegrationintegtestDefaultTestDeployAssert09AC4C77.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "stepfunctionsintegrationintegtestDefaultTestDeployAssert09AC4C77.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "stepfunctionsintegrationintegtestDefaultTestDeployAssert09AC4C77.assets"
+      ],
+      "metadata": {
+        "/stepfunctions-integration-integ-test/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/stepfunctions-integration-integ-test/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "stepfunctions-integration-integ-test/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}
