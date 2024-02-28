@@ -4,7 +4,7 @@
       "package": "software.amazon.awscdk.services.workspacesweb"
     },
     "dotnet": {
-      "package": "Amazon.CDK.AWS.WorkSpacesWeb"
+      "namespace": "Amazon.CDK.AWS.WorkSpacesWeb"
     },
     "python": {
       "module": "aws_cdk.aws_workspacesweb"
