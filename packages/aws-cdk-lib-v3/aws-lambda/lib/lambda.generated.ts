@@ -2248,21 +2248,12 @@ export class CfnFunction extends cdk.CfnResource implements ICfnFunction, cdk.II
     this.vpcConfig = props.vpcConfig;
   }
 
-  private _getDeadLetterConfig(deadLetterConfig: CfnFunction.DeadLetterConfigProperty  | cdk.IResolvable): any {
-    if(deadLetterConfig instanceof CfnFunction.DeadLetterConfigProperty) {
-      return {
-        "target": deadLetterConfig.target?.returnTargetArn()
-      };
-    }
-    return deadLetterConfig;
-  }
-
   protected get cfnProperties(): Record<string, any> {
     return {
       "architectures": this.architectures?.map(architecture => architecture instanceof CfnFunction.ArchitecturesEnum? architecture.name: architecture),
       "code": 'returnCode' in this.code? this.code.returnCode() : this.code,
       "codeSigningConfigArn": (this.codeSigningConfig !== null && this.codeSigningConfig !== undefined) ? (instanceOfICfnCodeSigningConfig(this.codeSigningConfig)? this.codeSigningConfig.attrCodeSigningConfigArn : this.codeSigningConfig) : null,
-      "deadLetterConfig": this._getDeadLetterConfig(this.deadLetterConfig),
+      "deadLetterConfig": (this.deadLetterConfig !== null && this.deadLetterConfig !== undefined) ? this.getDeadLetterConfig(this.deadLetterConfig) : null,
       "description": this.description,
       "environment": this.environment,
       "ephemeralStorage": this.ephemeralStorage,
@@ -2274,7 +2265,7 @@ export class CfnFunction extends cdk.CfnResource implements ICfnFunction, cdk.II
       "layers": this.layers,
       "loggingConfig": this.loggingConfig,
       "memorySize": this.memorySize,
-      "packageType": this.packageType?.name,
+      "packageType": this.packageType,
       "reservedConcurrentExecutions": this.reservedConcurrentExecutions,
       "role": "attrArn" in this.role ? this.role.attrArn : this.role,
       "runtime": this.runtime,
@@ -2299,6 +2290,22 @@ export class CfnFunction extends cdk.CfnResource implements ICfnFunction, cdk.II
 
   protected renderProperties(props: Record<string, any>): Record<string, any> {
     return convertCfnFunctionPropsToCloudFormation(props);
+  }
+
+  private getDeadLetterConfig(deadLetterConfig: CfnFunction.DeadLetterConfigProperty  | cdk.IResolvable): any {
+    if(this.instanceOfIDeadLetterConfigProperty(deadLetterConfig)) {
+      return {
+        "target": deadLetterConfig.target?.returnTargetArn()
+      };
+    }
+    return deadLetterConfig;
+  }
+
+  private instanceOfIDeadLetterConfigProperty(object: any): object is CfnFunction.DeadLetterConfigProperty {
+    if (object == null) {
+      return false;
+    }
+    return "target" in object;
   }
 }
 
@@ -2866,7 +2873,7 @@ export interface CfnFunctionProps {
    *
    * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-lambda-function.html#cfn-lambda-function-architectures
    */
-  readonly architectures?: Array<CfnFunction.ArchitecturesEnum>;
+  readonly architectures?: Array<CfnFunction.ArchitecturesEnum | cdk.IResolvable>;
 
   /**
    * The code for the function.
@@ -3197,7 +3204,7 @@ function CfnFunctionDeadLetterConfigPropertyValidator(properties: any): cdk.Vali
 function convertCfnFunctionArchitecturePropertyValidator(properties: any): cdk.ValidationResult {
   if (!cdk.canInspect(properties)) return cdk.VALIDATION_SUCCESS;
   const errors = new cdk.ValidationResults();
-  return errors.wrap("supplied properties not correct for \"DeadLetterConfigProperty\"");
+  return errors.wrap("supplied properties not correct for \"Architectures property\"");
 }
 
 // @ts-ignore TS6133
@@ -3274,7 +3281,7 @@ function CfnFunctionCodePropertyValidator(properties: any): cdk.ValidationResult
 function convertCfnFunctionArchitecturePropertyToCloudFormation(properties: any): any {
   if (!cdk.canInspect(properties)) return properties;
   convertCfnFunctionArchitecturePropertyValidator(properties).assertSuccess();
-  return cdk.stringToCloudFormation(properties.name);
+  return cdk.stringToCloudFormation(properties);
 }
 
 // @ts-ignore TS6133
