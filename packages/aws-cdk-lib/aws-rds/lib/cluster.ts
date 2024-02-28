@@ -686,6 +686,18 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
   }
 
   /**
+   * The ARN of the cluster
+   */
+  public get clusterArn(): string {
+    return Stack.of(this).formatArn({
+      service: 'rds',
+      resource: 'cluster',
+      arnFormat: ArnFormat.COLON_RESOURCE_NAME,
+      resourceName: this.clusterIdentifier,
+    });
+  }
+
+  /**
    * Create cluster instances
    *
    * @internal

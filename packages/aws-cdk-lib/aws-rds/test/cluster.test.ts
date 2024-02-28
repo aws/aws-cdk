@@ -4052,6 +4052,34 @@ describe('cluster', () => {
       ],
     });
   });
+
+  test('check that clusterArn property works', () => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const exportName = 'DbCluterArn';
+
+    // WHEN
+    const cluster = new DatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.AURORA,
+      writer: ClusterInstance.provisioned('writer'),
+      vpc,
+    });
+    new cdk.CfnOutput(stack, exportName, {
+      exportName,
+      value: cluster.clusterArn,
+    });
+
+    // THEN
+    expect(stack.resolve(cluster.clusterArn)).toEqual({
+      'Fn::Join': ['', [
+        'arn:',
+        { Ref: 'AWS::Partition' },
+        ':rds:us-test-1:12345:cluster:',
+        { Ref: 'DatabaseB269D8BB' },
+      ]],
+    });
+  });
 });
 
 test.each([
