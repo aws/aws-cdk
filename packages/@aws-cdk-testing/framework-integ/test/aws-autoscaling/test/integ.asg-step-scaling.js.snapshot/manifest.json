@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/b6351ec1c05eef818c53fedccb18fb96ff55ee77e2049a05d2b5b15903984b19.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/9275d003ca02cbf717d5af0130f852ba74ab89d57dbc60b2edf6737afc7f4757.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -224,6 +224,30 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "ASGStepScalingUpperAlarmD989D805"
+          }
+        ],
+        "/autoscaling-step-scaling/ASG/StepScalingWithDefaultAdjustmentType/LowerPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ASGStepScalingWithDefaultAdjustmentTypeLowerPolicyA6C1EA33"
+          }
+        ],
+        "/autoscaling-step-scaling/ASG/StepScalingWithDefaultAdjustmentType/LowerAlarm/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ASGStepScalingWithDefaultAdjustmentTypeLowerAlarmF9F52487"
+          }
+        ],
+        "/autoscaling-step-scaling/ASG/StepScalingWithDefaultAdjustmentType/UpperPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ASGStepScalingWithDefaultAdjustmentTypeUpperPolicy08CC2D99"
+          }
+        ],
+        "/autoscaling-step-scaling/ASG/StepScalingWithDefaultAdjustmentType/UpperAlarm/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ASGStepScalingWithDefaultAdjustmentTypeUpperAlarm2379E17B"
           }
         ],
         "/autoscaling-step-scaling/SsmParameterValue:--aws--service--ami-amazon-linux-latest--amzn2-ami-hvm-x86_64-gp2:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": [
