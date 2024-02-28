@@ -52,9 +52,11 @@ export function fullDiff(
   normalize(newTemplate);
   const theDiff = diffTemplate(currentTemplate, newTemplate);
   // If the currentTemplate is empty, we skip these changeset functions.
-  if (changeSet && Object.keys(currentTemplate).length > 0) {
-    filterFalsePositivies(theDiff, changeSet);
+  if (changeSet) {
     addImportInformation(theDiff, changeSet);
+    if (Object.keys(currentTemplate).length > 0) {
+      filterFalsePositivies(theDiff, changeSet);
+    }
   }
 
   return theDiff;
