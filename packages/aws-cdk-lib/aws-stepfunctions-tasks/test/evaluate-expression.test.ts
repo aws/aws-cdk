@@ -1,4 +1,5 @@
 import { Template } from '../../assertions';
+import * as iam from '../../aws-iam';
 import { Runtime, RuntimeFamily } from '../../aws-lambda';
 import * as sfn from '../../aws-stepfunctions';
 import { Stack } from '../../core';
@@ -102,4 +103,55 @@ test('With Node.js 18.x', () => {
   Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
     Runtime: 'nodejs18.x',
   });
+});
+
+test('With imported role', () => {
+  // WHEN
+  const role = new iam.Role(stack, 'Role', {
+    assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+    roleName: 'role-for-test',
+  });
+  const task = new tasks.EvaluateExpression(stack, 'Task', {
+    expression: '$.a + $.b',
+    role,
+  });
+  new sfn.StateMachine(stack, 'SM', {
+    definitionBody: sfn.DefinitionBody.fromChainable(task),
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::StepFunctions::StateMachine', {
+    DefinitionString: {
+      'Fn::Join': [
+        '',
+        [
+          '{"StartAt":"Task","States":{"Task":{"End":true,"Type":"Task","Resource":"',
+          {
+            'Fn::GetAtt': ['Eval41256dc5445742738ed917bc818694e54EB1134F', 'Arn'],
+          },
+          '","Parameters":{"expression":"$.a + $.b","expressionAttributeValues":{"$.a.$":"$.a","$.b.$":"$.b"}}}}}',
+        ],
+      ],
+    },
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+    Runtime: 'nodejs18.x',
+    Role: {
+      'Fn::GetAtt': ['Role1ABCC5F0', 'Arn'],
+    },
+  });
+
+  Template.fromStack(stack).resourcePropertiesCountIs('AWS::IAM::Role', {
+    AssumeRolePolicyDocument: {
+      Statement: [
+        {
+          Principal: {
+            Service: 'lambda.amazonaws.com',
+          },
+        },
+      ],
+    },
+  },
+  1);
 });
