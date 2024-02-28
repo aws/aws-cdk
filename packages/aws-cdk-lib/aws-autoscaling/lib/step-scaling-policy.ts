@@ -147,7 +147,7 @@ export class StepScalingPolicy extends Construct {
       const threshold = intervals[alarms.lowerAlarmIntervalIndex].upper;
 
       this.lowerAction = new StepScalingAction(this, 'LowerPolicy', {
-        adjustmentType: props.adjustmentType,
+        adjustmentType,
         cooldown: props.cooldown,
         estimatedInstanceWarmup: props.estimatedInstanceWarmup,
         metricAggregationType: props.metricAggregationType ?? aggregationTypeFromMetric(props.metric),
@@ -179,7 +179,7 @@ export class StepScalingPolicy extends Construct {
       const threshold = intervals[alarms.upperAlarmIntervalIndex].lower;
 
       this.upperAction = new StepScalingAction(this, 'UpperPolicy', {
-        adjustmentType: props.adjustmentType,
+        adjustmentType,
         cooldown: props.cooldown,
         estimatedInstanceWarmup: props.estimatedInstanceWarmup,
         metricAggregationType: props.metricAggregationType ?? aggregationTypeFromMetric(props.metric),
