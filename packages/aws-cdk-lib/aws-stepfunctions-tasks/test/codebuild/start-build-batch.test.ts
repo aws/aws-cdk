@@ -65,7 +65,9 @@ test('only the required parameters', () => {
       Statement: [{
         Action: 'codebuild:StartBuildBatch',
         Effect: 'Allow',
-        Resource: '*',
+        Resource: {
+          'Fn::GetAtt': ['ProjectC78D97AD', 'Arn'],
+        },
       }],
     },
   });

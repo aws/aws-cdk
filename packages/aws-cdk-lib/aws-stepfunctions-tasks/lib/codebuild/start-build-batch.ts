@@ -87,7 +87,7 @@ export class CodeBuildStartBuildBatch extends sfn.TaskStateBase {
       case sfn.IntegrationPattern.REQUEST_RESPONSE:
         policyStatements = [
           new iam.PolicyStatement({
-            resources: ['*'],
+            resources: [this.props.project.projectArn],
             actions: ['codebuild:StartBuildBatch'],
           }),
         ];

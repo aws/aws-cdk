@@ -234,9 +234,7 @@
      "Statement": [
       {
        "Action": [
-        "codebuild:BatchGetBuilds",
-        "codebuild:BatchGetReports",
-        "codebuild:ListBuildsForProject",
+        "codebuild:BatchGetBuildBatches",
         "codebuild:StartBuildBatch",
         "codebuild:StopBuildBatch"
        ],
@@ -271,7 +269,7 @@
           {
            "Ref": "AWS::AccountId"
           },
-          ":rule/StepFunctionsGetEventForCodeBuildStartBuildRule"
+          ":rule/StepFunctionsGetEventForCodeBuildStartBuildBatchRule"
          ]
         ]
        }
