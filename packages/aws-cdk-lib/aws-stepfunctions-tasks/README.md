@@ -392,6 +392,8 @@ const task = new tasks.CodeBuildStartBuild(this, 'Task', {
 It is necessary to enable the batch build feature in the CodeBuild project.
 
 ```ts
+import * as codebuild from 'aws-cdk-lib/aws-codebuild';
+
 const project = new codebuild.Project(this, 'Project', {
   projectName: 'MyTestProject',
   buildSpec: codebuild.BuildSpec.fromObjectToYaml({
@@ -412,7 +414,7 @@ if (buildconfig == null) {
   throw new Error('Batch builds not enabled');
 }
 
-const task = = new tasks.CodeBuildStartBuildBatch(this, 'buildBatchTask', {
+const task = new tasks.CodeBuildStartBuildBatch(this, 'buildBatchTask', {
   project,
   integrationPattern: sfn.IntegrationPattern.REQUEST_RESPONSE,
   environmentVariablesOverride: {
