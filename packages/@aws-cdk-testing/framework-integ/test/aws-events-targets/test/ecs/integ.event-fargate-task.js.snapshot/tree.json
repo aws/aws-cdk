@@ -823,7 +823,11 @@
                                     "Fn::Join": [
                                       "",
                                       [
-                                        "arn:aws:ecs:*:*:task/",
+                                        "arn:aws:ecs:",
+                                        {
+                                          "Ref": "AWS::Region"
+                                        },
+                                        ":*:task/",
                                         {
                                           "Ref": "EcsCluster97242B84"
                                         },
@@ -1276,7 +1280,11 @@
                                     "Fn::Join": [
                                       "",
                                       [
-                                        "arn:aws:ecs:*:*:task/",
+                                        "arn:aws:ecs:",
+                                        {
+                                          "Ref": "AWS::Region"
+                                        },
+                                        ":*:task/",
                                         {
                                           "Ref": "EcsCluster97242B84"
                                         },

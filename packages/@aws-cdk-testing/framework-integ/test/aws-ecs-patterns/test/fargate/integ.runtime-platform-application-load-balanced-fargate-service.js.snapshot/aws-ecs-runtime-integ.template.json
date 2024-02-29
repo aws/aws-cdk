@@ -468,7 +468,11 @@
         "Fn::Join": [
          "",
          [
-          "arn:aws:ecs:*:*:task/",
+          "arn:aws:ecs:",
+          {
+           "Ref": "AWS::Region"
+          },
+          ":*:task/",
           {
            "Ref": "FargateCluster7CCD5F93"
           },

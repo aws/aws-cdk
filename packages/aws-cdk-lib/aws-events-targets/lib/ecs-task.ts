@@ -288,7 +288,7 @@ export class EcsTask implements events.IRuleTarget {
       new iam.PolicyStatement({
         actions: ['ecs:TagResource'],
         // eslint-disable-next-line @aws-cdk/no-literal-partition
-        resources: [`arn:aws:ecs:*:*:task/${this.cluster.clusterName}/*`],
+        resources: [`arn:aws:ecs:${this.cluster.env.region}:*:task/${this.cluster.clusterName}/*`],
       }),
     ];
 
