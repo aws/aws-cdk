@@ -392,9 +392,22 @@ const task = new tasks.CodeBuildStartBuild(this, 'Task', {
 It is necessary to enable the batch build feature in the CodeBuild project.
 
 ```ts
-declare const project: codebuild.Project;
-
+const project = new codebuild.Project(this, 'Project', {
+  projectName: 'MyTestProject',
+  buildSpec: codebuild.BuildSpec.fromObjectToYaml({
+    version: 0.2,
+    batch: {
+      'build-list': [
+        {
+          identifier: 'id',
+          buildspec: 'version: 0.2\nphases:\n  build:\n    commands:\n      - echo "Hello, from small!"',
+        },
+      ],
+    },
+  }),
+});
 const buildconfig = project.enableBatchBuilds();
+
 if (buildconfig == null) {
   throw new Error('Batch builds not enabled');
 }
