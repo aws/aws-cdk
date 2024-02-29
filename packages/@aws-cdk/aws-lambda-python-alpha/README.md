@@ -159,6 +159,7 @@ Custom bundling can be performed by passing in additional build arguments that p
 - `PIP_INDEX_URL`
 - `PIP_EXTRA_INDEX_URL`
 - `HTTPS_PROXY`
+- `POETRY_VERSION`
 
 Additional build args for bundling that refer to PyPI indexes can be specified as:
 
@@ -185,6 +186,18 @@ new python.PythonFunction(this, 'function', {
   entry,
   runtime: Runtime.PYTHON_3_8,
   bundling: { image },
+});
+```
+
+The default Docker build image uses `poetry==1.5.1` to ensure compatibility with `Runtime.PYTHON_3_7`. When using a more recent Python runtime, you can specify a newer version of `poetry` by setting the `POETRY_VERSION` build arg: 
+
+```ts
+new python.PythonFunction(this, 'function', {
+  entry,
+  runtime: Runtime.PYTHON_3_11,
+  bundling: {
+    buildArgs: { POETRY_VERSION: "1.8.1" },
+  },
 });
 ```
 
