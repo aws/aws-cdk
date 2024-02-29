@@ -42,7 +42,6 @@ class TestStack extends cdk.Stack {
       parameterGroup: params,
       kmsKey,
       removalPolicy: cdk.RemovalPolicy.SNAPSHOT,
-      instanceRemovalPolicy: cdk.RemovalPolicy.RETAIN, // Remember to cleanup after running this test
       enablePerformanceInsights: true,
     });
 

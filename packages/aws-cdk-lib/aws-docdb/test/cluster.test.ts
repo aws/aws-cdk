@@ -1013,13 +1013,26 @@ describe('DatabaseCluster', () => {
       },
       instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
       vpc,
-      instanceRemovalPolicy: cdk.RemovalPolicy.DESTROY,
+      removalPolicy: cdk.RemovalPolicy.SNAPSHOT,
+      instanceRemovalPolicy: cdk.RemovalPolicy.RETAIN,
     });
 
     // THEN
+    Template.fromStack(stack).hasResource('AWS::DocDB::DBCluster', {
+      Properties: {
+        DBSubnetGroupName: { Ref: 'DatabaseSubnets56F17B9A' },
+        MasterUsername: 'admin',
+        MasterUserPassword: 'tooshort',
+        VpcSecurityGroupIds: [{ 'Fn::GetAtt': ['DatabaseSecurityGroup5C91FDCB', 'GroupId'] }],
+      },
+      DeletionPolicy: 'Snapshot',
+      UpdateReplacePolicy: 'Snapshot',
+    });
+
+    // Associated instance gets specified policy
     Template.fromStack(stack).hasResource('AWS::DocDB::DBInstance', {
-      DeletionPolicy: 'Delete',
-      UpdateReplacePolicy: 'Delete',
+      DeletionPolicy: 'Retain',
+      UpdateReplacePolicy: 'Retain',
     });
   });
 
@@ -1037,13 +1050,26 @@ describe('DatabaseCluster', () => {
       },
       instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
       vpc,
-      securityGroupRemovalPolicy: cdk.RemovalPolicy.DESTROY,
+      removalPolicy: cdk.RemovalPolicy.SNAPSHOT,
+      securityGroupRemovalPolicy: cdk.RemovalPolicy.RETAIN,
     });
 
     // THEN
+    Template.fromStack(stack).hasResource('AWS::DocDB::DBCluster', {
+      Properties: {
+        DBSubnetGroupName: { Ref: 'DatabaseSubnets56F17B9A' },
+        MasterUsername: 'admin',
+        MasterUserPassword: 'tooshort',
+        VpcSecurityGroupIds: [{ 'Fn::GetAtt': ['DatabaseSecurityGroup5C91FDCB', 'GroupId'] }],
+      },
+      DeletionPolicy: 'Snapshot',
+      UpdateReplacePolicy: 'Snapshot',
+    });
+
+    // Associated security group gets specified policy
     Template.fromStack(stack).hasResource('AWS::EC2::SecurityGroup', {
-      DeletionPolicy: 'Delete',
-      UpdateReplacePolicy: 'Delete',
+      DeletionPolicy: 'Retain',
+      UpdateReplacePolicy: 'Retain',
     });
   });
 
