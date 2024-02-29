@@ -10,7 +10,7 @@ class NestedStack1 extends NestedStack {
   constructor(scope, id, props) {
     super(scope, id, props);
     new Function(this, 'FunctionPythonRuntime', {
-      runtime: Runtime.PYTHON_3_7,
+      runtime: Runtime.PYTHON_3_12,
       code: Code.fromAsset('./src/python/Function'),
       handler: 'app.lambda_handler',
     });
