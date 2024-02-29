@@ -261,8 +261,9 @@ abstract class KeyBase extends Resource implements IKey {
       return false;
     }
     const bucketStack = Stack.of(this);
+    const region = this.env.region ?? bucketStack.region;
     const identityStack = Stack.of(grantee.grantPrincipal);
-    return bucketStack.region !== identityStack.region;
+    return region !== identityStack.region;
   }
 
   private isGranteeFromAnotherAccount(grantee: iam.IGrantable): boolean {
@@ -270,8 +271,9 @@ abstract class KeyBase extends Resource implements IKey {
       return false;
     }
     const bucketStack = Stack.of(this);
+    const account = this.env.account ?? bucketStack.account;
     const identityStack = Stack.of(grantee.grantPrincipal);
-    return bucketStack.account !== identityStack.account;
+    return account !== identityStack.account;
   }
 }
 
