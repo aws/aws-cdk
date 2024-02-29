@@ -1757,6 +1757,36 @@ Note to set `mapPublicIpOnLaunch` to true in the `subnetConfiguration`.
 Additionally, IPv6 support varies by instance type. Most instance types have IPv6 support with exception of m1-m3, c1, g2, and t1.micro. A full list can be found here: https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-eni.html#AvailableIpPerENI.
 
 
+### Credit configuration modes for burstable instances
+
+You can set the [credit configuration mode](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/burstable-credits-baseline-concepts.html) for burstable instances (T2, T3, T3a and T4g instance types):
+
+```ts
+declare const vpc: ec2.Vpc;
+
+const instance = new ec2.Instance(this, 'Instance', {
+  instanceType: ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.MICRO),
+  machineImage: ec2.MachineImage.latestAmazonLinux2(),
+  vpc: vpc,
+  creditSpecification: ec2.CpuCredits.STANDARD,
+});
+```
+
+It is also possible to set the credit configuration mode for NAT instances.
+
+```ts
+const natInstanceProvider = ec2.NatProvider.instance({
+  instanceType: ec2.InstanceType.of(ec2.InstanceClass.T4G, ec2.InstanceSize.LARGE),
+  machineImage: new ec2.AmazonLinuxImage(),
+  creditSpecification: ec2.CpuCredits.UNLIMITED,
+});
+new ec2.Vpc(this, 'VPC', {
+  natGatewayProvider: natInstanceProvider,
+});
+```
+
+**Note**: `CpuCredits.UNLIMITED` mode is not supported for T3 instances that are launched on a Dedicated Host.
+
 ## VPC Flow Logs
 
 VPC Flow Logs is a feature that enables you to capture information about the IP traffic going to and from network interfaces in your VPC. Flow log data can be published to Amazon CloudWatch Logs and Amazon S3. After you've created a flow log, you can retrieve and view its data in the chosen destination. (<https://docs.aws.amazon.com/vpc/latest/userguide/flow-logs.html>).
