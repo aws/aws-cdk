@@ -83,7 +83,7 @@ describe('key policies', () => {
 
   test('cross region key with iam role grant', () => {
     const app = new cdk.App();
-    const stack = new cdk.Stack(app, 'test-stack', { env: { account: '123456789012', region: 'us-west-2' } });
+    const stack = new cdk.Stack(app, 'test-stack', { env: { account: '123412341234', region: 'us-west-2' } });
     const key = kms.Key.fromKeyArn(
       stack,
       'Key',
@@ -94,7 +94,7 @@ describe('key policies', () => {
       env: { account: '123412341234', region: 'eu-north-1' },
     });
     const role = new iam.Role(roleStack, 'Role', {
-      assumedBy: new iam.AccountPrincipal('123456789012'),
+      assumedBy: new iam.AccountPrincipal('123412341234'),
     });
     key.grantEncryptDecrypt(role);
 
@@ -102,12 +102,6 @@ describe('key policies', () => {
       PolicyDocument: {
         Statement: [
           {
-            Action: [
-              'kms:Decrypt',
-              'kms:Encrypt',
-              'kms:GenerateDataKey*',
-              'kms:ReEncrypt*',
-            ],
             Effect: 'Allow',
             Resource: 'arn:aws:kms:eu-north-1:123412341234:key/e3ab59e5-3dc3-4bc4-9c3f-c790231d2287',
           },

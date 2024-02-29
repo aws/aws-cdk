@@ -261,9 +261,10 @@ abstract class KeyBase extends Resource implements IKey {
       return false;
     }
     const bucketStack = Stack.of(this);
-    const region = this.env.region ?? bucketStack.region;
     const identityStack = Stack.of(grantee.grantPrincipal);
-    return region !== identityStack.region;
+    // if two compared stacks have the same region, this should return 'false' since it's from the
+    // same region; if two stacks have different region, then compare env.region
+    return bucketStack.region !== identityStack.region && this.env.region !== identityStack.region;
   }
 
   private isGranteeFromAnotherAccount(grantee: iam.IGrantable): boolean {
@@ -271,9 +272,10 @@ abstract class KeyBase extends Resource implements IKey {
       return false;
     }
     const bucketStack = Stack.of(this);
-    const account = this.env.account ?? bucketStack.account;
     const identityStack = Stack.of(grantee.grantPrincipal);
-    return account !== identityStack.account;
+    // if two compared stacks have the same region, this should return 'false' since it's from the
+    // same region; if two stacks have different region, then compare env.account
+    return bucketStack.account !== identityStack.account && this.env.account !== identityStack.account;
   }
 }
 
