@@ -386,6 +386,31 @@ const task = new tasks.CodeBuildStartBuild(this, 'Task', {
 });
 ```
 
+### StartBuildBatch
+
+[StartBuildBatch](https://docs.aws.amazon.com/codebuild/latest/APIReference/API_StartBuildBatch.html) starts a CodeBuild Project by Project Name.
+It is necessary to enable the batch build feature in the CodeBuild project.
+
+```ts
+declare const project: codebuild.Project;
+
+const buildconfig = project.enableBatchBuilds();
+if (buildconfig == null) {
+  throw new Error('Batch builds not enabled');
+}
+
+const task = = new tasks.CodeBuildStartBuildBatch(this, 'buildBatchTask', {
+  project,
+  integrationPattern: sfn.IntegrationPattern.REQUEST_RESPONSE,
+  environmentVariablesOverride: {
+    test: {
+      type: codebuild.BuildEnvironmentVariableType.PLAINTEXT,
+      value: 'testValue',
+    },
+  },
+});
+```
+
 ## DynamoDB
 
 You can call DynamoDB APIs from a `Task` state.
