@@ -11,7 +11,7 @@ jobs:
       pull-requests: write
     runs-on: ubuntu-latest
     steps:
-      - uses: rix0rrr/close-stale-prs@main
+      - uses: cdklabs/close-stale-prs@main
         with:
           # Required
           # Must be PROJEN_GITHUB_TOKEN because the default GHA GitHub token will not have permissions to

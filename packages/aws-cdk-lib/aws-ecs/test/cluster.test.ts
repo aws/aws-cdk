@@ -1527,6 +1527,26 @@ describe('cluster', () => {
     expect(cluster.connections.securityGroups).toEqual([]);
   });
 
+  test('Can import autoscaling groups', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Vpc');
+    const autoscalingGroup = new autoscaling.AutoScalingGroup(stack, 'asgal2', {
+      vpc,
+      instanceType: new ec2.InstanceType('bogus'),
+      machineImage: ecs.EcsOptimizedImage.amazonLinux2(),
+    });
+
+    const cluster = ecs.Cluster.fromClusterAttributes(stack, 'Cluster', {
+      clusterName: 'cluster-name',
+      vpc,
+      autoscalingGroup,
+    });
+
+    // THEN
+    expect(cluster.autoscalingGroup).toEqual(autoscalingGroup);
+  });
+
   test('Metric', () => {
     // GIVEN
     const stack = new cdk.Stack();
