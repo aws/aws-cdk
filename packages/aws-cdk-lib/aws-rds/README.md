@@ -1213,8 +1213,9 @@ The following code snippet shows an example of setting the cluster's maintenance
 to 23:15-23:45 on Sundays
 
 ```ts
-const rdsCluster = new DatabaseCluster(stack, 'Database', {
-  engine: DatabaseClusterEngine.AURORA,
+declare const vpc: ec2.Vpc;
+new rds.DatabaseCluster(this, 'DatabaseCluster', {
+  engine: rds.DatabaseClusterEngine.AURORA,
   instanceProps: {
     vpc: vpc,
     preferredMaintenanceWindow: 'Sun:23:15-Sun:23:45',
