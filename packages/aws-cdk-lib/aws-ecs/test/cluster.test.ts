@@ -2928,7 +2928,7 @@ test('can add ASG capacity via Capacity Provider by not specifying machineImageT
 
 });
 
-test('throws when ASG Capacity Provider with capacityProviderName starting with aws, ecs or faragte', () => {
+test('throws when ASG Capacity Provider with capacityProviderName starting with aws, ecs or fargate', () => {
   // GIVEN
   const app = new cdk.App();
   const stack = new cdk.Stack(app, 'test');
@@ -2965,7 +2965,7 @@ test('throws when ASG Capacity Provider with capacityProviderName starting with 
   }).toThrow(/Invalid Capacity Provider Name: ecscp, If a name is specified, it cannot start with aws, ecs, or fargate./);
 });
 
-test('throws when ASG Capacity Provider with no capacityProviderName but stack name starting with aws, ecs or faragte', () => {
+test('throws when ASG Capacity Provider with no capacityProviderName but stack name starting with aws, ecs or fargate', () => {
   // GIVEN
   const app = new cdk.App();
   const stack = new cdk.Stack(app, 'ecscp');
