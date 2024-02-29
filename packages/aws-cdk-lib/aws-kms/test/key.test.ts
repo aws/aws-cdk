@@ -83,18 +83,18 @@ describe('key policies', () => {
 
   test('cross region key with iam role grant', () => {
     const app = new cdk.App();
-    const stack = new cdk.Stack(app, 'test-stack', { env: { account: '123412341234', region: 'us-west-2' } });
+    const stack = new cdk.Stack(app, 'test-stack', { env: { account: '000000000000', region: 'us-west-2' } });
     const key = kms.Key.fromKeyArn(
       stack,
       'Key',
-      'arn:aws:kms:eu-north-1:123412341234:key/e3ab59e5-3dc3-4bc4-9c3f-c790231d2287',
+      'arn:aws:kms:eu-north-1:000000000000:key/e3ab59e5-3dc3-4bc4-9c3f-c790231d2287',
     );
 
     const roleStack = new cdk.Stack(app, 'RoleStack', {
-      env: { account: '123412341234', region: 'eu-north-1' },
+      env: { account: '000000000000', region: 'eu-north-1' },
     });
     const role = new iam.Role(roleStack, 'Role', {
-      assumedBy: new iam.AccountPrincipal('123412341234'),
+      assumedBy: new iam.AccountPrincipal('000000000000'),
     });
     key.grantEncryptDecrypt(role);
 
@@ -103,7 +103,7 @@ describe('key policies', () => {
         Statement: [
           {
             Effect: 'Allow',
-            Resource: 'arn:aws:kms:eu-north-1:123412341234:key/e3ab59e5-3dc3-4bc4-9c3f-c790231d2287',
+            Resource: 'arn:aws:kms:eu-north-1:000000000000:key/e3ab59e5-3dc3-4bc4-9c3f-c790231d2287',
           },
         ],
         Version: '2012-10-17',
