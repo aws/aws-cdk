@@ -54,32 +54,46 @@ export class CodeBuildStartBuildBatch extends sfn.TaskStateBase {
     this.taskPolicies = this.configurePolicyStatements();
   }
 
+  /**
+   * configure the necessary permissions for invoke the CodeBuild StartBuildBatch API
+   *
+   * @see https://docs.aws.amazon.com/step-functions/latest/dg/codebuild-iam.html#codebuild-iam-startbuildbatch
+   */
   private configurePolicyStatements(): iam.PolicyStatement[] {
-    let policyStatements = [
-      new iam.PolicyStatement({
-        resources: [this.props.project.projectArn],
-        actions: [
-          'codebuild:StartBuildBatch',
-          'codebuild:StopBuildBatch',
-          'codebuild:BatchGetBuilds',
-          'codebuild:BatchGetReports',
-          'codebuild:ListBuildsForProject',
-        ],
-      }),
-    ];
+    let policyStatements: iam.PolicyStatement[];
 
-    if (this.integrationPattern === sfn.IntegrationPattern.RUN_JOB) {
-      policyStatements.push(
-        new iam.PolicyStatement({
-          actions: ['events:PutTargets', 'events:PutRule', 'events:DescribeRule'],
-          resources: [
-            cdk.Stack.of(this).formatArn({
-              service: 'events',
-              resource: 'rule/StepFunctionsGetEventForCodeBuildStartBuildRule',
-            }),
-          ],
-        }),
-      );
+    switch (this.integrationPattern) {
+      case sfn.IntegrationPattern.RUN_JOB:
+        policyStatements = [
+          new iam.PolicyStatement({
+            resources: [this.props.project.projectArn],
+            actions: [
+              'codebuild:StartBuildBatch',
+              'codebuild:StopBuildBatch',
+              'codebuild:BatchGetBuildBatches',
+            ],
+          }),
+          new iam.PolicyStatement({
+            actions: ['events:PutTargets', 'events:PutRule', 'events:DescribeRule'],
+            resources: [
+              cdk.Stack.of(this).formatArn({
+                service: 'events',
+                resource: 'rule/StepFunctionsGetEventForCodeBuildStartBuildBatchRule',
+              }),
+            ],
+          }),
+        ];
+        break;
+      case sfn.IntegrationPattern.REQUEST_RESPONSE:
+        policyStatements = [
+          new iam.PolicyStatement({
+            resources: ['*'],
+            actions: ['codebuild:StartBuildBatch'],
+          }),
+        ];
+        break;
+      default:
+        throw new Error(`Unsupported integration pattern: ${this.integrationPattern}`);
     }
 
     return policyStatements;
@@ -87,8 +101,7 @@ export class CodeBuildStartBuildBatch extends sfn.TaskStateBase {
 
   /**
    * Provides the CodeBuild StartBuild service integration task configuration
-   */
-  /**
+   *
    * @internal
    */
   protected _renderTask(): any {

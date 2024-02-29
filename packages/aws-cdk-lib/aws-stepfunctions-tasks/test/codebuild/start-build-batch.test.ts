@@ -1,3 +1,4 @@
+import { Template, Match } from '../../../assertions';
 import * as codebuild from '../../../aws-codebuild';
 import * as sfn from '../../../aws-stepfunctions';
 import * as cdk from '../../../core';
@@ -33,6 +34,9 @@ test('only the required parameters', () => {
   const task = new CodeBuildStartBuildBatch(stack, 'Task', {
     project: codebuildProject,
   });
+  new sfn.StateMachine(stack, 'StateMachine', {
+    definitionBody: sfn.DefinitionBody.fromChainable(task),
+  });
 
   // THEN
   expect(stack.resolve(task.toStateJson())).toEqual({
@@ -56,19 +60,30 @@ test('only the required parameters', () => {
       },
     },
   });
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+    PolicyDocument: {
+      Statement: [{
+        Action: 'codebuild:StartBuildBatch',
+        Effect: 'Allow',
+        Resource: '*',
+      }],
+    },
+  });
 });
 
 test('supports tokens', () => {
   // WHEN
   const task = new CodeBuildStartBuildBatch(stack, 'Task', {
     project: codebuildProject,
-    integrationPattern: sfn.IntegrationPattern.RUN_JOB,
     environmentVariablesOverride: {
       ZONE: {
         type: codebuild.BuildEnvironmentVariableType.PLAINTEXT,
         value: sfn.JsonPath.stringAt('$.envVariables.zone'),
       },
     },
+  });
+  new sfn.StateMachine(stack, 'StateMachine', {
+    definitionBody: sfn.DefinitionBody.fromChainable(task),
   });
 
   // THEN
@@ -82,7 +97,7 @@ test('supports tokens', () => {
           {
             Ref: 'AWS::Partition',
           },
-          ':states:::codebuild:startBuildBatch.sync',
+          ':states:::codebuild:startBuildBatch',
         ],
       ],
     },
@@ -114,6 +129,9 @@ test('with the all parameters', () => {
       },
     },
   });
+  new sfn.StateMachine(stack, 'StateMachine', {
+    definitionBody: sfn.DefinitionBody.fromChainable(task),
+  });
 
   // THEN
   expect(stack.resolve(task.toStateJson())).toEqual({
@@ -144,9 +162,46 @@ test('with the all parameters', () => {
       ],
     },
   });
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+    PolicyDocument: {
+      Statement: Match.arrayWith([
+        {
+          Action: ['codebuild:StartBuildBatch', 'codebuild:StopBuildBatch', 'codebuild:BatchGetBuildBatches'],
+          Effect: 'Allow',
+          Resource: {
+            'Fn::GetAtt': ['ProjectC78D97AD', 'Arn'],
+          },
+        },
+        {
+          Action: ['events:PutTargets', 'events:PutRule', 'events:DescribeRule'],
+          Effect: 'Allow',
+          Resource: {
+            'Fn::Join': [
+              '',
+              [
+                'arn:',
+                {
+                  Ref: 'AWS::Partition',
+                },
+                ':events:',
+                {
+                  Ref: 'AWS::Region',
+                },
+                ':',
+                {
+                  Ref: 'AWS::AccountId',
+                },
+                ':rule/StepFunctionsGetEventForCodeBuildStartBuildBatchRule',
+              ],
+            ],
+          },
+        },
+      ]),
+    },
+  });
 });
 
-test('Task throws if WAIT_FOR_TASK_TOKEN is supplied as service integration pattern', () => {
+test('throw error when WAIT_FOR_TASK_TOKEN is supplied as service integration pattern', () => {
   expect(() => {
     new CodeBuildStartBuildBatch(stack, 'Task', {
       project: codebuildProject,
