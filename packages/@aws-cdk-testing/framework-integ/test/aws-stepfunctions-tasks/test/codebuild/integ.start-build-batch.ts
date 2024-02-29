@@ -53,8 +53,20 @@ class TestStack extends cdk.Stack {
       throw new Error('Batch builds not enabled');
     }
 
-    const startBuildBatch = new tasks.CodeBuildStartBuildBatch(this, 'buildTask', {
+    const startBuildBatch1 = new tasks.CodeBuildStartBuildBatch(this, 'buildTask1', {
       project,
+      integrationPattern: sfn.IntegrationPattern.REQUEST_RESPONSE,
+      environmentVariablesOverride: {
+        test: {
+          type: codebuild.BuildEnvironmentVariableType.PLAINTEXT,
+          value: 'testValue',
+        },
+      },
+    });
+
+    const startBuildBatch2 = new tasks.CodeBuildStartBuildBatch(this, 'buildTask2', {
+      project,
+      integrationPattern: sfn.IntegrationPattern.RUN_JOB,
       environmentVariablesOverride: {
         test: {
           type: codebuild.BuildEnvironmentVariableType.PLAINTEXT,
@@ -65,7 +77,7 @@ class TestStack extends cdk.Stack {
 
     const definition = new sfn.Pass(this, 'Start', {
       result: sfn.Result.fromObject({ bar: 'SomeValue' }),
-    }).next(startBuildBatch);
+    }).next(startBuildBatch1).next(startBuildBatch2);
 
     new sfn.StateMachine(this, 'StateMachine', {
       definition,
@@ -75,7 +87,7 @@ class TestStack extends cdk.Stack {
 
 const app = new cdk.App();
 const stack = new TestStack(app, 'StartBuildBatch');
-new IntegTest(app, 'StartBuildBatchinteg', {
+new IntegTest(app, 'StartBuildBatchInteg', {
   testCases: [stack],
 });
 

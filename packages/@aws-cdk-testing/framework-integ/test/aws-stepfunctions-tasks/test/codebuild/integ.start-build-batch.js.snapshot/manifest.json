@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/8287e3621f92198786f7e941852291d2f93ef868bd62f5e957f82b9c42fbb8d7.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/4d3b6d934e181e57229f3f003946e06f28876e4f60dfe5334cceaebd5e821b7c.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -97,19 +97,19 @@
       },
       "displayName": "StartBuildBatch"
     },
-    "StartBuildBatchintegDefaultTestDeployAssert4AD576F9.assets": {
+    "StartBuildBatchIntegDefaultTestDeployAssert142C169A.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "StartBuildBatchintegDefaultTestDeployAssert4AD576F9.assets.json",
+        "file": "StartBuildBatchIntegDefaultTestDeployAssert142C169A.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "StartBuildBatchintegDefaultTestDeployAssert4AD576F9": {
+    "StartBuildBatchIntegDefaultTestDeployAssert142C169A": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "StartBuildBatchintegDefaultTestDeployAssert4AD576F9.template.json",
+        "templateFile": "StartBuildBatchIntegDefaultTestDeployAssert142C169A.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
@@ -118,7 +118,7 @@
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "StartBuildBatchintegDefaultTestDeployAssert4AD576F9.assets"
+          "StartBuildBatchIntegDefaultTestDeployAssert142C169A.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -127,23 +127,23 @@
         }
       },
       "dependencies": [
-        "StartBuildBatchintegDefaultTestDeployAssert4AD576F9.assets"
+        "StartBuildBatchIntegDefaultTestDeployAssert142C169A.assets"
       ],
       "metadata": {
-        "/StartBuildBatchinteg/DefaultTest/DeployAssert/BootstrapVersion": [
+        "/StartBuildBatchInteg/DefaultTest/DeployAssert/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/StartBuildBatchinteg/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+        "/StartBuildBatchInteg/DefaultTest/DeployAssert/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "StartBuildBatchinteg/DefaultTest/DeployAssert"
+      "displayName": "StartBuildBatchInteg/DefaultTest/DeployAssert"
     },
     "Tree": {
       "type": "cdk:tree",
