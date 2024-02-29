@@ -2,7 +2,6 @@
 *.js.map
 *.d.ts
 !resources/**/*
-# node_modules
 dist
 
 .LAST_BUILD
@@ -17,4 +16,4 @@ nyc.config.js
 
 .DS_Store
 
-junit.xml
+junit.xmls
