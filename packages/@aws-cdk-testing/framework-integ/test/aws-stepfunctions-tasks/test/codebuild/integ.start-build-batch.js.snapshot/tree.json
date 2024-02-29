@@ -206,14 +206,7 @@
                       "image": "aws/codebuild/standard:1.0",
                       "imagePullCredentialsType": "CODEBUILD",
                       "privilegedMode": false,
-                      "computeType": "BUILD_GENERAL1_SMALL",
-                      "environmentVariables": [
-                        {
-                          "name": "zone",
-                          "type": "PLAINTEXT",
-                          "value": "defaultZone"
-                        }
-                      ]
+                      "computeType": "BUILD_GENERAL1_SMALL"
                     },
                     "name": "MyTestProject",
                     "serviceRole": {
@@ -224,7 +217,7 @@
                     },
                     "source": {
                       "type": "NO_SOURCE",
-                      "buildSpec": "{\n  \"version\": \"0.2\",\n  \"batch\": {\n    \"fast-fail\": true,\n    \"buildGraph\": [\n      {\n        \"identifier\": \"linux_small\",\n        \"env\": {\n          \"computeType\": \"BUILD_GENERAL1_SMALL\",\n          \"image\": \"aws/codebuild/standard:4.0\",\n          \"type\": \"LINUX_CONTAINER\"\n        }\n      },\n      {\n        \"identifier\": \"linux_medium\",\n        \"env\": {\n          \"computeType\": \"BUILD_GENERAL1_MEDIUM\",\n          \"image\": \"aws/codebuild/standard:4.0\",\n          \"type\": \"LINUX_CONTAINER\"\n        },\n        \"depends-on\": [\n          \"linux_small\"\n        ]\n      }\n    ]\n  },\n  \"phases\": {\n    \"build\": {\n      \"commands\": [\n        \"echo \\\"Hello, CodeBuild!\\\"\"\n      ]\n    }\n  }\n}"
+                      "buildSpec": "version: 0.2\nenvironment:\n  buildImage:\n    type: LINUX_CONTAINER\n    defaultComputeType: BUILD_GENERAL1_SMALL\n    imageId: aws/codebuild/standard:5.0\n    imagePullPrincipalType: CODEBUILD\n    secretsManagerCredentials: null\n    repository: null\ntimeout:\n  amount: 1\n  unit:\n    label: hours\n    isoLabel: H\n    inMillis: 3600000\nbatch:\n  fast-fail: true\n  build-list:\n    - identifier: linux_small\n      env:\n        compute-type: BUILD_GENERAL1_SMALL\n        image: aws/codebuild/standard:5.0\n        type: LINUX_CONTAINER\n        variables:\n          key1: value1\n      buildspec: |-\n        version: 0.2\n        phases:\n          build:\n            commands:\n              - echo \"Hello, from small!\"\n    - identifier: linux_medium\n      env:\n        compute-type: BUILD_GENERAL1_MEDIUM\n        image: aws/codebuild/standard:4.0\n        type: LINUX_CONTAINER\n        variables:\n          key2: value2\n      buildspec: |-\n        version: 0.2\n        phases:\n          build:\n            commands:\n              - echo \"Hello, from medium!\"\n"
                     }
                   }
                 },
@@ -330,11 +323,11 @@
               "version": "0.0.0"
             }
           },
-          "build-task": {
-            "id": "build-task",
-            "path": "StartBuildBatch/build-task",
+          "buildTask": {
+            "id": "buildTask",
+            "path": "StartBuildBatch/buildTask",
             "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_stepfunctions_tasks.CodeBuildStartBuild",
+              "fqn": "aws-cdk-lib.aws_stepfunctions_tasks.CodeBuildStartBuildBatch",
               "version": "0.0.0"
             }
           },
@@ -403,8 +396,9 @@
                                   "Action": [
                                     "codebuild:BatchGetBuilds",
                                     "codebuild:BatchGetReports",
-                                    "codebuild:StartBuild",
-                                    "codebuild:StopBuild"
+                                    "codebuild:ListBuildsForProject",
+                                    "codebuild:StartBuildBatch",
+                                    "codebuild:StopBuildBatch"
                                   ],
                                   "Effect": "Allow",
                                   "Resource": {
@@ -452,15 +446,15 @@
                       "Fn::Join": [
                         "",
                         [
-                          "{\"StartAt\":\"Start\",\"States\":{\"Start\":{\"Type\":\"Pass\",\"Result\":{\"bar\":\"SomeValue\"},\"Next\":\"build-task\"},\"build-task\":{\"End\":true,\"Type\":\"Task\",\"Resource\":\"arn:",
+                          "{\"StartAt\":\"Start\",\"States\":{\"Start\":{\"Type\":\"Pass\",\"Result\":{\"bar\":\"SomeValue\"},\"Next\":\"buildTask\"},\"buildTask\":{\"End\":true,\"Type\":\"Task\",\"Resource\":\"arn:",
                           {
                             "Ref": "AWS::Partition"
                           },
-                          ":states:::codebuild:startBuild\",\"Parameters\":{\"ProjectName\":\"",
+                          ":states:::codebuild:startBuildBatch\",\"Parameters\":{\"ProjectName\":\"",
                           {
                             "Ref": "ProjectC78D97AD"
                           },
-                          "\",\"EnvironmentVariablesOverride\":[{\"Name\":\"ZONE\",\"Type\":\"PLAINTEXT\",\"Value.$\":\"$.envVariables.zone\"}]}}}}"
+                          "\",\"EnvironmentVariablesOverride\":[{\"Name\":\"test\",\"Type\":\"PLAINTEXT\",\"Value\":\"testValue\"}]}}}}"
                         ]
                       ]
                     },

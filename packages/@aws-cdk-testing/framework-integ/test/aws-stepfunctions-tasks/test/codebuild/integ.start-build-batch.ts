@@ -10,44 +10,42 @@ class TestStack extends cdk.Stack {
 
     const project = new codebuild.Project(this, 'Project', {
       projectName: 'MyTestProject',
-      buildSpec: codebuild.BuildSpec.fromObject({
-        version: '0.2',
+      environment: {
+        buildImage: codebuild.LinuxBuildImage.STANDARD_5_0,
+      },
+      timeout: cdk.Duration.hours(1),
+      buildSpec: codebuild.BuildSpec.fromObjectToYaml({
+        version: 0.2,
         batch: {
           'fast-fail': true,
-          'buildGraph': [
+          'build-list': [
             {
               identifier: 'linux_small',
               env: {
-                computeType: 'BUILD_GENERAL1_SMALL',
-                image: 'aws/codebuild/standard:4.0',
-                type: 'LINUX_CONTAINER',
+                'compute-type': 'BUILD_GENERAL1_SMALL',
+                'image': 'aws/codebuild/standard:5.0',
+                'type': 'LINUX_CONTAINER',
+                'variables': {
+                  key1: 'value1',
+                },
               },
+              buildspec: 'version: 0.2\nphases:\n  build:\n    commands:\n      - echo "Hello, from small!"',
             },
             {
-              'identifier': 'linux_medium',
-              'env': {
-                computeType: 'BUILD_GENERAL1_MEDIUM',
-                image: 'aws/codebuild/standard:4.0',
-                type: 'LINUX_CONTAINER',
+              identifier: 'linux_medium',
+              env: {
+                'compute-type': 'BUILD_GENERAL1_MEDIUM',
+                'image': 'aws/codebuild/standard:4.0',
+                'type': 'LINUX_CONTAINER',
+                'variables': {
+                  key2: 'value2',
+                },
               },
-              'depends-on': ['linux_small'],
+              buildspec: 'version: 0.2\nphases:\n  build:\n    commands:\n      - echo "Hello, from medium!"',
             },
           ],
         },
-        phases: {
-          build: {
-            commands: [
-              'echo "Hello, CodeBuild!"',
-            ],
-          },
-        },
       }),
-      environmentVariables: {
-        zone: {
-          type: codebuild.BuildEnvironmentVariableType.PLAINTEXT,
-          value: 'defaultZone',
-        },
-      },
     });
     const buildconfig = project.enableBatchBuilds();
 
@@ -55,12 +53,12 @@ class TestStack extends cdk.Stack {
       throw new Error('Batch builds not enabled');
     }
 
-    const startBuildBatch = new tasks.CodeBuildStartBuild(this, 'build-task', {
+    const startBuildBatch = new tasks.CodeBuildStartBuildBatch(this, 'buildTask', {
       project,
       environmentVariablesOverride: {
-        ZONE: {
+        test: {
           type: codebuild.BuildEnvironmentVariableType.PLAINTEXT,
-          value: sfn.JsonPath.stringAt('$.envVariables.zone'),
+          value: 'testValue',
         },
       },
     });
