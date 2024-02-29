@@ -29,19 +29,19 @@ class CDKSupportDemoRootStack extends Stack{
     // Layers
     new PythonLayerVersion(this, 'PythonLayerVersion', {
       compatibleRuntimes: [
-        Runtime.PYTHON_3_7,
+        Runtime.PYTHON_3_12,
       ],
       entry: './src/python/Layer',
     });
     new LayerVersion(this, 'LayerVersion', {
       compatibleRuntimes: [
-        Runtime.PYTHON_3_7,
+        Runtime.PYTHON_3_12,
       ],
       code: Code.fromAsset('./src/python/Layer'),
     });
     new LayerVersion(this, 'BundledLayerVersionPythonRuntime', {
       compatibleRuntimes: [
-        Runtime.PYTHON_3_7,
+        Runtime.PYTHON_3_12,
       ],
       code: Code.fromAsset('./src/python/Layer', {
         bundling: {
@@ -50,7 +50,7 @@ class CDKSupportDemoRootStack extends Stack{
             '-c',
             'rm -rf /tmp/asset-input && mkdir /tmp/asset-input && cp * /tmp/asset-input && cd /tmp/asset-input && pip install -r requirements.txt -t . && mkdir /asset-output/python && cp -R /tmp/asset-input/* /asset-output/python',
           ],
-          image: Runtime.PYTHON_3_7.bundlingImage,
+          image: Runtime.PYTHON_3_12.bundlingImage,
           user: 'root',
         }
       }),
@@ -61,17 +61,17 @@ class CDKSupportDemoRootStack extends Stack{
       entry: './src/python/Function',
       index: 'app.py',
       handler: 'lambda_handler',
-      runtime: Runtime.PYTHON_3_7,
+      runtime: Runtime.PYTHON_3_12,
       functionName: 'pythonFunc',
       logRetention: RetentionDays.THREE_MONTHS,
     });
     new Function(this, 'FunctionPythonRuntime', {
-      runtime: Runtime.PYTHON_3_7,
+      runtime: Runtime.PYTHON_3_12,
       code: Code.fromAsset('./src/python/Function'),
       handler: 'app.lambda_handler',
     });
     new Function(this, 'BundledFunctionPythonRuntime', {
-      runtime: Runtime.PYTHON_3_7,
+      runtime: Runtime.PYTHON_3_12,
       code: Code.fromAsset('./src/python/Function/', {
         bundling: {
           command: [
@@ -79,7 +79,7 @@ class CDKSupportDemoRootStack extends Stack{
             '-c',
             'rm -rf /tmp/asset-input && mkdir /tmp/asset-input && cp * /tmp/asset-input && cd /tmp/asset-input && pip install -r requirements.txt -t . && cp -R /tmp/asset-input/* /asset-output',
           ],
-          image: Runtime.PYTHON_3_7.bundlingImage,
+          image: Runtime.PYTHON_3_12.bundlingImage,
           user: 'root',
         }
       }),
