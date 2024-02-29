@@ -2,7 +2,7 @@
 *.js.map
 *.d.ts
 !resources/**/*
-node_modules
+# node_modules
 dist
 
 .LAST_BUILD
