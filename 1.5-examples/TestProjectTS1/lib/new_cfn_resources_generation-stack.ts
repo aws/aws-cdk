@@ -30,6 +30,8 @@ export class NewCfnResourcesGenerationStack extends cdk.Stack {
       },
     });
 
+    let queue = new sqs.CfnQueue(this, 'MyQueue');
+
     let lambdaFn = new lambda.CfnFunction(this, 'MyLambda', {
       runtime: lambda.CfnFunction.RuntimeEnum.PYTHON3_11,
       code: new lambda.CfnFunction.S3Code(functionCode.s3BucketName, functionCode.s3ObjectKey, functionCode.assetHash),
@@ -38,6 +40,9 @@ export class NewCfnResourcesGenerationStack extends cdk.Stack {
       architectures: [lambda.CfnFunction.ArchitecturesEnum.ARM64],
       tracingConfig: {
         mode: lambda.CfnFunction.TracingConfigMode.ACTIVE,
+      },
+      deadLetterConfig: {
+        target: queue
       }
     });
 
@@ -49,9 +54,12 @@ export class NewCfnResourcesGenerationStack extends cdk.Stack {
       },
       role: role.attrArn,
       packageType: "Zip",
-      architectures: [lambda.CfnFunction.ArchitecturesEnum.ARM64.name],
+      architectures: ['arm64'],
       tracingConfig: {
-        mode: lambda.CfnFunction.TracingConfigMode.ACTIVE.name,
+        mode: "Active",
+      },
+      deadLetterConfig: {
+        targetArn: queue.attrArn
       }
     });
   }

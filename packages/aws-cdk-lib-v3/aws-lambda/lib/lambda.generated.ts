@@ -2295,7 +2295,7 @@ export class CfnFunction extends cdk.CfnResource implements ICfnFunction, cdk.II
   private getDeadLetterConfig(deadLetterConfig: CfnFunction.DeadLetterConfigProperty  | cdk.IResolvable): any {
     if(this.instanceOfIDeadLetterConfigProperty(deadLetterConfig)) {
       return {
-        "target": deadLetterConfig.target?.returnTargetArn()
+        "TargetArn": deadLetterConfig.target?.returnTargetArn()
       };
     }
     return deadLetterConfig;
@@ -3211,9 +3211,9 @@ function convertCfnFunctionArchitecturePropertyValidator(properties: any): cdk.V
 function convertCfnFunctionDeadLetterConfigPropertyToCloudFormation(properties: any): any {
   if (!cdk.canInspect(properties)) return properties;
   CfnFunctionDeadLetterConfigPropertyValidator(properties).assertSuccess();
-  return {
-    "TargetArn": cdk.stringToCloudFormation(properties.target.returnTargetArn())
-  };
+  if (properties !== null) {
+    return properties;
+  }
 }
 
 /**
@@ -3452,7 +3452,7 @@ function convertCfnFunctionPropsToCloudFormation(properties: any): any {
     "Architectures": cdk.listMapper(convertCfnFunctionArchitecturePropertyToCloudFormation)(properties.architectures),
     "Code": convertCfnFunctionCodePropertyToCloudFormation(properties.code),
     "CodeSigningConfigArn": cdk.stringToCloudFormation(properties.codeSigningConfig?.attrCodeSigningConfigArn),
-    "DeadLetterConfig": convertCfnFunctionDeadLetterConfigPropertyToCloudFormation(properties.deadLetterConfig),
+    "DeadLetterConfig": convertCfnFunctionDeadLetterConfigPropertyToCloudFormation(properties?.deadLetterConfig),
     "Description": cdk.stringToCloudFormation(properties.description),
     "Environment": convertCfnFunctionEnvironmentPropertyToCloudFormation(properties.environment),
     "EphemeralStorage": convertCfnFunctionEphemeralStoragePropertyToCloudFormation(properties.ephemeralStorage),
@@ -3466,7 +3466,7 @@ function convertCfnFunctionPropsToCloudFormation(properties: any): any {
     "MemorySize": cdk.numberToCloudFormation(properties.memorySize),
     "PackageType": cdk.stringToCloudFormation(properties.packageType?.name),
     "ReservedConcurrentExecutions": cdk.numberToCloudFormation(properties.reservedConcurrentExecutions),
-    "Role": cdk.stringToCloudFormation("attrArn" in properties.role ? properties.role.attrArn : properties.role),
+    "Role": cdk.stringToCloudFormation(properties.role),
     "Runtime": cdk.stringToCloudFormation(properties.runtime?.name),
     "RuntimeManagementConfig": convertCfnFunctionRuntimeManagementConfigPropertyToCloudFormation(properties.runtimeManagementConfig),
     "SnapStart": convertCfnFunctionSnapStartPropertyToCloudFormation(properties.snapStart),
