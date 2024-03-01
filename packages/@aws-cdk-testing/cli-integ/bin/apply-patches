@@ -19,6 +19,4 @@ if [[ -d "$candidate_dir" ]]; then
   cp -vR "${candidate_dir}/"* "$2"
 else
   echo "No patch directory named: ${candidate_dir}"
-  echo "Did find:"
-  find "${scripdir}/.."
 fi
