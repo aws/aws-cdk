@@ -14,9 +14,11 @@ fi
 
 candidate_dir="${scriptdir}/../resources/cli-regression-patches/v${version}"
 
-if [[ -f "$candidate_dir" ]]; then
+if [[ -d "$candidate_dir" ]]; then
   echo "Found patch directory: ${candidate_dir}"
   cp -vR "${candidate_dir}/"* "$2"
 else
   echo "No patch directory named: ${candidate_dir}"
+  echo "Did find:"
+  find "${scripdir}/.."
 fi
