@@ -71,6 +71,26 @@ describe('target tracking', () => {
     });
   });
 
+  test('test setup target tracking on predefined metric for SAGEMAKER_VARIANT_PROVISIONED_CONCURRENCY_UTILIZATION', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const target = createScalableTarget(stack);
+
+    // WHEN
+    target.scaleToTrackMetric('Tracking', {
+      predefinedMetric: appscaling.PredefinedMetric.SAGEMAKER_VARIANT_PROVISIONED_CONCURRENCY_UTILIZATION,
+      targetValue: 0.5,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ApplicationAutoScaling::ScalingPolicy', {
+      TargetTrackingScalingPolicyConfiguration: {
+        PredefinedMetricSpecification: { PredefinedMetricType: 'SageMakerVariantProvisionedConcurrencyUtilization' },
+        TargetValue: 0.5,
+      },
+    });
+  });
+
   test('test setup target tracking on custom metric', () => {
     // GIVEN
     const stack = new cdk.Stack();

@@ -1,0 +1,12 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "IntegTestEnvironmentVariables/DefaultTest": {
+      "stacks": [
+        "AppSyncEnvironmentVariables"
+      ],
+      "assertionStack": "IntegTestEnvironmentVariables/DefaultTest/DeployAssert",
+      "assertionStackName": "IntegTestEnvironmentVariablesDefaultTestDeployAssertCD36F8FC"
+    }
+  }
+}

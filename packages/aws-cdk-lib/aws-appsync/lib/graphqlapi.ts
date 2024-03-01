@@ -5,10 +5,10 @@ import { ISchema, SchemaFile } from './schema';
 import { MergeType, addSourceApiAutoMergePermission, addSourceGraphQLPermission } from './source-api-association';
 import { ICertificate } from '../../aws-certificatemanager';
 import { IUserPool } from '../../aws-cognito';
-import { ManagedPolicy, Role, IRole, ServicePrincipal, Grant, IGrantable } from '../../aws-iam';
+import { ManagedPolicy, Role, IRole, ServicePrincipal } from '../../aws-iam';
 import { IFunction } from '../../aws-lambda';
 import { ILogGroup, LogGroup, LogRetention, RetentionDays } from '../../aws-logs';
-import { ArnFormat, CfnResource, Duration, Expiration, FeatureFlags, IResolvable, Stack } from '../../core';
+import { CfnResource, Duration, Expiration, FeatureFlags, IResolvable, Lazy, Stack, Token } from '../../core';
 import * as cxapi from '../../cx-api';
 
 /**
@@ -442,65 +442,20 @@ export interface GraphqlApiProps {
    * @default IntrospectionConfig.ENABLED
    */
   readonly introspectionConfig?: IntrospectionConfig;
-}
-
-/**
- * A class used to generate resource arns for AppSync
- */
-export class IamResource {
-  /**
-   * Generate the resource names given custom arns
-   *
-   * @param arns The custom arns that need to be permissioned
-   *
-   * Example: custom('/types/Query/fields/getExample')
-   */
-  public static custom(...arns: string[]): IamResource {
-    if (arns.length === 0) {
-      throw new Error('At least 1 custom ARN must be provided.');
-    }
-    return new IamResource(arns);
-  }
 
   /**
-   * Generate the resource names given a type and fields
+   * A map containing the list of resources with their properties and environment variables.
    *
-   * @param type The type that needs to be allowed
-   * @param fields The fields that need to be allowed, if empty grant permissions to ALL fields
+   * There are a few rules you must follow when creating keys and values:
+   *   - Keys must begin with a letter.
+   *   - Keys must be between 2 and 64 characters long.
+   *   - Keys can only contain letters, numbers, and the underscore character (_).
+   *   - Values can be up to 512 characters long.
+   *   - You can configure up to 50 key-value pairs in a GraphQL API.
    *
-   * Example: ofType('Query', 'GetExample')
+   * @default - No environment variables.
    */
-  public static ofType(type: string, ...fields: string[]): IamResource {
-    const arns = fields.length ? fields.map((field) => `types/${type}/fields/${field}`) : [`types/${type}/*`];
-    return new IamResource(arns);
-  }
-
-  /**
-   * Generate the resource names that accepts all types: `*`
-   */
-  public static all(): IamResource {
-    return new IamResource(['*']);
-  }
-
-  private arns: string[];
-
-  private constructor(arns: string[]) {
-    this.arns = arns;
-  }
-
-  /**
-   * Return the Resource ARN
-   *
-   * @param api The GraphQL API to give permissions
-   */
-  public resourceArns(api: GraphqlApi): string[] {
-    return this.arns.map((arn) => Stack.of(api).formatArn({
-      service: 'appsync',
-      resource: `apis/${api.apiId}`,
-      arnFormat: ArnFormat.SLASH_RESOURCE_NAME,
-      resourceName: `${arn}`,
-    }));
-  }
+  readonly environmentVariables?: { [key: string]: string };
 }
 
 /**
@@ -619,6 +574,7 @@ export class GraphqlApi extends GraphqlApiBase {
   private apiKeyResource?: CfnApiKey;
   private domainNameResource?: CfnDomainName;
   private mergedApiExecutionRole?: IRole;
+  private environmentVariables: { [key: string]: string } = {};
 
   constructor(scope: Construct, id: string, props: GraphqlApiProps) {
     super(scope, id);
@@ -644,6 +600,13 @@ export class GraphqlApi extends GraphqlApiBase {
       this.setupMergedApiExecutionRole(this.definition.sourceApiOptions);
     }
 
+    if (props.environmentVariables !== undefined) {
+      Object.entries(props.environmentVariables).forEach(([key, value]) => {
+        this.addEnvironmentVariable(key, value);
+      });
+    }
+    this.node.addValidation({ validate: () => this.validateEnvironmentVariables() });
+
     this.api = new CfnGraphQLApi(this, 'Resource', {
       name: props.name,
       authenticationType: defaultMode.authorizationType,
@@ -657,6 +620,7 @@ export class GraphqlApi extends GraphqlApiBase {
       mergedApiExecutionRoleArn: this.mergedApiExecutionRole?.roleArn,
       apiType: this.definition.sourceApiOptions ? 'MERGED' : undefined,
       introspectionConfig: props.introspectionConfig,
+      environmentVariables: Lazy.any({ produce: () => this.renderEnvironmentVariables() }),
     });
 
     this.apiId = this.api.attrApiId;
@@ -762,56 +726,6 @@ export class GraphqlApi extends GraphqlApiBase {
     }
   }
 
-  /**
-   * Adds an IAM policy statement associated with this GraphQLApi to an IAM
-   * principal's policy.
-   *
-   * @param grantee The principal
-   * @param resources The set of resources to allow (i.e. ...:[region]:[accountId]:apis/GraphQLId/...)
-   * @param actions The actions that should be granted to the principal (i.e. appsync:graphql )
-   */
-  public grant(grantee: IGrantable, resources: IamResource, ...actions: string[]): Grant {
-    return Grant.addToPrincipal({
-      grantee,
-      actions,
-      resourceArns: resources.resourceArns(this),
-      scope: this,
-    });
-  }
-
-  /**
-   * Adds an IAM policy statement for Mutation access to this GraphQLApi to an IAM
-   * principal's policy.
-   *
-   * @param grantee The principal
-   * @param fields The fields to grant access to that are Mutations (leave blank for all)
-   */
-  public grantMutation(grantee: IGrantable, ...fields: string[]): Grant {
-    return this.grant(grantee, IamResource.ofType('Mutation', ...fields), 'appsync:GraphQL');
-  }
-
-  /**
-   * Adds an IAM policy statement for Query access to this GraphQLApi to an IAM
-   * principal's policy.
-   *
-   * @param grantee The principal
-   * @param fields The fields to grant access to that are Queries (leave blank for all)
-   */
-  public grantQuery(grantee: IGrantable, ...fields: string[]): Grant {
-    return this.grant(grantee, IamResource.ofType('Query', ...fields), 'appsync:GraphQL');
-  }
-
-  /**
-   * Adds an IAM policy statement for Subscription access to this GraphQLApi to an IAM
-   * principal's policy.
-   *
-   * @param grantee The principal
-   * @param fields The fields to grant access to that are Subscriptions (leave blank for all)
-   */
-  public grantSubscription(grantee: IGrantable, ...fields: string[]): Grant {
-    return this.grant(grantee, IamResource.ofType('Subscription', ...fields), 'appsync:GraphQL');
-  }
-
   private validateAuthorizationProps(modes: AuthorizationMode[]) {
     if (modes.filter((mode) => mode.authorizationType === AuthorizationType.LAMBDA).length > 1) {
       throw new Error('You can only have a single AWS Lambda function configured to authorize your API.');
@@ -845,6 +759,39 @@ export class GraphqlApi extends GraphqlApiBase {
       construct.addDependency(this.schemaResource);
     };
     return true;
+  }
+
+  /**
+   * Add an environment variable to the construct.
+   */
+  public addEnvironmentVariable(key: string, value: string) {
+    if (this.definition.sourceApiOptions) {
+      throw new Error('Environment variables are not supported for merged APIs');
+    }
+    if (!Token.isUnresolved(key) && !/^[A-Za-z]+\w*$/.test(key)) {
+      throw new Error(`Key '${key}' must begin with a letter and can only contain letters, numbers, and underscores`);
+    }
+    if (!Token.isUnresolved(key) && (key.length < 2 || key.length > 64)) {
+      throw new Error(`Key '${key}' must be between 2 and 64 characters long, got ${key.length}`);
+    }
+    if (!Token.isUnresolved(value) && value.length > 512) {
+      throw new Error(`Value for '${key}' is too long. Values can be up to 512 characters long, got ${value.length}`);
+    }
+
+    this.environmentVariables[key] = value;
+  }
+
+  private validateEnvironmentVariables() {
+    const errors: string[] = [];
+    const entries = Object.entries(this.environmentVariables);
+    if (entries.length > 50) {
+      errors.push(`Only 50 environment variables can be set, got ${entries.length}`);
+    }
+    return errors;
+  }
+
+  private renderEnvironmentVariables() {
+    return Object.entries(this.environmentVariables).length > 0 ? this.environmentVariables : undefined;
   }
 
   private setupLogConfig(config?: LogConfig) {

@@ -1,0 +1,12 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "instance-test/DefaultTest": {
+      "stacks": [
+        "integ-ec2-instance-credit"
+      ],
+      "assertionStack": "instance-test/DefaultTest/DeployAssert",
+      "assertionStackName": "instancetestDefaultTestDeployAssert5516EAF1"
+    }
+  }
+}

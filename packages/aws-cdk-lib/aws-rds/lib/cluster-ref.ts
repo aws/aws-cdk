@@ -51,6 +51,11 @@ export interface IDatabaseCluster extends IResource, ec2.IConnectable, secretsma
   readonly engine?: IClusterEngine;
 
   /**
+   * The ARN of the database cluster
+   */
+  readonly clusterArn: string;
+
+  /**
    * Add a new db proxy to this cluster.
    */
   addProxy(id: string, options: DatabaseProxyOptions): DatabaseProxy;
