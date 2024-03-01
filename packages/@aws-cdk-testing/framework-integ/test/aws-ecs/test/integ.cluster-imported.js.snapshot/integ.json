@@ -1,0 +1,12 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "ClusterImported/DefaultTest": {
+      "stacks": [
+        "integ-ecs-imported-cluster"
+      ],
+      "assertionStack": "ClusterImported/DefaultTest/DeployAssert",
+      "assertionStackName": "ClusterImportedDefaultTestDeployAssert8B67C7A2"
+    }
+  }
+}
