@@ -12,7 +12,7 @@ export enum ActionCategory {
   TEST = 'Test',
   APPROVAL = 'Approval',
   DEPLOY = 'Deploy',
-  INVOKE = 'Invoke'
+  INVOKE = 'Invoke',
 }
 
 /**

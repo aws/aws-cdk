@@ -306,6 +306,20 @@ integ.assertions.awsApiCall('SQS', 'receiveMessage', {
 });
 ```
 
+You must specify the `service` and the `api` when using The `AwsApiCall` construct.
+The `service` is the name of an AWS service, in one of the following forms:
+
+- An AWS SDK for JavaScript v3 package name (`@aws-sdk/client-api-gateway`)
+- An AWS SDK for JavaScript v3 client name (`api-gateway`)
+- An AWS SDK for JavaScript v2 constructor name (`APIGateway`)
+- A lowercase AWS SDK for JavaScript v2 constructor name (`apigateway`)
+
+The `api` is the name of an AWS API call, in one of the following forms:
+
+- An API call name as found in the API Reference documentation (`GetObject`)
+- The API call name starting with a lowercase letter (`getObject`)
+- The AWS SDK for JavaScript v3 command class name (`GetObjectCommand`)
+
 By default, the `AwsApiCall` construct will automatically add the correct IAM policies
 to allow the Lambda function to make the API call. It does this based on the `service`
 and `api` that is provided. In the above example the service is `SQS` and the api is

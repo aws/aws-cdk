@@ -71,7 +71,7 @@ interface DatabaseClusterBaseProps {
    *
    * @default 2
    */
-  readonly serverlessV2MaxCapacity?: number,
+  readonly serverlessV2MaxCapacity?: number;
 
   /**
    * The minimum number of Aurora capacity units (ACUs) for a DB instance in an Aurora Serverless v2 cluster.
@@ -120,7 +120,7 @@ interface DatabaseClusterBaseProps {
    * @see https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/AuroraMySQL.Managing.Backtrack.html
    * @default 0 seconds (no backtrack)
    */
-  readonly backtrackWindow?: Duration
+  readonly backtrackWindow?: Duration;
 
   /**
    * Backup settings
@@ -329,7 +329,7 @@ interface DatabaseClusterBaseProps {
    *
    * @default - true if storageEncryptionKey is provided, false otherwise
    */
-  readonly storageEncrypted?: boolean
+  readonly storageEncrypted?: boolean;
 
   /**
    * The KMS key for storage encryption.
@@ -410,7 +410,7 @@ export enum InstanceUpdateBehaviour {
    * This results in at most one instance being unavailable during the update.
    * If your cluster consists of more than 1 instance, the downtime periods are limited to the time a primary switch needs.
    */
-  ROLLING = 'ROLLING'
+  ROLLING = 'ROLLING',
 }
 
 /**
@@ -456,6 +456,18 @@ export abstract class DatabaseClusterBase extends Resource implements IDatabaseC
    * Access to the network connections
    */
   public abstract readonly connections: ec2.Connections;
+
+  /**
+   * The ARN of the cluster
+   */
+  public get clusterArn(): string {
+    return Stack.of(this).formatArn({
+      service: 'rds',
+      resource: 'cluster',
+      arnFormat: ArnFormat.COLON_RESOURCE_NAME,
+      resourceName: this.clusterIdentifier,
+    });
+  }
 
   /**
    * Add a new db proxy to this cluster.

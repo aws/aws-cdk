@@ -171,7 +171,7 @@ test('Policy sizes do not exceed the maximum size', () => {
     }
   }
 
-  // expect template size warning, but no other warnings
+  // expect template size warning
   const annotations = Annotations.fromStack(pipelineStack);
   annotations.hasWarning('*', Match.stringLikeRegexp('^Template size is approaching limit'));
   const warnings = annotations.findWarning('*', Match.anyValue());

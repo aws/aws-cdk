@@ -424,7 +424,7 @@ export class CdkToolkit {
     const rootDir = path.dirname(path.resolve(PROJECT_CONFIG));
     debug("root directory used for 'watch' is: %s", rootDir);
 
-    const watchSettings: { include?: string | string[], exclude: string | string [] } | undefined =
+    const watchSettings: { include?: string | string[]; exclude: string | string [] } | undefined =
         this.props.configuration.settings.get(['watch']);
     if (!watchSettings) {
       throw new Error("Cannot use the 'watch' command without specifying at least one directory to monitor. " +
@@ -613,7 +613,7 @@ export class CdkToolkit {
     }
   }
 
-  public async list(selectors: string[], options: { long?: boolean, json?: boolean } = { }): Promise<number> {
+  public async list(selectors: string[], options: { long?: boolean; json?: boolean } = { }): Promise<number> {
     const stacks = await this.selectStacksForList(selectors);
 
     // if we are in "long" mode, emit the array as-is (JSON/YAML)
@@ -733,7 +733,7 @@ export class CdkToolkit {
    * @param options Options for CDK app creation
    */
   public async migrate(options: MigrateOptions): Promise<void> {
-    warning('This is an experimental feature and development on it is still in progress. We make no guarantees about the outcome or stability of the functionality.');
+    warning('This command is an experimental feature.');
     const language = options.language?.toLowerCase() ?? 'typescript';
     const environment = setEnvironment(options.account, options.region);
     let generateTemplateOutput: GenerateTemplateOutput | undefined;
@@ -909,7 +909,7 @@ export class CdkToolkit {
     return this.props.cloudExecutable.synthesize(cacheCloudAssembly);
   }
 
-  private patternsArrayForWatch(patterns: string | string[] | undefined, options: { rootDir: string, returnRootDirIfEmpty: boolean }): string[] {
+  private patternsArrayForWatch(patterns: string | string[] | undefined, options: { rootDir: string; returnRootDirIfEmpty: boolean }): string[] {
     const patternsArray: string[] = patterns !== undefined
       ? (Array.isArray(patterns) ? patterns : [patterns])
       : [];
@@ -1355,7 +1355,7 @@ export interface DestroyOptions {
   /**
    * Whether the destroy request came from a deploy.
    */
-  fromDeploy?: boolean
+  fromDeploy?: boolean;
 
   /**
    * Whether we are on a CI system

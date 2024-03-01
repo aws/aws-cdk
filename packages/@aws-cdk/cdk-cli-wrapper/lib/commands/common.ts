@@ -15,7 +15,7 @@ export enum RequireApproval {
   /**
    * Only prompt for approval if there are security related changes
    */
-  BROADENING = 'broadening'
+  BROADENING = 'broadening',
 }
 
 /**

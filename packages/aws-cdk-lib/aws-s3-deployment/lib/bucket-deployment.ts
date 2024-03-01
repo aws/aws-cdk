@@ -58,7 +58,7 @@ export interface BucketDeploymentProps {
    * @default - No exclude filters are used
    * @see https://docs.aws.amazon.com/cli/latest/reference/s3/index.html#use-of-exclude-and-include-filters
    */
-  readonly exclude?: string[]
+  readonly exclude?: string[];
 
   /**
    * If this is set, matching files or objects will be included with the deployment's sync
@@ -68,7 +68,7 @@ export interface BucketDeploymentProps {
    * @default - No include filters are used and all files are included with the sync command
    * @see https://docs.aws.amazon.com/cli/latest/reference/s3/index.html#use-of-exclude-and-include-filters
    */
-  readonly include?: string[]
+  readonly include?: string[];
 
   /**
    * If this is set to false, files in the destination bucket that
@@ -78,7 +78,7 @@ export interface BucketDeploymentProps {
    *
    * @default true
    */
-  readonly prune?: boolean
+  readonly prune?: boolean;
 
   /**
    * If this is set to "false", the destination files will be deleted when the
@@ -152,7 +152,7 @@ export interface BucketDeploymentProps {
    *
    * @default - No EFS. Lambda has access only to 512MB of disk space.
    */
-  readonly useEfs?: boolean
+  readonly useEfs?: boolean;
 
   /**
    * Execution role associated with this function
@@ -602,6 +602,13 @@ export interface DeployTimeSubstitutedFileProps {
   readonly source: string;
 
   /**
+   * The object key in the destination bucket where the processed
+   * file would be written to.
+   * @default - Fingerprint of the file content would be used as object key
+   */
+  readonly destinationKey?: string;
+
+  /**
    * The S3 bucket to sync the contents of the zip file to.
    */
   readonly destinationBucket: s3.IBucket;
@@ -641,7 +648,7 @@ export class DeployTimeSubstitutedFile extends BucketDeployment {
       return props.substitutions[expr] ?? match;
     });
 
-    const objectKey = cdk.FileSystem.fingerprint(props.source);
+    const objectKey = props.destinationKey ?? cdk.FileSystem.fingerprint(props.source);
     const fileSource = Source.data(objectKey, fileData);
     const fullBucketDeploymentProps: BucketDeploymentProps = {
       prune: false,
@@ -792,7 +799,7 @@ export enum ServerSideEncryption {
   /**
    * 'aws:kms'
    */
-  AWS_KMS = 'aws:kms'
+  AWS_KMS = 'aws:kms',
 }
 
 /**
@@ -834,7 +841,7 @@ export enum StorageClass {
   /**
    * 'DEEP_ARCHIVE'
    */
-  DEEP_ARCHIVE = 'DEEP_ARCHIVE'
+  DEEP_ARCHIVE = 'DEEP_ARCHIVE',
 }
 
 /**

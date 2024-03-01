@@ -3,7 +3,7 @@ import { CfnTopic } from './sns.generated';
 import { ITopic, TopicBase } from './topic-base';
 import { IRole } from '../../aws-iam';
 import { IKey } from '../../aws-kms';
-import { ArnFormat, Lazy, Names, Stack } from '../../core';
+import { ArnFormat, Lazy, Names, Stack, Token } from '../../core';
 
 /**
  * Properties for a new SNS topic
@@ -56,6 +56,26 @@ export interface TopicProps {
    * @default None
    */
   readonly loggingConfigs?: LoggingConfig[];
+
+  /**
+   * The number of days Amazon SNS retains messages.
+   *
+   * It can only be set for FIFO topics.
+   *
+   * @see https://docs.aws.amazon.com/sns/latest/dg/fifo-message-archiving-replay.html
+   *
+   * @default - do not archive messages
+   */
+  readonly messageRetentionPeriodInDays?: number;
+
+  /**
+   * Adds a statement to enforce encryption of data in transit when publishing to the topic.
+   *
+   * For more information, see https://docs.aws.amazon.com/sns/latest/dg/sns-security-best-practices.html#enforce-encryption-data-in-transit.
+   *
+   * @default false
+   */
+  readonly enforceSSL?: boolean;
 }
 
 /**
@@ -163,8 +183,20 @@ export class Topic extends TopicBase {
       physicalName: props.topicName,
     });
 
+    this.enforceSSL = props.enforceSSL;
+
     if (props.contentBasedDeduplication && !props.fifo) {
       throw new Error('Content based deduplication can only be enabled for FIFO SNS topics.');
+    }
+    if (props.messageRetentionPeriodInDays && !props.fifo) {
+      throw new Error('`messageRetentionPeriodInDays` is only valid for FIFO SNS topics.');
+    }
+    if (
+      props.messageRetentionPeriodInDays !== undefined
+      && !Token.isUnresolved(props.messageRetentionPeriodInDays)
+      && (!Number.isInteger(props.messageRetentionPeriodInDays) || props.messageRetentionPeriodInDays > 365 || props.messageRetentionPeriodInDays < 1)
+    ) {
+      throw new Error('`messageRetentionPeriodInDays` must be an integer between 1 and 365');
     }
 
     if (props.loggingConfigs) {
@@ -186,6 +218,9 @@ export class Topic extends TopicBase {
     }
 
     const resource = new CfnTopic(this, 'Resource', {
+      archivePolicy: props.messageRetentionPeriodInDays ? {
+        MessageRetentionPeriod: props.messageRetentionPeriodInDays,
+      } : undefined,
       displayName: props.displayName,
       topicName: cfnTopicName,
       kmsMasterKeyId: props.masterKey && props.masterKey.keyArn,

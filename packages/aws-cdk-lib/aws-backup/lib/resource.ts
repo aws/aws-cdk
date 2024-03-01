@@ -17,7 +17,7 @@ export enum TagOperation {
   /**
    * Dummy member
    */
-  DUMMY = 'dummy'
+  DUMMY = 'dummy',
 }
 
 /**

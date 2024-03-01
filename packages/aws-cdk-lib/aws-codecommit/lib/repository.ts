@@ -645,7 +645,7 @@ export enum RepositoryEventTrigger {
   ALL = 'all',
   UPDATE_REF = 'updateReference',
   CREATE_REF = 'createReference',
-  DELETE_REF = 'deleteReference'
+  DELETE_REF = 'deleteReference',
 }
 
 /**

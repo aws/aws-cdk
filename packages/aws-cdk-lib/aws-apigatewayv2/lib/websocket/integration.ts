@@ -53,7 +53,7 @@ export enum PassthroughBehavior {
    * templates. However if there is at least one content type defined,
    * unmapped content types will be rejected with the same 415 response.
    */
-  WHEN_NO_TEMPLATES = 'WHEN_NO_TEMPLATES'
+  WHEN_NO_TEMPLATES = 'WHEN_NO_TEMPLATES',
 }
 
 /**
@@ -126,7 +126,7 @@ export interface WebSocketIntegrationProps {
    *
    * @default - No passthrough behavior required.
    */
-  readonly passthroughBehavior?: PassthroughBehavior
+  readonly passthroughBehavior?: PassthroughBehavior;
 }
 
 /**

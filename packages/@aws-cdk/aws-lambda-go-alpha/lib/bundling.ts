@@ -143,7 +143,7 @@ export class Bundling implements cdk.BundlingOptions {
     // Docker bundling
     const shouldBuildImage = props.forcedDockerBundling || !Bundling.runsLocally;
     this.image = shouldBuildImage
-      ? props.dockerImage ?? cdk.DockerImage.fromBuild(path.join(__dirname, '../lib'), {
+      ? props.dockerImage ?? cdk.DockerImage.fromBuild(path.join(__dirname, '..', 'lib'), {
         buildArgs: {
           ...props.buildArgs ?? {},
           IMAGE: Runtime.GO_1_X.bundlingImage.image, // always use the GO_1_X build image

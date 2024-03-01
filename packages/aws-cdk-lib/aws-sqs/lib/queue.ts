@@ -445,9 +445,9 @@ export class Queue extends QueueBase {
     this.encryptionType = encryptionType;
 
     function _determineEncryptionProps(this: Queue): {
-      encryptionProps: EncryptionProps,
-      encryptionMasterKey?: kms.IKey,
-      encryptionType: QueueEncryption | undefined
+      encryptionProps: EncryptionProps;
+      encryptionMasterKey?: kms.IKey;
+      encryptionType: QueueEncryption | undefined;
     } {
       let encryption = props.encryption;
 

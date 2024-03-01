@@ -83,7 +83,7 @@ export enum CapacityType {
   /**
    * on-demand instances
    */
-  ON_DEMAND = 'ON_DEMAND'
+  ON_DEMAND = 'ON_DEMAND',
 }
 
 /**

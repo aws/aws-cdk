@@ -276,7 +276,7 @@ export interface DatabaseClusterProps {
    *
    * @default - Retain cluster.
    */
-  readonly removalPolicy?: RemovalPolicy
+  readonly removalPolicy?: RemovalPolicy;
 
   /**
    * If set to true, Neptune will automatically update the engine of the entire

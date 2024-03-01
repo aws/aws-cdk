@@ -21,7 +21,7 @@ export interface IntegTestCaseProps extends TestOptions {
    *
    * @default - a stack is created for you
    */
-  readonly assertionStack?: Stack
+  readonly assertionStack?: Stack;
 }
 
 /**
@@ -138,7 +138,7 @@ export interface IntegTestProps extends TestOptions {
    *
    * @default - a stack is created for you
    */
-  readonly assertionStack?: Stack
+  readonly assertionStack?: Stack;
 }
 
 /**

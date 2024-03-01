@@ -1826,8 +1826,8 @@ test('badge support test', () => {
   const stack = new cdk.Stack();
 
   interface BadgeValidationTestCase {
-    source: codebuild.Source,
-    allowsBadge: boolean
+    source: codebuild.Source;
+    allowsBadge: boolean;
   }
 
   const repo = new codecommit.Repository(stack, 'MyRepo', {

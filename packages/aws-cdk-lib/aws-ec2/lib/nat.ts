@@ -2,6 +2,7 @@ import { Connections, IConnectable } from './connections';
 import { Instance } from './instance';
 import { InstanceType } from './instance-types';
 import { IKeyPair } from './key-pair';
+import { CpuCredits } from './launch-template';
 import { IMachineImage, LookupMachineImage } from './machine-image';
 import { Port } from './port';
 import { ISecurityGroup, SecurityGroup } from './security-group';
@@ -37,12 +38,12 @@ export interface GatewayConfig {
   /**
    * Availability Zone
    */
-  readonly az: string
+  readonly az: string;
 
   /**
    * Identity of gateway spawned by the provider
    */
-  readonly gatewayId: string
+  readonly gatewayId: string;
 }
 
 /**
@@ -218,6 +219,14 @@ export interface NatInstanceProps {
    * @default NatTrafficDirection.INBOUND_AND_OUTBOUND
    */
   readonly defaultAllowedTraffic?: NatTrafficDirection;
+
+  /**
+   * Specifying the CPU credit type for burstable EC2 instance types (T2, T3, T3a, etc).
+   * The unlimited CPU credit option is not supported for T3 instances with dedicated host (`host`) tenancy.
+   *
+   * @default - T2 instances are standard, while T3, T4g, and T3a instances are unlimited.
+   */
+  readonly creditSpecification?: CpuCredits;
 }
 
 /**
@@ -323,6 +332,7 @@ export class NatInstanceProvider extends NatProvider implements IConnectable {
         role,
         keyPair: this.props.keyPair,
         keyName: this.props.keyName,
+        creditSpecification: this.props.creditSpecification,
       });
       // NAT instance routes all traffic, both ways
       this.gateways.add(sub.availabilityZone, natInstance);
