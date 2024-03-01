@@ -81,7 +81,7 @@ export async function listStacks(toolkit: CdkToolkit, options: ListStacksOptions
             });
           }
         } else {
-          data.dependencies?.push({
+          data.dependencies.push({
             id: depStack.stackArtifacts[0].id,
             dependencies: [],
           });
