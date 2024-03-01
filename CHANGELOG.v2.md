@@ -2,6 +2,36 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.130.0](https://github.com/aws/aws-cdk/compare/v2.129.0...v2.130.0) (2024-02-23)
+
+
+### Features
+
+* **appconfig:** graduate to stable 🚀 ([#29188](https://github.com/aws/aws-cdk/issues/29188)) ([7feabc1](https://github.com/aws/aws-cdk/commit/7feabc1796cef3bd120af92525b49fe34fb7fd19))
+* **bedrock:** stabilityai model ([#29210](https://github.com/aws/aws-cdk/issues/29210)) ([6c17ca5](https://github.com/aws/aws-cdk/commit/6c17ca5dbd00ed94ce41beeafe81383a97c5564c))
+
+
+### Bug Fixes
+
+* **custom-resources-handlers:** s3 deployment handler log injection vulnerability ([#28599](https://github.com/aws/aws-cdk/issues/28599)) ([83aa395](https://github.com/aws/aws-cdk/commit/83aa3956ad035f534a7d96374844085919be3e8a)), closes [#28469](https://github.com/aws/aws-cdk/issues/28469)
+* **pipelines:** generates warning since CDK 2.128.0 due to addition of v2 pipeline support in aws-codepipeline ([#29199](https://github.com/aws/aws-cdk/issues/29199)) ([eca1bcf](https://github.com/aws/aws-cdk/commit/eca1bcf0b8a449d07692e6363cefa149b1fe0ce4)), closes [#29190](https://github.com/aws/aws-cdk/issues/29190) [/github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/pipelines/lib/codepipeline/codepipeline.ts#L467-L480](https://github.com/aws//github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/pipelines/lib/codepipeline/codepipeline.ts/issues/L467-L480)
+
+## [2.129.0](https://github.com/aws/aws-cdk/compare/v2.128.0...v2.129.0) (2024-02-21)
+
+
+### Features
+
+* update L1 CloudFormation resource definitions ([#29191](https://github.com/aws/aws-cdk/issues/29191)) ([c579e3c](https://github.com/aws/aws-cdk/commit/c579e3cdfa425fe4e58fc20a653d32d32f943ca9))
+* **applicationautoscaling:** timezone for ScheduledAction ([#29116](https://github.com/aws/aws-cdk/issues/29116)) ([8694125](https://github.com/aws/aws-cdk/commit/869412535f564d5b36cf7cc5356aa38a381d02f1)), closes [#22645](https://github.com/aws/aws-cdk/issues/22645) [#27754](https://github.com/aws/aws-cdk/issues/27754)
+* **cloudfront-origin:** adding FunctionUrlOrigin ([#29101](https://github.com/aws/aws-cdk/issues/29101)) ([2b0ed53](https://github.com/aws/aws-cdk/commit/2b0ed53bfe85a59e9334883a667c88fb9e3f5bc0))
+* **ecs:** credentialSpecs in ContainerDefinitionOptions ([#29085](https://github.com/aws/aws-cdk/issues/29085)) ([e92dbec](https://github.com/aws/aws-cdk/commit/e92dbec0e5fb51bad6037d01d6131c9ab4ce3f55))
+* **events-targets:** `launchType` property for ECS task ([#29069](https://github.com/aws/aws-cdk/issues/29069)) ([b4daf84](https://github.com/aws/aws-cdk/commit/b4daf84cf8a90ef38e3a2328df6271bdaf19de01)), closes [#28990](https://github.com/aws/aws-cdk/issues/28990)
+* **lambda:**  Add `Ipv6AllowedforDualStack` support for Lambda function ([#28928](https://github.com/aws/aws-cdk/issues/28928)) ([90caad9](https://github.com/aws/aws-cdk/commit/90caad953147c2c15022898f40b49a8d44997f6e))
+* **lambda:** adding .net 8 (dotnet8) lambda runtime support  ([#29178](https://github.com/aws/aws-cdk/issues/29178)) ([74335f6](https://github.com/aws/aws-cdk/commit/74335f63b7be81ede07e1ae2e24e7f59ed44beef))
+* **rds:** support Aurora MySQL 3.05.2 ([#29166](https://github.com/aws/aws-cdk/issues/29166)) ([da0b82c](https://github.com/aws/aws-cdk/commit/da0b82c21e1ddd3c301db8f98e39767e07ff32fc))
+* **sns:** enforce ssl with topic policy ([#29144](https://github.com/aws/aws-cdk/issues/29144)) ([a75f447](https://github.com/aws/aws-cdk/commit/a75f447d6dc9ad8b1b00a7faebdd8aadc3d25e28)), closes [#29142](https://github.com/aws/aws-cdk/issues/29142)
+* **synthetics:** latest canary runtimes for NodeJS, Python ([#29132](https://github.com/aws/aws-cdk/issues/29132)) ([3c122a4](https://github.com/aws/aws-cdk/commit/3c122a435c9d8ee3012859c05a5acf4864e9030a)), closes [#29135](https://github.com/aws/aws-cdk/issues/29135)
+
 ## [2.128.0](https://github.com/aws/aws-cdk/compare/v2.127.0...v2.128.0) (2024-02-14)
 
 

@@ -1122,7 +1122,7 @@ declare const vpc: ec2.Vpc;
 const cluster = new rds.ServerlessCluster(this, 'AnotherCluster', {
   engine: rds.DatabaseClusterEngine.AURORA_POSTGRESQL,
   copyTagsToSnapshot: true, // whether to save the cluster tags when creating the snapshot. Default is 'true'
-  parameterGroup: rds.ParameterGroup.fromParameterGroupName(this, 'ParameterGroup', 'default.aurora-postgresql10'),
+  parameterGroup: rds.ParameterGroup.fromParameterGroupName(this, 'ParameterGroup', 'default.aurora-postgresql11'),
   vpc,
   scaling: {
     autoPause: Duration.minutes(10), // default is to pause after 5 minutes of idle time
