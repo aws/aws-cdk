@@ -1166,18 +1166,12 @@ new rds.ServerlessClusterFromSnapshot(this, 'Cluster', {
 
 ### Data API
 
-You can access your Aurora Serverless DB cluster using the built-in Data API. The Data API doesn't require a persistent connection to the DB cluster. Instead, it provides a secure HTTP endpoint and integration with AWS SDKs.
+You can access your Aurora DB cluster using the built-in Data API. The Data API doesn't require a persistent connection to the DB cluster. Instead, it provides a secure HTTP endpoint and integration with AWS SDKs.
 
 The following example shows granting Data API access to a Lamba function.
 
 ```ts
 declare const vpc: ec2.Vpc;
-
-const cluster = new rds.ServerlessCluster(this, 'AnotherCluster', {
-  engine: rds.DatabaseClusterEngine.AURORA_MYSQL,
-  vpc, // this parameter is optional for serverless Clusters
-  enableDataApi: true, // Optional - will be automatically set if you call grantDataApiAccess()
-});
 
 declare const code: lambda.Code;
 const fn = new lambda.Function(this, 'MyFunction', {
@@ -1189,7 +1183,24 @@ const fn = new lambda.Function(this, 'MyFunction', {
     SECRET_ARN: cluster.secret!.secretArn,
   },
 });
+
+// Create a serverless V1 cluster
+const serverlessV1Cluster = new rds.ServerlessCluster(this, 'AnotherCluster', {
+  engine: rds.DatabaseClusterEngine.AURORA_MYSQL,
+  vpc, // this parameter is optional for serverless Clusters
+  enableDataApi: true, // Optional - will be automatically set if you call grantDataApiAccess()
+});
+serverlessV1Cluster.grantDataApiAccess(fn);
+
+// Create an Aurora cluster
+const cluster = new rds.DatabaseCluster(this, 'Cluster', {
+  engine: rds.DatabaseClusterEngine.AURORA_MYSQL,
+  vpc,
+  enableDataApi: true, // Optional - will be automatically set if you call grantDataApiAccess()
+});
 cluster.grantDataApiAccess(fn);
+// It is necessary to grant the function access to the secret associated with the cluster for `DatabaseCluster`.
+cluster.secret!.grantRead(fn);
 ```
 
 **Note**: To invoke the Data API, the resource will need to read the secret associated with the cluster.
