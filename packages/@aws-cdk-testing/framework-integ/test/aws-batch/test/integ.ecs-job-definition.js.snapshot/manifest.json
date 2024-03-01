@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/80ca79d29007dc0a645c6568c47e0730a748e22b27eaba47a7336b97d459edcc.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/9b59badf02feb83b2f2747da9bbab479669d1efa47acadf76785d017660f7d03.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -247,10 +247,7 @@
         "/stack/ECSFargateJobDefn/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ECSFargateJobDefn327BE725",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "ECSFargateJobDefn327BE725"
           }
         ],
         "/stack/EcsDockerContainer/ExecutionRole/Resource": [
@@ -269,6 +266,24 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "ECSDockerJobDefnF388CFCF"
+          }
+        ],
+        "/stack/WindowsFargateContainer/ExecutionRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WindowsFargateContainerExecutionRoleAE15A6C1"
+          }
+        ],
+        "/stack/WindowsFargateContainer/ExecutionRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WindowsFargateContainerExecutionRoleDefaultPolicyA16F3283"
+          }
+        ],
+        "/stack/WindowsJobDefinitio/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WindowsJobDefinitio0652E08A"
           }
         ],
         "/stack/BootstrapVersion": [
