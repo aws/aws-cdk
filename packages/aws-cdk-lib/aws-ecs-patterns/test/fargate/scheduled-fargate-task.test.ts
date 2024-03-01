@@ -92,6 +92,7 @@ test('Can create a scheduled Fargate Task - with optional props', () => {
       image: ecs.ContainerImage.fromRegistry('henk'),
       memoryLimitMiB: 512,
       cpu: 2,
+      ephemeralStorageGiB: 100,
       environment: { TRIGGER: 'CloudWatch Events' },
     },
     desiredTaskCount: 2,
@@ -162,6 +163,9 @@ test('Can create a scheduled Fargate Task - with optional props', () => {
         Name: 'ScheduledContainer',
       },
     ],
+    EphemeralStorage: {
+      SizeInGiB: 100,
+    },
   });
 });
 

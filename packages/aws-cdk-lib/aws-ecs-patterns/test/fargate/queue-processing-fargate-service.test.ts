@@ -497,6 +497,7 @@ testDeprecated('test Fargate queue worker service construct - with optional prop
   new ecsPatterns.QueueProcessingFargateService(stack, 'Service', {
     cluster,
     memoryLimitMiB: 512,
+    ephemeralStorageGiB: 100,
     image: ecs.ContainerImage.fromRegistry('test'),
     command: ['-c', '4', 'amazon.com'],
     enableLogging: false,
@@ -565,6 +566,9 @@ testDeprecated('test Fargate queue worker service construct - with optional prop
       }),
     ],
     Family: 'fargate-task-family',
+    EphemeralStorage: {
+      SizeInGiB: 100,
+    },
   });
 });
 
