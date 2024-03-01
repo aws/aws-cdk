@@ -505,7 +505,7 @@ describe('cluster new api', () => {
   });
 
   describe('instanceEndpoints', () => {
-    test('should contain writer and reader instance endpoints', () => {
+    test('should contain writer and reader instance endpoints at DatabaseCluster', () => {
       //GIVEN
       const stack = testStack();
       const vpc = new ec2.Vpc(stack, 'VPC');
@@ -517,6 +517,54 @@ describe('cluster new api', () => {
         writer: ClusterInstance.serverlessV2('writer'),
         readers: [ClusterInstance.serverlessV2('reader')],
         iamAuthentication: true,
+      });
+
+      //THEN
+      expect(cluster.instanceEndpoints).toHaveLength(2);
+      expect(stack.resolve(cluster.instanceEndpoints)).toEqual([{
+        hostname: {
+          'Fn::GetAtt': ['Databasewriter2462CC03', 'Endpoint.Address'],
+        },
+        port: {
+          'Fn::GetAtt': ['DatabaseB269D8BB', 'Endpoint.Port'],
+        },
+        socketAddress: {
+          'Fn::Join': ['', [
+            { 'Fn::GetAtt': ['Databasewriter2462CC03', 'Endpoint.Address'] },
+            ':',
+            { 'Fn::GetAtt': ['DatabaseB269D8BB', 'Endpoint.Port'] },
+          ]],
+        },
+      }, {
+        hostname: {
+          'Fn::GetAtt': ['Databasereader13B43287', 'Endpoint.Address'],
+        },
+        port: {
+          'Fn::GetAtt': ['DatabaseB269D8BB', 'Endpoint.Port'],
+        },
+        socketAddress: {
+          'Fn::Join': ['', [
+            { 'Fn::GetAtt': ['Databasereader13B43287', 'Endpoint.Address'] },
+            ':',
+            { 'Fn::GetAtt': ['DatabaseB269D8BB', 'Endpoint.Port'] },
+          ]],
+        },
+      }]);
+    });
+
+    test('should contain writer and reader instance endpoints at DatabaseClusterFromSnapshot', () => {
+      //GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+
+      //WHEN
+      const cluster = new DatabaseClusterFromSnapshot(stack, 'Database', {
+        engine: DatabaseClusterEngine.AURORA,
+        vpc,
+        snapshotIdentifier: 'snapshot-identifier',
+        iamAuthentication: true,
+        writer: ClusterInstance.serverlessV2('writer'),
+        readers: [ClusterInstance.serverlessV2('reader')],
       });
 
       //THEN
