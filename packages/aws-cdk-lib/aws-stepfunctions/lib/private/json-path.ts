@@ -340,10 +340,12 @@ export function renderInExpression(x: any) {
 function singleQuotestring(x: string) {
   const ret = new Array<string>();
   ret.push("'");
-  for (const c of x) {
+  for (let i = 0; i < x.length; i++) {
+    const c = x[i];
     if (c === "'") {
       ret.push("\\'");
-    } else if (c === '\\') {
+    } else if (c === '\\' && (i == x.length - 1 || (x[i+1] != '{' && x[i+1] != '}'))) {
+      // Escape backslash, but only if it doesn't immediately precede a curly brace
       ret.push('\\\\');
     } else {
       ret.push(c);
