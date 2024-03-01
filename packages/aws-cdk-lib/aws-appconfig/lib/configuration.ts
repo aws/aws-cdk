@@ -304,7 +304,7 @@ abstract class ConfigurationBase extends Construct implements IConfiguration, IE
 
   protected addExistingEnvironmentsToApplication() {
     this.deployTo?.forEach((environment) => {
-      if (!this.application.environments.includes(environment)) {
+      if (!this.application.environments().includes(environment)) {
         this.application.addExistingEnvironment(environment);
       }
     });
@@ -315,7 +315,7 @@ abstract class ConfigurationBase extends Construct implements IConfiguration, IE
       return;
     }
 
-    this.application.environments.forEach((environment) => {
+    this.application.environments().forEach((environment) => {
       if ((this.deployTo && !this.deployTo.includes(environment))) {
         return;
       }
