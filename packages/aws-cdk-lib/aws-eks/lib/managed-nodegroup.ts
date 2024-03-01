@@ -73,7 +73,7 @@ export enum NodegroupAmiType {
   /**
    * Amazon Linux 2023 (x86-64)
    */
-  AL2023_x86_64_STANDARD = 'AL2023_x86_64_STANDARD',
+  AL2023_X86_64_STANDARD = 'AL2023_x86_64_STANDARD',
   /**
    * Amazon Linux 2023 (ARM-64)
    */
