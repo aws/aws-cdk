@@ -97,7 +97,7 @@ export interface MapBaseProps {
   /**
    * MaxConcurrencyPath
    *
-   * An upper bound on the number of iterations you want running at once, in JsonPath.
+   * A JsonPath that specifies the maximum concurrency dynamically from the state input.
    *
    * @default - full concurrency
    */
