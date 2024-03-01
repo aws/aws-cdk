@@ -93,12 +93,8 @@ export class OperatingSystemFamily {
    * Returns true if the operating system family is Windows
    */
   public isWindows(): boolean {
-    if (this._operatingSystemFamily?.toLowerCase().includes('windows')) {
-      return true;
-    }
-    return false;
+    return this._operatingSystemFamily?.toLowerCase().startsWith('windows') ? true : false;
   }
-
 }
 
 /**
