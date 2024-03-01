@@ -90,6 +90,9 @@ export interface MapBaseProps {
    *
    * An upper bound on the number of iterations you want running at once.
    *
+   * @see
+   * https://docs.aws.amazon.com/step-functions/latest/dg/concepts-asl-use-map-state-inline.html#map-state-inline-additional-fields
+   *
    * @default - full concurrency
    */
   readonly maxConcurrency?: number;
@@ -98,6 +101,9 @@ export interface MapBaseProps {
    * MaxConcurrencyPath
    *
    * An upper bound on the number of iterations you want running at once, in JsonPath.
+   *
+   * @see
+   * https://docs.aws.amazon.com/step-functions/latest/dg/concepts-asl-use-map-state-inline.html#map-state-inline-additional-fields
    *
    * @default - full concurrency
    */
