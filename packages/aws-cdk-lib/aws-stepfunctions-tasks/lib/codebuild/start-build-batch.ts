@@ -56,7 +56,7 @@ export class CodeBuildStartBuildBatch extends sfn.TaskStateBase {
   }
 
   /**
-   * configure the necessary permissions for invoke the CodeBuild StartBuildBatch API
+   * Configure the necessary permissions to invoke the CodeBuild StartBuildBatch API
    *
    * @see https://docs.aws.amazon.com/step-functions/latest/dg/codebuild-iam.html#codebuild-iam-startbuildbatch
    */
