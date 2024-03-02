@@ -1,0 +1,6 @@
+import { Construct } from "constructs";
+class MyConstruct extends Construct {
+constructor(scope: Construct, id: string) {
+super(scope, id);
+/// here
+} }

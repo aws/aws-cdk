@@ -2,6 +2,7 @@
 import * as cdk from "aws-cdk-lib";
 import * as constructs from "constructs";
 import * as iam from "../../aws-iam";
+import * as kms from "../../aws-kms";
 
 /**
  * The `AWS::Lambda::Alias` resource creates an [alias](https://docs.aws.amazon.com/lambda/latest/dg/configuration-aliases.html) for a Lambda function version. Use aliases to provide clients with a function identifier that you can update to invoke a different version.
@@ -2128,7 +2129,7 @@ export class CfnFunction extends cdk.CfnResource implements ICfnFunction, cdk.II
   /**
    * The ARN of the AWS Key Management Service ( AWS KMS ) customer managed key that's used to encrypt your function's [environment variables](https://docs.aws.amazon.com/lambda/latest/dg/configuration-envvars.html#configuration-envvars-encryption) . When [Lambda SnapStart](https://docs.aws.amazon.com/lambda/latest/dg/snapstart-security.html) is activated, Lambda also uses this key is to encrypt your function's snapshot. If you deploy your function using a container image, Lambda also uses this key to encrypt your function when it's deployed. Note that this is not the same key that's used to protect your container image in the Amazon Elastic Container Registry (Amazon ECR). If you don't provide a customer managed key, Lambda uses a default service key.
    */
-  public kmsKeyArn?: string;
+  public kmsKeyArn?: kms.ICfnKey | cdk.IResolvable;
 
   /**
    * A list of [function layers](https://docs.aws.amazon.com/lambda/latest/dg/configuration-layers.html) to add to the function's execution environment. Specify each layer by its ARN, including the version.
@@ -2261,7 +2262,7 @@ export class CfnFunction extends cdk.CfnResource implements ICfnFunction, cdk.II
       "functionName": this.functionName,
       "handler": this.handler,
       "imageConfig": this.imageConfig,
-      "kmsKeyArn": this.kmsKeyArn,
+      "kmsKeyArn": this.instanceOfICfnKey(this.kmsKeyArn) ? this.kmsKeyArn.attrArn : this.kmsKeyArn,
       "layers": this.layers,
       "loggingConfig": this.loggingConfig,
       "memorySize": this.memorySize,
@@ -2295,7 +2296,7 @@ export class CfnFunction extends cdk.CfnResource implements ICfnFunction, cdk.II
   private getDeadLetterConfig(deadLetterConfig: CfnFunction.DeadLetterConfigProperty  | cdk.IResolvable): any {
     if(this.instanceOfIDeadLetterConfigProperty(deadLetterConfig)) {
       return {
-        "TargetArn": deadLetterConfig.target?.returnTargetArn()
+        "target": deadLetterConfig.target?.returnTargetArn()
       };
     }
     return deadLetterConfig;
@@ -2306,6 +2307,13 @@ export class CfnFunction extends cdk.CfnResource implements ICfnFunction, cdk.II
       return false;
     }
     return "target" in object;
+  }
+
+  private instanceOfICfnKey(object: any): object is kms.ICfnKey {
+    if (object == null) {
+      return false;
+    }
+    return 'attrArn' in object;
   }
 }
 
@@ -2422,7 +2430,7 @@ export namespace CfnFunction {
    * TracingConfigMode enum
    */
   export class TracingConfigMode {
-    public static readonly ACTIVE = new TracingConfigMode('Active');
+    public static readonly ACTIVE = new TracingConfigMode('ACTIVEEE');
     public static readonly PASSTHROUGH = new TracingConfigMode('PassThrough');
     readonly name: string
     protected constructor(name: string) {
@@ -2969,7 +2977,7 @@ export interface CfnFunctionProps {
    *
    * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-lambda-function.html#cfn-lambda-function-kmskeyarn
    */
-  readonly kmsKeyArn?: string;
+  readonly kmsKeyArn?: kms.ICfnKey | cdk.IResolvable;
 
   /**
    * A list of [function layers](https://docs.aws.amazon.com/lambda/latest/dg/configuration-layers.html) to add to the function's execution environment. Specify each layer by its ARN, including the version.
@@ -3281,7 +3289,7 @@ function CfnFunctionCodePropertyValidator(properties: any): cdk.ValidationResult
 function convertCfnFunctionArchitecturePropertyToCloudFormation(properties: any): any {
   if (!cdk.canInspect(properties)) return properties;
   convertCfnFunctionArchitecturePropertyValidator(properties).assertSuccess();
-  return cdk.stringToCloudFormation(properties);
+  return cdk.stringToCloudFormation(properties.name);
 }
 
 // @ts-ignore TS6133
@@ -3452,7 +3460,7 @@ function convertCfnFunctionPropsToCloudFormation(properties: any): any {
     "Architectures": cdk.listMapper(convertCfnFunctionArchitecturePropertyToCloudFormation)(properties.architectures),
     "Code": convertCfnFunctionCodePropertyToCloudFormation(properties.code),
     "CodeSigningConfigArn": cdk.stringToCloudFormation(properties.codeSigningConfig?.attrCodeSigningConfigArn),
-    "DeadLetterConfig": convertCfnFunctionDeadLetterConfigPropertyToCloudFormation(properties?.deadLetterConfig),
+    "DeadLetterConfig": convertCfnFunctionDeadLetterConfigPropertyToCloudFormation(properties.deadLetterConfig),
     "Description": cdk.stringToCloudFormation(properties.description),
     "Environment": convertCfnFunctionEnvironmentPropertyToCloudFormation(properties.environment),
     "EphemeralStorage": convertCfnFunctionEphemeralStoragePropertyToCloudFormation(properties.ephemeralStorage),
@@ -3466,12 +3474,12 @@ function convertCfnFunctionPropsToCloudFormation(properties: any): any {
     "MemorySize": cdk.numberToCloudFormation(properties.memorySize),
     "PackageType": cdk.stringToCloudFormation(properties.packageType?.name),
     "ReservedConcurrentExecutions": cdk.numberToCloudFormation(properties.reservedConcurrentExecutions),
-    "Role": cdk.stringToCloudFormation(properties.role),
+    "Role": cdk.stringToCloudFormation("attrArn" in properties.role ? properties.role.attrArn : properties.role),
     "Runtime": cdk.stringToCloudFormation(properties.runtime?.name),
     "RuntimeManagementConfig": convertCfnFunctionRuntimeManagementConfigPropertyToCloudFormation(properties.runtimeManagementConfig),
     "SnapStart": convertCfnFunctionSnapStartPropertyToCloudFormation(properties.snapStart),
     "Tags": cdk.listMapper(cdk.cfnTagToCloudFormation)(properties.tags),
-    "Timeout": cdk.numberToCloudFormation(properties.timeout?.toSeconds()),
+    "Timeout": cdk.numberToCloudFormation(properties.timeout),
     "TracingConfig": convertCfnFunctionTracingConfigPropertyToCloudFormation(properties.tracingConfig),
     "VpcConfig": convertCfnFunctionVpcConfigPropertyToCloudFormation(properties.vpcConfig)
   };

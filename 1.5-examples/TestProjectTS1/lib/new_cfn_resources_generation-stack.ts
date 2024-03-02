@@ -32,6 +32,9 @@ export class NewCfnResourcesGenerationStack extends cdk.Stack {
 
     let queue = new sqs.CfnQueue(this, 'MyQueue');
 
+    let kmsKey = new kms.CfnKey(this, 'MyKey');
+
+    // L1.5 Lambda Function
     let lambdaFn = new lambda.CfnFunction(this, 'MyLambda', {
       runtime: lambda.CfnFunction.RuntimeEnum.PYTHON3_11,
       code: new lambda.CfnFunction.S3Code(functionCode.s3BucketName, functionCode.s3ObjectKey, functionCode.assetHash),
@@ -43,9 +46,12 @@ export class NewCfnResourcesGenerationStack extends cdk.Stack {
       },
       deadLetterConfig: {
         target: queue
-      }
+      },
+      timeout: cdk.Duration.minutes(0.5),
+      kmsKeyArn: kmsKey
     });
 
+    // Current L1 Lambda Function
     let lambdaFnV1 = new lambdaV1.CfnFunction(this, 'MyLambdaV1', {
       code: {
         s3Bucket: functionCode.s3BucketName,
@@ -60,7 +66,9 @@ export class NewCfnResourcesGenerationStack extends cdk.Stack {
       },
       deadLetterConfig: {
         targetArn: queue.attrArn
-      }
+      },
+      timeout: 30,
+      kmsKeyArn: kmsKey.attrArn
     });
   }
 }

@@ -76,10 +76,6 @@
       "python": {
         "distName": "aws-cdk-lib-v3",
         "module": "aws_cdk_v3"
-      },
-      "go": {
-        "moduleName": "github.com/aws/aws-cdk-v3-go",
-        "packageName": "awscdkv3"
       }
     },
     "projectReferences": true,
