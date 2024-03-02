@@ -1172,17 +1172,7 @@ The following example shows granting Data API access to a Lamba function.
 
 ```ts
 declare const vpc: ec2.Vpc;
-
-declare const code: lambda.Code;
-const fn = new lambda.Function(this, 'MyFunction', {
-  runtime: lambda.Runtime.NODEJS_LATEST,
-  handler: 'index.handler',
-  code,
-  environment: {
-    CLUSTER_ARN: cluster.clusterArn,
-    SECRET_ARN: cluster.secret!.secretArn,
-  },
-});
+declare const function: lambda.Function;
 
 // Create a serverless V1 cluster
 const serverlessV1Cluster = new rds.ServerlessCluster(this, 'AnotherCluster', {
