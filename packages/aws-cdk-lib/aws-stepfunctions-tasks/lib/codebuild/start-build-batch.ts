@@ -13,6 +13,7 @@ export interface CodeBuildStartBuildBatchProps extends sfn.TaskStateBaseProps {
    * CodeBuild project to start
    */
   readonly project: codebuild.IProject;
+
   /**
    * A set of environment variables to be used for this build only.
    *
