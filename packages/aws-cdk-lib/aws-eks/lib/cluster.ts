@@ -1818,16 +1818,13 @@ export class Cluster extends ClusterBase {
    * @param options options for creating a new nodegroup
    */
   public addNodegroupCapacity(id: string, options?: NodegroupOptions): Nodegroup {
-    const hasInferentiaInstanceType = [
+    const hasInferentiaOrTraniumInstanceType = [
       options?.instanceType,
       ...options?.instanceTypes ?? [],
-    ].some(i => i && nodeTypeForInstanceType(i) === NodeType.INFERENTIA);
-    const hasTrainiumInstanceType = [
-      options?.instanceType,
-      ...options?.instanceTypes ?? [],
-    ].some(i => i && nodeTypeForInstanceType(i) === NodeType.TRAINIUM);
+    ].some(i => i && (nodeTypeForInstanceType(i) === NodeType.INFERENTIA ||
+        nodeTypeForInstanceType(i) === NodeType.TRAINIUM));
 
-    if (hasInferentiaInstanceType || hasTrainiumInstanceType) {
+    if (hasInferentiaOrTraniumInstanceType) {
       this.addNeuronDevicePlugin();
     }
     return new Nodegroup(this, `Nodegroup${id}`, {
@@ -2483,10 +2480,14 @@ export enum MachineImageType {
 }
 
 function nodeTypeForInstanceType(instanceType: ec2.InstanceType) {
-  return INSTANCE_TYPES.gpu.includes(instanceType.toString().substring(0, 2)) ? NodeType.GPU :
-    INSTANCE_TYPES.inferentia.includes(instanceType.toString().substring(0, 4)) ? NodeType.INFERENTIA :
-      INSTANCE_TYPES.trainium.includes(instanceType.toString().substring(0, 4)) ? NodeType.TRAINIUM :
-        NodeType.STANDARD;
+  if (INSTANCE_TYPES.gpu.includes(instanceType.toString().substring(0, 2))) {
+    return NodeType.GPU;
+  } else if (INSTANCE_TYPES.inferentia.includes(instanceType.toString().substring(0, 4))) {
+    return NodeType.INFERENTIA;
+  } else if (INSTANCE_TYPES.trainium.includes(instanceType.toString().substring(0, 4))) {
+    return NodeType.TRAINIUM;
+  }
+  return NodeType.STANDARD;
 }
 
 function cpuArchForInstanceType(instanceType: ec2.InstanceType) {
