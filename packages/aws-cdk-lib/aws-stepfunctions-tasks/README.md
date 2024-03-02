@@ -388,7 +388,7 @@ const task = new tasks.CodeBuildStartBuild(this, 'Task', {
 
 ### StartBuildBatch
 
-[StartBuildBatch](https://docs.aws.amazon.com/codebuild/latest/APIReference/API_StartBuildBatch.html) starts a CodeBuild Project by Project Name.
+[StartBuildBatch](https://docs.aws.amazon.com/codebuild/latest/APIReference/API_StartBuildBatch.html) starts a batch CodeBuild for a project by project name.
 It is necessary to enable the batch build feature in the CodeBuild project.
 
 ```ts
