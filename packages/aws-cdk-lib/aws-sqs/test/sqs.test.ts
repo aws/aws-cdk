@@ -753,6 +753,33 @@ describe('redriveAllowPolicy', () => {
     });
   });
 
+  test.each([
+    [sqs.RedrivePermission.ALLOW_ALL, 'allowAll'],
+    [sqs.RedrivePermission.DENY_ALL, 'denyAll'],
+  ])('redrive permission can be set to %s', (permission, expected) => {
+    const stack = new Stack();
+    new sqs.Queue(stack, 'Queue', {
+      redriveAllowPolicy: {
+        redrivePermission: permission,
+      },
+    });
+
+    Template.fromStack(stack).templateMatches({
+      'Resources': {
+        'Queue4A7E3555': {
+          'Type': 'AWS::SQS::Queue',
+          'Properties': {
+            'RedriveAllowPolicy': {
+              'redrivePermission': expected,
+            },
+          },
+          'UpdateReplacePolicy': 'Delete',
+          'DeletionPolicy': 'Delete',
+        },
+      },
+    });
+  });
+
   test('explicit specification of dead letter source queues', () => {
     const stack = new Stack();
     const sourceQueue1 = new sqs.Queue(stack, 'SourceQueue1');
