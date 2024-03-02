@@ -1,6 +1,8 @@
+import * as destinations from 'aws-cdk-lib/aws-lambda-destinations';
 import { Construct, DependencyGroup, IDependable } from 'constructs';
 import { AccessPoint, AccessPointOptions } from './access-point';
 import { CfnFileSystem, CfnMountTarget } from './efs.generated';
+import { DestinationFlowConfigProperty } from '../../aws-appflow/lib/appflow.generated';
 import * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
@@ -324,6 +326,13 @@ export interface FileSystemProps {
    * @default ReplicationOverwriteProtection.ENABLED
    */
   readonly replicationOverwriteProtection?: ReplicationOverwriteProtection;
+
+  /**
+   * Replication configuration for the file system.
+   *
+   * @default - no replication
+   */
+  readonly replicationConfiguration?: ReplicationConfiguration;
 }
 
 /**
@@ -348,6 +357,42 @@ export interface FileSystemAttributes {
    * @default - determined based on fileSystemId
    */
   readonly fileSystemArn?: string;
+}
+
+export interface ReplicationConfiguration {
+  /**
+   * Whether to enable automatic replication.
+   *
+   * Other replication settings cannot be set if this is set to false.
+   */
+  readonly enableReplication: boolean;
+  /**
+   * The existing destination file system for the replication.
+   *
+   * You cannot configure `kmsKey`, `region` and `az` when `destinationFileSystem` is set.
+   *
+   * @default - create a new file system for the replication destination
+   */
+  readonly destinationFileSystem?: IFileSystem;
+  /**
+   * AWS KMS key used to protect the encrypted file system.
+   *
+   * @default - service-managed KMS key for Amazon EFS is used
+   */
+  readonly kmsKey?: kms.IKey;
+  /**
+   * The AWS Region in which the destination file system is located.
+   *
+   * @default - the region of the stack
+   */
+  readonly region?: string;
+  /**
+   * The availability zone name of the destination file system.
+   * One zone file system is used as the destination file system when this property is set.
+   *
+   * @default - create regional file system for the replication destination
+   */
+  readonly az?: string;
 }
 
 enum ClientAction {
@@ -573,10 +618,28 @@ export class FileSystem extends FileSystemBase {
       lifecyclePolicies.push({ transitionToArchive: props.transitionToArchivePolicy });
     }
 
+    if (
+      props.replicationConfiguration?.enableReplication === true &&
+      props.replicationOverwriteProtection === ReplicationOverwriteProtection.DISABLED
+    ) {
+      throw new Error('Cannot configure `replicationConfiguration` when `replicationOverwriteProtection` is set to `DISABLED`');
+    }
+
     const oneZoneAzName = props.vpc.availabilityZones[0];
 
     const fileSystemProtection = props.replicationOverwriteProtection !== undefined ? {
       replicationOverwriteProtection: props.replicationOverwriteProtection,
+    } : undefined;
+
+    const replicationConfiguration = props.replicationConfiguration?.enableReplication === true ? {
+      destinations: [
+        {
+          fileSystemId: props.replicationConfiguration.destinationFileSystem?.fileSystemId,
+          kmsKeyId: props.replicationConfiguration.kmsKey?.keyArn,
+          region: props.replicationConfiguration.region ?? Stack.of(this).region,
+          az: props.replicationConfiguration.az,
+        },
+      ],
     } : undefined;
 
     this._resource = new CfnFileSystem(this, 'Resource', {
@@ -611,6 +674,7 @@ export class FileSystem extends FileSystemBase {
       }),
       fileSystemProtection,
       availabilityZoneName: props.oneZone ? oneZoneAzName : undefined,
+      replicationConfiguration,
     });
     this._resource.applyRemovalPolicy(props.removalPolicy);
 
