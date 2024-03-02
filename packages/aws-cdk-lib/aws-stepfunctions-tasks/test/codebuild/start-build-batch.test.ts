@@ -119,7 +119,7 @@ test('supports tokens', () => {
   });
 });
 
-test('with the all parameters', () => {
+test('with all the parameters', () => {
   // WHEN
   const task = new CodeBuildStartBuildBatch(stack, 'Task', {
     project: codebuildProject,
