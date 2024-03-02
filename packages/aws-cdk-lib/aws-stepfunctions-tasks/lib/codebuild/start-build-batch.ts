@@ -25,7 +25,7 @@ export interface CodeBuildStartBuildBatchProps extends sfn.TaskStateBaseProps {
 /**
  * Start a CodeBuild BatchBuild as a task
  *
- * @see https://docs.aws.amazon.com/step-functions/latest/dg/connect-codebuild.html
+ * @see https://docs.aws.amazon.com/codebuild/latest/APIReference/API_StartBuildBatch.html
  */
 export class CodeBuildStartBuildBatch extends sfn.TaskStateBase {
   private static readonly SUPPORTED_INTEGRATION_PATTERNS: sfn.IntegrationPattern[] = [
