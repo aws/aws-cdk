@@ -1,8 +1,6 @@
-import * as destinations from 'aws-cdk-lib/aws-lambda-destinations';
 import { Construct, DependencyGroup, IDependable } from 'constructs';
 import { AccessPoint, AccessPointOptions } from './access-point';
 import { CfnFileSystem, CfnMountTarget } from './efs.generated';
-import { DestinationFlowConfigProperty } from '../../aws-appflow/lib/appflow.generated';
 import * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
@@ -363,7 +361,7 @@ export interface ReplicationConfiguration {
   /**
    * Whether to enable automatic replication.
    *
-   * Other replication settings cannot be set if this is set to false.
+   * Other replication settings(`destinationFileSystem`, `kmsKey`, `region`, `az`) cannot be set if this is set to false.
    */
   readonly enableReplication: boolean;
   /**
@@ -389,6 +387,8 @@ export interface ReplicationConfiguration {
   /**
    * The availability zone name of the destination file system.
    * One zone file system is used as the destination file system when this property is set.
+   *
+   * You have to specify the `region` property for the region that the specified availability zone belongs to.
    *
    * @default - create regional file system for the replication destination
    */
@@ -598,6 +598,32 @@ export class FileSystem extends FileSystemBase {
     if (props.throughputMode === ThroughputMode.ELASTIC && props.performanceMode === PerformanceMode.MAX_IO) {
       throw new Error('ThroughputMode ELASTIC is not supported for file systems with performanceMode MAX_IO');
     }
+
+    // if (props.replicationConfiguration?.enableReplication) {
+    //   if (props.replicationOverwriteProtection === ReplicationOverwriteProtection.DISABLED) {
+    //     throw new Error('Cannot configure `replicationConfiguration` when `replicationOverwriteProtection` is set to `DISABLED`');
+    //   }
+    //   if (
+    //     props.replicationConfiguration.destinationFileSystem &&
+    //     (
+    //       props.replicationConfiguration.region ||
+    //       props.replicationConfiguration.az ||
+    //       props.replicationConfiguration.kmsKey
+    //     )
+    //   ) {
+    //     throw new Error('Cannot configure `replicationConfiguration.region`, `replicationConfiguration.az` or `replicationConfiguration.kmsKey` when `replicationConfiguration.destinationFileSystem` is set');
+    //   }
+    // }
+
+    // if (props.replicationConfiguration?.enableReplication === false && (
+    //   props.replicationConfiguration.destinationFileSystem ||
+    //   props.replicationConfiguration.region ||
+    //   props.replicationConfiguration.az ||
+    //   props.replicationConfiguration.kmsKey
+    // )) {
+    //   throw new Error('Cannot configure replication when `replicationConfiguration.enableReplication` is set to `false`');
+    // }
+
     // we explictly use 'undefined' to represent 'false' to maintain backwards compatibility since
     // its considered an actual change in CloudFormations eyes, even though they have the same meaning.
     const encrypted = props.encrypted ?? (FeatureFlags.of(this).isEnabled(
@@ -618,20 +644,13 @@ export class FileSystem extends FileSystemBase {
       lifecyclePolicies.push({ transitionToArchive: props.transitionToArchivePolicy });
     }
 
-    if (
-      props.replicationConfiguration?.enableReplication === true &&
-      props.replicationOverwriteProtection === ReplicationOverwriteProtection.DISABLED
-    ) {
-      throw new Error('Cannot configure `replicationConfiguration` when `replicationOverwriteProtection` is set to `DISABLED`');
-    }
-
     const oneZoneAzName = props.vpc.availabilityZones[0];
 
     const fileSystemProtection = props.replicationOverwriteProtection !== undefined ? {
       replicationOverwriteProtection: props.replicationOverwriteProtection,
     } : undefined;
 
-    const replicationConfiguration = props.replicationConfiguration?.enableReplication === true ? {
+    const replicationConfiguration = props.replicationConfiguration?.enableReplication ? {
       destinations: [
         {
           fileSystemId: props.replicationConfiguration.destinationFileSystem?.fileSystemId,
