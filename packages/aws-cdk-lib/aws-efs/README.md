@@ -91,7 +91,7 @@ new efs.FileSystem(this, 'ReplicationSourceFileSystem1', {
     enable: true,
     kmsKey, // optional
     region: 'us-east-1', // optional
-    az: 'us-east-1a', // optional, Specifing the AZ means creating a One Zone file system as the replication destination
+    availabilityZone: 'us-east-1a', // optional, Specifing the AZ means creating a One Zone file system as the replication destination
   }
 });
 
@@ -111,8 +111,6 @@ new efs.FileSystem(this, 'ReplicationSourceFileSystem2', {
   }
 });
 ```
-
-
 
 ### IAM to control file system data access
 
