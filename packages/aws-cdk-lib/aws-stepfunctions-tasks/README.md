@@ -422,6 +422,9 @@ const task = new tasks.CodeBuildStartBuildBatch(this, 'buildBatchTask', {
 });
 ```
 
+**Note**: `enableBatchBuilds()` is not supported for imported projects.
+If you are using an imported project, you must ensure that the project is already configured for batch builds.
+
 ## DynamoDB
 
 You can call DynamoDB APIs from a `Task` state.
