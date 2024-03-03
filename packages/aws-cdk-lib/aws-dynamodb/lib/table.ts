@@ -877,7 +877,7 @@ export abstract class TableBase extends Resource implements ITable {
    */
   private combinedGrant(
     grantee: iam.IGrantable,
-    opts: { keyActions?: string[], tableActions?: string[], streamActions?: string[] },
+    opts: { keyActions?: string[]; tableActions?: string[]; streamActions?: string[] },
   ): iam.Grant {
     if (this.encryptionKey && opts.keyActions) {
       this.encryptionKey.grant(grantee, ...opts.keyActions);
@@ -1341,7 +1341,7 @@ export class Table extends TableBase {
    *
    * @param props read and write capacity properties
    */
-  private validateProvisioning(props: { readCapacity?: number, writeCapacity?: number }): void {
+  private validateProvisioning(props: { readCapacity?: number; writeCapacity?: number }): void {
     if (this.billingMode === BillingMode.PAY_PER_REQUEST) {
       if (props.readCapacity !== undefined || props.writeCapacity !== undefined) {
         throw new Error('you cannot provision read and write capacity for a table with PAY_PER_REQUEST billing mode');
@@ -1570,7 +1570,7 @@ export class Table extends TableBase {
    * Set up key properties and return the Table encryption property from the
    * user's configuration.
    */
-  private parseEncryption(props: TableProps): { sseSpecification: CfnTableProps['sseSpecification'], encryptionKey?: kms.IKey } {
+  private parseEncryption(props: TableProps): { sseSpecification: CfnTableProps['sseSpecification']; encryptionKey?: kms.IKey } {
     let encryptionType = props.encryption;
 
     if (encryptionType != null && props.serverSideEncryption != null) {

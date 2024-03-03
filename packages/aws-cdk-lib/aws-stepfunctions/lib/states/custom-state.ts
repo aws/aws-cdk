@@ -68,10 +68,17 @@ export class CustomState extends State implements IChainable, INextable {
    * Returns the Amazon States Language object for this state
    */
   public toStateJson(): object {
-    return {
+    const state = {
       ...this.renderNextEnd(),
       ...this.stateJson,
       ...this.renderRetryCatch(),
     };
+
+    // merge the Retry filed defined in the stateJson into the state
+    if (Array.isArray(this.stateJson.Retry)) {
+      state.Retry = [...state.Retry, ...this.stateJson.Retry];
+    }
+
+    return state;
   }
 }

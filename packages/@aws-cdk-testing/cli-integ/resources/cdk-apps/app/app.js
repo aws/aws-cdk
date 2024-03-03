@@ -86,7 +86,35 @@ class MigrateStack extends cdk.Stack {
         value: queue.node.defaultChild.logicalId,
       });
     }
+    if (process.env.SAMPLE_RESOURCES) {
+      const myTopic = new sns.Topic(this, 'migratetopic1', {
+        removalPolicy: cdk.RemovalPolicy.DESTROY,
+      });
+      cdk.Tags.of(myTopic).add('tag1', 'value1');
+      const myTopic2 = new sns.Topic(this, 'migratetopic2', {
+        removalPolicy: cdk.RemovalPolicy.DESTROY,
+      });
+      cdk.Tags.of(myTopic2).add('tag2', 'value2');
+      const myQueue = new sqs.Queue(this, 'migratequeue1', {
+        removalPolicy: cdk.RemovalPolicy.DESTROY,
+      });
+      cdk.Tags.of(myQueue).add('tag3', 'value3');
+    }
+    if (process.env.LAMBDA_RESOURCES) {
+      const myFunction = new lambda.Function(this, 'migratefunction1', {
+        code: lambda.Code.fromInline('console.log("hello world")'),
+        handler: 'index.handler',
+        runtime: lambda.Runtime.NODEJS_18_X,
+      });
+      cdk.Tags.of(myFunction).add('lambda-tag', 'lambda-value');
 
+      const myFunction2 = new lambda.Function(this, 'migratefunction2', {
+        code: lambda.Code.fromInline('console.log("hello world2")'),
+        handler: 'index.handler',
+        runtime: lambda.Runtime.NODEJS_18_X,
+      });
+      cdk.Tags.of(myFunction2).add('lambda-tag', 'lambda-value');
+    }
   }
 }
 

@@ -21,7 +21,7 @@ export enum HttpMethod {
   HEAD = 'HEAD',
 
   /** Return data describing what other methods and operations the server supports */
-  OPTIONS = 'OPTIONS'
+  OPTIONS = 'OPTIONS',
 }
 
 /**

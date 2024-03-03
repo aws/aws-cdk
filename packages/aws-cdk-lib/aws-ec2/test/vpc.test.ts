@@ -31,6 +31,10 @@ import {
   Ipv6Addresses,
   InterfaceVpcEndpointAwsService,
   IpProtocol,
+  AmazonLinuxImage,
+  CpuCredits,
+  InstanceClass,
+  InstanceSize,
 } from '../lib';
 
 describe('vpc', () => {
@@ -379,6 +383,75 @@ describe('vpc', () => {
         GatewayId: {},
       });
 
+    });
+
+    test('with only reserved subnets as public subnets, should not create the internet gateway', () => {
+      const stack = getTestStack();
+      const vpc = new Vpc(stack, 'TheVPC', {
+        subnetConfiguration: [
+          {
+            subnetType: SubnetType.PRIVATE_ISOLATED,
+            name: 'isolated',
+          },
+          {
+            subnetType: SubnetType.PUBLIC,
+            name: 'public',
+            reserved: true,
+          },
+        ],
+      });
+      Template.fromStack(stack).resourceCountIs('AWS::EC2::InternetGateway', 0);
+      Template.fromStack(stack).resourceCountIs('AWS::EC2::VPCGatewayAttachment', 0);
+    });
+
+    test('with only reserved subnets as private subnets with egress, should not create the internet gateway', () => {
+      const stack = getTestStack();
+      const vpc = new Vpc(stack, 'TheVPC', {
+        subnetConfiguration: [
+          {
+            subnetType: SubnetType.PRIVATE_ISOLATED,
+            name: 'isolated',
+          },
+          {
+            subnetType: SubnetType.PRIVATE_WITH_EGRESS,
+            name: 'egress',
+            reserved: true,
+          },
+        ],
+      });
+      Template.fromStack(stack).resourceCountIs('AWS::EC2::InternetGateway', 0);
+      Template.fromStack(stack).resourceCountIs('AWS::EC2::VPCGatewayAttachment', 0);
+    });
+
+    test('with no public subnets and natGateways > 0, should throw an error', () => {
+      const stack = getTestStack();
+      expect(() => new Vpc(stack, 'TheVPC', {
+        subnetConfiguration: [
+          {
+            subnetType: SubnetType.PRIVATE_WITH_EGRESS,
+            name: 'egress',
+          },
+        ],
+        natGateways: 1,
+      })).toThrow(/If you configure PRIVATE subnets in 'subnetConfiguration', you must also configure PUBLIC subnets to put the NAT gateways into \(got \[{"subnetType":"Private","name":"egress"}\]./);
+    });
+
+    test('with only reserved subnets as public subnets and natGateways > 0, should throw an error', () => {
+      const stack = getTestStack();
+      expect(() => new Vpc(stack, 'TheVPC', {
+        subnetConfiguration: [
+          {
+            subnetType: SubnetType.PUBLIC,
+            name: 'public',
+            reserved: true,
+          },
+          {
+            subnetType: SubnetType.PRIVATE_WITH_EGRESS,
+            name: 'egress',
+          },
+        ],
+        natGateways: 1,
+      })).toThrow(/If you configure PRIVATE subnets in 'subnetConfiguration', you must also configure PUBLIC subnets to put the NAT gateways into \(got \[{"subnetType":"Public","name":"public","reserved":true},{"subnetType":"Private","name":"egress"}\]./);
     });
 
     test('with subnets and reserved subnets defined, VPC subnet count should not contain reserved subnets ', () => {
@@ -1330,6 +1403,38 @@ describe('vpc', () => {
 
       Template.fromStack(stack).resourceCountIs('Custom::VpcRestrictDefaultSG', 0);
     });
+
+    test.each(
+      [
+        {
+          subnetType: SubnetType.PRIVATE_ISOLATED,
+        },
+        {
+          subnetType: SubnetType.PRIVATE_WITH_EGRESS,
+          additionalSubnetConfig: [{ subnetType: SubnetType.PUBLIC, name: 'public' }],
+        },
+        {
+          subnetType: SubnetType.PUBLIC,
+        },
+      ],
+    )('subnet has dependent on the CIDR block when ipv6AssignAddressOnCreation is set to true, ', (testData) => {
+      const stack = getTestStack();
+      new Vpc(stack, 'TheVPC', {
+        ipProtocol: IpProtocol.DUAL_STACK,
+        maxAzs: 1,
+        subnetConfiguration: [
+          {
+            subnetType: testData.subnetType,
+            name: 'subnetName',
+            ipv6AssignAddressOnCreation: true,
+          },
+          ...testData.additionalSubnetConfig ?? [],
+        ],
+      });
+      Template.fromStack(stack).hasResource('AWS::EC2::Subnet', {
+        DependsOn: ['TheVPCipv6cidrF3E84E30'],
+      });
+    });
   });
 
   describe('fromVpcAttributes', () => {
@@ -1625,6 +1730,31 @@ describe('vpc', () => {
         ],
       });
 
+    });
+
+    test('burstable instance with explicit credit specification', () => {
+      // GIVEN
+      const stack = getTestStack();
+
+      // WHEN
+      const natInstanceProvider = NatProvider.instance({
+        instanceType: InstanceType.of(InstanceClass.T3, InstanceSize.LARGE),
+        machineImage: new AmazonLinuxImage(),
+        creditSpecification: CpuCredits.STANDARD,
+      });
+      new Vpc(stack, 'VPC', {
+        natGatewayProvider: natInstanceProvider,
+        // The 'natGateways' parameter now controls the number of NAT instances
+        natGateways: 1,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::Instance', {
+        InstanceType: 't3.large',
+        CreditSpecification: {
+          CPUCredits: 'standard',
+        },
+      });
     });
 
   });
@@ -2482,13 +2612,13 @@ function getTestStack(): Stack {
   return new Stack(undefined, 'TestStack', { env: { account: '123456789012', region: 'us-east-1' } });
 }
 
-function toCfnTags(tags: any): Array<{Key: string, Value: string}> {
+function toCfnTags(tags: any): Array<{Key: string; Value: string}> {
   return Object.keys(tags).map( key => {
     return { Key: key, Value: tags[key] };
   });
 }
 
-function hasTags(expectedTags: Array<{Key: string, Value: string}>) {
+function hasTags(expectedTags: Array<{Key: string; Value: string}>) {
   return {
     Properties: {
       Tags: Match.arrayWith(expectedTags),

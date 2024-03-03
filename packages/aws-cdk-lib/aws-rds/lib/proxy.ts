@@ -297,7 +297,7 @@ export interface DatabaseProxyProps extends DatabaseProxyOptions {
   /**
    * DB proxy target: Instance or Cluster
    */
-  readonly proxyTarget: ProxyTarget
+  readonly proxyTarget: ProxyTarget;
 }
 
 /**

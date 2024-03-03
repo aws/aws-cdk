@@ -82,7 +82,7 @@ export interface DashboardProps {
    *
    * @default - No widgets
    */
-  readonly widgets?: IWidget[][]
+  readonly widgets?: IWidget[][];
 
   /**
    * A list of dashboard variables

@@ -9,7 +9,7 @@ export interface TlsCertificateConfig {
   /**
    * The CFN shape for a TLS certificate
    */
-  readonly tlsCertificate: CfnVirtualNode.ListenerTlsCertificateProperty,
+  readonly tlsCertificate: CfnVirtualNode.ListenerTlsCertificateProperty;
 }
 
 /**

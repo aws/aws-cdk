@@ -352,7 +352,7 @@ describe('InitFile', () => {
           default: new ec2.InitConfig([
             ec2.InitFile.fromAsset(
               '/target/path/config.json',
-              path.join(__dirname, 'init-configs/configFileForFirstInstance.json'),
+              path.join(__dirname, 'init-configs', 'configFileForFirstInstance.json'),
             ),
           ]),
         },
@@ -377,7 +377,7 @@ describe('InitFile', () => {
             default: new ec2.InitConfig([
               ec2.InitFile.fromAsset(
                 '/target/path/config.json',
-                path.join(__dirname, 'init-configs/configFileForSecondInstance.json'),
+                path.join(__dirname, 'init-configs', 'configFileForSecondInstance.json'),
               ),
             ]),
           },

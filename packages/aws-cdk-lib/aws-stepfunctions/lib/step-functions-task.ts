@@ -104,5 +104,5 @@ export enum ServiceIntegrationPattern {
   /**
    * Call a service with a task token and wait until that token is returned by SendTaskSuccess/SendTaskFailure with payload.
    */
-  WAIT_FOR_TASK_TOKEN = 'WAIT_FOR_TASK_TOKEN'
+  WAIT_FOR_TASK_TOKEN = 'WAIT_FOR_TASK_TOKEN',
 }

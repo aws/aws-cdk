@@ -63,6 +63,27 @@ test('EcsJobDefinition uses Compatibility.FARGATE for Fargate containers', () =>
   });
 });
 
+test('EcsJobDefinition uses runtimePlatform for Fargate containers', () => {
+  // GIVEN
+  const stack = new Stack();
+
+  // WHEN
+  new EcsJobDefinition(stack, 'ECSJobDefn', {
+    container: new EcsFargateContainerDefinition(stack, 'EcsContainer', {
+      cpu: 256,
+      image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+      memory: Size.mebibytes(2048),
+      fargateCpuArchitecture: ecs.CpuArchitecture.ARM64,
+      fargateOperatingSystemFamily: ecs.OperatingSystemFamily.LINUX,
+    }),
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Batch::JobDefinition', {
+    PlatformCapabilities: [Compatibility.FARGATE],
+  });
+});
+
 test('can be imported from ARN', () => {
   // GIVEN
   const stack = new Stack();

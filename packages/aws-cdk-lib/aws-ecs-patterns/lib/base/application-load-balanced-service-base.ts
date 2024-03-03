@@ -30,7 +30,7 @@ export enum ApplicationLoadBalancedServiceRecordType {
   /**
    * Do not create any DNS records
    */
-  NONE
+  NONE,
 }
 
 /**

@@ -38,7 +38,9 @@ const repo = new codecommit.Repository(stack, 'Repo', {
   repositoryName: 'TestRepository',
 });
 
-const pipeline = new codepipeline.Pipeline(stack, 'pipelinePipeline22F2A91D');
+const pipeline = new codepipeline.Pipeline(stack, 'pipelinePipeline22F2A91D', {
+  crossAccountKeys: true,
+});
 
 const srcArtifact = new codepipeline.Artifact('Src');
 pipeline.addStage({

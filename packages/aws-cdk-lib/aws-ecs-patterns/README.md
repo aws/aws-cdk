@@ -60,6 +60,8 @@ You can omit `cluster` and `vpc` to let CDK create a new VPC with two AZs and cr
 
 You can customize the health check for your target group; otherwise it defaults to `HTTP` over port `80` hitting path `/`.
 
+You can customize the health check configuration of the container via the [`healthCheck`](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_ecs.HealthCheck.html) property; otherwise it defaults to the health check configuration from the container.
+
 Fargate services will use the `LATEST` platform version by default, but you can override by providing a value for the `platformVersion` property in the constructor.
 
 Fargate services use the default VPC Security Group unless one or more are provided using the `securityGroups` property in the constructor.
@@ -1090,5 +1092,34 @@ const scheduledFargateTask = new ecsPatterns.ScheduledFargateTask(this, 'Schedul
       value: 'my-tag-value',
     },
   ],
+});
+```
+
+### Use custom ephemeral storage for ECS Fargate tasks
+
+You can pass a custom ephemeral storage (21GiB - 200GiB) to ECS Fargate tasks on Fargate Platform Version 1.4.0 or later. 
+
+```ts
+const vpc = new ec2.Vpc(this, 'Vpc', { maxAzs: 2, restrictDefaultSecurityGroup: false });
+const cluster = new ecs.Cluster(this, 'FargateCluster', { vpc });
+
+const applicationLoadBalancedFargateService = new ecsPatterns.ApplicationLoadBalancedFargateService(this, 'ALBFargateServiceWithCustomEphemeralStorage', {
+  cluster,
+  memoryLimitMiB: 1024,
+  cpu: 512,
+  ephemeralStorageGiB: 21,
+  taskImageOptions: {
+    image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+  },
+});
+
+const networkLoadBalancedFargateService = new ecsPatterns.NetworkLoadBalancedFargateService(this, 'NLBFargateServiceWithCustomEphemeralStorage', {
+  cluster,
+  memoryLimitMiB: 1024,
+  cpu: 512,
+  ephemeralStorageGiB: 200,
+  taskImageOptions: {
+    image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+  },
 });
 ```

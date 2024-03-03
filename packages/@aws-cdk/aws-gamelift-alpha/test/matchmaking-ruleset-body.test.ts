@@ -35,14 +35,14 @@ describe('MatchmakingRuleSetBody', () => {
 
   describe('gamelift.MatchmakingRuleSetBody.fromJsonFile', () => {
     test('new RuleSetBody from Json file', () => {
-      const ruleSet = gamelift.RuleSetContent.fromJsonFile(path.join(__dirname, 'my-ruleset/ruleset.json'));
+      const ruleSet = gamelift.RuleSetContent.fromJsonFile(path.join(__dirname, 'my-ruleset', 'ruleset.json'));
       const content = ruleSet.bind(stack);
-      const result = JSON.parse(fs.readFileSync(path.join(__dirname, 'my-ruleset/ruleset.json')).toString());
+      const result = JSON.parse(fs.readFileSync(path.join(__dirname, 'my-ruleset', 'ruleset.json')).toString());
       expect(content.ruleSetBody).toEqual(JSON.stringify(result));
     });
 
     test('fails if file not exist', () => {
-      const content = path.join(__dirname, 'my-ruleset/file-not-exist.json');
+      const content = path.join(__dirname, 'my-ruleset', 'file-not-exist.json');
       expect(() => gamelift.RuleSetContent.fromJsonFile(content))
         .toThrow(`RuleSet path does not exist, please verify it, actual ${content}`);
     });
