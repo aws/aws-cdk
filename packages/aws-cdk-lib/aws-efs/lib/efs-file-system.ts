@@ -363,7 +363,7 @@ export interface ReplicationConfiguration {
    *
    * Other replication settings(`destinationFileSystem`, `kmsKey`, `region`, `az`) cannot be set if this is set to false.
    */
-  readonly enableReplication: boolean;
+  readonly enable: boolean;
   /**
    * The existing destination file system for the replication.
    *
@@ -392,7 +392,7 @@ export interface ReplicationConfiguration {
    *
    * @default - create regional file system for the replication destination
    */
-  readonly az?: string;
+  readonly availabilityZone?: string;
 }
 
 enum ClientAction {
@@ -599,30 +599,30 @@ export class FileSystem extends FileSystemBase {
       throw new Error('ThroughputMode ELASTIC is not supported for file systems with performanceMode MAX_IO');
     }
 
-    // if (props.replicationConfiguration?.enableReplication) {
-    //   if (props.replicationOverwriteProtection === ReplicationOverwriteProtection.DISABLED) {
-    //     throw new Error('Cannot configure `replicationConfiguration` when `replicationOverwriteProtection` is set to `DISABLED`');
-    //   }
-    //   if (
-    //     props.replicationConfiguration.destinationFileSystem &&
-    //     (
-    //       props.replicationConfiguration.region ||
-    //       props.replicationConfiguration.az ||
-    //       props.replicationConfiguration.kmsKey
-    //     )
-    //   ) {
-    //     throw new Error('Cannot configure `replicationConfiguration.region`, `replicationConfiguration.az` or `replicationConfiguration.kmsKey` when `replicationConfiguration.destinationFileSystem` is set');
-    //   }
-    // }
+    if (props.replicationConfiguration?.enable) {
+      if (props.replicationOverwriteProtection === ReplicationOverwriteProtection.DISABLED) {
+        throw new Error('Cannot configure `replicationConfiguration` when `replicationOverwriteProtection` is set to `DISABLED`');
+      }
+      if (
+        props.replicationConfiguration.destinationFileSystem &&
+        (
+          props.replicationConfiguration.region ||
+          props.replicationConfiguration.availabilityZone ||
+          props.replicationConfiguration.kmsKey
+        )
+      ) {
+        throw new Error('Cannot configure `replicationConfiguration.region`, `replicationConfiguration.az` or `replicationConfiguration.kmsKey` when `replicationConfiguration.destinationFileSystem` is set');
+      }
+    }
 
-    // if (props.replicationConfiguration?.enableReplication === false && (
-    //   props.replicationConfiguration.destinationFileSystem ||
-    //   props.replicationConfiguration.region ||
-    //   props.replicationConfiguration.az ||
-    //   props.replicationConfiguration.kmsKey
-    // )) {
-    //   throw new Error('Cannot configure replication when `replicationConfiguration.enableReplication` is set to `false`');
-    // }
+    if (props.replicationConfiguration?.enable === false && (
+      props.replicationConfiguration.destinationFileSystem ||
+      props.replicationConfiguration.region ||
+      props.replicationConfiguration.availabilityZone ||
+      props.replicationConfiguration.kmsKey
+    )) {
+      throw new Error('Cannot configure replication when `replicationConfiguration.enableReplication` is set to `false`');
+    }
 
     // we explictly use 'undefined' to represent 'false' to maintain backwards compatibility since
     // its considered an actual change in CloudFormations eyes, even though they have the same meaning.
@@ -650,13 +650,14 @@ export class FileSystem extends FileSystemBase {
       replicationOverwriteProtection: props.replicationOverwriteProtection,
     } : undefined;
 
-    const replicationConfiguration = props.replicationConfiguration?.enableReplication ? {
+    const replicationConfiguration = props.replicationConfiguration?.enable ? {
       destinations: [
         {
           fileSystemId: props.replicationConfiguration.destinationFileSystem?.fileSystemId,
           kmsKeyId: props.replicationConfiguration.kmsKey?.keyArn,
-          region: props.replicationConfiguration.region ?? Stack.of(this).region,
-          az: props.replicationConfiguration.az,
+          region: props.replicationConfiguration.region ??
+            props.replicationConfiguration.destinationFileSystem ? undefined : Stack.of(this).region,
+          availabilityZoneName: props.replicationConfiguration.availabilityZone,
         },
       ],
     } : undefined;
