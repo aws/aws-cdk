@@ -357,6 +357,9 @@ export interface FileSystemAttributes {
   readonly fileSystemArn?: string;
 }
 
+/**
+ * Replication configuration for the file system.
+ */
 export interface ReplicationConfiguration {
   /**
    * Whether to enable automatic replication.
