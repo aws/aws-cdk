@@ -656,6 +656,7 @@ export class FileSystem extends FileSystemBase {
           fileSystemId: props.replicationConfiguration.destinationFileSystem?.fileSystemId,
           kmsKeyId: props.replicationConfiguration.kmsKey?.keyArn,
           region: props.replicationConfiguration.region ??
+            // if destinationFileSystem is set, region is not specified, use the region of the destination file system
             (props.replicationConfiguration.destinationFileSystem ? undefined : Stack.of(this).region),
           availabilityZoneName: props.replicationConfiguration.availabilityZone,
         },
