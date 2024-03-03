@@ -1145,4 +1145,17 @@ describe('replication configuration', () => {
       });
     }).toThrow('Cannot configure replication when `replicationConfiguration.enableReplication` is set to `false`');
   });
+
+  test('throw error for invalid region', () => {
+    // THEN
+    expect(() => {
+      new FileSystem(stack, 'EfsFileSystem', {
+        vpc,
+        replicationConfiguration: {
+          enable: true,
+          region: 'invalid-region',
+        },
+      });
+    }).toThrow('`replicationConfiguration.region` is invalid.');
+  });
 });

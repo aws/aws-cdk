@@ -4,7 +4,7 @@ import { CfnFileSystem, CfnMountTarget } from './efs.generated';
 import * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
-import { ArnFormat, FeatureFlags, Lazy, RemovalPolicy, Resource, Size, Stack, Tags } from '../../core';
+import { ArnFormat, FeatureFlags, Lazy, RemovalPolicy, Resource, Size, Stack, Tags, Token } from '../../core';
 import * as cxapi from '../../cx-api';
 
 /**
@@ -599,28 +599,22 @@ export class FileSystem extends FileSystemBase {
       throw new Error('ThroughputMode ELASTIC is not supported for file systems with performanceMode MAX_IO');
     }
 
-    if (props.replicationConfiguration?.enable) {
+    const { destinationFileSystem, region, availabilityZone, kmsKey, enable } = props.replicationConfiguration ?? {};
+    if (enable) {
       if (props.replicationOverwriteProtection === ReplicationOverwriteProtection.DISABLED) {
         throw new Error('Cannot configure `replicationConfiguration` when `replicationOverwriteProtection` is set to `DISABLED`');
       }
-      if (
-        props.replicationConfiguration.destinationFileSystem &&
-        (
-          props.replicationConfiguration.region ||
-          props.replicationConfiguration.availabilityZone ||
-          props.replicationConfiguration.kmsKey
-        )
-      ) {
+
+      if (destinationFileSystem && (region || availabilityZone || kmsKey)) {
         throw new Error('Cannot configure `replicationConfiguration.region`, `replicationConfiguration.az` or `replicationConfiguration.kmsKey` when `replicationConfiguration.destinationFileSystem` is set');
+      }
+
+      if (region && !Token.isUnresolved(region) && !/^[a-z]{2}-((iso[a-z]{0,1}-)|(gov-)){0,1}[a-z]+-{0,1}[0-9]{0,1}$/.test(region)) {
+        throw new Error('`replicationConfiguration.region` is invalid.');
       }
     }
 
-    if (props.replicationConfiguration?.enable === false && (
-      props.replicationConfiguration.destinationFileSystem ||
-      props.replicationConfiguration.region ||
-      props.replicationConfiguration.availabilityZone ||
-      props.replicationConfiguration.kmsKey
-    )) {
+    if (enable === false && (destinationFileSystem || region || availabilityZone || kmsKey)) {
       throw new Error('Cannot configure replication when `replicationConfiguration.enableReplication` is set to `false`');
     }
 
@@ -650,15 +644,15 @@ export class FileSystem extends FileSystemBase {
       replicationOverwriteProtection: props.replicationOverwriteProtection,
     } : undefined;
 
-    const replicationConfiguration = props.replicationConfiguration?.enable ? {
+    const replicationConfiguration = enable ? {
       destinations: [
         {
-          fileSystemId: props.replicationConfiguration.destinationFileSystem?.fileSystemId,
-          kmsKeyId: props.replicationConfiguration.kmsKey?.keyArn,
-          region: props.replicationConfiguration.region ??
+          fileSystemId: destinationFileSystem?.fileSystemId,
+          kmsKeyId: kmsKey?.keyArn,
+          region: region ??
             // if destinationFileSystem is set, region is not specified, use the region of the destination file system
-            (props.replicationConfiguration.destinationFileSystem ? undefined : Stack.of(this).region),
-          availabilityZoneName: props.replicationConfiguration.availabilityZone,
+            (destinationFileSystem ? undefined : Stack.of(this).region),
+          availabilityZoneName: availabilityZone,
         },
       ],
     } : undefined;
