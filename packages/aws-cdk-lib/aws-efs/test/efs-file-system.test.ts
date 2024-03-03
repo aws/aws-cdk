@@ -958,3 +958,191 @@ test.each([
     },
   });
 });
+
+describe('replication configuration', () => {
+  test('default settings', () => {
+    // WHEN
+    new FileSystem(stack, 'EfsFileSystem', {
+      vpc,
+      replicationConfiguration: {
+        enable: true,
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::EFS::FileSystem', {
+      ReplicationConfiguration: {
+        Destinations: [
+          {
+            Region: {
+              Ref: 'AWS::Region',
+            },
+          },
+        ],
+      },
+    });
+  });
+
+  test('with destination file system', () => {
+    // WHEN
+    const destination = new FileSystem(stack, 'DestinationFileSystem', {
+      vpc,
+      replicationOverwriteProtection: ReplicationOverwriteProtection.DISABLED,
+    });
+    new FileSystem(stack, 'EfsFileSystem', {
+      vpc,
+      replicationConfiguration: {
+        destinationFileSystem: destination,
+        enable: true,
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::EFS::FileSystem', {
+      ReplicationConfiguration: {
+        Destinations: [
+          {
+            FileSystemId: {
+              Ref: 'DestinationFileSystem12545967',
+            },
+          },
+        ],
+      },
+    });
+  });
+
+  test('with full settings', () => {
+    // WHEN
+    new FileSystem(stack, 'EfsFileSystem', {
+      vpc,
+      replicationConfiguration: {
+        enable: true,
+        kmsKey: new kms.Key(stack, 'customKey'),
+        region: 'us-east-1',
+        availabilityZone: 'us-east-1a',
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::EFS::FileSystem', {
+      ReplicationConfiguration: {
+        Destinations: [
+          {
+            Region: 'us-east-1',
+            AvailabilityZoneName: 'us-east-1a',
+            KmsKeyId: {
+              'Fn::GetAtt': [
+                'customKeyFEB2B57F',
+                'Arn',
+              ],
+            },
+          },
+        ],
+      },
+    });
+  });
+
+  test('throw error for read-only file system', () => {
+    // THEN
+    expect(() => {
+      new FileSystem(stack, 'EfsFileSystem', {
+        vpc,
+        replicationConfiguration: {
+          enable: true,
+        },
+        replicationOverwriteProtection: ReplicationOverwriteProtection.DISABLED,
+      });
+    }).toThrow('Cannot configure `replicationConfiguration` when `replicationOverwriteProtection` is set to `DISABLED`');
+  });
+
+  test.each([
+    { region: 'us-east-1' },
+    { availabilityZone: 'us-east-1a' },
+  ])('throw error for specifing both destinationFileSystem and other parameters', (config) => {
+    // WHEN
+    const destination = new FileSystem(stack, 'DestinationFileSystem', {
+      vpc,
+      replicationOverwriteProtection: ReplicationOverwriteProtection.DISABLED,
+    });
+
+    // THEN
+    expect(() => {
+      new FileSystem(stack, 'EfsFileSystem', {
+        vpc,
+        replicationConfiguration: {
+          destinationFileSystem: destination,
+          enable: true,
+          ...config,
+        },
+      });
+    }).toThrow('Cannot configure `replicationConfiguration.region`, `replicationConfiguration.az` or `replicationConfiguration.kmsKey` when `replicationConfiguration.destinationFileSystem` is set');
+  });
+
+  test('throw error for specifing both destinationFileSystem and kmsKey', () => {
+    // WHEN
+    const destination = new FileSystem(stack, 'DestinationFileSystem', {
+      vpc,
+      replicationOverwriteProtection: ReplicationOverwriteProtection.DISABLED,
+    });
+
+    // THEN
+    expect(() => {
+      new FileSystem(stack, 'EfsFileSystem', {
+        vpc,
+        replicationConfiguration: {
+          destinationFileSystem: destination,
+          enable: true,
+          kmsKey: new kms.Key(stack, 'customKey'),
+        },
+      });
+    }).toThrow('Cannot configure `replicationConfiguration.region`, `replicationConfiguration.az` or `replicationConfiguration.kmsKey` when `replicationConfiguration.destinationFileSystem` is set');
+  });
+
+  test.each([
+    { region: 'us-east-1' },
+    { availabilityZone: 'us-east-1a' },
+  ])('throw error when configure replication settings for replication disabled file system', (config) => {
+    // THEN
+    expect(() => {
+      new FileSystem(stack, 'EfsFileSystem', {
+        vpc,
+        replicationConfiguration: {
+          enable: false,
+          ...config,
+        },
+      });
+    }).toThrow('Cannot configure replication when `replicationConfiguration.enableReplication` is set to `false`');
+  });
+
+  test('throw error when configure kmsKey for replication disabled file system', () => {
+    // THEN
+    expect(() => {
+      new FileSystem(stack, 'EfsFileSystem', {
+        vpc,
+        replicationConfiguration: {
+          enable: false,
+          kmsKey: new kms.Key(stack, 'customKey'),
+        },
+      });
+    }).toThrow('Cannot configure replication when `replicationConfiguration.enableReplication` is set to `false`');
+  });
+
+  test('throw error when configure destinationFileSystem for replication disabled file system', () => {
+    // WHEN
+    const destination = new FileSystem(stack, 'DestinationFileSystem', {
+      vpc,
+      replicationOverwriteProtection: ReplicationOverwriteProtection.DISABLED,
+    });
+
+    // THEN
+    expect(() => {
+      new FileSystem(stack, 'EfsFileSystem', {
+        vpc,
+        replicationConfiguration: {
+          enable: false,
+          destinationFileSystem: destination,
+        },
+      });
+    }).toThrow('Cannot configure replication when `replicationConfiguration.enableReplication` is set to `false`');
+  });
+});
