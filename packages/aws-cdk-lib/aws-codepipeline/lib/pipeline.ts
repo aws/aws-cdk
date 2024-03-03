@@ -114,15 +114,29 @@ export enum PipelineType {
  */
 export enum ExecutionMode {
   /**
-   * QUEUED mode
+   * QUEUED mode.
+   *
+   * Executions are processed one by one in the order that they are queued.
+   *
+   * This requires pipeline type V2.
    */
   QUEUED = 'QUEUED',
   /**
-   * SUPERSEDED mode
+   * SUPERSEDED mode.
+   *
+   * A more recent execution can overtake an older one.
+   *
+   * This is the default.
    */
   SUPERSEDED = 'SUPERSEDED',
   /**
-   * PARALLEL mode
+   * PARALLEL mode.
+   *
+   * In PARALLEL mode, executions run simultaneously and independently of one
+   * another. Executions don't wait for other runs to complete before starting
+   * or finishing.
+   *
+   * This requires pipeline type V2.
    */
   PARALLEL = 'PARALLEL',
 }
