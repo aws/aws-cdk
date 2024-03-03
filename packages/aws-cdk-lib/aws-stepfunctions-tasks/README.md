@@ -408,11 +408,7 @@ const project = new codebuild.Project(this, 'Project', {
     },
   }),
 });
-const buildconfig = project.enableBatchBuilds();
-
-if (buildconfig == null) {
-  throw new Error('Batch builds not enabled');
-}
+project.enableBatchBuilds();
 
 const task = new tasks.CodeBuildStartBuildBatch(this, 'buildBatchTask', {
   project,
