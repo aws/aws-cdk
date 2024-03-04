@@ -9,7 +9,7 @@ export interface ModuleDefinition {
   readonly moduleBaseName: string;
   readonly packageName: string;
 
-  readonly dotnetPackage: string;
+  readonly dotnetNamespace: string;
   readonly javaGroupId: string;
   readonly javaPackage: string;
   readonly javaArtifactId: string;
@@ -27,7 +27,7 @@ export function createModuleDefinitionFromCfnNamespace(namespace: string): Modul
   const packageName = `aws-cdk-lib/${moduleName}`;
 
   // dotnet names
-  const dotnetPackage = `Amazon.CDK.${moduleFamily}.${moduleBaseName}`;
+  const dotnetNamespace = `Amazon.CDK.${moduleFamily}.${moduleBaseName}`;
 
   // java names
   const javaGroupId = 'software.amazon.awscdk';
@@ -49,7 +49,7 @@ export function createModuleDefinitionFromCfnNamespace(namespace: string): Modul
     moduleFamily,
     moduleBaseName,
     packageName,
-    dotnetPackage,
+    dotnetNamespace,
     javaGroupId,
     javaPackage,
     javaArtifactId,
