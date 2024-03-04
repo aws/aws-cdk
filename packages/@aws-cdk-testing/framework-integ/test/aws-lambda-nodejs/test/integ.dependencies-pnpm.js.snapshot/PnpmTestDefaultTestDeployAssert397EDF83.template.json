@@ -14,11 +14,20 @@
     "expected": "{\"$ObjectLike\":{\"StatusCode\":200,\"ExecutedVersion\":\"$LATEST\",\"Payload\":\"null\"}}",
     "parameters": {
      "FunctionName": {
-      "Fn::ImportValue": "TestStack:ExportsOutputRefFunction76856677C48862D5"
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "TestStack:ExportsOutputRefFunction76856677C48862D5"
+        },
+        "\""
+       ]
+      ]
      }
     },
     "flattenResponse": "false",
-    "salt": "1680010885937"
+    "salt": "1706612024275"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -113,12 +122,12 @@
   "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
-    "Runtime": "nodejs14.x",
+    "Runtime": "nodejs18.x",
     "Code": {
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "92ec9d050245fd270cf2b0df478b31f140ba820c3407e964246946bcea933a19.zip"
+     "S3Key": "8fbdffa7c2de22475e8059b7577376fdc9c31b95db57b70d80184a4dd626575a.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
