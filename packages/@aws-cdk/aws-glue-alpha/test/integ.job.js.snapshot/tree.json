@@ -20,8 +20,8 @@
                     "id": "ImportServiceRole",
                     "path": "aws-glue-job/EtlJob2.0/ServiceRole/ImportServiceRole",
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.2.55"
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "0.0.0"
                     }
                   },
                   "Resource": {
@@ -59,8 +59,8 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.2.55"
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                      "version": "0.0.0"
                     }
                   },
                   "DefaultPolicy": {
@@ -165,20 +165,20 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "constructs.Construct",
-                          "version": "10.2.55"
+                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                          "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.2.55"
+                      "fqn": "aws-cdk-lib.aws_iam.Policy",
+                      "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.2.55"
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
+                  "version": "0.0.0"
                 }
               },
               "SparkUIBucket": {
@@ -193,40 +193,40 @@
                       "aws:cdk:cloudformation:props": {}
                     },
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.2.55"
+                      "fqn": "aws-cdk-lib.aws_s3.CfnBucket",
+                      "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.2.55"
+                  "fqn": "aws-cdk-lib.aws_s3.Bucket",
+                  "version": "0.0.0"
                 }
               },
-              "Code161d2d609eea130c2e9c740956bb950c": {
-                "id": "Code161d2d609eea130c2e9c740956bb950c",
-                "path": "aws-glue-job/EtlJob2.0/Code161d2d609eea130c2e9c740956bb950c",
+              "Code2fe0fc936e45d982e718ad516d9c48b5": {
+                "id": "Code2fe0fc936e45d982e718ad516d9c48b5",
+                "path": "aws-glue-job/EtlJob2.0/Code2fe0fc936e45d982e718ad516d9c48b5",
                 "children": {
                   "Stage": {
                     "id": "Stage",
-                    "path": "aws-glue-job/EtlJob2.0/Code161d2d609eea130c2e9c740956bb950c/Stage",
+                    "path": "aws-glue-job/EtlJob2.0/Code2fe0fc936e45d982e718ad516d9c48b5/Stage",
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.2.55"
+                      "fqn": "aws-cdk-lib.AssetStaging",
+                      "version": "0.0.0"
                     }
                   },
                   "AssetBucket": {
                     "id": "AssetBucket",
-                    "path": "aws-glue-job/EtlJob2.0/Code161d2d609eea130c2e9c740956bb950c/AssetBucket",
+                    "path": "aws-glue-job/EtlJob2.0/Code2fe0fc936e45d982e718ad516d9c48b5/AssetBucket",
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.2.55"
+                      "fqn": "aws-cdk-lib.aws_s3.BucketBase",
+                      "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.2.55"
+                  "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
+                  "version": "0.0.0"
                 }
               },
               "Resource": {
@@ -251,12 +251,6 @@
                       },
                       "pythonVersion": "3"
                     },
-                    "role": {
-                      "Fn::GetAtt": [
-                        "EtlJob20ServiceRoleD520CA20",
-                        "Arn"
-                      ]
-                    },
                     "defaultArguments": {
                       "--job-language": "python",
                       "--enable-continuous-cloudwatch-log": "true",
@@ -270,7 +264,8 @@
                             "s3://",
                             {
                               "Ref": "EtlJob20SparkUIBucketFD07FBD8"
-                            }
+                            },
+                            "/"
                           ]
                         ]
                       },
@@ -289,6 +284,12 @@
                       "notifyDelayAfter": 1
                     },
                     "numberOfWorkers": 10,
+                    "role": {
+                      "Fn::GetAtt": [
+                        "EtlJob20ServiceRoleD520CA20",
+                        "Arn"
+                      ]
+                    },
                     "tags": {
                       "key": "value"
                     },
@@ -297,8 +298,8 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.2.55"
+                  "fqn": "aws-cdk-lib.aws_glue.CfnJob",
+                  "version": "0.0.0"
                 }
               },
               "SuccessMetricRule": {
@@ -346,20 +347,20 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.2.55"
+                      "fqn": "aws-cdk-lib.aws_events.CfnRule",
+                      "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.2.55"
+                  "fqn": "aws-cdk-lib.aws_events.Rule",
+                  "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.2.55"
+              "fqn": "@aws-cdk/aws-glue-alpha.Job",
+              "version": "0.0.0"
             }
           },
           "StreamingJob2.0": {
@@ -374,8 +375,8 @@
                     "id": "ImportServiceRole",
                     "path": "aws-glue-job/StreamingJob2.0/ServiceRole/ImportServiceRole",
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.2.55"
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "0.0.0"
                     }
                   },
                   "Resource": {
@@ -413,8 +414,8 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.2.55"
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                      "version": "0.0.0"
                     }
                   },
                   "DefaultPolicy": {
@@ -482,20 +483,20 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "constructs.Construct",
-                          "version": "10.2.55"
+                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                          "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.2.55"
+                      "fqn": "aws-cdk-lib.aws_iam.Policy",
+                      "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.2.55"
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
+                  "version": "0.0.0"
                 }
               },
               "Resource": {
@@ -520,12 +521,6 @@
                       },
                       "pythonVersion": "3"
                     },
-                    "role": {
-                      "Fn::GetAtt": [
-                        "StreamingJob20ServiceRole491E0FFF",
-                        "Arn"
-                      ]
-                    },
                     "defaultArguments": {
                       "--job-language": "python",
                       "arg1": "value1",
@@ -534,6 +529,12 @@
                     "glueVersion": "2.0",
                     "name": "StreamingJob2.0",
                     "numberOfWorkers": 10,
+                    "role": {
+                      "Fn::GetAtt": [
+                        "StreamingJob20ServiceRole491E0FFF",
+                        "Arn"
+                      ]
+                    },
                     "tags": {
                       "key": "value"
                     },
@@ -541,14 +542,14 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.2.55"
+                  "fqn": "aws-cdk-lib.aws_glue.CfnJob",
+                  "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.2.55"
+              "fqn": "@aws-cdk/aws-glue-alpha.Job",
+              "version": "0.0.0"
             }
           },
           "EtlJob3.0": {
@@ -563,8 +564,8 @@
                     "id": "ImportServiceRole",
                     "path": "aws-glue-job/EtlJob3.0/ServiceRole/ImportServiceRole",
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.2.55"
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "0.0.0"
                     }
                   },
                   "Resource": {
@@ -602,8 +603,8 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.2.55"
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                      "version": "0.0.0"
                     }
                   },
                   "DefaultPolicy": {
@@ -708,20 +709,20 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "constructs.Construct",
-                          "version": "10.2.55"
+                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                          "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.2.55"
+                      "fqn": "aws-cdk-lib.aws_iam.Policy",
+                      "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.2.55"
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
+                  "version": "0.0.0"
                 }
               },
               "SparkUIBucket": {
@@ -736,14 +737,14 @@
                       "aws:cdk:cloudformation:props": {}
                     },
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.2.55"
+                      "fqn": "aws-cdk-lib.aws_s3.CfnBucket",
+                      "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.2.55"
+                  "fqn": "aws-cdk-lib.aws_s3.Bucket",
+                  "version": "0.0.0"
                 }
               },
               "Resource": {
@@ -768,12 +769,6 @@
                       },
                       "pythonVersion": "3"
                     },
-                    "role": {
-                      "Fn::GetAtt": [
-                        "EtlJob30ServiceRole8E675579",
-                        "Arn"
-                      ]
-                    },
                     "defaultArguments": {
                       "--job-language": "python",
                       "--enable-continuous-cloudwatch-log": "true",
@@ -787,7 +782,8 @@
                             "s3://",
                             {
                               "Ref": "EtlJob30SparkUIBucket9D789346"
-                            }
+                            },
+                            "/"
                           ]
                         ]
                       },
@@ -806,6 +802,12 @@
                       "notifyDelayAfter": 1
                     },
                     "numberOfWorkers": 10,
+                    "role": {
+                      "Fn::GetAtt": [
+                        "EtlJob30ServiceRole8E675579",
+                        "Arn"
+                      ]
+                    },
                     "tags": {
                       "key": "value"
                     },
@@ -814,8 +816,8 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.2.55"
+                  "fqn": "aws-cdk-lib.aws_glue.CfnJob",
+                  "version": "0.0.0"
                 }
               },
               "SuccessMetricRule": {
@@ -863,20 +865,20 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.2.55"
+                      "fqn": "aws-cdk-lib.aws_events.CfnRule",
+                      "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.2.55"
+                  "fqn": "aws-cdk-lib.aws_events.Rule",
+                  "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.2.55"
+              "fqn": "@aws-cdk/aws-glue-alpha.Job",
+              "version": "0.0.0"
             }
           },
           "StreamingJob3.0": {
@@ -891,8 +893,8 @@
                     "id": "ImportServiceRole",
                     "path": "aws-glue-job/StreamingJob3.0/ServiceRole/ImportServiceRole",
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.2.55"
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "0.0.0"
                     }
                   },
                   "Resource": {
@@ -930,8 +932,8 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.2.55"
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                      "version": "0.0.0"
                     }
                   },
                   "DefaultPolicy": {
@@ -999,20 +1001,20 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "constructs.Construct",
-                          "version": "10.2.55"
+                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                          "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.2.55"
+                      "fqn": "aws-cdk-lib.aws_iam.Policy",
+                      "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.2.55"
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
+                  "version": "0.0.0"
                 }
               },
               "Resource": {
@@ -1037,12 +1039,6 @@
                       },
                       "pythonVersion": "3"
                     },
-                    "role": {
-                      "Fn::GetAtt": [
-                        "StreamingJob30ServiceRole443B2FDE",
-                        "Arn"
-                      ]
-                    },
                     "defaultArguments": {
                       "--job-language": "python",
                       "arg1": "value1",
@@ -1051,6 +1047,12 @@
                     "glueVersion": "3.0",
                     "name": "StreamingJob3.0",
                     "numberOfWorkers": 10,
+                    "role": {
+                      "Fn::GetAtt": [
+                        "StreamingJob30ServiceRole443B2FDE",
+                        "Arn"
+                      ]
+                    },
                     "tags": {
                       "key": "value"
                     },
@@ -1058,14 +1060,14 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.2.55"
+                  "fqn": "aws-cdk-lib.aws_glue.CfnJob",
+                  "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.2.55"
+              "fqn": "@aws-cdk/aws-glue-alpha.Job",
+              "version": "0.0.0"
             }
           },
           "EtlJob4.0": {
@@ -1080,8 +1082,8 @@
                     "id": "ImportServiceRole",
                     "path": "aws-glue-job/EtlJob4.0/ServiceRole/ImportServiceRole",
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.2.55"
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "0.0.0"
                     }
                   },
                   "Resource": {
@@ -1119,8 +1121,8 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.2.55"
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                      "version": "0.0.0"
                     }
                   },
                   "DefaultPolicy": {
@@ -1225,20 +1227,20 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "constructs.Construct",
-                          "version": "10.2.55"
+                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                          "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.2.55"
+                      "fqn": "aws-cdk-lib.aws_iam.Policy",
+                      "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.2.55"
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
+                  "version": "0.0.0"
                 }
               },
               "SparkUIBucket": {
@@ -1253,14 +1255,14 @@
                       "aws:cdk:cloudformation:props": {}
                     },
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.2.55"
+                      "fqn": "aws-cdk-lib.aws_s3.CfnBucket",
+                      "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.2.55"
+                  "fqn": "aws-cdk-lib.aws_s3.Bucket",
+                  "version": "0.0.0"
                 }
               },
               "Resource": {
@@ -1285,12 +1287,6 @@
                       },
                       "pythonVersion": "3"
                     },
-                    "role": {
-                      "Fn::GetAtt": [
-                        "EtlJob40ServiceRoleBDD9998A",
-                        "Arn"
-                      ]
-                    },
                     "defaultArguments": {
                       "--job-language": "python",
                       "--enable-continuous-cloudwatch-log": "true",
@@ -1304,7 +1300,8 @@
                             "s3://",
                             {
                               "Ref": "EtlJob40SparkUIBucket02F50B0D"
-                            }
+                            },
+                            "/"
                           ]
                         ]
                       },
@@ -1323,6 +1320,12 @@
                       "notifyDelayAfter": 1
                     },
                     "numberOfWorkers": 10,
+                    "role": {
+                      "Fn::GetAtt": [
+                        "EtlJob40ServiceRoleBDD9998A",
+                        "Arn"
+                      ]
+                    },
                     "tags": {
                       "key": "value"
                     },
@@ -1331,8 +1334,8 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.2.55"
+                  "fqn": "aws-cdk-lib.aws_glue.CfnJob",
+                  "version": "0.0.0"
                 }
               },
               "SuccessMetricRule": {
@@ -1380,20 +1383,20 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.2.55"
+                      "fqn": "aws-cdk-lib.aws_events.CfnRule",
+                      "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.2.55"
+                  "fqn": "aws-cdk-lib.aws_events.Rule",
+                  "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.2.55"
+              "fqn": "@aws-cdk/aws-glue-alpha.Job",
+              "version": "0.0.0"
             }
           },
           "StreamingJob4.0": {
@@ -1408,8 +1411,8 @@
                     "id": "ImportServiceRole",
                     "path": "aws-glue-job/StreamingJob4.0/ServiceRole/ImportServiceRole",
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.2.55"
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "0.0.0"
                     }
                   },
                   "Resource": {
@@ -1447,8 +1450,8 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.2.55"
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                      "version": "0.0.0"
                     }
                   },
                   "DefaultPolicy": {
@@ -1516,20 +1519,20 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "constructs.Construct",
-                          "version": "10.2.55"
+                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                          "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.2.55"
+                      "fqn": "aws-cdk-lib.aws_iam.Policy",
+                      "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.2.55"
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
+                  "version": "0.0.0"
                 }
               },
               "Resource": {
@@ -1554,12 +1557,6 @@
                       },
                       "pythonVersion": "3"
                     },
-                    "role": {
-                      "Fn::GetAtt": [
-                        "StreamingJob40ServiceRole034BDEBD",
-                        "Arn"
-                      ]
-                    },
                     "defaultArguments": {
                       "--job-language": "python",
                       "arg1": "value1",
@@ -1568,6 +1565,12 @@
                     "glueVersion": "4.0",
                     "name": "StreamingJob4.0",
                     "numberOfWorkers": 10,
+                    "role": {
+                      "Fn::GetAtt": [
+                        "StreamingJob40ServiceRole034BDEBD",
+                        "Arn"
+                      ]
+                    },
                     "tags": {
                       "key": "value"
                     },
@@ -1575,14 +1578,14 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.2.55"
+                  "fqn": "aws-cdk-lib.aws_glue.CfnJob",
+                  "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.2.55"
+              "fqn": "@aws-cdk/aws-glue-alpha.Job",
+              "version": "0.0.0"
             }
           },
           "ShellJob": {
@@ -1597,8 +1600,8 @@
                     "id": "ImportServiceRole",
                     "path": "aws-glue-job/ShellJob/ServiceRole/ImportServiceRole",
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.2.55"
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "0.0.0"
                     }
                   },
                   "Resource": {
@@ -1636,8 +1639,8 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.2.55"
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                      "version": "0.0.0"
                     }
                   },
                   "DefaultPolicy": {
@@ -1705,20 +1708,20 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "constructs.Construct",
-                          "version": "10.2.55"
+                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                          "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.2.55"
+                      "fqn": "aws-cdk-lib.aws_iam.Policy",
+                      "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.2.55"
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
+                  "version": "0.0.0"
                 }
               },
               "Resource": {
@@ -1743,12 +1746,6 @@
                       },
                       "pythonVersion": "3"
                     },
-                    "role": {
-                      "Fn::GetAtt": [
-                        "ShellJobServiceRoleCF97BC4B",
-                        "Arn"
-                      ]
-                    },
                     "defaultArguments": {
                       "--job-language": "python",
                       "arg1": "value1",
@@ -1756,20 +1753,26 @@
                     },
                     "glueVersion": "1.0",
                     "name": "ShellJob",
+                    "role": {
+                      "Fn::GetAtt": [
+                        "ShellJobServiceRoleCF97BC4B",
+                        "Arn"
+                      ]
+                    },
                     "tags": {
                       "key": "value"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.2.55"
+                  "fqn": "aws-cdk-lib.aws_glue.CfnJob",
+                  "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.2.55"
+              "fqn": "@aws-cdk/aws-glue-alpha.Job",
+              "version": "0.0.0"
             }
           },
           "ShellJob39": {
@@ -1784,8 +1787,8 @@
                     "id": "ImportServiceRole",
                     "path": "aws-glue-job/ShellJob39/ServiceRole/ImportServiceRole",
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.2.55"
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "0.0.0"
                     }
                   },
                   "Resource": {
@@ -1823,8 +1826,8 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.2.55"
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                      "version": "0.0.0"
                     }
                   },
                   "DefaultPolicy": {
@@ -1892,20 +1895,20 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "constructs.Construct",
-                          "version": "10.2.55"
+                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                          "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.2.55"
+                      "fqn": "aws-cdk-lib.aws_iam.Policy",
+                      "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.2.55"
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
+                  "version": "0.0.0"
                 }
               },
               "Resource": {
@@ -1930,12 +1933,6 @@
                       },
                       "pythonVersion": "3.9"
                     },
-                    "role": {
-                      "Fn::GetAtt": [
-                        "ShellJob39ServiceRole2F6F3768",
-                        "Arn"
-                      ]
-                    },
                     "defaultArguments": {
                       "--job-language": "python",
                       "arg1": "value1",
@@ -1943,20 +1940,26 @@
                     },
                     "glueVersion": "1.0",
                     "name": "ShellJob39",
+                    "role": {
+                      "Fn::GetAtt": [
+                        "ShellJob39ServiceRole2F6F3768",
+                        "Arn"
+                      ]
+                    },
                     "tags": {
                       "key": "value"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.2.55"
+                  "fqn": "aws-cdk-lib.aws_glue.CfnJob",
+                  "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.2.55"
+              "fqn": "@aws-cdk/aws-glue-alpha.Job",
+              "version": "0.0.0"
             }
           },
           "RayJob": {
@@ -1971,8 +1974,8 @@
                     "id": "ImportServiceRole",
                     "path": "aws-glue-job/RayJob/ServiceRole/ImportServiceRole",
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.2.55"
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "0.0.0"
                     }
                   },
                   "Resource": {
@@ -2010,8 +2013,8 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.2.55"
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                      "version": "0.0.0"
                     }
                   },
                   "DefaultPolicy": {
@@ -2079,20 +2082,20 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "constructs.Construct",
-                          "version": "10.2.55"
+                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                          "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.2.55"
+                      "fqn": "aws-cdk-lib.aws_iam.Policy",
+                      "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.2.55"
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
+                  "version": "0.0.0"
                 }
               },
               "Resource": {
@@ -2118,12 +2121,6 @@
                       "pythonVersion": "3.9",
                       "runtime": "Ray2.4"
                     },
-                    "role": {
-                      "Fn::GetAtt": [
-                        "RayJobServiceRole51433C3D",
-                        "Arn"
-                      ]
-                    },
                     "defaultArguments": {
                       "--job-language": "python",
                       "arg1": "value1",
@@ -2132,6 +2129,12 @@
                     "glueVersion": "4.0",
                     "name": "RayJob",
                     "numberOfWorkers": 2,
+                    "role": {
+                      "Fn::GetAtt": [
+                        "RayJobServiceRole51433C3D",
+                        "Arn"
+                      ]
+                    },
                     "tags": {
                       "key": "value"
                     },
@@ -2139,14 +2142,14 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.2.55"
+                  "fqn": "aws-cdk-lib.aws_glue.CfnJob",
+                  "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.2.55"
+              "fqn": "@aws-cdk/aws-glue-alpha.Job",
+              "version": "0.0.0"
             }
           },
           "EtlJobWithFLEX": {
@@ -2161,8 +2164,8 @@
                     "id": "ImportServiceRole",
                     "path": "aws-glue-job/EtlJobWithFLEX/ServiceRole/ImportServiceRole",
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.2.55"
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "0.0.0"
                     }
                   },
                   "Resource": {
@@ -2200,8 +2203,8 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.2.55"
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                      "version": "0.0.0"
                     }
                   },
                   "DefaultPolicy": {
@@ -2269,20 +2272,20 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "constructs.Construct",
-                          "version": "10.2.55"
+                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                          "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.2.55"
+                      "fqn": "aws-cdk-lib.aws_iam.Policy",
+                      "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.2.55"
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
+                  "version": "0.0.0"
                 }
               },
               "Resource": {
@@ -2307,12 +2310,6 @@
                       },
                       "pythonVersion": "3"
                     },
-                    "role": {
-                      "Fn::GetAtt": [
-                        "EtlJobWithFLEXServiceRoleBA7C99A5",
-                        "Arn"
-                      ]
-                    },
                     "defaultArguments": {
                       "--job-language": "python"
                     },
@@ -2320,40 +2317,46 @@
                     "glueVersion": "3.0",
                     "name": "EtlJobWithFLEX",
                     "numberOfWorkers": 10,
+                    "role": {
+                      "Fn::GetAtt": [
+                        "EtlJobWithFLEXServiceRoleBA7C99A5",
+                        "Arn"
+                      ]
+                    },
                     "workerType": "G.1X"
                   }
                 },
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.2.55"
+                  "fqn": "aws-cdk-lib.aws_glue.CfnJob",
+                  "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.2.55"
+              "fqn": "@aws-cdk/aws-glue-alpha.Job",
+              "version": "0.0.0"
             }
           },
           "BootstrapVersion": {
             "id": "BootstrapVersion",
             "path": "aws-glue-job/BootstrapVersion",
             "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.2.55"
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
             }
           },
           "CheckBootstrapVersion": {
             "id": "CheckBootstrapVersion",
             "path": "aws-glue-job/CheckBootstrapVersion",
             "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.2.55"
+              "fqn": "aws-cdk-lib.CfnRule",
+              "version": "0.0.0"
             }
           }
         },
         "constructInfo": {
-          "fqn": "constructs.Construct",
-          "version": "10.2.55"
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "0.0.0"
         }
       },
       "Tree": {
@@ -2361,13 +2364,13 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.2.55"
+          "version": "10.3.0"
         }
       }
     },
     "constructInfo": {
-      "fqn": "constructs.Construct",
-      "version": "10.2.55"
+      "fqn": "aws-cdk-lib.App",
+      "version": "0.0.0"
     }
   }
 }
