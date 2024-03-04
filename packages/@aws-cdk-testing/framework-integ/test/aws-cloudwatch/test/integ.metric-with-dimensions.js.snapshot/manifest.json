@@ -1,28 +1,28 @@
 {
   "version": "36.0.0",
   "artifacts": {
-    "cdk-stepfunctions-map-distributed-stack.assets": {
+    "aws-cdk-cloudwatch-metric-dimensions.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "cdk-stepfunctions-map-distributed-stack.assets.json",
+        "file": "aws-cdk-cloudwatch-metric-dimensions.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "cdk-stepfunctions-map-distributed-stack": {
+    "aws-cdk-cloudwatch-metric-dimensions": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "cdk-stepfunctions-map-distributed-stack.template.json",
+        "templateFile": "aws-cdk-cloudwatch-metric-dimensions.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/02a90dd088b90a83c2e917a07e465b621f46664f62ae3c4440f0d0799957e3f4.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/5b7b9376300e8d5da09834e7dfc97bf825e9354f770b53e1bc3e3d0a9de8f10c.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "cdk-stepfunctions-map-distributed-stack.assets"
+          "aws-cdk-cloudwatch-metric-dimensions.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -31,55 +31,49 @@
         }
       },
       "dependencies": [
-        "cdk-stepfunctions-map-distributed-stack.assets"
+        "aws-cdk-cloudwatch-metric-dimensions.assets"
       ],
       "metadata": {
-        "/cdk-stepfunctions-map-distributed-stack/StateMachine/Role/Resource": [
+        "/aws-cdk-cloudwatch-metric-dimensions/queue": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "StateMachineRoleB840431D"
+            "data": "queue"
           }
         ],
-        "/cdk-stepfunctions-map-distributed-stack/StateMachine/Resource": [
+        "/aws-cdk-cloudwatch-metric-dimensions/Alarm/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "StateMachine2E01A3A5"
+            "data": "Alarm7103F465"
           }
         ],
-        "/cdk-stepfunctions-map-distributed-stack/StateMachineARN": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "StateMachineARN"
-          }
-        ],
-        "/cdk-stepfunctions-map-distributed-stack/BootstrapVersion": [
+        "/aws-cdk-cloudwatch-metric-dimensions/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/cdk-stepfunctions-map-distributed-stack/CheckBootstrapVersion": [
+        "/aws-cdk-cloudwatch-metric-dimensions/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "cdk-stepfunctions-map-distributed-stack"
+      "displayName": "aws-cdk-cloudwatch-metric-dimensions"
     },
-    "cdkstepfunctionsmapdistributedintegDefaultTestDeployAssert69F30423.assets": {
+    "metricwithdimensionstestDefaultTestDeployAssert1196DF0F.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "cdkstepfunctionsmapdistributedintegDefaultTestDeployAssert69F30423.assets.json",
+        "file": "metricwithdimensionstestDefaultTestDeployAssert1196DF0F.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "cdkstepfunctionsmapdistributedintegDefaultTestDeployAssert69F30423": {
+    "metricwithdimensionstestDefaultTestDeployAssert1196DF0F": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "cdkstepfunctionsmapdistributedintegDefaultTestDeployAssert69F30423.template.json",
+        "templateFile": "metricwithdimensionstestDefaultTestDeployAssert1196DF0F.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
@@ -88,7 +82,7 @@
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "cdkstepfunctionsmapdistributedintegDefaultTestDeployAssert69F30423.assets"
+          "metricwithdimensionstestDefaultTestDeployAssert1196DF0F.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -97,23 +91,23 @@
         }
       },
       "dependencies": [
-        "cdkstepfunctionsmapdistributedintegDefaultTestDeployAssert69F30423.assets"
+        "metricwithdimensionstestDefaultTestDeployAssert1196DF0F.assets"
       ],
       "metadata": {
-        "/cdk-stepfunctions-map-distributed-integ/DefaultTest/DeployAssert/BootstrapVersion": [
+        "/metric-with-dimensions-test/DefaultTest/DeployAssert/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/cdk-stepfunctions-map-distributed-integ/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+        "/metric-with-dimensions-test/DefaultTest/DeployAssert/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "cdk-stepfunctions-map-distributed-integ/DefaultTest/DeployAssert"
+      "displayName": "metric-with-dimensions-test/DefaultTest/DeployAssert"
     },
     "Tree": {
       "type": "cdk:tree",
