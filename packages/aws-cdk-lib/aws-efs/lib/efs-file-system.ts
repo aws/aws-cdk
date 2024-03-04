@@ -6,6 +6,7 @@ import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import { ArnFormat, FeatureFlags, Lazy, RemovalPolicy, Resource, Size, Stack, Tags, Token } from '../../core';
 import * as cxapi from '../../cx-api';
+import { Region } from '../../../@aws-cdk/region-info/lib/aws-entities';
 
 /**
  * EFS Lifecycle Policy, if a file is not accessed for given days, it will move to EFS Infrequent Access
@@ -657,8 +658,8 @@ export class FileSystem extends FileSystemBase {
           fileSystemId: destinationFileSystem?.fileSystemId,
           kmsKeyId: kmsKey?.keyArn,
           region: region ??
-            // if destinationFileSystem is set, region is not specified, use the region of the destination file system
-            (destinationFileSystem ? undefined : Stack.of(this).region),
+            // if destinationFileSystem is set, specify the region of the destination file system
+            (destinationFileSystem ? destinationFileSystem.env.region : Stack.of(this).region),
           availabilityZoneName: availabilityZone,
         },
       ],
