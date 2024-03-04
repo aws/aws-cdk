@@ -6,7 +6,6 @@ import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import { ArnFormat, FeatureFlags, Lazy, RemovalPolicy, Resource, Size, Stack, Tags, Token } from '../../core';
 import * as cxapi from '../../cx-api';
-import { Region } from '../../../@aws-cdk/region-info/lib/aws-entities';
 
 /**
  * EFS Lifecycle Policy, if a file is not accessed for given days, it will move to EFS Infrequent Access
