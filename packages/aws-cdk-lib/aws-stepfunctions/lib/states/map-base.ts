@@ -90,9 +90,24 @@ export interface MapBaseProps {
    *
    * An upper bound on the number of iterations you want running at once.
    *
+   * @see
+   * https://docs.aws.amazon.com/step-functions/latest/dg/concepts-asl-use-map-state-inline.html#map-state-inline-additional-fields
+   *
    * @default - full concurrency
    */
   readonly maxConcurrency?: number;
+
+  /**
+   * MaxConcurrencyPath
+   *
+   * A JsonPath that specifies the maximum concurrency dynamically from the state input.
+   *
+   * @see
+   * https://docs.aws.amazon.com/step-functions/latest/dg/concepts-asl-use-map-state-inline.html#map-state-inline-additional-fields
+   *
+   * @default - full concurrency
+   */
+  readonly maxConcurrencyPath?: string;
 }
 
 /**
@@ -122,6 +137,7 @@ export abstract class MapBase extends State implements INextable {
   public readonly endStates: INextable[];
 
   private readonly maxConcurrency?: number;
+  private readonly maxConcurrencyPath?: string;
   protected readonly itemsPath?: string;
   protected readonly itemSelector?: { [key: string]: any };
 
@@ -129,6 +145,7 @@ export abstract class MapBase extends State implements INextable {
     super(scope, id, props);
     this.endStates = [this];
     this.maxConcurrency = props.maxConcurrency;
+    this.maxConcurrencyPath = props.maxConcurrencyPath;
     this.itemsPath = props.itemsPath;
     this.itemSelector = props.itemSelector;
   }
@@ -156,7 +173,8 @@ export abstract class MapBase extends State implements INextable {
       ...this.renderItemsPath(),
       ...this.renderItemSelector(),
       ...this.renderItemProcessor(),
-      MaxConcurrency: this.maxConcurrency,
+      ...(this.maxConcurrency && { MaxConcurrency: this.maxConcurrency }),
+      ...(this.maxConcurrencyPath && { MaxConcurrencyPath: renderJsonPath(this.maxConcurrencyPath) }),
     };
   }
 
@@ -172,6 +190,10 @@ export abstract class MapBase extends State implements INextable {
 
     if (this.maxConcurrency && !Token.isUnresolved(this.maxConcurrency) && !isPositiveInteger(this.maxConcurrency)) {
       errors.push('maxConcurrency has to be a positive integer');
+    }
+
+    if (this.maxConcurrency && this.maxConcurrencyPath) {
+      errors.push('Provide either `maxConcurrency` or `maxConcurrencyPath`, but not both');
     }
 
     return errors;
