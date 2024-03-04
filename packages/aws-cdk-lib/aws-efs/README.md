@@ -81,6 +81,8 @@ This is to prevent deployment failures due to cross-AZ configurations.
 You can create a replica of your EFS file system in the AWS Region of your preference.
 
 ```ts
+import * as kms from 'aws-cdk-lib/aws-kms';
+
 declare const vpc: ec2.Vpc;
 declare const kmsKey: kms.Key;
 
