@@ -15,6 +15,7 @@ In addition, the library also supports defining Kubernetes resource manifests wi
       - [Node Groups with IPv6 Support](#node-groups-with-ipv6-support)
       - [Spot Instances Support](#spot-instances-support)
       - [Launch Template Support](#launch-template-support)
+    - [Update clusters](#update-clusters)
     - [Fargate profiles](#fargate-profiles)
     - [Self-managed nodes](#self-managed-nodes)
       - [Spot Instances](#spot-instances)
@@ -366,6 +367,29 @@ You may specify one `instanceType` in the launch template or multiple `instanceT
 Graviton 2 instance types are supported including `c6g`, `m6g`, `r6g` and `t4g`.
 Graviton 3 instance types are supported including `c7g`.
 
+### Update clusters
+
+When you rename the cluster name and redeploy the stack, the cluster replacement will be triggered and
+the existing one will be deleted after the new one is provisioned. As the cluster resource ARN has been changed, 
+the cluster resource handler would not be able to delete the old one as the resource ARN in the IAM policy
+has been changed. As a workaround, you need to add a temporary policy to the cluster admin role for 
+successful replacement. Consider this example if you are renaming the cluster from `foo` to `bar`:
+
+```ts
+const cluster = new eks.Cluster(this, 'cluster-to-rename', {
+  clusterName: 'foo', // rename this to 'bar'
+  version: eks.KubernetesVersion.V1_29,
+});
+
+// allow the cluster admin role to delete the cluster 'foo'
+cluster.adminRole.addToPolicy(new iam.PolicyStatement({
+  actions: ['eks:DeleteCluster'],
+  resources: [ 
+    Stack.of(this).formatArn({ service: 'eks', resource: 'cluster', resourceName: 'foo' }),
+]
+}))
+```
+
 ### Fargate profiles
 
 AWS Fargate is a technology that provides on-demand, right-sized compute
@@ -657,7 +681,7 @@ new eks.Cluster(this, 'HelloEKS', {
 });
 ```
 
-> Note: Isolated VPCs (i.e with no internet access) are not currently supported. See https://github.com/aws/aws-cdk/issues/12171
+> Note: Isolated VPCs (i.e with no internet access) are not fully supported. See https://github.com/aws/aws-cdk/issues/12171. Check out [this aws-cdk-example](https://github.com/aws-samples/aws-cdk-examples/tree/master/java/eks/private-cluster) for reference.
 
 If you do not specify a VPC, one will be created on your behalf, which you can then access via `cluster.vpc`. The cluster VPC will be associated to any EKS managed capacity (i.e Managed Node Groups and Fargate Profiles).
 

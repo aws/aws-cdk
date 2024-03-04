@@ -227,6 +227,11 @@ export class Runtime {
   public static readonly DOTNET_6 = new Runtime('dotnet6', RuntimeFamily.DOTNET_CORE);
 
   /**
+   * The .NET 8 runtime (dotnet8)
+   */
+  public static readonly DOTNET_8 = new Runtime('dotnet8', RuntimeFamily.DOTNET_CORE);
+
+  /**
    * The .NET Core 1.0 runtime (dotnetcore1.0)
    * @deprecated Legacy runtime no longer supported by AWS Lambda. Migrate to the latest .NET Core runtime.
    */

@@ -2,7 +2,7 @@
   "name": "@aws-cdk/aws-appconfig-alpha",
   "private": false,
   "version": "0.0.0",
-  "description": "An experimental construct library for AWS AppConfig.",
+  "description": "This module is deprecated. All constructs are now available under aws-cdk-lib/aws-appconfig",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "jsii": {
@@ -98,8 +98,8 @@
   "engines": {
     "node": ">= 14.15.0"
   },
-  "stability": "experimental",
-  "maturity": "experimental",
+  "stability": "deprecated",
+  "maturity": "deprecated",
   "awscdkio": {
     "announce": false
   },

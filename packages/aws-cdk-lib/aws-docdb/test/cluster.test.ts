@@ -956,6 +956,164 @@ describe('DatabaseCluster', () => {
       VpcSecurityGroupIds: Match.arrayWith([stack.resolve(securityGroup.securityGroupId)]),
     });
   });
+
+  test('can create a cluster with snapshot removal policy', () => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new DatabaseCluster(stack, 'Database', {
+      instances: 1,
+      masterUser: {
+        username: 'admin',
+        password: cdk.SecretValue.unsafePlainText('tooshort'),
+      },
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+      vpc,
+      removalPolicy: cdk.RemovalPolicy.SNAPSHOT,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResource('AWS::DocDB::DBCluster', {
+      Properties: {
+        DBSubnetGroupName: { Ref: 'DatabaseSubnets56F17B9A' },
+        MasterUsername: 'admin',
+        MasterUserPassword: 'tooshort',
+        VpcSecurityGroupIds: [{ 'Fn::GetAtt': ['DatabaseSecurityGroup5C91FDCB', 'GroupId'] }],
+      },
+      DeletionPolicy: 'Snapshot',
+      UpdateReplacePolicy: 'Snapshot',
+    });
+
+    // Associated instance gets delete policy
+    Template.fromStack(stack).hasResource('AWS::DocDB::DBInstance', {
+      DeletionPolicy: 'Delete',
+      UpdateReplacePolicy: 'Delete',
+    });
+
+    // Associated security group gets delete policy
+    Template.fromStack(stack).hasResource('AWS::EC2::SecurityGroup', {
+      DeletionPolicy: 'Delete',
+      UpdateReplacePolicy: 'Delete',
+    });
+  });
+
+  test('can specify instances removal policy', () => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new DatabaseCluster(stack, 'Database', {
+      instances: 1,
+      masterUser: {
+        username: 'admin',
+        password: cdk.SecretValue.unsafePlainText('tooshort'),
+      },
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+      vpc,
+      removalPolicy: cdk.RemovalPolicy.SNAPSHOT,
+      instanceRemovalPolicy: cdk.RemovalPolicy.RETAIN,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResource('AWS::DocDB::DBCluster', {
+      Properties: {
+        DBSubnetGroupName: { Ref: 'DatabaseSubnets56F17B9A' },
+        MasterUsername: 'admin',
+        MasterUserPassword: 'tooshort',
+        VpcSecurityGroupIds: [{ 'Fn::GetAtt': ['DatabaseSecurityGroup5C91FDCB', 'GroupId'] }],
+      },
+      DeletionPolicy: 'Snapshot',
+      UpdateReplacePolicy: 'Snapshot',
+    });
+
+    // Associated instance gets specified policy
+    Template.fromStack(stack).hasResource('AWS::DocDB::DBInstance', {
+      DeletionPolicy: 'Retain',
+      UpdateReplacePolicy: 'Retain',
+    });
+  });
+
+  test('can specify security group removal policy', () => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new DatabaseCluster(stack, 'Database', {
+      instances: 1,
+      masterUser: {
+        username: 'admin',
+        password: cdk.SecretValue.unsafePlainText('tooshort'),
+      },
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+      vpc,
+      removalPolicy: cdk.RemovalPolicy.SNAPSHOT,
+      securityGroupRemovalPolicy: cdk.RemovalPolicy.RETAIN,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResource('AWS::DocDB::DBCluster', {
+      Properties: {
+        DBSubnetGroupName: { Ref: 'DatabaseSubnets56F17B9A' },
+        MasterUsername: 'admin',
+        MasterUserPassword: 'tooshort',
+        VpcSecurityGroupIds: [{ 'Fn::GetAtt': ['DatabaseSecurityGroup5C91FDCB', 'GroupId'] }],
+      },
+      DeletionPolicy: 'Snapshot',
+      UpdateReplacePolicy: 'Snapshot',
+    });
+
+    // Associated security group gets specified policy
+    Template.fromStack(stack).hasResource('AWS::EC2::SecurityGroup', {
+      DeletionPolicy: 'Retain',
+      UpdateReplacePolicy: 'Retain',
+    });
+  });
+
+  test('instances removal policy cannot be set to snapshot', () => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    // THEN
+    expect(() => {
+      new DatabaseCluster(stack, 'Database', {
+        instances: 1,
+        masterUser: {
+          username: 'admin',
+          password: cdk.SecretValue.unsafePlainText('tooshort'),
+        },
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+        vpc,
+        instanceRemovalPolicy: cdk.RemovalPolicy.SNAPSHOT,
+      });
+    }).toThrow(/AWS::DocDB::DBInstance does not support the SNAPSHOT removal policy/);
+  });
+
+  test('security group removal policy cannot be set to snapshot', () => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    // THEN
+    expect(() => {
+      new DatabaseCluster(stack, 'Database', {
+        instances: 1,
+        masterUser: {
+          username: 'admin',
+          password: cdk.SecretValue.unsafePlainText('tooshort'),
+        },
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+        vpc,
+        securityGroupRemovalPolicy: cdk.RemovalPolicy.SNAPSHOT,
+      });
+    }).toThrow(/AWS::EC2::SecurityGroup does not support the SNAPSHOT removal policy/);
+  });
 });
 
 function testStack() {

@@ -45,6 +45,49 @@ describe('Map State', () => {
     });
   }),
 
+  test('State Machine With Map State and MaxConcurrencyPath', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const map = new stepfunctions.Map(stack, 'Map State', {
+      stateName: 'My-Map-State',
+      maxConcurrencyPath: stepfunctions.JsonPath.stringAt('$.maxConcurrencyPath'),
+      itemsPath: stepfunctions.JsonPath.stringAt('$.inputForMap'),
+      parameters: {
+        foo: 'foo',
+        bar: stepfunctions.JsonPath.stringAt('$.bar'),
+      },
+    });
+    map.iterator(new stepfunctions.Pass(stack, 'Pass State'));
+
+    // THEN
+    expect(render(map)).toStrictEqual({
+      StartAt: 'My-Map-State',
+      States: {
+        'My-Map-State': {
+          Type: 'Map',
+          End: true,
+          Parameters: {
+            'foo': 'foo',
+            'bar.$': '$.bar',
+          },
+          Iterator: {
+            StartAt: 'Pass State',
+            States: {
+              'Pass State': {
+                Type: 'Pass',
+                End: true,
+              },
+            },
+          },
+          ItemsPath: '$.inputForMap',
+          MaxConcurrencyPath: '$.maxConcurrencyPath',
+        },
+      },
+    });
+  }),
+
   test('State Machine With Map State and ResultSelector', () => {
     // GIVEN
     const stack = new cdk.Stack();
@@ -393,6 +436,21 @@ describe('Map State', () => {
     });
 
     expect(() => app.synth()).toThrow(/maxConcurrency has to be a positive integer/);
+  }),
+
+  test('fails in synthesis when maxConcurrency and maxConcurrencyPath are both defined', () => {
+    const app = createAppWithMap((stack) => {
+      const map = new stepfunctions.Map(stack, 'Map State', {
+        maxConcurrency: 1,
+        maxConcurrencyPath: stepfunctions.JsonPath.stringAt('$.maxConcurrencyPath'),
+        itemsPath: stepfunctions.JsonPath.stringAt('$.inputForMap'),
+      });
+      map.iterator(new stepfunctions.Pass(stack, 'Pass State'));
+
+      return map;
+    });
+
+    expect(() => app.synth()).toThrow(/Provide either `maxConcurrency` or `maxConcurrencyPath`, but not both/);
   }),
 
   test('does not fail synthesis when maxConcurrency is a jsonPath', () => {

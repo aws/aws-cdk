@@ -1,0 +1,12 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "GraphqlGrantImportedApiInteg/DefaultTest": {
+      "stacks": [
+        "imported-stack"
+      ],
+      "assertionStack": "GraphqlGrantImportedApiInteg/DefaultTest/DeployAssert",
+      "assertionStackName": "GraphqlGrantImportedApiIntegDefaultTestDeployAssertE072C285"
+    }
+  }
+}

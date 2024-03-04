@@ -11,7 +11,7 @@ jobs:
       repository-projects: write
     runs-on: ubuntu-latest
     steps:
-      - uses: kaizencc/issue-reprioritization-manager@main
+      - uses: cdklabs/issue-reprioritization-manager@main
         id: reprioritization-manager
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}

@@ -369,6 +369,7 @@
                             "Ref": "PipelineArtifactsBucketAEA9A052"
                           }
                         },
+                        "pipelineType": "V1",
                         "restartExecutionOnUpdate": true,
                         "roleArn": {
                           "Fn::GetAtt": [
@@ -827,13 +828,13 @@
                         },
                         "constructInfo": {
                           "fqn": "constructs.Construct",
-                          "version": "10.2.70"
+                          "version": "10.3.0"
                         }
                       }
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.2.70"
+                      "version": "10.3.0"
                     }
                   },
                   "EventsRole": {
@@ -1204,13 +1205,13 @@
                         },
                         "constructInfo": {
                           "fqn": "constructs.Construct",
-                          "version": "10.2.70"
+                          "version": "10.3.0"
                         }
                       }
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.2.70"
+                      "version": "10.3.0"
                     }
                   },
                   "AppStage": {
@@ -1222,7 +1223,7 @@
                         "path": "StackOutputPipelineStack/Pipeline/Pipeline/AppStage/Stack.Prepare",
                         "constructInfo": {
                           "fqn": "constructs.Construct",
-                          "version": "10.2.70"
+                          "version": "10.3.0"
                         }
                       },
                       "Stack.Deploy": {
@@ -1230,7 +1231,7 @@
                         "path": "StackOutputPipelineStack/Pipeline/Pipeline/AppStage/Stack.Deploy",
                         "constructInfo": {
                           "fqn": "constructs.Construct",
-                          "version": "10.2.70"
+                          "version": "10.3.0"
                         }
                       },
                       "CustomFunction": {
@@ -1496,13 +1497,13 @@
                         },
                         "constructInfo": {
                           "fqn": "constructs.Construct",
-                          "version": "10.2.70"
+                          "version": "10.3.0"
                         }
                       }
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.2.70"
+                      "version": "10.3.0"
                     }
                   },
                   "MutableRolearn:${AWS::Partition}:iam::${AWS::AccountId}:role--cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}": {
@@ -1522,7 +1523,7 @@
                         "path": "StackOutputPipelineStack/Pipeline/Pipeline/arn:${AWS::Partition}:iam::${AWS::AccountId}:role--cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}/8389e75f-0810-4838-bf64-d6f85a95cf83",
                         "constructInfo": {
                           "fqn": "constructs.Construct",
-                          "version": "10.2.70"
+                          "version": "10.3.0"
                         }
                       }
                     },
@@ -1734,7 +1735,7 @@
                 "path": "PipelineWithCustomStepStackOutputTest/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.70"
+                  "version": "10.3.0"
                 }
               },
               "DeployAssert": {
@@ -1780,7 +1781,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.2.70"
+          "version": "10.3.0"
         }
       }
     },

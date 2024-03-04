@@ -264,7 +264,7 @@ THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH RE
 
 ----------------
 
-** aws-sdk@2.1557.0 - https://www.npmjs.com/package/aws-sdk/v/2.1557.0 | Apache-2.0
+** aws-sdk@2.1562.0 - https://www.npmjs.com/package/aws-sdk/v/2.1562.0 | Apache-2.0
 AWS SDK for JavaScript
 Copyright 2012-2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 
@@ -461,7 +461,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 ----------------
 
-** cdk-from-cfn@0.130.0 - https://www.npmjs.com/package/cdk-from-cfn/v/0.130.0 | MIT OR Apache-2.0
+** cdk-from-cfn@0.133.0 - https://www.npmjs.com/package/cdk-from-cfn/v/0.133.0 | MIT OR Apache-2.0
 
 ----------------
 
@@ -1410,7 +1410,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 ----------------
 
-** http-proxy-agent@7.0.1 - https://www.npmjs.com/package/http-proxy-agent/v/7.0.1 | MIT
+** http-proxy-agent@7.0.2 - https://www.npmjs.com/package/http-proxy-agent/v/7.0.2 | MIT
 (The MIT License)
 
 Copyright (c) 2013 Nathan Rajlich <nathan@tootallnate.net>
@@ -1437,7 +1437,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 ----------------
 
-** https-proxy-agent@7.0.3 - https://www.npmjs.com/package/https-proxy-agent/v/7.0.3 | MIT
+** https-proxy-agent@7.0.4 - https://www.npmjs.com/package/https-proxy-agent/v/7.0.4 | MIT
 (The MIT License)
 
 Copyright (c) 2013 Nathan Rajlich <nathan@tootallnate.net>
