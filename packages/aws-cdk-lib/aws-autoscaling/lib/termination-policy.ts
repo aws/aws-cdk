@@ -39,4 +39,14 @@ export enum TerminationPolicy {
    * Terminate instances that have the oldest launch template.
    */
   OLDEST_LAUNCH_TEMPLATE = 'OldestLaunchTemplate',
+
+  /**
+   * Terminate instances using custom termination policy with lambda. If this is
+   * specified, you must also supply a value of lambda arn in the terminationPolicyCustomLambdaFunctionArn property.
+   *
+   * If there are multiple termination policies specified, the custom termination policy with lambda
+   * must be specified first in the order.
+   * @see https://docs.aws.amazon.com/autoscaling/ec2/userguide/lambda-custom-termination-policy.html#lambda-custom-termination-policy-limitations
+   */
+  CUSTOM_LAMBDA_FUNCTION = 'CustomLambdaFunction',
 }

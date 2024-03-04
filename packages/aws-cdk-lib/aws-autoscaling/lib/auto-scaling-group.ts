@@ -339,6 +339,17 @@ export interface CommonAutoScalingGroupProps {
   readonly terminationPolicies?: TerminationPolicy[];
 
   /**
+   * A lambda function Arn that can be used as a custom termination policy to select the instances
+   * to terminate. This property must be specified if the TerminationPolicy.CUSTOM_LAMBDA_FUNCTION
+   * is used.
+   *
+   * @see https://docs.aws.amazon.com/autoscaling/ec2/userguide/lambda-custom-termination-policy.html
+   *
+   * @default - No lambda function Arn will be supplied
+   */
+  readonly terminationPolicyCustomLambdaFunctionArn?: string;
+
+  /**
    * The amount of time, in seconds, until a newly launched instance can contribute to the Amazon CloudWatch metrics.
    * This delay lets an instance finish initializing before Amazon EC2 Auto Scaling aggregates instance metrics,
    * resulting in more reliable usage data. Set this value equal to the amount of time that it takes for resource
@@ -1471,6 +1482,26 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
     }
 
     const { subnetIds, hasPublic } = props.vpc.selectSubnets(props.vpcSubnets);
+
+    const terminationPolicies: string[] = [];
+    if (props.terminationPolicies) {
+      props.terminationPolicies.forEach((terminationPolicy, index) => {
+        if (terminationPolicy === TerminationPolicy.CUSTOM_LAMBDA_FUNCTION) {
+          if (index !== 0) {
+            throw new Error('TerminationPolicy.CUSTOM_LAMBDA_FUNCTION must be specified first in the termination policies');
+          }
+
+          if (!props.terminationPolicyCustomLambdaFunctionArn) {
+            throw new Error('terminationPolicyCustomLambdaFunctionArn property must be specified if the TerminationPolicy.CUSTOM_LAMBDA_FUNCTION is used');
+          }
+
+          terminationPolicies.push(props.terminationPolicyCustomLambdaFunctionArn);
+        } else {
+          terminationPolicies.push(terminationPolicy);
+        }
+      });
+    }
+
     const asgProps: CfnAutoScalingGroupProps = {
       autoScalingGroupName: this.physicalName,
       cooldown: props.cooldown?.toSeconds().toString(),
@@ -1486,7 +1517,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
       healthCheckGracePeriod: props.healthCheck && props.healthCheck.gracePeriod && props.healthCheck.gracePeriod.toSeconds(),
       maxInstanceLifetime: this.maxInstanceLifetime ? this.maxInstanceLifetime.toSeconds() : undefined,
       newInstancesProtectedFromScaleIn: Lazy.any({ produce: () => this.newInstancesProtectedFromScaleIn }),
-      terminationPolicies: props.terminationPolicies,
+      terminationPolicies: terminationPolicies.length === 0 ? undefined : terminationPolicies,
       defaultInstanceWarmup: props.defaultInstanceWarmup?.toSeconds(),
       capacityRebalance: props.capacityRebalance,
       instanceMaintenancePolicy: this.renderInstanceMaintenancePolicy(

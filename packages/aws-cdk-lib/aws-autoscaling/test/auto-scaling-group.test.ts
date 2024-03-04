@@ -1678,6 +1678,85 @@ describe('auto scaling group', () => {
     });
   });
 
+  test('supports custom termination policy with lambda function arn specified', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = mockVpc(stack);
+    const arn = stack.formatArn({
+      service: 'lambda',
+      resource: 'function',
+      account: '123456789012',
+      region: 'us-east-1',
+      partition: 'aws',
+      resourceName: 'CustomTerminationPolicyLambda:1',
+    });
+
+    // WHEN
+    new autoscaling.AutoScalingGroup(stack, 'MyASG', {
+      vpc,
+      instanceType: new ec2.InstanceType('t2.micro'),
+      machineImage: new ec2.AmazonLinuxImage(),
+      terminationPolicies: [
+        autoscaling.TerminationPolicy.CUSTOM_LAMBDA_FUNCTION,
+        autoscaling.TerminationPolicy.OLDEST_INSTANCE,
+        autoscaling.TerminationPolicy.DEFAULT,
+      ],
+      terminationPolicyCustomLambdaFunctionArn: arn,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::AutoScalingGroup', {
+      TerminationPolicies: [
+        arn,
+        'OldestInstance',
+        'Default',
+      ],
+    });
+  });
+
+  test('Should specify TerminationPolicy.CUSTOM_LAMBDA_FUNCTION in first', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = mockVpc(stack);
+
+    // WHEN
+    const terminationPolicies = [
+      autoscaling.TerminationPolicy.DEFAULT,
+      autoscaling.TerminationPolicy.CUSTOM_LAMBDA_FUNCTION,
+    ];
+
+    // THEN
+    expect(() => {
+      new autoscaling.AutoScalingGroup(stack, 'MyASG', {
+        vpc,
+        instanceType: new ec2.InstanceType('t2.micro'),
+        machineImage: new ec2.AmazonLinuxImage(),
+        terminationPolicies: terminationPolicies,
+      });
+    }).toThrow('TerminationPolicy.CUSTOM_LAMBDA_FUNCTION must be specified first in the termination policies');
+  });
+
+  test('Should specify terminationPolicyCustomLambdaFunctionArn property if TerminationPolicy.CUSTOM_LAMBDA_FUNCTION is used', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = mockVpc(stack);
+
+    // WHEN
+    const terminationPolicies = [
+      autoscaling.TerminationPolicy.CUSTOM_LAMBDA_FUNCTION,
+    ];
+
+    // THEN
+    expect(() => {
+      new autoscaling.AutoScalingGroup(stack, 'MyASG', {
+        vpc,
+        instanceType: new ec2.InstanceType('t2.micro'),
+        machineImage: new ec2.AmazonLinuxImage(),
+        terminationPolicies: terminationPolicies,
+      });
+    }).toThrow('terminationPolicyCustomLambdaFunctionArn property must be specified if the TerminationPolicy.CUSTOM_LAMBDA_FUNCTION is used');
+  });
+
   test('Can use imported Launch Template with ID', () => {
     // GIVEN
     const stack = new cdk.Stack();
