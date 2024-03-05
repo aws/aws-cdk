@@ -23,7 +23,8 @@ if (process.env.PACKAGE_LAYOUT_VERSION === '1') {
     aws_sns: sns,
     aws_sqs: sqs,
     aws_lambda: lambda,
-    aws_ecr_assets: docker
+    aws_ecr_assets: docker,
+    Stack
   } = require('aws-cdk-lib');
 }
 
@@ -62,6 +63,59 @@ class YourStack extends cdk.Stack {
     super(parent, id, props);
     new sns.Topic(this, 'topic1');
     new sns.Topic(this, 'topic2');
+  }
+}
+
+class ListMultipleDependentStack extends Stack {
+  constructor(scope, id) {
+    super(scope, id);
+
+    const dependentStack1 = new DependentStack1(this, 'DependentStack1');
+    const dependentStack2 = new DependentStack2(this, 'DependentStack2');
+
+    this.addDependency(dependentStack1);
+    this.addDependency(dependentStack2);
+  }
+}
+
+class DependentStack1 extends Stack {
+  constructor(scope, id) {
+    super(scope, id);
+
+  }
+}
+
+class DependentStack2 extends Stack {
+  constructor(scope, id) {
+    super(scope, id);
+
+  }
+}
+
+class ListStack extends Stack {
+  constructor(scope, id) {
+    super(scope, id);
+
+    const dependentStack = new DependentStack(this, 'DependentStack');
+
+    this.addDependency(dependentStack);
+  }
+}
+
+class DependentStack extends Stack {
+  constructor(scope, id) {
+    super(scope, id);
+
+    const innerDependentStack = new InnerDependentStack(this, 'InnerDependentStack');
+    
+    this.addDependency(innerDependentStack);
+  }
+}
+
+class InnerDependentStack extends Stack {
+  constructor(scope, id) {
+    super(scope, id);
+
   }
 }
 
@@ -498,6 +552,8 @@ switch (stackSet) {
 
     new StackWithNestedStack(app, `${stackPrefix}-with-nested-stack`);
     new StackWithNestedStackUsingParameters(app, `${stackPrefix}-with-nested-stack-using-parameters`);
+    new ListStack(app, `${stackPrefix}-list-stacks`)
+    new ListMultipleDependentStack(app, `${stackPrefix}-list-multiple-dependent-stacks`);
 
     new YourStack(app, `${stackPrefix}-termination-protection`, {
       terminationProtection: process.env.TERMINATION_PROTECTION !== 'FALSE' ? true : false,
