@@ -89,12 +89,11 @@ declare const kmsKey: kms.Key;
 // auto generate a replication destination file system
 new efs.FileSystem(this, 'ReplicationSourceFileSystem1', {
   vpc,
-  replicationConfiguration: {
-    enable: true,
-    kmsKey, // optional
-    region: 'us-east-1', // optional
-    availabilityZone: 'us-east-1a', // optional, Specifing the AZ means creating a One Zone file system as the replication destination
-  }
+  replicationConfiguration: [{
+    kmsKey,
+    region: 'us-east-1',
+    availabilityZone: 'us-east-1a', // Specifing the AZ means creating a One Zone file system as the replication destination
+  }]
 });
 
 // specify the replication destination file system
@@ -106,11 +105,10 @@ const destinationFileSystem = new efs.FileSystem(this, 'DestinationFileSystem', 
 
 new efs.FileSystem(this, 'ReplicationSourceFileSystem2', {
   vpc,
-  replicationConfiguration: {
-    enable: true,
+  replicationConfiguration: [{
     destinationFileSystem,
     // cannot configure other properties when destinationFileSystem is specified
-  }
+  }]
 });
 ```
 
