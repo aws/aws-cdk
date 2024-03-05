@@ -293,7 +293,6 @@ export interface IEventSourceMapping extends cdk.IResource {
  * event sources. For example, to add an SQS event source to a function:
  *
  * ```ts
- * import * as lambda from 'aws-cdk-lib/aws-lambda';
  * import * as sqs from 'aws-cdk-lib/aws-sqs';
  * import * as eventsources from 'aws-cdk-lib/aws-lambda-event-sources';
  *
