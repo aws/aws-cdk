@@ -16,7 +16,7 @@ export * from './constants';
 export * from './jobs/job';
 // export * from './jobs/flex-job';
 export * from './jobs/pyspark-etl-job';
-// export * from './jobs/python-shell-job';
+export * from './jobs/python-shell-job';
 // export * from './jobs/ray-job';
 // export * from './jobs/scala-spark-etl-job';
 export * from './jobs/spark-ui-utils';

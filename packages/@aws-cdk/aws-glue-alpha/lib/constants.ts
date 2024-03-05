@@ -238,3 +238,18 @@ export enum JobType {
 
 }
 
+/**
+ * The number of AWS Glue data processing units (DPUs) that can be allocated when this job runs. A DPU is a relative measure of processing power that consists of 4 vCPUs of compute capacity and 16 GB of memory.
+ */
+export enum MaxCapacity {
+
+  /**
+   * DPU value of 1/16th
+   */
+  DPU_1_16TH = 0.0625,
+
+  /**
+   * DPU value of 1
+   */
+  DPU_1 = 1,
+}
