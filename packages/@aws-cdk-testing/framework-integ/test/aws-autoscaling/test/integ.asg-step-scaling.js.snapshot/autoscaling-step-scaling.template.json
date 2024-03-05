@@ -643,6 +643,99 @@
     "Statistic": "Average",
     "Threshold": 50
    }
+  },
+  "ASGStepScalingWithDefaultAdjustmentTypeLowerPolicyA6C1EA33": {
+   "Type": "AWS::AutoScaling::ScalingPolicy",
+   "Properties": {
+    "AdjustmentType": "ChangeInCapacity",
+    "AutoScalingGroupName": {
+     "Ref": "ASG46ED3070"
+    },
+    "MetricAggregationType": "Maximum",
+    "PolicyType": "StepScaling",
+    "StepAdjustments": [
+     {
+      "MetricIntervalUpperBound": 0,
+      "ScalingAdjustment": -1
+     }
+    ]
+   }
+  },
+  "ASGStepScalingWithDefaultAdjustmentTypeLowerAlarmF9F52487": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "AlarmActions": [
+     {
+      "Ref": "ASGStepScalingWithDefaultAdjustmentTypeLowerPolicyA6C1EA33"
+     }
+    ],
+    "AlarmDescription": "Lower threshold scaling alarm",
+    "ComparisonOperator": "LessThanOrEqualToThreshold",
+    "DatapointsToAlarm": 5,
+    "Dimensions": [
+     {
+      "Name": "AutoScalingGroupName",
+      "Value": {
+       "Ref": "ASG46ED3070"
+      }
+     }
+    ],
+    "EvaluationPeriods": 10,
+    "MetricName": "DiskWriteOps",
+    "Namespace": "AWS/EC2",
+    "Period": 300,
+    "Statistic": "Average",
+    "Threshold": 100
+   }
+  },
+  "ASGStepScalingWithDefaultAdjustmentTypeUpperPolicy08CC2D99": {
+   "Type": "AWS::AutoScaling::ScalingPolicy",
+   "Properties": {
+    "AdjustmentType": "ChangeInCapacity",
+    "AutoScalingGroupName": {
+     "Ref": "ASG46ED3070"
+    },
+    "MetricAggregationType": "Maximum",
+    "PolicyType": "StepScaling",
+    "StepAdjustments": [
+     {
+      "MetricIntervalLowerBound": 0,
+      "MetricIntervalUpperBound": 200,
+      "ScalingAdjustment": 1
+     },
+     {
+      "MetricIntervalLowerBound": 200,
+      "ScalingAdjustment": 2
+     }
+    ]
+   }
+  },
+  "ASGStepScalingWithDefaultAdjustmentTypeUpperAlarm2379E17B": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "AlarmActions": [
+     {
+      "Ref": "ASGStepScalingWithDefaultAdjustmentTypeUpperPolicy08CC2D99"
+     }
+    ],
+    "AlarmDescription": "Upper threshold scaling alarm",
+    "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+    "DatapointsToAlarm": 5,
+    "Dimensions": [
+     {
+      "Name": "AutoScalingGroupName",
+      "Value": {
+       "Ref": "ASG46ED3070"
+      }
+     }
+    ],
+    "EvaluationPeriods": 10,
+    "MetricName": "DiskWriteOps",
+    "Namespace": "AWS/EC2",
+    "Period": 300,
+    "Statistic": "Average",
+    "Threshold": 300
+   }
   }
  },
  "Parameters": {
