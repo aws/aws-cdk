@@ -1,0 +1,19 @@
+{
+  "version": "36.0.0",
+  "files": {
+    "0ece8e7474492fb9bf96c13fe64d386d3095f1c46c71d34d0cd9d77c870eb47c": {
+      "source": {
+        "path": "aws-cdk-autoscaling-instance-termination-policy.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "0ece8e7474492fb9bf96c13fe64d386d3095f1c46c71d34d0cd9d77c870eb47c.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

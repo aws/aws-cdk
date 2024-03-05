@@ -87,7 +87,8 @@ async function parseCommandLineArguments(args: string[]) {
     .option('no-color', { type: 'boolean', desc: 'Removes colors and other style from console output', default: false })
     .option('ci', { type: 'boolean', desc: 'Force CI detection. If CI=true then logs will be sent to stdout instead of stderr', default: process.env.CI !== undefined })
     .command(['list [STACKS..]', 'ls [STACKS..]'], 'Lists all stacks in the app', (yargs: Argv) => yargs
-      .option('long', { type: 'boolean', default: false, alias: 'l', desc: 'Display environment information for each stack' }),
+      .option('long', { type: 'boolean', default: false, alias: 'l', desc: 'Display environment information for each stack' })
+      .option('show-dependencies', { type: 'boolean', default: false, alias: 'd', desc: 'Display stack dependency information for each stack' }),
     )
     .command(['synthesize [STACKS..]', 'synth [STACKS..]'], 'Synthesizes and prints the CloudFormation template for this stack', (yargs: Argv) => yargs
       .option('exclusively', { type: 'boolean', alias: 'e', desc: 'Only synthesize requested stacks, don\'t include dependencies' })
@@ -498,7 +499,7 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
 
       case 'ls':
       case 'list':
-        return cli.list(args.STACKS, { long: args.long, json: argv.json });
+        return cli.list(args.STACKS, { long: args.long, json: argv.json, showDeps: args.showDependencies });
 
       case 'diff':
         const enableDiffNoFail = isFeatureEnabled(configuration, cxapi.ENABLE_DIFF_NO_FAIL_CONTEXT);
