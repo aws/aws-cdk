@@ -185,7 +185,7 @@ export interface BundlingOptions extends DockerRunOptions {
    *
    * @default - false
    * if `true` the `aws-sdk` will be included in the asset bundle and not be
-   * resolved to the Lambda provided bundle.
+   * resolved to the Lambda provided sdk.
    */
   readonly bundleAwsSDK?: boolean;
 
