@@ -20,7 +20,7 @@ export enum AwsLogDriverMode {
    * The non-blocking message delivery mode prevents applications from blocking due to logging back pressure.
    * Applications are likely to fail in unexpected ways when STDERR or STDOUT streams block.
    */
-  NON_BLOCKING = 'non-blocking'
+  NON_BLOCKING = 'non-blocking',
 }
 
 /**

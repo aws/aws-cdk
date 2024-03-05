@@ -69,14 +69,14 @@ export interface SourceAccessConfiguration {
   /**
    * The type of authentication protocol or the VPC components for your event source. For example: "SASL_SCRAM_512_AUTH".
    */
-  readonly type: SourceAccessConfigurationType,
+  readonly type: SourceAccessConfigurationType;
   /**
    * The value for your chosen configuration in type.
    * For example: "URI": "arn:aws:secretsmanager:us-east-1:01234567890:secret:MyBrokerSecretName".
    * The exact string depends on the type.
    * @see SourceAccessConfigurationType
    */
-  readonly uri: string
+  readonly uri: string;
 }
 
 export interface EventSourceMappingOptions {
@@ -224,7 +224,7 @@ export interface EventSourceMappingOptions {
    *
    * @default - none
    */
-  readonly kafkaBootstrapServers?: string[]
+  readonly kafkaBootstrapServers?: string[];
 
   /**
    * The identifier for the Kafka consumer group to join. The consumer group ID must be unique among all your Kafka event sources. After creating a Kafka event source mapping with the consumer group ID specified, you cannot update this value. The value must have a lenght between 1 and 200 and full the pattern '[a-zA-Z0-9-\/*:_+=.@-]*'. For more information, see [Customizable consumer group ID](https://docs.aws.amazon.com/lambda/latest/dg/with-msk.html#services-msk-consumer-group-id).
@@ -233,7 +233,7 @@ export interface EventSourceMappingOptions {
    *
    * @default - none
    */
-  readonly kafkaConsumerGroupId?: string
+  readonly kafkaConsumerGroupId?: string;
 
   /**
    * Specific settings like the authentication protocol or the VPC components to secure access to your event source.
@@ -241,7 +241,7 @@ export interface EventSourceMappingOptions {
    *
    * @default - none
    */
-  readonly sourceAccessConfigurations?: SourceAccessConfiguration[]
+  readonly sourceAccessConfigurations?: SourceAccessConfiguration[];
 
   /**
    * Add filter criteria to Event Source
@@ -249,7 +249,7 @@ export interface EventSourceMappingOptions {
    *
    * @default - none
    */
-  readonly filters?: Array<{[key: string]: any}>
+  readonly filters?: Array<{[key: string]: any}>;
 
   /**
    * Check if support S3 onfailure destination(ODF). Currently only MSK and self managed kafka event support S3 ODF

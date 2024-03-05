@@ -1,0 +1,1 @@
+path.join(__dirname, '..', '..', 'no-path-outside-module', '..', '..', 'fixtures.test.ts') is not a valid path. It goes backwards and forwards and backwards again, and can be simplified.

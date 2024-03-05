@@ -36,7 +36,7 @@ jobs:
         SEARCH_QUERY: 'repo:aws/aws-cdk is:issue created:${{ env.last_month }} -reason:"not planned"'
 
     - name: Create report for issues
-      uses: peter-evans/create-issue-from-file@v4
+      uses: peter-evans/create-issue-from-file@v5
       with:
         title: Monthly issue metrics report
         token: ${{ secrets.GITHUB_TOKEN }}
@@ -50,7 +50,7 @@ jobs:
         SEARCH_QUERY: 'repo:aws/aws-cdk is:pr created:${{ env.last_month }} -is:draft'
 
     - name: Create report for PRs
-      uses: peter-evans/create-issue-from-file@v4
+      uses: peter-evans/create-issue-from-file@v5
       with:
         title: Monthly PR metrics report
         token: ${{ secrets.GITHUB_TOKEN }}

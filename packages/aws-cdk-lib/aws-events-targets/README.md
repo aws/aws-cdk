@@ -20,6 +20,7 @@ Currently supported are:
   - [Put an event on an EventBridge bus](#put-an-event-on-an-eventbridge-bus)
   - [Run an ECS Task](#run-an-ecs-task)
     - [Tagging Tasks](#tagging-tasks)
+    - [Launch type for ECS Task](#launch-type-for-ecs-task)
     - [Assign public IP addresses to tasks](#assign-public-ip-addresses-to-tasks)
     - [Enable Amazon ECS Exec for ECS Task](#enable-amazon-ecs-exec-for-ecs-task)
 
@@ -387,6 +388,29 @@ rule.addTarget(
     ],
   }),
 );
+```
+
+### Launch type for ECS Task
+
+By default, if `isEc2Compatible` for the `taskDefinition` is true, the EC2 type is used as
+the launch type for the task, otherwise the FARGATE type.
+If you want to override the default launch type, you can set the `launchType` property.
+
+```ts
+import * as ecs from 'aws-cdk-lib/aws-ecs';
+
+declare const cluster: ecs.ICluster;
+declare const taskDefinition: ecs.TaskDefinition;
+
+const rule = new events.Rule(this, 'Rule', {
+  schedule: events.Schedule.rate(cdk.Duration.hours(1)),
+});
+
+rule.addTarget(new targets.EcsTask({
+  cluster,
+  taskDefinition,
+  launchType: ecs.LaunchType.FARGATE,
+}));
 ```
 
 ### Assign public IP addresses to tasks

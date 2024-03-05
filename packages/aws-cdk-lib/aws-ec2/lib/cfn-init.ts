@@ -168,7 +168,7 @@ export class CloudFormationInit {
     }
   }
 
-  private bind(scope: Construct, options: AttachInitOptions): { configData: any, authData: any, assetHash?: any } {
+  private bind(scope: Construct, options: AttachInitOptions): { configData: any; authData: any; assetHash?: any } {
     const nonEmptyConfigs = mapValues(this._configs, c => c.isEmpty() ? undefined : c);
 
     const configNameToBindResult = mapValues(nonEmptyConfigs, c => c._bind(scope, options));

@@ -626,7 +626,7 @@ test('esbuild bundling with projectRoot', () => {
 });
 
 test('esbuild bundling with projectRoot and externals and dependencies', () => {
-  const repoRoot = path.join(__dirname, '../../../..');
+  const repoRoot = path.join(__dirname, '..', '..', '..', '..');
   const packageLock = path.join(repoRoot, 'common', 'package-lock.json');
   Bundling.bundle(stack, {
     entry: __filename,

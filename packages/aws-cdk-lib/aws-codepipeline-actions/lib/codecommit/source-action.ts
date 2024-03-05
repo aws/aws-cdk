@@ -73,7 +73,7 @@ export interface ICustomEventRule {
   /**
    * Target e.g. Lambda when event pattern is fulfilled
    */
-  readonly target: IRuleTarget
+  readonly target: IRuleTarget;
   /**
    * Rulename
    */
@@ -137,7 +137,7 @@ export interface CodeCommitSourceActionProps extends codepipeline.CommonAwsActio
    * Check which `eventPattern` to use: https://docs.aws.amazon.com/codecommit/latest/userguide/monitoring-events.html
    * @default Event rule which is triggered by CodeCommit repository on commit
    */
-  readonly customEventRule?: ICustomEventRule
+  readonly customEventRule?: ICustomEventRule;
 }
 
 /**

@@ -13,12 +13,15 @@ import { FullActionDescriptor } from './private/full-action-descriptor';
 import { RichAction } from './private/rich-action';
 import { Stage } from './private/stage';
 import { validateName, validateNamespaceName, validateSourceAction } from './private/validation';
+import { Trigger, TriggerProps } from './trigger';
+import { Variable } from './variable';
 import * as notifications from '../../aws-codestarnotifications';
 import * as events from '../../aws-events';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as s3 from '../../aws-s3';
 import {
+  Annotations,
   ArnFormat,
   BootstraplessSynthesizer,
   DefaultStackSynthesizer,
@@ -92,6 +95,20 @@ export interface StageOptions extends StageProps {
   readonly placement?: StagePlacement;
 }
 
+/**
+ * Pipeline types.
+ */
+export enum PipelineType {
+  /**
+   * V1 type
+   */
+  V1 = 'V1',
+  /**
+   * V2 type
+   */
+  V2 = 'V2',
+}
+
 export interface PipelineProps {
   /**
    * The S3 bucket used by this Pipeline to store artifacts.
@@ -153,7 +170,8 @@ export interface PipelineProps {
    * encrypted with an AWS-managed key). However, cross-account deployments will
    * no longer be possible.
    *
-   * @default true
+   * @default false - false if the feature flag `CODEPIPELINE_CROSS_ACCOUNT_KEYS_DEFAULT_VALUE_TO_FALSE`
+   * is true, true otherwise
    */
   readonly crossAccountKeys?: boolean;
 
@@ -173,6 +191,39 @@ export interface PipelineProps {
    * @default - true (Use the same support stack for all pipelines in App)
    */
   readonly reuseCrossRegionSupportStacks?: boolean;
+
+  /**
+   * Type of the pipeline.
+   *
+   * @default - PipelineType.V1
+   *
+   * @see https://docs.aws.amazon.com/codepipeline/latest/userguide/pipeline-types-planning.html
+   */
+  readonly pipelineType?: PipelineType;
+
+  /**
+   * A list that defines the pipeline variables for a pipeline resource.
+   *
+   * `variables` can only be used when `pipelineType` is set to `PipelineType.V2`.
+   * You can always add more variables later by calling `Pipeline#addVariable`.
+   *
+   * @default - No variables
+   */
+  readonly variables?: Variable[];
+
+  /**
+   * The trigger configuration specifying a type of event, such as Git tags, that
+   * starts the pipeline.
+   *
+   * When a trigger configuration is specified, default change detection for repository
+   * and branch commits is disabled.
+   *
+   * `triggers` can only be used when `pipelineType` is set to `PipelineType.V2`.
+   * You can always add more triggers later by calling `Pipeline#addTrigger`.
+   *
+   * @default - No triggers
+   */
+  readonly triggers?: TriggerProps[];
 }
 
 abstract class PipelineBase extends Resource implements IPipeline {
@@ -373,6 +424,9 @@ export class Pipeline extends PipelineBase {
   private readonly enableKeyRotation?: boolean;
   private readonly reuseCrossRegionSupportStacks: boolean;
   private readonly codePipeline: CfnPipeline;
+  private readonly pipelineType: PipelineType;
+  private readonly variables = new Array<Variable>();
+  private readonly triggers = new Array<Trigger>();
 
   constructor(scope: Construct, id: string, props: PipelineProps = {}) {
     super(scope, id, {
@@ -386,8 +440,9 @@ export class Pipeline extends PipelineBase {
       throw new Error('Only one of artifactBucket and crossRegionReplicationBuckets can be specified!');
     }
 
-    // @deprecated(v2): switch to default false
-    this.crossAccountKeys = props.crossAccountKeys ?? true;
+    // The feature flag is set to true by default for new projects, otherwise false.
+    this.crossAccountKeys = props.crossAccountKeys
+      ?? (FeatureFlags.of(this).isEnabled(cxapi.CODEPIPELINE_CROSS_ACCOUNT_KEYS_DEFAULT_VALUE_TO_FALSE) ? false : true);
     this.enableKeyRotation = props.enableKeyRotation;
 
     // Cross account keys must be set for key rotation to be enabled
@@ -434,6 +489,12 @@ export class Pipeline extends PipelineBase {
       assumedBy: new iam.ServicePrincipal('codepipeline.amazonaws.com'),
     });
 
+    // TODO: Change the default value of `pipelineType` to V2 under a feature flag.
+    if (props.pipelineType === undefined) {
+      Annotations.of(this).addWarningV2('@aws-cdk/aws-codepipeline:unspecifiedPipelineType', 'V1 pipeline type is implicitly selected when `pipelineType` is not set. If you want to use V2 type, set `PipelineType.V2`.');
+    }
+    this.pipelineType = props.pipelineType ?? PipelineType.V1;
+
     this.codePipeline = new CfnPipeline(this, 'Resource', {
       artifactStore: Lazy.any({ produce: () => this.renderArtifactStoreProperty() }),
       artifactStores: Lazy.any({ produce: () => this.renderArtifactStoresProperty() }),
@@ -441,6 +502,9 @@ export class Pipeline extends PipelineBase {
       disableInboundStageTransitions: Lazy.any({ produce: () => this.renderDisabledTransitions() }, { omitEmptyArray: true }),
       roleArn: this.role.roleArn,
       restartExecutionOnUpdate: props && props.restartExecutionOnUpdate,
+      pipelineType: props.pipelineType,
+      variables: Lazy.any({ produce: () => this.renderVariables() }, { omitEmptyArray: true }),
+      triggers: Lazy.any({ produce: () => this.renderTriggers() }, { omitEmptyArray: true }),
       name: this.physicalName,
     });
 
@@ -467,6 +531,12 @@ export class Pipeline extends PipelineBase {
 
     for (const stage of props.stages || []) {
       this.addStage(stage);
+    }
+    for (const variable of props.variables || []) {
+      this.addVariable(variable);
+    }
+    for (const trigger of props.triggers || []) {
+      this.addTrigger(trigger);
     }
 
     this.node.addValidation({ validate: () => this.validatePipeline() });
@@ -500,6 +570,41 @@ export class Pipeline extends PipelineBase {
    */
   public addToRolePolicy(statement: iam.PolicyStatement) {
     this.role.addToPrincipalPolicy(statement);
+  }
+
+  /**
+   * Adds a new Variable to this Pipeline.
+   *
+   * @param variable Variable instance to add to this Pipeline
+   * @returns the newly created variable
+   */
+  public addVariable(variable: Variable): Variable {
+    // check for duplicate variables and names
+    if (this.variables.find(v => v.variableName === variable.variableName)) {
+      throw new Error(`Variable with duplicate name '${variable.variableName}' added to the Pipeline`);
+    }
+
+    this.variables.push(variable);
+    return variable;
+  }
+
+  /**
+   * Adds a new Trigger to this Pipeline.
+   *
+   * @param props Trigger property to add to this Pipeline
+   * @returns the newly created trigger
+   */
+  public addTrigger(props: TriggerProps): Trigger {
+    const trigger = new Trigger(props);
+    const actionName = props.gitConfiguration?.sourceAction.actionProperties.actionName;
+
+    // check for duplicate source actions for triggers
+    if (actionName !== undefined && this.triggers.find(t => t.sourceAction?.actionProperties.actionName === actionName)) {
+      throw new Error(`Trigger with duplicate source action '${actionName}' added to the Pipeline`);
+    }
+
+    this.triggers.push(trigger);
+    return trigger;
   }
 
   /**
@@ -590,6 +695,8 @@ export class Pipeline extends PipelineBase {
       ...this.validateHasStages(),
       ...this.validateStages(),
       ...this.validateArtifacts(),
+      ...this.validateVariables(),
+      ...this.validateTriggers(),
     ];
   }
 
@@ -1017,6 +1124,22 @@ export class Pipeline extends PipelineBase {
     return ret;
   }
 
+  private validateVariables(): string[] {
+    const errors: string[] = [];
+    if (this.variables.length && this.pipelineType !== PipelineType.V2) {
+      errors.push('Pipeline variables can only be used with V2 pipelines, `PipelineType.V2` must be specified for `pipelineType`');
+    }
+    return errors;
+  }
+
+  private validateTriggers(): string[] {
+    const errors: string[] = [];
+    if (this.triggers.length && this.pipelineType !== PipelineType.V2) {
+      errors.push('Triggers can only be used with V2 pipelines, `PipelineType.V2` must be specified for `pipelineType`');
+    }
+    return errors;
+  }
+
   private renderArtifactStoresProperty(): CfnPipeline.ArtifactStoreMapProperty[] | undefined {
     if (!this.crossRegion) { return undefined; }
 
@@ -1075,6 +1198,14 @@ export class Pipeline extends PipelineBase {
         reason: stage.transitionDisabledReason,
         stageName: stage.stageName,
       }));
+  }
+
+  private renderVariables(): CfnPipeline.VariableDeclarationProperty[] {
+    return this.variables.map(variable => variable._render());
+  }
+
+  private renderTriggers(): CfnPipeline.PipelineTriggerDeclarationProperty[] {
+    return this.triggers.map(trigger => trigger._render());
   }
 
   private requireRegion(): string {

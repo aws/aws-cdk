@@ -9,7 +9,7 @@ export type PropertyMap = {[key: string]: any };
 export type ResourceReplacements = { [logicalId: string]: ResourceReplacement };
 
 export interface ResourceReplacement {
-  resourceReplaced: boolean,
+  resourceReplaced: boolean;
   propertiesReplaced: { [propertyName: string]: ChangeSetReplacement };
 }
 
@@ -398,10 +398,10 @@ export class DifferenceCollection<V, T extends IDifference<V>> {
    * @param cb
    */
   public forEachDifference(cb: (logicalId: string, change: T) => any): void {
-    const removed = new Array<{ logicalId: string, change: T }>();
-    const added = new Array<{ logicalId: string, change: T }>();
-    const updated = new Array<{ logicalId: string, change: T }>();
-    const others = new Array<{ logicalId: string, change: T }>();
+    const removed = new Array<{ logicalId: string; change: T }>();
+    const added = new Array<{ logicalId: string; change: T }>();
+    const updated = new Array<{ logicalId: string; change: T }>();
+    const others = new Array<{ logicalId: string; change: T }>();
 
     for (const logicalId of this.logicalIds) {
       const change: T = this.changes[logicalId]!;
@@ -480,6 +480,8 @@ export enum ResourceImpact {
   WILL_DESTROY = 'WILL_DESTROY',
   /** The existing physical resource will be removed from CloudFormation supervision */
   WILL_ORPHAN = 'WILL_ORPHAN',
+  /** The existing physical resource will be added to CloudFormation supervision */
+  WILL_IMPORT = 'WILL_IMPORT',
   /** There is no change in this resource */
   NO_CHANGE = 'NO_CHANGE',
 }
@@ -495,6 +497,7 @@ function worstImpact(one: ResourceImpact, two?: ResourceImpact): ResourceImpact 
   if (!two) { return one; }
   const badness = {
     [ResourceImpact.NO_CHANGE]: 0,
+    [ResourceImpact.WILL_IMPORT]: 0,
     [ResourceImpact.WILL_UPDATE]: 1,
     [ResourceImpact.WILL_CREATE]: 2,
     [ResourceImpact.WILL_ORPHAN]: 3,
@@ -528,6 +531,11 @@ export class ResourceDifference implements IDifference<Resource> {
    */
   public readonly isRemoval: boolean;
 
+  /**
+   * Whether this resource was imported
+   */
+  public isImport?: boolean;
+
   /** Property-level changes on the resource */
   private readonly propertyDiffs: { [key: string]: PropertyDifference<any> };
 
@@ -535,15 +543,15 @@ export class ResourceDifference implements IDifference<Resource> {
   private readonly otherDiffs: { [key: string]: Difference<any> };
 
   /** The resource type (or old and new type if it has changed) */
-  private readonly resourceTypes: { readonly oldType?: string, readonly newType?: string };
+  private readonly resourceTypes: { readonly oldType?: string; readonly newType?: string };
 
   constructor(
     public readonly oldValue: Resource | undefined,
     public readonly newValue: Resource | undefined,
     args: {
-      resourceType: { oldType?: string, newType?: string },
-      propertyDiffs: { [key: string]: PropertyDifference<any> },
-      otherDiffs: { [key: string]: Difference<any> }
+      resourceType: { oldType?: string; newType?: string };
+      propertyDiffs: { [key: string]: PropertyDifference<any> };
+      otherDiffs: { [key: string]: Difference<any> };
     },
   ) {
     this.resourceTypes = args.resourceType;
@@ -552,6 +560,7 @@ export class ResourceDifference implements IDifference<Resource> {
 
     this.isAddition = oldValue === undefined;
     this.isRemoval = newValue === undefined;
+    this.isImport = undefined;
   }
 
   public get oldProperties(): PropertyMap | undefined {
@@ -647,6 +656,9 @@ export class ResourceDifference implements IDifference<Resource> {
   }
 
   public get changeImpact(): ResourceImpact {
+    if (this.isImport) {
+      return ResourceImpact.WILL_IMPORT;
+    }
     // Check the Type first
     if (this.resourceTypes.oldType !== this.resourceTypes.newType) {
       if (this.resourceTypes.oldType === undefined) { return ResourceImpact.WILL_CREATE; }

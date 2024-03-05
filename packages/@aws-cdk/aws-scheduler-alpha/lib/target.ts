@@ -42,7 +42,7 @@ export interface ScheduleTargetConfig {
   /**
    * An object that contains information about an Amazon SQS queue that EventBridge Scheduler uses as a dead-letter queue for your schedule. If specified, EventBridge Scheduler delivers failed events that could not be successfully delivered to a target to the queue.\
    */
-  readonly deadLetterConfig?: CfnSchedule.DeadLetterConfigProperty
+  readonly deadLetterConfig?: CfnSchedule.DeadLetterConfigProperty;
 
   /**
    *  The templated target type for the Amazon ECS RunTask API Operation.
