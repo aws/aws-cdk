@@ -362,13 +362,6 @@ export interface FileSystemAttributes {
  */
 export interface ReplicationConfiguration {
   /**
-   * Whether to enable automatic replication.
-   *
-   * Other replication settings(`destinationFileSystem`, `kmsKey`, `region`, `az`) cannot be set if this is set to false.
-   */
-  readonly enable: boolean;
-
-  /**
    * The existing destination file system for the replication.
    *
    * You cannot configure `kmsKey`, `region` and `az` when `destinationFileSystem` is set.
@@ -606,8 +599,8 @@ export class FileSystem extends FileSystemBase {
       throw new Error('ThroughputMode ELASTIC is not supported for file systems with performanceMode MAX_IO');
     }
 
-    const { destinationFileSystem, region, availabilityZone, kmsKey, enable } = props.replicationConfiguration ?? {};
-    if (enable) {
+    const { destinationFileSystem, region, availabilityZone, kmsKey } = props.replicationConfiguration ?? {};
+    if (props.replicationConfiguration) {
       if (props.replicationOverwriteProtection === ReplicationOverwriteProtection.DISABLED) {
         throw new Error('Cannot configure `replicationConfiguration` when `replicationOverwriteProtection` is set to `DISABLED`');
       }
@@ -619,10 +612,10 @@ export class FileSystem extends FileSystemBase {
       if (region && !Token.isUnresolved(region) && !/^[a-z]{2}-((iso[a-z]{0,1}-)|(gov-)){0,1}[a-z]+-{0,1}[0-9]{0,1}$/.test(region)) {
         throw new Error('`replicationConfiguration.region` is invalid.');
       }
-    }
 
-    if (enable === false && (destinationFileSystem || region || availabilityZone || kmsKey)) {
-      throw new Error('Cannot configure replication when `replicationConfiguration.enableReplication` is set to `false`');
+      if (availabilityZone && !Token.isUnresolved(availabilityZone) && !region) {
+        throw new Error('`replicationConfiguration.availabilityZone` cannot be specified without `replicationConfiguration.region`');
+      }
     }
 
     // we explictly use 'undefined' to represent 'false' to maintain backwards compatibility since
@@ -651,12 +644,12 @@ export class FileSystem extends FileSystemBase {
       replicationOverwriteProtection: props.replicationOverwriteProtection,
     } : undefined;
 
-    const replicationConfiguration = enable ? {
+    const replicationConfiguration = props.replicationConfiguration ? {
       destinations: [
         {
           fileSystemId: destinationFileSystem?.fileSystemId,
           kmsKeyId: kmsKey?.keyArn,
-          region: destinationFileSystem ? destinationFileSystem.env.region : (region ?? Stack.of(this).region)
+          region: destinationFileSystem ? destinationFileSystem.env.region : (region ?? Stack.of(this).region),
           availabilityZoneName: availabilityZone,
         },
       ],

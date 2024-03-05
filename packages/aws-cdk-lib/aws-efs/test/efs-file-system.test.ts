@@ -964,9 +964,7 @@ describe('replication configuration', () => {
     // WHEN
     new FileSystem(stack, 'EfsFileSystem', {
       vpc,
-      replicationConfiguration: {
-        enable: true,
-      },
+      replicationConfiguration: {},
     });
 
     // THEN
@@ -993,7 +991,6 @@ describe('replication configuration', () => {
       vpc,
       replicationConfiguration: {
         destinationFileSystem: destination,
-        enable: true,
       },
     });
 
@@ -1016,7 +1013,6 @@ describe('replication configuration', () => {
     new FileSystem(stack, 'EfsFileSystem', {
       vpc,
       replicationConfiguration: {
-        enable: true,
         kmsKey: new kms.Key(stack, 'customKey'),
         region: 'us-east-1',
         availabilityZone: 'us-east-1a',
@@ -1048,7 +1044,7 @@ describe('replication configuration', () => {
       new FileSystem(stack, 'EfsFileSystem', {
         vpc,
         replicationConfiguration: {
-          enable: true,
+          region: 'us-east-1',
         },
         replicationOverwriteProtection: ReplicationOverwriteProtection.DISABLED,
       });
@@ -1071,7 +1067,6 @@ describe('replication configuration', () => {
         vpc,
         replicationConfiguration: {
           destinationFileSystem: destination,
-          enable: true,
           ...config,
         },
       });
@@ -1091,59 +1086,10 @@ describe('replication configuration', () => {
         vpc,
         replicationConfiguration: {
           destinationFileSystem: destination,
-          enable: true,
           kmsKey: new kms.Key(stack, 'customKey'),
         },
       });
     }).toThrow('Cannot configure `replicationConfiguration.region`, `replicationConfiguration.az` or `replicationConfiguration.kmsKey` when `replicationConfiguration.destinationFileSystem` is set');
-  });
-
-  test.each([
-    { region: 'us-east-1' },
-    { availabilityZone: 'us-east-1a' },
-  ])('throw error when configure replication settings for replication disabled file system', (config) => {
-    // THEN
-    expect(() => {
-      new FileSystem(stack, 'EfsFileSystem', {
-        vpc,
-        replicationConfiguration: {
-          enable: false,
-          ...config,
-        },
-      });
-    }).toThrow('Cannot configure replication when `replicationConfiguration.enableReplication` is set to `false`');
-  });
-
-  test('throw error when configure kmsKey for replication disabled file system', () => {
-    // THEN
-    expect(() => {
-      new FileSystem(stack, 'EfsFileSystem', {
-        vpc,
-        replicationConfiguration: {
-          enable: false,
-          kmsKey: new kms.Key(stack, 'customKey'),
-        },
-      });
-    }).toThrow('Cannot configure replication when `replicationConfiguration.enableReplication` is set to `false`');
-  });
-
-  test('throw error when configure destinationFileSystem for replication disabled file system', () => {
-    // WHEN
-    const destination = new FileSystem(stack, 'DestinationFileSystem', {
-      vpc,
-      replicationOverwriteProtection: ReplicationOverwriteProtection.DISABLED,
-    });
-
-    // THEN
-    expect(() => {
-      new FileSystem(stack, 'EfsFileSystem', {
-        vpc,
-        replicationConfiguration: {
-          enable: false,
-          destinationFileSystem: destination,
-        },
-      });
-    }).toThrow('Cannot configure replication when `replicationConfiguration.enableReplication` is set to `false`');
   });
 
   test('throw error for invalid region', () => {
@@ -1157,5 +1103,17 @@ describe('replication configuration', () => {
         },
       });
     }).toThrow('`replicationConfiguration.region` is invalid.');
+  });
+
+  test('throw error for specifying availabilityZone without region', () => {
+    // THEN
+    expect(() => {
+      new FileSystem(stack, 'EfsFileSystem', {
+        vpc,
+        replicationConfiguration: {
+          availabilityZone: 'us-east-1a',
+        },
+      });
+    }).toThrow('`replicationConfiguration.availabilityZone` cannot be specified without `replicationConfiguration.region`');
   });
 });
