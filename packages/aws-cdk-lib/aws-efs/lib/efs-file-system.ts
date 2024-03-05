@@ -656,9 +656,7 @@ export class FileSystem extends FileSystemBase {
         {
           fileSystemId: destinationFileSystem?.fileSystemId,
           kmsKeyId: kmsKey?.keyArn,
-          region: region ??
-            // if destinationFileSystem is set, specify the region of the destination file system
-            (destinationFileSystem ? destinationFileSystem.env.region : Stack.of(this).region),
+          region: destinationFileSystem ? destinationFileSystem.env.region : (region ?? Stack.of(this).region)
           availabilityZoneName: availabilityZone,
         },
       ],
