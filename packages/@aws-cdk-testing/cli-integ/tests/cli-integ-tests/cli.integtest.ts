@@ -749,6 +749,27 @@ integTest('enableDiffNoFail', withDefaultFixture(async (fixture) => {
   type DiffParameters = { fail?: boolean; enableDiffNoFail: boolean };
 }));
 
+integTest('cdk diff should not show verbose messages by default', withDefaultFixture(async (fixture) => {
+  const diff = await fixture.cdk(['diff', fixture.fullStackName('test-1')], { verbose: false });
+  expect(diff).not.toContain('Hold on while we create a read-only change set');
+}));
+
+integTest('cdk diff should only show verbose messages in --verbose mode', withDefaultFixture(async (fixture) => {
+  const diff = await fixture.cdk(['diff', fixture.fullStackName('test-1')], { verbose: true });
+  expect(diff).toContain('Hold on while we create a read-only change set');
+}));
+
+integTest('cdk diff should allow configuring whether to use changesets via cdk.json', withDefaultFixture(async (fixture) => {
+  const cdkJson = JSON.parse(await fs.readFile(path.join(fixture.integTestDir, 'cdk.json'), 'utf8'));
+  cdkJson.diff = {
+    changeSet: false,
+  };
+  await fs.writeFile(path.join(fixture.integTestDir, 'cdk.json'), JSON.stringify(cdkJson));
+
+  const diff = await fixture.cdk(['diff', fixture.fullStackName('test-1')], { verbose: true });
+  expect(diff).not.toContain('Hold on while we create a read-only change set');
+}));
+
 integTest('cdk diff --fail on multiple stacks exits with error if any of the stacks contains a diff', withDefaultFixture(async (fixture) => {
   // GIVEN
   const diff1 = await fixture.cdk(['diff', fixture.fullStackName('test-1')]);
