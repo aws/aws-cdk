@@ -2,6 +2,7 @@ import { Construct } from 'constructs';
 import { Match, Template } from '../../../assertions';
 import { Metric } from '../../../aws-cloudwatch';
 import * as ec2 from '../../../aws-ec2';
+import { Key } from '../../../aws-kms';
 import * as s3 from '../../../aws-s3';
 import * as cdk from '../../../core';
 import * as elbv2 from '../../lib';
@@ -246,11 +247,16 @@ describe('tests', () => {
       }
     }
 
-    function loggingSetup(): { stack: cdk.Stack; bucket: s3.Bucket; lb: elbv2.ApplicationLoadBalancer } {
+    function loggingSetup(withEncryption: boolean = false ): { stack: cdk.Stack; bucket: s3.Bucket; lb: elbv2.ApplicationLoadBalancer } {
       const app = new cdk.App();
       const stack = new cdk.Stack(app, undefined, { env: { region: 'us-east-1' } });
       const vpc = new ec2.Vpc(stack, 'Stack');
-      const bucket = new s3.Bucket(stack, 'AccessLoggingBucket');
+      let bucketProps = {};
+      if (withEncryption) {
+        const kmsKey = new Key(stack, 'TestKMSKey');
+        bucketProps = { ...bucketProps, encryption: s3.BucketEncryption.KMS, encyptionKey: kmsKey };
+      }
+      const bucket = new s3.Bucket(stack, 'AccessLogBucket', { ...bucketProps });
       const lb = new elbv2.ApplicationLoadBalancer(stack, 'LB', { vpc });
       return { stack, bucket, lb };
     }
@@ -401,6 +407,19 @@ describe('tests', () => {
           ],
         },
       });
+    });
+
+    test('bucket with KMS throws validation error', () => {
+      //GIVEN
+      const { bucket, lb } = loggingSetup(true);
+
+      // WHEN
+      const logAccessLogFunctionTest = () => lb.logAccessLogs(bucket);
+
+      // THEN
+      // verify failure in case the access log bucket is encrypted with KMS
+      expect(logAccessLogFunctionTest).toThrow('Encryption key detected. Bucket encryption using KMS keys is unsupported');
+
     });
 
     test('access logging on imported bucket', () => {
