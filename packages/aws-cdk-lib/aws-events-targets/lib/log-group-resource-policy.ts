@@ -17,6 +17,8 @@ export interface LogGroupResourcePolicyProps {
   readonly policyStatements: [iam.PolicyStatement];
   /**
    * Whether to install latest AWS SDK for the custom resource
+   *
+   * @default - install latest AWS SDK
    */
   readonly installLatestAwsSdk?: boolean;
 }
