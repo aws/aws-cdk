@@ -514,7 +514,7 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
           stream: args.ci ? process.stdout : undefined,
           compareAgainstProcessedTemplate: args.processed,
           quiet: args.quiet,
-          changeSet: args['change-set'],
+          changeSet: configuration.settings.get(['diff', 'changeSet']) ?? args['change-set'],
         });
 
       case 'bootstrap':
