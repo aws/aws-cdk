@@ -397,6 +397,22 @@ const domain = new Domain(this, 'Domain', {
 });
 ```
 
+## Cold storage
+
+Cold storage can be enabled on the domain. You must enable UltraWarm storage to enable cold storage.
+
+```ts
+const domain = new Domain(this, 'Domain', {
+  version: EngineVersion.OPENSEARCH_1_0,
+  capacity: {
+    masterNodes: 2,
+    warmNodes: 2,
+    warmInstanceType: 'ultrawarm1.medium.search',
+  },
+  coldStorageEnabled: true,
+});
+```
+
 ## Custom endpoint
 
 Custom endpoints can be configured to reach the domain under a custom domain name.

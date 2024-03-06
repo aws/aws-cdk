@@ -687,6 +687,15 @@ export interface DomainProps {
    * @default - false
    */
   readonly suppressLogsResourcePolicy?: boolean;
+
+  /**
+   * Whether to enable or disable cold storage on the domain. You must enable UltraWarm storage to enable cold storage.
+   *
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-opensearchservice-domain-coldstorageoptions.html
+   *
+   * @default - undefined
+   */
+  readonly coldStorageEnabled?: boolean;
 }
 
 /**
@@ -1700,6 +1709,10 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
       throw new Error('Dedicated master node is required when UltraWarm storage is enabled.');
     }
 
+    if (props.coldStorageEnabled && !warmEnabled) {
+      throw new Error('You must enable UltraWarm storage to enable cold storage.');
+    }
+
     let cfnVpcOptions: CfnDomain.VPCOptionsProperty | undefined;
 
     if (securityGroups && subnets) {
@@ -1834,6 +1847,9 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
       domainName: this.physicalName,
       engineVersion: props.version.version,
       clusterConfig: {
+        coldStorageOptions: props.coldStorageEnabled ? {
+          enabled: true,
+        } : undefined,
         dedicatedMasterEnabled,
         dedicatedMasterCount: dedicatedMasterEnabled
           ? dedicatedMasterCount
