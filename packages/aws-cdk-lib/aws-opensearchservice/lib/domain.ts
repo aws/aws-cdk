@@ -1847,8 +1847,8 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
       domainName: this.physicalName,
       engineVersion: props.version.version,
       clusterConfig: {
-        coldStorageOptions: props.coldStorageEnabled ? {
-          enabled: true,
+        coldStorageOptions: props.coldStorageEnabled !== undefined ? {
+          enabled: props.coldStorageEnabled,
         } : undefined,
         dedicatedMasterEnabled,
         dedicatedMasterCount: dedicatedMasterEnabled
