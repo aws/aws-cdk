@@ -63,6 +63,8 @@ export interface MissingContext {
 
   /**
    * Whether to disable persisting this to the context file.
+   *
+   * @default false
    */
   readonly disableContextCaching?: boolean;
 }
