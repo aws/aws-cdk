@@ -69,6 +69,11 @@ export async function provideContextValues(
       }, resolvedEnvironment, sdk);
 
       value = await provider.getValue({ ...missingContext.props, lookupRoleArn: arns.lookupRoleArn });
+
+      if (missingContext.disableContextCaching) {
+        debug(`Skipping context caching for ${key}`);
+        context.set(key + TRANSIENT_CONTEXT_KEY, { [TRANSIENT_CONTEXT_KEY]: true });
+      }
     } catch (e: any) {
       // Set a specially formatted provider value which will be interpreted
       // as a lookup failure in the toolkit.

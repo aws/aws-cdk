@@ -458,7 +458,7 @@ function expandHomeDir(x: string) {
 function stripTransientValues(obj: {[key: string]: any}) {
   const ret: any = {};
   for (const [key, value] of Object.entries(obj)) {
-    if (!isTransientValue(value)) {
+    if (!isTransientValue(value) && !isTransientValue(obj[key + TRANSIENT_CONTEXT_KEY])) {
       ret[key] = value;
     }
   }

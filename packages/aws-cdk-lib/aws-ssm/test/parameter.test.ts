@@ -1,6 +1,10 @@
 /* eslint-disable max-len */
 
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
+import { Deployments } from '../../../aws-cdk/lib/api/deployments';
+import { CdkToolkit } from '../../../aws-cdk/lib/cdk-toolkit';
+import { Configuration } from '../../../aws-cdk/lib/settings';
+import { MockCloudExecutable } from '../../../aws-cdk/test/util';
 import { Template } from '../../assertions';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
@@ -650,6 +654,100 @@ test('fromLookup will use the SSM context provider to read value during synthesi
       provider: 'ssm',
     },
   ]);
+});
+
+test('fromLookup will persist value in context by default', async () => {
+  // GIVEN
+  const app = new cdk.App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
+  const stack = new cdk.Stack(app, 'my-staq', { env: { region: 'us-east-1', account: '12344' } });
+
+  // WHEN
+  const value = ssm.StringParameter.valueFromLookup(stack, 'my-param-name');
+
+  const synth = app.synth();
+
+  const mockCloudExecutable = new MockCloudExecutable({
+    stacks: synth.stacks,
+    missing: synth.manifest.missing,
+  });
+
+  let requestedParameterName: string | undefined;
+  mockCloudExecutable.sdkProvider.stubSSM({
+    getParameter(request) {
+      requestedParameterName = request.Name;
+      return {
+        Parameter: {
+          Value: '123',
+        },
+      };
+    },
+  });
+
+  const cdkToolkit = new CdkToolkit({
+    cloudExecutable: mockCloudExecutable,
+    configuration: mockCloudExecutable.configuration,
+    sdkProvider: mockCloudExecutable.sdkProvider,
+    deployments: new Deployments({ sdkProvider: mockCloudExecutable.sdkProvider }),
+  });
+
+  await mockCloudExecutable.configuration.load();
+
+  await cdkToolkit.assembly();
+
+  await mockCloudExecutable.configuration.saveContext();
+  const config = await new Configuration({ readUserContext: false }).load();
+
+  // THEN
+  expect(value).toEqual('dummy-value-for-my-param-name');
+  expect(requestedParameterName).toEqual('my-param-name');
+  expect(config.context.keys).toEqual(['ssm:account=12344:parameterName=my-param-name:region=us-east-1']);
+});
+
+test('fromLookup will not persist value in context if requested', async () => {
+  // GIVEN
+  const app = new cdk.App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
+  const stack = new cdk.Stack(app, 'my-staq', { env: { region: 'us-east-1', account: '12344' } });
+
+  // WHEN
+  const value = ssm.StringParameter.valueFromLookup(stack, 'my-param-name', { disableContextCaching: true });
+
+  const synth = app.synth();
+
+  const mockCloudExecutable = new MockCloudExecutable({
+    stacks: synth.stacks,
+    missing: synth.manifest.missing,
+  });
+
+  let requestedParameterName: string | undefined;
+  mockCloudExecutable.sdkProvider.stubSSM({
+    getParameter(request) {
+      requestedParameterName = request.Name;
+      return {
+        Parameter: {
+          Value: '123',
+        },
+      };
+    },
+  });
+
+  const cdkToolkit = new CdkToolkit({
+    cloudExecutable: mockCloudExecutable,
+    configuration: mockCloudExecutable.configuration,
+    sdkProvider: mockCloudExecutable.sdkProvider,
+    deployments: new Deployments({ sdkProvider: mockCloudExecutable.sdkProvider }),
+  });
+
+  await mockCloudExecutable.configuration.load();
+
+  await cdkToolkit.assembly();
+
+  await mockCloudExecutable.configuration.saveContext();
+  const config = await new Configuration({ readUserContext: false }).load();
+
+  // THEN
+  expect(value).toEqual('dummy-value-for-my-param-name');
+  expect(requestedParameterName).toEqual('my-param-name');
+  expect(config.context.keys).toEqual([]);
 });
 
 describe('from string list parameter', () => {

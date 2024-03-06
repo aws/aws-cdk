@@ -137,3 +137,18 @@ test('transient values arent saved to disk', async () => {
   // THEN
   expect(config2.context.get('some_key')).toEqual(undefined);
 });
+
+test('transient keys arent saved to disk', async () => {
+  // GIVEN
+  const config1 = await new Configuration({ readUserContext: false }).load();
+  config1.context.set('some_key', 'some_value');
+  config1.context.set('some_key' + TRANSIENT_CONTEXT_KEY, { [TRANSIENT_CONTEXT_KEY]: true });
+  await config1.saveContext();
+  expect(config1.context.get('some_key')).toEqual('some_value');
+
+  // WHEN
+  const config2 = await new Configuration({ readUserContext: false }).load();
+
+  // THEN
+  expect(config2.context.get('some_key')).toEqual(undefined);
+});

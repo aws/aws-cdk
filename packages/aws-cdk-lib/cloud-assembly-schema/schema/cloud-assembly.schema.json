@@ -482,6 +482,10 @@
                 "props": {
                     "$ref": "#/definitions/ContextQueryProperties",
                     "description": "A set of provider-specific options."
+                },
+                "disableContextCaching": {
+                    "description": "Whether to disable persisting this to the context file.",
+                    "type": "boolean"
                 }
             },
             "required": [
