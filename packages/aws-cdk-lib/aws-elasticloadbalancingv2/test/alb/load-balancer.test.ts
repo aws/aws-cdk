@@ -277,7 +277,7 @@ describe('tests', () => {
           },
           {
             Key: 'access_logs.s3.bucket',
-            Value: { Ref: 'AccessLoggingBucketA6D88F29' },
+            Value: { Ref: 'AccessLogBucketDA470295' },
           },
           {
             Key: 'access_logs.s3.prefix',
@@ -297,7 +297,7 @@ describe('tests', () => {
       // THEN
       // verify the ALB depends on the bucket policy
       Template.fromStack(stack).hasResource('AWS::ElasticLoadBalancingV2::LoadBalancer', {
-        DependsOn: ['AccessLoggingBucketPolicy700D7CC6'],
+        DependsOn: ['AccessLogBucketPolicyF52D2D01'],
       });
     });
 
@@ -319,7 +319,7 @@ describe('tests', () => {
               Effect: 'Allow',
               Principal: { AWS: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::127311923021:root']] } },
               Resource: {
-                'Fn::Join': ['', [{ 'Fn::GetAtt': ['AccessLoggingBucketA6D88F29', 'Arn'] }, '/AWSLogs/',
+                'Fn::Join': ['', [{ 'Fn::GetAtt': ['AccessLogBucketDA470295', 'Arn'] }, '/AWSLogs/',
                   { Ref: 'AWS::AccountId' }, '/*']],
               },
             },
@@ -328,7 +328,7 @@ describe('tests', () => {
               Effect: 'Allow',
               Principal: { Service: 'delivery.logs.amazonaws.com' },
               Resource: {
-                'Fn::Join': ['', [{ 'Fn::GetAtt': ['AccessLoggingBucketA6D88F29', 'Arn'] }, '/AWSLogs/',
+                'Fn::Join': ['', [{ 'Fn::GetAtt': ['AccessLogBucketDA470295', 'Arn'] }, '/AWSLogs/',
                   { Ref: 'AWS::AccountId' }, '/*']],
               },
               Condition: { StringEquals: { 's3:x-amz-acl': 'bucket-owner-full-control' } },
@@ -338,7 +338,7 @@ describe('tests', () => {
               Effect: 'Allow',
               Principal: { Service: 'delivery.logs.amazonaws.com' },
               Resource: {
-                'Fn::GetAtt': ['AccessLoggingBucketA6D88F29', 'Arn'],
+                'Fn::GetAtt': ['AccessLogBucketDA470295', 'Arn'],
               },
             },
           ],
@@ -363,7 +363,7 @@ describe('tests', () => {
           },
           {
             Key: 'access_logs.s3.bucket',
-            Value: { Ref: 'AccessLoggingBucketA6D88F29' },
+            Value: { Ref: 'AccessLogBucketDA470295' },
           },
           {
             Key: 'access_logs.s3.prefix',
@@ -382,7 +382,7 @@ describe('tests', () => {
               Effect: 'Allow',
               Principal: { AWS: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::127311923021:root']] } },
               Resource: {
-                'Fn::Join': ['', [{ 'Fn::GetAtt': ['AccessLoggingBucketA6D88F29', 'Arn'] }, '/prefix-of-access-logs/AWSLogs/',
+                'Fn::Join': ['', [{ 'Fn::GetAtt': ['AccessLogBucketDA470295', 'Arn'] }, '/prefix-of-access-logs/AWSLogs/',
                   { Ref: 'AWS::AccountId' }, '/*']],
               },
             },
@@ -391,7 +391,7 @@ describe('tests', () => {
               Effect: 'Allow',
               Principal: { Service: 'delivery.logs.amazonaws.com' },
               Resource: {
-                'Fn::Join': ['', [{ 'Fn::GetAtt': ['AccessLoggingBucketA6D88F29', 'Arn'] }, '/prefix-of-access-logs/AWSLogs/',
+                'Fn::Join': ['', [{ 'Fn::GetAtt': ['AccessLogBucketDA470295', 'Arn'] }, '/prefix-of-access-logs/AWSLogs/',
                   { Ref: 'AWS::AccountId' }, '/*']],
               },
               Condition: { StringEquals: { 's3:x-amz-acl': 'bucket-owner-full-control' } },
@@ -401,7 +401,7 @@ describe('tests', () => {
               Effect: 'Allow',
               Principal: { Service: 'delivery.logs.amazonaws.com' },
               Resource: {
-                'Fn::GetAtt': ['AccessLoggingBucketA6D88F29', 'Arn'],
+                'Fn::GetAtt': ['AccessLogBucketDA470295', 'Arn'],
               },
             },
           ],
