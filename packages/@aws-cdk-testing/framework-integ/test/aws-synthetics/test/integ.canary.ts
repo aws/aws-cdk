@@ -96,10 +96,11 @@ const createCanaryByRuntimes = (runtime: Runtime) =>
     cleanup: Cleanup.LAMBDA,
   });
 
-const puppeteer39 = createCanaryByRuntimes(Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_9);
 const puppeteer40 = createCanaryByRuntimes(Runtime.SYNTHETICS_NODEJS_PUPPETEER_4_0);
+const puppeteer62 = createCanaryByRuntimes(Runtime.SYNTHETICS_NODEJS_PUPPETEER_6_2);
 const selenium13 = createCanaryByRuntimes(Runtime.SYNTHETICS_PYTHON_SELENIUM_1_3);
 const selenium20 = createCanaryByRuntimes(Runtime.SYNTHETICS_PYTHON_SELENIUM_2_0);
+const selenium21 = createCanaryByRuntimes(Runtime.SYNTHETICS_PYTHON_SELENIUM_2_1);
 
 const test = new IntegTest(app, 'IntegCanaryTest', {
   testCases: [stack],
@@ -111,10 +112,11 @@ const test = new IntegTest(app, 'IntegCanaryTest', {
   directoryAsset,
   folderAsset,
   zipAsset,
-  puppeteer39,
   puppeteer40,
+  puppeteer62,
   selenium13,
   selenium20,
+  selenium21,
 ].forEach((canary) => test.assertions
   .awsApiCall('Synthetics', 'getCanaryRuns', {
     Name: canary.canaryName,

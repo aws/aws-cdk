@@ -5,6 +5,7 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import { Construct } from 'constructs';
 import { IApplication } from './application';
 import { ActionPoint, IEventDestination, ExtensionOptions, IExtension, IExtensible, ExtensibleBase } from './extension';
+import { getHash } from './private/hash';
 
 /**
  * Attributes of an existing AWS AppConfig environment to import it.
@@ -252,11 +253,11 @@ export class Environment extends EnvironmentBase {
       applicationId: this.applicationId,
       name: this.name,
       description: this.description,
-      monitors: this.monitors?.map((monitor, index) => {
+      monitors: this.monitors?.map((monitor) => {
         return {
           alarmArn: monitor.alarmArn,
           ...(monitor.monitorType === MonitorType.CLOUDWATCH
-            ? { alarmRoleArn: monitor.alarmRoleArn || this.createAlarmRole(monitor, index).roleArn }
+            ? { alarmRoleArn: monitor.alarmRoleArn || this.createOrGetAlarmRole().roleArn }
             : { alarmRoleArn: monitor.alarmRoleArn }),
         };
       }),
@@ -274,24 +275,20 @@ export class Environment extends EnvironmentBase {
     this.application.addExistingEnvironment(this);
   }
 
-  private createAlarmRole(monitor: Monitor, index: number): iam.IRole {
-    const logicalId = monitor.isCompositeAlarm ? 'RoleCompositeAlarm' : `Role${index}`;
+  private createOrGetAlarmRole(): iam.IRole {
+    // the name is guaranteed to be set in line 243
+    const logicalId = `Role${getHash(this.name!)}`;
     const existingRole = this.node.tryFindChild(logicalId) as iam.IRole;
     if (existingRole) {
       return existingRole;
     }
-    const alarmArn = monitor.isCompositeAlarm
-      ? this.stack.formatArn({
-        service: 'cloudwatch',
-        resource: 'alarm',
-        resourceName: '*',
-        arnFormat: ArnFormat.COLON_RESOURCE_NAME,
-      })
-      : monitor.alarmArn;
+    // this scope is fine for cloudwatch:DescribeAlarms since it is readonly
+    // and it is required for composite alarms
+    // https://docs.aws.amazon.com/AmazonCloudWatch/latest/APIReference/API_DescribeAlarms.html
     const policy = new iam.PolicyStatement({
       effect: iam.Effect.ALLOW,
       actions: ['cloudwatch:DescribeAlarms'],
-      resources: [alarmArn],
+      resources: ['*'],
     });
     const document = new iam.PolicyDocument({
       statements: [policy],
@@ -338,7 +335,6 @@ export abstract class Monitor {
       alarmArn: alarm.alarmArn,
       alarmRoleArn: alarmRole?.roleArn,
       monitorType: MonitorType.CLOUDWATCH,
-      isCompositeAlarm: alarm instanceof cloudwatch.CompositeAlarm,
     };
   }
 

@@ -5,6 +5,7 @@ export * from './inspector-start-assessment-run';
 export * from './kinesis-data-firehose-put-record';
 export * from './kinesis-stream-put-record';
 export * from './lambda-invoke';
+export * from './sage-maker-start-pipeline-execution';
 export * from './sns-publish';
 export * from './sqs-send-message';
 export * from './stepfunctions-start-execution';
