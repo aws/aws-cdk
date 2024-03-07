@@ -130,7 +130,9 @@ export class Bundling implements cdk.BundlingOptions {
     const versionedExternals = isV2Runtime ? ['aws-sdk'] : ['@aws-sdk/*'];
     // Don't automatically externalize any dependencies when using a `latest` runtime which may
     // update versions in the future.
-    const defaultExternals = props.runtime?.isVariable ? [] : versionedExternals;
+    // Don't automatically externalize aws sdk if `bundleAwsSDK` is true so it can be
+    // include in the bundle asset
+    const defaultExternals = props.runtime?.isVariable || props.bundleAwsSDK ? [] : versionedExternals;
     const externals = props.externalModules ?? defaultExternals;
 
     // Warn users if they are trying to rely on global versions of the SDK that aren't available in

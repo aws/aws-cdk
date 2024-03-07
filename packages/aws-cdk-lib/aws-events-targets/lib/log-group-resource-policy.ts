@@ -15,6 +15,12 @@ export interface LogGroupResourcePolicyProps {
    * The policy statements for the log group resource logs
    */
   readonly policyStatements: [iam.PolicyStatement];
+  /**
+   * Whether to install latest AWS SDK for the custom resource
+   *
+   * @default - install latest AWS SDK
+   */
+  readonly installLatestAwsSdk?: boolean;
 }
 
 /**
@@ -39,6 +45,7 @@ export class LogGroupResourcePolicy extends cr.AwsCustomResource {
         },
         physicalResourceId: cr.PhysicalResourceId.of(id),
       },
+      installLatestAwsSdk: props.installLatestAwsSdk,
       onDelete: {
         service: 'CloudWatchLogs',
         action: 'deleteResourcePolicy',
