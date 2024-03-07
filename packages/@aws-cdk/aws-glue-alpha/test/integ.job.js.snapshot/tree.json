@@ -432,6 +432,43 @@
                               "Statement": [
                                 {
                                   "Action": [
+                                    "s3:Abort*",
+                                    "s3:DeleteObject*",
+                                    "s3:GetBucket*",
+                                    "s3:GetObject*",
+                                    "s3:List*",
+                                    "s3:PutObject",
+                                    "s3:PutObjectLegalHold",
+                                    "s3:PutObjectRetention",
+                                    "s3:PutObjectTagging",
+                                    "s3:PutObjectVersionTagging"
+                                  ],
+                                  "Effect": "Allow",
+                                  "Resource": [
+                                    {
+                                      "Fn::GetAtt": [
+                                        "StreamingJob20SparkUIBucket92EF3706",
+                                        "Arn"
+                                      ]
+                                    },
+                                    {
+                                      "Fn::Join": [
+                                        "",
+                                        [
+                                          {
+                                            "Fn::GetAtt": [
+                                              "StreamingJob20SparkUIBucket92EF3706",
+                                              "Arn"
+                                            ]
+                                          },
+                                          "/*"
+                                        ]
+                                      ]
+                                    }
+                                  ]
+                                },
+                                {
+                                  "Action": [
                                     "s3:GetBucket*",
                                     "s3:GetObject*",
                                     "s3:List*"
@@ -499,6 +536,28 @@
                   "version": "0.0.0"
                 }
               },
+              "SparkUIBucket": {
+                "id": "SparkUIBucket",
+                "path": "aws-glue-job/StreamingJob2.0/SparkUIBucket",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-glue-job/StreamingJob2.0/SparkUIBucket/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::S3::Bucket",
+                      "aws:cdk:cloudformation:props": {}
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_s3.CfnBucket",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3.Bucket",
+                  "version": "0.0.0"
+                }
+              },
               "Resource": {
                 "id": "Resource",
                 "path": "aws-glue-job/StreamingJob2.0/Resource",
@@ -523,6 +582,19 @@
                     },
                     "defaultArguments": {
                       "--job-language": "python",
+                      "--enable-spark-ui": "true",
+                      "--spark-event-logs-path": {
+                        "Fn::Join": [
+                          "",
+                          [
+                            "s3://",
+                            {
+                              "Ref": "StreamingJob20SparkUIBucket92EF3706"
+                            },
+                            "/"
+                          ]
+                        ]
+                      },
                       "arg1": "value1",
                       "arg2": "value2"
                     },
@@ -950,6 +1022,43 @@
                               "Statement": [
                                 {
                                   "Action": [
+                                    "s3:Abort*",
+                                    "s3:DeleteObject*",
+                                    "s3:GetBucket*",
+                                    "s3:GetObject*",
+                                    "s3:List*",
+                                    "s3:PutObject",
+                                    "s3:PutObjectLegalHold",
+                                    "s3:PutObjectRetention",
+                                    "s3:PutObjectTagging",
+                                    "s3:PutObjectVersionTagging"
+                                  ],
+                                  "Effect": "Allow",
+                                  "Resource": [
+                                    {
+                                      "Fn::GetAtt": [
+                                        "StreamingJob30SparkUIBucketEFBF52D3",
+                                        "Arn"
+                                      ]
+                                    },
+                                    {
+                                      "Fn::Join": [
+                                        "",
+                                        [
+                                          {
+                                            "Fn::GetAtt": [
+                                              "StreamingJob30SparkUIBucketEFBF52D3",
+                                              "Arn"
+                                            ]
+                                          },
+                                          "/*"
+                                        ]
+                                      ]
+                                    }
+                                  ]
+                                },
+                                {
+                                  "Action": [
                                     "s3:GetBucket*",
                                     "s3:GetObject*",
                                     "s3:List*"
@@ -1017,6 +1126,28 @@
                   "version": "0.0.0"
                 }
               },
+              "SparkUIBucket": {
+                "id": "SparkUIBucket",
+                "path": "aws-glue-job/StreamingJob3.0/SparkUIBucket",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-glue-job/StreamingJob3.0/SparkUIBucket/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::S3::Bucket",
+                      "aws:cdk:cloudformation:props": {}
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_s3.CfnBucket",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3.Bucket",
+                  "version": "0.0.0"
+                }
+              },
               "Resource": {
                 "id": "Resource",
                 "path": "aws-glue-job/StreamingJob3.0/Resource",
@@ -1041,6 +1172,19 @@
                     },
                     "defaultArguments": {
                       "--job-language": "python",
+                      "--enable-spark-ui": "true",
+                      "--spark-event-logs-path": {
+                        "Fn::Join": [
+                          "",
+                          [
+                            "s3://",
+                            {
+                              "Ref": "StreamingJob30SparkUIBucketEFBF52D3"
+                            },
+                            "/"
+                          ]
+                        ]
+                      },
                       "arg1": "value1",
                       "arg2": "value2"
                     },
@@ -1468,6 +1612,43 @@
                               "Statement": [
                                 {
                                   "Action": [
+                                    "s3:Abort*",
+                                    "s3:DeleteObject*",
+                                    "s3:GetBucket*",
+                                    "s3:GetObject*",
+                                    "s3:List*",
+                                    "s3:PutObject",
+                                    "s3:PutObjectLegalHold",
+                                    "s3:PutObjectRetention",
+                                    "s3:PutObjectTagging",
+                                    "s3:PutObjectVersionTagging"
+                                  ],
+                                  "Effect": "Allow",
+                                  "Resource": [
+                                    {
+                                      "Fn::GetAtt": [
+                                        "StreamingJob40SparkUIBucketA97E24C6",
+                                        "Arn"
+                                      ]
+                                    },
+                                    {
+                                      "Fn::Join": [
+                                        "",
+                                        [
+                                          {
+                                            "Fn::GetAtt": [
+                                              "StreamingJob40SparkUIBucketA97E24C6",
+                                              "Arn"
+                                            ]
+                                          },
+                                          "/*"
+                                        ]
+                                      ]
+                                    }
+                                  ]
+                                },
+                                {
+                                  "Action": [
                                     "s3:GetBucket*",
                                     "s3:GetObject*",
                                     "s3:List*"
@@ -1535,6 +1716,28 @@
                   "version": "0.0.0"
                 }
               },
+              "SparkUIBucket": {
+                "id": "SparkUIBucket",
+                "path": "aws-glue-job/StreamingJob4.0/SparkUIBucket",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-glue-job/StreamingJob4.0/SparkUIBucket/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::S3::Bucket",
+                      "aws:cdk:cloudformation:props": {}
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_s3.CfnBucket",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3.Bucket",
+                  "version": "0.0.0"
+                }
+              },
               "Resource": {
                 "id": "Resource",
                 "path": "aws-glue-job/StreamingJob4.0/Resource",
@@ -1559,6 +1762,19 @@
                     },
                     "defaultArguments": {
                       "--job-language": "python",
+                      "--enable-spark-ui": "true",
+                      "--spark-event-logs-path": {
+                        "Fn::Join": [
+                          "",
+                          [
+                            "s3://",
+                            {
+                              "Ref": "StreamingJob40SparkUIBucketA97E24C6"
+                            },
+                            "/"
+                          ]
+                        ]
+                      },
                       "arg1": "value1",
                       "arg2": "value2"
                     },

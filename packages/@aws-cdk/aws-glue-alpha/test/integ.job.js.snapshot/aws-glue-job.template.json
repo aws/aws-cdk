@@ -270,6 +270,43 @@
      "Statement": [
       {
        "Action": [
+        "s3:Abort*",
+        "s3:DeleteObject*",
+        "s3:GetBucket*",
+        "s3:GetObject*",
+        "s3:List*",
+        "s3:PutObject",
+        "s3:PutObjectLegalHold",
+        "s3:PutObjectRetention",
+        "s3:PutObjectTagging",
+        "s3:PutObjectVersionTagging"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "StreamingJob20SparkUIBucket92EF3706",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "StreamingJob20SparkUIBucket92EF3706",
+             "Arn"
+            ]
+           },
+           "/*"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": [
         "s3:GetBucket*",
         "s3:GetObject*",
         "s3:List*"
@@ -320,6 +357,11 @@
     ]
    }
   },
+  "StreamingJob20SparkUIBucket92EF3706": {
+   "Type": "AWS::S3::Bucket",
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
   "StreamingJob20355B58C7": {
    "Type": "AWS::Glue::Job",
    "Properties": {
@@ -341,6 +383,19 @@
     },
     "DefaultArguments": {
      "--job-language": "python",
+     "--enable-spark-ui": "true",
+     "--spark-event-logs-path": {
+      "Fn::Join": [
+       "",
+       [
+        "s3://",
+        {
+         "Ref": "StreamingJob20SparkUIBucket92EF3706"
+        },
+        "/"
+       ]
+      ]
+     },
      "arg1": "value1",
      "arg2": "value2"
     },
@@ -629,6 +684,43 @@
      "Statement": [
       {
        "Action": [
+        "s3:Abort*",
+        "s3:DeleteObject*",
+        "s3:GetBucket*",
+        "s3:GetObject*",
+        "s3:List*",
+        "s3:PutObject",
+        "s3:PutObjectLegalHold",
+        "s3:PutObjectRetention",
+        "s3:PutObjectTagging",
+        "s3:PutObjectVersionTagging"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "StreamingJob30SparkUIBucketEFBF52D3",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "StreamingJob30SparkUIBucketEFBF52D3",
+             "Arn"
+            ]
+           },
+           "/*"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": [
         "s3:GetBucket*",
         "s3:GetObject*",
         "s3:List*"
@@ -679,6 +771,11 @@
     ]
    }
   },
+  "StreamingJob30SparkUIBucketEFBF52D3": {
+   "Type": "AWS::S3::Bucket",
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
   "StreamingJob30E005FBEB": {
    "Type": "AWS::Glue::Job",
    "Properties": {
@@ -700,6 +797,19 @@
     },
     "DefaultArguments": {
      "--job-language": "python",
+     "--enable-spark-ui": "true",
+     "--spark-event-logs-path": {
+      "Fn::Join": [
+       "",
+       [
+        "s3://",
+        {
+         "Ref": "StreamingJob30SparkUIBucketEFBF52D3"
+        },
+        "/"
+       ]
+      ]
+     },
      "arg1": "value1",
      "arg2": "value2"
     },
@@ -988,6 +1098,43 @@
      "Statement": [
       {
        "Action": [
+        "s3:Abort*",
+        "s3:DeleteObject*",
+        "s3:GetBucket*",
+        "s3:GetObject*",
+        "s3:List*",
+        "s3:PutObject",
+        "s3:PutObjectLegalHold",
+        "s3:PutObjectRetention",
+        "s3:PutObjectTagging",
+        "s3:PutObjectVersionTagging"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "StreamingJob40SparkUIBucketA97E24C6",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "StreamingJob40SparkUIBucketA97E24C6",
+             "Arn"
+            ]
+           },
+           "/*"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": [
         "s3:GetBucket*",
         "s3:GetObject*",
         "s3:List*"
@@ -1038,6 +1185,11 @@
     ]
    }
   },
+  "StreamingJob40SparkUIBucketA97E24C6": {
+   "Type": "AWS::S3::Bucket",
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
   "StreamingJob40E284A782": {
    "Type": "AWS::Glue::Job",
    "Properties": {
@@ -1059,6 +1211,19 @@
     },
     "DefaultArguments": {
      "--job-language": "python",
+     "--enable-spark-ui": "true",
+     "--spark-event-logs-path": {
+      "Fn::Join": [
+       "",
+       [
+        "s3://",
+        {
+         "Ref": "StreamingJob40SparkUIBucketA97E24C6"
+        },
+        "/"
+       ]
+      ]
+     },
      "arg1": "value1",
      "arg2": "value2"
     },

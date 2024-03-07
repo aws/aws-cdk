@@ -69,6 +69,9 @@ const script = glue.Code.fromAsset(path.join(__dirname, 'job-script', 'hello_wor
       arg1: 'value1',
       arg2: 'value2',
     },
+    sparkUI: {
+      enabled: true,
+    },
     tags: {
       key: 'value',
     },

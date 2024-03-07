@@ -2395,6 +2395,54 @@ describe('bucket', () => {
     });
   });
 
+  test('s3UrlForObject returns the S3 URL with a trailing slash when trailingSlash is set to true', () => {
+    const stack = new cdk.Stack();
+    const bucket = new s3.Bucket(stack, 'MyBucket');
+
+    new cdk.CfnOutput(stack, 'BucketS3URL', { value: bucket.s3UrlForObject(null, true) });
+    new cdk.CfnOutput(stack, 'MyFolderS3URL', { value: bucket.s3UrlForObject('my/folder', true) });
+
+    Template.fromStack(stack).templateMatches({
+      'Resources': {
+        'MyBucketF68F3FF0': {
+          'Type': 'AWS::S3::Bucket',
+          'DeletionPolicy': 'Retain',
+          'UpdateReplacePolicy': 'Retain',
+        },
+      },
+      'Outputs': {
+        'BucketS3URL': {
+          'Value': {
+            'Fn::Join': [
+              '',
+              [
+                's3://',
+                {
+                  'Ref': 'MyBucketF68F3FF0',
+                },
+                '/',
+              ],
+            ],
+          },
+        },
+        'MyFolderS3URL': {
+          'Value': {
+            'Fn::Join': [
+              '',
+              [
+                's3://',
+                {
+                  'Ref': 'MyBucketF68F3FF0',
+                },
+                '/my/folder/',
+              ],
+            ],
+          },
+        },
+      },
+    });
+  });
+
   describe('grantPublicAccess', () => {
     test('by default, grants s3:GetObject to all objects', () => {
       // GIVEN
