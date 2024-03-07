@@ -31,7 +31,7 @@ export interface GetContextKeyOptions {
  */
 export interface ContextProviderConfig {
   /**
-   * Whether the context provider is allowed to cache the value.
+   * Whether caching the value to the context is disabled.
    *
    * @default false
    */
