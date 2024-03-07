@@ -86,7 +86,10 @@ export function generateStack(template: string, stackName: string, language: str
   try {
     return cdk_from_cfn.transmute(template, language, formattedStackName);
   } catch (e) {
-    throw new Error(`${formattedStackName} could not be generated because ${(e as Error).message}`);
+    const errorMessage = (e as Error).message === 'unreachable'
+      ? 'template and/or language inputs caused the source code to panic'
+      : (e as Error).message.replace('TransmuteError: ', '');
+    throw new Error(`${formattedStackName} could not be generated because ${errorMessage}`);
   }
 }
 

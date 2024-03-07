@@ -134,11 +134,11 @@ describe('Migrate Function Tests', () => {
   });
 
   test('generateStack throws error when called for other language', () => {
-    expect(() => generateStack(validTemplate, 'BadBadBad', 'php')).toThrowError('BadBadBadStack could not be generated because unreachable');
+    expect(() => generateStack(validTemplate, 'BadBadBad', 'php')).toThrowError('BadBadBadStack could not be generated because template and/or language inputs caused the source code to panic');
   });
 
   test('generateStack throws error for invalid resource property', () => {
-    expect(() => generateStack(invalidTemplate, 'VeryBad', 'typescript')).toThrow('VeryBadStack could not be generated because unreachable');
+    expect(() => generateStack(invalidTemplate, 'VeryBad', 'typescript')).toThrow('VeryBadStack could not be generated because ReadEndpoint is not a valid property for resource RDSCluster of type AWS::RDS::DBCluster');
   });
 
   cliTest('generateCdkApp generates the expected cdk app when called for typescript', async (workDir) => {
