@@ -330,7 +330,7 @@ export interface FileSystemProps {
    *
    * @default - no replication
    */
-  readonly replicationConfiguration?: ReplicationConfiguration[];
+  readonly replicationConfiguration?: ReplicationConfiguration;
 }
 
 /**
@@ -599,27 +599,23 @@ export class FileSystem extends FileSystemBase {
       throw new Error('ThroughputMode ELASTIC is not supported for file systems with performanceMode MAX_IO');
     }
 
+    const { destinationFileSystem, region, availabilityZone, kmsKey } = props.replicationConfiguration ?? {};
     if (props.replicationConfiguration) {
       if (props.replicationOverwriteProtection === ReplicationOverwriteProtection.DISABLED) {
         throw new Error('Cannot configure `replicationConfiguration` when `replicationOverwriteProtection` is set to `DISABLED`');
       }
-      if (props.replicationConfiguration.length !== 1) {
-        throw new Error('`replicationConfiguration` must contain exactly one destination');
+
+      if (destinationFileSystem && (region || availabilityZone || kmsKey)) {
+        throw new Error('Cannot configure `replicationConfiguration.region`, `replicationConfiguration.az` or `replicationConfiguration.kmsKey` when `replicationConfiguration.destinationFileSystem` is set');
       }
 
-      props.replicationConfiguration.forEach((config) => {
-        const { destinationFileSystem, region, availabilityZone, kmsKey } = config;
+      if (region && !Token.isUnresolved(region) && !/^[a-z]{2}-((iso[a-z]{0,1}-)|(gov-)){0,1}[a-z]+-{0,1}[0-9]{0,1}$/.test(region)) {
+        throw new Error('`replicationConfiguration.region` is invalid.');
+      }
 
-        if (destinationFileSystem && (region || availabilityZone || kmsKey)) {
-          throw new Error('Cannot configure `replicationConfiguration.region`, `replicationConfiguration.az` or `replicationConfiguration.kmsKey` when `replicationConfiguration.destinationFileSystem` is set');
-        }
-        if (region && !Token.isUnresolved(region) && !/^[a-z]{2}-((iso[a-z]{0,1}-)|(gov-)){0,1}[a-z]+-{0,1}[0-9]{0,1}$/.test(region)) {
-          throw new Error('`replicationConfiguration.region` is invalid.');
-        }
-        if (availabilityZone && !Token.isUnresolved(availabilityZone) && !region) {
-          throw new Error('`replicationConfiguration.availabilityZone` cannot be specified without `replicationConfiguration.region`');
-        }
-      });
+      if (availabilityZone && !Token.isUnresolved(availabilityZone) && !region) {
+        throw new Error('`replicationConfiguration.availabilityZone` cannot be specified without `replicationConfiguration.region`');
+      }
     }
 
     // we explictly use 'undefined' to represent 'false' to maintain backwards compatibility since
@@ -649,13 +645,14 @@ export class FileSystem extends FileSystemBase {
     } : undefined;
 
     const replicationConfiguration = props.replicationConfiguration ? {
-      destinations: props.replicationConfiguration.map(
-        (config) => ({
-          fileSystemId: config.destinationFileSystem?.fileSystemId,
-          kmsKeyId: config.kmsKey?.keyArn,
-          region: config.destinationFileSystem ? config.destinationFileSystem.env.region : (config.region ?? Stack.of(this).region),
-          availabilityZoneName: config.availabilityZone,
-        })),
+      destinations: [
+        {
+          fileSystemId: destinationFileSystem?.fileSystemId,
+          kmsKeyId: kmsKey?.keyArn,
+          region: destinationFileSystem ? destinationFileSystem.env.region : (region ?? Stack.of(this).region),
+          availabilityZoneName: availabilityZone,
+        },
+      ],
     } : undefined;
 
     this._resource = new CfnFileSystem(this, 'Resource', {

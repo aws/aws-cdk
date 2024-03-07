@@ -4,7 +4,7 @@ import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import { App, RemovalPolicy, Size, Stack, Tags } from '../../core';
 import * as cxapi from '../../cx-api';
-import { FileSystem, LifecyclePolicy, PerformanceMode, ThroughputMode, OutOfInfrequentAccessPolicy, ReplicationOverwriteProtection, ReplicationConfiguration } from '../lib';
+import { FileSystem, LifecyclePolicy, PerformanceMode, ThroughputMode, OutOfInfrequentAccessPolicy, ReplicationOverwriteProtection } from '../lib';
 
 let stack = new Stack();
 let vpc = new ec2.Vpc(stack, 'VPC');
@@ -964,7 +964,7 @@ describe('replication configuration', () => {
     // WHEN
     new FileSystem(stack, 'EfsFileSystem', {
       vpc,
-      replicationConfiguration: [{}],
+      replicationConfiguration: {},
     });
 
     // THEN
@@ -989,9 +989,9 @@ describe('replication configuration', () => {
     });
     new FileSystem(stack, 'EfsFileSystem', {
       vpc,
-      replicationConfiguration: [{
+      replicationConfiguration: {
         destinationFileSystem: destination,
-      }],
+      },
     });
 
     // THEN
@@ -1012,11 +1012,11 @@ describe('replication configuration', () => {
     // WHEN
     new FileSystem(stack, 'EfsFileSystem', {
       vpc,
-      replicationConfiguration: [{
+      replicationConfiguration: {
         kmsKey: new kms.Key(stack, 'customKey'),
         region: 'us-east-1',
         availabilityZone: 'us-east-1a',
-      }],
+      },
     });
 
     // THEN
@@ -1043,9 +1043,9 @@ describe('replication configuration', () => {
     expect(() => {
       new FileSystem(stack, 'EfsFileSystem', {
         vpc,
-        replicationConfiguration: [{
+        replicationConfiguration: {
           region: 'us-east-1',
-        }],
+        },
         replicationOverwriteProtection: ReplicationOverwriteProtection.DISABLED,
       });
     }).toThrow('Cannot configure `replicationConfiguration` when `replicationOverwriteProtection` is set to `DISABLED`');
@@ -1065,10 +1065,10 @@ describe('replication configuration', () => {
     expect(() => {
       new FileSystem(stack, 'EfsFileSystem', {
         vpc,
-        replicationConfiguration: [{
+        replicationConfiguration: {
           destinationFileSystem: destination,
           ...config,
-        }],
+        },
       });
     }).toThrow('Cannot configure `replicationConfiguration.region`, `replicationConfiguration.az` or `replicationConfiguration.kmsKey` when `replicationConfiguration.destinationFileSystem` is set');
   });
@@ -1084,10 +1084,10 @@ describe('replication configuration', () => {
     expect(() => {
       new FileSystem(stack, 'EfsFileSystem', {
         vpc,
-        replicationConfiguration: [{
+        replicationConfiguration: {
           destinationFileSystem: destination,
           kmsKey: new kms.Key(stack, 'customKey'),
-        }],
+        },
       });
     }).toThrow('Cannot configure `replicationConfiguration.region`, `replicationConfiguration.az` or `replicationConfiguration.kmsKey` when `replicationConfiguration.destinationFileSystem` is set');
   });
@@ -1097,9 +1097,10 @@ describe('replication configuration', () => {
     expect(() => {
       new FileSystem(stack, 'EfsFileSystem', {
         vpc,
-        replicationConfiguration: [{
+        replicationConfiguration: {
+          enable: true,
           region: 'invalid-region',
-        }],
+        },
       });
     }).toThrow('`replicationConfiguration.region` is invalid.');
   });
@@ -1109,22 +1110,10 @@ describe('replication configuration', () => {
     expect(() => {
       new FileSystem(stack, 'EfsFileSystem', {
         vpc,
-        replicationConfiguration: [{
+        replicationConfiguration: {
           availabilityZone: 'us-east-1a',
-        }],
+        },
       });
     }).toThrow('`replicationConfiguration.availabilityZone` cannot be specified without `replicationConfiguration.region`');
-  });
-
-  test.each([
-    [[]], [[{ region: 'us-east-1' }, { region: 'ap-northeast-1' }]],
-  ])('throw error for invalid length of replicationConfiguration', (replicationConfiguration) => {
-    // THEN
-    expect(() => {
-      new FileSystem(stack, 'EfsFileSystem', {
-        vpc,
-        replicationConfiguration,
-      });
-    }).toThrow('`replicationConfiguration` must contain exactly one destination');
   });
 });
