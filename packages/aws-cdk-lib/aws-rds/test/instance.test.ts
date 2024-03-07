@@ -194,6 +194,22 @@ describe('instance', () => {
     Template.fromStack(stack).resourceCountIs('Custom::LogRetention', 4);
   });
 
+  test('create DB instance with io2 instance storage', () => {
+    // WHEN
+    new rds.DatabaseInstance(stack, 'Instance', {
+      engine: rds.DatabaseInstanceEngine.MYSQL,
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.MEDIUM),
+      vpc,
+      storageType: rds.StorageType.IO2,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
+      Iops: 1000,
+      StorageType: 'io2',
+    });
+  });
+
   test('throws when create database with specific AZ and multiAZ enabled', () => {
     expect(() => {
       new rds.DatabaseInstance(stack, 'Instance', {
