@@ -128,7 +128,7 @@ $ cdk synth
 $ # Synthesize cloud assembly for StackName, but don't include dependencies
 $ cdk synth MyStackName --exclusively
 
-$ # Synthesize cloud assembly for StackName, but don't cloudFormation template output to STDOUT
+$ # Synthesize cloud assembly for StackName, but don't write CloudFormation template output to STDOUT
 $ cdk synth MyStackName --quiet
 ```
 
