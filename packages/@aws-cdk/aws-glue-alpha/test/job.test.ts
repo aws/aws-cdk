@@ -542,6 +542,7 @@ describe('Job', () => {
                     {
                       Ref: 'JobSparkUIBucket8E6A0139',
                     },
+                    '/',
                   ],
                 ],
               },
