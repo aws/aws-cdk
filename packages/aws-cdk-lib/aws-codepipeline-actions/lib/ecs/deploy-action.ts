@@ -81,7 +81,7 @@ export class EcsDeployAction extends Action {
   codepipeline.ActionConfig {
     // permissions based on CodePipeline documentation:
     // https://docs.aws.amazon.com/codepipeline/latest/userguide/security-iam.html#how-to-custom-role
-    options.role.addToPrincipalPolicy(new iam.PolicyStatement({
+    options.role.addToPolicy(new iam.PolicyStatement({
       actions: [
         'ecs:DescribeServices',
         'ecs:DescribeTaskDefinition',
