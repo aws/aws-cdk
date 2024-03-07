@@ -1,5 +1,6 @@
 import { Construct } from 'constructs';
 import { ScalableTaskCount } from './scalable-task-count';
+import { ServiceManagedVolume } from './service-managed-volume';
 import * as appscaling from '../../../aws-applicationautoscaling';
 import * as cloudwatch from '../../../aws-cloudwatch';
 import * as ec2 from '../../../aws-ec2';
@@ -69,7 +70,14 @@ export interface DeploymentController {
  */
 export interface DeploymentCircuitBreaker {
   /**
+   * Whether to enable the deployment circuit breaker logic
+   * @default true
+   */
+  readonly enable?: boolean;
+
+  /**
    * Whether to enable rollback on deployment failure
+   *
    * @default false
    */
   readonly rollback?: boolean;
@@ -207,7 +215,7 @@ export interface ServiceConnectService {
   readonly dnsName?: string;
 
   /**
-   The port for clients to use to communicate with this service via Service Connect.
+   * The port for clients to use to communicate with this service via Service Connect.
    *
    * @default the container port specified by the port mapping in portMappingName.
    */
@@ -219,6 +227,32 @@ export interface ServiceConnectService {
    * @default - none
    */
   readonly ingressPortOverride?: number;
+
+  /**
+   * The amount of time in seconds a connection for Service Connect will stay active while idle.
+   *
+   * A value of 0 can be set to disable `idleTimeout`.
+   *
+   * If `idleTimeout` is set to a time that is less than `perRequestTimeout`, the connection will close
+   * when the `idleTimeout` is reached and not the `perRequestTimeout`.
+   *
+   * @default - Duration.minutes(5) for HTTP/HTTP2/GRPC, Duration.hours(1) for TCP.
+   */
+  readonly idleTimeout?: Duration;
+
+  /**
+   * The amount of time waiting for the upstream to respond with a complete response per request for
+   * Service Connect.
+   *
+   * A value of 0 can be set to disable `perRequestTimeout`.
+   * Can only be set when the `appProtocol` for the application container is HTTP/HTTP2/GRPC.
+   *
+   * If `idleTimeout` is set to a time that is less than `perRequestTimeout`, the connection will close
+   * when the `idleTimeout` is reached and not the `perRequestTimeout`.
+   *
+   * @default - Duration.seconds(15)
+   */
+  readonly perRequestTimeout?: Duration;
 }
 
 /**
@@ -357,6 +391,14 @@ export interface BaseServiceOptions {
    * @default - Uses the revision of the passed task definition deployed by CloudFormation
    */
   readonly taskDefinitionRevision?: TaskDefinitionRevision;
+
+  /**
+   * Configuration details for a volume used by the service. This allows you to specify
+   * details about the EBS volume that can be attched to ECS tasks.
+   *
+   * @default - undefined
+   */
+  readonly volumeConfigurations?: ServiceManagedVolume[];
 }
 
 /**
@@ -577,6 +619,11 @@ export abstract class BaseService extends Resource
   private scalableTaskCount?: ScalableTaskCount;
 
   /**
+   * All volumes
+   */
+  private readonly volumes: ServiceManagedVolume[] = [];
+
+  /**
    * Constructs a new instance of the BaseService class.
    */
   constructor(
@@ -610,7 +657,7 @@ export abstract class BaseService extends Resource
         maximumPercent: props.maxHealthyPercent || 200,
         minimumHealthyPercent: props.minHealthyPercent === undefined ? 50 : props.minHealthyPercent,
         deploymentCircuitBreaker: props.circuitBreaker ? {
-          enable: true,
+          enable: props.circuitBreaker.enable ?? true,
           rollback: props.circuitBreaker.rollback ?? false,
         } : undefined,
         alarms: Lazy.any({ produce: () => this.deploymentAlarms }, { omitEmptyArray: true }),
@@ -626,6 +673,7 @@ export abstract class BaseService extends Resource
       networkConfiguration: Lazy.any({ produce: () => this.networkConfiguration }, { omitEmptyArray: true }),
       serviceRegistries: Lazy.any({ produce: () => this.serviceRegistries }, { omitEmptyArray: true }),
       serviceConnectConfiguration: Lazy.any({ produce: () => this._serviceConnectConfig }, { omitEmptyArray: true }),
+      volumeConfigurations: Lazy.any({ produce: () => this.renderVolumes() }, { omitEmptyArray: true }),
       ...additionalProps,
     });
 
@@ -686,6 +734,10 @@ export abstract class BaseService extends Resource
       this.enableServiceConnect(props.serviceConnectConfiguration);
     }
 
+    if (props.volumeConfigurations) {
+      props.volumeConfigurations.forEach(v => this.addVolume(v));
+    }
+
     if (props.enableExecuteCommand) {
       this.enableExecuteCommand();
 
@@ -719,6 +771,48 @@ export abstract class BaseService extends Resource
     }
 
     this.node.defaultChild = this.resource;
+  }
+
+  /**
+   * Adds a volume to the Service.
+   */
+  public addVolume(volume: ServiceManagedVolume) {
+    this.volumes.push(volume);
+  }
+
+  private renderVolumes(): CfnService.ServiceVolumeConfigurationProperty[] {
+    if (this.volumes.length > 1) {
+      throw new Error(`Only one EBS volume can be specified for 'volumeConfigurations', got: ${this.volumes.length}`);
+    }
+    return this.volumes.map(renderVolume);
+    function renderVolume(spec: ServiceManagedVolume): CfnService.ServiceVolumeConfigurationProperty {
+      const tagSpecifications = spec.config?.tagSpecifications?.map(ebsTagSpec => {
+        return {
+          resourceType: 'volume',
+          propagateTags: ebsTagSpec.propagateTags,
+          tags: ebsTagSpec.tags ? Object.entries(ebsTagSpec.tags).map(([key, value]) => ({
+            key: key,
+            value: value,
+          })) : undefined,
+        } as CfnService.EBSTagSpecificationProperty;
+      });
+
+      return {
+        name: spec.name,
+        managedEbsVolume: spec.config && {
+          roleArn: spec.role.roleArn,
+          encrypted: spec.config.encrypted,
+          filesystemType: spec.config.fileSystemType,
+          iops: spec.config.iops,
+          kmsKeyId: spec.config.kmsKeyId?.keyId,
+          throughput: spec.config.throughput,
+          volumeType: spec.config.volumeType,
+          snapshotId: spec.config.snapShotId,
+          sizeInGiB: spec.config.size?.toGibibytes(),
+          tagSpecifications: tagSpecifications,
+        },
+      };
+    }
   }
 
   /**
@@ -819,6 +913,7 @@ export abstract class BaseService extends Resource
         discoveryName: svc.discoveryName,
         ingressPortOverride: svc.ingressPortOverride,
         clientAliases: [alias],
+        timeout: this.renderTimeout(svc.idleTimeout, svc.perRequestTimeout),
       } as CfnService.ServiceConnectServiceProperty;
     });
 
@@ -1400,6 +1495,20 @@ export abstract class BaseService extends Resource
     }
     return true;
   }
+
+  private renderTimeout(idleTimeout?: Duration, perRequestTimeout?: Duration): CfnService.TimeoutConfigurationProperty | undefined {
+    if (!idleTimeout && !perRequestTimeout) return undefined;
+    if (idleTimeout && idleTimeout.toMilliseconds() > 0 && idleTimeout.toMilliseconds() < Duration.seconds(1).toMilliseconds()) {
+      throw new Error(`idleTimeout must be at least 1 second or 0 to disable it, got ${idleTimeout.toMilliseconds()}ms.`);
+    }
+    if (perRequestTimeout && perRequestTimeout.toMilliseconds() > 0 && perRequestTimeout.toMilliseconds() < Duration.seconds(1).toMilliseconds()) {
+      throw new Error(`perRequestTimeout must be at least 1 second or 0 to disable it, got ${perRequestTimeout.toMilliseconds()}ms.`);
+    }
+    return {
+      idleTimeoutSeconds: idleTimeout?.toSeconds(),
+      perRequestTimeoutSeconds: perRequestTimeout?.toSeconds(),
+    };
+  }
 }
 
 /**
@@ -1411,7 +1520,7 @@ export interface CloudMapOptions {
    *
    * @default CloudFormation-generated name
    */
-  readonly name?: string,
+  readonly name?: string;
 
   /**
    * The service discovery namespace for the Cloud Map service to attach to the ECS service.
@@ -1425,7 +1534,7 @@ export interface CloudMapOptions {
    *
    * @default - DnsRecordType.A if TaskDefinition.networkMode = AWS_VPC, otherwise DnsRecordType.SRV
    */
-  readonly dnsRecordType?: cloudmap.DnsRecordType.A | cloudmap.DnsRecordType.SRV,
+  readonly dnsRecordType?: cloudmap.DnsRecordType.A | cloudmap.DnsRecordType.SRV;
 
   /**
    * The amount of time that you want DNS resolvers to cache the settings for this record.
@@ -1522,7 +1631,7 @@ export enum LaunchType {
   /**
    * The service will be launched using the EXTERNAL launch type
    */
-  EXTERNAL = 'EXTERNAL'
+  EXTERNAL = 'EXTERNAL',
 }
 
 /**
@@ -1543,7 +1652,7 @@ export enum DeploymentControllerType {
   /**
    * The external (EXTERNAL) deployment type enables you to use any third-party deployment controller
    */
-  EXTERNAL = 'EXTERNAL'
+  EXTERNAL = 'EXTERNAL',
 }
 
 /**
@@ -1563,7 +1672,7 @@ export enum PropagatedTagSource {
   /**
    * Do not propagate
    */
-  NONE = 'NONE'
+  NONE = 'NONE',
 }
 
 /**

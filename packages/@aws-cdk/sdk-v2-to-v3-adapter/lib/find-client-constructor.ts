@@ -6,9 +6,9 @@ export function findV3ClientConstructor(pkg: Object) {
     },
   ) as [string, {
     new (config: any): {
-      send: (command: any) => Promise<any>
-      config: any
-    }
+      send: (command: any) => Promise<any>;
+      config: any;
+    };
   }];
   return ServiceClient;
 }

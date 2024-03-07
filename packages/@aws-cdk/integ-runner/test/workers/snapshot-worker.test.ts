@@ -16,7 +16,7 @@ afterEach(() => {
   jest.restoreAllMocks();
 });
 
-const directory = path.join(__dirname, '../test-data');
+const directory = path.join(__dirname, '..', 'test-data');
 describe('Snapshot tests', () => {
   test('no snapshot', () => {
     // WHEN

@@ -70,6 +70,7 @@ myTopic.addSubscription(new subscriptions.LambdaSubscription(fn, {
     color: sns.SubscriptionFilter.stringFilter({
       allowlist: ['red', 'orange'],
       matchPrefixes: ['bl'],
+      matchSuffixes: ['ue'],
     }),
     size: sns.SubscriptionFilter.stringFilter({
       denylist: ['small', 'medium'],
@@ -207,6 +208,44 @@ const topicPolicy = new sns.TopicPolicy(this, 'Policy', {
 });
 ```
 
+### Enforce encryption of data in transit when publishing to a topic
+
+You can enforce SSL when creating a topic policy by setting the `enforceSSL` flag:
+
+```ts
+const topic = new sns.Topic(this, 'Topic');
+const policyDocument = new iam.PolicyDocument({
+  assignSids: true,
+  statements: [
+    new iam.PolicyStatement({
+      actions: ["sns:Publish"],
+      principals: [new iam.ServicePrincipal('s3.amazonaws.com')],
+      resources: [topic.topicArn],
+    }),
+  ],
+});
+
+const topicPolicy = new sns.TopicPolicy(this, 'Policy', {
+  topics: [topic],
+  policyDocument,
+  enforceSSL: true,
+});
+```
+
+Similiarly you can enforce SSL by setting the `enforceSSL` flag on the topic:
+
+```ts
+const topic = new sns.Topic(this, 'TopicAddPolicy', {
+  enforceSSL: true,
+});
+
+topic.addToResourcePolicy(new iam.PolicyStatement({
+  principals: [new iam.ServicePrincipal('s3.amazonaws.com')],
+  actions: ['sns:Publish'],
+  resources: [topic.topicArn],
+}));
+```
+
 ## Delivery status logging
 
 Amazon SNS provides support to log the delivery status of notification messages sent to topics with the following Amazon SNS endpoints:
@@ -248,3 +287,22 @@ topic.addLoggingConfig({
 ```
 
 Note that valid values for `successFeedbackSampleRate` are integer between 0-100.
+
+## Archive Policy
+
+Message archiving provides the ability to archive a single copy of all messages published to your topic.
+You can store published messages within your topic by enabling the message archive policy on the topic, which enables message archiving for all subscriptions linked to that topic.
+Messages can be archived for a minimum of one day to a maximum of 365 days.
+
+Example with a archive policy for SQS:
+
+```ts
+declare const role: iam.Role;
+const topic = new sns.Topic(this, 'MyTopic', {
+  fifo: true,
+  messageRetentionPeriodInDays: 7,
+});
+```
+
+**Note**: The `messageRetentionPeriodInDays` property is only available for FIFO topics.
+

@@ -2,12 +2,15 @@ import { Template, Match } from '../../../assertions';
 import * as codebuild from '../../../aws-codebuild';
 import * as codecommit from '../../../aws-codecommit';
 import * as codepipeline from '../../../aws-codepipeline';
+import { LambdaFunction } from '../../../aws-events-targets';
 import * as iam from '../../../aws-iam';
 import * as kms from '../../../aws-kms';
+import { Code, Function, Runtime } from '../../../aws-lambda';
 import * as s3 from '../../../aws-s3';
 import { Stack, Lazy, App } from '../../../core';
 import { CODECOMMIT_SOURCE_ACTION_DEFAULT_BRANCH_NAME } from '../../../cx-api';
 import * as cpactions from '../../lib';
+import { CodeCommitSourceActionProps } from '../../lib';
 
 /* eslint-disable quote-props */
 
@@ -190,6 +193,69 @@ describe('CodeCommit Source Action', () => {
       });
 
       Template.fromStack(stack).resourceCountIs('AWS::Events::Rule', 0);
+    });
+
+    test('check when a custom event is provided', () => {
+      const stack = new Stack();
+
+      const eventPattern
+      = {
+        'detail-type': ['CodeCommit Repository State Change'],
+        'resources': ['foo'],
+        'source': ['aws.codecommit'],
+        'detail': {
+          referenceType: ['branch'],
+          event: ['referenceCreated', 'referenceUpdated'],
+          referenceName: ['test-branch'],
+        },
+      };
+
+      minimalPipeline(stack, cpactions.CodeCommitTrigger.EVENTS, {
+        customEventRule: {
+          eventPattern,
+          target: new LambdaFunction(new Function(stack, 'TestFunction', {
+            runtime: Runtime.NODEJS_LATEST,
+            handler: 'index.handler',
+            code: Code.fromInline('exports.handler = handler.toString()'),
+          })),
+        },
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
+        'EventPattern': {
+          'source': [
+            'aws.codecommit',
+          ],
+          'resources': ['foo', {
+            'Fn::GetAtt': [
+              'MyRepoF4F48043',
+              'Arn',
+            ],
+          }],
+          'detail-type': [
+            'CodeCommit Repository State Change',
+          ],
+          'detail': {
+            'referenceType': [
+              'branch',
+            ],
+            'event': [
+              'referenceCreated',
+              'referenceUpdated',
+            ],
+            'referenceName': [
+              'test-branch',
+            ],
+          },
+        },
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+        'Handler': 'index.handler',
+        'Code': {
+          'ZipFile': 'exports.handler = handler.toString()',
+        },
+      });
     });
 
     test('cannot be created with an empty branch', () => {
@@ -750,7 +816,7 @@ describe('CodeCommit Source Action', () => {
   });
 });
 
-function minimalPipeline(stack: Stack, trigger: cpactions.CodeCommitTrigger | undefined): codepipeline.Pipeline {
+function minimalPipeline(stack: Stack, trigger?: cpactions.CodeCommitTrigger, customEventRule?: Pick<CodeCommitSourceActionProps, 'customEventRule'>): codepipeline.Pipeline {
   const sourceOutput = new codepipeline.Artifact();
   return new codepipeline.Pipeline(stack, 'MyPipeline', {
     stages: [
@@ -764,6 +830,7 @@ function minimalPipeline(stack: Stack, trigger: cpactions.CodeCommitTrigger | un
             }),
             output: sourceOutput,
             trigger,
+            customEventRule: customEventRule?.customEventRule,
           }),
         ],
       },

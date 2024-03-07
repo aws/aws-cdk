@@ -91,6 +91,29 @@ new autoscaling.AutoScalingGroup(this, 'ASG', {
 });
 ```
 
+You can specify instances requirements with the `instanceRequirements ` property:
+
+```ts
+declare const vpc: ec2.Vpc;
+declare const launchTemplate1: ec2.LaunchTemplate;
+
+new autoscaling.AutoScalingGroup(this, 'ASG', {
+  vpc,
+  mixedInstancesPolicy: {
+    launchTemplate: launchTemplate1,
+    launchTemplateOverrides: [
+      {
+        instanceRequirements: {
+          vCpuCount: { min: 4, max: 8 },
+          memoryMiB: { min: 16384 },
+          cpuManufacturers: ['intel'],
+        },
+      }
+    ],
+  }
+});
+```
+
 ## Machine Images (AMIs)
 
 AMIs control the OS that gets launched when you start your EC2 instance. The EC2
@@ -199,6 +222,8 @@ autoScalingGroup.scaleOnMetric('ScaleToCPU', {
     { lower: 50, change: +1 },
     { lower: 70, change: +3 },
   ],
+  evaluationPeriods: 10,
+  datapointsToAlarm: 5,
 
   // Change this to AdjustmentType.PERCENT_CHANGE_IN_CAPACITY to interpret the
   // 'change' numbers before as percentages instead of capacity counts.
@@ -514,10 +539,22 @@ to determine which instances it terminates first during scale-in events. You
 can specify one or more termination policies with the `terminationPolicies`
 property:
 
+[Custom termination policy](https://docs.aws.amazon.com/autoscaling/ec2/userguide/lambda-custom-termination-policy.html) with lambda
+can be used to determine which instances to terminate based on custom logic.
+The custom termination policy can be specified using `TerminationPolicy.CUSTOM_LAMBDA_FUNCTION`. If this is
+specified, you must also supply a value of lambda arn in the `terminationPolicyCustomLambdaFunctionArn` property and
+attach necessary [permission](https://docs.aws.amazon.com/autoscaling/ec2/userguide/lambda-custom-termination-policy.html#lambda-custom-termination-policy-create-function)
+to invoke the lambda function.
+
+If there are multiple termination policies specified,
+custom termination policy with lambda `TerminationPolicy.CUSTOM_LAMBDA_FUNCTION`
+must be specified first.
+
 ```ts
 declare const vpc: ec2.Vpc;
 declare const instanceType: ec2.InstanceType;
 declare const machineImage: ec2.IMachineImage;
+declare const arn: string;
 
 new autoscaling.AutoScalingGroup(this, 'ASG', {
   vpc,
@@ -527,9 +564,13 @@ new autoscaling.AutoScalingGroup(this, 'ASG', {
   // ...
 
   terminationPolicies: [
+    autoscaling.TerminationPolicy.CUSTOM_LAMBDA_FUNCTION,
     autoscaling.TerminationPolicy.OLDEST_INSTANCE,
     autoscaling.TerminationPolicy.DEFAULT,
   ],
+
+  //terminationPolicyCustomLambdaFunctionArn property must be specified if the TerminationPolicy.CUSTOM_LAMBDA_FUNCTION is used
+  terminationPolicyCustomLambdaFunctionArn: arn,
 });
 ```
 

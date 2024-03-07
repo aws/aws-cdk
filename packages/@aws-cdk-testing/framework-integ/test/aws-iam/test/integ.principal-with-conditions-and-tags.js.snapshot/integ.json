@@ -1,0 +1,12 @@
+{
+  "version": "34.0.0",
+  "testCases": {
+    "PrincipalWithConditionAndTags/DefaultTest": {
+      "stacks": [
+        "integ-principal-with-conditions-and-tags"
+      ],
+      "assertionStack": "PrincipalWithConditionAndTags/DefaultTest/DeployAssert",
+      "assertionStackName": "PrincipalWithConditionAndTagsDefaultTestDeployAssertA5074573"
+    }
+  }
+}

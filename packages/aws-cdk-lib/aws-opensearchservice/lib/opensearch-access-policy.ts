@@ -33,6 +33,7 @@ export class OpenSearchAccessPolicy extends cr.AwsCustomResource {
   constructor(scope: Construct, id: string, props: OpenSearchAccessPolicyProps) {
     super(scope, id, {
       resourceType: 'Custom::OpenSearchAccessPolicy',
+      installLatestAwsSdk: false,
       onUpdate: {
         action: 'updateDomainConfig',
         service: 'OpenSearch',

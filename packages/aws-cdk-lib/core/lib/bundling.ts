@@ -75,7 +75,7 @@ export interface BundlingOptions {
    *
    * @default - no environment variables.
    */
-  readonly environment?: { [key: string]: string; };
+  readonly environment?: { [key: string]: string };
 
   /**
    * Working directory inside the Docker container.
@@ -538,7 +538,7 @@ export interface DockerRunOptions {
    *
    * @default - no environment variables.
    */
-  readonly environment?: { [key: string]: string; };
+  readonly environment?: { [key: string]: string };
 
   /**
    * Working directory inside the container.

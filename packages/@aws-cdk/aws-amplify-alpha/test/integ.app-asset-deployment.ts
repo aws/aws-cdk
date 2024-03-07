@@ -10,7 +10,7 @@ class TestStack extends Stack {
     super(scope, id, props);
 
     const asset = new Asset(this, 'SampleAsset', {
-      path: path.join(__dirname, './test-asset'),
+      path: path.join(__dirname, 'test-asset'),
     });
 
     const amplifyApp = new amplify.App(this, 'App', {});

@@ -1,0 +1,13 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "integ-test-bucket-deployment-loggroup/DefaultTest": {
+      "stacks": [
+        "test-bucket-deployment-loggroup"
+      ],
+      "diffAssets": false,
+      "assertionStack": "integ-test-bucket-deployment-loggroup/DefaultTest/DeployAssert",
+      "assertionStackName": "integtestbucketdeploymentloggroupDefaultTestDeployAssertB356FD0A"
+    }
+  }
+}

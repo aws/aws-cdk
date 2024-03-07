@@ -13,7 +13,7 @@ enum ContainerProviderTypes {
   /**
    * Supported container provider type for a EKS Cluster
    */
-  EKS = 'EKS'
+  EKS = 'EKS',
 }
 
 /**

@@ -2345,7 +2345,9 @@ describe('function', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
         Environment: {
           Variables: {
+            AWS_CODEGURU_PROFILER_GROUP_NAME: { Ref: 'MyLambdaProfilingGroupEC6DE32F' },
             AWS_CODEGURU_PROFILER_GROUP_ARN: { 'Fn::GetAtt': ['MyLambdaProfilingGroupEC6DE32F', 'Arn'] },
+            AWS_CODEGURU_PROFILER_TARGET_REGION: { Ref: 'AWS::Region' },
             AWS_CODEGURU_PROFILER_ENABLED: 'TRUE',
           },
         },
@@ -2389,16 +2391,58 @@ describe('function', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
         Environment: {
           Variables: {
+            AWS_CODEGURU_PROFILER_GROUP_NAME: { Ref: 'ProfilingGroup26979FD7' },
             AWS_CODEGURU_PROFILER_GROUP_ARN: {
-              'Fn::Join': [
-                '',
-                [
-                  'arn:', { Ref: 'AWS::Partition' }, ':codeguru-profiler:', { Ref: 'AWS::Region' },
-                  ':', { Ref: 'AWS::AccountId' }, ':profilingGroup/', { Ref: 'ProfilingGroup26979FD7' },
-                ],
+              'Fn::GetAtt': [
+                'ProfilingGroup26979FD7',
+                'Arn',
               ],
             },
+            AWS_CODEGURU_PROFILER_TARGET_REGION: { Ref: 'AWS::Region' },
             AWS_CODEGURU_PROFILER_ENABLED: 'TRUE',
+          },
+        },
+      });
+    });
+
+    test('default function with client imported Profiling Group', () => {
+      const stack = new cdk.Stack();
+
+      new lambda.Function(stack, 'MyLambda', {
+        code: new lambda.InlineCode('foo'),
+        handler: 'index.handler',
+        runtime: lambda.Runtime.PYTHON_3_9,
+        profilingGroup: ProfilingGroup.fromProfilingGroupArn(stack, 'ProfilingGroup', 'arn:aws:codeguru-profiler:us-east-1:1234567890:profilingGroup/MyAwesomeProfilingGroup'),
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+        PolicyDocument: {
+          Statement: [
+            {
+              Action: [
+                'codeguru-profiler:ConfigureAgent',
+                'codeguru-profiler:PostAgentProfile',
+              ],
+              Effect: 'Allow',
+              Resource: 'arn:aws:codeguru-profiler:us-east-1:1234567890:profilingGroup/MyAwesomeProfilingGroup',
+            },
+          ],
+          Version: '2012-10-17',
+        },
+        PolicyName: 'MyLambdaServiceRoleDefaultPolicy5BBC6F68',
+        Roles: [
+          {
+            Ref: 'MyLambdaServiceRole4539ECB6',
+          },
+        ],
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+        Environment: {
+          Variables: {
+            AWS_CODEGURU_PROFILER_GROUP_NAME: 'MyAwesomeProfilingGroup',
+            AWS_CODEGURU_PROFILER_GROUP_ARN: 'arn:aws:codeguru-profiler:us-east-1:1234567890:profilingGroup/MyAwesomeProfilingGroup',
+            AWS_CODEGURU_PROFILER_TARGET_REGION: 'us-east-1',
           },
         },
       });
@@ -2438,31 +2482,115 @@ describe('function', () => {
     test('default function with profiling enabled and client provided env vars', () => {
       const stack = new cdk.Stack();
 
-      expect(() => new lambda.Function(stack, 'MyLambda', {
+      new lambda.Function(stack, 'MyLambda', {
         code: new lambda.InlineCode('foo'),
         handler: 'index.handler',
         runtime: lambda.Runtime.PYTHON_3_9,
         profiling: true,
         environment: {
+          AWS_CODEGURU_PROFILER_GROUP_NAME: 'profiler_group',
           AWS_CODEGURU_PROFILER_GROUP_ARN: 'profiler_group_arn',
+          AWS_CODEGURU_PROFILER_TARGET_REGION: 'us-east-1',
           AWS_CODEGURU_PROFILER_ENABLED: 'yes',
         },
-      })).toThrow(/AWS_CODEGURU_PROFILER_GROUP_ARN and AWS_CODEGURU_PROFILER_ENABLED must not be set when profiling options enabled/);
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+        PolicyDocument: {
+          Statement: [
+            {
+              Action: [
+                'codeguru-profiler:ConfigureAgent',
+                'codeguru-profiler:PostAgentProfile',
+              ],
+              Effect: 'Allow',
+              Resource: {
+                'Fn::GetAtt': [
+                  'MyLambdaProfilingGroupEC6DE32F',
+                  'Arn',
+                ],
+              },
+            },
+          ],
+          Version: '2012-10-17',
+        },
+        PolicyName: 'MyLambdaServiceRoleDefaultPolicy5BBC6F68',
+        Roles: [
+          {
+            Ref: 'MyLambdaServiceRole4539ECB6',
+          },
+        ],
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+        Environment: {
+          Variables: {
+            AWS_CODEGURU_PROFILER_GROUP_NAME: 'profiler_group',
+            AWS_CODEGURU_PROFILER_GROUP_ARN: 'profiler_group_arn',
+            AWS_CODEGURU_PROFILER_TARGET_REGION: 'us-east-1',
+            AWS_CODEGURU_PROFILER_ENABLED: 'yes',
+          },
+        },
+      });
+
+      Annotations.fromStack(stack).hasWarning('/Default/MyLambda', Match.stringLikeRegexp('AWS_CODEGURU_PROFILER_GROUP_NAME, AWS_CODEGURU_PROFILER_GROUP_ARN, AWS_CODEGURU_PROFILER_TARGET_REGION, and AWS_CODEGURU_PROFILER_ENABLED should not be set when profiling options enabled'));
     });
 
     test('default function with client provided Profiling Group and client provided env vars', () => {
       const stack = new cdk.Stack();
 
-      expect(() => new lambda.Function(stack, 'MyLambda', {
+      new lambda.Function(stack, 'MyLambda', {
         code: new lambda.InlineCode('foo'),
         handler: 'index.handler',
         runtime: lambda.Runtime.PYTHON_3_9,
         profilingGroup: new ProfilingGroup(stack, 'ProfilingGroup'),
         environment: {
+          AWS_CODEGURU_PROFILER_GROUP_NAME: 'profiler_group',
           AWS_CODEGURU_PROFILER_GROUP_ARN: 'profiler_group_arn',
+          AWS_CODEGURU_PROFILER_TARGET_REGION: 'us-east-1',
           AWS_CODEGURU_PROFILER_ENABLED: 'yes',
         },
-      })).toThrow(/AWS_CODEGURU_PROFILER_GROUP_ARN and AWS_CODEGURU_PROFILER_ENABLED must not be set when profiling options enabled/);
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+        PolicyDocument: {
+          Statement: [
+            {
+              Action: [
+                'codeguru-profiler:ConfigureAgent',
+                'codeguru-profiler:PostAgentProfile',
+              ],
+              Effect: 'Allow',
+              Resource: {
+                'Fn::GetAtt': [
+                  'ProfilingGroup26979FD7',
+                  'Arn',
+                ],
+              },
+            },
+          ],
+          Version: '2012-10-17',
+        },
+        PolicyName: 'MyLambdaServiceRoleDefaultPolicy5BBC6F68',
+        Roles: [
+          {
+            Ref: 'MyLambdaServiceRole4539ECB6',
+          },
+        ],
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+        Environment: {
+          Variables: {
+            AWS_CODEGURU_PROFILER_GROUP_NAME: 'profiler_group',
+            AWS_CODEGURU_PROFILER_GROUP_ARN: 'profiler_group_arn',
+            AWS_CODEGURU_PROFILER_TARGET_REGION: 'us-east-1',
+            AWS_CODEGURU_PROFILER_ENABLED: 'yes',
+          },
+        },
+      });
+
+      Annotations.fromStack(stack).hasWarning('/Default/MyLambda', Match.stringLikeRegexp('AWS_CODEGURU_PROFILER_GROUP_NAME, AWS_CODEGURU_PROFILER_GROUP_ARN, AWS_CODEGURU_PROFILER_TARGET_REGION, and AWS_CODEGURU_PROFILER_ENABLED should not be set when profiling options enabled'));
     });
 
     test('throws an error when used with an unsupported runtime', () => {
@@ -2675,6 +2803,43 @@ describe('function', () => {
           'VpcPrivateSubnet2DefaultRoute060D2087',
           'VpcPrivateSubnet2RouteTableAssociationA89CAD56',
         ],
+      });
+    });
+
+    test('correct security group is created when deployed in separate stacks', () => {
+      const app = new cdk.App();
+
+      // EfsStack
+      const efsStack = new cdk.Stack(app, 'EfsStack');
+      const vpc = new ec2.Vpc(efsStack, 'Vpc');
+      const fs = new efs.FileSystem(efsStack, 'Efs', {
+        vpc,
+      });
+      const accessPoint = fs.addAccessPoint('AccessPoint');
+
+      // LambdaStack
+      const lambdaStack = new cdk.Stack(app, 'LambdaStack');
+      new lambda.Function(lambdaStack, 'MyFunction', {
+        vpc,
+        handler: 'foo',
+        runtime: lambda.Runtime.NODEJS_LATEST,
+        code: lambda.Code.fromAsset(path.join(__dirname, 'handler.zip')),
+        filesystem: lambda.FileSystem.fromEfsAccessPoint(accessPoint, '/mnt/msg'),
+      });
+
+      Template.fromStack(lambdaStack).hasResourceProperties('AWS::EC2::SecurityGroup', {
+        SecurityGroupEgress: [
+          {
+            CidrIp: '0.0.0.0/0',
+            IpProtocol: '-1',
+          },
+        ],
+      });
+
+      Template.fromStack(lambdaStack).hasResourceProperties('AWS::EC2::SecurityGroupIngress', {
+        FromPort: 2049,
+        ToPort: 2049,
+        IpProtocol: 'tcp',
       });
     });
   });
@@ -3276,14 +3441,14 @@ describe('function', () => {
       handler: 'index.handler',
       runtime: lambda.Runtime.NODEJS_LATEST,
       adotInstrumentation: {
-        layerVersion: lambda.AdotLayerVersion.fromJavaSdkLayerVersion(AdotLambdaLayerJavaSdkVersion.V1_31_0),
+        layerVersion: lambda.AdotLayerVersion.fromJavaSdkLayerVersion(AdotLambdaLayerJavaSdkVersion.V1_32_0),
         execWrapper: lambda.AdotLambdaExecWrapper.REGULAR_HANDLER,
       },
     });
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
-      Layers: ['arn:aws:lambda:us-west-2:901920570463:layer:aws-otel-java-wrapper-amd64-ver-1-31-0:1'],
+      Layers: ['arn:aws:lambda:us-west-2:901920570463:layer:aws-otel-java-wrapper-amd64-ver-1-32-0:1'],
       Environment: {
         Variables: {
           AWS_LAMBDA_EXEC_WRAPPER: '/opt/otel-handler',
@@ -3305,14 +3470,14 @@ describe('function', () => {
       handler: 'index.handler',
       runtime: lambda.Runtime.PYTHON_3_9,
       adotInstrumentation: {
-        layerVersion: lambda.AdotLayerVersion.fromPythonSdkLayerVersion(lambda.AdotLambdaLayerPythonSdkVersion.V1_20_0_1),
+        layerVersion: lambda.AdotLayerVersion.fromPythonSdkLayerVersion(lambda.AdotLambdaLayerPythonSdkVersion.V1_21_0),
         execWrapper: lambda.AdotLambdaExecWrapper.INSTRUMENT_HANDLER,
       },
     });
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
-      Layers: ['arn:aws:lambda:us-west-2:901920570463:layer:aws-otel-python-amd64-ver-1-20-0:3'],
+      Layers: ['arn:aws:lambda:us-west-2:901920570463:layer:aws-otel-python-amd64-ver-1-21-0:1'],
       Environment: {
         Variables: {
           AWS_LAMBDA_EXEC_WRAPPER: '/opt/otel-instrument',
@@ -3329,7 +3494,7 @@ describe('function', () => {
       handler: 'index.handler',
       runtime: lambda.Runtime.PYTHON_3_10,
       adotInstrumentation: {
-        layerVersion: lambda.AdotLayerVersion.fromPythonSdkLayerVersion(lambda.AdotLambdaLayerPythonSdkVersion.V1_20_0_1),
+        layerVersion: lambda.AdotLayerVersion.fromPythonSdkLayerVersion(lambda.AdotLambdaLayerPythonSdkVersion.V1_21_0),
         execWrapper: lambda.AdotLambdaExecWrapper.REGULAR_HANDLER,
       },
     })).toThrow(/Python Adot Lambda layer requires AdotLambdaExecWrapper.INSTRUMENT_HANDLER/);
@@ -3348,7 +3513,7 @@ describe('function', () => {
         new lambda.DockerImageFunction(stack, 'MyLambda', {
           code: lambda.DockerImageCode.fromImageAsset(dockerLambdaHandlerPath),
           adotInstrumentation: {
-            layerVersion: lambda.AdotLayerVersion.fromJavaSdkLayerVersion(AdotLambdaLayerJavaSdkVersion.V1_31_0),
+            layerVersion: lambda.AdotLayerVersion.fromJavaSdkLayerVersion(AdotLambdaLayerJavaSdkVersion.V1_32_0),
             execWrapper: lambda.AdotLambdaExecWrapper.REGULAR_HANDLER,
           },
         }),
@@ -3666,6 +3831,100 @@ describe('VPC configuration', () => {
       securityGroups: [],
       allowAllOutbound: false,
     })).not.toThrow();
+  });
+
+  test('with ipv6AllowedForDualStack and no VPC', () => {
+    const stack = new cdk.Stack();
+    expect(() => new lambda.Function(stack, 'MyLambda', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.PYTHON_3_9,
+      ipv6AllowedForDualStack: true,
+    })).toThrow(/Cannot configure 'ipv6AllowedForDualStack' without configuring a VPC/);
+  });
+
+  test('set ipv6AllowedForDualStack with VPC', () => {
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Vpc', {
+      maxAzs: 3,
+      natGateways: 1,
+    });
+    const securityGroup = new ec2.SecurityGroup(stack, 'LambdaSG', {
+      vpc,
+      allowAllOutbound: true,
+      allowAllIpv6Outbound: true,
+    });
+    new lambda.Function(stack, 'MyLambda', {
+      vpc: vpc,
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.PYTHON_3_9,
+      ipv6AllowedForDualStack: true,
+      securityGroups: [securityGroup],
+      vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS },
+    });
+
+    Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
+      Properties:
+      {
+        Code: { ZipFile: 'foo' },
+        Handler: 'index.handler',
+        Runtime: 'python3.9',
+        Role: { 'Fn::GetAtt': ['MyLambdaServiceRole4539ECB6', 'Arn'] },
+        VpcConfig: {
+          Ipv6AllowedForDualStack: true,
+          SecurityGroupIds: [
+            { 'Fn::GetAtt': ['LambdaSG9DBFCFB7', 'GroupId'] },
+          ],
+          SubnetIds: [
+            { Ref: 'VpcPrivateSubnet1Subnet536B997A' },
+            { Ref: 'VpcPrivateSubnet2Subnet3788AAA1' },
+          ],
+        },
+      },
+    });
+  });
+
+  test('set ipv6AllowedForDualStack to False with VPC', () => {
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Vpc', {
+      maxAzs: 3,
+      natGateways: 1,
+    });
+    const securityGroup = new ec2.SecurityGroup(stack, 'LambdaSG', {
+      vpc,
+      allowAllOutbound: true,
+      allowAllIpv6Outbound: true,
+    });
+    new lambda.Function(stack, 'MyLambda', {
+      vpc: vpc,
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.PYTHON_3_9,
+      ipv6AllowedForDualStack: false,
+      securityGroups: [securityGroup],
+      vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS },
+    });
+
+    Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
+      Properties:
+      {
+        Code: { ZipFile: 'foo' },
+        Handler: 'index.handler',
+        Runtime: 'python3.9',
+        Role: { 'Fn::GetAtt': ['MyLambdaServiceRole4539ECB6', 'Arn'] },
+        VpcConfig: {
+          Ipv6AllowedForDualStack: false,
+          SecurityGroupIds: [
+            { 'Fn::GetAtt': ['LambdaSG9DBFCFB7', 'GroupId'] },
+          ],
+          SubnetIds: [
+            { Ref: 'VpcPrivateSubnet1Subnet536B997A' },
+            { Ref: 'VpcPrivateSubnet2Subnet3788AAA1' },
+          ],
+        },
+      },
+    });
   });
 });
 

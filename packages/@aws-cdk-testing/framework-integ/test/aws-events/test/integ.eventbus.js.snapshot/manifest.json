@@ -1,5 +1,5 @@
 {
-  "version": "34.0.0",
+  "version": "36.0.0",
   "artifacts": {
     "Stack.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/57e14b65d6e62634abcf2a64f00eb08e99ee92617490f92b45eff16399d6173a.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/1ac02a396bc49bcce2ab3c276dd4e234efe7e86f9d1a06c9ae16c054f1764bf1.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -40,16 +40,16 @@
             "data": "BusEA82B648"
           }
         ],
-        "/Stack/Bus/Statement1/Resource": [
+        "/Stack/Bus/cdk-Statement1/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "BusStatement1B4D0336C"
+            "data": "BuscdkStatement1D7D87B9D"
           }
         ],
-        "/Stack/Bus/Statement2/Resource": [
+        "/Stack/Bus/cdk-Statement2/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "BusStatement2B5FB314B"
+            "data": "BuscdkStatement2341A5B58"
           }
         ],
         "/Stack/BootstrapVersion": [
@@ -62,6 +62,24 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
+          }
+        ],
+        "BusStatement1B4D0336C": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BusStatement1B4D0336C",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "BusStatement2B5FB314B": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BusStatement2B5FB314B",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },

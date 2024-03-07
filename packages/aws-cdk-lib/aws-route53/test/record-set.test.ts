@@ -1,6 +1,9 @@
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Template } from '../../assertions';
+import * as cloudfront from '../../aws-cloudfront';
+import * as origins from '../../aws-cloudfront-origins';
 import * as iam from '../../aws-iam';
+import * as targets from '../../aws-route53-targets';
 import { Duration, RemovalPolicy, Stack } from '../../core';
 import * as route53 from '../lib';
 
@@ -1096,4 +1099,167 @@ describe('record set', () => {
       ],
     });
   });
+
+  test('with weight', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    const zone = new route53.HostedZone(stack, 'HostedZone', {
+      zoneName: 'myzone',
+    });
+
+    // WHEN
+    new route53.RecordSet(stack, 'RecordSet', {
+      zone,
+      recordName: 'www',
+      recordType: route53.RecordType.CNAME,
+      target: route53.RecordTarget.fromValues('zzz'),
+      weight: 50,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Route53::RecordSet', {
+      Name: 'www.myzone.',
+      Type: 'CNAME',
+      HostedZoneId: {
+        Ref: 'HostedZoneDB99F866',
+      },
+      ResourceRecords: [
+        'zzz',
+      ],
+      TTL: '1800',
+      Weight: 50,
+      SetIdentifier: 'WEIGHT_50_ID_RecordSet',
+    });
+  });
+
+  test.each([
+    [-1],
+    [256],
+  ])('throw error for invalid weight %s', (weight: number) => {
+    // GIVEN
+    const stack = new Stack();
+
+    const zone = new route53.HostedZone(stack, 'HostedZone', { zoneName: 'myzone' });
+
+    // THEN
+    expect(() => new route53.RecordSet(stack, 'Basic', {
+      zone,
+      recordName: 'www',
+      recordType: route53.RecordType.CNAME,
+      target: route53.RecordTarget.fromValues('zzz'),
+      weight,
+    })).toThrow(`weight must be between 0 and 255 inclusive, got: ${weight}`);
+  });
+
+  test('throw error for invalid setIdentifier', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    const zone = new route53.HostedZone(stack, 'HostedZone', { zoneName: 'myzone' });
+
+    // THEN
+    expect(() => new route53.RecordSet(stack, 'Basic', {
+      zone,
+      recordName: 'www',
+      recordType: route53.RecordType.CNAME,
+      target: route53.RecordTarget.fromValues('zzz'),
+      weight: 20,
+      setIdentifier: 'a'.repeat(129),
+    })).toThrow('setIdentifier must be between 1 and 128 characters long, got: 129');
+  });
+
+  test.each([
+    { weight: 20, geoLocation: route53.GeoLocation.continent(route53.Continent.EUROPE) },
+    { weight: 20, region: 'us-east-1' },
+    { geoLocation: route53.GeoLocation.continent(route53.Continent.EUROPE), region: 'us-east-1' },
+    { multiValueAnswer: true, geoLocation: route53.GeoLocation.continent(route53.Continent.EUROPE) },
+    { multiValueAnswer: true, region: 'us-east-1' },
+    { multiValueAnswer: true, weight: 20 },
+    { weight: 20, geoLocation: route53.GeoLocation.continent(route53.Continent.EUROPE), region: 'us-east-1', multiValueAnswer: true },
+  ])('throw error for the simultaneous definition of weight, geoLocation and region', (props) => {
+    // GIVEN
+    const stack = new Stack();
+
+    const zone = new route53.HostedZone(stack, 'HostedZone', { zoneName: 'myzone' });
+
+    // THEN
+    expect(() => new route53.RecordSet(stack, 'Basic', {
+      zone,
+      recordName: 'www',
+      recordType: route53.RecordType.CNAME,
+      target: route53.RecordTarget.fromValues('zzz'),
+      setIdentifier: 'uniqueId',
+      ...props,
+    })).toThrow('Only one of region, weight, multiValueAnswer or geoLocation can be defined');
+  });
+
+  test('throw error for the definition of setIdentifier without weight, geoLocation or region', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    const zone = new route53.HostedZone(stack, 'HostedZone', { zoneName: 'myzone' });
+
+    // THEN
+    expect(() => new route53.RecordSet(stack, 'Basic', {
+      zone,
+      recordName: 'www',
+      recordType: route53.RecordType.CNAME,
+      target: route53.RecordTarget.fromValues('zzz'),
+      setIdentifier: 'uniqueId',
+    })).toThrow('setIdentifier can only be specified for non-simple routing policies');
+  });
+
+  test('with multiValueAnswer', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    const zone = new route53.HostedZone(stack, 'HostedZone', { zoneName: 'myzone' });
+
+    // WHEN
+    new route53.RecordSet(stack, 'RecordSet', {
+      zone,
+      recordName: 'www',
+      recordType: route53.RecordType.CNAME,
+      target: route53.RecordTarget.fromValues('zzz'),
+      multiValueAnswer: true,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Route53::RecordSet', {
+      HostedZoneId: {
+        Ref: 'HostedZoneDB99F866',
+      },
+      MultiValueAnswer: true,
+      Name: 'www.myzone.',
+      ResourceRecords: [
+        'zzz',
+      ],
+      SetIdentifier: 'MVA_ID_RecordSet',
+      TTL: '1800',
+      Type: 'CNAME',
+    });
+  });
+
+  test('throw error for the definition of multiValueAnswer for alias record', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    const distribution = new cloudfront.Distribution(stack, 'Distribution', {
+      defaultBehavior: {
+        origin: new origins.HttpOrigin('www.example.com'),
+      },
+    });
+    const zone = new route53.HostedZone(stack, 'HostedZone', { zoneName: 'myzone' });
+
+    // THEN
+    expect(() => new route53.RecordSet(stack, 'Basic', {
+      zone,
+      recordName: 'www',
+      recordType: route53.RecordType.A,
+      target: route53.RecordTarget.fromAlias(new targets.CloudFrontTarget(distribution)),
+      multiValueAnswer: true,
+    })).toThrow('multiValueAnswer cannot be specified for alias record');
+  });
 });
+

@@ -30,7 +30,10 @@ interface LinuxArmBuildImageProps {
  * @see https://docs.aws.amazon.com/codebuild/latest/userguide/build-env-ref-available.html
  */
 export class LinuxArmBuildImage implements IBuildImage {
-  /** Image "aws/codebuild/amazonlinux2-aarch64-standard:1.0". */
+  /**
+   * Image "aws/codebuild/amazonlinux2-aarch64-standard:1.0".
+   * @deprecated Use LinuxArmBuildImage.AMAZON_LINUX_2_STANDARD_3_0 instead.
+   * */
   public static readonly AMAZON_LINUX_2_STANDARD_1_0 = LinuxArmBuildImage.fromCodeBuildImageId('aws/codebuild/amazonlinux2-aarch64-standard:1.0');
   /** Image "aws/codebuild/amazonlinux2-aarch64-standard:2.0". */
   public static readonly AMAZON_LINUX_2_STANDARD_2_0 = LinuxArmBuildImage.fromCodeBuildImageId('aws/codebuild/amazonlinux2-aarch64-standard:2.0');

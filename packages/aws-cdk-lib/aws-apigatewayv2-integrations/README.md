@@ -9,6 +9,7 @@
   - [Request Parameters](#request-parameters)
 - [WebSocket APIs](#websocket-apis)
   - [Lambda WebSocket Integration](#lambda-websocket-integration)
+  - [AWS WebSocket Integration](#aws-websocket-integration)
 
 ## HTTP APIs
 
@@ -63,6 +64,58 @@ httpApi.addRoutes({
   integration: booksIntegration,
 });
 ```
+
+### StepFunctions Integration
+
+Step Functions integrations enable integrating an HTTP API route with AWS Step Functions.
+This allows the HTTP API to start state machine executions synchronously or asynchronously, or to stop executions.
+
+When a client invokes the route configured with a Step Functions integration, the API Gateway service interacts with the specified state machine according to the integration subtype (e.g., starts a new execution, synchronously starts an execution, or stops an execution) and returns the response to the client.
+
+The following code configures a Step Functions integrations:
+
+```ts
+import { HttpStepFunctionsIntegration } from 'aws-cdk-lib/aws-apigatewayv2-integrations';
+import * as sfn from 'aws-cdk-lib/aws-stepfunctions';
+
+declare const stateMachine: sfn.StateMachine;
+declare const httpApi: apigwv2.HttpApi;
+
+httpApi.addRoutes({
+  path: '/start',
+  methods: [ apigwv2.HttpMethod.POST ],
+  integration: new HttpStepFunctionsIntegration('StartExecutionIntegration', {
+    stateMachine,
+    subtype: apigwv2.HttpIntegrationSubtype.STEPFUNCTIONS_START_EXECUTION,
+  }),
+});
+
+httpApi.addRoutes({
+  path: '/start-sync',
+  methods: [ apigwv2.HttpMethod.POST ],
+  integration: new HttpStepFunctionsIntegration('StartSyncExecutionIntegration', {
+    stateMachine,
+    subtype: apigwv2.HttpIntegrationSubtype.STEPFUNCTIONS_START_SYNC_EXECUTION,
+  }),
+});
+
+httpApi.addRoutes({
+  path: '/stop',
+  methods: [ apigwv2.HttpMethod.POST ],
+  integration: new HttpStepFunctionsIntegration('StopExecutionIntegration', {
+    stateMachine,
+    subtype: apigwv2.HttpIntegrationSubtype.STEPFUNCTIONS_STOP_EXECUTION,
+    // For the `STOP_EXECUTION` subtype, it is necessary to specify the `executionArn`.
+    parameterMapping: new apigwv2.ParameterMapping()
+      .custom('ExecutionArn', '$request.querystring.executionArn'),
+  }),
+});
+```
+
+**Note**:
+
+- The `executionArn` parameter is required for the `STOP_EXECUTION` subtype. It is necessary to specify the `executionArn` in the `parameterMapping` property of the `HttpStepFunctionsIntegration` object.
+- `START_SYNC_EXECUTION` subtype is only supported for EXPRESS type state machine.
 
 ### Private Integration
 
@@ -208,5 +261,46 @@ new apigwv2.WebSocketStage(this, 'mystage', {
 declare const messageHandler: lambda.Function;
 webSocketApi.addRoute('sendMessage', {
   integration: new WebSocketLambdaIntegration('SendMessageIntegration', messageHandler),
+});
+```
+
+### AWS WebSocket Integration
+
+AWS type integrations enable integrating with any supported AWS service. This is only supported for WebSocket APIs. When a client 
+connects/disconnects or sends a message specific to a route, the API Gateway service forwards the request to the specified AWS service.
+
+The following code configures a `$connect` route with a AWS integration that integrates with a dynamodb table. On websocket api connect,
+it will write new entry to the dynamodb table. 
+
+```ts
+import { WebSocketAwsIntegration } from 'aws-cdk-lib/aws-apigatewayv2-integrations';
+import * as dynamodb from 'aws-cdk-lib/aws-dynamodb';
+import * as iam from 'aws-cdk-lib/aws-iam';
+
+const webSocketApi = new apigwv2.WebSocketApi(this, 'mywsapi');
+new apigwv2.WebSocketStage(this, 'mystage', {
+  webSocketApi,
+  stageName: 'dev',
+  autoDeploy: true,
+});
+
+declare const apiRole: iam.Role;
+declare const table: dynamodb.Table;
+webSocketApi.addRoute('$connect', {
+  integration: new WebSocketAwsIntegration('DynamodbPutItem', {
+    integrationUri: `arn:aws:apigateway:${this.region}:dynamodb:action/PutItem`,
+    integrationMethod: apigwv2.HttpMethod.POST,
+    credentialsRole: apiRole,
+    requestTemplates: {
+      'application/json': JSON.stringify({
+        TableName: table.tableName,
+        Item: {
+          id: {
+            S: '$context.requestId',
+          },
+        },
+      }),
+    },
+  }),
 });
 ```

@@ -12,6 +12,7 @@
      "Ref": "AWS::AccountId"
     },
     "DatabaseInput": {
+     "Description": "my_database_description",
      "Name": "my_database"
     }
    }

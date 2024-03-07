@@ -211,7 +211,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-scheduler-alpha.Group",
+              "fqn": "aws-cdk-lib.Resource",
               "version": "0.0.0"
             }
           },
@@ -235,7 +235,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-scheduler-alpha.Group",
+              "fqn": "aws-cdk-lib.Resource",
               "version": "0.0.0"
             }
           },
@@ -283,7 +283,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-scheduler-alpha.Schedule",
+              "fqn": "aws-cdk-lib.Resource",
               "version": "0.0.0"
             }
           },
@@ -332,7 +332,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-scheduler-alpha.Schedule",
+              "fqn": "aws-cdk-lib.Resource",
               "version": "0.0.0"
             }
           },
@@ -381,7 +381,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-scheduler-alpha.Schedule",
+              "fqn": "aws-cdk-lib.Resource",
               "version": "0.0.0"
             }
           },
@@ -429,7 +429,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-scheduler-alpha.Schedule",
+              "fqn": "aws-cdk-lib.Resource",
               "version": "0.0.0"
             }
           },
@@ -477,7 +477,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-scheduler-alpha.Schedule",
+              "fqn": "aws-cdk-lib.Resource",
               "version": "0.0.0"
             }
           },
@@ -612,7 +612,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-scheduler-alpha.Schedule",
+              "fqn": "aws-cdk-lib.Resource",
               "version": "0.0.0"
             }
           },
@@ -661,7 +661,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-scheduler-alpha.Schedule",
+              "fqn": "aws-cdk-lib.Resource",
               "version": "0.0.0"
             }
           },
@@ -675,13 +675,13 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::Scheduler::Schedule",
                   "aws:cdk:cloudformation:props": {
-                    "endDate": "2025-10-01T00:00:00.000Z",
+                    "endDate": "2026-10-01T00:00:00.000Z",
                     "flexibleTimeWindow": {
                       "mode": "OFF"
                     },
                     "scheduleExpression": "rate(12 hours)",
                     "scheduleExpressionTimezone": "Etc/UTC",
-                    "startDate": "2024-04-15T06:30:00.000Z",
+                    "startDate": "2025-04-15T06:30:00.000Z",
                     "state": "ENABLED",
                     "target": {
                       "arn": {
@@ -711,7 +711,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-scheduler-alpha.Schedule",
+              "fqn": "aws-cdk-lib.Resource",
               "version": "0.0.0"
             }
           },

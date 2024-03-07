@@ -333,6 +333,28 @@ test('esbuild bundling without aws-sdk v3 when use greater than or equal Runtime
   });
 });
 
+test('esbuild bundling includes aws-sdk', () => {
+  Bundling.bundle(stack, {
+    entry,
+    projectRoot,
+    depsLockFilePath,
+    runtime: Runtime.NODEJS_18_X,
+    architecture: Architecture.X86_64,
+    bundleAwsSDK: true,
+  });
+
+  // Correctly bundles with esbuild
+  expect(Code.fromAsset).toHaveBeenCalledWith(path.dirname(depsLockFilePath), {
+    assetHashType: AssetHashType.OUTPUT,
+    bundling: expect.objectContaining({
+      command: [
+        'bash', '-c',
+        `esbuild --bundle "/asset-input/lib/handler.ts" --target=${STANDARD_TARGET} --platform=node --outfile="/asset-output/index.js"`,
+      ],
+    }),
+  });
+});
+
 test('esbuild bundling source map inline', () => {
   Bundling.bundle(stack, {
     entry,
@@ -626,7 +648,7 @@ test('esbuild bundling with projectRoot', () => {
 });
 
 test('esbuild bundling with projectRoot and externals and dependencies', () => {
-  const repoRoot = path.join(__dirname, '../../../..');
+  const repoRoot = path.join(__dirname, '..', '..', '..', '..');
   const packageLock = path.join(repoRoot, 'common', 'package-lock.json');
   Bundling.bundle(stack, {
     entry: __filename,

@@ -699,7 +699,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.CustomResourceProvider",
+              "fqn": "aws-cdk-lib.CustomResourceProviderBase",
               "version": "0.0.0"
             }
           },
@@ -861,6 +861,9 @@
                       "Ref": "SsmParameterValueawsserviceamiamazonlinuxlatestal2023amikernel61x8664C96584B6F00A464EAD1953AFF4B05118Parameter"
                     },
                     "instanceType": "t3.micro",
+                    "keyName": {
+                      "Ref": "TestKeyPair38B6CD21"
+                    },
                     "securityGroupIds": [
                       {
                         "Fn::GetAtt": [

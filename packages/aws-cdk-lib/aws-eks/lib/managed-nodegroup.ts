@@ -70,6 +70,14 @@ export enum NodegroupAmiType {
    * Windows Full 2022 (x86-64)
    */
   WINDOWS_FULL_2022_X86_64 = 'WINDOWS_FULL_2022_x86_64',
+  /**
+   * Amazon Linux 2023 (x86-64)
+   */
+  AL2023_X86_64_STANDARD = 'AL2023_x86_64_STANDARD',
+  /**
+   * Amazon Linux 2023 (ARM-64)
+   */
+  AL2023_ARM_64_STANDARD = 'AL2023_ARM_64_STANDARD',
 }
 
 /**
@@ -83,7 +91,7 @@ export enum CapacityType {
   /**
    * on-demand instances
    */
-  ON_DEMAND = 'ON_DEMAND'
+  ON_DEMAND = 'ON_DEMAND',
 }
 
 /**
@@ -421,7 +429,7 @@ export class Nodegroup extends Resource implements INodegroup {
 
       // if the user explicitly configured an ami type, make sure it's included in the possibleAmiTypes
       if (props.amiType && !possibleAmiTypes.includes(props.amiType)) {
-        throw new Error(`The specified AMI does not match the instance types architecture, either specify one of ${possibleAmiTypes.join(', ')} or don't specify any`);
+        throw new Error(`The specified AMI does not match the instance types architecture, either specify one of ${possibleAmiTypes.join(', ').toUpperCase()} or don't specify any`);
       }
 
       //if the user explicitly configured a Windows ami type, make sure the instanceType is allowed
@@ -611,7 +619,7 @@ function getPossibleAmiTypes(instanceTypes: InstanceType[]): NodegroupAmiType[] 
   const architectures: Set<AmiArchitecture> = new Set(instanceTypes.map(typeToArch));
 
   if (architectures.size === 0) { // protective code, the current implementation will never result in this.
-    throw new Error(`Cannot determine any ami type comptaible with instance types: ${instanceTypes.map(i => i.toString).join(',')}`);
+    throw new Error(`Cannot determine any ami type compatible with instance types: ${instanceTypes.map(i => i.toString).join(', ')}`);
   }
 
   if (architectures.size > 1) {

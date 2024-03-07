@@ -491,6 +491,33 @@ const gp3Instance = new rds.DatabaseInstance(this, 'Gp3Instance', {
 });
 ```
 
+Use the `allocatedStorage` property to specify the amount of storage (in gigabytes) that is initially allocated for the instance 
+to use for the instance:
+
+```ts
+declare const vpc: ec2.Vpc;
+
+// Setting allocatedStorage for DatabaseInstance
+const iopsInstance = new rds.DatabaseInstance(this, 'IopsInstance', {
+  engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_30 }),
+  vpc,
+  storageType: rds.StorageType.IO1,
+  iops: 5000,
+  allocatedStorage: 500,
+});
+
+// Setting allocatedStorage for DatabaseInstance replica
+// Note: If allocatedStorage isn't set here, the replica instance will inherit the allocatedStorage of the source instance
+declare const sourceInstance: rds.DatabaseInstance;
+new rds.DatabaseInstanceReadReplica(this, 'ReadReplica', {
+  sourceDatabaseInstance: sourceInstance,
+  instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.LARGE),
+  vpc,
+  allocatedStorage: 500,
+});
+```
+
+
 Use the `caCertificate` property to specify the [CA certificates](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/UsingWithRDS.SSL-certificate-rotation.html)
 to use for the instance:
 
@@ -788,6 +815,27 @@ proxy.grantConnect(role, 'admin'); // Grant the role connection access to the DB
 **Note**: In addition to the setup above, a database user will need to be created to support IAM auth.
 See <https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/UsingWithRDS.IAMDBAuth.DBAccounts.html> for setup instructions.
 
+To specify the details of authentication used by a proxy to log in as a specific database
+user use the `clientPasswordAuthType` property:
+
+```ts
+declare const vpc: ec2.Vpc;
+const cluster = new rds.DatabaseCluster(this, 'Database', {
+  engine: rds.DatabaseClusterEngine.auroraMysql({
+    version: rds.AuroraMysqlEngineVersion.VER_3_03_0,
+  }),
+  writer: rds.ClusterInstance.provisioned('writer'),
+  vpc,
+});
+
+const proxy = new rds.DatabaseProxy(this, 'Proxy', {
+  proxyTarget: rds.ProxyTarget.fromCluster(cluster),
+  secrets: [cluster.secret!],
+  vpc,
+  clientPasswordAuthType: rds.ClientPasswordAuthType.MYSQL_NATIVE_PASSWORD,
+});
+```
+
 ### Cluster
 
 The following example shows granting connection access for an IAM role to an Aurora Cluster.
@@ -820,7 +868,10 @@ Directory Services.
 ```ts
 declare const vpc: ec2.Vpc;
 const role = new iam.Role(this, 'RDSDirectoryServicesRole', {
-  assumedBy: new iam.ServicePrincipal('rds.amazonaws.com'),
+  assumedBy: new iam.CompositePrincipal(
+    new iam.ServicePrincipal('rds.amazonaws.com'),
+    new iam.ServicePrincipal('directoryservice.rds.amazonaws.com'),
+  ),
   managedPolicies: [
     iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonRDSDirectoryServiceAccess'),
   ],
@@ -833,7 +884,32 @@ const instance = new rds.DatabaseInstance(this, 'Instance', {
 });
 ```
 
-**Note**: In addition to the setup above, you need to make sure that the database instance has network connectivity
+You can also use the Kerberos authentication for an Aurora database cluster.
+
+```ts
+declare const vpc: ec2.Vpc;
+const iamRole = new iam.Role(this, 'Role', {
+  assumedBy: new iam.CompositePrincipal(
+    new iam.ServicePrincipal('rds.amazonaws.com'),
+    new iam.ServicePrincipal('directoryservice.rds.amazonaws.com'),
+  ),
+  managedPolicies: [
+    iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonRDSDirectoryServiceAccess'),
+  ],
+});
+
+new rds.DatabaseCluster(this, 'Database', {
+  engine: rds.DatabaseClusterEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_3_05_1 }),
+  writer: rds.ClusterInstance.provisioned('Instance', {
+    instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.MEDIUM),
+  }),
+  vpc,
+  domain: 'd-????????', // The ID of the domain for the cluster to join.
+  domainRole: iamRole, // Optional - will be created automatically if not provided.
+});
+```
+
+**Note**: In addition to the setup above, you need to make sure that the database instance or cluster has network connectivity
 to the domain controllers. This includes enabling cross-VPC traffic if in a different VPC and setting up the
 appropriate security groups/network ACL to allow traffic between the database instance and domain controllers.
 Once configured, see <https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/kerberos-authentication.html> for details
@@ -938,6 +1014,11 @@ const cluster = new rds.DatabaseCluster(this, 'Database', {
   // ...
 });
 
+// When 'cloudwatchLogsExports' is set, each export value creates its own log group in DB cluster. 
+// Specify an export value to access its log group.
+const errorLogGroup = cluster.cloudwatchLogGroups['error'];
+const auditLogGroup = cluster.cloudwatchLogGroups.audit;
+
 // Exporting logs from an instance
 const instance = new rds.DatabaseInstance(this, 'Instance', {
   engine: rds.DatabaseInstanceEngine.postgres({
@@ -945,8 +1026,13 @@ const instance = new rds.DatabaseInstance(this, 'Instance', {
   }),
   vpc,
   cloudwatchLogsExports: ['postgresql'], // Export the PostgreSQL logs
+  cloudwatchLogsRetention: logs.RetentionDays.THREE_MONTHS, // Optional - default is to never expire logs
   // ...
 });
+
+// When 'cloudwatchLogsExports' is set, each export value creates its own log group in DB instance. 
+// Specify an export value to access its log group.
+const postgresqlLogGroup = instance.cloudwatchLogGroups['postgresql'];
 ```
 
 ## Option Groups
@@ -1036,12 +1122,14 @@ declare const vpc: ec2.Vpc;
 const cluster = new rds.ServerlessCluster(this, 'AnotherCluster', {
   engine: rds.DatabaseClusterEngine.AURORA_POSTGRESQL,
   copyTagsToSnapshot: true, // whether to save the cluster tags when creating the snapshot. Default is 'true'
-  parameterGroup: rds.ParameterGroup.fromParameterGroupName(this, 'ParameterGroup', 'default.aurora-postgresql10'),
+  parameterGroup: rds.ParameterGroup.fromParameterGroupName(this, 'ParameterGroup', 'default.aurora-postgresql11'),
   vpc,
   scaling: {
     autoPause: Duration.minutes(10), // default is to pause after 5 minutes of idle time
     minCapacity: rds.AuroraCapacityUnit.ACU_8, // default is 2 Aurora capacity units (ACUs)
     maxCapacity: rds.AuroraCapacityUnit.ACU_32, // default is 16 Aurora capacity units (ACUs)
+    timeout: Duration.seconds(100), // default is 5 minutes
+    timeoutAction: rds.TimeoutAction.FORCE_APPLY_CAPACITY_CHANGE // default is ROLLBACK_CAPACITY_CHANGE
   }
 });
 ```
@@ -1078,30 +1166,31 @@ new rds.ServerlessClusterFromSnapshot(this, 'Cluster', {
 
 ### Data API
 
-You can access your Aurora Serverless DB cluster using the built-in Data API. The Data API doesn't require a persistent connection to the DB cluster. Instead, it provides a secure HTTP endpoint and integration with AWS SDKs.
+You can access your Aurora DB cluster using the built-in Data API. The Data API doesn't require a persistent connection to the DB cluster. Instead, it provides a secure HTTP endpoint and integration with AWS SDKs.
 
 The following example shows granting Data API access to a Lamba function.
 
 ```ts
 declare const vpc: ec2.Vpc;
+declare const fn: lambda.Function;
 
-const cluster = new rds.ServerlessCluster(this, 'AnotherCluster', {
+// Create a serverless V1 cluster
+const serverlessV1Cluster = new rds.ServerlessCluster(this, 'AnotherCluster', {
   engine: rds.DatabaseClusterEngine.AURORA_MYSQL,
   vpc, // this parameter is optional for serverless Clusters
   enableDataApi: true, // Optional - will be automatically set if you call grantDataApiAccess()
 });
+serverlessV1Cluster.grantDataApiAccess(fn);
 
-declare const code: lambda.Code;
-const fn = new lambda.Function(this, 'MyFunction', {
-  runtime: lambda.Runtime.NODEJS_LATEST,
-  handler: 'index.handler',
-  code,
-  environment: {
-    CLUSTER_ARN: cluster.clusterArn,
-    SECRET_ARN: cluster.secret!.secretArn,
-  },
+// Create an Aurora cluster
+const cluster = new rds.DatabaseCluster(this, 'Cluster', {
+  engine: rds.DatabaseClusterEngine.AURORA_MYSQL,
+  vpc,
+  enableDataApi: true, // Optional - will be automatically set if you call grantDataApiAccess()
 });
 cluster.grantDataApiAccess(fn);
+// It is necessary to grant the function access to the secret associated with the cluster for `DatabaseCluster`.
+cluster.secret!.grantRead(fn);
 ```
 
 **Note**: To invoke the Data API, the resource will need to read the secret associated with the cluster.
@@ -1115,3 +1204,23 @@ The `vpc` parameter is optional.
 If not provided, the cluster will be created in the default VPC of the account and region.
 As this VPC is not deployed with AWS CDK, you can't configure the `vpcSubnets`, `subnetGroup` or `securityGroups` of the Aurora Serverless Cluster.
 If you want to provide one of `vpcSubnets`, `subnetGroup` or `securityGroups` parameter, please provide a `vpc`.
+
+### Preferred Maintenance Window
+
+When creating an RDS cluster, it is possible to (optionally) specify a preferred maintenance window for the cluster as well as the instances under the cluster.
+See [AWS docs](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/USER_UpgradeDBInstance.Maintenance.html#Concepts.DBMaintenance) for more information regarding maintenance windows.
+
+The following code snippet shows an example of setting the cluster's maintenance window to 22:15-22:45 (UTC) on Saturdays, but setting the instances' maintenance window
+to 23:15-23:45 on Sundays
+
+```ts
+declare const vpc: ec2.Vpc;
+new rds.DatabaseCluster(this, 'DatabaseCluster', {
+  engine: rds.DatabaseClusterEngine.AURORA,
+  instanceProps: {
+    vpc: vpc,
+    preferredMaintenanceWindow: 'Sun:23:15-Sun:23:45',
+  },
+  preferredMaintenanceWindow: 'Sat:22:15-Sat:22:45',
+});
+```

@@ -620,7 +620,7 @@ describe('auto scaling group', () => {
           'MinSuccessfulInstancesPercent': 50,
           'WaitOnResourceSignals': true,
           'PauseTime': 'PT5M45S',
-          'SuspendProcesses': ['HealthCheck', 'ReplaceUnhealthy', 'AZRebalance', 'AlarmNotification', 'ScheduledActions'],
+          'SuspendProcesses': ['HealthCheck', 'ReplaceUnhealthy', 'AZRebalance', 'AlarmNotification', 'ScheduledActions', 'InstanceRefresh'],
         },
       },
     });
@@ -1678,6 +1678,85 @@ describe('auto scaling group', () => {
     });
   });
 
+  test('supports custom termination policy with lambda function arn specified', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = mockVpc(stack);
+    const arn = stack.formatArn({
+      service: 'lambda',
+      resource: 'function',
+      account: '123456789012',
+      region: 'us-east-1',
+      partition: 'aws',
+      resourceName: 'CustomTerminationPolicyLambda:1',
+    });
+
+    // WHEN
+    new autoscaling.AutoScalingGroup(stack, 'MyASG', {
+      vpc,
+      instanceType: new ec2.InstanceType('t2.micro'),
+      machineImage: new ec2.AmazonLinuxImage(),
+      terminationPolicies: [
+        autoscaling.TerminationPolicy.CUSTOM_LAMBDA_FUNCTION,
+        autoscaling.TerminationPolicy.OLDEST_INSTANCE,
+        autoscaling.TerminationPolicy.DEFAULT,
+      ],
+      terminationPolicyCustomLambdaFunctionArn: arn,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::AutoScalingGroup', {
+      TerminationPolicies: [
+        arn,
+        'OldestInstance',
+        'Default',
+      ],
+    });
+  });
+
+  test('Should specify TerminationPolicy.CUSTOM_LAMBDA_FUNCTION in first', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = mockVpc(stack);
+
+    // WHEN
+    const terminationPolicies = [
+      autoscaling.TerminationPolicy.DEFAULT,
+      autoscaling.TerminationPolicy.CUSTOM_LAMBDA_FUNCTION,
+    ];
+
+    // THEN
+    expect(() => {
+      new autoscaling.AutoScalingGroup(stack, 'MyASG', {
+        vpc,
+        instanceType: new ec2.InstanceType('t2.micro'),
+        machineImage: new ec2.AmazonLinuxImage(),
+        terminationPolicies: terminationPolicies,
+      });
+    }).toThrow('TerminationPolicy.CUSTOM_LAMBDA_FUNCTION must be specified first in the termination policies');
+  });
+
+  test('Should specify terminationPolicyCustomLambdaFunctionArn property if TerminationPolicy.CUSTOM_LAMBDA_FUNCTION is used', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = mockVpc(stack);
+
+    // WHEN
+    const terminationPolicies = [
+      autoscaling.TerminationPolicy.CUSTOM_LAMBDA_FUNCTION,
+    ];
+
+    // THEN
+    expect(() => {
+      new autoscaling.AutoScalingGroup(stack, 'MyASG', {
+        vpc,
+        instanceType: new ec2.InstanceType('t2.micro'),
+        machineImage: new ec2.AmazonLinuxImage(),
+        terminationPolicies: terminationPolicies,
+      });
+    }).toThrow('terminationPolicyCustomLambdaFunctionArn property must be specified if the TerminationPolicy.CUSTOM_LAMBDA_FUNCTION is used');
+  });
+
   test('Can use imported Launch Template with ID', () => {
     // GIVEN
     const stack = new cdk.Stack();
@@ -1860,6 +1939,120 @@ describe('auto scaling group', () => {
         },
       },
     });
+  });
+
+  test('Can specify InstanceRequirements', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const lt = LaunchTemplate.fromLaunchTemplateAttributes(stack, 'imported-lt', {
+      launchTemplateId: 'test-lt-id',
+      versionNumber: '0',
+    });
+
+    new autoscaling.AutoScalingGroup(stack, 'mip-asg', {
+      mixedInstancesPolicy: {
+        launchTemplate: lt,
+        launchTemplateOverrides: [{
+          instanceRequirements: {
+            vCpuCount: { min: 4, max: 8 },
+            memoryMiB: { min: 16384 },
+            cpuManufacturers: ['intel'],
+          },
+          launchTemplate: lt,
+          weightedCapacity: 9,
+        }],
+      },
+      vpc: mockVpc(stack),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::AutoScalingGroup', {
+      MixedInstancesPolicy: {
+        LaunchTemplate: {
+          LaunchTemplateSpecification: {
+            LaunchTemplateId: 'test-lt-id',
+            Version: '0',
+          },
+          Overrides: [
+            {
+              InstanceRequirements: {
+                VCpuCount: {
+                  Min: 4,
+                  Max: 8,
+                },
+                MemoryMiB: {
+                  Min: 16384,
+                },
+                CpuManufacturers: ['intel'],
+              },
+              LaunchTemplateSpecification: {
+                LaunchTemplateId: 'test-lt-id',
+                Version: '0',
+              },
+              WeightedCapacity: '9',
+            },
+          ],
+        },
+      },
+    });
+  });
+
+  test('Cannot specify InstanceRequirements and InstanceType at the same time', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const lt = LaunchTemplate.fromLaunchTemplateAttributes(stack, 'imported-lt', {
+      launchTemplateId: 'test-lt-id',
+      versionNumber: '0',
+    });
+
+    // THEN
+    expect(() => {
+      new autoscaling.AutoScalingGroup(stack, 'mip-asg', {
+        mixedInstancesPolicy: {
+          launchTemplate: lt,
+          launchTemplateOverrides: [{
+            instanceRequirements: {
+              vCpuCount: { min: 4, max: 8 },
+              memoryMiB: { min: 16384 },
+              cpuManufacturers: ['intel'],
+            },
+            instanceType: new InstanceType('t4g.micro'),
+            launchTemplate: lt,
+            weightedCapacity: 9,
+          }],
+        },
+        vpc: mockVpc(stack),
+      });
+    }).toThrow('You can specify either \'instanceRequirements\' or \'instanceType\', not both.');
+  });
+
+  test('Should specify either InstanceRequirements or InstanceType', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const lt = LaunchTemplate.fromLaunchTemplateAttributes(stack, 'imported-lt', {
+      launchTemplateId: 'test-lt-id',
+      versionNumber: '0',
+    });
+
+    // THEN
+    expect(() => {
+      new autoscaling.AutoScalingGroup(stack, 'mip-asg', {
+        mixedInstancesPolicy: {
+          launchTemplate: lt,
+          launchTemplateOverrides: [{
+            launchTemplate: lt,
+            weightedCapacity: 9,
+          }],
+        },
+        vpc: mockVpc(stack),
+      });
+    }).toThrow('You must specify either \'instanceRequirements\' or \'instanceType\'.');
   });
 
   test('Cannot specify both Launch Template and Launch Config', () => {

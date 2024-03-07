@@ -185,7 +185,7 @@ describe('extension', () => {
       value: 'arn:lambda:us-east-1:123456789012:function:my-function',
     });
     const appconfig = new Application(stack, 'MyApplication', {
-      name: 'MyApplication',
+      applicationName: 'MyApplication',
     });
     const ext = new Extension(stack, 'MyExtension', {
       actions: [
@@ -196,7 +196,7 @@ describe('extension', () => {
           eventDestination: new LambdaDestination(func),
         }),
       ],
-      name: 'TestExtension',
+      extensionName: 'TestExtension',
       description: 'This is my extension',
       parameters: [
         Parameter.required('testVariable', 'hello'),

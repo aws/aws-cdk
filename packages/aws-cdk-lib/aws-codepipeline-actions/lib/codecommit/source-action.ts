@@ -1,6 +1,7 @@
 import { Construct } from 'constructs';
 import * as codecommit from '../../../aws-codecommit';
 import * as codepipeline from '../../../aws-codepipeline';
+import { EventPattern, IRuleTarget } from '../../../aws-events';
 import * as targets from '../../../aws-events-targets';
 import * as iam from '../../../aws-iam';
 import { FeatureFlags, Names, Stack, Token, TokenComparison } from '../../../core';
@@ -55,6 +56,35 @@ export interface CodeCommitSourceVariables {
 }
 
 /**
+ * Represents a custom event rule in AWS CodePipeline Actions.
+ *
+ * This interface defines the structure for specifying a custom event rule
+ * in the AWS CodePipeline Actions module. The event rule is defined by an
+ * event pattern and a target.
+ *
+ * @see https://docs.aws.amazon.com/codecommit/latest/userguide/monitoring-events.html
+ * @see https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_events_targets-readme.html
+ */
+export interface ICustomEventRule {
+  /**
+   * event pattern when this rule should be triggered
+   */
+  readonly eventPattern: EventPattern;
+  /**
+   * Target e.g. Lambda when event pattern is fulfilled
+   */
+  readonly target: IRuleTarget;
+  /**
+   * Rulename
+   */
+  readonly ruleName?: string;
+  /**
+   * Description
+   */
+  readonly description?: string;
+}
+
+/**
  * Construction properties of the `CodeCommitSourceAction CodeCommit source CodePipeline Action`.
  */
 export interface CodeCommitSourceActionProps extends codepipeline.CommonAwsActionProps {
@@ -100,6 +130,14 @@ export interface CodeCommitSourceActionProps extends codepipeline.CommonAwsActio
    * @see https://docs.aws.amazon.com/codepipeline/latest/userguide/action-reference-CodeCommit.html
    */
   readonly codeBuildCloneOutput?: boolean;
+
+  /**
+   * You can pass a `customEventRule` to set up a custom event rule for the CodeCommit source action.
+   * You must provide the `eventPattern` and `target` properties in the `customEventRule` object.
+   * Check which `eventPattern` to use: https://docs.aws.amazon.com/codecommit/latest/userguide/monitoring-events.html
+   * @default Event rule which is triggered by CodeCommit repository on commit
+   */
+  readonly customEventRule?: ICustomEventRule;
 }
 
 /**
@@ -169,13 +207,19 @@ export class CodeCommitSourceAction extends Action {
 
     const createEvent = this.props.trigger === undefined ||
       this.props.trigger === CodeCommitTrigger.EVENTS;
-    if (createEvent) {
-      const eventId = this.generateEventId(stage);
+    const eventId = this.generateEventId(stage);
+
+    if (createEvent && this.props.customEventRule === undefined) {
       this.props.repository.onCommit(eventId, {
         target: new targets.CodePipeline(stage.pipeline, {
           eventRole: this.props.eventRole,
         }),
         branches: [branchOrDefault],
+        crossStackScope: stage.pipeline as unknown as Construct,
+      });
+    } else if (this.props.customEventRule !== undefined) {
+      this.props.repository.onEvent(eventId, {
+        ...this.props.customEventRule,
         crossStackScope: stage.pipeline as unknown as Construct,
       });
     }

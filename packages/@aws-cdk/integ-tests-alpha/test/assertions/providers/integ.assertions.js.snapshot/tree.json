@@ -31,7 +31,7 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.2.70"
+              "version": "10.3.0"
             }
           },
           "BootstrapVersion": {
@@ -69,7 +69,7 @@
                 "path": "AssertionsTest/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.70"
+                  "version": "10.3.0"
                 }
               },
               "DeployAssert": {
@@ -89,7 +89,7 @@
                             "path": "AssertionsTest/DefaultTest/DeployAssert/AwsApiCallSSMgetParametere2d1ba6ca5f8b296a8dfc6b4036a90f2/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.2.70"
+                              "version": "10.3.0"
                             }
                           }
                         },
@@ -161,7 +161,7 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.2.70"
+                      "version": "10.3.0"
                     }
                   },
                   "AwsApiCallSSMgetParametere2d1ba6ca5f8b296a8dfc6b4036a90f21": {
@@ -177,7 +177,7 @@
                             "path": "AssertionsTest/DefaultTest/DeployAssert/AwsApiCallSSMgetParametere2d1ba6ca5f8b296a8dfc6b4036a90f21/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.2.70"
+                              "version": "10.3.0"
                             }
                           }
                         },
@@ -207,6 +207,114 @@
                       "AssertionResults": {
                         "id": "AssertionResults",
                         "path": "AssertionsTest/DefaultTest/DeployAssert/AwsApiCallSSMgetParametere2d1ba6ca5f8b296a8dfc6b4036a90f21/AssertionResults",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CfnOutput",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/integ-tests-alpha.AwsApiCall",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "AwsApiCall@aws-sdk--client-ssmGetParameterCommande2d1ba6ca5f8b296a8dfc6b4036a90f2": {
+                    "id": "AwsApiCall@aws-sdk--client-ssmGetParameterCommande2d1ba6ca5f8b296a8dfc6b4036a90f2",
+                    "path": "AssertionsTest/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-ssmGetParameterCommande2d1ba6ca5f8b296a8dfc6b4036a90f2",
+                    "children": {
+                      "SdkProvider": {
+                        "id": "SdkProvider",
+                        "path": "AssertionsTest/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-ssmGetParameterCommande2d1ba6ca5f8b296a8dfc6b4036a90f2/SdkProvider",
+                        "children": {
+                          "AssertionsProvider": {
+                            "id": "AssertionsProvider",
+                            "path": "AssertionsTest/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-ssmGetParameterCommande2d1ba6ca5f8b296a8dfc6b4036a90f2/SdkProvider/AssertionsProvider",
+                            "constructInfo": {
+                              "fqn": "constructs.Construct",
+                              "version": "10.3.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/integ-tests-alpha.AssertionsProvider",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Default": {
+                        "id": "Default",
+                        "path": "AssertionsTest/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-ssmGetParameterCommande2d1ba6ca5f8b296a8dfc6b4036a90f2/Default",
+                        "children": {
+                          "Default": {
+                            "id": "Default",
+                            "path": "AssertionsTest/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-ssmGetParameterCommande2d1ba6ca5f8b296a8dfc6b4036a90f2/Default/Default",
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.CfnResource",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CustomResource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "AssertionResults": {
+                        "id": "AssertionResults",
+                        "path": "AssertionsTest/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-ssmGetParameterCommande2d1ba6ca5f8b296a8dfc6b4036a90f2/AssertionResults",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CfnOutput",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/integ-tests-alpha.AwsApiCall",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "AwsApiCallssmGetParameterCommande2d1ba6ca5f8b296a8dfc6b4036a90f2": {
+                    "id": "AwsApiCallssmGetParameterCommande2d1ba6ca5f8b296a8dfc6b4036a90f2",
+                    "path": "AssertionsTest/DefaultTest/DeployAssert/AwsApiCallssmGetParameterCommande2d1ba6ca5f8b296a8dfc6b4036a90f2",
+                    "children": {
+                      "SdkProvider": {
+                        "id": "SdkProvider",
+                        "path": "AssertionsTest/DefaultTest/DeployAssert/AwsApiCallssmGetParameterCommande2d1ba6ca5f8b296a8dfc6b4036a90f2/SdkProvider",
+                        "children": {
+                          "AssertionsProvider": {
+                            "id": "AssertionsProvider",
+                            "path": "AssertionsTest/DefaultTest/DeployAssert/AwsApiCallssmGetParameterCommande2d1ba6ca5f8b296a8dfc6b4036a90f2/SdkProvider/AssertionsProvider",
+                            "constructInfo": {
+                              "fqn": "constructs.Construct",
+                              "version": "10.3.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/integ-tests-alpha.AssertionsProvider",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Default": {
+                        "id": "Default",
+                        "path": "AssertionsTest/DefaultTest/DeployAssert/AwsApiCallssmGetParameterCommande2d1ba6ca5f8b296a8dfc6b4036a90f2/Default",
+                        "children": {
+                          "Default": {
+                            "id": "Default",
+                            "path": "AssertionsTest/DefaultTest/DeployAssert/AwsApiCallssmGetParameterCommande2d1ba6ca5f8b296a8dfc6b4036a90f2/Default/Default",
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.CfnResource",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CustomResource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "AssertionResults": {
+                        "id": "AssertionResults",
+                        "path": "AssertionsTest/DefaultTest/DeployAssert/AwsApiCallssmGetParameterCommande2d1ba6ca5f8b296a8dfc6b4036a90f2/AssertionResults",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.CfnOutput",
                           "version": "0.0.0"
@@ -257,7 +365,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.2.70"
+          "version": "10.3.0"
         }
       }
     },

@@ -34,7 +34,7 @@ interface StagedAsset {
   /**
    * The packaging of the asset
    */
-  readonly packaging: FileAssetPackaging,
+  readonly packaging: FileAssetPackaging;
 
   /**
    * Whether this asset is an archive
@@ -343,11 +343,16 @@ export class AssetStaging extends Construct {
     this.stageAsset(bundledAsset.path, stagedPath, 'move');
 
     // If bundling produced a single archive file we "touch" this file in the bundling
-    // directory after it has been moved to the staging directory. This way if bundling
+    // directory after it has been moved to the staging directory if the hash is known before bundling. This way if bundling
     // is skipped because the bundling directory already exists we can still determine
     // the correct packaging type.
+    // If the hash is calculated after bundling we remove the temporary directory now.
     if (bundledAsset.packaging === FileAssetPackaging.FILE) {
-      fs.closeSync(fs.openSync(bundledAsset.path, 'w'));
+      if (this.hashType === AssetHashType.OUTPUT || this.hashType === AssetHashType.BUNDLE) {
+        fs.removeSync(path.dirname(bundledAsset.path));
+      } else {
+        fs.closeSync(fs.openSync(bundledAsset.path, 'w'));
+      }
     }
 
     return {
@@ -605,9 +610,9 @@ function findSingleFile(directory: string, archiveOnly: boolean): string | undef
 }
 
 interface BundledAsset {
-  path: string,
-  packaging: FileAssetPackaging,
-  extension?: string
+  path: string;
+  packaging: FileAssetPackaging;
+  extension?: string;
 }
 
 /**

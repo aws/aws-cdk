@@ -1,0 +1,12 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "integ-aws-ecs-disable-circuit-breaker/DefaultTest": {
+      "stacks": [
+        "aws-ecs-disable-circuit-breaker"
+      ],
+      "assertionStack": "integ-aws-ecs-disable-circuit-breaker/DefaultTest/DeployAssert",
+      "assertionStackName": "integawsecsdisablecircuitbreakerDefaultTestDeployAssert7600BFAE"
+    }
+  }
+}

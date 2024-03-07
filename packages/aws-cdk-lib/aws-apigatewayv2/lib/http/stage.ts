@@ -28,28 +28,28 @@ export interface IHttpStage extends IStage {
    *
    * @default - sum over 5 minutes
    */
-  metricClientError(props?: MetricOptions): Metric
+  metricClientError(props?: MetricOptions): Metric;
 
   /**
    * Metric for the number of server-side errors captured in a given period.
    *
    * @default - sum over 5 minutes
    */
-  metricServerError(props?: MetricOptions): Metric
+  metricServerError(props?: MetricOptions): Metric;
 
   /**
    * Metric for the amount of data processed in bytes.
    *
    * @default - sum over 5 minutes
    */
-  metricDataProcessed(props?: MetricOptions): Metric
+  metricDataProcessed(props?: MetricOptions): Metric;
 
   /**
    * Metric for the total number API requests in a given period.
    *
    * @default - SampleCount over 5 minutes
    */
-  metricCount(props?: MetricOptions): Metric
+  metricCount(props?: MetricOptions): Metric;
 
   /**
    * Metric for the time between when API Gateway relays a request to the backend
@@ -57,7 +57,7 @@ export interface IHttpStage extends IStage {
    *
    * @default - no statistic
    */
-  metricIntegrationLatency(props?: MetricOptions): Metric
+  metricIntegrationLatency(props?: MetricOptions): Metric;
 
   /**
    * The time between when API Gateway receives a request from a client
@@ -66,7 +66,7 @@ export interface IHttpStage extends IStage {
    *
    * @default - no statistic
    */
-  metricLatency(props?: MetricOptions): Metric
+  metricLatency(props?: MetricOptions): Metric;
 }
 
 /**

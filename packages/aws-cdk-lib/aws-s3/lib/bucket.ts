@@ -96,6 +96,11 @@ export interface IBucket extends IResource {
   policy?: BucketPolicy;
 
   /**
+   * The account bucket belongs to.
+   */
+  readonly account?: string;
+
+  /**
    * Adds a statement to the resource policy for a principal (i.e.
    * account/role/service) to perform actions on this bucket and/or its
    * contents. Use `bucketArn` and `arnForObjects(keys)` to obtain ARNs for
@@ -357,7 +362,7 @@ export interface IBucket extends IResource {
    * @param dest The notification destination (see onEvent)
    * @param filters Filters (see onEvent)
    */
-  addObjectCreatedNotification(dest: IBucketNotificationDestination, ...filters: NotificationKeyFilter[]): void
+  addObjectCreatedNotification(dest: IBucketNotificationDestination, ...filters: NotificationKeyFilter[]): void;
 
   /**
    * Subscribes a destination to receive notifications when an object is
@@ -1177,7 +1182,7 @@ export enum InventoryFrequency {
   /**
    * A report is generated every Sunday (UTC timezone) after the initial report.
    */
-  WEEKLY = 'Weekly'
+  WEEKLY = 'Weekly',
 }
 
 /**
@@ -1287,7 +1292,9 @@ export enum ObjectOwnership {
    */
   BUCKET_OWNER_ENFORCED = 'BucketOwnerEnforced',
   /**
-   * Objects uploaded to the bucket change ownership to the bucket owner .
+   * The bucket owner will own the object if the object is uploaded with
+   * the bucket-owner-full-control canned ACL. Without this setting and
+   * canned ACL, the object is uploaded and remains owned by the uploading account.
    */
   BUCKET_OWNER_PREFERRED = 'BucketOwnerPreferred',
   /**
@@ -1334,6 +1341,68 @@ export interface IntelligentTieringConfiguration {
    * @default Objects will not move to Glacier Deep Access
    */
   readonly deepArchiveAccessTierTime?: Duration;
+}
+
+/**
+ * The date source for the partitioned prefix.
+ */
+export enum PartitionDateSource {
+  /**
+   * The year, month, and day will be based on the timestamp of the S3 event in the file that's been delivered.
+   */
+  EVENT_TIME = 'EventTime',
+
+  /**
+   * The year, month, and day will be based on the time when the log file was delivered to S3.
+   */
+  DELIVERY_TIME = 'DeliveryTime',
+}
+
+/**
+ * The key format for the log object.
+ */
+export abstract class TargetObjectKeyFormat {
+  /**
+   * Use partitioned prefix for log objects.
+   * If you do not specify the dateSource argument, the default is EventTime.
+   *
+   * The partitioned prefix format as follow:
+   * [DestinationPrefix][SourceAccountId]/​[SourceRegion]/​[SourceBucket]/​[YYYY]/​[MM]/​[DD]/​[YYYY]-[MM]-[DD]-[hh]-[mm]-[ss]-[UniqueString]
+   */
+  public static partitionedPrefix(dateSource?: PartitionDateSource): TargetObjectKeyFormat {
+    return new class extends TargetObjectKeyFormat {
+      public _render(): CfnBucket.LoggingConfigurationProperty['targetObjectKeyFormat'] {
+        return {
+          partitionedPrefix: {
+            partitionDateSource: dateSource,
+          },
+        };
+      }
+    }();
+  }
+
+  /**
+   * Use the simple prefix for log objects.
+   *
+   * The simple prefix format as follow:
+   * [DestinationPrefix][YYYY]-[MM]-[DD]-[hh]-[mm]-[ss]-[UniqueString]
+   */
+  public static simplePrefix(): TargetObjectKeyFormat {
+    return new class extends TargetObjectKeyFormat {
+      public _render(): CfnBucket.LoggingConfigurationProperty['targetObjectKeyFormat'] {
+        return {
+          simplePrefix: {},
+        };
+      }
+    }();
+  }
+
+  /**
+   * Render the log object key format.
+   *
+   * @internal
+   */
+  public abstract _render(): CfnBucket.LoggingConfigurationProperty['targetObjectKeyFormat'];
 }
 
 export interface BucketProps {
@@ -1545,6 +1614,13 @@ export interface BucketProps {
   readonly serverAccessLogsPrefix?: string;
 
   /**
+   * Optional key format for log objects.
+   *
+   * @default - the default key format is: [DestinationPrefix][YYYY]-[MM]-[DD]-[hh]-[mm]-[ss]-[UniqueString]
+   */
+  readonly targetObjectKeyFormat?: TargetObjectKeyFormat;
+
+  /**
    * The inventory configuration of the bucket.
    *
    * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/storage-inventory.html
@@ -1683,6 +1759,7 @@ export class Bucket extends BucketBase {
       public readonly bucketWebsiteNewUrlFormat = attrs.bucketWebsiteNewUrlFormat ?? false;
       public readonly encryptionKey = attrs.encryptionKey;
       public readonly isWebsite = attrs.isWebsite ?? false;
+      public readonly account = attrs.account;
       public policy?: BucketPolicy = undefined;
       protected autoCreatePolicy = false;
       protected disallowPublicAccess = false;
@@ -1896,11 +1973,11 @@ export class Bucket extends BucketBase {
 
     if (props.serverAccessLogsBucket instanceof Bucket) {
       props.serverAccessLogsBucket.allowLogDelivery(this, props.serverAccessLogsPrefix);
-    // It is possible that `serverAccessLogsBucket` was specified but is some other `IBucket`
-    // that cannot have the ACLs or bucket policy applied. In that scenario, we should only
-    // setup log delivery permissions to `this` if a bucket was not specified at all, as documented.
-    // For example, we should not allow log delivery to `this` if given an imported bucket or
-    // another situation that causes `instanceof` to fail
+      // It is possible that `serverAccessLogsBucket` was specified but is some other `IBucket`
+      // that cannot have the ACLs or bucket policy applied. In that scenario, we should only
+      // setup log delivery permissions to `this` if a bucket was not specified at all, as documented.
+      // For example, we should not allow log delivery to `this` if given an imported bucket or
+      // another situation that causes `instanceof` to fail
     } else if (!props.serverAccessLogsBucket && props.serverAccessLogsPrefix) {
       this.allowLogDelivery(this, props.serverAccessLogsPrefix);
     } else if (props.serverAccessLogsBucket) {
@@ -2036,8 +2113,8 @@ export class Bucket extends BucketBase {
    * | S3_MANAGED       | k                   | e                      | ERROR!                          | ERROR!                       |
    */
   private parseEncryption(props: BucketProps): {
-    bucketEncryption?: CfnBucket.BucketEncryptionProperty,
-    encryptionKey?: kms.IKey
+    bucketEncryption?: CfnBucket.BucketEncryptionProperty;
+    encryptionKey?: kms.IKey;
   } {
 
     // default based on whether encryptionKey is specified
@@ -2154,7 +2231,7 @@ export class Bucket extends BucketBase {
     function parseLifecycleRule(rule: LifecycleRule): CfnBucket.RuleProperty {
       const enabled = rule.enabled ?? true;
       if ((rule.expiredObjectDeleteMarker)
-      && (rule.expiration || rule.expirationDate || self.parseTagFilters(rule.tagFilters))) {
+        && (rule.expiration || rule.expirationDate || self.parseTagFilters(rule.tagFilters))) {
         // ExpiredObjectDeleteMarker cannot be specified with ExpirationInDays, ExpirationDate, or TagFilters.
         throw new Error('ExpiredObjectDeleteMarker cannot be specified with expiration, ExpirationDate, or TagFilters.');
       }
@@ -2213,6 +2290,7 @@ export class Bucket extends BucketBase {
     return {
       destinationBucketName: props.serverAccessLogsBucket?.bucketName,
       logFilePrefix: props.serverAccessLogsPrefix,
+      targetObjectKeyFormat: props.targetObjectKeyFormat?._render(),
     };
   }
 
@@ -2278,7 +2356,7 @@ export class Bucket extends BucketBase {
     }
 
     if (accessControlRequiresObjectOwnership && this.objectOwnership === ObjectOwnership.BUCKET_OWNER_ENFORCED) {
-      throw new Error (`objectOwnership must be set to "${ObjectOwnership.OBJECT_WRITER}" when accessControl is "${this.accessControl}"`);
+      throw new Error(`objectOwnership must be set to "${ObjectOwnership.OBJECT_WRITER}" when accessControl is "${this.accessControl}"`);
     }
 
     return {

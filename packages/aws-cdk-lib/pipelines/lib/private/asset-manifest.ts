@@ -92,7 +92,7 @@ export class AssetManifestReader {
       ...describeAssets('docker-image', this.manifest.dockerImages || {}),
     ];
 
-    function describeAssets(type: string, assets: Record<string, { source: any, destinations: Record<string, any> }>) {
+    function describeAssets(type: string, assets: Record<string, { source: any; destinations: Record<string, any> }>) {
       const ret = new Array<string>();
       for (const [assetId, asset] of Object.entries(assets || {})) {
         ret.push(`${assetId} ${type} ${JSON.stringify(asset.source)}`);
@@ -114,7 +114,7 @@ export class AssetManifestReader {
     ];
 
     function makeEntries<A, B, C>(
-      assets: Record<string, { source: A, destinations: Record<string, B> }>,
+      assets: Record<string, { source: A; destinations: Record<string, B> }>,
       ctor: new (id: DestinationIdentifier, source: A, destination: B) => C): C[] {
 
       const ret = new Array<C>();

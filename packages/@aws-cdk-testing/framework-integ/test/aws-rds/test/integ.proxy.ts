@@ -2,12 +2,14 @@ import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as cdk from 'aws-cdk-lib';
 import { RemovalPolicy } from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
+import * as kms from 'aws-cdk-lib/aws-kms';
 import * as rds from 'aws-cdk-lib/aws-rds';
 
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-rds-proxy');
 
 const vpc = new ec2.Vpc(stack, 'vpc', { maxAzs: 2, restrictDefaultSecurityGroup: false });
+const kmsKey = new kms.Key(stack, 'SecretEncryptionKey');
 
 const dbInstance = new rds.DatabaseInstance(stack, 'dbInstance', {
   engine: rds.DatabaseInstanceEngine.postgres({
@@ -15,6 +17,7 @@ const dbInstance = new rds.DatabaseInstance(stack, 'dbInstance', {
   }),
   instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.MEDIUM),
   credentials: rds.Credentials.fromUsername('master', {
+    encryptionKey: kmsKey,
     excludeCharacters: '"@/\\',
   }),
   vpc,
@@ -27,6 +30,7 @@ new rds.DatabaseProxy(stack, 'dbProxy', {
   secrets: [dbInstance.secret!],
   proxyTarget: rds.ProxyTarget.fromInstance(dbInstance),
   vpc,
+  clientPasswordAuthType: rds.ClientPasswordAuthType.POSTGRES_SCRAM_SHA_256,
 });
 
 const cluster = new rds.DatabaseCluster(stack, 'dbCluster', {

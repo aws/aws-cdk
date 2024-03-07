@@ -37,7 +37,7 @@ export interface ReceiptRuleSetProps {
    *
    * @default - No rules are added to the rule set.
    */
-  readonly rules?: ReceiptRuleOptions[]
+  readonly rules?: ReceiptRuleOptions[];
 
   /**
    * Whether to add a first rule to stop processing messages

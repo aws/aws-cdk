@@ -4,12 +4,21 @@ Eslint plugin for the CDK repository. Contains rules that need to be applied spe
 
 ## Rules
 
+* `invalid-cfn-imports`: Ensures that imports of `Cfn<Resource>` L1 resources come from the stable 
+  `aws-cdk-lib` package and not the alpha packages. Rule only applies to alpha modules.
+
 * `no-core-construct`: Forbid the use of `Construct` and `IConstruct` from the "@aws-cdk/core" module.
   Instead use `Construct` and `IConstruct` from the "constructs" module.
   Rule only applies to typescript files under the `test/` folder.
 * `no-handler-constructs`: Forbid the construction of constructs that create lambda handler resources.
   Instead use the standard code generation tools in `@aws-cdk/handler-framework` to avoid duplication
   and opt in to automatic runtime updates.
+
+* `no-invalid-path`: Checks paths specified using `path.join()` for validity, including not going backwards (`'..'`)
+  multiple times in the path and not going backwards beyond a package's `package.json`.
+
+* `no-literal-partition`: Forbids the use of literal partitions (usually `aws`). Instead, use
+  `Aws.PARTITION` to ensure that the code works for other partitions too.
 
 ## How to add new rules
 

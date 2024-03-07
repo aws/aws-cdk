@@ -29,7 +29,7 @@ export enum TlsPolicy {
   /**
    * Bounce emails that are not received over TLS.
    */
-  REQUIRE = 'Require'
+  REQUIRE = 'Require',
 }
 
 /**

@@ -1,0 +1,12 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "integ-instance-kerberos/DefaultTest": {
+      "stacks": [
+        "instance-kerberos"
+      ],
+      "assertionStack": "integ-instance-kerberos/DefaultTest/DeployAssert",
+      "assertionStackName": "integinstancekerberosDefaultTestDeployAssert4433E747"
+    }
+  }
+}

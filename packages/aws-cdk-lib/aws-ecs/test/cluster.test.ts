@@ -1021,6 +1021,15 @@ describe('cluster', () => {
 
   });
 
+  test('allows returning the correct image for linux 2 for EcsOptimizedImage with Neuron hardware', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    expect(ecs.EcsOptimizedImage.amazonLinux2(ecs.AmiHardwareType.NEURON).getImage(stack).osType).toEqual(
+      ec2.OperatingSystemType.LINUX);
+
+  });
+
   test('allows returning the correct image for linux 2023 for EcsOptimizedImage', () => {
     // GIVEN
     const stack = new cdk.Stack();
@@ -1046,6 +1055,26 @@ describe('cluster', () => {
     expect(ecs.EcsOptimizedImage.windows(ecs.WindowsOptimizedVersion.SERVER_2019).getImage(stack).osType).toEqual(
       ec2.OperatingSystemType.WINDOWS);
 
+  });
+
+  test('correct SSM parameter is set for amazon linux 2 Neuron AMI', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'test');
+
+    const cluster = new ecs.Cluster(stack, 'EcsCluster');
+
+    // WHEN
+    cluster.addCapacity('amazonlinux2-neuron-asg', {
+      instanceType: new ec2.InstanceType('inf1.xlarge'),
+      machineImage: ecs.EcsOptimizedImage.amazonLinux2(ecs.AmiHardwareType.NEURON),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasParameter('*', {
+      Type: 'AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>',
+      Default: '/aws/service/ecs/optimized-ami/amazon-linux-2/inf/recommended/image_id',
+    });
   });
 
   test('allows setting cluster ServiceConnectDefaults.Namespace property when useAsServiceConnectDefault is true', () => {
@@ -1496,6 +1525,26 @@ describe('cluster', () => {
 
     // THEN
     expect(cluster.connections.securityGroups).toEqual([]);
+  });
+
+  test('Can import autoscaling groups', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Vpc');
+    const autoscalingGroup = new autoscaling.AutoScalingGroup(stack, 'asgal2', {
+      vpc,
+      instanceType: new ec2.InstanceType('bogus'),
+      machineImage: ecs.EcsOptimizedImage.amazonLinux2(),
+    });
+
+    const cluster = ecs.Cluster.fromClusterAttributes(stack, 'Cluster', {
+      clusterName: 'cluster-name',
+      vpc,
+      autoscalingGroup,
+    });
+
+    // THEN
+    expect(cluster.autoscalingGroup).toEqual(autoscalingGroup);
   });
 
   test('Metric', () => {
@@ -2003,6 +2052,7 @@ describe('cluster', () => {
             'AZRebalance',
             'AlarmNotification',
             'ScheduledActions',
+            'InstanceRefresh',
           ],
         },
         AutoScalingScheduledAction: {
@@ -2192,6 +2242,7 @@ describe('cluster', () => {
       autoScalingGroup,
       enableManagedScaling: false,
       enableManagedTerminationProtection: false,
+      enableManagedDraining: false,
     });
 
     // THEN
@@ -2202,6 +2253,7 @@ describe('cluster', () => {
         },
         ManagedScaling: Match.absent(),
         ManagedTerminationProtection: 'DISABLED',
+        ManagedDraining: 'DISABLED',
       },
     });
   });
@@ -2234,6 +2286,70 @@ describe('cluster', () => {
           TargetCapacity: 100,
         },
         ManagedTerminationProtection: 'DISABLED',
+      },
+    });
+  });
+
+  test('can disable Managed Draining for ASG capacity provider', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'test');
+    const vpc = new ec2.Vpc(stack, 'Vpc');
+    const autoScalingGroup = new autoscaling.AutoScalingGroup(stack, 'asg', {
+      vpc,
+      instanceType: new ec2.InstanceType('bogus'),
+      machineImage: ecs.EcsOptimizedImage.amazonLinux2(),
+    });
+
+    // WHEN
+    new ecs.AsgCapacityProvider(stack, 'provider', {
+      autoScalingGroup,
+      enableManagedDraining: false,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::CapacityProvider', {
+      AutoScalingGroupProvider: {
+        AutoScalingGroupArn: {
+          Ref: 'asgASG4D014670',
+        },
+        ManagedDraining: 'DISABLED',
+        ManagedScaling: {
+          Status: 'ENABLED',
+          TargetCapacity: 100,
+        },
+      },
+    });
+  });
+
+  test('can enable Managed Draining for ASG capacity provider', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'test');
+    const vpc = new ec2.Vpc(stack, 'Vpc');
+    const autoScalingGroup = new autoscaling.AutoScalingGroup(stack, 'asg', {
+      vpc,
+      instanceType: new ec2.InstanceType('bogus'),
+      machineImage: ecs.EcsOptimizedImage.amazonLinux2(),
+    });
+
+    // WHEN
+    new ecs.AsgCapacityProvider(stack, 'provider', {
+      autoScalingGroup,
+      enableManagedDraining: true,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::CapacityProvider', {
+      AutoScalingGroupProvider: {
+        AutoScalingGroupArn: {
+          Ref: 'asgASG4D014670',
+        },
+        ManagedDraining: 'ENABLED',
+        ManagedScaling: {
+          Status: 'ENABLED',
+          TargetCapacity: 100,
+        },
       },
     });
   });
@@ -2813,7 +2929,7 @@ test('can add ASG capacity via Capacity Provider by not specifying machineImageT
 
 });
 
-test('throws when ASG Capacity Provider with capacityProviderName starting with aws, ecs or faragte', () => {
+test('throws when ASG Capacity Provider with capacityProviderName starting with aws, ecs or fargate', () => {
   // GIVEN
   const app = new cdk.App();
   const stack = new cdk.Stack(app, 'test');
@@ -2848,6 +2964,31 @@ test('throws when ASG Capacity Provider with capacityProviderName starting with 
 
     cluster.addAsgCapacityProvider(capacityProviderAl2);
   }).toThrow(/Invalid Capacity Provider Name: ecscp, If a name is specified, it cannot start with aws, ecs, or fargate./);
+});
+
+test('throws when ASG Capacity Provider with no capacityProviderName but stack name starting with aws, ecs or fargate', () => {
+  // GIVEN
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app, 'ecscp');
+  const vpc = new ec2.Vpc(stack, 'Vpc');
+  const cluster = new ecs.Cluster(stack, 'EcsCluster');
+
+  const autoScalingGroupAl2 = new autoscaling.AutoScalingGroup(stack, 'asgal2', {
+    vpc,
+    instanceType: new ec2.InstanceType('bogus'),
+    machineImage: ecs.EcsOptimizedImage.amazonLinux2(),
+  });
+
+  expect(() => {
+    // WHEN Capacity Provider when stack name starts with ecs.
+    const capacityProvider = new ecs.AsgCapacityProvider(stack, 'provideral2-2', {
+      autoScalingGroup: autoScalingGroupAl2,
+      enableManagedTerminationProtection: false,
+    });
+
+    cluster.addAsgCapacityProvider(capacityProvider);
+
+  }).not.toThrow();
 });
 
 test('throws when InstanceWarmupPeriod is less than 0', () => {

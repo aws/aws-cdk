@@ -48,7 +48,7 @@ export interface SubnetGroupProps {
    *
    * @default RemovalPolicy.DESTROY
    */
-  readonly removalPolicy?: RemovalPolicy
+  readonly removalPolicy?: RemovalPolicy;
 }
 
 /**

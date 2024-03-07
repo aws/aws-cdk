@@ -290,7 +290,7 @@ describe('tests that use assets', () => {
 function addAssets(
   builder: CloudAssemblyBuilder,
   artifactId: string,
-  options: { files: Record<string, cxschema.FileAsset>, dependencies?: string[] },
+  options: { files: Record<string, cxschema.FileAsset>; dependencies?: string[] },
 ) {
   const manifestFile = `${artifactId}.json`;
   const outPath = path.join(builder.outdir, manifestFile);
@@ -314,7 +314,7 @@ function addAssets(
 /**
  * Add a stack to the cloud assembly
  */
-function addStack(builder: CloudAssemblyBuilder, stackId: string, options: { environment: string, dependencies?: string[] }) {
+function addStack(builder: CloudAssemblyBuilder, stackId: string, options: { environment: string; dependencies?: string[] }) {
   const templateFile = `${stackId}.template.json`;
   const outPath = path.join(builder.outdir, templateFile);
   fs.writeFileSync(outPath, JSON.stringify({}, undefined, 2));

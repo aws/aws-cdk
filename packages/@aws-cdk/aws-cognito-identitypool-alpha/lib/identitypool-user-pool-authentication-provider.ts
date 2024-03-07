@@ -61,7 +61,7 @@ export interface UserPoolAuthenticationProviderBindConfig {
   /**
    * Client Id of the Associated User Pool Client
    */
-  readonly clientId: string
+  readonly clientId: string;
 
   /**
    * The identity providers associated with the UserPool

@@ -68,6 +68,7 @@ export * as aws_customerprofiles from './aws-customerprofiles';
 export * as aws_databrew from './aws-databrew';
 export * as aws_datapipeline from './aws-datapipeline';
 export * as aws_datasync from './aws-datasync';
+export * as aws_datazone from './aws-datazone';
 export * as aws_dax from './aws-dax';
 export * as aws_detective from './aws-detective';
 export * as aws_devicefarm from './aws-devicefarm';

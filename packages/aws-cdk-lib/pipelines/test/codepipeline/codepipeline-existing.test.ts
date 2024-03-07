@@ -46,4 +46,20 @@ describeDeprecated('codepipeline existing', () => {
       });
     }).toThrow("Cannot set 'enableKeyRotation' if an existing CodePipeline is given using 'codePipeline'");
   });
+
+  test('Does not allow setting crossRegionReplicationBuckets if an existing CodePipeline is given', () => {
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'PipelineStack');
+    const existingCodePipeline = new codePipeline.Pipeline(stack, 'CustomCodePipeline');
+
+    expect(() => {
+      new cdkp.CodePipeline(stack, 'CDKPipeline', {
+        crossRegionReplicationBuckets: {}, // Even the empty set is forbidden.
+        codePipeline: existingCodePipeline,
+        synth: new cdkp.ShellStep('Synth', {
+          commands: ['echo hello'],
+        }),
+      }).buildPipeline();
+    }).toThrow("Cannot set 'crossRegionReplicationBuckets' if an existing CodePipeline is given using 'codePipeline'");
+  });
 });

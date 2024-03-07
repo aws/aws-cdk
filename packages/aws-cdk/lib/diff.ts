@@ -1,6 +1,7 @@
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cfnDiff from '@aws-cdk/cloudformation-diff';
 import * as cxapi from '@aws-cdk/cx-api';
+import { CloudFormation } from 'aws-sdk';
 import * as chalk from 'chalk';
 import { print, warning } from './logging';
 
@@ -21,15 +22,16 @@ export function printStackDiff(
   strict: boolean,
   context: number,
   quiet: boolean,
+  changeSet?: CloudFormation.DescribeChangeSetOutput,
   stream?: cfnDiff.FormatStream): number {
 
-  let diff = cfnDiff.diffTemplate(oldTemplate, newTemplate.template);
+  let diff = cfnDiff.fullDiff(oldTemplate, newTemplate.template, changeSet);
 
   // detect and filter out mangled characters from the diff
   let filteredChangesCount = 0;
   if (diff.differenceCount && !strict) {
     const mangledNewTemplate = JSON.parse(cfnDiff.mangleLikeCloudFormation(JSON.stringify(newTemplate.template)));
-    const mangledDiff = cfnDiff.diffTemplate(oldTemplate, mangledNewTemplate);
+    const mangledDiff = cfnDiff.fullDiff(oldTemplate, mangledNewTemplate, changeSet);
     filteredChangesCount = Math.max(0, diff.differenceCount - mangledDiff.differenceCount);
     if (filteredChangesCount > 0) {
       diff = mangledDiff;
@@ -66,7 +68,7 @@ export enum RequireApproval {
 
   AnyChange = 'any-change',
 
-  Broadening = 'broadening'
+  Broadening = 'broadening',
 }
 
 /**
@@ -74,8 +76,13 @@ export enum RequireApproval {
  *
  * Returns true if the changes are prompt-worthy, false otherwise.
  */
-export function printSecurityDiff(oldTemplate: any, newTemplate: cxapi.CloudFormationStackArtifact, requireApproval: RequireApproval): boolean {
-  const diff = cfnDiff.diffTemplate(oldTemplate, newTemplate.template);
+export function printSecurityDiff(
+  oldTemplate: any,
+  newTemplate: cxapi.CloudFormationStackArtifact,
+  requireApproval: RequireApproval,
+  changeSet?: CloudFormation.DescribeChangeSetOutput,
+): boolean {
+  const diff = cfnDiff.fullDiff(oldTemplate, newTemplate.template, changeSet);
 
   if (difRequiresApproval(diff, requireApproval)) {
     // eslint-disable-next-line max-len

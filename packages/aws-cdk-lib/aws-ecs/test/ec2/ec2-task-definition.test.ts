@@ -247,7 +247,7 @@ describe('ec2 task definition', () => {
         dockerSecurityOptions: ['ECS_SELINUX_CAPABLE=true'],
         entryPoint: ['/app/node_modules/.bin/cdk'],
         environment: { TEST_ENVIRONMENT_VARIABLE: 'test environment variable value' },
-        environmentFiles: [ecs.EnvironmentFile.fromAsset(path.join(__dirname, '../demo-envfiles/test-envfile.env'))],
+        environmentFiles: [ecs.EnvironmentFile.fromAsset(path.join(__dirname, '..', 'demo-envfiles', 'test-envfile.env'))],
         essential: true,
         extraHosts: { EXTRAHOST: 'extra host' },
         healthCheck: {
@@ -1107,6 +1107,126 @@ describe('ec2 task definition', () => {
           EFSVolumeConfiguration: {
             FilesystemId: 'local',
           },
+        }],
+      });
+    });
+
+    test('correctly sets env variables when using EC2 capacity provider with AWSVPC mode - with no other user-defined env variables', () => {
+      // GIVEN AWS-VPC network mode
+      const stack = new cdk.Stack();
+      const taskDefiniton = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {
+        networkMode: ecs.NetworkMode.AWS_VPC,
+      });
+      taskDefiniton.addContainer('some-container', {
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+        memoryLimitMiB: 512,
+      });
+
+      // THEN it should include the AWS_REGION env variable - when no user defined env variables are provided
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
+        NetworkMode: ecs.NetworkMode.AWS_VPC,
+        ContainerDefinitions: [{
+          Name: 'some-container',
+          Image: 'amazon/amazon-ecs-sample',
+          Memory: 512,
+          Environment: [{
+            Name: 'AWS_REGION',
+            Value: {
+              Ref: 'AWS::Region',
+            },
+          }],
+        }],
+      });
+    });
+
+    test('correctly sets env variables when using EC2 capacity provider with AWSVPC mode - with other user-defined env variables', () => {
+      // GIVEN AWS-VPC network mode
+      const stack = new cdk.Stack();
+      const taskDefiniton = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {
+        networkMode: ecs.NetworkMode.AWS_VPC,
+      });
+      taskDefiniton.addContainer('some-container', {
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+        memoryLimitMiB: 512,
+        environment: {
+          SOME_VARIABLE: 'some-value',
+        },
+      });
+
+      // THEN it should include the AWS_REGION env variable
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
+        NetworkMode: ecs.NetworkMode.AWS_VPC,
+        ContainerDefinitions: [{
+          Name: 'some-container',
+          Image: 'amazon/amazon-ecs-sample',
+          Memory: 512,
+          Environment: [{
+            Name: 'SOME_VARIABLE',
+            Value: 'some-value',
+          }, {
+            Name: 'AWS_REGION',
+            Value: {
+              Ref: 'AWS::Region',
+            },
+          }],
+        }],
+      });
+    });
+
+    test('correctly sets env variables when using EC2 capacity provider with HOST mode', () => {
+      // GIVEN HOST network mode
+      const stack = new cdk.Stack();
+      const taskDefiniton = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {
+        networkMode: ecs.NetworkMode.HOST,
+      });
+      taskDefiniton.addContainer('some-container', {
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+        memoryLimitMiB: 512,
+        environment: {
+          SOME_VARIABLE: 'some-value',
+        },
+      });
+
+      // THEN it should not include the AWS_REGION env variable
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
+        NetworkMode: ecs.NetworkMode.HOST,
+        ContainerDefinitions: [{
+          Name: 'some-container',
+          Image: 'amazon/amazon-ecs-sample',
+          Memory: 512,
+          Environment: [{
+            Name: 'SOME_VARIABLE',
+            Value: 'some-value',
+          }],
+        }],
+      });
+    });
+
+    test('correctly sets env variables when using EC2 capacity provider with BRIDGE mode', () => {
+      // GIVEN HOST network mode
+      const stack = new cdk.Stack();
+      const taskDefiniton = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef', {
+        networkMode: ecs.NetworkMode.BRIDGE,
+      });
+      taskDefiniton.addContainer('some-container', {
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+        memoryLimitMiB: 512,
+        environment: {
+          SOME_VARIABLE: 'some-value',
+        },
+      });
+
+      // THEN it should not include the AWS_REGION env variable
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
+        NetworkMode: ecs.NetworkMode.BRIDGE,
+        ContainerDefinitions: [{
+          Name: 'some-container',
+          Image: 'amazon/amazon-ecs-sample',
+          Memory: 512,
+          Environment: [{
+            Name: 'SOME_VARIABLE',
+            Value: 'some-value',
+          }],
         }],
       });
     });

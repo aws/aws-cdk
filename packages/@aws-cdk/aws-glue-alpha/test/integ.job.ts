@@ -21,7 +21,7 @@ const app = new cdk.App();
 
 const stack = new cdk.Stack(app, 'aws-glue-job');
 
-const script = glue.Code.fromAsset(path.join(__dirname, 'job-script/hello_world.py'));
+const script = glue.Code.fromAsset(path.join(__dirname, 'job-script', 'hello_world.py'));
 
 [glue.GlueVersion.V2_0, glue.GlueVersion.V3_0, glue.GlueVersion.V4_0].forEach((glueVersion) => {
   const etlJob = new glue.Job(stack, 'EtlJob' + glueVersion.name, {
