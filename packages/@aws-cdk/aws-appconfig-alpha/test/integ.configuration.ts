@@ -216,6 +216,10 @@ new SourcedConfiguration(stack, 'MyConfigFromPipeline', {
   location: ConfigurationSource.fromPipeline(pipeline),
 });
 
+/* resource deployment alone is sufficient because we already have the
+   corresponding resource handler tests to assert that resources can be
+   used after created */
+
 new IntegTest(app, 'appconfig-configuration', {
   testCases: [stack],
   cdkCommandOptions: {

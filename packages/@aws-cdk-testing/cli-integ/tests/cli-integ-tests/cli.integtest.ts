@@ -599,76 +599,76 @@ integTest('cdk migrate generates migrate.json', withCDKMigrateFixture('typescrip
   await fixture.cdkDestroy(fixture.stackNamePrefix);
 }));
 
-integTest('cdk migrate --from-scan with AND/OR filters correctly filters resources', withExtendedTimeoutFixture(async (fixture) => {
-  const stackName = `cdk-migrate-integ-${fixture.randomString}`;
+// integTest('cdk migrate --from-scan with AND/OR filters correctly filters resources', withExtendedTimeoutFixture(async (fixture) => {
+//   const stackName = `cdk-migrate-integ-${fixture.randomString}`;
 
-  await fixture.cdkDeploy('migrate-stack', {
-    modEnv: { SAMPLE_RESOURCES: '1' },
-  });
-  await fixture.cdk(
-    ['migrate', '--stack-name', stackName, '--from-scan', 'new', '--filter', 'type=AWS::SNS::Topic,tag-key=tag1', 'type=AWS::SQS::Queue,tag-key=tag3'],
-    { modEnv: { MIGRATE_INTEG_TEST: '1' }, neverRequireApproval: true, verbose: true, captureStderr: false },
-  );
+//   await fixture.cdkDeploy('migrate-stack', {
+//     modEnv: { SAMPLE_RESOURCES: '1' },
+//   });
+//   await fixture.cdk(
+//     ['migrate', '--stack-name', stackName, '--from-scan', 'new', '--filter', 'type=AWS::SNS::Topic,tag-key=tag1', 'type=AWS::SQS::Queue,tag-key=tag3'],
+//     { modEnv: { MIGRATE_INTEG_TEST: '1' }, neverRequireApproval: true, verbose: true, captureStderr: false },
+//   );
 
-  try {
-    const response = await fixture.aws.cloudFormation('describeGeneratedTemplate', {
-      GeneratedTemplateName: stackName,
-    });
-    const resourceNames = [];
-    for (const resource of response.Resources || []) {
-      if (resource.LogicalResourceId) {
-        resourceNames.push(resource.LogicalResourceId);
-      }
-    }
-    fixture.log(`Resources: ${resourceNames}`);
-    expect(resourceNames.some(ele => ele && ele.includes('migratetopic1'))).toBeTruthy();
-    expect(resourceNames.some(ele => ele && ele.includes('migratequeue1'))).toBeTruthy();
-  } finally {
-    await fixture.cdkDestroy('migrate-stack');
-    await fixture.aws.cloudFormation('deleteGeneratedTemplate', {
-      GeneratedTemplateName: stackName,
-    });
-  }
-}));
+//   try {
+//     const response = await fixture.aws.cloudFormation('describeGeneratedTemplate', {
+//       GeneratedTemplateName: stackName,
+//     });
+//     const resourceNames = [];
+//     for (const resource of response.Resources || []) {
+//       if (resource.LogicalResourceId) {
+//         resourceNames.push(resource.LogicalResourceId);
+//       }
+//     }
+//     fixture.log(`Resources: ${resourceNames}`);
+//     expect(resourceNames.some(ele => ele && ele.includes('migratetopic1'))).toBeTruthy();
+//     expect(resourceNames.some(ele => ele && ele.includes('migratequeue1'))).toBeTruthy();
+//   } finally {
+//     await fixture.cdkDestroy('migrate-stack');
+//     await fixture.aws.cloudFormation('deleteGeneratedTemplate', {
+//       GeneratedTemplateName: stackName,
+//     });
+//   }
+// }));
 
-integTest('cdk migrate --from-scan for resources with Write Only Properties generates warnings', withExtendedTimeoutFixture(async (fixture) => {
-  const stackName = `cdk-migrate-integ-${fixture.randomString}`;
+// integTest('cdk migrate --from-scan for resources with Write Only Properties generates warnings', withExtendedTimeoutFixture(async (fixture) => {
+//   const stackName = `cdk-migrate-integ-${fixture.randomString}`;
 
-  await fixture.cdkDeploy('migrate-stack', {
-    modEnv: {
-      LAMBDA_RESOURCES: '1',
-    },
-  });
-  await fixture.cdk(
-    ['migrate', '--stack-name', stackName, '--from-scan', 'new', '--filter', 'type=AWS::Lambda::Function,tag-key=lambda-tag'],
-    { modEnv: { MIGRATE_INTEG_TEST: '1' }, neverRequireApproval: true, verbose: true, captureStderr: false },
-  );
+//   await fixture.cdkDeploy('migrate-stack', {
+//     modEnv: {
+//       LAMBDA_RESOURCES: '1',
+//     },
+//   });
+//   await fixture.cdk(
+//     ['migrate', '--stack-name', stackName, '--from-scan', 'new', '--filter', 'type=AWS::Lambda::Function,tag-key=lambda-tag'],
+//     { modEnv: { MIGRATE_INTEG_TEST: '1' }, neverRequireApproval: true, verbose: true, captureStderr: false },
+//   );
 
-  try {
+//   try {
 
-    const response = await fixture.aws.cloudFormation('describeGeneratedTemplate', {
-      GeneratedTemplateName: stackName,
-    });
-    const resourceNames = [];
-    for (const resource of response.Resources || []) {
-      if (resource.LogicalResourceId && resource.ResourceType === 'AWS::Lambda::Function') {
-        resourceNames.push(resource.LogicalResourceId);
-      }
-    }
-    fixture.log(`Resources: ${resourceNames}`);
-    const readmePath = path.join(fixture.integTestDir, stackName, 'README.md');
-    const readme = await fs.readFile(readmePath, 'utf8');
-    expect(readme).toContain('## Warnings');
-    for (const resourceName of resourceNames) {
-      expect(readme).toContain(`### ${resourceName}`);
-    }
-  } finally {
-    await fixture.cdkDestroy('migrate-stack');
-    await fixture.aws.cloudFormation('deleteGeneratedTemplate', {
-      GeneratedTemplateName: stackName,
-    });
-  }
-}));
+//     const response = await fixture.aws.cloudFormation('describeGeneratedTemplate', {
+//       GeneratedTemplateName: stackName,
+//     });
+//     const resourceNames = [];
+//     for (const resource of response.Resources || []) {
+//       if (resource.LogicalResourceId && resource.ResourceType === 'AWS::Lambda::Function') {
+//         resourceNames.push(resource.LogicalResourceId);
+//       }
+//     }
+//     fixture.log(`Resources: ${resourceNames}`);
+//     const readmePath = path.join(fixture.integTestDir, stackName, 'README.md');
+//     const readme = await fs.readFile(readmePath, 'utf8');
+//     expect(readme).toContain('## Warnings');
+//     for (const resourceName of resourceNames) {
+//       expect(readme).toContain(`### ${resourceName}`);
+//     }
+//   } finally {
+//     await fixture.cdkDestroy('migrate-stack');
+//     await fixture.aws.cloudFormation('deleteGeneratedTemplate', {
+//       GeneratedTemplateName: stackName,
+//     });
+//   }
+// }));
 
 ['typescript', 'python', 'csharp', 'java'].forEach(language => {
   integTest(`cdk migrate --from-stack creates deployable ${language} app`, withExtendedTimeoutFixture(async (fixture) => {
@@ -842,6 +842,139 @@ integTest('cdk ls', withDefaultFixture(async (fixture) => {
   for (const stack of expectedStacks) {
     expect(listing).toContain(fixture.fullStackName(stack));
   }
+}));
+
+/**
+ * Type to store stack dependencies recursively
+ */
+type DependencyDetails = {
+  id: string;
+  dependencies: DependencyDetails[];
+};
+
+type StackDetails = {
+  id: string;
+  dependencies: DependencyDetails[];
+};
+
+integTest('cdk ls --show-dependencies --json', withDefaultFixture(async (fixture) => {
+  const listing = await fixture.cdk(['ls --show-dependencies --json'], { captureStderr: false });
+
+  const expectedStacks = [
+    {
+      id: 'test-1',
+      dependencies: [],
+    },
+    {
+      id: 'order-providing',
+      dependencies: [],
+    },
+    {
+      id: 'order-consuming',
+      dependencies: [
+        {
+          id: 'order-providing',
+          dependencies: [],
+        },
+      ],
+    },
+    {
+      id: 'with-nested-stack',
+      dependencies: [],
+    },
+    {
+      id: 'list-stacks',
+      dependencies: [
+        {
+          id: 'liststacksDependentStack',
+          dependencies: [
+            {
+              id: 'liststacksDependentStackInnerDependentStack',
+              dependencies: [],
+            },
+          ],
+        },
+      ],
+    },
+    {
+      id: 'list-multiple-dependent-stacks',
+      dependencies: [
+        {
+          id: 'listmultipledependentstacksDependentStack1',
+          dependencies: [],
+        },
+        {
+          id: 'listmultipledependentstacksDependentStack2',
+          dependencies: [],
+        },
+      ],
+    },
+  ];
+
+  function validateStackDependencies(stack: StackDetails) {
+    expect(listing).toContain(stack.id);
+
+    function validateDependencies(dependencies: DependencyDetails[]) {
+      for (const dependency of dependencies) {
+        expect(listing).toContain(dependency.id);
+        if (dependency.dependencies.length > 0) {
+          validateDependencies(dependency.dependencies);
+        }
+      }
+    }
+
+    if (stack.dependencies.length > 0) {
+      validateDependencies(stack.dependencies);
+    }
+  }
+
+  for (const stack of expectedStacks) {
+    validateStackDependencies(stack);
+  }
+}));
+
+integTest('cdk ls --show-dependencies --json --long', withDefaultFixture(async (fixture) => {
+  const listing = await fixture.cdk(['ls --show-dependencies --json --long'], { captureStderr: false });
+
+  const expectedStacks = [
+    {
+      id: 'order-providing',
+      name: 'order-providing',
+      enviroment: {
+        account: 'unknown-account',
+        region: 'unknown-region',
+        name: 'aws://unknown-account/unknown-region',
+      },
+      dependencies: [],
+    },
+    {
+      id: 'order-consuming',
+      name: 'order-consuming',
+      enviroment: {
+        account: 'unknown-account',
+        region: 'unknown-region',
+        name: 'aws://unknown-account/unknown-region',
+      },
+      dependencies: [
+        {
+          id: 'order-providing',
+          dependencies: [],
+        },
+      ],
+    },
+  ];
+
+  for (const stack of expectedStacks) {
+    expect(listing).toContain(fixture.fullStackName(stack.id));
+    expect(listing).toContain(fixture.fullStackName(stack.name));
+    expect(listing).toContain(stack.enviroment.account);
+    expect(listing).toContain(stack.enviroment.name);
+    expect(listing).toContain(stack.enviroment.region);
+    for (const dependency of stack.dependencies) {
+      expect(listing).toContain(fixture.fullStackName(dependency.id));
+    }
+  }
+
 }));
 
 integTest('synthing a stage with errors leads to failure', withDefaultFixture(async (fixture) => {

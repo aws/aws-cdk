@@ -189,9 +189,7 @@ are managed by AWS. If you would prefer to use your own managed NAT
 *instances* instead, specify a different value for the `natGatewayProvider`
 property, as follows:
 
-[using NAT instances](test/integ.nat-instances.lit.ts)
-
-The construct will automatically search for the most recent NAT gateway AMI.
+The construct will automatically selects the latest version of Amazon Linux 2023.
 If you prefer to use a custom AMI, use `machineImage:
 MachineImage.genericLinux({ ... })` and configure the right AMI ID for the
 regions you want to deploy to.
@@ -200,6 +198,25 @@ By default, the NAT instances will route all traffic. To control what traffic
 gets routed, pass a custom value for `defaultAllowedTraffic` and access the
 `NatInstanceProvider.connections` member after having passed the NAT provider to
 the VPC:
+
+```ts
+declare const instanceType: ec2.InstanceType;
+
+const provider = ec2.NatProvider.instanceV2({
+  instanceType,
+  defaultAllowedTraffic: ec2.NatTrafficDirection.OUTBOUND_ONLY,
+});
+new ec2.Vpc(this, 'TheVPC', {
+  natGatewayProvider: provider,
+});
+provider.connections.allowFrom(ec2.Peer.ipv4('1.2.3.4/8'), ec2.Port.tcp(80));
+```
+
+[using NAT instances](test/integ.nat-instances.lit.ts) [Deprecated]
+
+The construct will use the AWS official NAT instance AMI, which has already 
+reached EOL on Dec 31, 2023. For more information, see the following blog post: 
+[Amazon Linux AMI end of life](https://aws.amazon.com/blogs/aws/update-on-amazon-linux-ami-end-of-life/).
 
 ```ts
 declare const instanceType: ec2.InstanceType;
@@ -1429,7 +1446,7 @@ EBS volume for the bastion host can be encrypted like:
 const host = new ec2.BastionHostLinux(this, 'BastionHost', {
   vpc,
   blockDevices: [{
-    deviceName: 'EBSBastionHost',
+    deviceName: '/dev/sdh',
     volume: ec2.BlockDeviceVolume.ebs(10, {
       encrypted: true,
     }),
@@ -1756,6 +1773,36 @@ Note to set `mapPublicIpOnLaunch` to true in the `subnetConfiguration`.
 
 Additionally, IPv6 support varies by instance type. Most instance types have IPv6 support with exception of m1-m3, c1, g2, and t1.micro. A full list can be found here: https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-eni.html#AvailableIpPerENI.
 
+
+### Credit configuration modes for burstable instances
+
+You can set the [credit configuration mode](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/burstable-credits-baseline-concepts.html) for burstable instances (T2, T3, T3a and T4g instance types):
+
+```ts
+declare const vpc: ec2.Vpc;
+
+const instance = new ec2.Instance(this, 'Instance', {
+  instanceType: ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.MICRO),
+  machineImage: ec2.MachineImage.latestAmazonLinux2(),
+  vpc: vpc,
+  creditSpecification: ec2.CpuCredits.STANDARD,
+});
+```
+
+It is also possible to set the credit configuration mode for NAT instances.
+
+```ts
+const natInstanceProvider = ec2.NatProvider.instance({
+  instanceType: ec2.InstanceType.of(ec2.InstanceClass.T4G, ec2.InstanceSize.LARGE),
+  machineImage: new ec2.AmazonLinuxImage(),
+  creditSpecification: ec2.CpuCredits.UNLIMITED,
+});
+new ec2.Vpc(this, 'VPC', {
+  natGatewayProvider: natInstanceProvider,
+});
+```
+
+**Note**: `CpuCredits.UNLIMITED` mode is not supported for T3 instances that are launched on a Dedicated Host.
 
 ## VPC Flow Logs
 

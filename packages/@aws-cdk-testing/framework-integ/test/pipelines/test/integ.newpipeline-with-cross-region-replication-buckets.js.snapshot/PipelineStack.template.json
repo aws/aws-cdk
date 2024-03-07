@@ -139,6 +139,7 @@
       "Region": "us-west-2"
      }
     ],
+    "PipelineType": "V1",
     "RestartExecutionOnUpdate": true,
     "RoleArn": {
      "Fn::GetAtt": [
