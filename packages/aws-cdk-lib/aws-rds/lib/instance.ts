@@ -1397,6 +1397,7 @@ function defaultIops(storageType: StorageType, iops?: number): number | undefine
     case StorageType.GP3:
       return iops;
     case StorageType.IO1:
+    case StorageType.IO2:
       return iops ?? 1000;
   }
 }
