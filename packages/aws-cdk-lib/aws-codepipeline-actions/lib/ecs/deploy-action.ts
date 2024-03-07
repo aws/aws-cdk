@@ -80,14 +80,15 @@ export class EcsDeployAction extends Action {
   protected bound(_scope: Construct, _stage: codepipeline.IStage, options: codepipeline.ActionBindOptions):
   codepipeline.ActionConfig {
     // permissions based on CodePipeline documentation:
-    // https://docs.aws.amazon.com/codepipeline/latest/userguide/how-to-custom-role.html#how-to-update-role-new-services
-    options.role.addToPolicy(new iam.PolicyStatement({
+    // https://docs.aws.amazon.com/codepipeline/latest/userguide/security-iam.html#how-to-custom-role
+    options.role.addToPrincipalPolicy(new iam.PolicyStatement({
       actions: [
         'ecs:DescribeServices',
         'ecs:DescribeTaskDefinition',
         'ecs:DescribeTasks',
         'ecs:ListTasks',
         'ecs:RegisterTaskDefinition',
+        'ecs:TagResource',
         'ecs:UpdateService',
       ],
       resources: ['*'],
