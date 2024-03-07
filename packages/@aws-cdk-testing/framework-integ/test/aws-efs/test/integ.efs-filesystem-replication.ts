@@ -19,7 +19,6 @@ new efs.FileSystem(stack, 'oneZoneReplicationFileSystem', {
   vpc,
   removalPolicy: cdk.RemovalPolicy.DESTROY,
   replicationConfiguration: {
-    enable: true,
     kmsKey,
     region: 'us-east-1',
     availabilityZone: 'us-east-1a',
@@ -37,7 +36,6 @@ new efs.FileSystem(stack, 'existFileSystemReplication', {
   removalPolicy: cdk.RemovalPolicy.DESTROY,
   replicationConfiguration: {
     destinationFileSystem: destination,
-    enable: true,
   },
 });
 
