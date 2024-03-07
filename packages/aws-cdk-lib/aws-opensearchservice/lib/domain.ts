@@ -691,7 +691,7 @@ export interface DomainProps {
   /**
    * Whether to enable or disable cold storage on the domain. You must enable UltraWarm storage to enable cold storage.
    *
-   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-opensearchservice-domain-coldstorageoptions.html
+   * @see https://docs.aws.amazon.com/opensearch-service/latest/developerguide/cold-storage.html
    *
    * @default - undefined
    */
