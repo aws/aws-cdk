@@ -16,11 +16,11 @@ Shout out to our top contributors!
 - [NetaNir](https://github.com/NetaNir)
 - [comcalvi](https://github.com/comcalvi)
 - [robertd](https://github.com/robertd)
-- [MrArnoldPalmer](https://github.com/MrArnoldPalmer)
 - [pahud](https://github.com/pahud)
+- [MrArnoldPalmer](https://github.com/MrArnoldPalmer)
 - [TheRealAmazonKendra](https://github.com/TheRealAmazonKendra)
-- [peterwoodworth](https://github.com/peterwoodworth)
 - [lpizzinidev](https://github.com/lpizzinidev)
+- [peterwoodworth](https://github.com/peterwoodworth)
 - [go-to-k](https://github.com/go-to-k)
 - [colifran](https://github.com/colifran)
 - [nija-at](https://github.com/nija-at)
@@ -29,4 +29,4 @@ Shout out to our top contributors!
 - [jumic](https://github.com/jumic)
 
 
-_Last updated: Thu, 01 Feb 24 00:09:34 +0000_
+_Last updated: Fri, 01 Mar 24 00:09:32 +0000_

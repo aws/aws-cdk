@@ -109,6 +109,10 @@ const hostedConfig = new HostedConfiguration(stack, 'HostedConfiguration', {
 });
 hostedConfig.node.addDependency(lambdaExtension, topicExtension, busExtension, queueExtension);
 
+/* resource deployment alone is sufficient because we already have the
+   corresponding resource handler tests to assert that resources can be
+   used after created */
+
 new IntegTest(app, 'appconfig-extension', {
   testCases: [stack],
   cdkCommandOptions: {

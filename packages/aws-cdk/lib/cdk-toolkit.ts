@@ -21,6 +21,7 @@ import { StackActivityProgress } from './api/util/cloudformation/stack-activity-
 import { generateCdkApp, generateStack, readFromPath, readFromStack, setEnvironment, parseSourceOptions, generateTemplate, FromScan, TemplateSourceOptions, GenerateTemplateOutput, CfnTemplateGeneratorProvider, writeMigrateJsonFile, buildGenertedTemplateOutput, buildCfnClient, appendWarningsToReadme, isThereAWarning } from './commands/migrate';
 import { printSecurityDiff, printStackDiff, RequireApproval } from './diff';
 import { ResourceImporter, removeNonImportResources } from './import';
+import { listStacks } from './list-stacks';
 import { data, debug, error, highlight, print, success, warning, withCorkedLogging } from './logging';
 import { deserializeStructure, serializeStructure } from './serialize';
 import { Configuration, PROJECT_CONFIG } from './settings';
@@ -615,16 +616,37 @@ export class CdkToolkit {
     }
   }
 
-  public async list(selectors: string[], options: { long?: boolean; json?: boolean } = { }): Promise<number> {
-    const stacks = await this.selectStacksForList(selectors);
+  public async list(selectors: string[], options: { long?: boolean; json?: boolean; showDeps?: boolean } = { }): Promise<number> {
+    const stacks = await listStacks(this, {
+      selectors: selectors,
+    });
 
-    // if we are in "long" mode, emit the array as-is (JSON/YAML)
+    if (options.long && options.showDeps) {
+      data(serializeStructure(stacks, options.json ?? false));
+      return 0;
+    }
+
+    if (options.showDeps) {
+      const stackDeps = [];
+
+      for (const stack of stacks) {
+        stackDeps.push({
+          id: stack.id,
+          dependencies: stack.dependencies,
+        });
+      }
+
+      data(serializeStructure(stackDeps, options.json ?? false));
+      return 0;
+    }
+
     if (options.long) {
       const long = [];
-      for (const stack of stacks.stackArtifacts) {
+
+      for (const stack of stacks) {
         long.push({
-          id: stack.hierarchicalId,
-          name: stack.stackName,
+          id: stack.id,
+          name: stack.name,
           environment: stack.environment,
         });
       }
@@ -633,8 +655,8 @@ export class CdkToolkit {
     }
 
     // just print stack IDs
-    for (const stack of stacks.stackArtifacts) {
-      data(stack.hierarchicalId);
+    for (const stack of stacks) {
+      data(stack.id);
     }
 
     return 0; // exit-code
@@ -907,7 +929,7 @@ export class CdkToolkit {
     return assembly.stackById(stacks.firstStack.id);
   }
 
-  private assembly(cacheCloudAssembly?: boolean): Promise<CloudAssembly> {
+  public assembly(cacheCloudAssembly?: boolean): Promise<CloudAssembly> {
     return this.props.cloudExecutable.synthesize(cacheCloudAssembly);
   }
 
