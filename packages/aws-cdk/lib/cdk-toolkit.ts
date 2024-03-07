@@ -136,7 +136,14 @@ export class CdkToolkit {
         throw new Error(`There is no file at ${options.templatePath}`);
       }
 
-      const changeSet = options.changeSet ? await createDiffChangeSet({
+      const stackExistsOptions = {
+        stack: stacks.firstStack,
+        deployName: stacks.firstStack.stackName,
+      };
+
+      const stackExists = await this.props.deployments.stackExists(stackExistsOptions);
+
+      const changeSet = (stackExists && options.changeSet) ? await createDiffChangeSet({
         stack: stacks.firstStack,
         uuid: uuid.v4(),
         willExecute: false,
@@ -168,13 +175,23 @@ export class CdkToolkit {
           removeNonImportResources(stack);
         }
 
-        const changeSet = options.changeSet ? await createDiffChangeSet({
+        const stackExistsOptions = {
+          stack,
+          deployName: stack.stackName,
+        };
+
+        const stackExists = await this.props.deployments.stackExists(stackExistsOptions);
+
+        // if the stack does not already exist, do not do a changeset
+        // this prevents race conditions between deleting the dummy changeset stack and deploying the real changeset stack
+        // migrate stacks that import resources will not previously exist and default to old diff logic
+        const changeSet = (stackExists && options.changeSet) ? await createDiffChangeSet({
           stack,
           uuid: uuid.v4(),
           deployments: this.props.deployments,
           willExecute: false,
           sdkProvider: this.props.sdkProvider,
-          parameters: Object.assign({}, parameterMap['*'], parameterMap[stacks.firstStack.stackName]),
+          parameters: Object.assign({}, parameterMap['*'], parameterMap[stacks.firstStack.stackName]), // should this be stack?
           resourcesToImport,
           stream,
         }) : undefined;
@@ -183,10 +200,11 @@ export class CdkToolkit {
           stream.write('Parameters and rules created during migration do not affect resource configuration.\n');
         }
 
+        // pass a boolean to print if the stack is a migrate stack in order to set all resource diffs to import
         const stackCount =
         options.securityOnly
           ? (numberFromBool(printSecurityDiff(currentTemplate, stack, RequireApproval.Broadening, changeSet)) > 0 ? 1 : 0)
-          : (printStackDiff(currentTemplate, stack, strict, contextLines, quiet, changeSet, stream) > 0 ? 1 : 0);
+          : (printStackDiff(currentTemplate, stack, strict, contextLines, quiet, changeSet, stream, !!resourcesToImport) > 0 ? 1 : 0);
 
         diffs += stackCount + nestedStackCount;
       }
