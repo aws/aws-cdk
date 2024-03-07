@@ -213,6 +213,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
       lb.addDependency(bucketPolicy);
     }
   }
+
   /**
    * Add a security group to this load balancer
    */

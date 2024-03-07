@@ -411,7 +411,7 @@ describe('tests', () => {
 
     test('bucket with KMS throws validation error', () => {
       //GIVEN
-      const { bucket, lb } = loggingSetup(true);
+      const { stack, bucket, lb } = loggingSetup(true);
 
       // WHEN
       const logAccessLogFunctionTest = () => lb.logAccessLogs(bucket);
