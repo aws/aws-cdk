@@ -90,7 +90,6 @@ declare const kmsKey: kms.Key;
 new efs.FileSystem(this, 'ReplicationSourceFileSystem1', {
   vpc,
   replicationConfiguration: {
-    enable: true,
     kmsKey, // optional
     region: 'us-east-1', // optional
     availabilityZone: 'us-east-1a', // optional, Specifing the AZ means creating a One Zone file system as the replication destination
@@ -107,7 +106,6 @@ const destinationFileSystem = new efs.FileSystem(this, 'DestinationFileSystem', 
 new efs.FileSystem(this, 'ReplicationSourceFileSystem2', {
   vpc,
   replicationConfiguration: {
-    enable: true,
     destinationFileSystem,
     // cannot configure other properties when destinationFileSystem is specified
   }
