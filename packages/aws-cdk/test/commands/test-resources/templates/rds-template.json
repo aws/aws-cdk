@@ -1,0 +1,19 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "AWS CloudFormation Sample Template S3_Website_Bucket_With_Retain_On_Delete: Sample template showing how to create a publicly accessible S3 bucket configured for website access with a deletion policy of retain on delete.",
+  "Resources": {
+    "RDSCluster": {
+      "Type": "AWS::RDS::DBCluster",
+      "Properties": {
+        "DBClusterIdentifier" : "aurora-postgresql-cluster",
+        "Engine" : "aurora-postgresql",
+        "EngineVersion" : "10.7",
+        "DBClusterParameterGroupName" : "default.aurora-postgresql10",
+        "EnableCloudwatchLogsExports" : ["postgresql"],
+        "ReadEndpoint": {
+            "Address": "http://127.0.0.1:8080"
+        }
+      }
+    }
+  }
+}
