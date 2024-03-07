@@ -1,5 +1,6 @@
 import * as path from 'path';
 import { format } from 'util';
+import * as cfnDiff from '@aws-cdk/cloudformation-diff';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as chalk from 'chalk';
 import * as chokidar from 'chokidar';
@@ -153,10 +154,6 @@ export class CdkToolkit {
     } else {
       // Compare N stacks against deployed templates
       for (const stack of stacks.stackArtifacts) {
-        if (!quiet) {
-          stream.write(format('Stack %s\n', chalk.bold(stack.displayName)));
-        }
-
         const templateWithNames = await this.props.deployments.readCurrentTemplateWithNestedStacks(
           stack, options.compareAgainstProcessedTemplate,
         );
@@ -179,14 +176,19 @@ export class CdkToolkit {
           stream,
         }) : undefined;
 
+        const diff = cfnDiff.fullDiff(currentTemplate, stack.template, changeSet);
+        if (!quiet || !diff.isEmpty) {
+          stream.write(format('Stack %s\n', chalk.bold(stack.displayName)));
+        }
+
         if (resourcesToImport) {
           stream.write('Parameters and rules created during migration do not affect resource configuration.\n');
         }
 
         const stackCount =
         options.securityOnly
-          ? (numberFromBool(printSecurityDiff(currentTemplate, stack, RequireApproval.Broadening, changeSet)) > 0 ? 1 : 0)
-          : (printStackDiff(currentTemplate, stack, strict, contextLines, quiet, changeSet, stream) > 0 ? 1 : 0);
+          ? (numberFromBool(printSecurityDiff(currentTemplate, stack, RequireApproval.Broadening, changeSet, diff)) > 0 ? 1 : 0)
+          : (printStackDiff(currentTemplate, stack, strict, contextLines, quiet, changeSet, stream, diff) > 0 ? 1 : 0);
 
         diffs += stackCount + nestedStackCount;
       }
