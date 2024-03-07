@@ -88,6 +88,13 @@ export class OperatingSystemFamily {
    * @param _operatingSystemFamily The operating system family.
    */
   private constructor(public readonly _operatingSystemFamily: string) { }
+
+  /**
+   * Returns true if the operating system family is Windows
+   */
+  public isWindows(): boolean {
+    return this._operatingSystemFamily?.toLowerCase().startsWith('windows') ? true : false;
+  }
 }
 
 /**
@@ -99,12 +106,12 @@ export interface RuntimePlatform {
    *
    * @default - Undefined.
    */
-  readonly cpuArchitecture?: CpuArchitecture,
+  readonly cpuArchitecture?: CpuArchitecture;
 
   /**
    * The operating system for Fargate Runtime Platform.
    *
    * @default - Undefined.
    */
-  readonly operatingSystemFamily?: OperatingSystemFamily,
+  readonly operatingSystemFamily?: OperatingSystemFamily;
 }

@@ -33,7 +33,7 @@ export class SingletonPolicy extends Construct implements iam.IGrantable {
     this.grantPrincipal = role;
   }
 
-  public grantExecuteChangeSet(props: { stackName: string, changeSetName: string, region?: string }): void {
+  public grantExecuteChangeSet(props: { stackName: string; changeSetName: string; region?: string }): void {
     this.statementFor({
       actions: [
         'cloudformation:DescribeStacks',
@@ -44,7 +44,7 @@ export class SingletonPolicy extends Construct implements iam.IGrantable {
     }).addResources(this.stackArnFromProps(props));
   }
 
-  public grantCreateReplaceChangeSet(props: { stackName: string, changeSetName: string, region?: string }): void {
+  public grantCreateReplaceChangeSet(props: { stackName: string; changeSetName: string; region?: string }): void {
     this.statementFor({
       actions: [
         'cloudformation:CreateChangeSet',
@@ -56,7 +56,7 @@ export class SingletonPolicy extends Construct implements iam.IGrantable {
     }).addResources(this.stackArnFromProps(props));
   }
 
-  public grantCreateUpdateStack(props: { stackName: string, replaceOnFailure?: boolean, region?: string }): void {
+  public grantCreateUpdateStack(props: { stackName: string; replaceOnFailure?: boolean; region?: string }): void {
     const actions = [
       'cloudformation:DescribeStack*',
       'cloudformation:CreateStack',
@@ -72,7 +72,7 @@ export class SingletonPolicy extends Construct implements iam.IGrantable {
     this.statementFor({ actions }).addResources(this.stackArnFromProps(props));
   }
 
-  public grantCreateUpdateStackSet(props: { stackSetName: string, region?: string }): void {
+  public grantCreateUpdateStackSet(props: { stackSetName: string; region?: string }): void {
     const actions = [
       'cloudformation:CreateStackSet',
       'cloudformation:UpdateStackSet',
@@ -84,7 +84,7 @@ export class SingletonPolicy extends Construct implements iam.IGrantable {
     this.statementFor({ actions }).addResources(this.stackSetArnFromProps(props));
   }
 
-  public grantDeleteStack(props: { stackName: string, region?: string }): void {
+  public grantDeleteStack(props: { stackName: string; region?: string }): void {
     this.statementFor({
       actions: [
         'cloudformation:DescribeStack*',
@@ -129,7 +129,7 @@ export class SingletonPolicy extends Construct implements iam.IGrantable {
     }
   }
 
-  private stackArnFromProps(props: { stackName: string, region?: string }): string {
+  private stackArnFromProps(props: { stackName: string; region?: string }): string {
     return cdk.Stack.of(this).formatArn({
       region: props.region,
       service: 'cloudformation',
@@ -138,7 +138,7 @@ export class SingletonPolicy extends Construct implements iam.IGrantable {
     });
   }
 
-  private stackSetArnFromProps(props: { stackSetName: string, region?: string }): string {
+  private stackSetArnFromProps(props: { stackSetName: string; region?: string }): string {
     return cdk.Stack.of(this).formatArn({
       region: props.region,
       service: 'cloudformation',

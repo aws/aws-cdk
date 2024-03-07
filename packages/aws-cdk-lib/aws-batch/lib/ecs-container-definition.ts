@@ -1057,6 +1057,11 @@ export class EcsFargateContainerDefinition extends EcsContainerDefinitionBase im
     this.fargateCpuArchitecture = props.fargateCpuArchitecture;
     this.fargateOperatingSystemFamily = props.fargateOperatingSystemFamily;
 
+    if (this.fargateOperatingSystemFamily?.isWindows() && this.readonlyRootFilesystem) {
+      // see https://kubernetes.io/docs/concepts/windows/intro/
+      throw new Error('Readonly root filesystem is not possible on Windows; write access is required for registry & system processes to run inside the container');
+    }
+
     // validates ephemeralStorageSize is within limits
     if (props.ephemeralStorageSize) {
       if (props.ephemeralStorageSize.toGibibytes() > 200) {
@@ -1071,7 +1076,7 @@ export class EcsFargateContainerDefinition extends EcsContainerDefinitionBase im
    * @internal
    */
   public _renderContainerDefinition(): CfnJobDefinition.ContainerPropertiesProperty {
-    return {
+    let containerDef = {
       ...super._renderContainerDefinition(),
       ephemeralStorage: this.ephemeralStorageSize? {
         sizeInGiB: this.ephemeralStorageSize?.toGibibytes(),
@@ -1087,6 +1092,13 @@ export class EcsFargateContainerDefinition extends EcsContainerDefinitionBase im
         operatingSystemFamily: this.fargateOperatingSystemFamily?._operatingSystemFamily,
       },
     };
+
+    // readonlyRootFilesystem isn't applicable to Windows, see https://kubernetes.io/docs/concepts/windows/intro/
+    if (this.fargateOperatingSystemFamily?.isWindows()) {
+      containerDef.readonlyRootFilesystem = undefined;
+    }
+
+    return containerDef;
   };
 }
 

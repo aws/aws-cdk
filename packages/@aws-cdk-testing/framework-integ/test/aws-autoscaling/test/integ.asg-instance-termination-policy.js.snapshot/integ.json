@@ -1,0 +1,12 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "InstanceTerminationPolicyTest/DefaultTest": {
+      "stacks": [
+        "aws-cdk-autoscaling-instance-termination-policy"
+      ],
+      "assertionStack": "InstanceTerminationPolicyTest/DefaultTest/DeployAssert",
+      "assertionStackName": "InstanceTerminationPolicyTestDefaultTestDeployAssertD453E37E"
+    }
+  }
+}

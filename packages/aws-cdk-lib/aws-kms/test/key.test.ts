@@ -1241,7 +1241,7 @@ function generateInvalidKeySpecKeyUsageCombinations() {
       KeySpec.SM2,
     ],
   };
-  const testCases: { keySpec: KeySpec, keyUsage: KeyUsage, toString: () => string }[] = [];
+  const testCases: { keySpec: KeySpec; keyUsage: KeyUsage; toString: () => string }[] = [];
   for (const keySpec in KeySpec) {
     for (const keyUsage in KeyUsage) {
       if (denyLists[keyUsage as KeyUsage].includes(keySpec as KeySpec)) {

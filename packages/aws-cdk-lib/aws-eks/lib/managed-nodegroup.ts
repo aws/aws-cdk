@@ -70,6 +70,14 @@ export enum NodegroupAmiType {
    * Windows Full 2022 (x86-64)
    */
   WINDOWS_FULL_2022_X86_64 = 'WINDOWS_FULL_2022_x86_64',
+  /**
+   * Amazon Linux 2023 (x86-64)
+   */
+  AL2023_X86_64_STANDARD = 'AL2023_x86_64_STANDARD',
+  /**
+   * Amazon Linux 2023 (ARM-64)
+   */
+  AL2023_ARM_64_STANDARD = 'AL2023_ARM_64_STANDARD',
 }
 
 /**
@@ -83,7 +91,7 @@ export enum CapacityType {
   /**
    * on-demand instances
    */
-  ON_DEMAND = 'ON_DEMAND'
+  ON_DEMAND = 'ON_DEMAND',
 }
 
 /**

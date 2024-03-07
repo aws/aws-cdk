@@ -339,6 +339,17 @@ export interface CommonAutoScalingGroupProps {
   readonly terminationPolicies?: TerminationPolicy[];
 
   /**
+   * A lambda function Arn that can be used as a custom termination policy to select the instances
+   * to terminate. This property must be specified if the TerminationPolicy.CUSTOM_LAMBDA_FUNCTION
+   * is used.
+   *
+   * @see https://docs.aws.amazon.com/autoscaling/ec2/userguide/lambda-custom-termination-policy.html
+   *
+   * @default - No lambda function Arn will be supplied
+   */
+  readonly terminationPolicyCustomLambdaFunctionArn?: string;
+
+  /**
    * The amount of time, in seconds, until a newly launched instance can contribute to the Amazon CloudWatch metrics.
    * This delay lets an instance finish initializing before Amazon EC2 Auto Scaling aggregates instance metrics,
    * resulting in more reliable usage data. Set this value equal to the amount of time that it takes for resource
@@ -491,7 +502,7 @@ export interface InstancesDistribution {
    *
    * @default OnDemandAllocationStrategy.PRIORITIZED
    */
-  readonly onDemandAllocationStrategy?: OnDemandAllocationStrategy,
+  readonly onDemandAllocationStrategy?: OnDemandAllocationStrategy;
 
   /**
    * The minimum amount of the Auto Scaling group's capacity that must be fulfilled by On-Demand Instances. This
@@ -501,7 +512,7 @@ export interface InstancesDistribution {
    *
    * @default 0
    */
-  readonly onDemandBaseCapacity?: number,
+  readonly onDemandBaseCapacity?: number;
 
   /**
    * Controls the percentages of On-Demand Instances and Spot Instances for your additional capacity beyond
@@ -510,7 +521,7 @@ export interface InstancesDistribution {
    *
    * @default 100
    */
-  readonly onDemandPercentageAboveBaseCapacity?: number,
+  readonly onDemandPercentageAboveBaseCapacity?: number;
 
   /**
    * If the allocation strategy is lowest-price, the Auto Scaling group launches instances using the Spot pools with the
@@ -525,7 +536,7 @@ export interface InstancesDistribution {
    *
    * @default SpotAllocationStrategy.LOWEST_PRICE
    */
-  readonly spotAllocationStrategy?: SpotAllocationStrategy,
+  readonly spotAllocationStrategy?: SpotAllocationStrategy;
 
   /**
    * The number of Spot Instance pools to use to allocate your Spot capacity. The Spot pools are determined from the different instance
@@ -534,7 +545,7 @@ export interface InstancesDistribution {
    *
    * @default 2
    */
-  readonly spotInstancePools?: number,
+  readonly spotInstancePools?: number;
 
   /**
    * The maximum price per unit hour that you are willing to pay for a Spot Instance. If you leave the value at its default (empty),
@@ -543,7 +554,7 @@ export interface InstancesDistribution {
    *
    * @default "" - On-Demand price
    */
-  readonly spotMaxPrice?: string
+  readonly spotMaxPrice?: string;
 }
 
 /**
@@ -563,7 +574,7 @@ export interface LaunchTemplateOverrides {
    *
    * @default - Do not override instance type
    */
-  readonly instanceRequirements?: CfnAutoScalingGroup.InstanceRequirementsProperty
+  readonly instanceRequirements?: CfnAutoScalingGroup.InstanceRequirementsProperty;
 
   /**
    * The instance type, such as m3.xlarge. You must use an instance type that is supported in your requested Region
@@ -573,7 +584,7 @@ export interface LaunchTemplateOverrides {
    *
    * @default - Do not override instance type
    */
-  readonly instanceType?: ec2.InstanceType,
+  readonly instanceType?: ec2.InstanceType;
 
   /**
    * Provides the launch template to be used when launching the instance type. For example, some instance types might
@@ -582,7 +593,7 @@ export interface LaunchTemplateOverrides {
    *
    * @default - Do not override launch template
    */
-  readonly launchTemplate?: ec2.ILaunchTemplate,
+  readonly launchTemplate?: ec2.ILaunchTemplate;
 
   /**
    * The number of capacity units provided by the specified instance type in terms of virtual CPUs, memory, storage,
@@ -598,7 +609,7 @@ export interface LaunchTemplateOverrides {
    *
    * @default - Do not provide weight
    */
-  readonly weightedCapacity?: number
+  readonly weightedCapacity?: number;
 }
 
 /**
@@ -1471,6 +1482,26 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
     }
 
     const { subnetIds, hasPublic } = props.vpc.selectSubnets(props.vpcSubnets);
+
+    const terminationPolicies: string[] = [];
+    if (props.terminationPolicies) {
+      props.terminationPolicies.forEach((terminationPolicy, index) => {
+        if (terminationPolicy === TerminationPolicy.CUSTOM_LAMBDA_FUNCTION) {
+          if (index !== 0) {
+            throw new Error('TerminationPolicy.CUSTOM_LAMBDA_FUNCTION must be specified first in the termination policies');
+          }
+
+          if (!props.terminationPolicyCustomLambdaFunctionArn) {
+            throw new Error('terminationPolicyCustomLambdaFunctionArn property must be specified if the TerminationPolicy.CUSTOM_LAMBDA_FUNCTION is used');
+          }
+
+          terminationPolicies.push(props.terminationPolicyCustomLambdaFunctionArn);
+        } else {
+          terminationPolicies.push(terminationPolicy);
+        }
+      });
+    }
+
     const asgProps: CfnAutoScalingGroupProps = {
       autoScalingGroupName: this.physicalName,
       cooldown: props.cooldown?.toSeconds().toString(),
@@ -1486,7 +1517,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
       healthCheckGracePeriod: props.healthCheck && props.healthCheck.gracePeriod && props.healthCheck.gracePeriod.toSeconds(),
       maxInstanceLifetime: this.maxInstanceLifetime ? this.maxInstanceLifetime.toSeconds() : undefined,
       newInstancesProtectedFromScaleIn: Lazy.any({ produce: () => this.newInstancesProtectedFromScaleIn }),
-      terminationPolicies: props.terminationPolicies,
+      terminationPolicies: terminationPolicies.length === 0 ? undefined : terminationPolicies,
       defaultInstanceWarmup: props.defaultInstanceWarmup?.toSeconds(),
       capacityRebalance: props.capacityRebalance,
       instanceMaintenancePolicy: this.renderInstanceMaintenancePolicy(
@@ -2009,7 +2040,7 @@ export enum ScalingEvent {
   /**
    * Send a test notification to the topic
    */
-  TEST_NOTIFICATION = 'autoscaling:TEST_NOTIFICATION'
+  TEST_NOTIFICATION = 'autoscaling:TEST_NOTIFICATION',
 }
 
 /**
@@ -2134,13 +2165,14 @@ export enum ScalingProcess {
   AZ_REBALANCE = 'AZRebalance',
   ALARM_NOTIFICATION = 'AlarmNotification',
   SCHEDULED_ACTIONS = 'ScheduledActions',
-  ADD_TO_LOAD_BALANCER = 'AddToLoadBalancer'
+  ADD_TO_LOAD_BALANCER = 'AddToLoadBalancer',
+  INSTANCE_REFRESH = 'InstanceRefresh',
 }
 
 // Recommended list of processes to suspend from here:
 // https://aws.amazon.com/premiumsupport/knowledge-center/auto-scaling-group-rolling-updates/
 const DEFAULT_SUSPEND_PROCESSES = [ScalingProcess.HEALTH_CHECK, ScalingProcess.REPLACE_UNHEALTHY, ScalingProcess.AZ_REBALANCE,
-  ScalingProcess.ALARM_NOTIFICATION, ScalingProcess.SCHEDULED_ACTIONS];
+  ScalingProcess.ALARM_NOTIFICATION, ScalingProcess.SCHEDULED_ACTIONS, ScalingProcess.INSTANCE_REFRESH];
 
 /**
  * EC2 Heath check options

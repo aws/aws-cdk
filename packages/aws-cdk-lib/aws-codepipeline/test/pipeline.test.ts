@@ -22,23 +22,18 @@ describe('', () => {
         role,
       });
 
-      // Adding 2 stages with actions so pipeline validation will pass
       const sourceArtifact = new codepipeline.Artifact();
-      pipeline.addStage({
-        stageName: 'Source',
-        actions: [new FakeSourceAction({
+      testPipelineSetup(
+        pipeline,
+        [new FakeSourceAction({
           actionName: 'FakeSource',
           output: sourceArtifact,
         })],
-      });
-
-      pipeline.addStage({
-        stageName: 'Build',
-        actions: [new FakeBuildAction({
+        [new FakeBuildAction({
           actionName: 'FakeBuild',
           input: sourceArtifact,
         })],
-      });
+      );
 
       Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
         'RoleArn': {
@@ -539,6 +534,31 @@ describe('', () => {
         Template.fromStack(stack).resourceCountIs('AWS::KMS::Key', 1);
       });
     });
+
+    test.each([
+      [codepipeline.PipelineType.V1, 'V1'],
+      [codepipeline.PipelineType.V2, 'V2'],
+    ])('can specify pipeline type %s', (type, expected) => {
+      const stack = new cdk.Stack();
+      const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
+        pipelineType: type,
+      });
+
+      const sourceArtifact = new codepipeline.Artifact();
+      const sourceActions = [new FakeSourceAction({
+        actionName: 'FakeSource',
+        output: sourceArtifact,
+      })];
+      const buildActions = [new FakeBuildAction({
+        actionName: 'FakeBuild',
+        input: sourceArtifact,
+      })];
+      testPipelineSetup(pipeline, sourceActions, buildActions);
+
+      Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
+        PipelineType: expected,
+      });
+    });
   });
 
   describe('cross account key alias name tests', () => {
@@ -938,12 +958,12 @@ function createPipelineWithSourceAndBuildStages(scope: Construct, pipelineName?:
 };
 
 interface CreatePipelineStackOptions {
-  readonly withFeatureFlag?: boolean,
-  readonly suffix: string,
-  readonly stackId?: string,
-  readonly pipelineId?: string,
-  readonly undefinedStackName?: boolean,
-  readonly nestedStackId?: string,
+  readonly withFeatureFlag?: boolean;
+  readonly suffix: string;
+  readonly stackId?: string;
+  readonly pipelineId?: string;
+  readonly undefinedStackName?: boolean;
+  readonly nestedStackId?: string;
 }
 
 function createPipelineStack(options: CreatePipelineStackOptions): PipelineStack {
@@ -955,3 +975,16 @@ function createPipelineStack(options: CreatePipelineStackOptions): PipelineStack
     pipelineId: options.pipelineId,
   });
 };
+
+// Adding 2 stages with actions so pipeline validation will pass
+function testPipelineSetup(pipeline: codepipeline.Pipeline, sourceActions?: codepipeline.IAction[], buildActions?: codepipeline.IAction[]) {
+  pipeline.addStage({
+    stageName: 'Source',
+    actions: sourceActions,
+  });
+
+  pipeline.addStage({
+    stageName: 'Build',
+    actions: buildActions,
+  });
+}

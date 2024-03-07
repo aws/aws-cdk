@@ -24,7 +24,7 @@ publishing this tool so that it can be used by the community and we would love t
 on use cases that the tool should support, or issues that prevent the tool from being used in your
 library.
 
-This tool is meant to be used with the [integ-tests](https://github.com/aws/aws-cdk/tree/main/packages/%40aws-cdk/integ-tests-alpha) library.
+This tool is meant to be used with the [integ-tests](https://docs.aws.amazon.com/cdk/api/v2/docs/integ-tests-alpha-readme.html) library.
 
 ## Usage
 
@@ -34,17 +34,24 @@ This tool is meant to be used with the [integ-tests](https://github.com/aws/aws-
 integ-runner [ARGS] [TEST...]
 ```
 
-This will look for all files that match the naming convention of `/integ.*.js$/`. Each of these files will be expected
-to be a self contained CDK app. The runner will execute the following for each file (app):
+This will look for all files that match the naming convention of `/integ.*.(js|ts)$/` or `/integ_*.py`.
+Each of these files represents a self contained AWS CDK app, defining test cases and assertions using the [integ-tests](https://docs.aws.amazon.com/cdk/api/v2/docs/integ-tests-alpha-readme.html) library.
 
-1. Check if snapshot files exist (i.e. `*.snapshot/**`)
-2. If the snapshot does not exist\
-   a) Synth the integ app which will produce the `integ.json` file
-3. Read the `integ.json` file which contains instructions on what the runner should do.
-4. Execute instructions
+By default, executing `integ-runner` will do the following for each file (app):
+
+1. Synth each integration test to create a new snapshot in memory
+2. Compare the snapshot to the previous version (i.e. files in `*.snapshot/**`), and fail on any differences.\
+   For new tests this will always fail.
+
+To accept a snapshot update, the integreation test has to be deployed and assertions have to pass.\
+Execute the runner again, this time with `integ-runner --update-on-fail` and the following will happen for each file:
+
+1. Deploy the previous snapshot
+2. Deploy the new version as a Stack update and run assertions
+3. If successful, update the snapshots
 
 All snapshot files (i.e. `*.snapshot/**`) must be checked-in to version control.
-If not, changes cannot be compared across systems.
+If not, changes cannot be compared across systems and the [update workflow](#update-workflow) cannot be used.
 
 ### Options
 

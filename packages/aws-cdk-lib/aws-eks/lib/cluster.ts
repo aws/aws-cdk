@@ -935,6 +935,15 @@ export class KubernetesVersion {
   public static readonly V1_28 = KubernetesVersion.of('1.28');
 
   /**
+   * Kubernetes version 1.29
+   *
+   * When creating a `Cluster` with this version, you need to also specify the
+   * `kubectlLayer` property with a `KubectlV29Layer` from
+   * `@aws-cdk/lambda-layer-kubectl-v29`.
+   */
+  public static readonly V1_29 = KubernetesVersion.of('1.29');
+
+  /**
    * Custom cluster version
    * @param version custom version number
    */
@@ -2214,7 +2223,7 @@ class ImportedCluster extends ClusterBase {
   public readonly connections = new ec2.Connections();
   public readonly kubectlRole?: iam.IRole;
   public readonly kubectlLambdaRole?: iam.IRole;
-  public readonly kubectlEnvironment?: { [key: string]: string; } | undefined;
+  public readonly kubectlEnvironment?: { [key: string]: string } | undefined;
   public readonly kubectlSecurityGroup?: ec2.ISecurityGroup | undefined;
   public readonly kubectlPrivateSubnets?: ec2.ISubnet[] | undefined;
   public readonly kubectlLayer?: lambda.ILayerVersion;

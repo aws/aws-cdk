@@ -41,7 +41,7 @@ export interface ClusterSubnetGroupProps {
    *
    * @default RemovalPolicy.RETAIN
    */
-  readonly removalPolicy?: RemovalPolicy
+  readonly removalPolicy?: RemovalPolicy;
 }
 
 /**

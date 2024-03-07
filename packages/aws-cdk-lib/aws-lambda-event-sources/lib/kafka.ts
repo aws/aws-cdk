@@ -14,14 +14,14 @@ export interface KafkaEventSourceProps extends BaseStreamEventSourceProps {
   /**
    * The Kafka topic to subscribe to
    */
-  readonly topic: string,
+  readonly topic: string;
   /**
    * The secret with the Kafka credentials, see https://docs.aws.amazon.com/msk/latest/developerguide/msk-password.html for details
    * This field is required if your Kafka brokers are accessed over the Internet
    *
    * @default none
    */
-  readonly secret?: secretsmanager.ISecret
+  readonly secret?: secretsmanager.ISecret;
   /**
    * The identifier for the Kafka consumer group to join. The consumer group ID must be unique among all your Kafka event sources. After creating a Kafka event source mapping with the consumer group ID specified, you cannot update this value.  The value must have a lenght between 1 and 200 and full the pattern '[a-zA-Z0-9-\/*:_+=.@-]*'.
    * @see https://docs.aws.amazon.com/lambda/latest/dg/with-msk.html#services-msk-consumer-group-id
@@ -36,7 +36,7 @@ export interface KafkaEventSourceProps extends BaseStreamEventSourceProps {
    *
    * @default - none
    */
-  readonly filters?: Array<{[key: string]: any}>
+  readonly filters?: Array<{[key: string]: any}>;
 
   /**
    * Add an on Failure Destination for this Kafka event. SNS/SQS/S3 are supported
@@ -87,7 +87,7 @@ export interface SelfManagedKafkaEventSourceProps extends KafkaEventSourceProps 
    * The list of host and port pairs that are the addresses of the Kafka brokers in a "bootstrap" Kafka cluster that
    * a Kafka client connects to initially to bootstrap itself. They are in the format `abc.xyz.com:xxxx`.
    */
-  readonly bootstrapServers: string[]
+  readonly bootstrapServers: string[];
 
   /**
    * If your Kafka brokers are only reachable via VPC provide the VPC here
@@ -101,21 +101,21 @@ export interface SelfManagedKafkaEventSourceProps extends KafkaEventSourceProps 
    *
    * @default - none, required if setting vpc
    */
-  readonly vpcSubnets?: SubnetSelection,
+  readonly vpcSubnets?: SubnetSelection;
 
   /**
    * If your Kafka brokers are only reachable via VPC, provide the security group here
    *
    * @default - none, required if setting vpc
    */
-  readonly securityGroup?: ISecurityGroup
+  readonly securityGroup?: ISecurityGroup;
 
   /**
    * The authentication method for your Kafka cluster
    *
    * @default AuthenticationMethod.SASL_SCRAM_512_AUTH
    */
-  readonly authenticationMethod?: AuthenticationMethod
+  readonly authenticationMethod?: AuthenticationMethod;
 
   /**
    * The secret with the root CA certificate used by your Kafka brokers for TLS encryption

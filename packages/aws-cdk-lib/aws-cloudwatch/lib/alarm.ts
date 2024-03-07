@@ -96,7 +96,7 @@ export enum TreatMissingData {
   /**
    * The alarm does not consider missing data points when evaluating whether to change state
    */
-  MISSING = 'missing'
+  MISSING = 'missing',
 }
 
 /**

@@ -1520,7 +1520,7 @@ export interface CloudMapOptions {
    *
    * @default CloudFormation-generated name
    */
-  readonly name?: string,
+  readonly name?: string;
 
   /**
    * The service discovery namespace for the Cloud Map service to attach to the ECS service.
@@ -1534,7 +1534,7 @@ export interface CloudMapOptions {
    *
    * @default - DnsRecordType.A if TaskDefinition.networkMode = AWS_VPC, otherwise DnsRecordType.SRV
    */
-  readonly dnsRecordType?: cloudmap.DnsRecordType.A | cloudmap.DnsRecordType.SRV,
+  readonly dnsRecordType?: cloudmap.DnsRecordType.A | cloudmap.DnsRecordType.SRV;
 
   /**
    * The amount of time that you want DNS resolvers to cache the settings for this record.
@@ -1631,7 +1631,7 @@ export enum LaunchType {
   /**
    * The service will be launched using the EXTERNAL launch type
    */
-  EXTERNAL = 'EXTERNAL'
+  EXTERNAL = 'EXTERNAL',
 }
 
 /**
@@ -1652,7 +1652,7 @@ export enum DeploymentControllerType {
   /**
    * The external (EXTERNAL) deployment type enables you to use any third-party deployment controller
    */
-  EXTERNAL = 'EXTERNAL'
+  EXTERNAL = 'EXTERNAL',
 }
 
 /**
@@ -1672,7 +1672,7 @@ export enum PropagatedTagSource {
   /**
    * Do not propagate
    */
-  NONE = 'NONE'
+  NONE = 'NONE',
 }
 
 /**
