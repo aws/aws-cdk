@@ -1189,8 +1189,6 @@ const cluster = new rds.DatabaseCluster(this, 'Cluster', {
   enableDataApi: true, // Optional - will be automatically set if you call grantDataApiAccess()
 });
 cluster.grantDataApiAccess(fn);
-// It is necessary to grant the function access to the secret associated with the cluster for `DatabaseCluster`.
-cluster.secret!.grantRead(fn);
 ```
 
 **Note**: To invoke the Data API, the resource will need to read the secret associated with the cluster.
