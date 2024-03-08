@@ -600,21 +600,25 @@ export class FileSystem extends FileSystemBase {
     }
 
     if (props.replicationConfiguration) {
-        const { destinationFileSystem, region, availabilityZone, kmsKey } = props.replicationConfiguration;
+      const { destinationFileSystem, region, availabilityZone, kmsKey } = props.replicationConfiguration;
       if (props.replicationOverwriteProtection === ReplicationOverwriteProtection.DISABLED) {
         throw new Error('Cannot configure \'replicationConfiguration\' when \'replicationOverwriteProtection\' is set to \'DISABLED\'');
       }
 
+      if (!destinationFileSystem && !region) {
+        throw new Error('\'replicationConfiguration.region\' or \'replicationConfiguration.destinationFileSystem\' is required');
+      }
+
       if (destinationFileSystem && (region || availabilityZone || kmsKey)) {
-        throw new Error('Cannot configure `replicationConfiguration.region`, `replicationConfiguration.az` or `replicationConfiguration.kmsKey` when `replicationConfiguration.destinationFileSystem` is set');
+        throw new Error('Cannot configure \'replicationConfiguration.region\', \'replicationConfiguration.availabilityZone\' or \'replicationConfiguration.kmsKey\' when \'replicationConfiguration.destinationFileSystem\' is set');
       }
 
       if (region && !Token.isUnresolved(region) && !/^[a-z]{2}-((iso[a-z]{0,1}-)|(gov-)){0,1}[a-z]+-{0,1}[0-9]{0,1}$/.test(region)) {
-        throw new Error('`replicationConfiguration.region` is invalid.');
+        throw new Error('\'replicationConfiguration.region\' is invalid.');
       }
 
       if (availabilityZone && !Token.isUnresolved(availabilityZone) && !region) {
-        throw new Error('`replicationConfiguration.availabilityZone` cannot be specified without `replicationConfiguration.region`');
+        throw new Error('\'replicationConfiguration.availabilityZone\' cannot be specified without \'replicationConfiguration.region\'');
       }
     }
 
@@ -647,10 +651,12 @@ export class FileSystem extends FileSystemBase {
     const replicationConfiguration = props.replicationConfiguration ? {
       destinations: [
         {
-          fileSystemId: destinationFileSystem?.fileSystemId,
-          kmsKeyId: kmsKey?.keyArn,
-          region: destinationFileSystem ? destinationFileSystem.env.region : (region ?? Stack.of(this).region),
-          availabilityZoneName: availabilityZone,
+          fileSystemId: props.replicationConfiguration.destinationFileSystem?.fileSystemId,
+          kmsKeyId: props.replicationConfiguration.kmsKey?.keyArn,
+          region: props.replicationConfiguration.destinationFileSystem ?
+            props.replicationConfiguration.destinationFileSystem.env.region :
+            (props.replicationConfiguration.region ?? Stack.of(this).region),
+          availabilityZoneName: props.replicationConfiguration.availabilityZone,
         },
       ],
     } : undefined;
