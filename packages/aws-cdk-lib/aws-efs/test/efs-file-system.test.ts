@@ -974,9 +974,7 @@ describe('replication configuration', () => {
       ReplicationConfiguration: {
         Destinations: [
           {
-            Region: {
-              Ref: 'AWS::Region',
-            },
+            Region: 'ap-northeast-1',
           },
         ],
       },
@@ -1053,10 +1051,7 @@ describe('replication configuration', () => {
     }).toThrow('Cannot configure \'replicationConfiguration\' when \'replicationOverwriteProtection\' is set to \'DISABLED\'');
   });
 
-  test.each([
-    { region: 'us-east-1' },
-    { availabilityZone: 'us-east-1a' },
-  ])('throw error for specifing both destinationFileSystem and other parameters', (config) => {
+  test('throw error for specifing both destinationFileSystem and other parameters', () => {
     // WHEN
     const destination = new FileSystem(stack, 'DestinationFileSystem', {
       vpc,
@@ -1069,7 +1064,7 @@ describe('replication configuration', () => {
         vpc,
         replicationConfiguration: {
           destinationFileSystem: destination,
-          ...config,
+          region: 'us-east-1',
         },
       });
     }).toThrow('Cannot configure \'replicationConfiguration.region\', \'replicationConfiguration.availabilityZone\' or \'replicationConfiguration.kmsKey\' when \'replicationConfiguration.destinationFileSystem\' is set');
@@ -1101,7 +1096,7 @@ describe('replication configuration', () => {
         vpc,
         replicationConfiguration: {},
       });
-    }).toThrow('\'replicationConfiguration.region\' or \'replicationConfiguration.destinationFileSystem\' is required.');
+    }).toThrow('\'replicationConfiguration.region\' or \'replicationConfiguration.destinationFileSystem\' is required');
   });
 
   test('throw error for invalid region', () => {

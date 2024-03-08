@@ -605,6 +605,10 @@ export class FileSystem extends FileSystemBase {
         throw new Error('Cannot configure \'replicationConfiguration\' when \'replicationOverwriteProtection\' is set to \'DISABLED\'');
       }
 
+      if (availabilityZone && !Token.isUnresolved(availabilityZone) && !region) {
+        throw new Error('\'replicationConfiguration.availabilityZone\' cannot be specified without \'replicationConfiguration.region\'');
+      }
+
       if (!destinationFileSystem && !region) {
         throw new Error('\'replicationConfiguration.region\' or \'replicationConfiguration.destinationFileSystem\' is required');
       }
@@ -615,10 +619,6 @@ export class FileSystem extends FileSystemBase {
 
       if (region && !Token.isUnresolved(region) && !/^[a-z]{2}-((iso[a-z]{0,1}-)|(gov-)){0,1}[a-z]+-{0,1}[0-9]{0,1}$/.test(region)) {
         throw new Error('\'replicationConfiguration.region\' is invalid.');
-      }
-
-      if (availabilityZone && !Token.isUnresolved(availabilityZone) && !region) {
-        throw new Error('\'replicationConfiguration.availabilityZone\' cannot be specified without \'replicationConfiguration.region\'');
       }
     }
 
