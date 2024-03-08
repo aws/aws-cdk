@@ -40,7 +40,7 @@ export interface AppSyncGraphQLAPIProps extends TargetBaseProps {
  */
 export class AppSync implements events.IRuleTarget {
 
-  constructor(public readonly appsyncApi: appsync.GraphqlApi, private readonly props: AppSyncGraphQLAPIProps) {
+  constructor(private readonly appsyncApi: appsync.GraphqlApi, private readonly props: AppSyncGraphQLAPIProps) {
   }
 
   /**

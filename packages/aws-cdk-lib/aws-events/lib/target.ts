@@ -62,6 +62,7 @@ export interface RuleTargetConfig {
 
   /**
    * Contains the GraphQL operation to be parsed and executed, if the event target is an AWS AppSync API.
+   * @default - None
    */
   readonly appSyncParameters?: CfnRule.AppSyncParametersProperty;
 
