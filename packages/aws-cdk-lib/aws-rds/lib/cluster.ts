@@ -756,6 +756,7 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
       promotionTier: 0, // override the promotion tier so that writers are always 0
     });
     instanceIdentifiers.push(writer.instanceIdentifier);
+    instanceEndpoints.push(new Endpoint(writer.dbInstanceEndpointAddress, this.clusterEndpoint.port));
 
     (props.readers ?? []).forEach(instance => {
       const clusterInstance = instance.bind(this, this, {
