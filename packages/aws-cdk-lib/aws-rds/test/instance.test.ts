@@ -194,6 +194,28 @@ describe('instance', () => {
     Template.fromStack(stack).resourceCountIs('Custom::LogRetention', 4);
   });
 
+  test.each([
+    [rds.StorageType.STANDARD, 'standard', 2000, undefined],
+    [rds.StorageType.GP2, 'gp2', 2000, undefined],
+    [rds.StorageType.GP3, 'gp3', 2000, 2000],
+    [rds.StorageType.IO1, 'io1', 2000, 2000],
+    [rds.StorageType.IO1, 'io1', undefined, 1000],
+    [rds.StorageType.IO2, 'io2', 2000, 2000],
+    [rds.StorageType.IO2, 'io2', undefined, 1000],
+  ])('storage type and IOPS for %s storage type', (inStorageType, outStorageType, inIops, outIops) => {
+    new rds.DatabaseInstance(stack, 'Instance', {
+      engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_30 }),
+      vpc,
+      storageType: inStorageType,
+      iops: inIops,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
+      StorageType: outStorageType,
+      Iops: outIops ?? Match.absent(),
+    });
+  });
+
   test('throws when create database with specific AZ and multiAZ enabled', () => {
     expect(() => {
       new rds.DatabaseInstance(stack, 'Instance', {
@@ -2008,7 +2030,7 @@ describe('instance', () => {
     });
   });
 
-  test('gp3 storage type', () => {
+  test('specify `storageThroughput` for gp3 storage type', () => {
     new rds.DatabaseInstance(stack, 'Instance', {
       engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_30 }),
       instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.SMALL),
