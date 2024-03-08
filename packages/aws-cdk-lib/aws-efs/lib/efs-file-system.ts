@@ -602,7 +602,7 @@ export class FileSystem extends FileSystemBase {
     if (props.replicationConfiguration) {
         const { destinationFileSystem, region, availabilityZone, kmsKey } = props.replicationConfiguration;
       if (props.replicationOverwriteProtection === ReplicationOverwriteProtection.DISABLED) {
-        throw new Error('Cannot configure `replicationConfiguration` when `replicationOverwriteProtection` is set to `DISABLED`');
+        throw new Error('Cannot configure \'replicationConfiguration\' when \'replicationOverwriteProtection\' is set to \'DISABLED\'');
       }
 
       if (destinationFileSystem && (region || availabilityZone || kmsKey)) {
