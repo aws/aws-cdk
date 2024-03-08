@@ -203,7 +203,7 @@ describe('proxy', () => {
         vpc,
         secrets: [new secretsmanager.Secret(stack, 'Secret')],
       });
-    }).toThrow(/Engine 'mariadb-10\.0\.24' does not support proxies/);
+    }).toThrow(/RDS proxies require an engine family to be specified on the database cluster or instance. No family specified for engine 'mariadb-10\.0\.24'/);
   });
 
   test('correctly creates a proxy for an imported Cluster if its engine is known', () => {

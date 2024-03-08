@@ -109,6 +109,38 @@ export enum PipelineType {
   V2 = 'V2',
 }
 
+/**
+ * Execution mode.
+ */
+export enum ExecutionMode {
+  /**
+   * QUEUED mode.
+   *
+   * Executions are processed one by one in the order that they are queued.
+   *
+   * This requires pipeline type V2.
+   */
+  QUEUED = 'QUEUED',
+  /**
+   * SUPERSEDED mode.
+   *
+   * A more recent execution can overtake an older one.
+   *
+   * This is the default.
+   */
+  SUPERSEDED = 'SUPERSEDED',
+  /**
+   * PARALLEL mode.
+   *
+   * In PARALLEL mode, executions run simultaneously and independently of one
+   * another. Executions don't wait for other runs to complete before starting
+   * or finishing.
+   *
+   * This requires pipeline type V2.
+   */
+  PARALLEL = 'PARALLEL',
+}
+
 export interface PipelineProps {
   /**
    * The S3 bucket used by this Pipeline to store artifacts.
@@ -224,6 +256,13 @@ export interface PipelineProps {
    * @default - No triggers
    */
   readonly triggers?: TriggerProps[];
+
+  /**
+   * The method that the pipeline will use to handle multiple executions.
+   *
+   * @default - ExecutionMode.SUPERSEDED
+   */
+  readonly executionMode?: ExecutionMode;
 }
 
 abstract class PipelineBase extends Resource implements IPipeline {
@@ -495,6 +534,14 @@ export class Pipeline extends PipelineBase {
     }
     this.pipelineType = props.pipelineType ?? PipelineType.V1;
 
+    if (
+      props.executionMode
+      && [ExecutionMode.QUEUED, ExecutionMode.PARALLEL].includes(props.executionMode)
+      && this.pipelineType !== PipelineType.V2
+    ) {
+      throw new Error(`${props.executionMode} execution mode can only be used with V2 pipelines, \`PipelineType.V2\` must be specified for \`pipelineType\``);
+    }
+
     this.codePipeline = new CfnPipeline(this, 'Resource', {
       artifactStore: Lazy.any({ produce: () => this.renderArtifactStoreProperty() }),
       artifactStores: Lazy.any({ produce: () => this.renderArtifactStoresProperty() }),
@@ -505,6 +552,7 @@ export class Pipeline extends PipelineBase {
       pipelineType: props.pipelineType,
       variables: Lazy.any({ produce: () => this.renderVariables() }, { omitEmptyArray: true }),
       triggers: Lazy.any({ produce: () => this.renderTriggers() }, { omitEmptyArray: true }),
+      executionMode: props.executionMode,
       name: this.physicalName,
     });
 
