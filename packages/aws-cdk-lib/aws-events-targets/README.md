@@ -120,6 +120,20 @@ rule.addTarget(new targets.CloudWatchLogGroup(logGroup, {
 }));
 ```
 
+The cloudwatch log event target will create an AWS custom resource internally which will default
+to set `installLatestAwsSdk` to `true`. This may be problematic for CN partition deployment. To
+workaround this issue, set `installLatestAwsSdk` to `false`.
+
+```ts
+import * as logs from 'aws-cdk-lib/aws-logs';
+declare const logGroup: logs.LogGroup;
+declare const rule: events.Rule;
+
+rule.addTarget(new targets.CloudWatchLogGroup(logGroup, {
+  installLatestAwsSdk: false,
+}));
+```
+
 ## Start a CodeBuild build
 
 Use the `CodeBuildProject` target to trigger a CodeBuild project.

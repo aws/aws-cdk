@@ -23,9 +23,10 @@ export function printStackDiff(
   context: number,
   quiet: boolean,
   changeSet?: CloudFormation.DescribeChangeSetOutput,
-  stream?: cfnDiff.FormatStream): number {
+  stream?: cfnDiff.FormatStream,
+  isImport?: boolean): number {
 
-  let diff = cfnDiff.fullDiff(oldTemplate, newTemplate.template, changeSet);
+  let diff = cfnDiff.fullDiff(oldTemplate, newTemplate.template, changeSet, isImport);
 
   // detect and filter out mangled characters from the diff
   let filteredChangesCount = 0;

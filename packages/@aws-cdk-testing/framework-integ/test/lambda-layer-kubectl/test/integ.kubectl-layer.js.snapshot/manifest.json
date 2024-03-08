@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/aeff48aad4d9c5617b7f62c994511a45325d4c600dfa09ae2c2bcee4303ace20.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/62fe4796411f0cf70178c8145c0b87f30f129e37fc9dee476eddc507a1c98699.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -38,42 +38,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "KubectlLayer600207B5"
-          }
-        ],
-        "/lambda-layer-kubectl-integ-stack/Lambda$python3.7/ServiceRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "Lambdapython37ServiceRoleB5A704D4"
-          }
-        ],
-        "/lambda-layer-kubectl-integ-stack/Lambda$python3.7/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "Lambdapython3780349E0A"
-          }
-        ],
-        "/lambda-layer-kubectl-integ-stack/Providerpython3.7/framework-onEvent/ServiceRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "Providerpython37frameworkonEventServiceRole9EA6B2B0"
-          }
-        ],
-        "/lambda-layer-kubectl-integ-stack/Providerpython3.7/framework-onEvent/ServiceRole/DefaultPolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "Providerpython37frameworkonEventServiceRoleDefaultPolicyA9099DC2"
-          }
-        ],
-        "/lambda-layer-kubectl-integ-stack/Providerpython3.7/framework-onEvent/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "Providerpython37frameworkonEvent3AA4F69E"
-          }
-        ],
-        "/lambda-layer-kubectl-integ-stack/CustomResourcepython3.7/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CustomResourcepython37"
           }
         ],
         "/lambda-layer-kubectl-integ-stack/Lambda$python3.9/ServiceRole/Resource": [
@@ -110,6 +74,42 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CustomResourcepython39"
+          }
+        ],
+        "/lambda-layer-kubectl-integ-stack/Lambda$python3.10/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Lambdapython310ServiceRoleD185E0B6"
+          }
+        ],
+        "/lambda-layer-kubectl-integ-stack/Lambda$python3.10/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Lambdapython310815BD7E9"
+          }
+        ],
+        "/lambda-layer-kubectl-integ-stack/Providerpython3.10/framework-onEvent/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Providerpython310frameworkonEventServiceRoleB6DF2879"
+          }
+        ],
+        "/lambda-layer-kubectl-integ-stack/Providerpython3.10/framework-onEvent/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Providerpython310frameworkonEventServiceRoleDefaultPolicyC0E8697B"
+          }
+        ],
+        "/lambda-layer-kubectl-integ-stack/Providerpython3.10/framework-onEvent/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Providerpython310frameworkonEvent7294D715"
+          }
+        ],
+        "/lambda-layer-kubectl-integ-stack/CustomResourcepython3.10/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomResourcepython310"
           }
         ],
         "/lambda-layer-kubectl-integ-stack/BootstrapVersion": [

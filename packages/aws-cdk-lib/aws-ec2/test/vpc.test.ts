@@ -1578,6 +1578,50 @@ describe('vpc', () => {
 
     });
 
+    test('Can configure NAT instances V2 instead of NAT gateways', () => {
+      // GIVEN
+      const stack = getTestStack();
+
+      // WHEN
+      const natGatewayProvider = NatProvider.instanceV2({
+        instanceType: new InstanceType('q86.mega'),
+        machineImage: new GenericLinuxImage({
+          'us-east-1': 'ami-1',
+        }),
+      });
+      new Vpc(stack, 'TheVPC', { natGatewayProvider });
+
+      // THEN
+      Template.fromStack(stack).resourceCountIs('AWS::EC2::Instance', 3);
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::Instance', {
+        ImageId: 'ami-1',
+        InstanceType: 'q86.mega',
+        SourceDestCheck: false,
+      });
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::Route', {
+        RouteTableId: { Ref: 'TheVPCPrivateSubnet1RouteTableF6513BC2' },
+        DestinationCidrBlock: '0.0.0.0/0',
+        InstanceId: { Ref: 'TheVPCPublicSubnet1NatInstanceCC514192' },
+      });
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroup', {
+        SecurityGroupEgress: [
+          {
+            CidrIp: '0.0.0.0/0',
+            Description: 'Allow all outbound traffic by default',
+            IpProtocol: '-1',
+          },
+        ],
+        SecurityGroupIngress: [
+          {
+            CidrIp: '0.0.0.0/0',
+            Description: 'from 0.0.0.0/0:ALL TRAFFIC',
+            IpProtocol: '-1',
+          },
+        ],
+      });
+
+    });
+
     test('natGateways controls amount of NAT instances', () => {
       // GIVEN
       const stack = getTestStack();
@@ -1585,6 +1629,25 @@ describe('vpc', () => {
       // WHEN
       new Vpc(stack, 'TheVPC', {
         natGatewayProvider: NatProvider.instance({
+          instanceType: new InstanceType('q86.mega'),
+          machineImage: new GenericLinuxImage({
+            'us-east-1': 'ami-1',
+          }),
+        }),
+        natGateways: 1,
+      });
+
+      // THEN
+      Template.fromStack(stack).resourceCountIs('AWS::EC2::Instance', 1);
+    });
+
+    test('natGateways controls amount of NAT instances V2', () => {
+      // GIVEN
+      const stack = getTestStack();
+
+      // WHEN
+      new Vpc(stack, 'TheVPC', {
+        natGatewayProvider: NatProvider.instanceV2({
           instanceType: new InstanceType('q86.mega'),
           machineImage: new GenericLinuxImage({
             'us-east-1': 'ami-1',

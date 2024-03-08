@@ -1,5 +1,5 @@
 {
-  "version": "32.0.0",
+  "version": "36.0.0",
   "artifacts": {
     "aws-ecs-integ-alb-ec2-cmd-entrypoint.assets": {
       "type": "cdk:asset-manifest",
@@ -14,10 +14,11 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "aws-ecs-integ-alb-ec2-cmd-entrypoint.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f99d8d7aa012c2005302f24b0c6917d70f4ee968aa635522e17119347b9634ed.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/96f1b91e7a099b720d86b3b88d975d45b769d67efd878163f884b12c11d81887.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -183,10 +184,10 @@
             "data": "Ec2Cluster56240A3A"
           }
         ],
-        "/aws-ecs-integ-alb-ec2-cmd-entrypoint/AutoScalingGroup/InstanceSecurityGroup/Resource": [
+        "/aws-ecs-integ-alb-ec2-cmd-entrypoint/SecurityGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AutoScalingGroupInstanceSecurityGroup9D2E0C5E"
+            "data": "SecurityGroupDD263621"
           }
         ],
         "/aws-ecs-integ-alb-ec2-cmd-entrypoint/AutoScalingGroup/InstanceRole/Resource": [
@@ -207,10 +208,10 @@
             "data": "AutoScalingGroupInstanceProfile342FAC7C"
           }
         ],
-        "/aws-ecs-integ-alb-ec2-cmd-entrypoint/AutoScalingGroup/LaunchConfig": [
+        "/aws-ecs-integ-alb-ec2-cmd-entrypoint/AutoScalingGroup/LaunchTemplate/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AutoScalingGroupLaunchConfigDEEB160C"
+            "data": "AutoScalingGroupLaunchTemplateCE2B3AFE"
           }
         ],
         "/aws-ecs-integ-alb-ec2-cmd-entrypoint/AutoScalingGroup/ASG": [
@@ -331,6 +332,7 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "AlbEc2ServiceWithCommandAndEntryPointDefaultTestDeployAssert91EF33D6.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",

@@ -1,0 +1,12 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "InstanceIo2Test/DefaultTest": {
+      "stacks": [
+        "integRdsInstanceIo2"
+      ],
+      "assertionStack": "InstanceIo2Test/DefaultTest/DeployAssert",
+      "assertionStackName": "InstanceIo2TestDefaultTestDeployAssert183D49C3"
+    }
+  }
+}

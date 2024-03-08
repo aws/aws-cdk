@@ -2052,6 +2052,7 @@ describe('cluster', () => {
             'AZRebalance',
             'AlarmNotification',
             'ScheduledActions',
+            'InstanceRefresh',
           ],
         },
         AutoScalingScheduledAction: {

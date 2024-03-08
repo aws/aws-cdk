@@ -280,9 +280,6 @@ export class NetworkTargetGroup extends TargetGroupBase implements INetworkTarge
       if (timeoutSeconds < lowHealthCheckTimeout || timeoutSeconds > highHealthCheckTimeout) {
         ret.push(`Health check timeout '${timeoutSeconds}' not supported. Must be a number between ${lowHealthCheckTimeout} and ${highHealthCheckTimeout}.`);
       }
-      if (healthCheck.interval && healthCheck.interval.toSeconds() < timeoutSeconds) {
-        ret.push(`Health check timeout '${timeoutSeconds}' must not be greater than the interval '${healthCheck.interval.toSeconds()}'`);
-      }
     }
 
     return ret;

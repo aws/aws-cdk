@@ -15,7 +15,7 @@ The AWS CDK Toolkit provides the `cdk` command-line interface that can be used t
 | ------------------------------------- | ---------------------------------------------------------------------------------- |
 | [`cdk docs`](#cdk-docs)               | Access the online documentation                                                    |
 | [`cdk init`](#cdk-init)               | Start a new CDK project (app or library)                                           |
-| [`cdk list`](#cdk-list)               | List stacks in an application                                                      |
+| [`cdk list`](#cdk-list)               | List stacks and their dependencies in an application                               |
 | [`cdk synth`](#cdk-synthesize)        | Synthesize a CDK app to CloudFormation template(s)                                 |
 | [`cdk diff`](#cdk-diff)               | Diff stacks against current state                                                  |
 | [`cdk deploy`](#cdk-deploy)           | Deploy a stack into an AWS account                                                 |
@@ -74,7 +74,7 @@ $ cdk init lib --language=typescript
 
 ### `cdk list`
 
-Lists the stacks modeled in the CDK app.
+Lists the stacks and their dependencies modeled in the CDK app.
 
 ```console
 $ # List all stacks in the CDK app 'node bin/main.js'
@@ -128,7 +128,7 @@ $ cdk synth
 $ # Synthesize cloud assembly for StackName, but don't include dependencies
 $ cdk synth MyStackName --exclusively
 
-$ # Synthesize cloud assembly for StackName, but don't cloudFormation template output to STDOUT
+$ # Synthesize cloud assembly for StackName, but don't write CloudFormation template output to STDOUT
 $ cdk synth MyStackName --quiet
 ```
 

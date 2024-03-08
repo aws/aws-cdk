@@ -450,6 +450,26 @@
        }
       },
       {
+       "Action": "ecs:TagResource",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:aws:ecs:",
+          {
+           "Ref": "AWS::Region"
+          },
+          ":*:task/",
+          {
+           "Ref": "EcsCluster97242B84"
+          },
+          "/*"
+         ]
+        ]
+       }
+      },
+      {
        "Action": "iam:PassRole",
        "Effect": "Allow",
        "Resource": [
@@ -681,6 +701,26 @@
        "Effect": "Allow",
        "Resource": {
         "Ref": "TaskDefWithCompatibilityAFDDF969"
+       }
+      },
+      {
+       "Action": "ecs:TagResource",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:aws:ecs:",
+          {
+           "Ref": "AWS::Region"
+          },
+          ":*:task/",
+          {
+           "Ref": "EcsCluster97242B84"
+          },
+          "/*"
+         ]
+        ]
        }
       },
       {
