@@ -1,0 +1,12 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "StartBuildBatchInteg/DefaultTest": {
+      "stacks": [
+        "StartBuildBatch"
+      ],
+      "assertionStack": "StartBuildBatchInteg/DefaultTest/DeployAssert",
+      "assertionStackName": "StartBuildBatchIntegDefaultTestDeployAssert142C169A"
+    }
+  }
+}

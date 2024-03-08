@@ -1416,6 +1416,7 @@ function legacyCreateInstances(cluster: DatabaseClusterNew, props: DatabaseClust
       autoMinorVersionUpgrade: instanceProps.autoMinorVersionUpgrade,
       allowMajorVersionUpgrade: instanceProps.allowMajorVersionUpgrade,
       deleteAutomatedBackups: instanceProps.deleteAutomatedBackups,
+      preferredMaintenanceWindow: instanceProps.preferredMaintenanceWindow,
     });
 
     // For instances that are part of a cluster:
