@@ -149,12 +149,6 @@
       ]
      }
     },
-    "Role": {
-     "Fn::GetAtt": [
-      "EtlJob20ServiceRoleD520CA20",
-      "Arn"
-     ]
-    },
     "DefaultArguments": {
      "--job-language": "python",
      "--enable-continuous-cloudwatch-log": "true",
@@ -187,6 +181,12 @@
      "NotifyDelayAfter": 1
     },
     "NumberOfWorkers": 10,
+    "Role": {
+     "Fn::GetAtt": [
+      "EtlJob20ServiceRoleD520CA20",
+      "Arn"
+     ]
+    },
     "Tags": {
      "key": "value"
     },
@@ -338,12 +338,6 @@
       ]
      }
     },
-    "Role": {
-     "Fn::GetAtt": [
-      "StreamingJob20ServiceRole491E0FFF",
-      "Arn"
-     ]
-    },
     "DefaultArguments": {
      "--job-language": "python",
      "arg1": "value1",
@@ -352,6 +346,12 @@
     "GlueVersion": "2.0",
     "Name": "StreamingJob2.0",
     "NumberOfWorkers": 10,
+    "Role": {
+     "Fn::GetAtt": [
+      "StreamingJob20ServiceRole491E0FFF",
+      "Arn"
+     ]
+    },
     "Tags": {
      "key": "value"
     },
@@ -507,12 +507,6 @@
       ]
      }
     },
-    "Role": {
-     "Fn::GetAtt": [
-      "EtlJob30ServiceRole8E675579",
-      "Arn"
-     ]
-    },
     "DefaultArguments": {
      "--job-language": "python",
      "--enable-continuous-cloudwatch-log": "true",
@@ -545,6 +539,12 @@
      "NotifyDelayAfter": 1
     },
     "NumberOfWorkers": 10,
+    "Role": {
+     "Fn::GetAtt": [
+      "EtlJob30ServiceRole8E675579",
+      "Arn"
+     ]
+    },
     "Tags": {
      "key": "value"
     },
@@ -696,12 +696,6 @@
       ]
      }
     },
-    "Role": {
-     "Fn::GetAtt": [
-      "StreamingJob30ServiceRole443B2FDE",
-      "Arn"
-     ]
-    },
     "DefaultArguments": {
      "--job-language": "python",
      "arg1": "value1",
@@ -710,6 +704,12 @@
     "GlueVersion": "3.0",
     "Name": "StreamingJob3.0",
     "NumberOfWorkers": 10,
+    "Role": {
+     "Fn::GetAtt": [
+      "StreamingJob30ServiceRole443B2FDE",
+      "Arn"
+     ]
+    },
     "Tags": {
      "key": "value"
     },
@@ -865,12 +865,6 @@
       ]
      }
     },
-    "Role": {
-     "Fn::GetAtt": [
-      "EtlJob40ServiceRoleBDD9998A",
-      "Arn"
-     ]
-    },
     "DefaultArguments": {
      "--job-language": "python",
      "--enable-continuous-cloudwatch-log": "true",
@@ -903,6 +897,12 @@
      "NotifyDelayAfter": 1
     },
     "NumberOfWorkers": 10,
+    "Role": {
+     "Fn::GetAtt": [
+      "EtlJob40ServiceRoleBDD9998A",
+      "Arn"
+     ]
+    },
     "Tags": {
      "key": "value"
     },
@@ -1054,12 +1054,6 @@
       ]
      }
     },
-    "Role": {
-     "Fn::GetAtt": [
-      "StreamingJob40ServiceRole034BDEBD",
-      "Arn"
-     ]
-    },
     "DefaultArguments": {
      "--job-language": "python",
      "arg1": "value1",
@@ -1068,6 +1062,12 @@
     "GlueVersion": "4.0",
     "Name": "StreamingJob4.0",
     "NumberOfWorkers": 10,
+    "Role": {
+     "Fn::GetAtt": [
+      "StreamingJob40ServiceRole034BDEBD",
+      "Arn"
+     ]
+    },
     "Tags": {
      "key": "value"
     },
@@ -1181,12 +1181,6 @@
       ]
      }
     },
-    "Role": {
-     "Fn::GetAtt": [
-      "ShellJobServiceRoleCF97BC4B",
-      "Arn"
-     ]
-    },
     "DefaultArguments": {
      "--job-language": "python",
      "arg1": "value1",
@@ -1194,6 +1188,12 @@
     },
     "GlueVersion": "1.0",
     "Name": "ShellJob",
+    "Role": {
+     "Fn::GetAtt": [
+      "ShellJobServiceRoleCF97BC4B",
+      "Arn"
+     ]
+    },
     "Tags": {
      "key": "value"
     }
@@ -1306,12 +1306,6 @@
       ]
      }
     },
-    "Role": {
-     "Fn::GetAtt": [
-      "ShellJob39ServiceRole2F6F3768",
-      "Arn"
-     ]
-    },
     "DefaultArguments": {
      "--job-language": "python",
      "arg1": "value1",
@@ -1319,6 +1313,12 @@
     },
     "GlueVersion": "1.0",
     "Name": "ShellJob39",
+    "Role": {
+     "Fn::GetAtt": [
+      "ShellJob39ServiceRole2F6F3768",
+      "Arn"
+     ]
+    },
     "Tags": {
      "key": "value"
     }
@@ -1427,25 +1427,37 @@
         {
          "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
         },
-        "/432033e3218068a915d2532fa9be7858a12b228a2ae6e5c10faccd9097b1e855.py"
+        "/9120cd4aa376310a46a09d707c5e0c75c164b9014f1740e4c5a3637a34dfafe7.py"
        ]
       ]
      }
     },
-    "Role": {
-     "Fn::GetAtt": [
-      "RayJobServiceRole51433C3D",
-      "Arn"
-     ]
-    },
     "DefaultArguments": {
      "--job-language": "python",
+     "--s3-py-modules": {
+      "Fn::Join": [
+       "",
+       [
+        "s3://",
+        {
+         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+        },
+        "/1c055910db2de9d0fcf53321842cab491bb6985900b80e05d634fceef328c5c4.zip"
+       ]
+      ]
+     },
      "arg1": "value1",
      "arg2": "value2"
     },
     "GlueVersion": "4.0",
     "Name": "RayJob",
     "NumberOfWorkers": 2,
+    "Role": {
+     "Fn::GetAtt": [
+      "RayJobServiceRole51433C3D",
+      "Arn"
+     ]
+    },
     "Tags": {
      "key": "value"
     },
@@ -1559,12 +1571,6 @@
       ]
      }
     },
-    "Role": {
-     "Fn::GetAtt": [
-      "EtlJobWithFLEXServiceRoleBA7C99A5",
-      "Arn"
-     ]
-    },
     "DefaultArguments": {
      "--job-language": "python"
     },
@@ -1572,6 +1578,12 @@
     "GlueVersion": "3.0",
     "Name": "EtlJobWithFLEX",
     "NumberOfWorkers": 10,
+    "Role": {
+     "Fn::GetAtt": [
+      "EtlJobWithFLEXServiceRoleBA7C99A5",
+      "Arn"
+     ]
+    },
     "WorkerType": "G.1X"
    }
   }
