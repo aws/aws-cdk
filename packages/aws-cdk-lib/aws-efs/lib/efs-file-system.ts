@@ -599,8 +599,8 @@ export class FileSystem extends FileSystemBase {
       throw new Error('ThroughputMode ELASTIC is not supported for file systems with performanceMode MAX_IO');
     }
 
-    const { destinationFileSystem, region, availabilityZone, kmsKey } = props.replicationConfiguration ?? {};
     if (props.replicationConfiguration) {
+        const { destinationFileSystem, region, availabilityZone, kmsKey } = props.replicationConfiguration;
       if (props.replicationOverwriteProtection === ReplicationOverwriteProtection.DISABLED) {
         throw new Error('Cannot configure `replicationConfiguration` when `replicationOverwriteProtection` is set to `DISABLED`');
       }
