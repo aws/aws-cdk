@@ -76,7 +76,7 @@ This is to prevent deployment failures due to cross-AZ configurations.
 
 ⚠️ When `oneZone` is enabled, `vpcSubnets` cannot be specified.
 
-### [Replicating file systems](https://docs.aws.amazon.com/efs/latest/ug/efs-replication.html)
+### Replicating file systems
 
 You can create a replica of your EFS file system in the AWS Region of your preference.
 
