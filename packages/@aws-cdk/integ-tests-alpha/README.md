@@ -439,6 +439,28 @@ invoke.expect(ExpectedResult.objectLike({
 }));
 ```
 
+The above example will by default create a CloudWatch log group that's never
+expired. If you want to configure it with custom log retention days, you need
+to specify the `logRenteion` property.
+
+```ts
+import * as logs from 'aws-cdk-lib/aws-logs';
+
+declare const lambdaFunction: lambda.IFunction;
+declare const app: App;
+
+const stack = new Stack(app, 'cdk-integ-lambda-bundling');
+
+const integ = new IntegTest(app, 'IntegTest', {
+  testCases: [stack],
+});
+
+const invoke = integ.assertions.invokeFunction({
+  functionName: lambdaFunction.functionName,
+  logRetention: logs.RetentionDays.ONE_WEEK,
+});
+```
+
 #### Make an AWS API Call
 
 In this example there is a StepFunctions state machine that is executed
