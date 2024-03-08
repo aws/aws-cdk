@@ -568,6 +568,26 @@ describe('tests', () => {
     }).toThrow('Health check interval must be greater than or equal to the timeout; received interval 10, timeout 20.');
   });
 
+  // for backwards compatibility these can be equal, see discussion in https://github.com/aws/aws-cdk/pull/26031
+  test('Throws error for health check interval less than timeout', () => {
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'Stack');
+    const vpc = new ec2.Vpc(stack, 'Vpc');
+
+    new elbv2.ApplicationTargetGroup(stack, 'TargetGroup', {
+      vpc,
+      port: 80,
+      healthCheck: {
+        interval: cdk.Duration.seconds(10),
+        timeout: cdk.Duration.seconds(20),
+      },
+    });
+
+    expect(() => {
+      app.synth();
+    }).toThrow('Health check interval must be greater than or equal to the timeout; received interval 10, timeout 20.');
+  });
+
   test('imported targetGroup has targetGroupName', () => {
     // GIVEN
     const app = new cdk.App();
