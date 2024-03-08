@@ -972,7 +972,7 @@ new rds.DatabaseCluster(this, 'dbcluster', {
 ## Creating a Database Proxy
 
 Amazon RDS Proxy sits between your application and your relational database to efficiently manage
-connections to the database and improve scalability of the application. Learn more about at [Amazon RDS Proxy](https://aws.amazon.com/rds/proxy/)
+connections to the database and improve scalability of the application. Learn more about at [Amazon RDS Proxy](https://aws.amazon.com/rds/proxy/). Proxies require an engine family to be specified on the database cluster or instance.
 
 The following code configures an RDS Proxy for a `DatabaseInstance`.
 
