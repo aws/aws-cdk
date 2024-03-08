@@ -1100,7 +1100,17 @@ new tasks.GlueStartJobRun(this, 'Task', {
 You can call the [`StartCrawler`](https://docs.aws.amazon.com/glue/latest/dg/aws-glue-api-crawler-crawling.html#aws-glue-api-crawler-crawling-StartCrawler) API from a `Task` state through AWS SDK service integrations.
 
 ```ts
-new tasks.GlueStartCrawlerRun(this, 'Task', {
+import * as glue from 'aws-cdk-lib/aws-glue';
+
+declare const myCrawler: glue.CfnCrawler;
+
+// You can get the crawler name from `crawler.ref`
+new tasks.GlueStartCrawlerRun(this, 'Task1', {
+  crawlerName: myCrawler.ref,
+});
+
+// Of course, you can also specify the crawler name directly.
+new tasks.GlueStartCrawlerRun(this, 'Task2', {
   crawlerName: 'my-crawler-job',
 });
 ```
