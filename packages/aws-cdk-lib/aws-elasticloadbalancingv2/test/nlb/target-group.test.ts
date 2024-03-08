@@ -144,6 +144,45 @@ describe('tests', () => {
     }).toThrow(/Health check interval '3' not supported. Must be between 5 and 300./);
   });
 
+  test('Throws error for health check interval less than timeout', () => {
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'Stack');
+    const vpc = new ec2.Vpc(stack, 'Vpc');
+
+    new elbv2.NetworkTargetGroup(stack, 'Group', {
+      vpc,
+      port: 80,
+      healthCheck: {
+        interval: cdk.Duration.seconds(10),
+        timeout: cdk.Duration.seconds(20),
+      },
+    });
+
+    expect(() => {
+      app.synth();
+    }).toThrow('Health check interval must be greater than or equal to the timeout; received interval 10, timeout 20.');
+  });
+
+  // for backwards compatibility these can be equal, see discussion in https://github.com/aws/aws-cdk/pull/26031
+  test('No error for health check interval == timeout', () => {
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'Stack');
+    const vpc = new ec2.Vpc(stack, 'Vpc');
+
+    new elbv2.NetworkTargetGroup(stack, 'Group', {
+      vpc,
+      port: 80,
+      healthCheck: {
+        interval: cdk.Duration.seconds(10),
+        timeout: cdk.Duration.seconds(10),
+      },
+    });
+
+    expect(() => {
+      app.synth();
+    }).not.toThrow();
+  });
+
   test('targetGroupName unallowed: more than 32 characters', () => {
     // GIVEN
     const app = new cdk.App();
