@@ -559,6 +559,57 @@ describe('', () => {
         PipelineType: expected,
       });
     });
+
+    test.each([
+      [codepipeline.ExecutionMode.SUPERSEDED, 'SUPERSEDED'],
+      [codepipeline.ExecutionMode.QUEUED, 'QUEUED'],
+      [codepipeline.ExecutionMode.PARALLEL, 'PARALLEL'],
+    ])('can specify execution mode %s', (type, expected) => {
+      const stack = new cdk.Stack();
+      const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
+        pipelineType: codepipeline.PipelineType.V2,
+        executionMode: type,
+      });
+
+      const sourceArtifact = new codepipeline.Artifact();
+      const sourceActions = [new FakeSourceAction({
+        actionName: 'FakeSource',
+        output: sourceArtifact,
+      })];
+      const buildActions = [new FakeBuildAction({
+        actionName: 'FakeBuild',
+        input: sourceArtifact,
+      })];
+      testPipelineSetup(pipeline, sourceActions, buildActions);
+
+      Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
+        ExecutionMode: expected,
+      });
+    });
+
+    test('throws if executionMode is QUEUED but pipeline type is not V2', () => {
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'PipelineStack');
+
+      expect(() => {
+        new codepipeline.Pipeline(stack, 'Pipeline', {
+          pipelineType: codepipeline.PipelineType.V1,
+          executionMode: codepipeline.ExecutionMode.QUEUED,
+        });
+      }).toThrow('QUEUED execution mode can only be used with V2 pipelines, `PipelineType.V2` must be specified for `pipelineType`');
+    });
+
+    test('throws if executionMode is PARALLEL but pipeline type is not V2', () => {
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'PipelineStack');
+
+      expect(() => {
+        new codepipeline.Pipeline(stack, 'Pipeline', {
+          pipelineType: codepipeline.PipelineType.V1,
+          executionMode: codepipeline.ExecutionMode.PARALLEL,
+        });
+      }).toThrow('PARALLEL execution mode can only be used with V2 pipelines, `PipelineType.V2` must be specified for `pipelineType`');
+    });
   });
 
   describe('cross account key alias name tests', () => {
