@@ -3,11 +3,20 @@ import * as iam from '../../../aws-iam';
 import * as kms from '../../../aws-kms';
 import * as sfn from '../../../aws-stepfunctions';
 import * as sqs from '../../../aws-sqs';
-import { Stack, Duration } from '../../../core';
+import { Stack, Duration, Token } from '../../../core';
 import { integrationResourceArn } from '../private/task-utils';
 
+/**
+ * The action that EventBridge Scheduler applies to the schedule after the schedule completes invoking the target.
+ */
 export enum ActionAfterCompletion {
+  /**
+   * Takes no action
+   */
   NONE = 'NONE',
+  /**
+   * Deletes the schedule
+   */
   DELETE = 'DELETE',
 }
 
@@ -29,34 +38,44 @@ export interface CreateScheduleProps extends sfn.TaskStateBaseProps {
 
   /**
    * Unique, case-sensitive identifier to ensure the idempotency of the request.
+   *
+   * @default - Automatically generated
    */
   readonly clientToken?: string;
 
   /**
    * The description for the schedule.
+   *
+   * @default - No description
    */
   readonly description?: string;
 
   /**
    * The date, in UTC, before which the schedule can invoke its target.
    * Depending on the schedule's recurrence expression, invocations might stop on, or before, the EndDate you specify. EventBridge Scheduler ignores EndDate for one-time schedules.
+   *
+   * @default - No end date
    */
   readonly endDate?: Date;
 
   /**
    * The maximum time window during which a schedule can be invoked.
+   *
+   * @default - Disable flexible time window
    */
   readonly flexibleTimeWindow?: Duration;
 
   /**
    * Schedule group name
    *
-   * @default 'Default'
+   * @default 'default'
    */
   readonly groupName?: string;
 
   /**
    * The customer managed KMS key that EventBridge Scheduler will use to encrypt and decrypt your data.
+   *
+   * @default - use automatically generated KMS key
    */
   readonly kmsKey?: kms.IKey;
 
@@ -69,17 +88,23 @@ export interface CreateScheduleProps extends sfn.TaskStateBaseProps {
 
   /**
    * The timezone in which the scheduling expression is evaluated.
+   *
+   * @default - UTC
    */
-  readonly timezone: string;
+  readonly timezone?: string;
 
   /**
    * The date, in UTC, after which the schedule can begin invoking its target.
    * Depending on the schedule's recurrence expression, invocations might occur on, or after, the StartDate you specify. EventBridge Scheduler ignores StartDate for one-time schedules.
+   *
+   * @default - No start date
    */
   readonly startDate?: Date;
 
   /**
    * Specifies whether the schedule is enabled or disabled.
+   *
+   * @default true
    */
   readonly enabled?: boolean;
 
@@ -95,16 +120,22 @@ export interface CreateScheduleProps extends sfn.TaskStateBaseProps {
 
   /**
    * The input to the target.
+   *
+   * @default - EventBridge Scheduler delivers a default notification to the target
    */
   readonly input?: string;
 
   /**
    * The retry policy settings
+   *
+   * @default - Do not retry
    */
   readonly retryPolicy?: RetryPolicy;
 
   /**
    * Dead letter queue for failed events
+   *
+   * @default - No dead letter queue
    */
   readonly deadLetterQueue?: sqs.IQueue;
 }
@@ -139,6 +170,8 @@ export class CreateSchedule extends sfn.TaskStateBase {
   constructor(scope: Construct, id: string, private readonly props: CreateScheduleProps) {
     super(scope, id, props);
 
+    this.validateProps(props);
+
     this.integrationPattern = props.integrationPattern ?? sfn.IntegrationPattern.REQUEST_RESPONSE;
     this.taskPolicies = [new iam.PolicyStatement({
       resources: [
@@ -154,9 +187,6 @@ export class CreateSchedule extends sfn.TaskStateBase {
     })];
   }
 
-  /**
-   * @internal
-   */
   protected _renderTask(): any {
     return {
       Resource: integrationResourceArn('aws-sdk:scheduler', 'createSchedule', this.integrationPattern),
@@ -175,7 +205,7 @@ export class CreateSchedule extends sfn.TaskStateBase {
         ScheduleExpression: this.props.scheduleExpression,
         ScheduleExpressionTimezone: this.props.timezone,
         StartDate: this.props.startDate ? Math.trunc(this.props.startDate.getTime() / 1000) : undefined,
-        State: this.props.enabled ? 'ENABLED' : 'DISABLED',
+        State: (this.props.enabled ?? true) ? 'ENABLED' : 'DISABLED',
         Target: {
           Arn: this.props.targetArn,
           RoleArn: this.props.role.roleArn,
@@ -190,5 +220,23 @@ export class CreateSchedule extends sfn.TaskStateBase {
         },
       },
     };
+  }
+
+  private validateProps(props: CreateScheduleProps) {
+    if (props.clientToken && !Token.isUnresolved(props.clientToken) && (props.clientToken.length > 64 || props.clientToken.length < 1)) {
+      throw new Error(`ClientToken must be between 1 and 64 characters long. Got: ${props.clientToken.length}`);
+    }
+
+    if (props.description && !Token.isUnresolved(props.description) && props.description.length > 512) {
+      throw new Error(`Description must be less than 512 characters long. Got: ${props.description.length}`);
+    }
+
+    if (props.flexibleTimeWindow && (props.flexibleTimeWindow.toMinutes() < 1 || props.flexibleTimeWindow.toMinutes() > 1440)) {
+      throw new Error('FlexibleTimeWindow must be between 1 and 1440 minutes');
+    }
+
+    if (props.groupName && !Token.isUnresolved(props.groupName) && (props.groupName.length > 64 || props.groupName.length < 1)) {
+      throw new Error(`GroupName must be between 1 and 64 characters long. Got: ${props.groupName.length}`);
+    }
   }
 }
