@@ -79,7 +79,7 @@ describe('proxy', () => {
     });
   });
 
-  test('create a DB proxy from an MariaDB instance', () => {
+  test('create a DB proxy for a MariaDB instance', () => {
     // GIVEN
     const instance = new rds.DatabaseInstance(stack, 'Instance', {
       engine: rds.DatabaseInstanceEngine.mariaDb({
