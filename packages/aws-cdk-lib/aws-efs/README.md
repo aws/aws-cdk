@@ -116,6 +116,8 @@ new efs.FileSystem(this, 'ReplicationSourceFileSystem2', {
 
 > Visit [Replicating file systems](https://docs.aws.amazon.com/efs/latest/ug/efs-replication.html) for more details.
 
+**Note**: You have to specify either `region` or `destinationFileSystem` when creating a replication destination file system.
+
 ### IAM to control file system data access
 
 You can use both IAM identity policies and resource policies to control client access to Amazon EFS resources in a way that is scalable and optimized for cloud environments. Using IAM, you can permit clients to perform specific actions on a file system, including read-only, write, and root access.
