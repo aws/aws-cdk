@@ -558,20 +558,20 @@ const storeAsset = new cloudfront.KeyValueStore(this, 'KeyValueStoreAsset', {
 });
 
 const storeInline = new cloudfront.KeyValueStore(this, 'KeyValueStoreInline', {
-  keyValuestoreName: 'KeyValueStoreInline',
+  keyValueStoreName: 'KeyValueStoreInline',
   source: cloudfront.ImportSource.fromInline(JSON.stringify({
     data: [
       {
         key: "key1",
-        value: "value1"
+        value: "value1",
       },
       {
         key: "key2",
-        value: "value2"
-      }
-    ]
+        value: "value2",
+      },
+    ],
   })),
-})
+});
 ```
 
 The Key Value Store can then be associated to a function using the `cloudfront-js-2.0` runtime
