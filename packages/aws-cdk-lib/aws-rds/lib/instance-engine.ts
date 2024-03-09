@@ -1621,6 +1621,10 @@ export class OracleEngineVersion {
   public static readonly VER_21_0_0_0_2023_07_R1 = OracleEngineVersion.of('21.0.0.0.ru-2023-07.rur-2023-07.r1', '21');
   /** Version "21.0.0.0.ru-2023-10.rur-2023-10.r1". */
   public static readonly VER_21_0_0_0_2023_10_R1 = OracleEngineVersion.of('21.0.0.0.ru-2023-10.rur-2023-10.r1', '21');
+  /** Version "19.0.0.0.ru-2024-01.rur-2024-01.r1". */
+  public static readonly VER_19_0_0_0_2024_01_R1 = OracleEngineVersion.of('19.0.0.0.ru-2024-01.rur-2024-01.r1', '19');
+  /** Version "21.0.0.0.ru-2024-01.rur-2024-01.r1". */
+  public static readonly VER_21_0_0_0_2024_01_R1 = OracleEngineVersion.of('21.0.0.0.ru-2024-01.rur-2024-01.r1', '21');
 
   /**
    * Creates a new OracleEngineVersion with an arbitrary version.
