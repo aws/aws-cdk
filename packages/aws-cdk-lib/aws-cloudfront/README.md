@@ -548,14 +548,30 @@ To create an empty Key Value Store:
 const store = new cloudfront.KeyValueStore(this, 'KeyValueStore');
 ```
 
-To also include an initial set of value, the `source` property can be specified. For the
-structure of this file, see [Creating a file of key value pairs](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/kvs-with-functions-create-s3-kvp.html).
+To also include an initial set of value, the `source` property can be specified, either from a 
+local file or an inline string. For the structure of this file, see [Creating a file of key value pairs](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/kvs-with-functions-create-s3-kvp.html).
 
 ```ts
-const store = new cloudfront.KeyValueStore(this, 'KeyValueStore', {
-  keyValueStoreName: 'KeyValueStore',
+const storeAsset = new cloudfront.KeyValueStore(this, 'KeyValueStoreAsset', {
+  keyValueStoreName: 'KeyValueStoreAsset',
   source: cloudfront.ImportSource.fromAsset('path-to-data.json'),
 });
+
+const storeInline = new cloudfront.KeyValueStore(this, 'KeyValueStoreInline', {
+  keyValuestoreName: 'KeyValueStoreInline',
+  source: cloudfront.ImportSource.fromInline(JSON.stringify({
+    data: [
+      {
+        key: "key1",
+        value: "value1"
+      },
+      {
+        key: "key2",
+        value: "value2"
+      }
+    ]
+  })),
+})
 ```
 
 The Key Value Store can then be associated to a function using the `cloudfront-js-2.0` runtime
