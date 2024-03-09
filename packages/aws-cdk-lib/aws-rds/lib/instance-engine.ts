@@ -1689,115 +1689,277 @@ export class OracleLegacyEngineVersion {
  * - `DatabaseInstanceEngine.oracleEeCdb`.
  */
 export class OracleEngineVersion {
-  /** Version "12.1" (only a major version, without a specific minor version). */
+  /**
+   * Version "12.1" (only a major version, without a specific minor version).
+   * @deprecated Oracle 12.1 is no longer supported by Amazon RDS.
+  */
   public static readonly VER_12_1 = OracleEngineVersion.of('12.1', '12.1');
-  /** Version "12.1.0.2.v1". */
+  /**
+   * Version "12.1.0.2.v1"
+   * @deprecated Oracle 12.1.0.2.v1 is no longer supported by Amazon RDS.
+   */
   public static readonly VER_12_1_0_2_V1 = OracleEngineVersion.of('12.1.0.2.v1', '12.1');
-  /** Version "12.1.0.2.v2". */
+  /**
+   * Version "12.1.0.2.v2"
+   * @deprecated Oracle 12.1.0.2.v2 is no longer supported by Amazon RDS.
+   */
   public static readonly VER_12_1_0_2_V2 = OracleEngineVersion.of('12.1.0.2.v2', '12.1');
-  /** Version "12.1.0.2.v3". */
+  /**
+   * Version "12.1.0.2.v3"
+   * @deprecated Oracle 12.1.0.2.v3 is no longer supported by Amazon RDS.
+   */
   public static readonly VER_12_1_0_2_V3 = OracleEngineVersion.of('12.1.0.2.v3', '12.1');
-  /** Version "12.1.0.2.v4". */
+  /**
+   * Version "12.1.0.2.v4"
+   * @deprecated Oracle 12.1.0.2.v4 is no longer supported by Amazon RDS.
+   */
   public static readonly VER_12_1_0_2_V4 = OracleEngineVersion.of('12.1.0.2.v4', '12.1');
-  /** Version "12.1.0.2.v5". */
+  /**
+   * Version "12.1.0.2.v5"
+   * @deprecated Oracle 12.1.0.2.v5 is no longer supported by Amazon RDS.
+   */
   public static readonly VER_12_1_0_2_V5 = OracleEngineVersion.of('12.1.0.2.v5', '12.1');
-  /** Version "12.1.0.2.v6". */
+  /**
+   * Version "12.1.0.2.v6"
+   * @deprecated Oracle 12.1.0.2.v6 is no longer supported by Amazon RDS.
+   */
   public static readonly VER_12_1_0_2_V6 = OracleEngineVersion.of('12.1.0.2.v6', '12.1');
-  /** Version "12.1.0.2.v7". */
+  /**
+   * Version "12.1.0.2.v7"
+   * @deprecated Oracle 12.1.0.2.v7 is no longer supported by Amazon RDS.
+   */
   public static readonly VER_12_1_0_2_V7 = OracleEngineVersion.of('12.1.0.2.v7', '12.1');
-  /** Version "12.1.0.2.v8". */
+  /**
+   * Version "12.1.0.2.v8"
+   * @deprecated Oracle 12.1.0.2.v8 is no longer supported by Amazon RDS.
+   */
   public static readonly VER_12_1_0_2_V8 = OracleEngineVersion.of('12.1.0.2.v8', '12.1');
-  /** Version "12.1.0.2.v9". */
+  /**
+   * Version "12.1.0.2.v9"
+   * @deprecated Oracle 12.1.0.2.v9 is no longer supported by Amazon RDS.
+   */
   public static readonly VER_12_1_0_2_V9 = OracleEngineVersion.of('12.1.0.2.v9', '12.1');
-  /** Version "12.1.0.2.v10". */
+  /**
+   * Version "12.1.0.2.v10"
+   * @deprecated Oracle 12.1.0.2.v10 is no longer supported by Amazon RDS.
+   */
   public static readonly VER_12_1_0_2_V10 = OracleEngineVersion.of('12.1.0.2.v10', '12.1');
-  /** Version "12.1.0.2.v11". */
+  /**
+   * Version "12.1.0.2.v11"
+   * @deprecated Oracle 12.1.0.2.v11 is no longer supported by Amazon RDS.
+   */
   public static readonly VER_12_1_0_2_V11 = OracleEngineVersion.of('12.1.0.2.v11', '12.1');
-  /** Version "12.1.0.2.v12". */
+  /**
+   * Version "12.1.0.2.v12"
+   * @deprecated Oracle 12.1.0.2.v12 is no longer supported by Amazon RDS.
+   */
   public static readonly VER_12_1_0_2_V12 = OracleEngineVersion.of('12.1.0.2.v12', '12.1');
-  /** Version "12.1.0.2.v13". */
+  /**
+   * Version "12.1.0.2.v13"
+   * @deprecated Oracle 12.1.0.2.v13 is no longer supported by Amazon RDS.
+   */
   public static readonly VER_12_1_0_2_V13 = OracleEngineVersion.of('12.1.0.2.v13', '12.1');
-  /** Version "12.1.0.2.v14". */
+  /**
+   * Version "12.1.0.2.v14"
+   * @deprecated Oracle 12.1.0.2.v14 is no longer supported by Amazon RDS.
+   */
   public static readonly VER_12_1_0_2_V14 = OracleEngineVersion.of('12.1.0.2.v14', '12.1');
-  /** Version "12.1.0.2.v15". */
+  /**
+   * Version "12.1.0.2.v15"
+   * @deprecated Oracle 12.1.0.2.v15 is no longer supported by Amazon RDS.
+   */
   public static readonly VER_12_1_0_2_V15 = OracleEngineVersion.of('12.1.0.2.v15', '12.1');
-  /** Version "12.1.0.2.v16". */
+  /**
+   * Version "12.1.0.2.v16"
+   * @deprecated Oracle 12.1.0.2.v16 is no longer supported by Amazon RDS.
+   */
   public static readonly VER_12_1_0_2_V16 = OracleEngineVersion.of('12.1.0.2.v16', '12.1');
-  /** Version "12.1.0.2.v17". */
+  /**
+   * Version "12.1.0.2.v17"
+   * @deprecated Oracle 12.1.0.2.v17 is no longer supported by Amazon RDS.
+   */
   public static readonly VER_12_1_0_2_V17 = OracleEngineVersion.of('12.1.0.2.v17', '12.1');
-  /** Version "12.1.0.2.v18". */
+  /**
+   * Version "12.1.0.2.v18"
+   * @deprecated Oracle 12.1.0.2.v18 is no longer supported by Amazon RDS.
+   */
   public static readonly VER_12_1_0_2_V18 = OracleEngineVersion.of('12.1.0.2.v18', '12.1');
-  /** Version "12.1.0.2.v19". */
+  /**
+   * Version "12.1.0.2.v19"
+   * @deprecated Oracle 12.1.0.2.v19 is no longer supported by Amazon RDS.
+   */
   public static readonly VER_12_1_0_2_V19 = OracleEngineVersion.of('12.1.0.2.v19', '12.1');
-  /** Version "12.1.0.2.v20". */
+  /**
+   * Version "12.1.0.2.v20"
+   * @deprecated Oracle 12.1.0.2.v20 is no longer supported by Amazon RDS.
+   */
   public static readonly VER_12_1_0_2_V20 = OracleEngineVersion.of('12.1.0.2.v20', '12.1');
-  /** Version "12.1.0.2.v21". */
+  /**
+   * Version "12.1.0.2.v21"
+   * @deprecated Oracle 12.1.0.2.v21 is no longer supported by Amazon RDS.
+   */
   public static readonly VER_12_1_0_2_V21 = OracleEngineVersion.of('12.1.0.2.v21', '12.1');
-  /** Version "12.1.0.2.v22". */
+  /**
+   * Version "12.1.0.2.v22"
+   * @deprecated Oracle 12.1.0.2.v22 is no longer supported by Amazon RDS.
+   */
   public static readonly VER_12_1_0_2_V22 = OracleEngineVersion.of('12.1.0.2.v22', '12.1');
-  /** Version "12.1.0.2.v23". */
+  /**
+   * Version "12.1.0.2.v23"
+   * @deprecated Oracle 12.1.0.2.v23 is no longer supported by Amazon RDS.
+   */
   public static readonly VER_12_1_0_2_V23 = OracleEngineVersion.of('12.1.0.2.v23', '12.1');
-  /** Version "12.1.0.2.v24". */
+  /**
+   * Version "12.1.0.2.v24"
+   * @deprecated Oracle 12.1.0.2.v24 is no longer supported by Amazon RDS.
+   */
   public static readonly VER_12_1_0_2_V24 = OracleEngineVersion.of('12.1.0.2.v24', '12.1');
-  /** Version "12.1.0.2.v25". */
+  /**
+   * Version "12.1.0.2.v25"
+   * @deprecated Oracle 12.1.0.2.v25 is no longer supported by Amazon RDS.
+   */
   public static readonly VER_12_1_0_2_V25 = OracleEngineVersion.of('12.1.0.2.v25', '12.1');
-  /** Version "12.1.0.2.v26". */
+  /**
+   * Version "12.1.0.2.v26"
+   * @deprecated Oracle 12.1.0.2.v26 is no longer supported by Amazon RDS.
+   */
   public static readonly VER_12_1_0_2_V26 = OracleEngineVersion.of('12.1.0.2.v26', '12.1');
-  /** Version "12.1.0.2.v27". */
+  /**
+   * Version "12.1.0.2.v27"
+   * @deprecated Oracle 12.1.0.2.v27 is no longer supported by Amazon RDS.
+   */
   public static readonly VER_12_1_0_2_V27 = OracleEngineVersion.of('12.1.0.2.v27', '12.1');
-  /** Version "12.1.0.2.v28". */
+  /**
+   * Version "12.1.0.2.v28"
+   * @deprecated Oracle 12.1.0.2.v28 is no longer supported by Amazon RDS.
+   */
   public static readonly VER_12_1_0_2_V28 = OracleEngineVersion.of('12.1.0.2.v28', '12.1');
-  /** Version "12.1.0.2.v29". */
+  /**
+   * Version "12.1.0.2.v29"
+   * @deprecated Oracle 12.1.0.2.v29 is no longer supported by Amazon RDS.
+   */
   public static readonly VER_12_1_0_2_V29 = OracleEngineVersion.of('12.1.0.2.v29', '12.1');
 
-  /** Version "12.2" (only a major version, without a specific minor version). */
+  /**
+   * Version "12.1" (only a major version, without a specific minor version).
+   * @deprecated Oracle 12.1 is no longer supported by Amazon RDS.
+  */
   public static readonly VER_12_2 = OracleEngineVersion.of('12.2', '12.2');
-  /** Version "12.2.0.1.ru-2018-10.rur-2018-10.r1". */
+  /**
+   * Version "12.2.0.1.ru-2018-10.rur-2018-10.r1"
+   * @deprecated Oracle 12.2.0.1.ru-2018-10.rur-2018-10.r1 is no longer supported by Amazon RDS.
+   */
   public static readonly VER_12_2_0_1_2018_10_R1 = OracleEngineVersion.of('12.2.0.1.ru-2018-10.rur-2018-10.r1', '12.2');
-  /** Version "12.2.0.1.ru-2019-01.rur-2019-01.r1". */
+  /**
+   * Version "12.2.0.1.ru-2019-01.rur-2019-01.r1"
+   * @deprecated Oracle 12.2.0.1.ru-2019-01.rur-2019-01.r1 is no longer supported by Amazon RDS.
+   */
   public static readonly VER_12_2_0_1_2019_01_R1 = OracleEngineVersion.of('12.2.0.1.ru-2019-01.rur-2019-01.r1', '12.2');
-  /** Version "12.2.0.1.ru-2019-04.rur-2019-04.r1". */
+  /**
+   * Version "12.2.0.1.ru-2019-04.rur-2019-04.r1"
+   * @deprecated Oracle 12.2.0.1.ru-2019-04.rur-2019-04.r1 is no longer supported by Amazon RDS.
+   */
   public static readonly VER_12_2_0_1_2019_04_R1 = OracleEngineVersion.of('12.2.0.1.ru-2019-04.rur-2019-04.r1', '12.2');
-  /** Version "12.2.0.1.ru-2019-07.rur-2019-07.r1". */
+  /**
+   * Version "12.2.0.1.ru-2019-07.rur-2019-07.r1"
+   * @deprecated Oracle 12.2.0.1.ru-2019-07.rur-2019-07.r1 is no longer supported by Amazon RDS.
+   */
   public static readonly VER_12_2_0_1_2019_07_R1 = OracleEngineVersion.of('12.2.0.1.ru-2019-07.rur-2019-07.r1', '12.2');
-  /** Version "12.2.0.1.ru-2019-10.rur-2019-10.r1". */
+  /**
+   * Version "12.2.0.1.ru-2019-10.rur-2019-10.r1"
+   * @deprecated Oracle 12.2.0.1.ru-2019-10.rur-2019-10.r1 is no longer supported by Amazon RDS.
+   */
   public static readonly VER_12_2_0_1_2019_10_R1 = OracleEngineVersion.of('12.2.0.1.ru-2019-10.rur-2019-10.r1', '12.2');
-  /** Version "12.2.0.1.ru-2020-01.rur-2020-01.r1". */
+  /**
+   * Version "12.2.0.1.ru-2020-01.rur-2020-01.r1"
+   * @deprecated Oracle 12.2.0.1.ru-2020-01.rur-2020-01.r1 is no longer supported by Amazon RDS.
+   */
   public static readonly VER_12_2_0_1_2020_01_R1 = OracleEngineVersion.of('12.2.0.1.ru-2020-01.rur-2020-01.r1', '12.2');
-  /** Version "12.2.0.1.ru-2020-04.rur-2020-04.r1". */
+  /**
+   * Version "12.2.0.1.ru-2020-04.rur-2020-04.r1"
+   * @deprecated Oracle 12.2.0.1.ru-2020-04.rur-2020-04.r1 is no longer supported by Amazon RDS.
+   */
   public static readonly VER_12_2_0_1_2020_04_R1 = OracleEngineVersion.of('12.2.0.1.ru-2020-04.rur-2020-04.r1', '12.2');
-  /** Version "12.2.0.1.ru-2020-07.rur-2020-07.r1". */
+  /**
+   * Version "12.2.0.1.ru-2020-07.rur-2020-07.r1"
+   * @deprecated Oracle 12.2.0.1.ru-2020-07.rur-2020-07.r1 is no longer supported by Amazon RDS.
+   */
   public static readonly VER_12_2_0_1_2020_07_R1 = OracleEngineVersion.of('12.2.0.1.ru-2020-07.rur-2020-07.r1', '12.2');
-  /** Version "12.2.0.1.ru-2021-10.rur-2020-10.r1". */
+  /**
+   * Version "12.2.0.1.ru-2021-10.rur-2020-10.r1"
+   * @deprecated Oracle 12.2.0.1.ru-2021-10.rur-2020-10.r1 is no longer supported by Amazon RDS.
+   */
   public static readonly VER_12_2_0_1_2020_10_R1 = OracleEngineVersion.of('12.2.0.1.ru-2020-10.rur-2020-10.r1', '12.2');
-  /** Version "12.2.0.1.ru-2021-01.rur-2021-01.r1". */
+  /**
+   * Version "12.2.0.1.ru-2021-01.rur-2021-01.r1"
+   * @deprecated Oracle 12.2.0.1.ru-2021-01.rur-2021-01.r1 is no longer supported by Amazon RDS.
+   */
   public static readonly VER_12_2_0_1_2021_01_R1 = OracleEngineVersion.of('12.2.0.1.ru-2021-01.rur-2021-01.r1', '12.2');
-  /** Version "12.2.0.1.ru-2021-04.rur-2021-04.r1". */
+  /**
+   * Version "12.2.0.1.ru-2021-04.rur-2021-04.r1"
+   * @deprecated Oracle 12.2.0.1.ru-2021-04.rur-2021-04.r1 is no longer supported by Amazon RDS.
+   */
   public static readonly VER_12_2_0_1_2021_04_R1 = OracleEngineVersion.of('12.2.0.1.ru-2021-04.rur-2021-04.r1', '12.2');
-  /** Version "12.2.0.1.ru-2021-07.rur-2021-07.r1". */
+  /**
+   * Version "12.2.0.1.ru-2021-07.rur-2021-07.r1"
+   * @deprecated Oracle 12.2.0.1.ru-2021-07.rur-2021-07.r1 is no longer supported by Amazon RDS.
+   */
   public static readonly VER_12_2_0_1_2021_07_R1 = OracleEngineVersion.of('12.2.0.1.ru-2021-07.rur-2021-07.r1', '12.2');
-  /** Version "12.2.0.1.ru-2021-10.rur-2021-10.r1". */
+  /**
+   * Version "12.2.0.1.ru-2021-10.rur-2021-10.r1"
+   * @deprecated Oracle 12.2.0.1.ru-2021-10.rur-2021-10.r1 is no longer supported by Amazon RDS.
+   */
   public static readonly VER_12_2_0_1_2021_10_R1 = OracleEngineVersion.of('12.2.0.1.ru-2021-10.rur-2021-10.r1', '12.2');
-  /** Version "12.2.0.1.ru-2022-01.rur-2022-01.r1". */
+  /**
+   * Version "12.2.0.1.ru-2022-01.rur-2022-01.r1"
+   * @deprecated Oracle 12.2.0.1.ru-2022-01.rur-2022-01.r1 is no longer supported by Amazon RDS.
+   */
   public static readonly VER_12_2_0_1_2022_01_R1 = OracleEngineVersion.of('12.2.0.1.ru-2022-01.rur-2022-01.r1', '12.2');
 
-  /** Version "18" (only a major version, without a specific minor version). */
+  /**
+   * Version "18" (only a major version, without a specific minor version).
+   * @deprecated Oracle 18 is no longer supported by Amazon RDS.
+  */
   public static readonly VER_18 = OracleEngineVersion.of('18', '18');
-  /** Version "18.0.0.0.ru-2019-07.rur-2019-07.r1". */
+  /**
+   * Version "18.0.0.0.ru-2019-07.rur-2019-07.r1"
+   * @deprecated Oracle 18.0.0.0.ru-2019-07.rur-2019-07.r1 is no longer supported by Amazon RDS.
+   */
   public static readonly VER_18_0_0_0_2019_07_R1 = OracleEngineVersion.of('18.0.0.0.ru-2019-07.rur-2019-07.r1', '18');
-  /** Version "18.0.0.0.ru-2019-10.rur-2019-10.r1". */
+  /**
+   * Version "18.0.0.0.ru-2019-10.rur-2019-10.r1"
+   * @deprecated Oracle 18.0.0.0.ru-2019-10.rur-2019-10.r1 is no longer supported by Amazon RDS.
+   */
   public static readonly VER_18_0_0_0_2019_10_R1 = OracleEngineVersion.of('18.0.0.0.ru-2019-10.rur-2019-10.r1', '18');
-  /** Version "18.0.0.0.ru-2020-01.rur-2020-01.r1". */
+  /**
+   * Version "18.0.0.0.ru-2020-01.rur-2020-01.r1"
+   * @deprecated Oracle 18.0.0.0.ru-2020-01.rur-2020-01.r1 is no longer supported by Amazon RDS.
+   */
   public static readonly VER_18_0_0_0_2020_01_R1 = OracleEngineVersion.of('18.0.0.0.ru-2020-01.rur-2020-01.r1', '18');
-  /** Version "18.0.0.0.ru-2020-04.rur-2020-04.r1". */
+  /**
+   * Version "18.0.0.0.ru-2020-04.rur-2020-04.r1"
+   * @deprecated Oracle 18.0.0.0.ru-2020-04.rur-2020-04.r1 is no longer supported by Amazon RDS.
+   */
   public static readonly VER_18_0_0_0_2020_04_R1 = OracleEngineVersion.of('18.0.0.0.ru-2020-04.rur-2020-04.r1', '18');
-  /** Version "18.0.0.0.ru-2020-07.rur-2020-07.r1". */
+  /**
+   * Version "18.0.0.0.ru-2020-07.rur-2020-07.r1"
+   * @deprecated Oracle 18.0.0.0.ru-2020-07.rur-2020-07.r1 is no longer supported by Amazon RDS.
+   */
   public static readonly VER_18_0_0_0_2020_07_R1 = OracleEngineVersion.of('18.0.0.0.ru-2020-07.rur-2020-07.r1', '18');
-  /** Version "18.0.0.0.ru-2020-10.rur-2020-10.r1". */
+  /**
+   * Version "18.0.0.0.ru-2020-10.rur-2020-10.r1"
+   * @deprecated Oracle 18.0.0.0.ru-2020-10.rur-2020-10.r1 is no longer supported by Amazon RDS.
+   */
   public static readonly VER_18_0_0_0_2020_10_R1 = OracleEngineVersion.of('18.0.0.0.ru-2020-10.rur-2020-10.r1', '18');
-  /** Version "18.0.0.0.ru-2021-01.rur-2021-01.r1". */
+  /**
+   * Version "18.0.0.0.ru-2021-01.rur-2021-01.r1"
+   * @deprecated Oracle 18.0.0.0.ru-2021-01.rur-2021-01.r1 is no longer supported by Amazon RDS.
+   */
   public static readonly VER_18_0_0_0_2021_01_R1 = OracleEngineVersion.of('18.0.0.0.ru-2021-01.rur-2021-01.r1', '18');
-  /** Version "18.0.0.0.ru-2021-04.rur-2021-04.r1". */
+  /**
+   * Version "18.0.0.0.ru-2021-04.rur-2021-04.r1"
+   * @deprecated Oracle 18.0.0.0.ru-2021-04.rur-2021-04.r1 is no longer supported by Amazon RDS.
+   */
   public static readonly VER_18_0_0_0_2021_04_R1 = OracleEngineVersion.of('18.0.0.0.ru-2021-04.rur-2021-04.r1', '18');
 
   /** Version "19" (only a major version, without a specific minor version). */
@@ -1834,12 +1996,16 @@ export class OracleEngineVersion {
   public static readonly VER_19_0_0_0_2022_10_R1 = OracleEngineVersion.of('19.0.0.0.ru-2022-10.rur-2022-10.r1', '19');
   /** Version "19.0.0.0.ru-2023-01.rur-2023-01.r1". */
   public static readonly VER_19_0_0_0_2023_01_R1 = OracleEngineVersion.of('19.0.0.0.ru-2023-01.rur-2023-01.r1', '19');
+  /** Version "19.0.0.0.ru-2023-01.rur-2023-01.r2". */
+  public static readonly VER_19_0_0_0_2023_01_R2 = OracleEngineVersion.of('19.0.0.0.ru-2023-01.rur-2023-01.r2', '19');
   /** Version "19.0.0.0.ru-2023-04.rur-2023-04.r1". */
   public static readonly VER_19_0_0_0_2023_04_R1 = OracleEngineVersion.of('19.0.0.0.ru-2023-04.rur-2023-04.r1', '19');
   /** Version "19.0.0.0.ru-2023-07.rur-2023-07.r1"  */
   public static readonly VER_19_0_0_0_2023_07_R1 = OracleEngineVersion.of('19.0.0.0.ru-2023-07.rur-2023-07.r1', '19');
   /** Version "19.0.0.0.ru-2023-10.rur-2023-10.r1"  */
   public static readonly VER_19_0_0_0_2023_10_R1 = OracleEngineVersion.of('19.0.0.0.ru-2023-10.rur-2023-10.r1', '19');
+  /** Version "19.0.0.0.ru-2024-01.rur-2024-01.r1". */
+  public static readonly VER_19_0_0_0_2024_01_R1 = OracleEngineVersion.of('19.0.0.0.ru-2024-01.rur-2024-01.r1', '19');
 
   /** Version "21" (only a major version, without a specific minor version). */
   public static readonly VER_21 = OracleEngineVersion.of('21', '21');
@@ -1853,12 +2019,16 @@ export class OracleEngineVersion {
   public static readonly VER_21_0_0_0_2022_10_R1 = OracleEngineVersion.of('21.0.0.0.ru-2022-10.rur-2022-10.r1', '21');
   /** Version "21.0.0.0.ru-2023-01.rur-2023-01.r1". */
   public static readonly VER_21_0_0_0_2023_01_R1 = OracleEngineVersion.of('21.0.0.0.ru-2023-01.rur-2023-01.r1', '21');
+  /** Version "21.0.0.0.ru-2023-01.rur-2023-01.r2". */
+  public static readonly VER_21_0_0_0_2023_01_R2 = OracleEngineVersion.of('21.0.0.0.ru-2023-01.rur-2023-01.r2', '21');
   /** Version "21.0.0.0.ru-2023-04.rur-2023-04.r1". */
   public static readonly VER_21_0_0_0_2023_04_R1 = OracleEngineVersion.of('21.0.0.0.ru-2023-04.rur-2023-04.r1', '21');
   /** Version "21.0.0.0.ru-2023-07.rur-2023-07.r1". */
   public static readonly VER_21_0_0_0_2023_07_R1 = OracleEngineVersion.of('21.0.0.0.ru-2023-07.rur-2023-07.r1', '21');
   /** Version "21.0.0.0.ru-2023-10.rur-2023-10.r1". */
   public static readonly VER_21_0_0_0_2023_10_R1 = OracleEngineVersion.of('21.0.0.0.ru-2023-10.rur-2023-10.r1', '21');
+  /** Version "21.0.0.0.ru-2024-01.rur-2024-01.r1". */
+  public static readonly VER_21_0_0_0_2024_01_R1 = OracleEngineVersion.of('21.0.0.0.ru-2024-01.rur-2024-01.r1', '21');
 
   /**
    * Creates a new OracleEngineVersion with an arbitrary version.
