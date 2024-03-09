@@ -91,7 +91,7 @@ new efs.FileSystem(this, 'ReplicationSourceFileSystem1', {
   vpc,
   replicationConfiguration: {
     kmsKey, // optional
-    region: 'us-east-1', // optional
+    region: 'us-east-1',
     availabilityZone: 'us-east-1a', // optional, Specifing the AZ means creating a One Zone file system as the replication destination
   }
 });
