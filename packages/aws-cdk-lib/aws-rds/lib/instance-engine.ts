@@ -288,53 +288,129 @@ export class MariaDbEngineVersion {
    * @deprecated MariaDB 10.2 is no longer supported by Amazon RDS.
    */
   public static readonly VER_10_2_41 = MariaDbEngineVersion.of('10.2.41', '10.2');
+  /**
+   * Version "10.2.43"
+   * @deprecated MariaDB 10.2.43 is no longer supported by Amazon RDS.
+   */
+  public static readonly VER_10_2_43 = MariaDbEngineVersion.of('10.2.43', '10.2');
+  /**
+   * Version "10.2.44"
+   * @deprecated MariaDB 10.2.44 is no longer supported by Amazon RDS.
+   */
+  public static readonly VER_10_2_44 = MariaDbEngineVersion.of('10.2.44', '10.2');
 
-  /** Version "10.3" (only a major version, without a specific minor version). */
+  /**
+   * Version "10.3" (only a major version, without a specific minor version).
+   * @deprecated MariaDB 10.3 is no longer supported by Amazon RDS.
+   */
   public static readonly VER_10_3 = MariaDbEngineVersion.of('10.3', '10.3');
-  /** Version "10.3.8". */
+  /**
+   * Version "10.3.8"
+   * @deprecated MariaDB 10.3.8 is no longer supported by Amazon RDS.
+   */
   public static readonly VER_10_3_8 = MariaDbEngineVersion.of('10.3.8', '10.3');
-  /** Version "10.3.13". */
+  /**
+   * Version "10.3.13"
+   * @deprecated MariaDB 10.3.13 is no longer supported by Amazon RDS.
+   */
   public static readonly VER_10_3_13 = MariaDbEngineVersion.of('10.3.13', '10.3');
-  /** Version "10.3.20". */
+  /**
+   * Version "10.3.20"
+   * @deprecated MariaDB 10.3.20 is no longer supported by Amazon RDS.
+   */
   public static readonly VER_10_3_20 = MariaDbEngineVersion.of('10.3.20', '10.3');
-  /** Version "10.3.23". */
+  /**
+   * Version "10.3.23"
+   * @deprecated MariaDB 10.3.23 is no longer supported by Amazon RDS.
+   */
   public static readonly VER_10_3_23 = MariaDbEngineVersion.of('10.3.23', '10.3');
-  /** Version "10.3.28". */
+  /**
+   * Version "10.3.28"
+   * @deprecated MariaDB 10.3.28 is no longer supported by Amazon RDS.
+   */
   public static readonly VER_10_3_28 = MariaDbEngineVersion.of('10.3.28', '10.3');
-  /** Version "10.3.31". */
+  /**
+   * Version "10.3.31"
+   * @deprecated MariaDB 10.3.31 is no longer supported by Amazon RDS.
+   */
   public static readonly VER_10_3_31 = MariaDbEngineVersion.of('10.3.31', '10.3');
-  /** Version "10.3.32". */
+  /**
+   * Version "10.3.32"
+   * @deprecated MariaDB 10.3.32 is no longer supported by Amazon RDS.
+   */
   public static readonly VER_10_3_32 = MariaDbEngineVersion.of('10.3.32', '10.3');
-  /** Version "10.3.34". */
+  /**
+   * Version "10.3.34"
+   * @deprecated MariaDB 10.3.34 is no longer supported by Amazon RDS.
+   */
   public static readonly VER_10_3_34 = MariaDbEngineVersion.of('10.3.34', '10.3');
-  /** Version "10.3.35". */
+  /**
+   * Version "10.3.35"
+   * @deprecated MariaDB 10.3.35 is no longer supported by Amazon RDS.
+   */
   public static readonly VER_10_3_35 = MariaDbEngineVersion.of('10.3.35', '10.3');
-  /** Version "10.3.36". */
+  /**
+   * Version "10.3.36"
+   * @deprecated MariaDB 10.3.36 is no longer supported by Amazon RDS.
+   */
   public static readonly VER_10_3_36 = MariaDbEngineVersion.of('10.3.36', '10.3');
-  /** Version "10.3.37". */
+  /**
+   * Version "10.3.37"
+   * @deprecated MariaDB 10.3.37 is no longer supported by Amazon RDS.
+   */
   public static readonly VER_10_3_37 = MariaDbEngineVersion.of('10.3.37', '10.3');
-  /** Version "10.3.38". */
+  /**
+   * Version "10.3.38"
+   * @deprecated MariaDB 10.3.38 is no longer supported by Amazon RDS.
+   */
   public static readonly VER_10_3_38 = MariaDbEngineVersion.of('10.3.38', '10.3');
-  /** Version "10.3.39". */
+  /**
+   * Version "10.3.39"
+   * @deprecated MariaDB 10.3.39 is no longer supported by Amazon RDS.
+   */
   public static readonly VER_10_3_39 = MariaDbEngineVersion.of('10.3.39', '10.3');
 
   /** Version "10.4" (only a major version, without a specific minor version). */
   public static readonly VER_10_4 = MariaDbEngineVersion.of('10.4', '10.4');
-  /** Version "10.4.8". */
+  /**
+   * Version "10.4.8"
+   * @deprecated MariaDB 10.4.8 is no longer supported by Amazon RDS.
+   */
   public static readonly VER_10_4_8 = MariaDbEngineVersion.of('10.4.8', '10.4');
-  /** Version "10.4.13". */
+  /**
+   * Version "10.4.13"
+   * @deprecated MariaDB 10.4.13 is no longer supported by Amazon RDS.
+   */
   public static readonly VER_10_4_13 = MariaDbEngineVersion.of('10.4.13', '10.4');
-  /** Version "10.4.18". */
+  /**
+   * Version "10.4.18"
+   * @deprecated MariaDB 10.4.18 is no longer supported by Amazon RDS.
+   */
   public static readonly VER_10_4_18 = MariaDbEngineVersion.of('10.4.18', '10.4');
-  /** Version "10.4.21". */
+  /**
+   * Version "10.4.21"
+   * @deprecated MariaDB 10.4.21 is no longer supported by Amazon RDS.
+   */
   public static readonly VER_10_4_21 = MariaDbEngineVersion.of('10.4.21', '10.4');
-  /** Version "10.4.22". */
+  /**
+   * Version "10.4.22"
+   * @deprecated MariaDB 10.4.22 is no longer supported by Amazon RDS.
+   */
   public static readonly VER_10_4_22 = MariaDbEngineVersion.of('10.4.22', '10.4');
-  /** Version "10.4.24". */
+  /**
+   * Version "10.4.24"
+   * @deprecated MariaDB 10.4.24 is no longer supported by Amazon RDS.
+   */
   public static readonly VER_10_4_24 = MariaDbEngineVersion.of('10.4.24', '10.4');
-  /** Version "10.4.25". */
+  /**
+   * Version "10.4.25"
+   * @deprecated MariaDB 10.4.25 is no longer supported by Amazon RDS.
+   */
   public static readonly VER_10_4_25 = MariaDbEngineVersion.of('10.4.25', '10.4');
-  /** Version "10.4.26". */
+  /**
+   * Version "10.4.26"
+   * @deprecated MariaDB 10.4.26 is no longer supported by Amazon RDS.
+   */
   public static readonly VER_10_4_26 = MariaDbEngineVersion.of('10.4.26', '10.4');
   /** Version "10.4.27". */
   public static readonly VER_10_4_27 = MariaDbEngineVersion.of('10.4.27', '10.4')
@@ -348,22 +424,45 @@ export class MariaDbEngineVersion {
   public static readonly VER_10_4_31 = MariaDbEngineVersion.of('10.4.31', '10.4')
   /** Version "10.4.32". */
   public static readonly VER_10_4_32 = MariaDbEngineVersion.of('10.4.32', '10.4')
+  /** Version "10.4.33". */
+  public static readonly VER_10_4_33 = MariaDbEngineVersion.of('10.4.33', '10.4');
 
   /** Version "10.5" (only a major version, without a specific minor version). */
   public static readonly VER_10_5 = MariaDbEngineVersion.of('10.5', '10.5');
-  /** Version "10.5.8". */
+  /**
+   * Version "10.5.8"
+   * @deprecated MariaDB 10.5.8 is no longer supported by Amazon RDS.
+   */
   public static readonly VER_10_5_8 = MariaDbEngineVersion.of('10.5.8', '10.5');
-  /** Version "10.5.9". */
+  /**
+   * Version "10.5.9"
+   * @deprecated MariaDB 10.5.9 is no longer supported by Amazon RDS.
+   */
   public static readonly VER_10_5_9 = MariaDbEngineVersion.of('10.5.9', '10.5');
-  /** Version "10.5.12". */
+  /**
+   * Version "10.5.12"
+   * @deprecated MariaDB 10.5.12 is no longer supported by Amazon RDS.
+   */
   public static readonly VER_10_5_12 = MariaDbEngineVersion.of('10.5.12', '10.5');
-  /** Version "10.5.13". */
+  /**
+   * Version "10.5.13"
+   * @deprecated MariaDB 10.5.13 is no longer supported by Amazon RDS.
+   */
   public static readonly VER_10_5_13 = MariaDbEngineVersion.of('10.5.13', '10.5');
-  /** Version "10.5.15". */
+  /**
+   * Version "10.5.15"
+   * @deprecated MariaDB 10.5.15 is no longer supported by Amazon RDS.
+   */
   public static readonly VER_10_5_15 = MariaDbEngineVersion.of('10.5.15', '10.5');
-  /** Version "10.5.16". */
+  /**
+   * Version "10.5.16"
+   * @deprecated MariaDB 10.5.16 is no longer supported by Amazon RDS.
+   */
   public static readonly VER_10_5_16 = MariaDbEngineVersion.of('10.5.16', '10.5');
-  /** Version "10.5.17". */
+  /**
+   * Version "10.5.17"
+   * @deprecated MariaDB 10.5.17 is no longer supported by Amazon RDS.
+   */
   public static readonly VER_10_5_17 = MariaDbEngineVersion.of('10.5.17', '10.5');
   /** Version "10.5.18". */
   public static readonly VER_10_5_18 = MariaDbEngineVersion.of('10.5.18', '10.5');
@@ -377,14 +476,25 @@ export class MariaDbEngineVersion {
   public static readonly VER_10_5_22 = MariaDbEngineVersion.of('10.5.22', '10.5');
   /** Version "10.5.23". */
   public static readonly VER_10_5_23 = MariaDbEngineVersion.of('10.5.23', '10.5');
+  /** Version "10.5.24". */
+  public static readonly VER_10_5_24 = MariaDbEngineVersion.of('10.5.24', '10.5');
 
   /** Version "10.6" (only a major version, without a specific minor version). */
   public static readonly VER_10_6 = MariaDbEngineVersion.of('10.6', '10.6');
-  /** Version "10.6.5". */
+  /**
+   * Version "10.6.5"
+   * @deprecated MariaDB 10.6.5 is no longer supported by Amazon RDS.
+   */
   public static readonly VER_10_6_5 = MariaDbEngineVersion.of('10.6.5', '10.6');
-  /** Version "10.6.7". */
+  /**
+   * Version "10.6.7"
+   * @deprecated MariaDB 10.6.7 is no longer supported by Amazon RDS.
+   */
   public static readonly VER_10_6_7 = MariaDbEngineVersion.of('10.6.7', '10.6');
-  /** Version "10.6.8". */
+  /**
+   * Version "10.6.8"
+   * @deprecated MariaDB 10.6.8 is no longer supported by Amazon RDS.
+   */
   public static readonly VER_10_6_8 = MariaDbEngineVersion.of('10.6.8', '10.6');
   /** Version "10.6.10". */
   public static readonly VER_10_6_10 = MariaDbEngineVersion.of('10.6.10', '10.6');
@@ -400,6 +510,8 @@ export class MariaDbEngineVersion {
   public static readonly VER_10_6_15 = MariaDbEngineVersion.of('10.6.15', '10.6');
   /** Version "10.6.16". */
   public static readonly VER_10_6_16 = MariaDbEngineVersion.of('10.6.16', '10.6');
+  /** Version "10.6.17". */
+  public static readonly VER_10_6_17 = MariaDbEngineVersion.of('10.6.17', '10.6');
 
   /** Version "10.11" (only a major version, without a specific minor version). */
   public static readonly VER_10_11 = MariaDbEngineVersion.of('10.11', '10.11');
@@ -409,6 +521,8 @@ export class MariaDbEngineVersion {
   public static readonly VER_10_11_5 = MariaDbEngineVersion.of('10.11.5', '10.11');
   /** Version "10.11.6". */
   public static readonly VER_10_11_6 = MariaDbEngineVersion.of('10.11.6', '10.11');
+  /** Version "10.11.7". */
+  public static readonly VER_10_11_7 = MariaDbEngineVersion.of('10.11.7', '10.11');
 
   /**
    * Create a new MariaDbEngineVersion with an arbitrary version.
