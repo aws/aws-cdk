@@ -114,9 +114,9 @@ new efs.FileSystem(this, 'ReplicationSourceFileSystem2', {
 
 **Note**: EFS now supports only one replication destination and thus allows specifying just one `replicationConfiguration` for each file system.
 
-> Visit [Replicating file systems](https://docs.aws.amazon.com/efs/latest/ug/efs-replication.html) for more details.
-
 **Note**: You have to specify either `region` or `destinationFileSystem` when creating a replication destination file system.
+
+> Visit [Replicating file systems](https://docs.aws.amazon.com/efs/latest/ug/efs-replication.html) for more details.
 
 ### IAM to control file system data access
 
