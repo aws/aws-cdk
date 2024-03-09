@@ -10,12 +10,12 @@ new cloudfront.KeyValueStore(stack, 'TestKeyValueStore', {
   source: cloudfront.ImportSource.fromInline(JSON.stringify({
     data: [
       {
-        key: "key1",
-        value: "value1",
+        key: 'key1',
+        value: 'value1',
       },
       {
-        key: "keyx2",
-        value: "value2",
+        key: 'key2',
+        value: 'value2',
       },
     ],
   })),
