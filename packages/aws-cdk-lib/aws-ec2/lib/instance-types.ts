@@ -1161,6 +1161,26 @@ export enum InstanceClass {
   HPC6A = 'hpc6a',
 
   /**
+   * High performance computing with local NVME drive based on 6th generation with Intel Xeon Scalable processors (3rd generation processors code named Ice Lake), 6th generation
+   */
+  HIGH_PERFORMANCE_COMPUTING6_INTEL_NVME_DRIVE = 'high-performance-computing6-intel-nvme-drive',
+
+  /**
+   * High performance computing with local NVME drive based on 6th generation with Intel Xeon Scalable processors (3rd generation processors code named Ice Lake), 6th generation
+   */
+  HPC6ID = 'hpc6id',
+
+  /**
+   * High performance computing based on Graviton, 7th generation
+   */
+  HIGH_PERFORMANCE_COMPUTING7_AMD = 'high-performance-computing7-amd',
+
+  /**
+   * High performance computing based on Graviton, 7th generation
+   */
+  HPC7A = 'hpc7a',
+
+  /**
    * High performance computing based on Graviton, 7th generation
    */
   HIGH_PERFORMANCE_COMPUTING7_GRAVITON = 'high-performance-computing7-graviton',
@@ -1571,6 +1591,8 @@ export class InstanceType {
       [InstanceClass.VT1]: 'vt1',
       [InstanceClass.HIGH_PERFORMANCE_COMPUTING6_AMD]: 'hpc6a',
       [InstanceClass.HPC6A]: 'hpc6a',
+      [InstanceClass.HIGH_PERFORMANCE_COMPUTING6_INTEL_NVME_DRIVE]: 'hpc6id',
+      [InstanceClass.HPC6ID]: 'hpc6id',
       [InstanceClass.I4I]: 'i4i',
       [InstanceClass.IO4_INTEL]: 'i4i',
       [InstanceClass.X2IEDN]: 'x2iedn',
@@ -1579,6 +1601,8 @@ export class InstanceType {
       [InstanceClass.MEMORY_INTENSIVE_2_INTEL]: 'x2idn',
       [InstanceClass.X2IEZN]: 'x2iezn',
       [InstanceClass.MEMORY_INTENSIVE_2_XTZ_INTEL]: 'x2iezn',
+      [InstanceClass.HIGH_PERFORMANCE_COMPUTING7_AMD]: 'hpc7a',
+      [InstanceClass.HPC7A]: 'hpc7a',
       [InstanceClass.HIGH_PERFORMANCE_COMPUTING7_GRAVITON]: 'hpc7g',
       [InstanceClass.HPC7G]: 'hpc7g',
       [InstanceClass.DEEP_LEARNING1]: 'dl1',
