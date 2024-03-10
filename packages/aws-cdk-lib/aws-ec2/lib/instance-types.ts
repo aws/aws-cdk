@@ -1309,6 +1309,26 @@ export enum InstanceSize {
    * Instance size METAL (metal)
    */
   METAL = 'metal',
+
+  /**
+   * Instance size XLARGE16METAL (metal-16xl)
+   */
+  XLARGE16METAL = 'metal-16xl',
+
+  /**
+   * Instance size XLARGE24METAL (metal-24xl)
+   */
+  XLARGE24METAL = 'metal-24xl',
+
+  /**
+   * Instance size XLARGE32METAL (metal-32xl)
+   */
+  XLARGE32METAL = 'metal-32xl',
+
+  /**
+   * Instance size XLARGE48METAL (metal-48xl)
+   */
+  XLARGE48METAL = 'metal-48xl',
 }
 
 /**
