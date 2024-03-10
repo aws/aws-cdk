@@ -1111,6 +1111,36 @@ export enum InstanceClass {
   MAC1 = 'mac1',
 
   /**
+   * Macintosh instances built on Apple Mac mini 2020 computers, 2nd generation with Apple silicon M1 processors
+   */
+  MACINTOSH2_M1 = 'macintosh2-m1',
+
+  /**
+   * Macintosh instances built on Apple Mac mini 2020 computers, 2nd generation with Apple silicon M1 processors
+   */
+  MAC2 = 'mac2',
+
+  /**
+   * Macintosh instances built on Apple Mac mini 2023 computers, 2nd generation with Apple silicon M2 processors
+   */
+  MACINTOSH2_M2 = 'macintosh2-m2',
+
+  /**
+   * Macintosh instances built on Apple Mac mini 2023 computers, 2nd generation with Apple silicon M2 processors
+   */
+  MAC2_M2 = 'mac2-m2',
+
+  /**
+   * Macintosh instances built on Apple Mac mini 2023 computers, 2nd generation with Apple silicon M2 Pro processors
+   */
+  MACINTOSH2_M2_PRO = 'macintosh2-m2-pro',
+
+  /**
+   * Macintosh instances built on 2023 Apple Mac mini hardware, Apple silicon M2 Pro processors
+   */
+  MAC2_M2PRO = 'mac2-m2pro',
+
+  /**
    * Multi-stream video transcoding instances for resolutions up to 4K UHD, 1st generation
    */
   VIDEO_TRANSCODING1 = 'video-transcoding1',
@@ -1129,6 +1159,16 @@ export enum InstanceClass {
    * High performance computing based on AMD EPYC, 6th generation
    */
   HPC6A = 'hpc6a',
+
+  /**
+   * High performance computing based on Graviton, 7th generation
+   */
+  HIGH_PERFORMANCE_COMPUTING7_GRAVITON = 'high-performance-computing7-graviton',
+
+  /**
+   * High performance computing based on Graviton, 7th generation
+   */
+  HPC7G = 'hpc7g',
 
   /**
    * Deep learning instances powered by Gaudi accelerators from Habana Labs (an Intel company), 1st generation
@@ -1495,6 +1535,13 @@ export class InstanceType {
       [InstanceClass.INF2]: 'inf2',
       [InstanceClass.MACINTOSH1_INTEL]: 'mac1',
       [InstanceClass.MAC1]: 'mac1',
+      [InstanceClass.MACINTOSH2_M1]: 'mac2',
+      [InstanceClass.MAC2]: 'mac2',
+      [InstanceClass.MACINTOSH2_M2]: 'mac2-m2',
+      [InstanceClass.MAC2_M2]: 'mac2-m2',
+      [InstanceClass.MACINTOSH2_M2_PRO]: 'mac2-m2pro',
+      [InstanceClass.MAC2_M2PRO]: 'mac2-m2pro',
+
       [InstanceClass.VIDEO_TRANSCODING1]: 'vt1',
       [InstanceClass.VT1]: 'vt1',
       [InstanceClass.HIGH_PERFORMANCE_COMPUTING6_AMD]: 'hpc6a',
@@ -1507,6 +1554,8 @@ export class InstanceType {
       [InstanceClass.MEMORY_INTENSIVE_2_INTEL]: 'x2idn',
       [InstanceClass.X2IEZN]: 'x2iezn',
       [InstanceClass.MEMORY_INTENSIVE_2_XTZ_INTEL]: 'x2iezn',
+      [InstanceClass.HIGH_PERFORMANCE_COMPUTING7_GRAVITON]: 'hpc7g',
+      [InstanceClass.HPC7G]: 'hpc7g',
       [InstanceClass.DEEP_LEARNING1]: 'dl1',
       [InstanceClass.DL1]: 'dl1',
     };
