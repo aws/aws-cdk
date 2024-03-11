@@ -114,6 +114,7 @@ export class Runtime {
    * - **Global and step-level configuration**: You can set CloudWatch Synthetics configurations at the global level, which are applied to all steps of canaries. You can also override these configurations at the step level by passing configuration key/value pairs to enable or disable certain options.
    * For more information, see {@link https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries_Library_Nodejs.html#CloudWatch_Synthetics_Library_SyntheticsConfiguration | SyntheticsConfiguration class}.
    * - **Continue on step failure configuration**: You can choose to continue canary execution when a step fails. For the executeHttpStep function, this is turned on by default. You can set this option once at global level or set it differently per-step.
+   *
    * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_nodejs_puppeteer.html#CloudWatch_Synthetics_runtimeversion-2.2
    * @deprecated Legacy runtime no longer supported by AWS Lambda. Migrate to the latest NodeJS Puppeteer runtime.
    */
@@ -175,6 +176,7 @@ export class Runtime {
    *
    * New Features:
    * - **More options for artifact encryption**: For canaries using this runtime or later, instead of using an AWS managed key to encrypt artifacts that the canary stores in Amazon S3, you can choose to use an AWS KMS customer managed key or an Amazon S3-managed key. For more information, see {@link https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_artifact_encryption.html | Encrypting canary artifacts}.
+   *
    * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_nodejs_puppeteer.html#CloudWatch_Synthetics_runtimeversion-nodejs-puppeteer-3.3
    * @deprecated Legacy runtime no longer supported by AWS Lambda. Migrate to the latest NodeJS Puppeteer runtime.
    */
@@ -190,6 +192,7 @@ export class Runtime {
    * - **Custom handler function**: You can now use a custom handler function for your canary scripts. Previous runtimes required the script entry point to include .handler.
    * You can also put canary scripts in any folder and pass the folder name as part of the handler. For example, MyFolder/MyScriptFile.functionname can be used as an entry point.
    * - **Expanded HAR file information**: You can now see bad, pending, and incomplete requests in the HAR files produced by canaries.
+   *
    * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_nodejs_puppeteer.html#CloudWatch_Synthetics_runtimeversion-nodejs-puppeteer-3.4
    * @deprecated Legacy runtime no longer supported by AWS Lambda. Migrate to the latest NodeJS Puppeteer runtime.
    */
@@ -449,6 +452,7 @@ export class Runtime {
    * Bug fixes:
    * - **Timestamp added**: A timestamp has been added to canary logs.
    * - **Session re-use**: A bug was fixed so that canaries are now prevented from reusing the session from their previous canary run.
+   *
    * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_python_selenium.html#CloudWatch_Synthetics_runtimeversion-syn-python-selenium-2.0
    * @deprecated Legacy runtime no longer supported by AWS Lambda. Migrate to the latest Python Selenium runtime.
    */
