@@ -1171,12 +1171,12 @@ export enum InstanceClass {
   HPC6ID = 'hpc6id',
 
   /**
-   * High performance computing based on Graviton, 7th generation
+   * High performance computing based on AMD EPYC, 7th generation
    */
   HIGH_PERFORMANCE_COMPUTING7_AMD = 'high-performance-computing7-amd',
 
   /**
-   * High performance computing based on Graviton, 7th generation
+   * High performance computing based on AMD EPYC, 7th generation
    */
   HPC7A = 'hpc7a',
 
