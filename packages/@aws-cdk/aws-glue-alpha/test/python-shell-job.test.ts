@@ -38,5 +38,17 @@ describe('Job', () => {
         GlueVersion: '3.0',
       });
     });
+
+    test('Default Max Retries should be 0', () => {
+      Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
+        MaxRetries: 0,
+      });
+    });
+
+    test('Default Max Capacity should be 0.0625', () => {
+      Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
+        MaxCapacity: 0.0625,
+      });
+    });
   });
 });
