@@ -22,6 +22,32 @@
     ]
    }
   },
+  "MyUserDefaultPolicy7B897426": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "Role1ABCC5F0",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "MyUserDefaultPolicy7B897426",
+    "Users": [
+     {
+      "Ref": "MyUserDC45028B"
+     }
+    ]
+   }
+  },
   "OneManagedPolicy77F9185F": {
    "Type": "AWS::IAM::ManagedPolicy",
    "Properties": {
@@ -34,16 +60,6 @@
        "Action": "sqs:SendMessage",
        "Effect": "Allow",
        "Resource": "*"
-      },
-      {
-       "Action": "sts:AssumeRole",
-       "Effect": "Allow",
-       "Resource": {
-        "Fn::GetAtt": [
-         "Role1ABCC5F0",
-         "Arn"
-        ]
-       }
       }
      ],
      "Version": "2012-10-17"
