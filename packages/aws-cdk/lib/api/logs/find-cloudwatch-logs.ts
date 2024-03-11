@@ -113,8 +113,6 @@ const cloudWatchLogsResolvers: Record<string, CloudWatchLogsResolver> = {
           return evaluateCfnTemplate.getResourceProperty(loggingConfig.LogGroup.Ref, 'LogGroupName');
         }
       }
-
-      return loggingConfig.LogGroup;
     }
 
     return `/aws/lambda/${resource.PhysicalResourceId}`;
