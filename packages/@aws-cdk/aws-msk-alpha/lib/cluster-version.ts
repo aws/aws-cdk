@@ -135,6 +135,16 @@ export class KafkaVersion {
   public static readonly V3_6_0 = KafkaVersion.of('3.6.0');
 
   /**
+   * List of Kafka versions that support tiered storage
+   *
+   * @see https://docs.aws.amazon.com/msk/latest/developerguide/msk-tiered-storage.html#msk-tiered-storage-requirements
+   */
+  private static readonly TIERED_STORAGE_COMPATIBLE_VERSIONS = [
+    KafkaVersion.V2_8_2_TIERED,
+    KafkaVersion.V3_6_0,
+  ].map(({ version }) => version);
+
+  /**
    * Custom cluster version
    * @param version custom version number
    */
@@ -147,16 +157,6 @@ export class KafkaVersion {
    * @param version cluster version number
    */
   private constructor(public readonly version: string) {}
-
-  /**
-   * List of Kafka versions that support tiered storage
-   *
-   * @see https://docs.aws.amazon.com/msk/latest/developerguide/msk-tiered-storage.html#msk-tiered-storage-requirements
-   */
-  private static readonly TIERED_STORAGE_COMPATIBLE_VERSIONS = [
-    KafkaVersion.V2_8_2_TIERED,
-    KafkaVersion.V3_6_0,
-  ].map(({version}) => version);
 
   /**
    * Checks if the cluster version supports tiered storage mode.
