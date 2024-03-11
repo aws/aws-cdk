@@ -745,7 +745,21 @@
                         "ipProtocol": "tcp",
                         "fromPort": 0,
                         "toPort": 65535,
-                        "description": "Allow traffic from NLB Security Group"
+                        "description": {
+                          "Fn::Join": [
+                            "",
+                            [
+                              "from ",
+                              {
+                                "Fn::GetAtt": [
+                                  "SecurityGroupNlbFA132873",
+                                  "GroupId"
+                                ]
+                              },
+                              ":ALL PORTS"
+                            ]
+                          ]
+                        }
                       }
                     ],
                     "vpcId": {

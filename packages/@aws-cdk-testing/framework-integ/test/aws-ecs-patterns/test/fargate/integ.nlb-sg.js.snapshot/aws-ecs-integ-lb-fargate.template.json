@@ -432,7 +432,21 @@
     ],
     "SecurityGroupIngress": [
      {
-      "Description": "Allow traffic from NLB Security Group",
+      "Description": {
+       "Fn::Join": [
+        "",
+        [
+         "from ",
+         {
+          "Fn::GetAtt": [
+           "SecurityGroupNlbFA132873",
+           "GroupId"
+          ]
+         },
+         ":ALL PORTS"
+        ]
+       ]
+      },
       "FromPort": 0,
       "IpProtocol": "tcp",
       "SourceSecurityGroupId": {
