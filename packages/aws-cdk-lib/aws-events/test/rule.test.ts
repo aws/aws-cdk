@@ -667,6 +667,46 @@ describe('rule', () => {
     });
   });
 
+  test('redshiftDataParameters are generated when they are specified in target props', () => {
+    const stack = new cdk.Stack();
+    const t1: IRuleTarget = {
+      bind: () => ({
+        id: '',
+        arn: 'ARN1',
+        redshiftDataParameters: {
+          database: 'database',
+          dbUser: 'dbUser',
+          secretManagerArn: 'secretManagerArn',
+          sqls: ['sqls'],
+          statementName: 'statementName',
+          withEvent: true,
+        },
+      }),
+    };
+
+    new Rule(stack, 'EventRule', {
+      schedule: Schedule.rate(cdk.Duration.minutes(5)),
+      targets: [t1],
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
+      Targets: [
+        {
+          'Arn': 'ARN1',
+          'Id': 'Target0',
+          'RedshiftDataParameters': {
+            'Database': 'database',
+            'DbUser': 'dbUser',
+            'SecretManagerArn': 'secretManagerArn',
+            'Sqls': ['sqls'],
+            'StatementName': 'statementName',
+            'WithEvent': true,
+          },
+        },
+      ],
+    });
+  });
+
   test('associate rule with event bus', () => {
     // GIVEN
     const stack = new cdk.Stack();

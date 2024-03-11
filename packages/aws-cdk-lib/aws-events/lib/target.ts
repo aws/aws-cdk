@@ -1,8 +1,8 @@
-import { IConstruct } from 'constructs';
-import { CfnRule } from './events.generated';
-import { RuleTargetInput } from './input';
-import { IRule } from './rule-ref';
-import * as iam from '../../aws-iam';
+import { IConstruct } from "constructs";
+import * as iam from "../../aws-iam";
+import { CfnRule } from "./events.generated";
+import { RuleTargetInput } from "./input";
+import { IRule } from "./rule-ref";
 
 /**
  * An abstract target for EventRules.
@@ -91,6 +91,11 @@ export interface RuleTargetConfig {
    * rule.
    */
   readonly sqsParameters?: CfnRule.SqsParametersProperty;
+
+  /**
+   * Parameters used when the rule invokes Amazon Redshift Queries
+   */
+  readonly redshiftDataParameters?: CfnRule.RedshiftDataParametersProperty;
 
   /**
    * What input to send to the event target
