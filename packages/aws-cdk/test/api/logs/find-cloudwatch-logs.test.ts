@@ -49,7 +49,41 @@ test('add log groups from lambda function when using custom LoggingConfig', asyn
           Properties: {
             FunctionName: 'my-function',
             LoggingConfig: {
-              LogGroupName: '/this/custom/my-custom-log-group',
+              LogGroup: '/this/custom/my-custom-log-group',
+            },
+          },
+        },
+      },
+    },
+  });
+  pushStackResourceSummaries(stackSummaryOf('Func', 'AWS::Lambda::Function', 'my-function'));
+
+  // WHEN
+  const result = await findCloudWatchLogGroups(logsMockSdkProvider.mockSdkProvider, cdkStackArtifact);
+
+  // THEN
+  expect(result.logGroupNames).toEqual(['/this/custom/my-custom-log-group']);
+});
+
+test('add log groups from lambda function when using custom LoggingConfig using Ref', async () => {
+  // GIVEN
+  const cdkStackArtifact = cdkStackArtifactOf({
+    template: {
+      Resources: {
+        MyCustomLogGroupLogicalId: {
+          Type: 'AWS::Logs::LogGroup',
+          Properties: {
+            LogGroupName: '/this/custom/my-custom-log-group',
+          },
+        },
+        Func: {
+          Type: 'AWS::Lambda::Function',
+          Properties: {
+            FunctionName: 'my-function',
+            LoggingConfig: {
+              LogGroup: {
+                Ref: 'MyCustomLogGroupLogicalId',
+              },
             },
           },
         },

@@ -101,8 +101,20 @@ const cloudWatchLogsResolvers: Record<string, CloudWatchLogsResolver> = {
   // and the service name that is used in the automatically created CloudWatch log group.
   'AWS::Lambda::Function': (resource, evaluateCfnTemplate) => {
     const loggingConfig = evaluateCfnTemplate.getResourceProperty(resource.LogicalResourceId, 'LoggingConfig');
-    if (loggingConfig?.LogGroupName) {
-      return loggingConfig.LogGroupName;
+    if (loggingConfig?.LogGroup) {
+      // if LoGroup is a string then use it as the LogGroupName as it is referred by LogGroup.fromLogGroupArn in CDK
+      if (typeof loggingConfig.LogGroup === 'string') {
+        return loggingConfig.LogGroup;
+      }
+
+      // if { Ref: '...' } is used then try to resolve the LogGroupName from the referenced resource in the template
+      if (typeof loggingConfig.LogGroup === 'object') {
+        if (loggingConfig.LogGroup.Ref) {
+          return evaluateCfnTemplate.getResourceProperty(loggingConfig.LogGroup.Ref, 'LogGroupName');
+        }
+      }
+
+      return loggingConfig.LogGroup;
     }
 
     return `/aws/lambda/${resource.PhysicalResourceId}`;
