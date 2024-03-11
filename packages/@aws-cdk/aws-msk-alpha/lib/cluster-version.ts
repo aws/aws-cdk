@@ -12,6 +12,15 @@ export class KafkaVersion {
   public static readonly V1_1_1 = KafkaVersion.of('1.1.1');
 
   /**
+   * **Deprecated by Amazon MSK. You can't create a Kafka cluster with a deprecated version.**
+   *
+   * Kafka version 2.1.0
+   *
+   * @deprecated use the latest runtime instead
+   */
+  public static readonly V2_1_0 = KafkaVersion.of('2.1.0');
+
+  /**
    * Kafka version 2.2.1
    */
   public static readonly V2_2_1 = KafkaVersion.of('2.2.1');
@@ -20,6 +29,15 @@ export class KafkaVersion {
    * Kafka version 2.3.1
    */
   public static readonly V2_3_1 = KafkaVersion.of('2.3.1');
+
+  /**
+   * **Deprecated by Amazon MSK. You can't create a Kafka cluster with a deprecated version.**
+   *
+   * Kafka version 2.4.1
+   *
+   * @deprecated use the latest runtime instead
+   */
+  public static readonly V2_4_1 = KafkaVersion.of('2.4.1');
 
   /**
    * Kafka version 2.4.1
@@ -110,6 +128,11 @@ export class KafkaVersion {
    * Kafka version 3.5.1
    */
   public static readonly V3_5_1 = KafkaVersion.of('3.5.1');
+
+  /**
+   * Kafka version 3.6.0
+   */
+  public static readonly V3_6_0 = KafkaVersion.of('3.6.0');
 
   /**
    * Custom cluster version
