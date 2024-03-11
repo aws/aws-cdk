@@ -1136,7 +1136,7 @@ export enum InstanceClass {
   MACINTOSH2_M2_PRO = 'macintosh2-m2-pro',
 
   /**
-   * Macintosh instances built on 2023 Apple Mac mini hardware, Apple silicon M2 Pro processors
+   * Macintosh instances built on Apple Mac mini 2023 computers, 2nd generation with Apple silicon M2 Pro processors
    */
   MAC2_M2PRO = 'mac2-m2pro',
 
