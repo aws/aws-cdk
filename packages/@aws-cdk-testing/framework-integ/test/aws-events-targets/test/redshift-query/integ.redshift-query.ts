@@ -3,50 +3,23 @@ import * as sqs from 'aws-cdk-lib/aws-sqs';
 import * as cdk from 'aws-cdk-lib';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as targets from 'aws-cdk-lib/aws-events-targets';
-import * as redshift from '@aws-cdk/aws-redshift-alpha'
 import * as redshiftserverless from 'aws-cdk-lib/aws-redshiftserverless';
-import * as ec2 from 'aws-cdk-lib/aws-ec2';
 
 const app = new cdk.App();
 
-const stack = new cdk.Stack(app, 'log-group-events');
+const stack = new cdk.Stack(app, 'redshift-query-events');
 
-const vpc = new ec2.Vpc(stack, 'VPC');
-
-const cluster = new redshift.Cluster(stack, 'Cluster', {
-  vpc,
-  masterUser: {
-    masterUsername: 'admin',
-  },
-  defaultDatabaseName: 'dev',
-  removalPolicy: cdk.RemovalPolicy.DESTROY,
+const namespace = new redshiftserverless.CfnNamespace(stack, 'Namespace', {
+  namespaceName: 'namespace',
 });
 
 const workGroup = new redshiftserverless.CfnWorkgroup(stack, 'WorkGroup', {
   workgroupName: 'workgroup',
+  namespaceName: namespace.namespaceName,
+  subnetIds: ['subnet-06c91b5d4c16df0ff', 'subnet-04b90752f12ed5174', 'subnet-0d42bcb68396ffd19'],
+  securityGroupIds: ['sg-0f3ee03c20cc6056c'],
 });
-
-const importedCluster = redshift.Cluster.fromClusterAttributes(stack, 'ImportedCluster', {
-  clusterName: 'imported-cluster',
-  clusterEndpointAddress: 'imported-cluster-endpoint',
-  clusterEndpointPort: 5439,
-  securityGroups: [],
-});
-
-const timer = new events.Rule(stack, 'Timer', {
-  schedule: events.Schedule.rate(cdk.Duration.minutes(1)),
-});
-timer.addTarget(new targets.RedshiftQuery(`arn:aws:redshift:${cluster.env.region}:${cluster.env.account}:cluster:${cluster.clusterName}`, {}));
-
-const customRule = new events.Rule(stack, 'CustomRule', {
-  eventPattern: {
-    source: ['cdk-integ'],
-    detailType: ['cdk-integ-custom-rule'],
-  },
-});
-customRule.addTarget(new targets.RedshiftQuery(`arn:aws:redshift:${importedCluster.env.region}:${importedCluster.env.account}:cluster:${importedCluster.clusterName}`, {
-  database: 'dev',
-}));
+workGroup.addDependency(namespace);
 
 const queue = new sqs.Queue(stack, 'dlq');
 
@@ -56,10 +29,11 @@ const timer3 = new events.Rule(stack, 'Timer3', {
 timer3.addTarget(new targets.RedshiftQuery(workGroup.attrWorkgroupWorkgroupArn, {
   database: 'dev',
   deadLetterQueue: queue,
-  sql: [
+  batchSQL: [
     'SELECT * FROM foo',
     'SELECT * FROM bar',
   ],
+  sql: 'SELECT * FROM baz',
 }));
 
 new IntegTest(app, 'LogGroup', {

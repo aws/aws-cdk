@@ -1,4 +1,4 @@
-import { singletonEventRole, addToDeadLetterQueueResourcePolicy } from './util';
+import { singletonEventRole } from './util';
 import * as events from '../../aws-events';
 import * as iam from '../../aws-iam';
 import * as secretsmanager from '../../aws-secretsmanager';

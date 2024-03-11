@@ -1,0 +1,13 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "LogGroup/DefaultTest": {
+      "stacks": [
+        "redshift-query-events"
+      ],
+      "diffAssets": true,
+      "assertionStack": "LogGroup/DefaultTest/DeployAssert",
+      "assertionStackName": "LogGroupDefaultTestDeployAssert353EE07A"
+    }
+  }
+}
