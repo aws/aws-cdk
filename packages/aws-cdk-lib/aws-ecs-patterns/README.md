@@ -1073,3 +1073,15 @@ const networkLoadBalancedFargateService = new ecsPatterns.NetworkLoadBalancedFar
   },
 });
 ```
+
+### Set securityGroups for NetworkLoadBalancedFargateService
+
+```ts
+declare const securityGroup: ec2.SecurityGroup;
+const queueProcessingFargateService = new ecsPatterns.NetworkLoadBalancedFargateService(this, 'Service', {
+  vpc,
+  memoryLimitMiB: 512,
+  image: ecs.ContainerImage.fromRegistry('test'),
+  securityGroups: [securityGroup],
+});
+```
