@@ -40,16 +40,16 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_dynamodb.CfnTable",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
                 }
               },
               "ScalingRole": {
                 "id": "ScalingRole",
                 "path": "aws-cdk-dynamodb-global-replicas-provisioned/Table/ScalingRole",
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.Resource",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
                 }
               },
               "SourceTableAttachedManagedPolicy-awscdkdynamodbglobalreplicasprovisionedawscdkawsdynamodbReplicaProviderOnEventHandlerServiceRoleD9856B77": {
@@ -64,8 +64,8 @@
                         "id": "ImportedResource",
                         "path": "aws-cdk-dynamodb-global-replicas-provisioned/Table/SourceTableAttachedManagedPolicy-awscdkdynamodbglobalreplicasprovisionedawscdkawsdynamodbReplicaProviderOnEventHandlerServiceRoleD9856B77/Resource/ImportedResource",
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.Resource",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.3.0"
                         }
                       },
                       "Resource": {
@@ -155,14 +155,14 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_iam.CfnManagedPolicy",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.3.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_iam.ManagedPolicy",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
                     }
                   }
                 },
@@ -183,8 +183,8 @@
                         "id": "ImportedResource",
                         "path": "aws-cdk-dynamodb-global-replicas-provisioned/Table/SourceTableAttachedManagedPolicy-awscdkdynamodbglobalreplicasprovisionedawscdkawsdynamodbReplicaProviderIsCompleteHandlerServiceRoleBE2B1C1A/Resource/ImportedResource",
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.Resource",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.3.0"
                         }
                       },
                       "Resource": {
@@ -236,14 +236,14 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_iam.CfnManagedPolicy",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.3.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_iam.ManagedPolicy",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
                     }
                   }
                 },
@@ -260,22 +260,22 @@
                     "id": "Default",
                     "path": "aws-cdk-dynamodb-global-replicas-provisioned/Table/Replicaus-east-2/Default",
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.CfnResource",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.CustomResource",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
                 }
               },
               "StackRegionNotEqualsus-east-2": {
                 "id": "StackRegionNotEqualsus-east-2",
                 "path": "aws-cdk-dynamodb-global-replicas-provisioned/Table/StackRegionNotEqualsus-east-2",
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.CfnCondition",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
                 }
               },
               "Replicaeu-west-3": {
@@ -286,22 +286,22 @@
                     "id": "Default",
                     "path": "aws-cdk-dynamodb-global-replicas-provisioned/Table/Replicaeu-west-3/Default",
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.CfnResource",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.CustomResource",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
                 }
               },
               "StackRegionNotEqualseu-west-3": {
                 "id": "StackRegionNotEqualseu-west-3",
                 "path": "aws-cdk-dynamodb-global-replicas-provisioned/Table/StackRegionNotEqualseu-west-3",
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.CfnCondition",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
                 }
               },
               "WriteScaling": {
@@ -352,8 +352,8 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_applicationautoscaling.CfnScalableTarget",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.3.0"
                         }
                       },
                       "Tracking": {
@@ -380,32 +380,32 @@
                               }
                             },
                             "constructInfo": {
-                              "fqn": "aws-cdk-lib.aws_applicationautoscaling.CfnScalingPolicy",
-                              "version": "0.0.0"
+                              "fqn": "constructs.Construct",
+                              "version": "10.3.0"
                             }
                           }
                         },
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_applicationautoscaling.TargetTrackingScalingPolicy",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.3.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_applicationautoscaling.ScalableTarget",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_applicationautoscaling.BaseScalableAttribute",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_dynamodb.Table",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
             }
           },
           "@aws-cdk--aws-dynamodb.ReplicaProvider": {
@@ -424,8 +424,8 @@
                         "id": "ImportServiceRole",
                         "path": "aws-cdk-dynamodb-global-replicas-provisioned/@aws-cdk--aws-dynamodb.ReplicaProvider/OnEventHandler/ServiceRole/ImportServiceRole",
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.Resource",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.3.0"
                         }
                       },
                       "Resource": {
@@ -463,8 +463,8 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_iam.CfnRole",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.3.0"
                         }
                       },
                       "DefaultPolicy": {
@@ -563,20 +563,20 @@
                               }
                             },
                             "constructInfo": {
-                              "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
-                              "version": "0.0.0"
+                              "fqn": "constructs.Construct",
+                              "version": "10.3.0"
                             }
                           }
                         },
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_iam.Policy",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.3.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_iam.Role",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
                     }
                   },
                   "Code": {
@@ -587,22 +587,22 @@
                         "id": "Stage",
                         "path": "aws-cdk-dynamodb-global-replicas-provisioned/@aws-cdk--aws-dynamodb.ReplicaProvider/OnEventHandler/Code/Stage",
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.AssetStaging",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.3.0"
                         }
                       },
                       "AssetBucket": {
                         "id": "AssetBucket",
                         "path": "aws-cdk-dynamodb-global-replicas-provisioned/@aws-cdk--aws-dynamodb.ReplicaProvider/OnEventHandler/Code/AssetBucket",
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_s3.BucketBase",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.3.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
                     }
                   },
                   "Resource": {
@@ -629,14 +629,14 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_lambda.Function",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
                 }
               },
               "IsCompleteHandler": {
@@ -651,8 +651,8 @@
                         "id": "ImportServiceRole",
                         "path": "aws-cdk-dynamodb-global-replicas-provisioned/@aws-cdk--aws-dynamodb.ReplicaProvider/IsCompleteHandler/ServiceRole/ImportServiceRole",
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.Resource",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.3.0"
                         }
                       },
                       "Resource": {
@@ -690,14 +690,14 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_iam.CfnRole",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.3.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_iam.Role",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
                     }
                   },
                   "Code": {
@@ -708,22 +708,22 @@
                         "id": "Stage",
                         "path": "aws-cdk-dynamodb-global-replicas-provisioned/@aws-cdk--aws-dynamodb.ReplicaProvider/IsCompleteHandler/Code/Stage",
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.AssetStaging",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.3.0"
                         }
                       },
                       "AssetBucket": {
                         "id": "AssetBucket",
                         "path": "aws-cdk-dynamodb-global-replicas-provisioned/@aws-cdk--aws-dynamodb.ReplicaProvider/IsCompleteHandler/Code/AssetBucket",
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_s3.BucketBase",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.3.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
                     }
                   },
                   "Resource": {
@@ -750,14 +750,14 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_lambda.Function",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
                 }
               },
               "Provider": {
@@ -776,8 +776,8 @@
                             "id": "ImportServiceRole",
                             "path": "aws-cdk-dynamodb-global-replicas-provisioned/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-onEvent/ServiceRole/ImportServiceRole",
                             "constructInfo": {
-                              "fqn": "aws-cdk-lib.Resource",
-                              "version": "0.0.0"
+                              "fqn": "constructs.Construct",
+                              "version": "10.3.0"
                             }
                           },
                           "Resource": {
@@ -815,8 +815,8 @@
                               }
                             },
                             "constructInfo": {
-                              "fqn": "aws-cdk-lib.aws_iam.CfnRole",
-                              "version": "0.0.0"
+                              "fqn": "constructs.Construct",
+                              "version": "10.3.0"
                             }
                           },
                           "DefaultPolicy": {
@@ -896,20 +896,20 @@
                                   }
                                 },
                                 "constructInfo": {
-                                  "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
-                                  "version": "0.0.0"
+                                  "fqn": "constructs.Construct",
+                                  "version": "10.3.0"
                                 }
                               }
                             },
                             "constructInfo": {
-                              "fqn": "aws-cdk-lib.aws_iam.Policy",
-                              "version": "0.0.0"
+                              "fqn": "constructs.Construct",
+                              "version": "10.3.0"
                             }
                           }
                         },
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_iam.Role",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.3.0"
                         }
                       },
                       "Code": {
@@ -920,22 +920,22 @@
                             "id": "Stage",
                             "path": "aws-cdk-dynamodb-global-replicas-provisioned/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-onEvent/Code/Stage",
                             "constructInfo": {
-                              "fqn": "aws-cdk-lib.AssetStaging",
-                              "version": "0.0.0"
+                              "fqn": "constructs.Construct",
+                              "version": "10.3.0"
                             }
                           },
                           "AssetBucket": {
                             "id": "AssetBucket",
                             "path": "aws-cdk-dynamodb-global-replicas-provisioned/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-onEvent/Code/AssetBucket",
                             "constructInfo": {
-                              "fqn": "aws-cdk-lib.aws_s3.BucketBase",
-                              "version": "0.0.0"
+                              "fqn": "constructs.Construct",
+                              "version": "10.3.0"
                             }
                           }
                         },
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.3.0"
                         }
                       },
                       "Resource": {
@@ -948,7 +948,7 @@
                               "s3Bucket": {
                                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                               },
-                              "s3Key": "15197a5512179542fe2cff74af89bb047793c9c4e0b4395f114641a81cd52ae5.zip"
+                              "s3Key": "3acc6fedca182d71a206045cb947120944e7c6eb84efaf2cb7a5bd8c0cb9b4da.zip"
                             },
                             "description": "AWS CDK resource provider framework - onEvent (aws-cdk-dynamodb-global-replicas-provisioned/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider)",
                             "environment": {
@@ -982,14 +982,14 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.3.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_lambda.Function",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
                     }
                   },
                   "framework-isComplete": {
@@ -1004,8 +1004,8 @@
                             "id": "ImportServiceRole",
                             "path": "aws-cdk-dynamodb-global-replicas-provisioned/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-isComplete/ServiceRole/ImportServiceRole",
                             "constructInfo": {
-                              "fqn": "aws-cdk-lib.Resource",
-                              "version": "0.0.0"
+                              "fqn": "constructs.Construct",
+                              "version": "10.3.0"
                             }
                           },
                           "Resource": {
@@ -1043,8 +1043,8 @@
                               }
                             },
                             "constructInfo": {
-                              "fqn": "aws-cdk-lib.aws_iam.CfnRole",
-                              "version": "0.0.0"
+                              "fqn": "constructs.Construct",
+                              "version": "10.3.0"
                             }
                           },
                           "DefaultPolicy": {
@@ -1117,20 +1117,20 @@
                                   }
                                 },
                                 "constructInfo": {
-                                  "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
-                                  "version": "0.0.0"
+                                  "fqn": "constructs.Construct",
+                                  "version": "10.3.0"
                                 }
                               }
                             },
                             "constructInfo": {
-                              "fqn": "aws-cdk-lib.aws_iam.Policy",
-                              "version": "0.0.0"
+                              "fqn": "constructs.Construct",
+                              "version": "10.3.0"
                             }
                           }
                         },
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_iam.Role",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.3.0"
                         }
                       },
                       "Code": {
@@ -1141,22 +1141,22 @@
                             "id": "Stage",
                             "path": "aws-cdk-dynamodb-global-replicas-provisioned/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-isComplete/Code/Stage",
                             "constructInfo": {
-                              "fqn": "aws-cdk-lib.AssetStaging",
-                              "version": "0.0.0"
+                              "fqn": "constructs.Construct",
+                              "version": "10.3.0"
                             }
                           },
                           "AssetBucket": {
                             "id": "AssetBucket",
                             "path": "aws-cdk-dynamodb-global-replicas-provisioned/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-isComplete/Code/AssetBucket",
                             "constructInfo": {
-                              "fqn": "aws-cdk-lib.aws_s3.BucketBase",
-                              "version": "0.0.0"
+                              "fqn": "constructs.Construct",
+                              "version": "10.3.0"
                             }
                           }
                         },
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.3.0"
                         }
                       },
                       "Resource": {
@@ -1169,7 +1169,7 @@
                               "s3Bucket": {
                                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                               },
-                              "s3Key": "15197a5512179542fe2cff74af89bb047793c9c4e0b4395f114641a81cd52ae5.zip"
+                              "s3Key": "3acc6fedca182d71a206045cb947120944e7c6eb84efaf2cb7a5bd8c0cb9b4da.zip"
                             },
                             "description": "AWS CDK resource provider framework - isComplete (aws-cdk-dynamodb-global-replicas-provisioned/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider)",
                             "environment": {
@@ -1200,14 +1200,14 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.3.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_lambda.Function",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
                     }
                   },
                   "framework-onTimeout": {
@@ -1222,8 +1222,8 @@
                             "id": "ImportServiceRole",
                             "path": "aws-cdk-dynamodb-global-replicas-provisioned/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-onTimeout/ServiceRole/ImportServiceRole",
                             "constructInfo": {
-                              "fqn": "aws-cdk-lib.Resource",
-                              "version": "0.0.0"
+                              "fqn": "constructs.Construct",
+                              "version": "10.3.0"
                             }
                           },
                           "Resource": {
@@ -1261,8 +1261,8 @@
                               }
                             },
                             "constructInfo": {
-                              "fqn": "aws-cdk-lib.aws_iam.CfnRole",
-                              "version": "0.0.0"
+                              "fqn": "constructs.Construct",
+                              "version": "10.3.0"
                             }
                           },
                           "DefaultPolicy": {
@@ -1335,20 +1335,20 @@
                                   }
                                 },
                                 "constructInfo": {
-                                  "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
-                                  "version": "0.0.0"
+                                  "fqn": "constructs.Construct",
+                                  "version": "10.3.0"
                                 }
                               }
                             },
                             "constructInfo": {
-                              "fqn": "aws-cdk-lib.aws_iam.Policy",
-                              "version": "0.0.0"
+                              "fqn": "constructs.Construct",
+                              "version": "10.3.0"
                             }
                           }
                         },
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_iam.Role",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.3.0"
                         }
                       },
                       "Code": {
@@ -1359,22 +1359,22 @@
                             "id": "Stage",
                             "path": "aws-cdk-dynamodb-global-replicas-provisioned/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-onTimeout/Code/Stage",
                             "constructInfo": {
-                              "fqn": "aws-cdk-lib.AssetStaging",
-                              "version": "0.0.0"
+                              "fqn": "constructs.Construct",
+                              "version": "10.3.0"
                             }
                           },
                           "AssetBucket": {
                             "id": "AssetBucket",
                             "path": "aws-cdk-dynamodb-global-replicas-provisioned/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-onTimeout/Code/AssetBucket",
                             "constructInfo": {
-                              "fqn": "aws-cdk-lib.aws_s3.BucketBase",
-                              "version": "0.0.0"
+                              "fqn": "constructs.Construct",
+                              "version": "10.3.0"
                             }
                           }
                         },
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.3.0"
                         }
                       },
                       "Resource": {
@@ -1387,7 +1387,7 @@
                               "s3Bucket": {
                                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                               },
-                              "s3Key": "15197a5512179542fe2cff74af89bb047793c9c4e0b4395f114641a81cd52ae5.zip"
+                              "s3Key": "3acc6fedca182d71a206045cb947120944e7c6eb84efaf2cb7a5bd8c0cb9b4da.zip"
                             },
                             "description": "AWS CDK resource provider framework - onTimeout (aws-cdk-dynamodb-global-replicas-provisioned/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider)",
                             "environment": {
@@ -1418,14 +1418,14 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.3.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_lambda.Function",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
                     }
                   },
                   "waiter-state-machine": {
@@ -1440,8 +1440,8 @@
                             "id": "ImportRole",
                             "path": "aws-cdk-dynamodb-global-replicas-provisioned/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/waiter-state-machine/Role/ImportRole",
                             "constructInfo": {
-                              "fqn": "aws-cdk-lib.Resource",
-                              "version": "0.0.0"
+                              "fqn": "constructs.Construct",
+                              "version": "10.3.0"
                             }
                           },
                           "Resource": {
@@ -1465,8 +1465,8 @@
                               }
                             },
                             "constructInfo": {
-                              "fqn": "aws-cdk-lib.aws_iam.CfnRole",
-                              "version": "0.0.0"
+                              "fqn": "constructs.Construct",
+                              "version": "10.3.0"
                             }
                           },
                           "DefaultPolicy": {
@@ -1526,6 +1526,22 @@
                                               ]
                                             }
                                           ]
+                                        },
+                                        {
+                                          "Action": [
+                                            "logs:CreateLogDelivery",
+                                            "logs:CreateLogStream",
+                                            "logs:DeleteLogDelivery",
+                                            "logs:DescribeLogGroups",
+                                            "logs:DescribeResourcePolicies",
+                                            "logs:GetLogDelivery",
+                                            "logs:ListLogDeliveries",
+                                            "logs:PutLogEvents",
+                                            "logs:PutResourcePolicy",
+                                            "logs:UpdateLogDelivery"
+                                          ],
+                                          "Effect": "Allow",
+                                          "Resource": "*"
                                         }
                                       ],
                                       "Version": "2012-10-17"
@@ -1539,28 +1555,113 @@
                                   }
                                 },
                                 "constructInfo": {
-                                  "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
-                                  "version": "0.0.0"
+                                  "fqn": "constructs.Construct",
+                                  "version": "10.3.0"
                                 }
                               }
                             },
                             "constructInfo": {
-                              "fqn": "aws-cdk-lib.aws_iam.Policy",
-                              "version": "0.0.0"
+                              "fqn": "constructs.Construct",
+                              "version": "10.3.0"
                             }
                           }
                         },
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_iam.Role",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.3.0"
+                        }
+                      },
+                      "LogGroup": {
+                        "id": "LogGroup",
+                        "path": "aws-cdk-dynamodb-global-replicas-provisioned/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/waiter-state-machine/LogGroup",
+                        "children": {
+                          "Resource": {
+                            "id": "Resource",
+                            "path": "aws-cdk-dynamodb-global-replicas-provisioned/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/waiter-state-machine/LogGroup/Resource",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::Logs::LogGroup",
+                              "aws:cdk:cloudformation:props": {
+                                "logGroupName": {
+                                  "Fn::Join": [
+                                    "",
+                                    [
+                                      "/aws/vendedlogs/states/waiter-state-machine-",
+                                      {
+                                        "Ref": "ProviderframeworkisComplete26D7B0CB"
+                                      },
+                                      "-c861cd2a83a6af30e2613fcc9324bc4db65ca58d7f"
+                                    ]
+                                  ]
+                                },
+                                "retentionInDays": 731
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "constructs.Construct",
+                              "version": "10.3.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "constructs.Construct",
+                          "version": "10.3.0"
                         }
                       },
                       "Resource": {
                         "id": "Resource",
                         "path": "aws-cdk-dynamodb-global-replicas-provisioned/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/waiter-state-machine/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::StepFunctions::StateMachine",
+                          "aws:cdk:cloudformation:props": {
+                            "definitionString": {
+                              "Fn::Join": [
+                                "",
+                                [
+                                  "{\"StartAt\":\"framework-isComplete-task\",\"States\":{\"framework-isComplete-task\":{\"End\":true,\"Retry\":[{\"ErrorEquals\":[\"States.ALL\"],\"IntervalSeconds\":10,\"MaxAttempts\":180,\"BackoffRate\":1}],\"Catch\":[{\"ErrorEquals\":[\"States.ALL\"],\"Next\":\"framework-onTimeout-task\"}],\"Type\":\"Task\",\"Resource\":\"",
+                                  {
+                                    "Fn::GetAtt": [
+                                      "ProviderframeworkisComplete26D7B0CB",
+                                      "Arn"
+                                    ]
+                                  },
+                                  "\"},\"framework-onTimeout-task\":{\"End\":true,\"Type\":\"Task\",\"Resource\":\"",
+                                  {
+                                    "Fn::GetAtt": [
+                                      "ProviderframeworkonTimeout0B47CA38",
+                                      "Arn"
+                                    ]
+                                  },
+                                  "\"}}}"
+                                ]
+                              ]
+                            },
+                            "loggingConfiguration": {
+                              "destinations": [
+                                {
+                                  "cloudWatchLogsLogGroup": {
+                                    "logGroupArn": {
+                                      "Fn::GetAtt": [
+                                        "ProviderwaiterstatemachineLogGroupDD693A98",
+                                        "Arn"
+                                      ]
+                                    }
+                                  }
+                                }
+                              ],
+                              "includeExecutionData": false,
+                              "level": "ERROR"
+                            },
+                            "roleArn": {
+                              "Fn::GetAtt": [
+                                "ProviderwaiterstatemachineRole0C7159F9",
+                                "Arn"
+                              ]
+                            }
+                          }
+                        },
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.CfnResource",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.3.0"
                         }
                       }
                     },
@@ -1571,46 +1672,46 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.custom_resources.Provider",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
                 }
               },
               "awscdkdynamodbglobalreplicasprovisionedawscdkawsdynamodbReplicaProviderOnEventHandlerServiceRole348A0C9ARef": {
                 "id": "awscdkdynamodbglobalreplicasprovisionedawscdkawsdynamodbReplicaProviderOnEventHandlerServiceRole348A0C9ARef",
                 "path": "aws-cdk-dynamodb-global-replicas-provisioned/@aws-cdk--aws-dynamodb.ReplicaProvider/awscdkdynamodbglobalreplicasprovisionedawscdkawsdynamodbReplicaProviderOnEventHandlerServiceRole348A0C9ARef",
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.CfnOutput",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
                 }
               },
               "awscdkdynamodbglobalreplicasprovisionedawscdkawsdynamodbReplicaProviderIsCompleteHandlerServiceRole750F1EE9Ref": {
                 "id": "awscdkdynamodbglobalreplicasprovisionedawscdkawsdynamodbReplicaProviderIsCompleteHandlerServiceRole750F1EE9Ref",
                 "path": "aws-cdk-dynamodb-global-replicas-provisioned/@aws-cdk--aws-dynamodb.ReplicaProvider/awscdkdynamodbglobalreplicasprovisionedawscdkawsdynamodbReplicaProviderIsCompleteHandlerServiceRole750F1EE9Ref",
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.CfnOutput",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
                 }
               },
               "awscdkdynamodbglobalreplicasprovisionedawscdkawsdynamodbReplicaProviderframeworkonEventACC2C387Arn": {
                 "id": "awscdkdynamodbglobalreplicasprovisionedawscdkawsdynamodbReplicaProviderframeworkonEventACC2C387Arn",
                 "path": "aws-cdk-dynamodb-global-replicas-provisioned/@aws-cdk--aws-dynamodb.ReplicaProvider/awscdkdynamodbglobalreplicasprovisionedawscdkawsdynamodbReplicaProviderframeworkonEventACC2C387Arn",
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.CfnOutput",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
                 }
               },
               "reference-to-awscdkdynamodbglobalreplicasprovisionedTable12280A12Ref": {
                 "id": "reference-to-awscdkdynamodbglobalreplicasprovisionedTable12280A12Ref",
                 "path": "aws-cdk-dynamodb-global-replicas-provisioned/@aws-cdk--aws-dynamodb.ReplicaProvider/reference-to-awscdkdynamodbglobalreplicasprovisionedTable12280A12Ref",
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.CfnParameter",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.NestedStack",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
             }
           },
           "@aws-cdk--aws-dynamodb.ReplicaProvider.NestedStack": {
@@ -1644,15 +1745,15 @@
                           {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "/9e74695d20fbb89dc62fd8a020b6273050655fc292429f61f3ec014282a93e69.json"
+                          "/053b42f8a05b4072ca462de36e148abb25c9a1d5c33e34225d8ca1f571ebcef4.json"
                         ]
                       ]
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.CfnStack",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
                 }
               }
             },
@@ -1665,22 +1766,22 @@
             "id": "BootstrapVersion",
             "path": "aws-cdk-dynamodb-global-replicas-provisioned/BootstrapVersion",
             "constructInfo": {
-              "fqn": "aws-cdk-lib.CfnParameter",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
             }
           },
           "CheckBootstrapVersion": {
             "id": "CheckBootstrapVersion",
             "path": "aws-cdk-dynamodb-global-replicas-provisioned/CheckBootstrapVersion",
             "constructInfo": {
-              "fqn": "aws-cdk-lib.CfnRule",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
             }
           }
         },
         "constructInfo": {
-          "fqn": "aws-cdk-lib.Stack",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.3.0"
         }
       },
       "aws-cdk-dynamodb-global-replicas-provisioned-test": {
@@ -1707,22 +1808,22 @@
                     "id": "BootstrapVersion",
                     "path": "aws-cdk-dynamodb-global-replicas-provisioned-test/DefaultTest/DeployAssert/BootstrapVersion",
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.CfnParameter",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
                     }
                   },
                   "CheckBootstrapVersion": {
                     "id": "CheckBootstrapVersion",
                     "path": "aws-cdk-dynamodb-global-replicas-provisioned-test/DefaultTest/DeployAssert/CheckBootstrapVersion",
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.CfnRule",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.Stack",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
                 }
               }
             },
@@ -1747,8 +1848,8 @@
       }
     },
     "constructInfo": {
-      "fqn": "aws-cdk-lib.App",
-      "version": "0.0.0"
+      "fqn": "constructs.Construct",
+      "version": "10.3.0"
     }
   }
 }
