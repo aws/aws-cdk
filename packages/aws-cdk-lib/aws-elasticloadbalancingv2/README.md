@@ -349,8 +349,8 @@ declare const vpc: ec2.Vpc;
 // Target group with slow start mode enabled
 const tg = new elbv2.ApplicationTargetGroup(this, 'TG', {
   targetType: elbv2.TargetType.INSTANCE,
+  slowStart: Duration.seconds(60),
   port: 80,
-  slowStart: cdk.Duration.seconds(60),
   vpc,
 });
 ```
