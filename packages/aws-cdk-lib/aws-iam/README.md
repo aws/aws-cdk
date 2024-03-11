@@ -369,6 +369,37 @@ new iam.Role(this, 'Role', {
 });
 ```
 
+### Granting assume role permission from a role
+
+Principals can be granted permission to assume a role using `grantAssumeRole`.  Note that this does not apply to Service Principals or Account Principals as they must be added to the role Trust Policy.
+
+```ts
+const user = new iam.User(this, 'user')
+const role = new iam.Role(this, 'role', {
+  assumedBy: new iam.AccountPrincipal(this.account)
+});
+
+role.grantAssumeRole(user);
+```
+
+### Giving Service Principals and Account Principals assume role permission from a role
+
+Service Principals and Account Principals can be granted permission to assume a role using `assumeRolePolicy` which modifies the role Trust Policy.
+
+```ts
+const role = new iam.Role(this, 'role', {
+  assumedBy: new iam.AccountPrincipal(this.account),
+});
+
+role.assumeRolePolicy?.addStatements(new iam.PolicyStatement({
+  actions: ['sts:AssumeRole'],
+  principals: [
+    new iam.AccountPrincipal('123456789'),
+    new iam.ServicePrincipal('beep-boop.amazonaws.com')
+    ],
+}));
+```
+
 
 ## Parsing JSON Policy Documents
 

@@ -388,7 +388,7 @@ describe('IAM role', () => {
     });
   });
 
-  test('a role can not grant AssumeRole permission to a Service Principal', () => {
+  test('a role cannot grant AssumeRole permission to a Service Principal', () => {
     // GIVEN
     const stack = new Stack();
 
@@ -401,6 +401,21 @@ describe('IAM role', () => {
     // THEN
     expect(() => role.grantAssumeRole(new ServicePrincipal('boop.amazonaws.com')))
       .toThrow('Cannot use a Service Principal with grantAssumeRole, use assumeRolePolicy instead.');
+  });
+
+  test('a role cannot grant AssumeRole permission to an Account Principal', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    const user = new User(stack, 'User');
+    const role = new Role(stack, 'MyRole', {
+      assumedBy: user,
+    });
+
+    // THEN
+    expect(() => role.grantAssumeRole(new AccountPrincipal('123456789')))
+      .toThrow('Cannot use an Account Principal with grantAssumeRole, use assumeRolePolicy instead.');
   });
 
   testDeprecated('can supply externalId', () => {
