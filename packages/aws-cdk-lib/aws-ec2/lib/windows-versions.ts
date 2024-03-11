@@ -370,8 +370,12 @@ export enum WindowsVersion {
   WINDOWS_SERVER_2012_R2_RTM_KOREAN_64BIT_BASE = 'Windows_Server-2012-R2_RTM-Korean-64Bit-Base',
   /** @deprecated - reached Microsoft End-of-Support */
   WINDOWS_SERVER_2012_R2_RTM_POLISH_64BIT_BASE = 'Windows_Server-2012-R2_RTM-Polish-64Bit-Base',
+  /** @deprecated - reached Microsoft End-of-Support ({@link WINDOWS_SERVER_2012_R2_RTM_PORTUGUESE_BRAZIL_64BIT_BASE}) */
+  WINDOWS_SERVER_2012_R2_RTM_PORTUGESE_BRAZIL_64BIT_BASE = 'Windows_Server-2012-R2_RTM-Portugese_Brazil-64Bit-Base',
   /** @deprecated - reached Microsoft End-of-Support */
   WINDOWS_SERVER_2012_R2_RTM_PORTUGUESE_BRAZIL_64BIT_BASE = 'Windows_Server-2012-R2_RTM-Portuguese_Brazil-64Bit-Base',
+  /** @deprecated - reached Microsoft End-of-Support ({@link WINDOWS_SERVER_2012_R2_RTM_PORTUGUESE_PORTUGAL_64BIT_BASE}) */
+  WINDOWS_SERVER_2012_R2_RTM_PORTUGESE_PORTUGAL_64BIT_BASE = 'Windows_Server-2012-R2_RTM-Portugese_Portugal-64Bit-Base',
   /** @deprecated - reached Microsoft End-of-Support */
   WINDOWS_SERVER_2012_R2_RTM_PORTUGUESE_PORTUGAL_64BIT_BASE = 'Windows_Server-2012-R2_RTM-Portuguese_Portugal-64Bit-Base',
   /** @deprecated - reached Microsoft End-of-Support */
@@ -382,6 +386,8 @@ export enum WindowsVersion {
   WINDOWS_SERVER_2012_R2_RTM_SWEDISH_64BIT_BASE = 'Windows_Server-2012-R2_RTM-Swedish-64Bit-Base',
   /** @deprecated - reached Microsoft End-of-Support */
   WINDOWS_SERVER_2012_R2_RTM_TURKISH_64BIT_BASE = 'Windows_Server-2012-R2_RTM-Turkish-64Bit-Base',
+  /** @deprecated - reached Microsoft End-of-Support ({@link WINDOWS_SERVER_2012_R2_SP1_PORTUGUESE_BRAZIL_64BIT_CORE}) */
+  WINDOWS_SERVER_2012_R2_SP1_PORTUGESE_BRAZIL_64BIT_CORE = 'Windows_Server-2008-R2_SP1-Portugese_Brazil-64Bit-Core',
   /** @deprecated - reached Microsoft End-of-Support */
   WINDOWS_SERVER_2012_R2_SP1_PORTUGUESE_BRAZIL_64BIT_CORE = 'Windows_Server-2008-R2_SP1-Portuguese_Brazil-64Bit-Core',
   /** @deprecated - reached Microsoft End-of-Support */
@@ -460,8 +466,12 @@ export enum WindowsVersion {
   WINDOWS_SERVER_2012_RTM_KOREAN_64BIT_BASE = 'Windows_Server-2012-RTM-Korean-64Bit-Base',
   /** @deprecated - reached Microsoft End-of-Support */
   WINDOWS_SERVER_2012_RTM_POLISH_64BIT_BASE = 'Windows_Server-2012-RTM-Polish-64Bit-Base',
+  /** @deprecated - reached Microsoft End-of-Support ({@link WINDOWS_SERVER_2012_RTM_PORTUGUESE_BRAZIL_64BIT_BASE}) */
+  WINDOWS_SERVER_2012_RTM_PORTUGESE_BRAZIL_64BIT_BASE = 'Windows_Server-2012-RTM-Portugese_Brazil-64Bit-Base',
   /** @deprecated - reached Microsoft End-of-Support */
   WINDOWS_SERVER_2012_RTM_PORTUGUESE_BRAZIL_64BIT_BASE = 'Windows_Server-2012-RTM-Portuguese_Brazil-64Bit-Base',
+  /** @deprecated - reached Microsoft End-of-Support ({@link WINDOWS_SERVER_2012_RTM_PORTUGUESE_PORTUGAL_64BIT_BASE}) */
+  WINDOWS_SERVER_2012_RTM_PORTUGESE_PORTUGAL_64BIT_BASE = 'Windows_Server-2012-RTM-Portugese_Portugal-64Bit-Base',
   /** @deprecated - reached Microsoft End-of-Support */
   WINDOWS_SERVER_2012_RTM_PORTUGUESE_PORTUGAL_64BIT_BASE = 'Windows_Server-2012-RTM-Portuguese_Portugal-64Bit-Base',
   /** @deprecated - reached Microsoft End-of-Support */
@@ -472,6 +482,8 @@ export enum WindowsVersion {
   WINDOWS_SERVER_2012_RTM_SWEDISH_64BIT_BASE = 'Windows_Server-2012-RTM-Swedish-64Bit-Base',
   /** @deprecated - reached Microsoft End-of-Support */
   WINDOWS_SERVER_2012_RTM_TURKISH_64BIT_BASE = 'Windows_Server-2012-RTM-Turkish-64Bit-Base',
+  /** @deprecated - reached Microsoft End-of-Support ({@link WINDOWS_SERVER_2012_SP2_PORTUGUESE_BRAZIL_64BIT_BASE}) */
+  WINDOWS_SERVER_2012_SP2_PORTUGESE_BRAZIL_64BIT_BASE = 'Windows_Server-2008-SP2-Portugese_Brazil-64Bit-Base',
   /** @deprecated - reached Microsoft End-of-Support */
   WINDOWS_SERVER_2012_SP2_PORTUGUESE_BRAZIL_64BIT_BASE = 'Windows_Server-2008-SP2-Portuguese_Brazil-64Bit-Base',
   /** 2012 - End */
@@ -985,7 +997,7 @@ export enum WindowsVersion {
   WINDOWS_SERVER_2019_ENGLISH_FULL_SQL_2017_STANDARD_2024_01_16 = 'Windows_Server-2019-English-Full-SQL_2017_Standard-2024.01.16',
   WINDOWS_SERVER_2019_ENGLISH_FULL_SQL_2017_STANDARD_2024_02_14 = 'Windows_Server-2019-English-Full-SQL_2017_Standard-2024.02.14',
   /** @deprecated - use one of WINDOWS_SERVER_2019_ENGLISH_FULL_SQL_2017_WEB_YYYY_MM_DD */
-  WINDOWS_SERVER_2019_ENGLISH_FULL_SQL_2017_WEB = 'Windows_Server_2019-English-Full-SQL_2017_Web',
+  WINDOWS_SERVER_2019_ENGLISH_FULL_SQL_2017_WEB = 'Windows_Server-2019-English-Full-SQL_2017_Web',
   WINDOWS_SERVER_2019_ENGLISH_FULL_SQL_2017_WEB_2023_11_15 = 'Windows_Server-2019-English-Full-SQL_2017_Web-2023.11.15',
   WINDOWS_SERVER_2019_ENGLISH_FULL_SQL_2017_WEB_2023_12_13 = 'Windows_Server-2019-English-Full-SQL_2017_Web-2023.12.13',
   WINDOWS_SERVER_2019_ENGLISH_FULL_SQL_2017_WEB_2024_01_16 = 'Windows_Server-2019-English-Full-SQL_2017_Web-2024.01.16',
