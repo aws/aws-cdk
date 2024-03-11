@@ -790,6 +790,12 @@ describe('MSK Cluster', () => {
 
   describe('created with storage mode', () => {
     describe('with tiered storage mode', () => {
+      test('version.isTieredStorageCompatible', () => {
+        expect(msk.KafkaVersion.V2_8_2_TIERED.isTieredStorageCompatible()).toBeTruthy();
+        expect(msk.KafkaVersion.V3_5_1.isTieredStorageCompatible()).toBeFalsy();
+        expect(msk.KafkaVersion.V3_6_0.isTieredStorageCompatible()).toBeTruthy();
+      });
+
       test('create a cluster with tiered storage mode', () => {
         new msk.Cluster(stack, 'Cluster', {
           clusterName: 'cluster',
