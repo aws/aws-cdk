@@ -19,17 +19,11 @@ jobs:
     - name: Get dates for last week
       shell: bash
       run: |
-        # Calculate the current day of the week (0=Sunday, 1=Monday, ..., 6=Saturday)
-        CURRENT_DAY_OF_WEEK=$(date +%u)
-
-        # Calculate the number of days to subtract to get to the previous Monday
-        DAYS_TO_MONDAY=$((CURRENT_DAY_OF_WEEK - 1))
-
         # Calculate the date of the previous Monday
-        PREVIOUS_MONDAY=$(date -d "$DAYS_TO_MONDAY days ago" "+%Y-%m-%d")
+        PREVIOUS_MONDAY=$(date -d "7 days ago" "+%Y-%m-%d")
 
-        # Calculate the date of the current Sunday (assuming today is not Sunday)
-        CURRENT_SUNDAY=$(date -d "$DAYS_TO_MONDAY days ago +6 day" "+%Y-%m-%d")
+        # Calculate the date of the current Sunday
+        CURRENT_SUNDAY=$(date -d "1 day ago" "+%Y-%m-%d")
 
         # Set an environment variable with the date range
         echo "$PREVIOUS_MONDAY..$CURRENT_SUNDAY"
