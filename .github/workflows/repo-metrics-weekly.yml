@@ -1,0 +1,58 @@
+name: Weekly repo metrics
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 9 * * MON'
+
+permissions:
+  issues: write
+  pull-requests: read
+
+jobs:
+  build:
+    # this workflow will always fail in forks; bail if this isn't running in the upstream
+    if: github.repository == 'aws/aws-cdk'
+    name: metrics
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Get dates for last week
+      shell: bash
+      run: |
+        # Calculate the previous Monday's date
+        PREVIOUS_MONDAY=$(date -d "last monday" "+%Y-%m-%d")
+
+        # Calculate the current Sunday's date
+        CURRENT_SUNDAY=$(date -d "next Sunday" "+%Y-%m-%d")
+
+        # Set an environment variable with the date range
+        echo "$PREVIOUS_MONDAY..$CURRENT_SUNDAY"
+        echo "last_week=$first_day..$last_day" >> "$GITHUB_ENV"
+
+    - name: Report on issues
+      uses: github/issue-metrics@v2
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        SEARCH_QUERY: 'repo:aws/aws-cdk is:issue created:${{ env.last_week }} -reason:"not planned"'
+
+    - name: Create report for issues
+      uses: peter-evans/create-issue-from-file@v5
+      with:
+        title: Weekly issue metrics report
+        token: ${{ secrets.GITHUB_TOKEN }}
+        content-filepath: ./issue_metrics.md
+        assignees: paulhcsun
+        
+    - name: Report on PRs
+      uses: github/issue-metrics@v2
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        SEARCH_QUERY: 'repo:aws/aws-cdk is:pr created:${{ env.last_week }} -is:draft'
+
+    - name: Create report for PRs
+      uses: peter-evans/create-issue-from-file@v5
+      with:
+        title: Weekly PR metrics report
+        token: ${{ secrets.GITHUB_TOKEN }}
+        content-filepath: ./issue_metrics.md
+        assignees: paulhcsun
