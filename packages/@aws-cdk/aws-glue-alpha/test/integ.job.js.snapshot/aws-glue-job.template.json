@@ -1595,13 +1595,25 @@
         {
          "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
         },
-        "/432033e3218068a915d2532fa9be7858a12b228a2ae6e5c10faccd9097b1e855.py"
+        "/9120cd4aa376310a46a09d707c5e0c75c164b9014f1740e4c5a3637a34dfafe7.py"
        ]
       ]
      }
     },
     "DefaultArguments": {
      "--job-language": "python",
+     "--s3-py-modules": {
+      "Fn::Join": [
+       "",
+       [
+        "s3://",
+        {
+         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+        },
+        "/1c055910db2de9d0fcf53321842cab491bb6985900b80e05d634fceef328c5c4.zip"
+       ]
+      ]
+     },
      "arg1": "value1",
      "arg2": "value2"
     },

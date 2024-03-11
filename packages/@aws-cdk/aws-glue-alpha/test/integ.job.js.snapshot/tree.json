@@ -2314,6 +2314,58 @@
                   "version": "0.0.0"
                 }
               },
+              "Code0115baecff23f24504399384f987872e": {
+                "id": "Code0115baecff23f24504399384f987872e",
+                "path": "aws-glue-job/RayJob/Code0115baecff23f24504399384f987872e",
+                "children": {
+                  "Stage": {
+                    "id": "Stage",
+                    "path": "aws-glue-job/RayJob/Code0115baecff23f24504399384f987872e/Stage",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.AssetStaging",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "AssetBucket": {
+                    "id": "AssetBucket",
+                    "path": "aws-glue-job/RayJob/Code0115baecff23f24504399384f987872e/AssetBucket",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_s3.BucketBase",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
+                  "version": "0.0.0"
+                }
+              },
+              "Code7e4c8ab0af31dc38a92c1c69bf696244": {
+                "id": "Code7e4c8ab0af31dc38a92c1c69bf696244",
+                "path": "aws-glue-job/RayJob/Code7e4c8ab0af31dc38a92c1c69bf696244",
+                "children": {
+                  "Stage": {
+                    "id": "Stage",
+                    "path": "aws-glue-job/RayJob/Code7e4c8ab0af31dc38a92c1c69bf696244/Stage",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.AssetStaging",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "AssetBucket": {
+                    "id": "AssetBucket",
+                    "path": "aws-glue-job/RayJob/Code7e4c8ab0af31dc38a92c1c69bf696244/AssetBucket",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_s3.BucketBase",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
+                  "version": "0.0.0"
+                }
+              },
               "Resource": {
                 "id": "Resource",
                 "path": "aws-glue-job/RayJob/Resource",
@@ -2330,7 +2382,7 @@
                             {
                               "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                             },
-                            "/432033e3218068a915d2532fa9be7858a12b228a2ae6e5c10faccd9097b1e855.py"
+                            "/9120cd4aa376310a46a09d707c5e0c75c164b9014f1740e4c5a3637a34dfafe7.py"
                           ]
                         ]
                       },
@@ -2339,6 +2391,18 @@
                     },
                     "defaultArguments": {
                       "--job-language": "python",
+                      "--s3-py-modules": {
+                        "Fn::Join": [
+                          "",
+                          [
+                            "s3://",
+                            {
+                              "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+                            },
+                            "/1c055910db2de9d0fcf53321842cab491bb6985900b80e05d634fceef328c5c4.zip"
+                          ]
+                        ]
+                      },
                       "arg1": "value1",
                       "arg2": "value2"
                     },
