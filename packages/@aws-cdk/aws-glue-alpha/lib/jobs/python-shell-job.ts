@@ -16,7 +16,7 @@ import { JobType, GlueVersion, PythonVersion, MaxCapacity } from '../constants';
 /**
  * Properties for creating a Python Shell job
  */
-export interface PythonShellJobProperties extends JobProperties {
+export interface PythonShellJobProps extends JobProperties {
   /**
   * Python Version
   * The version of Python to use to execute this job
@@ -49,7 +49,7 @@ export class PythonShellJob extends Job {
   * @param id
   * @param props
   */
-  constructor(scope: Construct, id: string, props: PythonShellJobProperties) {
+  constructor(scope: Construct, id: string, props: PythonShellJobProps) {
     super(scope, id, { physicalName: props.jobName });
 
     // Set up role and permissions for principal
@@ -99,7 +99,7 @@ export class PythonShellJob extends Job {
   * @param props
   * @returns An array of arguments for Glue to use on execution
   */
-  private executableArguments(props: PythonShellJobProperties) {
+  private executableArguments(props: PythonShellJobProps) {
     const args: { [key: string]: string } = {};
 
     //If no Python version set (default 3.9) or the version is set to 3.9 then set library-set argument
