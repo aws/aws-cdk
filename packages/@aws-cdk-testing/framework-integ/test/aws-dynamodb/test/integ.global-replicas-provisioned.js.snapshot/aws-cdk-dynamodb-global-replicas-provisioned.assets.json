@@ -14,20 +14,20 @@
         }
       }
     },
-    "3acc6fedca182d71a206045cb947120944e7c6eb84efaf2cb7a5bd8c0cb9b4da": {
+    "979447ec3a2593e45725926b0d8fbc1827cb1ab0b09700bbcd50f9b334439563": {
       "source": {
-        "path": "asset.3acc6fedca182d71a206045cb947120944e7c6eb84efaf2cb7a5bd8c0cb9b4da",
+        "path": "asset.979447ec3a2593e45725926b0d8fbc1827cb1ab0b09700bbcd50f9b334439563",
         "packaging": "zip"
       },
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "3acc6fedca182d71a206045cb947120944e7c6eb84efaf2cb7a5bd8c0cb9b4da.zip",
+          "objectKey": "979447ec3a2593e45725926b0d8fbc1827cb1ab0b09700bbcd50f9b334439563.zip",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
     },
-    "053b42f8a05b4072ca462de36e148abb25c9a1d5c33e34225d8ca1f571ebcef4": {
+    "b1fb7e119569a43b9c7414f37eb60a618d8cef9723bfb8ae3d6f594bbdc318c5": {
       "source": {
         "path": "awscdkdynamodbglobalreplicasprovisionedawscdkawsdynamodbReplicaProviderEA32CB30.nested.template.json",
         "packaging": "file"
@@ -35,12 +35,12 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "053b42f8a05b4072ca462de36e148abb25c9a1d5c33e34225d8ca1f571ebcef4.json",
+          "objectKey": "b1fb7e119569a43b9c7414f37eb60a618d8cef9723bfb8ae3d6f594bbdc318c5.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
     },
-    "291264afa112df5045ef656d1d851beeb00c329ec0aaf87c0109cf7f2b7f3440": {
+    "9185c67b7da9f5d067fbbea8e4034530123e921846c4c1de02ef814ce0ca56d9": {
       "source": {
         "path": "aws-cdk-dynamodb-global-replicas-provisioned.template.json",
         "packaging": "file"
@@ -48,7 +48,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "291264afa112df5045ef656d1d851beeb00c329ec0aaf87c0109cf7f2b7f3440.json",
+          "objectKey": "9185c67b7da9f5d067fbbea8e4034530123e921846c4c1de02ef814ce0ca56d9.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
