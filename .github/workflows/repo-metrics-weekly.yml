@@ -23,11 +23,11 @@ jobs:
         PREVIOUS_MONDAY=$(date -d "last monday" "+%Y-%m-%d")
 
         # Calculate the current Sunday's date
-        CURRENT_SUNDAY=$(date -d "next Sunday" "+%Y-%m-%d")
+        CURRENT_SUNDAY=$(date -d "current Sunday" "+%Y-%m-%d")
 
         # Set an environment variable with the date range
         echo "$PREVIOUS_MONDAY..$CURRENT_SUNDAY"
-        echo "last_week=$first_day..$last_day" >> "$GITHUB_ENV"
+        echo "last_week=$PREVIOUS_MONDAY..$CURRENT_SUNDAY" >> "$GITHUB_ENV"
 
     - name: Report on issues
       uses: github/issue-metrics@v2
