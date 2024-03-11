@@ -212,7 +212,7 @@ export class Runtime {
   /**
    * `syn-nodejs-puppeteer-3.6` includes the following:
    * - Lambda runtime Node.js 14.x
-   * - Puppeteer-core version 10.1.0
+   * - Puppeteer-core version 5.5.0
    * - Chromium version 92.0.4512
    *
    * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_nodejs_puppeteer.html#CloudWatch_Synthetics_runtimeversion-nodejs-puppeteer-3.6
