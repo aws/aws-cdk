@@ -797,7 +797,7 @@ describe('MSK Cluster', () => {
           kafkaVersion: msk.KafkaVersion.V2_8_2_TIERED,
           vpc,
           storageMode: msk.StorageMode.TIERED,
-        }),
+        });
         Template.fromStack(stack).hasResourceProperties('AWS::MSK::Cluster', {
           StorageMode: 'TIERED',
         });
