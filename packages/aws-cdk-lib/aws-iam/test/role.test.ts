@@ -2,7 +2,7 @@ import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Construct } from 'constructs';
 import { Template, Match, Annotations } from '../../assertions';
 import { Duration, Stack, App, CfnResource, RemovalPolicy, Lazy, Stage, DefaultStackSynthesizer, CliCredentialsStackSynthesizer, PERMISSIONS_BOUNDARY_CONTEXT_KEY, PermissionsBoundary, Token } from '../../core';
-import { AnyPrincipal, ArnPrincipal, CompositePrincipal, FederatedPrincipal, ManagedPolicy, PolicyStatement, Role, ServicePrincipal, User, Policy, PolicyDocument, Effect } from '../lib';
+import { AccountPrincipal, AnyPrincipal, ArnPrincipal, CompositePrincipal, FederatedPrincipal, ManagedPolicy, PolicyStatement, Role, ServicePrincipal, User, Policy, PolicyDocument, Effect } from '../lib';
 
 describe('isRole() returns', () => {
   test('true if given Role instance', () => {
@@ -399,23 +399,8 @@ describe('IAM role', () => {
     });
 
     // THEN
-    expect(() => role.grantAssumeRole(new ServicePrincipal('boop.amazonaws.com')))
+    expect(() => role.grantAssumeRole(new ServicePrincipal('beep-boop.amazonaws.com')))
       .toThrow('Cannot use a Service Principal with grantAssumeRole, use assumeRolePolicy instead.');
-  });
-
-  test('a role cannot grant AssumeRole permission to an Account Principal', () => {
-    // GIVEN
-    const stack = new Stack();
-
-    // WHEN
-    const user = new User(stack, 'User');
-    const role = new Role(stack, 'MyRole', {
-      assumedBy: user,
-    });
-
-    // THEN
-    expect(() => role.grantAssumeRole(new AccountPrincipal('123456789')))
-      .toThrow('Cannot use an Account Principal with grantAssumeRole, use assumeRolePolicy instead.');
   });
 
   testDeprecated('can supply externalId', () => {

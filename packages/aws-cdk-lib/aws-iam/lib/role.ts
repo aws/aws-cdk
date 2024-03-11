@@ -598,10 +598,6 @@ export class Role extends Resource implements IRole {
     if (identity.policyFragment.principalJson.Service) {
       throw new Error('Cannot use a Service Principal with grantAssumeRole, use assumeRolePolicy instead.');
     }
-    // Account Principals must use assumeRolePolicy
-    if (identity.policyFragment.principalJson.AccountPrincipal) {
-      throw new Error('Cannot use an Account Principal with grantAssumeRole, use assumeRolePolicy instead.');
-    }
     return this.grant(identity, 'sts:AssumeRole');
   }
 
