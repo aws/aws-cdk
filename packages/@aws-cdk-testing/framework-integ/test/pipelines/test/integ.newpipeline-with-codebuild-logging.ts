@@ -68,7 +68,7 @@ class AppStage extends Stage {
 }
 
 const app = new App({
-  postCliContext: {
+  context: {
     '@aws-cdk/core:newStyleStackSynthesis': '1',
     '@aws-cdk/aws-codepipeline:defaultPipelineTypeToV2': false,
   },
