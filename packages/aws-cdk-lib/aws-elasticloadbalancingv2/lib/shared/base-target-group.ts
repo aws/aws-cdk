@@ -280,6 +280,7 @@ export abstract class TargetGroupBase extends Construct implements ITargetGroup 
     this.targetGroupName = this.resource.attrTargetGroupName;
     this.defaultPort = additionalProps.port;
 
+    this.node.addValidation({ validate: () => this.validateHealthCheck() });
     this.node.addValidation({ validate: () => this.validateTargetGroup() });
   }
 
@@ -349,6 +350,22 @@ export abstract class TargetGroupBase extends Construct implements ITargetGroup 
       }
     }
 
+    return ret;
+  }
+
+  protected validateHealthCheck(): string[] {
+    const ret = new Array<string>();
+
+    const intervalSeconds = this.healthCheck.interval?.toSeconds();
+    const timeoutSeconds = this.healthCheck.timeout?.toSeconds();
+
+    if (intervalSeconds && timeoutSeconds) {
+      if (intervalSeconds < timeoutSeconds) {
+        // < instead of <= for backwards compatibility, see discussion in https://github.com/aws/aws-cdk/pull/26031
+        ret.push('Health check interval must be greater than or equal to the timeout; received interval ' +
+        `${intervalSeconds}, timeout ${timeoutSeconds}.`);
+      }
+    }
     return ret;
   }
 }
