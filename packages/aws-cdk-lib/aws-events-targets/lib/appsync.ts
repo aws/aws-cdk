@@ -52,6 +52,11 @@ export class AppSync implements events.IRuleTarget {
       addToDeadLetterQueueResourcePolicy(rule, this.props.deadLetterQueue);
     }
 
+    // make sure the API has AWS_IAM configured.
+    if (!this.appsyncApi.modes.includes(appsync.AuthorizationType.IAM)) {
+      throw new Error('You must have AWS_IAM authorization mode enabled on your API to configure an AppSync target');
+    }
+
     const role = this.props.eventRole || singletonEventRole(this.appsyncApi);
 
     // if a role was not provided, attach a permission
