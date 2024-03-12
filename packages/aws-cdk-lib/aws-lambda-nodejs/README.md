@@ -168,6 +168,16 @@ new nodejs.NodejsFunction(this, 'my-handler', {
   },
 });
 ```
+Includes AWS SDK in the bundle asset by setting `bundleAwsSDK` to `true`. This will be essentially exclude sdk from the external 
+module and not be resolved to the Lambda provided sdk.
+
+```ts
+new nodejs.NodejsFunction(this, 'my-handler', {
+  bundling: {
+    bundleAwsSDK: true,
+  },
+});
+```
 
 ### Install modules
 

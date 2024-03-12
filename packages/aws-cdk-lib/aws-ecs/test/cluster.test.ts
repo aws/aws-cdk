@@ -2052,6 +2052,7 @@ describe('cluster', () => {
             'AZRebalance',
             'AlarmNotification',
             'ScheduledActions',
+            'InstanceRefresh',
           ],
         },
         AutoScalingScheduledAction: {
@@ -2928,7 +2929,7 @@ test('can add ASG capacity via Capacity Provider by not specifying machineImageT
 
 });
 
-test('throws when ASG Capacity Provider with capacityProviderName starting with aws, ecs or faragte', () => {
+test('throws when ASG Capacity Provider with capacityProviderName starting with aws, ecs or fargate', () => {
   // GIVEN
   const app = new cdk.App();
   const stack = new cdk.Stack(app, 'test');
@@ -2963,6 +2964,31 @@ test('throws when ASG Capacity Provider with capacityProviderName starting with 
 
     cluster.addAsgCapacityProvider(capacityProviderAl2);
   }).toThrow(/Invalid Capacity Provider Name: ecscp, If a name is specified, it cannot start with aws, ecs, or fargate./);
+});
+
+test('throws when ASG Capacity Provider with no capacityProviderName but stack name starting with aws, ecs or fargate', () => {
+  // GIVEN
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app, 'ecscp');
+  const vpc = new ec2.Vpc(stack, 'Vpc');
+  const cluster = new ecs.Cluster(stack, 'EcsCluster');
+
+  const autoScalingGroupAl2 = new autoscaling.AutoScalingGroup(stack, 'asgal2', {
+    vpc,
+    instanceType: new ec2.InstanceType('bogus'),
+    machineImage: ecs.EcsOptimizedImage.amazonLinux2(),
+  });
+
+  expect(() => {
+    // WHEN Capacity Provider when stack name starts with ecs.
+    const capacityProvider = new ecs.AsgCapacityProvider(stack, 'provideral2-2', {
+      autoScalingGroup: autoScalingGroupAl2,
+      enableManagedTerminationProtection: false,
+    });
+
+    cluster.addAsgCapacityProvider(capacityProvider);
+
+  }).not.toThrow();
 });
 
 test('throws when InstanceWarmupPeriod is less than 0', () => {

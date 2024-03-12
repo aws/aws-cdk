@@ -1995,6 +1995,79 @@ each(testedOpenSearchVersions).describe('custom error responses', (engineVersion
     })).toThrow(/UltraWarm requires Elasticsearch version 6\.8 or later or OpenSearch version 1.0 or later/);
   });
 
+  test('enabling cold storage without ultrawarm throws an error', () => {
+    expect(() => new Domain(stack, 'Domain', {
+      version: engineVersion,
+      coldStorageEnabled: true,
+    })).toThrow(/You must enable UltraWarm storage to enable cold storage./);
+  });
+
+  test('can enable cold storage', () => {
+    new Domain(stack, 'Domain', {
+      version: engineVersion,
+      capacity: {
+        masterNodes: 2,
+        warmNodes: 2,
+      },
+      coldStorageEnabled: true,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::OpenSearchService::Domain', {
+      ClusterConfig: {
+        DedicatedMasterEnabled: true,
+        WarmEnabled: true,
+        WarmCount: 2,
+        WarmType: 'ultrawarm1.medium.search',
+        ColdStorageOptions: {
+          Enabled: true,
+        },
+      },
+    });
+  });
+
+  test('can disable cold storage', () => {
+    new Domain(stack, 'Domain', {
+      version: engineVersion,
+      capacity: {
+        masterNodes: 2,
+        warmNodes: 2,
+      },
+      coldStorageEnabled: false,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::OpenSearchService::Domain', {
+      ClusterConfig: {
+        DedicatedMasterEnabled: true,
+        WarmEnabled: true,
+        WarmCount: 2,
+        WarmType: 'ultrawarm1.medium.search',
+        ColdStorageOptions: {
+          Enabled: false,
+        },
+      },
+    });
+  });
+
+  test('cold storage default is undefined', () => {
+    new Domain(stack, 'Domain', {
+      version: engineVersion,
+      capacity: {
+        masterNodes: 2,
+        warmNodes: 2,
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::OpenSearchService::Domain', {
+      ClusterConfig: {
+        DedicatedMasterEnabled: true,
+        WarmEnabled: true,
+        WarmCount: 2,
+        WarmType: 'ultrawarm1.medium.search',
+        ColdStorageOptions: Match.absent(),
+      },
+    });
+  });
+
   test('error when t2 or t3 instance types are specified with UltramWarm enabled', () => {
     const error = /T2 and T3 instance types do not support UltraWarm storage/;
     expect(() => new Domain(stack, 'Domain1', {

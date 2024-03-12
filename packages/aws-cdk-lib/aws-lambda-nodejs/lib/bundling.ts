@@ -130,7 +130,9 @@ export class Bundling implements cdk.BundlingOptions {
     const versionedExternals = isV2Runtime ? ['aws-sdk'] : ['@aws-sdk/*'];
     // Don't automatically externalize any dependencies when using a `latest` runtime which may
     // update versions in the future.
-    const defaultExternals = props.runtime?.isVariable ? [] : versionedExternals;
+    // Don't automatically externalize aws sdk if `bundleAwsSDK` is true so it can be
+    // include in the bundle asset
+    const defaultExternals = props.runtime?.isVariable || props.bundleAwsSDK ? [] : versionedExternals;
     const externals = props.externalModules ?? defaultExternals;
 
     // Warn users if they are trying to rely on global versions of the SDK that aren't available in
@@ -418,10 +420,13 @@ function toTarget(runtime: Runtime): string {
 
 function toCliArgs(esbuildArgs: { [key: string]: string | boolean }): string {
   const args = new Array<string>();
+  const reSpecifiedKeys = ['--alias', '--drop', '--pure', '--log-override', '--out-extension'];
 
   for (const [key, value] of Object.entries(esbuildArgs)) {
     if (value === true || value === '') {
       args.push(key);
+    } else if (reSpecifiedKeys.includes(key)) {
+      args.push(`${key}:"${value}"`);
     } else if (value) {
       args.push(`${key}="${value}"`);
     }

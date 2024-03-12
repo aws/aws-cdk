@@ -386,6 +386,45 @@ const task = new tasks.CodeBuildStartBuild(this, 'Task', {
 });
 ```
 
+### StartBuildBatch
+
+[StartBuildBatch](https://docs.aws.amazon.com/codebuild/latest/APIReference/API_StartBuildBatch.html) starts a batch CodeBuild for a project by project name.
+It is necessary to enable the batch build feature in the CodeBuild project.
+
+```ts
+import * as codebuild from 'aws-cdk-lib/aws-codebuild';
+
+const project = new codebuild.Project(this, 'Project', {
+  projectName: 'MyTestProject',
+  buildSpec: codebuild.BuildSpec.fromObjectToYaml({
+    version: 0.2,
+    batch: {
+      'build-list': [
+        {
+          identifier: 'id',
+          buildspec: 'version: 0.2\nphases:\n  build:\n    commands:\n      - echo "Hello, from small!"',
+        },
+      ],
+    },
+  }),
+});
+project.enableBatchBuilds();
+
+const task = new tasks.CodeBuildStartBuildBatch(this, 'buildBatchTask', {
+  project,
+  integrationPattern: sfn.IntegrationPattern.REQUEST_RESPONSE,
+  environmentVariablesOverride: {
+    test: {
+      type: codebuild.BuildEnvironmentVariableType.PLAINTEXT,
+      value: 'testValue',
+    },
+  },
+});
+```
+
+**Note**: `enableBatchBuilds()` will do nothing for imported projects.
+If you are using an imported project, you must ensure that the project is already configured for batch builds.
+
 ## DynamoDB
 
 You can call DynamoDB APIs from a `Task` state.
@@ -1041,6 +1080,8 @@ new tasks.EventBridgePutEvents(this, 'Send an event to EventBridge', {
 
 Step Functions supports [AWS Glue](https://docs.aws.amazon.com/step-functions/latest/dg/connect-glue.html) through the service integration pattern.
 
+### StartJobRun
+
 You can call the [`StartJobRun`](https://docs.aws.amazon.com/glue/latest/dg/aws-glue-api-jobs-runs.html#aws-glue-api-jobs-runs-StartJobRun) API from a `Task` state.
 
 ```ts
@@ -1051,6 +1092,26 @@ new tasks.GlueStartJobRun(this, 'Task', {
   }),
   taskTimeout: sfn.Timeout.duration(Duration.minutes(30)),
   notifyDelayAfter: Duration.minutes(5),
+});
+```
+
+### StartCrawlerRun
+
+You can call the [`StartCrawler`](https://docs.aws.amazon.com/glue/latest/dg/aws-glue-api-crawler-crawling.html#aws-glue-api-crawler-crawling-StartCrawler) API from a `Task` state through AWS SDK service integrations.
+
+```ts
+import * as glue from 'aws-cdk-lib/aws-glue';
+
+declare const myCrawler: glue.CfnCrawler;
+
+// You can get the crawler name from `crawler.ref`
+new tasks.GlueStartCrawlerRun(this, 'Task1', {
+  crawlerName: myCrawler.ref,
+});
+
+// Of course, you can also specify the crawler name directly.
+new tasks.GlueStartCrawlerRun(this, 'Task2', {
+  crawlerName: 'my-crawler-job',
 });
 ```
 

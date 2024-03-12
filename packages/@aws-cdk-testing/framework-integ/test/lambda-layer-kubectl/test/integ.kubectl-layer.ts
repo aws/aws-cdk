@@ -15,8 +15,8 @@ const stack = new cdk.Stack(app, 'lambda-layer-kubectl-integ-stack');
 const layer = new KubectlLayer(stack, 'KubectlLayer');
 
 const runtimes = [
-  lambda.Runtime.PYTHON_3_7,
   lambda.Runtime.PYTHON_3_9,
+  lambda.Runtime.PYTHON_3_10,
 ];
 
 for (const runtime of runtimes) {

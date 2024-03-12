@@ -871,7 +871,7 @@ describe('Job', () => {
           }),
           workerType: glue.WorkerType.Z_2X,
           workerCount: 2,
-        })).toThrow('Runtime is required for Ray jobs.');
+        })).toThrow('Runtime is required for Ray jobs');
       });
     });
 
