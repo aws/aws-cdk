@@ -75,12 +75,9 @@ function isReferencedFromIgnoredResource(
   evaluateCfnTemplate: EvaluateCloudFormationTemplate,
 ): boolean {
   const resourcesReferencingLogGroup = evaluateCfnTemplate.findReferencesTo(logGroupResource.LogicalResourceId);
-  for (const reference of resourcesReferencingLogGroup) {
-    if (IGNORE_LOGS_RESOURCE_TYPES.includes(reference.Type)) {
-      return true;
-    }
-  }
-  return false;
+  return resourcesReferencingLogGroup.some(reference => {
+    return IGNORE_LOGS_RESOURCE_TYPES.includes(reference.Type);
+  });
 }
 
 type CloudWatchLogsResolver = (
