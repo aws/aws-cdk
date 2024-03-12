@@ -1,8 +1,8 @@
 import { Construct } from 'constructs';
 import * as iam from '../../../aws-iam';
 import * as kms from '../../../aws-kms';
-import * as sfn from '../../../aws-stepfunctions';
 import * as sqs from '../../../aws-sqs';
+import * as sfn from '../../../aws-stepfunctions';
 import { Stack, Duration, Token } from '../../../core';
 import { integrationResourceArn } from '../private/task-utils';
 
@@ -66,7 +66,7 @@ export interface CreateScheduleProps extends sfn.TaskStateBaseProps {
   readonly flexibleTimeWindow?: Duration;
 
   /**
-   * Schedule group name
+   * Existing schedule group name
    *
    * @default 'default'
    */
@@ -173,18 +173,26 @@ export class EventBridgeSchedulerCreateScheduleTask extends sfn.TaskStateBase {
     this.validateProps(props);
 
     this.integrationPattern = props.integrationPattern ?? sfn.IntegrationPattern.REQUEST_RESPONSE;
-    this.taskPolicies = [new iam.PolicyStatement({
-      resources: [
-        Stack.of(this).formatArn({
-          service: 'scheduler',
-          resource: 'schedule',
-          resourceName: `${this.props.groupName ?? 'default'}/${this.props.scheduleName}`,
-        }),
-      ],
-      actions: [
-        'scheduler:CreateSchedule',
-      ],
-    })];
+    this.taskPolicies = [
+      new iam.PolicyStatement({
+        resources: [
+          Stack.of(this).formatArn({
+            service: 'scheduler',
+            resource: 'schedule',
+            resourceName: `${this.props.groupName ?? 'default'}/${this.props.scheduleName}`,
+          }),
+        ],
+        actions: [
+          'scheduler:CreateSchedule',
+        ],
+      }),
+      new iam.PolicyStatement({
+        resources: [props.role.roleArn],
+        actions: [
+          'iam:PassRole',
+        ],
+      }),
+    ];
   }
 
   protected _renderTask(): any {
@@ -194,7 +202,7 @@ export class EventBridgeSchedulerCreateScheduleTask extends sfn.TaskStateBase {
         ActionAfterCompletion: this.props.actionAfterCompletion,
         ClientToken: this.props.clientToken,
         Description: this.props.description,
-        EndDate: this.props.endDate ? Math.trunc(this.props.endDate.getTime() / 1000) : undefined,
+        EndDate: this.props.endDate ? this.props.endDate.toISOString() : undefined,
         FlexibleTimeWindow: {
           Mode: this.props.flexibleTimeWindow ? 'FLEXIBLE' : 'OFF',
           MaximumWindowInMinutes: this.props.flexibleTimeWindow?.toMinutes(),
@@ -204,14 +212,14 @@ export class EventBridgeSchedulerCreateScheduleTask extends sfn.TaskStateBase {
         Name: this.props.scheduleName,
         ScheduleExpression: this.props.scheduleExpression,
         ScheduleExpressionTimezone: this.props.timezone,
-        StartDate: this.props.startDate ? Math.trunc(this.props.startDate.getTime() / 1000) : undefined,
+        StartDate: this.props.startDate ? this.props.startDate.toISOString() : undefined,
         State: (this.props.enabled ?? true) ? 'ENABLED' : 'DISABLED',
         Target: {
           Arn: this.props.targetArn,
           RoleArn: this.props.role.roleArn,
           Input: this.props.input,
           RetryPolicy: this.props.retryPolicy ? {
-            MaximumEventAgeInseconds: this.props.retryPolicy.maximumEventAge.toSeconds(),
+            MaximumEventAgeInSeconds: this.props.retryPolicy.maximumEventAge.toSeconds(),
             MaximumRetryAttempts: this.props.retryPolicy.maximumRetryAttempts,
           } : undefined,
           DeadLetterConfig: this.props.deadLetterQueue ? {
