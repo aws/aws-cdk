@@ -1000,6 +1000,21 @@ const api = new apigateway.RestApi(this, 'books', {
   cloudWatchRoleRemovalPolicy: cdk.RemovalPolicy.DESTROY,
 });
 ```
+### Deploying to an existing stage
+
+If you want to use an existing stage for a deployment, you can specify the stage name in the deployment as follows:
+```ts
+const restApi = new apigateway.RestApi(this, 'my-api', {
+  deploy: false,
+});
+
+const deployment = new apigateway.Deployment(this, 'my-deployment', {
+  api: restApi,
+  stageName: 'dev',
+});
+
+```
+
 
 ### Deep dive: Invalidation of deployments
 
