@@ -118,7 +118,7 @@ test('cache pretends to be empty if cache file does not contain JSON', async() =
   try {
     await fs.writeFile(cacheFile, '');
 
-    await expect(cache.get('abc')).resolves.toEqual(undefined);
+    await expect(cache.get('abc')).resolves.toBeUndefined();
   } finally {
     await nukeCache(cacheDir);
   }
