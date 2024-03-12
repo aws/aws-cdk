@@ -26,6 +26,13 @@ export interface DeploymentProps {
    * @default false
    */
   readonly retainDeployments?: boolean;
+
+  /**
+   * The stage of the API Gateway deployment.
+   *
+   * @default - If `stageName` is not specified, a "prod" stage will be automatically created for the API Gateway deployment.
+   */
+  readonly stageName?: string;
 }
 
 /**
@@ -63,6 +70,11 @@ export class Deployment extends Resource {
   public readonly deploymentId: string;
   public readonly api: IRestApi;
 
+  /**
+  * The stage of the API Gateway deployment.
+  */
+  public readonly stageName?: string;
+
   private readonly resource: LatestDeploymentResource;
 
   constructor(scope: Construct, id: string, props: DeploymentProps) {
@@ -71,6 +83,7 @@ export class Deployment extends Resource {
     this.resource = new LatestDeploymentResource(this, 'Resource', {
       description: props.description,
       restApi: props.api,
+      stageName: props.stageName,
     });
 
     if (props.retainDeployments) {
@@ -126,6 +139,7 @@ export class Deployment extends Resource {
 interface LatestDeploymentResourceProps {
   readonly description?: string;
   readonly restApi: IRestApi;
+  readonly stageName?: string;
 }
 
 class LatestDeploymentResource extends CfnDeployment {
@@ -137,6 +151,7 @@ class LatestDeploymentResource extends CfnDeployment {
     super(scope, id, {
       description: props.description,
       restApiId: props.restApi.restApiId,
+      stageName: props.stageName,
     });
 
     this.api = props.restApi;
