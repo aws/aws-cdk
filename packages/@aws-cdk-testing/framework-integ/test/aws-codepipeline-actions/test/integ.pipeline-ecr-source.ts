@@ -25,7 +25,7 @@ import * as cpactions from 'aws-cdk-lib/aws-codepipeline-actions';
  */
 
 const app = new cdk.App({
-  postCliContext: {
+  context: {
     '@aws-cdk/aws-codepipeline:defaultPipelineTypeToV2': false,
   },
 });

@@ -33,7 +33,7 @@ def handler(event, context):
 `;
 
 const app = new App({
-  postCliContext: {
+  context: {
     '@aws-cdk/aws-codepipeline:defaultPipelineTypeToV2': false,
   },
 });
