@@ -651,7 +651,7 @@ To migrate your pipeline type from V1 to V2, you just need to update the `pipeli
 This migration does not cause replacement of your pipeline.
 
 When the `@aws-cdk/aws-codepipeline:defaultPipelineTypeToV2` feature flag is set to `true` (default for new projects),
-the V2 type is selected by default. Otherwise, the V1 type is selected.
+the V2 type is selected by default if you do not specify a value for `pipelineType` property. Otherwise, the V1 type is selected.
 
 ```ts
 new codepipeline.Pipeline(this, 'Pipeline', {
