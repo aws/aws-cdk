@@ -31,7 +31,7 @@ schedulerRole.addToPrincipalPolicy(new iam.PolicyStatement({
   resources: [kmsKey.keyArn],
 }));
 
-const createScheduleTask = new EventBridgeSchedulerCreateScheduleTask(stack, 'createSchedule', {
+const createScheduleTask1 = new EventBridgeSchedulerCreateScheduleTask(stack, 'createSchedule1', {
   scheduleName: 'TestSchedule',
   actionAfterCompletion: ActionAfterCompletion.NONE,
   clientToken: 'testToken',
@@ -53,11 +53,18 @@ const createScheduleTask = new EventBridgeSchedulerCreateScheduleTask(stack, 'cr
   deadLetterQueue,
 });
 
+const createScheduleTask2 = new EventBridgeSchedulerCreateScheduleTask(stack, 'createSchedule2', {
+  scheduleName: 'TestSchedule2',
+  scheduleExpression: 'rate(1 minute)',
+  targetArn: targetQueue.queueArn,
+  role: schedulerRole,
+});
+
 const startTask = new sfn.Pass(stack, 'Start Task');
 const endTask = new sfn.Pass(stack, 'End Task');
 
 const stateMachine = new sfn.StateMachine(stack, 'stateMachine', {
-  definition: sfn.Chain.start(startTask).next(createScheduleTask).next(endTask),
+  definition: sfn.Chain.start(startTask).next(createScheduleTask1).next(createScheduleTask2).next(endTask),
 });
 
 const testCase = new IntegTest(app, 'PutEvents', {
