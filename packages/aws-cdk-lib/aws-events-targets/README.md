@@ -23,6 +23,7 @@ Currently supported are:
     - [Launch type for ECS Task](#launch-type-for-ecs-task)
     - [Assign public IP addresses to tasks](#assign-public-ip-addresses-to-tasks)
     - [Enable Amazon ECS Exec for ECS Task](#enable-amazon-ecs-exec-for-ecs-task)
+  - [Run a Redshift query](#schedule-a-redshift-query-(serverless-or-cluster))
 
 See the README of the `aws-cdk-lib/aws-events` library for more information on
 EventBridge.
@@ -463,5 +464,32 @@ rule.addTarget(new targets.EcsTask({
     command: ['echo', events.EventField.fromPath('$.detail.event')],
   }],
   enableExecuteCommand: true,
+}));
+```
+
+## Schedule a Redshift query (serverless or cluster)
+
+Use the `RedshiftQuery` target to schedule an Amazon Redshift Query.
+
+The code snippet below creates the scheduled event rule that route events to an Amazon Redshift Query
+
+```ts
+import * as redshiftserverless from 'aws-cdk-lib/aws-redshift-serverless'
+declare const workgroup: redshiftserverless.CfnWorkgroup;
+
+const rule = new events.Rule(this, 'Rule', {
+  schedule: events.Schedule.rate(cdk.Duration.hours(1)),
+});
+
+const dlq = new sqs.Queue(this, 'DeadLetterQueue');
+
+rule.addTarget(new targets.RedshiftQuery(workGroup.attrWorkgroupWorkgroupArn{
+  database: 'dev',
+  deadLetterQueue: dlq,
+  batchSQL: [
+    'SELECT * FROM foo',
+    'SELECT * FROM bar',
+  ],
+  sql: 'SELECT * FROM baz',
 }));
 ```
