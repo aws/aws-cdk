@@ -1,4 +1,4 @@
-import { HostedZone, PublicHostedZone } from 'aws-cdk-lib/aws-route53';
+import { HostedZone } from 'aws-cdk-lib/aws-route53';
 import { Stack, App } from 'aws-cdk-lib';
 import { ROUTE53_PATTERNS_USE_CERTIFICATE } from 'aws-cdk-lib/cx-api';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
