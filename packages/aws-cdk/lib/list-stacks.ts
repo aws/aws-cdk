@@ -56,7 +56,7 @@ export async function listStacks(toolkit: CdkToolkit, options: ListStacksOptions
 
     for (const stack of collectionOfStacks.stackArtifacts) {
       const data: StackDetails = {
-        id: stack.id,
+        id: stack.displayName ?? stack.id,
         name: stack.stackName,
         environment: stack.environment,
         dependencies: [],
@@ -82,7 +82,7 @@ export async function listStacks(toolkit: CdkToolkit, options: ListStacksOptions
           }
         } else {
           data.dependencies.push({
-            id: depStack.stackArtifacts[0].id,
+            id: depStack.stackArtifacts[0].displayName ?? depStack.stackArtifacts[0].id,
             dependencies: [],
           });
         }
