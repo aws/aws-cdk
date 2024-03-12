@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.132.1](https://github.com/aws/aws-cdk/compare/v2.132.0...v2.132.1) (2024-03-12)
+
+
+### Bug Fixes
+
+* **cli:** `cdk ls` returns stack id instead of stack display name ([#29447](https://github.com/aws/aws-cdk/issues/29447)) ([effad1c](https://github.com/aws/aws-cdk/commit/effad1cf8a854789070e963691b30fadf1597afb)), closes [#29420](https://github.com/aws/aws-cdk/issues/29420)
+
 ## [2.132.0](https://github.com/aws/aws-cdk/compare/v2.131.0...v2.132.0) (2024-03-08)
 
 
