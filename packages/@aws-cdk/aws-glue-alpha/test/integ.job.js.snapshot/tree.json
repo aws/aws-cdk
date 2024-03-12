@@ -2362,6 +2362,58 @@
                   }
                 },
                 "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
+                  "version": "0.0.0"
+                }
+              },
+              "Code0115baecff23f24504399384f987872e": {
+                "id": "Code0115baecff23f24504399384f987872e",
+                "path": "aws-glue-job/RayJob/Code0115baecff23f24504399384f987872e",
+                "children": {
+                  "Stage": {
+                    "id": "Stage",
+                    "path": "aws-glue-job/RayJob/Code0115baecff23f24504399384f987872e/Stage",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.AssetStaging",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "AssetBucket": {
+                    "id": "AssetBucket",
+                    "path": "aws-glue-job/RayJob/Code0115baecff23f24504399384f987872e/AssetBucket",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_s3.BucketBase",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
+                  "version": "0.0.0"
+                }
+              },
+              "Code7e4c8ab0af31dc38a92c1c69bf696244": {
+                "id": "Code7e4c8ab0af31dc38a92c1c69bf696244",
+                "path": "aws-glue-job/RayJob/Code7e4c8ab0af31dc38a92c1c69bf696244",
+                "children": {
+                  "Stage": {
+                    "id": "Stage",
+                    "path": "aws-glue-job/RayJob/Code7e4c8ab0af31dc38a92c1c69bf696244/Stage",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.AssetStaging",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "AssetBucket": {
+                    "id": "AssetBucket",
+                    "path": "aws-glue-job/RayJob/Code7e4c8ab0af31dc38a92c1c69bf696244/AssetBucket",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_s3.BucketBase",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
                   "version": "0.0.0"
                 }
