@@ -3,7 +3,7 @@ import * as events from '../../../aws-events';
 import { Stack } from '../../../core';
 import * as targets from '../../lib';
 
-describe('KinesisFirehoseStream event target', () => {
+describe('RedshiftQuery event target', () => {
   let stack: Stack;
   let clusterArn: string;
   let streamArn: any;
