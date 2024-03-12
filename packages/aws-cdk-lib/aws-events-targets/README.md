@@ -1,6 +1,5 @@
 # Event Targets for Amazon EventBridge
 
-
 This library contains integration classes to send Amazon EventBridge to any
 number of supported AWS Services. Instances of these classes should be passed
 to the `rule.addTarget()` method.
@@ -17,6 +16,7 @@ Currently supported are:
   - [Queue a Batch job](#queue-a-batch-job)
   - [Invoke an API Gateway REST API](#invoke-an-api-gateway-rest-api)
   - [Invoke an API Destination](#invoke-an-api-destination)
+  - [Invoke an AppSync GraphQL API](#invoke-an-appsync-graphql-api)
   - [Put an event on an EventBridge bus](#put-an-event-on-an-eventbridge-bus)
   - [Run an ECS Task](#run-an-ecs-task)
     - [Tagging Tasks](#tagging-tasks)
@@ -327,6 +327,52 @@ const rule = new events.Rule(this, 'Rule', {
   schedule: events.Schedule.rate(Duration.minutes(1)),
   targets: [new targets.ApiDestination(destination)],
 });
+```
+
+## Invoke an AppSync GraphQL API
+
+Use the `AppSync` target to trigger an AppSync GraphQL API. You need to
+create an `AppSync.GraphqlApi` configured with `AWS_IAM` authorization mode.
+
+The code snippet below creates a AppSync GraphQL API that is invoked every hour.
+
+```ts
+import * as api from 'aws-cdk-lib/aws-apigateway';
+import * as appsync from 'aws-cdk-lib/aws-appsync';
+
+
+const rule = new events.Rule(this, 'Rule', {
+  schedule: events.Schedule.rate(cdk.Duration.minutes(1)),
+});
+
+const api = new appsync.GraphqlApi(this, 'MyAPI', {
+  name: 'my-api',
+  definition: appsync.Definition.fromFile(path.join(__dirname, 'schema.graphql')),
+  authorizationConfig: { defaultAuthorization: { authorizationType: appsync.AuthorizationType.IAM } },
+});
+
+const none = api.addNoneDataSource('none');
+none.createResolver('publisher', {
+  typeName: 'Mutation',
+  fieldName: 'publish',
+  code: appsync.AssetCode.fromInline(`
+export const request = (ctx) => ({payload: null})
+export const response = (ctx) => ctx.args.message
+`.trim()),
+  runtime: appsync.FunctionRuntime.JS_1_0_0,
+});
+
+const graphQLOperation = 'mutation Publish($message: String!){ publish(message: $message) { message } }';
+const queue = new sqs.Queue(this, 'Queue');
+
+rule.addTarget(new targets.AppSync(api, {
+  mutationFields: ['publish'],
+  graphQLOperation,
+  variables: events.RuleTargetInput.fromObject({
+    message: 'hello world',
+  }),
+  deadLetterQueue: queue,
+}));
 ```
 
 ## Put an event on an EventBridge bus
