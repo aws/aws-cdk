@@ -268,6 +268,8 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   public static readonly APP_RUNNER = new InterfaceVpcEndpointAwsService('apprunner');
   public static readonly APP_RUNNER_REQUESTS = new InterfaceVpcEndpointAwsService('apprunner.requests');
   public static readonly APP_SYNC = new InterfaceVpcEndpointAwsService('appsync-api');
+  public static readonly APPCONFIG = new InterfaceVpcEndpointAwsService('appconfig');
+  public static readonly APPCONFIGDATA = new InterfaceVpcEndpointAwsService('appconfigdata');
   public static readonly APPLICATION_AUTOSCALING = new InterfaceVpcEndpointAwsService('application-autoscaling');
   public static readonly APPLICATION_MIGRATION_SERVICE = new InterfaceVpcEndpointAwsService('mgn');
   public static readonly APPSTREAM_API = new InterfaceVpcEndpointAwsService('appstream.api');

@@ -1995,7 +1995,7 @@ export class WindowsBuildImage implements IBuildImage {
   /**
    * Corresponds to the standard CodeBuild image `aws/codebuild/windows-base:1.0`.
    *
-   * @deprecated `WindowsBuildImage.WIN_SERVER_CORE_2019_BASE_2_0` should be used instead.
+   * @deprecated `WindowsBuildImage.WIN_SERVER_CORE_2019_BASE_3_0` should be used instead.
    */
   public static readonly WIN_SERVER_CORE_2016_BASE: IBuildImage = new WindowsBuildImage({
     imageId: 'aws/codebuild/windows-base:1.0',
@@ -2006,7 +2006,7 @@ export class WindowsBuildImage implements IBuildImage {
    * The standard CodeBuild image `aws/codebuild/windows-base:2.0`, which is
    * based off Windows Server Core 2016.
    *
-   * @deprecated `WindowsBuildImage.WIN_SERVER_CORE_2019_BASE_2_0` should be used instead.
+   * @deprecated `WindowsBuildImage.WIN_SERVER_CORE_2019_BASE_3_0` should be used instead.
    */
   public static readonly WINDOWS_BASE_2_0: IBuildImage = new WindowsBuildImage({
     imageId: 'aws/codebuild/windows-base:2.0',
@@ -2029,6 +2029,16 @@ export class WindowsBuildImage implements IBuildImage {
    */
   public static readonly WIN_SERVER_CORE_2019_BASE_2_0: IBuildImage = new WindowsBuildImage({
     imageId: 'aws/codebuild/windows-base:2019-2.0',
+    imagePullPrincipalType: ImagePullPrincipalType.CODEBUILD,
+    imageType: WindowsImageType.SERVER_2019,
+  });
+
+  /**
+   * The standard CodeBuild image `aws/codebuild/windows-base:2019-3.0`, which is
+   * based off Windows Server Core 2019.
+   */
+  public static readonly WIN_SERVER_CORE_2019_BASE_3_0: IBuildImage = new WindowsBuildImage({
+    imageId: 'aws/codebuild/windows-base:2019-3.0',
     imagePullPrincipalType: ImagePullPrincipalType.CODEBUILD,
     imageType: WindowsImageType.SERVER_2019,
   });

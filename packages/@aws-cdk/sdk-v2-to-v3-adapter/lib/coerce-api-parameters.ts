@@ -34,6 +34,7 @@ export class Coercer {
       case undefined: return value;
       case 'b': return coerceValueToUint8Array(value);
       case 'n': return coerceValueToNumber(value);
+      case 'd': return coerceValueToDate(value);
     }
 
     if (Array.isArray(value)) {
@@ -89,6 +90,19 @@ function coerceValueToNumber(x: unknown): number | any {
   if (typeof x === 'string') {
     const n = Number(x);
     return isNaN(n) ? x : n;
+  }
+
+  return x;
+}
+
+function coerceValueToDate(x: unknown): Date | any {
+  if (typeof x === 'string' || typeof x === 'number') {
+    const date = new Date(x);
+    // if x is not a valid date
+    if (isNaN(date.getTime())) {
+      return x;
+    }
+    return date;
   }
 
   return x;

@@ -294,6 +294,28 @@ test('step scaling from percentile metric', () => {
   });
 });
 
+test('step scaling with adjustmentType by default', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const fixture = new ASGFixture(stack, 'Fixture');
+
+  // WHEN
+  fixture.asg.scaleOnMetric('Tracking', {
+    metric: new cloudwatch.Metric({ namespace: 'Test', metricName: 'Metric', statistic: 'p99' }),
+    scalingSteps: [
+      { upper: 0, change: -1 },
+      { lower: 100, change: +1 },
+      { lower: 500, change: +5 },
+    ],
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::AutoScaling::ScalingPolicy', {
+    PolicyType: 'StepScaling',
+    AdjustmentType: 'ChangeInCapacity',
+  });
+});
+
 test('step scaling with evaluation period configured', () => {
   // GIVEN
   const stack = new cdk.Stack();

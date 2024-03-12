@@ -141,6 +141,7 @@ export class CfnResource extends CfnRefElement {
       case RemovalPolicy.SNAPSHOT:
         // https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-attribute-deletionpolicy.html
         const snapshottableResourceTypes = [
+          'AWS::DocDB::DBCluster',
           'AWS::EC2::Volume',
           'AWS::ElastiCache::CacheCluster',
           'AWS::ElastiCache::ReplicationGroup',

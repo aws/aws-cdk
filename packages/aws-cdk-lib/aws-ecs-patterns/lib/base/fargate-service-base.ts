@@ -62,6 +62,17 @@ export interface FargateServiceBaseProps {
   readonly memoryLimitMiB?: number;
 
   /**
+    * The amount (in GiB) of ephemeral storage to be allocated to the task.
+    *
+    * The minimum supported value is `21` GiB and the maximum supported value is `200` GiB.
+    *
+    * Only supported in Fargate platform version 1.4.0 or later.
+    *
+    * @default Undefined, in which case, the task will receive 20GiB ephemeral storage.
+    */
+  readonly ephemeralStorageGiB?: number;
+
+  /**
    * The platform version on which to run your service.
    *
    * If one is not specified, the LATEST platform version is used by default. For more information, see

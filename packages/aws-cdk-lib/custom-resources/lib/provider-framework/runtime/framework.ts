@@ -50,7 +50,10 @@ async function onEvent(cfnRequest: AWSLambda.CloudFormationCustomResourceEvent) 
     input: JSON.stringify(resourceEvent),
   };
 
-  log('starting waiter', waiter);
+  log('starting waiter', {
+    stateMachineArn: getEnv(consts.WAITER_STATE_MACHINE_ARN_ENV),
+    name: resourceEvent.RequestId,
+  });
 
   // kick off waiter state machine
   await startExecution(waiter);
