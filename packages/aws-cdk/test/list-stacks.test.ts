@@ -171,7 +171,7 @@ describe('list', () => {
       dependencies: [],
     },
     {
-      id: 'Test-Stack-B',
+      id: 'Test-Stack-A/Test-Stack-B',
       name: 'Test-Stack-B',
       environment: {
         account: '123456789012',
@@ -181,6 +181,94 @@ describe('list', () => {
       dependencies: [{
         id: 'Test-Stack-A',
         dependencies: [],
+      }],
+    }]));
+  });
+
+  test('stacks with display names and have nested dependencies', async () => {
+    let cloudExecutable = new MockCloudExecutable({
+      stacks: [
+        MockStack.MOCK_STACK_A,
+        {
+          stackName: 'Test-Stack-B',
+          template: { Resources: { TemplateName: 'Test-Stack-B' } },
+          env: 'aws://123456789012/bermuda-triangle-1',
+          metadata: {
+            '/Test-Stack-B': [
+              {
+                type: cxschema.ArtifactMetadataEntryType.STACK_TAGS,
+              },
+            ],
+          },
+          depends: ['Test-Stack-A'],
+          displayName: 'Test-Stack-A/Test-Stack-B',
+        },
+        {
+          stackName: 'Test-Stack-C',
+          template: { Resources: { TemplateName: 'Test-Stack-C' } },
+          env: 'aws://123456789012/bermuda-triangle-1',
+          metadata: {
+            '/Test-Stack-C': [
+              {
+                type: cxschema.ArtifactMetadataEntryType.STACK_TAGS,
+              },
+            ],
+          },
+          depends: ['Test-Stack-B'],
+          displayName: 'Test-Stack-A/Test-Stack-B/Test-Stack-C',
+        },
+      ],
+    });
+
+    // GIVEN
+    const toolkit = new CdkToolkit({
+      cloudExecutable,
+      configuration: cloudExecutable.configuration,
+      sdkProvider: cloudExecutable.sdkProvider,
+      deployments: cloudFormation,
+    });
+
+    // WHEN
+    const workflow = await listStacks( toolkit, { selectors: ['Test-Stack-A', 'Test-Stack-A/Test-Stack-B', 'Test-Stack-A/Test-Stack-B/Test-Stack-C'] });
+
+    // THEN
+    expect(JSON.stringify(workflow)).toEqual(JSON.stringify([{
+      id: 'Test-Stack-A',
+      name: 'Test-Stack-A',
+      environment: {
+        account: '123456789012',
+        region: 'bermuda-triangle-1',
+        name: 'aws://123456789012/bermuda-triangle-1',
+      },
+      dependencies: [],
+    },
+    {
+      id: 'Test-Stack-A/Test-Stack-B',
+      name: 'Test-Stack-B',
+      environment: {
+        account: '123456789012',
+        region: 'bermuda-triangle-1',
+        name: 'aws://123456789012/bermuda-triangle-1',
+      },
+      dependencies: [{
+        id: 'Test-Stack-A',
+        dependencies: [],
+      }],
+    },
+    {
+      id: 'Test-Stack-A/Test-Stack-B/Test-Stack-C',
+      name: 'Test-Stack-C',
+      environment: {
+        account: '123456789012',
+        region: 'bermuda-triangle-1',
+        name: 'aws://123456789012/bermuda-triangle-1',
+      },
+      dependencies: [{
+        id: 'Test-Stack-A/Test-Stack-B',
+        dependencies: [{
+          id: 'Test-Stack-A',
+          dependencies: [],
+        }],
       }],
     }]));
   });
@@ -204,10 +292,10 @@ describe('list', () => {
         },
         {
           stackName: 'Test-Stack-C',
-          template: { Resources: { TemplateName: 'Test-Stack-B' } },
+          template: { Resources: { TemplateName: 'Test-Stack-C' } },
           env: 'aws://123456789012/bermuda-triangle-1',
           metadata: {
-            '/Test-Stack-B': [
+            '/Test-Stack-C': [
               {
                 type: cxschema.ArtifactMetadataEntryType.STACK_TAGS,
               },
