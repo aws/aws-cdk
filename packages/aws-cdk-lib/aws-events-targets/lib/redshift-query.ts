@@ -1,4 +1,4 @@
-import { singletonEventRole } from './util';
+import { bindBaseTargetConfig, singletonEventRole } from './util';
 import * as events from '../../aws-events';
 import * as iam from '../../aws-iam';
 import * as secretsmanager from '../../aws-secretsmanager';
@@ -95,8 +95,8 @@ export class RedshiftQuery implements events.IRuleTarget {
     }
 
     return {
+      ...bindBaseTargetConfig(this.props),
       arn: this.clusterArn,
-      deadLetterConfig: this.props.deadLetterQueue ? { arn: this.props.deadLetterQueue?.queueArn } : undefined,
       role,
       redshiftDataParameters: {
         database: this.props.database ?? 'dev',
