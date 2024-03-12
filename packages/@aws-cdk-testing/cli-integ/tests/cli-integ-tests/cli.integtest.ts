@@ -886,10 +886,10 @@ integTest('cdk ls --show-dependencies --json', withDefaultFixture(async (fixture
       id: 'list-stacks',
       dependencies: [
         {
-          id: 'liststacksDependentStack',
+          id: 'list-stacks/DependentStack',
           dependencies: [
             {
-              id: 'liststacksDependentStackInnerDependentStack',
+              id: 'list-stacks/DependentStack/InnerDependentStack',
               dependencies: [],
             },
           ],
@@ -900,11 +900,11 @@ integTest('cdk ls --show-dependencies --json', withDefaultFixture(async (fixture
       id: 'list-multiple-dependent-stacks',
       dependencies: [
         {
-          id: 'listmultipledependentstacksDependentStack1',
+          id: 'list-multiple-dependent-stacks/DependentStack1',
           dependencies: [],
         },
         {
-          id: 'listmultipledependentstacksDependentStack2',
+          id: 'list-multiple-dependent-stacks/DependentStack2',
           dependencies: [],
         },
       ],
