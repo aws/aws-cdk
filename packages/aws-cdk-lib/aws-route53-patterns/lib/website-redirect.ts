@@ -133,6 +133,7 @@ export class HttpsRedirect extends Construct {
       const certStack = parent.node.tryFindChild(stackId) as Stack;
       return certStack ?? new Stack(parent, stackId, {
         env: { region: 'us-east-1', account: stack.account },
+        crossRegionReferences: true,
       });
     }
     return this;
