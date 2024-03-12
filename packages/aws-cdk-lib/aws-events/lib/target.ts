@@ -94,6 +94,8 @@ export interface RuleTargetConfig {
 
   /**
    * Parameters used when the rule invokes Amazon Redshift Queries
+   *
+   * @default - no parameters set
    */
   readonly redshiftDataParameters?: CfnRule.RedshiftDataParametersProperty;
 
