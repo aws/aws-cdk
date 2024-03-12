@@ -4,7 +4,7 @@ import * as cdk from '../../core';
 import * as cpactions from '../lib';
 
 const app = new cdk.App({
-  context: {
+  postCliContext: {
     '@aws-cdk/aws-codepipeline:defaultPipelineTypeToV2': false,
   },
 });

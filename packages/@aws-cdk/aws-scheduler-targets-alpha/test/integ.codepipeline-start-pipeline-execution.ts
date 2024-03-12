@@ -18,7 +18,7 @@ import { CodePipelineStartPipelineExecution } from '../lib/codepipeline-start-pi
  * 3. The pipeline is invoked by the scheduler every minute (but it needs only one successful execution to pass).
  */
 const app = new cdk.App({
-  context: {
+  postCliContext: {
     '@aws-cdk/aws-codepipeline:defaultPipelineTypeToV2': false,
   },
 });
