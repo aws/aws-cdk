@@ -538,8 +538,36 @@ describe('', () => {
     test.each([
       [codepipeline.PipelineType.V1, 'V1'],
       [codepipeline.PipelineType.V2, 'V2'],
-    ])('can specify pipeline type %s', (type, expected) => {
+      [undefined, Match.absent()],
+    ])('can specify pipeline type %s when feature flag is not set', (type, expected) => {
       const stack = new cdk.Stack();
+      const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
+        pipelineType: type,
+      });
+
+      const sourceArtifact = new codepipeline.Artifact();
+      const sourceActions = [new FakeSourceAction({
+        actionName: 'FakeSource',
+        output: sourceArtifact,
+      })];
+      const buildActions = [new FakeBuildAction({
+        actionName: 'FakeBuild',
+        input: sourceArtifact,
+      })];
+      testPipelineSetup(pipeline, sourceActions, buildActions);
+
+      Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
+        PipelineType: expected,
+      });
+    });
+
+    test.each([
+      [codepipeline.PipelineType.V1, 'V1'],
+      [codepipeline.PipelineType.V2, 'V2'],
+      [undefined, 'V2'],
+    ])('can specify pipeline type %s when feature flag is enabled', (type, expected) => {
+      const stack = new cdk.Stack();
+      stack.node.setContext(cxapi.CODEPIPELINE_DEFAULT_PIPELINE_TYPE_TO_V2, true);
       const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
         pipelineType: type,
       });
