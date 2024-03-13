@@ -32,7 +32,7 @@
   "Timer30894E3BB": {
    "Type": "AWS::Events::Rule",
    "Properties": {
-    "ScheduleExpression": "rate(1 minute)",
+    "ScheduleExpression": "rate(5 minutes)",
     "State": "ENABLED",
     "Targets": [
      {
@@ -51,6 +51,10 @@
        }
       },
       "Id": "Target0",
+      "RedshiftDataParameters": {
+       "Database": "dev",
+       "Sql": "SELECT * FROM baz"
+      },
       "RoleArn": {
        "Fn::GetAtt": [
         "Timer3EventsRole909B99A1",
@@ -84,10 +88,7 @@
     "PolicyDocument": {
      "Statement": [
       {
-       "Action": [
-        "redshift-data:BatchExecuteStatement",
-        "redshift-data:ExecuteStatement"
-       ],
+       "Action": "redshift-data:ExecuteStatement",
        "Effect": "Allow",
        "Resource": {
         "Fn::GetAtt": [

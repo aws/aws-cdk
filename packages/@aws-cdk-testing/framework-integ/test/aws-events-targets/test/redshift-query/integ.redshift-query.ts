@@ -24,15 +24,11 @@ workGroup.addDependency(namespace);
 const queue = new sqs.Queue(stack, 'dlq');
 
 const timer3 = new events.Rule(stack, 'Timer3', {
-  schedule: events.Schedule.rate(cdk.Duration.minutes(1)),
+  schedule: events.Schedule.rate(cdk.Duration.minutes(5)),
 });
 timer3.addTarget(new targets.RedshiftQuery(workGroup.attrWorkgroupWorkgroupArn, {
   database: 'dev',
   deadLetterQueue: queue,
-  batchSQL: [
-    'SELECT * FROM foo',
-    'SELECT * FROM bar',
-  ],
   sql: 'SELECT * FROM baz',
 }));
 
