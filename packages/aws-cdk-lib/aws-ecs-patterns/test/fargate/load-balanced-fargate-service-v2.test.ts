@@ -1,8 +1,11 @@
 import { Match, Template } from '../../../assertions';
+import { Certificate } from '../../../aws-certificatemanager';
 import { Vpc } from '../../../aws-ec2';
 import * as ecs from '../../../aws-ecs';
 import { ContainerDefinition, ContainerImage } from '../../../aws-ecs';
+import { ApplicationProtocol, SslPolicy } from '../../../aws-elasticloadbalancingv2';
 import { CompositePrincipal, Role, ServicePrincipal } from '../../../aws-iam';
+import { PublicHostedZone } from '../../../aws-route53';
 import { Duration, Stack } from '../../../core';
 import { ApplicationLoadBalancedFargateService, ApplicationMultipleTargetGroupsFargateService, NetworkLoadBalancedFargateService, NetworkMultipleTargetGroupsFargateService } from '../../lib';
 
@@ -222,6 +225,7 @@ describe('Application Load Balancer', () => {
         cpu: 256,
         assignPublicIp: true,
         memoryLimitMiB: 512,
+        ephemeralStorageGiB: 50,
         desiredCount: 3,
         enableECSManagedTags: true,
         enableExecuteCommand: true,
@@ -346,6 +350,9 @@ describe('Application Load Balancer', () => {
           },
         ],
         Cpu: '256',
+        EphemeralStorage: {
+          SizeInGiB: 50,
+        },
         ExecutionRoleArn: {
           'Fn::GetAtt': [
             'ExecutionRole605A040B',
@@ -415,6 +422,292 @@ describe('Application Load Balancer', () => {
           cluster,
         });
       }).toThrow(/You must specify one of: taskDefinition or image/);
+    });
+
+    test('errors when idleTimeout is over 4000 seconds for multiAlbService', () => {
+      // GIVEN
+      const stack = new Stack();
+      const vpc = new Vpc(stack, 'VPC');
+
+      // THEN
+      expect(() => {
+        new ApplicationMultipleTargetGroupsFargateService(stack, 'myService', {
+          cluster: new ecs.Cluster(stack, 'EcsCluster', { vpc }),
+          memoryLimitMiB: 256,
+          taskImageOptions: {
+            image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+          },
+          enableExecuteCommand: true,
+          loadBalancers: [
+            {
+              name: 'lb',
+              idleTimeout: Duration.seconds(400),
+              domainName: 'api.example.com',
+              domainZone: new PublicHostedZone(stack, 'HostedZone', { zoneName: 'example.com' }),
+              listeners: [
+                {
+                  name: 'listener',
+                  protocol: ApplicationProtocol.HTTPS,
+                  certificate: Certificate.fromCertificateArn(stack, 'Cert', 'helloworld'),
+                  sslPolicy: SslPolicy.TLS12_EXT,
+                },
+              ],
+            },
+            {
+              name: 'lb2',
+              idleTimeout: Duration.seconds(5000),
+              domainName: 'frontend.com',
+              domainZone: new PublicHostedZone(stack, 'HostedZone2', { zoneName: 'frontend.com' }),
+              listeners: [
+                {
+                  name: 'listener2',
+                  protocol: ApplicationProtocol.HTTPS,
+                  certificate: Certificate.fromCertificateArn(stack, 'Cert2', 'helloworld'),
+                  sslPolicy: SslPolicy.TLS12_EXT,
+                },
+              ],
+            },
+          ],
+          targetGroups: [
+            {
+              containerPort: 80,
+              listener: 'listener',
+            },
+            {
+              containerPort: 90,
+              pathPattern: 'a/b/c',
+              priority: 10,
+              listener: 'listener',
+            },
+            {
+              containerPort: 443,
+              listener: 'listener2',
+            },
+            {
+              containerPort: 80,
+              pathPattern: 'a/b/c',
+              priority: 10,
+              listener: 'listener2',
+            },
+          ],
+        });
+      }).toThrowError();
+    });
+
+    test('errors when idleTimeout is under 1 seconds for multiAlbService', () => {
+      // GIVEN
+      const stack = new Stack();
+      const vpc = new Vpc(stack, 'VPC');
+
+      // THEN
+      expect(() => {
+        new ApplicationMultipleTargetGroupsFargateService(stack, 'myService', {
+          cluster: new ecs.Cluster(stack, 'EcsCluster', { vpc }),
+          memoryLimitMiB: 256,
+          taskImageOptions: {
+            image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+          },
+          enableExecuteCommand: true,
+          loadBalancers: [
+            {
+              name: 'lb',
+              idleTimeout: Duration.seconds(400),
+              domainName: 'api.example.com',
+              domainZone: new PublicHostedZone(stack, 'HostedZone', { zoneName: 'example.com' }),
+              listeners: [
+                {
+                  name: 'listener',
+                  protocol: ApplicationProtocol.HTTPS,
+                  certificate: Certificate.fromCertificateArn(stack, 'Cert', 'helloworld'),
+                  sslPolicy: SslPolicy.TLS12_EXT,
+                },
+              ],
+            },
+            {
+              name: 'lb2',
+              idleTimeout: Duration.seconds(0),
+              domainName: 'frontend.com',
+              domainZone: new PublicHostedZone(stack, 'HostedZone2', { zoneName: 'frontend.com' }),
+              listeners: [
+                {
+                  name: 'listener2',
+                  protocol: ApplicationProtocol.HTTPS,
+                  certificate: Certificate.fromCertificateArn(stack, 'Cert2', 'helloworld'),
+                  sslPolicy: SslPolicy.TLS12_EXT,
+                },
+              ],
+            },
+          ],
+          targetGroups: [
+            {
+              containerPort: 80,
+              listener: 'listener',
+            },
+            {
+              containerPort: 90,
+              pathPattern: 'a/b/c',
+              priority: 10,
+              listener: 'listener',
+            },
+            {
+              containerPort: 443,
+              listener: 'listener2',
+            },
+            {
+              containerPort: 80,
+              pathPattern: 'a/b/c',
+              priority: 10,
+              listener: 'listener2',
+            },
+          ],
+        });
+      }).toThrowError();
+    });
+
+    test('passes when idleTimeout is between 1 and 4000 seconds for multiAlbService', () => {
+      // GIVEN
+      const stack = new Stack();
+      const vpc = new Vpc(stack, 'VPC');
+
+      // THEN
+      expect(() => {
+        new ApplicationMultipleTargetGroupsFargateService(stack, 'myService', {
+          cluster: new ecs.Cluster(stack, 'EcsCluster', { vpc }),
+          memoryLimitMiB: 256,
+          taskImageOptions: {
+            image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+          },
+          enableExecuteCommand: true,
+          loadBalancers: [
+            {
+              name: 'lb',
+              idleTimeout: Duration.seconds(5),
+              domainName: 'api.example.com',
+              domainZone: new PublicHostedZone(stack, 'HostedZone', { zoneName: 'example.com' }),
+              listeners: [
+                {
+                  name: 'listener',
+                  protocol: ApplicationProtocol.HTTPS,
+                  certificate: Certificate.fromCertificateArn(stack, 'Cert', 'helloworld'),
+                  sslPolicy: SslPolicy.TLS12_EXT,
+                },
+              ],
+            },
+            {
+              name: 'lb2',
+              idleTimeout: Duration.seconds(500),
+              domainName: 'frontend.com',
+              domainZone: new PublicHostedZone(stack, 'HostedZone2', { zoneName: 'frontend.com' }),
+              listeners: [
+                {
+                  name: 'listener2',
+                  protocol: ApplicationProtocol.HTTPS,
+                  certificate: Certificate.fromCertificateArn(stack, 'Cert2', 'helloworld'),
+                  sslPolicy: SslPolicy.TLS12_EXT,
+                },
+              ],
+            },
+          ],
+          targetGroups: [
+            {
+              containerPort: 80,
+              listener: 'listener',
+            },
+            {
+              containerPort: 90,
+              pathPattern: 'a/b/c',
+              priority: 10,
+              listener: 'listener',
+            },
+            {
+              containerPort: 443,
+              listener: 'listener2',
+            },
+            {
+              containerPort: 80,
+              pathPattern: 'a/b/c',
+              priority: 10,
+              listener: 'listener2',
+            },
+          ],
+        });
+      }).toBeTruthy();
+    });
+
+    test('idletime is undefined when not set for multiAlbService', () => {
+      // GIVEN
+      const stack = new Stack();
+      const vpc = new Vpc(stack, 'VPC');
+
+      // WHEN
+      new ApplicationMultipleTargetGroupsFargateService(stack, 'myService', {
+        cluster: new ecs.Cluster(stack, 'EcsCluster', { vpc }),
+        memoryLimitMiB: 256,
+        taskImageOptions: {
+          image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+        },
+        enableExecuteCommand: true,
+        loadBalancers: [
+          {
+            name: 'lb',
+            domainName: 'api.example.com',
+            domainZone: new PublicHostedZone(stack, 'HostedZone', { zoneName: 'example.com' }),
+            listeners: [
+              {
+                name: 'listener',
+                protocol: ApplicationProtocol.HTTPS,
+                certificate: Certificate.fromCertificateArn(stack, 'Cert', 'helloworld'),
+                sslPolicy: SslPolicy.TLS12_EXT,
+              },
+            ],
+          },
+          {
+            name: 'lb2',
+            domainName: 'frontend.com',
+            domainZone: new PublicHostedZone(stack, 'HostedZone2', { zoneName: 'frontend.com' }),
+            listeners: [
+              {
+                name: 'listener2',
+                protocol: ApplicationProtocol.HTTPS,
+                certificate: Certificate.fromCertificateArn(stack, 'Cert2', 'helloworld'),
+                sslPolicy: SslPolicy.TLS12_EXT,
+              },
+            ],
+          },
+        ],
+        targetGroups: [
+          {
+            containerPort: 80,
+            listener: 'listener',
+          },
+          {
+            containerPort: 90,
+            pathPattern: 'a/b/c',
+            priority: 10,
+            listener: 'listener',
+          },
+          {
+            containerPort: 443,
+            listener: 'listener2',
+          },
+          {
+            containerPort: 80,
+            pathPattern: 'a/b/c',
+            priority: 10,
+            listener: 'listener2',
+          },
+        ],
+      });
+
+      // THEN - stack contains default LoadBalancer Attributes
+      Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+        LoadBalancerAttributes: [
+          {
+            Key: 'deletion_protection.enabled',
+            Value: 'false',
+          },
+        ],
+      });
     });
   });
 });
@@ -558,6 +851,7 @@ describe('Network Load Balancer', () => {
         cpu: 256,
         assignPublicIp: true,
         memoryLimitMiB: 512,
+        ephemeralStorageGiB: 80,
         desiredCount: 3,
         enableECSManagedTags: true,
         enableExecuteCommand: true,
@@ -666,6 +960,9 @@ describe('Network Load Balancer', () => {
           },
         ],
         Cpu: '256',
+        EphemeralStorage: {
+          SizeInGiB: 80,
+        },
         ExecutionRoleArn: {
           'Fn::GetAtt': [
             'ExecutionRole605A040B',

@@ -12,8 +12,9 @@ cluster directly: use CDK file assets with CloudFormation Init for instances, or
 CDK container assets for ECS clusters instead.
 
 Give the CDK Pipelines way of doing things a shot first: you might find it does
-everything you need. If you want or need more control, we recommend you drop
-down to using the `aws-codepipeline` construct library directly.
+everything you need. If you need more control, or if you need `v2` support from
+`aws-codepipeline`, we recommend you drop down to using the `aws-codepipeline` 
+construct library directly.
 
 > This module contains two sets of APIs: an **original** and a **modern** version of
 > CDK Pipelines. The *modern* API has been updated to be easier to work with and

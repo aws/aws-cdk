@@ -172,6 +172,7 @@ export interface LoggingOptions {
   /**
    * Specify if slow search logging should be set up.
    * Requires Elasticsearch version 5.1 or later or OpenSearch version 1.0 or later.
+   * An explicit `false` is required when disabling it from `true`.
    *
    * @default - false
    */
@@ -187,6 +188,7 @@ export interface LoggingOptions {
   /**
    * Specify if slow index logging should be set up.
    * Requires Elasticsearch version 5.1 or later or OpenSearch version 1.0 or later.
+   * An explicit `false` is required when disabling it from `true`.
    *
    * @default - false
    */
@@ -202,6 +204,7 @@ export interface LoggingOptions {
   /**
    * Specify if Amazon OpenSearch Service application logging should be set up.
    * Requires Elasticsearch version 5.1 or later or OpenSearch version 1.0 or later.
+   * An explicit `false` is required when disabling it from `true`.
    *
    * @default - false
    */
@@ -684,6 +687,15 @@ export interface DomainProps {
    * @default - false
    */
   readonly suppressLogsResourcePolicy?: boolean;
+
+  /**
+   * Whether to enable or disable cold storage on the domain. You must enable UltraWarm storage to enable cold storage.
+   *
+   * @see https://docs.aws.amazon.com/opensearch-service/latest/developerguide/cold-storage.html
+   *
+   * @default - undefined
+   */
+  readonly coldStorageEnabled?: boolean;
 }
 
 /**
@@ -1697,6 +1709,10 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
       throw new Error('Dedicated master node is required when UltraWarm storage is enabled.');
     }
 
+    if (props.coldStorageEnabled && !warmEnabled) {
+      throw new Error('You must enable UltraWarm storage to enable cold storage.');
+    }
+
     let cfnVpcOptions: CfnDomain.VPCOptionsProperty | undefined;
 
     if (securityGroups && subnets) {
@@ -1831,6 +1847,9 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
       domainName: this.physicalName,
       engineVersion: props.version.version,
       clusterConfig: {
+        coldStorageOptions: props.coldStorageEnabled !== undefined ? {
+          enabled: props.coldStorageEnabled,
+        } : undefined,
         dedicatedMasterEnabled,
         dedicatedMasterCount: dedicatedMasterEnabled
           ? dedicatedMasterCount
