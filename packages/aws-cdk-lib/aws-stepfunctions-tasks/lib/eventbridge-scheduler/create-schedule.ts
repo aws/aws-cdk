@@ -231,11 +231,14 @@ export class EventBridgeSchedulerCreateScheduleTask extends sfn.TaskStateBase {
   }
 
   private validateProps(props: CreateScheduleProps) {
-    if (props.clientToken && !Token.isUnresolved(props.clientToken) && (props.clientToken.length > 64 || props.clientToken.length < 1)) {
+    if (
+      props.clientToken !== undefined &&
+      !Token.isUnresolved(props.clientToken) &&
+      (props.clientToken.length > 64 || props.clientToken.length < 1)) {
       throw new Error(`ClientToken must be between 1 and 64 characters long. Got: ${props.clientToken.length}`);
     }
 
-    if (props.description && !Token.isUnresolved(props.description) && props.description.length > 512) {
+    if (props.description !== undefined && !Token.isUnresolved(props.description) && props.description.length > 512) {
       throw new Error(`Description must be less than 512 characters long. Got: ${props.description.length}`);
     }
 
