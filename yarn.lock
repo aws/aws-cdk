@@ -56,12 +56,12 @@
   resolved "https://registry.npmjs.org/@aws-cdk/asset-node-proxy-agent-v6/-/asset-node-proxy-agent-v6-2.0.1.tgz#6dc9b7cdb22ff622a7176141197962360c33e9ac"
   integrity sha512-DDt4SLdLOwWCjGtltH4VCST7hpOI5DzieuhGZsBpZ+AgJdSI2GCjklCXm0GCTwJG/SolkL5dtQXyUKgg9luBDg==
 
-"@aws-cdk/aws-service-spec@^0.0.51":
-  version "0.0.51"
-  resolved "https://registry.npmjs.org/@aws-cdk/aws-service-spec/-/aws-service-spec-0.0.51.tgz#c094ac441140bd245c35d4d6b9e1e941e01d239c"
-  integrity sha512-eqDGgFuJLeKVmc4+ulRMm2sagyZhM7guc/TlXNO4zT4swdXPpNJLoSAuuJJBLEu2KDYw2EZDY4Fa33SQnUsavg==
+"@aws-cdk/aws-service-spec@^0.0.53":
+  version "0.0.53"
+  resolved "https://registry.npmjs.org/@aws-cdk/aws-service-spec/-/aws-service-spec-0.0.53.tgz#d8f7b2edc69e9819a304261fcc9c0c0b87916015"
+  integrity sha512-CcKhkQDuf4I9K93/5v/Bq3ekWIq2A5KmUQTWqnqWjXaof1J3mk+htsFU8vP7AhsLfTuYsJM9vTLF7WK6fPD5mA==
   dependencies:
-    "@aws-cdk/service-spec-types" "^0.0.51"
+    "@aws-cdk/service-spec-types" "^0.0.53"
     "@cdklabs/tskb" "^0.0.3"
 
 "@aws-cdk/lambda-layer-kubectl-v24@^2.0.242":
@@ -69,12 +69,12 @@
   resolved "https://registry.npmjs.org/@aws-cdk/lambda-layer-kubectl-v24/-/lambda-layer-kubectl-v24-2.0.242.tgz#4273a5ad7714f933a7eba155eb9280823086db71"
   integrity sha512-7/wIOo685tmrEe4hh6zqDELhBZh5OQGf3Hd2FU2Vnwy2ZubW8qTmEw5gqJCsCrGKeYDoa1BcVhDRZ/nzjkaqyA==
 
-"@aws-cdk/service-spec-importers@^0.0.22":
-  version "0.0.22"
-  resolved "https://registry.npmjs.org/@aws-cdk/service-spec-importers/-/service-spec-importers-0.0.22.tgz#05a3f200e2bcfd59d81fbbd6643930705547419b"
-  integrity sha512-GWAglOy/9kVNPJtKuDt6RX+uMgszaKBPrRwHKuvUDlYvGBcB7XT1e0e7sPtSArFCALHQuu1fapNpunC5pjEytw==
+"@aws-cdk/service-spec-importers@^0.0.24":
+  version "0.0.24"
+  resolved "https://registry.npmjs.org/@aws-cdk/service-spec-importers/-/service-spec-importers-0.0.24.tgz#74c1e97afe252149c1c1ebfb6bf09b66d41e6aa0"
+  integrity sha512-bDA3wZT19FdpHZZVQfFpBt7ax5ppXC5u3gSk6j7SKV6JThaBXXtUjixD6AMPIGju/xmKuhUVOlhvezd0OS9/7w==
   dependencies:
-    "@aws-cdk/service-spec-types" "^0.0.49"
+    "@aws-cdk/service-spec-types" "^0.0.53"
     "@cdklabs/tskb" "^0.0.3"
     ajv "^6"
     canonicalize "^2.0.0"
@@ -85,17 +85,10 @@
     glob "^8"
     sort-json "^2.0.1"
 
-"@aws-cdk/service-spec-types@^0.0.49":
-  version "0.0.49"
-  resolved "https://registry.npmjs.org/@aws-cdk/service-spec-types/-/service-spec-types-0.0.49.tgz#1adc059466cd4107b6fd2d424c663bf6964ee1ac"
-  integrity sha512-j8UZXdWjplG+HcmpejNlJcEHJzkoVdj4hhxa8cTW+PNqqw8j0nAniZbS58qI+dcg7zFB1NA0M76gX2ns7ExgTQ==
-  dependencies:
-    "@cdklabs/tskb" "^0.0.3"
-
-"@aws-cdk/service-spec-types@^0.0.51":
-  version "0.0.51"
-  resolved "https://registry.npmjs.org/@aws-cdk/service-spec-types/-/service-spec-types-0.0.51.tgz#33976fe494a9fd6d7cf4128b449ac0be0580b85b"
-  integrity sha512-WL1sxvpXAp2wDtXrSqpvGWMaStFgXycqksGBp98wGx8Motac8jbkPwVcTWde/4VOL1cjJ49w49c4xroXgQ0G7A==
+"@aws-cdk/service-spec-types@^0.0.53":
+  version "0.0.53"
+  resolved "https://registry.npmjs.org/@aws-cdk/service-spec-types/-/service-spec-types-0.0.53.tgz#026e203d973114973f1cdc67d8c2feb6026f2888"
+  integrity sha512-TbZ9/9wkGlwZyE4/Tuv0azCbUqHHPlp91SWwqd8CjNFHZ3r+1r0m8yKdJgGdfO6PO973Ojesr4+4IxMc8rmy/w==
   dependencies:
     "@cdklabs/tskb" "^0.0.3"
 
@@ -396,6 +389,51 @@
     "@smithy/util-utf8" "^2.0.0"
     tslib "^2.5.0"
     uuid "^8.3.2"
+
+"@aws-sdk/client-cloudwatch@3.421.0":
+  version "3.421.0"
+  resolved "https://registry.npmjs.org/@aws-sdk/client-cloudwatch/-/client-cloudwatch-3.421.0.tgz#4589cb1e03e05188870e18340b256fc8fb74fb95"
+  integrity sha512-EBegld7Ks/g1tyNL+0AgTS0ZdgF0njz/AgyQwDIHXgsJVDn9tNga8wL3V2l2aj37gASJAC6PEXwK1rb0pVz4lw==
+  dependencies:
+    "@aws-crypto/sha256-browser" "3.0.0"
+    "@aws-crypto/sha256-js" "3.0.0"
+    "@aws-sdk/client-sts" "3.421.0"
+    "@aws-sdk/credential-provider-node" "3.421.0"
+    "@aws-sdk/middleware-host-header" "3.418.0"
+    "@aws-sdk/middleware-logger" "3.418.0"
+    "@aws-sdk/middleware-recursion-detection" "3.418.0"
+    "@aws-sdk/middleware-signing" "3.418.0"
+    "@aws-sdk/middleware-user-agent" "3.418.0"
+    "@aws-sdk/region-config-resolver" "3.418.0"
+    "@aws-sdk/types" "3.418.0"
+    "@aws-sdk/util-endpoints" "3.418.0"
+    "@aws-sdk/util-user-agent-browser" "3.418.0"
+    "@aws-sdk/util-user-agent-node" "3.418.0"
+    "@smithy/config-resolver" "^2.0.10"
+    "@smithy/fetch-http-handler" "^2.1.5"
+    "@smithy/hash-node" "^2.0.9"
+    "@smithy/invalid-dependency" "^2.0.9"
+    "@smithy/middleware-content-length" "^2.0.11"
+    "@smithy/middleware-endpoint" "^2.0.9"
+    "@smithy/middleware-retry" "^2.0.12"
+    "@smithy/middleware-serde" "^2.0.9"
+    "@smithy/middleware-stack" "^2.0.2"
+    "@smithy/node-config-provider" "^2.0.12"
+    "@smithy/node-http-handler" "^2.1.5"
+    "@smithy/protocol-http" "^3.0.5"
+    "@smithy/smithy-client" "^2.1.6"
+    "@smithy/types" "^2.3.3"
+    "@smithy/url-parser" "^2.0.9"
+    "@smithy/util-base64" "^2.0.0"
+    "@smithy/util-body-length-browser" "^2.0.0"
+    "@smithy/util-body-length-node" "^2.1.0"
+    "@smithy/util-defaults-mode-browser" "^2.0.10"
+    "@smithy/util-defaults-mode-node" "^2.0.12"
+    "@smithy/util-retry" "^2.0.2"
+    "@smithy/util-utf8" "^2.0.0"
+    "@smithy/util-waiter" "^2.0.9"
+    fast-xml-parser "4.2.5"
+    tslib "^2.5.0"
 
 "@aws-sdk/client-codepipeline@3.421.0":
   version "3.421.0"
@@ -6269,10 +6307,10 @@ case@1.6.3, case@^1.6.3:
   resolved "https://registry.npmjs.org/case/-/case-1.6.3.tgz#0a4386e3e9825351ca2e6216c60467ff5f1ea1c9"
   integrity sha512-mzDSXIPaFwVDvZAHqZ9VlbyF4yyXRuX6IvB06WvPYkqJVO24kX1PPhv9bfpKNFZyxYFmmgo03HUiD8iklmJYRQ==
 
-cdk-from-cfn@^0.133.0:
-  version "0.133.0"
-  resolved "https://registry.npmjs.org/cdk-from-cfn/-/cdk-from-cfn-0.133.0.tgz#a18dd2c505c8fc0b7f4947f6d6afb3e7fea5b391"
-  integrity sha512-Yj0kE+GixlSGLNTodCaZEcIeyxzNQonZAykmsSP7wRSm3yYNfg/2XX1tRWi9hzUGMwqYuQr5GsCBymukU0GKsA==
+cdk-from-cfn@^0.141.0:
+  version "0.141.0"
+  resolved "https://registry.npmjs.org/cdk-from-cfn/-/cdk-from-cfn-0.141.0.tgz#f480ee87658f8056a933e4684198b050cb783e8f"
+  integrity sha512-saEHn8rxR3a2b0MpOAjnNMeLOoCKo9lSKYMm7GsAPlzyMOiTmTQeIwKhUAgt8ouVbt4VZPddBukzmfh5+xtCYw==
 
 cdk-generate-synthetic-examples@^0.1.304:
   version "0.1.304"
