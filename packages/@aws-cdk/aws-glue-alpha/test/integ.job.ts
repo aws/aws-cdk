@@ -71,9 +71,6 @@ const moduleUtils = glue.Code.fromAsset(path.join(__dirname, 'module', 'utils.zi
       arg1: 'value1',
       arg2: 'value2',
     },
-    sparkUI: {
-      enabled: true,
-    },
     tags: {
       key: 'value',
     },

@@ -164,10 +164,9 @@ export interface IBucket extends IResource {
    * - `s3://bucket/key`
    * @param key The S3 key of the object. If not specified, the S3 URL of the
    *      bucket is returned.
-   * @param trailingSlash Whether to add a trailing slash when the url does not have it.
    * @returns an ObjectS3Url token
    */
-  s3UrlForObject(key?: string, trailingSlash?: boolean): string;
+  s3UrlForObject(key?: string): string;
 
   /**
    * Returns an ARN that represents all objects within the bucket that match
@@ -733,21 +732,14 @@ export abstract class BucketBase extends Resource implements IBucket {
    *
    * @param key The S3 key of the object. If not specified, the S3 URL of the
    *      bucket is returned.
-   * @param trailingSlash Whether to add a trailing slash when the url does not have it.
    * @returns an ObjectS3Url token
    */
-  public s3UrlForObject(key?: string, trailingSlash?: boolean): string {
+  public s3UrlForObject(key?: string): string {
     const prefix = 's3://';
-    let url = undefined;
     if (typeof key !== 'string') {
-      url = this.urlJoin(prefix, this.bucketName);
-    } else {
-      url = this.urlJoin(prefix, this.bucketName, key);
+      return this.urlJoin(prefix, this.bucketName);
     }
-    if (trailingSlash) {
-      url = url.replace(/\/?$/, '/');
-    }
-    return url;
+    return this.urlJoin(prefix, this.bucketName, key);
   }
 
   /**

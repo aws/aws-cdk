@@ -826,7 +826,7 @@ export class Job extends JobBase {
     bucket.grantReadWrite(role, this.cleanPrefixForGrant(props.prefix));
     const args = {
       '--enable-spark-ui': 'true',
-      '--spark-event-logs-path': bucket.s3UrlForObject(props.prefix, true),
+      '--spark-event-logs-path': bucket.s3UrlForObject(props.prefix).replace(/\/?$/, '/'),
     };
 
     return {
