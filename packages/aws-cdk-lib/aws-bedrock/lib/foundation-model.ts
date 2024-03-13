@@ -38,6 +38,9 @@ export class FoundationModelIdentifier {
   /** Base model "anthropic.claude-instant-v1". */
   public static readonly ANTHROPIC_CLAUDE_INSTANT_V1 = new FoundationModelIdentifier('anthropic.claude-instant-v1');
 
+  /** Base model "anthropic.claude-3-sonnet-20240229-v1:0". */
+  public static readonly ANTHROPIC_CLAUDE_3_SONNET_20240229_V1_0 = new FoundationModelIdentifier('anthropic.claude-3-sonnet-20240229-v1:0');
+
   /** Base model "cohere.command-text-v14". */
   public static readonly COHERE_COMMAND_V14 = new FoundationModelIdentifier('cohere.command-text-v14');
 
@@ -61,6 +64,12 @@ export class FoundationModelIdentifier {
 
   /** Base model "stability.stable-diffusion-xl-v1". */
   public static readonly STABILITY_STABLE_DIFFUSION_XL_V1 = new FoundationModelIdentifier('stability.stable-diffusion-xl-v1');
+
+  /** Base model "mistral.mistral-7b-instruct-v0:2". */
+  public static readonly MISTRAL_7B_INSTRUCT_V0_2 = new FoundationModelIdentifier('mistral.mistral-7b-instruct-v0:2');
+
+  /** Base model "mistral.mixtral-8x7b-instruct-v0:1". */
+  public static readonly MIXTRAL_8X7B_INSTRUCT_V0_1 = new FoundationModelIdentifier('mistral.mixtral-8x7b-instruct-v0:1');
 
   /**
    * Constructor for foundation model identifier
