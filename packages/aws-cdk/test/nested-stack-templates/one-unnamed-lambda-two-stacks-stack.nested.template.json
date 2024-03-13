@@ -15,7 +15,7 @@
     "GrandChildStackA": {
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
-        "TemplateURL": "https://www.magic-url.com"
+        "TemplateURL": "https://www.amazon.com"
       },
       "Metadata": {
         "aws:asset:path": "one-unnamed-lambda-stack.nested.template.json"
@@ -24,7 +24,7 @@
     "GrandChildStackB": {
       "Type": "AWS::CloudFormation::Stack",
       "Properties": {
-        "TemplateURL": "https://www.magic-url.com"
+        "TemplateURL": "https://www.amazon.com"
       },
       "Metadata": {
         "aws:asset:path": "one-unnamed-lambda-stack.nested.template.json"
