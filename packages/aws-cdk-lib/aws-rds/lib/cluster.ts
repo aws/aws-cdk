@@ -5,6 +5,7 @@ import { DatabaseClusterAttributes, IDatabaseCluster } from './cluster-ref';
 import { Endpoint } from './endpoint';
 import { NetworkType } from './instance';
 import { IParameterGroup, ParameterGroup } from './parameter-group';
+import { DATA_API_ACTIONS } from './perms';
 import { applyDefaultRotationOptions, defaultDeletionProtection, renderCredentials, setupS3ImportExport, helperRemovalPolicy, renderUnless, renderSnapshotCredentials } from './private/util';
 import { BackupProps, Credentials, InstanceProps, PerformanceInsightRetention, RotationSingleUserOptions, RotationMultiUserOptions, SnapshotCredentials } from './props';
 import { DatabaseProxy, DatabaseProxyOptions, ProxyTarget } from './proxy';
@@ -377,6 +378,13 @@ interface DatabaseClusterBaseProps {
    * @default - If `DatabaseClusterBaseProps.domain` is specified, a role with the `AmazonRDSDirectoryServiceAccess` policy is automatically created.
    */
   readonly domainRole?: iam.IRole;
+
+  /**
+   * Whether to enable the Data API for the cluster.
+   *
+   * @default - false
+   */
+  readonly enableDataApi?: boolean;
 }
 
 /**
@@ -457,6 +465,20 @@ export abstract class DatabaseClusterBase extends Resource implements IDatabaseC
    */
   public abstract readonly connections: ec2.Connections;
 
+  protected abstract enableDataApi?: boolean;
+
+  /**
+   * The ARN of the cluster
+   */
+  public get clusterArn(): string {
+    return Stack.of(this).formatArn({
+      service: 'rds',
+      resource: 'cluster',
+      arnFormat: ArnFormat.COLON_RESOURCE_NAME,
+      resourceName: this.clusterIdentifier,
+    });
+  }
+
   /**
    * Add a new db proxy to this cluster.
    */
@@ -487,6 +509,22 @@ export abstract class DatabaseClusterBase extends Resource implements IDatabaseC
         resourceName: `${this.clusterResourceIdentifier}/${dbUser}`,
         arnFormat: ArnFormat.COLON_RESOURCE_NAME,
       })],
+    });
+  }
+
+  /**
+   * Grant the given identity to access the Data API.
+   */
+  public grantDataApiAccess(grantee: iam.IGrantable): iam.Grant {
+    if (this.enableDataApi === false) {
+      throw new Error('Cannot grant Data API access when the Data API is disabled');
+    }
+
+    this.enableDataApi = true;
+    return iam.Grant.addToPrincipal({
+      actions: DATA_API_ACTIONS,
+      grantee,
+      resourceArns: [this.clusterArn],
     });
   }
 }
@@ -544,6 +582,7 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
   protected readonly serverlessV2MaxCapacity: number;
 
   protected hasServerlessInstance?: boolean;
+  protected enableDataApi?: boolean;
 
   constructor(scope: Construct, id: string, props: DatabaseClusterBaseProps) {
     super(scope, id);
@@ -567,6 +606,8 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
     this.serverlessV2MaxCapacity = props.serverlessV2MaxCapacity ?? 2;
     this.serverlessV2MinCapacity = props.serverlessV2MinCapacity ?? 0.5;
     this.validateServerlessScalingConfig();
+
+    this.enableDataApi = props.enableDataApi;
 
     const { subnetIds } = this.vpc.selectSubnets(this.vpcSubnets);
 
@@ -655,6 +696,7 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
       associatedRoles: clusterAssociatedRoles.length > 0 ? clusterAssociatedRoles : undefined,
       deletionProtection: defaultDeletionProtection(props.deletionProtection, props.removalPolicy),
       enableIamDatabaseAuthentication: props.iamAuthentication,
+      enableHttpEndpoint: Lazy.any({ produce: () => this.enableDataApi }),
       networkType: props.networkType,
       serverlessV2ScalingConfiguration: Lazy.any({
         produce: () => {
@@ -714,6 +756,7 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
       promotionTier: 0, // override the promotion tier so that writers are always 0
     });
     instanceIdentifiers.push(writer.instanceIdentifier);
+    instanceEndpoints.push(new Endpoint(writer.dbInstanceEndpointAddress, this.clusterEndpoint.port));
 
     (props.readers ?? []).forEach(instance => {
       const clusterInstance = instance.bind(this, this, {
@@ -927,6 +970,8 @@ class ImportedDatabaseCluster extends DatabaseClusterBase implements IDatabaseCl
   private readonly _clusterReadEndpoint?: Endpoint;
   private readonly _instanceIdentifiers?: string[];
   private readonly _instanceEndpoints?: Endpoint[];
+
+  protected readonly enableDataApi = false;
 
   constructor(scope: Construct, id: string, attrs: DatabaseClusterAttributes) {
     super(scope, id);
@@ -1371,6 +1416,7 @@ function legacyCreateInstances(cluster: DatabaseClusterNew, props: DatabaseClust
       autoMinorVersionUpgrade: instanceProps.autoMinorVersionUpgrade,
       allowMajorVersionUpgrade: instanceProps.allowMajorVersionUpgrade,
       deleteAutomatedBackups: instanceProps.deleteAutomatedBackups,
+      preferredMaintenanceWindow: instanceProps.preferredMaintenanceWindow,
     });
 
     // For instances that are part of a cluster:

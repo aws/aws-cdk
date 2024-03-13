@@ -65,6 +65,7 @@ export class NetworkMultipleTargetGroupsFargateService extends NetworkMultipleTa
       this.taskDefinition = new FargateTaskDefinition(this, 'TaskDef', {
         memoryLimitMiB: props.memoryLimitMiB,
         cpu: props.cpu,
+        ephemeralStorageGiB: props.ephemeralStorageGiB,
         executionRole: taskImageOptions.executionRole,
         taskRole: taskImageOptions.taskRole,
         family: taskImageOptions.family,

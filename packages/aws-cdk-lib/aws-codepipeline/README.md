@@ -745,10 +745,26 @@ pipeline.addTrigger({
 });
 ```
 
+## Execution mode
+
+To control the concurrency behavior when multiple executions of a pipeline are started, you can use the `executionMode` property.
+
+The execution mode can only be used with pipeline type V2.
+
+```ts
+new codepipeline.Pipeline(this, 'Pipeline', {
+  pipelineType: codepipeline.PipelineType.V2,
+  executionMode: codepipeline.ExecutionMode.PARALLEL,
+});
+```
+
 ## Migrating a pipeline type from V1 to V2
 
 To migrate your pipeline type from V1 to V2, you just need to update the `pipelineType` property to `PipelineType.V2`.
 This migration does not cause replacement of your pipeline.
+
+When the `@aws-cdk/aws-codepipeline:defaultPipelineTypeToV2` feature flag is set to `true` (default for new projects),
+the V2 type is selected by default if you do not specify a value for `pipelineType` property. Otherwise, the V1 type is selected.
 
 ```ts
 new codepipeline.Pipeline(this, 'Pipeline', {
