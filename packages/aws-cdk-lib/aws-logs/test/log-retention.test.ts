@@ -4,6 +4,7 @@ import * as iam from '../../aws-iam';
 import * as cdk from '../../core';
 import * as cxapi from '../../cx-api';
 import { LogRetention, RetentionDays } from '../lib';
+import {Key} from "../../aws-kms";
 
 /* eslint-disable quote-props */
 
@@ -548,6 +549,19 @@ describe('log retention', () => {
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
       Timeout: 900,
+    });
+  });
+
+  test('with KmsKeyId specified', () => {
+    const stack = new cdk.Stack();
+    new LogRetention(stack, 'MyLambda', {
+      logGroupName: 'group',
+      retention: RetentionDays.INFINITE,
+      kmsKey: new Key(stack, 'MyKey')
+    });
+
+    Template.fromStack(stack).hasResourceProperties('Custom::LogRetention', {
+      KmsKey: 'us-east-1',
     });
   });
 });
