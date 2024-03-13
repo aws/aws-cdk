@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/30c658bb3cfa20d3e01112705df055414f1af71c39615b6f43131af59cb4c208.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/dd8261e4900491c4aaaec8bcd31c57b1f30085f1d579f19089bd55a4bdb023b7.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -76,6 +76,12 @@
             "data": "StreamingJob20ServiceRoleDefaultPolicy3CF74B2D"
           }
         ],
+        "/aws-glue-job/StreamingJob2.0/SparkUIBucket/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StreamingJob20SparkUIBucket92EF3706"
+          }
+        ],
         "/aws-glue-job/StreamingJob2.0/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -124,6 +130,12 @@
             "data": "StreamingJob30ServiceRoleDefaultPolicy0C15D010"
           }
         ],
+        "/aws-glue-job/StreamingJob3.0/SparkUIBucket/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StreamingJob30SparkUIBucketEFBF52D3"
+          }
+        ],
         "/aws-glue-job/StreamingJob3.0/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -170,6 +182,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "StreamingJob40ServiceRoleDefaultPolicy0667C434"
+          }
+        ],
+        "/aws-glue-job/StreamingJob4.0/SparkUIBucket/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StreamingJob40SparkUIBucketA97E24C6"
           }
         ],
         "/aws-glue-job/StreamingJob4.0/Resource": [
