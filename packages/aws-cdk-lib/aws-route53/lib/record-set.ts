@@ -859,6 +859,12 @@ export interface CrossAccountZoneDelegationRecordProps {
    * @default RemovalPolicy.DESTROY
    */
   readonly removalPolicy?: RemovalPolicy;
+
+  /**
+   * Region from which to obtain temporary credentials.
+   * @default - the Route53 signing region in the current partition
+   */
+  readonly stsRegion?: string;
 }
 
 /**
@@ -897,6 +903,7 @@ export class CrossAccountZoneDelegationRecord extends Construct {
         DelegatedZoneName: props.delegatedZone.zoneName,
         DelegatedZoneNameServers: props.delegatedZone.hostedZoneNameServers!,
         TTL: (props.ttl || Duration.days(2)).toSeconds(),
+        STSRegion: props.stsRegion,
       },
     });
 
