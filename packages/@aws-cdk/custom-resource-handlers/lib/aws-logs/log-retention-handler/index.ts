@@ -11,17 +11,18 @@ interface LogRetentionEvent extends Omit<AWSLambda.CloudFormationCustomResourceE
     SdkRetry?: {
       maxRetries?: string;
     };
-    RemovalPolicy?: string
+    RemovalPolicy?: string;
+    KmsKeyId?: string;
   };
 }
 
 /**
  * Creates a log group and doesn't throw if it exists.
  */
-async function createLogGroupSafe(logGroupName: string, client: Logs.CloudWatchLogsClient, withDelay: (block: () => Promise<void>) => Promise<void>) {
+async function createLogGroupSafe(logGroupName: string, client: Logs.CloudWatchLogsClient, withDelay: (block: () => Promise<void>) => Promise<void>, kmsKeyId?: string) {
   await withDelay(async () => {
     try {
-      const params = { logGroupName };
+      const params = { logGroupName, kmsKeyId };
       const command = new Logs.CreateLogGroupCommand(params);
       await client.send(command);
 
@@ -90,6 +91,9 @@ export async function handler(event: LogRetentionEvent, context: AWSLambda.Conte
     // The region of the target log group
     const logGroupRegion = event.ResourceProperties.LogGroupRegion;
 
+    // The kms key used to encrypt the log group
+    const kmsKeyId = event.ResourceProperties.KmsKeyId;
+
     // Parse to AWS SDK retry options
     const maxRetries = parseIntOptional(event.ResourceProperties.SdkRetry?.maxRetries) ?? 5;
     const withDelay = makeWithDelay(maxRetries);
@@ -103,7 +107,7 @@ export async function handler(event: LogRetentionEvent, context: AWSLambda.Conte
 
     if (event.RequestType === 'Create' || event.RequestType === 'Update') {
       // Act on the target log group
-      await createLogGroupSafe(logGroupName, client, withDelay);
+      await createLogGroupSafe(logGroupName, client, withDelay, kmsKeyId);
       await setRetentionPolicy(logGroupName, client, withDelay, parseIntOptional(event.ResourceProperties.RetentionInDays));
 
       // Configure the Log Group for the Custom Resource function itself
@@ -116,7 +120,7 @@ export async function handler(event: LogRetentionEvent, context: AWSLambda.Conte
         // Due to the async nature of the log group creation, the log group for this function might
         // still be not created yet at this point. Therefore we attempt to create it.
         // In case it is being created, createLogGroupSafe will handle the conflict.
-        await createLogGroupSafe(`/aws/lambda/${context.functionName}`, clientForCustomResourceFunction, withDelay);
+        await createLogGroupSafe(`/aws/lambda/${context.functionName}`, clientForCustomResourceFunction, withDelay, kmsKeyId);
         // If createLogGroupSafe fails, the log group is not created even after multiple attempts.
         // In this case we have nothing to set the retention policy on but an exception will skip
         // the next line.

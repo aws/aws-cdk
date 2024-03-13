@@ -17,7 +17,7 @@
 
 "@actions/github@^5.1.1":
   version "5.1.1"
-  resolved "https://registry.npmjs.org/@actions/github/-/github-5.1.1.tgz#40b9b9e1323a5efcf4ff7dadd33d8ea51651bbcb"
+  resolved "https://registry.npmjs.org/@actions/github/-/github-5.1.1.tgz"
   integrity sha512-Nk59rMDoJaV+mHCOJPXuvB1zIbomlKS0dmSIqPGxd0enAXBnOfn4VWF+CGtRCwXZG9Epa54tZA7VIRlJDS8A6g==
   dependencies:
     "@actions/http-client" "^2.0.1"

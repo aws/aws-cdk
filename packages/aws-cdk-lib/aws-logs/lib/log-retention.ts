@@ -5,6 +5,7 @@ import * as iam from '../../aws-iam';
 import * as s3_assets from '../../aws-s3-assets';
 import * as cdk from '../../core';
 import { ArnFormat } from '../../core';
+import {IKey} from "../../aws-kms";
 
 /**
  * Construction properties for a LogRetention.
@@ -45,6 +46,12 @@ export interface LogRetentionProps {
    * @default RemovalPolicy.RETAIN
    */
   readonly removalPolicy?: cdk.RemovalPolicy;
+
+  /**
+   * The KMS key used to encrypt the log group upon creation
+   * @default Log group will not be encrypted
+   */
+  readonly kmsKey?: IKey;
 }
 
 /**
@@ -105,6 +112,7 @@ export class LogRetention extends Construct {
         } : undefined,
         RetentionInDays: props.retention === RetentionDays.INFINITE ? undefined : props.retention,
         RemovalPolicy: props.removalPolicy,
+        KmsKeyId: props.kmsKey ? props.kmsKey?.keyArn : undefined,
       },
     });
 
