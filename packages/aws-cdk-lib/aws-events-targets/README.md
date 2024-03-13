@@ -483,7 +483,7 @@ const rule = new events.Rule(this, 'Rule', {
 
 const dlq = new sqs.Queue(this, 'DeadLetterQueue');
 
-rule.addTarget(new targets.RedshiftQuery(workGroup.attrWorkgroupWorkgroupArn{
+rule.addTarget(new targets.RedshiftQuery(workgroup.attrWorkgroupWorkgroupArn{
   database: 'dev',
   deadLetterQueue: dlq,
   batchSQL: [
