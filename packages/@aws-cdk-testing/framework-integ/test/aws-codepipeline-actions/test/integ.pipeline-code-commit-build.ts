@@ -6,7 +6,11 @@ import * as cpactions from 'aws-cdk-lib/aws-codepipeline-actions';
 
 /* eslint-disable quote-props */
 
-const app = new cdk.App();
+const app = new cdk.App({
+  postCliContext: {
+    '@aws-cdk/aws-codepipeline:defaultPipelineTypeToV2': false,
+  },
+});
 
 const stack = new cdk.Stack(app, 'aws-cdk-codepipeline-codecommit-codebuild');
 

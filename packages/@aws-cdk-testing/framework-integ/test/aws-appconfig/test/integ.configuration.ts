@@ -32,7 +32,11 @@ def handler(event, context):
   print('This is my dummy validator')
 `;
 
-const app = new App();
+const app = new App({
+  postCliContext: {
+    '@aws-cdk/aws-codepipeline:defaultPipelineTypeToV2': false,
+  },
+});
 
 const stack = new Stack(app, 'aws-appconfig-configuration');
 
