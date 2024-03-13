@@ -1111,6 +1111,36 @@ export enum InstanceClass {
   MAC1 = 'mac1',
 
   /**
+   * Macintosh instances built on Apple Mac mini 2020 computers, 2nd generation with Apple silicon M1 processors
+   */
+  MACINTOSH2_M1 = 'macintosh2-m1',
+
+  /**
+   * Macintosh instances built on Apple Mac mini 2020 computers, 2nd generation with Apple silicon M1 processors
+   */
+  MAC2 = 'mac2',
+
+  /**
+   * Macintosh instances built on Apple Mac mini 2023 computers, 2nd generation with Apple silicon M2 processors
+   */
+  MACINTOSH2_M2 = 'macintosh2-m2',
+
+  /**
+   * Macintosh instances built on Apple Mac mini 2023 computers, 2nd generation with Apple silicon M2 processors
+   */
+  MAC2_M2 = 'mac2-m2',
+
+  /**
+   * Macintosh instances built on Apple Mac mini 2023 computers, 2nd generation with Apple silicon M2 Pro processors
+   */
+  MACINTOSH2_M2_PRO = 'macintosh2-m2-pro',
+
+  /**
+   * Macintosh instances built on Apple Mac mini 2023 computers, 2nd generation with Apple silicon M2 Pro processors
+   */
+  MAC2_M2PRO = 'mac2-m2pro',
+
+  /**
    * Multi-stream video transcoding instances for resolutions up to 4K UHD, 1st generation
    */
   VIDEO_TRANSCODING1 = 'video-transcoding1',
@@ -1129,6 +1159,36 @@ export enum InstanceClass {
    * High performance computing based on AMD EPYC, 6th generation
    */
   HPC6A = 'hpc6a',
+
+  /**
+   * High performance computing with local NVME drive based on 6th generation with Intel Xeon Scalable processors (3rd generation processors code named Ice Lake), 6th generation
+   */
+  HIGH_PERFORMANCE_COMPUTING6_INTEL_NVME_DRIVE = 'high-performance-computing6-intel-nvme-drive',
+
+  /**
+   * High performance computing with local NVME drive based on 6th generation with Intel Xeon Scalable processors (3rd generation processors code named Ice Lake), 6th generation
+   */
+  HPC6ID = 'hpc6id',
+
+  /**
+   * High performance computing based on AMD EPYC, 7th generation
+   */
+  HIGH_PERFORMANCE_COMPUTING7_AMD = 'high-performance-computing7-amd',
+
+  /**
+   * High performance computing based on AMD EPYC, 7th generation
+   */
+  HPC7A = 'hpc7a',
+
+  /**
+   * High performance computing based on Graviton, 7th generation
+   */
+  HIGH_PERFORMANCE_COMPUTING7_GRAVITON = 'high-performance-computing7-graviton',
+
+  /**
+   * High performance computing based on Graviton, 7th generation
+   */
+  HPC7G = 'hpc7g',
 
   /**
    * Deep learning instances powered by Gaudi accelerators from Habana Labs (an Intel company), 1st generation
@@ -1261,7 +1321,12 @@ export enum InstanceSize {
   XLARGE56 = '56xlarge',
 
   /**
-   * Instance size XLARGE56 (112xlarge)
+   * Instance size XLARGE96 (96xlarge)
+   */
+  XLARGE96 = '96xlarge',
+
+  /**
+   * Instance size XLARGE112 (112xlarge)
    */
   XLARGE112 = '112xlarge',
 
@@ -1269,6 +1334,26 @@ export enum InstanceSize {
    * Instance size METAL (metal)
    */
   METAL = 'metal',
+
+  /**
+   * Instance size XLARGE16METAL (metal-16xl)
+   */
+  XLARGE16METAL = 'metal-16xl',
+
+  /**
+   * Instance size XLARGE24METAL (metal-24xl)
+   */
+  XLARGE24METAL = 'metal-24xl',
+
+  /**
+   * Instance size XLARGE32METAL (metal-32xl)
+   */
+  XLARGE32METAL = 'metal-32xl',
+
+  /**
+   * Instance size XLARGE48METAL (metal-48xl)
+   */
+  XLARGE48METAL = 'metal-48xl',
 }
 
 /**
@@ -1495,10 +1580,22 @@ export class InstanceType {
       [InstanceClass.INF2]: 'inf2',
       [InstanceClass.MACINTOSH1_INTEL]: 'mac1',
       [InstanceClass.MAC1]: 'mac1',
+      [InstanceClass.MACINTOSH2_M1]: 'mac2',
+      [InstanceClass.MAC2]: 'mac2',
+      [InstanceClass.MACINTOSH2_M2]: 'mac2-m2',
+      [InstanceClass.MAC2_M2]: 'mac2-m2',
+      [InstanceClass.MACINTOSH2_M2_PRO]: 'mac2-m2pro',
+      [InstanceClass.MAC2_M2PRO]: 'mac2-m2pro',
       [InstanceClass.VIDEO_TRANSCODING1]: 'vt1',
       [InstanceClass.VT1]: 'vt1',
       [InstanceClass.HIGH_PERFORMANCE_COMPUTING6_AMD]: 'hpc6a',
       [InstanceClass.HPC6A]: 'hpc6a',
+      [InstanceClass.HIGH_PERFORMANCE_COMPUTING6_INTEL_NVME_DRIVE]: 'hpc6id',
+      [InstanceClass.HPC6ID]: 'hpc6id',
+      [InstanceClass.HIGH_PERFORMANCE_COMPUTING7_AMD]: 'hpc7a',
+      [InstanceClass.HPC7A]: 'hpc7a',
+      [InstanceClass.HIGH_PERFORMANCE_COMPUTING7_GRAVITON]: 'hpc7g',
+      [InstanceClass.HPC7G]: 'hpc7g',
       [InstanceClass.I4I]: 'i4i',
       [InstanceClass.IO4_INTEL]: 'i4i',
       [InstanceClass.X2IEDN]: 'x2iedn',
