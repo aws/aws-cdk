@@ -73,6 +73,13 @@ export interface RedshiftQueryProps {
    * @default - a new role will be created.
    */
   readonly role?: iam.IRole;
+
+  /**
+   * The input to the state machine execution
+   *
+   * @default the entire EventBridge event
+   */
+  readonly input?: events.RuleTargetInput;
 }
 
 /**
@@ -80,9 +87,9 @@ export interface RedshiftQueryProps {
  * It is recommended to append a `QS2-` prefix to both `statementName` and `ruleName`, to allow Amazon Redshift to identify the Event Bridge rule, and present it in the Amazon Redshift console.
  */
 export class RedshiftQuery implements events.IRuleTarget {
-  constructor(private readonly clusterArn: string, private readonly props: RedshiftQueryProps = {
-    database: 'dev',
-  }) {
+  constructor(
+    private readonly clusterArn: string,
+    private readonly props: RedshiftQueryProps = {}) {
   }
 
   bind(rule: events.IRule, _id?: string): events.RuleTargetConfig {
@@ -98,6 +105,7 @@ export class RedshiftQuery implements events.IRuleTarget {
       ...bindBaseTargetConfig(this.props),
       arn: this.clusterArn,
       role,
+      input: this.props.input,
       redshiftDataParameters: {
         database: this.props.database ?? 'dev',
         dbUser: this.props.dbUser,

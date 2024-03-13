@@ -690,7 +690,7 @@ describe('rule', () => {
     });
 
     // eslint-disable-next-line no-console
-    console.log(Template.fromStack(stack).toJSON());
+    console.log(Template.fromStack(stack).toJSON().Resources.EventRule5A491D2C.Properties.Targets[0]);
 
     Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
       Targets: [
