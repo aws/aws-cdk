@@ -83,6 +83,11 @@ export class AlbControllerVersion {
   public static readonly V2_3_1 = new AlbControllerVersion('v2.3.1', '1.4.1', false);
 
   /**
+   * v2.4.0
+   */
+  public static readonly V2_4_0 = new AlbControllerVersion('v2.4.0', '1.4.1', false);
+
+  /**
    * v2.4.1
    */
   public static readonly V2_4_1 = new AlbControllerVersion('v2.4.1', '1.4.1', false);
@@ -156,6 +161,16 @@ export class AlbControllerVersion {
    * v2.6.2
    */
   public static readonly V2_6_2 = new AlbControllerVersion('v2.6.2', '1.6.2', false);
+
+  /**
+   * v2.7.0
+   */
+  public static readonly V2_7_0 = new AlbControllerVersion('v2.7.0', '1.7.0', false);
+
+  /**
+   * v2.7.1
+   */
+  public static readonly V2_7_1 = new AlbControllerVersion('v2.7.1', '1.7.1', false);
 
   /**
    * Specify a custom version and an associated helm chart version.
