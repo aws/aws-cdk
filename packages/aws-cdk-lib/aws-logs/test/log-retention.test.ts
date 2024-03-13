@@ -561,7 +561,7 @@ describe('log retention', () => {
     });
 
     Template.fromStack(stack).hasResourceProperties('Custom::LogRetention', {
-      KmsKey: 'us-east-1',
+      KmsKeyId: { 'Fn::GetAtt': [Match.stringLikeRegexp('MyKey'), 'Arn'] },
     });
   });
 });
