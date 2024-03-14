@@ -23,7 +23,7 @@ Currently supported are:
     - [Launch type for ECS Task](#launch-type-for-ecs-task)
     - [Assign public IP addresses to tasks](#assign-public-ip-addresses-to-tasks)
     - [Enable Amazon ECS Exec for ECS Task](#enable-amazon-ecs-exec-for-ecs-task)
-  - [Run a Redshift query](#schedule-a-redshift-query-(serverless-or-cluster))
+  - [Run a Redshift query](#schedule-a-redshift-query-serverless-or-cluster)
 
 See the README of the `aws-cdk-lib/aws-events` library for more information on
 EventBridge.
