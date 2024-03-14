@@ -23,7 +23,7 @@ export enum ActionAfterCompletion {
 /**
  * Properties for creating an AWS EventBridge Scheduler schedule
  */
-export interface CreateScheduleProps extends sfn.TaskStateBaseProps {
+export interface EventBridgeSchedulerCreateScheduleTaskProps extends sfn.TaskStateBaseProps {
   /**
    * Schedule name
    */
@@ -115,7 +115,7 @@ export interface CreateScheduleProps extends sfn.TaskStateBaseProps {
    *
    * @see https://docs.aws.amazon.com/scheduler/latest/UserGuide/managing-targets.html
    */
-  readonly targetArn: string;
+  readonly target: string;
 
   /**
    * The IAM role that EventBridge Scheduler will use for this target when the schedule is invoked.
@@ -171,7 +171,7 @@ export class EventBridgeSchedulerCreateScheduleTask extends sfn.TaskStateBase {
 
   private readonly integrationPattern: sfn.IntegrationPattern;
 
-  constructor(scope: Construct, id: string, private readonly props: CreateScheduleProps) {
+  constructor(scope: Construct, id: string, private readonly props: EventBridgeSchedulerCreateScheduleTaskProps) {
     super(scope, id, props);
 
     this.validateProps(props);
@@ -222,7 +222,7 @@ export class EventBridgeSchedulerCreateScheduleTask extends sfn.TaskStateBase {
         StartDate: this.props.startDate ? this.props.startDate.toISOString() : undefined,
         State: (this.props.enabled ?? true) ? 'ENABLED' : 'DISABLED',
         Target: {
-          Arn: this.props.targetArn,
+          Arn: this.props.target,
           RoleArn: this.props.role.roleArn,
           Input: this.props.input,
           RetryPolicy: this.props.retryPolicy ? {
@@ -237,7 +237,7 @@ export class EventBridgeSchedulerCreateScheduleTask extends sfn.TaskStateBase {
     };
   }
 
-  private validateProps(props: CreateScheduleProps) {
+  private validateProps(props: EventBridgeSchedulerCreateScheduleTaskProps) {
     if (
       props.clientToken !== undefined &&
       !Token.isUnresolved(props.clientToken) &&

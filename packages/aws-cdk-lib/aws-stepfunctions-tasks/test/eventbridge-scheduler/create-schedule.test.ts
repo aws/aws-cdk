@@ -28,7 +28,7 @@ describe('Create Schedule', () => {
     const createScheduleTask = new tasks.EventBridgeSchedulerCreateScheduleTask(stack, 'createSchedule', {
       scheduleName: 'TestSchedule',
       scheduleExpression: 'rate(1 minute)',
-      targetArn: targetQueue.queueArn,
+      target: targetQueue.queueArn,
       role: schedulerRole,
     });
 
@@ -179,7 +179,7 @@ describe('Create Schedule', () => {
       scheduleExpression: 'rate(1 minute)',
       timezone: 'UTC',
       enabled: true,
-      targetArn: targetQueue.queueArn,
+      target: targetQueue.queueArn,
       role: schedulerRole,
       retryPolicy: {
         maximumRetryAttempts: 2,
@@ -340,7 +340,7 @@ describe('Create Schedule', () => {
       new tasks.EventBridgeSchedulerCreateScheduleTask(stack, 'createSchedule', {
         scheduleName: 'TestSchedule',
         scheduleExpression: 'rate(1 minute)',
-        targetArn: 'arn:aws:sqs:us-east-1:123456789012:queue-name',
+        target: 'arn:aws:sqs:us-east-1:123456789012:queue-name',
         role: schedulerRole,
         clientToken,
       });
@@ -353,7 +353,7 @@ describe('Create Schedule', () => {
       new tasks.EventBridgeSchedulerCreateScheduleTask(stack, 'createSchedule', {
         scheduleName: 'TestSchedule',
         scheduleExpression: 'rate(1 minute)',
-        targetArn: 'arn:aws:sqs:us-east-1:123456789012:queue-name',
+        target: 'arn:aws:sqs:us-east-1:123456789012:queue-name',
         role: schedulerRole,
         description: invalidDescription,
       });
@@ -367,7 +367,7 @@ describe('Create Schedule', () => {
       new tasks.EventBridgeSchedulerCreateScheduleTask(stack, 'createSchedule', {
         scheduleName: 'TestSchedule',
         scheduleExpression: 'rate(1 minute)',
-        targetArn: 'arn:aws:sqs:us-east-1:123456789012:queue-name',
+        target: 'arn:aws:sqs:us-east-1:123456789012:queue-name',
         role: schedulerRole,
         flexibleTimeWindow,
       });
@@ -381,7 +381,7 @@ describe('Create Schedule', () => {
       new tasks.EventBridgeSchedulerCreateScheduleTask(stack, 'createSchedule', {
         scheduleName: 'TestSchedule',
         scheduleExpression: 'rate(1 minute)',
-        targetArn: 'arn:aws:sqs:us-east-1:123456789012:queue-name',
+        target: 'arn:aws:sqs:us-east-1:123456789012:queue-name',
         role: schedulerRole,
         groupName,
       });
