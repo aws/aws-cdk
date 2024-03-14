@@ -143,15 +143,19 @@ export class CdkToolkit {
           stack: stacks.firstStack,
           deployName: stacks.firstStack.stackName,
         });
-        changeSet = stackExists ? await createDiffChangeSet({
-          stack: stacks.firstStack,
-          uuid: uuid.v4(),
-          willExecute: false,
-          deployments: this.props.deployments,
-          sdkProvider: this.props.sdkProvider,
-          parameters: Object.assign({}, parameterMap['*'], parameterMap[stacks.firstStack.stackName]),
-          stream,
-        }) : undefined;
+        if (stackExists) {
+          changeSet = await createDiffChangeSet({
+            stack: stacks.firstStack,
+            uuid: uuid.v4(),
+            deployments: this.props.deployments,
+            willExecute: false,
+            sdkProvider: this.props.sdkProvider,
+            parameters: Object.assign({}, parameterMap['*'], parameterMap[stacks.firstStack.stackName]),
+            stream,
+          });
+        } else {
+          debug(`the stack '${stacks.firstStack.stackName}' does not exist, skipping changeset creation.`);
+        }
       }
 
       const template = deserializeStructure(await fs.readFile(options.templatePath, { encoding: 'UTF-8' }));
@@ -183,16 +187,20 @@ export class CdkToolkit {
             stack: stack,
             deployName: stack.stackName,
           });
-          changeSet = stackExists ? await createDiffChangeSet({
-            stack,
-            uuid: uuid.v4(),
-            deployments: this.props.deployments,
-            willExecute: false,
-            sdkProvider: this.props.sdkProvider,
-            parameters: Object.assign({}, parameterMap['*'], parameterMap[stacks.firstStack.stackName]),
-            resourcesToImport,
-            stream,
-          }) : undefined;
+          if (stackExists) {
+            changeSet = await createDiffChangeSet({
+              stack,
+              uuid: uuid.v4(),
+              deployments: this.props.deployments,
+              willExecute: false,
+              sdkProvider: this.props.sdkProvider,
+              parameters: Object.assign({}, parameterMap['*'], parameterMap[stacks.firstStack.stackName]),
+              resourcesToImport,
+              stream,
+            });
+          } else {
+            debug(`the stack '${stack.stackName}' does not exist, skipping changeset creation.`);
+          }
         }
 
         if (resourcesToImport) {
