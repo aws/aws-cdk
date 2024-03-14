@@ -79,6 +79,67 @@ describe('proxy', () => {
     });
   });
 
+  test('create a DB proxy for a MariaDB instance', () => {
+    // GIVEN
+    const instance = new rds.DatabaseInstance(stack, 'Instance', {
+      engine: rds.DatabaseInstanceEngine.mariaDb({
+        version: rds.MariaDbEngineVersion.VER_10_6_16,
+      }),
+      vpc,
+    });
+
+    // WHEN
+    new rds.DatabaseProxy(stack, 'Proxy', {
+      proxyTarget: rds.ProxyTarget.fromInstance(instance),
+      secrets: [instance.secret!],
+      vpc,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBProxy', {
+      Auth: [
+        {
+          AuthScheme: 'SECRETS',
+          IAMAuth: 'DISABLED',
+          SecretArn: {
+            Ref: 'InstanceSecretAttachment83BEE581',
+          },
+        },
+      ],
+      DBProxyName: 'Proxy',
+      EngineFamily: 'MYSQL',
+      RequireTLS: true,
+      RoleArn: {
+        'Fn::GetAtt': [
+          'ProxyIAMRole2FE8AB0F',
+          'Arn',
+        ],
+      },
+      VpcSubnetIds: [
+        {
+          Ref: 'VPCPrivateSubnet1Subnet8BCA10E0',
+        },
+        {
+          Ref: 'VPCPrivateSubnet2SubnetCFCDAA7A',
+        },
+      ],
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBProxyTargetGroup', {
+      DBProxyName: {
+        Ref: 'ProxyCB0DFB71',
+      },
+      ConnectionPoolConfigurationInfo: {},
+      DBInstanceIdentifiers: [
+        {
+          Ref: 'InstanceC1063A87',
+        },
+      ],
+      TargetGroupName: 'default',
+    });
+  });
+
   test('create a DB proxy from a cluster', () => {
     // GIVEN
     const cluster = new rds.DatabaseCluster(stack, 'Database', {
@@ -192,8 +253,8 @@ describe('proxy', () => {
       instanceEndpointAddress: 'instance-address',
       port: 5432,
       securityGroups: [],
-      engine: rds.DatabaseInstanceEngine.mariaDb({
-        version: rds.MariaDbEngineVersion.VER_10_0_24,
+      engine: rds.DatabaseInstanceEngine.oracleEe({
+        version: rds.OracleEngineVersion.VER_21,
       }),
     });
 
@@ -203,7 +264,7 @@ describe('proxy', () => {
         vpc,
         secrets: [new secretsmanager.Secret(stack, 'Secret')],
       });
-    }).toThrow(/RDS proxies require an engine family to be specified on the database cluster or instance. No family specified for engine 'mariadb-10\.0\.24'/);
+    }).toThrow(/RDS proxies require an engine family to be specified on the database cluster or instance. No family specified for engine 'oracle-ee-21'/);
   });
 
   test('correctly creates a proxy for an imported Cluster if its engine is known', () => {

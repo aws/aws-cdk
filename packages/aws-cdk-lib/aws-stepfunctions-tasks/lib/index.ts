@@ -34,6 +34,7 @@ export * from './emrcontainers/delete-virtual-cluster';
 export * from './emrcontainers/start-job-run';
 export * from './glue/run-glue-job-task';
 export * from './glue/start-job-run';
+export * from './glue/start-crawler-run';
 export * from './batch/run-batch-job';
 export * from './batch/submit-job';
 export * from './dynamodb/get-item';

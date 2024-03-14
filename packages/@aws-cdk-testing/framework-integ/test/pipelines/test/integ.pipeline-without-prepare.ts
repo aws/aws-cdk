@@ -65,8 +65,9 @@ class PipelineStack extends Stack {
 }
 
 const app = new App({
-  context: {
+  postCliContext: {
     '@aws-cdk/core:newStyleStackSynthesis': '1',
+    '@aws-cdk/aws-codepipeline:defaultPipelineTypeToV2': false,
   },
 });
 
