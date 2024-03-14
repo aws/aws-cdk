@@ -474,7 +474,8 @@ Use the `RedshiftQuery` target to schedule an Amazon Redshift Query.
 The code snippet below creates the scheduled event rule that route events to an Amazon Redshift Query
 
 ```ts
-import * as redshiftserverless from 'aws-cdk-lib/aws-redshift-serverless'
+import * as redshiftserverless from 'aws-cdk-lib/aws-redshiftserverless'
+
 declare const workgroup: redshiftserverless.CfnWorkgroup;
 
 const rule = new events.Rule(this, 'Rule', {
@@ -483,7 +484,7 @@ const rule = new events.Rule(this, 'Rule', {
 
 const dlq = new sqs.Queue(this, 'DeadLetterQueue');
 
-rule.addTarget(new targets.RedshiftQuery(workGroup.attrWorkgroupWorkgroupArn{
+rule.addTarget(new targets.RedshiftQuery(workGroup.attrWorkgroupWorkgroupArn, {
   database: 'dev',
   deadLetterQueue: dlq,
   batchSQL: [
