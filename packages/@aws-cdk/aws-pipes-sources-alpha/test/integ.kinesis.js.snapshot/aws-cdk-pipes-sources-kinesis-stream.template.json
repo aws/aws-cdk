@@ -107,9 +107,6 @@
     },
     "SourceParameters": {
      "KinesisStreamParameters": {
-      "MaximumRecordAgeInSeconds": -1,
-      "MaximumRetryAttempts": -1,
-      "ParallelizationFactor": 1,
       "StartingPosition": "LATEST"
      }
     },

@@ -1,6 +1,6 @@
 {
  "Resources": {
-  "AwsApiCallKinesisputRecord21dc394732cd749237139af8f36fc5ac": {
+  "AwsApiCallKinesisputRecord0fd40d734970b86832217f918325869e": {
    "Type": "Custom::DeployAssert@SdkCallKinesisputRecord",
    "Properties": {
     "ServiceToken": {
@@ -24,11 +24,11 @@
        ]
       ]
      },
-     "Data": "\"e79efc4e-6287-4fc6-b05d-716ab878112a\"",
+     "Data": "\"b16d9238-a3f2-4aa7-aedd-42d7b607f1f8\"",
      "PartitionKey": "\"1\""
     },
     "flattenResponse": "false",
-    "salt": "1710384002321"
+    "salt": "1710429222958"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -123,7 +123,7 @@
     },
     "service": "SQS",
     "api": "receiveMessage",
-    "expected": "{\"$StringLike\":\"ZTc5ZWZjNGUtNjI4Ny00ZmM2LWIwNWQtNzE2YWI4NzgxMTJh\"}",
+    "expected": "{\"$StringLike\":\"YjE2ZDkyMzgtYTNmMi00YWE3LWFlZGQtNDJkN2I2MDdmMWY4\"}",
     "actualPath": "Messages.0.Body.data",
     "stateMachineArn": {
      "Ref": "AwsApiCallSQSreceiveMessage23b37826db4ba4656cf9088d0244b67bWaitFor296E8BCE"
@@ -146,7 +146,7 @@
     "outputPaths": [
      "Messages.0.Body.data"
     ],
-    "salt": "1710384002321"
+    "salt": "1710429222958"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
