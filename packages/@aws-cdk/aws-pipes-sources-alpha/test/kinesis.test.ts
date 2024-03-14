@@ -52,7 +52,7 @@ describe('kinesis source', () => {
         arn: topic.topicArn,
       },
       maximumBatchingWindow: Duration.seconds(10),
-      maximumRecordAgeInSeconds: 10,
+      maximumRecordAge: Duration.seconds(10),
       maximumRetryAttempts: 10,
       onPartialBatchItemFailure: OnPartialBatchItemFailure.AUTOMATIC_BISECT,
       parallelizationFactor: 10,
@@ -159,21 +159,6 @@ describe('kinesis source parameters validation', () => {
     }).toThrow('Maximum batching window must be between 0 and 300, received 301');
   });
 
-  test('maximum record age < -1 should throw', () => {
-    // GIVEN
-    const app = new App();
-    const stack = new Stack(app, 'demo-stack');
-    const stream = new Stream(stack, 'MyStream', {});
-
-    // WHEN
-    expect(() => {
-      new KinesisSource(stream, {
-        startingPosition: StartingPosition.LATEST,
-        maximumRecordAgeInSeconds: -2,
-      });
-    }).toThrow('Maximum record age in seconds must be between -1 and 604800, received -2');
-  });
-
   test('maximum record age > 604800 should throw', () => {
     // GIVEN
     const app = new App();
@@ -184,7 +169,7 @@ describe('kinesis source parameters validation', () => {
     expect(() => {
       new KinesisSource(stream, {
         startingPosition: StartingPosition.LATEST,
-        maximumRecordAgeInSeconds: 604801,
+        maximumRecordAge: Duration.seconds(604801),
       });
     }).toThrow('Maximum record age in seconds must be between -1 and 604800, received 604801');
   });
