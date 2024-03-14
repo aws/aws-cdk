@@ -1,6 +1,6 @@
 {
  "Resources": {
-  "SourceKinesisStream2376424EB": {
+  "SourceKinesisStreamD9B33274": {
    "Type": "AWS::Kinesis::Stream",
    "Properties": {
     "RetentionPeriodHours": 24,
@@ -60,7 +60,7 @@
        "Effect": "Allow",
        "Resource": {
         "Fn::GetAtt": [
-         "SourceKinesisStream2376424EB",
+         "SourceKinesisStreamD9B33274",
          "Arn"
         ]
        }
@@ -101,7 +101,7 @@
     },
     "Source": {
      "Fn::GetAtt": [
-      "SourceKinesisStream2376424EB",
+      "SourceKinesisStreamD9B33274",
       "Arn"
      ]
     },
@@ -143,15 +143,15 @@
   }
  },
  "Outputs": {
-  "ExportsOutputFnGetAttSourceKinesisStream2376424EBArnEEBEE728": {
+  "ExportsOutputFnGetAttSourceKinesisStreamD9B33274Arn1A7BEAA1": {
    "Value": {
     "Fn::GetAtt": [
-     "SourceKinesisStream2376424EB",
+     "SourceKinesisStreamD9B33274",
      "Arn"
     ]
    },
    "Export": {
-    "Name": "aws-cdk-pipes-sources-kinesis-stream:ExportsOutputFnGetAttSourceKinesisStream2376424EBArnEEBEE728"
+    "Name": "aws-cdk-pipes-sources-kinesis-stream:ExportsOutputFnGetAttSourceKinesisStreamD9B33274Arn1A7BEAA1"
    }
   },
   "ExportsOutputRefTargetQueue08AD2B3C0C69AE0E": {
