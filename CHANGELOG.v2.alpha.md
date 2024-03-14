@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.132.1-alpha.0](https://github.com/aws/aws-cdk/compare/v2.132.0-alpha.0...v2.132.1-alpha.0) (2024-03-12)
+
+## [2.132.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.131.0-alpha.0...v2.132.0-alpha.0) (2024-03-08)
+
+
+### Bug Fixes
+
+* **glue:** `PythonRayExecutableProps` has innaccurate properties ([#28625](https://github.com/aws/aws-cdk/issues/28625)) ([7994733](https://github.com/aws/aws-cdk/commit/79947337d59539a03a2d7d2849043aa9405268d8)), closes [#28570](https://github.com/aws/aws-cdk/issues/28570)
+
+## [2.131.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.130.0-alpha.0...v2.131.0-alpha.0) (2024-03-01)
+
 ## [2.130.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.129.0-alpha.0...v2.130.0-alpha.0) (2024-02-23)
 
 ## [2.129.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.128.0-alpha.0...v2.129.0-alpha.0) (2024-02-21)

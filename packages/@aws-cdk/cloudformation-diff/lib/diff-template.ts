@@ -52,14 +52,14 @@ export function fullDiff(
   normalize(newTemplate);
   const theDiff = diffTemplate(currentTemplate, newTemplate);
   if (changeSet) {
-    filterFalsePositivies(theDiff, changeSet);
+    filterFalsePositives(theDiff, changeSet);
     addImportInformation(theDiff, changeSet);
   }
 
   return theDiff;
 }
 
-function diffTemplate(
+export function diffTemplate(
   currentTemplate: { [key: string]: any },
   newTemplate: { [key: string]: any },
 ): types.TemplateDiff {
@@ -218,7 +218,7 @@ function addImportInformation(diff: types.TemplateDiff, changeSet: CloudFormatio
   });
 }
 
-function filterFalsePositivies(diff: types.TemplateDiff, changeSet: CloudFormation.DescribeChangeSetOutput) {
+function filterFalsePositives(diff: types.TemplateDiff, changeSet: CloudFormation.DescribeChangeSetOutput) {
   const replacements = findResourceReplacements(changeSet);
   diff.resources.forEachDifference((logicalId: string, change: types.ResourceDifference) => {
     if (change.resourceType.includes('AWS::Serverless')) {

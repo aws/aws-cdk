@@ -972,7 +972,9 @@ new rds.DatabaseCluster(this, 'dbcluster', {
 ## Creating a Database Proxy
 
 Amazon RDS Proxy sits between your application and your relational database to efficiently manage
-connections to the database and improve scalability of the application. Learn more about at [Amazon RDS Proxy](https://aws.amazon.com/rds/proxy/)
+connections to the database and improve scalability of the application. Learn more about at [Amazon RDS Proxy](https://aws.amazon.com/rds/proxy/). 
+
+RDS Proxy is supported for MySQL, MariaDB, Postgres, and SQL Server.
 
 The following code configures an RDS Proxy for a `DatabaseInstance`.
 
@@ -1166,30 +1168,31 @@ new rds.ServerlessClusterFromSnapshot(this, 'Cluster', {
 
 ### Data API
 
-You can access your Aurora Serverless DB cluster using the built-in Data API. The Data API doesn't require a persistent connection to the DB cluster. Instead, it provides a secure HTTP endpoint and integration with AWS SDKs.
+You can access your Aurora DB cluster using the built-in Data API. The Data API doesn't require a persistent connection to the DB cluster. Instead, it provides a secure HTTP endpoint and integration with AWS SDKs.
 
 The following example shows granting Data API access to a Lamba function.
 
 ```ts
 declare const vpc: ec2.Vpc;
+declare const fn: lambda.Function;
 
-const cluster = new rds.ServerlessCluster(this, 'AnotherCluster', {
+// Create a serverless V1 cluster
+const serverlessV1Cluster = new rds.ServerlessCluster(this, 'AnotherCluster', {
   engine: rds.DatabaseClusterEngine.AURORA_MYSQL,
   vpc, // this parameter is optional for serverless Clusters
   enableDataApi: true, // Optional - will be automatically set if you call grantDataApiAccess()
 });
+serverlessV1Cluster.grantDataApiAccess(fn);
 
-declare const code: lambda.Code;
-const fn = new lambda.Function(this, 'MyFunction', {
-  runtime: lambda.Runtime.NODEJS_LATEST,
-  handler: 'index.handler',
-  code,
-  environment: {
-    CLUSTER_ARN: cluster.clusterArn,
-    SECRET_ARN: cluster.secret!.secretArn,
-  },
+// Create an Aurora cluster
+const cluster = new rds.DatabaseCluster(this, 'Cluster', {
+  engine: rds.DatabaseClusterEngine.AURORA_MYSQL,
+  vpc,
+  enableDataApi: true, // Optional - will be automatically set if you call grantDataApiAccess()
 });
 cluster.grantDataApiAccess(fn);
+// It is necessary to grant the function access to the secret associated with the cluster for `DatabaseCluster`.
+cluster.secret!.grantRead(fn);
 ```
 
 **Note**: To invoke the Data API, the resource will need to read the secret associated with the cluster.
@@ -1203,3 +1206,23 @@ The `vpc` parameter is optional.
 If not provided, the cluster will be created in the default VPC of the account and region.
 As this VPC is not deployed with AWS CDK, you can't configure the `vpcSubnets`, `subnetGroup` or `securityGroups` of the Aurora Serverless Cluster.
 If you want to provide one of `vpcSubnets`, `subnetGroup` or `securityGroups` parameter, please provide a `vpc`.
+
+### Preferred Maintenance Window
+
+When creating an RDS cluster, it is possible to (optionally) specify a preferred maintenance window for the cluster as well as the instances under the cluster.
+See [AWS docs](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/USER_UpgradeDBInstance.Maintenance.html#Concepts.DBMaintenance) for more information regarding maintenance windows.
+
+The following code snippet shows an example of setting the cluster's maintenance window to 22:15-22:45 (UTC) on Saturdays, but setting the instances' maintenance window
+to 23:15-23:45 on Sundays
+
+```ts
+declare const vpc: ec2.Vpc;
+new rds.DatabaseCluster(this, 'DatabaseCluster', {
+  engine: rds.DatabaseClusterEngine.AURORA,
+  instanceProps: {
+    vpc: vpc,
+    preferredMaintenanceWindow: 'Sun:23:15-Sun:23:45',
+  },
+  preferredMaintenanceWindow: 'Sat:22:15-Sat:22:45',
+});
+```
