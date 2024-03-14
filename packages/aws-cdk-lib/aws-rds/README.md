@@ -972,7 +972,9 @@ new rds.DatabaseCluster(this, 'dbcluster', {
 ## Creating a Database Proxy
 
 Amazon RDS Proxy sits between your application and your relational database to efficiently manage
-connections to the database and improve scalability of the application. Learn more about at [Amazon RDS Proxy](https://aws.amazon.com/rds/proxy/)
+connections to the database and improve scalability of the application. Learn more about at [Amazon RDS Proxy](https://aws.amazon.com/rds/proxy/). 
+
+RDS Proxy is supported for MySQL, MariaDB, Postgres, and SQL Server.
 
 The following code configures an RDS Proxy for a `DatabaseInstance`.
 
@@ -1189,8 +1191,6 @@ const cluster = new rds.DatabaseCluster(this, 'Cluster', {
   enableDataApi: true, // Optional - will be automatically set if you call grantDataApiAccess()
 });
 cluster.grantDataApiAccess(fn);
-// It is necessary to grant the function access to the secret associated with the cluster for `DatabaseCluster`.
-cluster.secret!.grantRead(fn);
 ```
 
 **Note**: To invoke the Data API, the resource will need to read the secret associated with the cluster.
@@ -1204,3 +1204,23 @@ The `vpc` parameter is optional.
 If not provided, the cluster will be created in the default VPC of the account and region.
 As this VPC is not deployed with AWS CDK, you can't configure the `vpcSubnets`, `subnetGroup` or `securityGroups` of the Aurora Serverless Cluster.
 If you want to provide one of `vpcSubnets`, `subnetGroup` or `securityGroups` parameter, please provide a `vpc`.
+
+### Preferred Maintenance Window
+
+When creating an RDS cluster, it is possible to (optionally) specify a preferred maintenance window for the cluster as well as the instances under the cluster.
+See [AWS docs](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/USER_UpgradeDBInstance.Maintenance.html#Concepts.DBMaintenance) for more information regarding maintenance windows.
+
+The following code snippet shows an example of setting the cluster's maintenance window to 22:15-22:45 (UTC) on Saturdays, but setting the instances' maintenance window
+to 23:15-23:45 on Sundays
+
+```ts
+declare const vpc: ec2.Vpc;
+new rds.DatabaseCluster(this, 'DatabaseCluster', {
+  engine: rds.DatabaseClusterEngine.AURORA,
+  instanceProps: {
+    vpc: vpc,
+    preferredMaintenanceWindow: 'Sun:23:15-Sun:23:45',
+  },
+  preferredMaintenanceWindow: 'Sat:22:15-Sat:22:45',
+});
+```
