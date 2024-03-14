@@ -83,7 +83,7 @@ describe('key policies', () => {
   });
 
   test('cross region key with iam role grant', () => {
-    const app = new cdk.App({ context: { [cxapi.KMS_CROSS_ACCOUNT_REGION_KMS_KEY_POLICY]: true } });
+    const app = new cdk.App({ context: { [cxapi.KMS_REDUCE_CROSS_ACCOUNT_REGION_POLICY_SCOPE]: true } });
     const stack = new cdk.Stack(app, 'test-stack', { env: { account: '000000000000', region: 'us-west-2' } });
     const key = kms.Key.fromKeyArn(
       stack,
@@ -113,7 +113,7 @@ describe('key policies', () => {
   });
 
   test('cross region key with iam role grant when feature flag is disabled', () => {
-    const app = new cdk.App({ context: { [cxapi.KMS_CROSS_ACCOUNT_REGION_KMS_KEY_POLICY]: false } });
+    const app = new cdk.App({ context: { [cxapi.KMS_REDUCE_CROSS_ACCOUNT_REGION_POLICY_SCOPE]: false } });
     const stack = new cdk.Stack(app, 'test-stack', { env: { account: '000000000000', region: 'us-west-2' } });
     const key = kms.Key.fromKeyArn(
       stack,

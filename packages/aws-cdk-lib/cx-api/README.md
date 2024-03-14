@@ -293,19 +293,19 @@ _cdk.json_
 }
 ```
 
-* `@aws-cdk/aws-kms:crossAccountRegionKmsKeyPolicy`
+* `@aws-cdk/aws-kms:reduceCrossAccountRegionPolicyScope`
 
-Enables KMS key grant to correctly set 'Resoruce' property of IAM policy to the key itself.
+Reduce resource scope of the IAM Policy created from KMS key grant to granting key only.
 
-When this feature flag is enabled and calling KMS key grant method, the created IAM policy should correctly resolve to this
-granting KMS key instead of a * resource property.
+When this feature flag is enabled and calling KMS key grant method, the created IAM policy will reduce the resource scope from
+'*' to this specific granting KMS key.
 
 _cdk.json_
 
 ```json
 {
   "context": {
-    "@aws-cdk/aws-kms:crossAccountRegionKmsKeyPolicy": true
+    "@aws-cdk/aws-kms:reduceCrossAccountRegionPolicyScope": true
   }
 }
 ```
