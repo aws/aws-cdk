@@ -26,18 +26,16 @@ schedulerRole.addToPrincipalPolicy(new iam.PolicyStatement({
   actions: ['sqs:SendMessage'],
   resources: [targetQueue.queueArn],
 }));
-schedulerRole.addToPrincipalPolicy(new iam.PolicyStatement({
-  actions: ['kms:Decrypt'],
-  resources: [kmsKey.keyArn],
-}));
+kmsKey.grantEncryptDecrypt(schedulerRole);
 
+const testDate = new Date('2024-03-19T00:00:00Z');
 const createScheduleTask1 = new EventBridgeSchedulerCreateScheduleTask(stack, 'createSchedule1', {
   scheduleName: 'TestSchedule',
   actionAfterCompletion: ActionAfterCompletion.NONE,
   clientToken: 'testToken',
   description: 'Testdescription',
-  startDate: new Date(),
-  endDate: new Date(new Date().getTime() + 1000 * 60 * 60),
+  startDate: testDate,
+  endDate: new Date(testDate.getTime() + 1000 * 60 * 60),
   flexibleTimeWindow: cdk.Duration.minutes(5),
   groupName: scheduleGroup.ref,
   kmsKey,

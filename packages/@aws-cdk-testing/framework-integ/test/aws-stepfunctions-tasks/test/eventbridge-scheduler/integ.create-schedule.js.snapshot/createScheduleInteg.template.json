@@ -84,7 +84,12 @@
        }
       },
       {
-       "Action": "kms:Decrypt",
+       "Action": [
+        "kms:Decrypt",
+        "kms:Encrypt",
+        "kms:GenerateDataKey*",
+        "kms:ReEncrypt*"
+       ],
        "Effect": "Allow",
        "Resource": {
         "Fn::GetAtt": [
@@ -208,7 +213,7 @@
        {
         "Ref": "AWS::Partition"
        },
-       ":states:::aws-sdk:scheduler:createSchedule\",\"Parameters\":{\"ActionAfterCompletion\":\"NONE\",\"ClientToken\":\"testToken\",\"Description\":\"Testdescription\",\"EndDate\":\"2024-03-12T08:04:36.568Z\",\"FlexibleTimeWindow\":{\"Mode\":\"FLEXIBLE\",\"MaximumWindowInMinutes\":5},\"GroupName\":\"",
+       ":states:::aws-sdk:scheduler:createSchedule\",\"Parameters\":{\"ActionAfterCompletion\":\"NONE\",\"ClientToken\":\"testToken\",\"Description\":\"Testdescription\",\"EndDate\":\"2024-03-19T01:00:00.000Z\",\"FlexibleTimeWindow\":{\"Mode\":\"FLEXIBLE\",\"MaximumWindowInMinutes\":5},\"GroupName\":\"",
        {
         "Ref": "ScheduleGroup"
        },
@@ -219,7 +224,7 @@
          "Arn"
         ]
        },
-       "\",\"Name\":\"TestSchedule\",\"ScheduleExpression\":\"rate(1 minute)\",\"ScheduleExpressionTimezone\":\"UTC\",\"StartDate\":\"2024-03-12T07:04:36.568Z\",\"State\":\"ENABLED\",\"Target\":{\"Arn\":\"",
+       "\",\"Name\":\"TestSchedule\",\"ScheduleExpression\":\"rate(1 minute)\",\"ScheduleExpressionTimezone\":\"UTC\",\"StartDate\":\"2024-03-19T00:00:00.000Z\",\"State\":\"ENABLED\",\"Target\":{\"Arn\":\"",
        {
         "Fn::GetAtt": [
          "TargetQueue08AD2B3C",
