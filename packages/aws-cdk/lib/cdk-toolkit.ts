@@ -156,7 +156,7 @@ export class CdkToolkit {
       const template = deserializeStructure(await fs.readFile(options.templatePath, { encoding: 'UTF-8' }));
       diffs = options.securityOnly
         ? numberFromBool(printSecurityDiff(template, stacks.firstStack, RequireApproval.Broadening, changeSet))
-        : printStackDiff(template, stacks.firstStack, strict, contextLines, quiet, changeSet, stream);
+        : printStackDiff(template, stacks.firstStack.template, strict, contextLines, quiet, changeSet, stream);
     } else {
       // Compare N stacks against deployed templates
       for (const stack of stacks.stackArtifacts) {
@@ -164,11 +164,11 @@ export class CdkToolkit {
           stream.write(format('Stack %s\n', chalk.bold(stack.displayName)));
         }
 
-        const templateWithNames = await this.props.deployments.readCurrentTemplateWithNestedStacks(
+        const templateWithNestedStacks = await this.props.deployments.readCurrentTemplateWithNestedStacks(
           stack, options.compareAgainstProcessedTemplate,
         );
-        const currentTemplate = templateWithNames.deployedTemplate;
-        const nestedStackCount = templateWithNames.nestedStackCount;
+        const currentTemplate = templateWithNestedStacks.deployedRootTemplate;
+        const nestedStacks = templateWithNestedStacks.nestedStacks;
 
         const resourcesToImport = await this.tryGetResources(await this.props.deployments.resolveEnvironment(stack));
         if (resourcesToImport) {
@@ -203,10 +203,10 @@ export class CdkToolkit {
         // pass a boolean to print if the stack is a migrate stack in order to set all resource diffs to import
         const stackCount =
         options.securityOnly
-          ? (numberFromBool(printSecurityDiff(currentTemplate, stack, RequireApproval.Broadening, changeSet)) > 0 ? 1 : 0)
-          : (printStackDiff(currentTemplate, stack, strict, contextLines, quiet, changeSet, stream, !!resourcesToImport) > 0 ? 1 : 0);
+          ? (numberFromBool(printSecurityDiff(currentTemplate, stack, RequireApproval.Broadening, changeSet)))
+          : (printStackDiff(currentTemplate, stack, strict, contextLines, quiet, changeSet, stream, nestedStacks, !!resourcesToImport));
 
-        diffs += stackCount + nestedStackCount;
+        diffs += stackCount;
       }
     }
 
