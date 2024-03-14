@@ -101,6 +101,8 @@ export const LAMBDA_PERMISSION_LOGICAL_ID_FOR_LAMBDA_ACTION = '@aws-cdk/aws-clou
 export const CODEPIPELINE_CROSS_ACCOUNT_KEYS_DEFAULT_VALUE_TO_FALSE = '@aws-cdk/aws-codepipeline:crossAccountKeysDefaultValueToFalse';
 export const CODEPIPELINE_DEFAULT_PIPELINE_TYPE_TO_V2 = '@aws-cdk/aws-codepipeline:defaultPipelineTypeToV2';
 export const KMS_REDUCE_CROSS_ACCOUNT_REGION_POLICY_SCOPE = '@aws-cdk/aws-kms:reduceCrossAccountRegionPolicyScope';
+export const ENABLE_ALBV2_EXTERNALAPPLICATIONLISTENER_ADDTARGETGROUP_TO_ADDACTION_MIGRATION = '@aws-cdk/aws-elasticloadbalancingv2:ExternalApplicationListener-noRuleSuffixForAddAction';
+export const ENABLE_ALBV2_EXTERNALAPPLICATIONLISTENER_ADDTARGETGROUP_CONSISTENT_LOGICALID = '@aws-cdk/aws-elasticloadbalancingv2:ExternalApplicationListener-addTargetGroupsConsistentLogicalId';
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
@@ -1030,6 +1032,41 @@ export const FLAGS: Record<string, FlagInfo> = {
     detailsMd: `
       When this feature flag is enabled and calling KMS key grant method, the created IAM policy will reduce the resource scope from
       '*' to this specific granting KMS key.
+    `,
+    introducedIn: { v2: 'V2NEXT' },
+    recommendedValue: true,
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [ENABLE_ALBV2_EXTERNALAPPLICATIONLISTENER_ADDTARGETGROUP_TO_ADDACTION_MIGRATION]: {
+    type: FlagType.VisibleContext,
+    summary: 'When enabled, you can migrate from the \`addTargetGroups()\` method of declaring a \`ListenerRule\` to the \`addAction()\` method, without changing the logicalId and replacing your resource.',
+    detailsMd: `
+      When migrating from a less complex to a more complex use of ALB,
+      you will eventually need features not available in the \`addTargetGroups()\` convenience method.
+      In this case you will want to use the \`addAction()\` method.
+      Without this feature being activated, the change will also add a \`Rule\` suffix to the logicalId of your \`ListnerRule\`,
+      causing CloudFormation to attempt to replace the resource.
+      Since ListenerRules have a unique priority,
+      CloudFormation will always fail when generating the new ListenerRule.
+
+      Setting this feature flag will cause the \`addAction()\` method to not add the \`Rule\` suffix on the logicalId,
+      enabling a migration from the \`addTargetGroups()\` method.
+
+      For new resources, see instead the ${ENABLE_ALBV2_EXTERNALAPPLICATIONLISTENER_ADDTARGETGROUP_CONSISTENT_LOGICALID} flag.
+    `,
+    introducedIn: { v2: 'V2NEXT' },
+    recommendedValue: false,
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [ENABLE_ALBV2_EXTERNALAPPLICATIONLISTENER_ADDTARGETGROUP_CONSISTENT_LOGICALID]: {
+    type: FlagType.BugFix,
+    summary: 'When enabled, the \`addTargetGroups()\` method will generate logicalIds which are consistent with other methods',
+    detailsMd: `
+      By default, the \`addTargetGroups()\` method omits the \`Rule\` suffix on the logicalId for the generated \`ListenerRule\`.
+      All other methods add this suffix when generating a \`ListenerRule\`.
+      Enabling this flag will cause the \`addTargetGroups()\` method to follow this naming pattern.
     `,
     introducedIn: { v2: 'V2NEXT' },
     recommendedValue: true,
