@@ -246,7 +246,7 @@ export class EventBridgeSchedulerCreateScheduleTask extends sfn.TaskStateBase {
       throw new Error('FlexibleTimeWindow must be between 1 and 1440 minutes');
     }
 
-    if (props.groupName && !Token.isUnresolved(props.groupName) && (props.groupName.length > 64 || props.groupName.length < 1)) {
+    if (props.groupName !== undefined && !Token.isUnresolved(props.groupName) && (props.groupName.length > 64 || props.groupName.length < 1)) {
       throw new Error(`GroupName must be between 1 and 64 characters long. Got: ${props.groupName.length}`);
     }
   }
