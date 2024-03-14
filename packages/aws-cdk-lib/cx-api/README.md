@@ -292,3 +292,20 @@ _cdk.json_
   }
 }
 ```
+
+* `@aws-cdk/aws-kms:crossAccountRegionKmsKeyPolicy`
+
+Enables KMS key grant to correctly set 'Resoruce' property of IAM policy to the key itself.
+
+When this feature flag is enabled and calling KMS key grant method, the created IAM policy should correctly resolve to this
+granting KMS key instead of a * resource property.
+
+_cdk.json_
+
+```json
+{
+  "context": {
+    "@aws-cdk/aws-kms:crossAccountRegionKmsKeyPolicy": true
+  }
+}
+```

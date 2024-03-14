@@ -262,9 +262,13 @@ abstract class KeyBase extends Resource implements IKey {
     }
     const bucketStack = Stack.of(this);
     const identityStack = Stack.of(grantee.grantPrincipal);
-    // if two compared stacks have the same region, this should return 'false' since it's from the
-    // same region; if two stacks have different region, then compare env.region
-    return bucketStack.region !== identityStack.region && this.env.region !== identityStack.region;
+
+    if (FeatureFlags.of(this).isEnabled(cxapi.KMS_CROSS_ACCOUNT_REGION_KMS_KEY_POLICY)) {
+      // if two compared stacks have the same region, this should return 'false' since it's from the
+      // same region; if two stacks have different region, then compare env.region
+      return bucketStack.region !== identityStack.region && this.env.region !== identityStack.region;
+    }
+    return bucketStack.region !== identityStack.region;
   }
 
   private isGranteeFromAnotherAccount(grantee: iam.IGrantable): boolean {
@@ -273,9 +277,13 @@ abstract class KeyBase extends Resource implements IKey {
     }
     const bucketStack = Stack.of(this);
     const identityStack = Stack.of(grantee.grantPrincipal);
-    // if two compared stacks have the same region, this should return 'false' since it's from the
-    // same region; if two stacks have different region, then compare env.account
-    return bucketStack.account !== identityStack.account && this.env.account !== identityStack.account;
+
+    if (FeatureFlags.of(this).isEnabled(cxapi.KMS_CROSS_ACCOUNT_REGION_KMS_KEY_POLICY)) {
+      // if two compared stacks have the same region, this should return 'false' since it's from the
+      // same region; if two stacks have different region, then compare env.account
+      return bucketStack.account !== identityStack.account && this.env.account !== identityStack.account;
+    }
+    return bucketStack.account !== identityStack.account;
   }
 }
 

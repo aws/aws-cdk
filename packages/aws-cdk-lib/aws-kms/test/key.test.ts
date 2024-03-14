@@ -2,6 +2,7 @@ import { describeDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Match, Template } from '../../assertions';
 import * as iam from '../../aws-iam';
 import * as cdk from '../../core';
+import * as cxapi from '../../cx-api';
 import * as kms from '../lib';
 import { KeySpec, KeyUsage } from '../lib';
 
@@ -82,7 +83,7 @@ describe('key policies', () => {
   });
 
   test('cross region key with iam role grant', () => {
-    const app = new cdk.App();
+    const app = new cdk.App({ context: { [cxapi.KMS_CROSS_ACCOUNT_REGION_KMS_KEY_POLICY]: true } });
     const stack = new cdk.Stack(app, 'test-stack', { env: { account: '000000000000', region: 'us-west-2' } });
     const key = kms.Key.fromKeyArn(
       stack,
@@ -104,6 +105,36 @@ describe('key policies', () => {
           {
             Effect: 'Allow',
             Resource: 'arn:aws:kms:eu-north-1:000000000000:key/e3ab59e5-3dc3-4bc4-9c3f-c790231d2287',
+          },
+        ],
+        Version: '2012-10-17',
+      },
+    });
+  });
+
+  test('cross region key with iam role grant when feature flag is disabled', () => {
+    const app = new cdk.App({ context: { [cxapi.KMS_CROSS_ACCOUNT_REGION_KMS_KEY_POLICY]: false } });
+    const stack = new cdk.Stack(app, 'test-stack', { env: { account: '000000000000', region: 'us-west-2' } });
+    const key = kms.Key.fromKeyArn(
+      stack,
+      'Key',
+      'arn:aws:kms:eu-north-1:000000000000:key/e3ab59e5-3dc3-4bc4-9c3f-c790231d2287',
+    );
+
+    const roleStack = new cdk.Stack(app, 'RoleStack', {
+      env: { account: '000000000000', region: 'eu-north-1' },
+    });
+    const role = new iam.Role(roleStack, 'Role', {
+      assumedBy: new iam.AccountPrincipal('000000000000'),
+    });
+    key.grantEncryptDecrypt(role);
+
+    Template.fromStack(roleStack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Effect: 'Allow',
+            Resource: '*',
           },
         ],
         Version: '2012-10-17',

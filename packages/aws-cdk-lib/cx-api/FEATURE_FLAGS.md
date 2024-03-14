@@ -66,6 +66,7 @@ Flags come in three types:
 | [@aws-cdk/aws-cloudwatch-actions:changeLambdaPermissionLogicalIdForLambdaAction](#aws-cdkaws-cloudwatch-actionschangelambdapermissionlogicalidforlambdaaction) | When enabled, the logical ID of a Lambda permission for a Lambda action includes an alarm ID. | 2.124.0 | (fix) |
 | [@aws-cdk/aws-codepipeline:crossAccountKeysDefaultValueToFalse](#aws-cdkaws-codepipelinecrossaccountkeysdefaultvaluetofalse) | Enables Pipeline to set the default value for crossAccountKeys to false. | 2.127.0 | (default) |
 | [@aws-cdk/aws-codepipeline:defaultPipelineTypeToV2](#aws-cdkaws-codepipelinedefaultpipelinetypetov2) | Enables Pipeline to set the default pipeline type to V2. | V2NEXT | (default) |
+| [@aws-cdk/aws-kms:crossAccountRegionKmsKeyPolicy](#aws-cdkaws-kmscrossaccountregionkmskeypolicy) | When enabled, KMS key grant should create policy with only one resource. | V2NEXT | (fix) |
 
 <!-- END table -->
 
@@ -122,7 +123,8 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/aws-codepipeline-actions:useNewDefaultBranchForCodeCommitSource": true,
     "@aws-cdk/aws-cloudwatch-actions:changeLambdaPermissionLogicalIdForLambdaAction": true,
     "@aws-cdk/aws-codepipeline:crossAccountKeysDefaultValueToFalse": true,
-    "@aws-cdk/aws-codepipeline:defaultPipelineTypeToV2": true
+    "@aws-cdk/aws-codepipeline:defaultPipelineTypeToV2": true,
+    "@aws-cdk/aws-kms:crossAccountRegionKmsKeyPolicy": true
   }
 }
 ```
@@ -1247,6 +1249,20 @@ construct, the construct automatically defaults the value of this property to `P
 | V2NEXT | `false` | `true` |
 
 **Compatibility with old behavior:** Pass `pipelineType: PipelineType.V1` to `Pipeline` construct to restore the previous behavior.
+
+
+### @aws-cdk/aws-kms:crossAccountRegionKmsKeyPolicy
+
+*When enabled, KMS key grant should create policy with only one resource.* (fix)
+
+When this feature flag is enabled and calling KMS key grant method, the created IAM policy should correctly resolve to this
+granting KMS key instead of a * resource property.
+
+
+| Since | Default | Recommended |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| V2NEXT | `false` | `true` |
 
 
 <!-- END details -->
