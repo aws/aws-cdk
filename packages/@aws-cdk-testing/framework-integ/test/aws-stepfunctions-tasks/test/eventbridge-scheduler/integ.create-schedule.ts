@@ -42,7 +42,7 @@ const createScheduleTask1 = new EventBridgeSchedulerCreateScheduleTask(stack, 'c
   scheduleExpression: 'rate(1 minute)',
   timezone: 'UTC',
   enabled: true,
-  targetArn: targetQueue.queueArn,
+  target: targetQueue.queueArn,
   role: schedulerRole,
   retryPolicy: {
     maximumRetryAttempts: 2,
@@ -54,7 +54,7 @@ const createScheduleTask1 = new EventBridgeSchedulerCreateScheduleTask(stack, 'c
 const createScheduleTask2 = new EventBridgeSchedulerCreateScheduleTask(stack, 'createSchedule2', {
   scheduleName: 'TestSchedule2',
   scheduleExpression: 'rate(1 minute)',
-  targetArn: targetQueue.queueArn,
+  target: targetQueue.queueArn,
   role: schedulerRole,
 });
 
