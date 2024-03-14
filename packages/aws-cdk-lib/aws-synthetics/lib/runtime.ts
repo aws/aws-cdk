@@ -193,6 +193,7 @@ export class Runtime {
    * - Chromium version 83.0.4103.0
    *
    * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_python_selenium.html#CloudWatch_Synthetics_runtimeversion-syn-python-selenium-1.0
+   * @deprecated Legacy runtime no longer supported by AWS Lambda. Migrate to the latest Python and Selenium runtime.
    */
   public static readonly SYNTHETICS_PYTHON_SELENIUM_1_0 = new Runtime('syn-python-selenium-1.0', RuntimeFamily.PYTHON);
 
@@ -209,6 +210,7 @@ export class Runtime {
    * - **Cross-Region artifact buckets**: A canary can store its artifacts in an Amazon S3 bucket in a different Region.
    *
    * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_python_selenium.html#CloudWatch_Synthetics_runtimeversion-syn-python-selenium-1.1
+   * @deprecated Legacy runtime no longer supported by AWS Lambda. Migrate to the latest Python and Selenium runtime.
    */
   public static readonly SYNTHETICS_PYTHON_SELENIUM_1_1 = new Runtime('syn-python-selenium-1.1', RuntimeFamily.PYTHON);
 
@@ -222,6 +224,7 @@ export class Runtime {
    * - **Updated dependencies**: The only new features in this runtime are the updated dependencies.
    *
    * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_python_selenium.html#CloudWatch_Synthetics_runtimeversion-syn-python-selenium-1.2
+   * @deprecated Legacy runtime no longer supported by AWS Lambda. Migrate to the latest Python and Selenium runtime.
    */
   public static readonly SYNTHETICS_PYTHON_SELENIUM_1_2 = new Runtime('syn-python-selenium-1.2', RuntimeFamily.PYTHON);
 
@@ -235,6 +238,7 @@ export class Runtime {
    * - **More precise timestamps**: The start time and stop time of canary runs are now precise to the millisecond.
    *
    * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_python_selenium.html#CloudWatch_Synthetics_runtimeversion-syn-python-selenium-1.3
+   * @deprecated Legacy runtime no longer supported by AWS Lambda. Migrate to the latest Python and Selenium runtime.
    */
   public static readonly SYNTHETICS_PYTHON_SELENIUM_1_3 = new Runtime('syn-python-selenium-1.3', RuntimeFamily.PYTHON);
 
@@ -252,6 +256,7 @@ export class Runtime {
    * - **Timestamp added**: A timestamp has been added to canary logs.
    * - **Session re-use**: A bug was fixed so that canaries are now prevented from reusing the session from their previous canary run.
    * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_python_selenium.html#CloudWatch_Synthetics_runtimeversion-syn-python-selenium-2.0
+   * @deprecated Legacy runtime no longer supported by AWS Lambda. Migrate to the latest Python and Selenium runtime.
    */
   public static readonly SYNTHETICS_PYTHON_SELENIUM_2_0 = new Runtime('syn-python-selenium-2.0', RuntimeFamily.PYTHON);
 
