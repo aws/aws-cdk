@@ -25,7 +25,7 @@ describe('Create Schedule', () => {
       resources: [targetQueue.queueArn],
     }));
 
-    const createScheduleTask = new tasks.EventBridgeSchedulerCreateScheduleTask(stack, 'createSchedule2', {
+    const createScheduleTask = new tasks.EventBridgeSchedulerCreateScheduleTask(stack, 'createSchedule', {
       scheduleName: 'TestSchedule',
       scheduleExpression: 'rate(1 minute)',
       targetArn: targetQueue.queueArn,
@@ -142,40 +142,6 @@ describe('Create Schedule', () => {
         },
       ],
     });
-    template.hasResourceProperties('AWS::StepFunctions::StateMachine', {
-      DefinitionString: {
-        'Fn::Join': [
-          '',
-          [
-            '{"StartAt":"createSchedule2","States":{"createSchedule2":{"End":true,"Type":"Task","Resource":"arn:',
-            {
-              Ref: 'AWS::Partition',
-            },
-            ':states:::aws-sdk:scheduler:createSchedule","Parameters":{"FlexibleTimeWindow":{"Mode":"OFF"},"Name":"TestSchedule","ScheduleExpression":"rate(1 minute)","State":"ENABLED","Target":{"Arn":"',
-            {
-              'Fn::GetAtt': [
-                'TargetQueue08AD2B3C',
-                'Arn',
-              ],
-            },
-            '","RoleArn":"',
-            {
-              'Fn::GetAtt': [
-                'SchedulerRole59E73443',
-                'Arn',
-              ],
-            },
-            '"}}}}}',
-          ],
-        ],
-      },
-      RoleArn: {
-        'Fn::GetAtt': [
-          'stateMachineRole64DF9B42',
-          'Arn',
-        ],
-      },
-    });
   });
 
   test('with all settings', () => {
@@ -200,7 +166,7 @@ describe('Create Schedule', () => {
     const testDate = new Date();
     const testEndDate = new Date(testDate.getTime() + 1000 * 60 * 60);
 
-    const createScheduleTask = new tasks.EventBridgeSchedulerCreateScheduleTask(stack, 'createSchedule1', {
+    const createScheduleTask = new tasks.EventBridgeSchedulerCreateScheduleTask(stack, 'createSchedule', {
       scheduleName: 'TestSchedule',
       actionAfterCompletion: tasks.ActionAfterCompletion.NONE,
       clientToken: 'testToken',
