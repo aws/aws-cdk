@@ -61,3 +61,20 @@ const pipe = new pipes.Pipe(this, 'Pipe', {
 });
 ```
 
+### Amazon Kinesis
+
+A Kinesis stream can be used as a source for a pipe. The stream will be polled for new messages and the messages will be sent to the pipe.
+
+```ts
+declare const sourceStream: kinesis.Stream;
+declare const targetQueue: sqs.Queue;
+
+const pipeSource = new sources.KinesisSource(sourceStream, {
+  startingPosition: StartingPosition.LATEST,
+});
+
+const pipe = new pipes.Pipe(this, 'Pipe', {
+  source: pipeSource,
+  target: new SomeTarget(targetQueue)
+});
+```
