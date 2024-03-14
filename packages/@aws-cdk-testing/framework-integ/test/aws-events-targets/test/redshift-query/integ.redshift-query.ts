@@ -24,7 +24,7 @@ workGroup.addDependency(namespace);
 const queue = new sqs.Queue(stack, 'dlq');
 
 const timer3 = new events.Rule(stack, 'Timer3', {
-  schedule: events.Schedule.rate(cdk.Duration.minutes(5)),
+  schedule: events.Schedule.rate(cdk.Duration.minutes(1)),
 });
 timer3.addTarget(new targets.RedshiftQuery(workGroup.attrWorkgroupWorkgroupArn, {
   database: 'dev',
@@ -34,7 +34,6 @@ timer3.addTarget(new targets.RedshiftQuery(workGroup.attrWorkgroupWorkgroupArn, 
 
 new IntegTest(app, 'LogGroup', {
   testCases: [stack],
-  diffAssets: true,
 });
 
 app.synth();

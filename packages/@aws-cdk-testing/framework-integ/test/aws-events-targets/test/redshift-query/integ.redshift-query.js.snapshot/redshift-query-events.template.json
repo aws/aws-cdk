@@ -32,7 +32,7 @@
   "Timer30894E3BB": {
    "Type": "AWS::Events::Rule",
    "Properties": {
-    "ScheduleExpression": "rate(5 minutes)",
+    "ScheduleExpression": "rate(1 minute)",
     "State": "ENABLED",
     "Targets": [
      {
