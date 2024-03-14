@@ -67,6 +67,7 @@ describe('imports', () => {
     });
 
     cloudFormation = instanceMockFrom(Deployments);
+    cloudFormation.stackExists = jest.fn().mockReturnValue(Promise.resolve(true));
 
     toolkit = new CdkToolkit({
       cloudExecutable,
@@ -305,6 +306,24 @@ describe('non-nested stacks', () => {
     expect(buffer.data.trim()).not.toContain('Stack A');
     expect(buffer.data.trim()).not.toContain('There were no differences');
     expect(exitCode).toBe(0);
+  });
+
+  test('diff does not check for stack existance when --no-changeset is passed', async () => {
+    // GIVEN
+    const buffer = new StringWritable();
+
+    // WHEN
+    const exitCode = await toolkit.diff({
+      stackNames: ['A', 'A'],
+      stream: buffer,
+      fail: false,
+      quiet: true,
+      changeSet: false,
+    });
+
+    // THEN
+    expect(exitCode).toBe(0);
+    expect(cloudFormation.stackExists).not.toHaveBeenCalled();
   });
 });
 

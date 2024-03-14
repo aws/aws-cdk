@@ -168,16 +168,24 @@ export class CdkToolkit {
           removeNonImportResources(stack);
         }
 
-        const changeSet = options.changeSet ? await createDiffChangeSet({
-          stack,
-          uuid: uuid.v4(),
-          deployments: this.props.deployments,
-          willExecute: false,
-          sdkProvider: this.props.sdkProvider,
-          parameters: Object.assign({}, parameterMap['*'], parameterMap[stacks.firstStack.stackName]),
-          resourcesToImport,
-          stream,
-        }) : undefined;
+        let changeSet = undefined;
+
+        if (options.changeSet) {
+          const stackExists = await this.props.deployments.stackExists({
+            stack: stack,
+            deployName: stack.stackName,
+          });
+          changeSet = stackExists ? await createDiffChangeSet({
+            stack,
+            uuid: uuid.v4(),
+            deployments: this.props.deployments,
+            willExecute: false,
+            sdkProvider: this.props.sdkProvider,
+            parameters: Object.assign({}, parameterMap['*'], parameterMap[stacks.firstStack.stackName]),
+            resourcesToImport,
+            stream,
+          }) : undefined;
+        }
 
         if (resourcesToImport) {
           stream.write('Parameters and rules created during migration do not affect resource configuration.\n');
