@@ -20,7 +20,7 @@ export interface KinesisSourceParameters {
     * Define the target queue to send dead-letter queue events to.
     *
     * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-pipes-pipe-pipesourcekinesisstreamparameters.html#cfn-pipes-pipe-pipesourcekinesisstreamparameters-deadletterconfig
-    * @default no dead letter config
+    * @default no dead letter target queue
     */
   readonly deadLetterConfig?: DeadLetterConfigParameters;
 
