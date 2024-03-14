@@ -1,7 +1,7 @@
 import * as AWS from 'aws-sdk';
 import { PromiseResult } from 'aws-sdk/lib/request';
 import { ISDK } from './aws-auth';
-import { NestedStackNames } from './nested-stack-helpers';
+import { NestedStackTemplates } from './nested-stack-helpers';
 
 export interface ListStackResources {
   listStackResources(): Promise<AWS.CloudFormation.StackResourceSummary[]>;
@@ -102,7 +102,7 @@ export interface EvaluateCloudFormationTemplateProps {
   readonly partition: string;
   readonly urlSuffix: (region: string) => string;
   readonly sdk: ISDK;
-  readonly nestedStackNames?: { [nestedStackLogicalId: string]: NestedStackNames };
+  readonly nestedStacks?: { [nestedStackLogicalId: string]: NestedStackTemplates };
 }
 
 export class EvaluateCloudFormationTemplate {
@@ -114,7 +114,7 @@ export class EvaluateCloudFormationTemplate {
   private readonly partition: string;
   private readonly urlSuffix: (region: string) => string;
   private readonly sdk: ISDK;
-  private readonly nestedStackNames: { [nestedStackLogicalId: string]: NestedStackNames };
+  private readonly nestedStacks: { [nestedStackLogicalId: string]: NestedStackTemplates };
   private readonly stackResources: ListStackResources;
   private readonly lookupExport: LookupExport;
 
@@ -136,7 +136,7 @@ export class EvaluateCloudFormationTemplate {
     this.sdk = props.sdk;
 
     // We need names of nested stack so we can evaluate cross stack references
-    this.nestedStackNames = props.nestedStackNames ?? {};
+    this.nestedStacks = props.nestedStacks ?? {};
 
     // The current resources of the Stack.
     // We need them to figure out the physical name of a resource in case it wasn't specified by the user.
@@ -163,7 +163,7 @@ export class EvaluateCloudFormationTemplate {
       partition: this.partition,
       urlSuffix: this.urlSuffix,
       sdk: this.sdk,
-      nestedStackNames: this.nestedStackNames,
+      nestedStacks: this.nestedStacks,
     });
   }
 
@@ -390,17 +390,15 @@ export class EvaluateCloudFormationTemplate {
     }
 
     if (foundResource.ResourceType == 'AWS::CloudFormation::Stack' && attribute?.startsWith('Outputs.')) {
-      // need to resolve attributes from another stack's Output section
-      const dependantStackName = this.findNestedStack(logicalId, this.nestedStackNames);
-      if (!dependantStackName) {
+      const dependantStack = this.findNestedStack(logicalId, this.nestedStacks);
+      if (!dependantStack || !dependantStack.physicalName) {
         //this is a newly created nested stack and cannot be hotswapped
         return undefined;
       }
-      const dependantStackTemplate = this.template.Resources[logicalId];
       const evaluateCfnTemplate = await this.createNestedEvaluateCloudFormationTemplate(
-        dependantStackName,
-        dependantStackTemplate?.Properties?.NestedTemplate,
-        dependantStackTemplate.newValue?.Properties?.Parameters);
+        dependantStack.physicalName,
+        dependantStack.generatedTemplate,
+        dependantStack.generatedTemplate.Parameters!);
 
       // Split Outputs.<refName> into 'Outputs' and '<refName>' and recursively call evaluate
       return evaluateCfnTemplate.evaluateCfnExpression({ 'Fn::GetAtt': attribute.split(/\.(.*)/s) });
@@ -410,14 +408,14 @@ export class EvaluateCloudFormationTemplate {
     return this.formatResourceAttribute(foundResource, attribute);
   }
 
-  private findNestedStack(logicalId: string, nestedStackNames: {
-    [nestedStackLogicalId: string]: NestedStackNames;
-  }): string | undefined {
-    for (const [nestedStackLogicalId, { nestedChildStackNames, nestedStackPhysicalName }] of Object.entries(nestedStackNames)) {
+  private findNestedStack(logicalId: string, nestedStacks: {
+    [nestedStackLogicalId: string]: NestedStackTemplates;
+  }): NestedStackTemplates | undefined {
+    for (const nestedStackLogicalId of Object.keys(nestedStacks)) {
       if (nestedStackLogicalId === logicalId) {
-        return nestedStackPhysicalName;
+        return nestedStacks[nestedStackLogicalId];
       }
-      const checkInNestedChildStacks = this.findNestedStack(logicalId, nestedChildStackNames);
+      const checkInNestedChildStacks = this.findNestedStack(logicalId, nestedStacks[nestedStackLogicalId].nestedStackTemplates);
       if (checkInNestedChildStacks) return checkInNestedChildStacks;
     }
     return undefined;
