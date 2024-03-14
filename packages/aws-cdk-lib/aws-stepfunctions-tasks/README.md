@@ -1112,6 +1112,63 @@ new tasks.EventBridgePutEvents(this, 'Send an event to EventBridge', {
 });
 ```
 
+## EventBridge Scheduler
+
+You can call EventBridge Scheduler APIs from a `Task` state.
+Read more about calling Scheduler APIs [here](https://docs.aws.amazon.com/scheduler/latest/APIReference/API_Operations.html)
+
+### Create Scheduler
+
+The [CreateSchedule](https://docs.aws.amazon.com/scheduler/latest/APIReference/API_CreateSchedule.html) API creates a new schedule.
+
+Here is an example of how to create a schedule that puts an event to SQS queue every 5 minutes:
+
+```ts
+import * as iam from 'aws-cdk-lib/aws-iam';
+import * as key from 'aws-cdk-lib/aws-kms';
+import * as scheduler from 'aws-cdk-lib/aws-scheduler';
+import * as sqs from 'aws-cdk-lib/aws-sqs';
+
+declare const key: kms.Key;
+declare const scheduleGroup: scheduler.CfnScheduleGroup;
+declare const targetQueue: sqs.Queue;
+declare const deadLetterQueue: sqs.Queue;
+
+const schedulerRole = new iam.Role(this, 'SchedulerRole', {
+  assumedBy: new iam.ServicePrincipal('scheduler.amazonaws.com'),
+});
+// To encrypt and decrypt the data
+kmsKey.grantEncryptDecrypt(schedulerRole);
+// To send the message to the queue
+// This policy changes depending on the type of target.
+schedulerRole.addToPrincipalPolicy(new iam.PolicyStatement({
+  actions: ['sqs:SendMessage'],
+  resources: [targetQueue.queueArn],
+}));
+
+const createScheduleTask1 = new EventBridgeSchedulerCreateScheduleTask(stack, 'createSchedule', {
+  scheduleName: 'TestSchedule',
+  actionAfterCompletion: ActionAfterCompletion.NONE,
+  clientToken: 'testToken',
+  description: 'TestDescription',
+  startDate: new Date(),
+  endDate: new Date(new Date().getTime() + 1000 * 60 * 60),
+  flexibleTimeWindow: cdk.Duration.minutes(5),
+  groupName: scheduleGroup.ref,
+  kmsKey,
+  scheduleExpression: 'rate(5 minute)',
+  timezone: 'UTC',
+  enabled: true,
+  targetArn: targetQueue.queueArn,
+  role: schedulerRole,
+  retryPolicy: {
+    maximumRetryAttempts: 2,
+    maximumEventAge: cdk.Duration.minutes(5),
+  },
+  deadLetterQueue,
+});
+```
+
 ## Glue
 
 Step Functions supports [AWS Glue](https://docs.aws.amazon.com/step-functions/latest/dg/connect-glue.html) through the service integration pattern.
