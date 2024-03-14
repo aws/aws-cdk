@@ -2851,7 +2851,6 @@
   version "7.23.9"
   resolved "https://registry.npmjs.org/@babel/traverse/-/traverse-7.23.9.tgz#2f9d6aead6b564669394c5ce0f9302bb65b9d950"
   integrity sha512-I/4UJ9vs90OkBtY6iiiTORVMyIhJ4kAVmsKo9KFc8UOxMeUfi2hvtIBsET5u9GizXE6/GFSuKCTNfgCswuEjRg==
-  dependencies:
     "@babel/code-frame" "^7.23.5"
     "@babel/generator" "^7.23.6"
     "@babel/helper-environment-visitor" "^7.22.20"
@@ -4347,7 +4346,6 @@
   version "2.1.1"
   resolved "https://registry.npmjs.org/@smithy/eventstream-codec/-/eventstream-codec-2.1.1.tgz#4405ab0f9c77d439c575560c4886e59ee17d6d38"
   integrity sha512-E8KYBxBIuU4c+zrpR22VsVrOPoEDzk35bQR3E+xm4k6Pa6JqzkDOdMyf9Atac5GPNKHJBdVaQ4JtjdWX2rl/nw==
-  dependencies:
     "@aws-crypto/crc32" "3.0.0"
     "@smithy/types" "^2.9.1"
     "@smithy/util-hex-encoding" "^2.1.1"
@@ -5065,7 +5063,6 @@
   version "18.19.17"
   resolved "https://registry.npmjs.org/@types/node/-/node-18.19.17.tgz#a581a9fb4b2cfdbc61f008804f4436b2d5c40354"
   integrity sha512-SzyGKgwPzuWp2SHhlpXKzCX0pIOfcI4V2eF37nNBJOhwlegQ83omtVQ1XxZpDE06V/d6AQvfQdPfnw0tRC//Ng==
-  dependencies:
     undici-types "~5.26.4"
 
 "@types/normalize-package-data@^2.4.0":
@@ -5844,10 +5841,26 @@ aws-sdk-mock@5.8.0:
     sinon "^14.0.1"
     traverse "^0.6.6"
 
-aws-sdk@2.1548.0:
-  version "2.1548.0"
-  resolved "https://registry.npmjs.org/aws-sdk/-/aws-sdk-2.1548.0.tgz#f888f266b0675e5021f48704df7a56de9856caa1"
-  integrity sha512-kmo3FvO7xKuB7WfLKm6ABuecZeUTFtfwrbrGjWMiCC/yNwP1S3oSm/j/Yy7LO8sQfukWSOXpnPfMk5yhhqq3UQ==
+aws-sdk@2.1562.0:
+  version "2.1562.0"
+  resolved "https://registry.npmjs.org/aws-sdk/-/aws-sdk-2.1562.0.tgz#7e5d42c7857e943edd233e282cdb85a882f08edc"
+  integrity sha512-HsdlDRfVamH4tv+M+d0lnEYdtx+yEpqWA4T2XuJCjtV5JjjHDUQTKm+9C+EoTxLWtuw+SYSVWyuclwETv6CmHQ==
+  dependencies:
+    buffer "4.9.2"
+    events "1.1.1"
+    ieee754 "1.1.13"
+    jmespath "0.16.0"
+    querystring "0.2.0"
+    sax "1.2.1"
+    url "0.10.3"
+    util "^0.12.4"
+    uuid "8.0.0"
+    xml2js "0.6.2"
+
+aws-sdk@^2.1231.0, aws-sdk@^2.1537.0, aws-sdk@^2.928.0:
+  version "2.1537.0"
+  resolved "https://registry.npmjs.org/aws-sdk/-/aws-sdk-2.1537.0.tgz#9bac0ee7ff8f0713b0c196d77c2872660732adad"
+  integrity sha512-ILC4pSOA07XdkqbOVGJ4W2s1cBlmG5xQnVEgo4g5g0vhrjpuJm3jTSkBSGAOqpGuZ0TA/5uFCfsGnYnpoT2z0A==
   dependencies:
     buffer "4.9.2"
     events "1.1.1"
@@ -8990,7 +9003,6 @@ hasown@^2.0.0, hasown@^2.0.1:
   version "2.0.1"
   resolved "https://registry.npmjs.org/hasown/-/hasown-2.0.1.tgz#26f48f039de2c0f8d3356c223fb8d50253519faa"
   integrity sha512-1/th4MHjnwncwXsIW6QMzlvYL9kG5e/CpVvLRZe4XPa8TOUNbCELqmvhDmnkNsAjwaG4+I8gJJL0JBvTTLO9qA==
-  dependencies:
     function-bind "^1.1.2"
 
 header-case@^2.0.4:
@@ -15184,6 +15196,14 @@ xml-js@^1.6.11:
   integrity sha512-7rVi2KMfwfWFl+GpPg6m80IVMWXLRjO+PxTq7V2CDhoGak0wzYzFgUY2m4XJ47OGdXd8eLE8EmwfAmdjw7lC1g==
   dependencies:
     sax "^1.2.4"
+
+xml2js@0.6.2:
+  version "0.6.2"
+  resolved "https://registry.npmjs.org/xml2js/-/xml2js-0.6.2.tgz#dd0b630083aa09c161e25a4d0901e2b2a929b499"
+  integrity sha512-T4rieHaC1EXcES0Kxxj4JWgaUQHDk+qwHcYOCFHfiwKz7tOVPLq7Hjq9dM1WCMhylqMEfP7hMcOIChvotiZegA==
+  dependencies:
+    sax ">=0.6.0"
+    xmlbuilder "~11.0.0"
 
 xml2js@0.6.2:
   version "0.6.2"
