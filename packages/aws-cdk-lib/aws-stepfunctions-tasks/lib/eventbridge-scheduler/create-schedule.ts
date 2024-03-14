@@ -199,6 +199,9 @@ export class EventBridgeSchedulerCreateScheduleTask extends sfn.TaskStateBase {
     ];
   }
 
+  /**
+   * @internal
+   */
   protected _renderTask(): any {
     return {
       Resource: integrationResourceArn('aws-sdk:scheduler', 'createSchedule', this.integrationPattern),
