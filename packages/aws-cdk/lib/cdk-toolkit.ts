@@ -136,15 +136,23 @@ export class CdkToolkit {
         throw new Error(`There is no file at ${options.templatePath}`);
       }
 
-      const changeSet = options.changeSet ? await createDiffChangeSet({
-        stack: stacks.firstStack,
-        uuid: uuid.v4(),
-        willExecute: false,
-        deployments: this.props.deployments,
-        sdkProvider: this.props.sdkProvider,
-        parameters: Object.assign({}, parameterMap['*'], parameterMap[stacks.firstStack.stackName]),
-        stream,
-      }) : undefined;
+      let changeSet = undefined;
+
+      if (options.changeSet) {
+        const stackExists = await this.props.deployments.stackExists({
+          stack: stacks.firstStack,
+          deployName: stacks.firstStack.stackName,
+        });
+        changeSet = stackExists ? await createDiffChangeSet({
+          stack: stacks.firstStack,
+          uuid: uuid.v4(),
+          willExecute: false,
+          deployments: this.props.deployments,
+          sdkProvider: this.props.sdkProvider,
+          parameters: Object.assign({}, parameterMap['*'], parameterMap[stacks.firstStack.stackName]),
+          stream,
+        }) : undefined;
+      }
 
       const template = deserializeStructure(await fs.readFile(options.templatePath, { encoding: 'UTF-8' }));
       diffs = options.securityOnly
