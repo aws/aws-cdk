@@ -131,13 +131,6 @@ interface SingletonFunctionProps extends LambdaFunctionProviderProps {
    * We recommend generating a UUID per provider.
    */
   readonly uuid: string;
-
-  /**
-   * How long, in days, the log contents will be retained.
-   *
-   * @default - no retention days specified
-   */
-  readonly logRetention?: RetentionDays;
 }
 
 /**
