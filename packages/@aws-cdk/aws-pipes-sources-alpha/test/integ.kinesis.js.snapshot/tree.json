@@ -8,13 +8,13 @@
         "id": "aws-cdk-pipes-sources-kinesis-stream",
         "path": "aws-cdk-pipes-sources-kinesis-stream",
         "children": {
-          "SourceKinesisStream2": {
-            "id": "SourceKinesisStream2",
-            "path": "aws-cdk-pipes-sources-kinesis-stream/SourceKinesisStream2",
+          "SourceKinesisStream": {
+            "id": "SourceKinesisStream",
+            "path": "aws-cdk-pipes-sources-kinesis-stream/SourceKinesisStream",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "aws-cdk-pipes-sources-kinesis-stream/SourceKinesisStream2/Resource",
+                "path": "aws-cdk-pipes-sources-kinesis-stream/SourceKinesisStream/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::Kinesis::Stream",
                   "aws:cdk:cloudformation:props": {
@@ -142,7 +142,7 @@
                                   "Effect": "Allow",
                                   "Resource": {
                                     "Fn::GetAtt": [
-                                      "SourceKinesisStream2376424EB",
+                                      "SourceKinesisStreamD9B33274",
                                       "Arn"
                                     ]
                                   }
@@ -203,7 +203,7 @@
                     },
                     "source": {
                       "Fn::GetAtt": [
-                        "SourceKinesisStream2376424EB",
+                        "SourceKinesisStreamD9B33274",
                         "Arn"
                       ]
                     },
@@ -236,9 +236,9 @@
             "id": "Exports",
             "path": "aws-cdk-pipes-sources-kinesis-stream/Exports",
             "children": {
-              "Output{\"Fn::GetAtt\":[\"SourceKinesisStream2376424EB\",\"Arn\"]}": {
-                "id": "Output{\"Fn::GetAtt\":[\"SourceKinesisStream2376424EB\",\"Arn\"]}",
-                "path": "aws-cdk-pipes-sources-kinesis-stream/Exports/Output{\"Fn::GetAtt\":[\"SourceKinesisStream2376424EB\",\"Arn\"]}",
+              "Output{\"Fn::GetAtt\":[\"SourceKinesisStreamD9B33274\",\"Arn\"]}": {
+                "id": "Output{\"Fn::GetAtt\":[\"SourceKinesisStreamD9B33274\",\"Arn\"]}",
+                "path": "aws-cdk-pipes-sources-kinesis-stream/Exports/Output{\"Fn::GetAtt\":[\"SourceKinesisStreamD9B33274\",\"Arn\"]}",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
                   "version": "10.3.0"
@@ -300,17 +300,17 @@
                 "id": "DeployAssert",
                 "path": "integtest-pipe-source-sqs/DefaultTest/DeployAssert",
                 "children": {
-                  "AwsApiCallKinesisputRecord0fd40d734970b86832217f918325869e": {
-                    "id": "AwsApiCallKinesisputRecord0fd40d734970b86832217f918325869e",
-                    "path": "integtest-pipe-source-sqs/DefaultTest/DeployAssert/AwsApiCallKinesisputRecord0fd40d734970b86832217f918325869e",
+                  "AwsApiCallKinesisputRecord12bd71b3716a7a0c282fab499f417e99": {
+                    "id": "AwsApiCallKinesisputRecord12bd71b3716a7a0c282fab499f417e99",
+                    "path": "integtest-pipe-source-sqs/DefaultTest/DeployAssert/AwsApiCallKinesisputRecord12bd71b3716a7a0c282fab499f417e99",
                     "children": {
                       "SdkProvider": {
                         "id": "SdkProvider",
-                        "path": "integtest-pipe-source-sqs/DefaultTest/DeployAssert/AwsApiCallKinesisputRecord0fd40d734970b86832217f918325869e/SdkProvider",
+                        "path": "integtest-pipe-source-sqs/DefaultTest/DeployAssert/AwsApiCallKinesisputRecord12bd71b3716a7a0c282fab499f417e99/SdkProvider",
                         "children": {
                           "AssertionsProvider": {
                             "id": "AssertionsProvider",
-                            "path": "integtest-pipe-source-sqs/DefaultTest/DeployAssert/AwsApiCallKinesisputRecord0fd40d734970b86832217f918325869e/SdkProvider/AssertionsProvider",
+                            "path": "integtest-pipe-source-sqs/DefaultTest/DeployAssert/AwsApiCallKinesisputRecord12bd71b3716a7a0c282fab499f417e99/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
                               "version": "10.3.0"
@@ -324,11 +324,11 @@
                       },
                       "Default": {
                         "id": "Default",
-                        "path": "integtest-pipe-source-sqs/DefaultTest/DeployAssert/AwsApiCallKinesisputRecord0fd40d734970b86832217f918325869e/Default",
+                        "path": "integtest-pipe-source-sqs/DefaultTest/DeployAssert/AwsApiCallKinesisputRecord12bd71b3716a7a0c282fab499f417e99/Default",
                         "children": {
                           "Default": {
                             "id": "Default",
-                            "path": "integtest-pipe-source-sqs/DefaultTest/DeployAssert/AwsApiCallKinesisputRecord0fd40d734970b86832217f918325869e/Default/Default",
+                            "path": "integtest-pipe-source-sqs/DefaultTest/DeployAssert/AwsApiCallKinesisputRecord12bd71b3716a7a0c282fab499f417e99/Default/Default",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
                               "version": "10.3.0"

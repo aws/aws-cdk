@@ -6,7 +6,7 @@ import { KinesisSource, StartingPosition } from '../lib';
 
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-pipes-sources-kinesis-stream');
-const sourceKinesisStream = new cdk.aws_kinesis.Stream(stack, 'SourceKinesisStream2');
+const sourceKinesisStream = new cdk.aws_kinesis.Stream(stack, 'SourceKinesisStream');
 const targetQueue = new cdk.aws_sqs.Queue(stack, 'TargetQueue');
 
 class TestTarget implements ITarget {

@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/ab46a6b453111a635b13a688e36f2ddbc6fdace101a8ffe9ffe059e3a6779f86.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/b9aba3c0e6116377b9bf85fe36c255876f1fc4a979c04380d568cc3e5bc83b95.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -34,10 +34,10 @@
         "aws-cdk-pipes-sources-kinesis-stream.assets"
       ],
       "metadata": {
-        "/aws-cdk-pipes-sources-kinesis-stream/SourceKinesisStream2/Resource": [
+        "/aws-cdk-pipes-sources-kinesis-stream/SourceKinesisStream/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "SourceKinesisStream2376424EB"
+            "data": "SourceKinesisStreamD9B33274"
           }
         ],
         "/aws-cdk-pipes-sources-kinesis-stream/AwsCdkKinesisEncryptedStreamsUnsupportedRegions": [
@@ -67,13 +67,16 @@
         "/aws-cdk-pipes-sources-kinesis-stream/Pipe/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "Pipe7793F8A1"
+            "data": "Pipe7793F8A1",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
-        "/aws-cdk-pipes-sources-kinesis-stream/Exports/Output{\"Fn::GetAtt\":[\"SourceKinesisStream2376424EB\",\"Arn\"]}": [
+        "/aws-cdk-pipes-sources-kinesis-stream/Exports/Output{\"Fn::GetAtt\":[\"SourceKinesisStreamD9B33274\",\"Arn\"]}": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ExportsOutputFnGetAttSourceKinesisStream2376424EBArnEEBEE728"
+            "data": "ExportsOutputFnGetAttSourceKinesisStreamD9B33274Arn1A7BEAA1"
           }
         ],
         "/aws-cdk-pipes-sources-kinesis-stream/Exports/Output{\"Ref\":\"TargetQueue08AD2B3C\"}": [
@@ -92,6 +95,15 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
+          }
+        ],
+        "SourceKinesisStream2376424EB": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SourceKinesisStream2376424EB",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },
@@ -114,7 +126,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/691776eb1ae3521e8c0df5df4dd01a2231eaca87e938c2d2556b92f9eb84f2fb.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/19fa61680e2eaeac516a1ce0135d509bee324fe0cb9f5aabe9879773fa2151c5.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -131,10 +143,10 @@
         "integtestpipesourcesqsDefaultTestDeployAssertD36A35C2.assets"
       ],
       "metadata": {
-        "/integtest-pipe-source-sqs/DefaultTest/DeployAssert/AwsApiCallKinesisputRecord0fd40d734970b86832217f918325869e/Default/Default": [
+        "/integtest-pipe-source-sqs/DefaultTest/DeployAssert/AwsApiCallKinesisputRecord12bd71b3716a7a0c282fab499f417e99/Default/Default": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AwsApiCallKinesisputRecord0fd40d734970b86832217f918325869e"
+            "data": "AwsApiCallKinesisputRecord12bd71b3716a7a0c282fab499f417e99"
           }
         ],
         "/integtest-pipe-source-sqs/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [

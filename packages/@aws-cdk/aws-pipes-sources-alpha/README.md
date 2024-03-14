@@ -66,11 +66,13 @@ const pipe = new pipes.Pipe(this, 'Pipe', {
 A Kinesis stream can be used as a source for a pipe. The stream will be polled for new messages and the messages will be sent to the pipe.
 
 ```ts
+import * as kinesis from 'aws-cdk-lib/aws-kinesis';
+
 declare const sourceStream: kinesis.Stream;
 declare const targetQueue: sqs.Queue;
 
 const pipeSource = new sources.KinesisSource(sourceStream, {
-  startingPosition: StartingPosition.LATEST,
+  startingPosition: sources.StartingPosition.LATEST,
 });
 
 const pipe = new pipes.Pipe(this, 'Pipe', {
