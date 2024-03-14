@@ -73,7 +73,9 @@ export interface CreateScheduleProps extends sfn.TaskStateBaseProps {
   readonly groupName?: string;
 
   /**
-   * The customer managed KMS key that EventBridge Scheduler will use to encrypt and decrypt your data.
+   * The customer managed KMS key that EventBridge Scheduler will use to encrypt and decrypt payload.
+   *
+   * @see https://docs.aws.amazon.com/scheduler/latest/UserGuide/encryption-rest.html
    *
    * @default - use automatically generated KMS key
    */
@@ -110,6 +112,8 @@ export interface CreateScheduleProps extends sfn.TaskStateBaseProps {
 
   /**
    * The Amazon Resource Name (ARN) of the target.
+   *
+   * @see https://docs.aws.amazon.com/scheduler/latest/UserGuide/managing-targets.html
    */
   readonly targetArn: string;
 
