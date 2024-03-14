@@ -1,0 +1,203 @@
+{
+ "Resources": {
+  "SourceKinesisStream2376424EB": {
+   "Type": "AWS::Kinesis::Stream",
+   "Properties": {
+    "RetentionPeriodHours": 24,
+    "ShardCount": 1,
+    "StreamEncryption": {
+     "Fn::If": [
+      "AwsCdkKinesisEncryptedStreamsUnsupportedRegions",
+      {
+       "Ref": "AWS::NoValue"
+      },
+      {
+       "EncryptionType": "KMS",
+       "KeyId": "alias/aws/kinesis"
+      }
+     ]
+    }
+   }
+  },
+  "TargetQueue08AD2B3C": {
+   "Type": "AWS::SQS::Queue",
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "PipeRole7D4AFC73": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "pipes.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "PipeRoleDefaultPolicy56E6A74D": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "kinesis:DescribeStream",
+        "kinesis:DescribeStreamConsumer",
+        "kinesis:DescribeStreamSummary",
+        "kinesis:GetRecords",
+        "kinesis:GetShardIterator",
+        "kinesis:ListShards",
+        "kinesis:ListStreams",
+        "kinesis:SubscribeToShard"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "SourceKinesisStream2376424EB",
+         "Arn"
+        ]
+       }
+      },
+      {
+       "Action": [
+        "sqs:GetQueueAttributes",
+        "sqs:GetQueueUrl",
+        "sqs:SendMessage"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "TargetQueue08AD2B3C",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "PipeRoleDefaultPolicy56E6A74D",
+    "Roles": [
+     {
+      "Ref": "PipeRole7D4AFC73"
+     }
+    ]
+   }
+  },
+  "Pipe7793F8A1": {
+   "Type": "AWS::Pipes::Pipe",
+   "Properties": {
+    "RoleArn": {
+     "Fn::GetAtt": [
+      "PipeRole7D4AFC73",
+      "Arn"
+     ]
+    },
+    "Source": {
+     "Fn::GetAtt": [
+      "SourceKinesisStream2376424EB",
+      "Arn"
+     ]
+    },
+    "SourceParameters": {
+     "KinesisStreamParameters": {
+      "MaximumRecordAgeInSeconds": -1,
+      "MaximumRetryAttempts": -1,
+      "ParallelizationFactor": 1,
+      "StartingPosition": "LATEST"
+     }
+    },
+    "Target": {
+     "Fn::GetAtt": [
+      "TargetQueue08AD2B3C",
+      "Arn"
+     ]
+    },
+    "TargetParameters": {}
+   }
+  }
+ },
+ "Conditions": {
+  "AwsCdkKinesisEncryptedStreamsUnsupportedRegions": {
+   "Fn::Or": [
+    {
+     "Fn::Equals": [
+      {
+       "Ref": "AWS::Region"
+      },
+      "cn-north-1"
+     ]
+    },
+    {
+     "Fn::Equals": [
+      {
+       "Ref": "AWS::Region"
+      },
+      "cn-northwest-1"
+     ]
+    }
+   ]
+  }
+ },
+ "Outputs": {
+  "ExportsOutputFnGetAttSourceKinesisStream2376424EBArnEEBEE728": {
+   "Value": {
+    "Fn::GetAtt": [
+     "SourceKinesisStream2376424EB",
+     "Arn"
+    ]
+   },
+   "Export": {
+    "Name": "aws-cdk-pipes-sources-kinesis-stream:ExportsOutputFnGetAttSourceKinesisStream2376424EBArnEEBEE728"
+   }
+  },
+  "ExportsOutputRefTargetQueue08AD2B3C0C69AE0E": {
+   "Value": {
+    "Ref": "TargetQueue08AD2B3C"
+   },
+   "Export": {
+    "Name": "aws-cdk-pipes-sources-kinesis-stream:ExportsOutputRefTargetQueue08AD2B3C0C69AE0E"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}
