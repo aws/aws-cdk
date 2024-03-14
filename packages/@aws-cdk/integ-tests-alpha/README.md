@@ -441,7 +441,7 @@ invoke.expect(ExpectedResult.objectLike({
 
 The above example will by default create a CloudWatch log group that's never
 expired. If you want to configure it with custom log retention days, you need
-to specify the `logRenteion` property.
+to specify the `logRetention` property.
 
 ```ts
 import * as logs from 'aws-cdk-lib/aws-logs';
