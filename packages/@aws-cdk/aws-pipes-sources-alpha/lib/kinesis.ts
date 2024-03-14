@@ -20,7 +20,7 @@ export interface KinesisSourceParameters {
     * Define the target queue to send dead-letter queue events to.
     *
     * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-pipes-pipe-pipesourcekinesisstreamparameters.html#cfn-pipes-pipe-pipesourcekinesisstreamparameters-deadletterconfig
-    * @default no dead letter target queue
+    * @default no dead letter queue
     */
   readonly deadLetterConfig?: DeadLetterConfigParameters;
 
@@ -35,10 +35,12 @@ export interface KinesisSourceParameters {
   /**
    * (Streams only) Discard records older than the specified age. The default value is -1, which sets the maximum age to infinite. When the value is set to infinite, EventBridge never discards old records.
    *
-   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-pipes-pipe-pipesourcekinesisstreamparameters.html#cfn-pipes-pipe-pipesourcekinesisstreamparameters-maximumrecordageinseconds
+   * Leave undefined to set the maximum record age to infinite.
+   *
+   *  @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-pipes-pipe-pipesourcekinesisstreamparameters.html#cfn-pipes-pipe-pipesourcekinesisstreamparameters-maximumrecordageinseconds
    * @default -1 (infinite)
    */
-  readonly maximumRecordAgeInSeconds?: number;
+  readonly maximumRecordAge?: Duration;
 
   /**
    * (Streams only) Discard records after the specified number of retries. The default value is -1, which sets the maximum number of retries to infinite. When MaximumRetryAttempts is infinite, EventBridge retries failed records until the record expires in the event source.
@@ -127,7 +129,7 @@ export class KinesisSource implements ISource {
     this.sourceParameters = parameters;
     this.batchSize = this.sourceParameters.batchSize;
     this.maximumBatchingWindowInSeconds = this.sourceParameters.maximumBatchingWindow?.toSeconds();
-    this.maximumRecordAgeInSeconds = this.sourceParameters.maximumRecordAgeInSeconds;
+    this.maximumRecordAgeInSeconds = this.sourceParameters.maximumRecordAge?.toSeconds();
     this.maximumRetryAttempts = this.sourceParameters.maximumRetryAttempts;
     this.parallelizationFactor = this.sourceParameters.parallelizationFactor;
 
@@ -143,7 +145,8 @@ export class KinesisSource implements ISource {
       }
     }
     if (this.maximumRecordAgeInSeconds !== undefined) {
-      if (this.maximumRecordAgeInSeconds < -1 || this.maximumRecordAgeInSeconds > 604800) {
+      // only need to check upper bound since Duration amounts cannot be negative
+      if (this.maximumRecordAgeInSeconds > 604800) {
         throw new Error(`Maximum record age in seconds must be between -1 and 604800, received ${this.maximumRecordAgeInSeconds}`);
       }
     }
