@@ -91,7 +91,8 @@
     "@aws-cdk/aws-pipes-alpha": "0.0.0",
     "@aws-cdk/integ-tests-alpha": "0.0.0"
   },
-  "dependencies": {},
+  "dependencies": {
+  },
   "peerDependencies": {
     "@aws-cdk/aws-pipes-alpha": "0.0.0",
     "aws-cdk-lib": "^0.0.0",
