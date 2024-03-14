@@ -37,7 +37,6 @@ const DIFF_HANDLERS: HandlerRegistry = {
  * @param currentTemplate the current state of the stack.
  * @param newTemplate     the target state of the stack.
  * @param changeSet       the change set for this stack.
- * @param isImport        if the stack is importing resources (a migrate stack).
  *
  * @returns a +types.TemplateDiff+ object that represents the changes that will happen if
  *      a stack which current state is described by +currentTemplate+ is updated with
@@ -47,7 +46,6 @@ export function fullDiff(
   currentTemplate: { [key: string]: any },
   newTemplate: { [key: string]: any },
   changeSet?: CloudFormation.DescribeChangeSetOutput,
-  isImport?: boolean,
 ): types.TemplateDiff {
 
   normalize(currentTemplate);
@@ -56,9 +54,6 @@ export function fullDiff(
   if (changeSet) {
     filterFalsePositives(theDiff, changeSet);
     addImportInformation(theDiff, changeSet);
-  }
-  if (isImport) {
-    addImportInformation(theDiff);
   }
 
   return theDiff;
@@ -214,25 +209,13 @@ function deepCopy(x: any): any {
   return x;
 }
 
-/**
- * Sets import flag to true for resource imports.
- * When the changeset parameter is not set, the stack is a new migrate stack,
- * so all resource changes are imports.
- */
-function addImportInformation(diff: types.TemplateDiff, changeSet?: CloudFormation.DescribeChangeSetOutput) {
-  if (changeSet) {
-    const imports = findResourceImports(changeSet);
-    diff.resources.forEachDifference((logicalId: string, change: types.ResourceDifference) => {
-      if (imports.includes(logicalId)) {
-        change.isImport = true;
-      }
-    });
-  } else {
-    diff.resources.forEachDifference((logicalId: string, change: types.ResourceDifference) => {
-      logicalId; // dont know how to get past warning that this variable is not used.
+function addImportInformation(diff: types.TemplateDiff, changeSet: CloudFormation.DescribeChangeSetOutput) {
+  const imports = findResourceImports(changeSet);
+  diff.resources.forEachDifference((logicalId: string, change: types.ResourceDifference) => {
+    if (imports.includes(logicalId)) {
       change.isImport = true;
-    });
-  }
+    }
+  });
 }
 
 function filterFalsePositives(diff: types.TemplateDiff, changeSet: CloudFormation.DescribeChangeSetOutput) {

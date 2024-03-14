@@ -100,6 +100,7 @@ export const CODECOMMIT_SOURCE_ACTION_DEFAULT_BRANCH_NAME = '@aws-cdk/aws-codepi
 export const LAMBDA_PERMISSION_LOGICAL_ID_FOR_LAMBDA_ACTION = '@aws-cdk/aws-cloudwatch-actions:changeLambdaPermissionLogicalIdForLambdaAction';
 export const CODEPIPELINE_CROSS_ACCOUNT_KEYS_DEFAULT_VALUE_TO_FALSE = '@aws-cdk/aws-codepipeline:crossAccountKeysDefaultValueToFalse';
 export const CODEPIPELINE_DEFAULT_PIPELINE_TYPE_TO_V2 = '@aws-cdk/aws-codepipeline:defaultPipelineTypeToV2';
+export const KMS_REDUCE_CROSS_ACCOUNT_REGION_POLICY_SCOPE = '@aws-cdk/aws-kms:reduceCrossAccountRegionPolicyScope';
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
@@ -1020,6 +1021,18 @@ export const FLAGS: Record<string, FlagInfo> = {
     introducedIn: { v2: 'V2NEXT' },
     recommendedValue: true,
     compatibilityWithOldBehaviorMd: 'Pass `pipelineType: PipelineType.V1` to `Pipeline` construct to restore the previous behavior.',
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [KMS_REDUCE_CROSS_ACCOUNT_REGION_POLICY_SCOPE]: {
+    type: FlagType.BugFix,
+    summary: 'When enabled, IAM Policy created from KMS key grant will reduce the resource scope to this key only.',
+    detailsMd: `
+      When this feature flag is enabled and calling KMS key grant method, the created IAM policy will reduce the resource scope from
+      '*' to this specific granting KMS key.
+    `,
+    introducedIn: { v2: 'V2NEXT' },
+    recommendedValue: true,
   },
 };
 
