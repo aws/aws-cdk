@@ -59,7 +59,7 @@
     }
   },
   "scripts": {
-    "build": "cdk-build --skip-lint",
+    "build": "cdk-build",
     "gen": "cdk-copy cloud-assembly-schema",
     "watch": "cdk-watch",
     "test": "cdk-test",

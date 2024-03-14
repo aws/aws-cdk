@@ -58,7 +58,7 @@
     }
   },
   "scripts": {
-    "build": "yarn gen && cdk-build --skip-lint",
+    "build": "cdk-build",
     "gen": "cdk-copy region-info",
     "watch": "cdk-watch",
     "lint": "cdk-lint",
