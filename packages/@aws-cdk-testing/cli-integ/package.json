@@ -30,7 +30,7 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@aws-cdk/cdk-build-tools": "0.0.0",
-    "@types/semver": "^7.5.7",
+    "@types/semver": "^7.5.8",
     "@types/yargs": "^15.0.19",
     "@types/fs-extra": "^9.0.13",
     "@types/glob": "^7.2.0",
@@ -39,7 +39,7 @@
   },
   "dependencies": {
     "@octokit/rest": "^18.12.0",
-    "aws-sdk": "^2.1562.0",
+    "aws-sdk": "^2.1576.0",
     "axios": "^1.6.7",
     "fs-extra": "^9.1.0",
     "glob": "^7.2.3",
