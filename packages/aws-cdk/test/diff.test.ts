@@ -94,7 +94,7 @@ describe('imports', () => {
     fs.rmSync('migrate.json');
   });
 
-  test('imports render correctly for a nonexistant stack', async () => {
+  test('imports render correctly for a nonexistant stack without creating a changeset', async () => {
     // GIVEN
     const buffer = new StringWritable();
     cloudFormation.stackExists = jest.fn().mockReturnValue(Promise.resolve(false));
@@ -108,6 +108,7 @@ describe('imports', () => {
 
     // THEN
     const plainTextOutput = buffer.data.replace(/\x1B\[[0-?]*[ -/]*[@-~]/g, '');
+    expect(cfn.createDiffChangeSet).not.toHaveBeenCalled();
     expect(plainTextOutput).toContain(`Stack A
 Parameters and rules created during migration do not affect resource configuration.
 Resources
@@ -120,7 +121,7 @@ Resources
     expect(exitCode).toBe(0);
   });
 
-  test('imports render correctly for an existing stack', async () => {
+  test('imports render correctly for an existing stack and diff creates a changeset', async () => {
     // GIVEN
     const buffer = new StringWritable();
     cloudFormation.stackExists = jest.fn().mockReturnValue(Promise.resolve(true));
@@ -134,6 +135,7 @@ Resources
 
     // THEN
     const plainTextOutput = buffer.data.replace(/\x1B\[[0-?]*[ -/]*[@-~]/g, '');
+    expect(cfn.createDiffChangeSet).toHaveBeenCalled();
     expect(plainTextOutput).toContain(`Stack A
 Parameters and rules created during migration do not affect resource configuration.
 Resources

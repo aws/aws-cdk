@@ -161,7 +161,7 @@ export class CdkToolkit {
       const template = deserializeStructure(await fs.readFile(options.templatePath, { encoding: 'UTF-8' }));
       diffs = options.securityOnly
         ? numberFromBool(printSecurityDiff(template, stacks.firstStack, RequireApproval.Broadening, changeSet))
-        : printStackDiff(template, stacks.firstStack.template, strict, contextLines, quiet, changeSet, stream);
+        : printStackDiff(template, stacks.firstStack.template, strict, contextLines, quiet, changeSet, false, stream);
     } else {
       // Compare N stacks against deployed templates
       for (const stack of stacks.stackArtifacts) {
@@ -188,7 +188,7 @@ export class CdkToolkit {
             stack: stack,
             deployName: stack.stackName,
           });
-          if (stackExists || resourcesToImport) {
+          if (stackExists) {
             changeSet = await createDiffChangeSet({
               stack,
               uuid: uuid.v4(),
@@ -211,7 +211,7 @@ export class CdkToolkit {
         const stackCount =
         options.securityOnly
           ? (numberFromBool(printSecurityDiff(currentTemplate, stack, RequireApproval.Broadening, changeSet)))
-          : (printStackDiff(currentTemplate, stack, strict, contextLines, quiet, changeSet, stream, nestedStacks));
+          : (printStackDiff(currentTemplate, stack, strict, contextLines, quiet, changeSet, !!resourcesToImport, stream, nestedStacks));
 
         diffs += stackCount;
       }
