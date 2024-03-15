@@ -55,8 +55,7 @@ export function fullDiff(
   if (changeSet) {
     filterFalsePositives(theDiff, changeSet);
     addImportInformation(theDiff, changeSet);
-  }
-  if (isImport) {
+  } else if (isImport) {
     makeAllResourceChangesImports(theDiff);
   }
 
