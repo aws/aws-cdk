@@ -1,19 +1,25 @@
 import { Pipe } from '@aws-cdk/aws-pipes-alpha';
 import { App, Duration, Stack } from 'aws-cdk-lib';
 import { Template } from 'aws-cdk-lib/assertions';
-import { Stream } from 'aws-cdk-lib/aws-kinesis';
+import { AttributeType, StreamViewType, Table, TableV2 } from 'aws-cdk-lib/aws-dynamodb';
 import { Topic } from 'aws-cdk-lib/aws-sns';
 import { TestTarget } from './test-classes';
-import { KinesisSource, KinesisStartingPosition, OnPartialBatchItemFailure } from '../lib';
+import { DynamoDBSource, DynamoDBStartingPosition, OnPartialBatchItemFailure } from '../lib';
 
-describe('kinesis source', () => {
+describe('dynamodb source', () => {
   it('should have only source arn and starting position', () => {
     // ARRANGE
     const app = new App();
     const stack = new Stack(app, 'TestStack');
-    const stream = new Stream(stack, 'MyStream', {});
-    const source = new KinesisSource(stream, {
-      startingPosition: KinesisStartingPosition.TRIM_HORIZON,
+    const table = new TableV2(stack, 'MyTable', {
+      partitionKey: {
+        name: 'PK',
+        type: AttributeType.STRING,
+      },
+      dynamoStream: StreamViewType.OLD_IMAGE,
+    });
+    const source = new DynamoDBSource(table, {
+      startingPosition: DynamoDBStartingPosition.TRIM_HORIZON,
     });
 
     new Pipe(stack, 'MyPipe', {
@@ -28,25 +34,51 @@ describe('kinesis source', () => {
     template.hasResourceProperties('AWS::Pipes::Pipe', {
       Source: {
         'Fn::GetAtt': [
-          'MyStream5C050E93',
-          'Arn',
+          'MyTable794EDED1',
+          'StreamArn',
         ],
       },
       SourceParameters: {
-        KinesisStreamParameters: {
+        DynamoDBStreamParameters: {
           StartingPosition: 'TRIM_HORIZON',
         },
       },
     });
   });
 
+  test('should throw if table does not have stream enabled', () => {
+    // GIVEN
+    const app = new App();
+    const stack = new Stack(app, 'demo-stack');
+    // use v1 Table so a global table with streams is not created
+    const table = new Table(stack, 'MyTable', {
+      partitionKey: {
+        name: 'PK',
+        type: AttributeType.STRING,
+      },
+    });
+
+    // WHEN
+    expect(() => {
+      new DynamoDBSource(table, {
+        startingPosition: DynamoDBStartingPosition.LATEST,
+      });
+    }).toThrow('Table does not have a stream defined, cannot create pipes source');
+  });
+
   it('should have source parameters', () => {
     // ARRANGE
     const app = new App();
     const stack = new Stack(app, 'TestStack');
-    const stream = new Stream(stack, 'MyStream', {});
     const topic = new Topic(stack, 'MyTopic', {});
-    const source = new KinesisSource(stream, {
+    const table = new TableV2(stack, 'MyTable', {
+      partitionKey: {
+        name: 'PK',
+        type: AttributeType.STRING,
+      },
+      dynamoStream: StreamViewType.OLD_IMAGE,
+    });
+    const source = new DynamoDBSource(table, {
       batchSize: 10,
       deadLetterConfig: {
         arn: topic.topicArn,
@@ -56,8 +88,7 @@ describe('kinesis source', () => {
       maximumRetryAttempts: 10,
       onPartialBatchItemFailure: OnPartialBatchItemFailure.AUTOMATIC_BISECT,
       parallelizationFactor: 10,
-      startingPosition: KinesisStartingPosition.LATEST,
-      startingPositionTimestamp: 'MyTimestamp',
+      startingPosition: DynamoDBStartingPosition.LATEST,
     });
 
     new Pipe(stack, 'MyPipe', {
@@ -72,12 +103,12 @@ describe('kinesis source', () => {
     template.hasResourceProperties('AWS::Pipes::Pipe', {
       Source: {
         'Fn::GetAtt': [
-          'MyStream5C050E93',
-          'Arn',
+          'MyTable794EDED1',
+          'StreamArn',
         ],
       },
       SourceParameters: {
-        KinesisStreamParameters: {
+        DynamoDBStreamParameters: {
           BatchSize: 10,
           DeadLetterConfig: {
             Arn: {
@@ -90,7 +121,6 @@ describe('kinesis source', () => {
           OnPartialBatchItemFailure: 'AUTOMATIC_BISECT',
           ParallelizationFactor: 10,
           StartingPosition: 'LATEST',
-          StartingPositionTimestamp: 'MyTimestamp',
         },
       },
     });
@@ -100,9 +130,15 @@ describe('kinesis source', () => {
     // ARRANGE
     const app = new App();
     const stack = new Stack(app, 'TestStack');
-    const stream = new Stream(stack, 'MyStream', {});
-    const source = new KinesisSource(stream, {
-      startingPosition: KinesisStartingPosition.LATEST,
+    const table = new TableV2(stack, 'MyTable', {
+      partitionKey: {
+        name: 'PK',
+        type: AttributeType.STRING,
+      },
+      dynamoStream: StreamViewType.OLD_IMAGE,
+    });
+    const source = new DynamoDBSource(table, {
+      startingPosition: DynamoDBStartingPosition.LATEST,
     });
 
     new Pipe(stack, 'MyPipe', {
@@ -119,17 +155,23 @@ describe('kinesis source', () => {
   });
 });
 
-describe('kinesis source parameters validation', () => {
+describe('dynamodb source parameters validation', () => {
   test('batch size > 10000 should throw', () => {
     // GIVEN
     const app = new App();
     const stack = new Stack(app, 'demo-stack');
-    const stream = new Stream(stack, 'MyStream', {});
+    const table = new TableV2(stack, 'MyTable', {
+      partitionKey: {
+        name: 'PK',
+        type: AttributeType.STRING,
+      },
+      dynamoStream: StreamViewType.OLD_IMAGE,
+    });
 
     // WHEN
     expect(() => {
-      new KinesisSource(stream, {
-        startingPosition: KinesisStartingPosition.LATEST,
+      new DynamoDBSource(table, {
+        startingPosition: DynamoDBStartingPosition.LATEST,
         batchSize: 10001,
       });
     }).toThrow('Batch size must be between 1 and 10000, received 10001');
@@ -139,12 +181,18 @@ describe('kinesis source parameters validation', () => {
     // GIVEN
     const app = new App();
     const stack = new Stack(app, 'demo-stack');
-    const stream = new Stream(stack, 'MyStream', {});
+    const table = new TableV2(stack, 'MyTable', {
+      partitionKey: {
+        name: 'PK',
+        type: AttributeType.STRING,
+      },
+      dynamoStream: StreamViewType.OLD_IMAGE,
+    });
 
     // WHEN
     expect(() => {
-      new KinesisSource(stream, {
-        startingPosition: KinesisStartingPosition.LATEST,
+      new DynamoDBSource(table, {
+        startingPosition: DynamoDBStartingPosition.LATEST,
         batchSize: 0,
       });
     }).toThrow('Batch size must be between 1 and 10000, received 0');
@@ -154,12 +202,18 @@ describe('kinesis source parameters validation', () => {
     // GIVEN
     const app = new App();
     const stack = new Stack(app, 'demo-stack');
-    const stream = new Stream(stack, 'MyStream', {});
+    const table = new TableV2(stack, 'MyTable', {
+      partitionKey: {
+        name: 'PK',
+        type: AttributeType.STRING,
+      },
+      dynamoStream: StreamViewType.OLD_IMAGE,
+    });
 
     // WHEN
     expect(() => {
-      new KinesisSource(stream, {
-        startingPosition: KinesisStartingPosition.LATEST,
+      new DynamoDBSource(table, {
+        startingPosition: DynamoDBStartingPosition.LATEST,
         maximumBatchingWindow: Duration.seconds(301),
       });
     }).toThrow('Maximum batching window must be between 0 and 300, received 301');
@@ -169,12 +223,18 @@ describe('kinesis source parameters validation', () => {
     // GIVEN
     const app = new App();
     const stack = new Stack(app, 'demo-stack');
-    const stream = new Stream(stack, 'MyStream', {});
+    const table = new TableV2(stack, 'MyTable', {
+      partitionKey: {
+        name: 'PK',
+        type: AttributeType.STRING,
+      },
+      dynamoStream: StreamViewType.OLD_IMAGE,
+    });
 
     // WHEN
     expect(() => {
-      new KinesisSource(stream, {
-        startingPosition: KinesisStartingPosition.LATEST,
+      new DynamoDBSource(table, {
+        startingPosition: DynamoDBStartingPosition.LATEST,
         maximumRecordAge: Duration.seconds(604801),
       });
     }).toThrow('Maximum record age in seconds must be between -1 and 604800, received 604801');
@@ -184,12 +244,18 @@ describe('kinesis source parameters validation', () => {
     // GIVEN
     const app = new App();
     const stack = new Stack(app, 'demo-stack');
-    const stream = new Stream(stack, 'MyStream', {});
+    const table = new TableV2(stack, 'MyTable', {
+      partitionKey: {
+        name: 'PK',
+        type: AttributeType.STRING,
+      },
+      dynamoStream: StreamViewType.OLD_IMAGE,
+    });
 
     // WHEN
     expect(() => {
-      new KinesisSource(stream, {
-        startingPosition: KinesisStartingPosition.LATEST,
+      new DynamoDBSource(table, {
+        startingPosition: DynamoDBStartingPosition.LATEST,
         maximumRetryAttempts: -2,
       });
     }).toThrow('Maximum retry attempts must be between -1 and 10000, received -2');
@@ -199,12 +265,18 @@ describe('kinesis source parameters validation', () => {
     // GIVEN
     const app = new App();
     const stack = new Stack(app, 'demo-stack');
-    const stream = new Stream(stack, 'MyStream', {});
+    const table = new TableV2(stack, 'MyTable', {
+      partitionKey: {
+        name: 'PK',
+        type: AttributeType.STRING,
+      },
+      dynamoStream: StreamViewType.OLD_IMAGE,
+    });
 
     // WHEN
     expect(() => {
-      new KinesisSource(stream, {
-        startingPosition: KinesisStartingPosition.LATEST,
+      new DynamoDBSource(table, {
+        startingPosition: DynamoDBStartingPosition.LATEST,
         maximumRetryAttempts: 10001,
       });
     }).toThrow('Maximum retry attempts must be between -1 and 10000, received 10001');
@@ -214,12 +286,18 @@ describe('kinesis source parameters validation', () => {
     // GIVEN
     const app = new App();
     const stack = new Stack(app, 'demo-stack');
-    const stream = new Stream(stack, 'MyStream', {});
+    const table = new TableV2(stack, 'MyTable', {
+      partitionKey: {
+        name: 'PK',
+        type: AttributeType.STRING,
+      },
+      dynamoStream: StreamViewType.OLD_IMAGE,
+    });
 
     // WHEN
     expect(() => {
-      new KinesisSource(stream, {
-        startingPosition: KinesisStartingPosition.LATEST,
+      new DynamoDBSource(table, {
+        startingPosition: DynamoDBStartingPosition.LATEST,
         parallelizationFactor: 0,
       });
     }).toThrow('Parallelization factor must be between 1 and 10, received 0');
@@ -229,12 +307,18 @@ describe('kinesis source parameters validation', () => {
     // GIVEN
     const app = new App();
     const stack = new Stack(app, 'demo-stack');
-    const stream = new Stream(stack, 'MyStream', {});
+    const table = new TableV2(stack, 'MyTable', {
+      partitionKey: {
+        name: 'PK',
+        type: AttributeType.STRING,
+      },
+      dynamoStream: StreamViewType.OLD_IMAGE,
+    });
 
     // WHEN
     expect(() => {
-      new KinesisSource(stream, {
-        startingPosition: KinesisStartingPosition.LATEST,
+      new DynamoDBSource(table, {
+        startingPosition: DynamoDBStartingPosition.LATEST,
         parallelizationFactor: 11,
       });
     }).toThrow('Parallelization factor must be between 1 and 10, received 11');
