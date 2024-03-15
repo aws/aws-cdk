@@ -1666,7 +1666,7 @@ export class InstanceType {
   }
 
   private static mapInstanceProperties(instanceTypeIdentifier: string): InstanceProperties|null {
-    const data =instancePropertiesData[instanceTypeIdentifier];
+    const data = instancePropertiesData[instanceTypeIdentifier];
     if (!data) return null;
 
     return {
@@ -1678,9 +1678,10 @@ export class InstanceType {
   constructor(
     /**
      * The instance type, as returned by the EC2 API
-     * @example "m3.small"
+     * @example "t3.small"
      */
     private readonly instanceTypeIdentifier: string,
+
     /**
      * Instance properties for the instance type, obtained from cached SDK data
      */
