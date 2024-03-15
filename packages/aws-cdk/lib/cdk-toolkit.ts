@@ -187,19 +187,19 @@ export class CdkToolkit {
             stack: stack,
             deployName: stack.stackName,
           });
-          if (stackExists) {
+          if (stackExists || resourcesToImport) {
             changeSet = await createDiffChangeSet({
               stack,
               uuid: uuid.v4(),
               deployments: this.props.deployments,
               willExecute: false,
               sdkProvider: this.props.sdkProvider,
-              parameters: Object.assign({}, parameterMap['*'], parameterMap[stacks.firstStack.stackName]),
+              parameters: Object.assign({}, parameterMap['*'], parameterMap[stack.stackName]),
               resourcesToImport,
               stream,
             });
           } else {
-            debug(`the stack '${stack.stackName}' does not exist, skipping changeset creation.`);
+            debug(`the stack '${stack.stackName}' does not exist and we are not importing resources, skipping changeset creation.`);
           }
         }
 
