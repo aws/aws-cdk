@@ -1,5 +1,5 @@
-import * as instancePropertiesJsonData from '../data/instance-properties.json';
 import type { InstanceTypeInfo } from '@aws-sdk/client-ec2';
+import * as instancePropertiesJsonData from '../data/instance-properties.json';
 
 type InstancePropertiesData = Omit<InstanceTypeInfo, 'InstanceType'>;
 const instancePropertiesData: {[InstanceType: string]: InstancePropertiesData} = instancePropertiesJsonData;
@@ -1665,9 +1665,9 @@ export class InstanceType {
     return new InstanceType(`${instanceClassMap[instanceClass] ?? instanceClass}.${instanceSize}`);
   }
 
-  private static mapInstanceProperties(instanceTypeIdentifier: string): InstanceProperties|null {
+  private static mapInstanceProperties(instanceTypeIdentifier: string): InstanceProperties | undefined {
     const data = instancePropertiesData[instanceTypeIdentifier];
-    if (!data) return null;
+    if (!data) return;
 
     return {
       currentGeneration: data.CurrentGeneration,
