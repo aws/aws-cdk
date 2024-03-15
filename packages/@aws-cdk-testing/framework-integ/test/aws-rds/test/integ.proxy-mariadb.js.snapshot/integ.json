@@ -1,0 +1,20 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "database-proxy-mariadb-integ-test/DefaultTest": {
+      "stacks": [
+        "aws-cdk-rds-proxy-mariadb"
+      ],
+      "diffAssets": true,
+      "cdkCommandOptions": {
+        "deploy": {
+          "args": {
+            "rollback": true
+          }
+        }
+      },
+      "assertionStack": "database-proxy-mariadb-integ-test/DefaultTest/DeployAssert",
+      "assertionStackName": "databaseproxymariadbintegtestDefaultTestDeployAssert9D9B7FF3"
+    }
+  }
+}

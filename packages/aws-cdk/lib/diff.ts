@@ -1,8 +1,10 @@
+import { format } from 'util';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cfnDiff from '@aws-cdk/cloudformation-diff';
 import * as cxapi from '@aws-cdk/cx-api';
 import { CloudFormation } from 'aws-sdk';
 import * as chalk from 'chalk';
+import { NestedStackTemplates } from './api/nested-stack-helpers';
 import { print, warning } from './logging';
 
 /**
@@ -14,7 +16,7 @@ import { print, warning } from './logging';
  * @param context     lines of context to use in arbitrary JSON diff
  * @param quiet       silences \'There were no differences\' messages
  *
- * @returns the count of differences that were rendered.
+ * @returns the number of stacks in this stack tree that have differences, including the top-level root stack
  */
 export function printStackDiff(
   oldTemplate: any,
@@ -23,10 +25,10 @@ export function printStackDiff(
   context: number,
   quiet: boolean,
   changeSet?: CloudFormation.DescribeChangeSetOutput,
-  stream?: cfnDiff.FormatStream,
-  isImport?: boolean): number {
+  stream: cfnDiff.FormatStream = process.stderr,
+  nestedStackTemplates?: { [nestedStackLogicalId: string]: NestedStackTemplates }): number {
 
-  let diff = cfnDiff.fullDiff(oldTemplate, newTemplate.template, changeSet, isImport);
+  let diff = cfnDiff.fullDiff(oldTemplate, newTemplate.template, changeSet);
 
   // detect and filter out mangled characters from the diff
   let filteredChangesCount = 0;
@@ -49,8 +51,10 @@ export function printStackDiff(
     });
   }
 
+  let stackDiffCount = 0;
   if (!diff.isEmpty) {
-    cfnDiff.formatDifferences(stream || process.stderr, diff, {
+    stackDiffCount++;
+    cfnDiff.formatDifferences(stream, diff, {
       ...logicalIdMapFromTemplate(oldTemplate),
       ...buildLogicalToPathMap(newTemplate),
     }, context);
@@ -61,7 +65,29 @@ export function printStackDiff(
     print(chalk.yellow(`Omitted ${filteredChangesCount} changes because they are likely mangled non-ASCII characters. Use --strict to print them.`));
   }
 
-  return diff.differenceCount;
+  for (const nestedStackLogicalId of Object.keys(nestedStackTemplates ?? {})) {
+    if (!nestedStackTemplates) {
+      break;
+    }
+    const nestedStack = nestedStackTemplates[nestedStackLogicalId];
+    if (!quiet) {
+      stream.write(format('Stack %s\n', chalk.bold(nestedStack.physicalName ?? nestedStackLogicalId)));
+    }
+
+    (newTemplate as any)._template = nestedStack.generatedTemplate;
+    stackDiffCount += printStackDiff(
+      nestedStack.deployedTemplate,
+      newTemplate,
+      strict,
+      context,
+      quiet,
+      undefined,
+      stream,
+      nestedStack.nestedStackTemplates,
+    );
+  }
+
+  return stackDiffCount;
 }
 
 export enum RequireApproval {
