@@ -6,16 +6,14 @@ const app = new cdk.App();
 const stack = new cdk.Stack(app, 'integtest-restapi-import-deployment-stage');
 
 const api = new apigateway.RestApi(stack, 'my-api', {
-  deployOptions: {
-    stageName: 'dev',
-  },
+  deploy: false,
 });
 api.root.addMethod('GET');
 
 // Create a new deployment that uses existing stage
-new apigateway.Deployment(stack, 'MyDeployment', {
+new apigateway.Deployment(stack, 'MyManualDeployment', {
   api: api,
-  stageName: 'dev',
+  stageName: 'myStage',
 });
 
 new integ.IntegTest(app, 'restapi-import-deployment-stage', {

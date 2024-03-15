@@ -26,71 +26,6 @@
                   "version": "0.0.0"
                 }
               },
-              "Deployment": {
-                "id": "Deployment",
-                "path": "integtest-restapi-import-deployment-stage/my-api/Deployment",
-                "children": {
-                  "Resource": {
-                    "id": "Resource",
-                    "path": "integtest-restapi-import-deployment-stage/my-api/Deployment/Resource",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::ApiGateway::Deployment",
-                      "aws:cdk:cloudformation:props": {
-                        "description": "Automatically created by the RestApi construct",
-                        "restApiId": {
-                          "Ref": "myapi4C7BF186"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_apigateway.CfnDeployment",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_apigateway.Deployment",
-                  "version": "0.0.0"
-                }
-              },
-              "DeploymentStage.dev": {
-                "id": "DeploymentStage.dev",
-                "path": "integtest-restapi-import-deployment-stage/my-api/DeploymentStage.dev",
-                "children": {
-                  "Resource": {
-                    "id": "Resource",
-                    "path": "integtest-restapi-import-deployment-stage/my-api/DeploymentStage.dev/Resource",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::ApiGateway::Stage",
-                      "aws:cdk:cloudformation:props": {
-                        "deploymentId": {
-                          "Ref": "myapiDeployment92F2CB4972a890db5063ec679071ba7eefc76f2a"
-                        },
-                        "restApiId": {
-                          "Ref": "myapi4C7BF186"
-                        },
-                        "stageName": "dev"
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_apigateway.CfnStage",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_apigateway.Stage",
-                  "version": "0.0.0"
-                }
-              },
-              "Endpoint": {
-                "id": "Endpoint",
-                "path": "integtest-restapi-import-deployment-stage/my-api/Endpoint",
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.CfnOutput",
-                  "version": "0.0.0"
-                }
-              },
               "Default": {
                 "id": "Default",
                 "path": "integtest-restapi-import-deployment-stage/my-api/Default",
@@ -144,19 +79,20 @@
               "version": "0.0.0"
             }
           },
-          "MyDeployment": {
-            "id": "MyDeployment",
-            "path": "integtest-restapi-import-deployment-stage/MyDeployment",
+          "MyManualDeployment": {
+            "id": "MyManualDeployment",
+            "path": "integtest-restapi-import-deployment-stage/MyManualDeployment",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "integtest-restapi-import-deployment-stage/MyDeployment/Resource",
+                "path": "integtest-restapi-import-deployment-stage/MyManualDeployment/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::ApiGateway::Deployment",
                   "aws:cdk:cloudformation:props": {
                     "restApiId": {
                       "Ref": "myapi4C7BF186"
-                    }
+                    },
+                    "stageName": "myStage"
                   }
                 },
                 "constructInfo": {

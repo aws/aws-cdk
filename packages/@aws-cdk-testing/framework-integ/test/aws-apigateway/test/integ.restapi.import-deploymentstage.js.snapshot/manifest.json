@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c92b6489cd9a42747721409b6cf36d4fd60f282aec41408e311e49349c6c6149.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/3bd472ac3fdbd7c291e3c4ef13df0429da6c1e0717dde5b304790b77637a72c3.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -40,34 +40,16 @@
             "data": "myapi4C7BF186"
           }
         ],
-        "/integtest-restapi-import-deployment-stage/my-api/Deployment/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "myapiDeployment92F2CB4972a890db5063ec679071ba7eefc76f2a"
-          }
-        ],
-        "/integtest-restapi-import-deployment-stage/my-api/DeploymentStage.dev/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "myapiDeploymentStagedevB1704B15"
-          }
-        ],
-        "/integtest-restapi-import-deployment-stage/my-api/Endpoint": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "myapiEndpoint3628AFE3"
-          }
-        ],
         "/integtest-restapi-import-deployment-stage/my-api/Default/GET/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "myapiGETF990CE3C"
           }
         ],
-        "/integtest-restapi-import-deployment-stage/MyDeployment/Resource": [
+        "/integtest-restapi-import-deployment-stage/MyManualDeployment/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyDeployment74F2406B6f3141cef1e8fea8ab3b3b8bc90df36d"
+            "data": "MyManualDeployment92F2175C6f3141cef1e8fea8ab3b3b8bc90df36d"
           }
         ],
         "/integtest-restapi-import-deployment-stage/BootstrapVersion": [
