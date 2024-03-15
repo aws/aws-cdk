@@ -1144,7 +1144,7 @@ schedulerRole.addToPrincipalPolicy(new iam.PolicyStatement({
   resources: [targetQueue.queueArn],
 }));
 
-const createScheduleTask1 = new tasks.EventBridgeSchedulerCreateScheduleTask(stack, 'createSchedule', {
+const createScheduleTask1 = new tasks.EventBridgeSchedulerCreateScheduleTask(this, 'createSchedule', {
   scheduleName: 'TestSchedule',
   actionAfterCompletion: tasks.ActionAfterCompletion.NONE,
   clientToken: 'testToken',
