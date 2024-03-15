@@ -1229,6 +1229,27 @@ new ec2.Instance(this, 'Instance5', {
 });
 ```
 
+### Instance type instances and properties
+
+**TODO**
+
+```ts
+declare const vpc: ec2.Vpc;
+
+const instanceType = ec2.InstanceType.BURSTABLE2_MICRO;
+
+assert(instanceType.instanceProperties?.freeTierEligible);
+
+new ec2.Instance(this, 'Instance', {
+  vpc,
+  instanceType,
+  machineImage: ec2.MachineImage.latestAmazonLinux2023({
+    cpuType: ec2.AmazonLinuxCpuType.ARM_64,
+  }),
+});
+
+```
+
 ### Latest Amazon Linux Images
 
 Rather than specifying a specific AMI ID to use, it is possible to specify a SSM
@@ -1302,6 +1323,8 @@ either specify the specific latest kernel version or opt-in to using the CDK
 latest kernel version.
 
 ```ts
+import { Key } from 'aws-cdk-lib/aws-kms';
+
 declare const vpc: ec2.Vpc;
 
 new ec2.Instance(this, 'LatestAl2023', {
