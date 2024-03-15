@@ -1,0 +1,12 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "EcsDeploymentConfigTest/DefaultTest": {
+      "stacks": [
+        "aws-cdk-glue-crawler"
+      ],
+      "assertionStack": "EcsDeploymentConfigTest/DefaultTest/DeployAssert",
+      "assertionStackName": "EcsDeploymentConfigTestDefaultTestDeployAssertA6573788"
+    }
+  }
+}

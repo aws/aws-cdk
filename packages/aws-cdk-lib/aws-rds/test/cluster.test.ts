@@ -209,6 +209,30 @@ describe('cluster new api', () => {
         ],
       });
     });
+
+    test('preferredMaintenanceWindow provided in InstanceProps', () => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+
+      const PREFERRED_MAINTENANCE_WINDOW: string = 'Sun:12:00-Sun:13:00';
+
+      // WHEN
+      new DatabaseCluster(stack, 'Database', {
+        engine: DatabaseClusterEngine.AURORA,
+        instanceProps: {
+          vpc: vpc,
+          preferredMaintenanceWindow: PREFERRED_MAINTENANCE_WINDOW,
+        },
+      });
+
+      // THEN
+      const template = Template.fromStack(stack);
+      // maintenance window is set
+      template.hasResourceProperties('AWS::RDS::DBInstance', Match.objectLike({
+        PreferredMaintenanceWindow: PREFERRED_MAINTENANCE_WINDOW,
+      }));
+    });
   });
 
   describe('migrate from instanceProps', () => {
@@ -501,6 +525,103 @@ describe('cluster new api', () => {
       expect(stack.resolve(cluster.instanceIdentifiers[0])).toEqual({
         Ref: 'Databasewriter2462CC03',
       });
+    });
+  });
+
+  describe('instanceEndpoints', () => {
+    test('should contain writer and reader instance endpoints at DatabaseCluster', () => {
+      //GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+
+      //WHEN
+      const cluster = new DatabaseCluster(stack, 'Database', {
+        engine: DatabaseClusterEngine.AURORA,
+        vpc,
+        writer: ClusterInstance.serverlessV2('writer'),
+        readers: [ClusterInstance.serverlessV2('reader')],
+        iamAuthentication: true,
+      });
+
+      //THEN
+      expect(cluster.instanceEndpoints).toHaveLength(2);
+      expect(stack.resolve(cluster.instanceEndpoints)).toEqual([{
+        hostname: {
+          'Fn::GetAtt': ['Databasewriter2462CC03', 'Endpoint.Address'],
+        },
+        port: {
+          'Fn::GetAtt': ['DatabaseB269D8BB', 'Endpoint.Port'],
+        },
+        socketAddress: {
+          'Fn::Join': ['', [
+            { 'Fn::GetAtt': ['Databasewriter2462CC03', 'Endpoint.Address'] },
+            ':',
+            { 'Fn::GetAtt': ['DatabaseB269D8BB', 'Endpoint.Port'] },
+          ]],
+        },
+      }, {
+        hostname: {
+          'Fn::GetAtt': ['Databasereader13B43287', 'Endpoint.Address'],
+        },
+        port: {
+          'Fn::GetAtt': ['DatabaseB269D8BB', 'Endpoint.Port'],
+        },
+        socketAddress: {
+          'Fn::Join': ['', [
+            { 'Fn::GetAtt': ['Databasereader13B43287', 'Endpoint.Address'] },
+            ':',
+            { 'Fn::GetAtt': ['DatabaseB269D8BB', 'Endpoint.Port'] },
+          ]],
+        },
+      }]);
+    });
+
+    test('should contain writer and reader instance endpoints at DatabaseClusterFromSnapshot', () => {
+      //GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+
+      //WHEN
+      const cluster = new DatabaseClusterFromSnapshot(stack, 'Database', {
+        engine: DatabaseClusterEngine.AURORA,
+        vpc,
+        snapshotIdentifier: 'snapshot-identifier',
+        iamAuthentication: true,
+        writer: ClusterInstance.serverlessV2('writer'),
+        readers: [ClusterInstance.serverlessV2('reader')],
+      });
+
+      //THEN
+      expect(cluster.instanceEndpoints).toHaveLength(2);
+      expect(stack.resolve(cluster.instanceEndpoints)).toEqual([{
+        hostname: {
+          'Fn::GetAtt': ['Databasewriter2462CC03', 'Endpoint.Address'],
+        },
+        port: {
+          'Fn::GetAtt': ['DatabaseB269D8BB', 'Endpoint.Port'],
+        },
+        socketAddress: {
+          'Fn::Join': ['', [
+            { 'Fn::GetAtt': ['Databasewriter2462CC03', 'Endpoint.Address'] },
+            ':',
+            { 'Fn::GetAtt': ['DatabaseB269D8BB', 'Endpoint.Port'] },
+          ]],
+        },
+      }, {
+        hostname: {
+          'Fn::GetAtt': ['Databasereader13B43287', 'Endpoint.Address'],
+        },
+        port: {
+          'Fn::GetAtt': ['DatabaseB269D8BB', 'Endpoint.Port'],
+        },
+        socketAddress: {
+          'Fn::Join': ['', [
+            { 'Fn::GetAtt': ['Databasereader13B43287', 'Endpoint.Address'] },
+            ':',
+            { 'Fn::GetAtt': ['DatabaseB269D8BB', 'Endpoint.Port'] },
+          ]],
+        },
+      }]);
     });
   });
 
@@ -4128,6 +4249,16 @@ describe('cluster', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
         PolicyDocument: {
           Statement: [
+            {
+              Action: [
+                'secretsmanager:GetSecretValue',
+                'secretsmanager:DescribeSecret',
+              ],
+              Effect: 'Allow',
+              Resource: {
+                Ref: 'DatabaseSecretAttachmentE5D1B020',
+              },
+            },
             {
               Action: [
                 'rds-data:BatchExecuteStatement',

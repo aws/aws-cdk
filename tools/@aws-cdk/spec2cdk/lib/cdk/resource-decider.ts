@@ -179,7 +179,7 @@ export class ResourceDecider {
 
   private handleTagPropertyModern(cfnName: string, prop: Property, variant: TagVariant) {
     const originalName = propertyNameFromCloudFormation(cfnName);
-    const originalType = this.converter.typeFromProperty(prop);
+    const originalType = this.converter.typeFromPropertyForModernTags(prop);
 
     this.propsProperties.push({
       propertySpec: {
