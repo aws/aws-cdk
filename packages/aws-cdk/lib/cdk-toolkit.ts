@@ -154,7 +154,7 @@ export class CdkToolkit {
             stream,
           });
         } else {
-          debug(`the stack '${stacks.firstStack.stackName}' does not exist, skipping changeset creation.`);
+          debug(`the stack '${stacks.firstStack.stackName}' has not been deployed to CloudFormation, skipping changeset creation.`);
         }
       }
 
