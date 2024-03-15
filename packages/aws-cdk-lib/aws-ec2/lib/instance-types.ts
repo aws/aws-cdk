@@ -1382,8 +1382,23 @@ export enum InstanceSize {
   XLARGE48METAL = 'metal-48xl',
 }
 
+/**
+ * Instance type properties
+ */
 export interface InstanceProperties {
+  /**
+   * If true, this instance type is current generation
+   *
+   * @default - not specified
+   */
   readonly currentGeneration?: boolean;
+
+  /**
+   * If true, this instance type is eligible for the AWS free trial
+   *
+   * @see https://aws.amazon.com/free/
+   * @default - not specified
+   */
   readonly freeTierEligible?: boolean;
 }
 
@@ -1678,12 +1693,15 @@ export class InstanceType {
   constructor(
     /**
      * The instance type, as returned by the EC2 API
+     *
      * @example "t3.small"
      */
     private readonly instanceTypeIdentifier: string,
 
     /**
      * Instance properties for the instance type, obtained from cached SDK data
+     *
+     * @default - Cached SDK data properties for the corresponding instance type
      */
     public readonly instanceProperties = InstanceType.mapInstanceProperties(instanceTypeIdentifier)) {
   }
