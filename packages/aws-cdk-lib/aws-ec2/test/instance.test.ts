@@ -137,7 +137,7 @@ describe('instance', () => {
     const instanceType = new InstanceType('class123.size123');
 
     // THEN
-    expect(instanceType.instanceProperties).toBeNull();
+    expect(instanceType.instanceProperties).toBeUndefined();
   });
 
   test('instance architecture is correctly discerned for arm instances', () => {
