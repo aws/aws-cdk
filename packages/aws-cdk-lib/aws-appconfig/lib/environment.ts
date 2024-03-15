@@ -1,6 +1,7 @@
 import { Construct } from 'constructs';
-import { CfnEnvironment } from './appconfig.generated';
+import { CfnDeployment, CfnEnvironment } from './appconfig.generated';
 import { IApplication } from './application';
+import { IConfiguration } from './configuration';
 import { ActionPoint, IEventDestination, ExtensionOptions, IExtension, IExtensible, ExtensibleBase } from './extension';
 import { getHash } from './private/hash';
 import * as cloudwatch from '../../aws-cloudwatch';
@@ -47,7 +48,31 @@ abstract class EnvironmentBase extends Resource implements IEnvironment, IExtens
   public abstract applicationId: string;
   public abstract environmentId: string;
   public abstract environmentArn: string;
+  public abstract name?: string | undefined;
   protected extensible!: ExtensibleBase;
+  protected deploymentQueue: Array<CfnDeployment> = [];
+
+  public addDeployment(configuration: IConfiguration): void {
+    const queueSize = this.deploymentQueue.push(
+      new CfnDeployment(configuration, `Deployment${getHash(this.name!)}`, {
+        applicationId: configuration.application.applicationId,
+        configurationProfileId: configuration.configurationProfileId,
+        deploymentStrategyId: configuration.deploymentStrategy!.deploymentStrategyId,
+        environmentId: this.environmentId,
+        configurationVersion: configuration.versionNumber!,
+        description: configuration.description,
+        kmsKeyIdentifier: configuration.deploymentKey?.keyArn,
+      }),
+    );
+
+    if (queueSize > 1) {
+      this.deploymentQueue[queueSize - 1].addDependency(this.deploymentQueue[queueSize - 2]);
+    }
+  }
+
+  public addDeployments(...configurations: IConfiguration[]): void {
+    configurations.forEach((config) => this.addDeployment(config));
+  }
 
   public on(actionPoint: ActionPoint, eventDestination: IEventDestination, options?: ExtensionOptions) {
     this.extensible.on(actionPoint, eventDestination, options);
@@ -154,6 +179,7 @@ export class Environment extends EnvironmentBase {
       public readonly applicationId = applicationId;
       public readonly environmentId = environmentId;
       public readonly environmentArn = environmentArn;
+      public readonly name?: string | undefined;
     }
 
     return new Import(scope, id, {
@@ -412,6 +438,23 @@ export interface IEnvironment extends IResource {
    * @attribute
    */
   readonly environmentArn: string;
+
+  /**
+   * Creates a deployment of the supplied configuration to this environment.
+   * Note that you can only deploy one configuration at a time to an environment.
+   * However, you can deploy one configuration each to different environments at the same time.
+   * If more than one deployment is requested for this environment, they will occur in the same order they were provided.
+   *
+   * @param configuration The configuration that will be deployed to this environment.
+   */
+  addDeployment(configuration: IConfiguration): void;
+
+  /**
+   * Creates a deployment for each of the supplied configurations to this environment.
+   *
+   * @param configurations The configurations that will be deployed to this environment.
+   */
+  addDeployments(...configurations: Array<IConfiguration>): void;
 
   /**
    * Adds an extension defined by the action point and event destination and also

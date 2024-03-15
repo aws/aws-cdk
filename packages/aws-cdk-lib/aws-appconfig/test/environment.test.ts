@@ -2,7 +2,7 @@ import { Template } from '../../assertions';
 import { Alarm, CompositeAlarm, Metric } from '../../aws-cloudwatch';
 import * as iam from '../../aws-iam';
 import * as cdk from '../../core';
-import { Application, Environment, Monitor } from '../lib';
+import { Application, ConfigurationContent, Environment, HostedConfiguration, Monitor } from '../lib';
 
 describe('environment', () => {
   test('default environment', () => {
@@ -52,6 +52,216 @@ describe('environment', () => {
       },
       Description: 'This is my description',
     });
+  });
+
+  test('environment with single deployment', () => {
+    const stack = new cdk.Stack();
+    const application = new Application(stack, 'MyAppConfig');
+    const env = new Environment(stack, 'MyEnvironment', {
+      application,
+    });
+
+    const firstConfig = new HostedConfiguration(stack, 'FirstConfig', {
+      application,
+      content: ConfigurationContent.fromInlineText('This is my content 1'),
+    });
+    env.addDeployment(firstConfig);
+
+    const actual = Template.fromStack(stack);
+
+    actual.hasResourceProperties('AWS::AppConfig::Environment', {
+      Name: 'MyEnvironment',
+      ApplicationId: {
+        Ref: 'MyAppConfigB4B63E75',
+      },
+    });
+
+    actual.hasResourceProperties('AWS::AppConfig::ConfigurationProfile', {
+      Name: 'FirstConfig',
+      ApplicationId: {
+        Ref: 'MyAppConfigB4B63E75',
+      },
+      LocationUri: 'hosted',
+    });
+    actual.hasResourceProperties('AWS::AppConfig::HostedConfigurationVersion', {
+      ApplicationId: {
+        Ref: 'MyAppConfigB4B63E75',
+      },
+      ConfigurationProfileId: {
+        Ref: 'FirstConfigConfigurationProfileDEF37C63',
+      },
+      Content: 'This is my content 1',
+      ContentType: 'text/plain',
+    });
+    actual.hasResource('AWS::AppConfig::Deployment', {
+      Properties: {
+        ApplicationId: {
+          Ref: 'MyAppConfigB4B63E75',
+        },
+        EnvironmentId: {
+          Ref: 'MyEnvironment465E4DEA',
+        },
+        ConfigurationVersion: {
+          Ref: 'FirstConfigC35E996C',
+        },
+        ConfigurationProfileId: {
+          Ref: 'FirstConfigConfigurationProfileDEF37C63',
+        },
+        DeploymentStrategyId: {
+          Ref: 'FirstConfigDeploymentStrategy863BBA9A',
+        },
+      },
+    });
+
+    actual.resourceCountIs('AWS::AppConfig::Deployment', 1);
+  });
+
+  test('environment with multiple deployments', () => {
+    const stack = new cdk.Stack();
+    const application = new Application(stack, 'MyAppConfig');
+    const env = new Environment(stack, 'MyEnvironment', {
+      application,
+    });
+
+    const firstConfig = new HostedConfiguration(stack, 'FirstConfig', {
+      application,
+      content: ConfigurationContent.fromInlineText('This is my content 1'),
+    });
+    const secondConfig = new HostedConfiguration(stack, 'SecondConfig', {
+      application,
+      content: ConfigurationContent.fromInlineText('This is my content 2'),
+    });
+    const thirdConfig = new HostedConfiguration(stack, 'ThirdConfig', {
+      application,
+      content: ConfigurationContent.fromInlineText('This is my content 3'),
+    });
+
+    env.addDeployments(firstConfig, secondConfig);
+    env.addDeployment(thirdConfig);
+
+    const actual = Template.fromStack(stack);
+
+    actual.hasResourceProperties('AWS::AppConfig::Environment', {
+      Name: 'MyEnvironment',
+      ApplicationId: {
+        Ref: 'MyAppConfigB4B63E75',
+      },
+    });
+
+    actual.hasResourceProperties('AWS::AppConfig::ConfigurationProfile', {
+      Name: 'FirstConfig',
+      ApplicationId: {
+        Ref: 'MyAppConfigB4B63E75',
+      },
+      LocationUri: 'hosted',
+    });
+    actual.hasResourceProperties('AWS::AppConfig::HostedConfigurationVersion', {
+      ApplicationId: {
+        Ref: 'MyAppConfigB4B63E75',
+      },
+      ConfigurationProfileId: {
+        Ref: 'FirstConfigConfigurationProfileDEF37C63',
+      },
+      Content: 'This is my content 1',
+      ContentType: 'text/plain',
+    });
+    actual.hasResource('AWS::AppConfig::Deployment', {
+      Properties: {
+        ApplicationId: {
+          Ref: 'MyAppConfigB4B63E75',
+        },
+        EnvironmentId: {
+          Ref: 'MyEnvironment465E4DEA',
+        },
+        ConfigurationVersion: {
+          Ref: 'FirstConfigC35E996C',
+        },
+        ConfigurationProfileId: {
+          Ref: 'FirstConfigConfigurationProfileDEF37C63',
+        },
+        DeploymentStrategyId: {
+          Ref: 'FirstConfigDeploymentStrategy863BBA9A',
+        },
+      },
+    });
+
+    actual.hasResourceProperties('AWS::AppConfig::ConfigurationProfile', {
+      Name: 'SecondConfig',
+      ApplicationId: {
+        Ref: 'MyAppConfigB4B63E75',
+      },
+      LocationUri: 'hosted',
+    });
+    actual.hasResourceProperties('AWS::AppConfig::HostedConfigurationVersion', {
+      ApplicationId: {
+        Ref: 'MyAppConfigB4B63E75',
+      },
+      ConfigurationProfileId: {
+        Ref: 'SecondConfigConfigurationProfileE64FE7B4',
+      },
+      Content: 'This is my content 2',
+      ContentType: 'text/plain',
+    });
+    actual.hasResource('AWS::AppConfig::Deployment', {
+      Properties: {
+        ApplicationId: {
+          Ref: 'MyAppConfigB4B63E75',
+        },
+        EnvironmentId: {
+          Ref: 'MyEnvironment465E4DEA',
+        },
+        ConfigurationVersion: {
+          Ref: 'SecondConfig22E40AAE',
+        },
+        ConfigurationProfileId: {
+          Ref: 'SecondConfigConfigurationProfileE64FE7B4',
+        },
+        DeploymentStrategyId: {
+          Ref: 'SecondConfigDeploymentStrategy9929738B',
+        },
+      },
+      DependsOn: ['FirstConfigDeployment52928BE68587B'],
+    });
+
+    actual.hasResourceProperties('AWS::AppConfig::ConfigurationProfile', {
+      Name: 'ThirdConfig',
+      ApplicationId: {
+        Ref: 'MyAppConfigB4B63E75',
+      },
+      LocationUri: 'hosted',
+    });
+    actual.hasResourceProperties('AWS::AppConfig::HostedConfigurationVersion', {
+      ApplicationId: {
+        Ref: 'MyAppConfigB4B63E75',
+      },
+      ConfigurationProfileId: {
+        Ref: 'ThirdConfigConfigurationProfile4945C970',
+      },
+      Content: 'This is my content 3',
+      ContentType: 'text/plain',
+    });
+    actual.hasResource('AWS::AppConfig::Deployment', {
+      Properties: {
+        ApplicationId: {
+          Ref: 'MyAppConfigB4B63E75',
+        },
+        EnvironmentId: {
+          Ref: 'MyEnvironment465E4DEA',
+        },
+        ConfigurationVersion: {
+          Ref: 'ThirdConfig498595D6',
+        },
+        ConfigurationProfileId: {
+          Ref: 'ThirdConfigConfigurationProfile4945C970',
+        },
+        DeploymentStrategyId: {
+          Ref: 'ThirdConfigDeploymentStrategy246FBD1A',
+        },
+      },
+      DependsOn: ['SecondConfigDeployment5292843F35B55'],
+    });
+
+    actual.resourceCountIs('AWS::AppConfig::Deployment', 3);
   });
 
   test('environment with monitors with alarm and alarmRole', () => {

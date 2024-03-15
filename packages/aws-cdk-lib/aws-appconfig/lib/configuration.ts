@@ -2,12 +2,11 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { Construct, IConstruct } from 'constructs';
-import { CfnConfigurationProfile, CfnDeployment, CfnHostedConfigurationVersion } from './appconfig.generated';
+import { CfnConfigurationProfile, CfnHostedConfigurationVersion } from './appconfig.generated';
 import { IApplication } from './application';
 import { DeploymentStrategy, IDeploymentStrategy, RolloutStrategy } from './deployment-strategy';
 import { IEnvironment } from './environment';
 import { ActionPoint, IEventDestination, ExtensionOptions, IExtension, IExtensible, ExtensibleBase } from './extension';
-import { getHash } from './private/hash';
 import * as cp from '../../aws-codepipeline';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
@@ -319,15 +318,7 @@ abstract class ConfigurationBase extends Construct implements IConfiguration, IE
       if ((this.deployTo && !this.deployTo.includes(environment))) {
         return;
       }
-      new CfnDeployment(this, `Deployment${getHash(environment.name!)}`, {
-        applicationId: this.application.applicationId,
-        configurationProfileId: this.configurationProfileId,
-        deploymentStrategyId: this.deploymentStrategy!.deploymentStrategyId,
-        environmentId: environment.environmentId,
-        configurationVersion: this.versionNumber!,
-        description: this.description,
-        kmsKeyIdentifier: this.deploymentKey?.keyArn,
-      });
+      environment.addDeployment(this);
     });
   }
 }
