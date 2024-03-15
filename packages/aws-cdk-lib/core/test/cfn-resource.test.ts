@@ -49,6 +49,7 @@ describe('cfn resource', () => {
 
   describe('snapshot removal policy', () => {
     const supportedResources = [
+      'AWS::DocDB::DBCluster',
       'AWS::EC2::Volume',
       'AWS::ElastiCache::CacheCluster',
       'AWS::ElastiCache::ReplicationGroup',

@@ -225,6 +225,7 @@ describe('Application Load Balancer', () => {
         cpu: 256,
         assignPublicIp: true,
         memoryLimitMiB: 512,
+        ephemeralStorageGiB: 50,
         desiredCount: 3,
         enableECSManagedTags: true,
         enableExecuteCommand: true,
@@ -349,6 +350,9 @@ describe('Application Load Balancer', () => {
           },
         ],
         Cpu: '256',
+        EphemeralStorage: {
+          SizeInGiB: 50,
+        },
         ExecutionRoleArn: {
           'Fn::GetAtt': [
             'ExecutionRole605A040B',
@@ -847,6 +851,7 @@ describe('Network Load Balancer', () => {
         cpu: 256,
         assignPublicIp: true,
         memoryLimitMiB: 512,
+        ephemeralStorageGiB: 80,
         desiredCount: 3,
         enableECSManagedTags: true,
         enableExecuteCommand: true,
@@ -955,6 +960,9 @@ describe('Network Load Balancer', () => {
           },
         ],
         Cpu: '256',
+        EphemeralStorage: {
+          SizeInGiB: 80,
+        },
         ExecutionRoleArn: {
           'Fn::GetAtt': [
             'ExecutionRole605A040B',
