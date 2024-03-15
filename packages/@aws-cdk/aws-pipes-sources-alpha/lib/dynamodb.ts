@@ -1,18 +1,18 @@
 import { IPipe, ISource, SourceConfig } from '@aws-cdk/aws-pipes-alpha';
 import { Duration } from 'aws-cdk-lib';
 import { IRole } from 'aws-cdk-lib/aws-iam';
-import { IStream } from 'aws-cdk-lib/aws-kinesis';
+import { ITableV2 } from 'aws-cdk-lib/aws-dynamodb';
 import { DeadLetterConfigParameters } from './deadLetterConfig';
-import { KinesisStartingPosition, OnPartialBatchItemFailure } from './enums';
+import { DynamoDBStartingPosition, OnPartialBatchItemFailure } from './enums';
 
 /**
- * Parameters for the Kinesis source.
+ * Parameters for the DynamoDB source.
  */
-export interface KinesisSourceParameters {
+export interface DynamoDBSourceParameters {
   /**
     * The maximum number of records to include in each batch.
     *
-    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-pipes-pipe-pipesourcekinesisstreamparameters.html#cfn-pipes-pipe-pipesourcekinesisstreamparameters-batchsize
+    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-pipes-pipe-pipesourcedynamodbstreamparameters.html#cfn-pipes-pipe-pipesourcedynamodbstreamparameters-batchsize
     * @default 1
     */
   readonly batchSize?: number;
@@ -20,7 +20,7 @@ export interface KinesisSourceParameters {
   /**
     * Define the target queue to send dead-letter queue events to.
     *
-    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-pipes-pipe-pipesourcekinesisstreamparameters.html#cfn-pipes-pipe-pipesourcekinesisstreamparameters-deadletterconfig
+    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-pipes-pipe-pipesourcedynamodbstreamparameters.html#cfn-pipes-pipe-pipesourcedynamodbstreamparameters-deadletterconfig
     * @default no dead letter queue
     */
   readonly deadLetterConfig?: DeadLetterConfigParameters;
@@ -28,7 +28,7 @@ export interface KinesisSourceParameters {
   /**
    * The maximum length of a time to wait for events.
    *
-   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-pipes-pipe-pipesourcekinesisstreamparameters.html#cfn-pipes-pipe-pipesourcekinesisstreamparameters-maximumbatchingwindowinseconds
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-pipes-pipe-pipesourcedynamodbstreamparameters.html#cfn-pipes-pipe-pipesourcedynamodbstreamparameters-maximumbatchingwindowinseconds
    * @default no batching window
    */
   readonly maximumBatchingWindow?: Duration;
@@ -38,7 +38,7 @@ export interface KinesisSourceParameters {
    *
    * Leave undefined to set the maximum record age to infinite.
    *
-   *  @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-pipes-pipe-pipesourcekinesisstreamparameters.html#cfn-pipes-pipe-pipesourcekinesisstreamparameters-maximumrecordageinseconds
+   *  @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-pipes-pipe-pipesourcedynamodbstreamparameters.html#cfn-pipes-pipe-pipesourcedynamodbstreamparameters-maximumrecordageinseconds
    * @default -1 (infinite)
    */
   readonly maximumRecordAge?: Duration;
@@ -46,7 +46,7 @@ export interface KinesisSourceParameters {
   /**
    * (Streams only) Discard records after the specified number of retries. The default value is -1, which sets the maximum number of retries to infinite. When MaximumRetryAttempts is infinite, EventBridge retries failed records until the record expires in the event source.
    *
-   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-pipes-pipe-pipesourcekinesisstreamparameters.html#cfn-pipes-pipe-pipesourcekinesisstreamparameters-maximumretryattempts
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-pipes-pipe-pipesourcedynamodbstreamparameters.html#cfn-pipes-pipe-pipesourcedynamodbstreamparameters-maximumretryattempts
    * @default -1 (infinite)
    */
   readonly maximumRetryAttempts?: number;
@@ -54,7 +54,7 @@ export interface KinesisSourceParameters {
   /**
    * (Streams only) Define how to handle item process failures. AUTOMATIC_BISECT halves each batch and retry each half until all the records are processed or there is one failed message left in the batch.
    *
-   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-pipes-pipe-pipesourcekinesisstreamparameters.html#cfn-pipes-pipe-pipesourcekinesisstreamparameters-onpartialbatchitemfailure
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-pipes-pipe-pipesourcedynamodbstreamparameters.html#cfn-pipes-pipe-pipesourcedynamodbstreamparameters-onpartialbatchitemfailure
    * @default off
    */
   readonly onPartialBatchItemFailure?: OnPartialBatchItemFailure;
@@ -62,7 +62,7 @@ export interface KinesisSourceParameters {
   /**
    * (Streams only) The number of batches to process concurrently from each shard. The default value is 1.
    *
-   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-pipes-pipe-pipesourcekinesisstreamparameters.html#cfn-pipes-pipe-pipesourcekinesisstreamparameters-parallelizationfactor
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-pipes-pipe-pipesourcedynamodbstreamparameters.html#cfn-pipes-pipe-pipesourcedynamodbstreamparameters-parallelizationfactor
    * @default 1
    */
   readonly parallelizationFactor?: number;
@@ -70,24 +70,16 @@ export interface KinesisSourceParameters {
   /**
    * (Streams only) The position in a stream from which to start reading.
    *
-   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-pipes-pipe-pipesourcekinesisstreamparameters.html#cfn-pipes-pipe-pipesourcekinesisstreamparameters-startingposition
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-pipes-pipe-pipesourcedynamodbstreamparameters.html#cfn-pipes-pipe-pipesourcedynamodbstreamparameters-startingposition
    */
-  readonly startingPosition: KinesisStartingPosition;
-
-  /**
-   * With StartingPosition set to AT_TIMESTAMP, the time from which to start reading, in Unix time seconds.
-   *
-   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-pipes-pipe-pipesourcekinesisstreamparameters.html#cfn-pipes-pipe-pipesourcekinesisstreamparameters-startingpositiontimestamp
-   * @default no starting position timestamp
-   */
-  readonly startingPositionTimestamp?: string;
+  readonly startingPosition: DynamoDBStartingPosition;
 }
 
 /**
- * A source that reads from Kinesis.
+ * A source that reads from an DynamoDB stream.
  */
-export class KinesisSource implements ISource {
-  private readonly stream: IStream;
+export class DynamoDBSource implements ISource {
+  private readonly table: ITableV2;
   readonly sourceArn;
   private sourceParameters;
 
@@ -97,9 +89,14 @@ export class KinesisSource implements ISource {
   private maximumRetryAttempts;
   private parallelizationFactor;
 
-  constructor(stream: IStream, parameters: KinesisSourceParameters) {
-    this.stream = stream;
-    this.sourceArn = stream.streamArn;
+  constructor(table: ITableV2, parameters: DynamoDBSourceParameters) {
+    this.table = table;
+
+    if (table.tableStreamArn === undefined) {
+      throw new Error('Table does not have a stream defined, cannot create pipes source');
+    }
+
+    this.sourceArn = table.tableStreamArn;
     this.sourceParameters = parameters;
 
     this.batchSize = this.sourceParameters.batchSize;
@@ -140,7 +137,7 @@ export class KinesisSource implements ISource {
   bind(_pipe: IPipe): SourceConfig {
     return {
       sourceParameters: {
-        kinesisStreamParameters: {
+        dynamoDbStreamParameters: {
           batchSize: this.batchSize,
           deadLetterConfig: this.sourceParameters.deadLetterConfig,
           maximumBatchingWindowInSeconds: this.maximumBatchingWindowInSeconds,
@@ -149,13 +146,13 @@ export class KinesisSource implements ISource {
           onPartialBatchItemFailure: this.sourceParameters.onPartialBatchItemFailure,
           parallelizationFactor: this.sourceParameters.parallelizationFactor,
           startingPosition: this.sourceParameters.startingPosition,
-          startingPositionTimestamp: this.sourceParameters.startingPositionTimestamp,
         },
       },
     };
   }
 
   grantRead(grantee: IRole): void {
-    this.stream.grantRead(grantee);
+    this.table.grantStreamRead(grantee);
   }
 }
+

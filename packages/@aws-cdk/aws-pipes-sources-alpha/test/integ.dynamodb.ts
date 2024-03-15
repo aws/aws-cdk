@@ -1,12 +1,19 @@
-import { randomUUID } from 'crypto';
 import { ITarget, Pipe, TargetConfig } from '@aws-cdk/aws-pipes-alpha';
 import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
-import { KinesisSource, KinesisStartingPosition } from '../lib';
+import * as ddb from 'aws-cdk-lib/aws-dynamodb';
+import { DynamoDBSource, DynamoDBStartingPosition } from '../lib';
 
 const app = new cdk.App();
-const stack = new cdk.Stack(app, 'aws-cdk-pipes-sources-kinesis-stream');
-const sourceKinesisStream = new cdk.aws_kinesis.Stream(stack, 'SourceKinesisStream');
+const stack = new cdk.Stack(app, 'aws-cdk-pipes-sources-dynamodb-stream');
+const table = new ddb.TableV2(stack, 'MyTable', {
+  partitionKey: {
+    name: 'id',
+    type: ddb.AttributeType.STRING,
+  },
+  dynamoStream: ddb.StreamViewType.KEYS_ONLY,
+  removalPolicy: cdk.RemovalPolicy.DESTROY,
+});
 const targetQueue = new cdk.aws_sqs.Queue(stack, 'TargetQueue');
 
 class TestTarget implements ITarget {
@@ -28,8 +35,8 @@ class TestTarget implements ITarget {
   }
 }
 
-const sourceUnderTest = new KinesisSource(sourceKinesisStream, {
-  startingPosition: KinesisStartingPosition.LATEST,
+const sourceUnderTest = new DynamoDBSource(table, {
+  startingPosition: DynamoDBStartingPosition.LATEST,
 });
 
 new Pipe(stack, 'Pipe', {
@@ -41,22 +48,22 @@ const test = new IntegTest(app, 'integtest-pipe-source-sqs', {
   testCases: [stack],
 });
 
-const uniqueIdentifier = randomUUID();
-const base64UniqueIdentifier = Buffer.from(uniqueIdentifier, 'utf-8').toString('base64');
-
-test.assertions.awsApiCall('Kinesis', 'putRecord', {
-  StreamARN: sourceKinesisStream.streamArn,
-  Data: uniqueIdentifier,
-  PartitionKey: '1',
+test.assertions.awsApiCall('DynamoDB', 'putItem', {
+  TableName: table.tableName,
+  Item: {
+    id: {
+      S: '1',
+    },
+  },
 });
 
 const message = test.assertions.awsApiCall('SQS', 'receiveMessage', {
   QueueUrl: targetQueue.queueUrl,
 });
 
-// data is base64 encoded
-message.assertAtPath('Messages.0.Body.data', ExpectedResult.stringLikeRegexp(base64UniqueIdentifier)).waitForAssertions({
-  totalTimeout: cdk.Duration.minutes(1),
+message.assertAtPath('Messages.0.Body.dynamodb.Keys.id.S', ExpectedResult.exact('1')).waitForAssertions({
+  totalTimeout: cdk.Duration.minutes(3),
+  interval: cdk.Duration.seconds(15),
 });
 
 app.synth();
