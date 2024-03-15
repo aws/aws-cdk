@@ -1124,10 +1124,7 @@ The [CreateSchedule](https://docs.aws.amazon.com/scheduler/latest/APIReference/A
 Here is an example of how to create a schedule that puts an event to SQS queue every 5 minutes:
 
 ```ts
-import * as iam from 'aws-cdk-lib/aws-iam';
-import * as key from 'aws-cdk-lib/aws-kms';
 import * as scheduler from 'aws-cdk-lib/aws-scheduler';
-import * as sqs from 'aws-cdk-lib/aws-sqs';
 
 declare const key: kms.Key;
 declare const scheduleGroup: scheduler.CfnScheduleGroup;
@@ -1138,7 +1135,7 @@ const schedulerRole = new iam.Role(this, 'SchedulerRole', {
   assumedBy: new iam.ServicePrincipal('scheduler.amazonaws.com'),
 });
 // To encrypt and decrypt the data
-kmsKey.grantEncryptDecrypt(schedulerRole);
+key.grantEncryptDecrypt(schedulerRole);
 // To send the message to the queue
 // This policy changes depending on the type of target.
 schedulerRole.addToPrincipalPolicy(new iam.PolicyStatement({
@@ -1146,16 +1143,16 @@ schedulerRole.addToPrincipalPolicy(new iam.PolicyStatement({
   resources: [targetQueue.queueArn],
 }));
 
-const createScheduleTask1 = new EventBridgeSchedulerCreateScheduleTask(stack, 'createSchedule', {
+const createScheduleTask1 = new tasks.EventBridgeSchedulerCreateScheduleTask(stack, 'createSchedule', {
   scheduleName: 'TestSchedule',
-  actionAfterCompletion: ActionAfterCompletion.NONE,
+  actionAfterCompletion: tasks.ActionAfterCompletion.NONE,
   clientToken: 'testToken',
   description: 'TestDescription',
   startDate: new Date(),
   endDate: new Date(new Date().getTime() + 1000 * 60 * 60),
-  flexibleTimeWindow: cdk.Duration.minutes(5),
+  flexibleTimeWindow: Duration.minutes(5),
   groupName: scheduleGroup.ref,
-  kmsKey,
+  kmsKey: key,
   scheduleExpression: 'rate(5 minute)',
   timezone: 'UTC',
   enabled: true,
@@ -1163,7 +1160,7 @@ const createScheduleTask1 = new EventBridgeSchedulerCreateScheduleTask(stack, 'c
   role: schedulerRole,
   retryPolicy: {
     maximumRetryAttempts: 2,
-    maximumEventAge: cdk.Duration.minutes(5),
+    maximumEventAge: Duration.minutes(5),
   },
   deadLetterQueue,
 });
