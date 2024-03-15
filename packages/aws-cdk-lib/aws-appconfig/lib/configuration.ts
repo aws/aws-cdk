@@ -61,7 +61,9 @@ export interface ConfigurationOptions {
    * The list of environments to deploy the configuration to.
    *
    * If this parameter is not specified, then there will be no
-   * deployment.
+   * deployment created alongside this configuration.
+   *
+   * A deployment can be added later via IEnvironment.
    *
    * @default - None.
    */
