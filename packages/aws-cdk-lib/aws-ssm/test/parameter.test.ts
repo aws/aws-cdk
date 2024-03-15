@@ -3,7 +3,7 @@
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Deployments } from '../../../aws-cdk/lib/api/deployments';
 import { CdkToolkit } from '../../../aws-cdk/lib/cdk-toolkit';
-import { Configuration } from '../../../aws-cdk/lib/settings';
+import { Configuration, TRANSIENT_CONTEXT_KEY } from '../../../aws-cdk/lib/settings';
 import { MockCloudExecutable } from '../../../aws-cdk/test/util';
 import { Template } from '../../assertions';
 import * as iam from '../../aws-iam';
@@ -658,6 +658,7 @@ test('fromLookup will use the SSM context provider to read value during synthesi
 
 test('fromLookup will persist value in context by default', async () => {
   // GIVEN
+  const ssmKey = 'ssm:account=12344:parameterName=my-param-name:region=us-east-1';
   const app = new cdk.App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
   const stack = new cdk.Stack(app, 'my-staq', { env: { region: 'us-east-1', account: '12344' } });
 
@@ -677,7 +678,7 @@ test('fromLookup will persist value in context by default', async () => {
       requestedParameterName = request.Name;
       return {
         Parameter: {
-          Value: '123',
+          Value: 'new-value',
         },
       };
     },
@@ -691,22 +692,25 @@ test('fromLookup will persist value in context by default', async () => {
   });
 
   await mockCloudExecutable.configuration.load();
+  mockCloudExecutable.configuration.context.set = jest.fn(mockCloudExecutable.configuration.context.set);
 
   await cdkToolkit.assembly();
 
   await mockCloudExecutable.configuration.saveContext();
-  const config = await new Configuration({ readUserContext: false }).load();
+  const configAfterSave = await new Configuration({ readUserContext: false }).load();
 
   // THEN
   expect(value).toEqual('dummy-value-for-my-param-name');
   expect(requestedParameterName).toEqual('my-param-name');
-  expect(config.context.keys).toEqual(['ssm:account=12344:parameterName=my-param-name:region=us-east-1']);
+  expect(mockCloudExecutable.configuration.context.set).toHaveBeenCalledWith(ssmKey, 'new-value');
+  expect(configAfterSave.context.get(ssmKey)).toEqual('new-value');
 });
 
-test('fromLookup will not persist value in context if requested', async () => {
+test('fromLookup with disableContextCaching: true will not persist value in context', async () => {
   // GIVEN
   const app = new cdk.App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
   const stack = new cdk.Stack(app, 'my-staq', { env: { region: 'us-east-1', account: '12344' } });
+  const ssmKey = 'ssm:account=12344:parameterName=my-param-name:region=us-east-1';
 
   // WHEN
   const value = ssm.StringParameter.valueFromLookup(stack, 'my-param-name', { disableContextCaching: true });
@@ -739,15 +743,71 @@ test('fromLookup will not persist value in context if requested', async () => {
 
   await mockCloudExecutable.configuration.load();
 
+  // spy on context set function
+  mockCloudExecutable.configuration.context.set = jest.fn(mockCloudExecutable.configuration.context.set);
+
   await cdkToolkit.assembly();
 
   await mockCloudExecutable.configuration.saveContext();
-  const config = await new Configuration({ readUserContext: false }).load();
+  const configAfterSave = await new Configuration({ readUserContext: false }).load();
 
   // THEN
   expect(value).toEqual('dummy-value-for-my-param-name');
   expect(requestedParameterName).toEqual('my-param-name');
-  expect(config.context.keys).toEqual([]);
+  expect(mockCloudExecutable.configuration.context.set).toHaveBeenCalledWith(ssmKey, '123');
+  expect(mockCloudExecutable.configuration.context.set).toHaveBeenCalledWith(ssmKey + TRANSIENT_CONTEXT_KEY, { [TRANSIENT_CONTEXT_KEY]: true });
+  expect(configAfterSave.context.keys).toHaveLength(0);
+});
+
+test('fromLookup with disableContextCaching: true will use previously cached value', async () => {
+  // GIVEN
+  const app = new cdk.App({ context: { [cxapi.NEW_STYLE_STACK_SYNTHESIS_CONTEXT]: false } });
+  const ssmKey = 'ssm:account=12344:parameterName=my-param-name:region=us-east-1';
+  app.node.setContext(ssmKey, 'cached-value');
+
+  const stack = new cdk.Stack(app, 'my-staq', { env: { region: 'us-east-1', account: '12344' } });
+
+  // WHEN
+  const value = ssm.StringParameter.valueFromLookup(stack, 'my-param-name', { disableContextCaching: true });
+
+  const synth = app.synth();
+
+  const mockCloudExecutable = new MockCloudExecutable({
+    stacks: synth.stacks,
+    missing: synth.manifest.missing,
+  });
+
+  let requestedParameterName: string | undefined;
+  mockCloudExecutable.sdkProvider.stubSSM({
+    getParameter(request) {
+      requestedParameterName = request.Name;
+      return {
+        Parameter: {
+          Value: 'new-value',
+        },
+      };
+    },
+  });
+
+  const cdkToolkit = new CdkToolkit({
+    cloudExecutable: mockCloudExecutable,
+    configuration: mockCloudExecutable.configuration,
+    sdkProvider: mockCloudExecutable.sdkProvider,
+    deployments: new Deployments({ sdkProvider: mockCloudExecutable.sdkProvider }),
+  });
+
+  await mockCloudExecutable.configuration.load();
+
+  // spy on context set function
+  mockCloudExecutable.configuration.context.set = jest.fn(mockCloudExecutable.configuration.context.set);
+
+  await cdkToolkit.assembly();
+  await mockCloudExecutable.configuration.saveContext();
+
+  // THEN
+  expect(value).toEqual('cached-value');
+  expect(requestedParameterName).toEqual(undefined);
+  expect(mockCloudExecutable.configuration.context.set).not.toHaveBeenCalled();
 });
 
 describe('from string list parameter', () => {
