@@ -1395,16 +1395,20 @@ export interface InstanceProperties {
  */
 export class InstanceType {
   /**
-   * Instance type: {@link InstanceClass.R6ID} Memory optimized instances with local NVME drive, 6th generation with Intel Xeon Scalable processors (3rd generation processors code named Ice Lake)
-   * Instance size: {@link InstanceSize.XLARGE16}
+   * **Instance type**: `r6id.16xlarge`:
+   *
+   * * **Instance class**: {@link InstanceClass.R6ID} Memory optimized instances with local NVME drive, 6th generation with Intel Xeon Scalable processors (3rd generation processors code named Ice Lake)
+   * * **Instance size**: {@link InstanceSize.XLARGE16}
    *
    * Alias: {@link InstanceType.MEMORY6_INTEL_NVME_DRIVE_16XLARGE}
    */
   public static readonly R6ID_16XLARGE = InstanceType.of(InstanceClass.R6ID, InstanceSize.XLARGE16);
 
   /**
-   * Instance type: {@link InstanceClass.R6ID} Memory optimized instances with local NVME drive, 6th generation with Intel Xeon Scalable processors (3rd generation processors code named Ice Lake)
-   * Instance size: {@link InstanceSize.XLARGE16}
+   * **Instance type**: `r6id.16xlarge`:
+   *
+   * * **Instance class**: {@link InstanceClass.R6ID} Memory optimized instances with local NVME drive, 6th generation with Intel Xeon Scalable processors (3rd generation processors code named Ice Lake)
+   * * **Instance size**: {@link InstanceSize.XLARGE16}
    *
    * Alias of: {@link InstanceType.R6ID_16XLARGE}
    */
