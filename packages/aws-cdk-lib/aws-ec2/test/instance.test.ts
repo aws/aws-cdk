@@ -106,6 +106,40 @@ describe('instance', () => {
     });
 
   });
+
+  test('identical instance types with alias', () => {
+    // GIVEN
+    const instanceType = InstanceType.R6ID_16XLARGE;
+    const instanceTypeAlias = InstanceType.MEMORY6_INTEL_NVME_DRIVE_16XLARGE;
+
+    // THEN
+    expect(instanceTypeAlias.toString()).toBe(instanceType.toString());
+  });
+
+  test('instance type from static initializer', () => {
+    // GIVEN
+    const instanceType = InstanceType.R6ID_16XLARGE;
+
+    // THEN
+    expect(instanceType.instanceProperties?.freeTierEligible).toBe(false);
+  });
+
+  test('instance type from factory', () => {
+    // GIVEN
+    const instanceType = InstanceType.of(InstanceClass.R6ID, InstanceSize.XLARGE16);
+
+    // THEN
+    expect(instanceType.instanceProperties?.freeTierEligible).toBe(false);
+  });
+
+  test('empty instanceProperties', () => {
+    // GIVEN
+    const instanceType = new InstanceType('class123.size123');
+
+    // THEN
+    expect(instanceType.instanceProperties).toBeNull();
+  });
+
   test('instance architecture is correctly discerned for arm instances', () => {
     // GIVEN
     const sampleInstanceClasses = [

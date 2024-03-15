@@ -1,3 +1,9 @@
+import * as instancePropertiesJsonData from '../data/instance-properties.json';
+import type { InstanceTypeInfo } from '@aws-sdk/client-ec2';
+
+type InstancePropertiesData = Omit<InstanceTypeInfo, 'InstanceType'>;
+const instancePropertiesData: {[InstanceType: string]: InstancePropertiesData} = instancePropertiesJsonData;
+
 /**
  * What class and generation of instance to use
  *
@@ -1376,6 +1382,11 @@ export enum InstanceSize {
   XLARGE48METAL = 'metal-48xl',
 }
 
+export interface InstanceProperties {
+  readonly currentGeneration?: boolean;
+  readonly freeTierEligible?: boolean;
+}
+
 /**
  * Instance type for EC2 instances
  *
@@ -1383,6 +1394,22 @@ export enum InstanceSize {
  * know the identifier of the type you want.
  */
 export class InstanceType {
+  /**
+   * Instance type: {@link InstanceClass.R6ID} Memory optimized instances with local NVME drive, 6th generation with Intel Xeon Scalable processors (3rd generation processors code named Ice Lake)
+   * Instance size: {@link InstanceSize.XLARGE16}
+   *
+   * Alias: {@link InstanceType.MEMORY6_INTEL_NVME_DRIVE_16XLARGE}
+   */
+  public static readonly R6ID_16XLARGE = InstanceType.of(InstanceClass.R6ID, InstanceSize.XLARGE16);
+
+  /**
+   * Instance type: {@link InstanceClass.R6ID} Memory optimized instances with local NVME drive, 6th generation with Intel Xeon Scalable processors (3rd generation processors code named Ice Lake)
+   * Instance size: {@link InstanceSize.XLARGE16}
+   *
+   * Alias of: {@link InstanceType.R6ID_16XLARGE}
+   */
+  public static readonly MEMORY6_INTEL_NVME_DRIVE_16XLARGE = InstanceType.of(InstanceClass.MEMORY6_INTEL_NVME_DRIVE, InstanceSize.XLARGE16);
+
   /**
    * Instance type for EC2 instances
    *
@@ -1634,7 +1661,26 @@ export class InstanceType {
     return new InstanceType(`${instanceClassMap[instanceClass] ?? instanceClass}.${instanceSize}`);
   }
 
-  constructor(private readonly instanceTypeIdentifier: string) {
+  private static mapInstanceProperties(instanceTypeIdentifier: string): InstanceProperties|null {
+    const data =instancePropertiesData[instanceTypeIdentifier];
+    if (!data) return null;
+
+    return {
+      currentGeneration: data.CurrentGeneration,
+      freeTierEligible: data.FreeTierEligible,
+    };
+  };
+
+  constructor(
+    /**
+     * The instance type, as returned by the EC2 API
+     * @example "m3.small"
+     */
+    private readonly instanceTypeIdentifier: string,
+    /**
+     * Instance properties for the instance type, obtained from cached SDK data
+     */
+    public readonly instanceProperties = InstanceType.mapInstanceProperties(instanceTypeIdentifier)) {
   }
 
   /**
