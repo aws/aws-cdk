@@ -28,9 +28,9 @@ export interface DeploymentProps {
   readonly retainDeployments?: boolean;
 
   /**
-   * The stage of the API Gateway deployment.
+   * The name of the stage the API Gateway deployment deploys to.
    *
-   * @default - If `stageName` is not specified, a "prod" stage will be automatically created for the API Gateway deployment.
+   * @default - No stage name.
    */
   readonly stageName?: string;
 }

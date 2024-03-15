@@ -6,30 +6,6 @@
     "Name": "my-api"
    }
   },
-  "myapiDeployment92F2CB4972a890db5063ec679071ba7eefc76f2a": {
-   "Type": "AWS::ApiGateway::Deployment",
-   "Properties": {
-    "Description": "Automatically created by the RestApi construct",
-    "RestApiId": {
-     "Ref": "myapi4C7BF186"
-    }
-   },
-   "DependsOn": [
-    "myapiGETF990CE3C"
-   ]
-  },
-  "myapiDeploymentStagedevB1704B15": {
-   "Type": "AWS::ApiGateway::Stage",
-   "Properties": {
-    "DeploymentId": {
-     "Ref": "myapiDeployment92F2CB4972a890db5063ec679071ba7eefc76f2a"
-    },
-    "RestApiId": {
-     "Ref": "myapi4C7BF186"
-    },
-    "StageName": "dev"
-   }
-  },
   "myapiGETF990CE3C": {
    "Type": "AWS::ApiGateway::Method",
    "Properties": {
@@ -49,44 +25,17 @@
     }
    }
   },
-  "MyDeployment74F2406B6f3141cef1e8fea8ab3b3b8bc90df36d": {
+  "MyManualDeployment92F2175C6f3141cef1e8fea8ab3b3b8bc90df36d": {
    "Type": "AWS::ApiGateway::Deployment",
    "Properties": {
     "RestApiId": {
      "Ref": "myapi4C7BF186"
-    }
+    },
+    "StageName": "myStage"
    },
    "DependsOn": [
     "myapiGETF990CE3C"
    ]
-  }
- },
- "Outputs": {
-  "myapiEndpoint3628AFE3": {
-   "Value": {
-    "Fn::Join": [
-     "",
-     [
-      "https://",
-      {
-       "Ref": "myapi4C7BF186"
-      },
-      ".execute-api.",
-      {
-       "Ref": "AWS::Region"
-      },
-      ".",
-      {
-       "Ref": "AWS::URLSuffix"
-      },
-      "/",
-      {
-       "Ref": "myapiDeploymentStagedevB1704B15"
-      },
-      "/"
-     ]
-    ]
-   }
   }
  },
  "Parameters": {
