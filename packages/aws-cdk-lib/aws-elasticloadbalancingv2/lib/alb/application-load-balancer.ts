@@ -60,7 +60,7 @@ export interface ApplicationLoadBalancerProps extends BaseLoadBalancerProps {
   readonly desyncMitigationMode?: DesyncMitigationMode;
 
   /**
-   * The client keep alive duration. The valid range is 60-604800 seconds.
+   * The client keep alive duration. The valid range is 60 to 604800 seconds (1 minute to 7 days).
    *
    * @default - Duration.seconds(3600)
    */
