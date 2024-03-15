@@ -200,7 +200,7 @@ export class CdkToolkit {
               stream,
             });
           } else {
-            debug(`the stack '${stack.stackName}' does not exist and we are not importing resources, skipping changeset creation.`);
+            debug(`the stack '${stack.stackName}' does not exist, skipping changeset creation.`);
           }
         }
 
