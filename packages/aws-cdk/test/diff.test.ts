@@ -67,7 +67,6 @@ describe('imports', () => {
     });
 
     cloudFormation = instanceMockFrom(Deployments);
-    cloudFormation.stackExists = jest.fn().mockReturnValue(Promise.resolve(true));
 
     toolkit = new CdkToolkit({
       cloudExecutable,
@@ -95,9 +94,36 @@ describe('imports', () => {
     fs.rmSync('migrate.json');
   });
 
-  test('imports', async () => {
+  test('imports render correctly for a nonexistant stack', async () => {
     // GIVEN
     const buffer = new StringWritable();
+    cloudFormation.stackExists = jest.fn().mockReturnValue(Promise.resolve(false));
+
+    // WHEN
+    const exitCode = await toolkit.diff({
+      stackNames: ['A'],
+      stream: buffer,
+      changeSet: true,
+    });
+
+    // THEN
+    const plainTextOutput = buffer.data.replace(/\x1B\[[0-?]*[ -/]*[@-~]/g, '');
+    expect(plainTextOutput).toContain(`Stack A
+Parameters and rules created during migration do not affect resource configuration.
+Resources
+[←] AWS::SQS::Queue Queue import
+[←] AWS::SQS::Queue Queue2 import
+[←] AWS::S3::Bucket Bucket import
+`);
+
+    expect(buffer.data.trim()).toContain('✨  Number of stacks with differences: 1');
+    expect(exitCode).toBe(0);
+  });
+
+  test('imports render correctly for an existing stack', async () => {
+    // GIVEN
+    const buffer = new StringWritable();
+    cloudFormation.stackExists = jest.fn().mockReturnValue(Promise.resolve(true));
 
     // WHEN
     const exitCode = await toolkit.diff({
