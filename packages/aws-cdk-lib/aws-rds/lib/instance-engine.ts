@@ -570,6 +570,7 @@ class MariaDbInstanceEngine extends InstanceEngineBase {
           majorVersion: version.mariaDbMajorVersion,
         }
         : undefined,
+      engineFamily: 'MYSQL',
     });
   }
 

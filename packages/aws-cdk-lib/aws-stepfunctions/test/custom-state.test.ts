@@ -242,4 +242,71 @@ describe('Custom State', () => {
       },
     );
   });
+
+  test('expect retry to not fail when specifying strategy inline', () => {
+    // GIVEN
+    const custom = new sfn.CustomState(stack, 'Custom', {
+      stateJson: {
+        Type: 'Task',
+        Resource: 'arn:aws:states:::dynamodb:putItem',
+        Parameters: {
+          TableName: 'MyTable',
+          Item: {
+            id: {
+              S: 'MyEntry',
+            },
+          },
+        },
+        ResultPath: null,
+        Retry: [
+          {
+            ErrorEquals: [
+              'Lambda.ServiceException',
+              'Lambda.AWSLambdaException',
+              'Lambda.SdkClientException',
+              'Lambda.TooManyRequestsException',
+            ],
+            IntervalSeconds: 20,
+            MaxAttempts: 2,
+          },
+        ],
+      },
+    });
+    const chain = sfn.Chain.start(custom);
+
+    // THEN
+    expect(render(stack, chain)).toStrictEqual(
+      {
+        StartAt: 'Custom',
+        States: {
+          Custom: {
+            Type: 'Task',
+            Resource: 'arn:aws:states:::dynamodb:putItem',
+            Parameters: {
+              TableName: 'MyTable',
+              Item: {
+                id: {
+                  S: 'MyEntry',
+                },
+              },
+            },
+            ResultPath: null,
+            Retry: [
+              {
+                ErrorEquals: [
+                  'Lambda.ServiceException',
+                  'Lambda.AWSLambdaException',
+                  'Lambda.SdkClientException',
+                  'Lambda.TooManyRequestsException',
+                ],
+                IntervalSeconds: 20,
+                MaxAttempts: 2,
+              },
+            ],
+            End: true,
+          },
+        },
+      },
+    );
+  });
 });

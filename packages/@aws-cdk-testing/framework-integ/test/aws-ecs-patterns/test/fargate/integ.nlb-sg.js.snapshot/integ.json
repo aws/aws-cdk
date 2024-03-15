@@ -1,0 +1,12 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "l3FargateTest/DefaultTest": {
+      "stacks": [
+        "aws-ecs-integ-lb-fargate"
+      ],
+      "assertionStack": "l3FargateTest/DefaultTest/DeployAssert",
+      "assertionStackName": "l3FargateTestDefaultTestDeployAssert3391A20B"
+    }
+  }
+}

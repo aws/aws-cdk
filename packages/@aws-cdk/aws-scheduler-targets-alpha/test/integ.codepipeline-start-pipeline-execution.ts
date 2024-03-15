@@ -17,7 +17,11 @@ import { CodePipelineStartPipelineExecution } from '../lib/codepipeline-start-pi
  * 2. The pipeline has a step function action that updates the Parameter 'MyParameter' from value '🌧️' to '🌈':
  * 3. The pipeline is invoked by the scheduler every minute (but it needs only one successful execution to pass).
  */
-const app = new cdk.App();
+const app = new cdk.App({
+  postCliContext: {
+    '@aws-cdk/aws-codepipeline:defaultPipelineTypeToV2': false,
+  },
+});
 const stack = new cdk.Stack(app, 'aws-cdk-scheduler-targets-codepipeline-start-pipeline-execution');
 
 const payload = {

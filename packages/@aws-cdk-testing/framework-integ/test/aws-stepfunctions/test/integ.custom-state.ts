@@ -39,6 +39,10 @@ const custom = new sfn.CustomState(stack, 'my custom task', {
   stateJson,
 });
 
+const customWithInlineRetry = new sfn.CustomState(stack, 'my custom task with inline Retriers', {
+  stateJson,
+});
+
 custom.addCatch(failure);
 custom.addRetry({
   errors: [sfn.Errors.TIMEOUT],
@@ -46,7 +50,7 @@ custom.addRetry({
   maxAttempts: 5,
 });
 
-const chain = sfn.Chain.start(custom).next(finalStatus);
+const chain = sfn.Chain.start(custom).next(customWithInlineRetry).next(finalStatus);
 
 const sm = new sfn.StateMachine(stack, 'StateMachine', {
   definition: chain,
