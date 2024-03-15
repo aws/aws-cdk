@@ -228,8 +228,8 @@ cluster.addNodegroupCapacity('custom-node-group', {
 });
 ```
 
-> **NOTE:** If you add instances with the inferentia (`inf1` or `inf2`) class the
-> [neuron plugin](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/containers/dlc-then-eks-devflow.html)
+> **NOTE:** If you add instances with the inferentia class (`inf1` or `inf2`) or trainium class (`trn1` or `trn1n`) 
+> the [neuron plugin](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/containers/dlc-then-eks-devflow.html)
 > will be automatically installed in the kubernetes cluster.
 
 #### Node Groups with IPv6 Support
