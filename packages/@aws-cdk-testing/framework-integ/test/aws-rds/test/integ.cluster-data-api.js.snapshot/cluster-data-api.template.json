@@ -10,7 +10,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "cluster-kerberos/VPC"
+      "Value": "cluster-data-api/VPC"
      }
     ]
    }
@@ -39,7 +39,7 @@
      },
      {
       "Key": "Name",
-      "Value": "cluster-kerberos/VPC/PublicSubnet1"
+      "Value": "cluster-data-api/VPC/PublicSubnet1"
      }
     ],
     "VpcId": {
@@ -53,7 +53,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "cluster-kerberos/VPC/PublicSubnet1"
+      "Value": "cluster-data-api/VPC/PublicSubnet1"
      }
     ],
     "VpcId": {
@@ -94,7 +94,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "cluster-kerberos/VPC/PublicSubnet1"
+      "Value": "cluster-data-api/VPC/PublicSubnet1"
      }
     ]
    }
@@ -114,7 +114,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "cluster-kerberos/VPC/PublicSubnet1"
+      "Value": "cluster-data-api/VPC/PublicSubnet1"
      }
     ]
    },
@@ -147,7 +147,7 @@
      },
      {
       "Key": "Name",
-      "Value": "cluster-kerberos/VPC/PublicSubnet2"
+      "Value": "cluster-data-api/VPC/PublicSubnet2"
      }
     ],
     "VpcId": {
@@ -161,7 +161,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "cluster-kerberos/VPC/PublicSubnet2"
+      "Value": "cluster-data-api/VPC/PublicSubnet2"
      }
     ],
     "VpcId": {
@@ -202,7 +202,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "cluster-kerberos/VPC/PublicSubnet2"
+      "Value": "cluster-data-api/VPC/PublicSubnet2"
      }
     ]
    }
@@ -222,7 +222,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "cluster-kerberos/VPC/PublicSubnet2"
+      "Value": "cluster-data-api/VPC/PublicSubnet2"
      }
     ]
    },
@@ -255,7 +255,7 @@
      },
      {
       "Key": "Name",
-      "Value": "cluster-kerberos/VPC/PrivateSubnet1"
+      "Value": "cluster-data-api/VPC/PrivateSubnet1"
      }
     ],
     "VpcId": {
@@ -269,7 +269,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "cluster-kerberos/VPC/PrivateSubnet1"
+      "Value": "cluster-data-api/VPC/PrivateSubnet1"
      }
     ],
     "VpcId": {
@@ -324,7 +324,7 @@
      },
      {
       "Key": "Name",
-      "Value": "cluster-kerberos/VPC/PrivateSubnet2"
+      "Value": "cluster-data-api/VPC/PrivateSubnet2"
      }
     ],
     "VpcId": {
@@ -338,7 +338,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "cluster-kerberos/VPC/PrivateSubnet2"
+      "Value": "cluster-data-api/VPC/PrivateSubnet2"
      }
     ],
     "VpcId": {
@@ -375,7 +375,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "cluster-kerberos/VPC"
+      "Value": "cluster-data-api/VPC"
      }
     ]
    }
@@ -545,6 +545,16 @@
      "Statement": [
       {
        "Action": [
+        "secretsmanager:DescribeSecret",
+        "secretsmanager:GetSecretValue"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Ref": "DatabaseSecretAttachmentE5D1B020"
+       }
+      },
+      {
+       "Action": [
         "rds-data:BatchExecuteStatement",
         "rds-data:BeginTransaction",
         "rds-data:CommitTransaction",
@@ -574,16 +584,6 @@
           }
          ]
         ]
-       }
-      },
-      {
-       "Action": [
-        "secretsmanager:DescribeSecret",
-        "secretsmanager:GetSecretValue"
-       ],
-       "Effect": "Allow",
-       "Resource": {
-        "Ref": "DatabaseSecretAttachmentE5D1B020"
        }
       }
      ],

@@ -4,6 +4,7 @@ import { ApiCallBase, IApiCall } from './api-call-base';
 import { ExpectedResult } from './common';
 import { AssertionsProvider, SDK_RESOURCE_TYPE_PREFIX } from './providers';
 import { WaiterStateMachine, WaiterStateMachineOptions } from './waiter-state-machine';
+import { RetentionDays } from 'aws-cdk-lib/aws-logs';
 
 /**
  * Options to perform an AWS JavaScript V2 API call
@@ -75,7 +76,9 @@ export class AwsApiCall extends ApiCallBase {
   constructor(scope: Construct, id: string, props: AwsApiCallProps) {
     super(scope, id);
 
-    this.provider = new AssertionsProvider(this, 'SdkProvider');
+    this.provider = new AssertionsProvider(this, 'SdkProvider', {
+      logRetention: props.parameters?.RetentionDays,
+    });
     this.provider.addPolicyStatementFromSdkCall(props.service, props.api);
     this.name = `${props.service}${props.api}`;
     this.api = props.api;
@@ -211,6 +214,13 @@ export interface LambdaInvokeFunctionProps {
   readonly logType?: LogType;
 
   /**
+   * How long, in days, the log contents will be retained.
+   *
+   * @default - no retention days specified
+   */
+  readonly logRetention?: RetentionDays;
+
+  /**
    * Payload to send as part of the invoke
    *
    * @default - no payload
@@ -234,6 +244,7 @@ export class LambdaInvokeFunction extends AwsApiCall {
         InvocationType: props.invocationType,
         LogType: props.logType,
         Payload: props.payload,
+        RetentionDays: props.logRetention,
       },
     });
 
