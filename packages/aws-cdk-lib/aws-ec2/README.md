@@ -1323,8 +1323,6 @@ either specify the specific latest kernel version or opt-in to using the CDK
 latest kernel version.
 
 ```ts
-import { Key } from 'aws-cdk-lib/aws-kms';
-
 declare const vpc: ec2.Vpc;
 
 new ec2.Instance(this, 'LatestAl2023', {
