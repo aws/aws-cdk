@@ -1125,6 +1125,7 @@ Here is an example of how to create a schedule that puts an event to SQS queue e
 
 ```ts
 import * as scheduler from 'aws-cdk-lib/aws-scheduler';
+import * as kms from 'aws-cdk-lib/aws-kms';
 
 declare const key: kms.Key;
 declare const scheduleGroup: scheduler.CfnScheduleGroup;
@@ -1156,7 +1157,7 @@ const createScheduleTask1 = new tasks.EventBridgeSchedulerCreateScheduleTask(sta
   scheduleExpression: 'rate(5 minute)',
   timezone: 'UTC',
   enabled: true,
-  targetArn: targetQueue.queueArn,
+  target: targetQueue.queueArn,
   role: schedulerRole,
   retryPolicy: {
     maximumRetryAttempts: 2,
