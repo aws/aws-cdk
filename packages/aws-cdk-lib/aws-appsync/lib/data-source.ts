@@ -9,7 +9,7 @@ import { IEventBus } from '../../aws-events';
 import { Grant, IGrantable, IPrincipal, IRole, Role, ServicePrincipal } from '../../aws-iam';
 import { IFunction } from '../../aws-lambda';
 import { IDomain as IOpenSearchDomain } from '../../aws-opensearchservice';
-import { IServerlessCluster } from '../../aws-rds';
+import { IServerlessCluster, IDatabaseCluster } from '../../aws-rds';
 import { ISecret } from '../../aws-secretsmanager';
 import { IResolvable, Lazy, Stack, Token } from '../../core';
 
@@ -346,7 +346,7 @@ export interface RdsDataSourceProps extends BackedDataSourceProps {
   /**
    * The serverless cluster to call to interact with this data source
    */
-  readonly serverlessCluster: IServerlessCluster;
+  readonly serverlessCluster: IServerlessCluster | IDatabaseCluster;
   /**
    * The secret containing the credentials for the database
    */
@@ -390,7 +390,6 @@ export class RdsDataSource extends BackedDataSource {
     props.secretStore.grantRead(this);
 
     // Change to grant with RDS grant becomes implemented
-
     props.serverlessCluster.grantDataApiAccess(this);
 
     Grant.addToPrincipal({
