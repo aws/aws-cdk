@@ -6,7 +6,7 @@ import * as lambda from 'aws-cdk-lib/aws-lambda';
 
 const app = new cdk.App();
 
-const stack = new cdk.Stack(app, 'cluster-kerberos');
+const stack = new cdk.Stack(app, 'cluster-data-api');
 const vpc = new ec2.Vpc(stack, 'VPC');
 
 const fucntion = new lambda.Function(stack, 'Function', {
@@ -23,7 +23,6 @@ const cluster = new rds.DatabaseCluster(stack, 'Database', {
 });
 
 cluster.grantDataApiAccess(fucntion);
-cluster.secret?.grantRead(fucntion);
 
 new integ.IntegTest(app, 'integ-cluster-data-api', {
   testCases: [stack],
