@@ -135,6 +135,14 @@
    "Export": {
     "Name": "aws-cdk-pipes-sources-dynamodb-stream:ExportsOutputRefMyTable794EDED1558A264E"
    }
+  },
+  "ExportsOutputRefTargetQueue08AD2B3C0C69AE0E": {
+   "Value": {
+    "Ref": "TargetQueue08AD2B3C"
+   },
+   "Export": {
+    "Name": "aws-cdk-pipes-sources-dynamodb-stream:ExportsOutputRefTargetQueue08AD2B3C0C69AE0E"
+   }
   }
  },
  "Parameters": {

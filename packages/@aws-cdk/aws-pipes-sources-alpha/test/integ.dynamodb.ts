@@ -52,7 +52,7 @@ test.assertions.awsApiCall('DynamoDB', 'putItem', {
   TableName: table.tableName,
   Item: {
     id: {
-      S: '1',
+      S: 'myPK',
     },
   },
 });
@@ -61,7 +61,7 @@ const message = test.assertions.awsApiCall('SQS', 'receiveMessage', {
   QueueUrl: targetQueue.queueUrl,
 });
 
-message.assertAtPath('Messages.0.Body.dynamodb.Keys.id.S', ExpectedResult.stringLikeRegexp('"1"')).waitForAssertions({
+message.assertAtPath('Messages.0.Body.dynamodb.Keys.id.S', ExpectedResult.stringLikeRegexp('myPK')).waitForAssertions({
   totalTimeout: cdk.Duration.minutes(2),
   interval: cdk.Duration.seconds(15),
 });
