@@ -66,8 +66,6 @@ const pipe = new pipes.Pipe(this, 'Pipe', {
 A Kinesis stream can be used as a source for a pipe. The stream will be polled for new messages and the messages will be sent to the pipe.
 
 ```ts
-import * as kinesis from 'aws-cdk-lib/aws-kinesis';
-
 declare const sourceStream: kinesis.Stream;
 declare const targetQueue: sqs.Queue;
 
@@ -86,8 +84,6 @@ const pipe = new pipes.Pipe(this, 'Pipe', {
 A DynamoDB stream can be used as a source for a pipe. The stream will be polled for new messages and the messages will be sent to the pipe.
 
 ```ts
-import * as ddb from 'aws-cdk-lib/aws-dynamodb';
-
 const table = new ddb.TableV2(stack, 'MyTable', {
   partitionKey: {
     name: 'id',

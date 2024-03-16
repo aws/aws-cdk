@@ -1,6 +1,8 @@
 // Fixture with packages imported, but nothing else
 import * as cdk from 'aws-cdk-lib';
 import * as sqs from 'aws-cdk-lib/aws-sqs';
+import * as kinesis from 'aws-cdk-lib/aws-kinesis';
+import * as ddb from 'aws-cdk-lib/aws-dynamodb';
 import { Construct } from 'constructs';
 import * as pipes from '@aws-cdk/aws-pipes-alpha';
 import * as sources from '@aws-cdk/aws-pipes-sources-alpha';
