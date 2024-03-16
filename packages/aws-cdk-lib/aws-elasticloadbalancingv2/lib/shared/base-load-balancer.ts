@@ -47,6 +47,38 @@ export interface BaseLoadBalancerProps {
    * @default false
    */
   readonly deletionProtection?: boolean;
+
+  /**
+   * Indicates whether cross-zone load balancing is enabled.
+   *
+   * @default - false for Network Load Balancers and true for Application Load Balancers.
+   */
+  readonly crossZone?: boolean;
+
+  /**
+   * The S3 bucket for the access logs.
+   *
+   * The bucket must exist in the same region as the load balancer and have a bucket policy that grants Elastic Load Balancing permissions to write to the bucket.
+   *
+   * @default - Access logs are not stored.
+   */
+  readonly accessLogDestinationBucket?: s3.IBucket;
+
+  /**
+   * The prefix for the location in the S3 bucket for the access logs.
+   *
+   * This parameeter is only used when `accessLogDestinationBucket` is defined.
+   *
+   * @default - No prefix
+   */
+  readonly accessLogPrefix?: string;
+
+  /**
+   * Indicates whether the load balancer blocks traffic through the Internet Gateway (IGW).
+   *
+   * @default - false for internet-facing load balancers and true for internal load balancers
+   */
+  readonly denyAllIgwTraffic?: boolean;
 }
 
 export interface ILoadBalancerV2 extends IResource {

@@ -227,6 +227,22 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
     this.connections = new ec2.Connections({ securityGroups: props.securityGroups });
     this.ipAddressType = props.ipAddressType ?? IpAddressType.IPV4;
     if (props.crossZoneEnabled) { this.setAttribute('load_balancing.cross_zone.enabled', 'true'); }
+    if (props.deletionProtection !== undefined) {
+      this.setAttribute('deletion_protection.enabled', props.deletionProtection.toString());
+    }
+    if (props.crossZone !== undefined) {
+      this.setAttribute('load_balancing.cross_zone.enabled', props.crossZone.toString());
+    }
+    if (props.accessLogDestinationBucket) {
+      this.setAttribute('access_logs.s3.enabled', 'true');
+      this.setAttribute('access_logs.s3.bucket', props.accessLogDestinationBucket.bucketName);
+      if (props.accessLogPrefix) {
+        this.setAttribute('access_logs.s3.prefix', props.accessLogPrefix);
+      }
+    }
+    if (props.denyAllIgwTraffic !== undefined) {
+      this.setAttribute('ipv6.deny_all_igw_traffic', props.denyAllIgwTraffic.toString());
+    }
   }
 
   /**
