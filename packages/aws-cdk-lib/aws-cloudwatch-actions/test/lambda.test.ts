@@ -139,7 +139,12 @@ def handler(event, context):
     handler: 'index.handler',
   });
   alarm1.addAlarmAction(new actions.LambdaAction(alarmLambda));
+  alarm1.addOkAction(new actions.LambdaAction(alarmLambda));
+  alarm1.addInsufficientDataAction(new actions.LambdaAction(alarmLambda));
+
   alarm2.addAlarmAction(new actions.LambdaAction(alarmLambda));
+  alarm2.addOkAction(new actions.LambdaAction(alarmLambda));
+  alarm2.addInsufficientDataAction(new actions.LambdaAction(alarmLambda));
 
   // THEN
   Template.fromStack(stack).resourceCountIs('AWS::CloudWatch::Alarm', 2);
@@ -175,6 +180,9 @@ def handler(event, context):
   alarm1.addAlarmAction(new actions.LambdaAction(alarmLambda));
 
   // THEN
+  expect(() => {
+    alarm1.addOkAction(new actions.LambdaAction(alarmLambda));
+  }).toThrow(/There is already a Construct with name 'AlarmPermission' in Function \[alarmLambda\]/);
   expect(() => {
     alarm2.addAlarmAction(new actions.LambdaAction(alarmLambda));
   }).toThrow(/There is already a Construct with name 'AlarmPermission' in Function \[alarmLambda\]/);
