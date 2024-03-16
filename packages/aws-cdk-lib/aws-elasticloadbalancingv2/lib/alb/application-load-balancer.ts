@@ -120,8 +120,8 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
     if (props.dropInvalidHeaderFields) {this.setAttribute('routing.http.drop_invalid_header_fields.enabled', 'true'); }
     if (props.desyncMitigationMode !== undefined) {this.setAttribute('routing.http.desync_mitigation_mode', props.desyncMitigationMode); }
     if (props.deletionProtection !== undefined) { this.setAttribute('deletion_protection.enabled', props.deletionProtection.toString()); }
-    if (props.crossZone !== undefined) {
-      if (props.crossZone === false) {
+    if (props.crossZoneEnabled !== undefined) {
+      if (props.crossZoneEnabled === false) {
         throw new Error('Cross-zone load balancing must be enabled for Application Load Balancers');
       }
       this.setAttribute('load_balancing.cross_zone.enabled', 'true');

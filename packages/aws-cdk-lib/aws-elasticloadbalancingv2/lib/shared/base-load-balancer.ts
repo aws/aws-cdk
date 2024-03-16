@@ -53,7 +53,7 @@ export interface BaseLoadBalancerProps {
    *
    * @default - false for Network Load Balancers and true for Application Load Balancers.
    */
-  readonly crossZone?: boolean;
+  readonly crossZoneEnabled?: boolean;
 
   /**
    * The S3 bucket for the access logs.

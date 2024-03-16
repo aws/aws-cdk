@@ -15,13 +15,6 @@ import { parseLoadBalancerFullName } from '../shared/util';
  */
 export interface NetworkLoadBalancerProps extends BaseLoadBalancerProps {
   /**
-   * Indicates whether cross-zone load balancing is enabled.
-   *
-   * @default false
-   */
-  readonly crossZoneEnabled?: boolean;
-
-  /**
    * Security groups to associate with this load balancer
    *
    * @default - No security groups associated with the load balancer.
@@ -229,9 +222,6 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
     if (props.crossZoneEnabled) { this.setAttribute('load_balancing.cross_zone.enabled', 'true'); }
     if (props.deletionProtection !== undefined) {
       this.setAttribute('deletion_protection.enabled', props.deletionProtection.toString());
-    }
-    if (props.crossZone !== undefined) {
-      this.setAttribute('load_balancing.cross_zone.enabled', props.crossZone.toString());
     }
     if (props.accessLogDestinationBucket) {
       this.setAttribute('access_logs.s3.enabled', 'true');
