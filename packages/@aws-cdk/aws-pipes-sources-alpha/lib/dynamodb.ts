@@ -1,7 +1,7 @@
 import { IPipe, ISource, SourceConfig } from '@aws-cdk/aws-pipes-alpha';
 import { Duration } from 'aws-cdk-lib';
-import { IRole } from 'aws-cdk-lib/aws-iam';
 import { ITableV2 } from 'aws-cdk-lib/aws-dynamodb';
+import { IRole } from 'aws-cdk-lib/aws-iam';
 import { DeadLetterConfigParameters } from './deadLetterConfig';
 import { DynamoDBStartingPosition, OnPartialBatchItemFailure } from './enums';
 
