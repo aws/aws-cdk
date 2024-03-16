@@ -1051,7 +1051,7 @@ describe('replication configuration', () => {
     }).toThrow('Cannot configure \'replicationConfiguration\' when \'replicationOverwriteProtection\' is set to \'DISABLED\'');
   });
 
-  test('throw error for specifing both destinationFileSystem and other parameters', () => {
+  test('throw error for specifying both destinationFileSystem and other parameters', () => {
     // WHEN
     const destination = new FileSystem(stack, 'DestinationFileSystem', {
       vpc,
