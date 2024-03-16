@@ -84,7 +84,7 @@ const pipe = new pipes.Pipe(this, 'Pipe', {
 A DynamoDB stream can be used as a source for a pipe. The stream will be polled for new messages and the messages will be sent to the pipe.
 
 ```ts
-const table = new ddb.TableV2(stack, 'MyTable', {
+const table = new ddb.TableV2(this, 'MyTable', {
   partitionKey: {
     name: 'id',
     type: ddb.AttributeType.STRING,
