@@ -11,6 +11,26 @@ import { IpAddressType } from '../shared/enums';
 import { parseLoadBalancerFullName } from '../shared/util';
 
 /**
+ * Indicates how traffic is distributed among the load balancer Availability Zones.
+ *
+ * @see https://docs.aws.amazon.com/elasticloadbalancing/latest/network/network-load-balancers.html#zonal-dns-affinity
+ */
+export enum ZonalAffinity {
+  /**
+   * 100 percent zonal affinity
+   */
+  AVAILABILITY_ZONE_AFFINITY = 'availability_zone_affinity',
+  /**
+   * 85 percent zonal affinity
+   */
+  PARTIAL_AVAILABILITY_ZONE_AFFINITY = 'partial_availability_zone_affinity',
+  /**
+   * No zonal affinity
+   */
+  ANY_AVAILABILITY_ZONE = 'any_availability_zone',
+}
+
+/**
  * Properties for a network load balancer
  */
 export interface NetworkLoadBalancerProps extends BaseLoadBalancerProps {
@@ -30,6 +50,15 @@ export interface NetworkLoadBalancerProps extends BaseLoadBalancerProps {
    * @default IpAddressType.IPV4
    */
   readonly ipAddressType?: IpAddressType;
+
+  /**
+   * The AZ affinity routing policy
+   *
+   * @see https://docs.aws.amazon.com/elasticloadbalancing/latest/network/network-load-balancers.html#zonal-dns-affinity
+   *
+   * @default - AZ affinity is disabled.
+   */
+  readonly zonalAffinity?: ZonalAffinity;
 }
 
 /**
@@ -232,6 +261,9 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
     }
     if (props.denyAllIgwTraffic !== undefined) {
       this.setAttribute('ipv6.deny_all_igw_traffic', props.denyAllIgwTraffic.toString());
+    }
+    if (props.zonalAffinity) {
+      this.setAttribute('dns_record.client_routing_policy', props.zonalAffinity);
     }
   }
 
