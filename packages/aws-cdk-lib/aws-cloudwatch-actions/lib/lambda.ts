@@ -22,10 +22,11 @@ export class LambdaAction implements cloudwatch.IAlarmAction {
    * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/APIReference/API_PutMetricAlarm.html
    */
   bind(scope: Construct, alarm: cloudwatch.IAlarm): cloudwatch.AlarmActionConfig {
-    const flag = FeatureFlags.of(scope).isEnabled(LAMBDA_PERMISSION_LOGICAL_ID_FOR_LAMBDA_ACTION);
-    const idPrefix = flag ? alarm.node.id : '';
+    const idPrefix = FeatureFlags.of(scope).isEnabled(LAMBDA_PERMISSION_LOGICAL_ID_FOR_LAMBDA_ACTION) ? alarm.node.id : '';
     const permissionId = `${idPrefix}AlarmPermission`;
-    if (!this.lambdaFunction.permissionsNode.tryFindChild(permissionId) || !flag) {
+    const permissionNode = this.lambdaFunction.permissionsNode.tryFindChild(permissionId) as lambda.CfnPermission | undefined;
+
+    if (permissionNode?.sourceArn !== alarm.alarmArn) {
       this.lambdaFunction.addPermission(permissionId, {
         sourceAccount: Stack.of(scope).account,
         action: 'lambda:InvokeFunction',
