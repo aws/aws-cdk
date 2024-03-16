@@ -364,7 +364,7 @@ export interface ReplicationConfiguration {
   /**
    * The existing destination file system for the replication.
    *
-   * You cannot configure `kmsKey`, `region` and `az` when `destinationFileSystem` is set.
+   * You cannot configure `kmsKey`, `region` and `availabilityZone` when `destinationFileSystem` is set.
    *
    * @default - create a new file system for the replication destination
    */
