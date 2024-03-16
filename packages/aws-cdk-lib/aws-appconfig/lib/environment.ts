@@ -48,13 +48,17 @@ abstract class EnvironmentBase extends Resource implements IEnvironment, IExtens
   public abstract applicationId: string;
   public abstract environmentId: string;
   public abstract environmentArn: string;
-  public abstract name?: string | undefined;
+  public abstract name?: string;
   protected extensible!: ExtensibleBase;
   protected deploymentQueue: Array<CfnDeployment> = [];
 
   public addDeployment(configuration: IConfiguration): void {
+    if (this.name === undefined) {
+      throw new Error('Environment name must be known to add a Deployment');
+    }
+
     const queueSize = this.deploymentQueue.push(
-      new CfnDeployment(configuration, `Deployment${getHash(this.name!)}`, {
+      new CfnDeployment(configuration, `Deployment${getHash(this.name)}`, {
         applicationId: configuration.application.applicationId,
         configurationProfileId: configuration.configurationProfileId,
         deploymentStrategyId: configuration.deploymentStrategy!.deploymentStrategyId,
@@ -179,7 +183,7 @@ export class Environment extends EnvironmentBase {
       public readonly applicationId = applicationId;
       public readonly environmentId = environmentId;
       public readonly environmentArn = environmentArn;
-      public readonly name?: string | undefined;
+      public readonly name? = undefined;
     }
 
     return new Import(scope, id, {
