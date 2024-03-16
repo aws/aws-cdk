@@ -63,7 +63,8 @@ export interface ConfigurationOptions {
    * If this parameter is not specified, then there will be no
    * deployment created alongside this configuration.
    *
-   * A deployment can be added later via IEnvironment.
+   * Deployments can be added later using the `IEnvironment.addDeployment` or
+   * `IEnvironment.addDeployments` methods.
    *
    * @default - None.
    */

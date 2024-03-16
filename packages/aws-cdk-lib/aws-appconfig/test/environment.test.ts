@@ -695,6 +695,20 @@ describe('environment', () => {
     expect(env.env.region).toEqual('us-west-2');
   });
 
+  test('from environment arn; cannot add new deployment', () => {
+    const stack = new cdk.Stack();
+    const application = new Application(stack, 'MyAppConfig');
+    const env = Environment.fromEnvironmentArn(stack, 'MyEnvironment',
+      'arn:aws:appconfig:us-west-2:123456789012:application/abc123/environment/def456');
+
+    expect(() => {
+      env.addDeployment(new HostedConfiguration(stack, 'FirstConfig', {
+        application,
+        content: ConfigurationContent.fromInlineText('This is my content 1'),
+      }));
+    }).toThrow('Environment name must be known to add a Deployment');
+  });
+
   test('from environment arn with no resource name', () => {
     const stack = new cdk.Stack();
     expect(() => {
@@ -745,5 +759,74 @@ describe('environment', () => {
     expect(env.applicationId).toBeDefined();
     expect(env.env.account).toEqual('123456789012');
     expect(env.env.region).toEqual('us-west-2');
+  });
+
+  test('from environment attributes; cannot add new deployment without name', () => {
+    const stack = new cdk.Stack();
+    const application = new Application(stack, 'MyAppConfig');
+    const env = Environment.fromEnvironmentAttributes(stack, 'MyEnvironment', {
+      application,
+      environmentId: 'def456',
+    });
+
+    expect(() => {
+      env.addDeployment(new HostedConfiguration(stack, 'FirstConfig', {
+        application,
+        content: ConfigurationContent.fromInlineText('This is my content 1'),
+      }));
+    }).toThrow('Environment name must be known to add a Deployment');
+  });
+
+  test('from environment attributes with name; can add new deployment', () => {
+    const stack = new cdk.Stack();
+    const application = new Application(stack, 'MyAppConfig');
+    const env = Environment.fromEnvironmentAttributes(stack, 'MyEnvironment', {
+      application,
+      environmentId: 'def456',
+      name: 'NamedEnv',
+    });
+    env.addDeployment(new HostedConfiguration(stack, 'FirstConfig', {
+      application,
+      content: ConfigurationContent.fromInlineText('This is my content 1'),
+    }));
+
+    const actual = Template.fromStack(stack);
+
+    actual.hasResourceProperties('AWS::AppConfig::ConfigurationProfile', {
+      Name: 'FirstConfig',
+      ApplicationId: {
+        Ref: 'MyAppConfigB4B63E75',
+      },
+      LocationUri: 'hosted',
+    });
+    actual.hasResourceProperties('AWS::AppConfig::HostedConfigurationVersion', {
+      ApplicationId: {
+        Ref: 'MyAppConfigB4B63E75',
+      },
+      ConfigurationProfileId: {
+        Ref: 'FirstConfigConfigurationProfileDEF37C63',
+      },
+      Content: 'This is my content 1',
+      ContentType: 'text/plain',
+    });
+    actual.hasResource('AWS::AppConfig::Deployment', {
+      Properties: {
+        ApplicationId: {
+          Ref: 'MyAppConfigB4B63E75',
+        },
+        EnvironmentId: 'def456',
+        ConfigurationVersion: {
+          Ref: 'FirstConfigC35E996C',
+        },
+        ConfigurationProfileId: {
+          Ref: 'FirstConfigConfigurationProfileDEF37C63',
+        },
+        DeploymentStrategyId: {
+          Ref: 'FirstConfigDeploymentStrategy863BBA9A',
+        },
+      },
+    });
+
+    actual.resourceCountIs('AWS::AppConfig::Deployment', 1);
   });
 });

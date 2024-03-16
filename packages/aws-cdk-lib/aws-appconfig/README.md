@@ -269,7 +269,7 @@ new appconfig.HostedConfiguration(this, 'MyHostedConfiguration', {
 
 When more than one configuration is set to deploy to the same environment, the 
 deployments will occur one at a time. This is done to satisfy 
-[AppConfig's constraint:](https://docs.aws.amazon.com/appconfig/latest/userguide/appconfig-deploying.html)
+[AppConfig's constraint](https://docs.aws.amazon.com/appconfig/latest/userguide/appconfig-deploying.html):
 > [!NOTE]  
 > You can only deploy one configuration at a time to an environment.   
 > However, you can deploy one configuration each to different environments at the same time.
