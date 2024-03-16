@@ -1070,7 +1070,7 @@ describe('replication configuration', () => {
     }).toThrow('Cannot configure \'replicationConfiguration.region\', \'replicationConfiguration.availabilityZone\' or \'replicationConfiguration.kmsKey\' when \'replicationConfiguration.destinationFileSystem\' is set');
   });
 
-  test('throw error for specifing both destinationFileSystem and kmsKey', () => {
+  test('throw error for specifying both destinationFileSystem and kmsKey', () => {
     // WHEN
     const destination = new FileSystem(stack, 'DestinationFileSystem', {
       vpc,
