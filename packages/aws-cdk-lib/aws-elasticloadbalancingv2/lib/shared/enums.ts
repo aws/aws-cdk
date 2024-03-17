@@ -321,3 +321,20 @@ export enum DesyncMitigationMode {
    */
   STRICTEST = 'strictest',
 }
+
+/**
+ * Indicates whether to evaluate inbound security group rules for traffic sent to a Network Load Balancer through AWS PrivateLink.
+ *
+ * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-elasticloadbalancingv2-loadbalancer.html#cfn-elasticloadbalancingv2-loadbalancer-enforcesecuritygroupinboundrulesonprivatelinktraffic
+ */
+export enum EnforceSecurityGroupInboundRulesOnPrivateLinkTraffic {
+  /**
+   * Evaluate inbound security group rules
+   */
+  ON = 'on',
+
+  /**
+   * Do not evaluate inbound security group rules
+   */
+  OFF = 'off',
+}

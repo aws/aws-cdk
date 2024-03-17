@@ -7,7 +7,7 @@ import { Lazy, Resource } from '../../../core';
 import * as cxapi from '../../../cx-api';
 import { NetworkELBMetrics } from '../elasticloadbalancingv2-canned-metrics.generated';
 import { BaseLoadBalancer, BaseLoadBalancerLookupOptions, BaseLoadBalancerProps, ILoadBalancerV2 } from '../shared/base-load-balancer';
-import { IpAddressType } from '../shared/enums';
+import { EnforceSecurityGroupInboundRulesOnPrivateLinkTraffic, IpAddressType } from '../shared/enums';
 import { parseLoadBalancerFullName } from '../shared/util';
 
 /**
@@ -37,6 +37,13 @@ export interface NetworkLoadBalancerProps extends BaseLoadBalancerProps {
    * @default IpAddressType.IPV4
    */
   readonly ipAddressType?: IpAddressType;
+
+  /**
+   * Indicates whether to evaluate inbound security group rules for traffic sent to a Network Load Balancer through AWS PrivateLink.
+   *
+   * @default on
+   */
+  readonly enforceSecurityGroupInboundRulesOnPrivateLinkTraffic?: EnforceSecurityGroupInboundRulesOnPrivateLinkTraffic;
 }
 
 /**
@@ -201,6 +208,7 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
   public readonly metrics: INetworkLoadBalancerMetrics;
   public readonly ipAddressType?: IpAddressType;
   public readonly connections: ec2.Connections;
+  public readonly enforceSecurityGroupInboundRulesOnPrivateLinkTraffic?: EnforceSecurityGroupInboundRulesOnPrivateLinkTraffic;
   private readonly isSecurityGroupsPropertyDefined: boolean;
 
   /**
@@ -220,12 +228,14 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
       type: 'network',
       securityGroups: Lazy.list({ produce: () => this.securityGroups }),
       ipAddressType: props.ipAddressType,
+      enforceSecurityGroupInboundRulesOnPrivateLinkTraffic: props.enforceSecurityGroupInboundRulesOnPrivateLinkTraffic,
     });
 
     this.metrics = new NetworkLoadBalancerMetrics(this, this.loadBalancerFullName);
     this.isSecurityGroupsPropertyDefined = !!props.securityGroups;
     this.connections = new ec2.Connections({ securityGroups: props.securityGroups });
     this.ipAddressType = props.ipAddressType ?? IpAddressType.IPV4;
+    this.enforceSecurityGroupInboundRulesOnPrivateLinkTraffic = props.enforceSecurityGroupInboundRulesOnPrivateLinkTraffic;
     if (props.crossZoneEnabled) { this.setAttribute('load_balancing.cross_zone.enabled', 'true'); }
   }
 
@@ -464,6 +474,13 @@ export interface INetworkLoadBalancer extends ILoadBalancerV2, ec2.IVpcEndpointS
    * @default IpAddressType.IPV4
    */
   readonly ipAddressType?: IpAddressType;
+
+  /**
+   * Indicates whether to evaluate inbound security group rules for traffic sent to a Network Load Balancer through AWS PrivateLink
+   *
+   * @default on
+   */
+  readonly enforceSecurityGroupInboundRulesOnPrivateLinkTraffic?: EnforceSecurityGroupInboundRulesOnPrivateLinkTraffic;
 
   /**
    * Add a listener to this load balancer

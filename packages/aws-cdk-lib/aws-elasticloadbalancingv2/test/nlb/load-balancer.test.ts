@@ -350,6 +350,44 @@ describe('tests', () => {
     });
   });
 
+  test('can set EnforceSecurityGroupInboundRulesOnPrivateLinkTraffic on', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Stack');
+
+    // WHEN
+    new elbv2.NetworkLoadBalancer(stack, 'NLB', {
+      loadBalancerName: 'myLoadBalancer',
+      enforceSecurityGroupInboundRulesOnPrivateLinkTraffic: elbv2.EnforceSecurityGroupInboundRulesOnPrivateLinkTraffic.ON,
+      vpc,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+      Name: 'myLoadBalancer',
+      EnforceSecurityGroupInboundRulesOnPrivateLinkTraffic: 'on',
+    });
+  });
+
+  test('can set EnforceSecurityGroupInboundRulesOnPrivateLinkTraffic off', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Stack');
+
+    // WHEN
+    new elbv2.NetworkLoadBalancer(stack, 'NLB', {
+      loadBalancerName: 'myLoadBalancer',
+      enforceSecurityGroupInboundRulesOnPrivateLinkTraffic: elbv2.EnforceSecurityGroupInboundRulesOnPrivateLinkTraffic.OFF,
+      vpc,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+      Name: 'myLoadBalancer',
+      EnforceSecurityGroupInboundRulesOnPrivateLinkTraffic: 'off',
+    });
+  });
+
   test('loadBalancerName unallowed: more than 32 characters', () => {
     // GIVEN
     const app = new cdk.App();
