@@ -267,7 +267,7 @@ declare const vpc: ec2.Vpc;
 
 const nlb = new elbv2.NetworkLoadBalancer(this, 'LB', {
   vpc,
-  enforceSecurityGroupInboundRulesOnPrivateLinkTraffic: true
+  enforceSecurityGroupInboundRulesOnPrivateLinkTraffic: true,
 });
 ```
 
