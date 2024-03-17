@@ -265,7 +265,7 @@ sent to a Network Load Balancer through AWS PrivateLink. The default is `on`.
 ```ts
 declare const vpc: ec2.Vpc;
 
-const nlb = new elbv2.NetworkLoadBalancer(stack, 'LB', {
+const nlb = new elbv2.NetworkLoadBalancer(this, 'LB', {
   vpc,
   enforceSecurityGroupInboundRulesOnPrivateLinkTraffic: elbv2.EnforceSecurityGroupInboundRulesOnPrivateLinkTraffic.ON,
 });
