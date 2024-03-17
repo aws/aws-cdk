@@ -358,7 +358,7 @@ describe('tests', () => {
     // WHEN
     new elbv2.NetworkLoadBalancer(stack, 'NLB', {
       loadBalancerName: 'myLoadBalancer',
-      enforceSecurityGroupInboundRulesOnPrivateLinkTraffic: elbv2.EnforceSecurityGroupInboundRulesOnPrivateLinkTraffic.ON,
+      enforceSecurityGroupInboundRulesOnPrivateLinkTraffic: true,
       vpc,
     });
 
@@ -377,7 +377,7 @@ describe('tests', () => {
     // WHEN
     new elbv2.NetworkLoadBalancer(stack, 'NLB', {
       loadBalancerName: 'myLoadBalancer',
-      enforceSecurityGroupInboundRulesOnPrivateLinkTraffic: elbv2.EnforceSecurityGroupInboundRulesOnPrivateLinkTraffic.OFF,
+      enforceSecurityGroupInboundRulesOnPrivateLinkTraffic: false,
       vpc,
     });
 

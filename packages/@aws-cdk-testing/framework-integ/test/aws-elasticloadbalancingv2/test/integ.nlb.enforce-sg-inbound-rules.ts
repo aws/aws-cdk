@@ -17,7 +17,7 @@ new elbv2.NetworkLoadBalancer(stack, 'LB', {
   securityGroups: [
     new ec2.SecurityGroup(stack, 'SG', { vpc }),
   ],
-  enforceSecurityGroupInboundRulesOnPrivateLinkTraffic: elbv2.EnforceSecurityGroupInboundRulesOnPrivateLinkTraffic.ON,
+  enforceSecurityGroupInboundRulesOnPrivateLinkTraffic: true,
 });
 
 new IntegTest(app, 'IntegTest', { testCases: [stack] });
