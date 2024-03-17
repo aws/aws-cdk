@@ -15,7 +15,7 @@ import { parseLoadBalancerFullName } from '../shared/util';
  *
  * @see https://docs.aws.amazon.com/elasticloadbalancing/latest/network/network-load-balancers.html#zonal-dns-affinity
  */
-export enum ZonalAffinity {
+export enum ClientRoutingPolicy {
   /**
    * 100 percent zonal affinity
    */
@@ -58,7 +58,7 @@ export interface NetworkLoadBalancerProps extends BaseLoadBalancerProps {
    *
    * @default - AZ affinity is disabled.
    */
-  readonly zonalAffinity?: ZonalAffinity;
+  readonly clientRoutingPolicy?: ClientRoutingPolicy;
 }
 
 /**
@@ -248,8 +248,8 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
     this.isSecurityGroupsPropertyDefined = !!props.securityGroups;
     this.connections = new ec2.Connections({ securityGroups: props.securityGroups });
     this.ipAddressType = props.ipAddressType ?? IpAddressType.IPV4;
-    if (props.zonalAffinity) {
-      this.setAttribute('dns_record.client_routing_policy', props.zonalAffinity);
+    if (props.clientRoutingPolicy) {
+      this.setAttribute('dns_record.client_routing_policy', props.clientRoutingPolicy);
     }
   }
 

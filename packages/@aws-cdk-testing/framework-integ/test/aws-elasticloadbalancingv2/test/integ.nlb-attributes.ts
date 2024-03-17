@@ -16,7 +16,7 @@ new elbv2.NetworkLoadBalancer(stack, 'NLB', {
   crossZoneEnabled: true,
   deletionProtection: false,
   denyAllIgwTraffic: true,
-  zonalAffinity: elbv2.ZonalAffinity.PARTIAL_AVAILABILITY_ZONE_AFFINITY,
+  clientRoutingPolicy: elbv2.ClientRoutingPolicy.PARTIAL_AVAILABILITY_ZONE_AFFINITY,
 });
 
 new integ.IntegTest(app, 'nlb-attlibutes-integ', {
