@@ -99,7 +99,7 @@ const cloudWatchLogsResolvers: Record<string, CloudWatchLogsResolver> = {
   'AWS::Lambda::Function': (resource, evaluateCfnTemplate) => {
     const loggingConfig = evaluateCfnTemplate.getResourceProperty(resource.LogicalResourceId, 'LoggingConfig');
     if (loggingConfig?.LogGroup) {
-      // if LoGroup is a string then use it as the LogGroupName as it is referred by LogGroup.fromLogGroupArn in CDK
+      // if LogGroup is a string then use it as the LogGroupName as it is referred by LogGroup.fromLogGroupArn in CDK
       if (typeof loggingConfig.LogGroup === 'string') {
         return loggingConfig.LogGroup;
       }
