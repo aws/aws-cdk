@@ -4,7 +4,9 @@ import * as cxapi from '@aws-cdk/cx-api';
 import * as chalk from 'chalk';
 import * as chokidar from 'chokidar';
 import * as fs from 'fs-extra';
+import { minimatch } from 'minimatch';
 import * as promptly from 'promptly';
+import * as semver from 'semver';
 import * as uuid from 'uuid';
 import { DeploymentMethod } from './api';
 import { SdkProvider } from './api/aws-auth';
@@ -29,6 +31,7 @@ import { validateSnsTopicArn } from './util/validate-notification-arn';
 import { Concurrency, WorkGraph } from './util/work-graph';
 import { WorkGraphBuilder } from './util/work-graph-builder';
 import { AssetBuildNode, AssetPublishNode, StackNode } from './util/work-graph-types';
+import { versionNumber } from './version';
 import { environmentsFromDescriptors, globEnvironmentsFromStacks, looksLikeGlob } from '../lib/api/cxapp/environments';
 
 export interface CdkToolkitProps {
@@ -136,14 +139,7 @@ export class CdkToolkit {
         throw new Error(`There is no file at ${options.templatePath}`);
       }
 
-      const stackExistsOptions = {
-        stack: stacks.firstStack,
-        deployName: stacks.firstStack.stackName,
-      };
-
-      const stackExists = await this.props.deployments.stackExists(stackExistsOptions);
-
-      const changeSet = (stackExists && options.changeSet) ? await createDiffChangeSet({
+      const changeSet = options.changeSet ? await createDiffChangeSet({
         stack: stacks.firstStack,
         uuid: uuid.v4(),
         willExecute: false,
@@ -156,7 +152,7 @@ export class CdkToolkit {
       const template = deserializeStructure(await fs.readFile(options.templatePath, { encoding: 'UTF-8' }));
       diffs = options.securityOnly
         ? numberFromBool(printSecurityDiff(template, stacks.firstStack, RequireApproval.Broadening, changeSet))
-        : printStackDiff(template, stacks.firstStack, strict, contextLines, quiet, changeSet, stream);
+        : printStackDiff(template, stacks.firstStack.template, strict, contextLines, quiet, changeSet, stream);
     } else {
       // Compare N stacks against deployed templates
       for (const stack of stacks.stackArtifacts) {
@@ -164,34 +160,24 @@ export class CdkToolkit {
           stream.write(format('Stack %s\n', chalk.bold(stack.displayName)));
         }
 
-        const templateWithNames = await this.props.deployments.readCurrentTemplateWithNestedStacks(
+        const templateWithNestedStacks = await this.props.deployments.readCurrentTemplateWithNestedStacks(
           stack, options.compareAgainstProcessedTemplate,
         );
-        const currentTemplate = templateWithNames.deployedTemplate;
-        const nestedStackCount = templateWithNames.nestedStackCount;
+        const currentTemplate = templateWithNestedStacks.deployedRootTemplate;
+        const nestedStacks = templateWithNestedStacks.nestedStacks;
 
         const resourcesToImport = await this.tryGetResources(await this.props.deployments.resolveEnvironment(stack));
         if (resourcesToImport) {
           removeNonImportResources(stack);
         }
 
-        const stackExistsOptions = {
-          stack,
-          deployName: stack.stackName,
-        };
-
-        const stackExists = await this.props.deployments.stackExists(stackExistsOptions);
-
-        // if the stack does not already exist, do not do a changeset
-        // this prevents race conditions between deleting the dummy changeset stack and deploying the real changeset stack
-        // migrate stacks that import resources will not previously exist and default to old diff logic
-        const changeSet = (stackExists && options.changeSet) ? await createDiffChangeSet({
+        const changeSet = options.changeSet ? await createDiffChangeSet({
           stack,
           uuid: uuid.v4(),
           deployments: this.props.deployments,
           willExecute: false,
           sdkProvider: this.props.sdkProvider,
-          parameters: Object.assign({}, parameterMap['*'], parameterMap[stacks.firstStack.stackName]), // should this be stack?
+          parameters: Object.assign({}, parameterMap['*'], parameterMap[stacks.firstStack.stackName]),
           resourcesToImport,
           stream,
         }) : undefined;
@@ -200,13 +186,12 @@ export class CdkToolkit {
           stream.write('Parameters and rules created during migration do not affect resource configuration.\n');
         }
 
-        // pass a boolean to print if the stack is a migrate stack in order to set all resource diffs to import
         const stackCount =
         options.securityOnly
-          ? (numberFromBool(printSecurityDiff(currentTemplate, stack, RequireApproval.Broadening, changeSet)) > 0 ? 1 : 0)
-          : (printStackDiff(currentTemplate, stack, strict, contextLines, quiet, changeSet, stream, !!resourcesToImport) > 0 ? 1 : 0);
+          ? (numberFromBool(printSecurityDiff(currentTemplate, stack, RequireApproval.Broadening, changeSet)))
+          : (printStackDiff(currentTemplate, stack, strict, contextLines, quiet, changeSet, stream, nestedStacks));
 
-        diffs += stackCount + nestedStackCount;
+        diffs += stackCount;
       }
     }
 
@@ -607,6 +592,9 @@ export class CdkToolkit {
     stacks = stacks.reversed();
 
     if (!options.force) {
+      if (stacks.stackArtifacts.length === 0) {
+        return;
+      }
       // eslint-disable-next-line max-len
       const confirmed = await promptly.confirm(`Are you sure you want to delete: ${chalk.blue(stacks.stackArtifacts.map(s => s.hierarchicalId).join(', '))} (y/n)?`);
       if (!confirmed) {
@@ -900,9 +888,43 @@ export class CdkToolkit {
       extend: exclusively ? ExtendedStackSelection.None : ExtendedStackSelection.Downstream,
       defaultBehavior: DefaultSelection.OnlySingle,
     });
+    const selectorWithoutPatterns: StackSelector = {
+      ...selector,
+      allTopLevel: true,
+      patterns: [],
+    };
+    const stacksWithoutPatterns = await assembly.selectStacks(selectorWithoutPatterns, {
+      extend: exclusively ? ExtendedStackSelection.None : ExtendedStackSelection.Downstream,
+      defaultBehavior: DefaultSelection.OnlySingle,
+    });
 
-    // No validation
+    const patterns = selector.patterns.map(pattern => {
+      const notExist = !stacks.stackArtifacts.find(stack =>
+        minimatch(stack.hierarchicalId, pattern) || (stack.id === pattern && semver.major(versionNumber()) < 2),
+      );
 
+      const closelyMatched = notExist ? stacksWithoutPatterns.stackArtifacts.map(stack => {
+        if (minimatch(stack.hierarchicalId.toLowerCase(), pattern.toLowerCase())) {
+          return stack.hierarchicalId;
+        }
+        if (stack.id.toLowerCase() === pattern.toLowerCase() && semver.major(versionNumber()) < 2) {
+          return stack.id;
+        }
+        return;
+      }).filter((stack): stack is string => stack !== undefined) : [];
+      return {
+        pattern,
+        notExist,
+        closelyMatched,
+      };
+    });
+
+    patterns.forEach(pattern => {
+      if (pattern.notExist) {
+        const closelyMatched = pattern.closelyMatched.length > 0 ? ` Do you mean ${pattern.closelyMatched.join(', ')}?` : '';
+        warning(`${pattern.pattern} does not exist.${closelyMatched}`);
+      }
+    });
     return stacks;
   }
 
