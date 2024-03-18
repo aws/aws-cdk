@@ -1720,6 +1720,7 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
 
     // Setup logging
     const logGroups: logs.ILogGroup[] = [];
+    const logPublishing: Record<string, any> = {};
 
     if (props.logging?.slowSearchLogEnabled) {
       this.slowSearchLogGroup = props.logging.slowSearchLogGroup ??
@@ -1728,6 +1729,14 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
         });
 
       logGroups.push(this.slowSearchLogGroup);
+      logPublishing.SEARCH_SLOW_LOGS = {
+        enabled: true,
+        cloudWatchLogsLogGroupArn: this.slowSearchLogGroup.logGroupArn,
+      };
+    } else if (props.logging?.slowSearchLogEnabled === false) {
+      logPublishing.SEARCH_SLOW_LOGS = {
+        enabled: false,
+      };
     };
 
     if (props.logging?.slowIndexLogEnabled) {
@@ -1737,6 +1746,14 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
         });
 
       logGroups.push(this.slowIndexLogGroup);
+      logPublishing.INDEX_SLOW_LOGS = {
+        enabled: true,
+        cloudWatchLogsLogGroupArn: this.slowIndexLogGroup.logGroupArn,
+      };
+    } else if (props.logging?.slowIndexLogEnabled === false) {
+      logPublishing.INDEX_SLOW_LOGS = {
+        enabled: false,
+      };
     };
 
     if (props.logging?.appLogEnabled) {
@@ -1746,6 +1763,14 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
         });
 
       logGroups.push(this.appLogGroup);
+      logPublishing.ES_APPLICATION_LOGS = {
+        enabled: true,
+        cloudWatchLogsLogGroupArn: this.appLogGroup.logGroupArn,
+      };
+    } else if (props.logging?.appLogEnabled === false) {
+      logPublishing.ES_APPLICATION_LOGS = {
+        enabled: false,
+      };
     };
 
     if (props.logging?.auditLogEnabled) {
@@ -1755,6 +1780,14 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
         });
 
       logGroups.push(this.auditLogGroup);
+      logPublishing.AUDIT_LOGS = {
+        enabled: true,
+        cloudWatchLogsLogGroupArn: this.auditLogGroup?.logGroupArn,
+      };
+    } else if (props.logging?.auditLogEnabled === false) {
+      logPublishing.AUDIT_LOGS = {
+        enabled: false,
+      };
     };
 
     let logGroupResourcePolicy: LogGroupResourcePolicy | null = null;
@@ -1773,36 +1806,6 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
         policyName: `ESLogPolicy${this.node.addr}`,
         policyStatements: [logPolicyStatement],
       });
-    }
-
-    const logPublishing: Record<string, any> = {};
-
-    if (this.appLogGroup) {
-      logPublishing.ES_APPLICATION_LOGS = {
-        enabled: true,
-        cloudWatchLogsLogGroupArn: this.appLogGroup.logGroupArn,
-      };
-    }
-
-    if (this.slowSearchLogGroup) {
-      logPublishing.SEARCH_SLOW_LOGS = {
-        enabled: true,
-        cloudWatchLogsLogGroupArn: this.slowSearchLogGroup.logGroupArn,
-      };
-    }
-
-    if (this.slowIndexLogGroup) {
-      logPublishing.INDEX_SLOW_LOGS = {
-        enabled: true,
-        cloudWatchLogsLogGroupArn: this.slowIndexLogGroup.logGroupArn,
-      };
-    }
-
-    if (this.auditLogGroup) {
-      logPublishing.AUDIT_LOGS = {
-        enabled: this.auditLogGroup != null,
-        cloudWatchLogsLogGroupArn: this.auditLogGroup?.logGroupArn,
-      };
     }
 
     let customEndpointCertificate: acm.ICertificate | undefined;
