@@ -32,8 +32,7 @@ export interface CapacityConfig {
   /**
    * The hardware configuration of the computer that hosts the dedicated master
    * node, such as `m3.medium.search`. For valid values, see [Supported
-   * Instance Types]
-   * (https://docs.aws.amazon.com/opensearch-service/latest/developerguide/supported-instance-types.html)
+   * Instance Types](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/supported-instance-types.html)
    * in the Amazon OpenSearch Service Developer Guide.
    *
    * @default - r5.large.search
@@ -66,8 +65,8 @@ export interface CapacityConfig {
 
   /**
    * The instance type for your UltraWarm node, such as `ultrawarm1.medium.search`.
-   * For valid values, see [UltraWarm Storage Limits]
-   * (https://docs.aws.amazon.com/opensearch-service/latest/developerguide/limits.html#limits-ultrawarm)
+   * For valid values, see [UltraWarm Storage
+   * Limits](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/limits.html#limits-ultrawarm)
    * in the Amazon OpenSearch Service Developer Guide.
    *
    * @default - ultrawarm1.medium.search
@@ -76,8 +75,8 @@ export interface CapacityConfig {
 
   /**
    * Indicates whether Multi-AZ with Standby deployment option is enabled.
-   * For more information, see [Multi-AZ with Standby]
-   * (https://docs.aws.amazon.com/opensearch-service/latest/developerguide/managedomains-multiaz.html#managedomains-za-standby)
+   * For more information, see [Multi-AZ with
+   * Standby](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/managedomains-multiaz.html#managedomains-za-standby)
    *
    * @default - no multi-az with standby
    */
@@ -95,8 +94,7 @@ export interface ZoneAwarenessConfig {
    * in the same region to prevent data loss and minimize downtime in the event
    * of node or data center failure. Don't enable zone awareness if your cluster
    * has no replica index shards or is a single-node cluster. For more information,
-   * see [Configuring a Multi-AZ Domain]
-   * (https://docs.aws.amazon.com/opensearch-service/latest/developerguide/managedomains-multiaz.html)
+   * see [Configuring a Multi-AZ Domain](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/managedomains-multiaz.html)
    * in the Amazon OpenSearch Service Developer Guide.
    *
    * @default - false
@@ -115,8 +113,7 @@ export interface ZoneAwarenessConfig {
 /**
  * The configurations of Amazon Elastic Block Store (Amazon EBS) volumes that
  * are attached to data nodes in the Amazon OpenSearch Service domain. For more information, see
- * [Amazon EBS]
- * (https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/AmazonEBS.html)
+ * [Amazon EBS](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/AmazonEBS.html)
  * in the Amazon Elastic Compute Cloud Developer Guide.
  */
 export interface EbsOptions {
@@ -149,8 +146,7 @@ export interface EbsOptions {
    * The size (in GiB) of the EBS volume for each data node. The minimum and
    * maximum size of an EBS volume depends on the EBS volume type and the
    * instance type to which it is attached.  For  valid values, see
-   * [EBS volume size limits]
-   * (https://docs.aws.amazon.com/opensearch-service/latest/developerguide/limits.html#ebsresource)
+   * [EBS volume size limits](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/limits.html#ebsresource)
    * in the Amazon OpenSearch Service Developer Guide.
    *
    * @default 10
