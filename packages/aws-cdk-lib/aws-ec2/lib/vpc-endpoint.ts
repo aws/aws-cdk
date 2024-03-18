@@ -265,7 +265,9 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   public static readonly AIRFLOW_ENV = new InterfaceVpcEndpointAwsService('airflow.env');
   public static readonly AIRFLOW_OPS = new InterfaceVpcEndpointAwsService('airflow.ops');
   public static readonly APIGATEWAY = new InterfaceVpcEndpointAwsService('execute-api');
+  /** @deprecated - Use InterfaceVpcEndpointAwsService.APP_MESH_ENVOY_MANAGEMENT instead. */
   public static readonly APP_MESH = new InterfaceVpcEndpointAwsService('appmesh-envoy-management');
+  public static readonly APP_MESH_ENVOY_MANAGEMENT = new InterfaceVpcEndpointAwsService('appmesh-envoy-management');
   public static readonly APP_MESH_OPS = new InterfaceVpcEndpointAwsService('appmesh');
   public static readonly APP_RUNNER = new InterfaceVpcEndpointAwsService('apprunner');
   public static readonly APP_RUNNER_REQUESTS = new InterfaceVpcEndpointAwsService('apprunner.requests');
@@ -455,7 +457,9 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   public static readonly PERSONALIZE_EVENTS = new InterfaceVpcEndpointAwsService('personalize-events');
   public static readonly PERSONALIZE_RUNTIME = new InterfaceVpcEndpointAwsService('personalize-runtime');
   public static readonly PINPOINT_V1 = new InterfaceVpcEndpointAwsService('pinpoint');
+  /** @deprecated - Use InterfaceVpcEndpointAwsService.PINPOINT_SMS_VOICE_V2 instead. */
   public static readonly PINPOINT = new InterfaceVpcEndpointAwsService('pinpoint-sms-voice-v2');
+  public static readonly PINPOINT_SMS_VOICE_V2 = new InterfaceVpcEndpointAwsService('pinpoint-sms-voice-v2');
   public static readonly POLLY = new InterfaceVpcEndpointAwsService('polly');
   public static readonly PRIVATE_5G = new InterfaceVpcEndpointAwsService('private-networks');
   public static readonly PRIVATE_CERTIFICATE_AUTHORITY = new InterfaceVpcEndpointAwsService('acm-pca');
