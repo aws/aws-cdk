@@ -340,7 +340,33 @@ describe('tests', () => {
           slowStart: badDuration,
           vpc,
         });
-      }).toThrow(/Slow start duration value must be between 30 and 900 seconds./);
+      }).toThrow(/Slow start duration value must be between 30 and 900 seconds, or 0 to disable slow start./);
+    });
+  });
+
+  test('Disable slow start by setting to 0 seconds', () => {
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'Stack');
+    const vpc = new ec2.Vpc(stack, 'VPC', {});
+
+    // WHEN
+    new elbv2.ApplicationTargetGroup(stack, 'TargetGroup', {
+      slowStart: cdk.Duration.seconds(0),
+      vpc,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::TargetGroup', {
+      TargetGroupAttributes: [
+        {
+          Key: 'slow_start.duration_seconds',
+          Value: '0',
+        },
+        {
+          Key: 'stickiness.enabled',
+          Value: 'false',
+        },
+      ],
     });
   });
 
