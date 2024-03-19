@@ -2,6 +2,39 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.133.0](https://github.com/aws/aws-cdk/compare/v2.132.1...v2.133.0) (2024-03-14)
+
+
+### Features
+
+* **CLI:** improved nested stack diff ([#29172](https://github.com/aws/aws-cdk/issues/29172)) ([135b520](https://github.com/aws/aws-cdk/commit/135b5208dce849f49b6f540f7199ece057a7ef22))
+* **codepipeline:** change default pipeline type to V2 (under feature flag) ([#29096](https://github.com/aws/aws-cdk/issues/29096)) ([e85231c](https://github.com/aws/aws-cdk/commit/e85231c092892879479cf12b89756e8f2b70a094)), closes [/github.com/aws/aws-cdk/pull/28538#discussion_r1471761574](https://github.com/aws//github.com/aws/aws-cdk/pull/28538/issues/discussion_r1471761574) [/github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/aws-codepipeline/lib/pipeline.ts#L492](https://github.com/aws//github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/aws-codepipeline/lib/pipeline.ts/issues/L492)
+* **ec2:** add APPCONFIG and APPCONFIGDATA to InterfaceVpcEndpointAwsService ([#29408](https://github.com/aws/aws-cdk/issues/29408)) ([baaa50c](https://github.com/aws/aws-cdk/commit/baaa50c73ae3a88d606b62349736ef1180dcf1ad))
+* **ecs-patterns:** support `securityGroups` in `NetworkLoadBalancedFargateService` ([#29431](https://github.com/aws/aws-cdk/issues/29431)) ([00e8a7b](https://github.com/aws/aws-cdk/commit/00e8a7b877a732b4236227f6462bf3914ce7a214)), closes [#29430](https://github.com/aws/aws-cdk/issues/29430) [/github.com/aws/aws-cdk/pull/29186#issuecomment-1959231406](https://github.com/aws//github.com/aws/aws-cdk/pull/29186/issues/issuecomment-1959231406)
+* **opensearchservice:** cold storage option ([#29387](https://github.com/aws/aws-cdk/issues/29387)) ([ce52c7e](https://github.com/aws/aws-cdk/commit/ce52c7e1ac939dc2f9f08cb29fad0f2dc9714445)), closes [#29366](https://github.com/aws/aws-cdk/issues/29366)
+* **rds:** proxy for mariadb ([#29412](https://github.com/aws/aws-cdk/issues/29412)) ([6fef789](https://github.com/aws/aws-cdk/commit/6fef789e14a0f53317da9ca4f319950d33f86ed1)), closes [#29402](https://github.com/aws/aws-cdk/issues/29402)
+* **stepfunctions-tasks:** start glue crawler ([#29016](https://github.com/aws/aws-cdk/issues/29016)) ([5592553](https://github.com/aws/aws-cdk/commit/5592553ac5edc6b2c29a786031b8bec139b2aef7)), closes [#24188](https://github.com/aws/aws-cdk/issues/24188)
+* update L1 CloudFormation resource definitions ([#29438](https://github.com/aws/aws-cdk/issues/29438)) ([5b910f0](https://github.com/aws/aws-cdk/commit/5b910f0d61d4adae38788f7f16ccdae6cb214057))
+
+
+### Bug Fixes
+
+* **cli:** `cdk ls` returns stack id instead of stack display name ([#29447](https://github.com/aws/aws-cdk/issues/29447)) ([77189be](https://github.com/aws/aws-cdk/commit/77189be16b4ab007450176010f71f1558ced6430)), closes [#29420](https://github.com/aws/aws-cdk/issues/29420)
+* **lambda-nodejs:** fixing esbuildArgs to take in account re-specified keys ([#29167](https://github.com/aws/aws-cdk/issues/29167)) ([919d16f](https://github.com/aws/aws-cdk/commit/919d16ff611ee01495ae2cb4c646c4e27378b3e3)), closes [#25385](https://github.com/aws/aws-cdk/issues/25385)
+* **stepfunctions:** the retry field in CustomState is not iterable ([#29403](https://github.com/aws/aws-cdk/issues/29403)) ([a1fbd51](https://github.com/aws/aws-cdk/commit/a1fbd51d7fa6791b6a55004a938ec157194b89ba)), closes [#29274](https://github.com/aws/aws-cdk/issues/29274)
+
+
+### Reverts
+
+* prevent changeset diff for non-deployed stacks ([#29485](https://github.com/aws/aws-cdk/issues/29485)) ([fac4a9c](https://github.com/aws/aws-cdk/commit/fac4a9c23f8e9090b3dc7e26a8306d3a8034b4c9)), closes [#29394](https://github.com/aws/aws-cdk/issues/29394) [#29172](https://github.com/aws/aws-cdk/issues/29172)
+
+## [2.132.1](https://github.com/aws/aws-cdk/compare/v2.132.0...v2.132.1) (2024-03-12)
+
+
+### Bug Fixes
+
+* **cli:** `cdk ls` returns stack id instead of stack display name ([#29447](https://github.com/aws/aws-cdk/issues/29447)) ([effad1c](https://github.com/aws/aws-cdk/commit/effad1cf8a854789070e963691b30fadf1597afb)), closes [#29420](https://github.com/aws/aws-cdk/issues/29420)
+
 ## [2.132.0](https://github.com/aws/aws-cdk/compare/v2.131.0...v2.132.0) (2024-03-08)
 
 
