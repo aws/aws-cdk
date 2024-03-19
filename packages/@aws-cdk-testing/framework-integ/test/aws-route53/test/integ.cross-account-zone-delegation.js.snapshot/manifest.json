@@ -191,10 +191,7 @@
         "/child-opt-in-stack/SubZone/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "SubZoneF7955E1A",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "SubZoneF7955E1A"
           }
         ],
         "/child-opt-in-stack/delegate/cross-account-zone-delegation-handler-role/PolicychildoptinstackdelegatecrossaccountzonedelegationhandlerroleD1C6F26D/Resource": [
