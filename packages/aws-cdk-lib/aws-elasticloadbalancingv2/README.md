@@ -193,7 +193,7 @@ If you do not provide any options for this method, it redirects HTTP port 80 to 
 By default all ingress traffic will be allowed on the source port. If you want to be more selective with your
 ingress rules then set `open: false` and use the listener's `connections` object to selectively grant access to the listener.
 
-### Load Balancer attributes
+### Application Load Balancer attributes
 
 You can modify attributes of Application Load Balancers:
 
@@ -220,6 +220,12 @@ const lb = new elbv2.ApplicationLoadBalancer(this, 'LB', {
 
   // The type of IP addresses to use.
   ipAddressType: elbv2.IpAddressType.IPV4,
+
+  // Whether cross-zone load balancing is enabled.
+  crossZoneEnabled: true,
+
+  // Whether the load balancer blocks traffic through the Internet Gateway (IGW).
+  denyAllIgwTraffic: false
 });
 ```
 
@@ -267,6 +273,7 @@ and [Register targets with your Target
 Group](https://docs.aws.amazon.com/elasticloadbalancing/latest/network/target-group-register-targets.html)
 for more information.
 
+
 ### Dualstack Network Load Balancer
 
 You can create a dualstack Network Load Balancer using the `ipAddressType` property:
@@ -281,6 +288,29 @@ const lb = new elbv2.NetworkLoadBalancer(this, 'LB', {
 ```
 
 You cannot add UDP or TCP_UDP listeners to a dualstack Network Load Balancer.
+
+### Network Load Balancer attributes
+
+You can modify attributes of Network Load Balancers:
+
+```ts
+declare const vpc: ec2.Vpc;
+
+const lb = new elbv2.NetworkLoadBalancer(this, 'LB', {
+  vpc,
+  // Whether deletion protection is enabled.
+  deletionProtection: true,
+
+  // Whether cross-zone load balancing is enabled.
+  crossZoneEnabled: true,
+
+  // Whether the load balancer blocks traffic through the Internet Gateway (IGW).
+  denyAllIgwTraffic: false,
+
+  // Indicates how traffic is distributed among the load balancer Availability Zones.
+  clientRoutingPolicy: elbv2.ClientRoutingPolicy.AVAILABILITY_ZONE_AFFINITY,
+});
+```
 
 ## Targets and Target Groups
 

@@ -80,6 +80,8 @@ describe('tests', () => {
     new elbv2.NetworkLoadBalancer(stack, 'LB', {
       vpc,
       crossZoneEnabled: true,
+      denyAllIgwTraffic: true,
+      clientRoutingPolicy: elbv2.ClientRoutingPolicy.PARTIAL_AVAILABILITY_ZONE_AFFINITY,
     });
 
     // THEN
@@ -88,6 +90,14 @@ describe('tests', () => {
         {
           Key: 'load_balancing.cross_zone.enabled',
           Value: 'true',
+        },
+        {
+          Key: 'ipv6.deny_all_igw_traffic',
+          Value: 'true',
+        },
+        {
+          Key: 'dns_record.client_routing_policy',
+          Value: 'partial_availability_zone_affinity',
         },
       ]),
     });
