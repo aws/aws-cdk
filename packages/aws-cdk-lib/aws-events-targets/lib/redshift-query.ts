@@ -12,7 +12,7 @@ export interface RedshiftQueryProps {
   /**
    * The Amazon Redshift database to run the query against.
    *
-   * @default - dev
+   * @default - no database is specified 
    */
   readonly database?: string;
 
