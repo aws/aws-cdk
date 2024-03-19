@@ -41,7 +41,7 @@ export interface NetworkLoadBalancerProps extends BaseLoadBalancerProps {
   /**
    * Indicates whether to evaluate inbound security group rules for traffic sent to a Network Load Balancer through AWS PrivateLink.
    *
-   * @default on
+   * @default true
    */
   readonly enforceSecurityGroupInboundRulesOnPrivateLinkTraffic?: boolean;
 }
@@ -208,8 +208,8 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
   public readonly metrics: INetworkLoadBalancerMetrics;
   public readonly ipAddressType?: IpAddressType;
   public readonly connections: ec2.Connections;
-  public readonly enforceSecurityGroupInboundRulesOnPrivateLinkTraffic?: string;
   private readonly isSecurityGroupsPropertyDefined: boolean;
+  private readonly _enforceSecurityGroupInboundRulesOnPrivateLinkTraffic?: boolean;
 
   /**
    * After the implementation of `IConnectable` (see https://github.com/aws/aws-cdk/pull/28494), the default
@@ -229,7 +229,7 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
       securityGroups: Lazy.list({ produce: () => this.securityGroups }),
       ipAddressType: props.ipAddressType,
       enforceSecurityGroupInboundRulesOnPrivateLinkTraffic: Lazy.string({
-        produce: () => this.transformEnforceSecurityGroupInboundRulesOnPrivateLinkTraffic(props.enforceSecurityGroupInboundRulesOnPrivateLinkTraffic),
+        produce: () => this.enforceSecurityGroupInboundRulesOnPrivateLinkTraffic,
       }),
     });
 
@@ -238,15 +238,12 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
     this.connections = new ec2.Connections({ securityGroups: props.securityGroups });
     this.ipAddressType = props.ipAddressType ?? IpAddressType.IPV4;
     if (props.crossZoneEnabled) { this.setAttribute('load_balancing.cross_zone.enabled', 'true'); }
-    this.enforceSecurityGroupInboundRulesOnPrivateLinkTraffic =
-      this.transformEnforceSecurityGroupInboundRulesOnPrivateLinkTraffic(props.enforceSecurityGroupInboundRulesOnPrivateLinkTraffic);
+    this._enforceSecurityGroupInboundRulesOnPrivateLinkTraffic = props.enforceSecurityGroupInboundRulesOnPrivateLinkTraffic;
   }
 
-  private transformEnforceSecurityGroupInboundRulesOnPrivateLinkTraffic(value: boolean | undefined): string | undefined {
-    if (value !== undefined) {
-      return value ? 'on' : 'off';
-    }
-    return undefined;
+  public get enforceSecurityGroupInboundRulesOnPrivateLinkTraffic(): string | undefined {
+    if (this._enforceSecurityGroupInboundRulesOnPrivateLinkTraffic === undefined) return undefined;
+    return this._enforceSecurityGroupInboundRulesOnPrivateLinkTraffic ? 'on' : 'off';
   }
 
   /**

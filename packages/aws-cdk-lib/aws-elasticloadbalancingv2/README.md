@@ -260,7 +260,8 @@ listener.addTargets('AppFleet', {
 ### Enforce security group inbound rules on PrivateLink traffic for a Network Load Balancer
 
 You can indicate whether to evaluate inbound security group rules for traffic 
-sent to a Network Load Balancer through AWS PrivateLink. The default is `on`. 
+sent to a Network Load Balancer through AWS PrivateLink.
+The evaluation is enabled by default.
 
 ```ts
 declare const vpc: ec2.Vpc;
