@@ -3,7 +3,7 @@ import { Template, Match } from '../../assertions';
 import { Vpc } from '../../aws-ec2';
 import { CodeConfig, Runtime } from '../../aws-lambda';
 import { App, Stack } from '../../core';
-import { LAMBDA_NODEJS_USE_LATEST_RUNTIME } from '../../cx-api';
+import { LAMBDA_NODEJS_USE_LATEST_RUNTIME, NODEJS_FUNCTION_DEFAULT_AWS_SDK_CONNECTION_REUSE_TO_FALSE } from '../../cx-api';
 import { NodejsFunction } from '../lib';
 import { Bundling } from '../lib/bundling';
 
@@ -258,6 +258,15 @@ test('can opt-out of connection reuse for aws sdk', () => {
   new NodejsFunction(stack, 'handler1', {
     awsSdkConnectionReuse: false,
   });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+    Environment: Match.absent(),
+  });
+});
+
+test('default value of awsSdkConnectionReuse is false', () => {
+  stack.node.setContext(NODEJS_FUNCTION_DEFAULT_AWS_SDK_CONNECTION_REUSE_TO_FALSE, true);
+  new NodejsFunction(stack, 'handler1');
 
   Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
     Environment: Match.absent(),
