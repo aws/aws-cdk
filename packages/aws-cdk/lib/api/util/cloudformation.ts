@@ -1,7 +1,7 @@
 import { SSMPARAM_NO_INVALIDATE } from '@aws-cdk/cx-api';
 import * as cxapi from '@aws-cdk/cx-api';
 import { CloudFormation } from 'aws-sdk';
-import { StackStatus } from './cloudformation/stack-status';
+import { StackStatus, StackDetailedStatus } from './cloudformation/stack-status';
 import { makeBodyParameterAndUpload, TemplateBodyParameter } from './template-body-parameter';
 import { debug } from '../../logging';
 import { deserializeStructure } from '../../serialize';
@@ -131,6 +131,16 @@ export class CloudFormationStack {
       return new StackStatus('NOT_FOUND', 'Stack not found during lookup');
     }
     return StackStatus.fromStackDescription(this.stack!);
+  }
+
+  /**
+   * The stack's detailed status
+   */
+  public get stackDetailedStatus(): StackDetailedStatus {
+    if (!this.exists) {
+      return new StackDetailedStatus('NOT_FOUND', 'Stack not found during lookup');
+    }
+    return StackDetailedStatus.fromStackDescription(this.stack!);
   }
 
   /**
@@ -435,14 +445,16 @@ export function changeSetHasNoChanges(description: CloudFormation.DescribeChange
  *
  * @param cfn        a CloudFormation client
  * @param stackName      the name of the stack to wait for after a delete
+ * @param optimistic  optimistic stabilization support
  *
  * @returns     the CloudFormation description of the stabilized stack after the delete attempt
  */
 export async function waitForStackDelete(
   cfn: CloudFormation,
-  stackName: string): Promise<CloudFormationStack | undefined> {
+  stackName: string,
+  optimistic?: boolean): Promise<CloudFormationStack | undefined> {
 
-  const stack = await stabilizeStack(cfn, stackName);
+  const stack = await stabilizeStack(cfn, stackName, optimistic);
   if (!stack) { return undefined; }
 
   const status = stack.stackStatus;
@@ -462,20 +474,27 @@ export async function waitForStackDelete(
  *
  * @param cfn        a CloudFormation client
  * @param stackName      the name of the stack to wait for after an update
+ * @param optimistic  optimistic stabilization support
  *
  * @returns     the CloudFormation description of the stabilized stack after the update attempt
  */
 export async function waitForStackDeploy(
   cfn: CloudFormation,
-  stackName: string): Promise<CloudFormationStack | undefined> {
+  stackName: string,
+  optimistic?: boolean): Promise<CloudFormationStack | undefined> {
 
-  const stack = await stabilizeStack(cfn, stackName);
+  const stack = await stabilizeStack(cfn, stackName, optimistic);
   if (!stack) { return undefined; }
 
   const status = stack.stackStatus;
+  const detailedStatus = stack.stackDetailedStatus;
 
   if (status.isCreationFailure) {
     throw new Error(`The stack named ${stackName} failed creation, it may need to be manually deleted from the AWS console: ${status}`);
+  } else if (detailedStatus.isConfigurationComplete) {
+    // Optimistic stabilization. Considering this in a stable status.
+    // When this happens, status.isDeploySuccess would be false but we consider it a successful deployment.
+    return stack;
   } else if (!status.isDeploySuccess) {
     throw new Error(`The stack named ${stackName} failed to deploy: ${status}`);
   }
@@ -486,7 +505,7 @@ export async function waitForStackDeploy(
 /**
  * Wait for a stack to become stable (no longer _IN_PROGRESS), returning it
  */
-export async function stabilizeStack(cfn: CloudFormation, stackName: string) {
+export async function stabilizeStack(cfn: CloudFormation, stackName: string, optimistic?: boolean) {
   debug('Waiting for stack %s to finish creating or updating...', stackName);
   return waitFor(async () => {
     const stack = await CloudFormationStack.lookup(cfn, stackName);
@@ -495,7 +514,13 @@ export async function stabilizeStack(cfn: CloudFormation, stackName: string) {
       return null;
     }
     const status = stack.stackStatus;
+    const detailedStatus = stack.stackDetailedStatus;
     if (status.isInProgress) {
+      // stack in optimistic stabilization status
+      if (optimistic && detailedStatus.isConfigurationComplete) {
+        debug('Stack %s in CONFIGURATION_COMPLETE detailed status. Considering this in a stable status (%s)', stackName, status);
+        return stack;
+      }
       debug('Stack %s has an ongoing operation in progress and is not stable (%s)', stackName, status);
       return undefined;
     } else if (status.isReviewInProgress) {

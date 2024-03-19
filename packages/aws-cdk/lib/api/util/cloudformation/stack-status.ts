@@ -50,3 +50,28 @@ export class StackStatus {
     return this.name + (this.reason ? ` (${this.reason})` : '');
   }
 }
+
+/**
+ * A utility class to inspect CloudFormation stack detailed statuses.
+ *
+ * @see https://docs.aws.amazon.com/cli/latest/reference/cloudformation/describe-stacks.html
+ */
+export class StackDetailedStatus {
+  public static fromStackDescription(description: AWS.CloudFormation.Stack) {
+    return new StackDetailedStatus(description.DetailedStatus, description.StackStatusReason);
+  }
+
+  constructor(public readonly name?: string, public readonly reason?: string) {}
+
+  get isConfigurationComplete(): boolean {
+    return this.name === 'CONFIGURATION_COMPLETE';
+  }
+
+  get isValidationFailed(): boolean {
+    return this.name === 'VALIDATION_FAILED';
+  }
+
+  public toString(): string {
+    return this.name + (this.reason ? ` (${this.reason})` : '');
+  }
+}
