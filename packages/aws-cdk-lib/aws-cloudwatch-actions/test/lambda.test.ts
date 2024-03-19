@@ -186,3 +186,39 @@ def handler(event, context):
     alarm2.addAlarmAction(new actions.LambdaAction(alarmLambda));
   }).toThrow(/There is already a Construct with name 'AlarmPermission' in Function \[alarmLambda\]/);
 });
+
+test('can use same lambda for same action multiple time', () => {
+  const stack = new Stack();
+  const alarm = new cloudwatch.Alarm(stack, 'Alarm', {
+    metric: new cloudwatch.Metric({ namespace: 'AWS', metricName: 'Test' }),
+    evaluationPeriods: 3,
+    threshold: 100,
+  });
+
+  // WHEN
+  const alarmLambda = new lambda.Function(stack, 'alarmLambda', {
+    runtime: lambda.Runtime.PYTHON_3_12,
+    functionName: 'alarmLambda',
+    code: lambda.Code.fromInline(`
+def handler(event, context):
+  print('event:', event)
+  print('.............................................')
+  print('context:', context)`),
+    handler: 'index.handler',
+  });
+  alarm.addAlarmAction(new actions.LambdaAction(alarmLambda));
+  alarm.addAlarmAction(new actions.LambdaAction(alarmLambda));
+
+  // THEN
+  Template.fromStack(stack).resourceCountIs('AWS::Lambda::Permission', 1);
+  Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::Alarm', {
+    AlarmActions: [
+      {
+        'Fn::GetAtt': ['alarmLambda131DB691', 'Arn'],
+      },
+      {
+        'Fn::GetAtt': ['alarmLambda131DB691', 'Arn'],
+      },
+    ],
+  });
+});

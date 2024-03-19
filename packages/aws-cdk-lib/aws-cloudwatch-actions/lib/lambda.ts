@@ -26,6 +26,9 @@ export class LambdaAction implements cloudwatch.IAlarmAction {
     const permissionId = `${idPrefix}AlarmPermission`;
     const permissionNode = this.lambdaFunction.permissionsNode.tryFindChild(permissionId) as lambda.CfnPermission | undefined;
 
+    // If the Lambda permission has already been added to this function
+    // we skip adding it to avoid an exception being thrown
+    // see https://github.com/aws/aws-cdk/issues/29514
     if (permissionNode?.sourceArn !== alarm.alarmArn) {
       this.lambdaFunction.addPermission(permissionId, {
         sourceAccount: Stack.of(scope).account,
