@@ -312,6 +312,20 @@ are opted-in. By default, this region is determined automatically, but if you ne
 change the region used for the AssumeRole call, specify `assumeRoleRegion`:
 
 ```ts
+const subZone = new route53.PublicHostedZone(this, 'SubZone', {
+  zoneName: 'sub.someexample.com',
+});
+
+// import the delegation role by constructing the roleArn
+const delegationRoleArn = Stack.of(this).formatArn({
+  region: '', // IAM is global in each partition
+  service: 'iam',
+  account: 'parent-account-id',
+  resource: 'role',
+  resourceName: 'MyDelegationRole',
+});
+const delegationRole = iam.Role.fromRoleArn(this, 'DelegationRole', delegationRoleArn);
+
 new route53.CrossAccountZoneDelegationRecord(this, 'delegate', {
   delegatedZone: subZone,
   parentHostedZoneName: 'someexample.com', // or you can use parentHostedZoneId
