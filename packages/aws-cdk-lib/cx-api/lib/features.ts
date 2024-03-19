@@ -101,6 +101,7 @@ export const LAMBDA_PERMISSION_LOGICAL_ID_FOR_LAMBDA_ACTION = '@aws-cdk/aws-clou
 export const CODEPIPELINE_CROSS_ACCOUNT_KEYS_DEFAULT_VALUE_TO_FALSE = '@aws-cdk/aws-codepipeline:crossAccountKeysDefaultValueToFalse';
 export const CODEPIPELINE_DEFAULT_PIPELINE_TYPE_TO_V2 = '@aws-cdk/aws-codepipeline:defaultPipelineTypeToV2';
 export const KMS_REDUCE_CROSS_ACCOUNT_REGION_POLICY_SCOPE = '@aws-cdk/aws-kms:reduceCrossAccountRegionPolicyScope';
+export const NODEJS_FUNCTION_DEFAULT_AWS_SDK_CONNECTION_REUSE_TO_FALSE = '@aws-cdk/aws-lambda-nodejs:defaultAwsSdkConnectionReuseToFalse';
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
@@ -1033,6 +1034,19 @@ export const FLAGS: Record<string, FlagInfo> = {
     `,
     introducedIn: { v2: 'V2NEXT' },
     recommendedValue: true,
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [NODEJS_FUNCTION_DEFAULT_AWS_SDK_CONNECTION_REUSE_TO_FALSE]: {
+    type: FlagType.ApiDefault,
+    summary: 'Change default value for awsSdkConnectionReuse to false.',
+    detailsMd: `
+      When this feature flag is enabled, and the \`awsSdkConnectionReuse\` property is not provided in a \`NodejsFunction\`
+      construct, the construct automatically defaults the value of this property to false.
+    `,
+    introducedIn: { v2: 'V2NEXT' },
+    recommendedValue: true,
+    compatibilityWithOldBehaviorMd: 'Pass `awsSdkConnectionReuse: true` to `NodejsFunction` construct to restore the previous behavior.',
   },
 };
 
