@@ -542,6 +542,7 @@ describe('Job', () => {
                     {
                       Ref: 'JobSparkUIBucket8E6A0139',
                     },
+                    '/',
                   ],
                 ],
               },
@@ -625,7 +626,7 @@ describe('Job', () => {
           Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
             DefaultArguments: {
               '--enable-spark-ui': 'true',
-              '--spark-event-logs-path': `s3://${sparkUIBucketName}`,
+              '--spark-event-logs-path': `s3://${sparkUIBucketName}/`,
             },
           });
         });
