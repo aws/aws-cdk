@@ -192,6 +192,7 @@
     "from-signature:aws-cdk-lib.aws_iam.Role.fromRoleName",
     "from-method:aws-cdk-lib.aws_lambda.FunctionUrl",
     "from-signature:aws-cdk-lib.aws_secretsmanager.Secret.fromSecretNameV2.params[2]",
+    "from-signature:aws-cdk-lib.aws_sns.Topic.fromTopicArn",
     "attribute-tag:aws-cdk-lib.aws_apigateway.RequestAuthorizer.authorizerArn",
     "attribute-tag:aws-cdk-lib.aws_apigateway.TokenAuthorizer.authorizerArn",
     "attribute-tag:aws-cdk-lib.aws_codecommit.Repository.repositoryCloneUrlGrc",
