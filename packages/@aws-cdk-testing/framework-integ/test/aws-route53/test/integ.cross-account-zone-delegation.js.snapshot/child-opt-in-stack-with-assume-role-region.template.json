@@ -3,10 +3,10 @@
   "SubZoneF7955E1A": {
    "Type": "AWS::Route53::HostedZone",
    "Properties": {
-    "Name": "sub.uniqueexample.com."
+    "Name": "sub3.uniqueexample.com."
    }
   },
-  "delegatecrossaccountzonedelegationhandlerrolePolicychildstackdelegatecrossaccountzonedelegationhandlerroleCB13E48E86169197": {
+  "delegatecrossaccountzonedelegationhandlerrolePolicychildoptinstackwithassumeroleregiondelegatecrossaccountzonedelegationhandlerroleA822DAE1970772B0": {
    "Type": "AWS::IAM::Policy",
    "Properties": {
     "PolicyDocument": {
@@ -19,7 +19,7 @@
      ],
      "Version": "2012-10-17"
     },
-    "PolicyName": "PolicychildstackdelegatecrossaccountzonedelegationhandlerroleCB13E48E",
+    "PolicyName": "PolicychildoptinstackwithassumeroleregiondelegatecrossaccountzonedelegationhandlerroleA822DAE1",
     "Roles": [
      {
       "Fn::Select": [
@@ -61,17 +61,18 @@
     },
     "AssumeRoleArn": "arn:aws:iam::12345678:role/MyUniqueDelegationRole",
     "ParentZoneName": "uniqueexample.com",
-    "DelegatedZoneName": "sub.uniqueexample.com",
+    "DelegatedZoneName": "sub3.uniqueexample.com",
     "DelegatedZoneNameServers": {
      "Fn::GetAtt": [
       "SubZoneF7955E1A",
       "NameServers"
      ]
     },
-    "TTL": 172800
+    "TTL": 172800,
+    "AssumeRoleRegion": "eu-west-1"
    },
    "DependsOn": [
-    "delegatecrossaccountzonedelegationhandlerrolePolicychildstackdelegatecrossaccountzonedelegationhandlerroleCB13E48E86169197"
+    "delegatecrossaccountzonedelegationhandlerrolePolicychildoptinstackwithassumeroleregiondelegatecrossaccountzonedelegationhandlerroleA822DAE1970772B0"
    ],
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -102,12 +103,8 @@
    "Type": "AWS::Lambda::Function",
    "Properties": {
     "Code": {
-     "S3Bucket": "cdk-hnb659fds-assets-234567890123-us-east-1",
-<<<<<<< HEAD
-     "S3Key": "aca4a134bf7ace6088b21213be7ab4357e3705f714362b690d76376b8f1df53a.zip"
-=======
+     "S3Bucket": "cdk-hnb659fds-assets-234567890123-af-south-1",
      "S3Key": "df95834e6926d4afc6bfce2bc88b586e43b0ca9a3abb57b43754f174ff07828a.zip"
->>>>>>> 96239f83c0 (test: add tests)
     },
     "Timeout": 900,
     "MemorySize": 128,

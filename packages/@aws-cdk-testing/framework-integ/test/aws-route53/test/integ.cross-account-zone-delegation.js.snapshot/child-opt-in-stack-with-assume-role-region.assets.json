@@ -1,47 +1,29 @@
 {
   "version": "36.0.0",
   "files": {
-<<<<<<< HEAD
-    "aca4a134bf7ace6088b21213be7ab4357e3705f714362b690d76376b8f1df53a": {
-      "source": {
-        "path": "asset.aca4a134bf7ace6088b21213be7ab4357e3705f714362b690d76376b8f1df53a",
-=======
     "df95834e6926d4afc6bfce2bc88b586e43b0ca9a3abb57b43754f174ff07828a": {
       "source": {
         "path": "asset.df95834e6926d4afc6bfce2bc88b586e43b0ca9a3abb57b43754f174ff07828a",
->>>>>>> 96239f83c0 (test: add tests)
         "packaging": "zip"
       },
       "destinations": {
         "234567890123-af-south-1": {
           "bucketName": "cdk-hnb659fds-assets-234567890123-af-south-1",
-<<<<<<< HEAD
-          "objectKey": "aca4a134bf7ace6088b21213be7ab4357e3705f714362b690d76376b8f1df53a.zip",
-=======
           "objectKey": "df95834e6926d4afc6bfce2bc88b586e43b0ca9a3abb57b43754f174ff07828a.zip",
->>>>>>> 96239f83c0 (test: add tests)
           "region": "af-south-1",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::234567890123:role/cdk-hnb659fds-file-publishing-role-234567890123-af-south-1"
         }
       }
     },
-<<<<<<< HEAD
-    "34da3610276ae2d635b15c43c511f47cbd7b4f6e3b7de7b82b980f76956011b1": {
-=======
-    "18f2dbac091f9ac5d22a8c4ce4a05b8c6c31cdaf1f062f8d19cda274d27ccf3c": {
->>>>>>> 96239f83c0 (test: add tests)
+    "f623a975a6715de3e8cfcea1429aa4dd9a0a9d47f328849d3148a0859b45a9d6": {
       "source": {
-        "path": "child-opt-in-stack.template.json",
+        "path": "child-opt-in-stack-with-assume-role-region.template.json",
         "packaging": "file"
       },
       "destinations": {
         "234567890123-af-south-1": {
           "bucketName": "cdk-hnb659fds-assets-234567890123-af-south-1",
-<<<<<<< HEAD
-          "objectKey": "34da3610276ae2d635b15c43c511f47cbd7b4f6e3b7de7b82b980f76956011b1.json",
-=======
-          "objectKey": "18f2dbac091f9ac5d22a8c4ce4a05b8c6c31cdaf1f062f8d19cda274d27ccf3c.json",
->>>>>>> 96239f83c0 (test: add tests)
+          "objectKey": "f623a975a6715de3e8cfcea1429aa4dd9a0a9d47f328849d3148a0859b45a9d6.json",
           "region": "af-south-1",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::234567890123:role/cdk-hnb659fds-file-publishing-role-234567890123-af-south-1"
         }
