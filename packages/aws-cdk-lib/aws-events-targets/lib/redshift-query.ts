@@ -100,6 +100,15 @@ export class RedshiftQuery implements events.IRuleTarget {
     if (this.props.batchSQL) {
       role.addToPrincipalPolicy(this.putBatchEventStatement());
     }
+    if (!(this.props.database)) {
+      throw new Error('A database must be specified.');
+    }
+    if (this.props.sql && this.props.batchSQL) {
+      throw new Error('Only one of `sql` or `batchSQL` can be specified, not both.');
+    }
+    if (!this.props.sql && !this.props.batchSQL) {
+      throw new Error('One of `sql` or `batchSQL` must be specified.');
+    }
 
     return {
       ...bindBaseTargetConfig(this.props),
@@ -107,7 +116,7 @@ export class RedshiftQuery implements events.IRuleTarget {
       role,
       input: this.props.input,
       redshiftDataParameters: {
-        database: this.props.database ?? 'dev',
+        database: this.props.database,
         dbUser: this.props.dbUser,
         secretManagerArn: this.props.secret?.secretFullArn ?? this.props.secret?.secretName,
         sql: this.props.sql,

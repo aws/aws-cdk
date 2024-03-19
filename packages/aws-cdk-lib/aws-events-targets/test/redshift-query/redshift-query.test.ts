@@ -24,7 +24,10 @@ describe('RedshiftQuery event target', () => {
 
     describe('with default settings', () => {
       beforeEach(() => {
-        rule.addTarget(new targets.RedshiftQuery(clusterArn));
+        rule.addTarget(new targets.RedshiftQuery(clusterArn, {
+          database: 'dev',
+          sql: 'SELECT * FROM foo',
+        }));
       });
 
       test('adds the clusters ARN and role to the targets of the rule', () => {
@@ -53,11 +56,11 @@ describe('RedshiftQuery event target', () => {
     });
 
     describe('with explicity SQL statements', () => {
-      test('sets the SQL statements', () => {
+      test('sets the SQL statement', () => {
         // GIVEN
         rule.addTarget(new targets.RedshiftQuery(clusterArn, {
+          database: 'dev',
           sql: 'SELECT * FROM foo',
-          batchSQL: ['SELECT * FROM foo', 'SELECT * FROM bar'],
         }));
 
         // THEN
@@ -69,6 +72,27 @@ describe('RedshiftQuery event target', () => {
               RedshiftDataParameters: {
                 Database: 'dev',
                 Sql: 'SELECT * FROM foo',
+              },
+            },
+          ],
+        });
+      });
+
+      test('sets the batch SQL statements', () => {
+        // GIVEN
+        rule.addTarget(new targets.RedshiftQuery(clusterArn, {
+          database: 'dev',
+          batchSQL: ['SELECT * FROM foo', 'SELECT * FROM bar'],
+        }));
+
+        // THEN
+        Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
+          Targets: [
+            {
+              Arn: clusterArn,
+              Id: 'Target0',
+              RedshiftDataParameters: {
+                Database: 'dev',
                 Sqls: ['SELECT * FROM foo', 'SELECT * FROM bar'],
               },
             },
@@ -79,6 +103,7 @@ describe('RedshiftQuery event target', () => {
       test('creates a policy that has ExecuteStatement permission on the clusters ARN', () => {
         // GIVEN
         rule.addTarget(new targets.RedshiftQuery(clusterArn, {
+          database: 'dev',
           sql: 'SELECT * FROM foo',
         }));
 
@@ -100,6 +125,7 @@ describe('RedshiftQuery event target', () => {
       test('creates a policy that has BatchExecuteStatement permission on the clusters ARN', () => {
         // GIVEN
         rule.addTarget(new targets.RedshiftQuery(clusterArn, {
+          database: 'dev',
           batchSQL: ['SELECT * FROM foo', 'SELECT * FROM bar'],
         }));
 
@@ -117,32 +143,34 @@ describe('RedshiftQuery event target', () => {
           },
         });
       });
+    });
 
-      test('creates a policy that has both ExecuteStatement and BatchExecuteStatement permissions on the clusters ARN', () => {
-        // GIVEN
-        rule.addTarget(new targets.RedshiftQuery(clusterArn, {
-          sql: 'SELECT * FROM foo',
-          batchSQL: ['SELECT * FROM foo', 'SELECT * FROM bar'],
-        }));
+    describe('failures', () => {
+      test('throws an error if neither sql nor batchSQL is specified', () => {
+        expect(() => {
+          rule.addTarget(new targets.RedshiftQuery(clusterArn, {
+            database: 'dev',
+          }));
+        }).toThrow(/One of `sql` or `batchSQL` must be specified./);
+      });
 
+      test('throws an error if both sql and batchSQL are specified', () => {
         // THEN
-        Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
-          PolicyDocument: {
-            Statement: [
-              {
-                Action: 'redshift-data:ExecuteStatement',
-                Effect: 'Allow',
-                Resource: clusterArn,
-              },
-              {
-                Action: 'redshift-data:BatchExecuteStatement',
-                Effect: 'Allow',
-                Resource: clusterArn,
-              },
-            ],
-            Version: '2012-10-17',
-          },
-        });
+        expect(() => {
+          rule.addTarget(new targets.RedshiftQuery(clusterArn, {
+            database: 'dev',
+            sql: 'SELECT * FROM foo',
+            batchSQL: ['SELECT * FROM foo', 'SELECT * FROM bar'],
+          }));
+        }).toThrow(/Only one of `sql` or `batchSQL` can be specified, not both./);
+      });
+
+      test('throws an error if a database is not specified', () => {
+        expect(() => {
+          rule.addTarget(new targets.RedshiftQuery(clusterArn, {
+            sql: 'SELECT * FROM foo',
+          }));
+        }).toThrow(/A database must be specified./);
       });
     });
   });
