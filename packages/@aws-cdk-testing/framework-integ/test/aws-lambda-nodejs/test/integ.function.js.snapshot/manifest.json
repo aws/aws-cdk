@@ -1,28 +1,28 @@
 {
-  "version": "34.0.0",
+  "version": "36.0.0",
   "artifacts": {
-    "cdk-integ-lambda-nodejs.assets": {
+    "cdk-integ-lambda-nodejs-with-feature-flag-stack.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "cdk-integ-lambda-nodejs.assets.json",
+        "file": "cdk-integ-lambda-nodejs-with-feature-flag-stack.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "cdk-integ-lambda-nodejs": {
+    "cdk-integ-lambda-nodejs-with-feature-flag-stack": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "cdk-integ-lambda-nodejs.template.json",
+        "templateFile": "cdk-integ-lambda-nodejs-with-feature-flag-stack.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/07a365b98f3b3c282c678757a8e27ce272fd97f2401314bf098050da96ab09ca.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/47380fef2ebc694084d32ce396a7a48a6b066d0c19c9a305ae3515c2824dfedd.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "cdk-integ-lambda-nodejs.assets"
+          "cdk-integ-lambda-nodejs-with-feature-flag-stack.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -31,239 +31,287 @@
         }
       },
       "dependencies": [
-        "cdk-integ-lambda-nodejs.assets"
+        "cdk-integ-lambda-nodejs-with-feature-flag-stack.assets"
       ],
       "metadata": {
-        "/cdk-integ-lambda-nodejs/ts-handler/ServiceRole/Resource": [
+        "/cdk-integ-lambda-nodejs-with-feature-flag-stack/ts-handler/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "tshandlerServiceRole8876B8E7"
           }
         ],
-        "/cdk-integ-lambda-nodejs/ts-handler/Resource": [
+        "/cdk-integ-lambda-nodejs-with-feature-flag-stack/ts-handler/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "tshandler4E1C6929"
           }
         ],
-        "/cdk-integ-lambda-nodejs/ts-handler-log-level/ServiceRole/Resource": [
+        "/cdk-integ-lambda-nodejs-with-feature-flag-stack/ts-handler-log-level/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "tshandlerloglevelServiceRole8512BC45"
           }
         ],
-        "/cdk-integ-lambda-nodejs/ts-handler-log-level/Resource": [
+        "/cdk-integ-lambda-nodejs-with-feature-flag-stack/ts-handler-log-level/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "tshandlerloglevel0D4E12A5"
           }
         ],
-        "/cdk-integ-lambda-nodejs/js-handler/ServiceRole/Resource": [
+        "/cdk-integ-lambda-nodejs-with-feature-flag-stack/js-handler/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "jshandlerServiceRole781AF366"
           }
         ],
-        "/cdk-integ-lambda-nodejs/js-handler/Resource": [
+        "/cdk-integ-lambda-nodejs-with-feature-flag-stack/js-handler/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "jshandlerD8909241"
           }
         ],
-        "/cdk-integ-lambda-nodejs/Vpc/Resource": [
+        "/cdk-integ-lambda-nodejs-with-feature-flag-stack/Vpc/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "Vpc8378EB38"
           }
         ],
-        "/cdk-integ-lambda-nodejs/Vpc/PublicSubnet1/Subnet": [
+        "/cdk-integ-lambda-nodejs-with-feature-flag-stack/Vpc/PublicSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPublicSubnet1Subnet5C2D37C4"
           }
         ],
-        "/cdk-integ-lambda-nodejs/Vpc/PublicSubnet1/RouteTable": [
+        "/cdk-integ-lambda-nodejs-with-feature-flag-stack/Vpc/PublicSubnet1/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPublicSubnet1RouteTable6C95E38E"
           }
         ],
-        "/cdk-integ-lambda-nodejs/Vpc/PublicSubnet1/RouteTableAssociation": [
+        "/cdk-integ-lambda-nodejs-with-feature-flag-stack/Vpc/PublicSubnet1/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPublicSubnet1RouteTableAssociation97140677"
           }
         ],
-        "/cdk-integ-lambda-nodejs/Vpc/PublicSubnet1/DefaultRoute": [
+        "/cdk-integ-lambda-nodejs-with-feature-flag-stack/Vpc/PublicSubnet1/DefaultRoute": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPublicSubnet1DefaultRoute3DA9E72A"
           }
         ],
-        "/cdk-integ-lambda-nodejs/Vpc/PublicSubnet1/EIP": [
+        "/cdk-integ-lambda-nodejs-with-feature-flag-stack/Vpc/PublicSubnet1/EIP": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPublicSubnet1EIPD7E02669"
           }
         ],
-        "/cdk-integ-lambda-nodejs/Vpc/PublicSubnet1/NATGateway": [
+        "/cdk-integ-lambda-nodejs-with-feature-flag-stack/Vpc/PublicSubnet1/NATGateway": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPublicSubnet1NATGateway4D7517AA"
           }
         ],
-        "/cdk-integ-lambda-nodejs/Vpc/PublicSubnet2/Subnet": [
+        "/cdk-integ-lambda-nodejs-with-feature-flag-stack/Vpc/PublicSubnet2/Subnet": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPublicSubnet2Subnet691E08A3"
           }
         ],
-        "/cdk-integ-lambda-nodejs/Vpc/PublicSubnet2/RouteTable": [
+        "/cdk-integ-lambda-nodejs-with-feature-flag-stack/Vpc/PublicSubnet2/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPublicSubnet2RouteTable94F7E489"
           }
         ],
-        "/cdk-integ-lambda-nodejs/Vpc/PublicSubnet2/RouteTableAssociation": [
+        "/cdk-integ-lambda-nodejs-with-feature-flag-stack/Vpc/PublicSubnet2/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPublicSubnet2RouteTableAssociationDD5762D8"
           }
         ],
-        "/cdk-integ-lambda-nodejs/Vpc/PublicSubnet2/DefaultRoute": [
+        "/cdk-integ-lambda-nodejs-with-feature-flag-stack/Vpc/PublicSubnet2/DefaultRoute": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPublicSubnet2DefaultRoute97F91067"
           }
         ],
-        "/cdk-integ-lambda-nodejs/Vpc/PublicSubnet2/EIP": [
+        "/cdk-integ-lambda-nodejs-with-feature-flag-stack/Vpc/PublicSubnet2/EIP": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPublicSubnet2EIP3C605A87"
           }
         ],
-        "/cdk-integ-lambda-nodejs/Vpc/PublicSubnet2/NATGateway": [
+        "/cdk-integ-lambda-nodejs-with-feature-flag-stack/Vpc/PublicSubnet2/NATGateway": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPublicSubnet2NATGateway9182C01D"
           }
         ],
-        "/cdk-integ-lambda-nodejs/Vpc/PrivateSubnet1/Subnet": [
+        "/cdk-integ-lambda-nodejs-with-feature-flag-stack/Vpc/PrivateSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPrivateSubnet1Subnet536B997A"
           }
         ],
-        "/cdk-integ-lambda-nodejs/Vpc/PrivateSubnet1/RouteTable": [
+        "/cdk-integ-lambda-nodejs-with-feature-flag-stack/Vpc/PrivateSubnet1/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPrivateSubnet1RouteTableB2C5B500"
           }
         ],
-        "/cdk-integ-lambda-nodejs/Vpc/PrivateSubnet1/RouteTableAssociation": [
+        "/cdk-integ-lambda-nodejs-with-feature-flag-stack/Vpc/PrivateSubnet1/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPrivateSubnet1RouteTableAssociation70C59FA6"
           }
         ],
-        "/cdk-integ-lambda-nodejs/Vpc/PrivateSubnet1/DefaultRoute": [
+        "/cdk-integ-lambda-nodejs-with-feature-flag-stack/Vpc/PrivateSubnet1/DefaultRoute": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPrivateSubnet1DefaultRouteBE02A9ED"
           }
         ],
-        "/cdk-integ-lambda-nodejs/Vpc/PrivateSubnet2/Subnet": [
+        "/cdk-integ-lambda-nodejs-with-feature-flag-stack/Vpc/PrivateSubnet2/Subnet": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPrivateSubnet2Subnet3788AAA1"
           }
         ],
-        "/cdk-integ-lambda-nodejs/Vpc/PrivateSubnet2/RouteTable": [
+        "/cdk-integ-lambda-nodejs-with-feature-flag-stack/Vpc/PrivateSubnet2/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPrivateSubnet2RouteTableA678073B"
           }
         ],
-        "/cdk-integ-lambda-nodejs/Vpc/PrivateSubnet2/RouteTableAssociation": [
+        "/cdk-integ-lambda-nodejs-with-feature-flag-stack/Vpc/PrivateSubnet2/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPrivateSubnet2RouteTableAssociationA89CAD56"
           }
         ],
-        "/cdk-integ-lambda-nodejs/Vpc/PrivateSubnet2/DefaultRoute": [
+        "/cdk-integ-lambda-nodejs-with-feature-flag-stack/Vpc/PrivateSubnet2/DefaultRoute": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPrivateSubnet2DefaultRoute060D2087"
           }
         ],
-        "/cdk-integ-lambda-nodejs/Vpc/IGW": [
+        "/cdk-integ-lambda-nodejs-with-feature-flag-stack/Vpc/IGW": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcIGWD7BA715C"
           }
         ],
-        "/cdk-integ-lambda-nodejs/Vpc/VPCGW": [
+        "/cdk-integ-lambda-nodejs-with-feature-flag-stack/Vpc/VPCGW": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcVPCGWBF912B6E"
           }
         ],
-        "/cdk-integ-lambda-nodejs/ts-handler-vpc/ServiceRole/Resource": [
+        "/cdk-integ-lambda-nodejs-with-feature-flag-stack/ts-handler-vpc/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "tshandlervpcServiceRoleF6D326A3"
           }
         ],
-        "/cdk-integ-lambda-nodejs/ts-handler-vpc/SecurityGroup/Resource": [
+        "/cdk-integ-lambda-nodejs-with-feature-flag-stack/ts-handler-vpc/SecurityGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "tshandlervpcSecurityGroup587CC215"
           }
         ],
-        "/cdk-integ-lambda-nodejs/ts-handler-vpc/Resource": [
+        "/cdk-integ-lambda-nodejs-with-feature-flag-stack/ts-handler-vpc/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "tshandlervpcA502E26A"
           }
         ],
-        "/cdk-integ-lambda-nodejs/ts-handler-custom-handler-no-dots/ServiceRole/Resource": [
+        "/cdk-integ-lambda-nodejs-with-feature-flag-stack/ts-handler-custom-handler-no-dots/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "tshandlercustomhandlernodotsServiceRole1775E15E"
           }
         ],
-        "/cdk-integ-lambda-nodejs/ts-handler-custom-handler-no-dots/Resource": [
+        "/cdk-integ-lambda-nodejs-with-feature-flag-stack/ts-handler-custom-handler-no-dots/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "tshandlercustomhandlernodots381F62EE"
           }
         ],
-        "/cdk-integ-lambda-nodejs/ts-handler-custom-handler-dots/ServiceRole/Resource": [
+        "/cdk-integ-lambda-nodejs-with-feature-flag-stack/ts-handler-custom-handler-dots/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "tshandlercustomhandlerdotsServiceRole0575D3CB"
           }
         ],
-        "/cdk-integ-lambda-nodejs/ts-handler-custom-handler-dots/Resource": [
+        "/cdk-integ-lambda-nodejs-with-feature-flag-stack/ts-handler-custom-handler-dots/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "tshandlercustomhandlerdots2695F653"
           }
         ],
-        "/cdk-integ-lambda-nodejs/BootstrapVersion": [
+        "/cdk-integ-lambda-nodejs-with-feature-flag-stack/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/cdk-integ-lambda-nodejs/CheckBootstrapVersion": [
+        "/cdk-integ-lambda-nodejs-with-feature-flag-stack/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "cdk-integ-lambda-nodejs"
+      "displayName": "cdk-integ-lambda-nodejs-with-feature-flag-stack"
+    },
+    "cdkinteglambdanodejswithfeatureflagDefaultTestDeployAssert8096EB71.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "cdkinteglambdanodejswithfeatureflagDefaultTestDeployAssert8096EB71.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "cdkinteglambdanodejswithfeatureflagDefaultTestDeployAssert8096EB71": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "cdkinteglambdanodejswithfeatureflagDefaultTestDeployAssert8096EB71.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "cdkinteglambdanodejswithfeatureflagDefaultTestDeployAssert8096EB71.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "cdkinteglambdanodejswithfeatureflagDefaultTestDeployAssert8096EB71.assets"
+      ],
+      "metadata": {
+        "/cdk-integ-lambda-nodejs-with-feature-flag/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/cdk-integ-lambda-nodejs-with-feature-flag/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "cdk-integ-lambda-nodejs-with-feature-flag/DefaultTest/DeployAssert"
     },
     "Tree": {
       "type": "cdk:tree",

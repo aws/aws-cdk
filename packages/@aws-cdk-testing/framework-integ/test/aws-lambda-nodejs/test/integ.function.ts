@@ -5,7 +5,9 @@ import { LayerVersion } from 'aws-cdk-lib/aws-lambda';
 import { Aws, App, Stack, StackProps } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import * as lambda from 'aws-cdk-lib/aws-lambda-nodejs';
+import * as integ from '@aws-cdk/integ-tests-alpha';
 import { STANDARD_NODEJS_RUNTIME } from '../../config';
+import { NODEJS_FUNCTION_DEFAULT_AWS_SDK_CONNECTION_REUSE_TO_FALSE } from 'aws-cdk-lib/cx-api';
 
 class TestStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
@@ -86,5 +88,15 @@ class TestStack extends Stack {
 }
 
 const app = new App();
-new TestStack(app, 'cdk-integ-lambda-nodejs');
+new integ.IntegTest(app, 'cdk-integ-lambda-nodejs', {
+  testCases: [new TestStack(app, 'cdk-integ-lambda-nodejs-stack')],
+});
 app.synth();
+
+const appWithFeatureFlag = new App({
+  context: { [NODEJS_FUNCTION_DEFAULT_AWS_SDK_CONNECTION_REUSE_TO_FALSE]: true },
+});
+new integ.IntegTest(appWithFeatureFlag, 'cdk-integ-lambda-nodejs-with-feature-flag', {
+  testCases: [new TestStack(appWithFeatureFlag, 'cdk-integ-lambda-nodejs-with-feature-flag-stack')],
+});
+appWithFeatureFlag.synth();
