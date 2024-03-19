@@ -25,10 +25,11 @@ export function printStackDiff(
   context: number,
   quiet: boolean,
   changeSet?: CloudFormation.DescribeChangeSetOutput,
+  isImport?: boolean,
   stream: cfnDiff.FormatStream = process.stderr,
   nestedStackTemplates?: { [nestedStackLogicalId: string]: NestedStackTemplates }): number {
 
-  let diff = cfnDiff.fullDiff(oldTemplate, newTemplate.template, changeSet);
+  let diff = cfnDiff.fullDiff(oldTemplate, newTemplate.template, changeSet, isImport);
 
   // detect and filter out mangled characters from the diff
   let filteredChangesCount = 0;
@@ -82,6 +83,7 @@ export function printStackDiff(
       context,
       quiet,
       undefined,
+      isImport,
       stream,
       nestedStack.nestedStackTemplates,
     );

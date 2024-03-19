@@ -94,9 +94,10 @@ describe('imports', () => {
     fs.rmSync('migrate.json');
   });
 
-  test('imports', async () => {
+  test('imports render correctly for a nonexistant stack without creating a changeset', async () => {
     // GIVEN
     const buffer = new StringWritable();
+    cloudFormation.stackExists = jest.fn().mockReturnValue(Promise.resolve(false));
 
     // WHEN
     const exitCode = await toolkit.diff({
@@ -107,6 +108,34 @@ describe('imports', () => {
 
     // THEN
     const plainTextOutput = buffer.data.replace(/\x1B\[[0-?]*[ -/]*[@-~]/g, '');
+    expect(cfn.createDiffChangeSet).not.toHaveBeenCalled();
+    expect(plainTextOutput).toContain(`Stack A
+Parameters and rules created during migration do not affect resource configuration.
+Resources
+[←] AWS::SQS::Queue Queue import
+[←] AWS::SQS::Queue Queue2 import
+[←] AWS::S3::Bucket Bucket import
+`);
+
+    expect(buffer.data.trim()).toContain('✨  Number of stacks with differences: 1');
+    expect(exitCode).toBe(0);
+  });
+
+  test('imports render correctly for an existing stack and diff creates a changeset', async () => {
+    // GIVEN
+    const buffer = new StringWritable();
+    cloudFormation.stackExists = jest.fn().mockReturnValue(Promise.resolve(true));
+
+    // WHEN
+    const exitCode = await toolkit.diff({
+      stackNames: ['A'],
+      stream: buffer,
+      changeSet: true,
+    });
+
+    // THEN
+    const plainTextOutput = buffer.data.replace(/\x1B\[[0-?]*[ -/]*[@-~]/g, '');
+    expect(cfn.createDiffChangeSet).toHaveBeenCalled();
     expect(plainTextOutput).toContain(`Stack A
 Parameters and rules created during migration do not affect resource configuration.
 Resources
@@ -305,6 +334,24 @@ describe('non-nested stacks', () => {
     expect(buffer.data.trim()).not.toContain('Stack A');
     expect(buffer.data.trim()).not.toContain('There were no differences');
     expect(exitCode).toBe(0);
+  });
+
+  test('diff does not check for stack existence when --no-changeset is passed', async () => {
+    // GIVEN
+    const buffer = new StringWritable();
+
+    // WHEN
+    const exitCode = await toolkit.diff({
+      stackNames: ['A', 'A'],
+      stream: buffer,
+      fail: false,
+      quiet: true,
+      changeSet: false,
+    });
+
+    // THEN
+    expect(exitCode).toBe(0);
+    expect(cloudFormation.stackExists).not.toHaveBeenCalled();
   });
 });
 

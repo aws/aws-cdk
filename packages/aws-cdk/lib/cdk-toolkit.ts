@@ -139,20 +139,32 @@ export class CdkToolkit {
         throw new Error(`There is no file at ${options.templatePath}`);
       }
 
-      const changeSet = options.changeSet ? await createDiffChangeSet({
-        stack: stacks.firstStack,
-        uuid: uuid.v4(),
-        willExecute: false,
-        deployments: this.props.deployments,
-        sdkProvider: this.props.sdkProvider,
-        parameters: Object.assign({}, parameterMap['*'], parameterMap[stacks.firstStack.stackName]),
-        stream,
-      }) : undefined;
+      let changeSet = undefined;
+
+      if (options.changeSet) {
+        const stackExists = await this.props.deployments.stackExists({
+          stack: stacks.firstStack,
+          deployName: stacks.firstStack.stackName,
+        });
+        if (stackExists) {
+          changeSet = await createDiffChangeSet({
+            stack: stacks.firstStack,
+            uuid: uuid.v4(),
+            deployments: this.props.deployments,
+            willExecute: false,
+            sdkProvider: this.props.sdkProvider,
+            parameters: Object.assign({}, parameterMap['*'], parameterMap[stacks.firstStack.stackName]),
+            stream,
+          });
+        } else {
+          debug(`the stack '${stacks.firstStack.stackName}' has not been deployed to CloudFormation, skipping changeset creation.`);
+        }
+      }
 
       const template = deserializeStructure(await fs.readFile(options.templatePath, { encoding: 'UTF-8' }));
       diffs = options.securityOnly
         ? numberFromBool(printSecurityDiff(template, stacks.firstStack, RequireApproval.Broadening, changeSet))
-        : printStackDiff(template, stacks.firstStack.template, strict, contextLines, quiet, changeSet, stream);
+        : printStackDiff(template, stacks.firstStack.template, strict, contextLines, quiet, changeSet, false, stream);
     } else {
       // Compare N stacks against deployed templates
       for (const stack of stacks.stackArtifacts) {
@@ -171,16 +183,29 @@ export class CdkToolkit {
           removeNonImportResources(stack);
         }
 
-        const changeSet = options.changeSet ? await createDiffChangeSet({
-          stack,
-          uuid: uuid.v4(),
-          deployments: this.props.deployments,
-          willExecute: false,
-          sdkProvider: this.props.sdkProvider,
-          parameters: Object.assign({}, parameterMap['*'], parameterMap[stacks.firstStack.stackName]),
-          resourcesToImport,
-          stream,
-        }) : undefined;
+        let changeSet = undefined;
+
+        if (options.changeSet) {
+          // only perform this check if we're going to make a changeset. This check requires permissions that --no-changeset users might not have.
+          const stackExists = await this.props.deployments.stackExists({
+            stack: stack,
+            deployName: stack.stackName,
+          });
+          if (stackExists) {
+            changeSet = await createDiffChangeSet({
+              stack,
+              uuid: uuid.v4(),
+              deployments: this.props.deployments,
+              willExecute: false,
+              sdkProvider: this.props.sdkProvider,
+              parameters: Object.assign({}, parameterMap['*'], parameterMap[stack.stackName]),
+              resourcesToImport,
+              stream,
+            });
+          } else {
+            debug(`the stack '${stack.stackName}' has not been deployed to CloudFormation, skipping changeset creation.`);
+          }
+        }
 
         if (resourcesToImport) {
           stream.write('Parameters and rules created during migration do not affect resource configuration.\n');
@@ -189,7 +214,7 @@ export class CdkToolkit {
         const stackCount =
         options.securityOnly
           ? (numberFromBool(printSecurityDiff(currentTemplate, stack, RequireApproval.Broadening, changeSet)))
-          : (printStackDiff(currentTemplate, stack, strict, contextLines, quiet, changeSet, stream, nestedStacks));
+          : (printStackDiff(currentTemplate, stack, strict, contextLines, quiet, changeSet, !!resourcesToImport, stream, nestedStacks));
 
         diffs += stackCount;
       }
