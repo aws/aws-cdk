@@ -1052,13 +1052,14 @@ new ec2.VpcEndpointService(this, 'EndpointService', {
 });
 ```
 
-To include a service principal in the `allowedPrincipals`, there is a workaround where you can use a service principal string as input to the `ArnPrincipal` type. The resulting VPC endpoint will have an allowlisted principal of type `Service`, instead of `Arn` for that item in the list.
+You can also include a service principal in the `allowedPrincipals` property by specifying it as a parameter to the  `ArnPrincipal` constructor.
+The resulting VPC endpoint will have an allowlisted principal of type `Service`, instead of `Arn` for that item in the list.
 ```ts
 declare const networkLoadBalancer: elbv2.NetworkLoadBalancer;
 
 new ec2.VpcEndpointService(this, 'EndpointService', {
   vpcEndpointServiceLoadBalancers: [networkLoadBalancer],
-  allowedPrincipals: [new iam.ArnPrincipal('someservice.amazonaws.com')],
+  allowedPrincipals: [new iam.ArnPrincipal('ec2.amazonaws.com')],
 });
 ```
 
