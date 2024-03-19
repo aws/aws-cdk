@@ -15,7 +15,7 @@ interface ResourceProperties {
   DelegatedZoneName: string,
   DelegatedZoneNameServers: string[],
   TTL: number,
-  STSRegion?: string,
+  AssumeRoleRegion?: string,
 }
 
 export async function handler(event: CrossAccountZoneDelegationEvent) {
@@ -38,7 +38,7 @@ async function cfnUpdateEventHandler(props: ResourceProperties, oldProps: Resour
 }
 
 async function cfnEventHandler(props: ResourceProperties, isDeleteEvent: boolean) {
-  const { AssumeRoleArn, ParentZoneId, ParentZoneName, DelegatedZoneName, DelegatedZoneNameServers, TTL, STSRegion } = props;
+  const { AssumeRoleArn, ParentZoneId, ParentZoneName, DelegatedZoneName, DelegatedZoneNameServers, TTL, AssumeRoleRegion } = props;
 
   if (!ParentZoneId && !ParentZoneName) {
     throw Error('One of ParentZoneId or ParentZoneName must be specified');
@@ -48,7 +48,7 @@ async function cfnEventHandler(props: ResourceProperties, isDeleteEvent: boolean
   const route53 = new Route53({
     credentials: fromTemporaryCredentials({
       clientConfig: {
-        region: STSRegion ?? route53Region(process.env.AWS_REGION ?? process.env.AWS_DEFAULT_REGION ?? ''),
+        region: AssumeRoleRegion ?? route53Region(process.env.AWS_REGION ?? process.env.AWS_DEFAULT_REGION ?? ''),
       },
       params: {
         RoleArn: AssumeRoleArn,

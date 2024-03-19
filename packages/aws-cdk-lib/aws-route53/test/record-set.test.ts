@@ -811,7 +811,7 @@ describe('record set', () => {
     });
   });
 
-  testDeprecated('Cross account zone delegation record with stsRegion', () => {
+  test('Cross account zone delegation record with stsRegion', () => {
     // GIVEN
     const stack = new Stack();
     const parentZone = new route53.PublicHostedZone(stack, 'ParentHostedZone', {
@@ -829,7 +829,7 @@ describe('record set', () => {
       delegationRole: parentZone.crossAccountZoneDelegationRole!,
       ttl: Duration.seconds(60),
       removalPolicy: RemovalPolicy.RETAIN,
-      stsRegion: 'us-west-2',
+      assumeRoleRegion: 'fake-region-1',
     });
 
     // THEN
@@ -857,7 +857,7 @@ describe('record set', () => {
         ],
       },
       TTL: 60,
-      STSRegion: 'us-west-2',
+      AssumeRoleRegion: 'fake-region-1',
     });
     Template.fromStack(stack).hasResource('Custom::CrossAccountZoneDelegation', {
       DeletionPolicy: 'Retain',
