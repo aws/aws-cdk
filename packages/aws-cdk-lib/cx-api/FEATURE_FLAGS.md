@@ -66,7 +66,8 @@ Flags come in three types:
 | [@aws-cdk/aws-cloudwatch-actions:changeLambdaPermissionLogicalIdForLambdaAction](#aws-cdkaws-cloudwatch-actionschangelambdapermissionlogicalidforlambdaaction) | When enabled, the logical ID of a Lambda permission for a Lambda action includes an alarm ID. | 2.124.0 | (fix) |
 | [@aws-cdk/aws-codepipeline:crossAccountKeysDefaultValueToFalse](#aws-cdkaws-codepipelinecrossaccountkeysdefaultvaluetofalse) | Enables Pipeline to set the default value for crossAccountKeys to false. | 2.127.0 | (default) |
 | [@aws-cdk/aws-codepipeline:defaultPipelineTypeToV2](#aws-cdkaws-codepipelinedefaultpipelinetypetov2) | Enables Pipeline to set the default pipeline type to V2. | 2.133.0 | (default) |
-| [@aws-cdk/aws-lambda-nodejs:defaultAwsSdkConnectionReuseToFalse](#aws-cdkaws-lambdanodejsdefaultawssdkconnectionreusetofalse) | Set default value for awsSdkConnectionReuse to false | V2NEXT | (default) |
+| [@aws-cdk/aws-kms:reduceCrossAccountRegionPolicyScope](#aws-cdkaws-kmsreducecrossaccountregionpolicyscope) | When enabled, IAM Policy created from KMS key grant will reduce the resource scope to this key only. | V2NEXT | (fix) |
+| [@aws-cdk/aws-lambda-nodejs:defaultAwsSdkConnectionReuseToFalse](#aws-cdkaws-lambda-nodejsdefaultawssdkconnectionreusetofalse) | Change default value for awsSdkConnectionReuse to false. | V2NEXT | (default) |
 
 <!-- END table -->
 
@@ -1265,15 +1266,20 @@ When this feature flag is enabled and calling KMS key grant method, the created 
 | (not in v1) |  |  |
 | V2NEXT | `false` | `true` |
 
+
 ### @aws-cdk/aws-lambda-nodejs:defaultAwsSdkConnectionReuseToFalse
 
-*Set default value for awsSdkConnectionReuse to false.* (default)
+*Change default value for awsSdkConnectionReuse to false.* (default)
 
-When this feature flag is enabled, the default value for the `awsSdkConnectionReuse` property of the `NodejsFunction` construct is set to `false`.
+When this feature flag is enabled, and the `awsSdkConnectionReuse` property is not provided in a `NodejsFunction`
+construct, the construct automatically defaults the value of this property to false.
 
 | Since | Default | Recommended |
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
 | V2NEXT | `false` | `true` |
+
+**Compatibility with old behavior:** Pass `awsSdkConnectionReuse: true` to `NodejsFunction` construct to restore the previous behavior.
+
 
 <!-- END details -->
