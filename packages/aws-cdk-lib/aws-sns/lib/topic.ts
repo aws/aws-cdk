@@ -164,13 +164,14 @@ export class Topic extends TopicBase {
    * @param scope The parent creating construct
    * @param id The construct's name
    * @param topicArn topic ARN (i.e. arn:aws:sns:us-east-2:444455556666:MyTopic)
+   * @param contentBasedDeduplication If content-based deduplication is enabled
    */
-  public static fromTopicArn(scope: Construct, id: string, topicArn: string): ITopic {
+  public static fromTopicArn(scope: Construct, id: string, topicArn: string, contentBasedDeduplication?: boolean): ITopic {
     class Import extends TopicBase {
       public readonly topicArn = topicArn;
       public readonly topicName = Stack.of(scope).splitArn(topicArn, ArnFormat.NO_RESOURCE_NAME).resource;
       public readonly fifo = this.topicName.endsWith('.fifo');
-      public readonly contentBasedDeduplication = false;
+      public readonly contentBasedDeduplication = contentBasedDeduplication ?? false;
       protected autoCreatePolicy: boolean = false;
     }
 

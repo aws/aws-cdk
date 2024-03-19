@@ -455,6 +455,37 @@ describe('Topic', () => {
     expect(imported.fifo).toEqual(true);
   });
 
+  test('fromTopicArn contentBasedDeduplication true', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const topic = new sns.Topic(stack, 'MyTopic', {
+      topicName: 'MyTopic',
+      fifo: true,
+      contentBasedDeduplication: true,
+    });
+    const imported = sns.Topic.fromTopicArn(stack, 'Imported', topic.topicArn, true);
+
+    // THEN
+    expect(imported.contentBasedDeduplication).toEqual(true);
+  });
+
+  test('fromTopicArn contentBasedDeduplication not provided (false)', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const topic = new sns.Topic(stack, 'MyTopic', {
+      topicName: 'MyTopic',
+      fifo: true,
+    });
+    const imported = sns.Topic.fromTopicArn(stack, 'Imported', topic.topicArn);
+
+    // THEN
+    expect(imported.contentBasedDeduplication).toEqual(false);
+  });
+
   test('sets account for imported topic env', () => {
     // GIVEN
     const stack = new cdk.Stack();
