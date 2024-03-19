@@ -76,6 +76,16 @@ export interface TopicProps {
    * @default false
    */
   readonly enforceSSL?: boolean;
+
+  /**
+   * The signature version corresponds to the hashing algorithm used while creating the signature of the notifications,
+   * subscription confirmations, or unsubscribe confirmation messages sent by Amazon SNS.
+   *
+   * For more information, see https://docs.aws.amazon.com/sns/latest/dg/sns-verify-signature-of-message.html.
+   *
+   * @default 1
+   */
+  readonly signatureVersion?: string;
 }
 
 /**
@@ -173,6 +183,7 @@ export class Topic extends TopicBase {
   public readonly topicName: string;
   public readonly contentBasedDeduplication: boolean;
   public readonly fifo: boolean;
+  public readonly signatureVersion?: string;
 
   protected readonly autoCreatePolicy: boolean = true;
 
@@ -226,6 +237,7 @@ export class Topic extends TopicBase {
       kmsMasterKeyId: props.masterKey && props.masterKey.keyArn,
       contentBasedDeduplication: props.contentBasedDeduplication,
       fifoTopic: props.fifo,
+      signatureVersion: props.signatureVersion,
       deliveryStatusLogging: Lazy.any({ produce: () => this.renderLoggingConfigs() }, { omitEmptyArray: true }),
     });
 
@@ -236,6 +248,7 @@ export class Topic extends TopicBase {
     this.topicName = this.getResourceNameAttribute(resource.attrTopicName);
     this.fifo = props.fifo || false;
     this.contentBasedDeduplication = props.contentBasedDeduplication || false;
+    this.signatureVersion = props.signatureVersion;
   }
 
   private renderLoggingConfigs(): CfnTopic.LoggingConfigProperty[] {
