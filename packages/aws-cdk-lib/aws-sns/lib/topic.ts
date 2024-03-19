@@ -171,6 +171,7 @@ export class Topic extends TopicBase {
       public readonly topicName = Stack.of(scope).splitArn(topicArn, ArnFormat.NO_RESOURCE_NAME).resource;
       public readonly fifo = this.topicName.endsWith('.fifo');
       public readonly contentBasedDeduplication = false;
+      public readonly signatureVersion = '1';
       protected autoCreatePolicy: boolean = false;
     }
 

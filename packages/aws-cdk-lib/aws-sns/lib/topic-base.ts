@@ -40,6 +40,14 @@ export interface ITopic extends IResource, notifications.INotificationRuleTarget
   readonly fifo: boolean;
 
   /**
+   * Corresponds to the hashing algorithm used while creating the signature of the notifications,
+   * subscription confirmations, or unsubscribe confirmation messages sent by Amazon SNS.
+   *
+   * @attribute
+   */
+  readonly signatureVersion?: string;
+
+  /**
    * Subscribe some endpoint to this topic
    */
   addSubscription(subscription: ITopicSubscription): Subscription;
@@ -70,6 +78,8 @@ export abstract class TopicBase extends Resource implements ITopic {
   public abstract readonly fifo: boolean;
 
   public abstract readonly contentBasedDeduplication: boolean;
+
+  public abstract readonly signatureVersion?: string;
 
   /**
    * Controls automatic creation of policy objects.
