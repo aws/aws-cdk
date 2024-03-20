@@ -320,6 +320,7 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   public static readonly CODEARTIFACT_REPOSITORIES = new InterfaceVpcEndpointAwsService('codeartifact.repositories');
   public static readonly CODEBUILD = new InterfaceVpcEndpointAwsService('codebuild');
   public static readonly CODEBUILD_FIPS = new InterfaceVpcEndpointAwsService('codebuild-fips');
+  public static readonly CODECATALYST = new InterfaceVpcEndpointAwsService('codecatalyst', 'aws.api.global', undefined, true);
   public static readonly CODECATALYST_GIT = new InterfaceVpcEndpointAwsService('codecatalyst.git');
   public static readonly CODECATALYST_PACKAGES = new InterfaceVpcEndpointAwsService('codecatalyst.packages');
   public static readonly CODECOMMIT = new InterfaceVpcEndpointAwsService('codecommit');
@@ -484,7 +485,7 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   public static readonly ROBOMAKER = new InterfaceVpcEndpointAwsService('robomaker');
   public static readonly S3 = new InterfaceVpcEndpointAwsService('s3');
   public static readonly S3_OUTPOSTS = new InterfaceVpcEndpointAwsService('s3-outposts');
-  public static readonly S3_MULTI_REGION_ACCESS_POINTS = new InterfaceVpcEndpointAwsService('s3-global.accesspoint', 'com.amazonaws');
+  public static readonly S3_MULTI_REGION_ACCESS_POINTS = new InterfaceVpcEndpointAwsService('s3-global.accesspoint', 'com.amazonaws', undefined, true);
   public static readonly SAGEMAKER_API = new InterfaceVpcEndpointAwsService('sagemaker.api');
   public static readonly SAGEMAKER_FEATURESTORE_RUNTIME = new InterfaceVpcEndpointAwsService('sagemaker.featurestore-runtime');
   public static readonly SAGEMAKER_GEOSPATIAL = new InterfaceVpcEndpointAwsService('sagemaker-geospatial');
@@ -553,10 +554,10 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
    */
   public readonly privateDnsDefault?: boolean = true;
 
-  constructor(name: string, prefix?: string, port?: number) {
-    const region = Lazy.uncachedString({
+  constructor(name: string, prefix?: string, port?: number, global = false) {
+    const regionPrefix = global ? '' : (Lazy.uncachedString({
       produce: (context) => Stack.of(context.scope).region,
-    });
+    }) + '.');
     const defaultEndpointPrefix = Lazy.uncachedString({
       produce: (context) => {
         const regionName = Stack.of(context.scope).region;
@@ -570,7 +571,7 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
       },
     });
 
-    this.name = `${prefix || defaultEndpointPrefix}.${region}.${name}${defaultEndpointSuffix}`;
+    this.name = `${prefix || defaultEndpointPrefix}.${regionPrefix}${name}${defaultEndpointSuffix}`;
     this.shortName = name;
     this.port = port || 443;
   }
