@@ -4,6 +4,7 @@ import { Construct } from 'constructs';
 import * as amplify from '../lib';
 import { Asset } from 'aws-cdk-lib/aws-s3-assets';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
+import { NODEJS_FUNCTION_DEFAULT_AWS_SDK_CONNECTION_REUSE_TO_FALSE } from 'aws-cdk-lib/cx-api';
 
 class TestStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
@@ -18,7 +19,9 @@ class TestStack extends Stack {
   }
 }
 
-const app = new App();
+const app = new App({
+  context: { [NODEJS_FUNCTION_DEFAULT_AWS_SDK_CONNECTION_REUSE_TO_FALSE]: false },
+});
 const stack = new TestStack(app, 'cdk-amplify-app-asset-deployment');
 
 // Deploying the stack is sufficient to test the custom resources

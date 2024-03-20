@@ -7,8 +7,11 @@ import * as logs from 'aws-cdk-lib/aws-logs';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as cdk from 'aws-cdk-lib';
 import * as destinations from '../lib';
+import { NODEJS_FUNCTION_DEFAULT_AWS_SDK_CONNECTION_REUSE_TO_FALSE } from 'aws-cdk-lib/cx-api';
 
-const app = new cdk.App();
+const app = new cdk.App({
+  context: { [NODEJS_FUNCTION_DEFAULT_AWS_SDK_CONNECTION_REUSE_TO_FALSE]: false },
+});
 
 const stack = new cdk.Stack(app, 'aws-cdk-firehose-delivery-stream-s3-all-properties');
 
