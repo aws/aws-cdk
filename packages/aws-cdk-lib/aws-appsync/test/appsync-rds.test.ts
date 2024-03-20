@@ -1,7 +1,7 @@
 import * as path from 'path';
 import { Template } from '../../assertions';
 import { Vpc, SecurityGroup, SubnetType } from '../../aws-ec2';
-import { DatabaseSecret, DatabaseClusterEngine, AuroraMysqlEngineVersion, ServerlessCluster, DatabaseCluster, ClusterInstance } from '../../aws-rds';
+import { DatabaseSecret, DatabaseClusterEngine, AuroraMysqlEngineVersion, ServerlessCluster, DatabaseCluster, ClusterInstance, AuroraPostgresEngineVersion } from '../../aws-rds';
 import * as cdk from '../../core';
 import * as appsync from '../lib';
 
@@ -43,7 +43,7 @@ describe('Rds Data Source configuration', () => {
     });
 
     serverlessClusterV2 = new DatabaseCluster(stack, 'AuroraClusterV2', {
-      engine: DatabaseClusterEngine.auroraMysql({ version: AuroraMysqlEngineVersion.VER_3_06_0 }),
+      engine: DatabaseClusterEngine.auroraPostgres({ version: AuroraPostgresEngineVersion.VER_15_5 }),
       credentials: { username: 'clusteradmin' },
       clusterIdentifier: 'db-endpoint-test',
       writer: ClusterInstance.serverlessV2('writer'),
@@ -440,7 +440,7 @@ describe('adding rds data source from imported api', () => {
     });
 
     serverlessClusterV2 = new DatabaseCluster(stack, 'AuroraClusterV2', {
-      engine: DatabaseClusterEngine.auroraMysql({ version: AuroraMysqlEngineVersion.VER_3_06_0 }),
+      engine: DatabaseClusterEngine.auroraPostgres({ version: AuroraPostgresEngineVersion.VER_15_5 }),
       credentials: { username: 'clusteradmin' },
       clusterIdentifier: 'db-endpoint-test',
       writer: ClusterInstance.serverlessV2('writer'),
@@ -450,6 +450,7 @@ describe('adding rds data source from imported api', () => {
       vpcSubnets: { subnetType: SubnetType.PRIVATE_WITH_EGRESS },
       securityGroups: [securityGroup],
       defaultDatabaseName: 'Animals',
+      enableDataApi: true,
     });
   });
 

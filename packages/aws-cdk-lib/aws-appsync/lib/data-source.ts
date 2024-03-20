@@ -340,13 +340,33 @@ export class LambdaDataSource extends BackedDataSource {
 }
 
 /**
- * Properties for an AppSync RDS datasource
+ * Properties for an AppSync RDS datasource Aurora Serverless V1
  */
 export interface RdsDataSourceProps extends BackedDataSourceProps {
   /**
    * The serverless cluster to call to interact with this data source
    */
-  readonly serverlessCluster: IServerlessCluster | IDatabaseCluster;
+  readonly serverlessCluster: IServerlessCluster;
+  /**
+   * The secret containing the credentials for the database
+   */
+  readonly secretStore: ISecret;
+  /**
+   * The name of the database to use within the cluster
+   *
+   * @default - None
+   */
+  readonly databaseName?: string;
+}
+
+/**
+ * Properties for an AppSync RDS datasource Aurora Serverless V2
+ */
+export interface RdsDataSourcePropsV2 extends BackedDataSourceProps {
+  /**
+   * The serverless cluster to call to interact with this data source
+   */
+  readonly serverlessCluster: IDatabaseCluster;
   /**
    * The secret containing the credentials for the database
    */
@@ -363,7 +383,8 @@ export interface RdsDataSourceProps extends BackedDataSourceProps {
  * An AppSync datasource backed by RDS
  */
 export class RdsDataSource extends BackedDataSource {
-  constructor(scope: Construct, id: string, props: RdsDataSourceProps) {
+  constructor(scope: Construct, id: string, props: RdsDataSourceProps)
+  constructor(scope: Construct, id: string, props: RdsDataSourcePropsV2) {
     super(scope, id, props, {
       type: 'RELATIONAL_DATABASE',
       relationalDatabaseConfig: {
@@ -383,6 +404,7 @@ export class RdsDataSource extends BackedDataSource {
         relationalDatabaseSourceType: 'RDS_HTTP_ENDPOINT',
       },
     });
+
     const clusterArn = Stack.of(this).formatArn({
       service: 'rds',
       resource: `cluster:${props.serverlessCluster.clusterIdentifier}`,
