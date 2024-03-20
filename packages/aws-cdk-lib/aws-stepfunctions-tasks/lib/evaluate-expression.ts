@@ -26,7 +26,7 @@ export interface EvaluateExpressionProps extends sfn.TaskStateBaseProps {
   /**
    * This is the role that will be assumed by the function upon execution.
    *
-   * @default - a role will be automatically created
+   * @default a role will be automatically created
    */
   readonly role?: iam.IRole;
 }
