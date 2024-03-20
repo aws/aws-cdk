@@ -320,6 +320,8 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   public static readonly CODEARTIFACT_REPOSITORIES = new InterfaceVpcEndpointAwsService('codeartifact.repositories');
   public static readonly CODEBUILD = new InterfaceVpcEndpointAwsService('codebuild');
   public static readonly CODEBUILD_FIPS = new InterfaceVpcEndpointAwsService('codebuild-fips');
+  public static readonly CODECATALYST_GIT = new InterfaceVpcEndpointAwsService('codecatalyst.git');
+  public static readonly CODECATALYST_PACKAGES = new InterfaceVpcEndpointAwsService('codecatalyst.packages'); 
   public static readonly CODECOMMIT = new InterfaceVpcEndpointAwsService('codecommit');
   public static readonly CODECOMMIT_FIPS = new InterfaceVpcEndpointAwsService('codecommit-fips');
   public static readonly CODEDEPLOY = new InterfaceVpcEndpointAwsService('codedeploy');
@@ -397,6 +399,7 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   public static readonly IAM_ROLES_ANYWHERE = new InterfaceVpcEndpointAwsService('rolesanywhere');
   public static readonly IMAGE_BUILDER = new InterfaceVpcEndpointAwsService('imagebuilder');
   public static readonly INSPECTOR = new InterfaceVpcEndpointAwsService('inspector2');
+  public static readonly INSPECTOR_SCAN = new InterfaceVpcEndpointAwsService('inspector-scan');
   public static readonly IOT_CORE = new InterfaceVpcEndpointAwsService('iot.data');
   public static readonly IOT_CORE_CREDENTIALS = new InterfaceVpcEndpointAwsService('iot.credentials');
   public static readonly IOT_CORE_DEVICE_ADVISOR = new InterfaceVpcEndpointAwsService('deviceadvisor.iot');
@@ -477,12 +480,14 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   public static readonly REKOGNITION_FIPS = new InterfaceVpcEndpointAwsService('rekognition-fips');
   public static readonly REKOGNITION_STREAMING = new InterfaceVpcEndpointAwsService('streaming-rekognition');
   public static readonly REKOGNITION_STREAMING_FIPS = new InterfaceVpcEndpointAwsService('streaming-rekognition-fips');
+  public static readonly REPOST_SPACE = new InterfaceVpcEndpointAwsService('repostspace');
   public static readonly ROBOMAKER = new InterfaceVpcEndpointAwsService('robomaker');
   public static readonly S3 = new InterfaceVpcEndpointAwsService('s3');
   public static readonly S3_OUTPOSTS = new InterfaceVpcEndpointAwsService('s3-outposts');
   public static readonly S3_MULTI_REGION_ACCESS_POINTS = new InterfaceVpcEndpointAwsService('s3-global.accesspoint', 'com.amazonaws');
   public static readonly SAGEMAKER_API = new InterfaceVpcEndpointAwsService('sagemaker.api');
   public static readonly SAGEMAKER_FEATURESTORE_RUNTIME = new InterfaceVpcEndpointAwsService('sagemaker.featurestore-runtime');
+  public static readonly SAGEMAKER_GEOSPATIAL = new InterfaceVpcEndpointAwsService('sagemaker-geospatial');
   public static readonly SAGEMAKER_METRICS = new InterfaceVpcEndpointAwsService('sagemaker.metrics');
   public static readonly SAGEMAKER_NOTEBOOK = new InterfaceVpcEndpointAwsService('notebook', 'aws.sagemaker');
   public static readonly SAGEMAKER_RUNTIME = new InterfaceVpcEndpointAwsService('sagemaker.runtime');
