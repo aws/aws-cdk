@@ -1,0 +1,12 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "cdk-integ-lambda-nodejs-aws-sdk-connection-reuse/DefaultTest": {
+      "stacks": [
+        "cdk-integ-lambda-nodejs-aws-sdk-connection-reuse-stack"
+      ],
+      "assertionStack": "cdk-integ-lambda-nodejs-aws-sdk-connection-reuse/DefaultTest/DeployAssert",
+      "assertionStackName": "cdkinteglambdanodejsawssdkconnectionreuseDefaultTestDeployAssertD7C7F354"
+    }
+  }
+}

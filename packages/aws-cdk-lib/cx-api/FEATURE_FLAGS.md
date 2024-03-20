@@ -1274,6 +1274,7 @@ When this feature flag is enabled and calling KMS key grant method, the created 
 When this feature flag is enabled, and the `awsSdkConnectionReuse` property is not provided in a `NodejsFunction`
 construct, the construct automatically defaults the value of this property to false.
 
+
 | Since | Default | Recommended |
 | ----- | ----- | ----- |
 | (not in v1) |  |  |

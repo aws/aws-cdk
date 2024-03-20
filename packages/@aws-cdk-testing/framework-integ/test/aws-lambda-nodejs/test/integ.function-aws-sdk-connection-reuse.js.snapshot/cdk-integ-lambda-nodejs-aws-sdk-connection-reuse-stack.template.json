@@ -40,6 +40,11 @@
      },
      "S3Key": "5017e4b2e278e32bc634202d075b7ed8961b0d784f75450f7918a6a4f6f7df4a.zip"
     },
+    "Environment": {
+     "Variables": {
+      "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1"
+     }
+    },
     "Handler": "index.handler",
     "Role": {
      "Fn::GetAtt": [
@@ -92,6 +97,11 @@
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
      "S3Key": "5017e4b2e278e32bc634202d075b7ed8961b0d784f75450f7918a6a4f6f7df4a.zip"
+    },
+    "Environment": {
+     "Variables": {
+      "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1"
+     }
     },
     "Handler": "index.handler",
     "Role": {
@@ -146,6 +156,11 @@
      },
      "S3Key": "6c52cc5df44f0d18474ce4399377d62ee08c9b9cb11855fb95070dcd83a5a6ea.zip"
     },
+    "Environment": {
+     "Variables": {
+      "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1"
+     }
+    },
     "Handler": "index.handler",
     "Role": {
      "Fn::GetAtt": [
@@ -169,7 +184,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "cdk-integ-lambda-nodejs-with-feature-flag-stack/Vpc"
+      "Value": "cdk-integ-lambda-nodejs-aws-sdk-connection-reuse-stack/Vpc"
      }
     ]
    }
@@ -198,7 +213,7 @@
      },
      {
       "Key": "Name",
-      "Value": "cdk-integ-lambda-nodejs-with-feature-flag-stack/Vpc/PublicSubnet1"
+      "Value": "cdk-integ-lambda-nodejs-aws-sdk-connection-reuse-stack/Vpc/PublicSubnet1"
      }
     ],
     "VpcId": {
@@ -212,7 +227,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "cdk-integ-lambda-nodejs-with-feature-flag-stack/Vpc/PublicSubnet1"
+      "Value": "cdk-integ-lambda-nodejs-aws-sdk-connection-reuse-stack/Vpc/PublicSubnet1"
      }
     ],
     "VpcId": {
@@ -253,7 +268,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "cdk-integ-lambda-nodejs-with-feature-flag-stack/Vpc/PublicSubnet1"
+      "Value": "cdk-integ-lambda-nodejs-aws-sdk-connection-reuse-stack/Vpc/PublicSubnet1"
      }
     ]
    }
@@ -273,7 +288,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "cdk-integ-lambda-nodejs-with-feature-flag-stack/Vpc/PublicSubnet1"
+      "Value": "cdk-integ-lambda-nodejs-aws-sdk-connection-reuse-stack/Vpc/PublicSubnet1"
      }
     ]
    },
@@ -306,7 +321,7 @@
      },
      {
       "Key": "Name",
-      "Value": "cdk-integ-lambda-nodejs-with-feature-flag-stack/Vpc/PublicSubnet2"
+      "Value": "cdk-integ-lambda-nodejs-aws-sdk-connection-reuse-stack/Vpc/PublicSubnet2"
      }
     ],
     "VpcId": {
@@ -320,7 +335,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "cdk-integ-lambda-nodejs-with-feature-flag-stack/Vpc/PublicSubnet2"
+      "Value": "cdk-integ-lambda-nodejs-aws-sdk-connection-reuse-stack/Vpc/PublicSubnet2"
      }
     ],
     "VpcId": {
@@ -361,7 +376,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "cdk-integ-lambda-nodejs-with-feature-flag-stack/Vpc/PublicSubnet2"
+      "Value": "cdk-integ-lambda-nodejs-aws-sdk-connection-reuse-stack/Vpc/PublicSubnet2"
      }
     ]
    }
@@ -381,7 +396,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "cdk-integ-lambda-nodejs-with-feature-flag-stack/Vpc/PublicSubnet2"
+      "Value": "cdk-integ-lambda-nodejs-aws-sdk-connection-reuse-stack/Vpc/PublicSubnet2"
      }
     ]
    },
@@ -414,7 +429,7 @@
      },
      {
       "Key": "Name",
-      "Value": "cdk-integ-lambda-nodejs-with-feature-flag-stack/Vpc/PrivateSubnet1"
+      "Value": "cdk-integ-lambda-nodejs-aws-sdk-connection-reuse-stack/Vpc/PrivateSubnet1"
      }
     ],
     "VpcId": {
@@ -428,7 +443,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "cdk-integ-lambda-nodejs-with-feature-flag-stack/Vpc/PrivateSubnet1"
+      "Value": "cdk-integ-lambda-nodejs-aws-sdk-connection-reuse-stack/Vpc/PrivateSubnet1"
      }
     ],
     "VpcId": {
@@ -483,7 +498,7 @@
      },
      {
       "Key": "Name",
-      "Value": "cdk-integ-lambda-nodejs-with-feature-flag-stack/Vpc/PrivateSubnet2"
+      "Value": "cdk-integ-lambda-nodejs-aws-sdk-connection-reuse-stack/Vpc/PrivateSubnet2"
      }
     ],
     "VpcId": {
@@ -497,7 +512,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "cdk-integ-lambda-nodejs-with-feature-flag-stack/Vpc/PrivateSubnet2"
+      "Value": "cdk-integ-lambda-nodejs-aws-sdk-connection-reuse-stack/Vpc/PrivateSubnet2"
      }
     ],
     "VpcId": {
@@ -534,7 +549,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "cdk-integ-lambda-nodejs-with-feature-flag-stack/Vpc"
+      "Value": "cdk-integ-lambda-nodejs-aws-sdk-connection-reuse-stack/Vpc"
      }
     ]
    }
@@ -602,7 +617,7 @@
   "tshandlervpcSecurityGroup587CC215": {
    "Type": "AWS::EC2::SecurityGroup",
    "Properties": {
-    "GroupDescription": "Automatic security group for Lambda Function cdkinteglambdanodejswithfeatureflagstacktshandlervpcED96AF93",
+    "GroupDescription": "Automatic security group for Lambda Function cdkinteglambdanodejsawssdkconnectionreusestacktshandlervpcFBB4366A",
     "SecurityGroupEgress": [
      {
       "CidrIp": "0.0.0.0/0",
@@ -629,6 +644,11 @@
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
      "S3Key": "5fd5332ac0f100f1845842d79d110a7cf0957bd31419a7aabaedf8d3043ddf09.zip"
+    },
+    "Environment": {
+     "Variables": {
+      "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1"
+     }
     },
     "Handler": "index.handler",
     "Role": {
@@ -705,6 +725,11 @@
      },
      "S3Key": "5017e4b2e278e32bc634202d075b7ed8961b0d784f75450f7918a6a4f6f7df4a.zip"
     },
+    "Environment": {
+     "Variables": {
+      "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1"
+     }
+    },
     "Handler": "index.handler",
     "Role": {
      "Fn::GetAtt": [
@@ -757,6 +782,11 @@
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
      "S3Key": "e13d2f4e26b1586fe7e2b9f1ce013083dfee5fffc377061fa1489449fd8b0cc8.zip"
+    },
+    "Environment": {
+     "Variables": {
+      "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1"
+     }
     },
     "Handler": "ts-web.run.sh",
     "Layers": [

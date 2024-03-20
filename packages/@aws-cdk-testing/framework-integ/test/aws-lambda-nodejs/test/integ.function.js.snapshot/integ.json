@@ -1,12 +1,12 @@
 {
   "version": "36.0.0",
   "testCases": {
-    "cdk-integ-lambda-nodejs-with-feature-flag/DefaultTest": {
+    "cdk-integ-lambda-nodejs/DefaultTest": {
       "stacks": [
-        "cdk-integ-lambda-nodejs-with-feature-flag-stack"
+        "cdk-integ-lambda-nodejs-stack"
       ],
-      "assertionStack": "cdk-integ-lambda-nodejs-with-feature-flag/DefaultTest/DeployAssert",
-      "assertionStackName": "cdkinteglambdanodejswithfeatureflagDefaultTestDeployAssert8096EB71"
+      "assertionStack": "cdk-integ-lambda-nodejs/DefaultTest/DeployAssert",
+      "assertionStackName": "cdkinteglambdanodejsDefaultTestDeployAssert37BBCF7E"
     }
   }
 }
