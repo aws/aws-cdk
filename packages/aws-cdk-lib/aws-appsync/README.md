@@ -119,11 +119,9 @@ const cluster = new rds.DatabaseCluster(stack, 'AuroraClusterV2', {
     credentials: { username: 'clusteradmin' },
     clusterIdentifier: 'db-endpoint-test',
     writer: rds.ClusterInstance.serverlessV2('writer'),
-    reader: rds.ClusterInstance.serverlessV2('reader'),
     serverlessV2MinCapacity: 2,
     serverlessV2MaxCapacity: 10,
     vpc,
-    securityGroups: [securityGroup],
     defaultDatabaseName: 'demos',
     enableDataApi: true,  // has to be set to true to enable Data API as not enable by default
   });
