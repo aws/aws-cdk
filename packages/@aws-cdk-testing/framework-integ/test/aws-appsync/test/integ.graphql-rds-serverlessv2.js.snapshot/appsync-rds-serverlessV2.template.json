@@ -489,7 +489,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "e978ad4ad0dca7e1c6be5f49cbbd1c5a150ee050c24052fedfe5a42f835d55da.zip"
+     "S3Key": "ee7de53d64cc9d6248fa6aa550f92358f6c907b5efd6f3298aeab1b5e7ea358a.zip"
     },
     "Timeout": 900,
     "MemorySize": 128,
@@ -929,7 +929,7 @@
     "DataSourceName": "ds",
     "FieldName": "getPost",
     "Kind": "UNIT",
-    "RequestMappingTemplate": "{\n      \"version\": \"2018-05-29\",\n      \"statements\": [\n        \"SELECT * FROM Posts WHERE id = :id\"\n      ]\n    }",
+    "RequestMappingTemplate": "{\n      \"version\": \"2018-05-29\",\n      \"statements\": [\n        \"SELECT * FROM integdb WHERE id = :id\"\n      ]\n    }",
     "ResponseMappingTemplate": "\n        #if($ctx.error)\n            $utils.error($ctx.error.message, $ctx.error.type)\n        #end\n        $utils.toJson($utils.rds.toJsonObject($ctx.result)[0])",
     "TypeName": "Query"
    },
@@ -950,7 +950,7 @@
     "DataSourceName": "ds",
     "FieldName": "addPost",
     "Kind": "UNIT",
-    "RequestMappingTemplate": "\n    {\n      \"version\": \"2018-05-29\",\n      \"statements\": [\n        \"INSERT INTO Posts VALUES (:id, :author, :title, :content, :url )\",\n        \"SELECT * WHERE id = :id\"\n      ],\n      \"variableMap\": {\n        \":id\": $util.toJson($util.autoId()),\n        \":author\": $util.toJson($ctx.args.author)\n        \":title\": $util.toJson($ctx.args.title)\n        \":content\": $util.toJson($ctx.args.content)\n        \":url\": $util.toJson($ctx.args.url)\n      }\n    }",
+    "RequestMappingTemplate": "\n    {\n      \"version\": \"2018-05-29\",\n      \"statements\": [\n        \"INSERT INTO integdb VALUES (:id, :author, :title, :content, :url )\",\n        \"SELECT * WHERE id = :id\"\n      ],\n      \"variableMap\": {\n        \":id\": $util.toJson($util.autoId()),\n        \":author\": $util.toJson($ctx.args.author)\n        \":title\": $util.toJson($ctx.args.title)\n        \":content\": $util.toJson($ctx.args.content)\n        \":url\": $util.toJson($ctx.args.url)\n      }\n    }",
     "ResponseMappingTemplate": "\n        #if($ctx.error)\n            $utils.error($ctx.error.message, $ctx.error.type)\n        #end\n        $utils.toJson($utils.rds.toJsonObject($ctx.result)[0])",
     "TypeName": "Mutation"
    },

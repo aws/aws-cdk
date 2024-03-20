@@ -71,7 +71,7 @@ class TestStack extends cdk.Stack {
     const queryPostReqTemplate: string = `{
       "version": "2018-05-29",
       "statements": [
-        "SELECT * FROM Posts WHERE id = :id"
+        "SELECT * FROM integdb WHERE id = :id"
       ]
     }`;
 
@@ -94,7 +94,7 @@ class TestStack extends cdk.Stack {
     {
       "version": "2018-05-29",
       "statements": [
-        "INSERT INTO Posts VALUES (:id, :author, :title, :content, :url )",
+        "INSERT INTO integdb VALUES (:id, :author, :title, :content, :url )",
         "SELECT * WHERE id = :id"
       ],
       "variableMap": {

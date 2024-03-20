@@ -1353,7 +1353,7 @@
                         "dataSourceName": "ds",
                         "fieldName": "getPost",
                         "kind": "UNIT",
-                        "requestMappingTemplate": "{\n      \"version\": \"2018-05-29\",\n      \"statements\": [\n        \"SELECT * FROM Posts WHERE id = :id\"\n      ]\n    }",
+                        "requestMappingTemplate": "{\n      \"version\": \"2018-05-29\",\n      \"statements\": [\n        \"SELECT * FROM integdb WHERE id = :id\"\n      ]\n    }",
                         "responseMappingTemplate": "\n        #if($ctx.error)\n            $utils.error($ctx.error.message, $ctx.error.type)\n        #end\n        $utils.toJson($utils.rds.toJsonObject($ctx.result)[0])",
                         "typeName": "Query"
                       }
@@ -1388,7 +1388,7 @@
                         "dataSourceName": "ds",
                         "fieldName": "addPost",
                         "kind": "UNIT",
-                        "requestMappingTemplate": "\n    {\n      \"version\": \"2018-05-29\",\n      \"statements\": [\n        \"INSERT INTO Posts VALUES (:id, :author, :title, :content, :url )\",\n        \"SELECT * WHERE id = :id\"\n      ],\n      \"variableMap\": {\n        \":id\": $util.toJson($util.autoId()),\n        \":author\": $util.toJson($ctx.args.author)\n        \":title\": $util.toJson($ctx.args.title)\n        \":content\": $util.toJson($ctx.args.content)\n        \":url\": $util.toJson($ctx.args.url)\n      }\n    }",
+                        "requestMappingTemplate": "\n    {\n      \"version\": \"2018-05-29\",\n      \"statements\": [\n        \"INSERT INTO integdb VALUES (:id, :author, :title, :content, :url )\",\n        \"SELECT * WHERE id = :id\"\n      ],\n      \"variableMap\": {\n        \":id\": $util.toJson($util.autoId()),\n        \":author\": $util.toJson($ctx.args.author)\n        \":title\": $util.toJson($ctx.args.title)\n        \":content\": $util.toJson($ctx.args.content)\n        \":url\": $util.toJson($ctx.args.url)\n      }\n    }",
                         "responseMappingTemplate": "\n        #if($ctx.error)\n            $utils.error($ctx.error.message, $ctx.error.type)\n        #end\n        $utils.toJson($utils.rds.toJsonObject($ctx.result)[0])",
                         "typeName": "Mutation"
                       }
