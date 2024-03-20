@@ -28,7 +28,7 @@ const logGroup = new logs.LogGroup(stack, 'LogGroup', {
 const dataProcessorFunction = new lambdanodejs.NodejsFunction(stack, 'DataProcessorFunction', {
   entry: path.join(__dirname, 'lambda-data-processor.js'),
   timeout: cdk.Duration.minutes(1),
-  awsSdkConnectionReuse: false,
+  awsSdkConnectionReuse: true,
 });
 
 const processor = new firehose.LambdaFunctionProcessor(dataProcessorFunction, {
