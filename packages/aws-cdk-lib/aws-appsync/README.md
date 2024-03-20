@@ -94,6 +94,8 @@ AppSync provides a data source for executing SQL commands against Amazon Aurora
 Serverless clusters. You can use AppSync resolvers to execute SQL statements
 against the Data API with GraphQL queries, mutations, and subscriptions.
 
+#### Aurora Serverless V1 Cluster
+
 ```ts
 // Create username and password secret for DB Cluster
 const secret = new rds.DatabaseSecret(this, 'AuroraSecret', {
@@ -104,7 +106,6 @@ const secret = new rds.DatabaseSecret(this, 'AuroraSecret', {
 const vpc = new ec2.Vpc(this, 'AuroraVpc');
 
 // Create the serverless cluster, provide all values needed to customise the database.
-// if Aurora V1 Serverless
 const cluster = new rds.ServerlessCluster(this, 'AuroraCluster', {
   engine: rds.DatabaseClusterEngine.AURORA_MYSQL,
   vpc,
@@ -113,7 +114,62 @@ const cluster = new rds.ServerlessCluster(this, 'AuroraCluster', {
   defaultDatabaseName: 'demos',
 });
 
-// if Aurora V2 Serverless
+// Build a data source for AppSync to access the database.
+declare const api: appsync.GraphqlApi;
+const rdsDS = api.addRdsDataSource('rds', cluster, secret, 'demos');
+
+// Set up a resolver for an RDS query.
+rdsDS.createResolver('QueryGetDemosRdsResolver', {
+  typeName: 'Query',
+  fieldName: 'getDemosRds',
+  requestMappingTemplate: appsync.MappingTemplate.fromString(`
+  {
+    "version": "2018-05-29",
+    "statements": [
+      "SELECT * FROM demos"
+    ]
+  }
+  `),
+  responseMappingTemplate: appsync.MappingTemplate.fromString(`
+    $utils.toJson($utils.rds.toJsonObject($ctx.result)[0])
+  `),
+});
+
+// Set up a resolver for an RDS mutation.
+rdsDS.createResolver('MutationAddDemoRdsResolver', {
+  typeName: 'Mutation',
+  fieldName: 'addDemoRds',
+  requestMappingTemplate: appsync.MappingTemplate.fromString(`
+  {
+    "version": "2018-05-29",
+    "statements": [
+      "INSERT INTO demos VALUES (:id, :version)",
+      "SELECT * WHERE id = :id"
+    ],
+    "variableMap": {
+      ":id": $util.toJson($util.autoId()),
+      ":version": $util.toJson($ctx.args.version)
+    }
+  }
+  `),
+  responseMappingTemplate: appsync.MappingTemplate.fromString(`
+    $utils.toJson($utils.rds.toJsonObject($ctx.result)[1][0])
+  `),
+});
+```
+
+#### Aurora Serverless V2 Cluster
+
+```ts
+// Create username and password secret for DB Cluster
+const secret = new rds.DatabaseSecret(this, 'AuroraSecret', {
+  username: 'clusteradmin',
+});
+
+// The VPC to place the cluster in
+const vpc = new ec2.Vpc(this, 'AuroraVpc');
+
+// Create the serverless cluster, provide all values needed to customise the database.
 const cluster = new rds.DatabaseCluster(stack, 'AuroraClusterV2', {
     engine: rds.DatabaseClusterEngine.auroraPostgres({ version: rds.AuroraPostgresEngineVersion.VER_15_5 }),
     credentials: { username: 'clusteradmin' },
