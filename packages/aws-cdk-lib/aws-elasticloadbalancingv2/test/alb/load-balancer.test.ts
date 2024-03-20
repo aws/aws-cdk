@@ -83,6 +83,7 @@ describe('tests', () => {
       idleTimeout: cdk.Duration.seconds(1000),
       dropInvalidHeaderFields: true,
       clientKeepAlive: cdk.Duration.seconds(200),
+      denyAllIgwTraffic: true,
     });
 
     // THEN
@@ -90,6 +91,10 @@ describe('tests', () => {
       LoadBalancerAttributes: [
         {
           Key: 'deletion_protection.enabled',
+          Value: 'true',
+        },
+        {
+          Key: 'ipv6.deny_all_igw_traffic',
           Value: 'true',
         },
         {
