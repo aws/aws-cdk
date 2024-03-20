@@ -104,6 +104,7 @@ const secret = new rds.DatabaseSecret(this, 'AuroraSecret', {
 const vpc = new ec2.Vpc(this, 'AuroraVpc');
 
 // Create the serverless cluster, provide all values needed to customise the database.
+// if Aurora V1 Serverless
 const cluster = new rds.ServerlessCluster(this, 'AuroraCluster', {
   engine: rds.DatabaseClusterEngine.AURORA_MYSQL,
   vpc,
@@ -111,6 +112,21 @@ const cluster = new rds.ServerlessCluster(this, 'AuroraCluster', {
   clusterIdentifier: 'db-endpoint-test',
   defaultDatabaseName: 'demos',
 });
+
+// if Aurora V2 Serverless
+const cluster = new rds.DatabaseCluster(stack, 'AuroraClusterV2', {
+    engine: rds.DatabaseClusterEngine.auroraPostgres({ version: rds.AuroraPostgresEngineVersion.VER_15_5 }),
+    credentials: { username: 'clusteradmin' },
+    clusterIdentifier: 'db-endpoint-test',
+    writer: rds.ClusterInstance.serverlessV2('writer'),
+    reader: rds.ClusterInstance.serverlessV2('reader'),
+    serverlessV2MinCapacity: 2,
+    serverlessV2MaxCapacity: 10,
+    vpc,
+    securityGroups: [securityGroup],
+    defaultDatabaseName: 'demos',
+    enableDataApi: true,  // has to be set to true to enable Data API as not enable by default
+  });
 
 // Build a data source for AppSync to access the database.
 declare const api: appsync.GraphqlApi;
