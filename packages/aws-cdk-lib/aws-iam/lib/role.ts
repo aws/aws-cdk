@@ -6,7 +6,7 @@ import { IManagedPolicy, ManagedPolicy } from './managed-policy';
 import { Policy } from './policy';
 import { PolicyDocument } from './policy-document';
 import { PolicyStatement } from './policy-statement';
-import { AddToPrincipalPolicyResult, ArnPrincipal, IPrincipal, PrincipalPolicyFragment } from './principals';
+import { AccountPrincipal, AddToPrincipalPolicyResult, ArnPrincipal, IPrincipal, PrincipalPolicyFragment, ServicePrincipal } from './principals';
 import { defaultAddPrincipalToAssumeRole } from './private/assume-role-policy';
 import { ImmutableRole } from './private/immutable-role';
 import { ImportedRole } from './private/imported-role';
@@ -594,9 +594,9 @@ export class Role extends Resource implements IRole {
    * Grant permissions to the given principal to assume this role.
    */
   public grantAssumeRole(identity: IPrincipal) {
-    // Service Principals must use assumeRolePolicy
-    if (identity.policyFragment.principalJson.Service) {
-      throw new Error('Cannot use a Service Principal with grantAssumeRole, use assumeRolePolicy instead.');
+    // Service and account principals must use assumeRolePolicy
+    if (identity instanceof ServicePrincipal || identity instanceof AccountPrincipal) {
+      throw new Error('Cannot use a service or account principal with grantAssumeRole, use assumeRolePolicy instead.');
     }
     return this.grant(identity, 'sts:AssumeRole');
   }

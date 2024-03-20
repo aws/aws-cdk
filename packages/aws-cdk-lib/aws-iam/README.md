@@ -369,9 +369,11 @@ new iam.Role(this, 'Role', {
 });
 ```
 
-### Granting assume role permission from a role
+### Granting an identity permission to assume a role
 
-Principals can be granted permission to assume a role using `grantAssumeRole`.  Note that this does not apply to Service Principals or Account Principals as they must be added to the role Trust Policy.
+An identity can be granted permission to assume a role using `grantAssumeRole`.
+
+Note that this does not apply to service principals or account principals as they must be added to the role trust policy.
 
 ```ts
 const user = new iam.User(this, 'user')
@@ -382,9 +384,9 @@ const role = new iam.Role(this, 'role', {
 role.grantAssumeRole(user);
 ```
 
-### Giving Service Principals and Account Principals assume role permission from a role
+### Granting service and account principals permission to assume a role
 
-Service Principals and Account Principals can be granted permission to assume a role using `assumeRolePolicy` which modifies the role Trust Policy.
+Service srincipals and account principals can be granted permission to assume a role using `assumeRolePolicy` which modifies the role trust policy.
 
 ```ts
 const role = new iam.Role(this, 'role', {
