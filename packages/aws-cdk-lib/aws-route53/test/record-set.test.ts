@@ -188,6 +188,34 @@ describe('record set', () => {
     });
   });
 
+  test('A record with imported alias', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    const zone = new route53.HostedZone(stack, 'HostedZone', {
+      zoneName: 'myzone',
+    });
+
+    // WHEN
+    route53.ARecord.fromArecordAttributes(zone, 'Alias', {
+      zone,
+      target: 'foo1.example.com',
+      recordName: '_foo',
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Route53::RecordSet', {
+      Name: '_foo.myzone.',
+      Type: 'A',
+      AliasTarget: {
+        DNSName: 'foo1.example.com',
+        HostedZoneId: {
+          Ref: 'HostedZoneDB99F866',
+        },
+      },
+    });
+  });
+
   test('AAAA record with ip addresses', () => {
     // GIVEN
     const stack = new Stack();
