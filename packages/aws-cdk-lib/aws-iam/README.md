@@ -369,11 +369,11 @@ new iam.Role(this, 'Role', {
 });
 ```
 
-### Granting an identity permission to assume a role
+### Granting a principal permission to assume a role
 
-An identity can be granted permission to assume a role using `grantAssumeRole`.
+A principal can be granted permission to assume a role using `grantAssumeRole`.
 
-Note that this does not apply to service principals or account principals as they must be added to the role trust policy.
+Note that this does not apply to service principals or account principals as they must be added to the role trust policy via `assumeRolePolicy`.
 
 ```ts
 const user = new iam.User(this, 'user')
