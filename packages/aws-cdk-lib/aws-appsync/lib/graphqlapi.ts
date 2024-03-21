@@ -706,6 +706,7 @@ export class GraphqlApi extends GraphqlApiBase {
         description: sourceApiConfig.description,
       });
 
+      // Add dependency because the schema must be created first to create the source api association.
       sourceApiConfig.sourceApi.addSchemaDependency(association);
 
       // Add permissions to merged api execution role
