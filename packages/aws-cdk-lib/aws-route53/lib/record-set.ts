@@ -472,7 +472,7 @@ export class ARecord extends RecordSet {
    * @param attrs the ARecordAttributes (Target Arecord DNS name and HostedZone)
    * @returns AWS::Route53::RecordSet of type A with target alias set to existing A record
    */
-  public static fromArecordAttributes(scope: Construct, id: string, attrs: ARecordAttrs): ARecord {
+  public static fromARecordAttributes(scope: Construct, id: string, attrs: ARecordAttrs): ARecord {
     const aliasTarget = RecordTarget.fromAlias(new ImportARecordAsTarget(attrs));
     return new ARecord(scope, id, {
       ...attrs,

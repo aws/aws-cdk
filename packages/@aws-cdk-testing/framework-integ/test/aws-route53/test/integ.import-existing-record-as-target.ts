@@ -21,7 +21,7 @@ const target = new ARecord(stack, 'AManual', {
   recordName: 'existing.test.record',
   target: RecordTarget.fromIpAddresses('192.0.1.1'),
 });
-const Arecord = ARecord.fromArecordAttributes(stack, 'A', {
+const Arecord = ARecord.fromARecordAttributes(stack, 'A', {
   zone: privateZone,
   recordName: 'r53-integ-test',
   target: 'existing.test.record.cdk.local',

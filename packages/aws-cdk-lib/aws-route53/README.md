@@ -110,9 +110,9 @@ To create an A record of type alias with target set to another record created ou
 ```ts
 
 declare const myZone: route53.HostedZone;
-declare const targetRecord = 'existing.record.cdk.local';
-route53.Arecord.fromArecordAttributes(stack, 'A', {
-  zone: privateZone,
+const targetRecord = 'existing.record.cdk.local';
+route53.ARecord.fromARecordAttributes(Stack, 'A', {
+  zone: myZone,
   recordName: 'test',
   target: targetRecord,
 });
