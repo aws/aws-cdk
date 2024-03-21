@@ -1,6 +1,6 @@
 import { WebSocketLambdaIntegration } from './../../lib/websocket/lambda';
 import { Template } from '../../../assertions';
-import { WebSocketApi } from '../../../aws-apigatewayv2';
+import { ContentHandling, WebSocketApi } from '../../../aws-apigatewayv2';
 import { Code, Function } from '../../../aws-lambda';
 import * as lambda from '../../../aws-lambda';
 import { Duration, Stack } from '../../../core';
@@ -49,7 +49,7 @@ describe('LambdaWebSocketIntegration', () => {
     });
   });
 
-  test('can set a custom timeout', () => {
+  test('can set custom properties', () => {
     // GIVEN
     const stack = new Stack();
     const fooFn = fooFunction(stack, 'Fn');
@@ -60,7 +60,10 @@ describe('LambdaWebSocketIntegration', () => {
         integration: new WebSocketLambdaIntegration(
           'Integration',
           fooFn,
-          { timeout: Duration.seconds(10) },
+          {
+            timeout: Duration.seconds(10),
+            contentHandling: ContentHandling.CONVERT_TO_TEXT,
+          },
         ),
       },
     });
@@ -70,6 +73,7 @@ describe('LambdaWebSocketIntegration', () => {
       IntegrationType: 'AWS_PROXY',
       IntegrationUri,
       TimeoutInMillis: 10000,
+      ContentHandlingStrategy: 'CONVERT_TO_TEXT',
     });
   });
 });

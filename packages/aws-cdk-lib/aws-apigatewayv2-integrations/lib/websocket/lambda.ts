@@ -3,6 +3,7 @@ import {
   WebSocketIntegrationType,
   WebSocketRouteIntegrationBindOptions,
   WebSocketRouteIntegrationConfig,
+  ContentHandling,
 } from '../../../aws-apigatewayv2';
 import { ServicePrincipal } from '../../../aws-iam';
 import { IFunction } from '../../../aws-lambda';
@@ -19,6 +20,14 @@ export interface WebSocketLambdaIntegrationProps {
    * @default Duration.seconds(29)
    */
   readonly timeout?: Duration;
+
+  /**
+   * Specifies how to handle response payload content type conversions.
+   *
+   * @default - The response payload will be passed through from the integration response to
+   * the route response or method response without modification.
+   */
+  readonly contentHandling?: ContentHandling;
 }
 
 /**
@@ -65,6 +74,8 @@ export class WebSocketLambdaIntegration extends WebSocketRouteIntegration {
       type: WebSocketIntegrationType.AWS_PROXY,
       uri: integrationUri,
       timeout: this.props.timeout,
+
+      contentHandling: this.props.contentHandling,
     };
   }
 }

@@ -431,6 +431,7 @@
     "ApiId": {
      "Ref": "mywsapi32E6CE11"
     },
+    "ContentHandlingStrategy": "CONVERT_TO_TEXT",
     "IntegrationType": "AWS_PROXY",
     "IntegrationUri": {
      "Fn::Join": [
