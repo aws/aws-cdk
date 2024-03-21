@@ -24,6 +24,14 @@ export interface WebSocketAwsIntegrationProps {
   readonly integrationMethod: string;
 
   /**
+   * Specifies how to handle response payload content type conversions.
+   *
+   * @default - The response payload will be passed through from the integration response to
+   * the route response or method response without modification.
+   */
+  readonly contentHandling?: ContentHandling;
+
+  /**
    * Specifies the credentials role required for the integration.
    *
    * @default - No credential role provided.
@@ -76,14 +84,6 @@ export interface WebSocketAwsIntegrationProps {
    * @default - No passthrough behavior required.
    */
   readonly passthroughBehavior?: PassthroughBehavior;
-
-  /**
-   * Specifies how to handle response payload content type conversions.
-   *
-   * @default - The response payload will be passed through from the integration response to
-   * the route response or method response without modification.
-   */
-  readonly contentHandling?: ContentHandling;
 }
 
 /**
@@ -102,11 +102,11 @@ export class WebSocketAwsIntegration extends WebSocketRouteIntegration {
       type: WebSocketIntegrationType.AWS,
       uri: this.props.integrationUri,
       method: this.props.integrationMethod,
+      contentHandling: this.props.contentHandling,
       credentialsRole: this.props.credentialsRole,
       requestParameters: this.props.requestParameters,
       requestTemplates: this.props.requestTemplates,
       passthroughBehavior: this.props.passthroughBehavior,
-      contentHandling: this.props.contentHandling,
       templateSelectionExpression: this.props.templateSelectionExpression,
       timeout: this.props.timeout,
     };
