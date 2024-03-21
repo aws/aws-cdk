@@ -74,7 +74,6 @@ export class WebSocketLambdaIntegration extends WebSocketRouteIntegration {
       type: WebSocketIntegrationType.AWS_PROXY,
       uri: integrationUri,
       timeout: this.props.timeout,
-
       contentHandling: this.props.contentHandling,
     };
   }
