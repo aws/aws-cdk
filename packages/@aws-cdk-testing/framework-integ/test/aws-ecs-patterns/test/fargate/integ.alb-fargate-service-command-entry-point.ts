@@ -15,9 +15,9 @@ const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 2, restrictDefaultSecurityGroup:
 const cluster = new ecs.Cluster(stack, 'TestFargateCluster', { vpc });
 const securityGroup = new ec2.SecurityGroup(stack, 'SecurityGroup', {
   vpc,
-  allowAllOutbound: true,
+  allowAllOutbound: false,
 });
-securityGroup.addIngressRule(ec2.Peer.anyIpv4(), ec2.Port.tcpRange(32768, 65535));
+securityGroup.addIngressRule(ec2.Peer.anyIpv4(), ec2.Port.tcp(80));
 
 // Create ALB service with Command and EntryPoint
 const applicationLoadBalancedFargateService = new ecsPatterns.ApplicationLoadBalancedFargateService(

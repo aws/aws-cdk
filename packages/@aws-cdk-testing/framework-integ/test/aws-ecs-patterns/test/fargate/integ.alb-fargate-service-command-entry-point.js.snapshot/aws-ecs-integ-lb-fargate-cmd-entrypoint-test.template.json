@@ -398,25 +398,39 @@
    "Type": "AWS::EC2::SecurityGroup",
    "Properties": {
     "GroupDescription": "aws-ecs-integ-lb-fargate-cmd-entrypoint-test/SecurityGroup",
-    "SecurityGroupEgress": [
-     {
-      "CidrIp": "0.0.0.0/0",
-      "Description": "Allow all outbound traffic by default",
-      "IpProtocol": "-1"
-     }
-    ],
     "SecurityGroupIngress": [
      {
       "CidrIp": "0.0.0.0/0",
-      "Description": "from 0.0.0.0/0:32768-65535",
-      "FromPort": 32768,
+      "Description": "from 0.0.0.0/0:80",
+      "FromPort": 80,
       "IpProtocol": "tcp",
-      "ToPort": 65535
+      "ToPort": 80
      }
     ],
     "VpcId": {
      "Ref": "Vpc8378EB38"
     }
+   }
+  },
+  "SecurityGrouptoawsecsinteglbfargatecmdentrypointtestALBFargateServiceWithCommandAndEntryPointServiceSecurityGroup6D1E5F1180E99BF818": {
+   "Type": "AWS::EC2::SecurityGroupEgress",
+   "Properties": {
+    "Description": "Load balancer to target",
+    "DestinationSecurityGroupId": {
+     "Fn::GetAtt": [
+      "ALBFargateServiceWithCommandAndEntryPointServiceSecurityGroupD154E880",
+      "GroupId"
+     ]
+    },
+    "FromPort": 80,
+    "GroupId": {
+     "Fn::GetAtt": [
+      "SecurityGroupDD263621",
+      "GroupId"
+     ]
+    },
+    "IpProtocol": "tcp",
+    "ToPort": 80
    }
   },
   "ALBFargateServiceWithCommandAndEntryPointLB353EA7CA": {
