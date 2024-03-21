@@ -75,6 +75,33 @@ describe('vpc endpoint service', () => {
 
     });
 
+    test('create endpoint service with a service principal (workaround)', () => {
+      // GIVEN
+      const stack = new Stack();
+
+      // WHEN
+      const lb = new DummyEndpointLoadBalacer('arn:aws:elasticloadbalancing:us-east-1:123456789012:loadbalancer/net/Test/9bn6qkf4e9jrw77a');
+      new VpcEndpointService(stack, 'EndpointService', {
+        vpcEndpointServiceLoadBalancers: [lb],
+        acceptanceRequired: false,
+        allowedPrincipals: [new ArnPrincipal('ec2.amazonaws.com')],
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPCEndpointService', {
+        NetworkLoadBalancerArns: ['arn:aws:elasticloadbalancing:us-east-1:123456789012:loadbalancer/net/Test/9bn6qkf4e9jrw77a'],
+        AcceptanceRequired: false,
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPCEndpointServicePermissions', {
+        ServiceId: {
+          Ref: 'EndpointServiceED36BE1F',
+        },
+        AllowedPrincipals: ['ec2.amazonaws.com'],
+      });
+
+    });
+
     test('with acceptance required', () => {
       // GIVEN
       const stack = new Stack();
