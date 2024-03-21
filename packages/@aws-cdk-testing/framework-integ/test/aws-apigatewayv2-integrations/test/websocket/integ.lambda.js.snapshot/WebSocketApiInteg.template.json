@@ -454,7 +454,8 @@
        "/invocations"
       ]
      ]
-    }
+    },
+    "TimeoutInMillis": 10000
    }
   },
   "mywsapidefaultRouteE9382DF8": {

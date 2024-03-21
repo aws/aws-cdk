@@ -1,5 +1,5 @@
 {
-  "version": "34.0.0",
+  "version": "36.0.0",
   "artifacts": {
     "WebSocketApiInteg.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/fa386136122b6cd106460ddbdcd437d10712be61617b8d1bf2110a459aa9e233.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a375a1b42c144b1a87ed46ada116a51c8c249ac8f08df1f08fce63e4f55eb894.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -91,10 +91,7 @@
         "/WebSocketApiInteg/mywsapi/$connect-Route/ConnectIntegration-Permission": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "mywsapiconnectRouteConnectIntegrationPermission719B6E63",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "mywsapiconnectRouteConnectIntegrationPermission719B6E63"
           }
         ],
         "/WebSocketApiInteg/mywsapi/$connect-Route/ConnectIntegration/Resource": [
@@ -112,10 +109,7 @@
         "/WebSocketApiInteg/mywsapi/$disconnect-Route/DisconnectIntegration-Permission": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "mywsapidisconnectRouteDisconnectIntegrationPermissionA8197C41",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "mywsapidisconnectRouteDisconnectIntegrationPermissionA8197C41"
           }
         ],
         "/WebSocketApiInteg/mywsapi/$disconnect-Route/DisconnectIntegration/Resource": [
@@ -133,10 +127,7 @@
         "/WebSocketApiInteg/mywsapi/$default-Route/DefaultIntegration-Permission": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "mywsapidefaultRouteDefaultIntegrationPermission3B7F9CA1",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "mywsapidefaultRouteDefaultIntegrationPermission3B7F9CA1"
           }
         ],
         "/WebSocketApiInteg/mywsapi/$default-Route/DefaultIntegration/Resource": [
@@ -154,10 +145,7 @@
         "/WebSocketApiInteg/mywsapi/sendmessage-Route/SendMessageIntegration-Permission": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "mywsapisendmessageRouteSendMessageIntegrationPermission92C9841E",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "mywsapisendmessageRouteSendMessageIntegrationPermission92C9841E"
           }
         ],
         "/WebSocketApiInteg/mywsapi/sendmessage-Route/SendMessageIntegration/Resource": [
