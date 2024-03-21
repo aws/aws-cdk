@@ -2,6 +2,31 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.134.0](https://github.com/aws/aws-cdk/compare/v2.133.0...v2.134.0) (2024-03-21)
+
+
+### Features
+
+* update L1 CloudFormation resource definitions ([#29569](https://github.com/aws/aws-cdk/issues/29569)) ([c9fb4f7](https://github.com/aws/aws-cdk/commit/c9fb4f739f3aacf669cdd38b8431695811be5e92))
+* **appsync:** queryDepthLimit and resolverCountLimit props on GraphqlApi ([#29182](https://github.com/aws/aws-cdk/issues/29182)) ([ba6d0b3](https://github.com/aws/aws-cdk/commit/ba6d0b3ec3fba2ac5a704022bcbe6a3ba6f7dff3))
+* **cli:** warn of non-existent stacks in `cdk destroy` ([#27921](https://github.com/aws/aws-cdk/issues/27921)) ([f0d1d67](https://github.com/aws/aws-cdk/commit/f0d1d675c7ca6575f953a446a86185cc20122a91)), closes [#27179](https://github.com/aws/aws-cdk/issues/27179)
+* **codepipeline-actions:** show status reason in the pipeline for failed change set executions ([#29534](https://github.com/aws/aws-cdk/issues/29534)) ([6d16337](https://github.com/aws/aws-cdk/commit/6d16337c9faed12716697a3b3af2a2be259b21b0))
+* **elasticloadbalancingv2:** `denyAllIgwTraffic` and `clientRoutingPolicy` for NLB ([#29521](https://github.com/aws/aws-cdk/issues/29521)) ([7fe8ad3](https://github.com/aws/aws-cdk/commit/7fe8ad3741fa5342ba93652ed9eabd1157682faa)), closes [#29520](https://github.com/aws/aws-cdk/issues/29520)
+* update L1 CloudFormation resource definitions ([#29530](https://github.com/aws/aws-cdk/issues/29530)) ([1fdac0c](https://github.com/aws/aws-cdk/commit/1fdac0cbb71a84efd3f744ade6a4f49a452968e0))
+* **eks:** trainium instance types ([#29155](https://github.com/aws/aws-cdk/issues/29155)) ([507b709](https://github.com/aws/aws-cdk/commit/507b709bab8679750f1e9cbe25794daf2eb76f00)), closes [#29131](https://github.com/aws/aws-cdk/issues/29131)
+* **rds:** eliminating the need for explicit `secret.grantRead()` invokes when using DataAPI with Aurora cluster ([#29399](https://github.com/aws/aws-cdk/issues/29399)) ([bc9d0b4](https://github.com/aws/aws-cdk/commit/bc9d0b44ef0717c6bd98fd37ab7883d830094461)), closes [#29362](https://github.com/aws/aws-cdk/issues/29362) [/github.com/aws/aws-cdk/pull/29338#discussion_r1512026791](https://github.com/aws//github.com/aws/aws-cdk/pull/29338/issues/discussion_r1512026791)
+
+
+### Bug Fixes
+
+* **CLI:** `cdk diff` stack deletion causes a race condition ([#29492](https://github.com/aws/aws-cdk/issues/29492)) ([067539a](https://github.com/aws/aws-cdk/commit/067539a9587794ca65b984d0001efa8d274766ca)), closes [#29265](https://github.com/aws/aws-cdk/issues/29265)
+* **cloudformation-diff:** move aws-sdk to dependency for cfn-diff to get CFN types resolved in exports ([#28768](https://github.com/aws/aws-cdk/issues/28768)) ([28c4be3](https://github.com/aws/aws-cdk/commit/28c4be3419e8c18ac84f2b72ae1838f8f424c1c6)), closes [#28680](https://github.com/aws/aws-cdk/issues/28680) [#28679](https://github.com/aws/aws-cdk/issues/28679)
+* **cloudwatch:** cloudwatch ec2 alarm action with multiple dimension results in error ([#29364](https://github.com/aws/aws-cdk/issues/29364)) ([cc37778](https://github.com/aws/aws-cdk/commit/cc377785c00a021c9b519bdda945be8e99cb1148))
+* **cloudwatch:** unrecognized statistic warning when using percentileRank statistic in Stats helper ([#29498](https://github.com/aws/aws-cdk/issues/29498)) ([f2ad980](https://github.com/aws/aws-cdk/commit/f2ad98027a896228c554985e746107a4c7089f70)), closes [#29465](https://github.com/aws/aws-cdk/issues/29465)
+* **elasticloadbalancingv2:** allow alb slow start duration of 0 seconds ([#29445](https://github.com/aws/aws-cdk/issues/29445)) ([cf2351b](https://github.com/aws/aws-cdk/commit/cf2351bfba986352ba6cbc93e00cb4eb9348265a)), closes [#29437](https://github.com/aws/aws-cdk/issues/29437)
+* **kms:** kms key grant methods misidentify region when enclosing stack is different region ([#29315](https://github.com/aws/aws-cdk/issues/29315)) ([9076d6e](https://github.com/aws/aws-cdk/commit/9076d6e522002357da307bc09417a5b12bcfb35e))
+* **opensearch:** cannot disable cluster logging ([#29205](https://github.com/aws/aws-cdk/issues/29205)) ([c7fcaf7](https://github.com/aws/aws-cdk/commit/c7fcaf7f8d819fa91b93effe2ad55658e980655b)), closes [#29294](https://github.com/aws/aws-cdk/issues/29294)
+
 ## [2.133.0](https://github.com/aws/aws-cdk/compare/v2.132.1...v2.133.0) (2024-03-14)
 
 
