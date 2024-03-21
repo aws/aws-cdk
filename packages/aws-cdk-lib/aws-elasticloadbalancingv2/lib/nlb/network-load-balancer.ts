@@ -11,16 +11,29 @@ import { IpAddressType } from '../shared/enums';
 import { parseLoadBalancerFullName } from '../shared/util';
 
 /**
+ * Indicates how traffic is distributed among the load balancer Availability Zones.
+ *
+ * @see https://docs.aws.amazon.com/elasticloadbalancing/latest/network/network-load-balancers.html#zonal-dns-affinity
+ */
+export enum ClientRoutingPolicy {
+  /**
+   * 100 percent zonal affinity
+   */
+  AVAILABILITY_ZONE_AFFINITY = 'availability_zone_affinity',
+  /**
+   * 85 percent zonal affinity
+   */
+  PARTIAL_AVAILABILITY_ZONE_AFFINITY = 'partial_availability_zone_affinity',
+  /**
+   * No zonal affinity
+   */
+  ANY_AVAILABILITY_ZONE = 'any_availability_zone',
+}
+
+/**
  * Properties for a network load balancer
  */
 export interface NetworkLoadBalancerProps extends BaseLoadBalancerProps {
-  /**
-   * Indicates whether cross-zone load balancing is enabled.
-   *
-   * @default false
-   */
-  readonly crossZoneEnabled?: boolean;
-
   /**
    * Security groups to associate with this load balancer
    *
@@ -37,6 +50,15 @@ export interface NetworkLoadBalancerProps extends BaseLoadBalancerProps {
    * @default IpAddressType.IPV4
    */
   readonly ipAddressType?: IpAddressType;
+
+  /**
+   * The AZ affinity routing policy
+   *
+   * @see https://docs.aws.amazon.com/elasticloadbalancing/latest/network/network-load-balancers.html#zonal-dns-affinity
+   *
+   * @default - AZ affinity is disabled.
+   */
+  readonly clientRoutingPolicy?: ClientRoutingPolicy;
 }
 
 /**
@@ -226,7 +248,9 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
     this.isSecurityGroupsPropertyDefined = !!props.securityGroups;
     this.connections = new ec2.Connections({ securityGroups: props.securityGroups });
     this.ipAddressType = props.ipAddressType ?? IpAddressType.IPV4;
-    if (props.crossZoneEnabled) { this.setAttribute('load_balancing.cross_zone.enabled', 'true'); }
+    if (props.clientRoutingPolicy) {
+      this.setAttribute('dns_record.client_routing_policy', props.clientRoutingPolicy);
+    }
   }
 
   /**

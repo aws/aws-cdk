@@ -1,0 +1,12 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "LambdaNodeJsEsbuildArgsInteg/DefaultTest": {
+      "stacks": [
+        "cdk-integ-lambda-nodejs-esbuildArgs"
+      ],
+      "assertionStack": "LambdaNodeJsEsbuildArgsInteg/DefaultTest/DeployAssert",
+      "assertionStackName": "LambdaNodeJsEsbuildArgsIntegDefaultTestDeployAssertB1F5AACE"
+    }
+  }
+}
