@@ -1,0 +1,220 @@
+{
+ "Resources": {
+  "Handler886CB40B": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "1471fa6f2876749a13de79989efc6651c9768d3173ef5904947e87504f8d7069.zip"
+    },
+    "Description": "onEvent handler for EKS kubectl resource provider",
+    "Handler": "index.handler",
+    "Layers": [
+     {
+      "Ref": "AwsCliLayerF44AAF94"
+     },
+     {
+      "Ref": "referencetoawscdkeksclusteral2023ngtestKubectlLayerF6150CEARef"
+     }
+    ],
+    "MemorySize": 1024,
+    "Role": {
+     "Ref": "referencetoawscdkeksclusteral2023ngtestClusterKubectlHandlerRole2648E53DArn"
+    },
+    "Runtime": "python3.10",
+    "Timeout": 900,
+    "VpcConfig": {
+     "SecurityGroupIds": [
+      {
+       "Ref": "referencetoawscdkeksclusteral2023ngtestClusterD36DFAB0ClusterSecurityGroupId"
+      }
+     ],
+     "SubnetIds": [
+      {
+       "Ref": "referencetoawscdkeksclusteral2023ngtestVpcPrivateSubnet1Subnet80536862Ref"
+      },
+      {
+       "Ref": "referencetoawscdkeksclusteral2023ngtestVpcPrivateSubnet2Subnet3D4CCC0DRef"
+      }
+     ]
+    }
+   }
+  },
+  "AwsCliLayerF44AAF94": {
+   "Type": "AWS::Lambda::LayerVersion",
+   "Properties": {
+    "Content": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "3322b7049fb0ed2b7cbb644a2ada8d1116ff80c32dca89e6ada846b5de26f961.zip"
+    },
+    "Description": "/opt/awscli/aws"
+   }
+  },
+  "ProviderframeworkonEventServiceRole9FF04296": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     },
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "ProviderframeworkonEventServiceRoleDefaultPolicy48CD2133": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "lambda:InvokeFunction",
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "Handler886CB40B",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "Handler886CB40B",
+             "Arn"
+            ]
+           },
+           ":*"
+          ]
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "ProviderframeworkonEventServiceRoleDefaultPolicy48CD2133",
+    "Roles": [
+     {
+      "Ref": "ProviderframeworkonEventServiceRole9FF04296"
+     }
+    ]
+   }
+  },
+  "ProviderframeworkonEvent83C1D0A7": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "15197a5512179542fe2cff74af89bb047793c9c4e0b4395f114641a81cd52ae5.zip"
+    },
+    "Description": "AWS CDK resource provider framework - onEvent (aws-cdk-eks-cluster-al2023-ng-test/@aws-cdk--aws-eks.KubectlProvider/Provider)",
+    "Environment": {
+     "Variables": {
+      "USER_ON_EVENT_FUNCTION_ARN": {
+       "Fn::GetAtt": [
+        "Handler886CB40B",
+        "Arn"
+       ]
+      }
+     }
+    },
+    "Handler": "framework.onEvent",
+    "Role": {
+     "Fn::GetAtt": [
+      "ProviderframeworkonEventServiceRole9FF04296",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs18.x",
+    "Timeout": 900,
+    "VpcConfig": {
+     "SecurityGroupIds": [
+      {
+       "Ref": "referencetoawscdkeksclusteral2023ngtestClusterD36DFAB0ClusterSecurityGroupId"
+      }
+     ],
+     "SubnetIds": [
+      {
+       "Ref": "referencetoawscdkeksclusteral2023ngtestVpcPrivateSubnet1Subnet80536862Ref"
+      },
+      {
+       "Ref": "referencetoawscdkeksclusteral2023ngtestVpcPrivateSubnet2Subnet3D4CCC0DRef"
+      }
+     ]
+    }
+   },
+   "DependsOn": [
+    "ProviderframeworkonEventServiceRoleDefaultPolicy48CD2133",
+    "ProviderframeworkonEventServiceRole9FF04296"
+   ]
+  }
+ },
+ "Outputs": {
+  "awscdkeksclusteral2023ngtestawscdkawseksKubectlProviderframeworkonEventE66F5793Arn": {
+   "Value": {
+    "Fn::GetAtt": [
+     "ProviderframeworkonEvent83C1D0A7",
+     "Arn"
+    ]
+   }
+  }
+ },
+ "Parameters": {
+  "referencetoawscdkeksclusteral2023ngtestKubectlLayerF6150CEARef": {
+   "Type": "String"
+  },
+  "referencetoawscdkeksclusteral2023ngtestClusterKubectlHandlerRole2648E53DArn": {
+   "Type": "String"
+  },
+  "referencetoawscdkeksclusteral2023ngtestVpcPrivateSubnet1Subnet80536862Ref": {
+   "Type": "String"
+  },
+  "referencetoawscdkeksclusteral2023ngtestVpcPrivateSubnet2Subnet3D4CCC0DRef": {
+   "Type": "String"
+  },
+  "referencetoawscdkeksclusteral2023ngtestClusterD36DFAB0ClusterSecurityGroupId": {
+   "Type": "String"
+  }
+ }
+}
