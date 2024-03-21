@@ -4,11 +4,13 @@ import {
   WebSocketRouteIntegrationConfig,
   WebSocketRouteIntegrationBindOptions,
   PassthroughBehavior,
+  ContentHandling,
 } from '../../../aws-apigatewayv2';
 import { IRole } from '../../../aws-iam';
+import { Duration } from '../../../core';
 
 /**
- * Props for AWS type integration for an HTTP Api.
+ * Props for AWS type integration for a WebSocket Api.
  */
 export interface WebSocketAwsIntegrationProps {
   /**
@@ -57,6 +59,14 @@ export interface WebSocketAwsIntegrationProps {
   readonly templateSelectionExpression?: string;
 
   /**
+   * The maximum amount of time an integration will run before it returns without a response.
+   * Must be between 50 milliseconds and 29 seconds.
+   *
+   * @default Duration.seconds(29)
+   */
+  readonly timeout?: Duration;
+
+  /**
    * Specifies the pass-through behavior for incoming requests based on the
    * Content-Type header in the request, and the available mapping templates
    * specified as the requestTemplates property on the Integration resource.
@@ -66,6 +76,14 @@ export interface WebSocketAwsIntegrationProps {
    * @default - No passthrough behavior required.
    */
   readonly passthroughBehavior?: PassthroughBehavior;
+
+  /**
+   * Specifies how to handle response payload content type conversions.
+   *
+   * @default - The response payload will be passed through from the integration response to
+   * the route response or method response without modification.
+   */
+  readonly contentHandling?: ContentHandling;
 }
 
 /**
@@ -88,7 +106,9 @@ export class WebSocketAwsIntegration extends WebSocketRouteIntegration {
       requestParameters: this.props.requestParameters,
       requestTemplates: this.props.requestTemplates,
       passthroughBehavior: this.props.passthroughBehavior,
+      contentHandling: this.props.contentHandling,
       templateSelectionExpression: this.props.templateSelectionExpression,
+      timeout: this.props.timeout,
     };
   }
 }

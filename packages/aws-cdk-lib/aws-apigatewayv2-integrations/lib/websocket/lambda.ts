@@ -6,7 +6,20 @@ import {
 } from '../../../aws-apigatewayv2';
 import { ServicePrincipal } from '../../../aws-iam';
 import { IFunction } from '../../../aws-lambda';
-import { Stack } from '../../../core';
+import { Duration, Stack } from '../../../core';
+
+/**
+ * Props for Lambda type integration for a WebSocket Api.
+ */
+export interface WebSocketLambdaIntegrationProps {
+  /**
+   * The maximum amount of time an integration will run before it returns without a response.
+   * Must be between 50 milliseconds and 29 seconds.
+   *
+   * @default Duration.seconds(29)
+   */
+  readonly timeout?: Duration;
+}
 
 /**
  * Lambda WebSocket Integration
@@ -20,7 +33,11 @@ export class WebSocketLambdaIntegration extends WebSocketRouteIntegration {
    * @param handler the Lambda function handler
    * @param props properties to configure the integration
    */
-  constructor(id: string, private readonly handler: IFunction) {
+  constructor(
+    id: string,
+    private readonly handler: IFunction,
+    private readonly props: WebSocketLambdaIntegrationProps = {},
+  ) {
     super(id);
     this._id = id;
   }
@@ -47,6 +64,7 @@ export class WebSocketLambdaIntegration extends WebSocketRouteIntegration {
     return {
       type: WebSocketIntegrationType.AWS_PROXY,
       uri: integrationUri,
+      timeout: this.props.timeout,
     };
   }
 }
