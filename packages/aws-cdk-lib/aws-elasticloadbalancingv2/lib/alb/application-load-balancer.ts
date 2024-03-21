@@ -189,7 +189,7 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
     if (props.preserveHostHeader) { this.setAttribute('routing.http.preserve_host_header.enabled', 'true'); }
     if (props.xAmznTlsVersionAndCipherSuiteHeaders) { this.setAttribute('routing.http.x_amzn_tls_version_and_cipher_suite.enabled', 'true'); }
     if (props.preserveXffClientPort) { this.setAttribute('routing.http.xff_client_port.enabled', 'true'); }
-    if (props.xffHeaderProcessingMode !== undefined) { this.setAttribute('routing.http.xff_header_processing.mode', props.xffHeaderProcessingMode);
+    if (props.xffHeaderProcessingMode !== undefined) { this.setAttribute('routing.http.xff_header_processing.mode', props.xffHeaderProcessingMode); }
     if (props.wafFailOpen) { this.setAttribute('waf.fail_open.enabled', 'true'); }
     if (props.clientKeepAlive !== undefined) {
       const clientKeepAliveInMillis = props.clientKeepAlive.toMilliseconds();
