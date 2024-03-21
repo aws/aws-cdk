@@ -232,10 +232,11 @@ Documentation: https://docs.aws.amazon.com/elasticloadbalancing/latest/applicati
 
 ```ts 
 
-declare const vpc: ec2.vpc;
+declare const vpc: ec2.Vpc;
 
-declare const bucket: s3.bucket = new s3.bucket(this, 'ALBAccessLogsBucket',{ 
-  encryption: s3.BucketEncryption.S3_MANAGED,});
+const bucket = new s3.Bucket(this, 'ALBAccessLogsBucket',{ 
+  encryption: s3.BucketEncryption.S3_MANAGED,
+  });
 
 const lb = new elbv2.ApplicationLoadBalancer(this, 'LB', { vpc });
 lb.logAccessLogs(bucket);
