@@ -180,7 +180,7 @@ export interface IGraphqlApi extends IResource {
    * add a new Rds data source to this API
    *
    * @param id The data source's id
-   * @param serverlessCluster or DatabaseCluster The serverless cluster to interact with this data source
+   * @param serverlessCluster The serverless cluster to interact with this data source
    * @param secretStore The secret store that contains the username and password for the serverless cluster
    * @param databaseName The optional name of the database to use within the cluster
    * @param options The optional configuration for this data source
