@@ -1,6 +1,7 @@
 import { CfnResource, Duration, Stack } from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import { AssertionsProvider } from './providers';
+import { RetentionDays } from 'aws-cdk-lib/aws-logs';
 
 /**
  * Options for creating a WaiterStateMachine
@@ -33,6 +34,13 @@ export interface WaiterStateMachineOptions {
    * @default 1 (no backoff)
    */
   readonly backoffRate?: number;
+
+  /**
+   * How long, in days, the log contents will be retained.
+   *
+   * @default - no retention days specified
+   */
+  readonly logRetention?: RetentionDays;
 }
 
 /**
@@ -90,11 +98,13 @@ export class WaiterStateMachine extends Construct {
     this.isCompleteProvider = new AssertionsProvider(this, 'IsCompleteProvider', {
       handler: 'index.isComplete',
       uuid: '76b3e830-a873-425f-8453-eddd85c86925',
+      logRetention: props.logRetention,
     });
 
     const timeoutProvider = new AssertionsProvider(this, 'TimeoutProvider', {
       handler: 'index.onTimeout',
       uuid: '5c1898e0-96fb-4e3e-95d5-f6c67f3ce41a',
+      logRetention: props.logRetention,
     });
 
     const role = new CfnResource(this, 'Role', {
