@@ -20,6 +20,7 @@ const handler = new lambda.NodejsFunction(stack, 'Function', {
     forceDockerBundling: true,
   },
   depsLockFilePath: path.join(__dirname, 'integ-handlers/pnpm/pnpm-lock.yaml'),
+  awsSdkConnectionReuse: true,
 });
 
 const integ = new IntegTest(app, 'PnpmTest', {

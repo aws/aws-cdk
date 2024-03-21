@@ -12,6 +12,7 @@ class TestStack extends Stack {
     new lambda.NodejsFunction(this, 'ts-handler', {
       entry: path.join(__dirname, 'integ-handlers/ts-handler.ts'),
       runtime: STANDARD_NODEJS_RUNTIME,
+      awsSdkConnectionReuse: true,
       bundling: {
         minify: true,
         sourceMap: true,
