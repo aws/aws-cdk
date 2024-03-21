@@ -706,13 +706,13 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.2.70"
+                      "version": "10.3.0"
                     }
                   }
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.70"
+                  "version": "10.3.0"
                 }
               },
               "Deploy": {
@@ -780,7 +780,7 @@
                             "path": "aws-cdk-codepipeline-cloudformation/Pipeline/Deploy/PrepareChanges/CodePipelineActionRole/8389e75f-0810-4838-bf64-d6f85a95cf83",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.2.70"
+                              "version": "10.3.0"
                             }
                           },
                           "DefaultPolicy": {
@@ -1038,7 +1038,7 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.2.70"
+                      "version": "10.3.0"
                     }
                   },
                   "ApproveChanges": {
@@ -1106,7 +1106,7 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.2.70"
+                      "version": "10.3.0"
                     }
                   },
                   "ExecuteChanges": {
@@ -1170,7 +1170,7 @@
                             "path": "aws-cdk-codepipeline-cloudformation/Pipeline/Deploy/ExecuteChanges/CodePipelineActionRole/8389e75f-0810-4838-bf64-d6f85a95cf83",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.2.70"
+                              "version": "10.3.0"
                             }
                           },
                           "DefaultPolicy": {
@@ -1188,6 +1188,7 @@
                                         {
                                           "Action": [
                                             "cloudformation:DescribeChangeSet",
+                                            "cloudformation:DescribeStackEvents",
                                             "cloudformation:DescribeStacks",
                                             "cloudformation:ExecuteChangeSet"
                                           ],
@@ -1249,13 +1250,13 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.2.70"
+                      "version": "10.3.0"
                     }
                   }
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.70"
+                  "version": "10.3.0"
                 }
               }
             },
@@ -1291,7 +1292,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.2.70"
+          "version": "10.3.0"
         }
       }
     },
