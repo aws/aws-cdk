@@ -314,7 +314,7 @@ export class EvaluateCloudFormationTemplate {
     return cfnExpression;
   }
 
-  public getResourceProperty<T = any>(logicalId: string, propertyName: string): T {
+  public getResourceProperty(logicalId: string, propertyName: string): any {
     return this.template.Resources?.[logicalId]?.Properties?.[propertyName];
   }
 
