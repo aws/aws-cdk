@@ -544,6 +544,8 @@ When you call `waitForAssertions()` the assertion provider will continuously mak
 `ExpectedResult` is met. You can also control the parameters for waiting, for example:
 
 ```ts
+import * as logs from 'aws-cdk-lib/aws-logs';
+
 declare const testCase: IntegTest;
 declare const start: IApiCall;
 
@@ -555,6 +557,7 @@ const describe = testCase.assertions.awsApiCall('StepFunctions', 'describeExecut
   totalTimeout: Duration.minutes(5),
   interval: Duration.seconds(15),
   backoffRate: 3,
+  logRetention: logs.RetentionDays.ONE_WEEK,
 });
 ```
 
