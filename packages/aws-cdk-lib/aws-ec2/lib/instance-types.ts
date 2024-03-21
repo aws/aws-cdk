@@ -224,6 +224,11 @@ export enum InstanceClass {
   MEMORY5_AMD_NVME_DRIVE = 'memory5-amd-nvme-drive',
 
   /**
+   * Memory optimized instances based on AMD EPYC with local NVME drive, 5th generation
+   */
+  R5AD = 'r5ad',
+
+  /**
    * High memory instances (3TB) based on Intel Xeon Platinum 8176M (Skylake) processors, 1st generation
    */
   HIGH_MEMORY_3TB_1 = 'high-memory-3tb-1',
@@ -282,11 +287,6 @@ export enum InstanceClass {
    * High memory instances (24TB) based on Intel Xeon Scalable (Cascade Lake) processors, 1st generation
    */
   U_24TB1 = 'u-24tb1',
-
-  /**
-   * Memory optimized instances based on AMD EPYC with local NVME drive, 5th generation
-   */
-  R5AD = 'r5ad',
 
   /**
    * Memory optimized instances that are also EBS-optimized, 5th generation
@@ -612,19 +612,29 @@ export enum InstanceClass {
   STORAGE_COMPUTE_1 = 'storage-compute-1',
 
   /**
+   * Storage/compute balanced instances, 1st generation
+   */
+  H1 = 'h1',
+
+  /**
+   * High performance computing powered by AWS Trainium
+   */
+  TRAINING_ACCELERATOR1 = 'training-accelerator1',
+
+  /**
    * High performance computing powered by AWS Trainium
    */
   TRN1 = 'trn1',
 
   /**
-   * High performance computing powered by AWS Trainium
+   * Network-optimized high performance computing powered by AWS Trainium
    */
-  TRN1N = 'trn1n',
+  TRAINING_ACCELERATOR1_ENHANCED_NETWORK = 'training-accelerator1-enhanced-network',
 
   /**
-   * Storage/compute balanced instances, 1st generation
+   * Network-optimized high performance computing powered by AWS Trainium
    */
-  H1 = 'h1',
+  TRN1N = 'trn1n',
 
   /**
    * I/O-optimized instances, 3rd generation
@@ -742,7 +752,7 @@ export enum InstanceClass {
   MEMORY_INTENSIVE_1_EXTENDED = 'memory-intensive-1-extended',
 
   /**
-   * Memory-intensive instances, 1st generation
+   * Memory-intensive instances, extended, 1st generation
    */
   X1E = 'x1e',
 
@@ -881,7 +891,7 @@ export enum InstanceClass {
   P2 = 'p2',
 
   /**
-   * Parallel-processing optimized instances, 3nd generation
+   * Parallel-processing optimized instances, 3rd generation
    */
   PARALLEL3 = 'parallel3',
 
@@ -891,7 +901,7 @@ export enum InstanceClass {
   P3 = 'p3',
 
   /**
-   * Parallel-processing optimized instances with local NVME drive for high performance computing, 3nd generation
+   * Parallel-processing optimized instances with local NVME drive for high performance computing, 3rd generation
    */
   PARALLEL3_NVME_DRIVE_HIGH_PERFORMANCE = 'parallel3-nvme-drive-high-performance',
 
@@ -1199,6 +1209,16 @@ export enum InstanceClass {
    * Deep learning instances powered by Gaudi accelerators from Habana Labs (an Intel company), 1st generation
    */
   DL1 = 'dl1',
+
+  /**
+   * Deep learning instances powered by Qualcomm AI 100 Standard accelerators, 2nd generation
+   */
+  DEEP_LEARNING2_QUALCOMM = 'deep-learning2-qualcomm',
+
+  /**
+   * Deep learning instances powered by Qualcomm AI 100 Standard accelerators, 2nd generation
+   */
+  DL2Q = 'dl2q',
 }
 
 /**
@@ -1490,7 +1510,9 @@ export class InstanceType {
       [InstanceClass.D3]: 'd3',
       [InstanceClass.STORAGE3_ENHANCED_NETWORK]: 'd3en',
       [InstanceClass.D3EN]: 'd3en',
+      [InstanceClass.TRAINING_ACCELERATOR1]: 'trn1',
       [InstanceClass.TRN1]: 'trn1',
+      [InstanceClass.TRAINING_ACCELERATOR1_ENHANCED_NETWORK]: 'trn1n',
       [InstanceClass.TRN1N]: 'trn1n',
       [InstanceClass.STORAGE_COMPUTE_1]: 'h1',
       [InstanceClass.H1]: 'h1',
@@ -1606,6 +1628,8 @@ export class InstanceType {
       [InstanceClass.MEMORY_INTENSIVE_2_XTZ_INTEL]: 'x2iezn',
       [InstanceClass.DEEP_LEARNING1]: 'dl1',
       [InstanceClass.DL1]: 'dl1',
+      [InstanceClass.DEEP_LEARNING2_QUALCOMM]: 'dl2q',
+      [InstanceClass.DL2Q]: 'dl2q',
     };
     return new InstanceType(`${instanceClassMap[instanceClass] ?? instanceClass}.${instanceSize}`);
   }

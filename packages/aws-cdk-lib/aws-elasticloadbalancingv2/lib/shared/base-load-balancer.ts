@@ -47,6 +47,20 @@ export interface BaseLoadBalancerProps {
    * @default false
    */
   readonly deletionProtection?: boolean;
+
+  /**
+   * Indicates whether cross-zone load balancing is enabled.
+   *
+   * @default - false for Network Load Balancers and true for Application Load Balancers.
+   */
+  readonly crossZoneEnabled?: boolean;
+
+  /**
+   * Indicates whether the load balancer blocks traffic through the Internet Gateway (IGW).
+   *
+   * @default - false for internet-facing load balancers and true for internal load balancers
+   */
+  readonly denyAllIgwTraffic?: boolean;
 }
 
 export interface ILoadBalancerV2 extends IResource {
@@ -229,6 +243,10 @@ export abstract class BaseLoadBalancer extends Resource {
     }
 
     this.setAttribute('deletion_protection.enabled', baseProps.deletionProtection ? 'true' : 'false');
+    if (baseProps.crossZoneEnabled) { this.setAttribute('load_balancing.cross_zone.enabled', 'true'); }
+    if (baseProps.denyAllIgwTraffic !== undefined) {
+      this.setAttribute('ipv6.deny_all_igw_traffic', baseProps.denyAllIgwTraffic.toString());
+    }
 
     this.loadBalancerCanonicalHostedZoneId = resource.attrCanonicalHostedZoneId;
     this.loadBalancerDnsName = resource.attrDnsName;

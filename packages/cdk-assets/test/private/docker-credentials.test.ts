@@ -104,7 +104,7 @@ describe('fetchDockerLoginCredentials', () => {
   });
 
   describe('SecretsManager', () => {
-    test('returns the credentials sucessfully if configured correctly - domain', async () => {
+    test('returns the credentials successfully if configured correctly - domain', async () => {
       mockSecretWithSecretString({ username: 'secretUser', secret: 'secretPass' });
 
       const creds = await fetchDockerLoginCredentials(aws, config, 'secret.example.com');

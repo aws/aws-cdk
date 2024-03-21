@@ -137,4 +137,11 @@ export interface DatabaseClusterAttributes {
    * @default - the imported Cluster's engine is unknown
    */
   readonly engine?: IClusterEngine;
+
+  /**
+   * The secret attached to the database cluster
+   *
+   * @default - the imported Cluster's secret is unknown
+   */
+  readonly secret?: secretsmanager.ISecret;
 }

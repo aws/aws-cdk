@@ -1,12 +1,6 @@
 {
-  "version": "20.0.0",
+  "version": "36.0.0",
   "artifacts": {
-    "Tree": {
-      "type": "cdk:tree",
-      "properties": {
-        "file": "tree.json"
-      }
-    },
     "FlinkAppCodeFromBucketTest.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
@@ -20,10 +14,11 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "FlinkAppCodeFromBucketTest.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/29b6babcdc09f7011be31e1014e8b548e391623adf4fedfc5ba3e9dace27c968.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/1bb9d6dca32d920930c65ef51caf5b52af031dde0168b5e26ba8384c5a3d0eba.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -54,7 +49,10 @@
         "/FlinkAppCodeFromBucketTest/App/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AppF1B96344"
+            "data": "AppF1B96344",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/FlinkAppCodeFromBucketTest/App/LogGroup/Resource": [
@@ -72,7 +70,10 @@
         "/FlinkAppCodeFromBucketTest/App/LoggingOption": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AppLoggingOption75BE995E"
+            "data": "AppLoggingOption75BE995E",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/FlinkAppCodeFromBucketTest/BootstrapVersion": [
@@ -89,6 +90,12 @@
         ]
       },
       "displayName": "FlinkAppCodeFromBucketTest"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
     }
   }
 }
