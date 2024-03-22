@@ -75,7 +75,7 @@ export interface StreamEventSourceProps extends BaseStreamEventSourceProps {
    * * Minimum value of 0
    * * Maximum value of 10000
    *
-   * @default -1 
+   * @default -1
    * retry until the record expires
    */
   readonly retryAttempts?: number;
