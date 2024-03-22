@@ -58,6 +58,13 @@ export interface ApplicationLoadBalancerProps extends BaseLoadBalancerProps {
    * @default DesyncMitigationMode.DEFENSIVE
    */
   readonly desyncMitigationMode?: DesyncMitigationMode;
+
+  /**
+   * The client keep alive duration. The valid range is 60 to 604800 seconds (1 minute to 7 days).
+   *
+   * @default - Duration.seconds(3600)
+   */
+  readonly clientKeepAlive?: Duration;
 }
 
 /**
@@ -119,6 +126,18 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
     if (props.idleTimeout !== undefined) { this.setAttribute('idle_timeout.timeout_seconds', props.idleTimeout.toSeconds().toString()); }
     if (props.dropInvalidHeaderFields) {this.setAttribute('routing.http.drop_invalid_header_fields.enabled', 'true'); }
     if (props.desyncMitigationMode !== undefined) {this.setAttribute('routing.http.desync_mitigation_mode', props.desyncMitigationMode); }
+    if (props.clientKeepAlive !== undefined) {
+      const clientKeepAliveInMillis = props.clientKeepAlive.toMilliseconds();
+      if (clientKeepAliveInMillis < 1000) {
+        throw new Error(`\'clientKeepAlive\' must be between 60 and 604800 seconds. Got: ${clientKeepAliveInMillis} milliseconds`);
+      }
+
+      const clientKeepAliveInSeconds = props.clientKeepAlive.toSeconds();
+      if (clientKeepAliveInSeconds < 60 || clientKeepAliveInSeconds > 604800) {
+        throw new Error(`\'clientKeepAlive\' must be between 60 and 604800 seconds. Got: ${clientKeepAliveInSeconds} seconds`);
+      }
+      this.setAttribute('client_keep_alive.seconds', clientKeepAliveInSeconds.toString());
+    }
   }
 
   /**
