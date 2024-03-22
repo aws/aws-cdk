@@ -862,6 +862,7 @@ export interface CrossAccountZoneDelegationRecordProps {
 
   /**
    * Region from which to obtain temporary credentials.
+   *
    * @default - the Route53 signing region in the current partition
    */
   readonly assumeRoleRegion?: string;
