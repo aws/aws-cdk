@@ -61,8 +61,12 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
   - [EventBridge](#eventbridge)
     - [Put Events](#put-events)
   - [Glue](#glue)
+    - [Start Job Run](#start-job-run)
+    - [Start Crawler Run](#startcrawlerrun)
   - [Glue DataBrew](#glue-databrew)
+    - [Start Job Run](#start-job-run-1)
   - [Lambda](#lambda)
+    - [Invoke](#invoke)
   - [SageMaker](#sagemaker)
     - [Create Training Job](#create-training-job)
     - [Create Transform Job](#create-transform-job)
@@ -71,10 +75,12 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
     - [Create Model](#create-model)
     - [Update Endpoint](#update-endpoint)
   - [SNS](#sns)
+    - [Publish](#publish)
   - [Step Functions](#step-functions)
     - [Start Execution](#start-execution)
     - [Invoke Activity](#invoke-activity)
   - [SQS](#sqs)
+    - [Send Message](#send-message)
 
 ## Paths
 
@@ -1119,6 +1125,8 @@ new tasks.GlueStartCrawlerRun(this, 'Task2', {
 
 Step Functions supports [AWS Glue DataBrew](https://docs.aws.amazon.com/step-functions/latest/dg/connect-databrew.html) through the service integration pattern.
 
+### Start Job Run
+
 You can call the [`StartJobRun`](https://docs.aws.amazon.com/databrew/latest/dg/API_StartJobRun.html) API from a `Task` state.
 
 ```ts
@@ -1128,6 +1136,10 @@ new tasks.GlueDataBrewStartJobRun(this, 'Task', {
 ```
 
 ## Lambda
+
+Step Functions supports [AWS Lambda](https://docs.aws.amazon.com/step-functions/latest/dg/connect-lambda.html) through the service integration pattern.
+
+### Invoke
 
 [Invoke](https://docs.aws.amazon.com/lambda/latest/dg/API_Invoke.html) a Lambda function.
 
@@ -1363,6 +1375,8 @@ new tasks.SageMakerUpdateEndpoint(this, 'SagemakerEndpoint', {
 
 Step Functions supports [Amazon SNS](https://docs.aws.amazon.com/step-functions/latest/dg/connect-sns.html) through the service integration pattern.
 
+### Publish
+
 You can call the [`Publish`](https://docs.aws.amazon.com/sns/latest/api/API_Publish.html) API from a `Task` state to publish to an SNS topic.
 
 ```ts
@@ -1403,6 +1417,8 @@ const task2 = new tasks.SnsPublish(this, 'Publish2', {
 ```
 
 ## Step Functions
+
+Step Functions supports [AWS Step Functions](https://docs.aws.amazon.com/step-functions/latest/dg/connect-stepfunctions.html) through the service integration pattern.
 
 ### Start Execution
 
@@ -1498,6 +1514,8 @@ new tasks.StepFunctionsInvokeActivity(this, 'Submit Job', {
 ## SQS
 
 Step Functions supports [Amazon SQS](https://docs.aws.amazon.com/step-functions/latest/dg/connect-sqs.html)
+
+### Send Message
 
 You can call the [`SendMessage`](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/APIReference/API_SendMessage.html) API from a `Task` state
 to send a message to an SQS queue.
