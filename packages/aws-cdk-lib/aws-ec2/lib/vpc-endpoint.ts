@@ -265,7 +265,7 @@ export interface InterfaceVpcEndpointAwsServiceProps {
    *
    * @default false
    */
-  global?: boolean;
+  readonly global?: boolean;
 }
 
 /**
