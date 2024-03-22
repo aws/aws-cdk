@@ -63,8 +63,9 @@ export class Duration {
    * Parse a period formatted according to the ISO 8601 standard
    *
    * Days are the largest ISO duration supported, i.e.,
-   * months and years are not supported.
+   * weeks, months, and years are not supported.
    *
+   * @example 'P1DT2H3M4.567S' would represent 1 day, 2 hours, 3 minutes, 4 seconds, and 567 milliseconds.
    * @see https://www.iso.org/standard/70907.html
    * @param duration an ISO-formatted duration to be parsed.
    * @returns the parsed `Duration`.
