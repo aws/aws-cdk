@@ -24,11 +24,12 @@ class VpcEndpointServiceStack extends cdk.Stack {
       vpc,
     });
     const principalArn = new ArnPrincipal('arn:aws:iam::123456789012:root');
+    const servicePrincipal = new ArnPrincipal('ec2.amazonaws.com');
 
     const service2 = new ec2.VpcEndpointService(this, 'MyVpcEndpointServiceWithPrincipals', {
       vpcEndpointServiceLoadBalancers: [nlbWithPrincipals],
       acceptanceRequired: false,
-      allowedPrincipals: [principalArn],
+      allowedPrincipals: [principalArn, servicePrincipal],
     });
 
     new cdk.CfnOutput(this, 'MyVpcEndpointServiceWithNoPrincipalsServiceName', {

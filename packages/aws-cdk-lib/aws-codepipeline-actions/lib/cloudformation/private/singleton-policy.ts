@@ -37,6 +37,7 @@ export class SingletonPolicy extends Construct implements iam.IGrantable {
     this.statementFor({
       actions: [
         'cloudformation:DescribeStacks',
+        'cloudformation:DescribeStackEvents',
         'cloudformation:DescribeChangeSet',
         'cloudformation:ExecuteChangeSet',
       ],
