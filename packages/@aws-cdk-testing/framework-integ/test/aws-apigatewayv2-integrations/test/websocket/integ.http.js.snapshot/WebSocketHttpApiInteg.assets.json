@@ -1,0 +1,19 @@
+{
+  "version": "36.0.0",
+  "files": {
+    "f3c83c623b85de5095da7237c656c3f1ab557d645c1da649e22ae6c40fc48c91": {
+      "source": {
+        "path": "WebSocketHttpApiInteg.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "f3c83c623b85de5095da7237c656c3f1ab557d645c1da649e22ae6c40fc48c91.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
