@@ -50,7 +50,7 @@ export interface NetworkLoadBalancerProps extends BaseLoadBalancerProps {
    * @default IpAddressType.IPV4
    */
   readonly ipAddressType?: IpAddressType;
-  
+
   /**
    * The AZ affinity routing policy
    *
