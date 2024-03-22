@@ -1,35 +1,21 @@
 {
   "version": "36.0.0",
   "files": {
-<<<<<<< HEAD
-    "aca4a134bf7ace6088b21213be7ab4357e3705f714362b690d76376b8f1df53a": {
+    "f43e5ef82b45e2e3ecb60cd54aa4a3599da7bb4c85d10cfe133dc43f54705458": {
       "source": {
-        "path": "asset.aca4a134bf7ace6088b21213be7ab4357e3705f714362b690d76376b8f1df53a",
-=======
-    "df95834e6926d4afc6bfce2bc88b586e43b0ca9a3abb57b43754f174ff07828a": {
-      "source": {
-        "path": "asset.df95834e6926d4afc6bfce2bc88b586e43b0ca9a3abb57b43754f174ff07828a",
->>>>>>> 96239f83c0 (test: add tests)
+        "path": "asset.f43e5ef82b45e2e3ecb60cd54aa4a3599da7bb4c85d10cfe133dc43f54705458",
         "packaging": "zip"
       },
       "destinations": {
         "234567890123-af-south-1": {
           "bucketName": "cdk-hnb659fds-assets-234567890123-af-south-1",
-<<<<<<< HEAD
-          "objectKey": "aca4a134bf7ace6088b21213be7ab4357e3705f714362b690d76376b8f1df53a.zip",
-=======
-          "objectKey": "df95834e6926d4afc6bfce2bc88b586e43b0ca9a3abb57b43754f174ff07828a.zip",
->>>>>>> 96239f83c0 (test: add tests)
+          "objectKey": "f43e5ef82b45e2e3ecb60cd54aa4a3599da7bb4c85d10cfe133dc43f54705458.zip",
           "region": "af-south-1",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::234567890123:role/cdk-hnb659fds-file-publishing-role-234567890123-af-south-1"
         }
       }
     },
-<<<<<<< HEAD
-    "34da3610276ae2d635b15c43c511f47cbd7b4f6e3b7de7b82b980f76956011b1": {
-=======
-    "18f2dbac091f9ac5d22a8c4ce4a05b8c6c31cdaf1f062f8d19cda274d27ccf3c": {
->>>>>>> 96239f83c0 (test: add tests)
+    "c1eff1c52ef11d0e701efdf0a44fa41b7e08915b74b284a3d6dd71f1ff90a6cf": {
       "source": {
         "path": "child-opt-in-stack.template.json",
         "packaging": "file"
@@ -37,11 +23,7 @@
       "destinations": {
         "234567890123-af-south-1": {
           "bucketName": "cdk-hnb659fds-assets-234567890123-af-south-1",
-<<<<<<< HEAD
-          "objectKey": "34da3610276ae2d635b15c43c511f47cbd7b4f6e3b7de7b82b980f76956011b1.json",
-=======
-          "objectKey": "18f2dbac091f9ac5d22a8c4ce4a05b8c6c31cdaf1f062f8d19cda274d27ccf3c.json",
->>>>>>> 96239f83c0 (test: add tests)
+          "objectKey": "c1eff1c52ef11d0e701efdf0a44fa41b7e08915b74b284a3d6dd71f1ff90a6cf.json",
           "region": "af-south-1",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::234567890123:role/cdk-hnb659fds-file-publishing-role-234567890123-af-south-1"
         }
