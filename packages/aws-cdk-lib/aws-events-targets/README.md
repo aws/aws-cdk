@@ -351,9 +351,7 @@ create an `AppSync.GraphqlApi` configured with `AWS_IAM` authorization mode.
 The code snippet below creates a AppSync GraphQL API that is invoked every hour.
 
 ```ts
-import * as api from 'aws-cdk-lib/aws-apigateway';
 import * as appsync from 'aws-cdk-lib/aws-appsync';
-
 
 const rule = new events.Rule(this, 'Rule', {
   schedule: events.Schedule.rate(cdk.Duration.minutes(1)),
