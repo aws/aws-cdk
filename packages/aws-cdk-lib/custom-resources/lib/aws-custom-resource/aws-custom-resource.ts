@@ -396,7 +396,7 @@ export interface AwsCustomResourceProps {
   readonly vpcSubnets?: ec2.SubnetSelection;
 
   /**
-   *
+   * ADD A DOCSTRING
    *
    * @default true
    */
