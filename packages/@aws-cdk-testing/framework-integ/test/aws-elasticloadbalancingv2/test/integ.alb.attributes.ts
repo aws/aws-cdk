@@ -19,6 +19,7 @@ new elbv2.ApplicationLoadBalancer(stack, 'LB', {
   idleTimeout: cdk.Duration.seconds(1000),
   dropInvalidHeaderFields: true,
   desyncMitigationMode: elbv2.DesyncMitigationMode.DEFENSIVE,
+  clientKeepAlive: cdk.Duration.seconds(1000),
 });
 
 new elbv2.ApplicationLoadBalancer(stack, 'DesyncMitigationModeMonitor', {
