@@ -1,6 +1,5 @@
 # AWS AppSync Construct Library
 
-
 The `aws-cdk-lib/aws-appsync` package contains constructs for building flexible
 APIs that use GraphQL.
 
@@ -85,8 +84,6 @@ demoDS.createResolver('QueryGetDemosConsistentResolver', {
   responseMappingTemplate: appsync.MappingTemplate.dynamoDbResultList(),
 });
 ```
-
-
 
 ### Aurora Serverless
 
@@ -233,6 +230,7 @@ httpDs.createResolver('MutationCallStepFunctionResolver', {
 ```
 
 ### EventBridge
+
 Integrating AppSync with EventBridge enables developers to use EventBridge rules to route commands for GraphQL mutations
 that need to perform any one of a variety of asynchronous tasks. More broadly, it enables teams to expose an event bus
 as a part of a GraphQL schema.
@@ -367,6 +365,7 @@ ds.createResolver('QueryGetTestsResolver', {
 ```
 
 ## Merged APIs
+
 AppSync supports [Merged APIs](https://docs.aws.amazon.com/appsync/latest/devguide/merged-api.html) which can be used to merge multiple source APIs into a single API.
 
 ```ts
@@ -532,9 +531,9 @@ sources and resolvers, an `apiId` is sufficient.
 
 ## Private APIs
 
-By default all AppSync GraphQL APIs are public and can be accessed from the internet. 
-For customers that want to limit access to be from their VPC, the optional API `visibility` property can be set to `Visibility.PRIVATE` 
-at creation time. To explicitly create a public API, the `visibility` property should be set to `Visibility.GLOBAL`. 
+By default all AppSync GraphQL APIs are public and can be accessed from the internet.
+For customers that want to limit access to be from their VPC, the optional API `visibility` property can be set to `Visibility.PRIVATE`
+at creation time. To explicitly create a public API, the `visibility` property should be set to `Visibility.GLOBAL`.
 If visibility is not set, the service will default to `GLOBAL`.
 
 CDK stack file `app-stack.ts`:
@@ -547,8 +546,8 @@ const api = new appsync.GraphqlApi(this, 'api', {
 });
 ```
 
-See [documentation](https://docs.aws.amazon.com/appsync/latest/devguide/using-private-apis.html) 
-for more details about Private APIs 
+See [documentation](https://docs.aws.amazon.com/appsync/latest/devguide/using-private-apis.html)
+for more details about Private APIs
 
 ## Authorization
 
@@ -772,8 +771,8 @@ const api = new appsync.GraphqlApi(this, 'api', {
 
 ## Resolver Count Limits
 
-You can control how many resolvers each query can process. 
-By default, each query can process up to 10000 resolvers. 
+You can control how many resolvers each query can process.
+By default, each query can process up to 10000 resolvers.
 By setting a limit AppSync will not handle any resolvers past a certain number limit.
 
 ```ts
@@ -799,4 +798,51 @@ const api = new appsync.GraphqlApi(this, 'api', {
 });
 
 api.addEnvironmentVariable('EnvKey2', 'non-empty-2');
+```
+
+## Configure an EventBridge target that invokes an AppSync GraphQL API
+
+Configuring the target relies on the `graphQLEndpointArn` property.
+
+Use the `AppSync` event target to trigger an AppSync GraphQL API. You need to
+create an `AppSync.GraphqlApi` configured with `AWS_IAM` authorization mode.
+
+The code snippet below creates a AppSync GraphQL API that is invoked every hour.
+
+```ts
+import * as appsync from 'aws-cdk-lib/aws-appsync';
+import * as events from 'aws-cd-lib/aws-events-targets';
+
+const rule = new events.Rule(this, 'Rule', {
+  schedule: events.Schedule.rate(cdk.Duration.minutes(1)),
+});
+
+const api = new appsync.GraphqlApi(this, 'MyAPI', {
+  name: 'my-api',
+  definition: appsync.Definition.fromFile(path.join(__dirname, 'schema.graphql')),
+  authorizationConfig: { defaultAuthorization: { authorizationType: appsync.AuthorizationType.IAM } },
+});
+
+const none = api.addNoneDataSource('none');
+none.createResolver('publisher', {
+  typeName: 'Mutation',
+  fieldName: 'publish',
+  code: appsync.AssetCode.fromInline(`
+export const request = (ctx) => ({payload: null})
+export const response = (ctx) => ctx.args.message
+`.trim()),
+  runtime: appsync.FunctionRuntime.JS_1_0_0,
+});
+
+const graphQLOperation = 'mutation Publish($message: String!){ publish(message: $message) { message } }';
+const queue = new sqs.Queue(this, 'Queue');
+
+rule.addTarget(new targets.AppSync(api, {
+  mutationFields: ['publish'],
+  graphQLOperation,
+  variables: events.RuleTargetInput.fromObject({
+    message: 'hello world',
+  }),
+  deadLetterQueue: queue,
+}));
 ```
