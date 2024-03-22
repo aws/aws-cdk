@@ -111,6 +111,8 @@ function route53Region(region: string) {
     'us-gov': 'us-gov-west-1',
     'us-iso': 'us-iso-east-1',
     'us-isob': 'us-isob-east-1',
+    'eu-isoe': 'eu-isoe-west-1',
+    'us-isof': 'us-isof-south-1',
   };
 
   for (const [prefix, mainRegion] of Object.entries(partitions)) {
