@@ -394,6 +394,13 @@ export interface AwsCustomResourceProps {
    * @default - the Vpc default strategy if not specified
    */
   readonly vpcSubnets?: ec2.SubnetSelection;
+
+  /**
+   *
+   *
+   * @default true
+   */
+  readonly enableLogging?: boolean;
 }
 
 /**
@@ -497,6 +504,7 @@ export class AwsCustomResource extends Construct implements iam.IGrantable {
         update: props.onUpdate && this.encodeJson(props.onUpdate),
         delete: props.onDelete && this.encodeJson(props.onDelete),
         installLatestAwsSdk,
+        enableLogging: props.enableLogging ?? true,
       },
     });
 
