@@ -221,6 +221,9 @@ const lb = new elbv2.ApplicationLoadBalancer(this, 'LB', {
   // The type of IP addresses to use.
   ipAddressType: elbv2.IpAddressType.IPV4,
 
+  // The duration of client keep-alive connections
+  clientKeepAlive: Duration.seconds(500),
+
   // Whether cross-zone load balancing is enabled.
   crossZoneEnabled: true,
 
