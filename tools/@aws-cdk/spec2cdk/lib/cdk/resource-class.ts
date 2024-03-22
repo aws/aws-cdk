@@ -102,7 +102,7 @@ export class ResourceClass extends ClassType {
 
     for (const prop of this.decider.propsProperties) {
       this.propsType.addProperty(prop.propertySpec);
-      cfnMapping.add(prop.cfnMapping);
+      cfnMapping.add(prop.cfnMapping, prop.propertySpec);
     }
 
     // Build the members of this class

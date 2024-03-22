@@ -24,6 +24,7 @@ export interface PropertyMapping {
   readonly propName: string;
   readonly baseType: Type;
   readonly optional?: boolean;
+  enum?: boolean;
 }
 
 /**
@@ -38,9 +39,12 @@ export class CloudFormationMapping {
 
   constructor(private readonly mapperFunctionsScope: IScope, private readonly converter: TypeConverter) {}
 
-  public add(mapping: PropertyMapping) {
+  public add(mapping: PropertyMapping, propSpec: any) {
     this.cfn2ts[mapping.cfnName] = mapping.propName;
     this.cfn2Prop[mapping.cfnName] = mapping;
+    if (propSpec.enum) {
+      this.cfn2Prop[mapping.cfnName].enum = true;
+    }
   }
 
   public cfnFromTs(): Array<[string, string]> {
@@ -87,14 +91,16 @@ export class CloudFormationMapping {
       );
     }
 
-    validations.push(
-      errorsObj.callMethod(
-        'collect',
-        CDK_CORE.propertyValidator
-          .call(expr.lit(prop.propName), this.typeHandlers(prop.baseType).validate)
-          .call(propsObj.prop(prop.propName)),
-      ),
-    );
+    if (!prop.enum) {
+      validations.push(
+        errorsObj.callMethod(
+          'collect',
+          CDK_CORE.propertyValidator
+            .call(expr.lit(prop.propName), this.typeHandlers(prop.baseType).validate)
+            .call(propsObj.prop(prop.propName)),
+        ),
+      );
+    }
 
     return validations;
   }

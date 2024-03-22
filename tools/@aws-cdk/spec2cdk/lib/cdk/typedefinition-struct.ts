@@ -52,7 +52,7 @@ export class TypeDefinitionStruct extends StructType {
 
     for (const prop of decider.properties) {
       this.addProperty(prop.propertySpec);
-      cfnMapping.add(prop.cfnMapping);
+      cfnMapping.add(prop.cfnMapping, prop.propertySpec);
     }
 
     cfnMapping.makeCfnProducer(this.module, this);

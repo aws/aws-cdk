@@ -74,6 +74,7 @@ export class ResourceDecider {
         type,
         optional,
         docs: this.defaultPropDocs(cfnName, prop),
+        enum: prop.enum,
       },
       validateRequiredInConstructor: !!prop.required,
       cfnMapping: {
@@ -90,6 +91,7 @@ export class ResourceDecider {
         optional,
         immutable: false,
         docs: this.defaultClassPropDocs(cfnName, prop),
+        enum: prop.enum,
       },
       initializer: (props: Expression) => expr.get(props, name),
       cfnValueToRender: { [name]: $this[name] },

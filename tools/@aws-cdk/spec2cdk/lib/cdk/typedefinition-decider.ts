@@ -56,6 +56,7 @@ export class TypeDefinitionDecider {
           }),
           deprecated: deprecationMessage(prop),
         },
+        enum: prop.enum,
       },
       baseType,
       cfnMapping: {
