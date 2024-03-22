@@ -149,7 +149,73 @@
     "RouteSelectionExpression": "$request.body.action"
    }
   },
-  "WebSocketApidefaultRouteWebsocketHttpIntegrationB46F2CEF": {
+  "WebSocketApihttpRouteWebsocketHttpIntegration832ADA56": {
+   "Type": "AWS::ApiGatewayV2::Integration",
+   "Properties": {
+    "ApiId": {
+     "Ref": "WebSocketApi34BCF99B"
+    },
+    "ContentHandlingStrategy": "CONVERT_TO_TEXT",
+    "IntegrationMethod": "GET",
+    "IntegrationType": "HTTP",
+    "IntegrationUri": {
+     "Fn::Join": [
+      "",
+      [
+       "https://",
+       {
+        "Ref": "HttpApiF5A9A8A7"
+       },
+       ".execute-api.",
+       {
+        "Ref": "AWS::Region"
+       },
+       ".",
+       {
+        "Ref": "AWS::URLSuffix"
+       },
+       "/"
+      ]
+     ]
+    },
+    "TimeoutInMillis": 10000
+   }
+  },
+  "WebSocketApihttpRoute5B14D2F6": {
+   "Type": "AWS::ApiGatewayV2::Route",
+   "Properties": {
+    "ApiId": {
+     "Ref": "WebSocketApi34BCF99B"
+    },
+    "AuthorizationType": "NONE",
+    "RouteKey": "http",
+    "RouteResponseSelectionExpression": "$default",
+    "Target": {
+     "Fn::Join": [
+      "",
+      [
+       "integrations/",
+       {
+        "Ref": "WebSocketApihttpRouteWebsocketHttpIntegration832ADA56"
+       }
+      ]
+     ]
+    }
+   }
+  },
+  "WebSocketApihttpRouteResponseCCA48B33": {
+   "Type": "AWS::ApiGatewayV2::RouteResponse",
+   "Properties": {
+    "ApiId": {
+     "Ref": "WebSocketApi34BCF99B"
+    },
+    "RouteId": {
+     "Ref": "WebSocketApihttpRoute5B14D2F6"
+    },
+    "RouteResponseKey": "$default"
+   }
+  },
+  "WebSocketApihttpproxyRouteWebsocketHttpIntegration579928F1": {
    "Type": "AWS::ApiGatewayV2::Integration",
    "Properties": {
     "ApiId": {
@@ -181,25 +247,38 @@
     "TimeoutInMillis": 10000
    }
   },
-  "WebSocketApidefaultRoute05EFD2FA": {
+  "WebSocketApihttpproxyRouteC8C92F88": {
    "Type": "AWS::ApiGatewayV2::Route",
    "Properties": {
     "ApiId": {
      "Ref": "WebSocketApi34BCF99B"
     },
     "AuthorizationType": "NONE",
-    "RouteKey": "$default",
+    "RouteKey": "http-proxy",
+    "RouteResponseSelectionExpression": "$default",
     "Target": {
      "Fn::Join": [
       "",
       [
        "integrations/",
        {
-        "Ref": "WebSocketApidefaultRouteWebsocketHttpIntegrationB46F2CEF"
+        "Ref": "WebSocketApihttpproxyRouteWebsocketHttpIntegration579928F1"
        }
       ]
      ]
     }
+   }
+  },
+  "WebSocketApihttpproxyRouteResponseCD1A93DF": {
+   "Type": "AWS::ApiGatewayV2::RouteResponse",
+   "Properties": {
+    "ApiId": {
+     "Ref": "WebSocketApi34BCF99B"
+    },
+    "RouteId": {
+     "Ref": "WebSocketApihttpproxyRouteC8C92F88"
+    },
+    "RouteResponseKey": "$default"
    }
   },
   "mystage114C35EC": {
@@ -214,7 +293,7 @@
   }
  },
  "Outputs": {
-  "ApiEndpoint": {
+  "ApiEndpointhttp": {
    "Value": {
     "Fn::Join": [
      "",
@@ -231,7 +310,29 @@
       {
        "Ref": "AWS::URLSuffix"
       },
-      "/dev"
+      "/dev/http"
+     ]
+    ]
+   }
+  },
+  "ApiEndpointhttpProxy": {
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "wss://",
+      {
+       "Ref": "WebSocketApi34BCF99B"
+      },
+      ".execute-api.",
+      {
+       "Ref": "AWS::Region"
+      },
+      ".",
+      {
+       "Ref": "AWS::URLSuffix"
+      },
+      "/dev/http-proxy"
      ]
     ]
    }
