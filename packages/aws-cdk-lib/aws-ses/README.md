@@ -210,6 +210,22 @@ for (const record of identity.dkimRecords) {
 }
 ```
 
+#### Grants
+
+To grant a specific action to a principal use the `grant` method.
+For sending emails, `grantSendEmail` can be used instead:
+
+```ts
+import * as iam from 'aws-cdk-lib/aws-iam';
+declare const user: iam.User;
+
+const identity = new ses.EmailIdentity(this, 'Identity', {
+  identity: ses.Identity.domain('cdk.dev'),
+});
+
+identity.grantSendEmail(user);
+```
+
 ### Virtual Deliverability Manager (VDM)
 
 Virtual Deliverability Manager is an Amazon SES feature that helps you enhance email deliverability,

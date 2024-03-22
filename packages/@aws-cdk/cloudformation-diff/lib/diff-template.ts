@@ -46,20 +46,23 @@ export function fullDiff(
   currentTemplate: { [key: string]: any },
   newTemplate: { [key: string]: any },
   changeSet?: CloudFormation.DescribeChangeSetOutput,
+  isImport?: boolean,
 ): types.TemplateDiff {
 
   normalize(currentTemplate);
   normalize(newTemplate);
   const theDiff = diffTemplate(currentTemplate, newTemplate);
   if (changeSet) {
-    filterFalsePositivies(theDiff, changeSet);
+    filterFalsePositives(theDiff, changeSet);
     addImportInformation(theDiff, changeSet);
+  } else if (isImport) {
+    makeAllResourceChangesImports(theDiff);
   }
 
   return theDiff;
 }
 
-function diffTemplate(
+export function diffTemplate(
   currentTemplate: { [key: string]: any },
   newTemplate: { [key: string]: any },
 ): types.TemplateDiff {
@@ -218,9 +221,19 @@ function addImportInformation(diff: types.TemplateDiff, changeSet: CloudFormatio
   });
 }
 
-function filterFalsePositivies(diff: types.TemplateDiff, changeSet: CloudFormation.DescribeChangeSetOutput) {
+function makeAllResourceChangesImports(diff: types.TemplateDiff) {
+  diff.resources.forEachDifference((_logicalId: string, change: types.ResourceDifference) => {
+    change.isImport = true;
+  });
+}
+
+function filterFalsePositives(diff: types.TemplateDiff, changeSet: CloudFormation.DescribeChangeSetOutput) {
   const replacements = findResourceReplacements(changeSet);
   diff.resources.forEachDifference((logicalId: string, change: types.ResourceDifference) => {
+    if (change.resourceType.includes('AWS::Serverless')) {
+      // CFN applies the SAM transform before creating the changeset, so the changeset contains no information about SAM resources
+      return;
+    }
     change.forEachDifference((type: 'Property' | 'Other', name: string, value: types.Difference<any> | types.PropertyDifference<any>) => {
       if (type === 'Property') {
         if (!replacements[logicalId]) {

@@ -27,7 +27,7 @@ export interface UserPoolIdentityProviderGoogleProps extends UserPoolIdentityPro
    */
   readonly clientSecretValue?: SecretValue;
   /**
-   * The list of google permissions to obtain for getting access to the google profile
+   * The list of Google permissions to obtain for getting access to the Google profile
    * @see https://developers.google.com/identity/sign-in/web/sign-in
    * @default [ profile ]
    */
@@ -35,7 +35,7 @@ export interface UserPoolIdentityProviderGoogleProps extends UserPoolIdentityPro
 }
 
 /**
- * Represents a identity provider that integrates with 'Google'
+ * Represents an identity provider that integrates with Google
  * @resource AWS::Cognito::UserPoolIdentityProvider
  */
 export class UserPoolIdentityProviderGoogle extends UserPoolIdentityProviderBase {

@@ -1540,6 +1540,29 @@ test('DeployTimeSubstitutedFile can be used to add substitutions in a file', () 
   expect(content).toContain('changedMockTypeSuccess');
 });
 
+test('DeployTimeSubstitutedFile can be used to add substitutions in a file with a defined destination key', () => {
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app, 'Test');
+  const bucket = new s3.Bucket(stack, 'Bucket');
+  const destinationKey = 'helloworld.yaml';
+  new s3deploy.DeployTimeSubstitutedFile(stack, 'MyFile', {
+    source: path.join(__dirname, 'file-substitution-test', 'sample-definition.yaml'),
+    destinationKey: destinationKey,
+    destinationBucket: bucket,
+    substitutions: {
+      testMethod: 'changedTestMethodSuccess',
+      mock: 'changedMockTypeSuccess',
+    },
+  });
+
+  const result = app.synth();
+  const content = readDataFile(result, destinationKey);
+  expect(content).not.toContain('testMethod');
+  expect(content).toContain('changedTestMethodSuccess');
+  expect(content).not.toContain('mock');
+  expect(content).toContain('changedMockTypeSuccess');
+});
+
 test('DeployTimeSubstitutedFile throws error when source file path is invalid', () => {
   const app = new cdk.App();
   const stack = new cdk.Stack(app, 'Test');
