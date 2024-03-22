@@ -266,6 +266,21 @@ listener.addTargets('AppFleet', {
 });
 ```
 
+### Enforce security group inbound rules on PrivateLink traffic for a Network Load Balancer
+
+You can indicate whether to evaluate inbound security group rules for traffic 
+sent to a Network Load Balancer through AWS PrivateLink.
+The evaluation is enabled by default.
+
+```ts
+declare const vpc: ec2.Vpc;
+
+const nlb = new elbv2.NetworkLoadBalancer(this, 'LB', {
+  vpc,
+  enforceSecurityGroupInboundRulesOnPrivateLinkTraffic: true,
+});
+```
+
 One thing to keep in mind is that network load balancers do not have security
 groups, and no automatic security group configuration is done for you. You will
 have to configure the security groups of the target yourself to allow traffic by
