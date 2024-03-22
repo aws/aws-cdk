@@ -10,7 +10,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-ec2-vpc-endpoint-service/VPC"
+      "Value": "aws-cdk-elbv2-integ-enforce-sg-inbound-rules/VPC"
      }
     ]
    }
@@ -39,7 +39,7 @@
      },
      {
       "Key": "Name",
-      "Value": "aws-cdk-ec2-vpc-endpoint-service/VPC/PublicSubnet1"
+      "Value": "aws-cdk-elbv2-integ-enforce-sg-inbound-rules/VPC/PublicSubnet1"
      }
     ],
     "VpcId": {
@@ -53,7 +53,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-ec2-vpc-endpoint-service/VPC/PublicSubnet1"
+      "Value": "aws-cdk-elbv2-integ-enforce-sg-inbound-rules/VPC/PublicSubnet1"
      }
     ],
     "VpcId": {
@@ -94,7 +94,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-ec2-vpc-endpoint-service/VPC/PublicSubnet1"
+      "Value": "aws-cdk-elbv2-integ-enforce-sg-inbound-rules/VPC/PublicSubnet1"
      }
     ]
    }
@@ -114,7 +114,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-ec2-vpc-endpoint-service/VPC/PublicSubnet1"
+      "Value": "aws-cdk-elbv2-integ-enforce-sg-inbound-rules/VPC/PublicSubnet1"
      }
     ]
    },
@@ -147,7 +147,7 @@
      },
      {
       "Key": "Name",
-      "Value": "aws-cdk-ec2-vpc-endpoint-service/VPC/PublicSubnet2"
+      "Value": "aws-cdk-elbv2-integ-enforce-sg-inbound-rules/VPC/PublicSubnet2"
      }
     ],
     "VpcId": {
@@ -161,7 +161,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-ec2-vpc-endpoint-service/VPC/PublicSubnet2"
+      "Value": "aws-cdk-elbv2-integ-enforce-sg-inbound-rules/VPC/PublicSubnet2"
      }
     ],
     "VpcId": {
@@ -202,7 +202,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-ec2-vpc-endpoint-service/VPC/PublicSubnet2"
+      "Value": "aws-cdk-elbv2-integ-enforce-sg-inbound-rules/VPC/PublicSubnet2"
      }
     ]
    }
@@ -222,7 +222,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-ec2-vpc-endpoint-service/VPC/PublicSubnet2"
+      "Value": "aws-cdk-elbv2-integ-enforce-sg-inbound-rules/VPC/PublicSubnet2"
      }
     ]
    },
@@ -255,7 +255,7 @@
      },
      {
       "Key": "Name",
-      "Value": "aws-cdk-ec2-vpc-endpoint-service/VPC/PrivateSubnet1"
+      "Value": "aws-cdk-elbv2-integ-enforce-sg-inbound-rules/VPC/PrivateSubnet1"
      }
     ],
     "VpcId": {
@@ -269,7 +269,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-ec2-vpc-endpoint-service/VPC/PrivateSubnet1"
+      "Value": "aws-cdk-elbv2-integ-enforce-sg-inbound-rules/VPC/PrivateSubnet1"
      }
     ],
     "VpcId": {
@@ -324,7 +324,7 @@
      },
      {
       "Key": "Name",
-      "Value": "aws-cdk-ec2-vpc-endpoint-service/VPC/PrivateSubnet2"
+      "Value": "aws-cdk-elbv2-integ-enforce-sg-inbound-rules/VPC/PrivateSubnet2"
      }
     ],
     "VpcId": {
@@ -338,7 +338,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-ec2-vpc-endpoint-service/VPC/PrivateSubnet2"
+      "Value": "aws-cdk-elbv2-integ-enforce-sg-inbound-rules/VPC/PrivateSubnet2"
      }
     ],
     "VpcId": {
@@ -375,7 +375,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-ec2-vpc-endpoint-service/VPC"
+      "Value": "aws-cdk-elbv2-integ-enforce-sg-inbound-rules/VPC"
      }
     ]
    }
@@ -391,112 +391,57 @@
     }
    }
   },
-  "NLBNoPrincipals25B7CFB1": {
-   "Type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
+  "SGADB53937": {
+   "Type": "AWS::EC2::SecurityGroup",
    "Properties": {
-    "LoadBalancerAttributes": [
+    "GroupDescription": "aws-cdk-elbv2-integ-enforce-sg-inbound-rules/SG",
+    "SecurityGroupEgress": [
      {
-      "Key": "deletion_protection.enabled",
-      "Value": "false"
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow all outbound traffic by default",
+      "IpProtocol": "-1"
      }
     ],
-    "Scheme": "internal",
-    "Subnets": [
-     {
-      "Ref": "VPCPrivateSubnet1Subnet8BCA10E0"
-     },
-     {
-      "Ref": "VPCPrivateSubnet2SubnetCFCDAA7A"
-     }
-    ],
-    "Type": "network"
-   }
-  },
-  "MyVpcEndpointServiceWithNoPrincipals9B24276E": {
-   "Type": "AWS::EC2::VPCEndpointService",
-   "Properties": {
-    "AcceptanceRequired": false,
-    "NetworkLoadBalancerArns": [
-     {
-      "Ref": "NLBNoPrincipals25B7CFB1"
-     }
-    ]
-   }
-  },
-  "NLBWithPrincipals912E28FF": {
-   "Type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
-   "Properties": {
-    "LoadBalancerAttributes": [
-     {
-      "Key": "deletion_protection.enabled",
-      "Value": "false"
-     }
-    ],
-    "Scheme": "internal",
-    "Subnets": [
-     {
-      "Ref": "VPCPrivateSubnet1Subnet8BCA10E0"
-     },
-     {
-      "Ref": "VPCPrivateSubnet2SubnetCFCDAA7A"
-     }
-    ],
-    "Type": "network"
-   }
-  },
-  "MyVpcEndpointServiceWithPrincipals41EE2DF2": {
-   "Type": "AWS::EC2::VPCEndpointService",
-   "Properties": {
-    "AcceptanceRequired": false,
-    "NetworkLoadBalancerArns": [
-     {
-      "Ref": "NLBWithPrincipals912E28FF"
-     }
-    ]
-   }
-  },
-  "MyVpcEndpointServiceWithPrincipalsPermissions29F9BD5A": {
-   "Type": "AWS::EC2::VPCEndpointServicePermissions",
-   "Properties": {
-    "AllowedPrincipals": [
-     "arn:aws:iam::123456789012:root",
-     "ec2.amazonaws.com"
-    ],
-    "ServiceId": {
-     "Ref": "MyVpcEndpointServiceWithPrincipals41EE2DF2"
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
     }
    }
-  }
- },
- "Outputs": {
-  "MyVpcEndpointServiceWithNoPrincipalsServiceName": {
-   "Description": "Give this to service consumers so they can connect via VPC Endpoint",
-   "Value": {
-    "Fn::Join": [
-     ".",
-     [
-      "com.amazonaws.vpce",
-      {
-       "Ref": "AWS::Region"
-      },
-      {
-       "Ref": "MyVpcEndpointServiceWithNoPrincipals9B24276E"
-      }
-     ]
-    ]
-   },
-   "Export": {
-    "Name": "ServiceName"
-   }
   },
-  "MyVpcEndpointServiceWithPrincipalsEndpointServiceId": {
-   "Description": "Reference this service from other stacks",
-   "Value": {
-    "Ref": "MyVpcEndpointServiceWithPrincipals41EE2DF2"
+  "LB8A12904C": {
+   "Type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
+   "Properties": {
+    "EnforceSecurityGroupInboundRulesOnPrivateLinkTraffic": "on",
+    "LoadBalancerAttributes": [
+     {
+      "Key": "deletion_protection.enabled",
+      "Value": "false"
+     }
+    ],
+    "Scheme": "internet-facing",
+    "SecurityGroups": [
+     {
+      "Fn::GetAtt": [
+       "SGADB53937",
+       "GroupId"
+      ]
+     }
+    ],
+    "Subnets": [
+     {
+      "Ref": "VPCPublicSubnet1SubnetB4246D30"
+     },
+     {
+      "Ref": "VPCPublicSubnet2Subnet74179F39"
+     }
+    ],
+    "Type": "network"
    },
-   "Export": {
-    "Name": "EndpointServiceId"
-   }
+   "DependsOn": [
+    "VPCPublicSubnet1DefaultRoute91CEF279",
+    "VPCPublicSubnet1RouteTableAssociation0B0896DC",
+    "VPCPublicSubnet2DefaultRouteB7481BBA",
+    "VPCPublicSubnet2RouteTableAssociation5A808732"
+   ]
   }
  },
  "Parameters": {
