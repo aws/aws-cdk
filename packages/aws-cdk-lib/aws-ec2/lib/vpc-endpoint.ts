@@ -256,6 +256,19 @@ export class InterfaceVpcEndpointService implements IInterfaceVpcEndpointService
 }
 
 /**
+ * Optional properties for the InterfaceVpcEndpointAwsService class
+ */
+export interface InterfaceVpcEndpointAwsServiceProps {
+  /**
+   * If true, the service is a global endpoint and
+   * its name will not be prefixed with the stack's region.
+   *
+   * @default false
+   */
+  global?: boolean;
+}
+
+/**
  * An AWS service for an interface VPC endpoint.
  */
 export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointService {
@@ -320,7 +333,7 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   public static readonly CODEARTIFACT_REPOSITORIES = new InterfaceVpcEndpointAwsService('codeartifact.repositories');
   public static readonly CODEBUILD = new InterfaceVpcEndpointAwsService('codebuild');
   public static readonly CODEBUILD_FIPS = new InterfaceVpcEndpointAwsService('codebuild-fips');
-  public static readonly CODECATALYST = new InterfaceVpcEndpointAwsService('codecatalyst', 'aws.api.global', undefined, true);
+  public static readonly CODECATALYST = new InterfaceVpcEndpointAwsService('codecatalyst', 'aws.api.global', undefined, { global: true });
   public static readonly CODECATALYST_GIT = new InterfaceVpcEndpointAwsService('codecatalyst.git');
   public static readonly CODECATALYST_PACKAGES = new InterfaceVpcEndpointAwsService('codecatalyst.packages');
   public static readonly CODECOMMIT = new InterfaceVpcEndpointAwsService('codecommit');
@@ -485,7 +498,7 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   public static readonly ROBOMAKER = new InterfaceVpcEndpointAwsService('robomaker');
   public static readonly S3 = new InterfaceVpcEndpointAwsService('s3');
   public static readonly S3_OUTPOSTS = new InterfaceVpcEndpointAwsService('s3-outposts');
-  public static readonly S3_MULTI_REGION_ACCESS_POINTS = new InterfaceVpcEndpointAwsService('s3-global.accesspoint', 'com.amazonaws', undefined, true);
+  public static readonly S3_MULTI_REGION_ACCESS_POINTS = new InterfaceVpcEndpointAwsService('s3-global.accesspoint', 'com.amazonaws', undefined, { global: true });
   public static readonly SAGEMAKER_API = new InterfaceVpcEndpointAwsService('sagemaker.api');
   public static readonly SAGEMAKER_FEATURESTORE_RUNTIME = new InterfaceVpcEndpointAwsService('sagemaker.featurestore-runtime');
   public static readonly SAGEMAKER_GEOSPATIAL = new InterfaceVpcEndpointAwsService('sagemaker-geospatial');
@@ -554,7 +567,12 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
    */
   public readonly privateDnsDefault?: boolean = true;
 
-  constructor(name: string, prefix?: string, port?: number, global = false) {
+  constructor(
+    name: string,
+    prefix?: string,
+    port?: number,
+    { global = false }: InterfaceVpcEndpointAwsServiceProps = {},
+  ) {
     const regionPrefix = global ? '' : (Lazy.uncachedString({
       produce: (context) => Stack.of(context.scope).region,
     }) + '.');
