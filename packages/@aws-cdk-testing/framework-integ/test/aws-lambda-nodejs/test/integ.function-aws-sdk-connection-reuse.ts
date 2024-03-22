@@ -86,8 +86,12 @@ class TestStack extends Stack {
   }
 }
 
-const app = new App();
-new integ.IntegTest(app, 'cdk-integ-lambda-nodejs', {
-  testCases: [new TestStack(app, 'cdk-integ-lambda-nodejs-stack')],
+const app = new App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda-nodejs:defaultAwsSdkConnectionReuseToFalse': false,
+  },
+});
+new integ.IntegTest(app, 'cdk-integ-lambda-nodejs-aws-sdk-connection-reuse', {
+  testCases: [new TestStack(app, 'cdk-integ-lambda-nodejs-aws-sdk-connection-reuse-stack')],
 });
 app.synth();

@@ -8,7 +8,11 @@ import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as cdk from 'aws-cdk-lib';
 import * as destinations from '../lib';
 
-const app = new cdk.App();
+const app = new cdk.App({
+  postCliContext: {
+    '@aws-cdk/aws-lambda-nodejs:defaultAwsSdkConnectionReuseToFalse': false,
+  },
+});
 
 const stack = new cdk.Stack(app, 'aws-cdk-firehose-delivery-stream-s3-all-properties');
 

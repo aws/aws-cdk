@@ -17,6 +17,7 @@ class SdkV2TestStack extends Stack {
     this.lambdaFunction = new lambda.NodejsFunction(this, 'external', {
       entry: path.join(__dirname, 'integ-handlers/dependencies.ts'),
       runtime: STANDARD_NODEJS_RUNTIME,
+      awsSdkConnectionReuse: true,
       bundling: {
         minify: true,
         // Will be installed, not bundled
@@ -39,6 +40,7 @@ class SdkV3TestStack extends Stack {
     this.lambdaFunction = new lambda.NodejsFunction(this, 'external-sdk-v3', {
       entry: path.join(__dirname, 'integ-handlers/dependencies-sdk-v3.ts'),
       runtime: Runtime.NODEJS_18_X,
+      awsSdkConnectionReuse: true,
     });
   }
 }
@@ -53,6 +55,7 @@ class SdkV3BundledStack extends Stack {
     this.lambdaFunction = new lambda.NodejsFunction(this, 'bundle-sdk', {
       entry: path.join(__dirname, 'integ-handlers/dependencies-sdk-v3.ts'),
       runtime: Runtime.NODEJS_18_X,
+      awsSdkConnectionReuse: true,
       bundling: {
         bundleAwsSDK: true,
       },

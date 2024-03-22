@@ -12,6 +12,7 @@ class TypeScriptModuleStack extends Stack {
 
     this.lambdaFunction = new lambda.NodejsFunction(this, 'mts-entry', {
       entry: path.join(__dirname, 'integ-handlers/mts-handler.mts'),
+      awsSdkConnectionReuse: true,
     });
   }
 }
@@ -22,6 +23,7 @@ class TypeScriptCommonJsStack extends Stack {
 
     this.lambdaFunction = new lambda.NodejsFunction(this, 'cts-entry', {
       entry: path.join(__dirname, 'integ-handlers/cts-handler.cts'),
+      awsSdkConnectionReuse: true,
     });
   }
 }
@@ -32,6 +34,7 @@ class JavaScriptCommonJsStack extends Stack {
 
     this.lambdaFunction = new lambda.NodejsFunction(this, 'cjs-entry', {
       entry: path.join(__dirname, 'integ-handlers/cjs-handler.cjs'),
+      awsSdkConnectionReuse: true,
     });
   }
 }

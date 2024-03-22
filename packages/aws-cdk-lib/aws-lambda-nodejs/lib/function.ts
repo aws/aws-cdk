@@ -8,7 +8,7 @@ import { callsites, findUpMultiple } from './util';
 import { Architecture } from '../../aws-lambda';
 import * as lambda from '../../aws-lambda';
 import { FeatureFlags } from '../../core';
-import { LAMBDA_NODEJS_USE_LATEST_RUNTIME } from '../../cx-api';
+import { LAMBDA_NODEJS_USE_LATEST_RUNTIME, NODEJS_FUNCTION_DEFAULT_AWS_SDK_CONNECTION_REUSE_TO_FALSE } from '../../cx-api';
 
 /**
  * Properties for a NodejsFunction
@@ -51,7 +51,7 @@ export interface NodejsFunctionProps extends lambda.FunctionOptions {
    *
    * @see https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/node-reusing-connections.html
    *
-   * @default true
+   * @default - `false` if the `@aws-cdk/aws-lambda-nodejs:defaultAwsSdkConnectionReuseToFalse` feature flag is enabled, otherwise `true`
    */
   readonly awsSdkConnectionReuse?: boolean;
 
@@ -117,7 +117,7 @@ export class NodejsFunction extends lambda.Function {
     });
 
     // Enable connection reuse for aws-sdk
-    if (props.awsSdkConnectionReuse ?? true) {
+    if (props.awsSdkConnectionReuse ?? (FeatureFlags.of(scope).isEnabled(NODEJS_FUNCTION_DEFAULT_AWS_SDK_CONNECTION_REUSE_TO_FALSE) ? false : true)) {
       this.addEnvironment('AWS_NODEJS_CONNECTION_REUSE_ENABLED', '1', { removeInEdge: true });
     }
   }

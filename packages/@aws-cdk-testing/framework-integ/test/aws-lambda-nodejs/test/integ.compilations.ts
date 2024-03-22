@@ -17,6 +17,7 @@ class TestStack extends Stack {
         preCompilation: true,
       },
       runtime: STANDARD_NODEJS_RUNTIME,
+      awsSdkConnectionReuse: true,
     });
 
     new lambda.NodejsFunction(this, 'ts-decorator-handler-tsconfig', {
@@ -29,6 +30,7 @@ class TestStack extends Stack {
         preCompilation: true,
       },
       runtime: STANDARD_NODEJS_RUNTIME,
+      awsSdkConnectionReuse: true,
     });
   }
 }

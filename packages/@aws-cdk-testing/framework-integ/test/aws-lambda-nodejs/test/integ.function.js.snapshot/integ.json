@@ -1,14 +1,12 @@
 {
-  "version": "34.0.0",
+  "version": "36.0.0",
   "testCases": {
-    "integ.function": {
+    "cdk-integ-lambda-nodejs/DefaultTest": {
       "stacks": [
-        "cdk-integ-lambda-nodejs"
+        "cdk-integ-lambda-nodejs-stack"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": true
+      "assertionStack": "cdk-integ-lambda-nodejs/DefaultTest/DeployAssert",
+      "assertionStackName": "cdkinteglambdanodejsDefaultTestDeployAssert37BBCF7E"
     }
-  },
-  "synthContext": {},
-  "enableLookups": false
+  }
 }

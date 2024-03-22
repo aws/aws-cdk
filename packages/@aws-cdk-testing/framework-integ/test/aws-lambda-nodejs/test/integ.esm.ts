@@ -10,6 +10,7 @@ class TestStack extends Stack {
 
     new lambda.NodejsFunction(this, 'esm', {
       entry: path.join(__dirname, 'integ-handlers/esm.ts'),
+      awsSdkConnectionReuse: true,
       bundling: {
         format: lambda.OutputFormat.ESM,
       },

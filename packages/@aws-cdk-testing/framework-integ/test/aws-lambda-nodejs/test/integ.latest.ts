@@ -15,6 +15,7 @@ class TestStack extends Stack {
 
     this.lambdaFunction = new lambda.NodejsFunction(this, 'latest', {
       entry: path.join(__dirname, 'integ-handlers/dependencies.ts'),
+      awsSdkConnectionReuse: true,
       bundling: {
         minify: true,
         nodeModules: ['delay'],
