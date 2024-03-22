@@ -10,6 +10,7 @@
 - [WebSocket APIs](#websocket-apis)
   - [Lambda WebSocket Integration](#lambda-websocket-integration)
   - [AWS WebSocket Integration](#aws-websocket-integration)
+  - [HTTP WebSocket Integrations](#http-websocket-integrations)
 
 ## HTTP APIs
 
@@ -307,3 +308,39 @@ webSocketApi.addRoute('$connect', {
 
 You can also set additional properties to change the behavior of your integration, such as `contentHandling`.
 See [Working with binary media types for WebSocket APIs](https://docs.aws.amazon.com/apigateway/latest/developerguide/websocket-api-develop-binary-media-types.html).
+
+### HTTP WebSocket Integrations
+
+
+HTTP proxy integrations allow the client request to be passed through to the client as-is. See [Set up HTTP proxy integrations in API Gateway](https://docs.aws.amazon.com/apigateway/latest/developerguide/setup-http-integrations.html#api-gateway-set-up-http-proxy-integration-on-proxy-resource)
+
+```ts
+import { WebSocketHttpProxyIntegration } from 'aws-cdk-lib/aws-apigatewayv2-integrations';
+import * as iam from 'aws-cdk-lib/aws-iam';
+
+const webSocketApi = new apigwv2.WebSocketApi(this, 'mywsapi');
+new apigwv2.WebSocketStage(this, 'mystage', {
+  webSocketApi,
+  stageName: 'dev',
+  autoDeploy: true,
+});
+
+// TODO
+```
+
+HTTP integrations, also known as "HTTP custom integrations". See [Set up HTTP custom integrations in API Gateway](https://docs.aws.amazon.com/apigateway/latest/developerguide/setup-http-integrations.html#set-up-http-custom-integrations)
+
+
+```ts
+import { WebSocketHttpIntegration } from 'aws-cdk-lib/aws-apigatewayv2-integrations';
+import * as iam from 'aws-cdk-lib/aws-iam';
+
+const webSocketApi = new apigwv2.WebSocketApi(this, 'mywsapi');
+new apigwv2.WebSocketStage(this, 'mystage', {
+  webSocketApi,
+  stageName: 'dev',
+  autoDeploy: true,
+});
+
+// TODO
+```
