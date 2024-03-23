@@ -25,17 +25,17 @@ export class AlbControllerVersion {
   /**
    * v2.0.1
    */
-  public static readonly V2_0_1 = new AlbControllerVersion('v2.0.1', '1.0.7', false);
+  public static readonly V2_0_1 = new AlbControllerVersion('v2.0.1', '1.0.8', false);
 
   /**
    * v2.1.0
    */
-  public static readonly V2_1_0 = new AlbControllerVersion('v2.1.0', '1.4.1', false);
+  public static readonly V2_1_0 = new AlbControllerVersion('v2.1.0', '1.1.1', false);
 
   /**
    * v2.1.1
    */
-  public static readonly V2_1_1 = new AlbControllerVersion('v2.1.1', '1.1.2', false);
+  public static readonly V2_1_1 = new AlbControllerVersion('v2.1.1', '1.1.3', false);
 
   /**
    * v2.1.2
@@ -45,12 +45,12 @@ export class AlbControllerVersion {
   /**
    * v2.1.3
    */
-  public static readonly V2_1_3 = new AlbControllerVersion('v2.1.3', '1.1.5', false);
+  public static readonly V2_1_3 = new AlbControllerVersion('v2.1.3', '1.1.6', false);
 
   /**
    * v2.0.0
    */
-  public static readonly V2_2_0 = new AlbControllerVersion('v2.2.0', '1.2.0', false);
+  public static readonly V2_2_0 = new AlbControllerVersion('v2.2.0', '1.2.2', false);
 
   /**
    * v2.2.1
@@ -75,7 +75,7 @@ export class AlbControllerVersion {
   /**
    * v2.3.0
    */
-  public static readonly V2_3_0 = new AlbControllerVersion('v2.3.0', '1.3.0', false);
+  public static readonly V2_3_0 = new AlbControllerVersion('v2.3.0', '1.3.2', false);
 
   /**
    * v2.3.1
@@ -95,7 +95,7 @@ export class AlbControllerVersion {
   /**
    * v2.4.2
    */
-  public static readonly V2_4_2 = new AlbControllerVersion('v2.4.2', '1.4.2', false);
+  public static readonly V2_4_2 = new AlbControllerVersion('v2.4.2', '1.4.3', false);
 
   /**
    * v2.4.3
@@ -130,7 +130,7 @@ export class AlbControllerVersion {
   /**
    * v2.5.1
    */
-  public static readonly V2_5_1 = new AlbControllerVersion('v2.5.1', '1.5.1', false);
+  public static readonly V2_5_1 = new AlbControllerVersion('v2.5.1', '1.5.2', false);
 
   /**
    * v2.5.2
