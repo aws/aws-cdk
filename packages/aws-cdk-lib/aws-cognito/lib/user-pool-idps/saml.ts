@@ -35,6 +35,24 @@ export interface UserPoolIdentityProviderSamlProps extends UserPoolIdentityProvi
    * @default - false
    */
   readonly idpSignout?: boolean;
+
+  /**
+   * Whether to require encrypted SAML assertions from IdP.
+   *
+   * @see https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-SAML-signing-encryption.html#cognito-user-pools-SAML-encryption
+   *
+   * @default false
+   */
+  readonly encryptedResponses?: boolean;
+
+  /**
+   * Whether to sign SAML requests.
+   *
+   * @see https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-SAML-signing-encryption.html#cognito-user-pools-SAML-signing
+   *
+   * @default false
+   */
+  readonly signingRequests?: boolean;
 }
 
 /**
@@ -99,6 +117,8 @@ export class UserPoolIdentityProviderSaml extends UserPoolIdentityProviderBase {
         IDPSignout: props.idpSignout ?? false,
         MetadataURL: metadataType === UserPoolIdentityProviderSamlMetadataType.URL ? metadataContent : undefined,
         MetadataFile: metadataType === UserPoolIdentityProviderSamlMetadataType.FILE ? metadataContent : undefined,
+        EncryptedResponses: props.encryptedResponses ?? undefined,
+        RequestSigningAlgorithm: props.signingRequests ? 'rsa-sha256' : undefined,
       },
       idpIdentifiers: props.identifiers,
       attributeMapping: super.configureAttributeMapping(),

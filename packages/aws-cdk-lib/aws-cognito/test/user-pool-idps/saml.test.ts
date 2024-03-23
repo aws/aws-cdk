@@ -86,6 +86,54 @@ describe('UserPoolIdentityProvider', () => {
       expect(pool.identityProviders).toContain(provider);
     });
 
+    test('encryptedResponses', () => {
+      // GIVEN
+      const stack = new Stack();
+      const pool = new UserPool(stack, 'userpool');
+
+      // WHEN
+      new UserPoolIdentityProviderSaml(stack, 'userpoolidp', {
+        userPool: pool,
+        metadata: UserPoolIdentityProviderSamlMetadata.file('my-file-contents'),
+        encryptedResponses: true,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolIdentityProvider', {
+        ProviderName: 'userpoolidp',
+        ProviderType: 'SAML',
+        ProviderDetails: {
+          MetadataFile: 'my-file-contents',
+          IDPSignout: false,
+          EncryptedResponses: true,
+        },
+      });
+    });
+
+    test('siningRequests', () => {
+      // GIVEN
+      const stack = new Stack();
+      const pool = new UserPool(stack, 'userpool');
+
+      // WHEN
+      new UserPoolIdentityProviderSaml(stack, 'userpoolidp', {
+        userPool: pool,
+        metadata: UserPoolIdentityProviderSamlMetadata.file('my-file-contents'),
+        signingRequests: true,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolIdentityProvider', {
+        ProviderName: 'userpoolidp',
+        ProviderType: 'SAML',
+        ProviderDetails: {
+          MetadataFile: 'my-file-contents',
+          IDPSignout: false,
+          RequestSigningAlgorithm: 'rsa-sha256',
+        },
+      });
+    });
+
     test('attribute mapping', () => {
       // GIVEN
       const stack = new Stack();
