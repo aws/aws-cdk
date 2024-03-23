@@ -34,10 +34,12 @@ function installLatestSdk(packageName: string): void {
 }
 
 interface AwsSdk {
-  [key: string]: any
+  [key: string]: any;
 }
+
 async function loadAwsSdk(
   packageName: string,
+  disableErrorLogging: boolean,
   installLatestAwsSdk?: 'true' | 'false',
 ) {
   let awsSdk: AwsSdk;
@@ -49,7 +51,9 @@ async function loadAwsSdk(
         // esbuild-disable unsupported-require-call -- not esbuildable but that's fine
         awsSdk = require(`/tmp/node_modules/${packageName}`);
       } catch (e) {
-        console.log(`Failed to install latest AWS SDK v3. Falling back to pre-installed version. Error: ${e}`);
+        if (!disableErrorLogging) {
+          console.log(`Failed to install latest AWS SDK v3. Falling back to pre-installed version. Error: ${e}`);
+        }
         // MUST use require as dynamic import() does not support importing from directories
         // esbuild-disable unsupported-require-call -- not esbuildable but that's fine
         return require(packageName); // Fallback to pre-installed version
@@ -71,10 +75,14 @@ async function loadAwsSdk(
 
 /* eslint-disable @typescript-eslint/no-require-imports, import/no-extraneous-dependencies */
 export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent, context: AWSLambda.Context) {
+  const disableInfoLogging = event.ResourceProperties.DisableInfoLogging === 'true';
+  const disableErrorLogging = event.ResourceProperties.DisableErrorLogging === 'true';
+
   try {
     event.ResourceProperties.Create = decodeCall(event.ResourceProperties.Create);
     event.ResourceProperties.Update = decodeCall(event.ResourceProperties.Update);
     event.ResourceProperties.Delete = decodeCall(event.ResourceProperties.Delete);
+
     let data: { [key: string]: string } = {};
 
     // Default physical resource id
@@ -95,9 +103,15 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
     if (call) {
       const apiCall = new ApiCall(call.service, call.action);
 
-      let awsSdk: AwsSdk | Promise<AwsSdk> = loadAwsSdk(apiCall.v3PackageName, event.ResourceProperties.InstallLatestAwsSdk);
+      let awsSdk: AwsSdk | Promise<AwsSdk> = loadAwsSdk(
+        apiCall.v3PackageName,
+        disableErrorLogging,
+        event.ResourceProperties.InstallLatestAwsSdk,
+      );
 
-      console.log(JSON.stringify({ ...event, ResponseURL: '...' }));
+      if (!disableInfoLogging) {
+        console.log(JSON.stringify({ ...event, ResponseURL: '...' }));
+      }
 
       let credentials;
       if (call.assumedRoleArn) {
@@ -128,7 +142,9 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
           flattenResponse: true,
         });
 
-        console.log('API response', response);
+        if (!disableInfoLogging) {
+          console.log('API response', response);
+        }
 
         flatData.apiVersion = apiCall.client.config.apiVersion; // For test purposes: check if apiVersion was correctly passed.
         flatData.region = await apiCall.client.config.region().catch(() => undefined); // For test purposes: check if region was correctly passed.
@@ -159,9 +175,26 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
       }
     }
 
-    await respond(event, 'SUCCESS', 'OK', physicalResourceId, data);
+    await respond({
+      event,
+      responseStatus: 'SUCCESS',
+      reason: 'OK',
+      physicalResourceId,
+      data,
+      disableInfoLogging,
+    });
   } catch (e: any) {
-    console.log(e);
-    await respond(event, 'FAILED', e.message || 'Internal Error', context.logStreamName, {});
+    if (!disableErrorLogging) {
+      console.log(e);
+    }
+
+    await respond({
+      event,
+      responseStatus: 'FAILED',
+      reason: e.message || 'Internal Error',
+      physicalResourceId: context.logStreamName,
+      data: {},
+      disableInfoLogging,
+    });
   }
 }

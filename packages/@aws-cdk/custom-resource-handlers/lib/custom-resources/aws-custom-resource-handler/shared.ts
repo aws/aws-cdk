@@ -5,6 +5,46 @@ import * as AWSLambda from 'aws-lambda';
  */
 export const PHYSICAL_RESOURCE_ID_REFERENCE = 'PHYSICAL:RESOURCEID:';
 
+type Event = AWSLambda.CloudFormationCustomResourceEvent
+
+/**
+ * Inputs to configure the Lambda function response.
+ */
+export interface RespondProps {
+  /**
+   * Data passed to the Lambda function upon execution.
+   */
+  event: Event;
+
+  /**
+   * The HTTP response status.
+   */
+  responseStatus: string;
+
+  /**
+   *
+   */
+  reason: string;
+
+  /**
+   * The physical ID of the custom resouce.
+   */
+  physicalResourceId: string;
+
+  /**
+   * API response data to include in the response.
+   */
+  data: any;
+
+  /**
+   * Disables info log information related to the operation of the Lambda function. This
+   * includes displaying the event received by the handler and any API responses received.
+   *
+   * @default false
+   */
+  disableInfoLogging?: boolean;
+}
+
 /**
  * Decodes encoded special values (physicalResourceId)
  */
@@ -41,25 +81,25 @@ export function filterKeys(object: object, pred: (key: string) => boolean) {
     );
 }
 
-type Event = AWSLambda.CloudFormationCustomResourceEvent
-
-export function respond(event: Event, responseStatus: string, reason: string, physicalResourceId: string, data: any) {
+export function respond(props: RespondProps) {
   const responseBody = JSON.stringify({
-    Status: responseStatus,
-    Reason: reason,
-    PhysicalResourceId: physicalResourceId,
-    StackId: event.StackId,
-    RequestId: event.RequestId,
-    LogicalResourceId: event.LogicalResourceId,
+    Status: props.responseStatus,
+    Reason: props.reason,
+    PhysicalResourceId: props.physicalResourceId,
+    StackId: props.event.StackId,
+    RequestId: props.event.RequestId,
+    LogicalResourceId: props.event.LogicalResourceId,
     NoEcho: false,
-    Data: data,
+    Data: props.data,
   });
 
-  // eslint-disable-next-line no-console
-  console.log('Responding', responseBody);
+  if (!props.disableInfoLogging) {
+    // eslint-disable-next-line no-console
+    console.log('Responding', responseBody);
+  }
 
   // eslint-disable-next-line @typescript-eslint/no-require-imports
-  const parsedUrl = require('url').parse(event.ResponseURL);
+  const parsedUrl = require('url').parse(props.event.ResponseURL);
   const requestOptions = {
     hostname: parsedUrl.hostname,
     path: parsedUrl.path,

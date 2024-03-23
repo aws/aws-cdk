@@ -396,11 +396,20 @@ export interface AwsCustomResourceProps {
   readonly vpcSubnets?: ec2.SubnetSelection;
 
   /**
-   * ADD A DOCSTRING
+   * Disables info log information related to the operation of the Lambda function. This
+   * includes displaying the event received by the handler and any API responses received.
    *
-   * @default true
+   * @default false
    */
-  readonly enableLogging?: boolean;
+  readonly disableInfoLogging?: boolean;
+
+  /**
+   * Disables error log information related to errors occurred while the Lambda function is
+   * operating.
+   *
+   * @default false
+   */
+  readonly disableErrorLogging?: boolean;
 }
 
 /**
@@ -504,7 +513,8 @@ export class AwsCustomResource extends Construct implements iam.IGrantable {
         update: props.onUpdate && this.encodeJson(props.onUpdate),
         delete: props.onDelete && this.encodeJson(props.onDelete),
         installLatestAwsSdk,
-        enableLogging: props.enableLogging ?? true,
+        disableInfoLogging: props.disableInfoLogging ?? false,
+        disableErrorLogging: props.disableErrorLogging ?? false,
       },
     });
 

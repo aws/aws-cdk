@@ -97,7 +97,9 @@
       ]
      ]
     },
-    "InstallLatestAwsSdk": false
+    "InstallLatestAwsSdk": "false",
+    "DisableInfoLogging": true,
+    "DisableErrorLogging": true
    },
    "DependsOn": [
     "ListLambdaFunctionsCustomResourcePolicyCFFF021A"
@@ -206,7 +208,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "e5178afc49b7c6a85127a67856ce958e4f0879ce6aad5e974cac2a088bf939db.zip"
+     "S3Key": "f47261605c7318d17a58bad776e04e516000c7fd973807f78df5f78dd172ebd8.zip"
     },
     "Handler": "index.handler",
     "Role": {
