@@ -22,7 +22,9 @@ const topic = new sns.Topic(this, 'Topic', {
 Add an SNS Topic to your stack with a specified signature version, which corresponds 
 to the hashing algorithm used while creating the signature of the notifications, 
 subscription confirmations, or unsubscribe confirmation messages sent by Amazon SNS.
-The default is `1`.
+
+The default signature version is `1` (`SHA1`).
+SNS also supports signature version `2` (`SHA256`).
 
 ```ts
 const topic = new sns.Topic(this, 'Topic', {

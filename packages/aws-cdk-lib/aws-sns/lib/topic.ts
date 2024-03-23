@@ -51,7 +51,7 @@ export interface TopicProps {
   /**
    * The list of delivery status logging configurations for the topic.
    *
-   * For more information, see https://docs.aws.amazon.com/sns/latest/dg/sns-topic-attributes.html.
+   * @see https://docs.aws.amazon.com/sns/latest/dg/sns-topic-attributes.html.
    *
    * @default None
    */
@@ -71,7 +71,7 @@ export interface TopicProps {
   /**
    * Adds a statement to enforce encryption of data in transit when publishing to the topic.
    *
-   * For more information, see https://docs.aws.amazon.com/sns/latest/dg/sns-security-best-practices.html#enforce-encryption-data-in-transit.
+   * @see https://docs.aws.amazon.com/sns/latest/dg/sns-security-best-practices.html#enforce-encryption-data-in-transit.
    *
    * @default false
    */
@@ -81,7 +81,7 @@ export interface TopicProps {
    * The signature version corresponds to the hashing algorithm used while creating the signature of the notifications,
    * subscription confirmations, or unsubscribe confirmation messages sent by Amazon SNS.
    *
-   * For more information, see https://docs.aws.amazon.com/sns/latest/dg/sns-verify-signature-of-message.html.
+   * @see https://docs.aws.amazon.com/sns/latest/dg/sns-verify-signature-of-message.html.
    *
    * @default 1
    */
@@ -91,7 +91,7 @@ export interface TopicProps {
 /**
  * A logging configuration for delivery status of messages sent from SNS topic to subscribed endpoints.
  *
- * For more information, see https://docs.aws.amazon.com/sns/latest/dg/sns-topic-attributes.html.
+ * @see https://docs.aws.amazon.com/sns/latest/dg/sns-topic-attributes.html.
  */
 export interface LoggingConfig {
   /**
@@ -171,7 +171,6 @@ export class Topic extends TopicBase {
       public readonly topicName = Stack.of(scope).splitArn(topicArn, ArnFormat.NO_RESOURCE_NAME).resource;
       public readonly fifo = this.topicName.endsWith('.fifo');
       public readonly contentBasedDeduplication = false;
-      public readonly signatureVersion = '1';
       protected autoCreatePolicy: boolean = false;
     }
 
@@ -184,7 +183,6 @@ export class Topic extends TopicBase {
   public readonly topicName: string;
   public readonly contentBasedDeduplication: boolean;
   public readonly fifo: boolean;
-  public readonly signatureVersion?: string;
 
   protected readonly autoCreatePolicy: boolean = true;
 
@@ -219,7 +217,7 @@ export class Topic extends TopicBase {
     if (props.fifo && props.topicName && !props.topicName.endsWith('.fifo')) {
       cfnTopicName = this.physicalName + '.fifo';
     } else if (props.fifo && !props.topicName) {
-      // Max lenght allowed by CloudFormation is 256, we subtract 5 to allow for ".fifo" suffix
+      // Max length allowed by CloudFormation is 256, we subtract 5 to allow for ".fifo" suffix
       const prefixName = Names.uniqueResourceName(this, {
         maxLength: 256 - 5,
         separator: '-',
@@ -227,6 +225,12 @@ export class Topic extends TopicBase {
       cfnTopicName = `${prefixName}.fifo`;
     } else {
       cfnTopicName = this.physicalName;
+    }
+
+    if (props.signatureVersion !== undefined) {
+      if (props.signatureVersion !== '1' && props.signatureVersion !== '2') {
+        throw new Error(`signatureVersion must be "1" or "2", received: "${props.signatureVersion}"`);
+      }
     }
 
     const resource = new CfnTopic(this, 'Resource', {
@@ -249,7 +253,6 @@ export class Topic extends TopicBase {
     this.topicName = this.getResourceNameAttribute(resource.attrTopicName);
     this.fifo = props.fifo || false;
     this.contentBasedDeduplication = props.contentBasedDeduplication || false;
-    this.signatureVersion = props.signatureVersion;
   }
 
   private renderLoggingConfigs(): CfnTopic.LoggingConfigProperty[] {
