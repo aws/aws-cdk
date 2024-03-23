@@ -807,42 +807,19 @@ Configuring the target relies on the `graphQLEndpointArn` property.
 Use the `AppSync` event target to trigger an AppSync GraphQL API. You need to
 create an `AppSync.GraphqlApi` configured with `AWS_IAM` authorization mode.
 
-The code snippet below creates a AppSync GraphQL API that is invoked every hour.
+The code snippet below creates a AppSync GraphQL API target that is invoked, calling the `publish` mutation.
 
 ```ts
-import * as appsync from 'aws-cdk-lib/aws-appsync';
-import * as events from 'aws-cd-lib/aws-events-targets';
+import * as events from 'aws-cdk-lib/aws-events-targets';
 
-const rule = new events.Rule(this, 'Rule', {
-  schedule: events.Schedule.rate(cdk.Duration.minutes(1)),
-});
-
-const api = new appsync.GraphqlApi(this, 'MyAPI', {
-  name: 'my-api',
-  definition: appsync.Definition.fromFile(path.join(__dirname, 'schema.graphql')),
-  authorizationConfig: { defaultAuthorization: { authorizationType: appsync.AuthorizationType.IAM } },
-});
-
-const none = api.addNoneDataSource('none');
-none.createResolver('publisher', {
-  typeName: 'Mutation',
-  fieldName: 'publish',
-  code: appsync.AssetCode.fromInline(`
-export const request = (ctx) => ({payload: null})
-export const response = (ctx) => ctx.args.message
-`.trim()),
-  runtime: appsync.FunctionRuntime.JS_1_0_0,
-});
-
-const graphQLOperation = 'mutation Publish($message: String!){ publish(message: $message) { message } }';
-const queue = new sqs.Queue(this, 'Queue');
+declare const rule: events.Rule;
+declare const api: appsync.GraphqlApi;
 
 rule.addTarget(new targets.AppSync(api, {
   mutationFields: ['publish'],
-  graphQLOperation,
+  graphQLOperation: 'mutation Publish($message: String!){ publish(message: $message) { message } }',
   variables: events.RuleTargetInput.fromObject({
     message: 'hello world',
   }),
-  deadLetterQueue: queue,
 }));
 ```
