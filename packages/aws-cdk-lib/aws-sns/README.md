@@ -294,10 +294,9 @@ Message archiving provides the ability to archive a single copy of all messages 
 You can store published messages within your topic by enabling the message archive policy on the topic, which enables message archiving for all subscriptions linked to that topic.
 Messages can be archived for a minimum of one day to a maximum of 365 days.
 
-Example with a archive policy for SQS:
+Example with a archive policy:
 
 ```ts
-declare const role: iam.Role;
 const topic = new sns.Topic(this, 'MyTopic', {
   fifo: true,
   messageRetentionPeriodInDays: 7,
