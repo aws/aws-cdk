@@ -173,7 +173,7 @@ export class AlbControllerVersion {
   public static readonly V2_7_1 = new AlbControllerVersion('v2.7.1', '1.7.1', false);
 
   /**
-   * v2.7.1
+   * v2.7.2
    */
   public static readonly V2_7_2 = new AlbControllerVersion('v2.7.2', '1.7.2', false);
 
