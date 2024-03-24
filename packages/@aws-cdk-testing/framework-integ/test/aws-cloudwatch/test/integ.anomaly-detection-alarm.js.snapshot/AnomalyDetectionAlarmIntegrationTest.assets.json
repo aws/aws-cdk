@@ -1,15 +1,15 @@
 {
   "version": "36.0.0",
   "files": {
-    "21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22": {
+    "364f311bb48d66d7f09a9152b15f169b64eb188ead2e5a2a195909a7bf290ca6": {
       "source": {
-        "path": "cdkintegcompositealarmDefaultTestDeployAssertF4EF969E.template.json",
+        "path": "AnomalyDetectionAlarmIntegrationTest.template.json",
         "packaging": "file"
       },
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+          "objectKey": "364f311bb48d66d7f09a9152b15f169b64eb188ead2e5a2a195909a7bf290ca6.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

@@ -1,0 +1,13 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "cdk-cloudwatch-anomaly-detection-alarm-integ-test/DefaultTest": {
+      "stacks": [
+        "AnomalyDetectionAlarmIntegrationTest",
+        "GeneratedAnomalyDetectionAlarmIntegrationTest"
+      ],
+      "assertionStack": "cdk-cloudwatch-anomaly-detection-alarm-integ-test/DefaultTest/DeployAssert",
+      "assertionStackName": "cdkcloudwatchanomalydetectionalarmintegtestDefaultTestDeployAssertBBE7E163"
+    }
+  }
+}

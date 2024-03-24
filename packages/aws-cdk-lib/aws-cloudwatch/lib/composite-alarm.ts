@@ -1,7 +1,7 @@
 import { Construct } from 'constructs';
 import { AlarmBase, IAlarm, IAlarmRule } from './alarm-base';
 import { CfnCompositeAlarm } from './cloudwatch.generated';
-import { ArnFormat, Lazy, Names, Stack, Duration } from '../../core';
+import { ArnFormat, Lazy, Names, Duration } from '../../core';
 
 /**
  * Properties for creating a Composite Alarm
@@ -71,14 +71,7 @@ export class CompositeAlarm extends AlarmBase {
    * @param compositeAlarmName Composite Alarm Name
    */
   public static fromCompositeAlarmName(scope: Construct, id: string, compositeAlarmName: string): IAlarm {
-    const stack = Stack.of(scope);
-
-    return this.fromCompositeAlarmArn(scope, id, stack.formatArn({
-      service: 'cloudwatch',
-      resource: 'alarm',
-      resourceName: compositeAlarmName,
-      arnFormat: ArnFormat.COLON_RESOURCE_NAME,
-    }));
+    return this.fromAlarmName(scope, id, compositeAlarmName);
   }
 
   /**
@@ -89,11 +82,7 @@ export class CompositeAlarm extends AlarmBase {
    * @param compositeAlarmArn Composite Alarm ARN (i.e. arn:aws:cloudwatch:<region>:<account-id>:alarm:CompositeAlarmName)
    */
   public static fromCompositeAlarmArn(scope: Construct, id: string, compositeAlarmArn: string): IAlarm {
-    class Import extends AlarmBase implements IAlarm {
-      public readonly alarmArn = compositeAlarmArn;
-      public readonly alarmName = Stack.of(scope).splitArn(compositeAlarmArn, ArnFormat.COLON_RESOURCE_NAME).resourceName!;
-    }
-    return new Import(scope, id);
+    return this.fromAlarmArn(scope, id, compositeAlarmArn);
   }
 
   /**

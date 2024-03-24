@@ -200,7 +200,7 @@ describe('CompositeAlarm', () => {
     expect(alarmFromArn.alarmName).toEqual('TestAlarmName');
     expect(alarmFromArn.alarmArn).toMatch(/:alarm:TestAlarmName$/);
 
-    const alarmFromName = CompositeAlarm.fromCompositeAlarmName(stack, 'AlarmFromName', 'TestAlarmName');
+    const alarmFromName = CompositeAlarm.fromAlarmName(stack, 'AlarmFromName', 'TestAlarmName');
 
     expect(alarmFromName.alarmName).toEqual('TestAlarmName');
     expect(alarmFromName.alarmArn).toMatch(/:alarm:TestAlarmName$/);

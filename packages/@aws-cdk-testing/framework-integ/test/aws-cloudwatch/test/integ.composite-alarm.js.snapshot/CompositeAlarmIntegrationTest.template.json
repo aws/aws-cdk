@@ -51,9 +51,9 @@
   "Alarm548383B2F": {
    "Type": "AWS::CloudWatch::Alarm",
    "Properties": {
+    "AlarmName": "Alarm with space in name",
     "ComparisonOperator": "GreaterThanOrEqualToThreshold",
     "EvaluationPeriods": 3,
-    "AlarmName": "Alarm with space in name",
     "MetricName": "Metric",
     "Namespace": "CDK/Test",
     "Period": 300,
@@ -64,6 +64,15 @@
   "CompositeAlarmF4C3D082": {
    "Type": "AWS::CloudWatch::CompositeAlarm",
    "Properties": {
+    "ActionsSuppressor": {
+     "Fn::GetAtt": [
+      "Alarm548383B2F",
+      "Arn"
+     ]
+    },
+    "ActionsSuppressorExtensionPeriod": 60,
+    "ActionsSuppressorWaitPeriod": 60,
+    "AlarmName": "CompositeAlarmIntegrationTestCompositeAlarm742D2FBA",
     "AlarmRule": {
      "Fn::Join": [
       "",
@@ -106,16 +115,7 @@
        "\")))) OR FALSE)"
       ]
      ]
-    },
-    "ActionsSuppressor": {
-     "Fn::GetAtt": [
-      "Alarm548383B2F",
-      "Arn"
-     ]
-    },
-    "ActionsSuppressorExtensionPeriod": 60,
-    "ActionsSuppressorWaitPeriod": 60,
-    "AlarmName": "CompositeAlarmIntegrationTestCompositeAlarm742D2FBA"
+    }
    }
   }
  },

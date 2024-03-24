@@ -1,6 +1,6 @@
 import { Construct } from 'constructs';
 import { IAlarmAction } from './alarm-action';
-import { AlarmBase, IAlarm } from './alarm-base';
+import { AlarmBase } from './alarm-base';
 import { CfnAlarm, CfnAlarmProps } from './cloudwatch.generated';
 import { HorizontalAnnotation } from './graph';
 import { CreateAlarmOptions } from './metric';
@@ -22,6 +22,20 @@ export interface AlarmProps extends CreateAlarmOptions {
    * custom Metric objects by instantiating one.
    */
   readonly metric: IMetric;
+}
+
+/**
+ * Properties for Anomaly Detection Alarms
+ */
+export interface AnomalyDetectionAlarmProps extends AlarmProps {
+  /**
+   * Defines if the alarm will try to create the anomaly detection expression from the provided metric.
+   *
+   * If set to true the threshold property will be used as the threshold for the `ANOMALY_DETECTION_BAND` function.
+   *
+   * @default - false
+   */
+  readonly generateAnomalyDetectionExpression?: boolean;
 }
 
 /**
@@ -103,39 +117,6 @@ export enum TreatMissingData {
  * An alarm on a CloudWatch metric
  */
 export class Alarm extends AlarmBase {
-
-  /**
-   * Import an existing CloudWatch alarm provided an Name.
-   *
-   * @param scope The parent creating construct (usually `this`)
-   * @param id The construct's name
-   * @param alarmName Alarm Name
-   */
-  public static fromAlarmName(scope: Construct, id: string, alarmName: string): IAlarm {
-    const stack = Stack.of(scope);
-
-    return this.fromAlarmArn(scope, id, stack.formatArn({
-      service: 'cloudwatch',
-      resource: 'alarm',
-      resourceName: alarmName,
-      arnFormat: ArnFormat.COLON_RESOURCE_NAME,
-    }));
-  }
-
-  /**
-   * Import an existing CloudWatch alarm provided an ARN
-   *
-   * @param scope The parent creating construct (usually `this`).
-   * @param id The construct's name
-   * @param alarmArn Alarm ARN (i.e. arn:aws:cloudwatch:<region>:<account-id>:alarm:Foo)
-   */
-  public static fromAlarmArn(scope: Construct, id: string, alarmArn: string): IAlarm {
-    class Import extends AlarmBase implements IAlarm {
-      public readonly alarmArn = alarmArn;
-      public readonly alarmName = Stack.of(scope).splitArn(alarmArn, ArnFormat.COLON_RESOURCE_NAME).resourceName!;
-    }
-    return new Import(scope, id);
-  }
 
   /**
    * ARN of this alarm
@@ -278,8 +259,8 @@ export class Alarm extends AlarmBase {
     const self = this;
     return dispatchMetric(metric, {
       withStat(stat, conf) {
-        self.validateMetricStat(stat, metric);
-        const canRenderAsLegacyMetric = conf.renderingProperties?.label == undefined && !self.requiresAccountId(stat);
+        validateMetricStat(self, stat, metric);
+        const canRenderAsLegacyMetric = conf.renderingProperties?.label == undefined && !requiresAccountId(self, stat);
         // Do this to disturb existing templates as little as possible
         if (canRenderAsLegacyMetric) {
           return dropUndefined({
@@ -307,7 +288,7 @@ export class Alarm extends AlarmBase {
                 unit: stat.unitFilter,
               },
               id: 'm1',
-              accountId: self.requiresAccountId(stat) ? stat.account : undefined,
+              accountId: requiresAccountId(self, stat) ? stat.account : undefined,
               label: conf.renderingProperties?.label,
               returnData: true,
             } as CfnAlarm.MetricDataQueryProperty,
@@ -328,7 +309,7 @@ export class Alarm extends AlarmBase {
         return {
           metrics: mset.entries.map(entry => dispatchMetric(entry.metric, {
             withStat(stat, conf) {
-              self.validateMetricStat(stat, entry.metric);
+              validateMetricStat(self, stat, entry.metric);
 
               return {
                 metricStat: {
@@ -342,7 +323,7 @@ export class Alarm extends AlarmBase {
                   unit: stat.unitFilter,
                 },
                 id: entry.id || uniqueMetricId(),
-                accountId: self.requiresAccountId(stat) ? stat.account : undefined,
+                accountId: requiresAccountId(self, stat) ? stat.account : undefined,
                 label: conf.renderingProperties?.label,
                 returnData: entry.tag ? undefined : false, // entry.tag evaluates to true if the metric is the math expression the alarm is based on.
               };
@@ -355,7 +336,7 @@ export class Alarm extends AlarmBase {
                 assertSubmetricsCount(expr);
               }
 
-              self.validateMetricExpression(expr);
+              validateMetricExpression(expr);
 
               return {
                 expression: expr.expression,
@@ -370,44 +351,337 @@ export class Alarm extends AlarmBase {
       },
     });
   }
+}
+
+/**
+ * An alarm based on CloudWatch anomaly detection
+ *
+ * @resource AWS::CloudWatch::Alarm
+ */
+export class AnomalyDetectionAlarm extends AlarmBase {
 
   /**
-   * Validate that if a region is in the given stat config, they match the Alarm
+   * ARN of this alarm
+   *
+   * @attribute
    */
-  private validateMetricStat(stat: MetricStatConfig, metric: IMetric) {
-    const stack = Stack.of(this);
+  public readonly alarmArn: string;
 
-    if (definitelyDifferent(stat.region, stack.region)) {
-      throw new Error(`Cannot create an Alarm in region '${stack.region}' based on metric '${metric}' in '${stat.region}'`);
+  /**
+   * Name of this alarm
+   *
+   * @attribute
+   */
+  public readonly alarmName: string;
+
+  /**
+   * The metric object this alarm was based on
+   */
+  public readonly metric: IMetric;
+
+  /**
+   * This is the identifier of the thresholdMetricId if the customer doesn't define it.
+   */
+  readonly anomalyDetectorMetricId = 'anomaly_detector_expr';
+
+  /**
+   * This is the identifier of the target metric for the anomaly detection expression.
+   */
+  readonly targetMetricId = 'target_metric';
+
+  constructor(scope: Construct, id: string, props: AnomalyDetectionAlarmProps) {
+    super(scope, id, {
+      physicalName: props.alarmName,
+    });
+
+    const generateAnomalyDetector = props.generateAnomalyDetectionExpression || false;
+    const bandThreshold = props.threshold;
+    if (generateAnomalyDetector) {
+      this.validateThreshold(bandThreshold);
+    }
+
+    const comparisonOperator = props.comparisonOperator || ComparisonOperator.LESS_THAN_LOWER_OR_GREATER_THAN_UPPER_THRESHOLD;
+    this.validateComparisonOperator(comparisonOperator);
+
+    // Render metric, process potential overrides from the alarm
+    // We generate the anomaly detection metric if the the customer doesn't provide it.
+    const metricProps: Writeable<Partial<CfnAlarmProps>> = generateAnomalyDetector ?
+      this.renderAnomalyDetectionMetric(props.metric, bandThreshold) :
+      this.renderMetric(props.metric, true);
+
+    if (props.period) {
+      metricProps.period = props.period.toSeconds();
+    }
+    if (props.statistic) {
+      // Will overwrite both fields if present
+      Object.assign(metricProps, {
+        statistic: renderIfSimpleStatistic(props.statistic),
+        extendedStatistic: renderIfExtendedStatistic(props.statistic),
+      });
+    }
+
+    const alarm = new CfnAlarm(this, 'Resource', {
+      // Meta
+      alarmDescription: props.alarmDescription,
+      alarmName: this.physicalName,
+
+      // Evaluation
+      comparisonOperator,
+      thresholdMetricId: this.anomalyDetectorMetricId,
+      datapointsToAlarm: props.datapointsToAlarm,
+      evaluateLowSampleCountPercentile: props.evaluateLowSampleCountPercentile,
+      evaluationPeriods: props.evaluationPeriods,
+      treatMissingData: props.treatMissingData,
+
+      // Actions
+      actionsEnabled: props.actionsEnabled,
+      alarmActions: Lazy.list({ produce: () => this.alarmActionArns }),
+      insufficientDataActions: Lazy.list({ produce: (() => this.insufficientDataActionArns) }),
+      okActions: Lazy.list({ produce: () => this.okActionArns }),
+
+      // Metric
+      ...metricProps,
+    });
+
+    this.alarmArn = this.getResourceArnAttribute(alarm.attrArn, {
+      service: 'cloudwatch',
+      resource: 'alarm',
+      resourceName: this.physicalName,
+      arnFormat: ArnFormat.COLON_RESOURCE_NAME,
+    });
+    this.alarmName = this.getResourceNameAttribute(alarm.ref);
+
+    this.metric = props.metric;
+  }
+
+  /**
+    * Validates that the anomaly detection threshold is a positive number.
+    */
+  private validateThreshold(threshold: number) {
+    if (threshold < 0) {
+      throw new Error('Cannot create an AnomalyDetectionAlarm with a negative anomaly detection threshold');
     }
   }
 
   /**
-   * Validates that the expression config does not specify searchAccount or searchRegion props
-   * as search expressions are not supported by Alarms.
-   */
-  private validateMetricExpression(expr: MetricExpressionConfig) {
-    if (expr.searchAccount !== undefined || expr.searchRegion !== undefined) {
-      throw new Error('Cannot create an Alarm based on a MathExpression which specifies a searchAccount or searchRegion');
+    * Validates that the comparison operator defined is supported by Anomaly Detection Alarms.
+    */
+  private validateComparisonOperator(comparisonOperator: ComparisonOperator) {
+    if (!(comparisonOperator === ComparisonOperator.LESS_THAN_LOWER_OR_GREATER_THAN_UPPER_THRESHOLD ||
+      comparisonOperator === ComparisonOperator.GREATER_THAN_UPPER_THRESHOLD ||
+      comparisonOperator === ComparisonOperator.LESS_THAN_LOWER_THRESHOLD
+    )) {
+      throw new Error(`Cannot create an AnomalyDetectionAlarm with a comparison operator of type '${comparisonOperator}'`);
     }
   }
 
   /**
-   * Determine if the accountId property should be included in the metric.
+   * Creates an anomaly detection expression on top of the metric the customer provided.
    */
-  private requiresAccountId(stat: MetricStatConfig): boolean {
-    const stackAccount = Stack.of(this).account;
-
-    // if stat.account is undefined, it's by definition in the same account
-    if (stat.account === undefined) {
-      return false;
+  private renderAnomalyDetectionMetric(metric: IMetric, anomalyDetectionThreshold: number) {
+    const conf = metric.toMetricConfig();
+    if (conf.metricStat || conf.mathExpression) {
+      return {
+        metrics: [
+          {
+            expression: `ANOMALY_DETECTION_BAND(${this.targetMetricId}, ${anomalyDetectionThreshold})`,
+            id: this.anomalyDetectorMetricId,
+            returnData: true,
+          } as CfnAlarm.MetricDataQueryProperty,
+          ...this.renderMetric(metric, false).metrics,
+        ],
+      };
+    } else {
+      throw new Error('Metric object must have a \'metricStat\' or a \'mathExpression\'');
     }
-
-    // Return true if they're different. The ACCOUNT_ID token is interned
-    // so will always have the same string value (and even if we guess wrong
-    // it will still work).
-    return stackAccount !== stat.account;
   }
+
+  /**
+   * To render the metric we take into account if the customer provided a thresholdMetricId.
+   * If they didn't we generate an expression with `ANOMALY_DETECTION_BAND` that targets the metric the customer provided.
+   */
+  private renderMetric(metric: IMetric, isAnomalyDetectionExpression: boolean) {
+    const self = this;
+    return dispatchMetric(metric, {
+      withStat(stat, conf) {
+        if (isAnomalyDetectionExpression) {
+          throw new Error('The Metric object for the AnomalyDetection alarm must have a \'mathExpression\'');
+        }
+        validateMetricStat(self, stat, metric);
+        return {
+          metrics: [
+            {
+              metricStat: {
+                metric: {
+                  metricName: stat.metricName,
+                  namespace: stat.namespace,
+                  dimensions: stat.dimensions,
+                },
+                period: stat.period.toSeconds(),
+                stat: stat.statistic,
+                unit: stat.unitFilter,
+              },
+              id: self.targetMetricId,
+              accountId: requiresAccountId(self, stat) ? stat.account : undefined,
+              label: conf.renderingProperties?.label,
+              returnData: true,
+            } as CfnAlarm.MetricDataQueryProperty,
+          ],
+        };
+      },
+
+      withExpression() {
+        // Expand the math expression metric into a set
+        const mset = new MetricSet<boolean>();
+        mset.addTopLevel(true, metric);
+        const targetMetricId = getAnomalyDetectionExpressionTargetId(metric.toMetricConfig().mathExpression);
+
+        let eid = 0;
+        function uniqueMetricId() {
+          return `expr_${++eid}`;
+        }
+
+        return {
+          metrics: mset.entries.map(entry => dispatchMetric(entry.metric, {
+            withStat(stat, conf) {
+              if (entry.tag && isAnomalyDetectionExpression) {
+                throw new Error('The Metric object for the AnomalyDetection alarm must have a \'mathExpression\'');
+              }
+
+              validateMetricStat(self, stat, entry.metric);
+
+              const isTarget = targetMetricId ? targetMetricId === entry.id : false;
+
+              return {
+                metricStat: {
+                  metric: {
+                    metricName: stat.metricName,
+                    namespace: stat.namespace,
+                    dimensions: stat.dimensions,
+                  },
+                  period: stat.period.toSeconds(),
+                  stat: stat.statistic,
+                  unit: stat.unitFilter,
+                },
+                id: entry.id || uniqueMetricId(),
+                accountId: requiresAccountId(self, stat) ? stat.account : undefined,
+                label: conf.renderingProperties?.label,
+                returnData: entry.tag || isTarget ? true : false, // entry.tag evaluates to true if the metric is the math expression the alarm is based on.
+              };
+            },
+            withExpression(expr, conf) {
+              // Verify the anomaly detection metric expression exists and if we expect it to be defined.
+              validateAnomalyDetectionMetricExpression(expr, entry.tag || false, isAnomalyDetectionExpression);
+
+              const hasSubmetrics = mathExprHasSubmetrics(expr);
+
+              if (hasSubmetrics) {
+                assertSubmetricsCount(expr);
+              }
+
+              validateMetricExpression(expr);
+
+              // Ensure that the top level expression has the correct ID to reference it
+              const metricId = entry.tag
+                ? isAnomalyDetectionExpression
+                  ? self.anomalyDetectorMetricId
+                  : self.targetMetricId
+                : entry.id || uniqueMetricId();
+              // Ensure that the metric the anomaly detection targets returns data
+              const isTarget = targetMetricId ? targetMetricId === entry.id : false;
+
+              return {
+                expression: expr.expression,
+                id: metricId,
+                label: conf.renderingProperties?.label,
+                period: hasSubmetrics ? undefined : expr.period,
+                returnData: entry.tag || isTarget ? true : false, // entry.tag evaluates to true if the metric is the math expression the alarm is based on.
+              };
+            },
+          }) as CfnAlarm.MetricDataQueryProperty),
+        };
+      },
+    });
+  }
+}
+
+/**
+ * Validate that if a region is in the given stat config, they match the Alarm
+ */
+function validateMetricStat(scope: Construct, stat: MetricStatConfig, metric: IMetric) {
+  const stack = Stack.of(scope);
+
+  if (definitelyDifferent(stat.region, stack.region)) {
+    throw new Error(`Cannot create an Alarm in region '${stack.region}' based on metric '${metric}' in '${stat.region}'`);
+  }
+}
+
+/**
+ * Validates that the expression config does not specify searchAccount or searchRegion props
+ * as search expressions are not supported by Alarms.
+ */
+function validateMetricExpression(expr: MetricExpressionConfig) {
+  if (expr.searchAccount !== undefined || expr.searchRegion !== undefined) {
+    throw new Error('Cannot create an Alarm based on a MathExpression which specifies a searchAccount or searchRegion');
+  }
+}
+
+/**
+ * Return the metric id from the first argument of the `ANOMALY_DETECTION_BAND` function.
+ */
+function getAnomalyDetectionExpressionTargetId(expr: MetricExpressionConfig | undefined) {
+  if (expr === undefined) {
+    return undefined;
+  }
+  const matches = expr.expression.match(/ANOMALY_DETECTION_BAND\(([^,\s]+),/);
+  if (matches && matches.length > 1) {
+    return matches[1].trim();
+  }
+  return undefined;
+}
+
+/**
+ * Validates a metric is an expression config that contains `ANOMALY_DETECTION_BAND`
+ * as it is required by Anomaly Detection Alarms.
+ */
+function isAnomalyDetectionMetricExpression(expr: MetricExpressionConfig | undefined) {
+  if (expr === undefined) {
+    return false;
+  }
+  const regex = new RegExp(/ANOMALY_DETECTION_BAND\s*\(\s*([^,\s]+)\s*,\s*([^,\s]+)\s*\)/);
+  return regex.test(expr.expression);
+}
+
+/**
+ * Validates that the expression config contains `ANOMALY_DETECTION_BAND`
+ * as it is required by Anomaly Detection Alarms.
+ */
+function validateAnomalyDetectionMetricExpression(expr: MetricExpressionConfig, isTopLevel: boolean, containsAnomalyDetectionExpression: boolean) {
+  const isAnomalyDetectionExpression = isAnomalyDetectionMetricExpression(expr);
+  if (isTopLevel) {
+    if (containsAnomalyDetectionExpression && !isAnomalyDetectionExpression) {
+      throw new Error('The Metric Object has a MathExpression with malformed or missing ANOMALY_DETECTION_BAND');
+    } else if (!containsAnomalyDetectionExpression && isAnomalyDetectionExpression) {
+      throw new Error('The Metric Object has a MathExpression which contains ANOMALY_DETECTION_BAND, but it is not defined in the thresholdMetricId property');
+    }
+  }
+}
+
+/**
+ * Determine if the accountId property should be included in the metric.
+ */
+function requiresAccountId(scope: Construct, stat: MetricStatConfig): boolean {
+  const stackAccount = Stack.of(scope).account;
+
+  // if stat.account is undefined, it's by definition in the same account
+  if (stat.account === undefined) {
+    return false;
+  }
+
+  // Return true if they're different. The ACCOUNT_ID token is interned
+  // so will always have the same string value (and even if we guess wrong
+  // it will still work).
+  return stackAccount !== stat.account;
 }
 
 function definitelyDifferent(x: string | undefined, y: string) {
