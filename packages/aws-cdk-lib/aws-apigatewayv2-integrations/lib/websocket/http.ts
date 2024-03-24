@@ -4,6 +4,7 @@ import {
   WebSocketRouteIntegrationBindOptions,
   WebSocketRouteIntegrationConfig,
   ContentHandling,
+  HttpMethod,
 } from '../../../aws-apigatewayv2';
 import { Duration } from '../../../core';
 
@@ -17,9 +18,10 @@ export interface WebSocketHttpIntegrationProps {
   readonly integrationUri: string;
 
   /**
-   * Specifies the integration's HTTP method type.
+   * The HTTP method that must be used to invoke the underlying HTTP proxy.
+   * @default HttpMethod.ANY
    */
-  readonly integrationMethod: string;
+  readonly integrationMethod?: HttpMethod;
 
   /**
    * Specifies how to handle response payload content type conversions.
@@ -30,6 +32,34 @@ export interface WebSocketHttpIntegrationProps {
   readonly contentHandling?: ContentHandling;
 
   /**
+   * The request parameters that API Gateway sends with the backend request.
+   * Specify request parameters as key-value pairs (string-to-string
+   * mappings), with a destination as the key and a source as the value.
+   *
+   * @default - No request parameter provided to the integration.
+   */
+  readonly requestParameters?: { [dest: string]: string };
+
+  /**
+   * A map of Apache Velocity templates that are applied on the request
+   * payload.
+   *
+   * ```
+   *   { "application/json": "{ \"statusCode\": 200 }" }
+   * ```
+   *
+   * @default - No request template provided to the integration.
+   */
+  readonly requestTemplates?: { [contentType: string]: string };
+
+  /**
+   * The template selection expression for the integration.
+   *
+   * @default - No template selection expression provided.
+   */
+  readonly templateSelectionExpression?: string;
+
+  /**
    * The maximum amount of time an integration will run before it returns without a response.
    * Must be between 50 milliseconds and 29 seconds.
    *
@@ -38,6 +68,8 @@ export interface WebSocketHttpIntegrationProps {
   readonly timeout?: Duration;
 }
 
+type WebSocketIntegrationHttpType = WebSocketIntegrationType.HTTP | WebSocketIntegrationType.HTTP_PROXY;
+
 class BaseWebSocketHttpIntegration extends WebSocketRouteIntegration {
   /**
      * @param id id of the underlying integration construct
@@ -45,7 +77,7 @@ class BaseWebSocketHttpIntegration extends WebSocketRouteIntegration {
      * @param props properties of the integration
      */
   constructor(id: string,
-    private readonly type: WebSocketIntegrationType.HTTP | WebSocketIntegrationType.HTTP_PROXY,
+    private readonly type: WebSocketIntegrationHttpType,
     private readonly props: WebSocketHttpIntegrationProps) {
     super(id);
   }
@@ -54,8 +86,11 @@ class BaseWebSocketHttpIntegration extends WebSocketRouteIntegration {
     return {
       type: this.type,
       uri: this.props.integrationUri,
-      method: this.props.integrationMethod,
+      method: this.props.integrationMethod ?? HttpMethod.ANY,
       contentHandling: this.props.contentHandling,
+      requestParameters: this.props.requestParameters,
+      requestTemplates: this.props.requestTemplates,
+      templateSelectionExpression: this.props.templateSelectionExpression,
       timeout: this.props.timeout,
     };
   }

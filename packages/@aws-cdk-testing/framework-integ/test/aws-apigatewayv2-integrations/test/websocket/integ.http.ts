@@ -1,6 +1,6 @@
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import { App, CfnOutput, Duration, Stack } from 'aws-cdk-lib';
-import { ContentHandling, HttpApi, WebSocketApi, WebSocketStage } from 'aws-cdk-lib/aws-apigatewayv2';
+import { ContentHandling, HttpApi, HttpMethod, WebSocketApi, WebSocketStage } from 'aws-cdk-lib/aws-apigatewayv2';
 import { HttpLambdaIntegration, WebSocketHttpIntegration, WebSocketHttpProxyIntegration } from 'aws-cdk-lib/aws-apigatewayv2-integrations';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 // import * as iam from 'aws-cdk-lib/aws-iam';
@@ -10,7 +10,8 @@ import * as assert from 'node:assert';
 /*
  * Stack verification steps:
  * 1. Connect: 'wscat -c <endpoint-in-the-stack-output>'. Should connect successfully and print event data containing connectionId in cloudwatch
- * 2. Default: '> {"data": "some-data"}'. Should send the message successfully and print the data in cloudwatch
+ * 2. HTTP: '> {"action": "http", "data": "some-data"}'. Should send the message successfully and print the data in cloudwatch
+ * 2. HTTP Proxy: '> {"action": "http-proxy", "data": "some-data"}'. Should send the message successfully and print the data in cloudwatch
  */
 
 const app = new App();
@@ -20,7 +21,11 @@ const stack = new Stack(app, 'WebSocketHttpApiInteg');
 const httpHandler = new lambda.Function(stack, 'HttpHandler', {
   runtime: lambda.Runtime.NODEJS_18_X,
   handler: 'index.handler',
-  code: new lambda.InlineCode('exports.handler = async function(event, context) { console.log(event); return { statusCode: 200, body: "success" }; };'),
+  code: new lambda.InlineCode(`
+  exports.handler = async function(event, context) {
+    console.log(event);
+    return { statusCode: 200, body: "success" };
+  };`),
 });
 
 const httpApi = new HttpApi(stack, 'HttpApi', {
@@ -31,10 +36,17 @@ assert(httpApi.url, 'HTTP API URL is required');
 const webSocketApi = new WebSocketApi(stack, 'WebSocketApi', {});
 
 const websocketHttpIntegration = new WebSocketHttpIntegration('WebsocketHttpIntegration', {
-  integrationMethod: 'GET',
+  integrationMethod: HttpMethod.GET,
   integrationUri: httpApi.url,
   timeout: Duration.seconds(10),
-  // contentHandling: ContentHandling.CONVERT_TO_BINARY,
+  contentHandling: ContentHandling.CONVERT_TO_BINARY,
+  requestParameters: {
+    'integration.request.header.Content-Type': '\'application/json\'',
+  },
+  requestTemplates: {
+    'application/json': JSON.stringify({ data: 'some-data' }),
+  },
+  templateSelectionExpression: '\\$default',
 });
 webSocketApi.addRoute('http', {
   integration: websocketHttpIntegration,
@@ -42,10 +54,17 @@ webSocketApi.addRoute('http', {
 });
 
 const websocketHttpProxyIntegration = new WebSocketHttpProxyIntegration('WebsocketHttpIntegration', {
-  integrationMethod: 'GET',
+  integrationMethod: HttpMethod.GET,
   integrationUri: httpApi.url,
   timeout: Duration.seconds(10),
-  contentHandling: ContentHandling.CONVERT_TO_TEXT,
+  contentHandling: ContentHandling.CONVERT_TO_BINARY,
+  requestParameters: {
+    'integration.request.header.Authorization': '$context.authorizer.auth',
+  },
+  requestTemplates: {
+    'application/json': JSON.stringify({ data: 'some-data' }),
+  },
+  templateSelectionExpression: '\\$default',
 });
 webSocketApi.addRoute('http-proxy', {
   integration: websocketHttpProxyIntegration,

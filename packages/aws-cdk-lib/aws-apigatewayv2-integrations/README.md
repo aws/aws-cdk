@@ -11,6 +11,7 @@
   - [Lambda WebSocket Integration](#lambda-websocket-integration)
   - [AWS WebSocket Integration](#aws-websocket-integration)
   - [HTTP WebSocket Integrations](#http-websocket-integrations)
+  - [WebSocket Request Parameters](#websocket-request-parameters)
 
 ## HTTP APIs
 
@@ -240,6 +241,8 @@ const httpEndpoint = new apigwv2.HttpApi(this, 'HttpProxyPrivateApi', {
 
 WebSocket integrations connect a route to backend resources. The following integrations are supported in the CDK.
 
+For an overview of how to integrate your WebSocket API, refer to [Invoking your backend integration](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-websocket-api-routes-integrations.html).
+
 ### Lambda WebSocket Integration
 
 Lambda integrations enable integrating a WebSocket API route with a Lambda function. When a client connects/disconnects
@@ -311,7 +314,6 @@ See [Working with binary media types for WebSocket APIs](https://docs.aws.amazon
 
 ### HTTP WebSocket Integrations
 
-
 HTTP proxy integrations allow the client request to be passed through to the client as-is. See [Set up HTTP proxy integrations in API Gateway](https://docs.aws.amazon.com/apigateway/latest/developerguide/setup-http-integrations.html#api-gateway-set-up-http-proxy-integration-on-proxy-resource)
 
 ```ts
@@ -334,6 +336,25 @@ HTTP integrations, also known as "HTTP custom integrations". See [Set up HTTP cu
 ```ts
 import { WebSocketHttpIntegration } from 'aws-cdk-lib/aws-apigatewayv2-integrations';
 import * as iam from 'aws-cdk-lib/aws-iam';
+
+const webSocketApi = new apigwv2.WebSocketApi(this, 'mywsapi');
+new apigwv2.WebSocketStage(this, 'mystage', {
+  webSocketApi,
+  stageName: 'dev',
+  autoDeploy: true,
+});
+
+// TODO
+```
+
+### Parameter mapping
+
+
+The [`AWS`](#aws-websocket-integration) and the [`HTTP`](#http-websocket-integrations) WbeSocket integrations allow you to map parameters. See [WebSocket selection expressions in API Gateway](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-websocket-api-selection-expressions.html).
+
+```ts
+import { WebSocketAwsIntegration, WebSocketHttpIntegration } from 'aws-cdk-lib/aws-apigatewayv2-integrations';
+
 
 const webSocketApi = new apigwv2.WebSocketApi(this, 'mywsapi');
 new apigwv2.WebSocketStage(this, 'mystage', {
