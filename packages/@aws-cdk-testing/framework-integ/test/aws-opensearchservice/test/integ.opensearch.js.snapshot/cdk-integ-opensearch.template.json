@@ -70,7 +70,9 @@
      ]
     },
     "Delete": "{\"service\":\"CloudWatchLogs\",\"action\":\"deleteResourcePolicy\",\"parameters\":{\"policyName\":\"ESLogPolicyc881416c4fcb1ec2b4bf7f47a5cde4097f01ec50fc\"},\"ignoreErrorCodesMatching\":\"ResourceNotFoundException\"}",
-    "InstallLatestAwsSdk": false
+    "InstallLatestAwsSdk": "false",
+    "DisableInfoLogging": false,
+    "DisableErrorLogging": false
    },
    "DependsOn": [
     "Domain1ESLogGroupPolicyc881416c4fcb1ec2b4bf7f47a5cde4097f01ec50fcCustomResourcePolicyBE9BFE5D"
@@ -131,19 +133,19 @@
     },
     "EngineVersion": "Elasticsearch_7.1",
     "LogPublishingOptions": {
-     "ES_APPLICATION_LOGS": {
+     "SEARCH_SLOW_LOGS": {
       "CloudWatchLogsLogGroupArn": {
        "Fn::GetAtt": [
-        "Domain1AppLogs6E8D1D67",
+        "Domain1SlowSearchLogs8F3B0506",
         "Arn"
        ]
       },
       "Enabled": true
      },
-     "SEARCH_SLOW_LOGS": {
+     "ES_APPLICATION_LOGS": {
       "CloudWatchLogsLogGroupArn": {
        "Fn::GetAtt": [
-        "Domain1SlowSearchLogs8F3B0506",
+        "Domain1AppLogs6E8D1D67",
         "Arn"
        ]
       },
@@ -230,7 +232,9 @@
       ]
      ]
     },
-    "InstallLatestAwsSdk": false
+    "InstallLatestAwsSdk": false,
+    "DisableInfoLogging": false,
+    "DisableErrorLogging": false
    },
    "DependsOn": [
     "Domain1AccessPolicyCustomResourcePolicy3BA04487"
@@ -302,7 +306,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "482f9f5ffd706706c8ef3652699d6c945568786593d3571e4331ecb1f966c932.zip"
+     "S3Key": "f47261605c7318d17a58bad776e04e516000c7fd973807f78df5f78dd172ebd8.zip"
     },
     "Handler": "index.handler",
     "Role": {
@@ -388,7 +392,9 @@
      ]
     },
     "Delete": "{\"service\":\"CloudWatchLogs\",\"action\":\"deleteResourcePolicy\",\"parameters\":{\"policyName\":\"ESLogPolicyc80140a7754e9c0dd4e81167ef19e15da5b55dca02\"},\"ignoreErrorCodesMatching\":\"ResourceNotFoundException\"}",
-    "InstallLatestAwsSdk": false
+    "InstallLatestAwsSdk": "false",
+    "DisableInfoLogging": false,
+    "DisableErrorLogging": false
    },
    "DependsOn": [
     "Domain2ESLogGroupPolicyc80140a7754e9c0dd4e81167ef19e15da5b55dca02CustomResourcePolicy2DB46870"
@@ -449,19 +455,19 @@
     },
     "EngineVersion": "Elasticsearch_7.1",
     "LogPublishingOptions": {
-     "ES_APPLICATION_LOGS": {
+     "SEARCH_SLOW_LOGS": {
       "CloudWatchLogsLogGroupArn": {
        "Fn::GetAtt": [
-        "Domain2AppLogs810876E2",
+        "Domain2SlowSearchLogs0C75F64B",
         "Arn"
        ]
       },
       "Enabled": true
      },
-     "SEARCH_SLOW_LOGS": {
+     "ES_APPLICATION_LOGS": {
       "CloudWatchLogsLogGroupArn": {
        "Fn::GetAtt": [
-        "Domain2SlowSearchLogs0C75F64B",
+        "Domain2AppLogs810876E2",
         "Arn"
        ]
       },
@@ -548,7 +554,9 @@
       ]
      ]
     },
-    "InstallLatestAwsSdk": false
+    "InstallLatestAwsSdk": false,
+    "DisableInfoLogging": false,
+    "DisableErrorLogging": false
    },
    "DependsOn": [
     "Domain2AccessPolicyCustomResourcePolicy7C8260FD"
