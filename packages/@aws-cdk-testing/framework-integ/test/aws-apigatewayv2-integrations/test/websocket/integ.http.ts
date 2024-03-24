@@ -1,6 +1,6 @@
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import { App, CfnOutput, Duration, Stack } from 'aws-cdk-lib';
-import { HttpApi, HttpMethod, WebSocketApi, WebSocketStage } from 'aws-cdk-lib/aws-apigatewayv2';
+import { ContentHandling, HttpApi, HttpMethod, WebSocketApi, WebSocketStage } from 'aws-cdk-lib/aws-apigatewayv2';
 import { HttpLambdaIntegration, WebSocketHttpIntegration, WebSocketHttpProxyIntegration } from 'aws-cdk-lib/aws-apigatewayv2-integrations';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 // import * as iam from 'aws-cdk-lib/aws-iam';
@@ -22,9 +22,38 @@ const httpHandler = new lambda.Function(stack, 'HttpHandler', {
   runtime: lambda.Runtime.NODEJS_18_X,
   handler: 'index.handler',
   code: new lambda.InlineCode(`
-  exports.handler = async function(event, context) {
+  exports.handler = function(event) {
     console.log(event);
-    return { statusCode: 200, body: "success" };
+    const { requestContext: { http: { method } }, headers, body, isBase64Encoded } = event;
+
+    const integHeaders = Object.fromEntries(
+      Object.entries(headers).filter(([key]) => key.startsWith('X-Integ')),
+    );
+
+    let parsedBody = body;
+    if (isBase64Encoded) {
+      parsedBody = Buffer.from(body, 'base64').toString('utf-8');
+    }
+    parsedBody = JSON.parse(parsedBody ?? 'null');
+
+    let resultBody = JSON.stringify({ 
+      success: true, 
+      requestReceivedByHttpEndpoint: { 
+        method,
+        integHeaders,
+        body: parsedBody,
+      }
+    });
+
+    if (isBase64Encoded) {
+      resultBody = Buffer.from(resultBody).toString('base64');
+    }
+
+    return { 
+      statusCode: 200,
+      body: resultBody,
+      isBase64Encoded,
+    };
   };`),
 });
 
@@ -33,42 +62,44 @@ const httpApi = new HttpApi(stack, 'HttpApi', {
 });
 assert(httpApi.url, 'HTTP API URL is required');
 
-const webSocketApi = new WebSocketApi(stack, 'WebSocketApi', {});
-
 const websocketHttpIntegration = new WebSocketHttpIntegration('WebsocketHttpIntegration', {
+  integrationMethod: HttpMethod.GET,
   integrationUri: httpApi.url,
   timeout: Duration.seconds(10),
-  // contentHandling: ContentHandling.CONVERT_TO_BINARY,
-  requestParameters: {
-    'integration.request.header.Content-Type': '\'application/json\'',
-  },
-  requestTemplates: {
-    'application/json': JSON.stringify({ data: 'some-data' }),
-  },
-  templateSelectionExpression: '\\$default',
-});
-webSocketApi.addRoute('http', {
-  integration: websocketHttpIntegration,
-  returnResponse: true,
+  // contentHandling: ContentHandling.CONVERT_TO_TEXT,
 });
 
 const websocketHttpProxyIntegration = new WebSocketHttpProxyIntegration('WebsocketHttpIntegration', {
   integrationMethod: HttpMethod.POST,
   integrationUri: httpApi.url,
   timeout: Duration.seconds(10),
-  // contentHandling: ContentHandling.CONVERT_TO_BINARY,
+  contentHandling: ContentHandling.CONVERT_TO_BINARY,
   requestParameters: {
-    'integration.request.header.Authorization': '$context.authorizer.auth',
+    // 'integration.request.header.Authorization': '$context.authorizer.auth',
+    // 'integration.request.header.X-Integ-Header': 'fixed-header-value',
   },
-  requestTemplates: {
+  /* requestTemplates: {
     'application/json': JSON.stringify({ data: 'some-data' }),
   },
-  templateSelectionExpression: '\\$default',
+  templateSelectionExpression: '\\$default', */
 });
-webSocketApi.addRoute('http-proxy', {
-  integration: websocketHttpProxyIntegration,
+
+const webSocketApi = new WebSocketApi(stack, 'WebSocketApi', {
+  defaultRouteOptions: {
+    integration: websocketHttpProxyIntegration,
+    returnResponse: true,
+  },
+});
+
+webSocketApi.addRoute('http', {
+  integration: websocketHttpIntegration,
   returnResponse: true,
 });
+
+/* webSocketApi.addRoute('http-proxy', {
+  integration: websocketHttpProxyIntegration,
+  returnResponse: true,
+});  */
 
 const stage = new WebSocketStage(stack, 'mystage', {
   webSocketApi,

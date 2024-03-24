@@ -365,3 +365,7 @@ new apigwv2.WebSocketStage(this, 'mystage', {
 
 // TODO
 ```
+
+### Binary `contentHandlingStrategy`
+
+TODO https://docs.aws.amazon.com/apigateway/latest/developerguide/websocket-api-develop-binary-media-types.html
