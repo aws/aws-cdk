@@ -1,6 +1,6 @@
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import { App, CfnOutput, Duration, Stack } from 'aws-cdk-lib';
-import { ContentHandling, HttpApi, HttpMethod, WebSocketApi, WebSocketStage } from 'aws-cdk-lib/aws-apigatewayv2';
+import { HttpApi, HttpMethod, WebSocketApi, WebSocketStage } from 'aws-cdk-lib/aws-apigatewayv2';
 import { HttpLambdaIntegration, WebSocketHttpIntegration, WebSocketHttpProxyIntegration } from 'aws-cdk-lib/aws-apigatewayv2-integrations';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 // import * as iam from 'aws-cdk-lib/aws-iam';
@@ -36,10 +36,9 @@ assert(httpApi.url, 'HTTP API URL is required');
 const webSocketApi = new WebSocketApi(stack, 'WebSocketApi', {});
 
 const websocketHttpIntegration = new WebSocketHttpIntegration('WebsocketHttpIntegration', {
-  integrationMethod: HttpMethod.GET,
   integrationUri: httpApi.url,
   timeout: Duration.seconds(10),
-  contentHandling: ContentHandling.CONVERT_TO_BINARY,
+  // contentHandling: ContentHandling.CONVERT_TO_BINARY,
   requestParameters: {
     'integration.request.header.Content-Type': '\'application/json\'',
   },
@@ -54,10 +53,10 @@ webSocketApi.addRoute('http', {
 });
 
 const websocketHttpProxyIntegration = new WebSocketHttpProxyIntegration('WebsocketHttpIntegration', {
-  integrationMethod: HttpMethod.GET,
+  integrationMethod: HttpMethod.POST,
   integrationUri: httpApi.url,
   timeout: Duration.seconds(10),
-  contentHandling: ContentHandling.CONVERT_TO_BINARY,
+  // contentHandling: ContentHandling.CONVERT_TO_BINARY,
   requestParameters: {
     'integration.request.header.Authorization': '$context.authorizer.auth',
   },
