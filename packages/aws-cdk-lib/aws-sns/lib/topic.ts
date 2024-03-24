@@ -227,8 +227,12 @@ export class Topic extends TopicBase {
       cfnTopicName = this.physicalName;
     }
 
-    if (props.signatureVersion !== undefined) {
-      if (props.signatureVersion !== '1' && props.signatureVersion !== '2') {
+    if (
+      props.signatureVersion &&
+      !Token.isUnresolved(props.signatureVersion) && 
+      props.signatureVersion !== '1' &&
+      props.signatureVersion !== '2'
+    ) {
         throw new Error(`signatureVersion must be "1" or "2", received: "${props.signatureVersion}"`);
       }
     }
