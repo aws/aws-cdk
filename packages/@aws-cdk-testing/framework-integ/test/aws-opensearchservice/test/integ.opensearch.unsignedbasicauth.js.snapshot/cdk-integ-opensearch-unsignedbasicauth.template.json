@@ -118,8 +118,7 @@
      ]
     },
     "InstallLatestAwsSdk": false,
-    "DisableInfoLogging": false,
-    "DisableErrorLogging": false
+    "DisableLogging": false
    },
    "DependsOn": [
     "DomainAccessPolicyCustomResourcePolicyE61F1845"
@@ -191,7 +190,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "f47261605c7318d17a58bad776e04e516000c7fd973807f78df5f78dd172ebd8.zip"
+     "S3Key": "aafb9e3ee3305d0579f4fa5511e48f53f7969d9f1a21610741e050a6726e6b95.zip"
     },
     "Handler": "index.handler",
     "Role": {
