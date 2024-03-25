@@ -1002,19 +1002,27 @@ const api = new apigateway.RestApi(this, 'books', {
 ```
 ### Deploying to an existing stage
 
-If you want to use an existing stage for a deployment, you can specify the stage name in the deployment as follows:
+If you want to use an existing stage for a deployment, first set `{ deploy: false }` so that `RestApi` does not automatically create new `Deployment` and `Stage` resources.  Then you can manually define a `apigateway.Deployment` resource and specify the stage name for your existing stage using the `stageName` property.
+
+Note that as long as the deployment's logical ID doesn't change, it will represent the snapshot in time when the resource was created. To ensure your deployment reflects changes to the `RestApi` model, use the method `addToLogicalId(data)` to augment the logical ID generated for the deployment resource.
 ```ts
 const restApi = new apigateway.RestApi(this, 'my-api', {
   deploy: false,
 });
 
+// Use `stageName` to deploy to an existing stage
 const deployment = new apigateway.Deployment(this, 'my-deployment', {
   api: restApi,
   stageName: 'dev',
 });
 
+// Generate a new logical ID so the deployment reflects changes made to api
+deployment.addToLogicalId(`Deployment-${Date.now()}`);
+
 ```
 
+If the `stageName` property is set but a stage with the corresponding name does not exist, a new stage 
+resource will be created with the provided stage name.
 
 ### Deep dive: Invalidation of deployments
 

@@ -25,7 +25,7 @@
     }
    }
   },
-  "MyManualDeployment92F2175C6f3141cef1e8fea8ab3b3b8bc90df36d": {
+  "MyManualDeployment92F2175C35a2644115e0765ad867f11b599a51c1": {
    "Type": "AWS::ApiGateway::Deployment",
    "Properties": {
     "RestApiId": {

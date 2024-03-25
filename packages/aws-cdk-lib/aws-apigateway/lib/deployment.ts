@@ -30,7 +30,9 @@ export interface DeploymentProps {
   /**
    * The name of the stage the API Gateway deployment deploys to.
    *
-   * @default - No stage name.
+   * @default - No stage name. If the `stageName` property is set but a stage with the
+   * corresponding name does not exist, a new stage resource will be created with the
+   * provided stage name.
    */
   readonly stageName?: string;
 }
@@ -69,10 +71,9 @@ export class Deployment extends Resource {
   /** @attribute */
   public readonly deploymentId: string;
   public readonly api: IRestApi;
-
   /**
-  * The stage of the API Gateway deployment.
-  */
+   * The stage of the API gateway deployment.
+   */
   public readonly stageName?: string;
 
   private readonly resource: LatestDeploymentResource;
