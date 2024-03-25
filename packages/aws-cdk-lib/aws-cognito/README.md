@@ -609,8 +609,8 @@ new cognito.UserPoolIdentityProviderSaml(stack, 'userpoolIdpFile', {
   metadata: UserPoolIdentityProviderSamlMetadata.file('my-file-contents'),
   // Whether to require encrypted SAML assertions from IdP
   encryptedResponses: true,
-  // Whether to sign SAML requests
-  signingRequests: true,
+  // The signing algorithm for the SAML requests
+  signingAlgorithm: cognito.SigningAlgorithm.RSA_SHA256,
 });
 
 // specify the metadata as a URL

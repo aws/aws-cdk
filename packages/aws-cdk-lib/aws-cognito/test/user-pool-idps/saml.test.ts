@@ -1,6 +1,6 @@
 import { Template, Match } from '../../../assertions';
 import { Stack } from '../../../core';
-import { ProviderAttribute, UserPool, UserPoolIdentityProviderSaml, UserPoolIdentityProviderSamlMetadata } from '../../lib';
+import { ProviderAttribute, SigningAlgorithm, UserPool, UserPoolIdentityProviderSaml, UserPoolIdentityProviderSamlMetadata } from '../../lib';
 
 describe('UserPoolIdentityProvider', () => {
   describe('saml', () => {
@@ -119,7 +119,7 @@ describe('UserPoolIdentityProvider', () => {
       new UserPoolIdentityProviderSaml(stack, 'userpoolidp', {
         userPool: pool,
         metadata: UserPoolIdentityProviderSamlMetadata.file('my-file-contents'),
-        signingRequests: true,
+        signingAlgorithm: SigningAlgorithm.RSA_SHA256,
       });
 
       // THEN
