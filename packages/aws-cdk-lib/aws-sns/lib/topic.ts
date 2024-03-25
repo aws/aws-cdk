@@ -165,6 +165,8 @@ export interface TopicAttributes {
   /**
    * Whether content-based deduplication is enabled.
    * Only applicable for FIFO topics.
+   *
+   * @default false
    */
   readonly contentBasedDeduplication?: boolean;
 }
