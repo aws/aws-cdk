@@ -14,6 +14,8 @@ class TestStack extends Stack {
       userPool: userpool,
       name: 'cdk',
       metadata: UserPoolIdentityProviderSamlMetadata.url('https://fujifish.github.io/samling/public/metadata.xml'),
+      encryptedResponses: true,
+      signingRequests: true,
     });
 
     const client = userpool.addClient('client');

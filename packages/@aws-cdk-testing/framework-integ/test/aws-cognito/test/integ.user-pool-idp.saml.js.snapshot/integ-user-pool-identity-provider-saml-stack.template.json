@@ -34,9 +34,6 @@
   "poolclient2623294C": {
    "Type": "AWS::Cognito::UserPoolClient",
    "Properties": {
-    "UserPoolId": {
-     "Ref": "pool056F3F7E"
-    },
     "AllowedOAuthFlows": [
      "implicit",
      "code"
@@ -57,7 +54,10 @@
       "Ref": "cdk52888317"
      },
      "COGNITO"
-    ]
+    ],
+    "UserPoolId": {
+     "Ref": "pool056F3F7E"
+    }
    }
   },
   "pooldomain430FA744": {
@@ -72,14 +72,16 @@
   "cdk52888317": {
    "Type": "AWS::Cognito::UserPoolIdentityProvider",
    "Properties": {
+    "ProviderDetails": {
+     "IDPSignout": false,
+     "MetadataURL": "https://fujifish.github.io/samling/public/metadata.xml",
+     "EncryptedResponses": true,
+     "RequestSigningAlgorithm": "rsa-sha256"
+    },
     "ProviderName": "cdk",
     "ProviderType": "SAML",
     "UserPoolId": {
      "Ref": "pool056F3F7E"
-    },
-    "ProviderDetails": {
-     "IDPSignout": false,
-     "MetadataURL": "https://fujifish.github.io/samling/public/metadata.xml"
     }
    }
   }

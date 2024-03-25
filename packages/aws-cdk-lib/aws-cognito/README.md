@@ -598,6 +598,28 @@ const provider = new cognito.UserPoolIdentityProviderGoogle(this, 'Google', {
 });
 ```
 
+Using SAML identity provider is possible to use SAML metadata file content or SAML metadata file url.
+
+```ts
+const userpool = new cognito.UserPool(this, 'Pool');
+
+// specify the metadata as a file content
+new cognito.UserPoolIdentityProviderSaml(stack, 'userpoolIdpFile', {
+  userPool: pool,
+  metadata: UserPoolIdentityProviderSamlMetadata.file('my-file-contents'),
+  // Whether to require encrypted SAML assertions from IdP
+  encryptedResponses: true,
+  // Whether to sign SAML requests
+  signingRequests: true,
+});
+
+// specify the metadata as a URL
+new cognito.UserPoolIdentityProviderSaml(stack, 'userpoolidpUrl', {
+  userPool: pool,
+  metadata: UserPoolIdentityProviderSamlMetadata.url('https://my-metadata-url.com'),
+});
+```
+
 Attribute mapping allows mapping attributes provided by the third-party identity providers to [standard and custom
 attributes](#Attributes) of the user pool. Learn more about [Specifying Identity Provider Attribute Mappings for Your
 User Pool](https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-specifying-attribute-mapping.html).
