@@ -229,12 +229,11 @@ export class Topic extends TopicBase {
 
     if (
       props.signatureVersion &&
-      !Token.isUnresolved(props.signatureVersion) && 
+      !Token.isUnresolved(props.signatureVersion) &&
       props.signatureVersion !== '1' &&
       props.signatureVersion !== '2'
     ) {
-        throw new Error(`signatureVersion must be "1" or "2", received: "${props.signatureVersion}"`);
-      }
+      throw new Error(`signatureVersion must be "1" or "2", received: "${props.signatureVersion}"`);
     }
 
     const resource = new CfnTopic(this, 'Resource', {
