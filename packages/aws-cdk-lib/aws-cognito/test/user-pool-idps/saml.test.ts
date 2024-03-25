@@ -134,6 +134,30 @@ describe('UserPoolIdentityProvider', () => {
       });
     });
 
+    test('ipdInitiated', () => {
+      // GIVEN
+      const stack = new Stack();
+      const pool = new UserPool(stack, 'userpool');
+
+      // WHEN
+      new UserPoolIdentityProviderSaml(stack, 'userpoolidp', {
+        userPool: pool,
+        metadata: UserPoolIdentityProviderSamlMetadata.file('my-file-contents'),
+        idpInitiated: true,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolIdentityProvider', {
+        ProviderName: 'userpoolidp',
+        ProviderType: 'SAML',
+        ProviderDetails: {
+          MetadataFile: 'my-file-contents',
+          IDPSignout: false,
+          IDPInit: true,
+        },
+      });
+    });
+
     test('attribute mapping', () => {
       // GIVEN
       const stack = new Stack();

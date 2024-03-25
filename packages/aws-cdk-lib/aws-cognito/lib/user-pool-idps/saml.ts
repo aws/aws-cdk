@@ -53,6 +53,13 @@ export interface UserPoolIdentityProviderSamlProps extends UserPoolIdentityProvi
    * @default false
    */
   readonly signingRequests?: boolean;
+
+  /**
+   * Whether to enable IdP-initiated SAML auth flows.
+   *
+   * @default false
+   */
+  readonly idpInitiated?: boolean;
 }
 
 /**
@@ -119,6 +126,7 @@ export class UserPoolIdentityProviderSaml extends UserPoolIdentityProviderBase {
         MetadataFile: metadataType === UserPoolIdentityProviderSamlMetadataType.FILE ? metadataContent : undefined,
         EncryptedResponses: props.encryptedResponses ?? undefined,
         RequestSigningAlgorithm: props.signingRequests ? 'rsa-sha256' : undefined,
+        IDPInit: props.idpInitiated ?? undefined,
       },
       idpIdentifiers: props.identifiers,
       attributeMapping: super.configureAttributeMapping(),
