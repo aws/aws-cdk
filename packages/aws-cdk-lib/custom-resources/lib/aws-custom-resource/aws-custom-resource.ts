@@ -506,7 +506,7 @@ export class AwsCustomResource extends Construct implements iam.IGrantable {
         update: props.onUpdate && this.encodeJson(props.onUpdate),
         delete: props.onDelete && this.encodeJson(props.onDelete),
         installLatestAwsSdk,
-        diableLogging: props.disableLogging ?? false,
+        disableLogging: props.disableLogging ?? false,
       },
     });
 
