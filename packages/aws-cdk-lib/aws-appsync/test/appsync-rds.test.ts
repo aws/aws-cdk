@@ -22,7 +22,7 @@ describe('Rds Data Source configuration', () => {
   // GIVEN
   let secret: DatabaseSecret;
   let serverlessCluster: ServerlessCluster;
-  let serverlessClusterV2: DatabaseCluster;
+
   beforeEach(() => {
     const vpc = new Vpc(stack, 'Vpc', { maxAzs: 2 });
     const securityGroup = new SecurityGroup(stack, 'AuroraSecurityGroup', {
@@ -40,20 +40,6 @@ describe('Rds Data Source configuration', () => {
       vpcSubnets: { subnetType: SubnetType.PRIVATE_WITH_EGRESS },
       securityGroups: [securityGroup],
       defaultDatabaseName: 'Animals',
-    });
-
-    serverlessClusterV2 = new DatabaseCluster(stack, 'AuroraClusterV2', {
-      engine: DatabaseClusterEngine.auroraPostgres({ version: AuroraPostgresEngineVersion.VER_15_5 }),
-      credentials: { username: 'clusteradmin' },
-      clusterIdentifier: 'db-endpoint-test',
-      writer: ClusterInstance.serverlessV2('writer'),
-      serverlessV2MinCapacity: 0.5,
-      serverlessV2MaxCapacity: 1,
-      vpc,
-      vpcSubnets: { subnetType: SubnetType.PRIVATE_WITH_EGRESS },
-      securityGroups: [securityGroup],
-      defaultDatabaseName: 'Animals',
-      enableDataApi: true,
     });
   });
 
@@ -124,6 +110,140 @@ describe('Rds Data Source configuration', () => {
           }],
         }],
       },
+    });
+  });
+
+  test('rds cluster arn saved to RdsHttpEndpointConfig', () => {
+    // WHEN
+    api.addRdsDataSource('ds', serverlessCluster, secret);
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::DataSource', {
+      Type: 'RELATIONAL_DATABASE',
+      RelationalDatabaseConfig: {
+        RdsHttpEndpointConfig: {
+          AwsRegion: { Ref: 'AWS::Region' },
+          AwsSecretStoreArn: { Ref: 'AuroraSecret41E6E877' },
+          DbClusterIdentifier: {
+            'Fn::Join': ['', ['arn:',
+              { Ref: 'AWS::Partition' },
+              ':rds:',
+              { Ref: 'AWS::Region' },
+              ':',
+              { Ref: 'AWS::AccountId' },
+              ':cluster:',
+              { Ref: 'AuroraCluster23D869C0' }]],
+          },
+        },
+      },
+    });
+  });
+
+  test('databaseName saved to RdsHttpEndpointConfig', () => {
+    // WHEN
+    const testDatabaseName = 'testDatabaseName';
+    api.addRdsDataSource('ds', serverlessCluster, secret, testDatabaseName);
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::DataSource', {
+      Type: 'RELATIONAL_DATABASE',
+      RelationalDatabaseConfig: {
+        RdsHttpEndpointConfig: {
+          AwsRegion: { Ref: 'AWS::Region' },
+          AwsSecretStoreArn: { Ref: 'AuroraSecret41E6E877' },
+          DbClusterIdentifier: {
+            'Fn::Join': ['', ['arn:',
+              { Ref: 'AWS::Partition' },
+              ':rds:',
+              { Ref: 'AWS::Region' },
+              ':',
+              { Ref: 'AWS::AccountId' },
+              ':cluster:',
+              { Ref: 'AuroraCluster23D869C0' }]],
+          },
+          DatabaseName: testDatabaseName,
+        },
+      },
+    });
+  });
+
+  test('default configuration produces name identical to the id', () => {
+    // WHEN
+    api.addRdsDataSource('ds', serverlessCluster, secret);
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::DataSource', {
+      Type: 'RELATIONAL_DATABASE',
+      Name: 'ds',
+    });
+  });
+
+  test('appsync configures name correctly', () => {
+    // WHEN
+    api.addRdsDataSource('ds', serverlessCluster, secret, undefined, {
+      name: 'custom',
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::DataSource', {
+      Type: 'RELATIONAL_DATABASE',
+      Name: 'custom',
+    });
+  });
+
+  test('appsync configures name and description correctly', () => {
+    // WHEN
+    api.addRdsDataSource('ds', serverlessCluster, secret, undefined, {
+      name: 'custom',
+      description: 'custom description',
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::DataSource', {
+      Type: 'RELATIONAL_DATABASE',
+      Name: 'custom',
+      Description: 'custom description',
+    });
+  });
+
+  test('appsync errors when creating multiple rds data sources with no configuration', () => {
+    // WHEN
+    const when = () => {
+      api.addRdsDataSource('ds', serverlessCluster, secret);
+      api.addRdsDataSource('ds', serverlessCluster, secret);
+    };
+
+    // THEN
+    expect(when).toThrow('There is already a Construct with name \'ds\' in GraphqlApi [baseApi]');
+  });
+});
+
+describe('Rds Data Source Serverless V2 configuration', () => {
+  // GIVEN
+  let secret: DatabaseSecret;
+  let serverlessClusterV2: DatabaseCluster;
+
+  beforeEach(() => {
+    const vpc = new Vpc(stack, 'Vpc', { maxAzs: 2 });
+    const securityGroup = new SecurityGroup(stack, 'AuroraSecurityGroup', {
+      vpc,
+      allowAllOutbound: true,
+    });
+    secret = new DatabaseSecret(stack, 'AuroraSecret', {
+      username: 'clusteradmin',
+    });
+    serverlessClusterV2 = new DatabaseCluster(stack, 'AuroraClusterV2', {
+      engine: DatabaseClusterEngine.auroraPostgres({ version: AuroraPostgresEngineVersion.VER_15_5 }),
+      credentials: { username: 'clusteradmin' },
+      clusterIdentifier: 'db-endpoint-test',
+      writer: ClusterInstance.serverlessV2('writer'),
+      serverlessV2MinCapacity: 0.5,
+      serverlessV2MaxCapacity: 1,
+      vpc,
+      vpcSubnets: { subnetType: SubnetType.PRIVATE_WITH_EGRESS },
+      securityGroups: [securityGroup],
+      defaultDatabaseName: 'Animals',
+      enableDataApi: true,
     });
   });
 
@@ -206,32 +326,6 @@ describe('Rds Data Source configuration', () => {
     });
   });
 
-  test('rds cluster arn saved to RdsHttpEndpointConfig', () => {
-    // WHEN
-    api.addRdsDataSource('ds', serverlessCluster, secret);
-
-    // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::DataSource', {
-      Type: 'RELATIONAL_DATABASE',
-      RelationalDatabaseConfig: {
-        RdsHttpEndpointConfig: {
-          AwsRegion: { Ref: 'AWS::Region' },
-          AwsSecretStoreArn: { Ref: 'AuroraSecret41E6E877' },
-          DbClusterIdentifier: {
-            'Fn::Join': ['', ['arn:',
-              { Ref: 'AWS::Partition' },
-              ':rds:',
-              { Ref: 'AWS::Region' },
-              ':',
-              { Ref: 'AWS::AccountId' },
-              ':cluster:',
-              { Ref: 'AuroraCluster23D869C0' }]],
-          },
-        },
-      },
-    });
-  });
-
   test('rds cluster arn saved to RdsHttpEndpointConfig serverlessV2', () => {
     // WHEN
     api.addRdsDataSource('dsV2', serverlessClusterV2, secret);
@@ -253,34 +347,6 @@ describe('Rds Data Source configuration', () => {
               ':cluster:',
               { Ref: 'AuroraClusterV2A232B19B' }]],
           },
-        },
-      },
-    });
-  });
-
-  test('databaseName saved to RdsHttpEndpointConfig', () => {
-    // WHEN
-    const testDatabaseName = 'testDatabaseName';
-    api.addRdsDataSource('ds', serverlessCluster, secret, testDatabaseName);
-
-    // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::DataSource', {
-      Type: 'RELATIONAL_DATABASE',
-      RelationalDatabaseConfig: {
-        RdsHttpEndpointConfig: {
-          AwsRegion: { Ref: 'AWS::Region' },
-          AwsSecretStoreArn: { Ref: 'AuroraSecret41E6E877' },
-          DbClusterIdentifier: {
-            'Fn::Join': ['', ['arn:',
-              { Ref: 'AWS::Partition' },
-              ':rds:',
-              { Ref: 'AWS::Region' },
-              ':',
-              { Ref: 'AWS::AccountId' },
-              ':cluster:',
-              { Ref: 'AuroraCluster23D869C0' }]],
-          },
-          DatabaseName: testDatabaseName,
         },
       },
     });
@@ -314,17 +380,6 @@ describe('Rds Data Source configuration', () => {
     });
   });
 
-  test('default configuration produces name identical to the id', () => {
-    // WHEN
-    api.addRdsDataSource('ds', serverlessCluster, secret);
-
-    // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::DataSource', {
-      Type: 'RELATIONAL_DATABASE',
-      Name: 'ds',
-    });
-  });
-
   test('default configuration produces name identical to the id serverlessV2', () => {
     // WHEN
     api.addRdsDataSource('dsV2', serverlessClusterV2, secret);
@@ -333,19 +388,6 @@ describe('Rds Data Source configuration', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::AppSync::DataSource', {
       Type: 'RELATIONAL_DATABASE',
       Name: 'dsV2',
-    });
-  });
-
-  test('appsync configures name correctly', () => {
-    // WHEN
-    api.addRdsDataSource('ds', serverlessCluster, secret, undefined, {
-      name: 'custom',
-    });
-
-    // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::DataSource', {
-      Type: 'RELATIONAL_DATABASE',
-      Name: 'custom',
     });
   });
 
@@ -359,21 +401,6 @@ describe('Rds Data Source configuration', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::AppSync::DataSource', {
       Type: 'RELATIONAL_DATABASE',
       Name: 'custom',
-    });
-  });
-
-  test('appsync configures name and description correctly', () => {
-    // WHEN
-    api.addRdsDataSource('ds', serverlessCluster, secret, undefined, {
-      name: 'custom',
-      description: 'custom description',
-    });
-
-    // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::DataSource', {
-      Type: 'RELATIONAL_DATABASE',
-      Name: 'custom',
-      Description: 'custom description',
     });
   });
 
@@ -392,17 +419,6 @@ describe('Rds Data Source configuration', () => {
     });
   });
 
-  test('appsync errors when creating multiple rds data sources with no configuration', () => {
-    // WHEN
-    const when = () => {
-      api.addRdsDataSource('ds', serverlessCluster, secret);
-      api.addRdsDataSource('ds', serverlessCluster, secret);
-    };
-
-    // THEN
-    expect(when).toThrow('There is already a Construct with name \'ds\' in GraphqlApi [baseApi]');
-  });
-
   test('appsync errors when creating multiple rds data sources with no configuration ServerlessV2', () => {
     // WHEN
     const when = () => {
@@ -419,7 +435,7 @@ describe('adding rds data source from imported api', () => {
   // GIVEN
   let secret: DatabaseSecret;
   let serverlessCluster: ServerlessCluster;
-  let serverlessClusterV2: DatabaseCluster;
+
   beforeEach(() => {
     const vpc = new Vpc(stack, 'Vpc', { maxAzs: 2 });
     const securityGroup = new SecurityGroup(stack, 'AuroraSecurityGroup', {
@@ -438,20 +454,6 @@ describe('adding rds data source from imported api', () => {
       securityGroups: [securityGroup],
       defaultDatabaseName: 'Animals',
     });
-
-    serverlessClusterV2 = new DatabaseCluster(stack, 'AuroraClusterV2', {
-      engine: DatabaseClusterEngine.auroraPostgres({ version: AuroraPostgresEngineVersion.VER_15_5 }),
-      credentials: { username: 'clusteradmin' },
-      clusterIdentifier: 'db-endpoint-test',
-      writer: ClusterInstance.serverlessV2('writer'),
-      serverlessV2MinCapacity: 0.5,
-      serverlessV2MaxCapacity: 1,
-      vpc,
-      vpcSubnets: { subnetType: SubnetType.PRIVATE_WITH_EGRESS },
-      securityGroups: [securityGroup],
-      defaultDatabaseName: 'Animals',
-      enableDataApi: true,
-    });
   });
 
   test('imported api can add RdsDbDataSource from id', () => {
@@ -468,20 +470,6 @@ describe('adding rds data source from imported api', () => {
     });
   });
 
-  test('imported api can add RdsDbDataSource V2 from id', () => {
-    // WHEN
-    const importedApi = appsync.GraphqlApi.fromGraphqlApiAttributes(stack, 'importedApi', {
-      graphqlApiId: api.apiId,
-    });
-    importedApi.addRdsDataSource('dsV2', serverlessClusterV2, secret);
-
-    // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::DataSource', {
-      Type: 'RELATIONAL_DATABASE',
-      ApiId: { 'Fn::GetAtt': ['baseApiCDA4D43A', 'ApiId'] },
-    });
-  });
-
   test('imported api can add RdsDataSource from attributes', () => {
     // WHEN
     const importedApi = appsync.GraphqlApi.fromGraphqlApiAttributes(stack, 'importedApi', {
@@ -489,6 +477,51 @@ describe('adding rds data source from imported api', () => {
       graphqlApiArn: api.arn,
     });
     importedApi.addRdsDataSource('ds', serverlessCluster, secret);
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::DataSource', {
+      Type: 'RELATIONAL_DATABASE',
+      ApiId: { 'Fn::GetAtt': ['baseApiCDA4D43A', 'ApiId'] },
+    });
+  });
+});
+
+describe('adding rds data source Serverless V2 from imported api', () => {
+  // GIVEN
+  let secret: DatabaseSecret;
+  let serverlessClusterV2: DatabaseCluster;
+
+  beforeEach(() => {
+    const vpc = new Vpc(stack, 'Vpc', { maxAzs: 2 });
+    const securityGroup = new SecurityGroup(stack, 'AuroraSecurityGroup', {
+      vpc,
+      allowAllOutbound: true,
+    });
+    secret = new DatabaseSecret(stack, 'AuroraSecret', {
+      username: 'clusteradmin',
+    });
+
+    serverlessClusterV2 = new DatabaseCluster(stack, 'AuroraClusterV2', {
+      engine: DatabaseClusterEngine.auroraPostgres({ version: AuroraPostgresEngineVersion.VER_15_5 }),
+      credentials: { username: 'clusteradmin' },
+      clusterIdentifier: 'db-endpoint-test',
+      writer: ClusterInstance.serverlessV2('writer'),
+      serverlessV2MinCapacity: 0.5,
+      serverlessV2MaxCapacity: 1,
+      vpc,
+      vpcSubnets: { subnetType: SubnetType.PRIVATE_WITH_EGRESS },
+      securityGroups: [securityGroup],
+      defaultDatabaseName: 'Animals',
+      enableDataApi: true,
+    });
+  });
+
+  test('imported api can add RdsDbDataSource V2 from id', () => {
+    // WHEN
+    const importedApi = appsync.GraphqlApi.fromGraphqlApiAttributes(stack, 'importedApi', {
+      graphqlApiId: api.apiId,
+    });
+    importedApi.addRdsDataSource('dsV2', serverlessClusterV2, secret);
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::AppSync::DataSource', {

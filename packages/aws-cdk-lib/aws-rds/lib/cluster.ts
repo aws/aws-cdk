@@ -972,6 +972,7 @@ class ImportedDatabaseCluster extends DatabaseClusterBase implements IDatabaseCl
   public readonly clusterIdentifier: string;
   public readonly connections: ec2.Connections;
   public readonly engine?: IClusterEngine;
+  public readonly secret?: secretsmanager.ISecret;
 
   private readonly _clusterResourceIdentifier?: string;
   private readonly _clusterEndpoint?: Endpoint;
@@ -979,7 +980,6 @@ class ImportedDatabaseCluster extends DatabaseClusterBase implements IDatabaseCl
   private readonly _instanceIdentifiers?: string[];
   private readonly _instanceEndpoints?: Endpoint[];
 
-  public readonly secret?: secretsmanager.ISecret;
   protected readonly enableDataApi = false;
 
   constructor(scope: Construct, id: string, attrs: DatabaseClusterAttributes) {
