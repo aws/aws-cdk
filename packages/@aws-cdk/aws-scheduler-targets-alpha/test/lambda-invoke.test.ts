@@ -1,5 +1,5 @@
-import { ScheduleExpression, Schedule } from '@aws-cdk/aws-scheduler-alpha';
-import { App, Duration, Stack } from 'aws-cdk-lib';
+import { Schedule, ScheduleExpression } from '@aws-cdk/aws-scheduler-alpha';
+import { App, Duration, Fn, Stack } from 'aws-cdk-lib';
 import { Template } from 'aws-cdk-lib/assertions';
 import { AccountRootPrincipal, Role } from 'aws-cdk-lib/aws-iam';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
@@ -316,6 +316,31 @@ describe('schedule target', () => {
         ],
       },
       Roles: ['someRole'],
+    });
+  });
+
+  test('import lambda function from different stack in the same account', () => {
+    const importValueName = 'MyFunctionArn';
+    const functionArn = Fn.importValue(importValueName);
+
+    const importedFunc = lambda.Function.fromFunctionAttributes(stack, 'ImportedFunction', {
+      functionArn,
+      sameEnvironment: true,
+    });
+
+    const lambdaTarget = new LambdaInvoke(importedFunc, {});
+
+    new Schedule(stack, 'MyScheduleDummy', {
+      schedule: expr,
+      target: lambdaTarget,
+    });
+
+    Template.fromStack(stack).hasResource('AWS::Scheduler::Schedule', {
+      Properties: {
+        Target: {
+          Arn: { 'Fn::ImportValue': importValueName },
+        },
+      },
     });
   });
 
