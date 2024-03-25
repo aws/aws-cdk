@@ -604,19 +604,21 @@ Using SAML identity provider is possible to use SAML metadata file content or SA
 const userpool = new cognito.UserPool(this, 'Pool');
 
 // specify the metadata as a file content
-new cognito.UserPoolIdentityProviderSaml(stack, 'userpoolIdpFile', {
-  userPool: pool,
-  metadata: UserPoolIdentityProviderSamlMetadata.file('my-file-contents'),
+new cognito.UserPoolIdentityProviderSaml(this, 'userpoolIdpFile', {
+  userPool: userpool,
+  metadata: cognito.UserPoolIdentityProviderSamlMetadata.file('my-file-contents'),
   // Whether to require encrypted SAML assertions from IdP
   encryptedResponses: true,
   // The signing algorithm for the SAML requests
   requestSigningAlgorithm: cognito.SigningAlgorithm.RSA_SHA256,
+  // Enable IdP initiated SAML auth flow
+  idpInitiated: true,
 });
 
 // specify the metadata as a URL
-new cognito.UserPoolIdentityProviderSaml(stack, 'userpoolidpUrl', {
-  userPool: pool,
-  metadata: UserPoolIdentityProviderSamlMetadata.url('https://my-metadata-url.com'),
+new cognito.UserPoolIdentityProviderSaml(this, 'userpoolidpUrl', {
+  userPool: userpool,
+  metadata: cognito.UserPoolIdentityProviderSamlMetadata.url('https://my-metadata-url.com'),
 });
 ```
 
