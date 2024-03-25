@@ -3,7 +3,7 @@ import { CfnTopic } from './sns.generated';
 import { ITopic, TopicBase } from './topic-base';
 import { IRole } from '../../aws-iam';
 import { IKey } from '../../aws-kms';
-import { ArnFormat, Lazy, Names, Stack, Token } from '../../core';
+import { ArnFormat, Fn, Lazy, Names, Stack, Token } from '../../core';
 
 /**
  * Properties for a new SNS topic
@@ -154,6 +154,22 @@ export enum LoggingProtocol {
 }
 
 /**
+ * Represents an SNS topic defined outside of this stack.
+ */
+export interface TopicAttributes {
+  /**
+   * The ARN of the SNS topic.
+   */
+  readonly topicArn: string;
+
+  /**
+   * Whether content-based deduplication is enabled.
+   * Only applicable for FIFO topics.
+   */
+  readonly contentBasedDeduplication?: boolean;
+}
+
+/**
  * A new SNS topic
  */
 export class Topic extends TopicBase {
@@ -164,20 +180,38 @@ export class Topic extends TopicBase {
    * @param scope The parent creating construct
    * @param id The construct's name
    * @param topicArn topic ARN (i.e. arn:aws:sns:us-east-2:444455556666:MyTopic)
-   * @param contentBasedDeduplication If content-based deduplication is enabled
    */
-  public static fromTopicArn(scope: Construct, id: string, topicArn: string, contentBasedDeduplication?: boolean): ITopic {
+  public static fromTopicArn(scope: Construct, id: string, topicArn: string): ITopic {
     class Import extends TopicBase {
       public readonly topicArn = topicArn;
       public readonly topicName = Stack.of(scope).splitArn(topicArn, ArnFormat.NO_RESOURCE_NAME).resource;
       public readonly fifo = this.topicName.endsWith('.fifo');
-      public readonly contentBasedDeduplication = contentBasedDeduplication ?? false;
+      public readonly contentBasedDeduplication = false;
       protected autoCreatePolicy: boolean = false;
     }
 
     return new Import(scope, id, {
       environmentFromArn: topicArn,
     });
+  }
+
+  /**
+   * Import an existing SNS topic provided a topic attributes
+   *
+   * @param scope The parent creating construct
+   * @param id The construct's name
+   * @param attrs the attributes of the topic to import
+   */
+  public static fromTopicAttributes(scope: Construct, id: string, attrs: TopicAttributes): ITopic {
+    class Import extends TopicBase {
+      public readonly topicArn = attrs.topicArn;
+      public readonly topicName = extractNameFromArn(attrs.topicArn);
+      public readonly fifo = this.topicName.endsWith('.fifo');
+      public readonly contentBasedDeduplication = attrs.contentBasedDeduplication || false;
+      protected autoCreatePolicy: boolean = false;
+    }
+
+    return new Import(scope, id);
   }
 
   public readonly topicArn: string;
@@ -284,4 +318,21 @@ export class Topic extends TopicBase {
   public addLoggingConfig(config: LoggingConfig) {
     this.loggingConfigs.push(config);
   }
+}
+
+/**
+ * Given an opaque (token) ARN, returns a CloudFormation expression that extracts the topic
+ * name from the ARN.
+ *
+ * Function ARNs look like this:
+ *
+ *   arn:aws:sns:region:account-id:topic-name
+ *
+ * ..which means that in order to extract the `topic-name` component from the ARN, we can
+ * split the ARN using ":" and select the component in index 5.
+ *
+ * @returns `FnSelect(5, FnSplit(':', arn))`
+ */
+function extractNameFromArn(arn: string) {
+  return Fn.select(5, Fn.split(':', arn));
 }

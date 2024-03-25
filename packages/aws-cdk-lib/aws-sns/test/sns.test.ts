@@ -455,35 +455,35 @@ describe('Topic', () => {
     expect(imported.fifo).toEqual(true);
   });
 
-  test('fromTopicArn contentBasedDeduplication true', () => {
+  test('fromTopicAttributes contentBasedDeduplication false', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
     // WHEN
-    const topic = new sns.Topic(stack, 'MyTopic', {
-      topicName: 'MyTopic',
-      fifo: true,
-      contentBasedDeduplication: true,
+    const imported = sns.Topic.fromTopicAttributes(stack, 'Imported', {
+      topicArn: 'arn:aws:sns:*:123456789012:mytopic',
     });
-    const imported = sns.Topic.fromTopicArn(stack, 'Imported', topic.topicArn, true);
 
     // THEN
-    expect(imported.contentBasedDeduplication).toEqual(true);
+    expect(imported.topicName).toEqual('mytopic');
+    expect(imported.topicArn).toEqual('arn:aws:sns:*:123456789012:mytopic');
+    expect(imported.contentBasedDeduplication).toEqual(false);
   });
 
-  test('fromTopicArn contentBasedDeduplication not provided (false)', () => {
+  test('fromTopicAttributes contentBasedDeduplication true', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
     // WHEN
-    const topic = new sns.Topic(stack, 'MyTopic', {
-      topicName: 'MyTopic',
-      fifo: true,
+    const imported = sns.Topic.fromTopicAttributes(stack, 'Imported', {
+      topicArn: 'arn:aws:sns:*:123456789012:mytopic.fifo',
+      contentBasedDeduplication: true,
     });
-    const imported = sns.Topic.fromTopicArn(stack, 'Imported', topic.topicArn);
 
     // THEN
-    expect(imported.contentBasedDeduplication).toEqual(false);
+    expect(imported.topicName).toEqual('mytopic.fifo');
+    expect(imported.topicArn).toEqual('arn:aws:sns:*:123456789012:mytopic.fifo');
+    expect(imported.contentBasedDeduplication).toEqual(true);
   });
 
   test('sets account for imported topic env', () => {
