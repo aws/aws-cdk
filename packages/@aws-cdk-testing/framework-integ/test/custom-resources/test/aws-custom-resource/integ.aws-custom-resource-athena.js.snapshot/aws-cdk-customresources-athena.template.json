@@ -150,8 +150,7 @@
     },
     "Delete": "{\"service\":\"Athena\",\"action\":\"deleteWorkGroup\",\"parameters\":{\"WorkGroup\":\"TestWG\"}}",
     "InstallLatestAwsSdk": true,
-    "DisableInfoLogging": false,
-    "DisableErrorLogging": false
+    "DisableLogging": false
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -163,7 +162,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "f47261605c7318d17a58bad776e04e516000c7fd973807f78df5f78dd172ebd8.zip"
+     "S3Key": "aafb9e3ee3305d0579f4fa5511e48f53f7969d9f1a21610741e050a6726e6b95.zip"
     },
     "Handler": "index.handler",
     "Role": {
@@ -192,8 +191,7 @@
     "Update": "{\"service\":\"Athena\",\"action\":\"updateNotebookMetadata\",\"parameters\":{\"Name\":\"MyNotebook1\",\"NotebookId\":\"PHYSICAL:RESOURCEID:\"}}",
     "Delete": "{\"service\":\"Athena\",\"action\":\"deleteNotebook\",\"parameters\":{\"NotebookId\":\"PHYSICAL:RESOURCEID:\"}}",
     "InstallLatestAwsSdk": true,
-    "DisableInfoLogging": false,
-    "DisableErrorLogging": false
+    "DisableLogging": false
    },
    "DependsOn": [
     "AthenaWorkGroupA2C2329E"

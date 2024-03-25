@@ -10,9 +10,7 @@
      ]
     },
     "Create": "{\"assumedRoleArn\":\"arn:aws:iam::12345678:role/MyUniqueRole\",\"service\":\"@aws-sdk/client-sts\",\"action\":\"GetCallerIdentityCommand\",\"physicalResourceId\":{\"id\":\"id\"}}",
-    "InstallLatestAwsSdk": false,
-    "DisableInfoLogging": false,
-    "DisableErrorLogging": false
+    "InstallLatestAwsSdk": false
    },
    "DependsOn": [
     "CrossAccountCRCustomResourcePolicyFA8BE490"
@@ -77,7 +75,7 @@
    "Properties": {
     "Code": {
      "S3Bucket": "cdk-hnb659fds-assets-234567890123-us-east-1",
-     "S3Key": "f47261605c7318d17a58bad776e04e516000c7fd973807f78df5f78dd172ebd8.zip"
+     "S3Key": "b0de6372e1c756b7afa1a8a1d0a21ee4cd330150290abffc9bc163f285150514.zip"
     },
     "Handler": "index.handler",
     "Role": {
