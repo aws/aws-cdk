@@ -37,12 +37,13 @@ export interface RespondProps {
   data: any;
 
   /**
-   * Disables info log information related to the operation of the Lambda function. This
-   * includes displaying the event received by the handler and any API responses received.
+   * Disables logging information related to the operation of the Lambda function. This
+   * includes displaying the event received by the handler, any API responses received,
+   * and any caught or uncaught errors
    *
    * @default false
    */
-  disableInfoLogging?: boolean;
+  disableLogging?: boolean;
 }
 
 /**
@@ -93,7 +94,7 @@ export function respond(props: RespondProps) {
     Data: props.data,
   });
 
-  if (!props.disableInfoLogging) {
+  if (!props.disableLogging) {
     // eslint-disable-next-line no-console
     console.log('Responding', responseBody);
   }

@@ -39,7 +39,7 @@ interface AwsSdk {
 
 async function loadAwsSdk(
   packageName: string,
-  disableErrorLogging: boolean,
+  disableLogging: boolean,
   installLatestAwsSdk?: 'true' | 'false',
 ) {
   let awsSdk: AwsSdk;
@@ -51,7 +51,7 @@ async function loadAwsSdk(
         // esbuild-disable unsupported-require-call -- not esbuildable but that's fine
         awsSdk = require(`/tmp/node_modules/${packageName}`);
       } catch (e) {
-        if (!disableErrorLogging) {
+        if (!disableLogging) {
           console.log(`Failed to install latest AWS SDK v3. Falling back to pre-installed version. Error: ${e}`);
         }
         // MUST use require as dynamic import() does not support importing from directories
@@ -75,8 +75,7 @@ async function loadAwsSdk(
 
 /* eslint-disable @typescript-eslint/no-require-imports, import/no-extraneous-dependencies */
 export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent, context: AWSLambda.Context) {
-  const disableInfoLogging = event.ResourceProperties.DisableInfoLogging === 'true';
-  const disableErrorLogging = event.ResourceProperties.DisableErrorLogging === 'true';
+  const disableLogging = event.ResourceProperties.DisableLogging === 'true';
 
   try {
     event.ResourceProperties.Create = decodeCall(event.ResourceProperties.Create);
@@ -105,11 +104,11 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
 
       let awsSdk: AwsSdk | Promise<AwsSdk> = loadAwsSdk(
         apiCall.v3PackageName,
-        disableErrorLogging,
+        disableLogging,
         event.ResourceProperties.InstallLatestAwsSdk,
       );
 
-      if (!disableInfoLogging) {
+      if (!disableLogging) {
         console.log(JSON.stringify({ ...event, ResponseURL: '...' }));
       }
 
@@ -142,7 +141,7 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
           flattenResponse: true,
         });
 
-        if (!disableInfoLogging) {
+        if (!disableLogging) {
           console.log('API response', response);
         }
 
@@ -181,10 +180,10 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
       reason: 'OK',
       physicalResourceId,
       data,
-      disableInfoLogging,
+      disableLogging,
     });
   } catch (e: any) {
-    if (!disableErrorLogging) {
+    if (!disableLogging) {
       console.log(e);
     }
 
@@ -194,7 +193,7 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
       reason: e.message || 'Internal Error',
       physicalResourceId: context.logStreamName,
       data: {},
-      disableInfoLogging,
+      disableLogging,
     });
   }
 }

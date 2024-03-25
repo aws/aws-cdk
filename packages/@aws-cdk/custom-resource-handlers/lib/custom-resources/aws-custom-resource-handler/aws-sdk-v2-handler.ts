@@ -62,8 +62,7 @@ function patchSdk(awsSdk: any): any {
 
 /* eslint-disable @typescript-eslint/no-require-imports, import/no-extraneous-dependencies */
 export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent, context: AWSLambda.Context) {
-  const disableInfoLogging = event.ResourceProperties.DisableInfoLogging === 'true';
-  const disableErrorLogging = event.ResourceProperties.DisableErrorLogging === 'true';
+  const disableLogging = event.ResourceProperties.DisableLogging === 'true';
 
   try {
     let AWS: any;
@@ -72,7 +71,7 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
         installLatestSdk();
         AWS = require('/tmp/node_modules/aws-sdk');
       } catch (e) {
-        if (!disableErrorLogging) {
+        if (!disableLogging) {
           console.log(`Failed to install latest AWS SDK v2: ${e}`);
         }
         AWS = require('aws-sdk'); // Fallback to pre-installed version
@@ -85,12 +84,12 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
     try {
       AWS = patchSdk(AWS);
     } catch (e) {
-      if (!disableErrorLogging) {
+      if (!disableLogging) {
         console.log(`Failed to patch AWS SDK: ${e}. Proceeding with the installed copy.`);
       }
     }
 
-    if (!disableInfoLogging) {
+    if (!disableLogging) {
       console.log(JSON.stringify({ ...event, ResponseURL: '...' }));
       console.log('AWS SDK VERSION: ' + AWS.VERSION);
     }
@@ -182,10 +181,10 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
       reason: 'OK',
       physicalResourceId,
       data,
-      disableInfoLogging,
+      disableLogging,
     });
   } catch (e: any) {
-    if (!disableErrorLogging) {
+    if (!disableLogging) {
       console.log(e);
     }
 
@@ -195,7 +194,7 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
       reason: e.message || 'Internal Error',
       physicalResourceId: context.logStreamName,
       data: {},
-      disableInfoLogging,
+      disableLogging,
     });
   }
 }
