@@ -44,7 +44,9 @@
       ]
      ]
     },
-    "InstallLatestAwsSdk": false
+    "InstallLatestAwsSdk": "false",
+    "DisableInfoLogging": false,
+    "DisableErrorLogging": false
    },
    "DependsOn": [
     "PublishCustomResourcePolicyDF696FCA"
@@ -111,7 +113,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "482f9f5ffd706706c8ef3652699d6c945568786593d3571e4331ecb1f966c932.zip"
+     "S3Key": "f47261605c7318d17a58bad776e04e516000c7fd973807f78df5f78dd172ebd8.zip"
     },
     "Handler": "index.handler",
     "Role": {
@@ -138,7 +140,9 @@
     },
     "Create": "{\"service\":\"SNS\",\"action\":\"listTopics\",\"physicalResourceId\":{\"responsePath\":\"Topics.0.TopicArn\"}}",
     "Update": "{\"service\":\"SNS\",\"action\":\"listTopics\",\"physicalResourceId\":{\"responsePath\":\"Topics.0.TopicArn\"}}",
-    "InstallLatestAwsSdk": false
+    "InstallLatestAwsSdk": "false",
+    "DisableInfoLogging": false,
+    "DisableErrorLogging": false
    },
    "DependsOn": [
     "ListTopicsCustomResourcePolicy31A8396A",
@@ -211,7 +215,9 @@
       ]
      ]
     },
-    "InstallLatestAwsSdk": false
+    "InstallLatestAwsSdk": "false",
+    "DisableInfoLogging": false,
+    "DisableErrorLogging": false
    },
    "DependsOn": [
     "GetParameterCustomResourcePolicyD8E5D455"
@@ -311,7 +317,9 @@
       ]
      ]
     },
-    "InstallLatestAwsSdk": false
+    "InstallLatestAwsSdk": "false",
+    "DisableInfoLogging": false,
+    "DisableErrorLogging": false
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -327,7 +335,9 @@
     },
     "Create": "{\"service\":\"EKS\",\"action\":\"describeCluster\",\"parameters\":{\"name\":\"fake-cluster\"},\"physicalResourceId\":{\"id\":\"fake-cluster\"},\"ignoreErrorCodesMatching\":\"ResourceNotFoundException\"}",
     "Update": "{\"service\":\"EKS\",\"action\":\"describeCluster\",\"parameters\":{\"name\":\"fake-cluster\"},\"physicalResourceId\":{\"id\":\"fake-cluster\"},\"ignoreErrorCodesMatching\":\"ResourceNotFoundException\"}",
-    "InstallLatestAwsSdk": false
+    "InstallLatestAwsSdk": "false",
+    "DisableInfoLogging": false,
+    "DisableErrorLogging": false
    },
    "DependsOn": [
     "DescribeClusterCustomResourcePolicyD7730CF4"
