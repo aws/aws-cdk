@@ -810,7 +810,8 @@ create an `AppSync.GraphqlApi` configured with `AWS_IAM` authorization mode.
 The code snippet below creates a AppSync GraphQL API target that is invoked, calling the `publish` mutation.
 
 ```ts
-import * as events from 'aws-cdk-lib/aws-events-targets';
+import * as events from 'aws-cdk-lib/aws-events';
+import * as targets from 'aws-cdk-lib/aws-events-targets';
 
 declare const rule: events.Rule;
 declare const api: appsync.GraphqlApi;
