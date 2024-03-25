@@ -89,14 +89,16 @@ export interface ApplicationLoadBalancerProps extends BaseLoadBalancerProps {
   readonly xAmznTlsVersionAndCipherSuiteHeaders?: boolean;
 
   /**
-   * Indicates whether the X-Forwarded-For header should preserve the source port that the client used to connect to the load balancer.
+   * Indicates whether the X-Forwarded-For header should preserve the source port
+   * that the client used to connect to the load balancer.
    *
    * @default false
    */
   readonly preserveXffClientPort?: boolean;
 
   /**
-   * Enables you to modify, preserve, or remove the X-Forwarded-For header in the HTTP request before the Application Load Balancer sends the request to the target.
+   * Enables you to modify, preserve, or remove the X-Forwarded-For header in the HTTP request
+   * before the Application Load Balancer sends the request to the target.
    *
    * @default XffHeaderProcessingMode.APPEND
    */

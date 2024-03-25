@@ -228,7 +228,22 @@ const lb = new elbv2.ApplicationLoadBalancer(this, 'LB', {
   crossZoneEnabled: true,
 
   // Whether the load balancer blocks traffic through the Internet Gateway (IGW).
-  denyAllIgwTraffic: false
+  denyAllIgwTraffic: false,
+
+  // Whether to preserve Host header in the request to the target
+  preserveHostHeader: true,
+
+  // Whether to add the TLS information header to the request
+  xAmznTlsVersionAndCipherSuiteHeaders: true,
+
+  // Whether the X-Forwarded-For header should preserve the source port
+  preserveXffClientPort: true,
+
+  // The processing mode for X-Forwarded-For headers
+  xffHeaderProcessingMode: elbv2.XffHeaderProcessingMode.APPEND,
+
+  // Whether to allow a load balancer to route requests to targets if it is unable to forward the request to AWS WAF.
+  wafFailOpen: true,
 });
 ```
 
