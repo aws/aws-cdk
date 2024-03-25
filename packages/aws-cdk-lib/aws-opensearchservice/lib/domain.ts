@@ -1827,6 +1827,10 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
       }
     }
 
+    if (isSomeInstanceType('t3') && multiAzWithStandbyEnabled) {
+      throw new Error('T3 instance types does not support Multi-AZ with standby feature.');
+    }
+
     const offPeakWindowEnabled = props.offPeakWindowEnabled ?? props.offPeakWindowStart !== undefined;
     if (offPeakWindowEnabled) {
       this.validateWindowStartTime(props.offPeakWindowStart);
