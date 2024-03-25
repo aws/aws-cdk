@@ -1790,10 +1790,7 @@ export class LinuxBuildImage implements IBuildImage {
 
   /** @deprecated Use LinuxArmBuildImage.AMAZON_LINUX_2_STANDARD_3_0 instead. */
   public static readonly AMAZON_LINUX_2_ARM = LinuxArmBuildImage.AMAZON_LINUX_2_STANDARD_1_0;
-  /**
-   * Image "aws/codebuild/amazonlinux2-aarch64-standard:2.0".
-   * @deprecated Use LinuxArmBuildImage.AMAZON_LINUX_2_STANDARD_3_0 instead.
-   * */
+  /** The `aws/codebuild/amazonlinux2-aarch64-standard:2.0` build image. */
   public static readonly AMAZON_LINUX_2_ARM_2 = LinuxArmBuildImage.AMAZON_LINUX_2_STANDARD_2_0;
   /** The `aws/codebuild/amazonlinux2-aarch64-standard:3.0` build image. */
   public static readonly AMAZON_LINUX_2_ARM_3 = LinuxArmBuildImage.AMAZON_LINUX_2_STANDARD_3_0;
