@@ -297,7 +297,6 @@ Messages can be archived for a minimum of one day to a maximum of 365 days.
 Example with a archive policy for SQS:
 
 ```ts
-declare const role: iam.Role;
 const topic = new sns.Topic(this, 'MyTopic', {
   fifo: true,
   messageRetentionPeriodInDays: 7,
@@ -305,4 +304,3 @@ const topic = new sns.Topic(this, 'MyTopic', {
 ```
 
 **Note**: The `messageRetentionPeriodInDays` property is only available for FIFO topics.
-
