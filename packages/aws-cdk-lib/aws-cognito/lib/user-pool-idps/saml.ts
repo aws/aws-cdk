@@ -52,7 +52,7 @@ export interface UserPoolIdentityProviderSamlProps extends UserPoolIdentityProvi
    *
    * @default - don't sign requests
    */
-  readonly signingAlgorithm?: SigningAlgorithm;
+  readonly requestSigningAlgorithm?: SigningAlgorithm;
 
   /**
    * Whether to enable IdP-initiated SAML auth flows.
@@ -135,7 +135,7 @@ export class UserPoolIdentityProviderSaml extends UserPoolIdentityProviderBase {
         MetadataURL: metadataType === UserPoolIdentityProviderSamlMetadataType.URL ? metadataContent : undefined,
         MetadataFile: metadataType === UserPoolIdentityProviderSamlMetadataType.FILE ? metadataContent : undefined,
         EncryptedResponses: props.encryptedResponses ?? undefined,
-        RequestSigningAlgorithm: props.signingAlgorithm,
+        RequestSigningAlgorithm: props.requestSigningAlgorithm,
         IDPInit: props.idpInitiated ?? undefined,
       },
       idpIdentifiers: props.identifiers,

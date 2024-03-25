@@ -16,7 +16,7 @@ class TestStack extends Stack {
       name: 'provider',
       metadata: UserPoolIdentityProviderSamlMetadata.url('https://fujifish.github.io/samling/public/metadata.xml'),
       encryptedResponses: true,
-      signingAlgorithm: SigningAlgorithm.RSA_SHA256,
+      requestSigningAlgorithm: SigningAlgorithm.RSA_SHA256,
     });
 
     const client = userpool.addClient('client');

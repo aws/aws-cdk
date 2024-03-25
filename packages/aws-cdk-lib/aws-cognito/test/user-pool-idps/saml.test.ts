@@ -119,7 +119,7 @@ describe('UserPoolIdentityProvider', () => {
       new UserPoolIdentityProviderSaml(stack, 'userpoolidp', {
         userPool: pool,
         metadata: UserPoolIdentityProviderSamlMetadata.file('my-file-contents'),
-        signingAlgorithm: SigningAlgorithm.RSA_SHA256,
+        requestSigningAlgorithm: SigningAlgorithm.RSA_SHA256,
       });
 
       // THEN
