@@ -43,8 +43,8 @@ export interface KinesisSourceParameters {
   /**
    * (Streams only) Discard records older than the specified age. The default value is -1, which sets the maximum age to infinite. When the value is set to infinite, EventBridge never discards old records.
    *
-   * Minumum = 60 (leave undefined to set the maximum age to -1)
-   * Maxiumum = 604800
+   * Minumum = Duration.seconds(60) (leave undefined to set the maximum age to -1)
+   * Maxiumum = Duration.seconds(604800)
    *
    *  @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-pipes-pipe-pipesourcekinesisstreamparameters.html#cfn-pipes-pipe-pipesourcekinesisstreamparameters-maximumrecordageinseconds
    * @default -1 - maximum age is infinite
@@ -134,7 +134,6 @@ export class KinesisSource implements ISource {
       }
     }
     if (this.maximumRecordAgeInSeconds !== undefined) {
-      // only need to check upper bound since Duration amounts cannot be negative
       if (this.maximumRecordAgeInSeconds < 60 || this.maximumRecordAgeInSeconds > 604800) {
         throw new Error(`Maximum record age in seconds must be between 60 and 604800 (leave undefined for infinite), received ${this.maximumRecordAgeInSeconds}`);
       }
