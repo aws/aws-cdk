@@ -969,6 +969,10 @@
     "Protocol": "HTTP",
     "TargetGroupAttributes": [
      {
+      "Key": "deregistration_delay.timeout_seconds",
+      "Value": "10"
+     },
+     {
       "Key": "stickiness.enabled",
       "Value": "false"
      }
@@ -1188,7 +1192,7 @@
       "Rollback": false
      },
      "MaximumPercent": 200,
-     "MinimumHealthyPercent": 50
+     "MinimumHealthyPercent": 33
     },
     "EnableECSManagedTags": false,
     "EnableExecuteCommand": true,

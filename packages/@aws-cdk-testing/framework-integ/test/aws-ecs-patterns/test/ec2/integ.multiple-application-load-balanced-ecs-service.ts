@@ -1,6 +1,6 @@
 import { InstanceType, Vpc } from 'aws-cdk-lib/aws-ec2';
 import { Cluster, ContainerImage } from 'aws-cdk-lib/aws-ecs';
-import { App, Stack } from 'aws-cdk-lib';
+import { App, Duration, Stack } from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import { ApplicationMultipleTargetGroupsEc2Service } from 'aws-cdk-lib/aws-ecs-patterns';
 import { AUTOSCALING_GENERATE_LAUNCH_TEMPLATE } from 'aws-cdk-lib/cx-api';
@@ -19,9 +19,11 @@ new ApplicationMultipleTargetGroupsEc2Service(stack, 'myService', {
     image: ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
   },
   enableExecuteCommand: true,
+  minHealthyPercent: 33,
   targetGroups: [
     {
       containerPort: 80,
+      deregistrationDelay: Duration.seconds(10),
     },
     {
       containerPort: 90,

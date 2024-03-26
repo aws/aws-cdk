@@ -177,6 +177,7 @@ export class NetworkMultipleTargetGroupsEc2Service extends NetworkMultipleTarget
       enableExecuteCommand: props.enableExecuteCommand,
       placementConstraints: props.placementConstraints,
       placementStrategies: props.placementStrategies,
+      minHealthyPercent: props.minHealthyPercent,
     });
   }
 }

@@ -171,6 +171,7 @@ export class ApplicationMultipleTargetGroupsEc2Service extends ApplicationMultip
       enableExecuteCommand: props.enableExecuteCommand,
       placementConstraints: props.placementConstraints,
       placementStrategies: props.placementStrategies,
+      minHealthyPercent: props.minHealthyPercent,
     });
   }
 }

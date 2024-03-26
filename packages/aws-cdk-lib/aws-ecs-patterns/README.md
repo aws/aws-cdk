@@ -85,9 +85,11 @@ const loadBalancedEc2Service = new ecsPatterns.ApplicationMultipleTargetGroupsEc
   taskImageOptions: {
     image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
   },
+  minHealthyPercent: 33,
   targetGroups: [
     {
       containerPort: 80,
+      deregistrationDelay: Duration.seconds(300),
     },
     {
       containerPort: 90,
@@ -110,9 +112,11 @@ const loadBalancedFargateService = new ecsPatterns.ApplicationMultipleTargetGrou
   taskImageOptions: {
     image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
   },
+  minHealthyPercent: 33,
   targetGroups: [
     {
       containerPort: 80,
+      deregistrationDelay: Duration.seconds(300),
     },
     {
       containerPort: 90,
