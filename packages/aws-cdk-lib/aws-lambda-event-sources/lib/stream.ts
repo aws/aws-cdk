@@ -63,9 +63,11 @@ export interface StreamEventSourceProps extends BaseStreamEventSourceProps {
    * * Minimum value of 60 seconds
    * * Maximum value of 7 days
    *
+   * The default value is -1, which sets the maximum age to infinite.
+   * When the value is set to infinite, Lambda never discards old records.
+   * Record are valid until it expires in the event source.
+   *
    * @default -1
-   * sets the maximum age to infinite. When infinite, Lambda never discards old records.
-   * The retention period configured on the stream now decides max age for records.
    */
   readonly maxRecordAge?: Duration;
 
@@ -75,8 +77,11 @@ export interface StreamEventSourceProps extends BaseStreamEventSourceProps {
    * * Minimum value of 0
    * * Maximum value of 10000
    *
+   * The default value is -1, which sets the maximum number of retries to infinite.
+   * When MaximumRetryAttempts is infinite, Lambda retries failed records until
+   * the record expires in the event source.
+   *
    * @default -1
-   * retry until the record expires
    */
   readonly retryAttempts?: number;
 
