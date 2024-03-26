@@ -2,7 +2,7 @@ import { ITarget, Pipe, TargetConfig } from '@aws-cdk/aws-pipes-alpha';
 import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
 import * as ddb from 'aws-cdk-lib/aws-dynamodb';
-import { DynamoDBSource, DynamoDBStartingPosition } from '../lib';
+import { DynamoDBSource, DynamoDBStartingPosition, OnPartialBatchItemFailure } from '../lib';
 
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-pipes-sources-dynamodb-stream');
@@ -14,6 +14,7 @@ const table = new ddb.TableV2(stack, 'MyTable', {
   dynamoStream: ddb.StreamViewType.KEYS_ONLY,
   removalPolicy: cdk.RemovalPolicy.DESTROY,
 });
+const dlqQueue = new cdk.aws_sqs.Queue(stack, 'DlqQueue');
 const targetQueue = new cdk.aws_sqs.Queue(stack, 'TargetQueue');
 
 class TestTarget implements ITarget {
@@ -36,6 +37,13 @@ class TestTarget implements ITarget {
 }
 
 const sourceUnderTest = new DynamoDBSource(table, {
+  batchSize: 1,
+  deadLetterTarget: dlqQueue,
+  maximumBatchingWindow: cdk.Duration.seconds(0),
+  maximumRecordAge: cdk.Duration.seconds(60),
+  maximumRetryAttempts: 1,
+  onPartialBatchItemFailure: OnPartialBatchItemFailure.AUTOMATIC_BISECT,
+  parallelizationFactor: 1,
   startingPosition: DynamoDBStartingPosition.LATEST,
 });
 
