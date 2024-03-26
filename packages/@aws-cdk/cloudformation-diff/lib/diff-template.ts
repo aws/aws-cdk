@@ -46,6 +46,7 @@ export function fullDiff(
   currentTemplate: { [key: string]: any },
   newTemplate: { [key: string]: any },
   changeSet?: CloudFormation.DescribeChangeSetOutput,
+  isImport?: boolean,
 ): types.TemplateDiff {
 
   normalize(currentTemplate);
@@ -54,6 +55,8 @@ export function fullDiff(
   if (changeSet) {
     filterFalsePositives(theDiff, changeSet);
     addImportInformation(theDiff, changeSet);
+  } else if (isImport) {
+    makeAllResourceChangesImports(theDiff);
   }
 
   return theDiff;
@@ -215,6 +218,12 @@ function addImportInformation(diff: types.TemplateDiff, changeSet: CloudFormatio
     if (imports.includes(logicalId)) {
       change.isImport = true;
     }
+  });
+}
+
+function makeAllResourceChangesImports(diff: types.TemplateDiff) {
+  diff.resources.forEachDifference((_logicalId: string, change: types.ResourceDifference) => {
+    change.isImport = true;
   });
 }
 

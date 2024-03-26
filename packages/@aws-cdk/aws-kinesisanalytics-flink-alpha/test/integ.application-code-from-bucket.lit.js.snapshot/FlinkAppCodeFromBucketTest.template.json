@@ -147,13 +147,6 @@
   "AppF1B96344": {
    "Type": "AWS::KinesisAnalyticsV2::Application",
    "Properties": {
-    "RuntimeEnvironment": "FLINK-1_11",
-    "ServiceExecutionRole": {
-     "Fn::GetAtt": [
-      "AppRole1AF9B530",
-      "Arn"
-     ]
-    },
     "ApplicationConfiguration": {
      "ApplicationCodeConfiguration": {
       "CodeContent": {
@@ -181,6 +174,13 @@
      "ApplicationSnapshotConfiguration": {
       "SnapshotsEnabled": true
      }
+    },
+    "RuntimeEnvironment": "FLINK-1_18",
+    "ServiceExecutionRole": {
+     "Fn::GetAtt": [
+      "AppRole1AF9B530",
+      "Arn"
+     ]
     }
    },
    "DependsOn": [

@@ -830,7 +830,7 @@ export class CfnTemplateGeneratorProvider {
     }).promise();
 
     if (createTemplateOutput.GeneratedTemplateId === undefined) {
-      throw new Error('CreateGeneratedTemplate failed to retrun an Arn.');
+      throw new Error('CreateGeneratedTemplate failed to return an Arn.');
     }
     return createTemplateOutput;
   }
