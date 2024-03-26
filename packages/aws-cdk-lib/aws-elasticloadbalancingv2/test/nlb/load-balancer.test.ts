@@ -80,6 +80,8 @@ describe('tests', () => {
     new elbv2.NetworkLoadBalancer(stack, 'LB', {
       vpc,
       crossZoneEnabled: true,
+      denyAllIgwTraffic: true,
+      clientRoutingPolicy: elbv2.ClientRoutingPolicy.PARTIAL_AVAILABILITY_ZONE_AFFINITY,
     });
 
     // THEN
@@ -88,6 +90,14 @@ describe('tests', () => {
         {
           Key: 'load_balancing.cross_zone.enabled',
           Value: 'true',
+        },
+        {
+          Key: 'ipv6.deny_all_igw_traffic',
+          Value: 'true',
+        },
+        {
+          Key: 'dns_record.client_routing_policy',
+          Value: 'partial_availability_zone_affinity',
         },
       ]),
     });
@@ -347,6 +357,44 @@ describe('tests', () => {
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
       Name: 'myLoadBalancer',
+    });
+  });
+
+  test('can set EnforceSecurityGroupInboundRulesOnPrivateLinkTraffic on', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Stack');
+
+    // WHEN
+    new elbv2.NetworkLoadBalancer(stack, 'NLB', {
+      loadBalancerName: 'myLoadBalancer',
+      enforceSecurityGroupInboundRulesOnPrivateLinkTraffic: true,
+      vpc,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+      Name: 'myLoadBalancer',
+      EnforceSecurityGroupInboundRulesOnPrivateLinkTraffic: 'on',
+    });
+  });
+
+  test('can set EnforceSecurityGroupInboundRulesOnPrivateLinkTraffic off', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Stack');
+
+    // WHEN
+    new elbv2.NetworkLoadBalancer(stack, 'NLB', {
+      loadBalancerName: 'myLoadBalancer',
+      enforceSecurityGroupInboundRulesOnPrivateLinkTraffic: false,
+      vpc,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+      Name: 'myLoadBalancer',
+      EnforceSecurityGroupInboundRulesOnPrivateLinkTraffic: 'off',
     });
   });
 

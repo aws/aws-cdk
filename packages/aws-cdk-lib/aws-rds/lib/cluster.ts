@@ -468,6 +468,11 @@ export abstract class DatabaseClusterBase extends Resource implements IDatabaseC
   protected abstract enableDataApi?: boolean;
 
   /**
+   * Secret in SecretsManager to store the database cluster user credentials.
+   */
+  public abstract readonly secret?: secretsmanager.ISecret;
+
+  /**
    * The ARN of the cluster
    */
   public get clusterArn(): string {
@@ -521,6 +526,7 @@ export abstract class DatabaseClusterBase extends Resource implements IDatabaseC
     }
 
     this.enableDataApi = true;
+    this.secret?.grantRead(grantee);
     return iam.Grant.addToPrincipal({
       actions: DATA_API_ACTIONS,
       grantee,
@@ -545,11 +551,6 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
 
   private readonly domainId?: string;
   private readonly domainRole?: iam.IRole;
-
-  /**
-   * Secret in SecretsManager to store the database cluster user credentials.
-   */
-  public abstract readonly secret?: secretsmanager.ISecret;
 
   /**
    * The VPC network to place the cluster in.
@@ -756,6 +757,7 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
       promotionTier: 0, // override the promotion tier so that writers are always 0
     });
     instanceIdentifiers.push(writer.instanceIdentifier);
+    instanceEndpoints.push(new Endpoint(writer.dbInstanceEndpointAddress, this.clusterEndpoint.port));
 
     (props.readers ?? []).forEach(instance => {
       const clusterInstance = instance.bind(this, this, {
@@ -963,6 +965,7 @@ class ImportedDatabaseCluster extends DatabaseClusterBase implements IDatabaseCl
   public readonly clusterIdentifier: string;
   public readonly connections: ec2.Connections;
   public readonly engine?: IClusterEngine;
+  public readonly secret?: secretsmanager.ISecret;
 
   private readonly _clusterResourceIdentifier?: string;
   private readonly _clusterEndpoint?: Endpoint;
@@ -984,6 +987,7 @@ class ImportedDatabaseCluster extends DatabaseClusterBase implements IDatabaseCl
       defaultPort,
     });
     this.engine = attrs.engine;
+    this.secret = attrs.secret;
 
     this._clusterEndpoint = (attrs.clusterEndpointAddress && attrs.port) ? new Endpoint(attrs.clusterEndpointAddress, attrs.port) : undefined;
     this._clusterReadEndpoint = (attrs.readerEndpointAddress && attrs.port) ? new Endpoint(attrs.readerEndpointAddress, attrs.port) : undefined;
