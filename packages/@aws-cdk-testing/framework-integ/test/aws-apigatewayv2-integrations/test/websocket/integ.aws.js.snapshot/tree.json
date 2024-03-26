@@ -214,6 +214,7 @@
                             "apiId": {
                               "Ref": "mywsapi32E6CE11"
                             },
+                            "contentHandlingStrategy": "CONVERT_TO_BINARY",
                             "credentialsArn": {
                               "Fn::GetAtt": [
                                 "ApiGatewayRoleD2518903",
@@ -234,6 +235,10 @@
                                 ]
                               ]
                             },
+                            "passthroughBehavior": "WHEN_NO_TEMPLATES",
+                            "requestParameters": {
+                              "integration.request.header.Content-Type": "'application/x-www-form-urlencoded'"
+                            },
                             "requestTemplates": {
                               "application/json": {
                                 "Fn::Join": [
@@ -247,7 +252,9 @@
                                   ]
                                 ]
                               }
-                            }
+                            },
+                            "templateSelectionExpression": "\\$default",
+                            "timeoutInMillis": 10000
                           }
                         },
                         "constructInfo": {
