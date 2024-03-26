@@ -1218,7 +1218,7 @@
                       "s3Bucket": {
                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "s3Key": "b0de6372e1c756b7afa1a8a1d0a21ee4cd330150290abffc9bc163f285150514.zip"
+                      "s3Key": "aafb9e3ee3305d0579f4fa5511e48f53f7969d9f1a21610741e050a6726e6b95.zip"
                     },
                     "handler": "index.handler",
                     "role": {
@@ -1257,7 +1257,7 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.2.70"
+              "version": "10.3.0"
             }
           },
           "BootstrapVersion": {
@@ -1295,7 +1295,7 @@
                 "path": "ScramSecretIntegTest/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.70"
+                  "version": "10.3.0"
                 }
               },
               "DeployAssert": {
@@ -1315,7 +1315,7 @@
                             "path": "ScramSecretIntegTest/DefaultTest/DeployAssert/AwsApiCallKafkalistScramSecrets99a2254ce6c3e412ea0555d481633181/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.2.70"
+                              "version": "10.3.0"
                             }
                           }
                         },
@@ -1387,7 +1387,7 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.2.70"
+                      "version": "10.3.0"
                     }
                   },
                   "BootstrapVersion": {
@@ -1429,7 +1429,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.2.70"
+          "version": "10.3.0"
         }
       }
     },

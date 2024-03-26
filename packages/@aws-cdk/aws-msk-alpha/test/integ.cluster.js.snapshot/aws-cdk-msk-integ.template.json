@@ -604,7 +604,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "2ec8ad9e91dcd6e7ad6a5c84ffc6c9c05c408aca3b26ceb2816d81043e6c4dc3.zip"
+     "S3Key": "54e6f07bf3aea46d100719f3b21fe0fb45ae789ee372d42d8cdfb97e21aba96c.zip"
     },
     "Timeout": 900,
     "MemorySize": 128,
@@ -738,7 +738,8 @@
       ]
      ]
     },
-    "InstallLatestAwsSdk": false
+    "InstallLatestAwsSdk": false,
+    "DisableLogging": false
    },
    "DependsOn": [
     "ClusterBootstrapBrokersBootstrapBrokerStringTlsCustomResourcePolicy13FC2126"
@@ -807,7 +808,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "e5178afc49b7c6a85127a67856ce958e4f0879ce6aad5e974cac2a088bf939db.zip"
+     "S3Key": "aafb9e3ee3305d0579f4fa5511e48f53f7969d9f1a21610741e050a6726e6b95.zip"
     },
     "Handler": "index.handler",
     "Role": {
@@ -935,7 +936,8 @@
       ]
      ]
     },
-    "InstallLatestAwsSdk": false
+    "InstallLatestAwsSdk": false,
+    "DisableLogging": false
    },
    "DependsOn": [
     "ClusterIAMBootstrapBrokersBootstrapBrokerStringSaslIamCustomResourcePolicy51509D99"
@@ -1151,7 +1153,8 @@
       ]
      ]
     },
-    "InstallLatestAwsSdk": false
+    "InstallLatestAwsSdk": false,
+    "DisableLogging": false
    },
    "DependsOn": [
     "CertificateActivation",
@@ -1291,7 +1294,8 @@
       ]
      ]
     },
-    "InstallLatestAwsSdk": false
+    "InstallLatestAwsSdk": false,
+    "DisableLogging": false
    },
    "DependsOn": [
     "ClusterV311BootstrapBrokersBootstrapBrokerStringTlsCustomResourcePolicy2F56212C"
@@ -1427,7 +1431,8 @@
       ]
      ]
     },
-    "InstallLatestAwsSdk": false
+    "InstallLatestAwsSdk": false,
+    "DisableLogging": false
    },
    "DependsOn": [
     "ClusterV320BootstrapBrokersBootstrapBrokerStringTlsCustomResourcePolicy8326D812"
@@ -1563,7 +1568,8 @@
       ]
      ]
     },
-    "InstallLatestAwsSdk": false
+    "InstallLatestAwsSdk": false,
+    "DisableLogging": false
    },
    "DependsOn": [
     "ClusterV331BootstrapBrokersBootstrapBrokerStringTlsCustomResourcePolicy30610F08"
@@ -1699,7 +1705,8 @@
       ]
      ]
     },
-    "InstallLatestAwsSdk": false
+    "InstallLatestAwsSdk": false,
+    "DisableLogging": false
    },
    "DependsOn": [
     "ClusterV332BootstrapBrokersBootstrapBrokerStringTlsCustomResourcePolicy2EA79A00"
