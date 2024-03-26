@@ -110,9 +110,10 @@ export interface NetworkMultipleTargetGroupsServiceBaseProps {
    * the Amazon ECS service's DesiredCount value, that must
    * continue to run and remain healthy during a deployment.
    *
+   * @see https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_DeploymentConfiguration.html
    * @default - 0 if daemon, otherwise 50
    */
-  readonly minHealthyPercent?: number;
+  readonly minimumHealthyPercent?: number;
 }
 
 /**

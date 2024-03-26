@@ -119,9 +119,10 @@ export interface ApplicationMultipleTargetGroupsServiceBaseProps {
    * the Amazon ECS service's DesiredCount value, that must
    * continue to run and remain healthy during a deployment.
    *
+   * @see https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_DeploymentConfiguration.html
    * @default - 0 if daemon, otherwise 50
    */
-  readonly minHealthyPercent?: number;
+  readonly minimumHealthyPercent?: number;
 }
 
 /**
@@ -285,6 +286,17 @@ export interface ApplicationTargetProps {
    * @default 300
    */
   readonly deregistrationDelay?: Duration;
+  /**
+   * The stickiness cookie expiration period.
+   *
+   * Setting this value enables load balancer stickiness.
+   *
+   * After this period, the cookie is considered stale. The minimum value is
+   * 1 second and the maximum value is 7 days (604800 seconds).
+   *
+   * @default Duration.days(1)
+   */
+  readonly stickinessCookieDuration?: Duration;
 }
 
 /**
@@ -534,6 +546,7 @@ export abstract class ApplicationMultipleTargetGroupsServiceBase extends Constru
         ],
         conditions,
         deregistrationDelay: targetProps.deregistrationDelay,
+        stickinessCookieDuration: targetProps.stickinessCookieDuration,
         priority: targetProps.priority,
       });
       this.targetGroups.push(targetGroup);

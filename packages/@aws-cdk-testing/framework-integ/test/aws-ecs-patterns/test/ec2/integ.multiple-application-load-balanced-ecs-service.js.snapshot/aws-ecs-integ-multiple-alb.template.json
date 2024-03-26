@@ -971,10 +971,17 @@
      {
       "Key": "deregistration_delay.timeout_seconds",
       "Value": "10"
+     },{
+      "Key": "stickiness.enabled",
+      "Value": "true"
      },
      {
-      "Key": "stickiness.enabled",
-      "Value": "false"
+      "Key": "stickiness.type",
+      "Value": "lb_cookie"
+     },
+     {
+      "Key": "stickiness.lb_cookie.duration_seconds",
+      "Value": "240"
      }
     ],
     "TargetType": "instance",

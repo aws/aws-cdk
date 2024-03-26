@@ -19,11 +19,12 @@ new ApplicationMultipleTargetGroupsEc2Service(stack, 'myService', {
     image: ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
   },
   enableExecuteCommand: true,
-  minHealthyPercent: 33,
+  minimumHealthyPercent: 33,
   targetGroups: [
     {
       containerPort: 80,
       deregistrationDelay: Duration.seconds(10),
+      stickinessCookieDuration: Duration.minutes(4),
     },
     {
       containerPort: 90,
