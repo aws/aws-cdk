@@ -40,6 +40,9 @@ class SNSInteg extends Stack {
       successFeedbackRole: feedbackRole,
       successFeedbackSampleRate: 50,
     });
+
+    // Can import topic from arn
+    Topic.fromTopicArn(this, 'ImportedTopic', topic.topicArn);
   }
 }
 
