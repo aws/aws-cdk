@@ -743,6 +743,14 @@ export class Job extends JobBase {
       throw new Error('Both workerType and workerCount must be set');
     }
 
+    if (executable.type === JobType.RAY && props.timeout) {
+      throw new Error('Ray jobs do not support timeout');
+    }
+
+    if (executable.type === JobType.RAY && (props.workerType !== WorkerType.Z_2X)) {
+      throw new Error('Ray jobs must specify workerType, which may only be Z_2X');
+    }
+
     const jobResource = new CfnJob(this, 'Resource', {
       name: props.jobName,
       description: props.description,
