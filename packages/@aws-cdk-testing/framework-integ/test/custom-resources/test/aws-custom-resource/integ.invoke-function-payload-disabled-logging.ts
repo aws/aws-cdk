@@ -30,8 +30,7 @@ const testCr = new cr.AwsCustomResource(stack, 'ListLambdaFunctions', {
       effect: iam.Effect.ALLOW,
     }),
   ]),
-  disableInfoLogging: true,
-  disableErrorLogging: true,
+  disableLogging: true,
 });
 
 fn.grantInvoke(testCr);

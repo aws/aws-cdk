@@ -98,7 +98,7 @@
      ]
     },
     "InstallLatestAwsSdk": "false",
-    "DisableLogging": false
+    "DisableLogging": true
    },
    "DependsOn": [
     "ListLambdaFunctionsCustomResourcePolicyCFFF021A"
