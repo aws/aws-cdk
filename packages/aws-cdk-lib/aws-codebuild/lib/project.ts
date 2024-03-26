@@ -1977,6 +1977,18 @@ export enum WindowsImageType {
    * The WINDOWS_SERVER_2019_CONTAINER environment type
    */
   SERVER_2019 = 'WINDOWS_SERVER_2019_CONTAINER',
+
+  /**
+   * The WINDOWS_SERVER_2022_CONTAINER environment type
+   *
+   * @deprecated Windows Server 2022 images are not supported for on-demand compute.
+   * You can either use {@link WindowsBuildImage.WIN_SERVER_CORE_2019_BASE_3_0}
+   * or deploy a fleet using {@link CfnProject}
+   *
+   * @see https://github.com/aws/aws-cdk/issues/29617
+   * @see https://docs.aws.amazon.com/codebuild/latest/userguide/fleets.html
+   */
+  SERVER_2022 = 'WINDOWS_SERVER_2022_CONTAINER',
 }
 
 /**
@@ -2008,7 +2020,7 @@ export class WindowsBuildImage implements IBuildImage {
   /**
    * Corresponds to the standard CodeBuild image `aws/codebuild/windows-base:1.0`.
    *
-   * @deprecated `WindowsBuildImage.WIN_SERVER_CORE_2019_BASE_3_0` should be used instead.
+   * @deprecated {@link WindowsBuildImage.WIN_SERVER_CORE_2019_BASE_3_0} should be used instead.
    */
   public static readonly WIN_SERVER_CORE_2016_BASE: IBuildImage = new WindowsBuildImage({
     imageId: 'aws/codebuild/windows-base:1.0',
@@ -2019,7 +2031,7 @@ export class WindowsBuildImage implements IBuildImage {
    * The standard CodeBuild image `aws/codebuild/windows-base:2.0`, which is
    * based off Windows Server Core 2016.
    *
-   * @deprecated `WindowsBuildImage.WIN_SERVER_CORE_2019_BASE_3_0` should be used instead.
+   * @deprecated {@link WindowsBuildImage.WIN_SERVER_CORE_2019_BASE_3_0} should be used instead.
    */
   public static readonly WINDOWS_BASE_2_0: IBuildImage = new WindowsBuildImage({
     imageId: 'aws/codebuild/windows-base:2.0',
@@ -2059,6 +2071,13 @@ export class WindowsBuildImage implements IBuildImage {
   /**
    * The standard CodeBuild image `aws/codebuild/windows-base:2022-1.0`, which is
    * based off Windows Server Core 2022.
+   *
+   * @deprecated Windows Server 2022 images are not supported for on-demand compute.
+   * You can either use {@link WindowsBuildImage.WIN_SERVER_CORE_2019_BASE_3_0}
+   * or deploy a fleet using {@link CfnProject}
+   *
+   * @see https://github.com/aws/aws-cdk/issues/29617
+   * @see https://docs.aws.amazon.com/codebuild/latest/userguide/fleets.html
    */
   public static readonly WIN_SERVER_CORE_2022_BASE_3_0: IBuildImage = new WindowsBuildImage({
     imageId: 'aws/codebuild/windows-base:2022-1.0',
