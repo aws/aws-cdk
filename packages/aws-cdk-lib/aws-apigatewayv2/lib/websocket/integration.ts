@@ -3,7 +3,7 @@ import { IWebSocketApi } from './api';
 import { IWebSocketRoute } from './route';
 import { CfnIntegration } from '.././index';
 import { IRole } from '../../../aws-iam';
-import { Resource } from '../../../core';
+import { Duration, Resource } from '../../../core';
 import { IIntegration } from '../common';
 
 /**
@@ -30,6 +30,21 @@ export enum WebSocketIntegrationType {
    * AWS Integration Type
    */
   AWS = 'AWS',
+}
+
+/**
+ * Integration content handling
+ */
+export enum ContentHandling {
+  /**
+   * Converts a request payload from a base64-encoded string to a binary blob.
+   */
+  CONVERT_TO_BINARY = 'CONVERT_TO_BINARY',
+
+  /**
+   * Converts a request payload from a binary blob to a base64-encoded string.
+   */
+  CONVERT_TO_TEXT = 'CONVERT_TO_TEXT',
 }
 
 /**
@@ -83,6 +98,14 @@ export interface WebSocketIntegrationProps {
   readonly integrationMethod?: string;
 
   /**
+   * Specifies how to handle response payload content type conversions.
+   *
+   * @default - The response payload will be passed through from the integration response to
+   * the route response or method response without modification.
+   */
+  readonly contentHandling?: ContentHandling;
+
+  /**
    * Specifies the IAM role required for the integration.
    *
    * @default - No IAM role required.
@@ -118,6 +141,14 @@ export interface WebSocketIntegrationProps {
   readonly templateSelectionExpression?: string;
 
   /**
+   * The maximum amount of time an integration will run before it returns without a response.
+   * Must be between 50 milliseconds and 29 seconds.
+   *
+   * @default Duration.seconds(29)
+   */
+  readonly timeout?: Duration;
+
+  /**
    * Specifies the pass-through behavior for incoming requests based on the
    * Content-Type header in the request, and the available mapping templates
    * specified as the requestTemplates property on the Integration resource.
@@ -144,11 +175,13 @@ export class WebSocketIntegration extends Resource implements IWebSocketIntegrat
       integrationType: props.integrationType,
       integrationUri: props.integrationUri,
       integrationMethod: props.integrationMethod,
+      contentHandlingStrategy: props.contentHandling,
       credentialsArn: props.credentialsRole?.roleArn,
       requestParameters: props.requestParameters,
       requestTemplates: props.requestTemplates,
       passthroughBehavior: props.passthroughBehavior,
       templateSelectionExpression: props.templateSelectionExpression,
+      timeoutInMillis: props.timeout?.toMilliseconds(),
     });
     this.integrationId = integ.ref;
     this.webSocketApi = props.webSocketApi;
@@ -201,9 +234,11 @@ export abstract class WebSocketRouteIntegration {
         integrationType: config.type,
         integrationUri: config.uri,
         integrationMethod: config.method,
+        contentHandling: config.contentHandling,
         credentialsRole: config.credentialsRole,
         requestTemplates: config.requestTemplates,
         requestParameters: config.requestParameters,
+        timeout: config.timeout,
         passthroughBehavior: config.passthroughBehavior,
         templateSelectionExpression: config.templateSelectionExpression,
       });
@@ -240,6 +275,14 @@ export interface WebSocketRouteIntegrationConfig {
   readonly method?: string;
 
   /**
+   * Specifies how to handle response payload content type conversions.
+   *
+   * @default - The response payload will be passed through from the integration response to
+   * the route response or method response without modification.
+   */
+  readonly contentHandling?: ContentHandling;
+
+  /**
    * Credentials role
    *
    * @default - No role provided.
@@ -266,6 +309,14 @@ export interface WebSocketRouteIntegrationConfig {
    * @default - No template selection expression.
    */
   readonly templateSelectionExpression?: string;
+
+  /**
+   * The maximum amount of time an integration will run before it returns without a response.
+   * Must be between 50 milliseconds and 29 seconds.
+   *
+   * @default Duration.seconds(29)
+   */
+  readonly timeout?: Duration;
 
   /**
    * Integration passthrough behaviors.

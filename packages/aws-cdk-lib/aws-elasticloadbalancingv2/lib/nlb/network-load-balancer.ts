@@ -59,6 +59,13 @@ export interface NetworkLoadBalancerProps extends BaseLoadBalancerProps {
    * @default - AZ affinity is disabled.
    */
   readonly clientRoutingPolicy?: ClientRoutingPolicy;
+
+  /**
+   * Indicates whether to evaluate inbound security group rules for traffic sent to a Network Load Balancer through AWS PrivateLink.
+   *
+   * @default true
+   */
+  readonly enforceSecurityGroupInboundRulesOnPrivateLinkTraffic?: boolean;
 }
 
 /**
@@ -224,6 +231,7 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
   public readonly ipAddressType?: IpAddressType;
   public readonly connections: ec2.Connections;
   private readonly isSecurityGroupsPropertyDefined: boolean;
+  private readonly _enforceSecurityGroupInboundRulesOnPrivateLinkTraffic?: boolean;
 
   /**
    * After the implementation of `IConnectable` (see https://github.com/aws/aws-cdk/pull/28494), the default
@@ -242,6 +250,9 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
       type: 'network',
       securityGroups: Lazy.list({ produce: () => this.securityGroups }),
       ipAddressType: props.ipAddressType,
+      enforceSecurityGroupInboundRulesOnPrivateLinkTraffic: Lazy.string({
+        produce: () => this.enforceSecurityGroupInboundRulesOnPrivateLinkTraffic,
+      }),
     });
 
     this.metrics = new NetworkLoadBalancerMetrics(this, this.loadBalancerFullName);
@@ -251,6 +262,12 @@ export class NetworkLoadBalancer extends BaseLoadBalancer implements INetworkLoa
     if (props.clientRoutingPolicy) {
       this.setAttribute('dns_record.client_routing_policy', props.clientRoutingPolicy);
     }
+    this._enforceSecurityGroupInboundRulesOnPrivateLinkTraffic = props.enforceSecurityGroupInboundRulesOnPrivateLinkTraffic;
+  }
+
+  public get enforceSecurityGroupInboundRulesOnPrivateLinkTraffic(): string | undefined {
+    if (this._enforceSecurityGroupInboundRulesOnPrivateLinkTraffic === undefined) return undefined;
+    return this._enforceSecurityGroupInboundRulesOnPrivateLinkTraffic ? 'on' : 'off';
   }
 
   /**
@@ -488,6 +505,13 @@ export interface INetworkLoadBalancer extends ILoadBalancerV2, ec2.IVpcEndpointS
    * @default IpAddressType.IPV4
    */
   readonly ipAddressType?: IpAddressType;
+
+  /**
+   * Indicates whether to evaluate inbound security group rules for traffic sent to a Network Load Balancer through AWS PrivateLink
+   *
+   * @default on
+   */
+  readonly enforceSecurityGroupInboundRulesOnPrivateLinkTraffic?: string;
 
   /**
    * Add a listener to this load balancer
