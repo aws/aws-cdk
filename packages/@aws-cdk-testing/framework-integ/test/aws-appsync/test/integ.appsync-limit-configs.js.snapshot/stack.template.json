@@ -1,0 +1,86 @@
+{
+ "Resources": {
+  "ApiLimitConfigsC74D7493": {
+   "Type": "AWS::AppSync::GraphQLApi",
+   "Properties": {
+    "AuthenticationType": "API_KEY",
+    "Name": "ApiLimitConfigs",
+    "QueryDepthLimit": 2,
+    "ResolverCountLimit": 2
+   }
+  },
+  "ApiLimitConfigsSchema1451D8D1": {
+   "Type": "AWS::AppSync::GraphQLSchema",
+   "Properties": {
+    "ApiId": {
+     "Fn::GetAtt": [
+      "ApiLimitConfigsC74D7493",
+      "ApiId"
+     ]
+    },
+    "Definition": "type test {\n  version: String!\n}\ntype Query {\n  getTests: [test]!\n}\ntype Mutation {\n  addTest(version: String!): test\n}\n"
+   }
+  },
+  "ApiLimitConfigsDefaultApiKey7D682F04": {
+   "Type": "AWS::AppSync::ApiKey",
+   "Properties": {
+    "ApiId": {
+     "Fn::GetAtt": [
+      "ApiLimitConfigsC74D7493",
+      "ApiId"
+     ]
+    }
+   },
+   "DependsOn": [
+    "ApiLimitConfigsSchema1451D8D1"
+   ]
+  },
+  "ApiLimitConfigsNoneDS3CA3BDA6": {
+   "Type": "AWS::AppSync::DataSource",
+   "Properties": {
+    "ApiId": {
+     "Fn::GetAtt": [
+      "ApiLimitConfigsC74D7493",
+      "ApiId"
+     ]
+    },
+    "Name": "NoneDS",
+    "Type": "NONE"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}
