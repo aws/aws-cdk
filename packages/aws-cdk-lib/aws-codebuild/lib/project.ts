@@ -1785,17 +1785,30 @@ export class LinuxBuildImage implements IBuildImage {
   public static readonly AMAZON_LINUX_2_3 = LinuxBuildImage.codeBuildImage('aws/codebuild/amazonlinux2-x86_64-standard:3.0');
   /** The Amazon Linux 2 x86_64 standard image, version `4.0`. */
   public static readonly AMAZON_LINUX_2_4 = LinuxBuildImage.codeBuildImage('aws/codebuild/amazonlinux2-x86_64-standard:4.0');
-  /** The Amazon Linux 2 x86_64 standard image, version `5.0`. */
+  /** The Amazon Linux 2023 x86_64 standard image, version `5.0`. */
   public static readonly AMAZON_LINUX_2_5 = LinuxBuildImage.codeBuildImage('aws/codebuild/amazonlinux2-x86_64-standard:5.0');
 
-  /** @deprecated Use LinuxArmBuildImage.AMAZON_LINUX_2_STANDARD_3_0 instead. */
+  /** The Amazon Coretto 8 image x86_64, based on Amazon Linux 2. */
+  public static readonly AMAZON_LINUX_2_CORETTO_8 = LinuxBuildImage.codeBuildImage('aws/codebuild/amazonlinux2-x86_64-standard:corretto8');
+  /** The Amazon Coretto 11 image x86_64, based on Amazon Linux 2. */
+  public static readonly AMAZON_LINUX_2_CORETTO_11 = LinuxBuildImage.codeBuildImage('aws/codebuild/amazonlinux2-x86_64-standard:corretto11');
+
+  /**
+   * Image "aws/codebuild/amazonlinux2-aarch64-standard:1.0".
+   * @see {LinuxArmBuildImage.AMAZON_LINUX_2_STANDARD_1_0}
+   *
+   * @deprecated Use LinuxArmBuildImage.AMAZON_LINUX_2_ARM_3 instead.
+   **/
   public static readonly AMAZON_LINUX_2_ARM = LinuxArmBuildImage.AMAZON_LINUX_2_STANDARD_1_0;
   /**
    * Image "aws/codebuild/amazonlinux2-aarch64-standard:2.0".
-   * @deprecated Use LinuxArmBuildImage.AMAZON_LINUX_2_STANDARD_3_0 instead.
+   * @see {LinuxArmBuildImage.AMAZON_LINUX_2_STANDARD_2_0}
    * */
   public static readonly AMAZON_LINUX_2_ARM_2 = LinuxArmBuildImage.AMAZON_LINUX_2_STANDARD_2_0;
-  /** @deprecated Use LinuxArmBuildImage.AMAZON_LINUX_2_STANDARD_3_0 instead. */
+  /**
+   * Image "aws/codebuild/amazonlinux2-aarch64-standard:2.0".
+   * @see {LinuxArmBuildImage.AMAZON_LINUX_2_STANDARD_3_0}
+   * */
   public static readonly AMAZON_LINUX_2_ARM_3 = LinuxArmBuildImage.AMAZON_LINUX_2_STANDARD_3_0;
 
   /** @deprecated Use `STANDARD_7_0` and specify runtime in buildspec runtime-versions section */
@@ -2041,6 +2054,16 @@ export class WindowsBuildImage implements IBuildImage {
     imageId: 'aws/codebuild/windows-base:2019-3.0',
     imagePullPrincipalType: ImagePullPrincipalType.CODEBUILD,
     imageType: WindowsImageType.SERVER_2019,
+  });
+
+  /**
+   * The standard CodeBuild image `aws/codebuild/windows-base:2022-1.0`, which is
+   * based off Windows Server Core 2022.
+   */
+  public static readonly WIN_SERVER_CORE_2022_BASE_3_0: IBuildImage = new WindowsBuildImage({
+    imageId: 'aws/codebuild/windows-base:2022-1.0',
+    imagePullPrincipalType: ImagePullPrincipalType.CODEBUILD,
+    imageType: WindowsImageType.SERVER_2022,
   });
 
   /**
