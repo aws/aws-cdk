@@ -1304,3 +1304,44 @@ test('can specify removal policy', () => {
     DeletionPolicy: 'Retain',
   });
 });
+
+test('logging enabled by default', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+
+  // WHEN
+  new AwsCustomResource(stack, 'AwsSdk', {
+    onCreate: {
+      service: 'service',
+      action: 'action',
+      physicalResourceId: PhysicalResourceId.of('id'),
+    },
+    policy: AwsCustomResourcePolicy.fromSdkCalls({ resources: AwsCustomResourcePolicy.ANY_RESOURCE }),
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('Custom::AWS', {
+    DisableLogging: false,
+  });
+});
+
+test('can disable logging', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+
+  // WHEN
+  new AwsCustomResource(stack, 'AwsSdk', {
+    onCreate: {
+      service: 'service',
+      action: 'action',
+      physicalResourceId: PhysicalResourceId.of('id'),
+    },
+    policy: AwsCustomResourcePolicy.fromSdkCalls({ resources: AwsCustomResourcePolicy.ANY_RESOURCE }),
+    disableLogging: true,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('Custom::AWS', {
+    DisableLogging: true,
+  });
+});
