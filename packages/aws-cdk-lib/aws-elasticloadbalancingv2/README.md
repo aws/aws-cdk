@@ -221,6 +221,9 @@ const lb = new elbv2.ApplicationLoadBalancer(this, 'LB', {
   // The type of IP addresses to use.
   ipAddressType: elbv2.IpAddressType.IPV4,
 
+  // The duration of client keep-alive connections
+  clientKeepAlive: Duration.seconds(500),
+
   // Whether cross-zone load balancing is enabled.
   crossZoneEnabled: true,
 
@@ -278,6 +281,21 @@ const listener = lb.addListener('Listener', {
 listener.addTargets('AppFleet', {
   port: 443,
   targets: [asg]
+});
+```
+
+### Enforce security group inbound rules on PrivateLink traffic for a Network Load Balancer
+
+You can indicate whether to evaluate inbound security group rules for traffic 
+sent to a Network Load Balancer through AWS PrivateLink.
+The evaluation is enabled by default.
+
+```ts
+declare const vpc: ec2.Vpc;
+
+const nlb = new elbv2.NetworkLoadBalancer(this, 'LB', {
+  vpc,
+  enforceSecurityGroupInboundRulesOnPrivateLinkTraffic: true,
 });
 ```
 

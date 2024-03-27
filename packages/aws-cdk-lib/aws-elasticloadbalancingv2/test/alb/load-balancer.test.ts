@@ -83,6 +83,7 @@ describe('tests', () => {
       http2Enabled: false,
       idleTimeout: cdk.Duration.seconds(1000),
       dropInvalidHeaderFields: true,
+      clientKeepAlive: cdk.Duration.seconds(200),
       denyAllIgwTraffic: true,
     });
 
@@ -109,8 +110,40 @@ describe('tests', () => {
           Key: 'routing.http.drop_invalid_header_fields.enabled',
           Value: 'true',
         },
+        {
+          Key: 'client_keep_alive.seconds',
+          Value: '200',
+        },
       ],
     });
+  });
+
+  test.each([59, 604801])('throw error for invalid clientKeepAlive in seconds', (duration) => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Stack');
+
+    // THEN
+    expect(() => {
+      new elbv2.ApplicationLoadBalancer(stack, 'LB', {
+        vpc,
+        clientKeepAlive: cdk.Duration.seconds(duration),
+      });
+    }).toThrow(`\'clientKeepAlive\' must be between 60 and 604800 seconds. Got: ${duration} seconds`);
+  });
+
+  test('throw errer for invalid clientKeepAlive in milliseconds', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Stack');
+
+    // THEN
+    expect(() => {
+      new elbv2.ApplicationLoadBalancer(stack, 'LB', {
+        vpc,
+        clientKeepAlive: cdk.Duration.millis(100),
+      });
+    }).toThrow('\'clientKeepAlive\' must be between 60 and 604800 seconds. Got: 100 milliseconds');
   });
 
   describe('Desync mitigation mode', () => {
