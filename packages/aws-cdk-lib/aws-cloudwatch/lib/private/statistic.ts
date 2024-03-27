@@ -34,6 +34,10 @@ export interface PercentileStatistic extends SingleStatistic {
   statName: 'percentile';
 }
 
+export interface PercentileRankStatistic extends PairStatistic {
+  statName: 'percentileRank';
+}
+
 export interface TrimmedMeanStatistic extends PairStatistic {
   statName: 'trimmedMean';
 }
@@ -154,6 +158,7 @@ export function parseStatistic(
 ):
   | SimpleStatistic
   | PercentileStatistic
+  | PercentileRankStatistic
   | TrimmedMeanStatistic
   | WinsorizedMeanStatistic
   | TrimmedCountStatistic
@@ -187,6 +192,10 @@ export function parseStatistic(
   // Percentile statistics
   m = parseSingleStatistic(stat, 'p');
   if (m) return { ...m, statName: 'percentile' } as PercentileStatistic;
+
+  // Percentile Rank statistics
+  m = parsePairStatistic(stat, 'pr');
+  if (m) return { ...m, statName: 'percentileRank' } as PercentileRankStatistic;
 
   // Trimmed mean statistics
   m = parseSingleStatistic(stat, 'tm') || parsePairStatistic(stat, 'tm');

@@ -1,5 +1,5 @@
 {
-  "version": "32.0.0",
+  "version": "36.0.0",
   "artifacts": {
     "aws-ecs-integ-lb-fargate-cmd-entrypoint-test.assets": {
       "type": "cdk:asset-manifest",
@@ -14,10 +14,11 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "aws-ecs-integ-lb-fargate-cmd-entrypoint-test.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/bd5c4694c4fe13248b11699dfcee108b7c5a6835e60b9f68628928a30689fa29.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/d5bc6608a501023f394e622f56da7bfa3d009cdcb254814891d1352b1e41bbbe.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -177,6 +178,18 @@
             "data": "TestFargateCluster0BF869F3"
           }
         ],
+        "/aws-ecs-integ-lb-fargate-cmd-entrypoint-test/SecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SecurityGroupDD263621"
+          }
+        ],
+        "/aws-ecs-integ-lb-fargate-cmd-entrypoint-test/SecurityGroup/to awsecsinteglbfargatecmdentrypointtestALBFargateServiceWithCommandAndEntryPointServiceSecurityGroup6D1E5F11:80": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SecurityGrouptoawsecsinteglbfargatecmdentrypointtestALBFargateServiceWithCommandAndEntryPointServiceSecurityGroup6D1E5F1180E99BF818"
+          }
+        ],
         "/aws-ecs-integ-lb-fargate-cmd-entrypoint-test/ALBFargateServiceWithCommandAndEntryPoint/LB/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -267,6 +280,12 @@
             "data": "ALBFargateServiceWithCommandAndEntryPointServiceSecurityGroupfromawsecsinteglbfargatecmdentrypointtestALBFargateServiceWithCommandAndEntryPointLBSecurityGroup886E70918046DDBFE6"
           }
         ],
+        "/aws-ecs-integ-lb-fargate-cmd-entrypoint-test/ALBFargateServiceWithCommandAndEntryPoint/Service/SecurityGroup/from awsecsinteglbfargatecmdentrypointtestSecurityGroupECF7922B:80": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ALBFargateServiceWithCommandAndEntryPointServiceSecurityGroupfromawsecsinteglbfargatecmdentrypointtestSecurityGroupECF7922B806B1E1C2D"
+          }
+        ],
         "/aws-ecs-integ-lb-fargate-cmd-entrypoint-test/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
@@ -295,6 +314,7 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "AlbFargateServiceWithCommandAndEntryPointDefaultTestDeployAssert84DAACDF.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",

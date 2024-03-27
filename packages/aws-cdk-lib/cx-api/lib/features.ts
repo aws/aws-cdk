@@ -1018,7 +1018,7 @@ export const FLAGS: Record<string, FlagInfo> = {
       When this feature flag is enabled, and the \`pipelineType\` property is not provided in a \`Pipeline\`
       construct, the construct automatically defaults the value of this property to \`PipelineType.V2\`.
     `,
-    introducedIn: { v2: 'V2NEXT' },
+    introducedIn: { v2: '2.133.0' },
     recommendedValue: true,
     compatibilityWithOldBehaviorMd: 'Pass `pipelineType: PipelineType.V1` to `Pipeline` construct to restore the previous behavior.',
   },
@@ -1031,7 +1031,7 @@ export const FLAGS: Record<string, FlagInfo> = {
       When this feature flag is enabled and calling KMS key grant method, the created IAM policy will reduce the resource scope from
       '*' to this specific granting KMS key.
     `,
-    introducedIn: { v2: 'V2NEXT' },
+    introducedIn: { v2: '2.134.0' },
     recommendedValue: true,
   },
 };
