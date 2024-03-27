@@ -205,6 +205,32 @@
               "version": "10.3.0"
             }
           },
+          "MyTopicSignatureVersion": {
+            "id": "MyTopicSignatureVersion",
+            "path": "SNSInteg/MyTopicSignatureVersion",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "SNSInteg/MyTopicSignatureVersion/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::SNS::Topic",
+                  "aws:cdk:cloudformation:props": {
+                    "displayName": "fooDisplayNameSignatureVersion",
+                    "signatureVersion": "2",
+                    "topicName": "fooTopicSignatureVersion"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
+            }
+          },
           "BootstrapVersion": {
             "id": "BootstrapVersion",
             "path": "SNSInteg/BootstrapVersion",

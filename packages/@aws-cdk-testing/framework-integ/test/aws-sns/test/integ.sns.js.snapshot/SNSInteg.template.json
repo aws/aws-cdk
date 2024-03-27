@@ -110,6 +110,14 @@
      }
     ]
    }
+  },
+  "MyTopicSignatureVersionEDDB6A3B": {
+   "Type": "AWS::SNS::Topic",
+   "Properties": {
+    "DisplayName": "fooDisplayNameSignatureVersion",
+    "SignatureVersion": "2",
+    "TopicName": "fooTopicSignatureVersion"
+   }
   }
  },
  "Parameters": {

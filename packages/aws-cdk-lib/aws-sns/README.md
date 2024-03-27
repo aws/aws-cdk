@@ -19,6 +19,19 @@ const topic = new sns.Topic(this, 'Topic', {
 });
 ```
 
+Add an SNS Topic to your stack with a specified signature version, which corresponds 
+to the hashing algorithm used while creating the signature of the notifications, 
+subscription confirmations, or unsubscribe confirmation messages sent by Amazon SNS.
+
+The default signature version is `1` (`SHA1`).
+SNS also supports signature version `2` (`SHA256`).
+
+```ts
+const topic = new sns.Topic(this, 'Topic', {
+  signatureVersion: '2',
+});
+```
+
 Note that FIFO topics require a topic name to be provided. The required `.fifo` suffix will be automatically generated and added to the topic name if it is not explicitly provided.
 
 ## Subscriptions
