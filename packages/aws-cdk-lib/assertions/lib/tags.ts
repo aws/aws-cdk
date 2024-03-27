@@ -33,6 +33,15 @@ export class Tags {
    * string or Matcher object.
    */
   public hasValues(tags: any): void {
+    // The Cloud Assembly API defaults tags to {} when undefined. Using
+    // Match.absent() will not work as the caller expects, so we push them
+    // towards a working API.
+    if (Matcher.isMatcher(tags) && tags.name === 'absent') {
+      throw new Error(
+        'Match.absent() will never match Tags because "{}" is the default value. Use Tags.hasNone() instead.',
+      );
+    }
+
     const matcher = Matcher.isMatcher(tags) ? tags : Match.objectLike(tags);
 
     const result = matcher.test(this.all());

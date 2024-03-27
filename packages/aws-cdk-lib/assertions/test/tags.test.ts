@@ -33,8 +33,10 @@ describe('Tags', () => {
       const stack = new Stack(app, 'stack');
       const tags = Tags.fromStack(stack);
 
+      // Since the tags are defaulted to the empty object, using the `absent()`
+      // matcher will never work, instead throwing an error.
       expect(() => tags.hasValues(Match.absent())).toThrow(
-        /Received \[object Object], but key should be absent/,
+        /^match.absent\(\) will never match Tags/i,
       );
     });
 
