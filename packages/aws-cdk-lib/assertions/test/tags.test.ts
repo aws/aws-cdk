@@ -1,6 +1,5 @@
-import { IConstruct } from 'constructs';
-import { Annotations, App, Aspects, CfnResource, IAspect, Stack } from '../../core';
-import { Tags as _Tags, Match, Tags } from '../lib';
+import { App, Stack } from '../../core';
+import { Match, Tags } from '../lib';
 
 describe('Tags', () => {
   let app: App;
