@@ -424,13 +424,30 @@ class CodeStarConnectionSource extends CodePipelineSource {
   constructor(repoString: string, readonly branch: string, readonly props: ConnectionSourceOptions) {
     super(repoString);
 
-    const parts = repoString.split('/');
-    if (Token.isUnresolved(repoString) || parts.length !== 2) {
-      throw new Error(`CodeStar repository name should be a resolved string like '<owner>/<repo>', got '${repoString}'`);
+    if (!this.isValidRepoString(repoString)) {
+      throw new Error(`CodeStar repository name should be a resolved string like '<owner>/<repo>' or '<owner>/<group>/<repo>', got '${repoString}'`);
     }
+
+    const parts = repoString.split('/');
+
     this.owner = parts[0];
-    this.repo = parts[1];
+    this.repo = parts.slice(1).join('/');
     this.configurePrimaryOutput(new FileSet('Source', this));
+  }
+
+  private isValidRepoString(repoString: string) {
+    if (Token.isUnresolved(repoString)) {
+      return false;
+    }
+
+    const parts = repoString.split('/');
+
+    if (parts.length < 2) {
+      return false;
+    }
+
+    // check if all element in parts is not empty
+    return parts.every(element => element !== '');
   }
 
   protected getAction(output: Artifact, actionName: string, runOrder: number, variablesNamespace?: string) {
