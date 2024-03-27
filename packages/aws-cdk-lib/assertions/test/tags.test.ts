@@ -1,12 +1,5 @@
 import { IConstruct } from 'constructs';
-import {
-  Annotations,
-  App,
-  Aspects,
-  CfnResource,
-  IAspect,
-  Stack,
-} from '../../core';
+import { Annotations, App, Aspects, CfnResource, IAspect, Stack } from '../../core';
 import { Tags as _Tags, Match, Tags } from '../lib';
 
 describe('Tags', () => {
