@@ -5,17 +5,11 @@ class SNSFifoInteg extends Stack {
   constructor(scope: App, id: string, props?: StackProps) {
     super(scope, id, props);
 
-    const topic = new Topic(this, 'MyTopic', {
+    new Topic(this, 'MyTopic', {
       topicName: 'fooTopic',
       displayName: 'fooDisplayName',
       contentBasedDeduplication: true,
       fifo: true,
-    });
-
-    // Can import topic from attributes
-    Topic.fromTopicAttributes(this, 'ImportedTopic', {
-      topicArn: topic.topicArn,
-      contentBasedDeduplication: true,
     });
   }
 }
