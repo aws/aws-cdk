@@ -48,7 +48,7 @@ class SNSInteg extends Stack {
     });
     const importedTopic = Topic.fromTopicArn(this, 'ImportedTopic', topic2.topicArn);
 
-    const publishRole = new Role(this, 'FeedbackRole', {
+    const publishRole = new Role(this, 'PublishRole', {
       assumedBy: new ServicePrincipal('s3.amazonaws.com'),
     });
     importedTopic.grantPublish(publishRole);
