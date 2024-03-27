@@ -107,6 +107,12 @@
     },
     "SourceParameters": {
      "KinesisStreamParameters": {
+      "BatchSize": 1,
+      "MaximumBatchingWindowInSeconds": 20,
+      "MaximumRecordAgeInSeconds": 60,
+      "MaximumRetryAttempts": 3,
+      "OnPartialBatchItemFailure": "AUTOMATIC_BISECT",
+      "ParallelizationFactor": 1,
       "StartingPosition": "LATEST"
      }
     },
@@ -151,7 +157,7 @@
     ]
    },
    "Export": {
-    "Name": "aws-cdk-pipes-sources-kinesis-stream:ExportsOutputFnGetAttSourceKinesisStreamD9B33274Arn1A7BEAA1"
+    "Name": "aws-cdk-pipes-sources-kinesis:ExportsOutputFnGetAttSourceKinesisStreamD9B33274Arn1A7BEAA1"
    }
   },
   "ExportsOutputRefTargetQueue08AD2B3C0C69AE0E": {
@@ -159,7 +165,7 @@
     "Ref": "TargetQueue08AD2B3C"
    },
    "Export": {
-    "Name": "aws-cdk-pipes-sources-kinesis-stream:ExportsOutputRefTargetQueue08AD2B3C0C69AE0E"
+    "Name": "aws-cdk-pipes-sources-kinesis:ExportsOutputRefTargetQueue08AD2B3C0C69AE0E"
    }
   }
  },

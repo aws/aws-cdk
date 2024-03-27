@@ -233,7 +233,9 @@ export class Pipe extends PipeBase {
      */
     const source = props.source.bind(this);
     props.source.grantRead(this.pipeRole);
-    props.source.grantDlqPush(this.pipeRole);
+    if (props.source.grantDlqPush) {
+      props.source.grantDlqPush(this.pipeRole);
+    }
 
     // Add the filter criteria to the source parameters
     const sourceParameters : CfnPipe.PipeSourceParametersProperty= {

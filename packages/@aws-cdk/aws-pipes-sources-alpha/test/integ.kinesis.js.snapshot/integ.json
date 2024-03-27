@@ -1,12 +1,12 @@
 {
   "version": "36.0.0",
   "testCases": {
-    "integtest-pipe-source-sqs/DefaultTest": {
+    "integtest-pipe-source-kinesis/DefaultTest": {
       "stacks": [
-        "aws-cdk-pipes-sources-kinesis-stream"
+        "aws-cdk-pipes-sources-kinesis"
       ],
-      "assertionStack": "integtest-pipe-source-sqs/DefaultTest/DeployAssert",
-      "assertionStackName": "integtestpipesourcesqsDefaultTestDeployAssertD36A35C2"
+      "assertionStack": "integtest-pipe-source-kinesis/DefaultTest/DeployAssert",
+      "assertionStackName": "integtestpipesourcekinesisDefaultTestDeployAssert6F0A38D7"
     }
   }
 }

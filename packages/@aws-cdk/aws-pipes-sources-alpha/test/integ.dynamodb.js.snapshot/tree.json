@@ -4,33 +4,42 @@
     "id": "App",
     "path": "",
     "children": {
-      "aws-cdk-pipes-sources-kinesis": {
-        "id": "aws-cdk-pipes-sources-kinesis",
-        "path": "aws-cdk-pipes-sources-kinesis",
+      "aws-cdk-pipes-sources-dynamodb": {
+        "id": "aws-cdk-pipes-sources-dynamodb",
+        "path": "aws-cdk-pipes-sources-dynamodb",
         "children": {
-          "SourceKinesisStream": {
-            "id": "SourceKinesisStream",
-            "path": "aws-cdk-pipes-sources-kinesis/SourceKinesisStream",
+          "MyTable": {
+            "id": "MyTable",
+            "path": "aws-cdk-pipes-sources-dynamodb/MyTable",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "aws-cdk-pipes-sources-kinesis/SourceKinesisStream/Resource",
+                "path": "aws-cdk-pipes-sources-dynamodb/MyTable/Resource",
                 "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::Kinesis::Stream",
+                  "aws:cdk:cloudformation:type": "AWS::DynamoDB::GlobalTable",
                   "aws:cdk:cloudformation:props": {
-                    "retentionPeriodHours": 24,
-                    "shardCount": 1,
-                    "streamEncryption": {
-                      "Fn::If": [
-                        "AwsCdkKinesisEncryptedStreamsUnsupportedRegions",
-                        {
-                          "Ref": "AWS::NoValue"
-                        },
-                        {
-                          "EncryptionType": "KMS",
-                          "KeyId": "alias/aws/kinesis"
+                    "attributeDefinitions": [
+                      {
+                        "attributeName": "id",
+                        "attributeType": "S"
+                      }
+                    ],
+                    "billingMode": "PAY_PER_REQUEST",
+                    "keySchema": [
+                      {
+                        "attributeName": "id",
+                        "keyType": "HASH"
+                      }
+                    ],
+                    "replicas": [
+                      {
+                        "region": {
+                          "Ref": "AWS::Region"
                         }
-                      ]
+                      }
+                    ],
+                    "streamSpecification": {
+                      "streamViewType": "KEYS_ONLY"
                     }
                   }
                 },
@@ -45,9 +54,23 @@
               "version": "10.3.0"
             }
           },
-          "AwsCdkKinesisEncryptedStreamsUnsupportedRegions": {
-            "id": "AwsCdkKinesisEncryptedStreamsUnsupportedRegions",
-            "path": "aws-cdk-pipes-sources-kinesis/AwsCdkKinesisEncryptedStreamsUnsupportedRegions",
+          "DlqQueue": {
+            "id": "DlqQueue",
+            "path": "aws-cdk-pipes-sources-dynamodb/DlqQueue",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-pipes-sources-dynamodb/DlqQueue/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::SQS::Queue",
+                  "aws:cdk:cloudformation:props": {}
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              }
+            },
             "constructInfo": {
               "fqn": "constructs.Construct",
               "version": "10.3.0"
@@ -55,11 +78,11 @@
           },
           "TargetQueue": {
             "id": "TargetQueue",
-            "path": "aws-cdk-pipes-sources-kinesis/TargetQueue",
+            "path": "aws-cdk-pipes-sources-dynamodb/TargetQueue",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "aws-cdk-pipes-sources-kinesis/TargetQueue/Resource",
+                "path": "aws-cdk-pipes-sources-dynamodb/TargetQueue/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::SQS::Queue",
                   "aws:cdk:cloudformation:props": {}
@@ -77,15 +100,15 @@
           },
           "Pipe": {
             "id": "Pipe",
-            "path": "aws-cdk-pipes-sources-kinesis/Pipe",
+            "path": "aws-cdk-pipes-sources-dynamodb/Pipe",
             "children": {
               "Role": {
                 "id": "Role",
-                "path": "aws-cdk-pipes-sources-kinesis/Pipe/Role",
+                "path": "aws-cdk-pipes-sources-dynamodb/Pipe/Role",
                 "children": {
                   "ImportRole": {
                     "id": "ImportRole",
-                    "path": "aws-cdk-pipes-sources-kinesis/Pipe/Role/ImportRole",
+                    "path": "aws-cdk-pipes-sources-dynamodb/Pipe/Role/ImportRole",
                     "constructInfo": {
                       "fqn": "constructs.Construct",
                       "version": "10.3.0"
@@ -93,7 +116,7 @@
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "aws-cdk-pipes-sources-kinesis/Pipe/Role/Resource",
+                    "path": "aws-cdk-pipes-sources-dynamodb/Pipe/Role/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                       "aws:cdk:cloudformation:props": {
@@ -118,11 +141,11 @@
                   },
                   "DefaultPolicy": {
                     "id": "DefaultPolicy",
-                    "path": "aws-cdk-pipes-sources-kinesis/Pipe/Role/DefaultPolicy",
+                    "path": "aws-cdk-pipes-sources-dynamodb/Pipe/Role/DefaultPolicy",
                     "children": {
                       "Resource": {
                         "id": "Resource",
-                        "path": "aws-cdk-pipes-sources-kinesis/Pipe/Role/DefaultPolicy/Resource",
+                        "path": "aws-cdk-pipes-sources-dynamodb/Pipe/Role/DefaultPolicy/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
                           "aws:cdk:cloudformation:props": {
@@ -130,20 +153,16 @@
                               "Statement": [
                                 {
                                   "Action": [
-                                    "kinesis:DescribeStream",
-                                    "kinesis:DescribeStreamConsumer",
-                                    "kinesis:DescribeStreamSummary",
-                                    "kinesis:GetRecords",
-                                    "kinesis:GetShardIterator",
-                                    "kinesis:ListShards",
-                                    "kinesis:ListStreams",
-                                    "kinesis:SubscribeToShard"
+                                    "dynamodb:DescribeStream",
+                                    "dynamodb:GetRecords",
+                                    "dynamodb:GetShardIterator",
+                                    "dynamodb:ListStreams"
                                   ],
                                   "Effect": "Allow",
                                   "Resource": {
                                     "Fn::GetAtt": [
-                                      "SourceKinesisStreamD9B33274",
-                                      "Arn"
+                                      "MyTable794EDED1",
+                                      "StreamArn"
                                     ]
                                   }
                                 },
@@ -154,12 +173,20 @@
                                     "sqs:SendMessage"
                                   ],
                                   "Effect": "Allow",
-                                  "Resource": {
-                                    "Fn::GetAtt": [
-                                      "TargetQueue08AD2B3C",
-                                      "Arn"
-                                    ]
-                                  }
+                                  "Resource": [
+                                    {
+                                      "Fn::GetAtt": [
+                                        "DlqQueueFDA42DA7",
+                                        "Arn"
+                                      ]
+                                    },
+                                    {
+                                      "Fn::GetAtt": [
+                                        "TargetQueue08AD2B3C",
+                                        "Arn"
+                                      ]
+                                    }
+                                  ]
                                 }
                               ],
                               "Version": "2012-10-17"
@@ -191,7 +218,7 @@
               },
               "Resource": {
                 "id": "Resource",
-                "path": "aws-cdk-pipes-sources-kinesis/Pipe/Resource",
+                "path": "aws-cdk-pipes-sources-dynamodb/Pipe/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::Pipes::Pipe",
                   "aws:cdk:cloudformation:props": {
@@ -203,13 +230,21 @@
                     },
                     "source": {
                       "Fn::GetAtt": [
-                        "SourceKinesisStreamD9B33274",
-                        "Arn"
+                        "MyTable794EDED1",
+                        "StreamArn"
                       ]
                     },
                     "sourceParameters": {
-                      "kinesisStreamParameters": {
+                      "dynamoDbStreamParameters": {
                         "batchSize": 1,
+                        "deadLetterConfig": {
+                          "arn": {
+                            "Fn::GetAtt": [
+                              "DlqQueueFDA42DA7",
+                              "Arn"
+                            ]
+                          }
+                        },
                         "maximumBatchingWindowInSeconds": 20,
                         "maximumRecordAgeInSeconds": 60,
                         "maximumRetryAttempts": 3,
@@ -240,11 +275,11 @@
           },
           "Exports": {
             "id": "Exports",
-            "path": "aws-cdk-pipes-sources-kinesis/Exports",
+            "path": "aws-cdk-pipes-sources-dynamodb/Exports",
             "children": {
-              "Output{\"Fn::GetAtt\":[\"SourceKinesisStreamD9B33274\",\"Arn\"]}": {
-                "id": "Output{\"Fn::GetAtt\":[\"SourceKinesisStreamD9B33274\",\"Arn\"]}",
-                "path": "aws-cdk-pipes-sources-kinesis/Exports/Output{\"Fn::GetAtt\":[\"SourceKinesisStreamD9B33274\",\"Arn\"]}",
+              "Output{\"Ref\":\"MyTable794EDED1\"}": {
+                "id": "Output{\"Ref\":\"MyTable794EDED1\"}",
+                "path": "aws-cdk-pipes-sources-dynamodb/Exports/Output{\"Ref\":\"MyTable794EDED1\"}",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
                   "version": "10.3.0"
@@ -252,7 +287,7 @@
               },
               "Output{\"Ref\":\"TargetQueue08AD2B3C\"}": {
                 "id": "Output{\"Ref\":\"TargetQueue08AD2B3C\"}",
-                "path": "aws-cdk-pipes-sources-kinesis/Exports/Output{\"Ref\":\"TargetQueue08AD2B3C\"}",
+                "path": "aws-cdk-pipes-sources-dynamodb/Exports/Output{\"Ref\":\"TargetQueue08AD2B3C\"}",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
                   "version": "10.3.0"
@@ -266,7 +301,7 @@
           },
           "BootstrapVersion": {
             "id": "BootstrapVersion",
-            "path": "aws-cdk-pipes-sources-kinesis/BootstrapVersion",
+            "path": "aws-cdk-pipes-sources-dynamodb/BootstrapVersion",
             "constructInfo": {
               "fqn": "constructs.Construct",
               "version": "10.3.0"
@@ -274,7 +309,7 @@
           },
           "CheckBootstrapVersion": {
             "id": "CheckBootstrapVersion",
-            "path": "aws-cdk-pipes-sources-kinesis/CheckBootstrapVersion",
+            "path": "aws-cdk-pipes-sources-dynamodb/CheckBootstrapVersion",
             "constructInfo": {
               "fqn": "constructs.Construct",
               "version": "10.3.0"
@@ -286,17 +321,17 @@
           "version": "10.3.0"
         }
       },
-      "integtest-pipe-source-kinesis": {
-        "id": "integtest-pipe-source-kinesis",
-        "path": "integtest-pipe-source-kinesis",
+      "integtest-pipe-source-dynamodb": {
+        "id": "integtest-pipe-source-dynamodb",
+        "path": "integtest-pipe-source-dynamodb",
         "children": {
           "DefaultTest": {
             "id": "DefaultTest",
-            "path": "integtest-pipe-source-kinesis/DefaultTest",
+            "path": "integtest-pipe-source-dynamodb/DefaultTest",
             "children": {
               "Default": {
                 "id": "Default",
-                "path": "integtest-pipe-source-kinesis/DefaultTest/Default",
+                "path": "integtest-pipe-source-dynamodb/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
                   "version": "10.3.0"
@@ -304,19 +339,19 @@
               },
               "DeployAssert": {
                 "id": "DeployAssert",
-                "path": "integtest-pipe-source-kinesis/DefaultTest/DeployAssert",
+                "path": "integtest-pipe-source-dynamodb/DefaultTest/DeployAssert",
                 "children": {
-                  "AwsApiCallKinesisputRecordac62b7caf42ac13ed9fe2cdebc241de9": {
-                    "id": "AwsApiCallKinesisputRecordac62b7caf42ac13ed9fe2cdebc241de9",
-                    "path": "integtest-pipe-source-kinesis/DefaultTest/DeployAssert/AwsApiCallKinesisputRecordac62b7caf42ac13ed9fe2cdebc241de9",
+                  "AwsApiCallDynamoDBputItemb68e576b6e2494edc708169549514b4b": {
+                    "id": "AwsApiCallDynamoDBputItemb68e576b6e2494edc708169549514b4b",
+                    "path": "integtest-pipe-source-dynamodb/DefaultTest/DeployAssert/AwsApiCallDynamoDBputItemb68e576b6e2494edc708169549514b4b",
                     "children": {
                       "SdkProvider": {
                         "id": "SdkProvider",
-                        "path": "integtest-pipe-source-kinesis/DefaultTest/DeployAssert/AwsApiCallKinesisputRecordac62b7caf42ac13ed9fe2cdebc241de9/SdkProvider",
+                        "path": "integtest-pipe-source-dynamodb/DefaultTest/DeployAssert/AwsApiCallDynamoDBputItemb68e576b6e2494edc708169549514b4b/SdkProvider",
                         "children": {
                           "AssertionsProvider": {
                             "id": "AssertionsProvider",
-                            "path": "integtest-pipe-source-kinesis/DefaultTest/DeployAssert/AwsApiCallKinesisputRecordac62b7caf42ac13ed9fe2cdebc241de9/SdkProvider/AssertionsProvider",
+                            "path": "integtest-pipe-source-dynamodb/DefaultTest/DeployAssert/AwsApiCallDynamoDBputItemb68e576b6e2494edc708169549514b4b/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
                               "version": "10.3.0"
@@ -330,11 +365,11 @@
                       },
                       "Default": {
                         "id": "Default",
-                        "path": "integtest-pipe-source-kinesis/DefaultTest/DeployAssert/AwsApiCallKinesisputRecordac62b7caf42ac13ed9fe2cdebc241de9/Default",
+                        "path": "integtest-pipe-source-dynamodb/DefaultTest/DeployAssert/AwsApiCallDynamoDBputItemb68e576b6e2494edc708169549514b4b/Default",
                         "children": {
                           "Default": {
                             "id": "Default",
-                            "path": "integtest-pipe-source-kinesis/DefaultTest/DeployAssert/AwsApiCallKinesisputRecordac62b7caf42ac13ed9fe2cdebc241de9/Default/Default",
+                            "path": "integtest-pipe-source-dynamodb/DefaultTest/DeployAssert/AwsApiCallDynamoDBputItemb68e576b6e2494edc708169549514b4b/Default/Default",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
                               "version": "10.3.0"
@@ -354,11 +389,11 @@
                   },
                   "SingletonFunction1488541a7b23466481b69b4408076b81": {
                     "id": "SingletonFunction1488541a7b23466481b69b4408076b81",
-                    "path": "integtest-pipe-source-kinesis/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81",
+                    "path": "integtest-pipe-source-dynamodb/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81",
                     "children": {
                       "Staging": {
                         "id": "Staging",
-                        "path": "integtest-pipe-source-kinesis/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Staging",
+                        "path": "integtest-pipe-source-dynamodb/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Staging",
                         "constructInfo": {
                           "fqn": "constructs.Construct",
                           "version": "10.3.0"
@@ -366,7 +401,7 @@
                       },
                       "Role": {
                         "id": "Role",
-                        "path": "integtest-pipe-source-kinesis/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role",
+                        "path": "integtest-pipe-source-dynamodb/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role",
                         "constructInfo": {
                           "fqn": "constructs.Construct",
                           "version": "10.3.0"
@@ -374,7 +409,7 @@
                       },
                       "Handler": {
                         "id": "Handler",
-                        "path": "integtest-pipe-source-kinesis/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler",
+                        "path": "integtest-pipe-source-dynamodb/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler",
                         "constructInfo": {
                           "fqn": "constructs.Construct",
                           "version": "10.3.0"
@@ -388,15 +423,15 @@
                   },
                   "AwsApiCallSQSreceiveMessage23b37826db4ba4656cf9088d0244b67b": {
                     "id": "AwsApiCallSQSreceiveMessage23b37826db4ba4656cf9088d0244b67b",
-                    "path": "integtest-pipe-source-kinesis/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage23b37826db4ba4656cf9088d0244b67b",
+                    "path": "integtest-pipe-source-dynamodb/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage23b37826db4ba4656cf9088d0244b67b",
                     "children": {
                       "SdkProvider": {
                         "id": "SdkProvider",
-                        "path": "integtest-pipe-source-kinesis/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage23b37826db4ba4656cf9088d0244b67b/SdkProvider",
+                        "path": "integtest-pipe-source-dynamodb/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage23b37826db4ba4656cf9088d0244b67b/SdkProvider",
                         "children": {
                           "AssertionsProvider": {
                             "id": "AssertionsProvider",
-                            "path": "integtest-pipe-source-kinesis/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage23b37826db4ba4656cf9088d0244b67b/SdkProvider/AssertionsProvider",
+                            "path": "integtest-pipe-source-dynamodb/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage23b37826db4ba4656cf9088d0244b67b/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
                               "version": "10.3.0"
@@ -410,11 +445,11 @@
                       },
                       "Default": {
                         "id": "Default",
-                        "path": "integtest-pipe-source-kinesis/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage23b37826db4ba4656cf9088d0244b67b/Default",
+                        "path": "integtest-pipe-source-dynamodb/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage23b37826db4ba4656cf9088d0244b67b/Default",
                         "children": {
                           "Default": {
                             "id": "Default",
-                            "path": "integtest-pipe-source-kinesis/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage23b37826db4ba4656cf9088d0244b67b/Default/Default",
+                            "path": "integtest-pipe-source-dynamodb/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage23b37826db4ba4656cf9088d0244b67b/Default/Default",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
                               "version": "10.3.0"
@@ -428,15 +463,15 @@
                       },
                       "WaitFor": {
                         "id": "WaitFor",
-                        "path": "integtest-pipe-source-kinesis/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage23b37826db4ba4656cf9088d0244b67b/WaitFor",
+                        "path": "integtest-pipe-source-dynamodb/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage23b37826db4ba4656cf9088d0244b67b/WaitFor",
                         "children": {
                           "IsCompleteProvider": {
                             "id": "IsCompleteProvider",
-                            "path": "integtest-pipe-source-kinesis/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage23b37826db4ba4656cf9088d0244b67b/WaitFor/IsCompleteProvider",
+                            "path": "integtest-pipe-source-dynamodb/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage23b37826db4ba4656cf9088d0244b67b/WaitFor/IsCompleteProvider",
                             "children": {
                               "AssertionsProvider": {
                                 "id": "AssertionsProvider",
-                                "path": "integtest-pipe-source-kinesis/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage23b37826db4ba4656cf9088d0244b67b/WaitFor/IsCompleteProvider/AssertionsProvider",
+                                "path": "integtest-pipe-source-dynamodb/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage23b37826db4ba4656cf9088d0244b67b/WaitFor/IsCompleteProvider/AssertionsProvider",
                                 "constructInfo": {
                                   "fqn": "constructs.Construct",
                                   "version": "10.3.0"
@@ -444,7 +479,7 @@
                               },
                               "Invoke": {
                                 "id": "Invoke",
-                                "path": "integtest-pipe-source-kinesis/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage23b37826db4ba4656cf9088d0244b67b/WaitFor/IsCompleteProvider/Invoke",
+                                "path": "integtest-pipe-source-dynamodb/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage23b37826db4ba4656cf9088d0244b67b/WaitFor/IsCompleteProvider/Invoke",
                                 "constructInfo": {
                                   "fqn": "constructs.Construct",
                                   "version": "10.3.0"
@@ -458,11 +493,11 @@
                           },
                           "TimeoutProvider": {
                             "id": "TimeoutProvider",
-                            "path": "integtest-pipe-source-kinesis/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage23b37826db4ba4656cf9088d0244b67b/WaitFor/TimeoutProvider",
+                            "path": "integtest-pipe-source-dynamodb/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage23b37826db4ba4656cf9088d0244b67b/WaitFor/TimeoutProvider",
                             "children": {
                               "AssertionsProvider": {
                                 "id": "AssertionsProvider",
-                                "path": "integtest-pipe-source-kinesis/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage23b37826db4ba4656cf9088d0244b67b/WaitFor/TimeoutProvider/AssertionsProvider",
+                                "path": "integtest-pipe-source-dynamodb/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage23b37826db4ba4656cf9088d0244b67b/WaitFor/TimeoutProvider/AssertionsProvider",
                                 "constructInfo": {
                                   "fqn": "constructs.Construct",
                                   "version": "10.3.0"
@@ -470,7 +505,7 @@
                               },
                               "Invoke": {
                                 "id": "Invoke",
-                                "path": "integtest-pipe-source-kinesis/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage23b37826db4ba4656cf9088d0244b67b/WaitFor/TimeoutProvider/Invoke",
+                                "path": "integtest-pipe-source-dynamodb/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage23b37826db4ba4656cf9088d0244b67b/WaitFor/TimeoutProvider/Invoke",
                                 "constructInfo": {
                                   "fqn": "constructs.Construct",
                                   "version": "10.3.0"
@@ -484,7 +519,7 @@
                           },
                           "Role": {
                             "id": "Role",
-                            "path": "integtest-pipe-source-kinesis/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage23b37826db4ba4656cf9088d0244b67b/WaitFor/Role",
+                            "path": "integtest-pipe-source-dynamodb/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage23b37826db4ba4656cf9088d0244b67b/WaitFor/Role",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
                               "version": "10.3.0"
@@ -492,7 +527,7 @@
                           },
                           "Resource": {
                             "id": "Resource",
-                            "path": "integtest-pipe-source-kinesis/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage23b37826db4ba4656cf9088d0244b67b/WaitFor/Resource",
+                            "path": "integtest-pipe-source-dynamodb/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage23b37826db4ba4656cf9088d0244b67b/WaitFor/Resource",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
                               "version": "10.3.0"
@@ -506,7 +541,7 @@
                       },
                       "AssertionResults": {
                         "id": "AssertionResults",
-                        "path": "integtest-pipe-source-kinesis/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage23b37826db4ba4656cf9088d0244b67b/AssertionResults",
+                        "path": "integtest-pipe-source-dynamodb/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage23b37826db4ba4656cf9088d0244b67b/AssertionResults",
                         "constructInfo": {
                           "fqn": "constructs.Construct",
                           "version": "10.3.0"
@@ -520,11 +555,11 @@
                   },
                   "SingletonFunction76b3e830a873425f8453eddd85c86925": {
                     "id": "SingletonFunction76b3e830a873425f8453eddd85c86925",
-                    "path": "integtest-pipe-source-kinesis/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925",
+                    "path": "integtest-pipe-source-dynamodb/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925",
                     "children": {
                       "Staging": {
                         "id": "Staging",
-                        "path": "integtest-pipe-source-kinesis/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Staging",
+                        "path": "integtest-pipe-source-dynamodb/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Staging",
                         "constructInfo": {
                           "fqn": "constructs.Construct",
                           "version": "10.3.0"
@@ -532,7 +567,7 @@
                       },
                       "Role": {
                         "id": "Role",
-                        "path": "integtest-pipe-source-kinesis/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Role",
+                        "path": "integtest-pipe-source-dynamodb/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Role",
                         "constructInfo": {
                           "fqn": "constructs.Construct",
                           "version": "10.3.0"
@@ -540,7 +575,7 @@
                       },
                       "Handler": {
                         "id": "Handler",
-                        "path": "integtest-pipe-source-kinesis/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Handler",
+                        "path": "integtest-pipe-source-dynamodb/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Handler",
                         "constructInfo": {
                           "fqn": "constructs.Construct",
                           "version": "10.3.0"
@@ -554,11 +589,11 @@
                   },
                   "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a": {
                     "id": "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a",
-                    "path": "integtest-pipe-source-kinesis/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a",
+                    "path": "integtest-pipe-source-dynamodb/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a",
                     "children": {
                       "Staging": {
                         "id": "Staging",
-                        "path": "integtest-pipe-source-kinesis/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Staging",
+                        "path": "integtest-pipe-source-dynamodb/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Staging",
                         "constructInfo": {
                           "fqn": "constructs.Construct",
                           "version": "10.3.0"
@@ -566,7 +601,7 @@
                       },
                       "Role": {
                         "id": "Role",
-                        "path": "integtest-pipe-source-kinesis/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Role",
+                        "path": "integtest-pipe-source-dynamodb/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Role",
                         "constructInfo": {
                           "fqn": "constructs.Construct",
                           "version": "10.3.0"
@@ -574,7 +609,7 @@
                       },
                       "Handler": {
                         "id": "Handler",
-                        "path": "integtest-pipe-source-kinesis/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Handler",
+                        "path": "integtest-pipe-source-dynamodb/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Handler",
                         "constructInfo": {
                           "fqn": "constructs.Construct",
                           "version": "10.3.0"
@@ -588,7 +623,7 @@
                   },
                   "BootstrapVersion": {
                     "id": "BootstrapVersion",
-                    "path": "integtest-pipe-source-kinesis/DefaultTest/DeployAssert/BootstrapVersion",
+                    "path": "integtest-pipe-source-dynamodb/DefaultTest/DeployAssert/BootstrapVersion",
                     "constructInfo": {
                       "fqn": "constructs.Construct",
                       "version": "10.3.0"
@@ -596,7 +631,7 @@
                   },
                   "CheckBootstrapVersion": {
                     "id": "CheckBootstrapVersion",
-                    "path": "integtest-pipe-source-kinesis/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "path": "integtest-pipe-source-dynamodb/DefaultTest/DeployAssert/CheckBootstrapVersion",
                     "constructInfo": {
                       "fqn": "constructs.Construct",
                       "version": "10.3.0"

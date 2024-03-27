@@ -5,7 +5,7 @@ import * as ddb from 'aws-cdk-lib/aws-dynamodb';
 import { DynamoDBSource, DynamoDBStartingPosition, OnPartialBatchItemFailure } from '../lib';
 
 const app = new cdk.App();
-const stack = new cdk.Stack(app, 'aws-cdk-pipes-sources-dynamodb-stream');
+const stack = new cdk.Stack(app, 'aws-cdk-pipes-sources-dynamodb');
 const table = new ddb.TableV2(stack, 'MyTable', {
   partitionKey: {
     name: 'id',
@@ -39,9 +39,9 @@ class TestTarget implements ITarget {
 const sourceUnderTest = new DynamoDBSource(table, {
   batchSize: 1,
   deadLetterTarget: dlqQueue,
-  maximumBatchingWindow: cdk.Duration.seconds(0),
+  maximumBatchingWindow: cdk.Duration.seconds(20),
   maximumRecordAge: cdk.Duration.seconds(60),
-  maximumRetryAttempts: 1,
+  maximumRetryAttempts: 3,
   onPartialBatchItemFailure: OnPartialBatchItemFailure.AUTOMATIC_BISECT,
   parallelizationFactor: 1,
   startingPosition: DynamoDBStartingPosition.LATEST,
@@ -52,7 +52,7 @@ new Pipe(stack, 'Pipe', {
   target: new TestTarget(targetQueue),
 });
 
-const test = new IntegTest(app, 'integtest-pipe-source-sqs', {
+const test = new IntegTest(app, 'integtest-pipe-source-dynamodb', {
   testCases: [stack],
 });
 

@@ -1,7 +1,7 @@
 {
  "Resources": {
-  "AwsApiCallKinesisputRecord12bd71b3716a7a0c282fab499f417e99": {
-   "Type": "Custom::DeployAssert@SdkCallKinesisputRecord",
+  "AwsApiCallDynamoDBputItemb68e576b6e2494edc708169549514b4b": {
+   "Type": "Custom::DeployAssert@SdkCallDynamoDBputItem",
    "Properties": {
     "ServiceToken": {
      "Fn::GetAtt": [
@@ -9,26 +9,25 @@
       "Arn"
      ]
     },
-    "service": "Kinesis",
-    "api": "putRecord",
+    "service": "DynamoDB",
+    "api": "putItem",
     "parameters": {
-     "StreamARN": {
+     "TableName": {
       "Fn::Join": [
        "",
        [
         "\"",
         {
-         "Fn::ImportValue": "aws-cdk-pipes-sources-kinesis-stream:ExportsOutputFnGetAttSourceKinesisStreamD9B33274Arn1A7BEAA1"
+         "Fn::ImportValue": "aws-cdk-pipes-sources-dynamodb:ExportsOutputRefMyTable794EDED1558A264E"
         },
         "\""
        ]
       ]
      },
-     "Data": "\"74740610-1629-4ada-a9e1-47e69839b0d1\"",
-     "PartitionKey": "\"1\""
+     "Item": "{\"id\":{\"S\":\"myPK\"}}"
     },
     "flattenResponse": "false",
-    "salt": "1710433040681"
+    "salt": "1711510236759"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -61,7 +60,7 @@
        "Statement": [
         {
          "Action": [
-          "kinesis:PutRecord"
+          "dynamodb:PutItem"
          ],
          "Effect": "Allow",
          "Resource": [
@@ -123,8 +122,8 @@
     },
     "service": "SQS",
     "api": "receiveMessage",
-    "expected": "{\"$StringLike\":\"NzQ3NDA2MTAtMTYyOS00YWRhLWE5ZTEtNDdlNjk4MzliMGQx\"}",
-    "actualPath": "Messages.0.Body.data",
+    "expected": "{\"$StringLike\":\"myPK\"}",
+    "actualPath": "Messages.0.Body.dynamodb.Keys.id.S",
     "stateMachineArn": {
      "Ref": "AwsApiCallSQSreceiveMessage23b37826db4ba4656cf9088d0244b67bWaitFor296E8BCE"
     },
@@ -135,7 +134,7 @@
        [
         "\"",
         {
-         "Fn::ImportValue": "aws-cdk-pipes-sources-kinesis-stream:ExportsOutputRefTargetQueue08AD2B3C0C69AE0E"
+         "Fn::ImportValue": "aws-cdk-pipes-sources-dynamodb:ExportsOutputRefTargetQueue08AD2B3C0C69AE0E"
         },
         "\""
        ]
@@ -144,9 +143,9 @@
     },
     "flattenResponse": "true",
     "outputPaths": [
-     "Messages.0.Body.data"
+     "Messages.0.Body.dynamodb.Keys.id.S"
     ],
-    "salt": "1710433040681"
+    "salt": "1711510236760"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -239,7 +238,7 @@
      "Fn::Join": [
       "",
       [
-       "{\"StartAt\":\"framework-isComplete-task\",\"States\":{\"framework-isComplete-task\":{\"End\":true,\"Retry\":[{\"ErrorEquals\":[\"States.ALL\"],\"IntervalSeconds\":5,\"MaxAttempts\":12,\"BackoffRate\":1}],\"Catch\":[{\"ErrorEquals\":[\"States.ALL\"],\"Next\":\"framework-onTimeout-task\"}],\"Type\":\"Task\",\"Resource\":\"",
+       "{\"StartAt\":\"framework-isComplete-task\",\"States\":{\"framework-isComplete-task\":{\"End\":true,\"Retry\":[{\"ErrorEquals\":[\"States.ALL\"],\"IntervalSeconds\":15,\"MaxAttempts\":8,\"BackoffRate\":1}],\"Catch\":[{\"ErrorEquals\":[\"States.ALL\"],\"Next\":\"framework-onTimeout-task\"}],\"Type\":\"Task\",\"Resource\":\"",
        {
         "Fn::GetAtt": [
          "SingletonFunction76b3e830a873425f8453eddd85c86925Handler81461ECE",
