@@ -44,6 +44,19 @@ export class Tags {
   }
 
   /**
+   * Assert that the there are no tags associated with
+   * the synthesized CDK Stack's manifest.
+   *
+   * This is a convenience method over `hasValues(Match.exact({}))`, and is present because the more
+   *
+   * @param tags the expected set of tags. This should be a
+   * string or Matcher object.
+   */
+  public hasNone(): void {
+    this.hasValues(Match.exact({}));
+  }
+
+  /**
    * Get the tags associated with the manifest. This will be an empty object if
    * no tags were supplied.
    *

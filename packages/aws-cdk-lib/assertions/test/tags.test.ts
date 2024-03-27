@@ -42,7 +42,7 @@ describe('Tags', () => {
       const stack = new Stack(app, 'stack');
       const tags = Tags.fromStack(stack);
 
-      tags.hasValues(Match.objectEquals({}));
+      tags.hasValues(Match.exact({}));
     });
 
     test('no match', () => {
@@ -56,6 +56,25 @@ describe('Tags', () => {
           'tag-one': 'mismatched value',
         }),
       ).toThrow(/Expected mismatched value but received tag-one-value/);
+    });
+  });
+
+  describe('hasNone', () => {
+    test.each([undefined, {}])('matches empty: %s', (v) => {
+      const stack = new Stack(app, 'stack', { tags: v });
+      const tags = Tags.fromStack(stack);
+
+      tags.hasNone();
+    });
+
+    test.each(<Record<string, string>[]>[
+      { ['tagOne']: 'single-tag' },
+      { ['tagOne']: 'first-value', ['tag-two']: 'second-value' },
+    ])('does not match with values: %s', (v) => {
+      const stack = new Stack(app, 'stack', { tags: v });
+      const tags = Tags.fromStack(stack);
+
+      expect(() => tags.hasNone()).toThrow(/unexpected key/i);
     });
   });
 
