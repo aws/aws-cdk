@@ -33,6 +33,7 @@ export interface HelmChartOptions {
    * The repository which contains the chart. For example: https://charts.helm.sh/stable/
    * @default - No repository will be used, which means that the chart needs to be an absolute URL.
    */
+
   readonly repository?: string;
 
   /**
@@ -74,6 +75,13 @@ export interface HelmChartOptions {
   readonly timeout?: Duration;
 
   /**
+   * Whether or not Helm should treat this operation as atomic; if set, upgrade process rolls back changes
+   * made in case of failed upgrade. The --wait flag will be set automatically if --atomic is used.
+   * @default false
+   */
+  readonly atomic?: boolean;
+
+  /**
    * create namespace if not exist
    * @default true
    */
@@ -112,6 +120,7 @@ export class HelmChart extends Construct {
   public readonly repository?: string;
   public readonly version?: string;
   public readonly chartAsset?: Asset;
+  public readonly atomic?: boolean;
 
   constructor(scope: Construct, id: string, props: HelmChartProps) {
     super(scope, id);
@@ -148,6 +157,8 @@ export class HelmChart extends Construct {
     const createNamespace = props.createNamespace ?? true;
     // default to not skip crd installation
     const skipCrds = props.skipCrds ?? false;
+    // default to set atomic as false
+    const atomic = props.atomic ?? false;
 
     this.chartAsset?.grantRead(provider.handlerRole);
 
@@ -168,6 +179,7 @@ export class HelmChart extends Construct {
         Repository: this.repository,
         CreateNamespace: createNamespace || undefined,
         SkipCrds: skipCrds || undefined,
+        Atomic: atomic || undefined, // props are stringified so we encode “false” as undefined
       },
     });
   }
