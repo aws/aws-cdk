@@ -879,6 +879,28 @@ describe('bucket', () => {
     });
   });
 
+  test('bucket with default block public access setting to throw error msg', () => {
+    const stack = new cdk.Stack();
+
+    expect(() => new s3.Bucket(stack, 'Bucket', {
+      publicReadAccess: true,
+    })).toThrow('Cannot use \'publicReadAccess\' property');
+  });
+
+  test('bucket with enabled block public access setting to throw error msg', () => {
+    const stack = new cdk.Stack();
+
+    expect(() => new s3.Bucket(stack, 'Bucket', {
+      publicReadAccess: true,
+      blockPublicAccess: {
+        blockPublicPolicy: true,
+        blockPublicAcls: false,
+        ignorePublicAcls: false,
+        restrictPublicBuckets: false,
+      },
+    })).toThrow('Cannot grant public access when \'blockPublicPolicy\' is enabled');
+  });
+
   test('bucket with custom canned access control', () => {
     const stack = new cdk.Stack();
     new s3.Bucket(stack, 'MyBucket', {
