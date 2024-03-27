@@ -415,7 +415,7 @@ each([testedOpenSearchVersions]).test('multiAZWithStandbyEnabled: true throws wi
       dataNodeInstanceType: 't3.medium.search',
       multiAzWithStandbyEnabled: true,
     },
-  })).toThrow(/T3 instance types does not support Multi-AZ with standby feature\./);
+  })).toThrow(/T3 instance type does not support Multi-AZ with standby feature\./);
 });
 
 each([testedOpenSearchVersions]).test('multiAZWithStandbyEnabled: true throws with t3 instance type (master node)', (engineVersion) => {
@@ -426,7 +426,7 @@ each([testedOpenSearchVersions]).test('multiAZWithStandbyEnabled: true throws wi
       masterNodes: 1,
       multiAzWithStandbyEnabled: true,
     },
-  })).toThrow(/T3 instance types does not support Multi-AZ with standby feature\./);
+  })).toThrow(/T3 instance type does not support Multi-AZ with standby feature\./);
 });
 
 each([testedOpenSearchVersions]).test('ENABLE_OPENSEARCH_MULTIAZ_WITH_STANDBY set multiAZWithStandbyEnabled value', (engineVersion) => {
