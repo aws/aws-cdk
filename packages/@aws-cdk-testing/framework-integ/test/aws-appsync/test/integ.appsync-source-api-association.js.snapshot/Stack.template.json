@@ -277,7 +277,10 @@
       "Arn"
      ]
     }
-   }
+   },
+   "DependsOn": [
+    "FirstSourceAPISchemaF2FDB692"
+   ]
   },
   "SourceApiAssociation254340D38": {
    "Type": "AWS::AppSync::SourceApiAssociation",
@@ -297,7 +300,10 @@
       "Arn"
      ]
     }
-   }
+   },
+   "DependsOn": [
+    "SecondSourceAPISchema65B7401E"
+   ]
   },
   "SourceApiAssociation3F6A7C1BA": {
    "Type": "AWS::AppSync::SourceApiAssociation",
