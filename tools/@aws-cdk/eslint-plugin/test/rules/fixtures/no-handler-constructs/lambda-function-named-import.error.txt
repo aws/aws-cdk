@@ -1,0 +1,1 @@
+Construction of type Function from aws-cdk-lib/aws-lambda is not allowed. Please generate a handler construct using @aws-cdk/handler-framework.

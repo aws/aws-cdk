@@ -1,0 +1,1 @@
+Construction of type CustomResourceProvider from aws-cdk-lib/custom-resources is not allowed. Please generate a handler construct using @aws-cdk/handler-framework.

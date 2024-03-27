@@ -10,6 +10,9 @@ Eslint plugin for the CDK repository. Contains rules that need to be applied spe
 * `no-core-construct`: Forbid the use of `Construct` and `IConstruct` from the "@aws-cdk/core" module.
   Instead use `Construct` and `IConstruct` from the "constructs" module.
   Rule only applies to typescript files under the `test/` folder.
+* `no-handler-constructs`: Forbid the construction of constructs that create lambda handler resources.
+  Instead use the standard code generation tools in `@aws-cdk/handler-framework` to avoid duplication
+  and opt in to automatic runtime updates.
 
 * `no-invalid-path`: Checks paths specified using `path.join()` for validity, including not going backwards (`'..'`)
   multiple times in the path and not going backwards beyond a package's `package.json`.
