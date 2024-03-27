@@ -29,7 +29,7 @@ Define a `GoFunction`:
 
 ```ts
 new go.GoFunction(this, 'handler', {
-  entry: 'app/cmd/api',
+  entry: 'lambda-app/cmd/api',
 });
 ```
 
@@ -37,7 +37,7 @@ By default, if `entry` points to a directory, then the construct will assume the
 Let's look at an example Go project:
 
 ```bash
-lamda-app
+lambda-app
 ├── cmd
 │   └── api
 │       └── main.go
@@ -244,7 +244,7 @@ all of your functions if anything changes, then `AssetHashType.SOURCE` will prob
 For example, if my app looked like this:
 
 ```bash
-lamda-app
+lambda-app
 ├── cmd
 │   └── api
 │       └── main.go
@@ -263,7 +263,7 @@ should trigger a new deploy, I could specify `AssetHashType.SOURCE`.
 On the other hand, if I had a project that deployed multiple Lambda functions, for example:
 
 ```bash
-lamda-app
+lambda-app
 ├── cmd
 │   ├── api
 │   │   └── main.go
