@@ -1,0 +1,312 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "ip-based-routing": {
+        "id": "ip-based-routing",
+        "path": "ip-based-routing",
+        "children": {
+          "HostedZone": {
+            "id": "HostedZone",
+            "path": "ip-based-routing/HostedZone",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "ip-based-routing/HostedZone/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Route53::HostedZone",
+                  "aws:cdk:cloudformation:props": {
+                    "name": "cdk.dev."
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_route53.CfnHostedZone",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_route53.PublicHostedZone",
+              "version": "0.0.0"
+            }
+          },
+          "ARecordIpBased1": {
+            "id": "ARecordIpBased1",
+            "path": "ip-based-routing/ARecordIpBased1",
+            "children": {
+              "CidrCollection": {
+                "id": "CidrCollection",
+                "path": "ip-based-routing/ARecordIpBased1/CidrCollection",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Route53::CidrCollection",
+                  "aws:cdk:cloudformation:props": {
+                    "locations": [
+                      {
+                        "cidrList": [
+                          "192.168.1.0/24",
+                          "192.168.16.0/20"
+                        ],
+                        "locationName": "TokyoServer"
+                      }
+                    ],
+                    "name": "myCollection"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_route53.CfnCidrCollection",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "ip-based-routing/ARecordIpBased1/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Route53::RecordSet",
+                  "aws:cdk:cloudformation:props": {
+                    "cidrRoutingConfig": {
+                      "collectionId": {
+                        "Ref": "ARecordIpBased1CidrCollection1872F36E"
+                      },
+                      "locationName": "TokyoServer"
+                    },
+                    "hostedZoneId": {
+                      "Ref": "HostedZoneDB99F866"
+                    },
+                    "name": "www.cdk.dev.",
+                    "resourceRecords": [
+                      "1.2.3.4"
+                    ],
+                    "setIdentifier": {
+                      "Fn::Join": [
+                        "",
+                        [
+                          "IP_",
+                          {
+                            "Ref": "ARecordIpBased1CidrCollection1872F36E"
+                          },
+                          "_TokyoServer_ID_ipbasedrodIpBased11B1FE39C"
+                        ]
+                      ]
+                    },
+                    "ttl": "1800",
+                    "type": "A"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_route53.CfnRecordSet",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_route53.ARecord",
+              "version": "0.0.0"
+            }
+          },
+          "ARecordIpBased2": {
+            "id": "ARecordIpBased2",
+            "path": "ip-based-routing/ARecordIpBased2",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "ip-based-routing/ARecordIpBased2/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Route53::RecordSet",
+                  "aws:cdk:cloudformation:props": {
+                    "cidrRoutingConfig": {
+                      "collectionId": {
+                        "Ref": "ARecordIpBased1CidrCollection1872F36E"
+                      },
+                      "locationName": "LondonServer"
+                    },
+                    "hostedZoneId": {
+                      "Ref": "HostedZoneDB99F866"
+                    },
+                    "name": "www.cdk.dev.",
+                    "resourceRecords": [
+                      "2.3.4.5"
+                    ],
+                    "setIdentifier": {
+                      "Fn::Join": [
+                        "",
+                        [
+                          "IP_",
+                          {
+                            "Ref": "ARecordIpBased1CidrCollection1872F36E"
+                          },
+                          "_LondonServer_ID_ipbasedrodIpBased2A1D4F6AF"
+                        ]
+                      ]
+                    },
+                    "ttl": "1800",
+                    "type": "A"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_route53.CfnRecordSet",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_route53.ARecord",
+              "version": "0.0.0"
+            }
+          },
+          "ARecordIpBased3": {
+            "id": "ARecordIpBased3",
+            "path": "ip-based-routing/ARecordIpBased3",
+            "children": {
+              "CidrCollection": {
+                "id": "CidrCollection",
+                "path": "ip-based-routing/ARecordIpBased3/CidrCollection",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Route53::CidrCollection",
+                  "aws:cdk:cloudformation:props": {
+                    "name": "ipbasedroutingARecordIpBased380A2B7CF"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_route53.CfnCidrCollection",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "ip-based-routing/ARecordIpBased3/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Route53::RecordSet",
+                  "aws:cdk:cloudformation:props": {
+                    "cidrRoutingConfig": {
+                      "collectionId": {
+                        "Ref": "ARecordIpBased3CidrCollection1CF5F3AD"
+                      },
+                      "locationName": "*"
+                    },
+                    "hostedZoneId": {
+                      "Ref": "HostedZoneDB99F866"
+                    },
+                    "name": "xxx.cdk.dev.",
+                    "resourceRecords": [
+                      "3.4.5.6"
+                    ],
+                    "setIdentifier": {
+                      "Fn::Join": [
+                        "",
+                        [
+                          "IP_",
+                          {
+                            "Ref": "ARecordIpBased3CidrCollection1CF5F3AD"
+                          },
+                          "_*_ID_ipbasedroutingARecordIpBased380A2B7CF"
+                        ]
+                      ]
+                    },
+                    "ttl": "1800",
+                    "type": "A"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_route53.CfnRecordSet",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_route53.ARecord",
+              "version": "0.0.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "ip-based-routing/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "ip-based-routing/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnRule",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "Route53IpBasedRoutingInteg": {
+        "id": "Route53IpBasedRoutingInteg",
+        "path": "Route53IpBasedRoutingInteg",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "Route53IpBasedRoutingInteg/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "Route53IpBasedRoutingInteg/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "Route53IpBasedRoutingInteg/DefaultTest/DeployAssert",
+                "children": {
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "Route53IpBasedRoutingInteg/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "Route53IpBasedRoutingInteg/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnRule",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.3.0"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "aws-cdk-lib.App",
+      "version": "0.0.0"
+    }
+  }
+}

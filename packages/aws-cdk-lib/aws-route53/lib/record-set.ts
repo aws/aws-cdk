@@ -2,7 +2,7 @@ import { Construct } from 'constructs';
 import { IAliasRecordTarget } from './alias-record-target';
 import { GeoLocation } from './geo-location';
 import { IHostedZone } from './hosted-zone-ref';
-import { CfnRecordSet } from './route53.generated';
+import { CfnCidrCollection, CfnRecordSet } from './route53.generated';
 import { determineFullyQualifiedDomainName } from './util';
 import * as iam from '../../aws-iam';
 import { CustomResource, Duration, IResource, Names, RemovalPolicy, Resource, Token } from '../../core';
@@ -201,6 +201,16 @@ export interface RecordSetOptions {
   readonly weight?: number;
 
   /**
+   * The configuration for IP-based routing in Amazon Route 53 record sets.
+   * It is used to direct traffic to different resources based on the IP address of the request.
+   *
+   * @see https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/routing-policy-ipbased.html
+   *
+   * @default - Do not set IP based routing
+   */
+  readonly cidrRoutingConfig?: ICidrRoutingConfig;
+
+  /**
    * The Amazon EC2 Region where you created the resource that this resource record set refers to.
    * The resource typically is an AWS resource, such as an EC2 instance or an ELB load balancer,
    * and is referred to by an IP address or a DNS domain name, depending on the record type.
@@ -231,6 +241,46 @@ export interface RecordSetOptions {
    * @default - Auto generated string
    */
   readonly setIdentifier?: string;
+}
+
+/**
+ * Configuration for IP-based routing.
+ */
+export interface ICidrRoutingConfig {
+  /**
+   * List of CIDR blocks.
+   *
+   * When specifying the default location (locationName is '*'), it cannot be set, but for all other cases, it is mandatory.
+   *
+   * @default - zero bit CIDR block (0.0.0.0/0 or ::/0) for the default location
+   */
+  cidrList?: string[];
+  /**
+   * The name of the location.
+   *
+   * When '*' is specified, it is treated as the default location.
+   * In this case, the cidrList cannot be specified.
+   */
+  locationName: string;
+  /**
+   * The name of a CIDR collection.
+   *
+   * This parameter is ignored when the `collection` property is specified.
+   *
+   * @default - Auto generated name
+   */
+  collectionName?: string;
+  /**
+   * Existing Cidr Collection.
+   *
+   * Use this to add a new Location to an existing Cidr Collection.
+   * Note that for IP-based routing, all resource record sets for the same record set name and type must reference the same CIDR collection.
+   *
+   * @see https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/routing-policy-ipbased.html
+   *
+   * @default - Create a new CIDR Collection
+   */
+  collection?: CfnCidrCollection;
 }
 
 /**
@@ -292,6 +342,8 @@ export class RecordSet extends Resource implements IRecordSet {
   private readonly weight?: number;
   private readonly region?: string;
   private readonly multiValueAnswer?: boolean;
+  private cidrLocation?: CfnRecordSet.CidrRoutingConfigProperty;
+  private _cidrCollection?: CfnCidrCollection;
 
   constructor(scope: Construct, id: string, props: RecordSetProps) {
     super(scope, id);
@@ -302,7 +354,14 @@ export class RecordSet extends Resource implements IRecordSet {
     if (props.setIdentifier && (props.setIdentifier.length < 1 || props.setIdentifier.length > 128)) {
       throw new Error(`setIdentifier must be between 1 and 128 characters long, got: ${props.setIdentifier.length}`);
     }
-    if (props.setIdentifier && !props.weight && !props.geoLocation && !props.region && !props.multiValueAnswer) {
+    if (
+      props.setIdentifier
+      && !props.weight
+      && !props.geoLocation
+      && !props.region
+      && !props.multiValueAnswer
+      && !props.cidrRoutingConfig
+    ) {
       throw new Error('setIdentifier can only be specified for non-simple routing policies');
     }
     if (props.multiValueAnswer && props.target.aliasTarget) {
@@ -314,9 +373,10 @@ export class RecordSet extends Resource implements IRecordSet {
       props.region,
       props.weight,
       props.multiValueAnswer,
+      props.cidrRoutingConfig,
     ].filter((variable) => variable !== undefined).length;
     if (nonSimpleRoutingPolicies > 1) {
-      throw new Error('Only one of region, weight, multiValueAnswer or geoLocation can be defined');
+      throw new Error('Only one of region, weight, multiValueAnswer, cidrRoutingConfig or geoLocation can be defined');
     }
 
     this.geoLocation = props.geoLocation;
@@ -327,6 +387,32 @@ export class RecordSet extends Resource implements IRecordSet {
     const ttl = props.target.aliasTarget ? undefined : ((props.ttl && props.ttl.toSeconds()) ?? 1800).toString();
 
     const recordName = determineFullyQualifiedDomainName(props.recordName || props.zone.zoneName, props.zone);
+
+    if (props.cidrRoutingConfig) {
+      const { locationName, cidrList, collectionName, collection } = props.cidrRoutingConfig;
+      if (!Token.isUnresolved(locationName) && locationName && (locationName.length < 1 || locationName.length > 16)) {
+        throw new Error(`locationName must be between 1 and 16 characters long, got: ${locationName.length}`);
+      }
+      if (!Token.isUnresolved(locationName) && locationName === '*' && cidrList) {
+        throw new Error('cidrList can only be specified for non-default locations');
+      }
+      if (!Token.isUnresolved(locationName) && locationName === '*' && collection) {
+        throw new Error('Default location cannot be specified when using an existing CIDR collection');
+      }
+      if (!Token.isUnresolved(locationName) && locationName && !/^[0-9A-Za-z_\-]+$/.test(locationName) && locationName !== '*') {
+        throw new Error(`locationName must only contain alphanumeric characters, underscores, and hyphens, or only '*', got: ${locationName}`);
+      }
+      if (cidrList && (cidrList.length < 1 || cidrList.length > 1000)) {
+        throw new Error(`cidrList must contain between 1 and 1000 elements, got: ${cidrList.length}`);
+      }
+      if (!Token.isUnresolved(collectionName) && collectionName &&(collectionName.length < 1 || collectionName.length > 64)) {
+        throw new Error(`collectionName must be between 1 and 64 characters long, got: ${collectionName.length}`);
+      }
+      if (!Token.isUnresolved(collectionName) && collectionName && !/^[0-9A-Za-z_\-]+$/.test(collectionName)) {
+        throw new Error(`collectionName must only contain alphanumeric characters, underscores, and hyphens, got: ${collectionName}`);
+      }
+      this.configureIpBasedRouting(props.cidrRoutingConfig);
+    }
 
     const recordSet = new CfnRecordSet(this, 'Resource', {
       hostedZoneId: props.zone.hostedZoneId,
@@ -345,6 +431,7 @@ export class RecordSet extends Resource implements IRecordSet {
       setIdentifier: props.setIdentifier ?? this.configureSetIdentifier(),
       weight: props.weight,
       region: props.region,
+      cidrRoutingConfig: this.cidrLocation,
     });
 
     this.domainName = recordSet.ref;
@@ -390,6 +477,56 @@ export class RecordSet extends Resource implements IRecordSet {
     }
   }
 
+  /**
+   * The Cidr Collection associated with this record.
+   */
+  public get cidrCollection(): CfnCidrCollection | undefined {
+    return this._cidrCollection;
+  }
+
+  private configureIpBasedRouting(cidrRoutingConfig: ICidrRoutingConfig): void {
+    const locationName = cidrRoutingConfig.locationName ?? Names.uniqueResourceName(this, { maxLength: 8 }).substring(0, 16);
+    const cidrList = cidrRoutingConfig.cidrList;
+    const isDefaultLocation = locationName === '*';
+
+    if (cidrRoutingConfig.collection) {
+      this._cidrCollection = cidrRoutingConfig.collection;
+      const currentLocations = this._cidrCollection.locations ?? [];
+      const locationsAsArray = Array.isArray(currentLocations) ? currentLocations : [currentLocations];
+      this._cidrCollection.addPropertyOverride('Locations', [...locationsAsArray.map((location) => {
+        // Since the location is either CfnCidrCollection.LocationProperty or IResolvable,
+        // use a type guard function to ascertain its exact type.
+        if ('cidrList' in location && 'locationName' in location) {
+          return {
+            CidrList: location.cidrList,
+            LocationName: location.locationName,
+          };
+        }
+        return location;
+      }), {
+        CidrList: cidrList,
+        LocationName: locationName,
+      }]);
+    } else {
+      this._cidrCollection = new CfnCidrCollection(this, 'CidrCollection', {
+        name: cidrRoutingConfig.collectionName ?? Names.uniqueResourceName(this, { maxLength: 64 }),
+        // When 'locationName' is '*', create a CidrCollection without specifying 'locations',
+        // thus having only the default location.
+        locations: isDefaultLocation ? undefined : [{
+          // For locations other than the defaultLocation, specifying the cidrList is mandatory,
+          // so in practice, cidrList will never be undefined.
+          cidrList: cidrList ?? [],
+          locationName,
+        }],
+      });
+    }
+
+    this.cidrLocation = {
+      collectionId: this._cidrCollection.ref,
+      locationName,
+    };
+  }
+
   private configureSetIdentifier(): string | undefined {
     if (this.geoLocation) {
       let identifier = 'GEO';
@@ -417,6 +554,11 @@ export class RecordSet extends Resource implements IRecordSet {
 
     if (this.multiValueAnswer) {
       const idPrefix = 'MVA_ID_';
+      return this.createIdentifier(idPrefix);
+    }
+
+    if (this.cidrLocation) {
+      const idPrefix = `IP_${this.cidrLocation.collectionId}_${this.cidrLocation.locationName}_ID_`;
       return this.createIdentifier(idPrefix);
     }
 
