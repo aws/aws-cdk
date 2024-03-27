@@ -16,7 +16,7 @@ class SNSFifoInteg extends Stack {
     Topic.fromTopicAttributes(this, 'ImportedTopic', {
       topicArn: topic.topicArn,
       contentBasedDeduplication: true,
-    })
+    });
   }
 }
 
