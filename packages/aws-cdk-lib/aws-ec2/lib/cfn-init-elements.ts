@@ -835,8 +835,8 @@ export class InitService extends InitElement {
       throw new Error(`SystemD executables must use an absolute path, got '${options.command}'`);
     }
 
-    if (options.environmentFiles?.some(file => !file.startsWith("/"))) {
-      throw new Error('SystemD environment files must use absolute paths')
+    if (options.environmentFiles?.some(file => !file.startsWith('/'))) {
+      throw new Error('SystemD environment files must use absolute paths');
     }
 
     const lines = [
@@ -1136,5 +1136,5 @@ export interface SystemdConfigFileOptions {
    *
    * @default - No environment files
    */
-  readonly environmentFiles?: string[]
+  readonly environmentFiles?: string[];
 }

@@ -738,8 +738,8 @@ describe('InitService', () => {
       description: 'my service',
       environmentFiles: ['/files/one', '/files/two'],
       environmentVariables: {
-        HELLO: "WORLD"
-      }
+        HELLO: 'WORLD',
+      },
     });
 
     // THEN
@@ -752,10 +752,10 @@ describe('InitService', () => {
     });
 
     const capture = rendered['/etc/systemd/system/myserver.service'].content;
-    expect(capture).toContain('EnvironmentFile=/files/one')
-    expect(capture).toContain('EnvironmentFile=/files/two')
-    expect(capture).toContain('Environment="HELLO=WORLD"')
-  })
+    expect(capture).toContain('EnvironmentFile=/files/one');
+    expect(capture).toContain('EnvironmentFile=/files/two');
+    expect(capture).toContain('Environment="HELLO=WORLD"');
+  });
 });
 
 describe('InitSource', () => {
