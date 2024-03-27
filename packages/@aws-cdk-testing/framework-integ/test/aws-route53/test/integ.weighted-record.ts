@@ -15,6 +15,7 @@ class TestStack extends Stack {
       { target: '1.2.3.4', weight: 20 },
       { target: '2.3.4.5', weight: 30 },
       { target: '3.4.5.6', weight: 50 },
+      { target: '4.5.6.7', weight: 0 },
     ].forEach((data, index) => {
       new route53.ARecord(this, `WeightedRecord${index}`, {
         zone: hostedZone,
