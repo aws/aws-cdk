@@ -33,7 +33,6 @@ class TestSource implements ISource {
   grantRead(pipeRole: cdk.aws_iam.IRole): void {
     this.queue.grantConsumeMessages(pipeRole);
   }
-  grantDlqPush(): void {}
 }
 
 class TestTarget implements ITarget {

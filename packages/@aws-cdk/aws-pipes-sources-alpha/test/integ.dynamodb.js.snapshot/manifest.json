@@ -1,28 +1,28 @@
 {
   "version": "36.0.0",
   "artifacts": {
-    "aws-cdk-pipes-sources-kinesis.assets": {
+    "aws-cdk-pipes-sources-dynamodb.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "aws-cdk-pipes-sources-kinesis.assets.json",
+        "file": "aws-cdk-pipes-sources-dynamodb.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "aws-cdk-pipes-sources-kinesis": {
+    "aws-cdk-pipes-sources-dynamodb": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "aws-cdk-pipes-sources-kinesis.template.json",
+        "templateFile": "aws-cdk-pipes-sources-dynamodb.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/078cf6c772b6ffef5992c48a9736208e36d83d5571f404f8288d8faacf8cf931.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/4547fc993636711e376302e9e35771dcedd667483f94107cc9445d876c1972d8.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "aws-cdk-pipes-sources-kinesis.assets"
+          "aws-cdk-pipes-sources-dynamodb.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -31,94 +31,94 @@
         }
       },
       "dependencies": [
-        "aws-cdk-pipes-sources-kinesis.assets"
+        "aws-cdk-pipes-sources-dynamodb.assets"
       ],
       "metadata": {
-        "/aws-cdk-pipes-sources-kinesis/SourceKinesisStream/Resource": [
+        "/aws-cdk-pipes-sources-dynamodb/MyTable/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "SourceKinesisStreamD9B33274"
+            "data": "MyTable794EDED1"
           }
         ],
-        "/aws-cdk-pipes-sources-kinesis/AwsCdkKinesisEncryptedStreamsUnsupportedRegions": [
+        "/aws-cdk-pipes-sources-dynamodb/DlqQueue/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AwsCdkKinesisEncryptedStreamsUnsupportedRegions"
+            "data": "DlqQueueFDA42DA7"
           }
         ],
-        "/aws-cdk-pipes-sources-kinesis/TargetQueue/Resource": [
+        "/aws-cdk-pipes-sources-dynamodb/TargetQueue/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "TargetQueue08AD2B3C"
           }
         ],
-        "/aws-cdk-pipes-sources-kinesis/Pipe/Role/Resource": [
+        "/aws-cdk-pipes-sources-dynamodb/Pipe/Role/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "PipeRole7D4AFC73"
           }
         ],
-        "/aws-cdk-pipes-sources-kinesis/Pipe/Role/DefaultPolicy/Resource": [
+        "/aws-cdk-pipes-sources-dynamodb/Pipe/Role/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "PipeRoleDefaultPolicy56E6A74D"
           }
         ],
-        "/aws-cdk-pipes-sources-kinesis/Pipe/Resource": [
+        "/aws-cdk-pipes-sources-dynamodb/Pipe/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "Pipe7793F8A1"
           }
         ],
-        "/aws-cdk-pipes-sources-kinesis/Exports/Output{\"Fn::GetAtt\":[\"SourceKinesisStreamD9B33274\",\"Arn\"]}": [
+        "/aws-cdk-pipes-sources-dynamodb/Exports/Output{\"Ref\":\"MyTable794EDED1\"}": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ExportsOutputFnGetAttSourceKinesisStreamD9B33274Arn1A7BEAA1"
+            "data": "ExportsOutputRefMyTable794EDED1558A264E"
           }
         ],
-        "/aws-cdk-pipes-sources-kinesis/Exports/Output{\"Ref\":\"TargetQueue08AD2B3C\"}": [
+        "/aws-cdk-pipes-sources-dynamodb/Exports/Output{\"Ref\":\"TargetQueue08AD2B3C\"}": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ExportsOutputRefTargetQueue08AD2B3C0C69AE0E"
           }
         ],
-        "/aws-cdk-pipes-sources-kinesis/BootstrapVersion": [
+        "/aws-cdk-pipes-sources-dynamodb/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/aws-cdk-pipes-sources-kinesis/CheckBootstrapVersion": [
+        "/aws-cdk-pipes-sources-dynamodb/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "aws-cdk-pipes-sources-kinesis"
+      "displayName": "aws-cdk-pipes-sources-dynamodb"
     },
-    "integtestpipesourcekinesisDefaultTestDeployAssert6F0A38D7.assets": {
+    "integtestpipesourcedynamodbDefaultTestDeployAssertD62992D6.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "integtestpipesourcekinesisDefaultTestDeployAssert6F0A38D7.assets.json",
+        "file": "integtestpipesourcedynamodbDefaultTestDeployAssertD62992D6.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "integtestpipesourcekinesisDefaultTestDeployAssert6F0A38D7": {
+    "integtestpipesourcedynamodbDefaultTestDeployAssertD62992D6": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "integtestpipesourcekinesisDefaultTestDeployAssert6F0A38D7.template.json",
+        "templateFile": "integtestpipesourcedynamodbDefaultTestDeployAssertD62992D6.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c26a17eb508f2d7d5729a4754ea8421bb41649efa8047971308ee8b55ee154f0.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c0e5c6ac573d0d25ec2370f357f49b182746fba5eb9eb9bd3ad148cc82c9cdeb.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "integtestpipesourcekinesisDefaultTestDeployAssert6F0A38D7.assets"
+          "integtestpipesourcedynamodbDefaultTestDeployAssertD62992D6.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -127,102 +127,102 @@
         }
       },
       "dependencies": [
-        "aws-cdk-pipes-sources-kinesis",
-        "integtestpipesourcekinesisDefaultTestDeployAssert6F0A38D7.assets"
+        "aws-cdk-pipes-sources-dynamodb",
+        "integtestpipesourcedynamodbDefaultTestDeployAssertD62992D6.assets"
       ],
       "metadata": {
-        "/integtest-pipe-source-kinesis/DefaultTest/DeployAssert/AwsApiCallKinesisputRecordac62b7caf42ac13ed9fe2cdebc241de9/Default/Default": [
+        "/integtest-pipe-source-dynamodb/DefaultTest/DeployAssert/AwsApiCallDynamoDBputItemb68e576b6e2494edc708169549514b4b/Default/Default": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AwsApiCallKinesisputRecordac62b7caf42ac13ed9fe2cdebc241de9"
+            "data": "AwsApiCallDynamoDBputItemb68e576b6e2494edc708169549514b4b"
           }
         ],
-        "/integtest-pipe-source-kinesis/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+        "/integtest-pipe-source-dynamodb/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
           {
             "type": "aws:cdk:logicalId",
             "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
           }
         ],
-        "/integtest-pipe-source-kinesis/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+        "/integtest-pipe-source-dynamodb/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
           {
             "type": "aws:cdk:logicalId",
             "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
           }
         ],
-        "/integtest-pipe-source-kinesis/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage23b37826db4ba4656cf9088d0244b67b/Default/Default": [
+        "/integtest-pipe-source-dynamodb/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage23b37826db4ba4656cf9088d0244b67b/Default/Default": [
           {
             "type": "aws:cdk:logicalId",
             "data": "AwsApiCallSQSreceiveMessage23b37826db4ba4656cf9088d0244b67b"
           }
         ],
-        "/integtest-pipe-source-kinesis/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage23b37826db4ba4656cf9088d0244b67b/WaitFor/IsCompleteProvider/Invoke": [
+        "/integtest-pipe-source-dynamodb/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage23b37826db4ba4656cf9088d0244b67b/WaitFor/IsCompleteProvider/Invoke": [
           {
             "type": "aws:cdk:logicalId",
             "data": "AwsApiCallSQSreceiveMessage23b37826db4ba4656cf9088d0244b67bWaitForIsCompleteProviderInvoke33D58FD0"
           }
         ],
-        "/integtest-pipe-source-kinesis/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage23b37826db4ba4656cf9088d0244b67b/WaitFor/TimeoutProvider/Invoke": [
+        "/integtest-pipe-source-dynamodb/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage23b37826db4ba4656cf9088d0244b67b/WaitFor/TimeoutProvider/Invoke": [
           {
             "type": "aws:cdk:logicalId",
             "data": "AwsApiCallSQSreceiveMessage23b37826db4ba4656cf9088d0244b67bWaitForTimeoutProviderInvokeD92624FF"
           }
         ],
-        "/integtest-pipe-source-kinesis/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage23b37826db4ba4656cf9088d0244b67b/WaitFor/Role": [
+        "/integtest-pipe-source-dynamodb/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage23b37826db4ba4656cf9088d0244b67b/WaitFor/Role": [
           {
             "type": "aws:cdk:logicalId",
             "data": "AwsApiCallSQSreceiveMessage23b37826db4ba4656cf9088d0244b67bWaitForRoleF8FA8111"
           }
         ],
-        "/integtest-pipe-source-kinesis/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage23b37826db4ba4656cf9088d0244b67b/WaitFor/Resource": [
+        "/integtest-pipe-source-dynamodb/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage23b37826db4ba4656cf9088d0244b67b/WaitFor/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "AwsApiCallSQSreceiveMessage23b37826db4ba4656cf9088d0244b67bWaitFor296E8BCE"
           }
         ],
-        "/integtest-pipe-source-kinesis/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage23b37826db4ba4656cf9088d0244b67b/AssertionResults": [
+        "/integtest-pipe-source-dynamodb/DefaultTest/DeployAssert/AwsApiCallSQSreceiveMessage23b37826db4ba4656cf9088d0244b67b/AssertionResults": [
           {
             "type": "aws:cdk:logicalId",
             "data": "AssertionResultsAwsApiCallSQSreceiveMessage23b37826db4ba4656cf9088d0244b67b"
           }
         ],
-        "/integtest-pipe-source-kinesis/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Role": [
+        "/integtest-pipe-source-dynamodb/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Role": [
           {
             "type": "aws:cdk:logicalId",
             "data": "SingletonFunction76b3e830a873425f8453eddd85c86925Role918961BB"
           }
         ],
-        "/integtest-pipe-source-kinesis/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Handler": [
+        "/integtest-pipe-source-dynamodb/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Handler": [
           {
             "type": "aws:cdk:logicalId",
             "data": "SingletonFunction76b3e830a873425f8453eddd85c86925Handler81461ECE"
           }
         ],
-        "/integtest-pipe-source-kinesis/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Role": [
+        "/integtest-pipe-source-dynamodb/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Role": [
           {
             "type": "aws:cdk:logicalId",
             "data": "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aRoleB84BD8CE"
           }
         ],
-        "/integtest-pipe-source-kinesis/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Handler": [
+        "/integtest-pipe-source-dynamodb/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Handler": [
           {
             "type": "aws:cdk:logicalId",
             "data": "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aHandlerADF3E6EA"
           }
         ],
-        "/integtest-pipe-source-kinesis/DefaultTest/DeployAssert/BootstrapVersion": [
+        "/integtest-pipe-source-dynamodb/DefaultTest/DeployAssert/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/integtest-pipe-source-kinesis/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+        "/integtest-pipe-source-dynamodb/DefaultTest/DeployAssert/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "integtest-pipe-source-kinesis/DefaultTest/DeployAssert"
+      "displayName": "integtest-pipe-source-dynamodb/DefaultTest/DeployAssert"
     },
     "Tree": {
       "type": "cdk:tree",

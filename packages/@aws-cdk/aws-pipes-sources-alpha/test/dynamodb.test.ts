@@ -184,7 +184,7 @@ describe('dynamodb source', () => {
     });
   });
 
-  it('should grant pipe role read access', () => {
+  it('should grant pipe role read access to source', () => {
     // ARRANGE
     const app = new App();
     const stack = new Stack(app, 'TestStack');
@@ -197,6 +197,66 @@ describe('dynamodb source', () => {
     });
     const source = new DynamoDBSource(table, {
       startingPosition: DynamoDBStartingPosition.LATEST,
+    });
+
+    new Pipe(stack, 'MyPipe', {
+      source,
+      target: new TestTarget(),
+    });
+
+    // ACT
+    const template = Template.fromStack(stack);
+
+    // ASSERT
+    expect(template.findResources('AWS::IAM::Role')).toMatchSnapshot();
+    expect(template.findResources('AWS::IAM::Policy')).toMatchSnapshot();
+  });
+
+  it('should grant pipe role write access to dead-letter queue', () => {
+    // ARRANGE
+    const app = new App();
+    const stack = new Stack(app, 'TestStack');
+    const queue = new Queue(stack, 'MyDlq');
+    const table = new TableV2(stack, 'MyTable', {
+      partitionKey: {
+        name: 'PK',
+        type: AttributeType.STRING,
+      },
+      dynamoStream: StreamViewType.OLD_IMAGE,
+    });
+    const source = new DynamoDBSource(table, {
+      startingPosition: DynamoDBStartingPosition.LATEST,
+      deadLetterTarget: queue,
+    });
+
+    new Pipe(stack, 'MyPipe', {
+      source,
+      target: new TestTarget(),
+    });
+
+    // ACT
+    const template = Template.fromStack(stack);
+
+    // ASSERT
+    expect(template.findResources('AWS::IAM::Role')).toMatchSnapshot();
+    expect(template.findResources('AWS::IAM::Policy')).toMatchSnapshot();
+  });
+
+  it('should grant pipe role write access to dead-letter topic', () => {
+    // ARRANGE
+    const app = new App();
+    const stack = new Stack(app, 'TestStack');
+    const topic = new Topic(stack, 'MyTopic');
+    const table = new TableV2(stack, 'MyTable', {
+      partitionKey: {
+        name: 'PK',
+        type: AttributeType.STRING,
+      },
+      dynamoStream: StreamViewType.OLD_IMAGE,
+    });
+    const source = new DynamoDBSource(table, {
+      startingPosition: DynamoDBStartingPosition.LATEST,
+      deadLetterTarget: topic,
     });
 
     new Pipe(stack, 'MyPipe', {

@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`dynamodb source should grant pipe role read access 1`] = `
+exports[`dynamodb source should grant pipe role read access to source 1`] = `
 {
   "MyPipeRoleCBC8E9AB": {
     "Properties": {
@@ -22,7 +22,7 @@ exports[`dynamodb source should grant pipe role read access 1`] = `
 }
 `;
 
-exports[`dynamodb source should grant pipe role read access 2`] = `
+exports[`dynamodb source should grant pipe role read access to source 2`] = `
 {
   "MyPipeRoleDefaultPolicy31387C20": {
     "Properties": {
@@ -50,6 +50,161 @@ exports[`dynamodb source should grant pipe role read access 2`] = `
                 "MyTable794EDED1",
                 "StreamArn",
               ],
+            },
+          },
+        ],
+        "Version": "2012-10-17",
+      },
+      "PolicyName": "MyPipeRoleDefaultPolicy31387C20",
+      "Roles": [
+        {
+          "Ref": "MyPipeRoleCBC8E9AB",
+        },
+      ],
+    },
+    "Type": "AWS::IAM::Policy",
+  },
+}
+`;
+
+exports[`dynamodb source should grant pipe role write access to dead-letter queue 1`] = `
+{
+  "MyPipeRoleCBC8E9AB": {
+    "Properties": {
+      "AssumeRolePolicyDocument": {
+        "Statement": [
+          {
+            "Action": "sts:AssumeRole",
+            "Effect": "Allow",
+            "Principal": {
+              "Service": "pipes.amazonaws.com",
+            },
+          },
+        ],
+        "Version": "2012-10-17",
+      },
+    },
+    "Type": "AWS::IAM::Role",
+  },
+}
+`;
+
+exports[`dynamodb source should grant pipe role write access to dead-letter queue 2`] = `
+{
+  "MyPipeRoleDefaultPolicy31387C20": {
+    "Properties": {
+      "PolicyDocument": {
+        "Statement": [
+          {
+            "Action": "dynamodb:ListStreams",
+            "Effect": "Allow",
+            "Resource": {
+              "Fn::GetAtt": [
+                "MyTable794EDED1",
+                "StreamArn",
+              ],
+            },
+          },
+          {
+            "Action": [
+              "dynamodb:DescribeStream",
+              "dynamodb:GetRecords",
+              "dynamodb:GetShardIterator",
+            ],
+            "Effect": "Allow",
+            "Resource": {
+              "Fn::GetAtt": [
+                "MyTable794EDED1",
+                "StreamArn",
+              ],
+            },
+          },
+          {
+            "Action": [
+              "sqs:SendMessage",
+              "sqs:GetQueueAttributes",
+              "sqs:GetQueueUrl",
+            ],
+            "Effect": "Allow",
+            "Resource": {
+              "Fn::GetAtt": [
+                "MyDlq41B41CC5",
+                "Arn",
+              ],
+            },
+          },
+        ],
+        "Version": "2012-10-17",
+      },
+      "PolicyName": "MyPipeRoleDefaultPolicy31387C20",
+      "Roles": [
+        {
+          "Ref": "MyPipeRoleCBC8E9AB",
+        },
+      ],
+    },
+    "Type": "AWS::IAM::Policy",
+  },
+}
+`;
+
+exports[`dynamodb source should grant pipe role write access to dead-letter topic 1`] = `
+{
+  "MyPipeRoleCBC8E9AB": {
+    "Properties": {
+      "AssumeRolePolicyDocument": {
+        "Statement": [
+          {
+            "Action": "sts:AssumeRole",
+            "Effect": "Allow",
+            "Principal": {
+              "Service": "pipes.amazonaws.com",
+            },
+          },
+        ],
+        "Version": "2012-10-17",
+      },
+    },
+    "Type": "AWS::IAM::Role",
+  },
+}
+`;
+
+exports[`dynamodb source should grant pipe role write access to dead-letter topic 2`] = `
+{
+  "MyPipeRoleDefaultPolicy31387C20": {
+    "Properties": {
+      "PolicyDocument": {
+        "Statement": [
+          {
+            "Action": "dynamodb:ListStreams",
+            "Effect": "Allow",
+            "Resource": {
+              "Fn::GetAtt": [
+                "MyTable794EDED1",
+                "StreamArn",
+              ],
+            },
+          },
+          {
+            "Action": [
+              "dynamodb:DescribeStream",
+              "dynamodb:GetRecords",
+              "dynamodb:GetShardIterator",
+            ],
+            "Effect": "Allow",
+            "Resource": {
+              "Fn::GetAtt": [
+                "MyTable794EDED1",
+                "StreamArn",
+              ],
+            },
+          },
+          {
+            "Action": "sns:Publish",
+            "Effect": "Allow",
+            "Resource": {
+              "Ref": "MyTopic86869434",
             },
           },
         ],

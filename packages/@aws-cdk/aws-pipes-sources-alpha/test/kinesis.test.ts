@@ -171,6 +171,54 @@ describe('kinesis source', () => {
     expect(template.findResources('AWS::IAM::Role')).toMatchSnapshot();
     expect(template.findResources('AWS::IAM::Policy')).toMatchSnapshot();
   });
+
+  it('should grant pipe role write access to dead-letter queue', () => {
+    // ARRANGE
+    const app = new App();
+    const stack = new Stack(app, 'TestStack');
+    const stream = new Stream(stack, 'MyStream', {});
+    const queue = new Queue(stack, 'MyQueue');
+    const source = new KinesisSource(stream, {
+      startingPosition: KinesisStartingPosition.LATEST,
+      deadLetterTarget: queue,
+    });
+
+    new Pipe(stack, 'MyPipe', {
+      source,
+      target: new TestTarget(),
+    });
+
+    // ACT
+    const template = Template.fromStack(stack);
+
+    // ASSERT
+    expect(template.findResources('AWS::IAM::Role')).toMatchSnapshot();
+    expect(template.findResources('AWS::IAM::Policy')).toMatchSnapshot();
+  });
+
+  it('should grant pipe role write access to dead-letter topic', () => {
+    // ARRANGE
+    const app = new App();
+    const stack = new Stack(app, 'TestStack');
+    const stream = new Stream(stack, 'MyStream', {});
+    const topic = new Topic(stack, 'MyTopic');
+    const source = new KinesisSource(stream, {
+      startingPosition: KinesisStartingPosition.LATEST,
+      deadLetterTarget: topic,
+    });
+
+    new Pipe(stack, 'MyPipe', {
+      source,
+      target: new TestTarget(),
+    });
+
+    // ACT
+    const template = Template.fromStack(stack);
+
+    // ASSERT
+    expect(template.findResources('AWS::IAM::Role')).toMatchSnapshot();
+    expect(template.findResources('AWS::IAM::Policy')).toMatchSnapshot();
+  });
 });
 
 describe('kinesis source parameters validation', () => {

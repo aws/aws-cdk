@@ -1,0 +1,19 @@
+{
+  "version": "36.0.0",
+  "files": {
+    "078cf6c772b6ffef5992c48a9736208e36d83d5571f404f8288d8faacf8cf931": {
+      "source": {
+        "path": "aws-cdk-pipes-sources-kinesis.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "078cf6c772b6ffef5992c48a9736208e36d83d5571f404f8288d8faacf8cf931.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
