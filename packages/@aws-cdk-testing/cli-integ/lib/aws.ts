@@ -18,6 +18,7 @@ export class AwsClients {
   public readonly cloudFormation: AwsCaller<AWS.CloudFormation>;
   public readonly s3: AwsCaller<AWS.S3>;
   public readonly ecr: AwsCaller<AWS.ECR>;
+  public readonly ecs: AwsCaller<AWS.ECS>;
   public readonly sns: AwsCaller<AWS.SNS>;
   public readonly iam: AwsCaller<AWS.IAM>;
   public readonly lambda: AwsCaller<AWS.Lambda>;
@@ -34,6 +35,7 @@ export class AwsClients {
     this.cloudFormation = makeAwsCaller(AWS.CloudFormation, this.config);
     this.s3 = makeAwsCaller(AWS.S3, this.config);
     this.ecr = makeAwsCaller(AWS.ECR, this.config);
+    this.ecs = makeAwsCaller(AWS.ECS, this.config);
     this.sns = makeAwsCaller(AWS.SNS, this.config);
     this.iam = makeAwsCaller(AWS.IAM, this.config);
     this.lambda = makeAwsCaller(AWS.Lambda, this.config);

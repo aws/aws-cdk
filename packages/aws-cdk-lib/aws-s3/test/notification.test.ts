@@ -182,7 +182,7 @@ describe('notification', () => {
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
-      Runtime: 'python3.9',
+      Runtime: 'python3.11',
     });
   });
 });

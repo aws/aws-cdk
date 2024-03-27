@@ -1,7 +1,7 @@
 {
-  "version": "34.0.0",
+  "version": "36.0.0",
   "files": {
-    "084ca20cbe926238233c0a6584e19f8ce8057e3e7b7adcb4f21c6b6828acd256": {
+    "9a14027f70a5347df91e17dca191f41087c869425efe6897fa2d61199cf4de5f": {
       "source": {
         "path": "aws-cdk-codepipeline-cloudformation.template.json",
         "packaging": "file"
@@ -9,7 +9,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "084ca20cbe926238233c0a6584e19f8ce8057e3e7b7adcb4f21c6b6828acd256.json",
+          "objectKey": "9a14027f70a5347df91e17dca191f41087c869425efe6897fa2d61199cf4de5f.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
