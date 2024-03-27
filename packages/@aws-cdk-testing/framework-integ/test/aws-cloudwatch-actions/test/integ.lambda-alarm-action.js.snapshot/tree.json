@@ -135,8 +135,36 @@
                       }
                     ],
                     "evaluationPeriods": 1,
+                    "insufficientDataActions": [
+                      {
+                        "Ref": "alarmLambdaFeatureCurrentVersionCF39751979501d2f67eaf906b2ef0c378303873b"
+                      },
+                      {
+                        "Ref": "alarmLambdaFeatureAliasaliasName16F91D34"
+                      },
+                      {
+                        "Fn::GetAtt": [
+                          "alarmLambdaFeatureD560800F",
+                          "Arn"
+                        ]
+                      }
+                    ],
                     "metricName": "Errors",
                     "namespace": "AWS/Lambda",
+                    "okActions": [
+                      {
+                        "Ref": "alarmLambdaFeatureCurrentVersionCF39751979501d2f67eaf906b2ef0c378303873b"
+                      },
+                      {
+                        "Ref": "alarmLambdaFeatureAliasaliasName16F91D34"
+                      },
+                      {
+                        "Fn::GetAtt": [
+                          "alarmLambdaFeatureD560800F",
+                          "Arn"
+                        ]
+                      }
+                    ],
                     "period": 60,
                     "statistic": "Sum",
                     "threshold": 1,
@@ -516,8 +544,36 @@
                       }
                     ],
                     "evaluationPeriods": 1,
+                    "insufficientDataActions": [
+                      {
+                        "Ref": "alarmLambdaFeatureCurrentVersionCF39751979501d2f67eaf906b2ef0c378303873b"
+                      },
+                      {
+                        "Ref": "alarmLambdaFeatureAliasaliasName16F91D34"
+                      },
+                      {
+                        "Fn::GetAtt": [
+                          "alarmLambdaFeatureD560800F",
+                          "Arn"
+                        ]
+                      }
+                    ],
                     "metricName": "Errors",
                     "namespace": "AWS/Lambda",
+                    "okActions": [
+                      {
+                        "Ref": "alarmLambdaFeatureCurrentVersionCF39751979501d2f67eaf906b2ef0c378303873b"
+                      },
+                      {
+                        "Ref": "alarmLambdaFeatureAliasaliasName16F91D34"
+                      },
+                      {
+                        "Fn::GetAtt": [
+                          "alarmLambdaFeatureD560800F",
+                          "Arn"
+                        ]
+                      }
+                    ],
                     "period": 60,
                     "statistic": "Sum",
                     "threshold": 1,
