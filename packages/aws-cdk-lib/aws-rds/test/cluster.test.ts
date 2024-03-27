@@ -4251,16 +4251,6 @@ describe('cluster', () => {
           Statement: [
             {
               Action: [
-                'secretsmanager:GetSecretValue',
-                'secretsmanager:DescribeSecret',
-              ],
-              Effect: 'Allow',
-              Resource: {
-                Ref: 'DatabaseSecretAttachmentE5D1B020',
-              },
-            },
-            {
-              Action: [
                 'rds-data:BatchExecuteStatement',
                 'rds-data:BeginTransaction',
                 'rds-data:CommitTransaction',
@@ -4279,6 +4269,14 @@ describe('cluster', () => {
                   ],
                 ],
               },
+            },
+            {
+              Action: [
+                'secretsmanager:GetSecretValue',
+                'secretsmanager:DescribeSecret',
+              ],
+              Effect: 'Allow',
+              Resource: { Ref: 'DatabaseSecretAttachmentE5D1B020' },
             },
           ],
         },

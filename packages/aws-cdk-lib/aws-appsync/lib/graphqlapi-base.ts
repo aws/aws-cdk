@@ -16,7 +16,7 @@ import { IEventBus } from '../../aws-events';
 import { Grant, IGrantable } from '../../aws-iam';
 import { IFunction } from '../../aws-lambda';
 import { IDomain as IOpenSearchDomain } from '../../aws-opensearchservice';
-import { IServerlessCluster } from '../../aws-rds';
+import { IDatabaseCluster, IServerlessCluster } from '../../aws-rds';
 import { ISecret } from '../../aws-secretsmanager';
 import { ArnFormat, CfnResource, IResource, Resource, Stack } from '../../core';
 
@@ -187,7 +187,7 @@ export interface IGraphqlApi extends IResource {
    */
   addRdsDataSource(
     id: string,
-    serverlessCluster: IServerlessCluster,
+    serverlessCluster: IServerlessCluster | IDatabaseCluster,
     secretStore: ISecret,
     databaseName?: string,
     options?: DataSourceOptions
@@ -352,7 +352,7 @@ export abstract class GraphqlApiBase extends Resource implements IGraphqlApi {
    */
   public addRdsDataSource(
     id: string,
-    serverlessCluster: IServerlessCluster,
+    serverlessCluster: IServerlessCluster | IDatabaseCluster,
     secretStore: ISecret,
     databaseName?: string,
     options?: DataSourceOptions,
