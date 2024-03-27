@@ -41,8 +41,17 @@ class SNSInteg extends Stack {
       successFeedbackSampleRate: 50,
     });
 
-    // Can import topic from arn
-    Topic.fromTopicArn(this, 'ImportedTopic', topic.topicArn);
+    const topic2 = new Topic(this, 'MyTopic2', {
+      topicName: 'fooTopic2',
+      displayName: 'fooDisplayName2',
+      masterKey: key,
+    });
+    const importedTopic = Topic.fromTopicArn(this, 'ImportedTopic', topic2.topicArn);
+
+    const publishRole = new Role(this, 'FeedbackRole', {
+      assumedBy: new ServicePrincipal('s3.amazonaws.com'),
+    });
+    importedTopic.grantPublish(publishRole);
   }
 }
 
