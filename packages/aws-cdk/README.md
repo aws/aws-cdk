@@ -464,6 +464,20 @@ and might have breaking changes in the future.
 
 > *: `Fn::GetAtt` is only partially supported. Refer to [this implementation](https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk/lib/api/evaluate-cloudformation-template.ts#L477-L492) for supported resources and attributes.
 
+#### Optimistic Stabilization
+
+You can pass the `--optimistic` flag to the `deploy` command:
+
+```console
+$ cdk deploy --optimistic [StackNames]
+```
+
+This will perform a deployment with optimistic stabilization strategy by watching the `CONFIGURATION_COMPLETE`
+detailed status and immediately return success when detected. This speeds up the stack deployment
+by ignoring the stack-level eventual consistency checks. Read [this](https://aws.amazon.com/blogs/devops/how-we-sped-up-aws-cloudformation-deployments-with-optimistic-stabilization/) for more details.
+
+The `--optimistic` flag is supported by `cdk deploy` and `cdk destroy`.
+
 ### `cdk watch`
 
 The `watch` command is similar to `deploy`,

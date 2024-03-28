@@ -206,6 +206,13 @@ export interface DeployStackOptions {
    * @default false
    */
   ignoreNoStacks?: boolean;
+
+  /**
+   * Whether to enable optimistic stabilization.
+   *
+   * @default false
+   */
+  optimistic?: boolean;
 }
 
 interface AssetOptions {
@@ -260,6 +267,7 @@ export interface DestroyStackOptions {
   quiet?: boolean;
   force?: boolean;
   ci?: boolean;
+  optimistic?: boolean;
 }
 
 export interface StackExistsOptions {
@@ -413,6 +421,7 @@ export class Deployments {
       resourcesToImport: options.resourcesToImport,
       overrideTemplate: options.overrideTemplate,
       assetParallelism: options.assetParallelism,
+      optimistic: options.optimistic,
     });
   }
 
@@ -426,6 +435,7 @@ export class Deployments {
       deployName: options.deployName,
       quiet: options.quiet,
       ci: options.ci,
+      optimistic: options.optimistic,
     });
   }
 

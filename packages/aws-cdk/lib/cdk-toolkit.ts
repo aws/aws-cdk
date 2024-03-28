@@ -363,6 +363,7 @@ export class CdkToolkit {
           extraUserAgent: options.extraUserAgent,
           assetParallelism: options.assetParallelism,
           ignoreNoStacks: options.ignoreNoStacks,
+          optimistic: options.optimistic,
         });
 
         const message = result.noOp
@@ -1352,6 +1353,13 @@ export interface DeployOptions extends CfnDeployOptions, WatchOptions {
    * @default false
    */
   readonly ignoreNoStacks?: boolean;
+
+  /**
+   * Whether to enable the optimistic stabilization.
+   *
+   * @default false
+   */
+  readonly optimistic?: boolean;
 }
 
 export interface ImportOptions extends CfnDeployOptions {

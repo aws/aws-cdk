@@ -488,6 +488,17 @@ integTest('deploy with notification ARN', withDefaultFixture(async (fixture) => 
   }
 }));
 
+integTest('deploy with optimistic stabilization', withDefaultFixture(async (fixture) => {
+  await fixture.cdkDeploy('test-optimistic', {
+    options: ['--optimistic'],
+  });
+  // verify that the stack we deployed has our notification ARN
+  const describeResponse = await fixture.aws.cloudFormation('describeStacks', {
+    StackName: fixture.fullStackName('test-optimistic'),
+  });
+  expect(describeResponse.Stacks?.[0].DetailedStatus).toEqual('CONFIGURATION_COMPLETE');
+}));
+
 // NOTE: this doesn't currently work with modern-style synthesis, as the bootstrap
 // role by default will not have permission to iam:PassRole the created role.
 integTest('deploy with role', withDefaultFixture(async (fixture) => {
