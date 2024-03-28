@@ -48,3 +48,16 @@ test('Lambda targets create dependency on Invoke permission', () => {
     return (def.DependsOn ?? []).includes('FunInvokeServicePrincipalelasticloadbalancingamazonawscomD2CAC0C4');
   });
 });
+
+test('Lambda targets create least privilege permission', () => {
+  // WHEN
+  listener.addTargets('Targets', {
+    targets: [new targets.LambdaTarget(fn)],
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Permission', {
+    Principal: 'elasticloadbalancing.amazonaws.com',
+    SourceArn: { Ref: 'LBListenerTargetsGroup76EF81E8' },
+  });
+});
