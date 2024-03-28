@@ -624,8 +624,26 @@ Tags.fromStack(stack).hasValues({
   'tag-name': 'tag-value'
 });
 
-// or another Matcher
+// ... with Matchers embedded
 Tags.fromStack(stack).hasValues({
-  'tag-name': Match.anyValue()
+  'tag-name': Match.stringLikeRegexp('-value$')
 });
+
+// or another object Matcher at the top level
+Tags.fromStack(stack).hasValues(Match.objectEquals({
+  'tag-name': Match.anyValue()
+}));
+```
+
+When tags are not defined on the stack, it is represented as an empty object
+rather than `undefined`. To make this more obvious, there is a `hasNone()`
+method that can be used in place of `Match.exactly({})`. If `Match.absent()` is
+passed, an error will result.
+
+```ts nofixture
+// no tags present
+Tags.fromStack(stack).hasNone();
+
+// don't use absent() at the top level, it won't work
+expect(() => { Tags.fromStack(stack).hasValues(Match.absent()); }).toThrow();
 ```
