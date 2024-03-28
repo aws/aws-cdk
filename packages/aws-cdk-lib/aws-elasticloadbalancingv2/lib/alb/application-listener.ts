@@ -622,7 +622,7 @@ abstract class ExternalApplicationListener extends Resource implements IApplicat
    * At least one TargetGroup must be added without conditions.
    *
    * Warning, when creating new resources, we strongly recommend setting the
-   * ENABLE_ALBV2_ADDTARGETGROUP_CONSISTENT_LOGICALID feature flag.
+   * ENABLE_ALBV2_EXTERNALAPPLICATIONLISTENER_ADDTARGETGROUP_TO_ADDACTION_MIGRATION feature flag.
    */
   public addTargetGroups(id: string, props: AddApplicationTargetGroupsProps): void {
     checkAddRuleProps(props);
@@ -672,7 +672,7 @@ abstract class ExternalApplicationListener extends Resource implements IApplicat
    * Warning, if you are attempting to migrate an existing `ListenerAction`
    * which was declared by the {@link addTargetGroups} method, you will
    * need to enable the
-   * ENABLE_ALBV2_ADDTARGETGROUP_TO_ADDACTION_MIGRATION feature flag.
+   * ENABLE_ALBV2_EXTERNALAPPLICATIONLISTENER_ADDTARGETGROUP_CONSISTENT_LOGICALID feature flag.
    */
   public addAction(id: string, props: AddApplicationActionProps): void {
     checkAddRuleProps(props);
