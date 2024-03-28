@@ -19,17 +19,43 @@ export interface IWebSocketIntegration extends IIntegration {
  */
 export enum WebSocketIntegrationType {
   /**
-   * AWS Proxy Integration Type
+   * AWS Proxy Integration Type.
+   *
+   * For integrating the route or method request with a Lambda function or other AWS service action.
+   * This integration is also referred to as a Lambda proxy integration.
    */
   AWS_PROXY = 'AWS_PROXY',
   /**
-   * Mock Integration Type
+   * Mock Integration Type.
+   *
+   * For integrating the route or method request with API Gateway
+   * as a "loopback" endpoint without invoking any backend.
    */
   MOCK = 'MOCK',
   /**
-   * AWS Integration Type
+   * AWS Integration Type.
+   *
+   * For integrating the route or method request with an AWS service action,
+   * including the Lambda function-invoking action.
+   * With the Lambda function-invoking action,  this is referred to as the Lambda custom integration.
+   * With any other AWS service action, this is known as AWS integration.
    */
   AWS = 'AWS',
+  /**
+   * HTTP Integration Type.
+   *
+   * For integrating the route or method request with an HTTP endpoint.
+   * This integration is also referred to as the HTTP custom integration.
+   */
+  HTTP = 'HTTP',
+  /**
+   * HTTP Proxy Integration Type.
+   *
+   * For integrating the route or method request with an HTTP endpoint,
+   * with the client request passed through as-is.
+   * This is also referred to as HTTP proxy integration.
+   */
+  HTTP_PROXY = 'HTTP_PROXY',
 }
 
 /**
