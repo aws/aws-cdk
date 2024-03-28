@@ -874,6 +874,44 @@ describe('Job', () => {
           workerCount: 2,
         })).toThrow('Runtime is required for Ray jobs');
       });
+
+      test('with timeout should throw', () => {
+        expect(() => new glue.Job(stack, 'Job', {
+          executable: glue.JobExecutable.pythonRay({
+            glueVersion: glue.GlueVersion.V4_0,
+            pythonVersion: glue.PythonVersion.THREE_NINE,
+            runtime: glue.Runtime.RAY_TWO_FOUR,
+            script,
+          }),
+          workerType: glue.WorkerType.Z_2X,
+          workerCount: 2,
+          timeout: cdk.Duration.minutes(5),
+        })).toThrow('Ray jobs do not support timeout');
+      });
+
+      test('without worker type should throw', () => {
+        expect(() => new glue.Job(stack, 'Job', {
+          executable: glue.JobExecutable.pythonRay({
+            glueVersion: glue.GlueVersion.V4_0,
+            pythonVersion: glue.PythonVersion.THREE_NINE,
+            runtime: glue.Runtime.RAY_TWO_FOUR,
+            script,
+          }),
+        })).toThrow('Ray jobs must specify workerType, which may only be Z_2X');
+      });
+
+      test('with unsupported worker type should throw', () => {
+        expect(() => new glue.Job(stack, 'Job', {
+          executable: glue.JobExecutable.pythonRay({
+            glueVersion: glue.GlueVersion.V4_0,
+            pythonVersion: glue.PythonVersion.THREE_NINE,
+            runtime: glue.Runtime.RAY_TWO_FOUR,
+            script,
+          }),
+          workerType: glue.WorkerType.G_1X,
+          workerCount: 2,
+        })).toThrow('Ray jobs must specify workerType, which may only be Z_2X');
+      });
     });
 
     test('etl job with all props should synthesize correctly', () => {
