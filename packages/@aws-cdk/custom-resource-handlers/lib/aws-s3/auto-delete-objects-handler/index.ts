@@ -15,7 +15,8 @@ export async function autoDeleteHandler(event: AWSLambda.CloudFormationCustomRes
     case 'Create':
       return;
     case 'Update':
-      return onUpdate(event);
+      const response = await onUpdate(event);
+      return { PhysicalResourceId: response.PhysicalResourceId };
     case 'Delete':
       return onDelete(event.ResourceProperties?.BucketName);
   }
@@ -24,15 +25,14 @@ export async function autoDeleteHandler(event: AWSLambda.CloudFormationCustomRes
 async function onUpdate(event: AWSLambda.CloudFormationCustomResourceEvent) {
   const updateEvent = event as AWSLambda.CloudFormationCustomResourceUpdateEvent;
   const oldBucketName = updateEvent.OldResourceProperties?.BucketName;
-  const newBucketName = updateEvent.ResourceProperties?.BucketName;
-  const bucketNameHasChanged = newBucketName != null && oldBucketName != null && newBucketName !== oldBucketName;
+  const newBucketName = updateEvent.ResourceProperties?.BucketName ?? oldBucketName;
 
   /* If the name of the bucket has changed, CloudFormation will try to delete the bucket
-     and create a new one with the new name. So we have to delete the contents of the
-     bucket so that this operation does not fail. */
-  if (bucketNameHasChanged) {
-    return onDelete(oldBucketName);
-  }
+    and create a new one with the new name. Returning a PhysicalResourceId that differs
+    from the event's PhysicalResourceId will trigger a `Delete` event for the custom
+    resource. The `Delete` event will trigger `onDelete` function which will
+    empty the content of the bucket and then proceed to delete the bucket. */
+  return { PhysicalResourceId: newBucketName };
 }
 
 /**
@@ -50,8 +50,8 @@ async function denyWrites(bucketName: string) {
         Principal: '*',
         Effect: 'Deny',
         Action: ['s3:PutObject'],
-        Resource: [`arn:aws:s3:::${bucketName}/*`]
-      }
+        Resource: [`arn:aws:s3:::${bucketName}/*`],
+      },
     );
 
     await s3.putBucketPolicy({ Bucket: bucketName, Policy: JSON.stringify(policy) });
