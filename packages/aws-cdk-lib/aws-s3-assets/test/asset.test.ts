@@ -143,11 +143,18 @@ test('"readers" or "grantRead" can be used to grant read permissions on the asse
   });
 });
 
+test('fails if path is empty', () => {
+  const stack = new cdk.Stack();
+  expect(() => new Asset(stack, 'MyDirectory', {
+    path: '',
+  })).toThrow(/Asset path cannot be empty/);
+});
+
 test('fails if directory not found', () => {
   const stack = new cdk.Stack();
   expect(() => new Asset(stack, 'MyDirectory', {
     path: '/path/not/found/' + Math.random() * 999999,
-  })).toThrow();
+  })).toThrow(/Cannot find asset/);
 });
 
 test('multiple assets under the same parent', () => {

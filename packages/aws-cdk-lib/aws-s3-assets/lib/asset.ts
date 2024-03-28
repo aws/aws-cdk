@@ -137,6 +137,10 @@ export class Asset extends Construct implements cdk.IAsset {
   constructor(scope: Construct, id: string, props: AssetProps) {
     super(scope, id);
 
+    if (!props.path) {
+      throw new Error('Asset path cannot be empty');
+    }
+
     this.isBundled = props.bundling != null;
 
     // stage the asset source (conditionally).
