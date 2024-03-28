@@ -1,6 +1,6 @@
 import { Template, Match } from '../../../assertions';
 import { Stack } from '../../../core';
-import { ProviderAttribute, UserPool, UserPoolIdentityProviderSaml, UserPoolIdentityProviderSamlMetadata } from '../../lib';
+import { ProviderAttribute, SigningAlgorithm, UserPool, UserPoolIdentityProviderSaml, UserPoolIdentityProviderSamlMetadata } from '../../lib';
 
 describe('UserPoolIdentityProvider', () => {
   describe('saml', () => {
@@ -84,6 +84,78 @@ describe('UserPoolIdentityProvider', () => {
 
       // THEN
       expect(pool.identityProviders).toContain(provider);
+    });
+
+    test('encryptedResponses', () => {
+      // GIVEN
+      const stack = new Stack();
+      const pool = new UserPool(stack, 'userpool');
+
+      // WHEN
+      new UserPoolIdentityProviderSaml(stack, 'userpoolidp', {
+        userPool: pool,
+        metadata: UserPoolIdentityProviderSamlMetadata.file('my-file-contents'),
+        encryptedResponses: true,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolIdentityProvider', {
+        ProviderName: 'userpoolidp',
+        ProviderType: 'SAML',
+        ProviderDetails: {
+          MetadataFile: 'my-file-contents',
+          IDPSignout: false,
+          EncryptedResponses: true,
+        },
+      });
+    });
+
+    test('siningRequests', () => {
+      // GIVEN
+      const stack = new Stack();
+      const pool = new UserPool(stack, 'userpool');
+
+      // WHEN
+      new UserPoolIdentityProviderSaml(stack, 'userpoolidp', {
+        userPool: pool,
+        metadata: UserPoolIdentityProviderSamlMetadata.file('my-file-contents'),
+        requestSigningAlgorithm: SigningAlgorithm.RSA_SHA256,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolIdentityProvider', {
+        ProviderName: 'userpoolidp',
+        ProviderType: 'SAML',
+        ProviderDetails: {
+          MetadataFile: 'my-file-contents',
+          IDPSignout: false,
+          RequestSigningAlgorithm: 'rsa-sha256',
+        },
+      });
+    });
+
+    test('ipdInitiated', () => {
+      // GIVEN
+      const stack = new Stack();
+      const pool = new UserPool(stack, 'userpool');
+
+      // WHEN
+      new UserPoolIdentityProviderSaml(stack, 'userpoolidp', {
+        userPool: pool,
+        metadata: UserPoolIdentityProviderSamlMetadata.file('my-file-contents'),
+        idpInitiated: true,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolIdentityProvider', {
+        ProviderName: 'userpoolidp',
+        ProviderType: 'SAML',
+        ProviderDetails: {
+          MetadataFile: 'my-file-contents',
+          IDPSignout: false,
+          IDPInit: true,
+        },
+      });
     });
 
     test('attribute mapping', () => {
