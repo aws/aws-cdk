@@ -4,6 +4,13 @@ import { RemovalPolicy } from './removal-policy';
 import { Resource } from './resource';
 import { Token } from './token';
 
+// Note that CloudFormation only supports the subset of JSON where the leaf nodes are strings.
+// See https://github.com/aws/aws-cdk-rfcs/issues/375 for details.
+type StringOnlyJsonValue =
+    | string
+    | { [x: string]: StringOnlyJsonValue }
+    | Array<StringOnlyJsonValue>;
+
 /**
  * Properties to provide a Lambda-backed custom resource
  */
@@ -57,10 +64,12 @@ export interface CustomResourceProps {
 
   /**
    * Properties to pass to the Lambda
+   * Note that CloudFormation only supports the subset of JSON where the leaf
+   * nodes are strings. See https://github.com/aws/aws-cdk-rfcs/issues/375 for details.
    *
    * @default - No properties.
    */
-  readonly properties?: { [key: string]: any };
+  readonly properties?: { [key: string]: StringOnlyJsonValue };
 
   /**
    * For custom resources, you can specify AWS::CloudFormation::CustomResource
