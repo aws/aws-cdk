@@ -1,7 +1,5 @@
 import { Vpc } from 'aws-cdk-lib/aws-ec2';
 import { Cluster, ContainerImage } from 'aws-cdk-lib/aws-ecs';
-import { ApplicationProtocol } from 'aws-cdk-lib/aws-elasticloadbalancingv2';
-import * as route53 from 'aws-cdk-lib/aws-route53';
 import { App, Duration, Stack } from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 
@@ -19,15 +17,6 @@ new ApplicationLoadBalancedFargateService(stack, 'myService', {
   taskImageOptions: {
     image: ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
   },
-  protocol: ApplicationProtocol.HTTPS,
-  enableECSManagedTags: true,
-  enableExecuteCommand: true,
-  domainName: 'test.example.com',
-  domainZone: route53.HostedZone.fromHostedZoneAttributes(stack, 'HostedZone', {
-    hostedZoneId: 'fakeId',
-    zoneName: 'example.com.',
-  }),
-  redirectHTTP: true,
   idleTimeout: Duration.seconds(120),
 });
 
