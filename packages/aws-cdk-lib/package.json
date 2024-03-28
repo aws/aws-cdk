@@ -121,7 +121,7 @@
   "dependencies": {
     "@aws-cdk/asset-awscli-v1": "^2.2.202",
     "@aws-cdk/asset-kubectl-v20": "^2.1.2",
-    "@aws-cdk/asset-node-proxy-agent-v6": "^2.0.1",
+    "@aws-cdk/asset-node-proxy-agent-v6": "^2.0.2",
     "@balena/dockerignore": "^1.0.2",
     "case": "1.6.3",
     "fs-extra": "^11.2.0",
