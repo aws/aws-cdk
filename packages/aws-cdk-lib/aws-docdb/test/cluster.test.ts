@@ -3,7 +3,7 @@ import * as ec2 from '../../aws-ec2';
 import * as kms from '../../aws-kms';
 import * as logs from '../../aws-logs';
 import * as cdk from '../../core';
-import { ClusterParameterGroup, DatabaseCluster, DatabaseSecret } from '../lib';
+import { ClusterParameterGroup, DatabaseCluster, DatabaseSecret, CaCertificate } from '../lib';
 
 describe('DatabaseCluster', () => {
   test('check that instantiation works', () => {
@@ -70,6 +70,30 @@ describe('DatabaseCluster', () => {
       MasterUsername: 'admin',
       MasterUserPassword: 'tooshort',
       VpcSecurityGroupIds: [{ 'Fn::GetAtt': ['DatabaseSecurityGroup5C91FDCB', 'GroupId'] }],
+    });
+  });
+
+  test('can specify instance CA certificate', () => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new DatabaseCluster(stack, 'Database', {
+      instances: 1,
+      masterUser: {
+        username: 'admin',
+        password: cdk.SecretValue.unsafePlainText('tooshort'),
+      },
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+      caCertificate: CaCertificate.RDS_CA_RSA4096_G1,
+      vpc,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::DocDB::DBInstance', {
+      DBClusterIdentifier: { Ref: 'DatabaseB269D8BB' },
+      CACertificateIdentifier: 'rds-ca-rsa4096-g1',
     });
   });
 

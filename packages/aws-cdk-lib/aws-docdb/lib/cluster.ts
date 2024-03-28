@@ -1,4 +1,5 @@
 import { Construct } from 'constructs';
+import { CaCertificate } from './ca-certificate';
 import { DatabaseClusterAttributes, IDatabaseCluster } from './cluster-ref';
 import { DatabaseSecret } from './database-secret';
 import { CfnDBCluster, CfnDBInstance, CfnDBSubnetGroup } from './docdb.generated';
@@ -87,6 +88,17 @@ export interface DatabaseClusterProps {
    * What type of instance to start for the replicas
    */
   readonly instanceType: ec2.InstanceType;
+
+  /**
+   * The identifier of the CA certificate used for the instances.
+   *
+   * Specifying or updating this property triggers a reboot.
+   *
+   * @see https://docs.aws.amazon.com/documentdb/latest/developerguide/ca_cert_rotation.html
+   *
+   * @default - DocumentDB will choose a certificate authority
+   */
+  readonly caCertificate?: CaCertificate;
 
   /**
     * What subnets to run the DocumentDB instances in.
@@ -533,6 +545,7 @@ export class DatabaseCluster extends DatabaseClusterBase {
     }
 
     const instanceRemovalPolicy = this.getInstanceRemovalPolicy(props);
+    const caCertificateIdentifier = props.caCertificate ? props.caCertificate.toString() : undefined;
 
     for (let i = 0; i < instanceCount; i++) {
       const instanceIndex = i + 1;
@@ -547,6 +560,7 @@ export class DatabaseCluster extends DatabaseClusterBase {
         // Instance properties
         dbInstanceClass: databaseInstanceType(props.instanceType),
         enablePerformanceInsights: props.enablePerformanceInsights,
+        caCertificateIdentifier: caCertificateIdentifier,
       });
 
       instance.applyRemovalPolicy(instanceRemovalPolicy, {
