@@ -28,10 +28,10 @@ export interface EcsRunTaskProps extends sfn.TaskStateBaseProps {
   readonly taskDefinition: ecs.TaskDefinition;
 
   /**
-   * The revision number of ECS task definiton family
-   *
-   * @default - '$latest'
-   */
+  * The revision number of ECS task definition family
+  *
+  * @default - '$latest'
+  */
   readonly revisionNumber?: number;
 
   /**
@@ -81,6 +81,15 @@ export interface EcsRunTaskProps extends sfn.TaskStateBaseProps {
    * @default - No tags are propagated.
    */
   readonly propagatedTagSource?: ecs.PropagatedTagSource;
+
+  /**
+   * Whether ECS Exec should be enabled
+   *
+   * @see https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_RunTask.html#ECS-RunTask-request-enableExecuteCommand
+   *
+   * @default - false
+   */
+  readonly enableExecuteCommand?: boolean;
 }
 
 /**
@@ -304,6 +313,7 @@ export class EcsRunTask extends sfn.TaskStateBase implements ec2.IConnectable {
         Overrides: renderOverrides(this.props.containerOverrides),
         PropagateTags: this.props.propagatedTagSource,
         ...this.props.launchTarget.bind(this, { taskDefinition: this.props.taskDefinition, cluster: this.props.cluster }).parameters,
+        EnableExecuteCommand: this.props.enableExecuteCommand,
       }),
     };
   }
