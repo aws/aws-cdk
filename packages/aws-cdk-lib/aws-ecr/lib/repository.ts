@@ -317,7 +317,9 @@ export abstract class RepositoryBase extends Resource implements IRepository {
     const rule = new events.Rule(this, id, options);
     rule.addEventPattern({
       source: ['aws.ecr'],
-      resources: [this.repositoryArn],
+      detail: {
+        'repository-name': [this.repositoryName],
+      },
     });
     rule.addTarget(options.target);
     return rule;

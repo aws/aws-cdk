@@ -2,6 +2,7 @@ import * as cdk from 'aws-cdk-lib';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as ecr from 'aws-cdk-lib/aws-ecr';
 import * as iam from 'aws-cdk-lib/aws-iam';
+import * as lambda from 'aws-cdk-lib/aws-lambda';
 
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-ecr-integ-stack');
@@ -26,6 +27,18 @@ new ecr.Repository(stack, 'RepoWithEmptyOnDelete', {
 
 new cdk.CfnOutput(stack, 'RepositoryURI', {
   value: repo.repositoryUri,
+});
+
+const repoOnEvent = new ecr.Repository(stack, 'RepoOnEvent');
+const lambdaFunction = new lambda.Function(stack, 'LambdaFunction', {
+  runtime: lambda.Runtime.PYTHON_3_12,
+  code: lambda.Code.fromInline('# dummy func'),
+  handler: 'index.handler',
+});
+repoOnEvent.onEvent('OnEventTargetLambda', {
+  target: {
+    bind: () => ({ arn: lambdaFunction.functionArn, id: 'OnEventTargetLambda' }),
+  },
 });
 
 new IntegTest(app, 'cdk-ecr-integ-test-basic', {
