@@ -76,6 +76,48 @@ This is to prevent deployment failures due to cross-AZ configurations.
 
 ⚠️ When `oneZone` is enabled, `vpcSubnets` cannot be specified.
 
+### Replicating file systems
+
+You can create a replica of your EFS file system in the AWS Region of your preference.
+
+```ts
+import * as kms from 'aws-cdk-lib/aws-kms';
+
+declare const vpc: ec2.Vpc;
+declare const kmsKey: kms.Key;
+
+// auto generate a replication destination file system
+new efs.FileSystem(this, 'ReplicationSourceFileSystem1', {
+  vpc,
+  replicationConfiguration: {
+    kmsKey, // optional
+    region: 'us-east-1',
+    availabilityZone: 'us-east-1a', // optional, Specifying the AZ means creating a One Zone file system as the replication destination
+  }
+});
+
+// specify the replication destination file system
+const destinationFileSystem = new efs.FileSystem(this, 'DestinationFileSystem', {
+  vpc,
+  // set as the read-only file system for use as a replication destination
+  replicationOverwriteProtection: efs.ReplicationOverwriteProtection.DISABLED,
+});
+
+new efs.FileSystem(this, 'ReplicationSourceFileSystem2', {
+  vpc,
+  replicationConfiguration: {
+    destinationFileSystem,
+    // cannot configure other properties when destinationFileSystem is specified
+  }
+});
+```
+
+**Note**: EFS now supports only one replication destination and thus allows specifying just one `replicationConfiguration` for each file system.
+
+**Note**: You have to specify either `region` or `destinationFileSystem` when creating a replication destination file system.
+
+> Visit [Replicating file systems](https://docs.aws.amazon.com/efs/latest/ug/efs-replication.html) for more details.
+
 ### IAM to control file system data access
 
 You can use both IAM identity policies and resource policies to control client access to Amazon EFS resources in a way that is scalable and optimized for cloud environments. Using IAM, you can permit clients to perform specific actions on a file system, including read-only, write, and root access.

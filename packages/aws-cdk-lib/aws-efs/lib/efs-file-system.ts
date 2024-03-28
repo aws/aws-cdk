@@ -4,7 +4,7 @@ import { CfnFileSystem, CfnMountTarget } from './efs.generated';
 import * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
-import { ArnFormat, FeatureFlags, Lazy, RemovalPolicy, Resource, Size, Stack, Tags } from '../../core';
+import { ArnFormat, FeatureFlags, Lazy, RemovalPolicy, Resource, Size, Stack, Tags, Token } from '../../core';
 import * as cxapi from '../../cx-api';
 
 /**
@@ -324,6 +324,13 @@ export interface FileSystemProps {
    * @default ReplicationOverwriteProtection.ENABLED
    */
   readonly replicationOverwriteProtection?: ReplicationOverwriteProtection;
+
+  /**
+   * Replication configuration for the file system.
+   *
+   * @default - no replication
+   */
+  readonly replicationConfiguration?: ReplicationConfiguration;
 }
 
 /**
@@ -348,6 +355,44 @@ export interface FileSystemAttributes {
    * @default - determined based on fileSystemId
    */
   readonly fileSystemArn?: string;
+}
+
+/**
+ * Replication configuration for the file system.
+ */
+export interface ReplicationConfiguration {
+  /**
+   * The existing destination file system for the replication.
+   *
+   * You cannot configure `kmsKey`, `region` and `availabilityZone` when `destinationFileSystem` is set.
+   *
+   * @default - create a new file system for the replication destination
+   */
+  readonly destinationFileSystem?: IFileSystem;
+
+  /**
+   * AWS KMS key used to protect the encrypted file system.
+   *
+   * @default - service-managed KMS key for Amazon EFS is used
+   */
+  readonly kmsKey?: kms.IKey;
+
+  /**
+   * The AWS Region in which the destination file system is located.
+   *
+   * @default - the region of the stack
+   */
+  readonly region?: string;
+
+  /**
+   * The availability zone name of the destination file system.
+   * One zone file system is used as the destination file system when this property is set.
+   *
+   * You have to specify the `region` property for the region that the specified availability zone belongs to.
+   *
+   * @default - create regional file system for the replication destination
+   */
+  readonly availabilityZone?: string;
 }
 
 enum ClientAction {
@@ -553,6 +598,30 @@ export class FileSystem extends FileSystemBase {
     if (props.throughputMode === ThroughputMode.ELASTIC && props.performanceMode === PerformanceMode.MAX_IO) {
       throw new Error('ThroughputMode ELASTIC is not supported for file systems with performanceMode MAX_IO');
     }
+
+    if (props.replicationConfiguration) {
+      const { destinationFileSystem, region, availabilityZone, kmsKey } = props.replicationConfiguration;
+      if (props.replicationOverwriteProtection === ReplicationOverwriteProtection.DISABLED) {
+        throw new Error('Cannot configure \'replicationConfiguration\' when \'replicationOverwriteProtection\' is set to \'DISABLED\'');
+      }
+
+      if (availabilityZone && !Token.isUnresolved(availabilityZone) && !region) {
+        throw new Error('\'replicationConfiguration.availabilityZone\' cannot be specified without \'replicationConfiguration.region\'');
+      }
+
+      if (!destinationFileSystem && !region) {
+        throw new Error('\'replicationConfiguration.region\' or \'replicationConfiguration.destinationFileSystem\' is required');
+      }
+
+      if (destinationFileSystem && (region || availabilityZone || kmsKey)) {
+        throw new Error('Cannot configure \'replicationConfiguration.region\', \'replicationConfiguration.availabilityZone\' or \'replicationConfiguration.kmsKey\' when \'replicationConfiguration.destinationFileSystem\' is set');
+      }
+
+      if (region && !Token.isUnresolved(region) && !/^[a-z]{2}-((iso[a-z]{0,1}-)|(gov-)){0,1}[a-z]+-{0,1}[0-9]{0,1}$/.test(region)) {
+        throw new Error('\'replicationConfiguration.region\' is invalid.');
+      }
+    }
+
     // we explictly use 'undefined' to represent 'false' to maintain backwards compatibility since
     // its considered an actual change in CloudFormations eyes, even though they have the same meaning.
     const encrypted = props.encrypted ?? (FeatureFlags.of(this).isEnabled(
@@ -577,6 +646,19 @@ export class FileSystem extends FileSystemBase {
 
     const fileSystemProtection = props.replicationOverwriteProtection !== undefined ? {
       replicationOverwriteProtection: props.replicationOverwriteProtection,
+    } : undefined;
+
+    const replicationConfiguration = props.replicationConfiguration ? {
+      destinations: [
+        {
+          fileSystemId: props.replicationConfiguration.destinationFileSystem?.fileSystemId,
+          kmsKeyId: props.replicationConfiguration.kmsKey?.keyArn,
+          region: props.replicationConfiguration.destinationFileSystem ?
+            props.replicationConfiguration.destinationFileSystem.env.region :
+            (props.replicationConfiguration.region ?? Stack.of(this).region),
+          availabilityZoneName: props.replicationConfiguration.availabilityZone,
+        },
+      ],
     } : undefined;
 
     this._resource = new CfnFileSystem(this, 'Resource', {
@@ -611,6 +693,7 @@ export class FileSystem extends FileSystemBase {
       }),
       fileSystemProtection,
       availabilityZoneName: props.oneZone ? oneZoneAzName : undefined,
+      replicationConfiguration,
     });
     this._resource.applyRemovalPolicy(props.removalPolicy);
 
