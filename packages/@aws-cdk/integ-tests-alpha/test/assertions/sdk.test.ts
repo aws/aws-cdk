@@ -2,6 +2,7 @@ import { Template, Match } from 'aws-cdk-lib/assertions';
 import { App, CfnOutput, Duration } from 'aws-cdk-lib';
 import { LogType, InvocationType, ExpectedResult } from '../../lib/assertions';
 import { DeployAssert } from '../../lib/assertions/private/deploy-assert';
+import { RetentionDays } from 'aws-cdk-lib/aws-logs';
 
 describe('AwsApiCall', () => {
   test('default', () => {
@@ -263,6 +264,33 @@ describe('AwsApiCall', () => {
           ],
         ],
       },
+    });
+  });
+  test('waitFor with logRetention option', () => {
+    // GIVEN
+    const app = new App();
+    const deplossert = new DeployAssert(app);
+
+    // WHEN
+    deplossert.awsApiCall('MyService', 'MyApi', {
+      param1: 'val1',
+      param2: 2,
+    }).expect(ExpectedResult.objectLike({
+      Key: 'Value',
+    })).waitForAssertions({
+      logRetention: RetentionDays.ONE_WEEK,
+    });
+
+    // THEN
+    const template = Template.fromStack(deplossert.scope);
+    template.resourceCountIs('AWS::Logs::LogGroup', 2);
+    template.hasResourceProperties('AWS::Logs::LogGroup', {
+      LogGroupName: '/aws/lambda/SingletonFunction76b3e830a873425f8453eddd85c86925',
+      RetentionInDays: 7,
+    });
+    template.hasResourceProperties('AWS::Logs::LogGroup', {
+      LogGroupName: '/aws/lambda/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a',
+      RetentionInDays: 7,
     });
   });
 
