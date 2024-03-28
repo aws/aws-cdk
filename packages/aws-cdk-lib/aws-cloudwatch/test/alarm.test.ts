@@ -3,7 +3,7 @@ import { Match, Template, Annotations } from '../../assertions';
 import { Ec2Action, Ec2InstanceAction } from '../../aws-cloudwatch-actions/lib';
 import { Duration, Stack, App } from '../../core';
 import { ENABLE_PARTITION_LITERALS } from '../../cx-api';
-import { Alarm, IAlarm, IAlarmAction, Metric, MathExpression, IMetric, Stats } from '../lib';
+import { Alarm, IAlarm, IAlarmAction, Metric, MathExpression, IMetric, Stats, AnomalyDetectionAlarm, ComparisonOperator } from '../lib';
 
 const testMetric = new Metric({
   namespace: 'CDK/Test',
@@ -457,6 +457,276 @@ describe('Alarm', () => {
     expect(alarmFromName.alarmName).toEqual('TestAlarmName');
     expect(alarmFromName.alarmArn).toMatch(/:alarm:TestAlarmName$/);
   });
+});
+
+describe('AnomalyDetectionAlarm', () => {
+  test('can create an anomaly detection alarm', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    const metricId = 'm1';
+    const usingMetrics: Record<string, IMetric> = {};
+    usingMetrics[metricId] = testMetric;
+    const math = new MathExpression({
+      expression: `ANOMALY_DETECTION_BAND(${metricId}, 2)`,
+      usingMetrics,
+    });
+
+    // WHEN
+    new AnomalyDetectionAlarm(stack, 'AnomalyDetectionAlarm', {
+      metric: math,
+      threshold: 1,
+      evaluationPeriods: 3,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::Alarm', {
+      ComparisonOperator: 'LessThanLowerOrGreaterThanUpperThreshold',
+      EvaluationPeriods: 3,
+      Metrics: [
+        {
+          Expression: 'ANOMALY_DETECTION_BAND(m1, 2)',
+          Id: 'anomaly_detector_expr',
+          ReturnData: true,
+        },
+        {
+          Id: 'm1',
+          MetricStat: {
+            Metric: {
+              Namespace: 'CDK/Test',
+              MetricName: 'Metric',
+            },
+            Period: 300,
+            Stat: 'Average',
+          },
+          ReturnData: true,
+        },
+      ],
+      ThresholdMetricId: 'anomaly_detector_expr',
+    });
+  });
+
+  test('can generate an anomaly detection alarm from a metric stat', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    new AnomalyDetectionAlarm(stack, 'AnomalyDetectionAlarm', {
+      metric: testMetric,
+      generateAnomalyDetectionExpression: true,
+      threshold: 1,
+      evaluationPeriods: 3,
+      comparisonOperator: ComparisonOperator.GREATER_THAN_UPPER_THRESHOLD,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::Alarm', {
+      ComparisonOperator: 'GreaterThanUpperThreshold',
+      EvaluationPeriods: 3,
+      Metrics: [
+        {
+          Expression: 'ANOMALY_DETECTION_BAND(target_metric, 1)',
+          Id: 'anomaly_detector_expr',
+          ReturnData: true,
+        },
+        {
+          Id: 'target_metric',
+          MetricStat: {
+            Metric: {
+              Namespace: 'CDK/Test',
+              MetricName: 'Metric',
+            },
+            Period: 300,
+            Stat: 'Average',
+          },
+          ReturnData: true,
+        },
+      ],
+      ThresholdMetricId: 'anomaly_detector_expr',
+    });
+  });
+
+  test('can generate an anomaly detection alarm from a metric expression', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    const metricId = 'm2';
+    const usingMetrics: Record<string, IMetric> = {};
+    usingMetrics[metricId] = testMetric;
+    const math = new MathExpression({
+      expression: `${metricId} / 2`,
+      usingMetrics,
+    });
+
+    // WHEN
+    new AnomalyDetectionAlarm(stack, 'AnomalyDetectionAlarm', {
+      metric: math,
+      generateAnomalyDetectionExpression: true,
+      threshold: 1,
+      evaluationPeriods: 3,
+      comparisonOperator: ComparisonOperator.GREATER_THAN_UPPER_THRESHOLD,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::Alarm', {
+      ComparisonOperator: 'GreaterThanUpperThreshold',
+      EvaluationPeriods: 3,
+      Metrics: [
+        {
+          Expression: 'ANOMALY_DETECTION_BAND(target_metric, 1)',
+          Id: 'anomaly_detector_expr',
+          ReturnData: true,
+        },
+        {
+          Expression: 'm2 / 2',
+          Id: 'target_metric',
+          ReturnData: true,
+        },
+        {
+          Id: 'm2',
+          MetricStat: {
+            Metric: {
+              Namespace: 'CDK/Test',
+              MetricName: 'Metric',
+            },
+            Period: 300,
+            Stat: 'Average',
+          },
+          ReturnData: false,
+        },
+      ],
+      ThresholdMetricId: 'anomaly_detector_expr',
+    });
+  });
+
+  test('alarm does not accept comparison operator that is not for anomaly detection', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    const metricId = 'm1';
+    const usingMetrics: Record<string, IMetric> = {};
+    usingMetrics[metricId] = testMetric;
+    const math = new MathExpression({
+      expression: `ANOMALY_DETECTION_BAND(${metricId}, 2)`,
+      usingMetrics,
+    });
+
+    // WHEN
+    expect(() => {
+      new AnomalyDetectionAlarm(stack, 'Alarm', {
+        metric: math,
+        threshold: 1,
+        evaluationPeriods: 3,
+        comparisonOperator: ComparisonOperator.GREATER_THAN_THRESHOLD,
+      });
+    }).toThrow(/Cannot create an AnomalyDetectionAlarm with a comparison operator of type/);
+  });
+
+  test('alarm does not accept negative threshold', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    const metricId = 'm1';
+    const usingMetrics: Record<string, IMetric> = {};
+    usingMetrics[metricId] = testMetric;
+    const math = new MathExpression({
+      expression: `ANOMALY_DETECTION_BAND(${metricId}, 2)`,
+      usingMetrics,
+    });
+
+    // WHEN
+    expect(() => {
+      new AnomalyDetectionAlarm(stack, 'Alarm', {
+        metric: math,
+        generateAnomalyDetectionExpression: true,
+        threshold: -1,
+        evaluationPeriods: 3,
+      });
+    }).toThrow(/Cannot create an AnomalyDetectionAlarm with a negative anomaly detection threshold/);
+  });
+
+  test('alarm does not accept metric stat for anomaly detection', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    expect(() => {
+      new AnomalyDetectionAlarm(stack, 'Alarm', {
+        metric: testMetric,
+        generateAnomalyDetectionExpression: false,
+        threshold: 1,
+        evaluationPeriods: 3,
+      });
+    }).toThrow(/The Metric object for the AnomalyDetection alarm must have a 'mathExpression'/);
+  });
+
+  test('alarm does not accept expression without ANOMALY_DETECTION_BAND', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    const metricId = 'm1';
+    const usingMetrics: Record<string, IMetric> = {};
+    usingMetrics[metricId] = testMetric;
+    const math = new MathExpression({
+      expression: `${metricId}/2`,
+      usingMetrics,
+    });
+
+    // WHEN
+    expect(() => {
+      new AnomalyDetectionAlarm(stack, 'Alarm', {
+        metric: math,
+        threshold: 1,
+        evaluationPeriods: 3,
+      });
+    }).toThrow(/The Metric Object has a MathExpression with malformed or missing ANOMALY_DETECTION_BAND/);
+  });
+
+  test('alarm does not accept expression with malformed ANOMALY_DETECTION_BAND', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    const metricId = 'm1';
+    const usingMetrics: Record<string, IMetric> = {};
+    usingMetrics[metricId] = testMetric;
+    const math = new MathExpression({
+      expression: 'ANOMALY_DETECTION_BAND(, 2)',
+      usingMetrics,
+    });
+
+    // WHEN
+    expect(() => {
+      new AnomalyDetectionAlarm(stack, 'Alarm', {
+        metric: math,
+        threshold: 1,
+        evaluationPeriods: 3,
+      });
+    }).toThrow(/The Metric Object has a MathExpression with malformed or missing ANOMALY_DETECTION_BAND/);
+  });
+
+  test('alarm with generated expression does not accept expression with ANOMALY_DETECTION_BAND', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    const metricId = 'm1';
+    const usingMetrics: Record<string, IMetric> = {};
+    usingMetrics[metricId] = testMetric;
+    const math = new MathExpression({
+      expression: `ANOMALY_DETECTION_BAND(${metricId}, 2)`,
+      usingMetrics,
+    });
+
+    // WHEN
+    expect(() => {
+      new AnomalyDetectionAlarm(stack, 'Alarm', {
+        metric: math,
+        generateAnomalyDetectionExpression: true,
+        threshold: 1,
+        evaluationPeriods: 3,
+      });
+    }).toThrow(/The Metric Object has a MathExpression which contains ANOMALY_DETECTION_BAND, but it is not defined in the thresholdMetricId property/);
+  });
+
 });
 
 class TestAlarmAction implements IAlarmAction {

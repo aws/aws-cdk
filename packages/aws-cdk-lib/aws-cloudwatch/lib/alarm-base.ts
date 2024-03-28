@@ -1,5 +1,6 @@
+import { Construct } from 'constructs';
 import { IAlarmAction } from './alarm-action';
-import { IResource, Resource } from '../../core';
+import { ArnFormat, IResource, Resource, Stack } from '../../core';
 
 /**
  * Interface for Alarm Rule.
@@ -36,6 +37,39 @@ export interface IAlarm extends IAlarmRule, IResource {
  * The base class for Alarm and CompositeAlarm resources.
  */
 export abstract class AlarmBase extends Resource implements IAlarm {
+
+  /**
+   * Import an existing CloudWatch alarm provided a Name.
+   *
+   * @param scope The parent creating construct (usually `this`)
+   * @param id The construct's name
+   * @param alarmName Alarm Name
+   */
+  public static fromAlarmName(scope: Construct, id: string, alarmName: string): IAlarm {
+    const stack = Stack.of(scope);
+
+    return this.fromAlarmArn(scope, id, stack.formatArn({
+      service: 'cloudwatch',
+      resource: 'alarm',
+      resourceName: alarmName,
+      arnFormat: ArnFormat.COLON_RESOURCE_NAME,
+    }));
+  }
+
+  /**
+   * Import an existing CloudWatch alarm provided an ARN
+   *
+   * @param scope The parent creating construct (usually `this`).
+   * @param id The construct's name
+   * @param alarmArn Alarm ARN (i.e. arn:aws:cloudwatch:<region>:<account-id>:alarm:Foo)
+   */
+  public static fromAlarmArn(scope: Construct, id: string, alarmArn: string): IAlarm {
+    class Import extends AlarmBase implements IAlarm {
+      public readonly alarmArn = alarmArn;
+      public readonly alarmName = Stack.of(scope).splitArn(alarmArn, ArnFormat.COLON_RESOURCE_NAME).resourceName!;
+    }
+    return new Import(scope, id);
+  }
 
   /**
    * @attribute

@@ -826,6 +826,9 @@ export interface CreateAlarmOptions {
 
   /**
    * The value against which the specified statistic is compared.
+   *
+   * For anomaly detection alarms this represents the anomaly detection threshold.
+   * A higher number create a thicker band for the anomaly detection.
    */
   readonly threshold: number;
 

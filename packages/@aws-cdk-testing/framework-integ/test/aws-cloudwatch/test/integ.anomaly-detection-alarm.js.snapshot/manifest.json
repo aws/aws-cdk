@@ -1,28 +1,28 @@
 {
   "version": "36.0.0",
   "artifacts": {
-    "CompositeAlarmIntegrationTest.assets": {
+    "AnomalyDetectionAlarmIntegrationTest.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "CompositeAlarmIntegrationTest.assets.json",
+        "file": "AnomalyDetectionAlarmIntegrationTest.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "CompositeAlarmIntegrationTest": {
+    "AnomalyDetectionAlarmIntegrationTest": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "CompositeAlarmIntegrationTest.template.json",
+        "templateFile": "AnomalyDetectionAlarmIntegrationTest.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/9698f1c53bfe6db62f5137cea563ba310ea4c2b17ceb93118937649d4f216f11.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/364f311bb48d66d7f09a9152b15f169b64eb188ead2e5a2a195909a7bf290ca6.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "CompositeAlarmIntegrationTest.assets"
+          "AnomalyDetectionAlarmIntegrationTest.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -31,82 +31,52 @@
         }
       },
       "dependencies": [
-        "CompositeAlarmIntegrationTest.assets"
+        "AnomalyDetectionAlarmIntegrationTest.assets"
       ],
       "metadata": {
-        "/CompositeAlarmIntegrationTest/Alarm1/Resource": [
+        "/AnomalyDetectionAlarmIntegrationTest/Alarm/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "Alarm1F9009D71"
+            "data": "Alarm7103F465"
           }
         ],
-        "/CompositeAlarmIntegrationTest/Alarm2/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "Alarm2A7122E13"
-          }
-        ],
-        "/CompositeAlarmIntegrationTest/Alarm3/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "Alarm32341D8D9"
-          }
-        ],
-        "/CompositeAlarmIntegrationTest/Alarm4/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "Alarm4671832C8"
-          }
-        ],
-        "/CompositeAlarmIntegrationTest/Alarm5/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "Alarm548383B2F"
-          }
-        ],
-        "/CompositeAlarmIntegrationTest/CompositeAlarm/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CompositeAlarmF4C3D082"
-          }
-        ],
-        "/CompositeAlarmIntegrationTest/BootstrapVersion": [
+        "/AnomalyDetectionAlarmIntegrationTest/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/CompositeAlarmIntegrationTest/CheckBootstrapVersion": [
+        "/AnomalyDetectionAlarmIntegrationTest/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "CompositeAlarmIntegrationTest"
+      "displayName": "AnomalyDetectionAlarmIntegrationTest"
     },
-    "CompositeAlarmImportIntegrationTest.assets": {
+    "GeneratedAnomalyDetectionAlarmIntegrationTest.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "CompositeAlarmImportIntegrationTest.assets.json",
+        "file": "GeneratedAnomalyDetectionAlarmIntegrationTest.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "CompositeAlarmImportIntegrationTest": {
+    "GeneratedAnomalyDetectionAlarmIntegrationTest": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "CompositeAlarmImportIntegrationTest.template.json",
+        "templateFile": "GeneratedAnomalyDetectionAlarmIntegrationTest.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a29bbb21cb63cde6a2d31ed4212e73dab8bfd786cf26aab0156b74490595c0a6.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/46ebd00dc077e3cf4c16efa958e2d61eefe5ec077909bade8edd4736eaf00572.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "CompositeAlarmImportIntegrationTest.assets"
+          "GeneratedAnomalyDetectionAlarmIntegrationTest.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -115,49 +85,43 @@
         }
       },
       "dependencies": [
-        "CompositeAlarmImportIntegrationTest.assets"
+        "GeneratedAnomalyDetectionAlarmIntegrationTest.assets"
       ],
       "metadata": {
-        "/CompositeAlarmImportIntegrationTest/AlarmName": [
+        "/GeneratedAnomalyDetectionAlarmIntegrationTest/Alarm/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AlarmName"
+            "data": "Alarm7103F465"
           }
         ],
-        "/CompositeAlarmImportIntegrationTest/AlarmArn": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AlarmArn"
-          }
-        ],
-        "/CompositeAlarmImportIntegrationTest/BootstrapVersion": [
+        "/GeneratedAnomalyDetectionAlarmIntegrationTest/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/CompositeAlarmImportIntegrationTest/CheckBootstrapVersion": [
+        "/GeneratedAnomalyDetectionAlarmIntegrationTest/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "CompositeAlarmImportIntegrationTest"
+      "displayName": "GeneratedAnomalyDetectionAlarmIntegrationTest"
     },
-    "cdkintegcompositealarmDefaultTestDeployAssertF4EF969E.assets": {
+    "cdkcloudwatchanomalydetectionalarmintegtestDefaultTestDeployAssertBBE7E163.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "cdkintegcompositealarmDefaultTestDeployAssertF4EF969E.assets.json",
+        "file": "cdkcloudwatchanomalydetectionalarmintegtestDefaultTestDeployAssertBBE7E163.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "cdkintegcompositealarmDefaultTestDeployAssertF4EF969E": {
+    "cdkcloudwatchanomalydetectionalarmintegtestDefaultTestDeployAssertBBE7E163": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "cdkintegcompositealarmDefaultTestDeployAssertF4EF969E.template.json",
+        "templateFile": "cdkcloudwatchanomalydetectionalarmintegtestDefaultTestDeployAssertBBE7E163.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
@@ -166,7 +130,7 @@
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "cdkintegcompositealarmDefaultTestDeployAssertF4EF969E.assets"
+          "cdkcloudwatchanomalydetectionalarmintegtestDefaultTestDeployAssertBBE7E163.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -175,23 +139,23 @@
         }
       },
       "dependencies": [
-        "cdkintegcompositealarmDefaultTestDeployAssertF4EF969E.assets"
+        "cdkcloudwatchanomalydetectionalarmintegtestDefaultTestDeployAssertBBE7E163.assets"
       ],
       "metadata": {
-        "/cdk-integ-composite-alarm/DefaultTest/DeployAssert/BootstrapVersion": [
+        "/cdk-cloudwatch-anomaly-detection-alarm-integ-test/DefaultTest/DeployAssert/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/cdk-integ-composite-alarm/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+        "/cdk-cloudwatch-anomaly-detection-alarm-integ-test/DefaultTest/DeployAssert/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "cdk-integ-composite-alarm/DefaultTest/DeployAssert"
+      "displayName": "cdk-cloudwatch-anomaly-detection-alarm-integ-test/DefaultTest/DeployAssert"
     },
     "Tree": {
       "type": "cdk:tree",
