@@ -29,6 +29,34 @@ describe('Tags', () => {
       });
     });
 
+    describe('given multiple tags', () => {
+      const stack = new Stack(app, 'stack', {
+        tags: {
+          'tag-one': 'tag-one-value',
+          'tag-two': 'tag-2-value',
+          'tag-three': 'tag-3-value',
+          'tag-four': 'tag-4-value',
+        },
+      });
+      const tags = Tags.fromStack(stack);
+
+      test('partial match succeeds', ()=>{
+        tags.hasValues({
+          'tag-one': Match.anyValue(),
+        });
+      });
+
+      test('complex match succeeds', ()=>{
+        tags.hasValues(Match.objectEquals({
+          'tag-one': Match.anyValue(),
+          'non-existent': Match.absent(),
+          'tag-three': Match.stringLikeRegexp('-3-'),
+          'tag-two': 'tag-2-value',
+          'tag-four': Match.anyValue(),
+        }));
+      });
+    });
+
     test('no tags with absent matcher will fail', () => {
       const stack = new Stack(app, 'stack');
       const tags = Tags.fromStack(stack);
