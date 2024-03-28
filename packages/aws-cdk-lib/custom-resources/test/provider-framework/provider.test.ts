@@ -21,12 +21,12 @@ test('security groups are applied to all framework functions', () => {
     onEventHandler: new lambda.Function(stack, 'OnEvent', {
       code: lambda.Code.fromInline('foo'),
       handler: 'index.onEvent',
-      runtime: lambda.Runtime.NODEJS_LATEST,
+      runtime: lambda.Runtime.NODEJS_20_X,
     }),
     isCompleteHandler: new lambda.Function(stack, 'IsComplete', {
       code: lambda.Code.fromInline('foo'),
       handler: 'index.isComplete',
-      runtime: lambda.Runtime.NODEJS_LATEST,
+      runtime: lambda.Runtime.NODEJS_20_X,
     }),
     vpc: vpc,
     vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS },
@@ -89,12 +89,12 @@ test('vpc is applied to all framework functions', () => {
     onEventHandler: new lambda.Function(stack, 'OnEvent', {
       code: lambda.Code.fromInline('foo'),
       handler: 'index.onEvent',
-      runtime: lambda.Runtime.NODEJS_LATEST,
+      runtime: lambda.Runtime.NODEJS_20_X,
     }),
     isCompleteHandler: new lambda.Function(stack, 'IsComplete', {
       code: lambda.Code.fromInline('foo'),
       handler: 'index.isComplete',
-      runtime: lambda.Runtime.NODEJS_LATEST,
+      runtime: lambda.Runtime.NODEJS_20_X,
     }),
     vpc: vpc,
     vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS },
@@ -141,7 +141,7 @@ test('minimal setup', () => {
     onEventHandler: new lambda.Function(stack, 'MyHandler', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.onEvent',
-      runtime: lambda.Runtime.NODEJS_LATEST,
+      runtime: lambda.Runtime.NODEJS_20_X,
     }),
   });
 
@@ -173,7 +173,7 @@ test('if isComplete is specified, the isComplete framework handler is also inclu
   const handler = new lambda.Function(stack, 'MyHandler', {
     code: new lambda.InlineCode('foo'),
     handler: 'index.onEvent',
-    runtime: lambda.Runtime.NODEJS_LATEST,
+    runtime: lambda.Runtime.NODEJS_20_X,
   });
 
   // WHEN
@@ -247,7 +247,7 @@ test('fails if "queryInterval" and/or "totalTimeout" are set without "isComplete
   const handler = new lambda.Function(stack, 'MyHandler', {
     code: new lambda.InlineCode('foo'),
     handler: 'index.onEvent',
-    runtime: lambda.Runtime.NODEJS_LATEST,
+    runtime: lambda.Runtime.NODEJS_20_X,
   });
 
   // THEN
@@ -303,7 +303,7 @@ describe('log retention', () => {
       onEventHandler: new lambda.Function(stack, 'MyHandler', {
         code: new lambda.InlineCode('foo'),
         handler: 'index.onEvent',
-        runtime: lambda.Runtime.NODEJS_LATEST,
+        runtime: lambda.Runtime.NODEJS_20_X,
       }),
       logRetention: logs.RetentionDays.ONE_WEEK,
     });

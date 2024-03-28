@@ -40,19 +40,19 @@
      },
      "S3Key": "2149a129ab87c93e19bbdbfc0f861cefeee8f1fe360b256c7f66b9bc521c11e3.zip"
     },
-    "Role": {
-     "Fn::GetAtt": [
-      "mtsentryServiceRole1174D60B",
-      "Arn"
-     ]
-    },
     "Environment": {
      "Variables": {
       "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1"
      }
     },
     "Handler": "index.handler",
-    "Runtime": "nodejs18.x"
+    "Role": {
+     "Fn::GetAtt": [
+      "mtsentryServiceRole1174D60B",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs20.x"
    },
    "DependsOn": [
     "mtsentryServiceRole1174D60B"

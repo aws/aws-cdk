@@ -1,20 +1,20 @@
 {
-  "version": "34.0.0",
+  "version": "36.0.0",
   "files": {
-    "0fc0f23d90182f641a75eed45976b37c0aaf20f7f5ddbe6c24e4505a9a077188": {
+    "208a3e45b62e58c4fe45c815073f1c93f25220d899c46824c26e32b7feab97a0": {
       "source": {
-        "path": "asset.0fc0f23d90182f641a75eed45976b37c0aaf20f7f5ddbe6c24e4505a9a077188",
+        "path": "asset.208a3e45b62e58c4fe45c815073f1c93f25220d899c46824c26e32b7feab97a0",
         "packaging": "zip"
       },
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "0fc0f23d90182f641a75eed45976b37c0aaf20f7f5ddbe6c24e4505a9a077188.zip",
+          "objectKey": "208a3e45b62e58c4fe45c815073f1c93f25220d899c46824c26e32b7feab97a0.zip",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
     },
-    "1f06dc6e09668368178d31ff51c0ee92db159a86131b0b61c4376d10e0d47120": {
+    "bf7e1fa4779e0a48619a72cb62b61a6ce5040837d5535f879ead7e25251d80a5": {
       "source": {
         "path": "cdk-ec2-client-vpn-endpoint.template.json",
         "packaging": "file"
@@ -22,7 +22,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "1f06dc6e09668368178d31ff51c0ee92db159a86131b0b61c4376d10e0d47120.json",
+          "objectKey": "bf7e1fa4779e0a48619a72cb62b61a6ce5040837d5535f879ead7e25251d80a5.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

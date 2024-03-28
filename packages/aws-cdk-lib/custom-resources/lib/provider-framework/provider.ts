@@ -232,7 +232,7 @@ export class Provider extends Construct implements ICustomResourceProvider {
         exclude: ['*.ts'],
       }),
       description: `AWS CDK resource provider framework - ${entrypoint} (${this.node.path})`.slice(0, 256),
-      runtime: lambda.Runtime.NODEJS_18_X,
+      runtime: lambda.Runtime.NODEJS_20_X,
       handler: `framework.${entrypoint}`,
       timeout: FRAMEWORK_HANDLER_TIMEOUT,
       // props.logRetention is deprecated, make sure we only set it if it is actually provided

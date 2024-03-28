@@ -11,8 +11,8 @@ import { PackageInstallation } from '../lib/package-installation';
 import { Charset, LogLevel, OutputFormat, SourceMapMode } from '../lib/types';
 import * as util from '../lib/util';
 
-const STANDARD_RUNTIME = Runtime.NODEJS_18_X;
-const STANDARD_TARGET = 'node18';
+const STANDARD_RUNTIME = Runtime.NODEJS_20_X;
+const STANDARD_TARGET = 'node20';
 const STANDARD_EXTERNAL = '@aws-sdk/*';
 
 let detectPackageInstallationMock: jest.SpyInstance<PackageInstallation | undefined>;
@@ -313,12 +313,12 @@ test('esbuild bundling source map default', () => {
   });
 });
 
-test('esbuild bundling without aws-sdk v3 when use greater than or equal Runtime.NODEJS_18_X', () => {
+test('esbuild bundling without aws-sdk v3 when use greater than or equal Runtime.NODEJS_20_X', () => {
   Bundling.bundle(stack, {
     entry,
     projectRoot,
     depsLockFilePath,
-    runtime: Runtime.NODEJS_18_X,
+    runtime: Runtime.NODEJS_20_X,
     architecture: Architecture.X86_64,
   });
 
@@ -339,7 +339,7 @@ test('esbuild bundling includes aws-sdk', () => {
     entry,
     projectRoot,
     depsLockFilePath,
-    runtime: Runtime.NODEJS_18_X,
+    runtime: Runtime.NODEJS_20_X,
     architecture: Architecture.X86_64,
     bundleAwsSDK: true,
   });

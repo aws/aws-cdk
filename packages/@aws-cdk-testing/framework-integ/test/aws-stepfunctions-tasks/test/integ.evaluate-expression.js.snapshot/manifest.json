@@ -1,5 +1,5 @@
 {
-  "version": "34.0.0",
+  "version": "36.0.0",
   "artifacts": {
     "cdk-sfn-evaluate-expression-integ.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/3defd0dcacbdfd76991b677ef909cf98e4904ceef0cdb515bcfcd240bab96d3d.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/9048a9451ed951d20f1ce4d6d810021cbbf2752cd45dd769ed44440df89b5ba2.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -34,16 +34,16 @@
         "cdk-sfn-evaluate-expression-integ.assets"
       ],
       "metadata": {
-        "/cdk-sfn-evaluate-expression-integ/Eval41256dc5445742738ed917bc818694e5/ServiceRole/Resource": [
+        "/cdk-sfn-evaluate-expression-integ/Eval1891dd320f444328a022efc92ea36f14/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "Eval41256dc5445742738ed917bc818694e5ServiceRoleA1AB6027"
+            "data": "Eval1891dd320f444328a022efc92ea36f14ServiceRoleA4233FBF"
           }
         ],
-        "/cdk-sfn-evaluate-expression-integ/Eval41256dc5445742738ed917bc818694e5/Resource": [
+        "/cdk-sfn-evaluate-expression-integ/Eval1891dd320f444328a022efc92ea36f14/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "Eval41256dc5445742738ed917bc818694e54EB1134F"
+            "data": "Eval1891dd320f444328a022efc92ea36f144D1753AD"
           }
         ],
         "/cdk-sfn-evaluate-expression-integ/Eval078d40d3fb4e4d5394a79c46fc11fe02/ServiceRole/Resource": [
@@ -92,6 +92,24 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
+          }
+        ],
+        "Eval41256dc5445742738ed917bc818694e5ServiceRoleA1AB6027": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Eval41256dc5445742738ed917bc818694e5ServiceRoleA1AB6027",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "Eval41256dc5445742738ed917bc818694e54EB1134F": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Eval41256dc5445742738ed917bc818694e54EB1134F",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },

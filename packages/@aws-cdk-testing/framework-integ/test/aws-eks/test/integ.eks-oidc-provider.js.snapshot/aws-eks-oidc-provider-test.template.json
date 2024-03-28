@@ -24,7 +24,7 @@
       ]
      ]
     },
-    "CodeHash": "03d2c2b0648898186dc5342981e426a3ac3bd09a96ce66df58a875bde29e4a56"
+    "CodeHash": "d366404a4ce081ae11ff6b9205567ba734c94125a75aabf82e3f30bf321a2897"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -79,7 +79,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "03d2c2b0648898186dc5342981e426a3ac3bd09a96ce66df58a875bde29e4a56.zip"
+     "S3Key": "d366404a4ce081ae11ff6b9205567ba734c94125a75aabf82e3f30bf321a2897.zip"
     },
     "Timeout": 900,
     "MemorySize": 128,
@@ -90,7 +90,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs18.x"
+    "Runtime": "nodejs20.x"
    },
    "DependsOn": [
     "CustomAWSCDKOpenIdConnectProviderCustomResourceProviderRole517FED65"

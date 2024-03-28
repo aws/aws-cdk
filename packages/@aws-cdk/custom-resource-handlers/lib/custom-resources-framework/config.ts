@@ -6,7 +6,7 @@ import * as path from 'path';
  */
 export enum Runtime {
   /**
-   * The NodeJs 18.x runtime
+   * The NodeJs 20.x runtime
    */
   NODEJS_20_X = 'nodejs20.x',
   /**

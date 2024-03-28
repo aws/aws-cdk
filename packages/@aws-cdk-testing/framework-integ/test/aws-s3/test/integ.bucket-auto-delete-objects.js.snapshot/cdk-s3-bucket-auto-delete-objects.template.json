@@ -124,7 +124,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs18.x",
+    "Runtime": "nodejs20.x",
     "Description": {
      "Fn::Join": [
       "",
@@ -210,7 +210,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs18.x"
+    "Runtime": "nodejs20.x"
    },
    "DependsOn": [
     "CustomS3PutObjectsCustomResourceProviderRole40D98C91"
@@ -425,7 +425,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs18.x",
+    "Runtime": "nodejs20.x",
     "Timeout": 120
    },
    "DependsOn": [

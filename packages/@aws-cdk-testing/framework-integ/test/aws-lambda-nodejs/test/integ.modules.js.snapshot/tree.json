@@ -107,19 +107,19 @@
                       },
                       "s3Key": "2149a129ab87c93e19bbdbfc0f861cefeee8f1fe360b256c7f66b9bc521c11e3.zip"
                     },
-                    "role": {
-                      "Fn::GetAtt": [
-                        "mtsentryServiceRole1174D60B",
-                        "Arn"
-                      ]
-                    },
                     "environment": {
                       "variables": {
                         "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1"
                       }
                     },
                     "handler": "index.handler",
-                    "runtime": "nodejs18.x"
+                    "role": {
+                      "Fn::GetAtt": [
+                        "mtsentryServiceRole1174D60B",
+                        "Arn"
+                      ]
+                    },
+                    "runtime": "nodejs20.x"
                   }
                 },
                 "constructInfo": {
@@ -148,7 +148,7 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.2.55"
+              "version": "10.3.0"
             }
           },
           "BootstrapVersion": {
@@ -276,19 +276,19 @@
                       },
                       "s3Key": "3df927e5941c39836eafe07496dc13c1c6935e59b0490249af5b05a1becfb7ab.zip"
                     },
-                    "role": {
-                      "Fn::GetAtt": [
-                        "ctsentryServiceRole93F225D5",
-                        "Arn"
-                      ]
-                    },
                     "environment": {
                       "variables": {
                         "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1"
                       }
                     },
                     "handler": "index.handler",
-                    "runtime": "nodejs18.x"
+                    "role": {
+                      "Fn::GetAtt": [
+                        "ctsentryServiceRole93F225D5",
+                        "Arn"
+                      ]
+                    },
+                    "runtime": "nodejs20.x"
                   }
                 },
                 "constructInfo": {
@@ -317,7 +317,7 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.2.55"
+              "version": "10.3.0"
             }
           },
           "BootstrapVersion": {
@@ -445,19 +445,19 @@
                       },
                       "s3Key": "28de77e42ea798836445f0dd73c84320861bfe911d58e603bee8767c2d6e9e8a.zip"
                     },
-                    "role": {
-                      "Fn::GetAtt": [
-                        "cjsentryServiceRole2A625525",
-                        "Arn"
-                      ]
-                    },
                     "environment": {
                       "variables": {
                         "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1"
                       }
                     },
                     "handler": "index.handler",
-                    "runtime": "nodejs18.x"
+                    "role": {
+                      "Fn::GetAtt": [
+                        "cjsentryServiceRole2A625525",
+                        "Arn"
+                      ]
+                    },
+                    "runtime": "nodejs20.x"
                   }
                 },
                 "constructInfo": {
@@ -486,7 +486,7 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.2.55"
+              "version": "10.3.0"
             }
           },
           "BootstrapVersion": {
@@ -524,7 +524,7 @@
                 "path": "LambdaModules/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.55"
+                  "version": "10.3.0"
                 }
               },
               "DeployAssert": {
@@ -544,7 +544,7 @@
                             "path": "LambdaModules/DefaultTest/DeployAssert/LambdaInvokeab00724fde60c789ed33b78cb44044f9/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.2.55"
+                              "version": "10.3.0"
                             }
                           }
                         },
@@ -624,7 +624,7 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.2.55"
+                      "version": "10.3.0"
                     }
                   },
                   "LambdaInvoke3d6d691a590234a399aac26bf978ebd1": {
@@ -640,7 +640,7 @@
                             "path": "LambdaModules/DefaultTest/DeployAssert/LambdaInvoke3d6d691a590234a399aac26bf978ebd1/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.2.55"
+                              "version": "10.3.0"
                             }
                           }
                         },
@@ -702,7 +702,7 @@
                             "path": "LambdaModules/DefaultTest/DeployAssert/LambdaInvoke1f8a896da0f461988a245593326b79ed/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.2.55"
+                              "version": "10.3.0"
                             }
                           }
                         },
@@ -790,7 +790,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.2.55"
+          "version": "10.3.0"
         }
       }
     },

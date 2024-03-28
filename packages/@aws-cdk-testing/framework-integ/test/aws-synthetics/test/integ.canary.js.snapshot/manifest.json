@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a084e2781e9799cdbf79f61a1e48791de68f996748cbf9a82d4df5ebe1259373.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/b47c1b4af32f466c7ee93aa1047fd7c1aafd79f0ab1fffa6f395d054bf83e3e4.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -429,51 +429,6 @@
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
-        ],
-        "SynNodejsPuppeteer39ArtifactsBucketC3BBB932": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "SynNodejsPuppeteer39ArtifactsBucketC3BBB932",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "SynNodejsPuppeteer39ArtifactsBucketPolicy502FE6AD": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "SynNodejsPuppeteer39ArtifactsBucketPolicy502FE6AD",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "SynNodejsPuppeteer39ServiceRole946A595A": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "SynNodejsPuppeteer39ServiceRole946A595A",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "SynNodejsPuppeteer3978815E0A": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "SynNodejsPuppeteer3978815E0A",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "SynNodejsPuppeteer39AutoDeleteUnderlyingResourcesCustomResourceB6D0DB57": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "SynNodejsPuppeteer39AutoDeleteUnderlyingResourcesCustomResourceB6D0DB57",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
         ]
       },
       "displayName": "canary-one"
@@ -495,7 +450,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/5222f77a218b1c67430bb8086fc0c058075ebfaf5eadf0c2c4ce5a54a1fadf5a.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/df921140ab17fc4aed0f38a14d643f498c38394db6610e85d2f2e2edc8b08641.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [

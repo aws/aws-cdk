@@ -19,7 +19,7 @@ export interface EvaluateExpressionProps extends sfn.TaskStateBaseProps {
   /**
    * The runtime language to use to evaluate the expression.
    *
-   * @default lambda.Runtime.NODEJS_18_X
+   * @default lambda.Runtime.NODEJS_20_X
    */
   readonly runtime?: lambda.Runtime;
 }
@@ -101,6 +101,7 @@ function createEvalFn(runtime: lambda.Runtime | undefined, scope: Construct) {
   const lambdaPurpose = 'Eval';
 
   const nodeJsGuids = {
+    [lambda.Runtime.NODEJS_20_X.name]: '078d40d3-fb4e-4d53-94a7-9c46fc11fe02',
     [lambda.Runtime.NODEJS_18_X.name]: '078d40d3-fb4e-4d53-94a7-9c46fc11fe02',
     [lambda.Runtime.NODEJS_16_X.name]: '2a430b68-eb4b-4026-9232-ee39b71c1db8',
     [lambda.Runtime.NODEJS_14_X.name]: 'da2d1181-604e-4a45-8694-1a6abd7fe42d',
@@ -108,7 +109,7 @@ function createEvalFn(runtime: lambda.Runtime | undefined, scope: Construct) {
     [lambda.Runtime.NODEJS_10_X.name]: 'a0d2ce44-871b-4e74-87a1-f5e63d7c3bdc',
 
     // UUID used when falling back to the default node runtime, which is a token and might be different per region
-    [NO_RUNTIME]: '41256dc5-4457-4273-8ed9-17bc818694e5',
+    [NO_RUNTIME]: '1891dd32-0f44-4328-a022-efc92ea36f14',
   };
 
   const uuid = nodeJsGuids[runtime?.name ?? NO_RUNTIME];

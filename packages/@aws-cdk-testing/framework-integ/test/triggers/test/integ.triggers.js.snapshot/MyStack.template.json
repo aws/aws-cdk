@@ -249,7 +249,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs18.x"
+    "Runtime": "nodejs20.x"
    },
    "DependsOn": [
     "AWSCDKTriggerCustomResourceProviderCustomResourceProviderRoleE18FAF0A"

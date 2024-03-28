@@ -617,7 +617,7 @@
                       "s3Bucket": {
                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "s3Key": "96d0b6be9a64ae309bf89a86f5515453f0fa1d07b4f6b37198051cc98e251f34.zip"
+                      "s3Key": "19044c50ec489a0413f51a8e60d6272e5746e9b5a0356ed15c12de97c3ca93ec.zip"
                     },
                     "handler": "index.handler",
                     "role": {
@@ -626,7 +626,7 @@
                         "Arn"
                       ]
                     },
-                    "runtime": "nodejs18.x"
+                    "runtime": "nodejs20.x"
                   }
                 },
                 "constructInfo": {
@@ -691,7 +691,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.2.70"
+          "version": "10.3.0"
         }
       }
     },

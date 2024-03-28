@@ -1,5 +1,5 @@
 {
-  "version": "35.0.0",
+  "version": "36.0.0",
   "files": {
     "e13e6995609aa8454729e5485c2f4e44385b644253c73c5872c27fce2403603e": {
       "source": {
@@ -14,7 +14,7 @@
         }
       }
     },
-    "6424a232f77da7626ad5fa225f6bcacbf4eca1adb70526c8690589740fb8b445": {
+    "8026f2ab7aef9acf5606d79d54b10f25a57fabb1e059a5151f8eadeeee7de65d": {
       "source": {
         "path": "aws-cdk-codepipeline-codecommit-custom-event.template.json",
         "packaging": "file"
@@ -22,7 +22,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "6424a232f77da7626ad5fa225f6bcacbf4eca1adb70526c8690589740fb8b445.json",
+          "objectKey": "8026f2ab7aef9acf5606d79d54b10f25a57fabb1e059a5151f8eadeeee7de65d.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

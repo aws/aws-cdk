@@ -26,17 +26,17 @@
               "version": "0.0.0"
             }
           },
-          "Eval41256dc5445742738ed917bc818694e5": {
-            "id": "Eval41256dc5445742738ed917bc818694e5",
-            "path": "cdk-sfn-evaluate-expression-integ/Eval41256dc5445742738ed917bc818694e5",
+          "Eval1891dd320f444328a022efc92ea36f14": {
+            "id": "Eval1891dd320f444328a022efc92ea36f14",
+            "path": "cdk-sfn-evaluate-expression-integ/Eval1891dd320f444328a022efc92ea36f14",
             "children": {
               "ServiceRole": {
                 "id": "ServiceRole",
-                "path": "cdk-sfn-evaluate-expression-integ/Eval41256dc5445742738ed917bc818694e5/ServiceRole",
+                "path": "cdk-sfn-evaluate-expression-integ/Eval1891dd320f444328a022efc92ea36f14/ServiceRole",
                 "children": {
                   "ImportServiceRole": {
                     "id": "ImportServiceRole",
-                    "path": "cdk-sfn-evaluate-expression-integ/Eval41256dc5445742738ed917bc818694e5/ServiceRole/ImportServiceRole",
+                    "path": "cdk-sfn-evaluate-expression-integ/Eval1891dd320f444328a022efc92ea36f14/ServiceRole/ImportServiceRole",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
@@ -44,7 +44,7 @@
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "cdk-sfn-evaluate-expression-integ/Eval41256dc5445742738ed917bc818694e5/ServiceRole/Resource",
+                    "path": "cdk-sfn-evaluate-expression-integ/Eval1891dd320f444328a022efc92ea36f14/ServiceRole/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                       "aws:cdk:cloudformation:props": {
@@ -89,11 +89,11 @@
               },
               "Code": {
                 "id": "Code",
-                "path": "cdk-sfn-evaluate-expression-integ/Eval41256dc5445742738ed917bc818694e5/Code",
+                "path": "cdk-sfn-evaluate-expression-integ/Eval1891dd320f444328a022efc92ea36f14/Code",
                 "children": {
                   "Stage": {
                     "id": "Stage",
-                    "path": "cdk-sfn-evaluate-expression-integ/Eval41256dc5445742738ed917bc818694e5/Code/Stage",
+                    "path": "cdk-sfn-evaluate-expression-integ/Eval1891dd320f444328a022efc92ea36f14/Code/Stage",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.AssetStaging",
                       "version": "0.0.0"
@@ -101,7 +101,7 @@
                   },
                   "AssetBucket": {
                     "id": "AssetBucket",
-                    "path": "cdk-sfn-evaluate-expression-integ/Eval41256dc5445742738ed917bc818694e5/Code/AssetBucket",
+                    "path": "cdk-sfn-evaluate-expression-integ/Eval1891dd320f444328a022efc92ea36f14/Code/AssetBucket",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_s3.BucketBase",
                       "version": "0.0.0"
@@ -115,7 +115,7 @@
               },
               "Resource": {
                 "id": "Resource",
-                "path": "cdk-sfn-evaluate-expression-integ/Eval41256dc5445742738ed917bc818694e5/Resource",
+                "path": "cdk-sfn-evaluate-expression-integ/Eval1891dd320f444328a022efc92ea36f14/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
                   "aws:cdk:cloudformation:props": {
@@ -128,11 +128,11 @@
                     "handler": "index.handler",
                     "role": {
                       "Fn::GetAtt": [
-                        "Eval41256dc5445742738ed917bc818694e5ServiceRoleA1AB6027",
+                        "Eval1891dd320f444328a022efc92ea36f14ServiceRoleA4233FBF",
                         "Arn"
                       ]
                     },
-                    "runtime": "nodejs18.x"
+                    "runtime": "nodejs20.x"
                   }
                 },
                 "constructInfo": {
@@ -270,7 +270,7 @@
                         "Arn"
                       ]
                     },
-                    "runtime": "nodejs18.x"
+                    "runtime": "nodejs20.x"
                   }
                 },
                 "constructInfo": {
@@ -375,7 +375,7 @@
                                     },
                                     {
                                       "Fn::GetAtt": [
-                                        "Eval41256dc5445742738ed917bc818694e54EB1134F",
+                                        "Eval1891dd320f444328a022efc92ea36f144D1753AD",
                                         "Arn"
                                       ]
                                     },
@@ -399,7 +399,7 @@
                                         [
                                           {
                                             "Fn::GetAtt": [
-                                              "Eval41256dc5445742738ed917bc818694e54EB1134F",
+                                              "Eval1891dd320f444328a022efc92ea36f144D1753AD",
                                               "Arn"
                                             ]
                                           },
@@ -450,7 +450,7 @@
                           "{\"StartAt\":\"Sum\",\"States\":{\"Sum\":{\"Next\":\"Multiply\",\"Type\":\"Task\",\"ResultPath\":\"$.c\",\"Resource\":\"",
                           {
                             "Fn::GetAtt": [
-                              "Eval41256dc5445742738ed917bc818694e54EB1134F",
+                              "Eval1891dd320f444328a022efc92ea36f144D1753AD",
                               "Arn"
                             ]
                           },
@@ -534,7 +534,7 @@
                 "path": "EvaluateExpressionInteg/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.70"
+                  "version": "10.3.0"
                 }
               },
               "DeployAssert": {
@@ -580,7 +580,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.2.70"
+          "version": "10.3.0"
         }
       }
     },

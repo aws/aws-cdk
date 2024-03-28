@@ -49,7 +49,7 @@
      "Payload.data.addTest.id",
      "Payload.data.addTest.id"
     ],
-    "salt": "1693924790471"
+    "salt": "1711663892363"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -158,7 +158,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "c7f4a8ca56d10961cf5e40d181faddf14f2ea8b39c5d65c7b61a366b17c7a2ce.zip"
+     "S3Key": "980ab41b674bbe2a714081b8b83c3b7bc45c4f8bb52a347bc93fc308857eadec.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
@@ -226,7 +226,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1693924790503"
+    "salt": "1711663892364"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"

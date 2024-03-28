@@ -1043,7 +1043,7 @@
    "Type": "AWS::Lambda::Function",
    "Properties": {
     "Handler": "index.handler",
-    "Runtime": "nodejs18.x",
+    "Runtime": "nodejs20.x",
     "Timeout": 900,
     "Code": {
      "S3Bucket": {

@@ -26,7 +26,7 @@ test('Eval with Node.js', () => {
         [
           '{"StartAt":"Task","States":{"Task":{"End":true,"Type":"Task","Resource":"',
           {
-            'Fn::GetAtt': ['Eval41256dc5445742738ed917bc818694e54EB1134F', 'Arn'],
+            'Fn::GetAtt': ['Eval1891dd320f444328a022efc92ea36f144D1753AD', 'Arn'],
           },
           '","Parameters":{"expression":"$.a + $.b","expressionAttributeValues":{"$.a.$":"$.a","$.b.$":"$.b"}}}}}',
         ],
@@ -35,7 +35,7 @@ test('Eval with Node.js', () => {
   });
 
   Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
-    Runtime: 'nodejs18.x',
+    Runtime: 'nodejs20.x',
   });
 });
 
@@ -55,7 +55,7 @@ test('expression does not contain paths', () => {
         [
           '{"StartAt":"Task","States":{"Task":{"End":true,"Type":"Task","Resource":"',
           {
-            'Fn::GetAtt': ['Eval41256dc5445742738ed917bc818694e54EB1134F', 'Arn'],
+            'Fn::GetAtt': ['Eval1891dd320f444328a022efc92ea36f144D1753AD', 'Arn'],
           },
           '","Parameters":{"expression":"2 + 2","expressionAttributeValues":{}}}}}',
         ],
@@ -80,7 +80,7 @@ test('with dash and underscore in path', () => {
         [
           '{"StartAt":"Task","States":{"Task":{"End":true,"Type":"Task","Resource":"',
           {
-            'Fn::GetAtt': ['Eval41256dc5445742738ed917bc818694e54EB1134F', 'Arn'],
+            'Fn::GetAtt': ['Eval1891dd320f444328a022efc92ea36f144D1753AD', 'Arn'],
           },
           '","Parameters":{"expression":"$.a_b + $.c-d + $[_e]","expressionAttributeValues":{"$.a_b.$":"$.a_b","$.c-d.$":"$.c-d","$[_e].$":"$[_e]"}}}}}',
         ],
@@ -89,17 +89,17 @@ test('with dash and underscore in path', () => {
   });
 });
 
-test('With Node.js 18.x', () => {
+test('With Node.js 20.x', () => {
   // WHEN
   const task = new tasks.EvaluateExpression(stack, 'Task', {
     expression: '$.a + $.b',
-    runtime: new Runtime('nodejs18.x', RuntimeFamily.NODEJS),
+    runtime: new Runtime('nodejs20.x', RuntimeFamily.NODEJS),
   });
   new sfn.StateMachine(stack, 'SM', {
     definition: task,
   });
 
   Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
-    Runtime: 'nodejs18.x',
+    Runtime: 'nodejs20.x',
   });
 });

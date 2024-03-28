@@ -14,7 +14,7 @@
         }
       }
     },
-    "59aa0c7d75711fe6b3cd33460e05300406cf0581421fcf3d8363a08736524766": {
+    "a77c8b048824eb8eec1871f8c28a77d35e831dda89728f50ff52452251cefd23": {
       "source": {
         "path": "aws-cdk-rds-instance-with-metric.template.json",
         "packaging": "file"
@@ -22,7 +22,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "59aa0c7d75711fe6b3cd33460e05300406cf0581421fcf3d8363a08736524766.json",
+          "objectKey": "a77c8b048824eb8eec1871f8c28a77d35e831dda89728f50ff52452251cefd23.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

@@ -131,19 +131,19 @@
     },
     "EngineVersion": "Elasticsearch_7.1",
     "LogPublishingOptions": {
-     "ES_APPLICATION_LOGS": {
+     "SEARCH_SLOW_LOGS": {
       "CloudWatchLogsLogGroupArn": {
        "Fn::GetAtt": [
-        "Domain1AppLogs6E8D1D67",
+        "Domain1SlowSearchLogs8F3B0506",
         "Arn"
        ]
       },
       "Enabled": true
      },
-     "SEARCH_SLOW_LOGS": {
+     "ES_APPLICATION_LOGS": {
       "CloudWatchLogsLogGroupArn": {
        "Fn::GetAtt": [
-        "Domain1SlowSearchLogs8F3B0506",
+        "Domain1AppLogs6E8D1D67",
         "Arn"
        ]
       },
@@ -311,7 +311,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs18.x",
+    "Runtime": "nodejs20.x",
     "Timeout": 120
    },
    "DependsOn": [
@@ -449,19 +449,19 @@
     },
     "EngineVersion": "Elasticsearch_7.1",
     "LogPublishingOptions": {
-     "ES_APPLICATION_LOGS": {
+     "SEARCH_SLOW_LOGS": {
       "CloudWatchLogsLogGroupArn": {
        "Fn::GetAtt": [
-        "Domain2AppLogs810876E2",
+        "Domain2SlowSearchLogs0C75F64B",
         "Arn"
        ]
       },
       "Enabled": true
      },
-     "SEARCH_SLOW_LOGS": {
+     "ES_APPLICATION_LOGS": {
       "CloudWatchLogsLogGroupArn": {
        "Fn::GetAtt": [
-        "Domain2SlowSearchLogs0C75F64B",
+        "Domain2AppLogs810876E2",
         "Arn"
        ]
       },

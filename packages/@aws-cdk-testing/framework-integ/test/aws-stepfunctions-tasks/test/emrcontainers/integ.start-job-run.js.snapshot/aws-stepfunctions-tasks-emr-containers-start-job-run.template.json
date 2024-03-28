@@ -1052,7 +1052,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/65536126088fb8c4feccd4777fb230f526ea0c608e6656c342a8654cc99869f2.json"
+       "/904c53362db0f24fc1efbf24acd7ae8b6c9006f0442144acd318c8c9bd5eac69.json"
       ]
      ]
     }
@@ -1099,7 +1099,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/f6fc74a2c74113121def69981744fa1e1010ad2a1ab5adbec9dc4be620d1dd6f.json"
+       "/2e3b8c74cf358031a86f989e519d0a18fded076882901a436ad17851137a1b0b.json"
       ]
      ]
     }
@@ -1256,7 +1256,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "3fb6287214999ddeafa7cd0e3e58bc5144c8678bb720f3b5e45e8fd32f333eb3.zip"
+     "S3Key": "3322b7049fb0ed2b7cbb644a2ada8d1116ff80c32dca89e6ada846b5de26f961.zip"
     },
     "Description": "/opt/awscli/aws"
    }
@@ -1341,7 +1341,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "c014eecccbb25b3f9b2930f62990f5a373bb117a6c78807df15d78a5ac33e9cd.zip"
+     "S3Key": "15197a5512179542fe2cff74af89bb047793c9c4e0b4395f114641a81cd52ae5.zip"
     },
     "Description": "AWS CDK resource provider framework - onEvent (aws-stepfunctions-tasks-emr-containers-start-job-run/Start a Job Run/CustomResourceProvider)",
     "Environment": {
@@ -1361,7 +1361,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs18.x",
+    "Runtime": "nodejs20.x",
     "Timeout": 900
    },
    "DependsOn": [
@@ -1435,7 +1435,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "1b474110b3f79050ba8693912584a5d5bac8c7e94d63afa8c73f1d087444e7cc.zip"
+     "S3Key": "482f9f5ffd706706c8ef3652699d6c945568786593d3571e4331ecb1f966c932.zip"
     },
     "Handler": "index.handler",
     "Role": {
@@ -1444,7 +1444,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs18.x",
+    "Runtime": "nodejs20.x",
     "Timeout": 120
    },
    "DependsOn": [

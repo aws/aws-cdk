@@ -124,7 +124,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs18.x",
+    "Runtime": "nodejs20.x",
     "Description": {
      "Fn::Join": [
       "",
@@ -2373,7 +2373,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs18.x",
+    "Runtime": "nodejs20.x",
     "Timeout": 300
    },
    "DependsOn": [
@@ -2717,7 +2717,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs18.x",
+    "Runtime": "nodejs20.x",
     "Timeout": 300
    },
    "DependsOn": [
