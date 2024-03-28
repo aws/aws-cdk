@@ -1431,7 +1431,7 @@ integTest('test resource import', withDefaultFixture(async (fixture) => {
 
   // Initial deploy
   await fixture.cdkDeploy('importable-stack', {
-    modEnv: { ORPHAN_TOPIC: '1' },
+    modEnv: { ORPHAN_TOPIC: '1', LARGE_TEMPLATE: '1' },
     options: ['--outputs-file', outputsFile],
   });
 
@@ -1442,7 +1442,7 @@ integTest('test resource import', withDefaultFixture(async (fixture) => {
   try {
     // Deploy again, orphaning the queue
     await fixture.cdkDeploy('importable-stack', {
-      modEnv: { OMIT_TOPIC: '1' },
+      modEnv: { OMIT_TOPIC: '1', LARGE_TEMPLATE: '1' },
     });
 
     // Write a resource mapping file based on the ID from step one, then run an import
