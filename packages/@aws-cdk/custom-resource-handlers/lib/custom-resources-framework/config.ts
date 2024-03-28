@@ -8,6 +8,10 @@ export enum Runtime {
   /**
    * The NodeJs 18.x runtime
    */
+  NODEJS_20_X = 'nodejs20.x',
+  /**
+   * The NodeJs 18.x runtime
+   */
   NODEJS_18_X = 'nodejs18.x',
 
   /**
