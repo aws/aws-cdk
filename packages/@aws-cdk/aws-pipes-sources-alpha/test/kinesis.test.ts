@@ -56,7 +56,7 @@ describe('kinesis source', () => {
       onPartialBatchItemFailure: OnPartialBatchItemFailure.AUTOMATIC_BISECT,
       parallelizationFactor: 10,
       startingPosition: KinesisStartingPosition.LATEST,
-      startingPositionTimestamp: 'MyTimestamp',
+      startingPositionTimestamp: 1711576897,
     });
 
     new Pipe(stack, 'MyPipe', {
@@ -87,7 +87,7 @@ describe('kinesis source', () => {
           OnPartialBatchItemFailure: 'AUTOMATIC_BISECT',
           ParallelizationFactor: 10,
           StartingPosition: 'LATEST',
-          StartingPositionTimestamp: 'MyTimestamp',
+          StartingPositionTimestamp: '1711576897',
         },
       },
     });
@@ -108,7 +108,7 @@ describe('kinesis source', () => {
       onPartialBatchItemFailure: OnPartialBatchItemFailure.AUTOMATIC_BISECT,
       parallelizationFactor: 10,
       startingPosition: KinesisStartingPosition.LATEST,
-      startingPositionTimestamp: 'MyTimestamp',
+      startingPositionTimestamp: 1711576897,
     });
 
     new Pipe(stack, 'MyPipe', {
@@ -144,7 +144,7 @@ describe('kinesis source', () => {
           OnPartialBatchItemFailure: 'AUTOMATIC_BISECT',
           ParallelizationFactor: 10,
           StartingPosition: 'LATEST',
-          StartingPositionTimestamp: 'MyTimestamp',
+          StartingPositionTimestamp: '1711576897',
         },
       },
     });

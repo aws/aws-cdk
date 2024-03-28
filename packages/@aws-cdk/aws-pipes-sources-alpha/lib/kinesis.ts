@@ -87,11 +87,14 @@ export interface KinesisSourceParameters {
 
   /**
    * With StartingPosition set to AT_TIMESTAMP, the time from which to start reading, in Unix time seconds.
+   * 
+   * @example
+   * 1711576897
    *
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-pipes-pipe-pipesourcekinesisstreamparameters.html#cfn-pipes-pipe-pipesourcekinesisstreamparameters-startingpositiontimestamp
    * @default - no starting position timestamp
    */
-  readonly startingPositionTimestamp?: string;
+  readonly startingPositionTimestamp?: number;
 }
 
 /**
@@ -168,7 +171,7 @@ export class KinesisSource implements ISource {
           onPartialBatchItemFailure: this.sourceParameters.onPartialBatchItemFailure,
           parallelizationFactor: this.sourceParameters.parallelizationFactor,
           startingPosition: this.sourceParameters.startingPosition,
-          startingPositionTimestamp: this.sourceParameters.startingPositionTimestamp,
+          startingPositionTimestamp: this.sourceParameters.startingPositionTimestamp?.toString(),
         },
       },
     };
