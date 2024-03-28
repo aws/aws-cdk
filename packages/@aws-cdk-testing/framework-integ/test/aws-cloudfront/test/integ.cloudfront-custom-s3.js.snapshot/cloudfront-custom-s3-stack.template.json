@@ -3,6 +3,12 @@
   "Bucket83908E77": {
    "Type": "AWS::S3::Bucket",
    "Properties": {
+    "PublicAccessBlockConfiguration": {
+     "BlockPublicAcls": false,
+     "BlockPublicPolicy": false,
+     "IgnorePublicAcls": false,
+     "RestrictPublicBuckets": false
+    },
     "WebsiteConfiguration": {
      "ErrorDocument": "404.html",
      "IndexDocument": "index.html"
