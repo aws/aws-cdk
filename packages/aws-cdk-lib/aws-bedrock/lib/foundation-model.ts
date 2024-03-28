@@ -89,6 +89,9 @@ export class FoundationModelIdentifier {
   /** Base model "anthropic.claude-3-sonnet-20240229-v1:0". */
   public static readonly ANTHROPIC_CLAUDE_3_SONNET_20240229_V1_0 = new FoundationModelIdentifier('anthropic.claude-3-sonnet-20240229-v1:0');
 
+  /** Base model "anthropic.claude-3-haiku-20240307-v1:0". */
+  public static readonly ANTHROPIC_CLAUDE_3_HAIKU_20240307_V1_0 = new FoundationModelIdentifier('anthropic.claude-3-haiku-20240307-v1:0');
+
   /** Base model "anthropic.claude-instant-v1". */
   public static readonly ANTHROPIC_CLAUDE_INSTANT_V1 = new FoundationModelIdentifier('anthropic.claude-instant-v1');
 
