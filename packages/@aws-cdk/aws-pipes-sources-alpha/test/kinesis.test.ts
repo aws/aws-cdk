@@ -56,7 +56,7 @@ describe('kinesis source', () => {
       onPartialBatchItemFailure: OnPartialBatchItemFailure.AUTOMATIC_BISECT,
       parallelizationFactor: 10,
       startingPosition: KinesisStartingPosition.LATEST,
-      startingPositionTimestamp: 1711576897,
+      startingPositionTimestamp: '2024-01-01T00:00:00Z',
     });
 
     new Pipe(stack, 'MyPipe', {
@@ -87,7 +87,7 @@ describe('kinesis source', () => {
           OnPartialBatchItemFailure: 'AUTOMATIC_BISECT',
           ParallelizationFactor: 10,
           StartingPosition: 'LATEST',
-          StartingPositionTimestamp: '1711576897',
+          StartingPositionTimestamp: '2024-01-01T00:00:00Z',
         },
       },
     });
@@ -108,7 +108,7 @@ describe('kinesis source', () => {
       onPartialBatchItemFailure: OnPartialBatchItemFailure.AUTOMATIC_BISECT,
       parallelizationFactor: 10,
       startingPosition: KinesisStartingPosition.LATEST,
-      startingPositionTimestamp: 1711576897,
+      startingPositionTimestamp: '2024-01-01T00:00:00Z',
     });
 
     new Pipe(stack, 'MyPipe', {
@@ -144,7 +144,7 @@ describe('kinesis source', () => {
           OnPartialBatchItemFailure: 'AUTOMATIC_BISECT',
           ParallelizationFactor: 10,
           StartingPosition: 'LATEST',
-          StartingPositionTimestamp: '1711576897',
+          StartingPositionTimestamp: '2024-01-01T00:00:00Z',
         },
       },
     });
@@ -355,5 +355,20 @@ describe('kinesis source parameters validation', () => {
         parallelizationFactor: 11,
       });
     }).toThrow('Parallelization factor must be between 1 and 10, received 11');
+  });
+
+  test('timestamp provided and starting position not set to AT_TIMESTAMP should throw', () => {
+    // GIVEN
+    const app = new App();
+    const stack = new Stack(app, 'demo-stack');
+    const stream = new Stream(stack, 'MyStream', {});
+
+    // WHEN
+    expect(() => {
+      new KinesisSource(stream, {
+        startingPosition: KinesisStartingPosition.LATEST,
+        startingPositionTimestamp: '2024-01-01T00:00:00Z',
+      });
+    }).toThrow('Timestamp only valid with StartingPosition AT_TIMESTAMP for Kinesis streams, received KinesisStartingPosition.LATEST');
   });
 });

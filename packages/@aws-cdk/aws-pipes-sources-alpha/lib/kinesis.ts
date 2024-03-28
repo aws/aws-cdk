@@ -87,14 +87,14 @@ export interface KinesisSourceParameters {
 
   /**
    * With StartingPosition set to AT_TIMESTAMP, the time from which to start reading, in Unix time seconds.
-   * 
+   *
    * @example
-   * 1711576897
+   * '2025-01-01T00:00:00Z'
    *
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-pipes-pipe-pipesourcekinesisstreamparameters.html#cfn-pipes-pipe-pipesourcekinesisstreamparameters-startingpositiontimestamp
    * @default - no starting position timestamp
    */
-  readonly startingPositionTimestamp?: number;
+  readonly startingPositionTimestamp?: string;
 }
 
 /**
@@ -112,6 +112,8 @@ export class KinesisSource implements ISource {
   private parallelizationFactor;
   private deadLetterTarget;
   private deadLetterTargetArn;
+  private startingPosition;
+  private startingPositionTimestamp;
 
   constructor(stream: IStream, parameters: KinesisSourceParameters) {
     this.stream = stream;
@@ -124,6 +126,8 @@ export class KinesisSource implements ISource {
     this.maximumRetryAttempts = this.sourceParameters.maximumRetryAttempts;
     this.parallelizationFactor = this.sourceParameters.parallelizationFactor;
     this.deadLetterTarget = this.sourceParameters.deadLetterTarget;
+    this.startingPosition = this.sourceParameters.startingPosition;
+    this.sourceParameters = this.sourceParameters.startingPositionTimestamp;
 
     if (this.batchSize !== undefined) {
       if (this.batchSize < 1 || this.batchSize > 10000) {
@@ -151,6 +155,9 @@ export class KinesisSource implements ISource {
         throw new Error(`Parallelization factor must be between 1 and 10, received ${this.parallelizationFactor}`);
       }
     }
+    if (this.startingPositionTimestamp && this.startingPosition !== KinesisStartingPosition.AT_TIMESTAMP) {
+      throw new Error(`Timestamp only valid with StartingPosition AT_TIMESTAMP for Kinesis streams, received ${this.startingPosition}`);
+    }
 
     if (this.deadLetterTarget instanceof Queue) {
       this.deadLetterTargetArn = this.deadLetterTarget.queueArn;
@@ -170,8 +177,8 @@ export class KinesisSource implements ISource {
           maximumRetryAttempts: this.maximumRetryAttempts,
           onPartialBatchItemFailure: this.sourceParameters.onPartialBatchItemFailure,
           parallelizationFactor: this.sourceParameters.parallelizationFactor,
-          startingPosition: this.sourceParameters.startingPosition,
-          startingPositionTimestamp: this.sourceParameters.startingPositionTimestamp?.toString(),
+          startingPosition: this.startingPosition,
+          startingPositionTimestamp: this.startingPositionTimestamp,
         },
       },
     };
