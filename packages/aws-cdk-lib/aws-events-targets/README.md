@@ -1,6 +1,5 @@
 # Event Targets for Amazon EventBridge
 
-
 This library contains integration classes to send Amazon EventBridge to any
 number of supported AWS Services. Instances of these classes should be passed
 to the `rule.addTarget()` method.
@@ -17,6 +16,7 @@ Currently supported are:
   - [Queue a Batch job](#queue-a-batch-job)
   - [Invoke an API Gateway REST API](#invoke-an-api-gateway-rest-api)
   - [Invoke an API Destination](#invoke-an-api-destination)
+  - [Invoke an AppSync GraphQL API](#invoke-an-appsync-graphql-api)
   - [Put an event on an EventBridge bus](#put-an-event-on-an-eventbridge-bus)
   - [Run an ECS Task](#run-an-ecs-task)
     - [Tagging Tasks](#tagging-tasks)
@@ -341,6 +341,30 @@ const rule = new events.Rule(this, 'Rule', {
   schedule: events.Schedule.rate(Duration.minutes(1)),
   targets: [new targets.ApiDestination(destination)],
 });
+```
+
+## Invoke an AppSync GraphQL API
+
+Use the `AppSync` target to trigger an AppSync GraphQL API. You need to
+create an `AppSync.GraphqlApi` configured with `AWS_IAM` authorization mode.
+
+The code snippet below creates a AppSync GraphQL API target that is invoked every hour, calling the `publish` mutation.
+
+```ts
+import * as appsync from 'aws-cdk-lib/aws-appsync';
+declare const api: appsync.GraphqlApi;
+
+const rule = new events.Rule(this, 'Rule', {
+  schedule: events.Schedule.rate(cdk.Duration.minutes(1)),
+});
+
+rule.addTarget(new targets.AppSync(api, {
+  mutationFields: ['publish'],
+  graphQLOperation: 'mutation Publish($message: String!){ publish(message: $message) { message } }',
+  variables: events.RuleTargetInput.fromObject({
+    message: 'hello world',
+  }),
+}));
 ```
 
 ## Put an event on an EventBridge bus
