@@ -328,7 +328,7 @@ const myResponseHeadersPolicy = new cloudfront.ResponseHeadersPolicy(this, 'Resp
     ],
   },
   securityHeadersBehavior: {
-    contentSecurityPolicy: { contentSecurityPolicy: 'default-src https:;', override: true },
+    contentSecurityPolicy: { contentSecurityPolicy: 'default-src https:;', reportOnly: true, override: true },
     contentTypeOptions: { override: true },
     frameOptions: { frameOption: cloudfront.HeadersFrameOption.DENY, override: true },
     referrerPolicy: { referrerPolicy: cloudfront.HeadersReferrerPolicy.NO_REFERRER, override: true },
