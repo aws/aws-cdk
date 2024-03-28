@@ -305,6 +305,35 @@ new route53.CrossAccountZoneDelegationRecord(this, 'delegate', {
 });
 ```
 
+Delegating the hosted zone requires assuming a role in the parent hosted zone's account.
+In order for the assumed credentials to be valid, the resource must assume the role using
+an STS endpoint in a region where both the subdomain's account and the parent's account
+are opted-in. By default, this region is determined automatically, but if you need to
+change the region used for the AssumeRole call, specify `assumeRoleRegion`:
+
+```ts
+const subZone = new route53.PublicHostedZone(this, 'SubZone', {
+  zoneName: 'sub.someexample.com',
+});
+
+// import the delegation role by constructing the roleArn
+const delegationRoleArn = Stack.of(this).formatArn({
+  region: '', // IAM is global in each partition
+  service: 'iam',
+  account: 'parent-account-id',
+  resource: 'role',
+  resourceName: 'MyDelegationRole',
+});
+const delegationRole = iam.Role.fromRoleArn(this, 'DelegationRole', delegationRoleArn);
+
+new route53.CrossAccountZoneDelegationRecord(this, 'delegate', {
+  delegatedZone: subZone,
+  parentHostedZoneName: 'someexample.com', // or you can use parentHostedZoneId
+  delegationRole,
+  assumeRoleRegion: "us-east-1",
+});
+```
+
 ### Add Trailing Dot to Domain Names
 
 In order to continue managing existing domain names with trailing dots using CDK, you can set `addTrailingDot: false` to prevent the Construct from adding a dot at the end of the domain name.
