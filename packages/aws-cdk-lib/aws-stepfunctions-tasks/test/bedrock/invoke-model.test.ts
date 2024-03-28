@@ -203,7 +203,7 @@ describe('Invoke Model', () => {
     });
   });
 
-  test('S3 permissions are created in generated policy when input and output locations are specified', () => {
+  test('S3 permissions are created in generated policy when input and output locations are specified by s3Location', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const model = bedrock.ProvisionedModel.fromProvisionedModelArn(stack, 'Imported', 'arn:aws:bedrock:us-turbo-2:123456789012:provisioned-model/abc-123');
@@ -272,6 +272,50 @@ describe('Invoke Model', () => {
           },
         ]),
       }),
+    });
+  });
+
+  test('S3 permissions are created in generated policy when input and output locations are specified by s3Uri', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const model = bedrock.ProvisionedModel.fromProvisionedModelArn(stack, 'Imported', 'arn:aws:bedrock:us-turbo-2:123456789012:provisioned-model/abc-123');
+
+    // WHEN
+    const task = new BedrockInvokeModel(stack, 'Invoke', {
+      model,
+      input: {
+        s3Uri: 's3://input-bucket/input-key',
+      },
+      output: {
+        s3Uri: 's3://output-bucket/output-key',
+      },
+    });
+
+    new sfn.StateMachine(stack, 'StateMachine', {
+      definitionBody: sfn.DefinitionBody.fromChainable(task),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: 'bedrock:InvokeModel',
+            Effect: 'Allow',
+            Resource: 'arn:aws:bedrock:us-turbo-2:123456789012:provisioned-model/abc-123',
+          },
+          {
+            Action: 's3:GetObject',
+            Effect: 'Allow',
+            Resource: 's3://input-bucket/input-key',
+          },
+          {
+            Action: 's3:PutObject',
+            Effect: 'Allow',
+            Resource: 's3://output-bucket/output-key',
+          },
+        ],
+      },
     });
   });
 

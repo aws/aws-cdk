@@ -21,6 +21,15 @@ export interface BedrockInvokeModelInputProps {
    * @default Input data is retrieved from the `body` field
    */
   readonly s3Location?: s3.Location;
+
+  /**
+   * S3 URI specifying the location to retrieve the input data from.
+   *
+   * If `s3Uri` is provided, it will be used instead of `s3Location`.
+   *
+   * @default None
+   */
+  readonly s3Uri?: string;
 }
 
 /**
@@ -39,6 +48,15 @@ export interface BedrockInvokeModelOutputProps {
    * @default Response body is returned in the task result
    */
   readonly s3Location?: s3.Location;
+
+  /**
+   * S3 URI specifying the location to write the output data to.
+   *
+   * If `s3Uri` is provided, it will be used instead of `s3Location`.
+   *
+   * @default None.
+   */
+  readonly s3Uri?: string;
 }
 
 /**
@@ -129,7 +147,9 @@ export class BedrockInvokeModel extends sfn.TaskStateBase {
     validatePatternSupported(this.integrationPattern, BedrockInvokeModel.SUPPORTED_INTEGRATION_PATTERNS);
 
     const isBodySpecified = props.body !== undefined;
-    const isInputSpecified = props.input !== undefined && props.input.s3Location !== undefined;
+    const isInputSpecified = props.input !== undefined && (
+      props.input.s3Location !== undefined || props.input.s3Uri !== undefined
+    );
 
     if (isBodySpecified && isInputSpecified) {
       throw new Error('Either `body` or `input` must be specified, but not both.');
@@ -155,38 +175,56 @@ export class BedrockInvokeModel extends sfn.TaskStateBase {
       }),
     ];
 
-    if (this.props.input !== undefined && this.props.input.s3Location !== undefined) {
-      policyStatements.push(
-        new iam.PolicyStatement({
-          actions: ['s3:GetObject'],
-          resources: [
-            Stack.of(this).formatArn({
-              region: '',
-              account: '',
-              service: 's3',
-              resource: this.props.input?.s3Location?.bucketName,
-              resourceName: this.props.input?.s3Location?.objectKey,
-            }),
-          ],
-        }),
-      );
+    if (this.props.input !== undefined) {
+      if (this.props.input.s3Uri !== undefined) {
+        policyStatements.push(
+          new iam.PolicyStatement({
+            actions: ['s3:GetObject'],
+            resources: [this.props.input.s3Uri],
+          }),
+        );
+      } else if (this.props.input.s3Location !== undefined) {
+        policyStatements.push(
+          new iam.PolicyStatement({
+            actions: ['s3:GetObject'],
+            resources: [
+              Stack.of(this).formatArn({
+                region: '',
+                account: '',
+                service: 's3',
+                resource: this.props.input?.s3Location?.bucketName,
+                resourceName: this.props.input?.s3Location?.objectKey,
+              }),
+            ],
+          }),
+        );
+      }
     }
 
-    if (this.props.output !== undefined && this.props.output.s3Location !== undefined) {
-      policyStatements.push(
-        new iam.PolicyStatement({
-          actions: ['s3:PutObject'],
-          resources: [
-            Stack.of(this).formatArn({
-              region: '',
-              account: '',
-              service: 's3',
-              resource: this.props.output?.s3Location?.bucketName,
-              resourceName: this.props.output?.s3Location?.objectKey,
-            }),
-          ],
-        }),
-      );
+    if (this.props.output !== undefined) {
+      if (this.props.output.s3Uri !== undefined) {
+        policyStatements.push(
+          new iam.PolicyStatement({
+            actions: ['s3:PutObject'],
+            resources: [this.props.output.s3Uri],
+          }),
+        );
+      } else if (this.props.output.s3Location !== undefined) {
+        policyStatements.push(
+          new iam.PolicyStatement({
+            actions: ['s3:PutObject'],
+            resources: [
+              Stack.of(this).formatArn({
+                region: '',
+                account: '',
+                service: 's3',
+                resource: this.props.output?.s3Location?.bucketName,
+                resourceName: this.props.output?.s3Location?.objectKey,
+              }),
+            ],
+          }),
+        );
+      }
     }
 
     return policyStatements;
@@ -207,9 +245,13 @@ export class BedrockInvokeModel extends sfn.TaskStateBase {
         Body: this.props.body?.value,
         Input: this.props.input?.s3Location ? {
           S3Uri: `s3://${this.props.input.s3Location.bucketName}/${this.props.input.s3Location.objectKey}`,
+        } : this.props.input?.s3Uri ? {
+          S3Uri: this.props.input.s3Uri,
         } : undefined,
         Output: this.props.output?.s3Location ? {
           S3Uri: `s3://${this.props.output.s3Location.bucketName}/${this.props.output.s3Location.objectKey}`,
+        } : this.props.output?.s3Uri ? {
+          S3Uri: this.props.output.s3Uri,
         } : undefined,
       }),
     };
