@@ -74,9 +74,14 @@ export class CustomState extends State implements IChainable, INextable {
       ...this.renderRetryCatch(),
     };
 
-    // merge the Retry field defined in the stateJson into the state
+    // Retriers and Catchers can be specified directly in the stateJson or indirectly to the construct with addRetry() and addCatch().
+    // renderRetryCatch() only renders the indirectly supplied Retriers and Catchers, so we need to manually merge in those directly in the stateJson
     if (Array.isArray(this.stateJson.Retry)) {
       state.Retry = Array.isArray(state.Retry) ? [...state.Retry, ...this.stateJson.Retry] : [...this.stateJson.Retry];
+    }
+
+    if (Array.isArray(this.stateJson.Catch)) {
+      state.Catch = Array.isArray(state.Catch) ? [...state.Catch, ...this.stateJson.Catch] : [...this.stateJson.Catch];
     }
 
     return state;

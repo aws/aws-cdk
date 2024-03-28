@@ -1,8 +1,9 @@
 import { render } from './private/render-util';
 import * as cdk from '../../core';
 import * as sfn from '../lib';
+import { Errors } from '../lib/types';
 
-describe('Custom State', () => {
+describe.only('Custom State', () => {
   let stack: cdk.Stack;
   let stateJson: any;
 
@@ -304,6 +305,147 @@ describe('Custom State', () => {
               },
             ],
             End: true,
+          },
+        },
+      },
+    );
+  });
+
+  test('expect retry to merge when specifying strategy inline and through construct', () => {
+    // GIVEN
+    const custom = new sfn.CustomState(stack, 'Custom', {
+      stateJson: {
+        ...stateJson,
+        Retry: [{
+          ErrorEquals: ['States.TaskFailed'],
+        }],
+      },
+    }).addRetry({ errors: [Errors.TIMEOUT] });
+    const chain = sfn.Chain.start(custom);
+
+    // THEN
+    expect(render(stack, chain)).toStrictEqual(
+      {
+        StartAt: 'Custom',
+        States: {
+          Custom: {
+            Type: 'Task',
+            Resource: 'arn:aws:states:::dynamodb:putItem',
+            Parameters: {
+              TableName: 'MyTable',
+              Item: {
+                id: {
+                  S: 'MyEntry',
+                },
+              },
+            },
+            ResultPath: null,
+            Retry: [
+              {
+                ErrorEquals: ['States.Timeout'],
+              },
+              {
+                ErrorEquals: ['States.TaskFailed'],
+              },
+            ],
+            End: true,
+          },
+        },
+      },
+    );
+  });
+
+  test('expect catch to not fail when specifying strategy inline', () => {
+    // GIVEN
+    const custom = new sfn.CustomState(stack, 'Custom', {
+      stateJson: {
+        ...stateJson,
+        Catch: [{
+          ErrorEquals: ['States.TaskFailed'],
+          Next: 'Failed',
+        }],
+      },
+    });
+    const chain = sfn.Chain.start(custom);
+
+    // THEN
+    expect(render(stack, chain)).toStrictEqual(
+      {
+        StartAt: 'Custom',
+        States: {
+          Custom: {
+            Type: 'Task',
+            Resource: 'arn:aws:states:::dynamodb:putItem',
+            Parameters: {
+              TableName: 'MyTable',
+              Item: {
+                id: {
+                  S: 'MyEntry',
+                },
+              },
+            },
+            ResultPath: null,
+            Catch: [{
+              ErrorEquals: ['States.TaskFailed'],
+              Next: 'Failed',
+            }],
+            End: true,
+          },
+        },
+      },
+    );
+  });
+
+  test('expect catch to merge when specifying strategy inline and through construct', () => {
+    // GIVEN
+    const failure = new sfn.Fail(stack, 'Failed', {
+      error: 'DidNotWork',
+      cause: 'We got stuck',
+    });
+
+    const custom = new sfn.CustomState(stack, 'Custom', {
+      stateJson: {
+        ...stateJson,
+        Catch: [{
+          ErrorEquals: ['States.TaskFailed'],
+          Next: 'Failed',
+        }],
+      },
+    }).addCatch(failure, { errors: [Errors.TIMEOUT] });
+    const chain = sfn.Chain.start(custom);
+
+    // THEN
+    expect(render(stack, chain)).toStrictEqual(
+      {
+        StartAt: 'Custom',
+        States: {
+          Custom: {
+            Type: 'Task',
+            Resource: 'arn:aws:states:::dynamodb:putItem',
+            Parameters: {
+              TableName: 'MyTable',
+              Item: {
+                id: {
+                  S: 'MyEntry',
+                },
+              },
+            },
+            ResultPath: null,
+            Catch: [
+              {
+                ErrorEquals: ['States.Timeout'],
+                Next: 'Failed',
+              }, {
+                ErrorEquals: ['States.TaskFailed'],
+                Next: 'Failed',
+              },
+            ],
+            End: true,
+          },
+          Failed: {
+            Type: 'Fail',
+            Error: 'DidNotWork',
+            Cause: 'We got stuck',
           },
         },
       },
