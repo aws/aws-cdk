@@ -394,6 +394,15 @@ export interface AwsCustomResourceProps {
    * @default - the Vpc default strategy if not specified
    */
   readonly vpcSubnets?: ec2.SubnetSelection;
+
+  /**
+   * Disables logging information related to the operation of the Lambda function. This
+   * includes displaying the event received by the handler, any API responses received,
+   * and any caught or uncaught errors
+   *
+   * @default false
+   */
+  readonly disableLogging?: boolean;
 }
 
 /**
@@ -497,6 +506,7 @@ export class AwsCustomResource extends Construct implements iam.IGrantable {
         update: props.onUpdate && this.encodeJson(props.onUpdate),
         delete: props.onDelete && this.encodeJson(props.onDelete),
         installLatestAwsSdk,
+        disableLogging: props.disableLogging ?? false,
       },
     });
 

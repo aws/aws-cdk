@@ -540,6 +540,36 @@ Since a successful resource provisioning might or might not produce outputs, thi
 
 In both the cases, you will get a synth time error if you attempt to use it in conjunction with `ignoreErrorCodesMatching`.
 
+### Custom Resource Logging
+
+By default, the `AwsCustomResource` construct will log info and errors to CloudWatch Logs within the AWS account the `AwsCustomResource` construct is deployed in. In general, the information that is logged is useful for debugging and includes:
+* The event received by the custom resource provider
+* API responses
+* Caught and uncaught error messages
+
+Logging is enabled by default, however this may include sensitive information that a user may want to keep hidden. To provide this functionality, the `disableLogging` flag can be set to `true` which will disable logging information related to the operation of the `AwsCustomResource`. Note that this flag is `false` by default.
+
+```ts
+const getParameter = new cr.AwsCustomResource(this, 'GetParameter', {
+  onUpdate: { // will also be called for a CREATE event
+    service: 'SSM',
+    action: 'GetParameter',
+    parameters: {
+      Name: 'my-parameter',
+      WithDecryption: true,
+    },
+    physicalResourceId: cr.PhysicalResourceId.of(Date.now().toString()), // Update physical id to always fetch the latest version
+  },
+  policy: cr.AwsCustomResourcePolicy.fromSdkCalls({
+    resources: cr.AwsCustomResourcePolicy.ANY_RESOURCE,
+  }),
+  disableLogging: true,
+});
+
+// Use the value in another construct with
+getParameter.getResponseField('Parameter.Value');
+```
+
 ### Customizing the Lambda function implementing the custom resource
 
 Use the `role`, `timeout`, `logGroup`, `functionName` and `removalPolicy` properties to customize

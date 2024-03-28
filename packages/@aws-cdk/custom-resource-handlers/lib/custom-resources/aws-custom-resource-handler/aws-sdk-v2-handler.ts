@@ -62,6 +62,8 @@ function patchSdk(awsSdk: any): any {
 
 /* eslint-disable @typescript-eslint/no-require-imports, import/no-extraneous-dependencies */
 export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent, context: AWSLambda.Context) {
+  const disableLogging = event.ResourceProperties.DisableLogging === 'true';
+
   try {
     let AWS: any;
     if (!latestSdkInstalled && event.ResourceProperties.InstallLatestAwsSdk === 'true') {
@@ -69,7 +71,9 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
         installLatestSdk();
         AWS = require('/tmp/node_modules/aws-sdk');
       } catch (e) {
-        console.log(`Failed to install latest AWS SDK v2: ${e}`);
+        if (!disableLogging) {
+          console.log(`Failed to install latest AWS SDK v2: ${e}`);
+        }
         AWS = require('aws-sdk'); // Fallback to pre-installed version
       }
     } else if (latestSdkInstalled) {
@@ -80,15 +84,20 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
     try {
       AWS = patchSdk(AWS);
     } catch (e) {
-      console.log(`Failed to patch AWS SDK: ${e}. Proceeding with the installed copy.`);
+      if (!disableLogging) {
+        console.log(`Failed to patch AWS SDK: ${e}. Proceeding with the installed copy.`);
+      }
     }
 
-    console.log(JSON.stringify({ ...event, ResponseURL: '...' }));
-    console.log('AWS SDK VERSION: ' + AWS.VERSION);
+    if (!disableLogging) {
+      console.log(JSON.stringify({ ...event, ResponseURL: '...' }));
+      console.log('AWS SDK VERSION: ' + AWS.VERSION);
+    }
 
     event.ResourceProperties.Create = decodeCall(event.ResourceProperties.Create);
     event.ResourceProperties.Update = decodeCall(event.ResourceProperties.Update);
     event.ResourceProperties.Delete = decodeCall(event.ResourceProperties.Delete);
+
     // Default physical resource id
     let physicalResourceId: string;
     switch (event.RequestType) {
@@ -166,9 +175,26 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
       }
     }
 
-    await respond(event, 'SUCCESS', 'OK', physicalResourceId, data);
+    await respond({
+      event,
+      responseStatus: 'SUCCESS',
+      reason: 'OK',
+      physicalResourceId,
+      data,
+      disableLogging,
+    });
   } catch (e: any) {
-    console.log(e);
-    await respond(event, 'FAILED', e.message || 'Internal Error', context.logStreamName, {});
+    if (!disableLogging) {
+      console.log(e);
+    }
+
+    await respond({
+      event,
+      responseStatus: 'FAILED',
+      reason: e.message || 'Internal Error',
+      physicalResourceId: context.logStreamName,
+      data: {},
+      disableLogging,
+    });
   }
 }
