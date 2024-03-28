@@ -99,6 +99,35 @@ describe('Key Value Store', () => {
     });
   });
 
+  test('with code from inline string', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    new KeyValueStore(stack, 'TestStore', {
+      source: ImportSource.fromInline(JSON.stringify({
+        data: [
+          {
+            key: 'key1',
+            value: 'value1',
+          },
+          {
+            key: 'key2',
+            value: 'value2',
+          },
+        ],
+      })),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::KeyValueStore', {
+      ImportSource: {
+        SourceArn: Match.anyValue(),
+        SourceType: 'S3',
+      },
+    });
+  });
+
   test('imported resource throws error when missing ID', () => {
     // GIVEN
     const stack = new Stack();
