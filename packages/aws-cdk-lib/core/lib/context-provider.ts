@@ -27,8 +27,20 @@ export interface GetContextKeyOptions {
 }
 
 /**
+ * Configuration options for context providers.
  */
-export interface GetContextValueOptions extends GetContextKeyOptions {
+export interface ContextProviderConfig {
+  /**
+   * Whether caching the value to the context is disabled.
+   *
+   * @default false
+   */
+  readonly disableContextCaching?: boolean;
+}
+
+/**
+ */
+export interface GetContextValueOptions extends GetContextKeyOptions, ContextProviderConfig {
   /**
    * The value to return if the context value was not found and a missing
    * context is reported. This should be a dummy value that should preferably
@@ -105,6 +117,7 @@ export class ContextProvider {
         key,
         provider: options.provider as cxschema.ContextProvider,
         props: props as cxschema.ContextQueryProperties,
+        disableContextCaching: options.disableContextCaching,
       });
 
       if (providerError !== undefined) {

@@ -60,6 +60,13 @@ export interface MissingContext {
    * A set of provider-specific options.
    */
   readonly props: ContextQueryProperties;
+
+  /**
+   * Whether to disable persisting this to the context file.
+   *
+   * @default false
+   */
+  readonly disableContextCaching?: boolean;
 }
 
 /**
