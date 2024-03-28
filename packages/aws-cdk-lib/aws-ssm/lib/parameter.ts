@@ -532,10 +532,13 @@ export class StringParameter extends ParameterBase implements IStringParameter {
    * Requires that the stack this scope is defined in will have explicit
    * account/region information. Otherwise, it will fail during synthesis.
    */
-  public static valueFromLookup(scope: Construct, parameterName: string): string {
+  public static valueFromLookup(scope: Construct, parameterName: string, additionalCacheKey?: string): string {
     const value = ContextProvider.getValue(scope, {
       provider: cxschema.ContextProvider.SSM_PARAMETER_PROVIDER,
-      props: { parameterName },
+      props: {
+        parameterName,
+        additionalCacheKey,
+      },
       dummyValue: `dummy-value-for-${parameterName}`,
     }).value;
 

@@ -1351,6 +1351,7 @@ export class Vpc extends VpcBase {
         returnAsymmetricSubnets: true,
         returnVpnGateways: options.returnVpnGateways,
         subnetGroupNameTag: options.subnetGroupNameTag,
+        additionalCacheKey: options.additionalCacheKey,
       } as cxschema.VpcContextQuery,
       dummyValue: undefined,
     }).value;
