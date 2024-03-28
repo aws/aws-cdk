@@ -277,7 +277,11 @@ export class BucketDeployment extends Construct {
   private requestDestinationArn: boolean = false;
   private readonly destinationBucket: s3.IBucket;
   private readonly sources: SourceConfig[];
-  private readonly handlerRole: iam.IRole;
+
+  /**
+   * Execution role of the Lambda function behind the custom CloudFormation resource of type `Custom::CDKBucketDeployment`.
+   */
+  public readonly handlerRole: iam.IRole;
 
   constructor(scope: Construct, id: string, props: BucketDeploymentProps) {
     super(scope, id);
