@@ -85,6 +85,11 @@ describe('tests', () => {
       dropInvalidHeaderFields: true,
       clientKeepAlive: cdk.Duration.seconds(200),
       denyAllIgwTraffic: true,
+      preserveHostHeader: true,
+      xAmznTlsVersionAndCipherSuiteHeaders: true,
+      preserveXffClientPort: true,
+      xffHeaderProcessingMode: elbv2.XffHeaderProcessingMode.PRESERVE,
+      wafFailOpen: true,
     });
 
     // THEN
@@ -108,6 +113,26 @@ describe('tests', () => {
         },
         {
           Key: 'routing.http.drop_invalid_header_fields.enabled',
+          Value: 'true',
+        },
+        {
+          Key: 'routing.http.preserve_host_header.enabled',
+          Value: 'true',
+        },
+        {
+          Key: 'routing.http.x_amzn_tls_version_and_cipher_suite.enabled',
+          Value: 'true',
+        },
+        {
+          Key: 'routing.http.xff_client_port.enabled',
+          Value: 'true',
+        },
+        {
+          Key: 'routing.http.xff_header_processing.mode',
+          Value: 'preserve',
+        },
+        {
+          Key: 'waf.fail_open.enabled',
           Value: 'true',
         },
         {
