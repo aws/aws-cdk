@@ -15,3 +15,4 @@ export * from './kinesis-firehose-stream';
 export * from './api-gateway';
 export * from './api-destination';
 export * from './util';
+export * from './redshift-query';
