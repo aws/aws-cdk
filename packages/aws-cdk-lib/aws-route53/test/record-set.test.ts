@@ -1187,6 +1187,39 @@ describe('record set', () => {
     });
   });
 
+  test('with weight of 0', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    const zone = new route53.HostedZone(stack, 'HostedZone', {
+      zoneName: 'myzone',
+    });
+
+    // WHEN
+    new route53.RecordSet(stack, 'RecordSet', {
+      zone,
+      recordName: 'www',
+      recordType: route53.RecordType.CNAME,
+      target: route53.RecordTarget.fromValues('zzz'),
+      weight: 0,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Route53::RecordSet', {
+      Name: 'www.myzone.',
+      Type: 'CNAME',
+      HostedZoneId: {
+        Ref: 'HostedZoneDB99F866',
+      },
+      ResourceRecords: [
+        'zzz',
+      ],
+      TTL: '1800',
+      Weight: 0,
+      SetIdentifier: 'WEIGHT_0_ID_RecordSet',
+    });
+  });
+
   test.each([
     [-1],
     [256],

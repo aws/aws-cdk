@@ -78,7 +78,8 @@ export interface CapacityConfig {
    * For more information, see [Multi-AZ with
    * Standby](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/managedomains-multiaz.html#managedomains-za-standby)
    *
-   * @default - no multi-az with standby
+   * @default - multi-az with standby if the feature flag `ENABLE_OPENSEARCH_MULTIAZ_WITH_STANDBY`
+   * is true, no multi-az with standby otherwise
    */
   readonly multiAzWithStandbyEnabled?: boolean;
 }
