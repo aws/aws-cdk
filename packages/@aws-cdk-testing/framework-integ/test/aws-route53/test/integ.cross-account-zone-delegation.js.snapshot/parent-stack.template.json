@@ -39,6 +39,9 @@
          "route53:ChangeResourceRecordSetsActions": [
           "UPSERT",
           "DELETE"
+         ],
+         "route53:ChangeResourceRecordSetsNormalizedRecordNames": [
+          "sub.uniqueexample.com"
          ]
         }
        },

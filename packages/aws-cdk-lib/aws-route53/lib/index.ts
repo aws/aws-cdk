@@ -1,4 +1,5 @@
 export * from './alias-record-target';
+export * from './delegation-grant-names';
 export * from './hosted-zone';
 export * from './hosted-zone-provider';
 export * from './hosted-zone-ref';

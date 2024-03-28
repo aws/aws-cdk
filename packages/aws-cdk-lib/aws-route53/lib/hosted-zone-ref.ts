@@ -1,3 +1,4 @@
+import { DelegationGrantNames } from './delegation-grant-names';
 import * as iam from '../../aws-iam';
 import { IResource } from '../../core';
 
@@ -36,8 +37,11 @@ export interface IHostedZone extends IResource {
 
   /**
    * Grant permissions to add delegation records to this zone
+   *
+   * @param grantee grantee to receive the permissions
+   * @param names specify to restrict the delegation to a specific set of names
    */
-  grantDelegation(grantee: iam.IGrantable): iam.Grant;
+  grantDelegation(grantee: iam.IGrantable, names?: DelegationGrantNames): iam.Grant;
 }
 
 /**
