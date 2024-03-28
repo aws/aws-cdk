@@ -1,0 +1,276 @@
+{
+  "version": "36.0.0",
+  "artifacts": {
+    "aws-stepfunctions-distributed-map-batch-input-integ.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "aws-stepfunctions-distributed-map-batch-input-integ.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "aws-stepfunctions-distributed-map-batch-input-integ": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-stepfunctions-distributed-map-batch-input-integ.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a9ab7465eadbb9dfb747c9f9e8f3f6e2d176b646e764c5ab247ae8ea2526f49e.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "aws-stepfunctions-distributed-map-batch-input-integ.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "aws-stepfunctions-distributed-map-batch-input-integ.assets"
+      ],
+      "metadata": {
+        "/aws-stepfunctions-distributed-map-batch-input-integ/Bucket/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Bucket83908E77"
+          }
+        ],
+        "/aws-stepfunctions-distributed-map-batch-input-integ/Bucket/Policy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BucketPolicyE9A3008A"
+          }
+        ],
+        "/aws-stepfunctions-distributed-map-batch-input-integ/Bucket/AutoDeleteObjectsCustomResource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BucketAutoDeleteObjectsCustomResourceBAFD23C2"
+          }
+        ],
+        "/aws-stepfunctions-distributed-map-batch-input-integ/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
+          }
+        ],
+        "/aws-stepfunctions-distributed-map-batch-input-integ/Custom::S3AutoDeleteObjectsCustomResourceProvider/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F"
+          }
+        ],
+        "/aws-stepfunctions-distributed-map-batch-input-integ/StateMachine/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StateMachineRoleB840431D"
+          }
+        ],
+        "/aws-stepfunctions-distributed-map-batch-input-integ/StateMachine/Role/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StateMachineRoleDefaultPolicyDF1E6607"
+          }
+        ],
+        "/aws-stepfunctions-distributed-map-batch-input-integ/StateMachine/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StateMachine2E01A3A5"
+          }
+        ],
+        "/aws-stepfunctions-distributed-map-batch-input-integ/StateMachine/DistributedMapPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "StateMachineDistributedMapPolicy57C9D8C2"
+          }
+        ],
+        "/aws-stepfunctions-distributed-map-batch-input-integ/GetResultWriterOutput/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "GetResultWriterOutputServiceRoleD5D3FC54"
+          }
+        ],
+        "/aws-stepfunctions-distributed-map-batch-input-integ/GetResultWriterOutput/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "GetResultWriterOutputServiceRoleDefaultPolicyB95C8C9F"
+          }
+        ],
+        "/aws-stepfunctions-distributed-map-batch-input-integ/GetResultWriterOutput/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "GetResultWriterOutput15DEE62B"
+          }
+        ],
+        "/aws-stepfunctions-distributed-map-batch-input-integ/Exports/Output{\"Ref\":\"StateMachine2E01A3A5\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefStateMachine2E01A3A5BA46F753"
+          }
+        ],
+        "/aws-stepfunctions-distributed-map-batch-input-integ/Exports/Output{\"Ref\":\"GetResultWriterOutput15DEE62B\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefGetResultWriterOutput15DEE62BAF22CB8E"
+          }
+        ],
+        "/aws-stepfunctions-distributed-map-batch-input-integ/Exports/Output{\"Ref\":\"Bucket83908E77\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefBucket83908E7781C90AC0"
+          }
+        ],
+        "/aws-stepfunctions-distributed-map-batch-input-integ/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/aws-stepfunctions-distributed-map-batch-input-integ/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "aws-stepfunctions-distributed-map-batch-input-integ"
+    },
+    "DistributedMapBatchInputDefaultTestDeployAssert0D5186B1.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "DistributedMapBatchInputDefaultTestDeployAssert0D5186B1.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "DistributedMapBatchInputDefaultTestDeployAssert0D5186B1": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "DistributedMapBatchInputDefaultTestDeployAssert0D5186B1.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/280bf2611b418fe6aca9e0b87acae2b664bed03658081549d986e8c8dd9c89be.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "DistributedMapBatchInputDefaultTestDeployAssert0D5186B1.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "aws-stepfunctions-distributed-map-batch-input-integ",
+        "DistributedMapBatchInputDefaultTestDeployAssert0D5186B1.assets"
+      ],
+      "metadata": {
+        "/DistributedMapBatchInput/DefaultTest/DeployAssert/AwsApiCallStepFunctionsdescribeStateMachinec5cc0786542148808c24d8ebf111c7aa/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallStepFunctionsdescribeStateMachinec5cc0786542148808c24d8ebf111c7aa"
+          }
+        ],
+        "/DistributedMapBatchInput/DefaultTest/DeployAssert/AwsApiCallStepFunctionsdescribeStateMachinec5cc0786542148808c24d8ebf111c7aa/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsAwsApiCallStepFunctionsdescribeStateMachinec5cc0786542148808c24d8ebf111c7aa"
+          }
+        ],
+        "/DistributedMapBatchInput/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+          }
+        ],
+        "/DistributedMapBatchInput/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+          }
+        ],
+        "/DistributedMapBatchInput/DefaultTest/DeployAssert/AwsApiCallS3putObject81ea7b15b4296d6d2efbbfdce2e3f9d3/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallS3putObject81ea7b15b4296d6d2efbbfdce2e3f9d3"
+          }
+        ],
+        "/DistributedMapBatchInput/DefaultTest/DeployAssert/AwsApiCallStepFunctionsstartExecution2dfa9f1b28886d712aed450a1bc8d679/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallStepFunctionsstartExecution2dfa9f1b28886d712aed450a1bc8d679"
+          }
+        ],
+        "/DistributedMapBatchInput/DefaultTest/DeployAssert/AwsApiCallStepFunctionsdescribeExecutiondce79d4b6bd926e246a8de09583664d4/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallStepFunctionsdescribeExecutiondce79d4b6bd926e246a8de09583664d4"
+          }
+        ],
+        "/DistributedMapBatchInput/DefaultTest/DeployAssert/AwsApiCallStepFunctionsdescribeExecutiondce79d4b6bd926e246a8de09583664d4/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsAwsApiCallStepFunctionsdescribeExecutiondce79d4b6bd926e246a8de09583664d4"
+          }
+        ],
+        "/DistributedMapBatchInput/DefaultTest/DeployAssert/AwsApiCallS3listObjectsV2075ab1ae20a59cc1715b5c01c4a48ac5/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallS3listObjectsV2075ab1ae20a59cc1715b5c01c4a48ac5"
+          }
+        ],
+        "/DistributedMapBatchInput/DefaultTest/DeployAssert/AwsApiCallS3listObjectsV2075ab1ae20a59cc1715b5c01c4a48ac5/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsAwsApiCallS3listObjectsV2075ab1ae20a59cc1715b5c01c4a48ac5"
+          }
+        ],
+        "/DistributedMapBatchInput/DefaultTest/DeployAssert/LambdaInvoke6f3961022cd8c759ab5ad6903ad6c335/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaInvoke6f3961022cd8c759ab5ad6903ad6c335"
+          }
+        ],
+        "/DistributedMapBatchInput/DefaultTest/DeployAssert/LambdaInvoke6f3961022cd8c759ab5ad6903ad6c335/Invoke": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaInvoke6f3961022cd8c759ab5ad6903ad6c335InvokeDCAA27D3"
+          }
+        ],
+        "/DistributedMapBatchInput/DefaultTest/DeployAssert/LambdaInvoke6f3961022cd8c759ab5ad6903ad6c335/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsLambdaInvoke6f3961022cd8c759ab5ad6903ad6c335"
+          }
+        ],
+        "/DistributedMapBatchInput/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/DistributedMapBatchInput/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "DistributedMapBatchInput/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}
