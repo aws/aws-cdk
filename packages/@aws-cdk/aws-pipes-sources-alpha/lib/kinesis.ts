@@ -127,7 +127,7 @@ export class KinesisSource implements ISource {
     this.parallelizationFactor = this.sourceParameters.parallelizationFactor;
     this.deadLetterTarget = this.sourceParameters.deadLetterTarget;
     this.startingPosition = this.sourceParameters.startingPosition;
-    this.sourceParameters = this.sourceParameters.startingPositionTimestamp;
+    this.startingPositionTimestamp = this.sourceParameters.startingPositionTimestamp;
 
     if (this.batchSize !== undefined) {
       if (this.batchSize < 1 || this.batchSize > 10000) {

@@ -55,7 +55,7 @@ describe('kinesis source', () => {
       maximumRetryAttempts: 10,
       onPartialBatchItemFailure: OnPartialBatchItemFailure.AUTOMATIC_BISECT,
       parallelizationFactor: 10,
-      startingPosition: KinesisStartingPosition.LATEST,
+      startingPosition: KinesisStartingPosition.AT_TIMESTAMP,
       startingPositionTimestamp: '2024-01-01T00:00:00Z',
     });
 
@@ -86,7 +86,7 @@ describe('kinesis source', () => {
           MaximumRetryAttempts: 10,
           OnPartialBatchItemFailure: 'AUTOMATIC_BISECT',
           ParallelizationFactor: 10,
-          StartingPosition: 'LATEST',
+          StartingPosition: 'AT_TIMESTAMP',
           StartingPositionTimestamp: '2024-01-01T00:00:00Z',
         },
       },
@@ -107,7 +107,7 @@ describe('kinesis source', () => {
       maximumRetryAttempts: 10,
       onPartialBatchItemFailure: OnPartialBatchItemFailure.AUTOMATIC_BISECT,
       parallelizationFactor: 10,
-      startingPosition: KinesisStartingPosition.LATEST,
+      startingPosition: KinesisStartingPosition.AT_TIMESTAMP,
       startingPositionTimestamp: '2024-01-01T00:00:00Z',
     });
 
@@ -143,7 +143,7 @@ describe('kinesis source', () => {
           MaximumRetryAttempts: 10,
           OnPartialBatchItemFailure: 'AUTOMATIC_BISECT',
           ParallelizationFactor: 10,
-          StartingPosition: 'LATEST',
+          StartingPosition: 'AT_TIMESTAMP',
           StartingPositionTimestamp: '2024-01-01T00:00:00Z',
         },
       },
@@ -369,6 +369,6 @@ describe('kinesis source parameters validation', () => {
         startingPosition: KinesisStartingPosition.LATEST,
         startingPositionTimestamp: '2024-01-01T00:00:00Z',
       });
-    }).toThrow('Timestamp only valid with StartingPosition AT_TIMESTAMP for Kinesis streams, received KinesisStartingPosition.LATEST');
+    }).toThrow('Timestamp only valid with StartingPosition AT_TIMESTAMP for Kinesis streams, received LATEST');
   });
 });
