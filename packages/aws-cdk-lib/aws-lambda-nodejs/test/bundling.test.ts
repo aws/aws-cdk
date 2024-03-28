@@ -239,7 +239,7 @@ test('esbuild bundling with esbuild options', () => {
       'process.env.STRING': JSON.stringify('this is a "test"'),
     },
     format: OutputFormat.ESM,
-    inject: ['./my-shim.js'],
+    inject: ['./my-shim.js', './path with space/second-shim.js'],
     esbuildArgs: {
       '--log-limit': '0',
       '--resolve-extensions': '.ts,.js',
@@ -264,7 +264,7 @@ test('esbuild bundling with esbuild options', () => {
           defineInstructions,
           '--log-level=silent --keep-names --tsconfig=/asset-input/lib/custom-tsconfig.ts',
           '--metafile=/asset-output/index.meta.json --banner:js="/* comments */" --footer:js="/* comments */"',
-          '--main-fields=module,main --inject:./my-shim.js',
+          '--main-fields=module,main --inject:"./my-shim.js" --inject:"./path with space/second-shim.js"',
           '--log-limit="0" --resolve-extensions=".ts,.js" --splitting --keep-names --out-extension:".js=.mjs"',
         ].join(' '),
       ],
