@@ -1,3 +1,9 @@
+import type { InstanceTypeInfo } from '@aws-sdk/client-ec2';
+import * as instancePropertiesJsonData from '../data/instance-properties.json';
+
+type InstancePropertiesData = Omit<InstanceTypeInfo, 'InstanceType'>;
+const instancePropertiesData: {[InstanceType: string]: InstancePropertiesData} = instancePropertiesJsonData;
+
 /**
  * What class and generation of instance to use
  *
@@ -1377,12 +1383,52 @@ export enum InstanceSize {
 }
 
 /**
+ * Instance type properties
+ */
+export interface InstanceProperties {
+  /**
+   * If true, this instance type is current generation
+   *
+   * @default - not specified
+   */
+  readonly currentGeneration?: boolean;
+
+  /**
+   * If true, this instance type is eligible for the AWS free trial
+   *
+   * @see https://aws.amazon.com/free/
+   * @default - not specified
+   */
+  readonly freeTierEligible?: boolean;
+}
+
+/**
  * Instance type for EC2 instances
  *
  * This class takes a literal string, good if you already
  * know the identifier of the type you want.
  */
 export class InstanceType {
+  /**
+   * **Instance type**: `r6id.16xlarge`:
+   *
+   * * **Instance class**: {@link InstanceClass.R6ID} Memory optimized instances with local NVME drive, 6th generation with Intel Xeon Scalable processors (3rd generation processors code named Ice Lake)
+   * * **Instance size**: {@link InstanceSize.XLARGE16}
+   *
+   * Alias: {@link InstanceType.MEMORY6_INTEL_NVME_DRIVE_16XLARGE}
+   */
+  public static readonly R6ID_16XLARGE = InstanceType.of(InstanceClass.R6ID, InstanceSize.XLARGE16);
+
+  /**
+   * **Instance type**: `r6id.16xlarge`:
+   *
+   * * **Instance class**: {@link InstanceClass.R6ID} Memory optimized instances with local NVME drive, 6th generation with Intel Xeon Scalable processors (3rd generation processors code named Ice Lake)
+   * * **Instance size**: {@link InstanceSize.XLARGE16}
+   *
+   * Alias of: {@link InstanceType.R6ID_16XLARGE}
+   */
+  public static readonly MEMORY6_INTEL_NVME_DRIVE_16XLARGE = InstanceType.of(InstanceClass.MEMORY6_INTEL_NVME_DRIVE, InstanceSize.XLARGE16);
+
   /**
    * Instance type for EC2 instances
    *
@@ -1634,7 +1680,30 @@ export class InstanceType {
     return new InstanceType(`${instanceClassMap[instanceClass] ?? instanceClass}.${instanceSize}`);
   }
 
-  constructor(private readonly instanceTypeIdentifier: string) {
+  private static mapInstanceProperties(instanceTypeIdentifier: string): InstanceProperties | undefined {
+    const data = instancePropertiesData[instanceTypeIdentifier];
+    if (!data) return;
+
+    return {
+      currentGeneration: data.CurrentGeneration,
+      freeTierEligible: data.FreeTierEligible,
+    };
+  };
+
+  constructor(
+    /**
+     * The instance type, as returned by the EC2 API
+     *
+     * @example "t3.small"
+     */
+    private readonly instanceTypeIdentifier: string,
+
+    /**
+     * Instance properties for the instance type, obtained from cached SDK data
+     *
+     * @default - Cached SDK data properties for the corresponding instance type
+     */
+    public readonly instanceProperties = InstanceType.mapInstanceProperties(instanceTypeIdentifier)) {
   }
 
   /**
