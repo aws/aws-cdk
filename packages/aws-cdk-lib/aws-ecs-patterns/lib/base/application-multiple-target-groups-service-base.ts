@@ -113,6 +113,16 @@ export interface ApplicationMultipleTargetGroupsServiceBaseProps {
    * @default - false
    */
   readonly enableExecuteCommand?: boolean;
+
+  /**
+   * The minimum number of tasks, specified as a percentage of
+   * the Amazon ECS service's DesiredCount value, that must
+   * continue to run and remain healthy during a deployment.
+   *
+   * @see https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_DeploymentConfiguration.html
+   * @default - 0 if daemon, otherwise 50
+   */
+  readonly minimumHealthyPercent?: number;
 }
 
 /**
@@ -267,6 +277,26 @@ export interface ApplicationTargetProps {
    * @default No path condition
    */
   readonly pathPattern?: string;
+
+  /**
+   * The amount of time for Elastic Load Balancing to wait before deregistering a target.
+   *
+   * The range is 0-3600 seconds.
+   *
+   * @default 300
+   */
+  readonly deregistrationDelay?: Duration;
+  /**
+   * The stickiness cookie expiration period.
+   *
+   * Setting this value enables load balancer stickiness.
+   *
+   * After this period, the cookie is considered stale. The minimum value is
+   * 1 second and the maximum value is 7 days (604800 seconds).
+   *
+   * @default Duration.days(1)
+   */
+  readonly stickinessCookieDuration?: Duration;
 }
 
 /**
@@ -515,6 +545,8 @@ export abstract class ApplicationMultipleTargetGroupsServiceBase extends Constru
           }),
         ],
         conditions,
+        deregistrationDelay: targetProps.deregistrationDelay,
+        stickinessCookieDuration: targetProps.stickinessCookieDuration,
         priority: targetProps.priority,
       });
       this.targetGroups.push(targetGroup);

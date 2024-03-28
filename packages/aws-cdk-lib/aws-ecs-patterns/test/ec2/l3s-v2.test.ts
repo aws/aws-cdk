@@ -168,6 +168,7 @@ describe('ApplicationMultipleTargetGroupsEc2Service', () => {
       ],
       placementStrategies: [PlacementStrategy.spreadAcrossInstances(), PlacementStrategy.packedByCpu(), PlacementStrategy.randomly()],
       placementConstraints: [PlacementConstraint.memberOf('attribute:ecs.instance-type =~ m5a.*')],
+      minHealthyPercent: 50,
     });
 
     // THEN
@@ -197,6 +198,7 @@ describe('ApplicationMultipleTargetGroupsEc2Service', () => {
       ServiceName: 'myService',
       PlacementConstraints: [{ Type: 'memberOf', Expression: 'attribute:ecs.instance-type =~ m5a.*' }],
       PlacementStrategies: [{ Field: 'instanceId', Type: 'spread' }, { Field: 'CPU', Type: 'binpack' }, { Type: 'random' }],
+      DeploymentConfiguration: { MinimumHealthyPercent: 50 },
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
@@ -1148,6 +1150,7 @@ describe('NetworkMultipleTargetGroupsEc2Service', () => {
       ],
       placementStrategies: [PlacementStrategy.spreadAcrossInstances(), PlacementStrategy.packedByCpu(), PlacementStrategy.randomly()],
       placementConstraints: [PlacementConstraint.memberOf('attribute:ecs.instance-type =~ m5a.*')],
+      minHealthyPercent: 50,
     });
 
     // THEN
@@ -1178,6 +1181,7 @@ describe('NetworkMultipleTargetGroupsEc2Service', () => {
       ServiceName: 'myService',
       PlacementConstraints: [{ Type: 'memberOf', Expression: 'attribute:ecs.instance-type =~ m5a.*' }],
       PlacementStrategies: [{ Field: 'instanceId', Type: 'spread' }, { Field: 'CPU', Type: 'binpack' }, { Type: 'random' }],
+      DeploymentConfiguration: { MinimumHealthyPercent: 50 },
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
