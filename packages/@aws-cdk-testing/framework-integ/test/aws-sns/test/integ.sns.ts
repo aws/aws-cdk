@@ -40,6 +40,18 @@ class SNSInteg extends Stack {
       successFeedbackRole: feedbackRole,
       successFeedbackSampleRate: 50,
     });
+
+    const topic2 = new Topic(this, 'MyTopic2', {
+      topicName: 'fooTopic2',
+      displayName: 'fooDisplayName2',
+      masterKey: key,
+    });
+    const importedTopic = Topic.fromTopicArn(this, 'ImportedTopic', topic2.topicArn);
+
+    const publishRole = new Role(this, 'PublishRole', {
+      assumedBy: new ServicePrincipal('s3.amazonaws.com'),
+    });
+    importedTopic.grantPublish(publishRole);
   }
 }
 
