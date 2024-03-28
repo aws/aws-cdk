@@ -340,7 +340,33 @@ describe('tests', () => {
           slowStart: badDuration,
           vpc,
         });
-      }).toThrow(/Slow start duration value must be between 30 and 900 seconds./);
+      }).toThrow(/Slow start duration value must be between 30 and 900 seconds, or 0 to disable slow start./);
+    });
+  });
+
+  test('Disable slow start by setting to 0 seconds', () => {
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'Stack');
+    const vpc = new ec2.Vpc(stack, 'VPC', {});
+
+    // WHEN
+    new elbv2.ApplicationTargetGroup(stack, 'TargetGroup', {
+      slowStart: cdk.Duration.seconds(0),
+      vpc,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::TargetGroup', {
+      TargetGroupAttributes: [
+        {
+          Key: 'slow_start.duration_seconds',
+          Value: '0',
+        },
+        {
+          Key: 'stickiness.enabled',
+          Value: 'false',
+        },
+      ],
     });
   });
 
@@ -547,6 +573,45 @@ describe('tests', () => {
     expect(() => {
       app.synth();
     }).toThrow('Healthcheck interval 1 minute must be greater than the timeout 2 minute');
+  });
+
+  test('Throws error for health check interval less than timeout', () => {
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'Stack');
+    const vpc = new ec2.Vpc(stack, 'Vpc');
+
+    new elbv2.ApplicationTargetGroup(stack, 'TargetGroup', {
+      vpc,
+      port: 80,
+      healthCheck: {
+        interval: cdk.Duration.seconds(10),
+        timeout: cdk.Duration.seconds(20),
+      },
+    });
+
+    expect(() => {
+      app.synth();
+    }).toThrow('Health check interval must be greater than or equal to the timeout; received interval 10, timeout 20.');
+  });
+
+  // for backwards compatibility these can be equal, see discussion in https://github.com/aws/aws-cdk/pull/26031
+  test('Throws error for health check interval less than timeout', () => {
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'Stack');
+    const vpc = new ec2.Vpc(stack, 'Vpc');
+
+    new elbv2.ApplicationTargetGroup(stack, 'TargetGroup', {
+      vpc,
+      port: 80,
+      healthCheck: {
+        interval: cdk.Duration.seconds(10),
+        timeout: cdk.Duration.seconds(20),
+      },
+    });
+
+    expect(() => {
+      app.synth();
+    }).toThrow('Health check interval must be greater than or equal to the timeout; received interval 10, timeout 20.');
   });
 
   test('imported targetGroup has targetGroupName', () => {

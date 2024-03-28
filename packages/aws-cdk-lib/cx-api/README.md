@@ -275,3 +275,37 @@ _cdk.json_
   }
 }
 ```
+
+* `@aws-cdk/aws-codepipeline:defaultPipelineTypeToV2`
+
+Enables Pipeline to set the default pipeline type to V2.
+
+When this feature flag is enabled, and the `pipelineType` property is not provided in a `Pipeline`
+construct, the construct automatically defaults the value of this property to `PipelineType.V2`.
+
+_cdk.json_
+
+```json
+{
+  "context": {
+    "@aws-cdk/aws-codepipeline:defaultPipelineTypeToV2": true
+  }
+}
+```
+
+* `@aws-cdk/aws-kms:reduceCrossAccountRegionPolicyScope`
+
+Reduce resource scope of the IAM Policy created from KMS key grant to granting key only.
+
+When this feature flag is enabled and calling KMS key grant method, the created IAM policy will reduce the resource scope from
+'*' to this specific granting KMS key.
+
+_cdk.json_
+
+```json
+{
+  "context": {
+    "@aws-cdk/aws-kms:reduceCrossAccountRegionPolicyScope": true
+  }
+}
+```

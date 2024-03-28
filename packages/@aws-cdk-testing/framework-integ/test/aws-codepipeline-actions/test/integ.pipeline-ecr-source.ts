@@ -24,7 +24,11 @@ import * as cpactions from 'aws-cdk-lib/aws-codepipeline-actions';
  * was triggered successfully.
  */
 
-const app = new cdk.App();
+const app = new cdk.App({
+  postCliContext: {
+    '@aws-cdk/aws-codepipeline:defaultPipelineTypeToV2': false,
+  },
+});
 
 const stack = new cdk.Stack(app, 'aws-cdk-codepipeline-ecr-source');
 

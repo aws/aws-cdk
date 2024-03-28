@@ -2,6 +2,29 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.134.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.133.0-alpha.0...v2.134.0-alpha.0) (2024-03-26)
+
+
+### Features
+
+* **kinesisanalytics-flink:** add support for Flink 1.18 ([#29554](https://github.com/aws/aws-cdk/issues/29554)) ([8fd8ee8](https://github.com/aws/aws-cdk/commit/8fd8ee8e7e5a6e047e5110f084dff61906bde160)), closes [/docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-kinesisanalyticsv2-application.html#aws-resource-kinesisanalyticsv2](https://github.com/aws//docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-kinesisanalyticsv2-application.html/issues/aws-resource-kinesisanalyticsv2)
+
+
+### Bug Fixes
+
+* **glue:** s3 path specified in --spark-event-logs-path needs to end with slash ([#29357](https://github.com/aws/aws-cdk/issues/29357)) ([4ff3565](https://github.com/aws/aws-cdk/commit/4ff3565a9d7b0298bf884822fecabdd3cff643aa)), closes [#29356](https://github.com/aws/aws-cdk/issues/29356)
+
+## [2.133.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.132.1-alpha.0...v2.133.0-alpha.0) (2024-03-14)
+
+## [2.132.1-alpha.0](https://github.com/aws/aws-cdk/compare/v2.132.0-alpha.0...v2.132.1-alpha.0) (2024-03-12)
+
+## [2.132.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.131.0-alpha.0...v2.132.0-alpha.0) (2024-03-08)
+
+
+### Bug Fixes
+
+* **glue:** `PythonRayExecutableProps` has innaccurate properties ([#28625](https://github.com/aws/aws-cdk/issues/28625)) ([7994733](https://github.com/aws/aws-cdk/commit/79947337d59539a03a2d7d2849043aa9405268d8)), closes [#28570](https://github.com/aws/aws-cdk/issues/28570)
+
 ## [2.131.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.130.0-alpha.0...v2.131.0-alpha.0) (2024-03-01)
 
 ## [2.130.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.129.0-alpha.0...v2.130.0-alpha.0) (2024-02-23)

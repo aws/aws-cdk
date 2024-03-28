@@ -1052,6 +1052,17 @@ new ec2.VpcEndpointService(this, 'EndpointService', {
 });
 ```
 
+You can also include a service principal in the `allowedPrincipals` property by specifying it as a parameter to the  `ArnPrincipal` constructor.
+The resulting VPC endpoint will have an allowlisted principal of type `Service`, instead of `Arn` for that item in the list.
+```ts
+declare const networkLoadBalancer: elbv2.NetworkLoadBalancer;
+
+new ec2.VpcEndpointService(this, 'EndpointService', {
+  vpcEndpointServiceLoadBalancers: [networkLoadBalancer],
+  allowedPrincipals: [new iam.ArnPrincipal('ec2.amazonaws.com')],
+});
+```
+
 Endpoint services support private DNS, which makes it easier for clients to connect to your service by automatically setting up DNS in their VPC.
 You can enable private DNS on an endpoint service like so:
 

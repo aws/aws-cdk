@@ -955,7 +955,11 @@
         "Fn::Join": [
          "",
          [
-          "arn:aws:ecs:",
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":ecs:",
           {
            "Ref": "AWS::Region"
           },

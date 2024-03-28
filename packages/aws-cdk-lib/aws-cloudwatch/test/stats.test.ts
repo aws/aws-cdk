@@ -1,4 +1,19 @@
+import { Metric, Stats } from '../../aws-cloudwatch';
 import * as cloudwatch from '../lib';
+
+it.each([
+  Stats.percentileRank(0),
+  Stats.percentileRank(0, 1),
+  Stats.percentileRank(0, undefined),
+])('Stats can create valid statistics %s without causing warnings', (statistic) => {
+  const metric = new Metric({
+    namespace: 'example',
+    metricName: 'example',
+    statistic,
+  });
+
+  expect(metric.warningsV2).toEqual(undefined);
+});
 
 test('spot check some constants', () => {
   expect(cloudwatch.Stats.AVERAGE).toEqual('Average');

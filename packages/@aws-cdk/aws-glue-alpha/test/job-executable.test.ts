@@ -254,5 +254,29 @@ describe('JobExecutable', () => {
         script,
       })).toBeDefined();
     });
+
+    test('with JobTypeof("glueray") and extraPythonFiles set should throw', () => {
+      expect(() => glue.JobExecutable.of({
+        type: glue.JobType.of('glueray'),
+        glueVersion: glue.GlueVersion.V4_0,
+        language: glue.JobLanguage.PYTHON,
+        pythonVersion: glue.PythonVersion.THREE_NINE,
+        runtime: glue.Runtime.RAY_TWO_FOUR,
+        extraPythonFiles: [script],
+        script,
+      })).toThrow(/extraPythonFiles is not supported for Ray jobs/);
+    });
+
+    test('with JobType ray and s3PythonModules should succeed', () => {
+      expect(glue.JobExecutable.of({
+        type: glue.JobType.of('glueray'),
+        glueVersion: glue.GlueVersion.V4_0,
+        language: glue.JobLanguage.PYTHON,
+        pythonVersion: glue.PythonVersion.THREE_NINE,
+        s3PythonModules: [script],
+        runtime: glue.Runtime.RAY_TWO_FOUR,
+        script,
+      })).toBeDefined();
+    });
   });
 });
