@@ -41,6 +41,50 @@
                   "fqn": "aws-cdk-lib.aws_iam.CfnUser",
                   "version": "0.0.0"
                 }
+              },
+              "DefaultPolicy": {
+                "id": "DefaultPolicy",
+                "path": "aws-cdk-iam-managed-policy/MyUser/DefaultPolicy",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-cdk-iam-managed-policy/MyUser/DefaultPolicy/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                      "aws:cdk:cloudformation:props": {
+                        "policyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Resource": {
+                                "Fn::GetAtt": [
+                                  "Role1ABCC5F0",
+                                  "Arn"
+                                ]
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "policyName": "MyUserDefaultPolicy7B897426",
+                        "users": [
+                          {
+                            "Ref": "MyUserDC45028B"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.Policy",
+                  "version": "0.0.0"
+                }
               }
             },
             "constructInfo": {
@@ -75,16 +119,6 @@
                           "Action": "sqs:SendMessage",
                           "Effect": "Allow",
                           "Resource": "*"
-                        },
-                        {
-                          "Action": "sts:AssumeRole",
-                          "Effect": "Allow",
-                          "Resource": {
-                            "Fn::GetAtt": [
-                              "Role1ABCC5F0",
-                              "Arn"
-                            ]
-                          }
                         }
                       ],
                       "Version": "2012-10-17"
