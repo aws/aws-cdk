@@ -10,7 +10,7 @@
     "package": "cdk-package",
     "awslint": "cdk-awslint",
     "pkglint": "pkglint -f",
-    "test": "jest",
+    "test": "./test.sh",
     "watch": "cdk-watch",
     "build+test": "yarn build && yarn test",
     "build+test+package": "yarn build+test && yarn package",
