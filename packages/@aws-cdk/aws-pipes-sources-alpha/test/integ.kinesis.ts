@@ -36,6 +36,7 @@ const sourceUnderTest = new KinesisSource(sourceKinesisStream, {
   onPartialBatchItemFailure: OnPartialBatchItemFailure.AUTOMATIC_BISECT,
   parallelizationFactor: 1,
   startingPosition: KinesisStartingPosition.LATEST,
+  startingPositionTimestamp: 1711576897,
 });
 
 new Pipe(stack, 'Pipe', {
