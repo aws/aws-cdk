@@ -306,6 +306,7 @@
     "docs-public-apis:aws-cdk-lib.aws_ec2.GatewayVpcEndpoint.fromGatewayVpcEndpointId",
     "docs-public-apis:aws-cdk-lib.aws_ec2.GatewayVpcEndpointAwsService.DYNAMODB",
     "docs-public-apis:aws-cdk-lib.aws_ec2.GatewayVpcEndpointAwsService.S3",
+    "docs-public-apis:aws-cdk-lib.aws_ec2.GatewayVpcEndpointAwsService.S3_EXPRESS",
     "docs-public-apis:aws-cdk-lib.aws_ec2.InstanceType.sameInstanceClassAs",
     "docs-public-apis:aws-cdk-lib.aws_ec2.InterfaceVpcEndpointAwsService.*",
     "docs-public-apis:aws-cdk-lib.aws_ec2.LogFormat.value",
