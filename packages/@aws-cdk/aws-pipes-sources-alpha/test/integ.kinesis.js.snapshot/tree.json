@@ -215,7 +215,8 @@
                         "maximumRetryAttempts": 3,
                         "onPartialBatchItemFailure": "AUTOMATIC_BISECT",
                         "parallelizationFactor": 1,
-                        "startingPosition": "LATEST"
+                        "startingPosition": "AT_TIMESTAMP",
+                        "startingPositionTimestamp": "2024-01-01T00:00:00Z"
                       }
                     },
                     "target": {
@@ -306,17 +307,17 @@
                 "id": "DeployAssert",
                 "path": "integtest-pipe-source-kinesis/DefaultTest/DeployAssert",
                 "children": {
-                  "AwsApiCallKinesisputRecordac62b7caf42ac13ed9fe2cdebc241de9": {
-                    "id": "AwsApiCallKinesisputRecordac62b7caf42ac13ed9fe2cdebc241de9",
-                    "path": "integtest-pipe-source-kinesis/DefaultTest/DeployAssert/AwsApiCallKinesisputRecordac62b7caf42ac13ed9fe2cdebc241de9",
+                  "AwsApiCallKinesisputRecord79fbaf9038737f10cd80d35a619fb146": {
+                    "id": "AwsApiCallKinesisputRecord79fbaf9038737f10cd80d35a619fb146",
+                    "path": "integtest-pipe-source-kinesis/DefaultTest/DeployAssert/AwsApiCallKinesisputRecord79fbaf9038737f10cd80d35a619fb146",
                     "children": {
                       "SdkProvider": {
                         "id": "SdkProvider",
-                        "path": "integtest-pipe-source-kinesis/DefaultTest/DeployAssert/AwsApiCallKinesisputRecordac62b7caf42ac13ed9fe2cdebc241de9/SdkProvider",
+                        "path": "integtest-pipe-source-kinesis/DefaultTest/DeployAssert/AwsApiCallKinesisputRecord79fbaf9038737f10cd80d35a619fb146/SdkProvider",
                         "children": {
                           "AssertionsProvider": {
                             "id": "AssertionsProvider",
-                            "path": "integtest-pipe-source-kinesis/DefaultTest/DeployAssert/AwsApiCallKinesisputRecordac62b7caf42ac13ed9fe2cdebc241de9/SdkProvider/AssertionsProvider",
+                            "path": "integtest-pipe-source-kinesis/DefaultTest/DeployAssert/AwsApiCallKinesisputRecord79fbaf9038737f10cd80d35a619fb146/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
                               "version": "10.3.0"
@@ -330,11 +331,11 @@
                       },
                       "Default": {
                         "id": "Default",
-                        "path": "integtest-pipe-source-kinesis/DefaultTest/DeployAssert/AwsApiCallKinesisputRecordac62b7caf42ac13ed9fe2cdebc241de9/Default",
+                        "path": "integtest-pipe-source-kinesis/DefaultTest/DeployAssert/AwsApiCallKinesisputRecord79fbaf9038737f10cd80d35a619fb146/Default",
                         "children": {
                           "Default": {
                             "id": "Default",
-                            "path": "integtest-pipe-source-kinesis/DefaultTest/DeployAssert/AwsApiCallKinesisputRecordac62b7caf42ac13ed9fe2cdebc241de9/Default/Default",
+                            "path": "integtest-pipe-source-kinesis/DefaultTest/DeployAssert/AwsApiCallKinesisputRecord79fbaf9038737f10cd80d35a619fb146/Default/Default",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
                               "version": "10.3.0"

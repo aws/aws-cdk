@@ -113,7 +113,8 @@
       "MaximumRetryAttempts": 3,
       "OnPartialBatchItemFailure": "AUTOMATIC_BISECT",
       "ParallelizationFactor": 1,
-      "StartingPosition": "LATEST"
+      "StartingPosition": "AT_TIMESTAMP",
+      "StartingPositionTimestamp": "2024-01-01T00:00:00Z"
      }
     },
     "Target": {
