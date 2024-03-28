@@ -1,0 +1,19 @@
+{
+  "version": "36.0.0",
+  "files": {
+    "c3065e2b174aec5c2983ead9d08adf6eeae1a88b04f53c1f2a44224959876568": {
+      "source": {
+        "path": "integtest-restapi-import-deployment-stage.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "c3065e2b174aec5c2983ead9d08adf6eeae1a88b04f53c1f2a44224959876568.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
