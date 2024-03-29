@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/032f36bb70285d387ca832d91b9cd41883fde7965551acc3794d9744ed0a8469.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/54ade77a86544e3c3bebba68ba724e64a54a99d42f1a46e09c045c8991b291e9.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -38,6 +38,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "PipelineBucketB967BD35"
+          }
+        ],
+        "/aws-cdk-codepipeline-type-v2/PipelineBucket/auto-deletion-log-group/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PipelineBucketautodeletionloggroup7090356C"
           }
         ],
         "/aws-cdk-codepipeline-type-v2/PipelineBucket/Policy/Resource": [
@@ -68,6 +74,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "DeployBucket67E2C076"
+          }
+        ],
+        "/aws-cdk-codepipeline-type-v2/DeployBucket/auto-deletion-log-group/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DeployBucketautodeletionloggroupC22EB0B1"
           }
         ],
         "/aws-cdk-codepipeline-type-v2/DeployBucket/Policy/Resource": [

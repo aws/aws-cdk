@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/45ae5e32493db5d43183e70f9b81e5df26199a1af8b8baa2949534c4a043bbfb.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/ccfa71d4e964ad76049bafc7a982baa14a87afc30b7772405b09b91f7eeae686.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -38,6 +38,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "PipelineBucketB967BD35"
+          }
+        ],
+        "/aws-cdk-codepipeline-with-pipeline-variables/PipelineBucket/auto-deletion-log-group/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PipelineBucketautodeletionloggroup7090356C"
           }
         ],
         "/aws-cdk-codepipeline-with-pipeline-variables/PipelineBucket/Policy/Resource": [
@@ -68,6 +74,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "DeployBucket67E2C076"
+          }
+        ],
+        "/aws-cdk-codepipeline-with-pipeline-variables/DeployBucket/auto-deletion-log-group/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DeployBucketautodeletionloggroupC22EB0B1"
           }
         ],
         "/aws-cdk-codepipeline-with-pipeline-variables/DeployBucket/Policy/Resource": [
@@ -174,7 +186,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/785ec07d0d460b2cb1c5005fba76e8f1e5d2360dfabbc19ab9c98e1c72b84eaa.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/7d810f8e850e1c2c412b209d574b0d89f2f2aeccc5a6d248a528dc888520c798.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
