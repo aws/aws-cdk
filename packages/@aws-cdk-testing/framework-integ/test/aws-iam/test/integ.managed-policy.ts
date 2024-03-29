@@ -24,7 +24,7 @@ const policy3 = ManagedPolicy.fromAwsManagedPolicyName('SecurityAudit');
 user.addManagedPolicy(policy3);
 
 const role = new Role(stack, 'Role', { assumedBy: new AccountRootPrincipal() });
-role.grantAssumeRole(user);
+role.grantAssumeRole(policy.grantPrincipal);
 
 Grant.addToPrincipal({ actions: ['iam:*'], resourceArns: [role.roleArn], grantee: policy2 });
 
