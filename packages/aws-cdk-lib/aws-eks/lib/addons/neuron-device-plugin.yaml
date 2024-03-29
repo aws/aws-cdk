@@ -1,4 +1,4 @@
-# source: https://github.com/aws/aws-neuron-sdk/blob/master/docs/neuron-container-tools/k8s-neuron-device-plugin.yml
+# source: https://awsdocs-neuron.readthedocs-hosted.com/en/latest/containers/tutorials/k8s-setup.html
 # https://kubernetes.io/docs/concepts/extend-kubernetes/compute-storage-net/device-plugins/
 apiVersion: apps/v1
 kind: DaemonSet
@@ -13,11 +13,13 @@ spec:
     type: RollingUpdate
   template:
     metadata:
-      annotations:
-        scheduler.alpha.kubernetes.io/critical-pod: ""
+      # Uncomment the annotation below if k8s version is 1.13 or lower
+      # annotations:
+      #  scheduler.alpha.kubernetes.io/critical-pod: ""
       labels:
         name: neuron-device-plugin-ds
     spec:
+      serviceAccount: neuron-device-plugin
       tolerations:
       - key: CriticalAddonsOnly
         operator: Exists
@@ -33,18 +35,22 @@ spec:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
             nodeSelectorTerms:
-              - matchExpressions:
-                  - key: "beta.kubernetes.io/instance-type"
-                    operator: In
-                    values:
-                      - inf1.xlarge
-                      - inf1.2xlarge
-                      - inf1.6xlarge
-                      - inf1.24xlarge
-                      - inf2.xlarge
-                      - inf2.8xlarge
-                      - inf2.24xlarge
-                      - inf2.48xlarge
+              # Uncomment following matchExpressions if using k8s 1.16 or lower
+              #- matchExpressions:
+              #    - key: "beta.kubernetes.io/instance-type"
+              #      operator: In
+              #      values:
+              #        - inf1.xlarge
+              #        - inf1.2xlarge
+              #        - inf1.6xlarge
+              #        - inf1.24xlarge
+              #        - inf2.xlarge
+              #        - inf2.8xlarge
+              #        - inf2.24xlarge
+              #        - inf2.48xlarge
+              #        - trn1.2xlarge
+              #        - trn1.32xlarge
+              #        - trn1n.32xlarge
               - matchExpressions:
                   - key: "node.kubernetes.io/instance-type"
                     operator: In
@@ -57,18 +63,34 @@ spec:
                       - inf2.8xlarge
                       - inf2.24xlarge
                       - inf2.48xlarge
+                      - trn1.2xlarge
+                      - trn1.32xlarge
+                      - trn1n.32xlarge
       containers:
-        - image: 790709498068.dkr.ecr.us-west-2.amazonaws.com/neuron-device-plugin:1.0.9043.0
-          imagePullPolicy: Always
-          name: k8s-neuron-device-plugin-ctr
-          securityContext:
-            allowPrivilegeEscalation: false
-            capabilities:
-              drop: ["ALL"]
-          volumeMounts:
-            - name: device-plugin
-              mountPath: /var/lib/kubelet/device-plugins
+        # Find all neuron-device-plugin images at https://gallery.ecr.aws/neuron/neuron-device-plugin
+      - image: public.ecr.aws/neuron/neuron-device-plugin:2.19.16.0
+        imagePullPolicy: Always
+        name: neuron-device-plugin
+        env:
+        - name: KUBECONFIG
+          value: /etc/kubernetes/kubelet.conf
+        - name: NODE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop: ["ALL"]
+        volumeMounts:
+          - name: device-plugin
+            mountPath: /var/lib/kubelet/device-plugins
+          - name: infa-map
+            mountPath: /run
       volumes:
         - name: device-plugin
           hostPath:
             path: /var/lib/kubelet/device-plugins
+        - name: infa-map
+          hostPath:
+            path: /run

@@ -1445,6 +1445,8 @@ export class Cluster extends ClusterBase {
 
   private _neuronDevicePlugin?: KubernetesManifest;
 
+  private _neuronDevicePluginRbac?: KubernetesManifest;
+
   private readonly endpointAccess: EndpointAccess;
 
   private readonly vpcSubnets: ec2.SubnetSelection[];
@@ -1803,6 +1805,7 @@ export class Cluster extends ClusterBase {
     if (nodeTypeForInstanceType(options.instanceType) === NodeType.INFERENTIA ||
     nodeTypeForInstanceType(options.instanceType) === NodeType.TRAINIUM ) {
       this.addNeuronDevicePlugin();
+      this.addNeuronDevicePluginRbac();
     }
 
     return asg;
@@ -1826,6 +1829,7 @@ export class Cluster extends ClusterBase {
 
     if (hasInferentiaOrTrainiumInstanceType) {
       this.addNeuronDevicePlugin();
+      this.addNeuronDevicePluginRbac();
     }
     return new Nodegroup(this, `Nodegroup${id}`, {
       cluster: this,
@@ -1985,6 +1989,20 @@ export class Cluster extends ClusterBase {
     }
 
     return this._neuronDevicePlugin;
+  }
+
+  /**
+   * Installs the Neuron device plugin RBAC on the cluster if it's not
+   * already added.
+   */
+  private addNeuronDevicePluginRbac() {
+    if (!this._neuronDevicePluginRbac) {
+      const fileContents = fs.readFileSync(path.join(__dirname, 'addons', 'neuron-device-plugin-rbac.yaml'), 'utf8');
+      const sanitized = YAML.parse(fileContents);
+      this._neuronDevicePluginRbac = this.addManifest('NeuronDevicePluginRbac', sanitized);
+    }
+
+    return this._neuronDevicePluginRbac;
   }
 
   /**
