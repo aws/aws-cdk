@@ -86,7 +86,7 @@ export interface KinesisSourceParameters {
   readonly startingPosition: KinesisStartingPosition;
 
   /**
-   * With StartingPosition set to AT_TIMESTAMP, the time from which to start reading, in Unix time seconds.
+   * With StartingPosition set to AT_TIMESTAMP, the time from which to start reading, in ISO 8601 format.
    *
    * @example
    * '2025-01-01T00:00:00Z'
