@@ -1,5 +1,6 @@
 import { Construct } from 'constructs';
 import { IWebSocketApi } from './api';
+import { WebSocketIntegrationResponse } from './integration-response';
 import { IWebSocketRoute } from './route';
 import { CfnIntegration } from '.././index';
 import { IRole } from '../../../aws-iam';
@@ -302,6 +303,14 @@ export interface WebSocketRouteIntegrationConfig {
    * @default - No request parameters provided.
    */
   readonly requestParameters?: { [dest: string]: string };
+
+  /**
+   * Integration response configuration
+   *
+   * @default - No response configuration provided.
+   * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-websocket-api-integration-responses.html
+   */
+  readonly responses?: WebSocketIntegrationResponse[];
 
   /**
    * Template selection expression
