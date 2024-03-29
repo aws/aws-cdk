@@ -1,4 +1,4 @@
-import { HttpApi, HttpIntegrationSubtype, HttpMethod } from 'aws-cdk-lib/aws-apigatewayv2';
+import * as apigwv2 from 'aws-cdk-lib/aws-apigatewayv2';
 import * as sqs from 'aws-cdk-lib/aws-sqs';
 import { App, Stack } from 'aws-cdk-lib';
 import { HttpSqsIntegration } from 'aws-cdk-lib/aws-apigatewayv2-integrations';
@@ -9,44 +9,44 @@ const stack = new Stack(app, 'sqs-integration');
 
 const queue = new sqs.Queue(stack, 'Queue');
 
-const httpApi = new HttpApi(stack, 'Api');
+const httpApi = new apigwv2.HttpApi(stack, 'Api');
 httpApi.addRoutes({
   path: '/default',
-  methods: [HttpMethod.POST],
-  integration: new HttpSqsIntegration('Integration', {
+  methods: [apigwv2.HttpMethod.POST],
+  integration: new HttpSqsIntegration('defaultIntegration', {
     queue,
   }),
 });
 httpApi.addRoutes({
   path: '/send-message',
-  methods: [HttpMethod.POST],
-  integration: new HttpSqsIntegration('Integration', {
+  methods: [apigwv2.HttpMethod.POST],
+  integration: new HttpSqsIntegration('sendMessageIntegration', {
     queue,
-    subtype: HttpIntegrationSubtype.SQS_SEND_MESSAGE,
+    subtype: apigwv2.HttpIntegrationSubtype.SQS_SEND_MESSAGE,
   }),
 });
 httpApi.addRoutes({
   path: '/receive-message',
-  methods: [HttpMethod.POST],
-  integration: new HttpSqsIntegration('Integration', {
+  methods: [apigwv2.HttpMethod.POST],
+  integration: new HttpSqsIntegration('receiveMessageIntegration', {
     queue,
-    subtype: HttpIntegrationSubtype.SQS_RECEIVE_MESSAGE,
+    subtype: apigwv2.HttpIntegrationSubtype.SQS_RECEIVE_MESSAGE,
   }),
 });
 httpApi.addRoutes({
   path: '/delete-message',
-  methods: [HttpMethod.POST],
-  integration: new HttpSqsIntegration('Integration', {
+  methods: [apigwv2.HttpMethod.POST],
+  integration: new HttpSqsIntegration('deleteMessageIntegration', {
     queue,
-    subtype: HttpIntegrationSubtype.SQS_DELETE_MESSAGE,
+    subtype: apigwv2.HttpIntegrationSubtype.SQS_DELETE_MESSAGE,
   }),
 });
 httpApi.addRoutes({
   path: '/purge-queue',
-  methods: [HttpMethod.POST],
-  integration: new HttpSqsIntegration('Integration', {
+  methods: [apigwv2.HttpMethod.POST],
+  integration: new HttpSqsIntegration('purgeQueueIntegration', {
     queue,
-    subtype: HttpIntegrationSubtype.SQS_PURGE_QUEUE,
+    subtype: apigwv2.HttpIntegrationSubtype.SQS_PURGE_QUEUE,
   }),
 });
 
@@ -54,6 +54,45 @@ const integTest = new integ.IntegTest(app, 'SqsIntegrationIntegTest', {
   testCases: [stack],
 });
 
-const assertion = integTest.assertions.httpApiCall(`${httpApi.apiEndpoint}/default`);
-// https://docs.aws.amazon.com/lambda/latest/api/API_Invoke.html#API_Invoke_ResponseElements
-assertion.expect(ExpectedResult.objectLike({ StatusCode: 200 }));
+const defaultAssertion = integTest.assertions.httpApiCall(
+  `${httpApi.apiEndpoint}/default`, {
+    body: JSON.stringify({ MessageBody: 'Hello World!' }),
+    method: 'POST',
+  },
+);
+defaultAssertion.expect(integ.ExpectedResult.objectLike({ status: 200, statusText: 'OK' }));
+
+const sendMessageAssertion = integTest.assertions.httpApiCall(
+  `${httpApi.apiEndpoint}/send-message`, {
+    body: JSON.stringify({ MessageBody: 'Hello World!' }),
+    method: 'POST',
+  },
+);
+sendMessageAssertion.expect(integ.ExpectedResult.objectLike({ status: 200, statusText: 'OK' }));
+
+const receiveMessageAssertion = integTest.assertions.httpApiCall(
+  `${httpApi.apiEndpoint}/receive-message`, {
+    method: 'POST',
+  },
+);
+receiveMessageAssertion.expect(integ.ExpectedResult.objectLike({ status: 200, statusText: 'OK' }));
+
+const receiveMessageResult = integTest.assertions.awsApiCall('SQS', 'receiveMessage', {
+  QueueUrl: queue.queueUrl,
+});
+const receiptHandle = receiveMessageResult.getAttString('Messages.0.ReceiptHandle');
+
+const deleteMessageAssertion = integTest.assertions.httpApiCall(
+  `${httpApi.apiEndpoint}/delete-message`, {
+    body: JSON.stringify({ ReceiptHandle: receiptHandle }),
+    method: 'POST',
+  },
+);
+deleteMessageAssertion.expect(integ.ExpectedResult.objectLike({ status: 200, statusText: 'OK' }));
+
+const purgeQueueAssertion = integTest.assertions.httpApiCall(
+  `${httpApi.apiEndpoint}/purge-queue`, {
+    method: 'POST',
+  },
+);
+purgeQueueAssertion.expect(integ.ExpectedResult.objectLike({ status: 200, statusText: 'OK' }));
