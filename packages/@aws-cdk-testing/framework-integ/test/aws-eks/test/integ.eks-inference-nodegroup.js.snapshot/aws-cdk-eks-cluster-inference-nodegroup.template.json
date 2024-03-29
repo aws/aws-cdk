@@ -826,7 +826,7 @@
       "OpenIdConnectIssuerUrl"
      ]
     },
-    "CodeHash": "9243a37c51ef38f361f19b938e8dd0cd37fd4a2c18460dca4546ad79d72b465c"
+    "CodeHash": "d366404a4ce081ae11ff6b9205567ba734c94125a75aabf82e3f30bf321a2897"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -983,7 +983,7 @@
       "Outputs.awscdkeksclusterinferencenodegroupawscdkawseksKubectlProviderframeworkonEventC5B4B50CArn"
      ]
     },
-    "Manifest": "[{\"apiVersion\":\"apps/v1\",\"kind\":\"DaemonSet\",\"metadata\":{\"name\":\"neuron-device-plugin-daemonset\",\"namespace\":\"kube-system\",\"labels\":{\"aws.cdk.eks/prune-c836af6e58d982a41d931db8d90565269fa7dea41d\":\"\"}},\"spec\":{\"selector\":{\"matchLabels\":{\"name\":\"neuron-device-plugin-ds\"}},\"updateStrategy\":{\"type\":\"RollingUpdate\"},\"template\":{\"metadata\":{\"annotations\":{\"scheduler.alpha.kubernetes.io/critical-pod\":\"\"},\"labels\":{\"name\":\"neuron-device-plugin-ds\"}},\"spec\":{\"tolerations\":[{\"key\":\"CriticalAddonsOnly\",\"operator\":\"Exists\"},{\"key\":\"aws.amazon.com/neuron\",\"operator\":\"Exists\",\"effect\":\"NoSchedule\"}],\"priorityClassName\":\"system-node-critical\",\"affinity\":{\"nodeAffinity\":{\"requiredDuringSchedulingIgnoredDuringExecution\":{\"nodeSelectorTerms\":[{\"matchExpressions\":[{\"key\":\"beta.kubernetes.io/instance-type\",\"operator\":\"In\",\"values\":[\"inf1.xlarge\",\"inf1.2xlarge\",\"inf1.6xlarge\",\"inf1.24xlarge\",\"inf2.xlarge\",\"inf2.8xlarge\",\"inf2.24xlarge\",\"inf2.48xlarge\"]}]},{\"matchExpressions\":[{\"key\":\"node.kubernetes.io/instance-type\",\"operator\":\"In\",\"values\":[\"inf1.xlarge\",\"inf1.2xlarge\",\"inf1.6xlarge\",\"inf1.24xlarge\",\"inf2.xlarge\",\"inf2.8xlarge\",\"inf2.24xlarge\",\"inf2.48xlarge\"]}]}]}}},\"containers\":[{\"image\":\"790709498068.dkr.ecr.us-west-2.amazonaws.com/neuron-device-plugin:1.0.9043.0\",\"imagePullPolicy\":\"Always\",\"name\":\"k8s-neuron-device-plugin-ctr\",\"securityContext\":{\"allowPrivilegeEscalation\":false,\"capabilities\":{\"drop\":[\"ALL\"]}},\"volumeMounts\":[{\"name\":\"device-plugin\",\"mountPath\":\"/var/lib/kubelet/device-plugins\"}]}],\"volumes\":[{\"name\":\"device-plugin\",\"hostPath\":{\"path\":\"/var/lib/kubelet/device-plugins\"}}]}}}}]",
+    "Manifest": "[{\"apiVersion\":\"apps/v1\",\"kind\":\"DaemonSet\",\"metadata\":{\"name\":\"neuron-device-plugin-daemonset\",\"namespace\":\"kube-system\",\"labels\":{\"aws.cdk.eks/prune-c836af6e58d982a41d931db8d90565269fa7dea41d\":\"\"}},\"spec\":{\"selector\":{\"matchLabels\":{\"name\":\"neuron-device-plugin-ds\"}},\"updateStrategy\":{\"type\":\"RollingUpdate\"},\"template\":{\"metadata\":{\"labels\":{\"name\":\"neuron-device-plugin-ds\"}},\"spec\":{\"serviceAccount\":\"neuron-device-plugin\",\"tolerations\":[{\"key\":\"CriticalAddonsOnly\",\"operator\":\"Exists\"},{\"key\":\"aws.amazon.com/neuron\",\"operator\":\"Exists\",\"effect\":\"NoSchedule\"}],\"priorityClassName\":\"system-node-critical\",\"affinity\":{\"nodeAffinity\":{\"requiredDuringSchedulingIgnoredDuringExecution\":{\"nodeSelectorTerms\":[{\"matchExpressions\":[{\"key\":\"node.kubernetes.io/instance-type\",\"operator\":\"In\",\"values\":[\"inf1.xlarge\",\"inf1.2xlarge\",\"inf1.6xlarge\",\"inf1.24xlarge\",\"inf2.xlarge\",\"inf2.8xlarge\",\"inf2.24xlarge\",\"inf2.48xlarge\",\"trn1.2xlarge\",\"trn1.32xlarge\",\"trn1n.32xlarge\"]}]}]}}},\"containers\":[{\"image\":\"public.ecr.aws/neuron/neuron-device-plugin:2.19.16.0\",\"imagePullPolicy\":\"Always\",\"name\":\"neuron-device-plugin\",\"env\":[{\"name\":\"KUBECONFIG\",\"value\":\"/etc/kubernetes/kubelet.conf\"},{\"name\":\"NODE_NAME\",\"valueFrom\":{\"fieldRef\":{\"fieldPath\":\"spec.nodeName\"}}}],\"securityContext\":{\"allowPrivilegeEscalation\":false,\"capabilities\":{\"drop\":[\"ALL\"]}},\"volumeMounts\":[{\"name\":\"device-plugin\",\"mountPath\":\"/var/lib/kubelet/device-plugins\"},{\"name\":\"infa-map\",\"mountPath\":\"/run\"}]}],\"volumes\":[{\"name\":\"device-plugin\",\"hostPath\":{\"path\":\"/var/lib/kubelet/device-plugins\"}},{\"name\":\"infa-map\",\"hostPath\":{\"path\":\"/run\"}}]}}}}]",
     "ClusterName": {
      "Ref": "Cluster9EE0221C"
     },
@@ -994,6 +994,87 @@
      ]
     },
     "PruneLabel": "aws.cdk.eks/prune-c836af6e58d982a41d931db8d90565269fa7dea41d"
+   },
+   "DependsOn": [
+    "ClusterKubectlReadyBarrier200052AF"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "ClustermanifestNeuronDevicePluginRbacClusterRoleFF27FA73": {
+   "Type": "Custom::AWSCDK-EKS-KubernetesResource",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "awscdkawseksKubectlProviderNestedStackawscdkawseksKubectlProviderNestedStackResourceA7AEBA6B",
+      "Outputs.awscdkeksclusterinferencenodegroupawscdkawseksKubectlProviderframeworkonEventC5B4B50CArn"
+     ]
+    },
+    "Manifest": "[{\"kind\":\"ClusterRole\",\"apiVersion\":\"rbac.authorization.k8s.io/v1\",\"metadata\":{\"name\":\"neuron-device-plugin\",\"labels\":{\"aws.cdk.eks/prune-c86a2b965391c615bec88a2b31772df2fee28e802e\":\"\"}},\"rules\":[{\"apiGroups\":[\"\"],\"resources\":[\"nodes\"],\"verbs\":[\"get\",\"list\",\"watch\"]},{\"apiGroups\":[\"\"],\"resources\":[\"events\"],\"verbs\":[\"create\",\"patch\"]},{\"apiGroups\":[\"\"],\"resources\":[\"pods\"],\"verbs\":[\"update\",\"patch\",\"get\",\"list\",\"watch\"]},{\"apiGroups\":[\"\"],\"resources\":[\"nodes/status\"],\"verbs\":[\"patch\",\"update\"]}]}]",
+    "ClusterName": {
+     "Ref": "Cluster9EE0221C"
+    },
+    "RoleArn": {
+     "Fn::GetAtt": [
+      "ClusterCreationRole360249B6",
+      "Arn"
+     ]
+    },
+    "PruneLabel": "aws.cdk.eks/prune-c86a2b965391c615bec88a2b31772df2fee28e802e"
+   },
+   "DependsOn": [
+    "ClusterKubectlReadyBarrier200052AF"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "ClustermanifestNeuronDevicePluginRbacClusterRoleBinding1AF7DA68": {
+   "Type": "Custom::AWSCDK-EKS-KubernetesResource",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "awscdkawseksKubectlProviderNestedStackawscdkawseksKubectlProviderNestedStackResourceA7AEBA6B",
+      "Outputs.awscdkeksclusterinferencenodegroupawscdkawseksKubectlProviderframeworkonEventC5B4B50CArn"
+     ]
+    },
+    "Manifest": "[{\"kind\":\"ClusterRoleBinding\",\"apiVersion\":\"rbac.authorization.k8s.io/v1\",\"metadata\":{\"name\":\"neuron-device-plugin\",\"namespace\":\"kube-system\",\"labels\":{\"aws.cdk.eks/prune-c8000b87c118ad5ab286611bf5d6f19b202e85d095\":\"\"}},\"roleRef\":{\"apiGroup\":\"rbac.authorization.k8s.io\",\"kind\":\"ClusterRole\",\"name\":\"neuron-device-plugin\"},\"subjects\":[{\"kind\":\"ServiceAccount\",\"name\":\"neuron-device-plugin\",\"namespace\":\"kube-system\"}]}]",
+    "ClusterName": {
+     "Ref": "Cluster9EE0221C"
+    },
+    "RoleArn": {
+     "Fn::GetAtt": [
+      "ClusterCreationRole360249B6",
+      "Arn"
+     ]
+    },
+    "PruneLabel": "aws.cdk.eks/prune-c8000b87c118ad5ab286611bf5d6f19b202e85d095"
+   },
+   "DependsOn": [
+    "ClusterKubectlReadyBarrier200052AF"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "ClustermanifestNeuronDevicePluginRbacServiceAccount0F35E0B2": {
+   "Type": "Custom::AWSCDK-EKS-KubernetesResource",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "awscdkawseksKubectlProviderNestedStackawscdkawseksKubectlProviderNestedStackResourceA7AEBA6B",
+      "Outputs.awscdkeksclusterinferencenodegroupawscdkawseksKubectlProviderframeworkonEventC5B4B50CArn"
+     ]
+    },
+    "Manifest": "[{\"apiVersion\":\"v1\",\"kind\":\"ServiceAccount\",\"metadata\":{\"name\":\"neuron-device-plugin\",\"namespace\":\"kube-system\",\"labels\":{\"aws.cdk.eks/prune-c81eb10fdf217e301eb05930f134d474257c5a74d9\":\"\"}}}]",
+    "ClusterName": {
+     "Ref": "Cluster9EE0221C"
+    },
+    "RoleArn": {
+     "Fn::GetAtt": [
+      "ClusterCreationRole360249B6",
+      "Arn"
+     ]
+    },
+    "PruneLabel": "aws.cdk.eks/prune-c81eb10fdf217e301eb05930f134d474257c5a74d9"
    },
    "DependsOn": [
     "ClusterKubectlReadyBarrier200052AF"
@@ -1194,7 +1275,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/01073d2d88357b47f4571fd094fc47b92ac95aaa0fda04ae7f30c5ecaf96d207.json"
+       "/ce0aa137b4a6fa4b135977a59a0d3473dbcf770a0ff40f27cb431091ae610f5b.json"
       ]
      ]
     }
@@ -1244,7 +1325,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/93f01e17ed12901678bd6301f0161c060d6ce4de20dedb23fa3280aa83ada79c.json"
+       "/c00e5fa963d4920708bcc99593f8548276895e76c0c49f21960027a4a43c4552.json"
       ]
      ]
     }
@@ -1870,7 +1951,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "9243a37c51ef38f361f19b938e8dd0cd37fd4a2c18460dca4546ad79d72b465c.zip"
+     "S3Key": "d366404a4ce081ae11ff6b9205567ba734c94125a75aabf82e3f30bf321a2897.zip"
     },
     "Timeout": 900,
     "MemorySize": 128,
@@ -1916,7 +1997,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "7e3e77a5ee3d2db0eeb9f1ca27d1864b68dcd5f1ef5f72269689043834710c60.zip"
+     "S3Key": "c03b8f212b49247638b0cd360b2b1ce85e385761ff33d5dc4328c5240a6bb39e.zip"
     },
     "Timeout": 900,
     "MemorySize": 128,

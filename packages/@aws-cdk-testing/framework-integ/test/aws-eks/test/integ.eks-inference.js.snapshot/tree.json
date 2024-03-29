@@ -2277,6 +2277,90 @@
                   "version": "0.0.0"
                 }
               },
+              "manifest-NeuronDevicePluginRbacClusterRole": {
+                "id": "manifest-NeuronDevicePluginRbacClusterRole",
+                "path": "aws-cdk-eks-cluster-inference/Cluster/manifest-NeuronDevicePluginRbacClusterRole",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-cdk-eks-cluster-inference/Cluster/manifest-NeuronDevicePluginRbacClusterRole/Resource",
+                    "children": {
+                      "Default": {
+                        "id": "Default",
+                        "path": "aws-cdk-eks-cluster-inference/Cluster/manifest-NeuronDevicePluginRbacClusterRole/Resource/Default",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CfnResource",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CustomResource",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_eks.KubernetesManifest",
+                  "version": "0.0.0"
+                }
+              },
+              "manifest-NeuronDevicePluginRbacClusterRoleBinding": {
+                "id": "manifest-NeuronDevicePluginRbacClusterRoleBinding",
+                "path": "aws-cdk-eks-cluster-inference/Cluster/manifest-NeuronDevicePluginRbacClusterRoleBinding",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-cdk-eks-cluster-inference/Cluster/manifest-NeuronDevicePluginRbacClusterRoleBinding/Resource",
+                    "children": {
+                      "Default": {
+                        "id": "Default",
+                        "path": "aws-cdk-eks-cluster-inference/Cluster/manifest-NeuronDevicePluginRbacClusterRoleBinding/Resource/Default",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CfnResource",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CustomResource",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_eks.KubernetesManifest",
+                  "version": "0.0.0"
+                }
+              },
+              "manifest-NeuronDevicePluginRbacServiceAccount": {
+                "id": "manifest-NeuronDevicePluginRbacServiceAccount",
+                "path": "aws-cdk-eks-cluster-inference/Cluster/manifest-NeuronDevicePluginRbacServiceAccount",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-cdk-eks-cluster-inference/Cluster/manifest-NeuronDevicePluginRbacServiceAccount/Resource",
+                    "children": {
+                      "Default": {
+                        "id": "Default",
+                        "path": "aws-cdk-eks-cluster-inference/Cluster/manifest-NeuronDevicePluginRbacServiceAccount/Resource/Default",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CfnResource",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CustomResource",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_eks.KubernetesManifest",
+                  "version": "0.0.0"
+                }
+              },
               "Inference2Instances": {
                 "id": "Inference2Instances",
                 "path": "aws-cdk-eks-cluster-inference/Cluster/Inference2Instances",
@@ -3001,7 +3085,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "1b5aaa158e02216aa983cbf998d740faf1176f70b3769f77295e9bd20f543edf.zip"
+                          "s3Key": "a25caac65d4a9c38307146f87e13e76716125757c4a64135cad1fbc754b3853d.zip"
                         },
                         "description": "onEvent handler for EKS cluster resource provider",
                         "environment": {
@@ -3133,7 +3217,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "1b5aaa158e02216aa983cbf998d740faf1176f70b3769f77295e9bd20f543edf.zip"
+                          "s3Key": "a25caac65d4a9c38307146f87e13e76716125757c4a64135cad1fbc754b3853d.zip"
                         },
                         "description": "isComplete handler for EKS cluster resource provider",
                         "environment": {
@@ -3356,7 +3440,7 @@
                               "s3Bucket": {
                                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                               },
-                              "s3Key": "c014eecccbb25b3f9b2930f62990f5a373bb117a6c78807df15d78a5ac33e9cd.zip"
+                              "s3Key": "15197a5512179542fe2cff74af89bb047793c9c4e0b4395f114641a81cd52ae5.zip"
                             },
                             "description": "AWS CDK resource provider framework - onEvent (aws-cdk-eks-cluster-inference/@aws-cdk--aws-eks.ClusterResourceProvider/Provider)",
                             "environment": {
@@ -3577,7 +3661,7 @@
                               "s3Bucket": {
                                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                               },
-                              "s3Key": "c014eecccbb25b3f9b2930f62990f5a373bb117a6c78807df15d78a5ac33e9cd.zip"
+                              "s3Key": "15197a5512179542fe2cff74af89bb047793c9c4e0b4395f114641a81cd52ae5.zip"
                             },
                             "description": "AWS CDK resource provider framework - isComplete (aws-cdk-eks-cluster-inference/@aws-cdk--aws-eks.ClusterResourceProvider/Provider)",
                             "environment": {
@@ -3795,7 +3879,7 @@
                               "s3Bucket": {
                                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                               },
-                              "s3Key": "c014eecccbb25b3f9b2930f62990f5a373bb117a6c78807df15d78a5ac33e9cd.zip"
+                              "s3Key": "15197a5512179542fe2cff74af89bb047793c9c4e0b4395f114641a81cd52ae5.zip"
                             },
                             "description": "AWS CDK resource provider framework - onTimeout (aws-cdk-eks-cluster-inference/@aws-cdk--aws-eks.ClusterResourceProvider/Provider)",
                             "environment": {
@@ -4039,7 +4123,7 @@
                           {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "/13b0812061474e43d8551e5b99af4b47b4a0736772220bb1088bf44f25008100.json"
+                          "/39142ca8d204476a991da7f6a65c2e03a41537ef7a4f20943067418d832d1916.json"
                         ]
                       ]
                     }
@@ -4100,7 +4184,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "096b0b696556ba7cc2ef5b5aedafc3b30654d446f5fc1a0258831f858b87adaf.zip"
+                          "s3Key": "1471fa6f2876749a13de79989efc6651c9768d3173ef5904947e87504f8d7069.zip"
                         },
                         "description": "onEvent handler for EKS kubectl resource provider",
                         "handler": "index.handler",
@@ -4186,7 +4270,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "3fb6287214999ddeafa7cd0e3e58bc5144c8678bb720f3b5e45e8fd32f333eb3.zip"
+                          "s3Key": "3322b7049fb0ed2b7cbb644a2ada8d1116ff80c32dca89e6ada846b5de26f961.zip"
                         },
                         "description": "/opt/awscli/aws"
                       }
@@ -4391,7 +4475,7 @@
                               "s3Bucket": {
                                 "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                               },
-                              "s3Key": "c014eecccbb25b3f9b2930f62990f5a373bb117a6c78807df15d78a5ac33e9cd.zip"
+                              "s3Key": "15197a5512179542fe2cff74af89bb047793c9c4e0b4395f114641a81cd52ae5.zip"
                             },
                             "description": "AWS CDK resource provider framework - onEvent (aws-cdk-eks-cluster-inference/@aws-cdk--aws-eks.KubectlProvider/Provider)",
                             "environment": {
@@ -4550,7 +4634,7 @@
                           {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "/014e5591053b07afa91e152031a1429d84ec244dbd3d5e4c29a40e94efd1aab4.json"
+                          "/8a115c544f59db0e685861742c4f5d6229da684926ba8c46cbb8fb3e1b468763.json"
                         ]
                       ]
                     }

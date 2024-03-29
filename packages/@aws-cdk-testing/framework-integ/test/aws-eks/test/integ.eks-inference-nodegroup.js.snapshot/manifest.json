@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/6a1b5457f19a19b7395cb97156865dea81750ce33a3151a2c966c3d8c246c6bd.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/644cf1e424bc51baa9ac3e0eb9b3c6fd864695bfadf6c4eaa3aee19a6a32a481.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -248,6 +248,24 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "ClustermanifestNeuronDevicePlugin0B3E0D17"
+          }
+        ],
+        "/aws-cdk-eks-cluster-inference-nodegroup/Cluster/manifest-NeuronDevicePluginRbacClusterRole/Resource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClustermanifestNeuronDevicePluginRbacClusterRoleFF27FA73"
+          }
+        ],
+        "/aws-cdk-eks-cluster-inference-nodegroup/Cluster/manifest-NeuronDevicePluginRbacClusterRoleBinding/Resource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClustermanifestNeuronDevicePluginRbacClusterRoleBinding1AF7DA68"
+          }
+        ],
+        "/aws-cdk-eks-cluster-inference-nodegroup/Cluster/manifest-NeuronDevicePluginRbacServiceAccount/Resource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClustermanifestNeuronDevicePluginRbacServiceAccount0F35E0B2"
           }
         ],
         "/aws-cdk-eks-cluster-inference-nodegroup/Cluster/NodegroupInferenceInstances/NodeGroupRole/Resource": [
