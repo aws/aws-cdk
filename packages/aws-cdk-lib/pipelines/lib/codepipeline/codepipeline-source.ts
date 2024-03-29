@@ -425,7 +425,7 @@ class CodeStarConnectionSource extends CodePipelineSource {
     super(repoString);
 
     if (!this.isValidRepoString(repoString)) {
-      throw new Error(`CodeStar repository name should be a resolved string like '<owner>/<repo>' or '<owner>/<group>/<repo>', got '${repoString}'`);
+      throw new Error(`CodeStar repository name should be a resolved string like '<owner>/<repo>' or '<owner>/<group1>/<group2>/.../<repo>', got '${repoString}'`);
     }
 
     const parts = repoString.split('/');
