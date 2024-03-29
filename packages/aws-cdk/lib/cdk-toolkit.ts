@@ -183,7 +183,7 @@ export class CdkToolkit {
         let changeSet = undefined;
 
         if (options.changeSet) {
-          // only perform this check if we're going to make a changeset. This check requires permissions that --no-changeset users might not have.
+          // only perform this check if we're going to make a changeset. This check requires permissions that --no-change-set users might not have.
           const stackExists = await this.props.deployments.stackExists({
             stack: stack,
             deployName: stack.stackName,
