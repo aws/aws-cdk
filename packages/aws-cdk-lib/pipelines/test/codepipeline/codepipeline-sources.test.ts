@@ -196,6 +196,7 @@ test('Dashes in repo names are removed from artifact names', () => {
 test.each([
   'owner/repo',
   'owner/group1/group2/groupN/repo',
+  'owner/p1/s1/s2/s3/s4/s5/s6/s7/s8/s9/s10/s11/s12/s13/s14/s15/s16/s17/s18/s19/s20/repo',
 ])('CodeStar connection honors all valid properties', (repoString) => {
   const connectionArn = 'arn:aws:codestar-connections:us-east-1:123456789012:connection/12345678-abcd-12ab-34cdef5678gh';
 
@@ -225,13 +226,14 @@ test.each([
 test.each([
   'repo-only',
   'owner//duplicatedDash/repo',
+  'owner/p1/s1/s2/s3/s4/s5/s6/s7/s8/s9/s10/s11/s12/s13/s14/s15/s16/s17/s18/s19/s20/s21/repo',
 ])('CodeStar connection does not accept ill-formatted identifiers', (repoString) => {
   expect(() => {
     new ModernTestGitHubNpmPipeline(pipelineStack, 'Pipeline', {
       input: cdkp.CodePipelineSource.connection(repoString, 'main',
         { connectionArn: 'arn:aws:codestar-connections:us-east-1:123456789012:connection/12345678-abcd-12ab-34cdef5678gh' }),
     });
-  }).toThrow(`CodeStar repository name should be a resolved string like \'<owner>/<repo>\' or \'<owner>/<group>/<repo>\', got \'${repoString}\'`);
+  }).toThrow(`CodeStar repository name should be a resolved string like \'<owner>/<repo>\' or \'<owner>/<group1>/<group2>/.../<repo>\', got \'${repoString}\'`);
 });
 
 test('artifact names are never longer than 128 characters', () => {

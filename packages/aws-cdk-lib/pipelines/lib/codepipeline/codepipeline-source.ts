@@ -442,7 +442,10 @@ class CodeStarConnectionSource extends CodePipelineSource {
 
     const parts = repoString.split('/');
 
-    if (parts.length < 2) {
+    // minimum length is 2 (owner/repo) and
+    // maximum length is 22 (owner/parent group/twenty sub groups/repo).
+    // maximum length is based on limitation of GitLab, see https://docs.gitlab.com/ee/user/group/subgroups/
+    if (parts.length < 2 || parts.length > 23) {
       return false;
     }
 
