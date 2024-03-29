@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/41852bca74abba51b6fc158d383cd50aadafa7c4aec4ae341cae19f569ec5118.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/39fd3cbbef3b80ad58c817d4851ba47d6504cda84ded9d7dd99ea5424c6b0487.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -44,6 +44,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "TargetBucketPolicyDDA8DC0A"
+          }
+        ],
+        "/aws-cdk-s3-access-logs-target/TargetBucket/auto-deletion-log-group/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TargetBucketautodeletionloggroupD4F05779"
           }
         ],
         "/aws-cdk-s3-access-logs-target/TargetBucket/AutoDeleteObjectsCustomResource/Default": [
@@ -102,7 +108,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/9319caf4cfc05cb6e8b06f5dbec4d89124cec526521b29d956733ad6541ac9f4.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/be50c0207b87c59cc086075aeccf48c617d1c647ef73ae731a72da1813696b09.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -129,6 +135,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "SourceBucketPolicy703DFBF9"
+          }
+        ],
+        "/aws-cdk-s3-access-logs-delivery/SourceBucket/auto-deletion-log-group/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SourceBucketautodeletionloggroupBB33C125"
           }
         ],
         "/aws-cdk-s3-access-logs-delivery/SourceBucket/AutoDeleteObjectsCustomResource/Default": [

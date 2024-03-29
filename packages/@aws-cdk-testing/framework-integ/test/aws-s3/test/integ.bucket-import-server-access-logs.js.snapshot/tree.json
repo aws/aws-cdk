@@ -179,6 +179,30 @@
                   "version": "0.0.0"
                 }
               },
+              "auto-deletion-log-group": {
+                "id": "auto-deletion-log-group",
+                "path": "aws-cdk-s3-access-logs-target/TargetBucket/auto-deletion-log-group",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-cdk-s3-access-logs-target/TargetBucket/auto-deletion-log-group/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::Logs::LogGroup",
+                      "aws:cdk:cloudformation:props": {
+                        "retentionInDays": 90
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_logs.CfnLogGroup",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_logs.LogGroup",
+                  "version": "0.0.0"
+                }
+              },
               "AutoDeleteObjectsCustomResource": {
                 "id": "AutoDeleteObjectsCustomResource",
                 "path": "aws-cdk-s3-access-logs-target/TargetBucket/AutoDeleteObjectsCustomResource",
@@ -434,6 +458,30 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_s3.BucketPolicy",
+                  "version": "0.0.0"
+                }
+              },
+              "auto-deletion-log-group": {
+                "id": "auto-deletion-log-group",
+                "path": "aws-cdk-s3-access-logs-delivery/SourceBucket/auto-deletion-log-group",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-cdk-s3-access-logs-delivery/SourceBucket/auto-deletion-log-group/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::Logs::LogGroup",
+                      "aws:cdk:cloudformation:props": {
+                        "retentionInDays": 90
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_logs.CfnLogGroup",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_logs.LogGroup",
                   "version": "0.0.0"
                 }
               },
