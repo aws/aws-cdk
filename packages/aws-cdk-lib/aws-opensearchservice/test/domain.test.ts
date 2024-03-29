@@ -408,6 +408,27 @@ each([testedOpenSearchVersions]).test('can specify multiAZWithStandbyEnabled in 
   });
 });
 
+each([testedOpenSearchVersions]).test('multiAZWithStandbyEnabled: true throws with t3 instance type (data node)', (engineVersion) => {
+  expect(() => new Domain(stack, 'Domain', {
+    version: engineVersion,
+    capacity: {
+      dataNodeInstanceType: 't3.medium.search',
+      multiAzWithStandbyEnabled: true,
+    },
+  })).toThrow(/T3 instance type does not support Multi-AZ with standby feature\./);
+});
+
+each([testedOpenSearchVersions]).test('multiAZWithStandbyEnabled: true throws with t3 instance type (master node)', (engineVersion) => {
+  expect(() => new Domain(stack, 'Domain', {
+    version: engineVersion,
+    capacity: {
+      masterNodeInstanceType: 't3.medium.search',
+      masterNodes: 1,
+      multiAzWithStandbyEnabled: true,
+    },
+  })).toThrow(/T3 instance type does not support Multi-AZ with standby feature\./);
+});
+
 each([testedOpenSearchVersions]).test('ENABLE_OPENSEARCH_MULTIAZ_WITH_STANDBY set multiAZWithStandbyEnabled value', (engineVersion) => {
   const stackWithFlag = new Stack(app, 'StackWithFlag', {
     env: { account: '1234', region: 'testregion' },
