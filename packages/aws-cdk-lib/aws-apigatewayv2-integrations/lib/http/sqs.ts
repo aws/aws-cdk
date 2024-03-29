@@ -38,6 +38,7 @@ export interface HttpSqsIntegrationProps {
  * The Sqs integration resource for HTTP API
  */
 export class HttpSqsIntegration extends apigwv2.HttpRouteIntegration {
+  private readonly subtype: apigwv2.HttpIntegrationSubtype;
   /**
    * @param id id of the underlying integration construct
    * @param props properties to configure the integration
@@ -47,6 +48,7 @@ export class HttpSqsIntegration extends apigwv2.HttpRouteIntegration {
     private readonly props: HttpSqsIntegrationProps,
   ) {
     super(id);
+    this.subtype = this.props.subtype ?? apigwv2.HttpIntegrationSubtype.SQS_SEND_MESSAGE;
   }
 
   public bind(options: apigwv2.HttpRouteIntegrationBindOptions): apigwv2.HttpRouteIntegrationConfig {
@@ -62,8 +64,8 @@ export class HttpSqsIntegration extends apigwv2.HttpRouteIntegration {
       new iam.PolicyStatement({
         effect: iam.Effect.ALLOW,
         sid: 'AllowSqsExecution',
-        actions: [this.determineActionBySubtype(this.props.subtype)],
-        resources: [this.determineResourceArn(options)],
+        actions: [this.determineActionBySubtype()],
+        resources: [this.determineResourceArn()],
       }),
     );
 
@@ -73,14 +75,12 @@ export class HttpSqsIntegration extends apigwv2.HttpRouteIntegration {
       subtype: this.props.subtype ?? apigwv2.HttpIntegrationSubtype.SQS_SEND_MESSAGE,
       credentials: apigwv2.IntegrationCredentials.fromRole(invokeRole),
       connectionType: apigwv2.HttpConnectionType.INTERNET,
-      parameterMapping: this.props.parameterMapping ?? new apigwv2.ParameterMapping()
-        .custom('QueueUrl', this.props.queue.queueUrl)
-        .custom('MessageBody', '$request.body.MessageBody'),
+      parameterMapping: this.props.parameterMapping ?? this.createDefaultParameterMapping(),
     };
   }
 
-  private determineActionBySubtype(subtype?: apigwv2.HttpIntegrationSubtype): string {
-    switch (subtype) {
+  private determineActionBySubtype(): string {
+    switch (this.subtype) {
       case apigwv2.HttpIntegrationSubtype.SQS_SEND_MESSAGE:
         return 'sqs:SendMessage';
       case apigwv2.HttpIntegrationSubtype.SQS_RECEIVE_MESSAGE:
@@ -90,22 +90,40 @@ export class HttpSqsIntegration extends apigwv2.HttpRouteIntegration {
       case apigwv2.HttpIntegrationSubtype.SQS_PURGE_QUEUE:
         return 'sqs:PurgeQueue';
       default:
-        throw new Error('Invalid subtype for SQS integration');
+        throw new Error(`Unsupported subtype: ${this.subtype}`);
     }
   }
 
-  private determineResourceArn(options: apigwv2.HttpRouteIntegrationBindOptions): string {
-    switch (this.props.subtype) {
+  private determineResourceArn(): string {
+    switch (this.subtype) {
       case apigwv2.HttpIntegrationSubtype.SQS_SEND_MESSAGE:
       case apigwv2.HttpIntegrationSubtype.SQS_RECEIVE_MESSAGE:
       case apigwv2.HttpIntegrationSubtype.SQS_DELETE_MESSAGE:
       case apigwv2.HttpIntegrationSubtype.SQS_PURGE_QUEUE:
         return this.props.queue.queueArn;
       default:
-        return options.route.stack.formatArn({
-          service: 'states',
-          resource: `execution:${this.props.queue.queueName}:*`,
-        });
+        throw new Error(`Unsupported subtype: ${this.subtype}`);
+    }
+  }
+
+  private createDefaultParameterMapping(): apigwv2.ParameterMapping {
+    switch (this.subtype) {
+      case apigwv2.HttpIntegrationSubtype.SQS_SEND_MESSAGE:
+        return new apigwv2.ParameterMapping()
+          .custom('QueueUrl', this.props.queue.queueUrl)
+          .custom('MessageBody', '$request.body.MessageBody');
+      case apigwv2.HttpIntegrationSubtype.SQS_RECEIVE_MESSAGE:
+        return new apigwv2.ParameterMapping()
+          .custom('QueueUrl', this.props.queue.queueUrl);
+      case apigwv2.HttpIntegrationSubtype.SQS_DELETE_MESSAGE:
+        return new apigwv2.ParameterMapping()
+          .custom('QueueUrl', this.props.queue.queueUrl)
+          .custom('ReceiptHandle', '$request.body.ReceiptHandle');
+      case apigwv2.HttpIntegrationSubtype.SQS_PURGE_QUEUE:
+        return new apigwv2.ParameterMapping()
+          .custom('QueueUrl', this.props.queue.queueUrl);
+      default:
+        throw new Error(`Unsupported subtype: ${this.subtype}`);
     }
   }
 }
