@@ -386,7 +386,7 @@ role.grantAssumeRole(user);
 
 ### Granting service and account principals permission to assume a role
 
-Service srincipals and account principals can be granted permission to assume a role using `assumeRolePolicy` which modifies the role trust policy.
+Service principals and account principals can be granted permission to assume a role using `assumeRolePolicy` which modifies the role trust policy.
 
 ```ts
 const role = new iam.Role(this, 'role', {
