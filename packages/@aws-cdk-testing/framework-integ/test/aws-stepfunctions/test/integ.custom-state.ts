@@ -48,8 +48,8 @@ const customWithInlineRetry = new sfn.CustomState(stack, 'my custom task with in
       ErrorEquals: [sfn.Errors.PERMISSIONS],
       IntervalSeconds: 20,
       MaxAttempts: 2,
-    }]
-  }
+    }],
+  },
 });
 
 const customWithInlineCatch = new sfn.CustomState(stack, 'my custom task with inline Catchers', {
@@ -57,9 +57,9 @@ const customWithInlineCatch = new sfn.CustomState(stack, 'my custom task with in
     ...stateJson,
     Catch: [{
       ErrorEquals: [sfn.Errors.PERMISSIONS],
-      Next: 'failed'
-    }]
-  }
+      Next: 'failed',
+    }],
+  },
 });
 
 const chain = sfn.Chain.start(custom).next(customWithInlineRetry).next(customWithInlineCatch).next(finalStatus);

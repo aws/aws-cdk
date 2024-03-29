@@ -3,7 +3,7 @@ import * as cdk from '../../core';
 import * as sfn from '../lib';
 import { Errors } from '../lib/types';
 
-describe.only('Custom State', () => {
+describe('Custom State', () => {
   let stack: cdk.Stack;
   let stateJson: any;
 
