@@ -70,8 +70,6 @@ function formatSecurityChangesWithBanner(formatter: Formatter, templateDiff: Tem
   if (!templateDiff.iamChanges.hasChanges && !templateDiff.securityGroupChanges.hasChanges) { return; }
   formatter.formatIamChanges(templateDiff.iamChanges);
   formatter.formatSecurityGroupChanges(templateDiff.securityGroupChanges);
-
-  formatter.warning('(NOTE: There may be security-related changes not in this list. See https://github.com/aws/aws-cdk/issues/1299)');
   formatter.printSectionFooter();
 }
 
