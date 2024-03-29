@@ -78,7 +78,8 @@ export interface CapacityConfig {
    * For more information, see [Multi-AZ with
    * Standby](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/managedomains-multiaz.html#managedomains-za-standby)
    *
-   * @default - no multi-az with standby
+   * @default - multi-az with standby if the feature flag `ENABLE_OPENSEARCH_MULTIAZ_WITH_STANDBY`
+   * is true, no multi-az with standby otherwise
    */
   readonly multiAzWithStandbyEnabled?: boolean;
 }
@@ -1825,6 +1826,10 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
       if (cdk.FeatureFlags.of(this).isEnabled(cxapi.ENABLE_OPENSEARCH_MULTIAZ_WITH_STANDBY)) {
         multiAzWithStandbyEnabled = true;
       }
+    }
+
+    if (isSomeInstanceType('t3') && multiAzWithStandbyEnabled) {
+      throw new Error('T3 instance type does not support Multi-AZ with standby feature.');
     }
 
     const offPeakWindowEnabled = props.offPeakWindowEnabled ?? props.offPeakWindowStart !== undefined;
