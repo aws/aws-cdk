@@ -156,6 +156,26 @@ describe('Topic', () => {
       })).toThrow(/Content based deduplication can only be enabled for FIFO SNS topics./);
 
     });
+
+    test('specify signatureVersion', () => {
+      const stack = new cdk.Stack();
+
+      new sns.Topic(stack, 'MyTopic', {
+        signatureVersion: '2',
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::SNS::Topic', {
+        'SignatureVersion': '2',
+      });
+    });
+
+    test('throw with incorrect signatureVersion', () => {
+      const stack = new cdk.Stack();
+
+      expect(() => new sns.Topic(stack, 'MyTopic', {
+        signatureVersion: '3',
+      })).toThrow(/signatureVersion must be "1" or "2", received: "3"/);
+    });
   });
 
   test('can add a policy to the topic', () => {
