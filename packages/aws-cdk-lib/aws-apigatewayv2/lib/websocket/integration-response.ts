@@ -1,12 +1,32 @@
 import { Construct } from 'constructs';
 import { ContentHandling, IWebSocketIntegration } from './integration';
-import { IResource, Resource } from '../../../core';
+import { IResource, Names, Resource } from '../../../core';
 import { CfnIntegrationResponse } from '../apigatewayv2.generated';
 
 /**
  * WebSocket integration response key helper class
  */
 export class WebSocketIntegrationResponseKey {
+  /**
+   * Match all responses
+   */
+  public static default= new WebSocketIntegrationResponseKey('$default');
+
+  /**
+   * Match all 2xx responses (HTTP success codes)
+   */
+  public static success= WebSocketIntegrationResponseKey.fromStatusRegExp('/2\d{2}/');
+
+  /**
+   * Match all 4xx responses (HTTP client error codes)
+   */
+  public static clientError= WebSocketIntegrationResponseKey.fromStatusRegExp('/4\d{2}/');
+
+  /**
+   * Match all 5xx responses (HTTP server error codes)
+   */
+  public static serverError= WebSocketIntegrationResponseKey.fromStatusRegExp('/5\d{2}/');
+
   /**
    * Generate an integration response key from an HTTP status code
    *
@@ -41,34 +61,6 @@ export class WebSocketIntegrationResponseKey {
     }
 
     return new WebSocketIntegrationResponseKey(`/${httpStatusRegExp.source}/`);
-  }
-
-  /**
-   * Match all responses
-   */
-  public static get default(): WebSocketIntegrationResponseKey {
-    return new WebSocketIntegrationResponseKey('$default');
-  }
-
-  /**
-   * Match all 2xx responses (HTTP success codes)
-   */
-  public static get success(): WebSocketIntegrationResponseKey {
-    return WebSocketIntegrationResponseKey.fromStatusRegExp('/2\d{2}/');
-  }
-
-  /**
-   * Match all 4xx responses (HTTP client error codes)
-   */
-  public static get clientError(): WebSocketIntegrationResponseKey {
-    return WebSocketIntegrationResponseKey.fromStatusRegExp('/4\d{2}/');
-  }
-
-  /**
-   * Match all 5xx responses (HTTP server error codes)
-   */
-  public static get serverError(): WebSocketIntegrationResponseKey {
-    return WebSocketIntegrationResponseKey.fromStatusRegExp('/5\d{2}/');
   }
 
   private constructor(readonly key: string) {}
@@ -134,35 +126,27 @@ export interface IWebSocketIntegrationResponse extends IResource {
  */
 export class WebSocketIntegrationResponse extends Resource implements IWebSocketIntegrationResponse {
   /**
+   * The integration response key.
+   */
+  readonly responseKey: WebSocketIntegrationResponseKey;
+
+  /**
    * Generate an array of WebSocket Integration Response resources from a map
    * and associate them with a given WebSocket Integration
    *
    * @param scope The parent construct
    * @param integration The WebSocket Integration to associate the responses with
-   * @param responsesProps The array of properties to create WebSocket Integration Responses from
+   * @param props The configuration properties to create WebSocket Integration Responses from
    */
-  public static fromIntegrationResponseMap(
-    scope: Construct,
-    integration: IWebSocketIntegration,
-    responsesProps: WebSocketIntegrationResponseProps[],
-  ): WebSocketIntegrationResponse[] {
-    return responsesProps.map((responseProps) =>
-      new WebSocketIntegrationResponse(scope, integration, responseProps),
-    );
-  }
-
-  /**
-   * The integration response key.
-   */
-  readonly responseKey: WebSocketIntegrationResponseKey;
-
-  private constructor(
+  constructor(
     scope: Construct,
     readonly integration: IWebSocketIntegration,
     props: WebSocketIntegrationResponseProps,
   ) {
-    // TODO generate a unique id from integration id + key
-    super(scope, '1234');
+    super(
+      scope,
+      Names.nodeUniqueId(integration.node) + slugify(props.responseKey.key) + 'IntegrationResponse',
+    );
 
     new CfnIntegrationResponse(this, 'Resource', {
       apiId: this.integration.webSocketApi.apiId,
@@ -176,4 +160,8 @@ export class WebSocketIntegrationResponse extends Resource implements IWebSocket
 
     this.responseKey = props.responseKey;
   }
+}
+
+function slugify(x: string): string {
+  return x.replace(/[^a-zA-Z0-9]/g, '');
 }

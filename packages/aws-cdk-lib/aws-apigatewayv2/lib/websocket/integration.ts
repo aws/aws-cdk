@@ -1,6 +1,6 @@
 import { Construct } from 'constructs';
 import { IWebSocketApi } from './api';
-import { WebSocketIntegrationResponse } from './integration-response';
+import { WebSocketIntegrationResponse, WebSocketIntegrationResponseProps } from './integration-response';
 import { IWebSocketRoute } from './route';
 import { CfnIntegration } from '.././index';
 import { IRole } from '../../../aws-iam';
@@ -211,6 +211,7 @@ export interface WebSocketRouteIntegrationBindOptions {
  */
 export abstract class WebSocketRouteIntegration {
   private integration?: WebSocketIntegration;
+  private responses: WebSocketIntegrationResponseProps[] = [];
 
   /**
    * Initialize an integration for a route on websocket api.
@@ -243,9 +244,33 @@ export abstract class WebSocketRouteIntegration {
         passthroughBehavior: config.passthroughBehavior,
         templateSelectionExpression: config.templateSelectionExpression,
       });
+
+      this.responses.push(...config.responses ?? []);
+      this.responses.reduce<{ [key: string]: string }>((acc, props) => {
+        if (props.responseKey.key in acc) {
+          throw new Error(`Duplicate integration response key: "${props.responseKey.key}"`);
+        }
+
+        const key = props.responseKey.key;
+        acc[key] = props.responseKey.key;
+        return acc;
+      }, {});
+
+      for (const response of this.responses) {
+        new WebSocketIntegrationResponse(options.scope, this.integration, response);
+      }
     }
 
     return { integrationId: this.integration.integrationId };
+  }
+
+  /**
+   * Add a response to this integration
+   *
+   * @param response The response to add
+   */
+  protected addResponse(response: WebSocketIntegrationResponseProps) {
+    this.responses.push(response);
   }
 
   /**
@@ -305,12 +330,12 @@ export interface WebSocketRouteIntegrationConfig {
   readonly requestParameters?: { [dest: string]: string };
 
   /**
-   * Integration response configuration
+   * Integration responses configuration
    *
    * @default - No response configuration provided.
    * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-websocket-api-integration-responses.html
    */
-  readonly responses?: WebSocketIntegrationResponse[];
+  readonly responses?: WebSocketIntegrationResponseProps[];
 
   /**
    * Template selection expression

@@ -5,6 +5,8 @@ import {
   WebSocketRouteIntegrationBindOptions,
   PassthroughBehavior,
   ContentHandling,
+  WebSocketIntegrationResponse,
+  WebSocketIntegrationResponseProps,
 } from '../../../aws-apigatewayv2';
 import { IRole } from '../../../aws-iam';
 import { Duration } from '../../../core';
@@ -60,6 +62,14 @@ export interface WebSocketAwsIntegrationProps {
   readonly requestTemplates?: { [contentType: string]: string };
 
   /**
+   * Integration responses configuration
+   *
+   * @default - No response configuration provided.
+   * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-websocket-api-integration-responses.html
+   */
+  readonly responses?: WebSocketIntegrationResponseProps[];
+
+  /**
    * The template selection expression for the integration.
    *
    * @default - No template selection expression provided.
@@ -106,9 +116,19 @@ export class WebSocketAwsIntegration extends WebSocketRouteIntegration {
       credentialsRole: this.props.credentialsRole,
       requestParameters: this.props.requestParameters,
       requestTemplates: this.props.requestTemplates,
+      responses: this.props.responses,
       passthroughBehavior: this.props.passthroughBehavior,
       templateSelectionExpression: this.props.templateSelectionExpression,
       timeout: this.props.timeout,
     };
+  }
+
+  /**
+   * Add a response to this integration
+   *
+   * @param response The response to add
+   */
+  addResponse(response: WebSocketIntegrationResponseProps) {
+    super.addResponse(response);
   }
 }
