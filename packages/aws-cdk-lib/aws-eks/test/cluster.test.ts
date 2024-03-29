@@ -2183,12 +2183,31 @@ describe('cluster', () => {
         instanceType: new ec2.InstanceType('inf1.2xlarge'),
         minCapacity: 1,
       });
-      const fileContents = fs.readFileSync(path.join(__dirname, '..', 'lib', 'addons', 'neuron-device-plugin.yaml'), 'utf8');
-      const sanitized = YAML.parse(fileContents);
+
+      const daemonSetFileContents = fs.readFileSync(path.join(__dirname, '..', 'lib', 'addons', 'neuron-device-plugin.yaml'), 'utf8');
+      const sanitizedDaemonSet = YAML.parse(daemonSetFileContents);
+
+      const clusterRoleFileContent = fs.readFileSync(path.join(__dirname, '..', 'lib', 'addons', 'neuron-device-plugin-rbac-cluster-role.yaml'), 'utf8');
+      const sanitizedClusterRole = YAML.parse(clusterRoleFileContent);
+
+      const clusterRoleBindingFileContents = fs.readFileSync(path.join(__dirname, '..', 'lib', 'addons', 'neuron-device-plugin-rbac-cluster-role-binding.yaml'), 'utf8');
+      const sanitizedClusterRoleBinding = YAML.parse(clusterRoleBindingFileContents);
+
+      const serviceAccountFileContents = fs.readFileSync(path.join(__dirname, '..', 'lib', 'addons', 'neuron-device-plugin-rbac-service-account.yaml'), 'utf8');
+      const sanitizedServiceAccount = YAML.parse(serviceAccountFileContents);
 
       // THEN
       Template.fromStack(stack).hasResourceProperties(eks.KubernetesManifest.RESOURCE_TYPE, {
-        Manifest: JSON.stringify([sanitized]),
+        Manifest: JSON.stringify([sanitizedDaemonSet]),
+      });
+      Template.fromStack(stack).hasResourceProperties(eks.KubernetesManifest.RESOURCE_TYPE, {
+        Manifest: JSON.stringify([sanitizedClusterRole]),
+      });
+      Template.fromStack(stack).hasResourceProperties(eks.KubernetesManifest.RESOURCE_TYPE, {
+        Manifest: JSON.stringify([sanitizedClusterRoleBinding]),
+      });
+      Template.fromStack(stack).hasResourceProperties(eks.KubernetesManifest.RESOURCE_TYPE, {
+        Manifest: JSON.stringify([sanitizedServiceAccount]),
       });
     });
     test('inf2 instances are supported', () => {
@@ -2201,12 +2220,31 @@ describe('cluster', () => {
         instanceType: new ec2.InstanceType('inf2.xlarge'),
         minCapacity: 1,
       });
-      const fileContents = fs.readFileSync(path.join(__dirname, '..', 'lib', 'addons', 'neuron-device-plugin.yaml'), 'utf8');
-      const sanitized = YAML.parse(fileContents);
+
+      const daemonSetFileContents = fs.readFileSync(path.join(__dirname, '..', 'lib', 'addons', 'neuron-device-plugin.yaml'), 'utf8');
+      const sanitizedDaemonSet = YAML.parse(daemonSetFileContents);
+
+      const clusterRoleFileContent = fs.readFileSync(path.join(__dirname, '..', 'lib', 'addons', 'neuron-device-plugin-rbac-cluster-role.yaml'), 'utf8');
+      const sanitizedClusterRole = YAML.parse(clusterRoleFileContent);
+
+      const clusterRoleBindingFileContents = fs.readFileSync(path.join(__dirname, '..', 'lib', 'addons', 'neuron-device-plugin-rbac-cluster-role-binding.yaml'), 'utf8');
+      const sanitizedClusterRoleBinding = YAML.parse(clusterRoleBindingFileContents);
+
+      const serviceAccountFileContents = fs.readFileSync(path.join(__dirname, '..', 'lib', 'addons', 'neuron-device-plugin-rbac-service-account.yaml'), 'utf8');
+      const sanitizedServiceAccount = YAML.parse(serviceAccountFileContents);
 
       // THEN
       Template.fromStack(stack).hasResourceProperties(eks.KubernetesManifest.RESOURCE_TYPE, {
-        Manifest: JSON.stringify([sanitized]),
+        Manifest: JSON.stringify([sanitizedDaemonSet]),
+      });
+      Template.fromStack(stack).hasResourceProperties(eks.KubernetesManifest.RESOURCE_TYPE, {
+        Manifest: JSON.stringify([sanitizedClusterRole]),
+      });
+      Template.fromStack(stack).hasResourceProperties(eks.KubernetesManifest.RESOURCE_TYPE, {
+        Manifest: JSON.stringify([sanitizedClusterRoleBinding]),
+      });
+      Template.fromStack(stack).hasResourceProperties(eks.KubernetesManifest.RESOURCE_TYPE, {
+        Manifest: JSON.stringify([sanitizedServiceAccount]),
       });
     });
     test('trn1 instances are supported', () => {
@@ -2219,12 +2257,31 @@ describe('cluster', () => {
         instanceType: new ec2.InstanceType('trn1.2xlarge'),
         minCapacity: 1,
       });
-      const fileContents = fs.readFileSync(path.join(__dirname, '..', 'lib', 'addons', 'neuron-device-plugin.yaml'), 'utf8');
-      const sanitized = YAML.parse(fileContents);
+
+      const daemonSetFileContents = fs.readFileSync(path.join(__dirname, '..', 'lib', 'addons', 'neuron-device-plugin.yaml'), 'utf8');
+      const sanitizedDaemonSet = YAML.parse(daemonSetFileContents);
+
+      const clusterRoleFileContent = fs.readFileSync(path.join(__dirname, '..', 'lib', 'addons', 'neuron-device-plugin-rbac-cluster-role.yaml'), 'utf8');
+      const sanitizedClusterRole = YAML.parse(clusterRoleFileContent);
+
+      const clusterRoleBindingFileContents = fs.readFileSync(path.join(__dirname, '..', 'lib', 'addons', 'neuron-device-plugin-rbac-cluster-role-binding.yaml'), 'utf8');
+      const sanitizedClusterRoleBinding = YAML.parse(clusterRoleBindingFileContents);
+
+      const serviceAccountFileContents = fs.readFileSync(path.join(__dirname, '..', 'lib', 'addons', 'neuron-device-plugin-rbac-service-account.yaml'), 'utf8');
+      const sanitizedServiceAccount = YAML.parse(serviceAccountFileContents);
 
       // THEN
       Template.fromStack(stack).hasResourceProperties(eks.KubernetesManifest.RESOURCE_TYPE, {
-        Manifest: JSON.stringify([sanitized]),
+        Manifest: JSON.stringify([sanitizedDaemonSet]),
+      });
+      Template.fromStack(stack).hasResourceProperties(eks.KubernetesManifest.RESOURCE_TYPE, {
+        Manifest: JSON.stringify([sanitizedClusterRole]),
+      });
+      Template.fromStack(stack).hasResourceProperties(eks.KubernetesManifest.RESOURCE_TYPE, {
+        Manifest: JSON.stringify([sanitizedClusterRoleBinding]),
+      });
+      Template.fromStack(stack).hasResourceProperties(eks.KubernetesManifest.RESOURCE_TYPE, {
+        Manifest: JSON.stringify([sanitizedServiceAccount]),
       });
     });
     test('trn1n instances are supported', () => {
@@ -2237,12 +2294,31 @@ describe('cluster', () => {
         instanceType: new ec2.InstanceType('trn1n.2xlarge'),
         minCapacity: 1,
       });
-      const fileContents = fs.readFileSync(path.join(__dirname, '..', 'lib', 'addons', 'neuron-device-plugin.yaml'), 'utf8');
-      const sanitized = YAML.parse(fileContents);
+
+      const daemonSetFileContents = fs.readFileSync(path.join(__dirname, '..', 'lib', 'addons', 'neuron-device-plugin.yaml'), 'utf8');
+      const sanitizedDaemonSet = YAML.parse(daemonSetFileContents);
+
+      const clusterRoleFileContent = fs.readFileSync(path.join(__dirname, '..', 'lib', 'addons', 'neuron-device-plugin-rbac-cluster-role.yaml'), 'utf8');
+      const sanitizedClusterRole = YAML.parse(clusterRoleFileContent);
+
+      const clusterRoleBindingFileContents = fs.readFileSync(path.join(__dirname, '..', 'lib', 'addons', 'neuron-device-plugin-rbac-cluster-role-binding.yaml'), 'utf8');
+      const sanitizedClusterRoleBinding = YAML.parse(clusterRoleBindingFileContents);
+
+      const serviceAccountFileContents = fs.readFileSync(path.join(__dirname, '..', 'lib', 'addons', 'neuron-device-plugin-rbac-service-account.yaml'), 'utf8');
+      const sanitizedServiceAccount = YAML.parse(serviceAccountFileContents);
 
       // THEN
       Template.fromStack(stack).hasResourceProperties(eks.KubernetesManifest.RESOURCE_TYPE, {
-        Manifest: JSON.stringify([sanitized]),
+        Manifest: JSON.stringify([sanitizedDaemonSet]),
+      });
+      Template.fromStack(stack).hasResourceProperties(eks.KubernetesManifest.RESOURCE_TYPE, {
+        Manifest: JSON.stringify([sanitizedClusterRole]),
+      });
+      Template.fromStack(stack).hasResourceProperties(eks.KubernetesManifest.RESOURCE_TYPE, {
+        Manifest: JSON.stringify([sanitizedClusterRoleBinding]),
+      });
+      Template.fromStack(stack).hasResourceProperties(eks.KubernetesManifest.RESOURCE_TYPE, {
+        Manifest: JSON.stringify([sanitizedServiceAccount]),
       });
     });
 
@@ -2255,12 +2331,31 @@ describe('cluster', () => {
       cluster.addNodegroupCapacity('InferenceInstances', {
         instanceTypes: [new ec2.InstanceType('inf1.2xlarge')],
       });
-      const fileContents = fs.readFileSync(path.join(__dirname, '..', 'lib', 'addons', 'neuron-device-plugin.yaml'), 'utf8');
-      const sanitized = YAML.parse(fileContents);
+
+      const daemonSetFileContents = fs.readFileSync(path.join(__dirname, '..', 'lib', 'addons', 'neuron-device-plugin.yaml'), 'utf8');
+      const sanitizedDaemonSet = YAML.parse(daemonSetFileContents);
+
+      const clusterRoleFileContent = fs.readFileSync(path.join(__dirname, '..', 'lib', 'addons', 'neuron-device-plugin-rbac-cluster-role.yaml'), 'utf8');
+      const sanitizedClusterRole = YAML.parse(clusterRoleFileContent);
+
+      const clusterRoleBindingFileContents = fs.readFileSync(path.join(__dirname, '..', 'lib', 'addons', 'neuron-device-plugin-rbac-cluster-role-binding.yaml'), 'utf8');
+      const sanitizedClusterRoleBinding = YAML.parse(clusterRoleBindingFileContents);
+
+      const serviceAccountFileContents = fs.readFileSync(path.join(__dirname, '..', 'lib', 'addons', 'neuron-device-plugin-rbac-service-account.yaml'), 'utf8');
+      const sanitizedServiceAccount = YAML.parse(serviceAccountFileContents);
 
       // THEN
       Template.fromStack(stack).hasResourceProperties(eks.KubernetesManifest.RESOURCE_TYPE, {
-        Manifest: JSON.stringify([sanitized]),
+        Manifest: JSON.stringify([sanitizedDaemonSet]),
+      });
+      Template.fromStack(stack).hasResourceProperties(eks.KubernetesManifest.RESOURCE_TYPE, {
+        Manifest: JSON.stringify([sanitizedClusterRole]),
+      });
+      Template.fromStack(stack).hasResourceProperties(eks.KubernetesManifest.RESOURCE_TYPE, {
+        Manifest: JSON.stringify([sanitizedClusterRoleBinding]),
+      });
+      Template.fromStack(stack).hasResourceProperties(eks.KubernetesManifest.RESOURCE_TYPE, {
+        Manifest: JSON.stringify([sanitizedServiceAccount]),
       });
     });
     test('inf2 instances are supported in addNodegroupCapacity', () => {
@@ -2272,12 +2367,31 @@ describe('cluster', () => {
       cluster.addNodegroupCapacity('InferenceInstances', {
         instanceTypes: [new ec2.InstanceType('inf2.xlarge')],
       });
-      const fileContents = fs.readFileSync(path.join(__dirname, '..', 'lib', 'addons', 'neuron-device-plugin.yaml'), 'utf8');
-      const sanitized = YAML.parse(fileContents);
+
+      const daemonSetFileContents = fs.readFileSync(path.join(__dirname, '..', 'lib', 'addons', 'neuron-device-plugin.yaml'), 'utf8');
+      const sanitizedDaemonSet = YAML.parse(daemonSetFileContents);
+
+      const clusterRoleFileContent = fs.readFileSync(path.join(__dirname, '..', 'lib', 'addons', 'neuron-device-plugin-rbac-cluster-role.yaml'), 'utf8');
+      const sanitizedClusterRole = YAML.parse(clusterRoleFileContent);
+
+      const clusterRoleBindingFileContents = fs.readFileSync(path.join(__dirname, '..', 'lib', 'addons', 'neuron-device-plugin-rbac-cluster-role-binding.yaml'), 'utf8');
+      const sanitizedClusterRoleBinding = YAML.parse(clusterRoleBindingFileContents);
+
+      const serviceAccountFileContents = fs.readFileSync(path.join(__dirname, '..', 'lib', 'addons', 'neuron-device-plugin-rbac-service-account.yaml'), 'utf8');
+      const sanitizedServiceAccount = YAML.parse(serviceAccountFileContents);
 
       // THEN
       Template.fromStack(stack).hasResourceProperties(eks.KubernetesManifest.RESOURCE_TYPE, {
-        Manifest: JSON.stringify([sanitized]),
+        Manifest: JSON.stringify([sanitizedDaemonSet]),
+      });
+      Template.fromStack(stack).hasResourceProperties(eks.KubernetesManifest.RESOURCE_TYPE, {
+        Manifest: JSON.stringify([sanitizedClusterRole]),
+      });
+      Template.fromStack(stack).hasResourceProperties(eks.KubernetesManifest.RESOURCE_TYPE, {
+        Manifest: JSON.stringify([sanitizedClusterRoleBinding]),
+      });
+      Template.fromStack(stack).hasResourceProperties(eks.KubernetesManifest.RESOURCE_TYPE, {
+        Manifest: JSON.stringify([sanitizedServiceAccount]),
       });
     });
 

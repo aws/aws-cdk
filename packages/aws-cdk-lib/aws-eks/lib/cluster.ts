@@ -1445,7 +1445,11 @@ export class Cluster extends ClusterBase {
 
   private _neuronDevicePlugin?: KubernetesManifest;
 
-  private _neuronDevicePluginRbac?: KubernetesManifest;
+  private _neuronDevicePluginRbacClusterRole?: KubernetesManifest;
+
+  private _neuronDevicePluginRbacServiceAccount?: KubernetesManifest;
+
+  private _neuronDevicePluginRbacClusterRoleBinding?: KubernetesManifest;
 
   private readonly endpointAccess: EndpointAccess;
 
@@ -1996,13 +2000,21 @@ export class Cluster extends ClusterBase {
    * already added.
    */
   private addNeuronDevicePluginRbac() {
-    if (!this._neuronDevicePluginRbac) {
-      const fileContents = fs.readFileSync(path.join(__dirname, 'addons', 'neuron-device-plugin-rbac.yaml'), 'utf8');
-      const sanitized = YAML.parse(fileContents);
-      this._neuronDevicePluginRbac = this.addManifest('NeuronDevicePluginRbac', sanitized);
+    if (!this._neuronDevicePluginRbacClusterRole) {
+      const clusterRoleFileContents = fs.readFileSync(path.join(__dirname, 'addons', 'neuron-device-plugin-rbac-cluster-role.yaml'), 'utf8');
+      const sanitizedClusterRole = YAML.parse(clusterRoleFileContents);
+      this._neuronDevicePluginRbacClusterRole = this.addManifest('NeuronDevicePluginRbacClusterRole', sanitizedClusterRole);
     }
-
-    return this._neuronDevicePluginRbac;
+    if (!this._neuronDevicePluginRbacClusterRoleBinding) {
+      const clusterRoleBindingFileContents = fs.readFileSync(path.join(__dirname, 'addons', 'neuron-device-plugin-rbac-cluster-role-binding.yaml'), 'utf8');
+      const sanitizedClusterRoleBinding = YAML.parse(clusterRoleBindingFileContents);
+      this._neuronDevicePluginRbacClusterRoleBinding = this.addManifest('NeuronDevicePluginRbacClusterRoleBinding', sanitizedClusterRoleBinding);
+    }
+    if (!this._neuronDevicePluginRbacServiceAccount) {
+      const clusterRoleBindingFileContents = fs.readFileSync(path.join(__dirname, 'addons', 'neuron-device-plugin-rbac-service-account.yaml'), 'utf8');
+      const sanitizedServiceAccount = YAML.parse(clusterRoleBindingFileContents);
+      this._neuronDevicePluginRbacServiceAccount = this.addManifest('NeuronDevicePluginRbacServiceAccount', sanitizedServiceAccount);
+    }
   }
 
   /**
