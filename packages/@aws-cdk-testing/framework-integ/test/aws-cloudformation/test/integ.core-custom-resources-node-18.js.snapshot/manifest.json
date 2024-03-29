@@ -1,5 +1,5 @@
 {
-  "version": "31.0.0",
+  "version": "36.0.0",
   "artifacts": {
     "custom-resource-test-node-18-stack.assets": {
       "type": "cdk:asset-manifest",
@@ -14,10 +14,11 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "custom-resource-test-node-18-stack.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/9e5d3e20624023e8f794f5d686d025da3e98b1b5a8acbe187a994bb8dc26f2c1.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a8c2c82a52d45206f3c8ae33c6c68147a83ca592f60c1930b6514e00bbf38e98.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -90,19 +91,20 @@
       },
       "displayName": "custom-resource-test-node-18-stack"
     },
-    "customresourcetestnode18integDefaultTestDeployAssert9B8E9A20.assets": {
+    "customresourcetestnode18integtestDefaultTestDeployAssertD3C9C1C1.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "customresourcetestnode18integDefaultTestDeployAssert9B8E9A20.assets.json",
+        "file": "customresourcetestnode18integtestDefaultTestDeployAssertD3C9C1C1.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "customresourcetestnode18integDefaultTestDeployAssert9B8E9A20": {
+    "customresourcetestnode18integtestDefaultTestDeployAssertD3C9C1C1": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "customresourcetestnode18integDefaultTestDeployAssert9B8E9A20.template.json",
+        "templateFile": "customresourcetestnode18integtestDefaultTestDeployAssertD3C9C1C1.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
@@ -110,7 +112,7 @@
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "customresourcetestnode18integDefaultTestDeployAssert9B8E9A20.assets"
+          "customresourcetestnode18integtestDefaultTestDeployAssertD3C9C1C1.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -119,23 +121,23 @@
         }
       },
       "dependencies": [
-        "customresourcetestnode18integDefaultTestDeployAssert9B8E9A20.assets"
+        "customresourcetestnode18integtestDefaultTestDeployAssertD3C9C1C1.assets"
       ],
       "metadata": {
-        "/custom-resource-test-node-18-integ/DefaultTest/DeployAssert/BootstrapVersion": [
+        "/custom-resource-test-node-18-integ-test/DefaultTest/DeployAssert/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/custom-resource-test-node-18-integ/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+        "/custom-resource-test-node-18-integ-test/DefaultTest/DeployAssert/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "custom-resource-test-node-18-integ/DefaultTest/DeployAssert"
+      "displayName": "custom-resource-test-node-18-integ-test/DefaultTest/DeployAssert"
     },
     "Tree": {
       "type": "cdk:tree",

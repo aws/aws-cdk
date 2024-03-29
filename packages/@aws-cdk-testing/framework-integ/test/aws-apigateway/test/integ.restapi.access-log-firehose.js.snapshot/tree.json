@@ -31,6 +31,30 @@
                   "version": "0.0.0"
                 }
               },
+              "auto-deletion-log-group": {
+                "id": "auto-deletion-log-group",
+                "path": "test-apigateway-access-logs-firehose/Bucket/auto-deletion-log-group",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "test-apigateway-access-logs-firehose/Bucket/auto-deletion-log-group/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::Logs::LogGroup",
+                      "aws:cdk:cloudformation:props": {
+                        "retentionInDays": 90
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_logs.CfnLogGroup",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_logs.LogGroup",
+                  "version": "0.0.0"
+                }
+              },
               "Policy": {
                 "id": "Policy",
                 "path": "test-apigateway-access-logs-firehose/Bucket/Policy",
@@ -155,7 +179,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.CustomResourceProvider",
+              "fqn": "aws-cdk-lib.CustomResourceProviderBase",
               "version": "0.0.0"
             }
           },

@@ -124,29 +124,29 @@
           "version": "0.0.0"
         }
       },
-      "custom-resource-test-node-18-integ": {
-        "id": "custom-resource-test-node-18-integ",
-        "path": "custom-resource-test-node-18-integ",
+      "custom-resource-test-node-18-integ-test": {
+        "id": "custom-resource-test-node-18-integ-test",
+        "path": "custom-resource-test-node-18-integ-test",
         "children": {
           "DefaultTest": {
             "id": "DefaultTest",
-            "path": "custom-resource-test-node-18-integ/DefaultTest",
+            "path": "custom-resource-test-node-18-integ-test/DefaultTest",
             "children": {
               "Default": {
                 "id": "Default",
-                "path": "custom-resource-test-node-18-integ/DefaultTest/Default",
+                "path": "custom-resource-test-node-18-integ-test/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.26"
+                  "version": "10.3.0"
                 }
               },
               "DeployAssert": {
                 "id": "DeployAssert",
-                "path": "custom-resource-test-node-18-integ/DefaultTest/DeployAssert",
+                "path": "custom-resource-test-node-18-integ-test/DefaultTest/DeployAssert",
                 "children": {
                   "BootstrapVersion": {
                     "id": "BootstrapVersion",
-                    "path": "custom-resource-test-node-18-integ/DefaultTest/DeployAssert/BootstrapVersion",
+                    "path": "custom-resource-test-node-18-integ-test/DefaultTest/DeployAssert/BootstrapVersion",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.CfnParameter",
                       "version": "0.0.0"
@@ -154,7 +154,7 @@
                   },
                   "CheckBootstrapVersion": {
                     "id": "CheckBootstrapVersion",
-                    "path": "custom-resource-test-node-18-integ/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "path": "custom-resource-test-node-18-integ-test/DefaultTest/DeployAssert/CheckBootstrapVersion",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.CfnRule",
                       "version": "0.0.0"
@@ -183,7 +183,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.2.26"
+          "version": "10.3.0"
         }
       }
     },
