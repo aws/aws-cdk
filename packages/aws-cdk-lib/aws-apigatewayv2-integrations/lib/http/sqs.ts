@@ -65,7 +65,7 @@ export class HttpSqsIntegration extends apigwv2.HttpRouteIntegration {
         effect: iam.Effect.ALLOW,
         sid: 'AllowSqsExecution',
         actions: [this.determineActionBySubtype()],
-        resources: [this.determineResourceArn()],
+        resources: [this.props.queue.queueArn],
       }),
     );
 
@@ -89,18 +89,6 @@ export class HttpSqsIntegration extends apigwv2.HttpRouteIntegration {
         return 'sqs:DeleteMessage';
       case apigwv2.HttpIntegrationSubtype.SQS_PURGE_QUEUE:
         return 'sqs:PurgeQueue';
-      default:
-        throw new Error(`Unsupported subtype: ${this.subtype}`);
-    }
-  }
-
-  private determineResourceArn(): string {
-    switch (this.subtype) {
-      case apigwv2.HttpIntegrationSubtype.SQS_SEND_MESSAGE:
-      case apigwv2.HttpIntegrationSubtype.SQS_RECEIVE_MESSAGE:
-      case apigwv2.HttpIntegrationSubtype.SQS_DELETE_MESSAGE:
-      case apigwv2.HttpIntegrationSubtype.SQS_PURGE_QUEUE:
-        return this.props.queue.queueArn;
       default:
         throw new Error(`Unsupported subtype: ${this.subtype}`);
     }

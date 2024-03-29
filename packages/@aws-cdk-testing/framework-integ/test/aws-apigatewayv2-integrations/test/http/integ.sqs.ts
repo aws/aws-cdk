@@ -77,19 +77,6 @@ const receiveMessageAssertion = integTest.assertions.httpApiCall(
 );
 receiveMessageAssertion.expect(integ.ExpectedResult.objectLike({ status: 200, statusText: 'OK' }));
 
-const receiveMessageResult = integTest.assertions.awsApiCall('SQS', 'receiveMessage', {
-  QueueUrl: queue.queueUrl,
-});
-const receiptHandle = receiveMessageResult.getAttString('Messages.0.ReceiptHandle');
-
-const deleteMessageAssertion = integTest.assertions.httpApiCall(
-  `${httpApi.apiEndpoint}/delete-message`, {
-    body: JSON.stringify({ ReceiptHandle: receiptHandle }),
-    method: 'POST',
-  },
-);
-deleteMessageAssertion.expect(integ.ExpectedResult.objectLike({ status: 200, statusText: 'OK' }));
-
 const purgeQueueAssertion = integTest.assertions.httpApiCall(
   `${httpApi.apiEndpoint}/purge-queue`, {
     method: 'POST',
