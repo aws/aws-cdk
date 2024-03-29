@@ -50,6 +50,8 @@ export class WebSocketIntegrationResponseKey {
    *
    * @param httpStatusRegExpStr HTTP status code regular expression string representation
    * @see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp
+   *
+   * @throws an error if {@link httpStatusRegExpStr} is not a valid regular expression string
    */
   public static fromStatusRegExp(httpStatusRegExpStr: string): WebSocketIntegrationResponseKey {
     const httpStatusRegExp = new RegExp(httpStatusRegExpStr);
