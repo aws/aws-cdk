@@ -10,6 +10,7 @@ import { parseBucketArn, parseBucketName } from './util';
 import * as events from '../../aws-events';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
+import { LogGroup, RetentionDays } from '../../aws-logs';
 import {
   CustomResource,
   Duration,
@@ -1476,6 +1477,20 @@ export interface BucketProps {
   readonly autoDeleteObjects?: boolean;
 
   /**
+   * The retention period for the log group which contains the autoDeleteObjects logs
+   *
+   * @default RetentionDays.THREE_MONTHS
+   */
+  readonly autoDeleteObjectsLogRetention?: RetentionDays;
+
+  /**
+   * Controls whether the log group which contains the autoDeleteObjects logs will be retained or destroyed
+   *
+   * @default RemovalPolicy.DESTROY
+   */
+  readonly autoDeleteObjectsLogRemovalPolicy?: RemovalPolicy;
+
+  /**
    * Whether this bucket should have versioning turned on or not.
    *
    * @default false (unless object lock is enabled, then true)
@@ -2003,7 +2018,7 @@ export class Bucket extends BucketBase {
         throw new Error('Cannot use \'autoDeleteObjects\' property on a bucket without setting removal policy to \'DESTROY\'.');
       }
 
-      this.enableAutoDeleteObjects();
+      this.enableAutoDeleteObjects(props.autoDeleteObjectsLogRetention, props.autoDeleteObjectsLogRemovalPolicy);
     }
 
     if (this.eventBridgeEnabled) {
@@ -2535,10 +2550,24 @@ export class Bucket extends BucketBase {
     });
   }
 
-  private enableAutoDeleteObjects() {
+  private enableAutoDeleteObjects(retention?: RetentionDays, removalPolicy?: RemovalPolicy) {
+
+    const logGroup = new LogGroup(this, 'auto-deletion-log-group', {
+      retention: retention ?? RetentionDays.THREE_MONTHS,
+      removalPolicy: removalPolicy ?? RemovalPolicy.DESTROY,
+    });
+
     const provider = AutoDeleteObjectsProvider.getOrCreateProvider(this, AUTO_DELETE_OBJECTS_RESOURCE_TYPE, {
       useCfnResponseWrapper: false,
       description: `Lambda function for auto-deleting objects in ${this.bucketName} S3 bucket.`,
+      logGroupName: logGroup.logGroupName,
+      policyStatements: [
+        {
+          Effect: 'Deny',
+          Action: 'logs:CreateLogGroup',
+          Resource: '*',
+        },
+      ],
     });
 
     // Use a bucket policy to allow the custom resource to delete

@@ -128,6 +128,10 @@ export abstract class CustomResourceProviderBase extends Construct {
 
     const timeout = props.timeout ?? Duration.minutes(15);
     const memory = props.memorySize ?? Size.mebibytes(128);
+    let loggingConfig = {};
+    if (props.logGroupName) {
+      loggingConfig = { LogGroup: props.logGroupName };
+    }
 
     const handler = new CfnResource(this, 'Handler', {
       type: 'AWS::Lambda::Function',
@@ -136,6 +140,7 @@ export abstract class CustomResourceProviderBase extends Construct {
         Timeout: timeout.toSeconds(),
         MemorySize: memory.toMebibytes(),
         Handler: codeHandler,
+        LoggingConfig: loggingConfig,
         Role: this.roleArn,
         Runtime: props.runtimeName,
         Environment: this.renderEnvironmentVariables(props.environment),

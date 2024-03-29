@@ -3,6 +3,7 @@ import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Annotations, Match, Template } from '../../assertions';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
+import { RetentionDays } from '../../aws-logs';
 import * as cdk from '../../core';
 import * as s3 from '../lib';
 
@@ -3435,6 +3436,69 @@ describe('bucket', () => {
     });
 
     Template.fromStack(stack).resourceCountIs('AWS::Lambda::Function', 1);
+  });
+
+  test('autoDeleteObjects lambda role policy denies log group creation', () => {
+    const stack = new cdk.Stack();
+
+    new s3.Bucket(stack, 'MyBucket', {
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+      autoDeleteObjects: true,
+    });
+
+    (Template.fromStack(stack).hasResource('AWS::IAM::Role', {
+      'Properties': {
+        'Policies': [
+          {
+            'PolicyDocument': {
+              'Statement': [
+                {
+                  'Action': 'logs:CreateLogGroup',
+                  'Resource': '*',
+                  'Effect': 'Deny',
+                },
+              ],
+            },
+          },
+        ],
+      },
+    }));
+  });
+
+  test('autoDeleteObjects log group can be optionally retained', () => {
+    const stack = new cdk.Stack();
+
+    new s3.Bucket(stack, 'MyBucket', {
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+      autoDeleteObjects: true,
+      autoDeleteObjectsLogRemovalPolicy: cdk.RemovalPolicy.RETAIN,
+    });
+
+    (Template.fromStack(stack).hasResource('AWS::Logs::LogGroup', {
+      'DeletionPolicy': 'Retain',
+      'Properties': {
+        'RetentionInDays': 90,
+      },
+      'UpdateReplacePolicy': 'Retain',
+    }));
+  });
+
+  test('autoDeleteObjects log group retention period be modified', () => {
+    const stack = new cdk.Stack();
+
+    new s3.Bucket(stack, 'MyBucket', {
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+      autoDeleteObjects: true,
+      autoDeleteObjectsLogRetention: RetentionDays.FIVE_DAYS,
+    });
+
+    (Template.fromStack(stack).hasResource('AWS::Logs::LogGroup', {
+      'DeletionPolicy': 'Delete',
+      'Properties': {
+        'RetentionInDays': 5,
+      },
+      'UpdateReplacePolicy': 'Delete',
+    }));
   });
 
   test('autoDeleteObjects throws if RemovalPolicy is not DESTROY', () => {

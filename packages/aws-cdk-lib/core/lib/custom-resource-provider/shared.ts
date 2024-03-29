@@ -69,4 +69,10 @@ export interface CustomResourceProviderOptions {
    * @default - No description.
    */
   readonly description?: string;
+
+  /**
+   * The Cloudwatch Log Group name to use for the provider.
+   * @default - A log group name is automatically generated
+   */
+  readonly logGroupName?: string;
 }
