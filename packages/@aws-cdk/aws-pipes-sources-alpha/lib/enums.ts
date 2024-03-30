@@ -3,7 +3,8 @@
  */
 export enum OnPartialBatchItemFailure {
   /**
-   * AUTOMATIC_BISECT
+   * EventBridge halves each batch and will retry each half until all the
+   * records are processed or there is one failed message left in the batch.
    */
   AUTOMATIC_BISECT = 'AUTOMATIC_BISECT',
 }
@@ -13,15 +14,18 @@ export enum OnPartialBatchItemFailure {
  */
 export enum KinesisStartingPosition {
   /**
-   * TRIM_HORIZON
+   * Start streaming at the last untrimmed record in the shard,
+   * which is the oldest data record in the shard.
    */
   TRIM_HORIZON = 'TRIM_HORIZON',
   /**
-   * LATEST
+   * Start streaming just after the most recent record in the shard,
+   * so that you always read the most recent data in the shard.
    */
   LATEST = 'LATEST',
   /**
-   * AT_TIMESTAMP
+   * Start streaming from the position denoted by the time stamp
+   * specified in the `startingPositionTimestamp` field.
    */
   AT_TIMESTAMP = 'AT_TIMESTAMP',
 }
@@ -31,11 +35,13 @@ export enum KinesisStartingPosition {
  */
 export enum DynamoDBStartingPosition {
   /**
-   * TRIM_HORIZON
+   * Start reading at the last (untrimmed) stream record,
+   * which is the oldest record in the shard.
    */
   TRIM_HORIZON = 'TRIM_HORIZON',
   /**
-   * LATEST
+   * Start reading just after the most recent stream record in the shard,
+   * so that you always read the most recent data in the shard.
    */
   LATEST = 'LATEST',
 }
