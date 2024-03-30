@@ -34,7 +34,7 @@
     "outputPaths": [
      "CanaryRuns.0.Status.State"
     ],
-    "salt": "1708098560175"
+    "salt": "1711840286719"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -325,24 +325,6 @@
          "Resource": [
           "*"
          ]
-        },
-        {
-         "Action": [
-          "synthetics:GetCanaryRuns"
-         ],
-         "Effect": "Allow",
-         "Resource": [
-          "*"
-         ]
-        },
-        {
-         "Action": [
-          "states:StartExecution"
-         ],
-         "Effect": "Allow",
-         "Resource": [
-          "*"
-         ]
         }
        ]
       }
@@ -358,7 +340,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "ac51674cf5325b7a0e5444d6b7c1f88607c16a031b852bd51c375ac8c5c4fce5.zip"
+     "S3Key": "30d328e47ab6c6a4d0d137aac9e53e30955ac7469bcb2be4a49f9baf5cfc2f9c.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
@@ -467,15 +449,6 @@
          "Resource": [
           "*"
          ]
-        },
-        {
-         "Action": [
-          "synthetics:GetCanaryRuns"
-         ],
-         "Effect": "Allow",
-         "Resource": [
-          "*"
-         ]
         }
        ]
       }
@@ -491,7 +464,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "ac51674cf5325b7a0e5444d6b7c1f88607c16a031b852bd51c375ac8c5c4fce5.zip"
+     "S3Key": "30d328e47ab6c6a4d0d137aac9e53e30955ac7469bcb2be4a49f9baf5cfc2f9c.zip"
     },
     "Timeout": 120,
     "Handler": "index.isComplete",
@@ -533,7 +506,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "ac51674cf5325b7a0e5444d6b7c1f88607c16a031b852bd51c375ac8c5c4fce5.zip"
+     "S3Key": "30d328e47ab6c6a4d0d137aac9e53e30955ac7469bcb2be4a49f9baf5cfc2f9c.zip"
     },
     "Timeout": 120,
     "Handler": "index.onTimeout",
@@ -579,7 +552,7 @@
     "outputPaths": [
      "CanaryRuns.0.Status.State"
     ],
-    "salt": "1708098560176"
+    "salt": "1711840286722"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -735,7 +708,7 @@
     "outputPaths": [
      "CanaryRuns.0.Status.State"
     ],
-    "salt": "1708098560177"
+    "salt": "1711840286722"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -891,7 +864,7 @@
     "outputPaths": [
      "CanaryRuns.0.Status.State"
     ],
-    "salt": "1708098560177"
+    "salt": "1711840286723"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -1013,7 +986,7 @@
     "AwsApiCallSyntheticsgetCanaryRunsaf0432d0aeabb461c9a56a62dba7b6feWaitForRole0C9EEFC1"
    ]
   },
-  "AwsApiCallSyntheticsgetCanaryRunse77bc009769f8becf2bba8ec443d0a60": {
+  "AwsApiCallSyntheticsgetCanaryRuns7529a951b35a7be38dbb382fdb631be1": {
    "Type": "Custom::DeployAssert@SdkCallSyntheticsgetCanaryRuns",
    "Properties": {
     "ServiceToken": {
@@ -1027,7 +1000,7 @@
     "expected": "{\"$StringLike\":\"PASSED\"}",
     "actualPath": "CanaryRuns.0.Status.State",
     "stateMachineArn": {
-     "Ref": "AwsApiCallSyntheticsgetCanaryRunse77bc009769f8becf2bba8ec443d0a60WaitFor8805095D"
+     "Ref": "AwsApiCallSyntheticsgetCanaryRuns7529a951b35a7be38dbb382fdb631be1WaitFor57B7139E"
     },
     "parameters": {
      "Name": {
@@ -1036,7 +1009,7 @@
        [
         "\"",
         {
-         "Fn::ImportValue": "canary-one:ExportsOutputRefSynNodejsPuppeteer406C46FFAF8F9722F2"
+         "Fn::ImportValue": "canary-one:ExportsOutputRefSynNodejsPuppeteer70DA1BD3951FA832AF"
         },
         "\""
        ]
@@ -1047,12 +1020,12 @@
     "outputPaths": [
      "CanaryRuns.0.Status.State"
     ],
-    "salt": "1708098560177"
+    "salt": "1711840286724"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "AwsApiCallSyntheticsgetCanaryRunse77bc009769f8becf2bba8ec443d0a60WaitForIsCompleteProviderInvoke28F4AB77": {
+  "AwsApiCallSyntheticsgetCanaryRuns7529a951b35a7be38dbb382fdb631be1WaitForIsCompleteProviderInvoke0FE9C34F": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",
@@ -1064,13 +1037,13 @@
     },
     "Principal": {
      "Fn::GetAtt": [
-      "AwsApiCallSyntheticsgetCanaryRunse77bc009769f8becf2bba8ec443d0a60WaitForRoleACF107E5",
+      "AwsApiCallSyntheticsgetCanaryRuns7529a951b35a7be38dbb382fdb631be1WaitForRole61C8790D",
       "Arn"
      ]
     }
    }
   },
-  "AwsApiCallSyntheticsgetCanaryRunse77bc009769f8becf2bba8ec443d0a60WaitForTimeoutProviderInvoke78F920F8": {
+  "AwsApiCallSyntheticsgetCanaryRuns7529a951b35a7be38dbb382fdb631be1WaitForTimeoutProviderInvoke8C26AAE8": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",
@@ -1082,13 +1055,13 @@
     },
     "Principal": {
      "Fn::GetAtt": [
-      "AwsApiCallSyntheticsgetCanaryRunse77bc009769f8becf2bba8ec443d0a60WaitForRoleACF107E5",
+      "AwsApiCallSyntheticsgetCanaryRuns7529a951b35a7be38dbb382fdb631be1WaitForRole61C8790D",
       "Arn"
      ]
     }
    }
   },
-  "AwsApiCallSyntheticsgetCanaryRunse77bc009769f8becf2bba8ec443d0a60WaitForRoleACF107E5": {
+  "AwsApiCallSyntheticsgetCanaryRuns7529a951b35a7be38dbb382fdb631be1WaitForRole61C8790D": {
    "Type": "AWS::IAM::Role",
    "Properties": {
     "AssumeRolePolicyDocument": {
@@ -1133,7 +1106,7 @@
     ]
    }
   },
-  "AwsApiCallSyntheticsgetCanaryRunse77bc009769f8becf2bba8ec443d0a60WaitFor8805095D": {
+  "AwsApiCallSyntheticsgetCanaryRuns7529a951b35a7be38dbb382fdb631be1WaitFor57B7139E": {
    "Type": "AWS::StepFunctions::StateMachine",
    "Properties": {
     "DefinitionString": {
@@ -1160,13 +1133,13 @@
     },
     "RoleArn": {
      "Fn::GetAtt": [
-      "AwsApiCallSyntheticsgetCanaryRunse77bc009769f8becf2bba8ec443d0a60WaitForRoleACF107E5",
+      "AwsApiCallSyntheticsgetCanaryRuns7529a951b35a7be38dbb382fdb631be1WaitForRole61C8790D",
       "Arn"
      ]
     }
    },
    "DependsOn": [
-    "AwsApiCallSyntheticsgetCanaryRunse77bc009769f8becf2bba8ec443d0a60WaitForRoleACF107E5"
+    "AwsApiCallSyntheticsgetCanaryRuns7529a951b35a7be38dbb382fdb631be1WaitForRole61C8790D"
    ]
   },
   "AwsApiCallSyntheticsgetCanaryRuns072a1d4866ac44cd80d65b9fb7140f44": {
@@ -1203,7 +1176,7 @@
     "outputPaths": [
      "CanaryRuns.0.Status.State"
     ],
-    "salt": "1708098560178"
+    "salt": "1711840286725"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -1325,7 +1298,7 @@
     "AwsApiCallSyntheticsgetCanaryRuns072a1d4866ac44cd80d65b9fb7140f44WaitForRole1F7DFDD4"
    ]
   },
-  "AwsApiCallSyntheticsgetCanaryRunse7a1e913bca172f26683b6f1e3a239e2": {
+  "AwsApiCallSyntheticsgetCanaryRunsf91ed1876add8c22a7b35f8a7e752983": {
    "Type": "Custom::DeployAssert@SdkCallSyntheticsgetCanaryRuns",
    "Properties": {
     "ServiceToken": {
@@ -1339,7 +1312,7 @@
     "expected": "{\"$StringLike\":\"PASSED\"}",
     "actualPath": "CanaryRuns.0.Status.State",
     "stateMachineArn": {
-     "Ref": "AwsApiCallSyntheticsgetCanaryRunse7a1e913bca172f26683b6f1e3a239e2WaitForB088533D"
+     "Ref": "AwsApiCallSyntheticsgetCanaryRunsf91ed1876add8c22a7b35f8a7e752983WaitFor809EEB77"
     },
     "parameters": {
      "Name": {
@@ -1348,7 +1321,7 @@
        [
         "\"",
         {
-         "Fn::ImportValue": "canary-one:ExportsOutputRefSynPythonSelenium13F92D8275979DE724"
+         "Fn::ImportValue": "canary-one:ExportsOutputRefSynPythonSelenium30F6137007049602B8"
         },
         "\""
        ]
@@ -1359,12 +1332,12 @@
     "outputPaths": [
      "CanaryRuns.0.Status.State"
     ],
-    "salt": "1708098560178"
+    "salt": "1711840286726"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "AwsApiCallSyntheticsgetCanaryRunse7a1e913bca172f26683b6f1e3a239e2WaitForIsCompleteProviderInvokeA008B058": {
+  "AwsApiCallSyntheticsgetCanaryRunsf91ed1876add8c22a7b35f8a7e752983WaitForIsCompleteProviderInvoke9283E57C": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",
@@ -1376,13 +1349,13 @@
     },
     "Principal": {
      "Fn::GetAtt": [
-      "AwsApiCallSyntheticsgetCanaryRunse7a1e913bca172f26683b6f1e3a239e2WaitForRole9256B779",
+      "AwsApiCallSyntheticsgetCanaryRunsf91ed1876add8c22a7b35f8a7e752983WaitForRoleC94CFFE2",
       "Arn"
      ]
     }
    }
   },
-  "AwsApiCallSyntheticsgetCanaryRunse7a1e913bca172f26683b6f1e3a239e2WaitForTimeoutProviderInvoke5934B864": {
+  "AwsApiCallSyntheticsgetCanaryRunsf91ed1876add8c22a7b35f8a7e752983WaitForTimeoutProviderInvoke10DCE3BC": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",
@@ -1394,13 +1367,13 @@
     },
     "Principal": {
      "Fn::GetAtt": [
-      "AwsApiCallSyntheticsgetCanaryRunse7a1e913bca172f26683b6f1e3a239e2WaitForRole9256B779",
+      "AwsApiCallSyntheticsgetCanaryRunsf91ed1876add8c22a7b35f8a7e752983WaitForRoleC94CFFE2",
       "Arn"
      ]
     }
    }
   },
-  "AwsApiCallSyntheticsgetCanaryRunse7a1e913bca172f26683b6f1e3a239e2WaitForRole9256B779": {
+  "AwsApiCallSyntheticsgetCanaryRunsf91ed1876add8c22a7b35f8a7e752983WaitForRoleC94CFFE2": {
    "Type": "AWS::IAM::Role",
    "Properties": {
     "AssumeRolePolicyDocument": {
@@ -1445,7 +1418,7 @@
     ]
    }
   },
-  "AwsApiCallSyntheticsgetCanaryRunse7a1e913bca172f26683b6f1e3a239e2WaitForB088533D": {
+  "AwsApiCallSyntheticsgetCanaryRunsf91ed1876add8c22a7b35f8a7e752983WaitFor809EEB77": {
    "Type": "AWS::StepFunctions::StateMachine",
    "Properties": {
     "DefinitionString": {
@@ -1472,169 +1445,13 @@
     },
     "RoleArn": {
      "Fn::GetAtt": [
-      "AwsApiCallSyntheticsgetCanaryRunse7a1e913bca172f26683b6f1e3a239e2WaitForRole9256B779",
+      "AwsApiCallSyntheticsgetCanaryRunsf91ed1876add8c22a7b35f8a7e752983WaitForRoleC94CFFE2",
       "Arn"
      ]
     }
    },
    "DependsOn": [
-    "AwsApiCallSyntheticsgetCanaryRunse7a1e913bca172f26683b6f1e3a239e2WaitForRole9256B779"
-   ]
-  },
-  "AwsApiCallSyntheticsgetCanaryRunsa8f10ec0b8d5ec0f9b81b350577d8d97": {
-   "Type": "Custom::DeployAssert@SdkCallSyntheticsgetCanaryRuns",
-   "Properties": {
-    "ServiceToken": {
-     "Fn::GetAtt": [
-      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
-      "Arn"
-     ]
-    },
-    "service": "Synthetics",
-    "api": "getCanaryRuns",
-    "expected": "{\"$StringLike\":\"PASSED\"}",
-    "actualPath": "CanaryRuns.0.Status.State",
-    "stateMachineArn": {
-     "Ref": "AwsApiCallSyntheticsgetCanaryRunsa8f10ec0b8d5ec0f9b81b350577d8d97WaitFor156A3E3A"
-    },
-    "parameters": {
-     "Name": {
-      "Fn::Join": [
-       "",
-       [
-        "\"",
-        {
-         "Fn::ImportValue": "canary-one:ExportsOutputRefSynPythonSelenium205975076709FDEB65"
-        },
-        "\""
-       ]
-      ]
-     }
-    },
-    "flattenResponse": "true",
-    "outputPaths": [
-     "CanaryRuns.0.Status.State"
-    ],
-    "salt": "1708098560178"
-   },
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
-  },
-  "AwsApiCallSyntheticsgetCanaryRunsa8f10ec0b8d5ec0f9b81b350577d8d97WaitForIsCompleteProviderInvokeD514B7C4": {
-   "Type": "AWS::Lambda::Permission",
-   "Properties": {
-    "Action": "lambda:InvokeFunction",
-    "FunctionName": {
-     "Fn::GetAtt": [
-      "SingletonFunction76b3e830a873425f8453eddd85c86925Handler81461ECE",
-      "Arn"
-     ]
-    },
-    "Principal": {
-     "Fn::GetAtt": [
-      "AwsApiCallSyntheticsgetCanaryRunsa8f10ec0b8d5ec0f9b81b350577d8d97WaitForRole36C609F2",
-      "Arn"
-     ]
-    }
-   }
-  },
-  "AwsApiCallSyntheticsgetCanaryRunsa8f10ec0b8d5ec0f9b81b350577d8d97WaitForTimeoutProviderInvokeBD7C1168": {
-   "Type": "AWS::Lambda::Permission",
-   "Properties": {
-    "Action": "lambda:InvokeFunction",
-    "FunctionName": {
-     "Fn::GetAtt": [
-      "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aHandlerADF3E6EA",
-      "Arn"
-     ]
-    },
-    "Principal": {
-     "Fn::GetAtt": [
-      "AwsApiCallSyntheticsgetCanaryRunsa8f10ec0b8d5ec0f9b81b350577d8d97WaitForRole36C609F2",
-      "Arn"
-     ]
-    }
-   }
-  },
-  "AwsApiCallSyntheticsgetCanaryRunsa8f10ec0b8d5ec0f9b81b350577d8d97WaitForRole36C609F2": {
-   "Type": "AWS::IAM::Role",
-   "Properties": {
-    "AssumeRolePolicyDocument": {
-     "Version": "2012-10-17",
-     "Statement": [
-      {
-       "Action": "sts:AssumeRole",
-       "Effect": "Allow",
-       "Principal": {
-        "Service": "states.amazonaws.com"
-       }
-      }
-     ]
-    },
-    "Policies": [
-     {
-      "PolicyName": "InlineInvokeFunctions",
-      "PolicyDocument": {
-       "Version": "2012-10-17",
-       "Statement": [
-        {
-         "Action": "lambda:InvokeFunction",
-         "Effect": "Allow",
-         "Resource": [
-          {
-           "Fn::GetAtt": [
-            "SingletonFunction76b3e830a873425f8453eddd85c86925Handler81461ECE",
-            "Arn"
-           ]
-          },
-          {
-           "Fn::GetAtt": [
-            "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aHandlerADF3E6EA",
-            "Arn"
-           ]
-          }
-         ]
-        }
-       ]
-      }
-     }
-    ]
-   }
-  },
-  "AwsApiCallSyntheticsgetCanaryRunsa8f10ec0b8d5ec0f9b81b350577d8d97WaitFor156A3E3A": {
-   "Type": "AWS::StepFunctions::StateMachine",
-   "Properties": {
-    "DefinitionString": {
-     "Fn::Join": [
-      "",
-      [
-       "{\"StartAt\":\"framework-isComplete-task\",\"States\":{\"framework-isComplete-task\":{\"End\":true,\"Retry\":[{\"ErrorEquals\":[\"States.ALL\"],\"IntervalSeconds\":5,\"MaxAttempts\":60,\"BackoffRate\":1}],\"Catch\":[{\"ErrorEquals\":[\"States.ALL\"],\"Next\":\"framework-onTimeout-task\"}],\"Type\":\"Task\",\"Resource\":\"",
-       {
-        "Fn::GetAtt": [
-         "SingletonFunction76b3e830a873425f8453eddd85c86925Handler81461ECE",
-         "Arn"
-        ]
-       },
-       "\"},\"framework-onTimeout-task\":{\"End\":true,\"Type\":\"Task\",\"Resource\":\"",
-       {
-        "Fn::GetAtt": [
-         "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aHandlerADF3E6EA",
-         "Arn"
-        ]
-       },
-       "\"}}}"
-      ]
-     ]
-    },
-    "RoleArn": {
-     "Fn::GetAtt": [
-      "AwsApiCallSyntheticsgetCanaryRunsa8f10ec0b8d5ec0f9b81b350577d8d97WaitForRole36C609F2",
-      "Arn"
-     ]
-    }
-   },
-   "DependsOn": [
-    "AwsApiCallSyntheticsgetCanaryRunsa8f10ec0b8d5ec0f9b81b350577d8d97WaitForRole36C609F2"
+    "AwsApiCallSyntheticsgetCanaryRunsf91ed1876add8c22a7b35f8a7e752983WaitForRoleC94CFFE2"
    ]
   },
   "AwsApiCallSyntheticsgetCanaryRunsf99e1fdf6a0501dc2db966a65404911a": {
@@ -1671,7 +1488,7 @@
     "outputPaths": [
      "CanaryRuns.0.Status.State"
     ],
-    "salt": "1708098560179"
+    "salt": "1711840286726"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -1827,10 +1644,10 @@
     ]
    }
   },
-  "AssertionResultsAwsApiCallSyntheticsgetCanaryRunse77bc009769f8becf2bba8ec443d0a60": {
+  "AssertionResultsAwsApiCallSyntheticsgetCanaryRuns7529a951b35a7be38dbb382fdb631be1": {
    "Value": {
     "Fn::GetAtt": [
-     "AwsApiCallSyntheticsgetCanaryRunse77bc009769f8becf2bba8ec443d0a60",
+     "AwsApiCallSyntheticsgetCanaryRuns7529a951b35a7be38dbb382fdb631be1",
      "assertion"
     ]
    }
@@ -1843,18 +1660,10 @@
     ]
    }
   },
-  "AssertionResultsAwsApiCallSyntheticsgetCanaryRunse7a1e913bca172f26683b6f1e3a239e2": {
+  "AssertionResultsAwsApiCallSyntheticsgetCanaryRunsf91ed1876add8c22a7b35f8a7e752983": {
    "Value": {
     "Fn::GetAtt": [
-     "AwsApiCallSyntheticsgetCanaryRunse7a1e913bca172f26683b6f1e3a239e2",
-     "assertion"
-    ]
-   }
-  },
-  "AssertionResultsAwsApiCallSyntheticsgetCanaryRunsa8f10ec0b8d5ec0f9b81b350577d8d97": {
-   "Value": {
-    "Fn::GetAtt": [
-     "AwsApiCallSyntheticsgetCanaryRunsa8f10ec0b8d5ec0f9b81b350577d8d97",
+     "AwsApiCallSyntheticsgetCanaryRunsf91ed1876add8c22a7b35f8a7e752983",
      "assertion"
     ]
    }
