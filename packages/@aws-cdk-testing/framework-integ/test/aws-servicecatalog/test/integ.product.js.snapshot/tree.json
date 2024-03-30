@@ -122,6 +122,36 @@
                   "version": "0.0.0"
                 }
               },
+              "auto-deletion-log-group": {
+                "id": "auto-deletion-log-group",
+                "path": "integ-servicecatalog-product/TestAssetBucket/auto-deletion-log-group",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "integ-servicecatalog-product/TestAssetBucket/auto-deletion-log-group/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::Logs::LogGroup",
+                      "aws:cdk:cloudformation:props": {
+                        "retentionInDays": 90,
+                        "tags": [
+                          {
+                            "key": "aws-cdk:cr-owned:f2fec642",
+                            "value": "true"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_logs.CfnLogGroup",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_logs.LogGroup",
+                  "version": "0.0.0"
+                }
+              },
               "Policy": {
                 "id": "Policy",
                 "path": "integ-servicecatalog-product/TestAssetBucket/Policy",
@@ -896,13 +926,13 @@
             "id": "TestProduct",
             "path": "integ-servicecatalog-product/TestProduct",
             "children": {
-              "Template2e547177b81b": {
-                "id": "Template2e547177b81b",
-                "path": "integ-servicecatalog-product/TestProduct/Template2e547177b81b",
+              "Template725235a5a436": {
+                "id": "Template725235a5a436",
+                "path": "integ-servicecatalog-product/TestProduct/Template725235a5a436",
                 "children": {
                   "Stage": {
                     "id": "Stage",
-                    "path": "integ-servicecatalog-product/TestProduct/Template2e547177b81b/Stage",
+                    "path": "integ-servicecatalog-product/TestProduct/Template725235a5a436/Stage",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.AssetStaging",
                       "version": "0.0.0"
@@ -910,7 +940,7 @@
                   },
                   "AssetBucket": {
                     "id": "AssetBucket",
-                    "path": "integ-servicecatalog-product/TestProduct/Template2e547177b81b/AssetBucket",
+                    "path": "integ-servicecatalog-product/TestProduct/Template725235a5a436/AssetBucket",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_s3.BucketBase",
                       "version": "0.0.0"
@@ -922,13 +952,13 @@
                   "version": "0.0.0"
                 }
               },
-              "Template0d8d51d704c5": {
-                "id": "Template0d8d51d704c5",
-                "path": "integ-servicecatalog-product/TestProduct/Template0d8d51d704c5",
+              "Template708c1a63fbb7": {
+                "id": "Template708c1a63fbb7",
+                "path": "integ-servicecatalog-product/TestProduct/Template708c1a63fbb7",
                 "children": {
                   "Stage": {
                     "id": "Stage",
-                    "path": "integ-servicecatalog-product/TestProduct/Template0d8d51d704c5/Stage",
+                    "path": "integ-servicecatalog-product/TestProduct/Template708c1a63fbb7/Stage",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.AssetStaging",
                       "version": "0.0.0"
@@ -936,7 +966,7 @@
                   },
                   "AssetBucket": {
                     "id": "AssetBucket",
-                    "path": "integ-servicecatalog-product/TestProduct/Template0d8d51d704c5/AssetBucket",
+                    "path": "integ-servicecatalog-product/TestProduct/Template708c1a63fbb7/AssetBucket",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_s3.BucketBase",
                       "version": "0.0.0"

@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-deploy-role-12345678-test-region",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-cfn-exec-role-12345678-test-region",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-12345678-test-region/f565eb49a0c6105a0239cc6b8cd6a8037171707fe974b3a94c612cefb06ce2cf.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-12345678-test-region/f6ce47f4a493f01573af909a1c75bf8879ecac1f622b0731bc037a4dc9ddf588.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -58,6 +58,12 @@
             "data": "TestAssetBucket9434EFAE"
           }
         ],
+        "/integ-servicecatalog-two-products/TestAssetBucket/auto-deletion-log-group/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TestAssetBucketautodeletionloggroupF82D8FDE"
+          }
+        ],
         "/integ-servicecatalog-two-products/TestAssetBucket/Policy/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -73,10 +79,7 @@
         "/integ-servicecatalog-two-products/TestAssetBucket/ProductAssetsDeployment/AwsCliLayer/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "TestAssetBucketProductAssetsDeploymentAwsCliLayerD1E52C82",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "TestAssetBucketProductAssetsDeploymentAwsCliLayerD1E52C82"
           }
         ],
         "/integ-servicecatalog-two-products/TestAssetBucket/ProductAssetsDeployment/CustomResource/Default": [
