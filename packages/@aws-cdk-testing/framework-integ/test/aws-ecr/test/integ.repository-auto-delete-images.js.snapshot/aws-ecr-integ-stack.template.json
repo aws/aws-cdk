@@ -113,6 +113,7 @@
     "Timeout": 900,
     "MemorySize": 128,
     "Handler": "index.handler",
+    "LoggingConfig": {},
     "Role": {
      "Fn::GetAtt": [
       "CustomECRAutoDeleteImagesCustomResourceProviderRole665F2773",
