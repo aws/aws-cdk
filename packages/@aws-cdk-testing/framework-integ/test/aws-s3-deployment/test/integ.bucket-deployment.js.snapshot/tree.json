@@ -50,6 +50,48 @@
                   "version": "0.0.0"
                 }
               },
+              "auto-deletion-log-group": {
+                "id": "auto-deletion-log-group",
+                "path": "test-bucket-deployments-2/Destination/auto-deletion-log-group",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "test-bucket-deployments-2/Destination/auto-deletion-log-group/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::Logs::LogGroup",
+                      "aws:cdk:cloudformation:props": {
+                        "retentionInDays": 90,
+                        "tags": [
+                          {
+                            "key": "aws-cdk:cr-owned:12c80047",
+                            "value": "true"
+                          },
+                          {
+                            "key": "aws-cdk:cr-owned:c06dfca0",
+                            "value": "true"
+                          },
+                          {
+                            "key": "aws-cdk:cr-owned:efs/:a01ecd3e",
+                            "value": "true"
+                          },
+                          {
+                            "key": "aws-cdk:cr-owned:f8ab5a69",
+                            "value": "true"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_logs.CfnLogGroup",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_logs.LogGroup",
+                  "version": "0.0.0"
+                }
+              },
               "Policy": {
                 "id": "Policy",
                 "path": "test-bucket-deployments-2/Destination/Policy",
@@ -2019,6 +2061,36 @@
                   "version": "0.0.0"
                 }
               },
+              "auto-deletion-log-group": {
+                "id": "auto-deletion-log-group",
+                "path": "test-bucket-deployments-2/Destination2/auto-deletion-log-group",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "test-bucket-deployments-2/Destination2/auto-deletion-log-group/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::Logs::LogGroup",
+                      "aws:cdk:cloudformation:props": {
+                        "retentionInDays": 90,
+                        "tags": [
+                          {
+                            "key": "aws-cdk:cr-owned:deploy/here/:272e95d8",
+                            "value": "true"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_logs.CfnLogGroup",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_logs.LogGroup",
+                  "version": "0.0.0"
+                }
+              },
               "Policy": {
                 "id": "Policy",
                 "path": "test-bucket-deployments-2/Destination2/Policy",
@@ -2255,6 +2327,36 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_s3.CfnBucket",
+                  "version": "0.0.0"
+                }
+              },
+              "auto-deletion-log-group": {
+                "id": "auto-deletion-log-group",
+                "path": "test-bucket-deployments-2/Destination3/auto-deletion-log-group",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "test-bucket-deployments-2/Destination3/auto-deletion-log-group/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::Logs::LogGroup",
+                      "aws:cdk:cloudformation:props": {
+                        "retentionInDays": 90,
+                        "tags": [
+                          {
+                            "key": "aws-cdk:cr-owned:9eca9fb3",
+                            "value": "true"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_logs.CfnLogGroup",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_logs.LogGroup",
                   "version": "0.0.0"
                 }
               },
@@ -2733,6 +2835,36 @@
                   "version": "0.0.0"
                 }
               },
+              "auto-deletion-log-group": {
+                "id": "auto-deletion-log-group",
+                "path": "test-bucket-deployments-2/Destination4/auto-deletion-log-group",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "test-bucket-deployments-2/Destination4/auto-deletion-log-group/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::Logs::LogGroup",
+                      "aws:cdk:cloudformation:props": {
+                        "retentionInDays": 90,
+                        "tags": [
+                          {
+                            "key": "aws-cdk:cr-owned:0ac1b9c4",
+                            "value": "true"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_logs.CfnLogGroup",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_logs.LogGroup",
+                  "version": "0.0.0"
+                }
+              },
               "Policy": {
                 "id": "Policy",
                 "path": "test-bucket-deployments-2/Destination4/Policy",
@@ -2969,6 +3101,36 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_s3.CfnBucket",
+                  "version": "0.0.0"
+                }
+              },
+              "auto-deletion-log-group": {
+                "id": "auto-deletion-log-group",
+                "path": "test-bucket-deployments-2/Destination5/auto-deletion-log-group",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "test-bucket-deployments-2/Destination5/auto-deletion-log-group/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::Logs::LogGroup",
+                      "aws:cdk:cloudformation:props": {
+                        "retentionInDays": 90,
+                        "tags": [
+                          {
+                            "key": "aws-cdk:cr-owned:761027a6",
+                            "value": "true"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_logs.CfnLogGroup",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_logs.LogGroup",
                   "version": "0.0.0"
                 }
               },
