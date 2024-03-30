@@ -1361,13 +1361,159 @@ var init_tslib_es6 = __esm({
   }
 });
 
-// ../../../node_modules/@smithy/protocol-http/dist-cjs/extensions/httpExtensionConfiguration.js
-var require_httpExtensionConfiguration = __commonJS({
-  "../../../node_modules/@smithy/protocol-http/dist-cjs/extensions/httpExtensionConfiguration.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.resolveHttpHandlerRuntimeConfig = exports2.getHttpHandlerExtensionConfiguration = void 0;
-    var getHttpHandlerExtensionConfiguration = (runtimeConfig) => {
+// ../../../node_modules/@smithy/types/dist-cjs/index.js
+var require_dist_cjs = __commonJS({
+  "../../../node_modules/@smithy/types/dist-cjs/index.js"(exports2, module2) {
+    var __defProp2 = Object.defineProperty;
+    var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
+    var __getOwnPropNames2 = Object.getOwnPropertyNames;
+    var __hasOwnProp2 = Object.prototype.hasOwnProperty;
+    var __name = (target, value) => __defProp2(target, "name", { value, configurable: true });
+    var __export2 = (target, all) => {
+      for (var name in all)
+        __defProp2(target, name, { get: all[name], enumerable: true });
+    };
+    var __copyProps2 = (to, from, except, desc) => {
+      if (from && typeof from === "object" || typeof from === "function") {
+        for (let key of __getOwnPropNames2(from))
+          if (!__hasOwnProp2.call(to, key) && key !== except)
+            __defProp2(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc2(from, key)) || desc.enumerable });
+      }
+      return to;
+    };
+    var __toCommonJS2 = (mod) => __copyProps2(__defProp2({}, "__esModule", { value: true }), mod);
+    var src_exports = {};
+    __export2(src_exports, {
+      AlgorithmId: () => AlgorithmId,
+      EndpointURLScheme: () => EndpointURLScheme,
+      FieldPosition: () => FieldPosition,
+      HttpApiKeyAuthLocation: () => HttpApiKeyAuthLocation,
+      HttpAuthLocation: () => HttpAuthLocation,
+      IniSectionType: () => IniSectionType,
+      RequestHandlerProtocol: () => RequestHandlerProtocol,
+      SMITHY_CONTEXT_KEY: () => SMITHY_CONTEXT_KEY,
+      getDefaultClientConfiguration: () => getDefaultClientConfiguration,
+      resolveDefaultRuntimeConfig: () => resolveDefaultRuntimeConfig
+    });
+    module2.exports = __toCommonJS2(src_exports);
+    var HttpAuthLocation = /* @__PURE__ */ ((HttpAuthLocation2) => {
+      HttpAuthLocation2["HEADER"] = "header";
+      HttpAuthLocation2["QUERY"] = "query";
+      return HttpAuthLocation2;
+    })(HttpAuthLocation || {});
+    var HttpApiKeyAuthLocation = /* @__PURE__ */ ((HttpApiKeyAuthLocation2) => {
+      HttpApiKeyAuthLocation2["HEADER"] = "header";
+      HttpApiKeyAuthLocation2["QUERY"] = "query";
+      return HttpApiKeyAuthLocation2;
+    })(HttpApiKeyAuthLocation || {});
+    var EndpointURLScheme = /* @__PURE__ */ ((EndpointURLScheme2) => {
+      EndpointURLScheme2["HTTP"] = "http";
+      EndpointURLScheme2["HTTPS"] = "https";
+      return EndpointURLScheme2;
+    })(EndpointURLScheme || {});
+    var AlgorithmId = /* @__PURE__ */ ((AlgorithmId2) => {
+      AlgorithmId2["MD5"] = "md5";
+      AlgorithmId2["CRC32"] = "crc32";
+      AlgorithmId2["CRC32C"] = "crc32c";
+      AlgorithmId2["SHA1"] = "sha1";
+      AlgorithmId2["SHA256"] = "sha256";
+      return AlgorithmId2;
+    })(AlgorithmId || {});
+    var getChecksumConfiguration = /* @__PURE__ */ __name((runtimeConfig) => {
+      const checksumAlgorithms = [];
+      if (runtimeConfig.sha256 !== void 0) {
+        checksumAlgorithms.push({
+          algorithmId: () => "sha256",
+          checksumConstructor: () => runtimeConfig.sha256
+        });
+      }
+      if (runtimeConfig.md5 != void 0) {
+        checksumAlgorithms.push({
+          algorithmId: () => "md5",
+          checksumConstructor: () => runtimeConfig.md5
+        });
+      }
+      return {
+        _checksumAlgorithms: checksumAlgorithms,
+        addChecksumAlgorithm(algo) {
+          this._checksumAlgorithms.push(algo);
+        },
+        checksumAlgorithms() {
+          return this._checksumAlgorithms;
+        }
+      };
+    }, "getChecksumConfiguration");
+    var resolveChecksumRuntimeConfig = /* @__PURE__ */ __name((clientConfig) => {
+      const runtimeConfig = {};
+      clientConfig.checksumAlgorithms().forEach((checksumAlgorithm) => {
+        runtimeConfig[checksumAlgorithm.algorithmId()] = checksumAlgorithm.checksumConstructor();
+      });
+      return runtimeConfig;
+    }, "resolveChecksumRuntimeConfig");
+    var getDefaultClientConfiguration = /* @__PURE__ */ __name((runtimeConfig) => {
+      return {
+        ...getChecksumConfiguration(runtimeConfig)
+      };
+    }, "getDefaultClientConfiguration");
+    var resolveDefaultRuntimeConfig = /* @__PURE__ */ __name((config) => {
+      return {
+        ...resolveChecksumRuntimeConfig(config)
+      };
+    }, "resolveDefaultRuntimeConfig");
+    var FieldPosition = /* @__PURE__ */ ((FieldPosition2) => {
+      FieldPosition2[FieldPosition2["HEADER"] = 0] = "HEADER";
+      FieldPosition2[FieldPosition2["TRAILER"] = 1] = "TRAILER";
+      return FieldPosition2;
+    })(FieldPosition || {});
+    var SMITHY_CONTEXT_KEY = "__smithy_context";
+    var IniSectionType = /* @__PURE__ */ ((IniSectionType2) => {
+      IniSectionType2["PROFILE"] = "profile";
+      IniSectionType2["SSO_SESSION"] = "sso-session";
+      IniSectionType2["SERVICES"] = "services";
+      return IniSectionType2;
+    })(IniSectionType || {});
+    var RequestHandlerProtocol = /* @__PURE__ */ ((RequestHandlerProtocol2) => {
+      RequestHandlerProtocol2["HTTP_0_9"] = "http/0.9";
+      RequestHandlerProtocol2["HTTP_1_0"] = "http/1.0";
+      RequestHandlerProtocol2["TDS_8_0"] = "tds/8.0";
+      return RequestHandlerProtocol2;
+    })(RequestHandlerProtocol || {});
+  }
+});
+
+// ../../../node_modules/@smithy/protocol-http/dist-cjs/index.js
+var require_dist_cjs2 = __commonJS({
+  "../../../node_modules/@smithy/protocol-http/dist-cjs/index.js"(exports2, module2) {
+    var __defProp2 = Object.defineProperty;
+    var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
+    var __getOwnPropNames2 = Object.getOwnPropertyNames;
+    var __hasOwnProp2 = Object.prototype.hasOwnProperty;
+    var __name = (target, value) => __defProp2(target, "name", { value, configurable: true });
+    var __export2 = (target, all) => {
+      for (var name in all)
+        __defProp2(target, name, { get: all[name], enumerable: true });
+    };
+    var __copyProps2 = (to, from, except, desc) => {
+      if (from && typeof from === "object" || typeof from === "function") {
+        for (let key of __getOwnPropNames2(from))
+          if (!__hasOwnProp2.call(to, key) && key !== except)
+            __defProp2(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc2(from, key)) || desc.enumerable });
+      }
+      return to;
+    };
+    var __toCommonJS2 = (mod) => __copyProps2(__defProp2({}, "__esModule", { value: true }), mod);
+    var src_exports = {};
+    __export2(src_exports, {
+      Field: () => Field,
+      Fields: () => Fields,
+      HttpRequest: () => HttpRequest,
+      HttpResponse: () => HttpResponse,
+      getHttpHandlerExtensionConfiguration: () => getHttpHandlerExtensionConfiguration,
+      isValidHostname: () => isValidHostname,
+      resolveHttpHandlerRuntimeConfig: () => resolveHttpHandlerRuntimeConfig
+    });
+    module2.exports = __toCommonJS2(src_exports);
+    var getHttpHandlerExtensionConfiguration = /* @__PURE__ */ __name((runtimeConfig) => {
       let httpHandler = runtimeConfig.httpHandler;
       return {
         setHttpHandler(handler2) {
@@ -1383,731 +1529,110 @@ var require_httpExtensionConfiguration = __commonJS({
           return httpHandler.httpHandlerConfigs();
         }
       };
-    };
-    exports2.getHttpHandlerExtensionConfiguration = getHttpHandlerExtensionConfiguration;
-    var resolveHttpHandlerRuntimeConfig = (httpHandlerExtensionConfiguration) => {
+    }, "getHttpHandlerExtensionConfiguration");
+    var resolveHttpHandlerRuntimeConfig = /* @__PURE__ */ __name((httpHandlerExtensionConfiguration) => {
       return {
         httpHandler: httpHandlerExtensionConfiguration.httpHandler()
       };
-    };
-    exports2.resolveHttpHandlerRuntimeConfig = resolveHttpHandlerRuntimeConfig;
-  }
-});
-
-// ../../../node_modules/@smithy/protocol-http/dist-cjs/extensions/index.js
-var require_extensions = __commonJS({
-  "../../../node_modules/@smithy/protocol-http/dist-cjs/extensions/index.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
-    tslib_1.__exportStar(require_httpExtensionConfiguration(), exports2);
-  }
-});
-
-// ../../../node_modules/@smithy/types/dist-cjs/abort.js
-var require_abort = __commonJS({
-  "../../../node_modules/@smithy/types/dist-cjs/abort.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-  }
-});
-
-// ../../../node_modules/@smithy/types/dist-cjs/auth/auth.js
-var require_auth = __commonJS({
-  "../../../node_modules/@smithy/types/dist-cjs/auth/auth.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.HttpAuthLocation = void 0;
-    var HttpAuthLocation;
-    (function(HttpAuthLocation2) {
-      HttpAuthLocation2["HEADER"] = "header";
-      HttpAuthLocation2["QUERY"] = "query";
-    })(HttpAuthLocation = exports2.HttpAuthLocation || (exports2.HttpAuthLocation = {}));
-  }
-});
-
-// ../../../node_modules/@smithy/types/dist-cjs/auth/HttpApiKeyAuth.js
-var require_HttpApiKeyAuth = __commonJS({
-  "../../../node_modules/@smithy/types/dist-cjs/auth/HttpApiKeyAuth.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.HttpApiKeyAuthLocation = void 0;
-    var HttpApiKeyAuthLocation;
-    (function(HttpApiKeyAuthLocation2) {
-      HttpApiKeyAuthLocation2["HEADER"] = "header";
-      HttpApiKeyAuthLocation2["QUERY"] = "query";
-    })(HttpApiKeyAuthLocation = exports2.HttpApiKeyAuthLocation || (exports2.HttpApiKeyAuthLocation = {}));
-  }
-});
-
-// ../../../node_modules/@smithy/types/dist-cjs/auth/HttpAuthScheme.js
-var require_HttpAuthScheme = __commonJS({
-  "../../../node_modules/@smithy/types/dist-cjs/auth/HttpAuthScheme.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-  }
-});
-
-// ../../../node_modules/@smithy/types/dist-cjs/auth/HttpAuthSchemeProvider.js
-var require_HttpAuthSchemeProvider = __commonJS({
-  "../../../node_modules/@smithy/types/dist-cjs/auth/HttpAuthSchemeProvider.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-  }
-});
-
-// ../../../node_modules/@smithy/types/dist-cjs/auth/HttpSigner.js
-var require_HttpSigner = __commonJS({
-  "../../../node_modules/@smithy/types/dist-cjs/auth/HttpSigner.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-  }
-});
-
-// ../../../node_modules/@smithy/types/dist-cjs/auth/IdentityProviderConfig.js
-var require_IdentityProviderConfig = __commonJS({
-  "../../../node_modules/@smithy/types/dist-cjs/auth/IdentityProviderConfig.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-  }
-});
-
-// ../../../node_modules/@smithy/types/dist-cjs/auth/index.js
-var require_auth2 = __commonJS({
-  "../../../node_modules/@smithy/types/dist-cjs/auth/index.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
-    tslib_1.__exportStar(require_auth(), exports2);
-    tslib_1.__exportStar(require_HttpApiKeyAuth(), exports2);
-    tslib_1.__exportStar(require_HttpAuthScheme(), exports2);
-    tslib_1.__exportStar(require_HttpAuthSchemeProvider(), exports2);
-    tslib_1.__exportStar(require_HttpSigner(), exports2);
-    tslib_1.__exportStar(require_IdentityProviderConfig(), exports2);
-  }
-});
-
-// ../../../node_modules/@smithy/types/dist-cjs/blob/blob-payload-input-types.js
-var require_blob_payload_input_types = __commonJS({
-  "../../../node_modules/@smithy/types/dist-cjs/blob/blob-payload-input-types.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-  }
-});
-
-// ../../../node_modules/@smithy/types/dist-cjs/checksum.js
-var require_checksum = __commonJS({
-  "../../../node_modules/@smithy/types/dist-cjs/checksum.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-  }
-});
-
-// ../../../node_modules/@smithy/types/dist-cjs/client.js
-var require_client = __commonJS({
-  "../../../node_modules/@smithy/types/dist-cjs/client.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-  }
-});
-
-// ../../../node_modules/@smithy/types/dist-cjs/command.js
-var require_command = __commonJS({
-  "../../../node_modules/@smithy/types/dist-cjs/command.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-  }
-});
-
-// ../../../node_modules/@smithy/types/dist-cjs/connection/config.js
-var require_config = __commonJS({
-  "../../../node_modules/@smithy/types/dist-cjs/connection/config.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-  }
-});
-
-// ../../../node_modules/@smithy/types/dist-cjs/connection/manager.js
-var require_manager = __commonJS({
-  "../../../node_modules/@smithy/types/dist-cjs/connection/manager.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-  }
-});
-
-// ../../../node_modules/@smithy/types/dist-cjs/connection/pool.js
-var require_pool = __commonJS({
-  "../../../node_modules/@smithy/types/dist-cjs/connection/pool.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-  }
-});
-
-// ../../../node_modules/@smithy/types/dist-cjs/connection/index.js
-var require_connection = __commonJS({
-  "../../../node_modules/@smithy/types/dist-cjs/connection/index.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
-    tslib_1.__exportStar(require_config(), exports2);
-    tslib_1.__exportStar(require_manager(), exports2);
-    tslib_1.__exportStar(require_pool(), exports2);
-  }
-});
-
-// ../../../node_modules/@smithy/types/dist-cjs/crypto.js
-var require_crypto = __commonJS({
-  "../../../node_modules/@smithy/types/dist-cjs/crypto.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-  }
-});
-
-// ../../../node_modules/@smithy/types/dist-cjs/encode.js
-var require_encode = __commonJS({
-  "../../../node_modules/@smithy/types/dist-cjs/encode.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-  }
-});
-
-// ../../../node_modules/@smithy/types/dist-cjs/endpoint.js
-var require_endpoint = __commonJS({
-  "../../../node_modules/@smithy/types/dist-cjs/endpoint.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.EndpointURLScheme = void 0;
-    var EndpointURLScheme;
-    (function(EndpointURLScheme2) {
-      EndpointURLScheme2["HTTP"] = "http";
-      EndpointURLScheme2["HTTPS"] = "https";
-    })(EndpointURLScheme = exports2.EndpointURLScheme || (exports2.EndpointURLScheme = {}));
-  }
-});
-
-// ../../../node_modules/@smithy/types/dist-cjs/endpoints/EndpointRuleObject.js
-var require_EndpointRuleObject = __commonJS({
-  "../../../node_modules/@smithy/types/dist-cjs/endpoints/EndpointRuleObject.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-  }
-});
-
-// ../../../node_modules/@smithy/types/dist-cjs/endpoints/ErrorRuleObject.js
-var require_ErrorRuleObject = __commonJS({
-  "../../../node_modules/@smithy/types/dist-cjs/endpoints/ErrorRuleObject.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-  }
-});
-
-// ../../../node_modules/@smithy/types/dist-cjs/endpoints/RuleSetObject.js
-var require_RuleSetObject = __commonJS({
-  "../../../node_modules/@smithy/types/dist-cjs/endpoints/RuleSetObject.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-  }
-});
-
-// ../../../node_modules/@smithy/types/dist-cjs/endpoints/shared.js
-var require_shared = __commonJS({
-  "../../../node_modules/@smithy/types/dist-cjs/endpoints/shared.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-  }
-});
-
-// ../../../node_modules/@smithy/types/dist-cjs/endpoints/TreeRuleObject.js
-var require_TreeRuleObject = __commonJS({
-  "../../../node_modules/@smithy/types/dist-cjs/endpoints/TreeRuleObject.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-  }
-});
-
-// ../../../node_modules/@smithy/types/dist-cjs/endpoints/index.js
-var require_endpoints = __commonJS({
-  "../../../node_modules/@smithy/types/dist-cjs/endpoints/index.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
-    tslib_1.__exportStar(require_EndpointRuleObject(), exports2);
-    tslib_1.__exportStar(require_ErrorRuleObject(), exports2);
-    tslib_1.__exportStar(require_RuleSetObject(), exports2);
-    tslib_1.__exportStar(require_shared(), exports2);
-    tslib_1.__exportStar(require_TreeRuleObject(), exports2);
-  }
-});
-
-// ../../../node_modules/@smithy/types/dist-cjs/eventStream.js
-var require_eventStream = __commonJS({
-  "../../../node_modules/@smithy/types/dist-cjs/eventStream.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-  }
-});
-
-// ../../../node_modules/@smithy/types/dist-cjs/extensions/checksum.js
-var require_checksum2 = __commonJS({
-  "../../../node_modules/@smithy/types/dist-cjs/extensions/checksum.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.resolveChecksumRuntimeConfig = exports2.getChecksumConfiguration = exports2.AlgorithmId = void 0;
-    var AlgorithmId;
-    (function(AlgorithmId2) {
-      AlgorithmId2["MD5"] = "md5";
-      AlgorithmId2["CRC32"] = "crc32";
-      AlgorithmId2["CRC32C"] = "crc32c";
-      AlgorithmId2["SHA1"] = "sha1";
-      AlgorithmId2["SHA256"] = "sha256";
-    })(AlgorithmId = exports2.AlgorithmId || (exports2.AlgorithmId = {}));
-    var getChecksumConfiguration = (runtimeConfig) => {
-      const checksumAlgorithms = [];
-      if (runtimeConfig.sha256 !== void 0) {
-        checksumAlgorithms.push({
-          algorithmId: () => AlgorithmId.SHA256,
-          checksumConstructor: () => runtimeConfig.sha256
-        });
-      }
-      if (runtimeConfig.md5 != void 0) {
-        checksumAlgorithms.push({
-          algorithmId: () => AlgorithmId.MD5,
-          checksumConstructor: () => runtimeConfig.md5
-        });
-      }
-      return {
-        _checksumAlgorithms: checksumAlgorithms,
-        addChecksumAlgorithm(algo) {
-          this._checksumAlgorithms.push(algo);
-        },
-        checksumAlgorithms() {
-          return this._checksumAlgorithms;
-        }
-      };
-    };
-    exports2.getChecksumConfiguration = getChecksumConfiguration;
-    var resolveChecksumRuntimeConfig = (clientConfig) => {
-      const runtimeConfig = {};
-      clientConfig.checksumAlgorithms().forEach((checksumAlgorithm) => {
-        runtimeConfig[checksumAlgorithm.algorithmId()] = checksumAlgorithm.checksumConstructor();
-      });
-      return runtimeConfig;
-    };
-    exports2.resolveChecksumRuntimeConfig = resolveChecksumRuntimeConfig;
-  }
-});
-
-// ../../../node_modules/@smithy/types/dist-cjs/extensions/defaultClientConfiguration.js
-var require_defaultClientConfiguration = __commonJS({
-  "../../../node_modules/@smithy/types/dist-cjs/extensions/defaultClientConfiguration.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.resolveDefaultRuntimeConfig = exports2.getDefaultClientConfiguration = void 0;
-    var checksum_1 = require_checksum2();
-    var getDefaultClientConfiguration = (runtimeConfig) => {
-      return {
-        ...(0, checksum_1.getChecksumConfiguration)(runtimeConfig)
-      };
-    };
-    exports2.getDefaultClientConfiguration = getDefaultClientConfiguration;
-    var resolveDefaultRuntimeConfig = (config) => {
-      return {
-        ...(0, checksum_1.resolveChecksumRuntimeConfig)(config)
-      };
-    };
-    exports2.resolveDefaultRuntimeConfig = resolveDefaultRuntimeConfig;
-  }
-});
-
-// ../../../node_modules/@smithy/types/dist-cjs/extensions/defaultExtensionConfiguration.js
-var require_defaultExtensionConfiguration = __commonJS({
-  "../../../node_modules/@smithy/types/dist-cjs/extensions/defaultExtensionConfiguration.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-  }
-});
-
-// ../../../node_modules/@smithy/types/dist-cjs/extensions/index.js
-var require_extensions2 = __commonJS({
-  "../../../node_modules/@smithy/types/dist-cjs/extensions/index.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.AlgorithmId = void 0;
-    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
-    tslib_1.__exportStar(require_defaultClientConfiguration(), exports2);
-    tslib_1.__exportStar(require_defaultExtensionConfiguration(), exports2);
-    var checksum_1 = require_checksum2();
-    Object.defineProperty(exports2, "AlgorithmId", { enumerable: true, get: function() {
-      return checksum_1.AlgorithmId;
-    } });
-  }
-});
-
-// ../../../node_modules/@smithy/types/dist-cjs/http.js
-var require_http = __commonJS({
-  "../../../node_modules/@smithy/types/dist-cjs/http.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.FieldPosition = void 0;
-    var FieldPosition;
-    (function(FieldPosition2) {
-      FieldPosition2[FieldPosition2["HEADER"] = 0] = "HEADER";
-      FieldPosition2[FieldPosition2["TRAILER"] = 1] = "TRAILER";
-    })(FieldPosition = exports2.FieldPosition || (exports2.FieldPosition = {}));
-  }
-});
-
-// ../../../node_modules/@smithy/types/dist-cjs/http/httpHandlerInitialization.js
-var require_httpHandlerInitialization = __commonJS({
-  "../../../node_modules/@smithy/types/dist-cjs/http/httpHandlerInitialization.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-  }
-});
-
-// ../../../node_modules/@smithy/types/dist-cjs/identity/apiKeyIdentity.js
-var require_apiKeyIdentity = __commonJS({
-  "../../../node_modules/@smithy/types/dist-cjs/identity/apiKeyIdentity.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-  }
-});
-
-// ../../../node_modules/@smithy/types/dist-cjs/identity/awsCredentialIdentity.js
-var require_awsCredentialIdentity = __commonJS({
-  "../../../node_modules/@smithy/types/dist-cjs/identity/awsCredentialIdentity.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-  }
-});
-
-// ../../../node_modules/@smithy/types/dist-cjs/identity/identity.js
-var require_identity = __commonJS({
-  "../../../node_modules/@smithy/types/dist-cjs/identity/identity.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-  }
-});
-
-// ../../../node_modules/@smithy/types/dist-cjs/identity/tokenIdentity.js
-var require_tokenIdentity = __commonJS({
-  "../../../node_modules/@smithy/types/dist-cjs/identity/tokenIdentity.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-  }
-});
-
-// ../../../node_modules/@smithy/types/dist-cjs/identity/index.js
-var require_identity2 = __commonJS({
-  "../../../node_modules/@smithy/types/dist-cjs/identity/index.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
-    tslib_1.__exportStar(require_apiKeyIdentity(), exports2);
-    tslib_1.__exportStar(require_awsCredentialIdentity(), exports2);
-    tslib_1.__exportStar(require_identity(), exports2);
-    tslib_1.__exportStar(require_tokenIdentity(), exports2);
-  }
-});
-
-// ../../../node_modules/@smithy/types/dist-cjs/logger.js
-var require_logger = __commonJS({
-  "../../../node_modules/@smithy/types/dist-cjs/logger.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-  }
-});
-
-// ../../../node_modules/@smithy/types/dist-cjs/middleware.js
-var require_middleware = __commonJS({
-  "../../../node_modules/@smithy/types/dist-cjs/middleware.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.SMITHY_CONTEXT_KEY = void 0;
-    exports2.SMITHY_CONTEXT_KEY = "__smithy_context";
-  }
-});
-
-// ../../../node_modules/@smithy/types/dist-cjs/pagination.js
-var require_pagination = __commonJS({
-  "../../../node_modules/@smithy/types/dist-cjs/pagination.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-  }
-});
-
-// ../../../node_modules/@smithy/types/dist-cjs/profile.js
-var require_profile = __commonJS({
-  "../../../node_modules/@smithy/types/dist-cjs/profile.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.IniSectionType = void 0;
-    var IniSectionType;
-    (function(IniSectionType2) {
-      IniSectionType2["PROFILE"] = "profile";
-      IniSectionType2["SSO_SESSION"] = "sso-session";
-      IniSectionType2["SERVICES"] = "services";
-    })(IniSectionType = exports2.IniSectionType || (exports2.IniSectionType = {}));
-  }
-});
-
-// ../../../node_modules/@smithy/types/dist-cjs/response.js
-var require_response = __commonJS({
-  "../../../node_modules/@smithy/types/dist-cjs/response.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-  }
-});
-
-// ../../../node_modules/@smithy/types/dist-cjs/retry.js
-var require_retry = __commonJS({
-  "../../../node_modules/@smithy/types/dist-cjs/retry.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-  }
-});
-
-// ../../../node_modules/@smithy/types/dist-cjs/serde.js
-var require_serde = __commonJS({
-  "../../../node_modules/@smithy/types/dist-cjs/serde.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-  }
-});
-
-// ../../../node_modules/@smithy/types/dist-cjs/shapes.js
-var require_shapes = __commonJS({
-  "../../../node_modules/@smithy/types/dist-cjs/shapes.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-  }
-});
-
-// ../../../node_modules/@smithy/types/dist-cjs/signature.js
-var require_signature = __commonJS({
-  "../../../node_modules/@smithy/types/dist-cjs/signature.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-  }
-});
-
-// ../../../node_modules/@smithy/types/dist-cjs/stream.js
-var require_stream = __commonJS({
-  "../../../node_modules/@smithy/types/dist-cjs/stream.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-  }
-});
-
-// ../../../node_modules/@smithy/types/dist-cjs/streaming-payload/streaming-blob-common-types.js
-var require_streaming_blob_common_types = __commonJS({
-  "../../../node_modules/@smithy/types/dist-cjs/streaming-payload/streaming-blob-common-types.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-  }
-});
-
-// ../../../node_modules/@smithy/types/dist-cjs/streaming-payload/streaming-blob-payload-input-types.js
-var require_streaming_blob_payload_input_types = __commonJS({
-  "../../../node_modules/@smithy/types/dist-cjs/streaming-payload/streaming-blob-payload-input-types.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-  }
-});
-
-// ../../../node_modules/@smithy/types/dist-cjs/streaming-payload/streaming-blob-payload-output-types.js
-var require_streaming_blob_payload_output_types = __commonJS({
-  "../../../node_modules/@smithy/types/dist-cjs/streaming-payload/streaming-blob-payload-output-types.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-  }
-});
-
-// ../../../node_modules/@smithy/types/dist-cjs/transfer.js
-var require_transfer = __commonJS({
-  "../../../node_modules/@smithy/types/dist-cjs/transfer.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.RequestHandlerProtocol = void 0;
-    var RequestHandlerProtocol;
-    (function(RequestHandlerProtocol2) {
-      RequestHandlerProtocol2["HTTP_0_9"] = "http/0.9";
-      RequestHandlerProtocol2["HTTP_1_0"] = "http/1.0";
-      RequestHandlerProtocol2["TDS_8_0"] = "tds/8.0";
-    })(RequestHandlerProtocol = exports2.RequestHandlerProtocol || (exports2.RequestHandlerProtocol = {}));
-  }
-});
-
-// ../../../node_modules/@smithy/types/dist-cjs/transform/client-payload-blob-type-narrow.js
-var require_client_payload_blob_type_narrow = __commonJS({
-  "../../../node_modules/@smithy/types/dist-cjs/transform/client-payload-blob-type-narrow.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-  }
-});
-
-// ../../../node_modules/@smithy/types/dist-cjs/transform/no-undefined.js
-var require_no_undefined = __commonJS({
-  "../../../node_modules/@smithy/types/dist-cjs/transform/no-undefined.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-  }
-});
-
-// ../../../node_modules/@smithy/types/dist-cjs/transform/type-transform.js
-var require_type_transform = __commonJS({
-  "../../../node_modules/@smithy/types/dist-cjs/transform/type-transform.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-  }
-});
-
-// ../../../node_modules/@smithy/types/dist-cjs/uri.js
-var require_uri = __commonJS({
-  "../../../node_modules/@smithy/types/dist-cjs/uri.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-  }
-});
-
-// ../../../node_modules/@smithy/types/dist-cjs/util.js
-var require_util = __commonJS({
-  "../../../node_modules/@smithy/types/dist-cjs/util.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-  }
-});
-
-// ../../../node_modules/@smithy/types/dist-cjs/waiter.js
-var require_waiter = __commonJS({
-  "../../../node_modules/@smithy/types/dist-cjs/waiter.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-  }
-});
-
-// ../../../node_modules/@smithy/types/dist-cjs/index.js
-var require_dist_cjs = __commonJS({
-  "../../../node_modules/@smithy/types/dist-cjs/index.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
-    tslib_1.__exportStar(require_abort(), exports2);
-    tslib_1.__exportStar(require_auth2(), exports2);
-    tslib_1.__exportStar(require_blob_payload_input_types(), exports2);
-    tslib_1.__exportStar(require_checksum(), exports2);
-    tslib_1.__exportStar(require_client(), exports2);
-    tslib_1.__exportStar(require_command(), exports2);
-    tslib_1.__exportStar(require_connection(), exports2);
-    tslib_1.__exportStar(require_crypto(), exports2);
-    tslib_1.__exportStar(require_encode(), exports2);
-    tslib_1.__exportStar(require_endpoint(), exports2);
-    tslib_1.__exportStar(require_endpoints(), exports2);
-    tslib_1.__exportStar(require_eventStream(), exports2);
-    tslib_1.__exportStar(require_extensions2(), exports2);
-    tslib_1.__exportStar(require_http(), exports2);
-    tslib_1.__exportStar(require_httpHandlerInitialization(), exports2);
-    tslib_1.__exportStar(require_identity2(), exports2);
-    tslib_1.__exportStar(require_logger(), exports2);
-    tslib_1.__exportStar(require_middleware(), exports2);
-    tslib_1.__exportStar(require_pagination(), exports2);
-    tslib_1.__exportStar(require_profile(), exports2);
-    tslib_1.__exportStar(require_response(), exports2);
-    tslib_1.__exportStar(require_retry(), exports2);
-    tslib_1.__exportStar(require_serde(), exports2);
-    tslib_1.__exportStar(require_shapes(), exports2);
-    tslib_1.__exportStar(require_signature(), exports2);
-    tslib_1.__exportStar(require_stream(), exports2);
-    tslib_1.__exportStar(require_streaming_blob_common_types(), exports2);
-    tslib_1.__exportStar(require_streaming_blob_payload_input_types(), exports2);
-    tslib_1.__exportStar(require_streaming_blob_payload_output_types(), exports2);
-    tslib_1.__exportStar(require_transfer(), exports2);
-    tslib_1.__exportStar(require_client_payload_blob_type_narrow(), exports2);
-    tslib_1.__exportStar(require_no_undefined(), exports2);
-    tslib_1.__exportStar(require_type_transform(), exports2);
-    tslib_1.__exportStar(require_uri(), exports2);
-    tslib_1.__exportStar(require_util(), exports2);
-    tslib_1.__exportStar(require_waiter(), exports2);
-  }
-});
-
-// ../../../node_modules/@smithy/protocol-http/dist-cjs/Field.js
-var require_Field = __commonJS({
-  "../../../node_modules/@smithy/protocol-http/dist-cjs/Field.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.Field = void 0;
-    var types_1 = require_dist_cjs();
-    var Field = class {
-      constructor({ name, kind = types_1.FieldPosition.HEADER, values = [] }) {
+    }, "resolveHttpHandlerRuntimeConfig");
+    var import_types = require_dist_cjs();
+    var _Field = class _Field {
+      constructor({ name, kind = import_types.FieldPosition.HEADER, values = [] }) {
         this.name = name;
         this.kind = kind;
         this.values = values;
       }
+      /**
+       * Appends a value to the field.
+       *
+       * @param value The value to append.
+       */
       add(value) {
         this.values.push(value);
       }
+      /**
+       * Overwrite existing field values.
+       *
+       * @param values The new field values.
+       */
       set(values) {
         this.values = values;
       }
+      /**
+       * Remove all matching entries from list.
+       *
+       * @param value Value to remove.
+       */
       remove(value) {
         this.values = this.values.filter((v) => v !== value);
       }
+      /**
+       * Get comma-delimited string.
+       *
+       * @returns String representation of {@link Field}.
+       */
       toString() {
         return this.values.map((v) => v.includes(",") || v.includes(" ") ? `"${v}"` : v).join(", ");
       }
+      /**
+       * Get string values as a list
+       *
+       * @returns Values in {@link Field} as a list.
+       */
       get() {
         return this.values;
       }
     };
-    exports2.Field = Field;
-  }
-});
-
-// ../../../node_modules/@smithy/protocol-http/dist-cjs/Fields.js
-var require_Fields = __commonJS({
-  "../../../node_modules/@smithy/protocol-http/dist-cjs/Fields.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.Fields = void 0;
-    var Fields = class {
+    __name(_Field, "Field");
+    var Field = _Field;
+    var _Fields = class _Fields {
       constructor({ fields = [], encoding = "utf-8" }) {
         this.entries = {};
         fields.forEach(this.setField.bind(this));
         this.encoding = encoding;
       }
+      /**
+       * Set entry for a {@link Field} name. The `name`
+       * attribute will be used to key the collection.
+       *
+       * @param field The {@link Field} to set.
+       */
       setField(field) {
         this.entries[field.name.toLowerCase()] = field;
       }
+      /**
+       *  Retrieve {@link Field} entry by name.
+       *
+       * @param name The name of the {@link Field} entry
+       *  to retrieve
+       * @returns The {@link Field} if it exists.
+       */
       getField(name) {
         return this.entries[name.toLowerCase()];
       }
+      /**
+       * Delete entry from collection.
+       *
+       * @param name Name of the entry to delete.
+       */
       removeField(name) {
         delete this.entries[name.toLowerCase()];
       }
+      /**
+       * Helper function for retrieving specific types of fields.
+       * Used to grab all headers or all trailers.
+       *
+       * @param kind {@link FieldPosition} of entries to retrieve.
+       * @returns The {@link Field} entries with the specified
+       *  {@link FieldPosition}.
+       */
       getByType(kind) {
         return Object.values(this.entries).filter((field) => field.kind === kind);
       }
     };
-    exports2.Fields = Fields;
-  }
-});
-
-// ../../../node_modules/@smithy/protocol-http/dist-cjs/httpHandler.js
-var require_httpHandler = __commonJS({
-  "../../../node_modules/@smithy/protocol-http/dist-cjs/httpHandler.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-  }
-});
-
-// ../../../node_modules/@smithy/protocol-http/dist-cjs/httpRequest.js
-var require_httpRequest = __commonJS({
-  "../../../node_modules/@smithy/protocol-http/dist-cjs/httpRequest.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.HttpRequest = void 0;
-    var HttpRequest = class _HttpRequest {
+    __name(_Fields, "Fields");
+    var Fields = _Fields;
+    var _HttpRequest = class _HttpRequest2 {
       constructor(options) {
         this.method = options.method || "GET";
         this.hostname = options.hostname || "localhost";
@@ -2128,7 +1653,7 @@ var require_httpRequest = __commonJS({
         return "method" in req && "protocol" in req && "hostname" in req && "path" in req && typeof req["query"] === "object" && typeof req["headers"] === "object";
       }
       clone() {
-        const cloned = new _HttpRequest({
+        const cloned = new _HttpRequest2({
           ...this,
           headers: { ...this.headers }
         });
@@ -2137,7 +1662,8 @@ var require_httpRequest = __commonJS({
         return cloned;
       }
     };
-    exports2.HttpRequest = HttpRequest;
+    __name(_HttpRequest, "HttpRequest");
+    var HttpRequest = _HttpRequest;
     function cloneQuery(query) {
       return Object.keys(query).reduce((carry, paramName) => {
         const param = query[paramName];
@@ -2147,16 +1673,8 @@ var require_httpRequest = __commonJS({
         };
       }, {});
     }
-  }
-});
-
-// ../../../node_modules/@smithy/protocol-http/dist-cjs/httpResponse.js
-var require_httpResponse = __commonJS({
-  "../../../node_modules/@smithy/protocol-http/dist-cjs/httpResponse.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.HttpResponse = void 0;
-    var HttpResponse = class {
+    __name(cloneQuery, "cloneQuery");
+    var _HttpResponse = class _HttpResponse {
       constructor(options) {
         this.statusCode = options.statusCode;
         this.reason = options.reason;
@@ -2170,46 +1688,13 @@ var require_httpResponse = __commonJS({
         return typeof resp.statusCode === "number" && typeof resp.headers === "object";
       }
     };
-    exports2.HttpResponse = HttpResponse;
-  }
-});
-
-// ../../../node_modules/@smithy/protocol-http/dist-cjs/isValidHostname.js
-var require_isValidHostname = __commonJS({
-  "../../../node_modules/@smithy/protocol-http/dist-cjs/isValidHostname.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.isValidHostname = void 0;
+    __name(_HttpResponse, "HttpResponse");
+    var HttpResponse = _HttpResponse;
     function isValidHostname(hostname) {
       const hostPattern = /^[a-z0-9][a-z0-9\.\-]*[a-z0-9]$/;
       return hostPattern.test(hostname);
     }
-    exports2.isValidHostname = isValidHostname;
-  }
-});
-
-// ../../../node_modules/@smithy/protocol-http/dist-cjs/types.js
-var require_types = __commonJS({
-  "../../../node_modules/@smithy/protocol-http/dist-cjs/types.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-  }
-});
-
-// ../../../node_modules/@smithy/protocol-http/dist-cjs/index.js
-var require_dist_cjs2 = __commonJS({
-  "../../../node_modules/@smithy/protocol-http/dist-cjs/index.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
-    tslib_1.__exportStar(require_extensions(), exports2);
-    tslib_1.__exportStar(require_Field(), exports2);
-    tslib_1.__exportStar(require_Fields(), exports2);
-    tslib_1.__exportStar(require_httpHandler(), exports2);
-    tslib_1.__exportStar(require_httpRequest(), exports2);
-    tslib_1.__exportStar(require_httpResponse(), exports2);
-    tslib_1.__exportStar(require_isValidHostname(), exports2);
-    tslib_1.__exportStar(require_types(), exports2);
+    __name(isValidHostname, "isValidHostname");
   }
 });
 
@@ -2363,75 +1848,73 @@ var require_dist_cjs5 = __commonJS({
   }
 });
 
-// ../../../node_modules/@smithy/property-provider/dist-cjs/ProviderError.js
-var require_ProviderError = __commonJS({
-  "../../../node_modules/@smithy/property-provider/dist-cjs/ProviderError.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.ProviderError = void 0;
-    var ProviderError = class _ProviderError extends Error {
+// ../../../node_modules/@smithy/property-provider/dist-cjs/index.js
+var require_dist_cjs6 = __commonJS({
+  "../../../node_modules/@smithy/property-provider/dist-cjs/index.js"(exports2, module2) {
+    var __defProp2 = Object.defineProperty;
+    var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
+    var __getOwnPropNames2 = Object.getOwnPropertyNames;
+    var __hasOwnProp2 = Object.prototype.hasOwnProperty;
+    var __name = (target, value) => __defProp2(target, "name", { value, configurable: true });
+    var __export2 = (target, all) => {
+      for (var name in all)
+        __defProp2(target, name, { get: all[name], enumerable: true });
+    };
+    var __copyProps2 = (to, from, except, desc) => {
+      if (from && typeof from === "object" || typeof from === "function") {
+        for (let key of __getOwnPropNames2(from))
+          if (!__hasOwnProp2.call(to, key) && key !== except)
+            __defProp2(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc2(from, key)) || desc.enumerable });
+      }
+      return to;
+    };
+    var __toCommonJS2 = (mod) => __copyProps2(__defProp2({}, "__esModule", { value: true }), mod);
+    var src_exports = {};
+    __export2(src_exports, {
+      CredentialsProviderError: () => CredentialsProviderError,
+      ProviderError: () => ProviderError,
+      TokenProviderError: () => TokenProviderError,
+      chain: () => chain,
+      fromStatic: () => fromStatic,
+      memoize: () => memoize
+    });
+    module2.exports = __toCommonJS2(src_exports);
+    var _ProviderError = class _ProviderError2 extends Error {
       constructor(message, tryNextLink = true) {
         super(message);
         this.tryNextLink = tryNextLink;
         this.name = "ProviderError";
-        Object.setPrototypeOf(this, _ProviderError.prototype);
+        Object.setPrototypeOf(this, _ProviderError2.prototype);
       }
       static from(error, tryNextLink = true) {
         return Object.assign(new this(error.message, tryNextLink), error);
       }
     };
-    exports2.ProviderError = ProviderError;
-  }
-});
-
-// ../../../node_modules/@smithy/property-provider/dist-cjs/CredentialsProviderError.js
-var require_CredentialsProviderError = __commonJS({
-  "../../../node_modules/@smithy/property-provider/dist-cjs/CredentialsProviderError.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.CredentialsProviderError = void 0;
-    var ProviderError_1 = require_ProviderError();
-    var CredentialsProviderError = class _CredentialsProviderError extends ProviderError_1.ProviderError {
+    __name(_ProviderError, "ProviderError");
+    var ProviderError = _ProviderError;
+    var _CredentialsProviderError = class _CredentialsProviderError2 extends ProviderError {
       constructor(message, tryNextLink = true) {
         super(message, tryNextLink);
         this.tryNextLink = tryNextLink;
         this.name = "CredentialsProviderError";
-        Object.setPrototypeOf(this, _CredentialsProviderError.prototype);
+        Object.setPrototypeOf(this, _CredentialsProviderError2.prototype);
       }
     };
-    exports2.CredentialsProviderError = CredentialsProviderError;
-  }
-});
-
-// ../../../node_modules/@smithy/property-provider/dist-cjs/TokenProviderError.js
-var require_TokenProviderError = __commonJS({
-  "../../../node_modules/@smithy/property-provider/dist-cjs/TokenProviderError.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.TokenProviderError = void 0;
-    var ProviderError_1 = require_ProviderError();
-    var TokenProviderError = class _TokenProviderError extends ProviderError_1.ProviderError {
+    __name(_CredentialsProviderError, "CredentialsProviderError");
+    var CredentialsProviderError = _CredentialsProviderError;
+    var _TokenProviderError = class _TokenProviderError2 extends ProviderError {
       constructor(message, tryNextLink = true) {
         super(message, tryNextLink);
         this.tryNextLink = tryNextLink;
         this.name = "TokenProviderError";
-        Object.setPrototypeOf(this, _TokenProviderError.prototype);
+        Object.setPrototypeOf(this, _TokenProviderError2.prototype);
       }
     };
-    exports2.TokenProviderError = TokenProviderError;
-  }
-});
-
-// ../../../node_modules/@smithy/property-provider/dist-cjs/chain.js
-var require_chain = __commonJS({
-  "../../../node_modules/@smithy/property-provider/dist-cjs/chain.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.chain = void 0;
-    var ProviderError_1 = require_ProviderError();
-    var chain = (...providers) => async () => {
+    __name(_TokenProviderError, "TokenProviderError");
+    var TokenProviderError = _TokenProviderError;
+    var chain = /* @__PURE__ */ __name((...providers) => async () => {
       if (providers.length === 0) {
-        throw new ProviderError_1.ProviderError("No providers in chain");
+        throw new ProviderError("No providers in chain");
       }
       let lastProviderError;
       for (const provider of providers) {
@@ -2440,41 +1923,21 @@ var require_chain = __commonJS({
           return credentials;
         } catch (err) {
           lastProviderError = err;
-          if (err === null || err === void 0 ? void 0 : err.tryNextLink) {
+          if (err == null ? void 0 : err.tryNextLink) {
             continue;
           }
           throw err;
         }
       }
       throw lastProviderError;
-    };
-    exports2.chain = chain;
-  }
-});
-
-// ../../../node_modules/@smithy/property-provider/dist-cjs/fromStatic.js
-var require_fromStatic = __commonJS({
-  "../../../node_modules/@smithy/property-provider/dist-cjs/fromStatic.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.fromStatic = void 0;
-    var fromStatic = (staticValue) => () => Promise.resolve(staticValue);
-    exports2.fromStatic = fromStatic;
-  }
-});
-
-// ../../../node_modules/@smithy/property-provider/dist-cjs/memoize.js
-var require_memoize = __commonJS({
-  "../../../node_modules/@smithy/property-provider/dist-cjs/memoize.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.memoize = void 0;
-    var memoize = (provider, isExpired, requiresRefresh) => {
+    }, "chain");
+    var fromStatic = /* @__PURE__ */ __name((staticValue) => () => Promise.resolve(staticValue), "fromStatic");
+    var memoize = /* @__PURE__ */ __name((provider, isExpired, requiresRefresh) => {
       let resolved;
       let pending;
       let hasResult;
       let isConstant = false;
-      const coalesceProvider = async () => {
+      const coalesceProvider = /* @__PURE__ */ __name(async () => {
         if (!pending) {
           pending = provider();
         }
@@ -2486,17 +1949,17 @@ var require_memoize = __commonJS({
           pending = void 0;
         }
         return resolved;
-      };
+      }, "coalesceProvider");
       if (isExpired === void 0) {
         return async (options) => {
-          if (!hasResult || (options === null || options === void 0 ? void 0 : options.forceRefresh)) {
+          if (!hasResult || (options == null ? void 0 : options.forceRefresh)) {
             resolved = await coalesceProvider();
           }
           return resolved;
         };
       }
       return async (options) => {
-        if (!hasResult || (options === null || options === void 0 ? void 0 : options.forceRefresh)) {
+        if (!hasResult || (options == null ? void 0 : options.forceRefresh)) {
           resolved = await coalesceProvider();
         }
         if (isConstant) {
@@ -2512,23 +1975,7 @@ var require_memoize = __commonJS({
         }
         return resolved;
       };
-    };
-    exports2.memoize = memoize;
-  }
-});
-
-// ../../../node_modules/@smithy/property-provider/dist-cjs/index.js
-var require_dist_cjs6 = __commonJS({
-  "../../../node_modules/@smithy/property-provider/dist-cjs/index.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
-    tslib_1.__exportStar(require_CredentialsProviderError(), exports2);
-    tslib_1.__exportStar(require_ProviderError(), exports2);
-    tslib_1.__exportStar(require_TokenProviderError(), exports2);
-    tslib_1.__exportStar(require_chain(), exports2);
-    tslib_1.__exportStar(require_fromStatic(), exports2);
-    tslib_1.__exportStar(require_memoize(), exports2);
+    }, "memoize");
   }
 });
 
@@ -3429,10 +2876,31 @@ var require_build2 = __commonJS({
 
 // ../../../node_modules/@smithy/util-hex-encoding/dist-cjs/index.js
 var require_dist_cjs8 = __commonJS({
-  "../../../node_modules/@smithy/util-hex-encoding/dist-cjs/index.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.toHex = exports2.fromHex = void 0;
+  "../../../node_modules/@smithy/util-hex-encoding/dist-cjs/index.js"(exports2, module2) {
+    var __defProp2 = Object.defineProperty;
+    var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
+    var __getOwnPropNames2 = Object.getOwnPropertyNames;
+    var __hasOwnProp2 = Object.prototype.hasOwnProperty;
+    var __name = (target, value) => __defProp2(target, "name", { value, configurable: true });
+    var __export2 = (target, all) => {
+      for (var name in all)
+        __defProp2(target, name, { get: all[name], enumerable: true });
+    };
+    var __copyProps2 = (to, from, except, desc) => {
+      if (from && typeof from === "object" || typeof from === "function") {
+        for (let key of __getOwnPropNames2(from))
+          if (!__hasOwnProp2.call(to, key) && key !== except)
+            __defProp2(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc2(from, key)) || desc.enumerable });
+      }
+      return to;
+    };
+    var __toCommonJS2 = (mod) => __copyProps2(__defProp2({}, "__esModule", { value: true }), mod);
+    var src_exports = {};
+    __export2(src_exports, {
+      fromHex: () => fromHex,
+      toHex: () => toHex
+    });
+    module2.exports = __toCommonJS2(src_exports);
     var SHORT_TO_HEX = {};
     var HEX_TO_SHORT = {};
     for (let i = 0; i < 256; i++) {
@@ -3458,7 +2926,7 @@ var require_dist_cjs8 = __commonJS({
       }
       return out;
     }
-    exports2.fromHex = fromHex;
+    __name(fromHex, "fromHex");
     function toHex(bytes) {
       let out = "";
       for (let i = 0; i < bytes.byteLength; i++) {
@@ -3466,18 +2934,45 @@ var require_dist_cjs8 = __commonJS({
       }
       return out;
     }
-    exports2.toHex = toHex;
+    __name(toHex, "toHex");
   }
 });
 
-// ../../../node_modules/@smithy/eventstream-codec/dist-cjs/Int64.js
-var require_Int64 = __commonJS({
-  "../../../node_modules/@smithy/eventstream-codec/dist-cjs/Int64.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.Int64 = void 0;
-    var util_hex_encoding_1 = require_dist_cjs8();
-    var Int64 = class _Int64 {
+// ../../../node_modules/@smithy/eventstream-codec/dist-cjs/index.js
+var require_dist_cjs9 = __commonJS({
+  "../../../node_modules/@smithy/eventstream-codec/dist-cjs/index.js"(exports2, module2) {
+    var __defProp2 = Object.defineProperty;
+    var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
+    var __getOwnPropNames2 = Object.getOwnPropertyNames;
+    var __hasOwnProp2 = Object.prototype.hasOwnProperty;
+    var __name = (target, value) => __defProp2(target, "name", { value, configurable: true });
+    var __export2 = (target, all) => {
+      for (var name in all)
+        __defProp2(target, name, { get: all[name], enumerable: true });
+    };
+    var __copyProps2 = (to, from, except, desc) => {
+      if (from && typeof from === "object" || typeof from === "function") {
+        for (let key of __getOwnPropNames2(from))
+          if (!__hasOwnProp2.call(to, key) && key !== except)
+            __defProp2(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc2(from, key)) || desc.enumerable });
+      }
+      return to;
+    };
+    var __toCommonJS2 = (mod) => __copyProps2(__defProp2({}, "__esModule", { value: true }), mod);
+    var src_exports = {};
+    __export2(src_exports, {
+      EventStreamCodec: () => EventStreamCodec,
+      HeaderMarshaller: () => HeaderMarshaller,
+      Int64: () => Int64,
+      MessageDecoderStream: () => MessageDecoderStream,
+      MessageEncoderStream: () => MessageEncoderStream,
+      SmithyMessageDecoderStream: () => SmithyMessageDecoderStream,
+      SmithyMessageEncoderStream: () => SmithyMessageEncoderStream
+    });
+    module2.exports = __toCommonJS2(src_exports);
+    var import_crc322 = require_build2();
+    var import_util_hex_encoding = require_dist_cjs8();
+    var _Int64 = class _Int642 {
       constructor(bytes) {
         this.bytes = bytes;
         if (bytes.byteLength !== 8) {
@@ -3495,21 +2990,25 @@ var require_Int64 = __commonJS({
         if (number < 0) {
           negate(bytes);
         }
-        return new _Int64(bytes);
+        return new _Int642(bytes);
       }
+      /**
+       * Called implicitly by infix arithmetic operators.
+       */
       valueOf() {
         const bytes = this.bytes.slice(0);
         const negative = bytes[0] & 128;
         if (negative) {
           negate(bytes);
         }
-        return parseInt((0, util_hex_encoding_1.toHex)(bytes), 16) * (negative ? -1 : 1);
+        return parseInt((0, import_util_hex_encoding.toHex)(bytes), 16) * (negative ? -1 : 1);
       }
       toString() {
         return String(this.valueOf());
       }
     };
-    exports2.Int64 = Int64;
+    __name(_Int64, "Int64");
+    var Int64 = _Int64;
     function negate(bytes) {
       for (let i = 0; i < 8; i++) {
         bytes[i] ^= 255;
@@ -3520,18 +3019,8 @@ var require_Int64 = __commonJS({
           break;
       }
     }
-  }
-});
-
-// ../../../node_modules/@smithy/eventstream-codec/dist-cjs/HeaderMarshaller.js
-var require_HeaderMarshaller = __commonJS({
-  "../../../node_modules/@smithy/eventstream-codec/dist-cjs/HeaderMarshaller.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.HeaderMarshaller = void 0;
-    var util_hex_encoding_1 = require_dist_cjs8();
-    var Int64_1 = require_Int64();
-    var HeaderMarshaller = class {
+    __name(negate, "negate");
+    var _HeaderMarshaller = class _HeaderMarshaller {
       constructor(toUtf8, fromUtf8) {
         this.toUtf8 = toUtf8;
         this.fromUtf8 = fromUtf8;
@@ -3553,17 +3042,28 @@ var require_HeaderMarshaller = __commonJS({
       formatHeaderValue(header) {
         switch (header.type) {
           case "boolean":
-            return Uint8Array.from([header.value ? 0 : 1]);
+            return Uint8Array.from([
+              header.value ? 0 : 1
+              /* boolFalse */
+            ]);
           case "byte":
             return Uint8Array.from([2, header.value]);
           case "short":
             const shortView = new DataView(new ArrayBuffer(3));
-            shortView.setUint8(0, 3);
+            shortView.setUint8(
+              0,
+              3
+              /* short */
+            );
             shortView.setInt16(1, header.value, false);
             return new Uint8Array(shortView.buffer);
           case "integer":
             const intView = new DataView(new ArrayBuffer(5));
-            intView.setUint8(0, 4);
+            intView.setUint8(
+              0,
+              4
+              /* integer */
+            );
             intView.setInt32(1, header.value, false);
             return new Uint8Array(intView.buffer);
           case "long":
@@ -3573,7 +3073,11 @@ var require_HeaderMarshaller = __commonJS({
             return longBytes;
           case "binary":
             const binView = new DataView(new ArrayBuffer(3 + header.value.byteLength));
-            binView.setUint8(0, 6);
+            binView.setUint8(
+              0,
+              6
+              /* byteArray */
+            );
             binView.setUint16(1, header.value.byteLength, false);
             const binBytes = new Uint8Array(binView.buffer);
             binBytes.set(header.value, 3);
@@ -3581,7 +3085,11 @@ var require_HeaderMarshaller = __commonJS({
           case "string":
             const utf8Bytes = this.fromUtf8(header.value);
             const strView = new DataView(new ArrayBuffer(3 + utf8Bytes.byteLength));
-            strView.setUint8(0, 7);
+            strView.setUint8(
+              0,
+              7
+              /* string */
+            );
             strView.setUint16(1, utf8Bytes.byteLength, false);
             const strBytes = new Uint8Array(strView.buffer);
             strBytes.set(utf8Bytes, 3);
@@ -3589,7 +3097,7 @@ var require_HeaderMarshaller = __commonJS({
           case "timestamp":
             const tsBytes = new Uint8Array(9);
             tsBytes[0] = 8;
-            tsBytes.set(Int64_1.Int64.fromNumber(header.value.valueOf()).bytes, 1);
+            tsBytes.set(Int64.fromNumber(header.value.valueOf()).bytes, 1);
             return tsBytes;
           case "uuid":
             if (!UUID_PATTERN.test(header.value)) {
@@ -3597,7 +3105,7 @@ var require_HeaderMarshaller = __commonJS({
             }
             const uuidBytes = new Uint8Array(17);
             uuidBytes[0] = 9;
-            uuidBytes.set((0, util_hex_encoding_1.fromHex)(header.value.replace(/\-/g, "")), 1);
+            uuidBytes.set((0, import_util_hex_encoding.fromHex)(header.value.replace(/\-/g, "")), 1);
             return uuidBytes;
         }
       }
@@ -3644,7 +3152,7 @@ var require_HeaderMarshaller = __commonJS({
             case 5:
               out[name] = {
                 type: LONG_TAG,
-                value: new Int64_1.Int64(new Uint8Array(headers.buffer, headers.byteOffset + position, 8))
+                value: new Int64(new Uint8Array(headers.buffer, headers.byteOffset + position, 8))
               };
               position += 8;
               break;
@@ -3669,7 +3177,7 @@ var require_HeaderMarshaller = __commonJS({
             case 8:
               out[name] = {
                 type: TIMESTAMP_TAG,
-                value: new Date(new Int64_1.Int64(new Uint8Array(headers.buffer, headers.byteOffset + position, 8)).valueOf())
+                value: new Date(new Int64(new Uint8Array(headers.buffer, headers.byteOffset + position, 8)).valueOf())
               };
               position += 8;
               break;
@@ -3678,7 +3186,9 @@ var require_HeaderMarshaller = __commonJS({
               position += 16;
               out[name] = {
                 type: UUID_TAG,
-                value: `${(0, util_hex_encoding_1.toHex)(uuidBytes.subarray(0, 4))}-${(0, util_hex_encoding_1.toHex)(uuidBytes.subarray(4, 6))}-${(0, util_hex_encoding_1.toHex)(uuidBytes.subarray(6, 8))}-${(0, util_hex_encoding_1.toHex)(uuidBytes.subarray(8, 10))}-${(0, util_hex_encoding_1.toHex)(uuidBytes.subarray(10))}`
+                value: `${(0, import_util_hex_encoding.toHex)(uuidBytes.subarray(0, 4))}-${(0, import_util_hex_encoding.toHex)(uuidBytes.subarray(4, 6))}-${(0, import_util_hex_encoding.toHex)(
+                  uuidBytes.subarray(6, 8)
+                )}-${(0, import_util_hex_encoding.toHex)(uuidBytes.subarray(8, 10))}-${(0, import_util_hex_encoding.toHex)(uuidBytes.subarray(10))}`
               };
               break;
             default:
@@ -3688,20 +3198,8 @@ var require_HeaderMarshaller = __commonJS({
         return out;
       }
     };
-    exports2.HeaderMarshaller = HeaderMarshaller;
-    var HEADER_VALUE_TYPE;
-    (function(HEADER_VALUE_TYPE2) {
-      HEADER_VALUE_TYPE2[HEADER_VALUE_TYPE2["boolTrue"] = 0] = "boolTrue";
-      HEADER_VALUE_TYPE2[HEADER_VALUE_TYPE2["boolFalse"] = 1] = "boolFalse";
-      HEADER_VALUE_TYPE2[HEADER_VALUE_TYPE2["byte"] = 2] = "byte";
-      HEADER_VALUE_TYPE2[HEADER_VALUE_TYPE2["short"] = 3] = "short";
-      HEADER_VALUE_TYPE2[HEADER_VALUE_TYPE2["integer"] = 4] = "integer";
-      HEADER_VALUE_TYPE2[HEADER_VALUE_TYPE2["long"] = 5] = "long";
-      HEADER_VALUE_TYPE2[HEADER_VALUE_TYPE2["byteArray"] = 6] = "byteArray";
-      HEADER_VALUE_TYPE2[HEADER_VALUE_TYPE2["string"] = 7] = "string";
-      HEADER_VALUE_TYPE2[HEADER_VALUE_TYPE2["timestamp"] = 8] = "timestamp";
-      HEADER_VALUE_TYPE2[HEADER_VALUE_TYPE2["uuid"] = 9] = "uuid";
-    })(HEADER_VALUE_TYPE || (HEADER_VALUE_TYPE = {}));
+    __name(_HeaderMarshaller, "HeaderMarshaller");
+    var HeaderMarshaller = _HeaderMarshaller;
     var BOOLEAN_TAG = "boolean";
     var BYTE_TAG = "byte";
     var SHORT_TAG = "short";
@@ -3712,16 +3210,7 @@ var require_HeaderMarshaller = __commonJS({
     var TIMESTAMP_TAG = "timestamp";
     var UUID_TAG = "uuid";
     var UUID_PATTERN = /^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/;
-  }
-});
-
-// ../../../node_modules/@smithy/eventstream-codec/dist-cjs/splitMessage.js
-var require_splitMessage = __commonJS({
-  "../../../node_modules/@smithy/eventstream-codec/dist-cjs/splitMessage.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.splitMessage = void 0;
-    var crc32_1 = require_build2();
+    var import_crc32 = require_build2();
     var PRELUDE_MEMBER_LENGTH = 4;
     var PRELUDE_LENGTH = PRELUDE_MEMBER_LENGTH * 2;
     var CHECKSUM_LENGTH = 4;
@@ -3738,35 +3227,33 @@ var require_splitMessage = __commonJS({
       const headerLength = view.getUint32(PRELUDE_MEMBER_LENGTH, false);
       const expectedPreludeChecksum = view.getUint32(PRELUDE_LENGTH, false);
       const expectedMessageChecksum = view.getUint32(byteLength - CHECKSUM_LENGTH, false);
-      const checksummer = new crc32_1.Crc32().update(new Uint8Array(buffer, byteOffset, PRELUDE_LENGTH));
+      const checksummer = new import_crc32.Crc32().update(new Uint8Array(buffer, byteOffset, PRELUDE_LENGTH));
       if (expectedPreludeChecksum !== checksummer.digest()) {
-        throw new Error(`The prelude checksum specified in the message (${expectedPreludeChecksum}) does not match the calculated CRC32 checksum (${checksummer.digest()})`);
+        throw new Error(
+          `The prelude checksum specified in the message (${expectedPreludeChecksum}) does not match the calculated CRC32 checksum (${checksummer.digest()})`
+        );
       }
-      checksummer.update(new Uint8Array(buffer, byteOffset + PRELUDE_LENGTH, byteLength - (PRELUDE_LENGTH + CHECKSUM_LENGTH)));
+      checksummer.update(
+        new Uint8Array(buffer, byteOffset + PRELUDE_LENGTH, byteLength - (PRELUDE_LENGTH + CHECKSUM_LENGTH))
+      );
       if (expectedMessageChecksum !== checksummer.digest()) {
-        throw new Error(`The message checksum (${checksummer.digest()}) did not match the expected value of ${expectedMessageChecksum}`);
+        throw new Error(
+          `The message checksum (${checksummer.digest()}) did not match the expected value of ${expectedMessageChecksum}`
+        );
       }
       return {
         headers: new DataView(buffer, byteOffset + PRELUDE_LENGTH + CHECKSUM_LENGTH, headerLength),
-        body: new Uint8Array(buffer, byteOffset + PRELUDE_LENGTH + CHECKSUM_LENGTH + headerLength, messageLength - headerLength - (PRELUDE_LENGTH + CHECKSUM_LENGTH + CHECKSUM_LENGTH))
+        body: new Uint8Array(
+          buffer,
+          byteOffset + PRELUDE_LENGTH + CHECKSUM_LENGTH + headerLength,
+          messageLength - headerLength - (PRELUDE_LENGTH + CHECKSUM_LENGTH + CHECKSUM_LENGTH)
+        )
       };
     }
-    exports2.splitMessage = splitMessage;
-  }
-});
-
-// ../../../node_modules/@smithy/eventstream-codec/dist-cjs/EventStreamCodec.js
-var require_EventStreamCodec = __commonJS({
-  "../../../node_modules/@smithy/eventstream-codec/dist-cjs/EventStreamCodec.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.EventStreamCodec = void 0;
-    var crc32_1 = require_build2();
-    var HeaderMarshaller_1 = require_HeaderMarshaller();
-    var splitMessage_1 = require_splitMessage();
-    var EventStreamCodec = class {
+    __name(splitMessage, "splitMessage");
+    var _EventStreamCodec = class _EventStreamCodec {
       constructor(toUtf8, fromUtf8) {
-        this.headerMarshaller = new HeaderMarshaller_1.HeaderMarshaller(toUtf8, fromUtf8);
+        this.headerMarshaller = new HeaderMarshaller(toUtf8, fromUtf8);
         this.messageBuffer = [];
         this.isEndOfStream = false;
       }
@@ -3801,12 +3288,16 @@ var require_EventStreamCodec = __commonJS({
           }
         };
       }
+      /**
+       * Convert a structured JavaScript object with tagged headers into a binary
+       * event stream message.
+       */
       encode({ headers: rawHeaders, body }) {
         const headers = this.headerMarshaller.format(rawHeaders);
         const length = headers.byteLength + body.byteLength + 16;
         const out = new Uint8Array(length);
         const view = new DataView(out.buffer, out.byteOffset, out.byteLength);
-        const checksum = new crc32_1.Crc32();
+        const checksum = new import_crc322.Crc32();
         view.setUint32(0, length, false);
         view.setUint32(4, headers.byteLength, false);
         view.setUint32(8, checksum.update(out.subarray(0, 8)).digest(), false);
@@ -3815,33 +3306,25 @@ var require_EventStreamCodec = __commonJS({
         view.setUint32(length - 4, checksum.update(out.subarray(8, length - 4)).digest(), false);
         return out;
       }
+      /**
+       * Convert a binary event stream message into a JavaScript object with an
+       * opaque, binary body and tagged, parsed headers.
+       */
       decode(message) {
-        const { headers, body } = (0, splitMessage_1.splitMessage)(message);
+        const { headers, body } = splitMessage(message);
         return { headers: this.headerMarshaller.parse(headers), body };
       }
+      /**
+       * Convert a structured JavaScript object with tagged headers into a binary
+       * event stream message header.
+       */
       formatHeaders(rawHeaders) {
         return this.headerMarshaller.format(rawHeaders);
       }
     };
-    exports2.EventStreamCodec = EventStreamCodec;
-  }
-});
-
-// ../../../node_modules/@smithy/eventstream-codec/dist-cjs/Message.js
-var require_Message = __commonJS({
-  "../../../node_modules/@smithy/eventstream-codec/dist-cjs/Message.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-  }
-});
-
-// ../../../node_modules/@smithy/eventstream-codec/dist-cjs/MessageDecoderStream.js
-var require_MessageDecoderStream = __commonJS({
-  "../../../node_modules/@smithy/eventstream-codec/dist-cjs/MessageDecoderStream.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.MessageDecoderStream = void 0;
-    var MessageDecoderStream = class {
+    __name(_EventStreamCodec, "EventStreamCodec");
+    var EventStreamCodec = _EventStreamCodec;
+    var _MessageDecoderStream = class _MessageDecoderStream {
       constructor(options) {
         this.options = options;
       }
@@ -3855,17 +3338,9 @@ var require_MessageDecoderStream = __commonJS({
         }
       }
     };
-    exports2.MessageDecoderStream = MessageDecoderStream;
-  }
-});
-
-// ../../../node_modules/@smithy/eventstream-codec/dist-cjs/MessageEncoderStream.js
-var require_MessageEncoderStream = __commonJS({
-  "../../../node_modules/@smithy/eventstream-codec/dist-cjs/MessageEncoderStream.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.MessageEncoderStream = void 0;
-    var MessageEncoderStream = class {
+    __name(_MessageDecoderStream, "MessageDecoderStream");
+    var MessageDecoderStream = _MessageDecoderStream;
+    var _MessageEncoderStream = class _MessageEncoderStream {
       constructor(options) {
         this.options = options;
       }
@@ -3882,17 +3357,9 @@ var require_MessageEncoderStream = __commonJS({
         }
       }
     };
-    exports2.MessageEncoderStream = MessageEncoderStream;
-  }
-});
-
-// ../../../node_modules/@smithy/eventstream-codec/dist-cjs/SmithyMessageDecoderStream.js
-var require_SmithyMessageDecoderStream = __commonJS({
-  "../../../node_modules/@smithy/eventstream-codec/dist-cjs/SmithyMessageDecoderStream.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.SmithyMessageDecoderStream = void 0;
-    var SmithyMessageDecoderStream = class {
+    __name(_MessageEncoderStream, "MessageEncoderStream");
+    var MessageEncoderStream = _MessageEncoderStream;
+    var _SmithyMessageDecoderStream = class _SmithyMessageDecoderStream {
       constructor(options) {
         this.options = options;
       }
@@ -3908,17 +3375,9 @@ var require_SmithyMessageDecoderStream = __commonJS({
         }
       }
     };
-    exports2.SmithyMessageDecoderStream = SmithyMessageDecoderStream;
-  }
-});
-
-// ../../../node_modules/@smithy/eventstream-codec/dist-cjs/SmithyMessageEncoderStream.js
-var require_SmithyMessageEncoderStream = __commonJS({
-  "../../../node_modules/@smithy/eventstream-codec/dist-cjs/SmithyMessageEncoderStream.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.SmithyMessageEncoderStream = void 0;
-    var SmithyMessageEncoderStream = class {
+    __name(_SmithyMessageDecoderStream, "SmithyMessageDecoderStream");
+    var SmithyMessageDecoderStream = _SmithyMessageDecoderStream;
+    var _SmithyMessageEncoderStream = class _SmithyMessageEncoderStream {
       constructor(options) {
         this.options = options;
       }
@@ -3932,184 +3391,265 @@ var require_SmithyMessageEncoderStream = __commonJS({
         }
       }
     };
-    exports2.SmithyMessageEncoderStream = SmithyMessageEncoderStream;
-  }
-});
-
-// ../../../node_modules/@smithy/eventstream-codec/dist-cjs/index.js
-var require_dist_cjs9 = __commonJS({
-  "../../../node_modules/@smithy/eventstream-codec/dist-cjs/index.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
-    tslib_1.__exportStar(require_EventStreamCodec(), exports2);
-    tslib_1.__exportStar(require_HeaderMarshaller(), exports2);
-    tslib_1.__exportStar(require_Int64(), exports2);
-    tslib_1.__exportStar(require_Message(), exports2);
-    tslib_1.__exportStar(require_MessageDecoderStream(), exports2);
-    tslib_1.__exportStar(require_MessageEncoderStream(), exports2);
-    tslib_1.__exportStar(require_SmithyMessageDecoderStream(), exports2);
-    tslib_1.__exportStar(require_SmithyMessageEncoderStream(), exports2);
-  }
-});
-
-// ../../../node_modules/@smithy/util-middleware/dist-cjs/getSmithyContext.js
-var require_getSmithyContext = __commonJS({
-  "../../../node_modules/@smithy/util-middleware/dist-cjs/getSmithyContext.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.getSmithyContext = void 0;
-    var types_1 = require_dist_cjs();
-    var getSmithyContext = (context) => context[types_1.SMITHY_CONTEXT_KEY] || (context[types_1.SMITHY_CONTEXT_KEY] = {});
-    exports2.getSmithyContext = getSmithyContext;
-  }
-});
-
-// ../../../node_modules/@smithy/util-middleware/dist-cjs/normalizeProvider.js
-var require_normalizeProvider = __commonJS({
-  "../../../node_modules/@smithy/util-middleware/dist-cjs/normalizeProvider.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.normalizeProvider = void 0;
-    var normalizeProvider = (input) => {
-      if (typeof input === "function")
-        return input;
-      const promisified = Promise.resolve(input);
-      return () => promisified;
-    };
-    exports2.normalizeProvider = normalizeProvider;
+    __name(_SmithyMessageEncoderStream, "SmithyMessageEncoderStream");
+    var SmithyMessageEncoderStream = _SmithyMessageEncoderStream;
   }
 });
 
 // ../../../node_modules/@smithy/util-middleware/dist-cjs/index.js
 var require_dist_cjs10 = __commonJS({
-  "../../../node_modules/@smithy/util-middleware/dist-cjs/index.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
-    tslib_1.__exportStar(require_getSmithyContext(), exports2);
-    tslib_1.__exportStar(require_normalizeProvider(), exports2);
+  "../../../node_modules/@smithy/util-middleware/dist-cjs/index.js"(exports2, module2) {
+    var __defProp2 = Object.defineProperty;
+    var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
+    var __getOwnPropNames2 = Object.getOwnPropertyNames;
+    var __hasOwnProp2 = Object.prototype.hasOwnProperty;
+    var __name = (target, value) => __defProp2(target, "name", { value, configurable: true });
+    var __export2 = (target, all) => {
+      for (var name in all)
+        __defProp2(target, name, { get: all[name], enumerable: true });
+    };
+    var __copyProps2 = (to, from, except, desc) => {
+      if (from && typeof from === "object" || typeof from === "function") {
+        for (let key of __getOwnPropNames2(from))
+          if (!__hasOwnProp2.call(to, key) && key !== except)
+            __defProp2(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc2(from, key)) || desc.enumerable });
+      }
+      return to;
+    };
+    var __toCommonJS2 = (mod) => __copyProps2(__defProp2({}, "__esModule", { value: true }), mod);
+    var src_exports = {};
+    __export2(src_exports, {
+      getSmithyContext: () => getSmithyContext,
+      normalizeProvider: () => normalizeProvider
+    });
+    module2.exports = __toCommonJS2(src_exports);
+    var import_types = require_dist_cjs();
+    var getSmithyContext = /* @__PURE__ */ __name((context) => context[import_types.SMITHY_CONTEXT_KEY] || (context[import_types.SMITHY_CONTEXT_KEY] = {}), "getSmithyContext");
+    var normalizeProvider = /* @__PURE__ */ __name((input) => {
+      if (typeof input === "function")
+        return input;
+      const promisified = Promise.resolve(input);
+      return () => promisified;
+    }, "normalizeProvider");
   }
 });
 
 // ../../../node_modules/@smithy/is-array-buffer/dist-cjs/index.js
 var require_dist_cjs11 = __commonJS({
-  "../../../node_modules/@smithy/is-array-buffer/dist-cjs/index.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.isArrayBuffer = void 0;
-    var isArrayBuffer = (arg) => typeof ArrayBuffer === "function" && arg instanceof ArrayBuffer || Object.prototype.toString.call(arg) === "[object ArrayBuffer]";
-    exports2.isArrayBuffer = isArrayBuffer;
+  "../../../node_modules/@smithy/is-array-buffer/dist-cjs/index.js"(exports2, module2) {
+    var __defProp2 = Object.defineProperty;
+    var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
+    var __getOwnPropNames2 = Object.getOwnPropertyNames;
+    var __hasOwnProp2 = Object.prototype.hasOwnProperty;
+    var __name = (target, value) => __defProp2(target, "name", { value, configurable: true });
+    var __export2 = (target, all) => {
+      for (var name in all)
+        __defProp2(target, name, { get: all[name], enumerable: true });
+    };
+    var __copyProps2 = (to, from, except, desc) => {
+      if (from && typeof from === "object" || typeof from === "function") {
+        for (let key of __getOwnPropNames2(from))
+          if (!__hasOwnProp2.call(to, key) && key !== except)
+            __defProp2(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc2(from, key)) || desc.enumerable });
+      }
+      return to;
+    };
+    var __toCommonJS2 = (mod) => __copyProps2(__defProp2({}, "__esModule", { value: true }), mod);
+    var src_exports = {};
+    __export2(src_exports, {
+      isArrayBuffer: () => isArrayBuffer
+    });
+    module2.exports = __toCommonJS2(src_exports);
+    var isArrayBuffer = /* @__PURE__ */ __name((arg) => typeof ArrayBuffer === "function" && arg instanceof ArrayBuffer || Object.prototype.toString.call(arg) === "[object ArrayBuffer]", "isArrayBuffer");
   }
 });
 
 // ../../../node_modules/@smithy/util-buffer-from/dist-cjs/index.js
 var require_dist_cjs12 = __commonJS({
-  "../../../node_modules/@smithy/util-buffer-from/dist-cjs/index.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.fromString = exports2.fromArrayBuffer = void 0;
-    var is_array_buffer_1 = require_dist_cjs11();
-    var buffer_1 = require("buffer");
-    var fromArrayBuffer = (input, offset = 0, length = input.byteLength - offset) => {
-      if (!(0, is_array_buffer_1.isArrayBuffer)(input)) {
+  "../../../node_modules/@smithy/util-buffer-from/dist-cjs/index.js"(exports2, module2) {
+    var __defProp2 = Object.defineProperty;
+    var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
+    var __getOwnPropNames2 = Object.getOwnPropertyNames;
+    var __hasOwnProp2 = Object.prototype.hasOwnProperty;
+    var __name = (target, value) => __defProp2(target, "name", { value, configurable: true });
+    var __export2 = (target, all) => {
+      for (var name in all)
+        __defProp2(target, name, { get: all[name], enumerable: true });
+    };
+    var __copyProps2 = (to, from, except, desc) => {
+      if (from && typeof from === "object" || typeof from === "function") {
+        for (let key of __getOwnPropNames2(from))
+          if (!__hasOwnProp2.call(to, key) && key !== except)
+            __defProp2(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc2(from, key)) || desc.enumerable });
+      }
+      return to;
+    };
+    var __toCommonJS2 = (mod) => __copyProps2(__defProp2({}, "__esModule", { value: true }), mod);
+    var src_exports = {};
+    __export2(src_exports, {
+      fromArrayBuffer: () => fromArrayBuffer,
+      fromString: () => fromString
+    });
+    module2.exports = __toCommonJS2(src_exports);
+    var import_is_array_buffer = require_dist_cjs11();
+    var import_buffer = require("buffer");
+    var fromArrayBuffer = /* @__PURE__ */ __name((input, offset = 0, length = input.byteLength - offset) => {
+      if (!(0, import_is_array_buffer.isArrayBuffer)(input)) {
         throw new TypeError(`The "input" argument must be ArrayBuffer. Received type ${typeof input} (${input})`);
       }
-      return buffer_1.Buffer.from(input, offset, length);
-    };
-    exports2.fromArrayBuffer = fromArrayBuffer;
-    var fromString = (input, encoding) => {
+      return import_buffer.Buffer.from(input, offset, length);
+    }, "fromArrayBuffer");
+    var fromString = /* @__PURE__ */ __name((input, encoding) => {
       if (typeof input !== "string") {
         throw new TypeError(`The "input" argument must be of type string. Received type ${typeof input} (${input})`);
       }
-      return encoding ? buffer_1.Buffer.from(input, encoding) : buffer_1.Buffer.from(input);
-    };
-    exports2.fromString = fromString;
-  }
-});
-
-// ../../../node_modules/@smithy/util-utf8/dist-cjs/fromUtf8.js
-var require_fromUtf8 = __commonJS({
-  "../../../node_modules/@smithy/util-utf8/dist-cjs/fromUtf8.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.fromUtf8 = void 0;
-    var util_buffer_from_1 = require_dist_cjs12();
-    var fromUtf8 = (input) => {
-      const buf = (0, util_buffer_from_1.fromString)(input, "utf8");
-      return new Uint8Array(buf.buffer, buf.byteOffset, buf.byteLength / Uint8Array.BYTES_PER_ELEMENT);
-    };
-    exports2.fromUtf8 = fromUtf8;
-  }
-});
-
-// ../../../node_modules/@smithy/util-utf8/dist-cjs/toUint8Array.js
-var require_toUint8Array = __commonJS({
-  "../../../node_modules/@smithy/util-utf8/dist-cjs/toUint8Array.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.toUint8Array = void 0;
-    var fromUtf8_1 = require_fromUtf8();
-    var toUint8Array = (data) => {
-      if (typeof data === "string") {
-        return (0, fromUtf8_1.fromUtf8)(data);
-      }
-      if (ArrayBuffer.isView(data)) {
-        return new Uint8Array(data.buffer, data.byteOffset, data.byteLength / Uint8Array.BYTES_PER_ELEMENT);
-      }
-      return new Uint8Array(data);
-    };
-    exports2.toUint8Array = toUint8Array;
-  }
-});
-
-// ../../../node_modules/@smithy/util-utf8/dist-cjs/toUtf8.js
-var require_toUtf8 = __commonJS({
-  "../../../node_modules/@smithy/util-utf8/dist-cjs/toUtf8.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.toUtf8 = void 0;
-    var util_buffer_from_1 = require_dist_cjs12();
-    var toUtf8 = (input) => (0, util_buffer_from_1.fromArrayBuffer)(input.buffer, input.byteOffset, input.byteLength).toString("utf8");
-    exports2.toUtf8 = toUtf8;
+      return encoding ? import_buffer.Buffer.from(input, encoding) : import_buffer.Buffer.from(input);
+    }, "fromString");
   }
 });
 
 // ../../../node_modules/@smithy/util-utf8/dist-cjs/index.js
 var require_dist_cjs13 = __commonJS({
-  "../../../node_modules/@smithy/util-utf8/dist-cjs/index.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
-    tslib_1.__exportStar(require_fromUtf8(), exports2);
-    tslib_1.__exportStar(require_toUint8Array(), exports2);
-    tslib_1.__exportStar(require_toUtf8(), exports2);
+  "../../../node_modules/@smithy/util-utf8/dist-cjs/index.js"(exports2, module2) {
+    var __defProp2 = Object.defineProperty;
+    var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
+    var __getOwnPropNames2 = Object.getOwnPropertyNames;
+    var __hasOwnProp2 = Object.prototype.hasOwnProperty;
+    var __name = (target, value) => __defProp2(target, "name", { value, configurable: true });
+    var __export2 = (target, all) => {
+      for (var name in all)
+        __defProp2(target, name, { get: all[name], enumerable: true });
+    };
+    var __copyProps2 = (to, from, except, desc) => {
+      if (from && typeof from === "object" || typeof from === "function") {
+        for (let key of __getOwnPropNames2(from))
+          if (!__hasOwnProp2.call(to, key) && key !== except)
+            __defProp2(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc2(from, key)) || desc.enumerable });
+      }
+      return to;
+    };
+    var __toCommonJS2 = (mod) => __copyProps2(__defProp2({}, "__esModule", { value: true }), mod);
+    var src_exports = {};
+    __export2(src_exports, {
+      fromUtf8: () => fromUtf8,
+      toUint8Array: () => toUint8Array,
+      toUtf8: () => toUtf8
+    });
+    module2.exports = __toCommonJS2(src_exports);
+    var import_util_buffer_from = require_dist_cjs12();
+    var fromUtf8 = /* @__PURE__ */ __name((input) => {
+      const buf = (0, import_util_buffer_from.fromString)(input, "utf8");
+      return new Uint8Array(buf.buffer, buf.byteOffset, buf.byteLength / Uint8Array.BYTES_PER_ELEMENT);
+    }, "fromUtf8");
+    var toUint8Array = /* @__PURE__ */ __name((data) => {
+      if (typeof data === "string") {
+        return fromUtf8(data);
+      }
+      if (ArrayBuffer.isView(data)) {
+        return new Uint8Array(data.buffer, data.byteOffset, data.byteLength / Uint8Array.BYTES_PER_ELEMENT);
+      }
+      return new Uint8Array(data);
+    }, "toUint8Array");
+    var toUtf8 = /* @__PURE__ */ __name((input) => {
+      if (typeof input === "string") {
+        return input;
+      }
+      if (typeof input !== "object" || typeof input.byteOffset !== "number" || typeof input.byteLength !== "number") {
+        throw new Error("@smithy/util-utf8: toUtf8 encoder function only accepts string | Uint8Array.");
+      }
+      return (0, import_util_buffer_from.fromArrayBuffer)(input.buffer, input.byteOffset, input.byteLength).toString("utf8");
+    }, "toUtf8");
   }
 });
 
-// ../../../node_modules/@smithy/signature-v4/dist-cjs/constants.js
-var require_constants = __commonJS({
-  "../../../node_modules/@smithy/signature-v4/dist-cjs/constants.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.MAX_PRESIGNED_TTL = exports2.KEY_TYPE_IDENTIFIER = exports2.MAX_CACHE_SIZE = exports2.UNSIGNED_PAYLOAD = exports2.EVENT_ALGORITHM_IDENTIFIER = exports2.ALGORITHM_IDENTIFIER_V4A = exports2.ALGORITHM_IDENTIFIER = exports2.UNSIGNABLE_PATTERNS = exports2.SEC_HEADER_PATTERN = exports2.PROXY_HEADER_PATTERN = exports2.ALWAYS_UNSIGNABLE_HEADERS = exports2.HOST_HEADER = exports2.TOKEN_HEADER = exports2.SHA256_HEADER = exports2.SIGNATURE_HEADER = exports2.GENERATED_HEADERS = exports2.DATE_HEADER = exports2.AMZ_DATE_HEADER = exports2.AUTH_HEADER = exports2.REGION_SET_PARAM = exports2.TOKEN_QUERY_PARAM = exports2.SIGNATURE_QUERY_PARAM = exports2.EXPIRES_QUERY_PARAM = exports2.SIGNED_HEADERS_QUERY_PARAM = exports2.AMZ_DATE_QUERY_PARAM = exports2.CREDENTIAL_QUERY_PARAM = exports2.ALGORITHM_QUERY_PARAM = void 0;
-    exports2.ALGORITHM_QUERY_PARAM = "X-Amz-Algorithm";
-    exports2.CREDENTIAL_QUERY_PARAM = "X-Amz-Credential";
-    exports2.AMZ_DATE_QUERY_PARAM = "X-Amz-Date";
-    exports2.SIGNED_HEADERS_QUERY_PARAM = "X-Amz-SignedHeaders";
-    exports2.EXPIRES_QUERY_PARAM = "X-Amz-Expires";
-    exports2.SIGNATURE_QUERY_PARAM = "X-Amz-Signature";
-    exports2.TOKEN_QUERY_PARAM = "X-Amz-Security-Token";
-    exports2.REGION_SET_PARAM = "X-Amz-Region-Set";
-    exports2.AUTH_HEADER = "authorization";
-    exports2.AMZ_DATE_HEADER = exports2.AMZ_DATE_QUERY_PARAM.toLowerCase();
-    exports2.DATE_HEADER = "date";
-    exports2.GENERATED_HEADERS = [exports2.AUTH_HEADER, exports2.AMZ_DATE_HEADER, exports2.DATE_HEADER];
-    exports2.SIGNATURE_HEADER = exports2.SIGNATURE_QUERY_PARAM.toLowerCase();
-    exports2.SHA256_HEADER = "x-amz-content-sha256";
-    exports2.TOKEN_HEADER = exports2.TOKEN_QUERY_PARAM.toLowerCase();
-    exports2.HOST_HEADER = "host";
-    exports2.ALWAYS_UNSIGNABLE_HEADERS = {
+// ../../../node_modules/@smithy/util-uri-escape/dist-cjs/index.js
+var require_dist_cjs14 = __commonJS({
+  "../../../node_modules/@smithy/util-uri-escape/dist-cjs/index.js"(exports2, module2) {
+    var __defProp2 = Object.defineProperty;
+    var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
+    var __getOwnPropNames2 = Object.getOwnPropertyNames;
+    var __hasOwnProp2 = Object.prototype.hasOwnProperty;
+    var __name = (target, value) => __defProp2(target, "name", { value, configurable: true });
+    var __export2 = (target, all) => {
+      for (var name in all)
+        __defProp2(target, name, { get: all[name], enumerable: true });
+    };
+    var __copyProps2 = (to, from, except, desc) => {
+      if (from && typeof from === "object" || typeof from === "function") {
+        for (let key of __getOwnPropNames2(from))
+          if (!__hasOwnProp2.call(to, key) && key !== except)
+            __defProp2(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc2(from, key)) || desc.enumerable });
+      }
+      return to;
+    };
+    var __toCommonJS2 = (mod) => __copyProps2(__defProp2({}, "__esModule", { value: true }), mod);
+    var src_exports = {};
+    __export2(src_exports, {
+      escapeUri: () => escapeUri,
+      escapeUriPath: () => escapeUriPath
+    });
+    module2.exports = __toCommonJS2(src_exports);
+    var escapeUri = /* @__PURE__ */ __name((uri) => (
+      // AWS percent-encodes some extra non-standard characters in a URI
+      encodeURIComponent(uri).replace(/[!'()*]/g, hexEncode)
+    ), "escapeUri");
+    var hexEncode = /* @__PURE__ */ __name((c) => `%${c.charCodeAt(0).toString(16).toUpperCase()}`, "hexEncode");
+    var escapeUriPath = /* @__PURE__ */ __name((uri) => uri.split("/").map(escapeUri).join("/"), "escapeUriPath");
+  }
+});
+
+// ../../../node_modules/@smithy/signature-v4/dist-cjs/index.js
+var require_dist_cjs15 = __commonJS({
+  "../../../node_modules/@smithy/signature-v4/dist-cjs/index.js"(exports2, module2) {
+    var __defProp2 = Object.defineProperty;
+    var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
+    var __getOwnPropNames2 = Object.getOwnPropertyNames;
+    var __hasOwnProp2 = Object.prototype.hasOwnProperty;
+    var __name = (target, value) => __defProp2(target, "name", { value, configurable: true });
+    var __export2 = (target, all) => {
+      for (var name in all)
+        __defProp2(target, name, { get: all[name], enumerable: true });
+    };
+    var __copyProps2 = (to, from, except, desc) => {
+      if (from && typeof from === "object" || typeof from === "function") {
+        for (let key of __getOwnPropNames2(from))
+          if (!__hasOwnProp2.call(to, key) && key !== except)
+            __defProp2(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc2(from, key)) || desc.enumerable });
+      }
+      return to;
+    };
+    var __toCommonJS2 = (mod) => __copyProps2(__defProp2({}, "__esModule", { value: true }), mod);
+    var src_exports = {};
+    __export2(src_exports, {
+      SignatureV4: () => SignatureV4,
+      clearCredentialCache: () => clearCredentialCache,
+      createScope: () => createScope,
+      getCanonicalHeaders: () => getCanonicalHeaders,
+      getCanonicalQuery: () => getCanonicalQuery,
+      getPayloadHash: () => getPayloadHash,
+      getSigningKey: () => getSigningKey,
+      moveHeadersToQuery: () => moveHeadersToQuery,
+      prepareRequest: () => prepareRequest
+    });
+    module2.exports = __toCommonJS2(src_exports);
+    var import_eventstream_codec = require_dist_cjs9();
+    var import_util_middleware = require_dist_cjs10();
+    var import_util_utf83 = require_dist_cjs13();
+    var ALGORITHM_QUERY_PARAM = "X-Amz-Algorithm";
+    var CREDENTIAL_QUERY_PARAM = "X-Amz-Credential";
+    var AMZ_DATE_QUERY_PARAM = "X-Amz-Date";
+    var SIGNED_HEADERS_QUERY_PARAM = "X-Amz-SignedHeaders";
+    var EXPIRES_QUERY_PARAM = "X-Amz-Expires";
+    var SIGNATURE_QUERY_PARAM = "X-Amz-Signature";
+    var TOKEN_QUERY_PARAM = "X-Amz-Security-Token";
+    var AUTH_HEADER = "authorization";
+    var AMZ_DATE_HEADER = AMZ_DATE_QUERY_PARAM.toLowerCase();
+    var DATE_HEADER = "date";
+    var GENERATED_HEADERS = [AUTH_HEADER, AMZ_DATE_HEADER, DATE_HEADER];
+    var SIGNATURE_HEADER = SIGNATURE_QUERY_PARAM.toLowerCase();
+    var SHA256_HEADER = "x-amz-content-sha256";
+    var TOKEN_HEADER = TOKEN_QUERY_PARAM.toLowerCase();
+    var ALWAYS_UNSIGNABLE_HEADERS = {
       authorization: true,
       "cache-control": true,
       connection: true,
@@ -4126,79 +3666,54 @@ var require_constants = __commonJS({
       "user-agent": true,
       "x-amzn-trace-id": true
     };
-    exports2.PROXY_HEADER_PATTERN = /^proxy-/;
-    exports2.SEC_HEADER_PATTERN = /^sec-/;
-    exports2.UNSIGNABLE_PATTERNS = [/^proxy-/i, /^sec-/i];
-    exports2.ALGORITHM_IDENTIFIER = "AWS4-HMAC-SHA256";
-    exports2.ALGORITHM_IDENTIFIER_V4A = "AWS4-ECDSA-P256-SHA256";
-    exports2.EVENT_ALGORITHM_IDENTIFIER = "AWS4-HMAC-SHA256-PAYLOAD";
-    exports2.UNSIGNED_PAYLOAD = "UNSIGNED-PAYLOAD";
-    exports2.MAX_CACHE_SIZE = 50;
-    exports2.KEY_TYPE_IDENTIFIER = "aws4_request";
-    exports2.MAX_PRESIGNED_TTL = 60 * 60 * 24 * 7;
-  }
-});
-
-// ../../../node_modules/@smithy/signature-v4/dist-cjs/credentialDerivation.js
-var require_credentialDerivation = __commonJS({
-  "../../../node_modules/@smithy/signature-v4/dist-cjs/credentialDerivation.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.clearCredentialCache = exports2.getSigningKey = exports2.createScope = void 0;
-    var util_hex_encoding_1 = require_dist_cjs8();
-    var util_utf8_1 = require_dist_cjs13();
-    var constants_1 = require_constants();
+    var PROXY_HEADER_PATTERN = /^proxy-/;
+    var SEC_HEADER_PATTERN = /^sec-/;
+    var ALGORITHM_IDENTIFIER = "AWS4-HMAC-SHA256";
+    var EVENT_ALGORITHM_IDENTIFIER = "AWS4-HMAC-SHA256-PAYLOAD";
+    var UNSIGNED_PAYLOAD = "UNSIGNED-PAYLOAD";
+    var MAX_CACHE_SIZE = 50;
+    var KEY_TYPE_IDENTIFIER = "aws4_request";
+    var MAX_PRESIGNED_TTL = 60 * 60 * 24 * 7;
+    var import_util_hex_encoding = require_dist_cjs8();
+    var import_util_utf8 = require_dist_cjs13();
     var signingKeyCache = {};
     var cacheQueue = [];
-    var createScope = (shortDate, region, service) => `${shortDate}/${region}/${service}/${constants_1.KEY_TYPE_IDENTIFIER}`;
-    exports2.createScope = createScope;
-    var getSigningKey = async (sha256Constructor, credentials, shortDate, region, service) => {
+    var createScope = /* @__PURE__ */ __name((shortDate, region, service) => `${shortDate}/${region}/${service}/${KEY_TYPE_IDENTIFIER}`, "createScope");
+    var getSigningKey = /* @__PURE__ */ __name(async (sha256Constructor, credentials, shortDate, region, service) => {
       const credsHash = await hmac(sha256Constructor, credentials.secretAccessKey, credentials.accessKeyId);
-      const cacheKey = `${shortDate}:${region}:${service}:${(0, util_hex_encoding_1.toHex)(credsHash)}:${credentials.sessionToken}`;
+      const cacheKey = `${shortDate}:${region}:${service}:${(0, import_util_hex_encoding.toHex)(credsHash)}:${credentials.sessionToken}`;
       if (cacheKey in signingKeyCache) {
         return signingKeyCache[cacheKey];
       }
       cacheQueue.push(cacheKey);
-      while (cacheQueue.length > constants_1.MAX_CACHE_SIZE) {
+      while (cacheQueue.length > MAX_CACHE_SIZE) {
         delete signingKeyCache[cacheQueue.shift()];
       }
       let key = `AWS4${credentials.secretAccessKey}`;
-      for (const signable of [shortDate, region, service, constants_1.KEY_TYPE_IDENTIFIER]) {
+      for (const signable of [shortDate, region, service, KEY_TYPE_IDENTIFIER]) {
         key = await hmac(sha256Constructor, key, signable);
       }
       return signingKeyCache[cacheKey] = key;
-    };
-    exports2.getSigningKey = getSigningKey;
-    var clearCredentialCache = () => {
+    }, "getSigningKey");
+    var clearCredentialCache = /* @__PURE__ */ __name(() => {
       cacheQueue.length = 0;
       Object.keys(signingKeyCache).forEach((cacheKey) => {
         delete signingKeyCache[cacheKey];
       });
-    };
-    exports2.clearCredentialCache = clearCredentialCache;
-    var hmac = (ctor, secret, data) => {
+    }, "clearCredentialCache");
+    var hmac = /* @__PURE__ */ __name((ctor, secret, data) => {
       const hash = new ctor(secret);
-      hash.update((0, util_utf8_1.toUint8Array)(data));
+      hash.update((0, import_util_utf8.toUint8Array)(data));
       return hash.digest();
-    };
-  }
-});
-
-// ../../../node_modules/@smithy/signature-v4/dist-cjs/getCanonicalHeaders.js
-var require_getCanonicalHeaders = __commonJS({
-  "../../../node_modules/@smithy/signature-v4/dist-cjs/getCanonicalHeaders.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.getCanonicalHeaders = void 0;
-    var constants_1 = require_constants();
-    var getCanonicalHeaders = ({ headers }, unsignableHeaders, signableHeaders) => {
+    }, "hmac");
+    var getCanonicalHeaders = /* @__PURE__ */ __name(({ headers }, unsignableHeaders, signableHeaders) => {
       const canonical = {};
       for (const headerName of Object.keys(headers).sort()) {
         if (headers[headerName] == void 0) {
           continue;
         }
         const canonicalHeaderName = headerName.toLowerCase();
-        if (canonicalHeaderName in constants_1.ALWAYS_UNSIGNABLE_HEADERS || (unsignableHeaders === null || unsignableHeaders === void 0 ? void 0 : unsignableHeaders.has(canonicalHeaderName)) || constants_1.PROXY_HEADER_PATTERN.test(canonicalHeaderName) || constants_1.SEC_HEADER_PATTERN.test(canonicalHeaderName)) {
+        if (canonicalHeaderName in ALWAYS_UNSIGNABLE_HEADERS || (unsignableHeaders == null ? void 0 : unsignableHeaders.has(canonicalHeaderName)) || PROXY_HEADER_PATTERN.test(canonicalHeaderName) || SEC_HEADER_PATTERN.test(canonicalHeaderName)) {
           if (!signableHeaders || signableHeaders && !signableHeaders.has(canonicalHeaderName)) {
             continue;
           }
@@ -4206,111 +3721,46 @@ var require_getCanonicalHeaders = __commonJS({
         canonical[canonicalHeaderName] = headers[headerName].trim().replace(/\s+/g, " ");
       }
       return canonical;
-    };
-    exports2.getCanonicalHeaders = getCanonicalHeaders;
-  }
-});
-
-// ../../../node_modules/@smithy/util-uri-escape/dist-cjs/escape-uri.js
-var require_escape_uri = __commonJS({
-  "../../../node_modules/@smithy/util-uri-escape/dist-cjs/escape-uri.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.escapeUri = void 0;
-    var escapeUri = (uri) => encodeURIComponent(uri).replace(/[!'()*]/g, hexEncode);
-    exports2.escapeUri = escapeUri;
-    var hexEncode = (c) => `%${c.charCodeAt(0).toString(16).toUpperCase()}`;
-  }
-});
-
-// ../../../node_modules/@smithy/util-uri-escape/dist-cjs/escape-uri-path.js
-var require_escape_uri_path = __commonJS({
-  "../../../node_modules/@smithy/util-uri-escape/dist-cjs/escape-uri-path.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.escapeUriPath = void 0;
-    var escape_uri_1 = require_escape_uri();
-    var escapeUriPath = (uri) => uri.split("/").map(escape_uri_1.escapeUri).join("/");
-    exports2.escapeUriPath = escapeUriPath;
-  }
-});
-
-// ../../../node_modules/@smithy/util-uri-escape/dist-cjs/index.js
-var require_dist_cjs14 = __commonJS({
-  "../../../node_modules/@smithy/util-uri-escape/dist-cjs/index.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
-    tslib_1.__exportStar(require_escape_uri(), exports2);
-    tslib_1.__exportStar(require_escape_uri_path(), exports2);
-  }
-});
-
-// ../../../node_modules/@smithy/signature-v4/dist-cjs/getCanonicalQuery.js
-var require_getCanonicalQuery = __commonJS({
-  "../../../node_modules/@smithy/signature-v4/dist-cjs/getCanonicalQuery.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.getCanonicalQuery = void 0;
-    var util_uri_escape_1 = require_dist_cjs14();
-    var constants_1 = require_constants();
-    var getCanonicalQuery = ({ query = {} }) => {
+    }, "getCanonicalHeaders");
+    var import_util_uri_escape = require_dist_cjs14();
+    var getCanonicalQuery = /* @__PURE__ */ __name(({ query = {} }) => {
       const keys = [];
       const serialized = {};
       for (const key of Object.keys(query).sort()) {
-        if (key.toLowerCase() === constants_1.SIGNATURE_HEADER) {
+        if (key.toLowerCase() === SIGNATURE_HEADER) {
           continue;
         }
         keys.push(key);
         const value = query[key];
         if (typeof value === "string") {
-          serialized[key] = `${(0, util_uri_escape_1.escapeUri)(key)}=${(0, util_uri_escape_1.escapeUri)(value)}`;
+          serialized[key] = `${(0, import_util_uri_escape.escapeUri)(key)}=${(0, import_util_uri_escape.escapeUri)(value)}`;
         } else if (Array.isArray(value)) {
-          serialized[key] = value.slice(0).reduce((encoded, value2) => encoded.concat([`${(0, util_uri_escape_1.escapeUri)(key)}=${(0, util_uri_escape_1.escapeUri)(value2)}`]), []).sort().join("&");
+          serialized[key] = value.slice(0).reduce(
+            (encoded, value2) => encoded.concat([`${(0, import_util_uri_escape.escapeUri)(key)}=${(0, import_util_uri_escape.escapeUri)(value2)}`]),
+            []
+          ).sort().join("&");
         }
       }
       return keys.map((key) => serialized[key]).filter((serialized2) => serialized2).join("&");
-    };
-    exports2.getCanonicalQuery = getCanonicalQuery;
-  }
-});
-
-// ../../../node_modules/@smithy/signature-v4/dist-cjs/getPayloadHash.js
-var require_getPayloadHash = __commonJS({
-  "../../../node_modules/@smithy/signature-v4/dist-cjs/getPayloadHash.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.getPayloadHash = void 0;
-    var is_array_buffer_1 = require_dist_cjs11();
-    var util_hex_encoding_1 = require_dist_cjs8();
-    var util_utf8_1 = require_dist_cjs13();
-    var constants_1 = require_constants();
-    var getPayloadHash = async ({ headers, body }, hashConstructor) => {
+    }, "getCanonicalQuery");
+    var import_is_array_buffer = require_dist_cjs11();
+    var import_util_utf82 = require_dist_cjs13();
+    var getPayloadHash = /* @__PURE__ */ __name(async ({ headers, body }, hashConstructor) => {
       for (const headerName of Object.keys(headers)) {
-        if (headerName.toLowerCase() === constants_1.SHA256_HEADER) {
+        if (headerName.toLowerCase() === SHA256_HEADER) {
           return headers[headerName];
         }
       }
       if (body == void 0) {
         return "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
-      } else if (typeof body === "string" || ArrayBuffer.isView(body) || (0, is_array_buffer_1.isArrayBuffer)(body)) {
+      } else if (typeof body === "string" || ArrayBuffer.isView(body) || (0, import_is_array_buffer.isArrayBuffer)(body)) {
         const hashCtor = new hashConstructor();
-        hashCtor.update((0, util_utf8_1.toUint8Array)(body));
-        return (0, util_hex_encoding_1.toHex)(await hashCtor.digest());
+        hashCtor.update((0, import_util_utf82.toUint8Array)(body));
+        return (0, import_util_hex_encoding.toHex)(await hashCtor.digest());
       }
-      return constants_1.UNSIGNED_PAYLOAD;
-    };
-    exports2.getPayloadHash = getPayloadHash;
-  }
-});
-
-// ../../../node_modules/@smithy/signature-v4/dist-cjs/headerUtil.js
-var require_headerUtil = __commonJS({
-  "../../../node_modules/@smithy/signature-v4/dist-cjs/headerUtil.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.deleteHeader = exports2.getHeaderValue = exports2.hasHeader = void 0;
-    var hasHeader = (soughtHeader, headers) => {
+      return UNSIGNED_PAYLOAD;
+    }, "getPayloadHash");
+    var hasHeader = /* @__PURE__ */ __name((soughtHeader, headers) => {
       soughtHeader = soughtHeader.toLowerCase();
       for (const headerName of Object.keys(headers)) {
         if (soughtHeader === headerName.toLowerCase()) {
@@ -4318,66 +3768,25 @@ var require_headerUtil = __commonJS({
         }
       }
       return false;
-    };
-    exports2.hasHeader = hasHeader;
-    var getHeaderValue = (soughtHeader, headers) => {
-      soughtHeader = soughtHeader.toLowerCase();
-      for (const headerName of Object.keys(headers)) {
-        if (soughtHeader === headerName.toLowerCase()) {
-          return headers[headerName];
-        }
-      }
-      return void 0;
-    };
-    exports2.getHeaderValue = getHeaderValue;
-    var deleteHeader = (soughtHeader, headers) => {
-      soughtHeader = soughtHeader.toLowerCase();
-      for (const headerName of Object.keys(headers)) {
-        if (soughtHeader === headerName.toLowerCase()) {
-          delete headers[headerName];
-        }
-      }
-    };
-    exports2.deleteHeader = deleteHeader;
-  }
-});
-
-// ../../../node_modules/@smithy/signature-v4/dist-cjs/cloneRequest.js
-var require_cloneRequest = __commonJS({
-  "../../../node_modules/@smithy/signature-v4/dist-cjs/cloneRequest.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.cloneQuery = exports2.cloneRequest = void 0;
-    var cloneRequest = ({ headers, query, ...rest }) => ({
+    }, "hasHeader");
+    var cloneRequest = /* @__PURE__ */ __name(({ headers, query, ...rest }) => ({
       ...rest,
       headers: { ...headers },
-      query: query ? (0, exports2.cloneQuery)(query) : void 0
-    });
-    exports2.cloneRequest = cloneRequest;
-    var cloneQuery = (query) => Object.keys(query).reduce((carry, paramName) => {
+      query: query ? cloneQuery(query) : void 0
+    }), "cloneRequest");
+    var cloneQuery = /* @__PURE__ */ __name((query) => Object.keys(query).reduce((carry, paramName) => {
       const param = query[paramName];
       return {
         ...carry,
         [paramName]: Array.isArray(param) ? [...param] : param
       };
-    }, {});
-    exports2.cloneQuery = cloneQuery;
-  }
-});
-
-// ../../../node_modules/@smithy/signature-v4/dist-cjs/moveHeadersToQuery.js
-var require_moveHeadersToQuery = __commonJS({
-  "../../../node_modules/@smithy/signature-v4/dist-cjs/moveHeadersToQuery.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.moveHeadersToQuery = void 0;
-    var cloneRequest_1 = require_cloneRequest();
-    var moveHeadersToQuery = (request2, options = {}) => {
+    }, {}), "cloneQuery");
+    var moveHeadersToQuery = /* @__PURE__ */ __name((request2, options = {}) => {
       var _a;
-      const { headers, query = {} } = typeof request2.clone === "function" ? request2.clone() : (0, cloneRequest_1.cloneRequest)(request2);
+      const { headers, query = {} } = typeof request2.clone === "function" ? request2.clone() : cloneRequest(request2);
       for (const name of Object.keys(headers)) {
         const lname = name.toLowerCase();
-        if (lname.slice(0, 6) === "x-amz-" && !((_a = options.unhoistableHeaders) === null || _a === void 0 ? void 0 : _a.has(lname))) {
+        if (lname.slice(0, 6) === "x-amz-" && !((_a = options.unhoistableHeaders) == null ? void 0 : _a.has(lname))) {
           query[name] = headers[name];
           delete headers[name];
         }
@@ -4387,41 +3796,18 @@ var require_moveHeadersToQuery = __commonJS({
         headers,
         query
       };
-    };
-    exports2.moveHeadersToQuery = moveHeadersToQuery;
-  }
-});
-
-// ../../../node_modules/@smithy/signature-v4/dist-cjs/prepareRequest.js
-var require_prepareRequest = __commonJS({
-  "../../../node_modules/@smithy/signature-v4/dist-cjs/prepareRequest.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.prepareRequest = void 0;
-    var cloneRequest_1 = require_cloneRequest();
-    var constants_1 = require_constants();
-    var prepareRequest = (request2) => {
-      request2 = typeof request2.clone === "function" ? request2.clone() : (0, cloneRequest_1.cloneRequest)(request2);
+    }, "moveHeadersToQuery");
+    var prepareRequest = /* @__PURE__ */ __name((request2) => {
+      request2 = typeof request2.clone === "function" ? request2.clone() : cloneRequest(request2);
       for (const headerName of Object.keys(request2.headers)) {
-        if (constants_1.GENERATED_HEADERS.indexOf(headerName.toLowerCase()) > -1) {
+        if (GENERATED_HEADERS.indexOf(headerName.toLowerCase()) > -1) {
           delete request2.headers[headerName];
         }
       }
       return request2;
-    };
-    exports2.prepareRequest = prepareRequest;
-  }
-});
-
-// ../../../node_modules/@smithy/signature-v4/dist-cjs/utilDate.js
-var require_utilDate = __commonJS({
-  "../../../node_modules/@smithy/signature-v4/dist-cjs/utilDate.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.toDate = exports2.iso8601 = void 0;
-    var iso8601 = (time) => (0, exports2.toDate)(time).toISOString().replace(/\.\d{3}Z$/, "Z");
-    exports2.iso8601 = iso8601;
-    var toDate = (time) => {
+    }, "prepareRequest");
+    var iso8601 = /* @__PURE__ */ __name((time) => toDate(time).toISOString().replace(/\.\d{3}Z$/, "Z"), "iso8601");
+    var toDate = /* @__PURE__ */ __name((time) => {
       if (typeof time === "number") {
         return new Date(time * 1e3);
       }
@@ -4432,61 +3818,60 @@ var require_utilDate = __commonJS({
         return new Date(time);
       }
       return time;
-    };
-    exports2.toDate = toDate;
-  }
-});
-
-// ../../../node_modules/@smithy/signature-v4/dist-cjs/SignatureV4.js
-var require_SignatureV4 = __commonJS({
-  "../../../node_modules/@smithy/signature-v4/dist-cjs/SignatureV4.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.SignatureV4 = void 0;
-    var eventstream_codec_1 = require_dist_cjs9();
-    var util_hex_encoding_1 = require_dist_cjs8();
-    var util_middleware_1 = require_dist_cjs10();
-    var util_utf8_1 = require_dist_cjs13();
-    var constants_1 = require_constants();
-    var credentialDerivation_1 = require_credentialDerivation();
-    var getCanonicalHeaders_1 = require_getCanonicalHeaders();
-    var getCanonicalQuery_1 = require_getCanonicalQuery();
-    var getPayloadHash_1 = require_getPayloadHash();
-    var headerUtil_1 = require_headerUtil();
-    var moveHeadersToQuery_1 = require_moveHeadersToQuery();
-    var prepareRequest_1 = require_prepareRequest();
-    var utilDate_1 = require_utilDate();
-    var SignatureV4 = class {
-      constructor({ applyChecksum, credentials, region, service, sha256, uriEscapePath = true }) {
-        this.headerMarshaller = new eventstream_codec_1.HeaderMarshaller(util_utf8_1.toUtf8, util_utf8_1.fromUtf8);
+    }, "toDate");
+    var _SignatureV4 = class _SignatureV4 {
+      constructor({
+        applyChecksum,
+        credentials,
+        region,
+        service,
+        sha256,
+        uriEscapePath = true
+      }) {
+        this.headerMarshaller = new import_eventstream_codec.HeaderMarshaller(import_util_utf83.toUtf8, import_util_utf83.fromUtf8);
         this.service = service;
         this.sha256 = sha256;
         this.uriEscapePath = uriEscapePath;
         this.applyChecksum = typeof applyChecksum === "boolean" ? applyChecksum : true;
-        this.regionProvider = (0, util_middleware_1.normalizeProvider)(region);
-        this.credentialProvider = (0, util_middleware_1.normalizeProvider)(credentials);
+        this.regionProvider = (0, import_util_middleware.normalizeProvider)(region);
+        this.credentialProvider = (0, import_util_middleware.normalizeProvider)(credentials);
       }
       async presign(originalRequest, options = {}) {
-        const { signingDate = /* @__PURE__ */ new Date(), expiresIn = 3600, unsignableHeaders, unhoistableHeaders, signableHeaders, signingRegion, signingService } = options;
+        const {
+          signingDate = /* @__PURE__ */ new Date(),
+          expiresIn = 3600,
+          unsignableHeaders,
+          unhoistableHeaders,
+          signableHeaders,
+          signingRegion,
+          signingService
+        } = options;
         const credentials = await this.credentialProvider();
         this.validateResolvedCredentials(credentials);
-        const region = signingRegion !== null && signingRegion !== void 0 ? signingRegion : await this.regionProvider();
+        const region = signingRegion ?? await this.regionProvider();
         const { longDate, shortDate } = formatDate(signingDate);
-        if (expiresIn > constants_1.MAX_PRESIGNED_TTL) {
-          return Promise.reject("Signature version 4 presigned URLs must have an expiration date less than one week in the future");
+        if (expiresIn > MAX_PRESIGNED_TTL) {
+          return Promise.reject(
+            "Signature version 4 presigned URLs must have an expiration date less than one week in the future"
+          );
         }
-        const scope = (0, credentialDerivation_1.createScope)(shortDate, region, signingService !== null && signingService !== void 0 ? signingService : this.service);
-        const request2 = (0, moveHeadersToQuery_1.moveHeadersToQuery)((0, prepareRequest_1.prepareRequest)(originalRequest), { unhoistableHeaders });
+        const scope = createScope(shortDate, region, signingService ?? this.service);
+        const request2 = moveHeadersToQuery(prepareRequest(originalRequest), { unhoistableHeaders });
         if (credentials.sessionToken) {
-          request2.query[constants_1.TOKEN_QUERY_PARAM] = credentials.sessionToken;
+          request2.query[TOKEN_QUERY_PARAM] = credentials.sessionToken;
         }
-        request2.query[constants_1.ALGORITHM_QUERY_PARAM] = constants_1.ALGORITHM_IDENTIFIER;
-        request2.query[constants_1.CREDENTIAL_QUERY_PARAM] = `${credentials.accessKeyId}/${scope}`;
-        request2.query[constants_1.AMZ_DATE_QUERY_PARAM] = longDate;
-        request2.query[constants_1.EXPIRES_QUERY_PARAM] = expiresIn.toString(10);
-        const canonicalHeaders = (0, getCanonicalHeaders_1.getCanonicalHeaders)(request2, unsignableHeaders, signableHeaders);
-        request2.query[constants_1.SIGNED_HEADERS_QUERY_PARAM] = getCanonicalHeaderList(canonicalHeaders);
-        request2.query[constants_1.SIGNATURE_QUERY_PARAM] = await this.getSignature(longDate, scope, this.getSigningKey(credentials, region, shortDate, signingService), this.createCanonicalRequest(request2, canonicalHeaders, await (0, getPayloadHash_1.getPayloadHash)(originalRequest, this.sha256)));
+        request2.query[ALGORITHM_QUERY_PARAM] = ALGORITHM_IDENTIFIER;
+        request2.query[CREDENTIAL_QUERY_PARAM] = `${credentials.accessKeyId}/${scope}`;
+        request2.query[AMZ_DATE_QUERY_PARAM] = longDate;
+        request2.query[EXPIRES_QUERY_PARAM] = expiresIn.toString(10);
+        const canonicalHeaders = getCanonicalHeaders(request2, unsignableHeaders, signableHeaders);
+        request2.query[SIGNED_HEADERS_QUERY_PARAM] = getCanonicalHeaderList(canonicalHeaders);
+        request2.query[SIGNATURE_QUERY_PARAM] = await this.getSignature(
+          longDate,
+          scope,
+          this.getSigningKey(credentials, region, shortDate, signingService),
+          this.createCanonicalRequest(request2, canonicalHeaders, await getPayloadHash(originalRequest, this.sha256))
+        );
         return request2;
       }
       async sign(toSign, options) {
@@ -4501,15 +3886,15 @@ var require_SignatureV4 = __commonJS({
         }
       }
       async signEvent({ headers, payload }, { signingDate = /* @__PURE__ */ new Date(), priorSignature, signingRegion, signingService }) {
-        const region = signingRegion !== null && signingRegion !== void 0 ? signingRegion : await this.regionProvider();
+        const region = signingRegion ?? await this.regionProvider();
         const { shortDate, longDate } = formatDate(signingDate);
-        const scope = (0, credentialDerivation_1.createScope)(shortDate, region, signingService !== null && signingService !== void 0 ? signingService : this.service);
-        const hashedPayload = await (0, getPayloadHash_1.getPayloadHash)({ headers: {}, body: payload }, this.sha256);
+        const scope = createScope(shortDate, region, signingService ?? this.service);
+        const hashedPayload = await getPayloadHash({ headers: {}, body: payload }, this.sha256);
         const hash = new this.sha256();
         hash.update(headers);
-        const hashedHeaders = (0, util_hex_encoding_1.toHex)(await hash.digest());
+        const hashedHeaders = (0, import_util_hex_encoding.toHex)(await hash.digest());
         const stringToSign = [
-          constants_1.EVENT_ALGORITHM_IDENTIFIER,
+          EVENT_ALGORITHM_IDENTIFIER,
           longDate,
           scope,
           priorSignature,
@@ -4519,15 +3904,18 @@ var require_SignatureV4 = __commonJS({
         return this.signString(stringToSign, { signingDate, signingRegion: region, signingService });
       }
       async signMessage(signableMessage, { signingDate = /* @__PURE__ */ new Date(), signingRegion, signingService }) {
-        const promise = this.signEvent({
-          headers: this.headerMarshaller.format(signableMessage.message.headers),
-          payload: signableMessage.message.body
-        }, {
-          signingDate,
-          signingRegion,
-          signingService,
-          priorSignature: signableMessage.priorSignature
-        });
+        const promise = this.signEvent(
+          {
+            headers: this.headerMarshaller.format(signableMessage.message.headers),
+            payload: signableMessage.message.body
+          },
+          {
+            signingDate,
+            signingRegion,
+            signingService,
+            priorSignature: signableMessage.priorSignature
+          }
+        );
         return promise.then((signature) => {
           return { message: signableMessage.message, signature };
         });
@@ -4535,37 +3923,48 @@ var require_SignatureV4 = __commonJS({
       async signString(stringToSign, { signingDate = /* @__PURE__ */ new Date(), signingRegion, signingService } = {}) {
         const credentials = await this.credentialProvider();
         this.validateResolvedCredentials(credentials);
-        const region = signingRegion !== null && signingRegion !== void 0 ? signingRegion : await this.regionProvider();
+        const region = signingRegion ?? await this.regionProvider();
         const { shortDate } = formatDate(signingDate);
         const hash = new this.sha256(await this.getSigningKey(credentials, region, shortDate, signingService));
-        hash.update((0, util_utf8_1.toUint8Array)(stringToSign));
-        return (0, util_hex_encoding_1.toHex)(await hash.digest());
+        hash.update((0, import_util_utf83.toUint8Array)(stringToSign));
+        return (0, import_util_hex_encoding.toHex)(await hash.digest());
       }
-      async signRequest(requestToSign, { signingDate = /* @__PURE__ */ new Date(), signableHeaders, unsignableHeaders, signingRegion, signingService } = {}) {
+      async signRequest(requestToSign, {
+        signingDate = /* @__PURE__ */ new Date(),
+        signableHeaders,
+        unsignableHeaders,
+        signingRegion,
+        signingService
+      } = {}) {
         const credentials = await this.credentialProvider();
         this.validateResolvedCredentials(credentials);
-        const region = signingRegion !== null && signingRegion !== void 0 ? signingRegion : await this.regionProvider();
-        const request2 = (0, prepareRequest_1.prepareRequest)(requestToSign);
+        const region = signingRegion ?? await this.regionProvider();
+        const request2 = prepareRequest(requestToSign);
         const { longDate, shortDate } = formatDate(signingDate);
-        const scope = (0, credentialDerivation_1.createScope)(shortDate, region, signingService !== null && signingService !== void 0 ? signingService : this.service);
-        request2.headers[constants_1.AMZ_DATE_HEADER] = longDate;
+        const scope = createScope(shortDate, region, signingService ?? this.service);
+        request2.headers[AMZ_DATE_HEADER] = longDate;
         if (credentials.sessionToken) {
-          request2.headers[constants_1.TOKEN_HEADER] = credentials.sessionToken;
+          request2.headers[TOKEN_HEADER] = credentials.sessionToken;
         }
-        const payloadHash = await (0, getPayloadHash_1.getPayloadHash)(request2, this.sha256);
-        if (!(0, headerUtil_1.hasHeader)(constants_1.SHA256_HEADER, request2.headers) && this.applyChecksum) {
-          request2.headers[constants_1.SHA256_HEADER] = payloadHash;
+        const payloadHash = await getPayloadHash(request2, this.sha256);
+        if (!hasHeader(SHA256_HEADER, request2.headers) && this.applyChecksum) {
+          request2.headers[SHA256_HEADER] = payloadHash;
         }
-        const canonicalHeaders = (0, getCanonicalHeaders_1.getCanonicalHeaders)(request2, unsignableHeaders, signableHeaders);
-        const signature = await this.getSignature(longDate, scope, this.getSigningKey(credentials, region, shortDate, signingService), this.createCanonicalRequest(request2, canonicalHeaders, payloadHash));
-        request2.headers[constants_1.AUTH_HEADER] = `${constants_1.ALGORITHM_IDENTIFIER} Credential=${credentials.accessKeyId}/${scope}, SignedHeaders=${getCanonicalHeaderList(canonicalHeaders)}, Signature=${signature}`;
+        const canonicalHeaders = getCanonicalHeaders(request2, unsignableHeaders, signableHeaders);
+        const signature = await this.getSignature(
+          longDate,
+          scope,
+          this.getSigningKey(credentials, region, shortDate, signingService),
+          this.createCanonicalRequest(request2, canonicalHeaders, payloadHash)
+        );
+        request2.headers[AUTH_HEADER] = `${ALGORITHM_IDENTIFIER} Credential=${credentials.accessKeyId}/${scope}, SignedHeaders=${getCanonicalHeaderList(canonicalHeaders)}, Signature=${signature}`;
         return request2;
       }
       createCanonicalRequest(request2, canonicalHeaders, payloadHash) {
         const sortedHeaders = Object.keys(canonicalHeaders).sort();
         return `${request2.method}
 ${this.getCanonicalPath(request2)}
-${(0, getCanonicalQuery_1.getCanonicalQuery)(request2)}
+${getCanonicalQuery(request2)}
 ${sortedHeaders.map((name) => `${name}:${canonicalHeaders[name]}`).join("\n")}
 
 ${sortedHeaders.join(";")}
@@ -4573,18 +3972,18 @@ ${payloadHash}`;
       }
       async createStringToSign(longDate, credentialScope, canonicalRequest) {
         const hash = new this.sha256();
-        hash.update((0, util_utf8_1.toUint8Array)(canonicalRequest));
+        hash.update((0, import_util_utf83.toUint8Array)(canonicalRequest));
         const hashedRequest = await hash.digest();
-        return `${constants_1.ALGORITHM_IDENTIFIER}
+        return `${ALGORITHM_IDENTIFIER}
 ${longDate}
 ${credentialScope}
-${(0, util_hex_encoding_1.toHex)(hashedRequest)}`;
+${(0, import_util_hex_encoding.toHex)(hashedRequest)}`;
       }
       getCanonicalPath({ path }) {
         if (this.uriEscapePath) {
           const normalizedPathSegments = [];
           for (const pathSegment of path.split("/")) {
-            if ((pathSegment === null || pathSegment === void 0 ? void 0 : pathSegment.length) === 0)
+            if ((pathSegment == null ? void 0 : pathSegment.length) === 0)
               continue;
             if (pathSegment === ".")
               continue;
@@ -4594,7 +3993,7 @@ ${(0, util_hex_encoding_1.toHex)(hashedRequest)}`;
               normalizedPathSegments.push(pathSegment);
             }
           }
-          const normalizedPath = `${(path === null || path === void 0 ? void 0 : path.startsWith("/")) ? "/" : ""}${normalizedPathSegments.join("/")}${normalizedPathSegments.length > 0 && (path === null || path === void 0 ? void 0 : path.endsWith("/")) ? "/" : ""}`;
+          const normalizedPath = `${(path == null ? void 0 : path.startsWith("/")) ? "/" : ""}${normalizedPathSegments.join("/")}${normalizedPathSegments.length > 0 && (path == null ? void 0 : path.endsWith("/")) ? "/" : ""}`;
           const doubleEncoded = encodeURIComponent(normalizedPath);
           return doubleEncoded.replace(/%2F/g, "/");
         }
@@ -4603,59 +4002,30 @@ ${(0, util_hex_encoding_1.toHex)(hashedRequest)}`;
       async getSignature(longDate, credentialScope, keyPromise, canonicalRequest) {
         const stringToSign = await this.createStringToSign(longDate, credentialScope, canonicalRequest);
         const hash = new this.sha256(await keyPromise);
-        hash.update((0, util_utf8_1.toUint8Array)(stringToSign));
-        return (0, util_hex_encoding_1.toHex)(await hash.digest());
+        hash.update((0, import_util_utf83.toUint8Array)(stringToSign));
+        return (0, import_util_hex_encoding.toHex)(await hash.digest());
       }
       getSigningKey(credentials, region, shortDate, service) {
-        return (0, credentialDerivation_1.getSigningKey)(this.sha256, credentials, shortDate, region, service || this.service);
+        return getSigningKey(this.sha256, credentials, shortDate, region, service || this.service);
       }
       validateResolvedCredentials(credentials) {
-        if (typeof credentials !== "object" || typeof credentials.accessKeyId !== "string" || typeof credentials.secretAccessKey !== "string") {
+        if (typeof credentials !== "object" || // @ts-expect-error: Property 'accessKeyId' does not exist on type 'object'.ts(2339)
+        typeof credentials.accessKeyId !== "string" || // @ts-expect-error: Property 'secretAccessKey' does not exist on type 'object'.ts(2339)
+        typeof credentials.secretAccessKey !== "string") {
           throw new Error("Resolved credential object is not valid");
         }
       }
     };
-    exports2.SignatureV4 = SignatureV4;
-    var formatDate = (now) => {
-      const longDate = (0, utilDate_1.iso8601)(now).replace(/[\-:]/g, "");
+    __name(_SignatureV4, "SignatureV4");
+    var SignatureV4 = _SignatureV4;
+    var formatDate = /* @__PURE__ */ __name((now) => {
+      const longDate = iso8601(now).replace(/[\-:]/g, "");
       return {
         longDate,
         shortDate: longDate.slice(0, 8)
       };
-    };
-    var getCanonicalHeaderList = (headers) => Object.keys(headers).sort().join(";");
-  }
-});
-
-// ../../../node_modules/@smithy/signature-v4/dist-cjs/index.js
-var require_dist_cjs15 = __commonJS({
-  "../../../node_modules/@smithy/signature-v4/dist-cjs/index.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.prepareRequest = exports2.moveHeadersToQuery = exports2.getPayloadHash = exports2.getCanonicalQuery = exports2.getCanonicalHeaders = void 0;
-    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
-    tslib_1.__exportStar(require_SignatureV4(), exports2);
-    var getCanonicalHeaders_1 = require_getCanonicalHeaders();
-    Object.defineProperty(exports2, "getCanonicalHeaders", { enumerable: true, get: function() {
-      return getCanonicalHeaders_1.getCanonicalHeaders;
-    } });
-    var getCanonicalQuery_1 = require_getCanonicalQuery();
-    Object.defineProperty(exports2, "getCanonicalQuery", { enumerable: true, get: function() {
-      return getCanonicalQuery_1.getCanonicalQuery;
-    } });
-    var getPayloadHash_1 = require_getPayloadHash();
-    Object.defineProperty(exports2, "getPayloadHash", { enumerable: true, get: function() {
-      return getPayloadHash_1.getPayloadHash;
-    } });
-    var moveHeadersToQuery_1 = require_moveHeadersToQuery();
-    Object.defineProperty(exports2, "moveHeadersToQuery", { enumerable: true, get: function() {
-      return moveHeadersToQuery_1.moveHeadersToQuery;
-    } });
-    var prepareRequest_1 = require_prepareRequest();
-    Object.defineProperty(exports2, "prepareRequest", { enumerable: true, get: function() {
-      return prepareRequest_1.prepareRequest;
-    } });
-    tslib_1.__exportStar(require_credentialDerivation(), exports2);
+    }, "formatDate");
+    var getCanonicalHeaderList = /* @__PURE__ */ __name((headers) => Object.keys(headers).sort().join(";"), "getCanonicalHeaderList");
   }
 });
 
@@ -5235,7 +4605,7 @@ var require_EndpointError = __commonJS({
 });
 
 // ../../../node_modules/@aws-sdk/util-endpoints/dist-cjs/types/EndpointRuleObject.js
-var require_EndpointRuleObject2 = __commonJS({
+var require_EndpointRuleObject = __commonJS({
   "../../../node_modules/@aws-sdk/util-endpoints/dist-cjs/types/EndpointRuleObject.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
@@ -5243,7 +4613,7 @@ var require_EndpointRuleObject2 = __commonJS({
 });
 
 // ../../../node_modules/@aws-sdk/util-endpoints/dist-cjs/types/ErrorRuleObject.js
-var require_ErrorRuleObject2 = __commonJS({
+var require_ErrorRuleObject = __commonJS({
   "../../../node_modules/@aws-sdk/util-endpoints/dist-cjs/types/ErrorRuleObject.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
@@ -5251,7 +4621,7 @@ var require_ErrorRuleObject2 = __commonJS({
 });
 
 // ../../../node_modules/@aws-sdk/util-endpoints/dist-cjs/types/RuleSetObject.js
-var require_RuleSetObject2 = __commonJS({
+var require_RuleSetObject = __commonJS({
   "../../../node_modules/@aws-sdk/util-endpoints/dist-cjs/types/RuleSetObject.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
@@ -5259,7 +4629,7 @@ var require_RuleSetObject2 = __commonJS({
 });
 
 // ../../../node_modules/@aws-sdk/util-endpoints/dist-cjs/types/TreeRuleObject.js
-var require_TreeRuleObject2 = __commonJS({
+var require_TreeRuleObject = __commonJS({
   "../../../node_modules/@aws-sdk/util-endpoints/dist-cjs/types/TreeRuleObject.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
@@ -5267,7 +4637,7 @@ var require_TreeRuleObject2 = __commonJS({
 });
 
 // ../../../node_modules/@aws-sdk/util-endpoints/dist-cjs/types/shared.js
-var require_shared2 = __commonJS({
+var require_shared = __commonJS({
   "../../../node_modules/@aws-sdk/util-endpoints/dist-cjs/types/shared.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
@@ -5275,17 +4645,17 @@ var require_shared2 = __commonJS({
 });
 
 // ../../../node_modules/@aws-sdk/util-endpoints/dist-cjs/types/index.js
-var require_types2 = __commonJS({
+var require_types = __commonJS({
   "../../../node_modules/@aws-sdk/util-endpoints/dist-cjs/types/index.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     tslib_1.__exportStar(require_EndpointError(), exports2);
-    tslib_1.__exportStar(require_EndpointRuleObject2(), exports2);
-    tslib_1.__exportStar(require_ErrorRuleObject2(), exports2);
-    tslib_1.__exportStar(require_RuleSetObject2(), exports2);
-    tslib_1.__exportStar(require_TreeRuleObject2(), exports2);
-    tslib_1.__exportStar(require_shared2(), exports2);
+    tslib_1.__exportStar(require_EndpointRuleObject(), exports2);
+    tslib_1.__exportStar(require_ErrorRuleObject(), exports2);
+    tslib_1.__exportStar(require_RuleSetObject(), exports2);
+    tslib_1.__exportStar(require_TreeRuleObject(), exports2);
+    tslib_1.__exportStar(require_shared(), exports2);
   }
 });
 
@@ -5401,7 +4771,7 @@ var require_getAttrPathList = __commonJS({
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.getAttrPathList = void 0;
-    var types_1 = require_types2();
+    var types_1 = require_types();
     var getAttrPathList = (path) => {
       const parts = path.split(".");
       const pathList = [];
@@ -5435,7 +4805,7 @@ var require_getAttr = __commonJS({
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.getAttr = void 0;
-    var types_1 = require_types2();
+    var types_1 = require_types();
     var getAttrPathList_1 = require_getAttrPathList();
     var getAttr = (value, path) => (0, getAttrPathList_1.getAttrPathList)(path).reduce((acc, index) => {
       if (typeof acc !== "object") {
@@ -5472,7 +4842,7 @@ var require_not = __commonJS({
 });
 
 // ../../../node_modules/@aws-sdk/types/dist-cjs/abort.js
-var require_abort2 = __commonJS({
+var require_abort = __commonJS({
   "../../../node_modules/@aws-sdk/types/dist-cjs/abort.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
@@ -5480,7 +4850,7 @@ var require_abort2 = __commonJS({
 });
 
 // ../../../node_modules/@aws-sdk/types/dist-cjs/auth.js
-var require_auth3 = __commonJS({
+var require_auth = __commonJS({
   "../../../node_modules/@aws-sdk/types/dist-cjs/auth.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
@@ -5501,7 +4871,7 @@ var require_blob_types = __commonJS({
 });
 
 // ../../../node_modules/@aws-sdk/types/dist-cjs/checksum.js
-var require_checksum3 = __commonJS({
+var require_checksum = __commonJS({
   "../../../node_modules/@aws-sdk/types/dist-cjs/checksum.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
@@ -5509,7 +4879,7 @@ var require_checksum3 = __commonJS({
 });
 
 // ../../../node_modules/@aws-sdk/types/dist-cjs/client.js
-var require_client2 = __commonJS({
+var require_client = __commonJS({
   "../../../node_modules/@aws-sdk/types/dist-cjs/client.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
@@ -5517,7 +4887,7 @@ var require_client2 = __commonJS({
 });
 
 // ../../../node_modules/@aws-sdk/types/dist-cjs/command.js
-var require_command2 = __commonJS({
+var require_command = __commonJS({
   "../../../node_modules/@aws-sdk/types/dist-cjs/command.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
@@ -5525,7 +4895,7 @@ var require_command2 = __commonJS({
 });
 
 // ../../../node_modules/@aws-sdk/types/dist-cjs/connection.js
-var require_connection2 = __commonJS({
+var require_connection = __commonJS({
   "../../../node_modules/@aws-sdk/types/dist-cjs/connection.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
@@ -5541,7 +4911,7 @@ var require_credentials = __commonJS({
 });
 
 // ../../../node_modules/@aws-sdk/types/dist-cjs/crypto.js
-var require_crypto2 = __commonJS({
+var require_crypto = __commonJS({
   "../../../node_modules/@aws-sdk/types/dist-cjs/crypto.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
@@ -5563,7 +4933,7 @@ var require_dns = __commonJS({
 });
 
 // ../../../node_modules/@aws-sdk/types/dist-cjs/encode.js
-var require_encode2 = __commonJS({
+var require_encode = __commonJS({
   "../../../node_modules/@aws-sdk/types/dist-cjs/encode.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
@@ -5571,7 +4941,7 @@ var require_encode2 = __commonJS({
 });
 
 // ../../../node_modules/@aws-sdk/types/dist-cjs/endpoint.js
-var require_endpoint2 = __commonJS({
+var require_endpoint = __commonJS({
   "../../../node_modules/@aws-sdk/types/dist-cjs/endpoint.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
@@ -5584,7 +4954,7 @@ var require_endpoint2 = __commonJS({
 });
 
 // ../../../node_modules/@aws-sdk/types/dist-cjs/eventStream.js
-var require_eventStream2 = __commonJS({
+var require_eventStream = __commonJS({
   "../../../node_modules/@aws-sdk/types/dist-cjs/eventStream.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
@@ -5592,7 +4962,7 @@ var require_eventStream2 = __commonJS({
 });
 
 // ../../../node_modules/@aws-sdk/types/dist-cjs/extensions/index.js
-var require_extensions3 = __commonJS({
+var require_extensions = __commonJS({
   "../../../node_modules/@aws-sdk/types/dist-cjs/extensions/index.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
@@ -5600,7 +4970,7 @@ var require_extensions3 = __commonJS({
 });
 
 // ../../../node_modules/@aws-sdk/types/dist-cjs/http.js
-var require_http2 = __commonJS({
+var require_http = __commonJS({
   "../../../node_modules/@aws-sdk/types/dist-cjs/http.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
@@ -5648,7 +5018,7 @@ var require_TokenIdentity = __commonJS({
 });
 
 // ../../../node_modules/@aws-sdk/types/dist-cjs/identity/index.js
-var require_identity3 = __commonJS({
+var require_identity = __commonJS({
   "../../../node_modules/@aws-sdk/types/dist-cjs/identity/index.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
@@ -5662,7 +5032,7 @@ var require_identity3 = __commonJS({
 });
 
 // ../../../node_modules/@aws-sdk/types/dist-cjs/logger.js
-var require_logger2 = __commonJS({
+var require_logger = __commonJS({
   "../../../node_modules/@aws-sdk/types/dist-cjs/logger.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
@@ -5670,7 +5040,7 @@ var require_logger2 = __commonJS({
 });
 
 // ../../../node_modules/@aws-sdk/types/dist-cjs/middleware.js
-var require_middleware2 = __commonJS({
+var require_middleware = __commonJS({
   "../../../node_modules/@aws-sdk/types/dist-cjs/middleware.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
@@ -5678,7 +5048,7 @@ var require_middleware2 = __commonJS({
 });
 
 // ../../../node_modules/@aws-sdk/types/dist-cjs/pagination.js
-var require_pagination2 = __commonJS({
+var require_pagination = __commonJS({
   "../../../node_modules/@aws-sdk/types/dist-cjs/pagination.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
@@ -5686,7 +5056,7 @@ var require_pagination2 = __commonJS({
 });
 
 // ../../../node_modules/@aws-sdk/types/dist-cjs/profile.js
-var require_profile2 = __commonJS({
+var require_profile = __commonJS({
   "../../../node_modules/@aws-sdk/types/dist-cjs/profile.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
@@ -5702,7 +5072,7 @@ var require_request = __commonJS({
 });
 
 // ../../../node_modules/@aws-sdk/types/dist-cjs/response.js
-var require_response2 = __commonJS({
+var require_response = __commonJS({
   "../../../node_modules/@aws-sdk/types/dist-cjs/response.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
@@ -5710,7 +5080,7 @@ var require_response2 = __commonJS({
 });
 
 // ../../../node_modules/@aws-sdk/types/dist-cjs/retry.js
-var require_retry2 = __commonJS({
+var require_retry = __commonJS({
   "../../../node_modules/@aws-sdk/types/dist-cjs/retry.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
@@ -5718,7 +5088,7 @@ var require_retry2 = __commonJS({
 });
 
 // ../../../node_modules/@aws-sdk/types/dist-cjs/serde.js
-var require_serde2 = __commonJS({
+var require_serde = __commonJS({
   "../../../node_modules/@aws-sdk/types/dist-cjs/serde.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
@@ -5726,7 +5096,7 @@ var require_serde2 = __commonJS({
 });
 
 // ../../../node_modules/@aws-sdk/types/dist-cjs/shapes.js
-var require_shapes2 = __commonJS({
+var require_shapes = __commonJS({
   "../../../node_modules/@aws-sdk/types/dist-cjs/shapes.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
@@ -5734,7 +5104,7 @@ var require_shapes2 = __commonJS({
 });
 
 // ../../../node_modules/@aws-sdk/types/dist-cjs/signature.js
-var require_signature2 = __commonJS({
+var require_signature = __commonJS({
   "../../../node_modules/@aws-sdk/types/dist-cjs/signature.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
@@ -5742,7 +5112,7 @@ var require_signature2 = __commonJS({
 });
 
 // ../../../node_modules/@aws-sdk/types/dist-cjs/stream.js
-var require_stream2 = __commonJS({
+var require_stream = __commonJS({
   "../../../node_modules/@aws-sdk/types/dist-cjs/stream.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
@@ -5758,7 +5128,7 @@ var require_token = __commonJS({
 });
 
 // ../../../node_modules/@aws-sdk/types/dist-cjs/transfer.js
-var require_transfer2 = __commonJS({
+var require_transfer = __commonJS({
   "../../../node_modules/@aws-sdk/types/dist-cjs/transfer.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
@@ -5771,7 +5141,7 @@ var require_transfer2 = __commonJS({
 });
 
 // ../../../node_modules/@aws-sdk/types/dist-cjs/uri.js
-var require_uri2 = __commonJS({
+var require_uri = __commonJS({
   "../../../node_modules/@aws-sdk/types/dist-cjs/uri.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
@@ -5779,7 +5149,7 @@ var require_uri2 = __commonJS({
 });
 
 // ../../../node_modules/@aws-sdk/types/dist-cjs/util.js
-var require_util2 = __commonJS({
+var require_util = __commonJS({
   "../../../node_modules/@aws-sdk/types/dist-cjs/util.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
@@ -5787,7 +5157,7 @@ var require_util2 = __commonJS({
 });
 
 // ../../../node_modules/@aws-sdk/types/dist-cjs/waiter.js
-var require_waiter2 = __commonJS({
+var require_waiter = __commonJS({
   "../../../node_modules/@aws-sdk/types/dist-cjs/waiter.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
@@ -5800,38 +5170,38 @@ var require_dist_cjs17 = __commonJS({
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
-    tslib_1.__exportStar(require_abort2(), exports2);
-    tslib_1.__exportStar(require_auth3(), exports2);
+    tslib_1.__exportStar(require_abort(), exports2);
+    tslib_1.__exportStar(require_auth(), exports2);
     tslib_1.__exportStar(require_blob_types(), exports2);
-    tslib_1.__exportStar(require_checksum3(), exports2);
-    tslib_1.__exportStar(require_client2(), exports2);
-    tslib_1.__exportStar(require_command2(), exports2);
-    tslib_1.__exportStar(require_connection2(), exports2);
+    tslib_1.__exportStar(require_checksum(), exports2);
+    tslib_1.__exportStar(require_client(), exports2);
+    tslib_1.__exportStar(require_command(), exports2);
+    tslib_1.__exportStar(require_connection(), exports2);
     tslib_1.__exportStar(require_credentials(), exports2);
-    tslib_1.__exportStar(require_crypto2(), exports2);
+    tslib_1.__exportStar(require_crypto(), exports2);
     tslib_1.__exportStar(require_dns(), exports2);
-    tslib_1.__exportStar(require_encode2(), exports2);
-    tslib_1.__exportStar(require_endpoint2(), exports2);
-    tslib_1.__exportStar(require_eventStream2(), exports2);
-    tslib_1.__exportStar(require_extensions3(), exports2);
-    tslib_1.__exportStar(require_http2(), exports2);
-    tslib_1.__exportStar(require_identity3(), exports2);
-    tslib_1.__exportStar(require_logger2(), exports2);
-    tslib_1.__exportStar(require_middleware2(), exports2);
-    tslib_1.__exportStar(require_pagination2(), exports2);
-    tslib_1.__exportStar(require_profile2(), exports2);
+    tslib_1.__exportStar(require_encode(), exports2);
+    tslib_1.__exportStar(require_endpoint(), exports2);
+    tslib_1.__exportStar(require_eventStream(), exports2);
+    tslib_1.__exportStar(require_extensions(), exports2);
+    tslib_1.__exportStar(require_http(), exports2);
+    tslib_1.__exportStar(require_identity(), exports2);
+    tslib_1.__exportStar(require_logger(), exports2);
+    tslib_1.__exportStar(require_middleware(), exports2);
+    tslib_1.__exportStar(require_pagination(), exports2);
+    tslib_1.__exportStar(require_profile(), exports2);
     tslib_1.__exportStar(require_request(), exports2);
-    tslib_1.__exportStar(require_response2(), exports2);
-    tslib_1.__exportStar(require_retry2(), exports2);
-    tslib_1.__exportStar(require_serde2(), exports2);
-    tslib_1.__exportStar(require_shapes2(), exports2);
-    tslib_1.__exportStar(require_signature2(), exports2);
-    tslib_1.__exportStar(require_stream2(), exports2);
+    tslib_1.__exportStar(require_response(), exports2);
+    tslib_1.__exportStar(require_retry(), exports2);
+    tslib_1.__exportStar(require_serde(), exports2);
+    tslib_1.__exportStar(require_shapes(), exports2);
+    tslib_1.__exportStar(require_signature(), exports2);
+    tslib_1.__exportStar(require_stream(), exports2);
     tslib_1.__exportStar(require_token(), exports2);
-    tslib_1.__exportStar(require_transfer2(), exports2);
-    tslib_1.__exportStar(require_uri2(), exports2);
-    tslib_1.__exportStar(require_util2(), exports2);
-    tslib_1.__exportStar(require_waiter2(), exports2);
+    tslib_1.__exportStar(require_transfer(), exports2);
+    tslib_1.__exportStar(require_uri(), exports2);
+    tslib_1.__exportStar(require_util(), exports2);
+    tslib_1.__exportStar(require_waiter(), exports2);
   }
 });
 
@@ -6021,7 +5391,7 @@ var require_evaluateExpression = __commonJS({
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.evaluateExpression = void 0;
-    var types_1 = require_types2();
+    var types_1 = require_types();
     var callFunction_1 = require_callFunction();
     var evaluateTemplate_1 = require_evaluateTemplate();
     var getReferenceValue_1 = require_getReferenceValue();
@@ -6063,7 +5433,7 @@ var require_evaluateCondition = __commonJS({
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.evaluateCondition = void 0;
     var debug_1 = require_debug();
-    var types_1 = require_types2();
+    var types_1 = require_types();
     var callFunction_1 = require_callFunction();
     var evaluateCondition = ({ assign, ...fnArgs }, options) => {
       var _a, _b;
@@ -6120,7 +5490,7 @@ var require_getEndpointHeaders = __commonJS({
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.getEndpointHeaders = void 0;
-    var types_1 = require_types2();
+    var types_1 = require_types();
     var evaluateExpression_1 = require_evaluateExpression();
     var getEndpointHeaders = (headers, options) => Object.entries(headers).reduce((acc, [headerKey, headerVal]) => ({
       ...acc,
@@ -6142,7 +5512,7 @@ var require_getEndpointProperty = __commonJS({
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.getEndpointProperty = void 0;
-    var types_1 = require_types2();
+    var types_1 = require_types();
     var evaluateTemplate_1 = require_evaluateTemplate();
     var getEndpointProperties_1 = require_getEndpointProperties();
     var getEndpointProperty = (property, options) => {
@@ -6188,7 +5558,7 @@ var require_getEndpointUrl = __commonJS({
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.getEndpointUrl = void 0;
-    var types_1 = require_types2();
+    var types_1 = require_types();
     var evaluateExpression_1 = require_evaluateExpression();
     var getEndpointUrl = (endpointUrl, options) => {
       const expression = (0, evaluateExpression_1.evaluateExpression)(endpointUrl, "Endpoint URL", options);
@@ -6250,7 +5620,7 @@ var require_evaluateErrorRule = __commonJS({
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.evaluateErrorRule = void 0;
-    var types_1 = require_types2();
+    var types_1 = require_types();
     var evaluateConditions_1 = require_evaluateConditions();
     var evaluateExpression_1 = require_evaluateExpression();
     var evaluateErrorRule = (errorRule, options) => {
@@ -6297,7 +5667,7 @@ var require_evaluateRules = __commonJS({
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.evaluateRules = void 0;
-    var types_1 = require_types2();
+    var types_1 = require_types();
     var evaluateEndpointRule_1 = require_evaluateEndpointRule();
     var evaluateErrorRule_1 = require_evaluateErrorRule();
     var evaluateTreeRule_1 = require_evaluateTreeRule();
@@ -6342,7 +5712,7 @@ var require_resolveEndpoint = __commonJS({
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.resolveEndpoint = void 0;
     var debug_1 = require_debug();
-    var types_1 = require_types2();
+    var types_1 = require_types();
     var utils_1 = require_utils();
     var resolveEndpoint = (ruleSetObject, options) => {
       var _a, _b, _c, _d, _e, _f;
@@ -6387,12 +5757,12 @@ var require_dist_cjs18 = __commonJS({
     tslib_1.__exportStar(require_partition(), exports2);
     tslib_1.__exportStar(require_isIpAddress(), exports2);
     tslib_1.__exportStar(require_resolveEndpoint(), exports2);
-    tslib_1.__exportStar(require_types2(), exports2);
+    tslib_1.__exportStar(require_types(), exports2);
   }
 });
 
 // ../../../node_modules/@aws-sdk/middleware-user-agent/dist-cjs/constants.js
-var require_constants2 = __commonJS({
+var require_constants = __commonJS({
   "../../../node_modules/@aws-sdk/middleware-user-agent/dist-cjs/constants.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
@@ -6415,7 +5785,7 @@ var require_user_agent_middleware = __commonJS({
     exports2.getUserAgentPlugin = exports2.getUserAgentMiddlewareOptions = exports2.userAgentMiddleware = void 0;
     var util_endpoints_1 = require_dist_cjs18();
     var protocol_http_1 = require_dist_cjs2();
-    var constants_1 = require_constants2();
+    var constants_1 = require_constants();
     var userAgentMiddleware = (options) => (next, context) => async (args) => {
       var _a, _b;
       const { request: request2 } = args;
@@ -6493,13 +5863,35 @@ var require_dist_cjs19 = __commonJS({
   }
 });
 
-// ../../../node_modules/@smithy/util-config-provider/dist-cjs/booleanSelector.js
-var require_booleanSelector = __commonJS({
-  "../../../node_modules/@smithy/util-config-provider/dist-cjs/booleanSelector.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.booleanSelector = void 0;
-    var booleanSelector = (obj, key, type) => {
+// ../../../node_modules/@smithy/util-config-provider/dist-cjs/index.js
+var require_dist_cjs20 = __commonJS({
+  "../../../node_modules/@smithy/util-config-provider/dist-cjs/index.js"(exports2, module2) {
+    var __defProp2 = Object.defineProperty;
+    var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
+    var __getOwnPropNames2 = Object.getOwnPropertyNames;
+    var __hasOwnProp2 = Object.prototype.hasOwnProperty;
+    var __name = (target, value) => __defProp2(target, "name", { value, configurable: true });
+    var __export2 = (target, all) => {
+      for (var name in all)
+        __defProp2(target, name, { get: all[name], enumerable: true });
+    };
+    var __copyProps2 = (to, from, except, desc) => {
+      if (from && typeof from === "object" || typeof from === "function") {
+        for (let key of __getOwnPropNames2(from))
+          if (!__hasOwnProp2.call(to, key) && key !== except)
+            __defProp2(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc2(from, key)) || desc.enumerable });
+      }
+      return to;
+    };
+    var __toCommonJS2 = (mod) => __copyProps2(__defProp2({}, "__esModule", { value: true }), mod);
+    var src_exports = {};
+    __export2(src_exports, {
+      SelectorType: () => SelectorType,
+      booleanSelector: () => booleanSelector,
+      numberSelector: () => numberSelector
+    });
+    module2.exports = __toCommonJS2(src_exports);
+    var booleanSelector = /* @__PURE__ */ __name((obj, key, type) => {
       if (!(key in obj))
         return void 0;
       if (obj[key] === "true")
@@ -6507,18 +5899,8 @@ var require_booleanSelector = __commonJS({
       if (obj[key] === "false")
         return false;
       throw new Error(`Cannot load ${type} "${key}". Expected "true" or "false", got ${obj[key]}.`);
-    };
-    exports2.booleanSelector = booleanSelector;
-  }
-});
-
-// ../../../node_modules/@smithy/util-config-provider/dist-cjs/numberSelector.js
-var require_numberSelector = __commonJS({
-  "../../../node_modules/@smithy/util-config-provider/dist-cjs/numberSelector.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.numberSelector = void 0;
-    var numberSelector = (obj, key, type) => {
+    }, "booleanSelector");
+    var numberSelector = /* @__PURE__ */ __name((obj, key, type) => {
       if (!(key in obj))
         return void 0;
       const numberValue = parseInt(obj[key], 10);
@@ -6526,103 +5908,85 @@ var require_numberSelector = __commonJS({
         throw new TypeError(`Cannot load ${type} '${key}'. Expected number, got '${obj[key]}'.`);
       }
       return numberValue;
-    };
-    exports2.numberSelector = numberSelector;
-  }
-});
-
-// ../../../node_modules/@smithy/util-config-provider/dist-cjs/types.js
-var require_types3 = __commonJS({
-  "../../../node_modules/@smithy/util-config-provider/dist-cjs/types.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.SelectorType = void 0;
-    var SelectorType;
-    (function(SelectorType2) {
+    }, "numberSelector");
+    var SelectorType = /* @__PURE__ */ ((SelectorType2) => {
       SelectorType2["ENV"] = "env";
       SelectorType2["CONFIG"] = "shared config entry";
-    })(SelectorType = exports2.SelectorType || (exports2.SelectorType = {}));
+      return SelectorType2;
+    })(SelectorType || {});
   }
 });
 
-// ../../../node_modules/@smithy/util-config-provider/dist-cjs/index.js
-var require_dist_cjs20 = __commonJS({
-  "../../../node_modules/@smithy/util-config-provider/dist-cjs/index.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
-    tslib_1.__exportStar(require_booleanSelector(), exports2);
-    tslib_1.__exportStar(require_numberSelector(), exports2);
-    tslib_1.__exportStar(require_types3(), exports2);
-  }
-});
-
-// ../../../node_modules/@smithy/config-resolver/dist-cjs/endpointsConfig/NodeUseDualstackEndpointConfigOptions.js
-var require_NodeUseDualstackEndpointConfigOptions = __commonJS({
-  "../../../node_modules/@smithy/config-resolver/dist-cjs/endpointsConfig/NodeUseDualstackEndpointConfigOptions.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.NODE_USE_DUALSTACK_ENDPOINT_CONFIG_OPTIONS = exports2.DEFAULT_USE_DUALSTACK_ENDPOINT = exports2.CONFIG_USE_DUALSTACK_ENDPOINT = exports2.ENV_USE_DUALSTACK_ENDPOINT = void 0;
-    var util_config_provider_1 = require_dist_cjs20();
-    exports2.ENV_USE_DUALSTACK_ENDPOINT = "AWS_USE_DUALSTACK_ENDPOINT";
-    exports2.CONFIG_USE_DUALSTACK_ENDPOINT = "use_dualstack_endpoint";
-    exports2.DEFAULT_USE_DUALSTACK_ENDPOINT = false;
-    exports2.NODE_USE_DUALSTACK_ENDPOINT_CONFIG_OPTIONS = {
-      environmentVariableSelector: (env) => (0, util_config_provider_1.booleanSelector)(env, exports2.ENV_USE_DUALSTACK_ENDPOINT, util_config_provider_1.SelectorType.ENV),
-      configFileSelector: (profile) => (0, util_config_provider_1.booleanSelector)(profile, exports2.CONFIG_USE_DUALSTACK_ENDPOINT, util_config_provider_1.SelectorType.CONFIG),
+// ../../../node_modules/@smithy/config-resolver/dist-cjs/index.js
+var require_dist_cjs21 = __commonJS({
+  "../../../node_modules/@smithy/config-resolver/dist-cjs/index.js"(exports2, module2) {
+    var __defProp2 = Object.defineProperty;
+    var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
+    var __getOwnPropNames2 = Object.getOwnPropertyNames;
+    var __hasOwnProp2 = Object.prototype.hasOwnProperty;
+    var __name = (target, value) => __defProp2(target, "name", { value, configurable: true });
+    var __export2 = (target, all) => {
+      for (var name in all)
+        __defProp2(target, name, { get: all[name], enumerable: true });
+    };
+    var __copyProps2 = (to, from, except, desc) => {
+      if (from && typeof from === "object" || typeof from === "function") {
+        for (let key of __getOwnPropNames2(from))
+          if (!__hasOwnProp2.call(to, key) && key !== except)
+            __defProp2(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc2(from, key)) || desc.enumerable });
+      }
+      return to;
+    };
+    var __toCommonJS2 = (mod) => __copyProps2(__defProp2({}, "__esModule", { value: true }), mod);
+    var src_exports = {};
+    __export2(src_exports, {
+      CONFIG_USE_DUALSTACK_ENDPOINT: () => CONFIG_USE_DUALSTACK_ENDPOINT,
+      CONFIG_USE_FIPS_ENDPOINT: () => CONFIG_USE_FIPS_ENDPOINT,
+      DEFAULT_USE_DUALSTACK_ENDPOINT: () => DEFAULT_USE_DUALSTACK_ENDPOINT,
+      DEFAULT_USE_FIPS_ENDPOINT: () => DEFAULT_USE_FIPS_ENDPOINT,
+      ENV_USE_DUALSTACK_ENDPOINT: () => ENV_USE_DUALSTACK_ENDPOINT,
+      ENV_USE_FIPS_ENDPOINT: () => ENV_USE_FIPS_ENDPOINT,
+      NODE_REGION_CONFIG_FILE_OPTIONS: () => NODE_REGION_CONFIG_FILE_OPTIONS,
+      NODE_REGION_CONFIG_OPTIONS: () => NODE_REGION_CONFIG_OPTIONS,
+      NODE_USE_DUALSTACK_ENDPOINT_CONFIG_OPTIONS: () => NODE_USE_DUALSTACK_ENDPOINT_CONFIG_OPTIONS,
+      NODE_USE_FIPS_ENDPOINT_CONFIG_OPTIONS: () => NODE_USE_FIPS_ENDPOINT_CONFIG_OPTIONS,
+      REGION_ENV_NAME: () => REGION_ENV_NAME,
+      REGION_INI_NAME: () => REGION_INI_NAME,
+      getRegionInfo: () => getRegionInfo,
+      resolveCustomEndpointsConfig: () => resolveCustomEndpointsConfig,
+      resolveEndpointsConfig: () => resolveEndpointsConfig,
+      resolveRegionConfig: () => resolveRegionConfig
+    });
+    module2.exports = __toCommonJS2(src_exports);
+    var import_util_config_provider = require_dist_cjs20();
+    var ENV_USE_DUALSTACK_ENDPOINT = "AWS_USE_DUALSTACK_ENDPOINT";
+    var CONFIG_USE_DUALSTACK_ENDPOINT = "use_dualstack_endpoint";
+    var DEFAULT_USE_DUALSTACK_ENDPOINT = false;
+    var NODE_USE_DUALSTACK_ENDPOINT_CONFIG_OPTIONS = {
+      environmentVariableSelector: (env) => (0, import_util_config_provider.booleanSelector)(env, ENV_USE_DUALSTACK_ENDPOINT, import_util_config_provider.SelectorType.ENV),
+      configFileSelector: (profile) => (0, import_util_config_provider.booleanSelector)(profile, CONFIG_USE_DUALSTACK_ENDPOINT, import_util_config_provider.SelectorType.CONFIG),
       default: false
     };
-  }
-});
-
-// ../../../node_modules/@smithy/config-resolver/dist-cjs/endpointsConfig/NodeUseFipsEndpointConfigOptions.js
-var require_NodeUseFipsEndpointConfigOptions = __commonJS({
-  "../../../node_modules/@smithy/config-resolver/dist-cjs/endpointsConfig/NodeUseFipsEndpointConfigOptions.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.NODE_USE_FIPS_ENDPOINT_CONFIG_OPTIONS = exports2.DEFAULT_USE_FIPS_ENDPOINT = exports2.CONFIG_USE_FIPS_ENDPOINT = exports2.ENV_USE_FIPS_ENDPOINT = void 0;
-    var util_config_provider_1 = require_dist_cjs20();
-    exports2.ENV_USE_FIPS_ENDPOINT = "AWS_USE_FIPS_ENDPOINT";
-    exports2.CONFIG_USE_FIPS_ENDPOINT = "use_fips_endpoint";
-    exports2.DEFAULT_USE_FIPS_ENDPOINT = false;
-    exports2.NODE_USE_FIPS_ENDPOINT_CONFIG_OPTIONS = {
-      environmentVariableSelector: (env) => (0, util_config_provider_1.booleanSelector)(env, exports2.ENV_USE_FIPS_ENDPOINT, util_config_provider_1.SelectorType.ENV),
-      configFileSelector: (profile) => (0, util_config_provider_1.booleanSelector)(profile, exports2.CONFIG_USE_FIPS_ENDPOINT, util_config_provider_1.SelectorType.CONFIG),
+    var ENV_USE_FIPS_ENDPOINT = "AWS_USE_FIPS_ENDPOINT";
+    var CONFIG_USE_FIPS_ENDPOINT = "use_fips_endpoint";
+    var DEFAULT_USE_FIPS_ENDPOINT = false;
+    var NODE_USE_FIPS_ENDPOINT_CONFIG_OPTIONS = {
+      environmentVariableSelector: (env) => (0, import_util_config_provider.booleanSelector)(env, ENV_USE_FIPS_ENDPOINT, import_util_config_provider.SelectorType.ENV),
+      configFileSelector: (profile) => (0, import_util_config_provider.booleanSelector)(profile, CONFIG_USE_FIPS_ENDPOINT, import_util_config_provider.SelectorType.CONFIG),
       default: false
     };
-  }
-});
-
-// ../../../node_modules/@smithy/config-resolver/dist-cjs/endpointsConfig/resolveCustomEndpointsConfig.js
-var require_resolveCustomEndpointsConfig = __commonJS({
-  "../../../node_modules/@smithy/config-resolver/dist-cjs/endpointsConfig/resolveCustomEndpointsConfig.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.resolveCustomEndpointsConfig = void 0;
-    var util_middleware_1 = require_dist_cjs10();
-    var resolveCustomEndpointsConfig = (input) => {
-      var _a, _b;
+    var import_util_middleware = require_dist_cjs10();
+    var resolveCustomEndpointsConfig = /* @__PURE__ */ __name((input) => {
       const { endpoint, urlParser } = input;
       return {
         ...input,
-        tls: (_a = input.tls) !== null && _a !== void 0 ? _a : true,
-        endpoint: (0, util_middleware_1.normalizeProvider)(typeof endpoint === "string" ? urlParser(endpoint) : endpoint),
+        tls: input.tls ?? true,
+        endpoint: (0, import_util_middleware.normalizeProvider)(typeof endpoint === "string" ? urlParser(endpoint) : endpoint),
         isCustomEndpoint: true,
-        useDualstackEndpoint: (0, util_middleware_1.normalizeProvider)((_b = input.useDualstackEndpoint) !== null && _b !== void 0 ? _b : false)
+        useDualstackEndpoint: (0, import_util_middleware.normalizeProvider)(input.useDualstackEndpoint ?? false)
       };
-    };
-    exports2.resolveCustomEndpointsConfig = resolveCustomEndpointsConfig;
-  }
-});
-
-// ../../../node_modules/@smithy/config-resolver/dist-cjs/endpointsConfig/utils/getEndpointFromRegion.js
-var require_getEndpointFromRegion = __commonJS({
-  "../../../node_modules/@smithy/config-resolver/dist-cjs/endpointsConfig/utils/getEndpointFromRegion.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.getEndpointFromRegion = void 0;
-    var getEndpointFromRegion = async (input) => {
-      var _a;
+    }, "resolveCustomEndpointsConfig");
+    var getEndpointFromRegion = /* @__PURE__ */ __name(async (input) => {
       const { tls = true } = input;
       const region = await input.region();
       const dnsHostRegex = new RegExp(/^([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9-]{0,61}[a-zA-Z0-9])$/);
@@ -6631,106 +5995,38 @@ var require_getEndpointFromRegion = __commonJS({
       }
       const useDualstackEndpoint = await input.useDualstackEndpoint();
       const useFipsEndpoint = await input.useFipsEndpoint();
-      const { hostname } = (_a = await input.regionInfoProvider(region, { useDualstackEndpoint, useFipsEndpoint })) !== null && _a !== void 0 ? _a : {};
+      const { hostname } = await input.regionInfoProvider(region, { useDualstackEndpoint, useFipsEndpoint }) ?? {};
       if (!hostname) {
         throw new Error("Cannot resolve hostname from client config");
       }
       return input.urlParser(`${tls ? "https:" : "http:"}//${hostname}`);
-    };
-    exports2.getEndpointFromRegion = getEndpointFromRegion;
-  }
-});
-
-// ../../../node_modules/@smithy/config-resolver/dist-cjs/endpointsConfig/resolveEndpointsConfig.js
-var require_resolveEndpointsConfig = __commonJS({
-  "../../../node_modules/@smithy/config-resolver/dist-cjs/endpointsConfig/resolveEndpointsConfig.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.resolveEndpointsConfig = void 0;
-    var util_middleware_1 = require_dist_cjs10();
-    var getEndpointFromRegion_1 = require_getEndpointFromRegion();
-    var resolveEndpointsConfig = (input) => {
-      var _a, _b;
-      const useDualstackEndpoint = (0, util_middleware_1.normalizeProvider)((_a = input.useDualstackEndpoint) !== null && _a !== void 0 ? _a : false);
+    }, "getEndpointFromRegion");
+    var resolveEndpointsConfig = /* @__PURE__ */ __name((input) => {
+      const useDualstackEndpoint = (0, import_util_middleware.normalizeProvider)(input.useDualstackEndpoint ?? false);
       const { endpoint, useFipsEndpoint, urlParser } = input;
       return {
         ...input,
-        tls: (_b = input.tls) !== null && _b !== void 0 ? _b : true,
-        endpoint: endpoint ? (0, util_middleware_1.normalizeProvider)(typeof endpoint === "string" ? urlParser(endpoint) : endpoint) : () => (0, getEndpointFromRegion_1.getEndpointFromRegion)({ ...input, useDualstackEndpoint, useFipsEndpoint }),
+        tls: input.tls ?? true,
+        endpoint: endpoint ? (0, import_util_middleware.normalizeProvider)(typeof endpoint === "string" ? urlParser(endpoint) : endpoint) : () => getEndpointFromRegion({ ...input, useDualstackEndpoint, useFipsEndpoint }),
         isCustomEndpoint: !!endpoint,
         useDualstackEndpoint
       };
-    };
-    exports2.resolveEndpointsConfig = resolveEndpointsConfig;
-  }
-});
-
-// ../../../node_modules/@smithy/config-resolver/dist-cjs/endpointsConfig/index.js
-var require_endpointsConfig = __commonJS({
-  "../../../node_modules/@smithy/config-resolver/dist-cjs/endpointsConfig/index.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
-    tslib_1.__exportStar(require_NodeUseDualstackEndpointConfigOptions(), exports2);
-    tslib_1.__exportStar(require_NodeUseFipsEndpointConfigOptions(), exports2);
-    tslib_1.__exportStar(require_resolveCustomEndpointsConfig(), exports2);
-    tslib_1.__exportStar(require_resolveEndpointsConfig(), exports2);
-  }
-});
-
-// ../../../node_modules/@smithy/config-resolver/dist-cjs/regionConfig/config.js
-var require_config2 = __commonJS({
-  "../../../node_modules/@smithy/config-resolver/dist-cjs/regionConfig/config.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.NODE_REGION_CONFIG_FILE_OPTIONS = exports2.NODE_REGION_CONFIG_OPTIONS = exports2.REGION_INI_NAME = exports2.REGION_ENV_NAME = void 0;
-    exports2.REGION_ENV_NAME = "AWS_REGION";
-    exports2.REGION_INI_NAME = "region";
-    exports2.NODE_REGION_CONFIG_OPTIONS = {
-      environmentVariableSelector: (env) => env[exports2.REGION_ENV_NAME],
-      configFileSelector: (profile) => profile[exports2.REGION_INI_NAME],
+    }, "resolveEndpointsConfig");
+    var REGION_ENV_NAME = "AWS_REGION";
+    var REGION_INI_NAME = "region";
+    var NODE_REGION_CONFIG_OPTIONS = {
+      environmentVariableSelector: (env) => env[REGION_ENV_NAME],
+      configFileSelector: (profile) => profile[REGION_INI_NAME],
       default: () => {
         throw new Error("Region is missing");
       }
     };
-    exports2.NODE_REGION_CONFIG_FILE_OPTIONS = {
+    var NODE_REGION_CONFIG_FILE_OPTIONS = {
       preferredFile: "credentials"
     };
-  }
-});
-
-// ../../../node_modules/@smithy/config-resolver/dist-cjs/regionConfig/isFipsRegion.js
-var require_isFipsRegion = __commonJS({
-  "../../../node_modules/@smithy/config-resolver/dist-cjs/regionConfig/isFipsRegion.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.isFipsRegion = void 0;
-    var isFipsRegion = (region) => typeof region === "string" && (region.startsWith("fips-") || region.endsWith("-fips"));
-    exports2.isFipsRegion = isFipsRegion;
-  }
-});
-
-// ../../../node_modules/@smithy/config-resolver/dist-cjs/regionConfig/getRealRegion.js
-var require_getRealRegion = __commonJS({
-  "../../../node_modules/@smithy/config-resolver/dist-cjs/regionConfig/getRealRegion.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.getRealRegion = void 0;
-    var isFipsRegion_1 = require_isFipsRegion();
-    var getRealRegion = (region) => (0, isFipsRegion_1.isFipsRegion)(region) ? ["fips-aws-global", "aws-fips"].includes(region) ? "us-east-1" : region.replace(/fips-(dkr-|prod-)?|-fips/, "") : region;
-    exports2.getRealRegion = getRealRegion;
-  }
-});
-
-// ../../../node_modules/@smithy/config-resolver/dist-cjs/regionConfig/resolveRegionConfig.js
-var require_resolveRegionConfig = __commonJS({
-  "../../../node_modules/@smithy/config-resolver/dist-cjs/regionConfig/resolveRegionConfig.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.resolveRegionConfig = void 0;
-    var getRealRegion_1 = require_getRealRegion();
-    var isFipsRegion_1 = require_isFipsRegion();
-    var resolveRegionConfig = (input) => {
+    var isFipsRegion = /* @__PURE__ */ __name((region) => typeof region === "string" && (region.startsWith("fips-") || region.endsWith("-fips")), "isFipsRegion");
+    var getRealRegion = /* @__PURE__ */ __name((region) => isFipsRegion(region) ? ["fips-aws-global", "aws-fips"].includes(region) ? "us-east-1" : region.replace(/fips-(dkr-|prod-)?|-fips/, "") : region, "getRealRegion");
+    var resolveRegionConfig = /* @__PURE__ */ __name((input) => {
       const { region, useFipsEndpoint } = input;
       if (!region) {
         throw new Error("Region is missing");
@@ -6739,97 +6035,29 @@ var require_resolveRegionConfig = __commonJS({
         ...input,
         region: async () => {
           if (typeof region === "string") {
-            return (0, getRealRegion_1.getRealRegion)(region);
+            return getRealRegion(region);
           }
           const providedRegion = await region();
-          return (0, getRealRegion_1.getRealRegion)(providedRegion);
+          return getRealRegion(providedRegion);
         },
         useFipsEndpoint: async () => {
           const providedRegion = typeof region === "string" ? region : await region();
-          if ((0, isFipsRegion_1.isFipsRegion)(providedRegion)) {
+          if (isFipsRegion(providedRegion)) {
             return true;
           }
           return typeof useFipsEndpoint !== "function" ? Promise.resolve(!!useFipsEndpoint) : useFipsEndpoint();
         }
       };
-    };
-    exports2.resolveRegionConfig = resolveRegionConfig;
-  }
-});
-
-// ../../../node_modules/@smithy/config-resolver/dist-cjs/regionConfig/index.js
-var require_regionConfig = __commonJS({
-  "../../../node_modules/@smithy/config-resolver/dist-cjs/regionConfig/index.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
-    tslib_1.__exportStar(require_config2(), exports2);
-    tslib_1.__exportStar(require_resolveRegionConfig(), exports2);
-  }
-});
-
-// ../../../node_modules/@smithy/config-resolver/dist-cjs/regionInfo/PartitionHash.js
-var require_PartitionHash = __commonJS({
-  "../../../node_modules/@smithy/config-resolver/dist-cjs/regionInfo/PartitionHash.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-  }
-});
-
-// ../../../node_modules/@smithy/config-resolver/dist-cjs/regionInfo/RegionHash.js
-var require_RegionHash = __commonJS({
-  "../../../node_modules/@smithy/config-resolver/dist-cjs/regionInfo/RegionHash.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-  }
-});
-
-// ../../../node_modules/@smithy/config-resolver/dist-cjs/regionInfo/getHostnameFromVariants.js
-var require_getHostnameFromVariants = __commonJS({
-  "../../../node_modules/@smithy/config-resolver/dist-cjs/regionInfo/getHostnameFromVariants.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.getHostnameFromVariants = void 0;
-    var getHostnameFromVariants = (variants = [], { useFipsEndpoint, useDualstackEndpoint }) => {
+    }, "resolveRegionConfig");
+    var getHostnameFromVariants = /* @__PURE__ */ __name((variants = [], { useFipsEndpoint, useDualstackEndpoint }) => {
       var _a;
-      return (_a = variants.find(({ tags }) => useFipsEndpoint === tags.includes("fips") && useDualstackEndpoint === tags.includes("dualstack"))) === null || _a === void 0 ? void 0 : _a.hostname;
-    };
-    exports2.getHostnameFromVariants = getHostnameFromVariants;
-  }
-});
-
-// ../../../node_modules/@smithy/config-resolver/dist-cjs/regionInfo/getResolvedHostname.js
-var require_getResolvedHostname = __commonJS({
-  "../../../node_modules/@smithy/config-resolver/dist-cjs/regionInfo/getResolvedHostname.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.getResolvedHostname = void 0;
-    var getResolvedHostname = (resolvedRegion, { regionHostname, partitionHostname }) => regionHostname ? regionHostname : partitionHostname ? partitionHostname.replace("{region}", resolvedRegion) : void 0;
-    exports2.getResolvedHostname = getResolvedHostname;
-  }
-});
-
-// ../../../node_modules/@smithy/config-resolver/dist-cjs/regionInfo/getResolvedPartition.js
-var require_getResolvedPartition = __commonJS({
-  "../../../node_modules/@smithy/config-resolver/dist-cjs/regionInfo/getResolvedPartition.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.getResolvedPartition = void 0;
-    var getResolvedPartition = (region, { partitionHash }) => {
-      var _a;
-      return (_a = Object.keys(partitionHash || {}).find((key) => partitionHash[key].regions.includes(region))) !== null && _a !== void 0 ? _a : "aws";
-    };
-    exports2.getResolvedPartition = getResolvedPartition;
-  }
-});
-
-// ../../../node_modules/@smithy/config-resolver/dist-cjs/regionInfo/getResolvedSigningRegion.js
-var require_getResolvedSigningRegion = __commonJS({
-  "../../../node_modules/@smithy/config-resolver/dist-cjs/regionInfo/getResolvedSigningRegion.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.getResolvedSigningRegion = void 0;
-    var getResolvedSigningRegion = (hostname, { signingRegion, regionRegex, useFipsEndpoint }) => {
+      return (_a = variants.find(
+        ({ tags }) => useFipsEndpoint === tags.includes("fips") && useDualstackEndpoint === tags.includes("dualstack")
+      )) == null ? void 0 : _a.hostname;
+    }, "getHostnameFromVariants");
+    var getResolvedHostname = /* @__PURE__ */ __name((resolvedRegion, { regionHostname, partitionHostname }) => regionHostname ? regionHostname : partitionHostname ? partitionHostname.replace("{region}", resolvedRegion) : void 0, "getResolvedHostname");
+    var getResolvedPartition = /* @__PURE__ */ __name((region, { partitionHash }) => Object.keys(partitionHash || {}).find((key) => partitionHash[key].regions.includes(region)) ?? "aws", "getResolvedPartition");
+    var getResolvedSigningRegion = /* @__PURE__ */ __name((hostname, { signingRegion, regionRegex, useFipsEndpoint }) => {
       if (signingRegion) {
         return signingRegion;
       } else if (useFipsEndpoint) {
@@ -6839,34 +6067,26 @@ var require_getResolvedSigningRegion = __commonJS({
           return regionRegexmatchArray[0].slice(1, -1);
         }
       }
-    };
-    exports2.getResolvedSigningRegion = getResolvedSigningRegion;
-  }
-});
-
-// ../../../node_modules/@smithy/config-resolver/dist-cjs/regionInfo/getRegionInfo.js
-var require_getRegionInfo = __commonJS({
-  "../../../node_modules/@smithy/config-resolver/dist-cjs/regionInfo/getRegionInfo.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.getRegionInfo = void 0;
-    var getHostnameFromVariants_1 = require_getHostnameFromVariants();
-    var getResolvedHostname_1 = require_getResolvedHostname();
-    var getResolvedPartition_1 = require_getResolvedPartition();
-    var getResolvedSigningRegion_1 = require_getResolvedSigningRegion();
-    var getRegionInfo = (region, { useFipsEndpoint = false, useDualstackEndpoint = false, signingService, regionHash, partitionHash }) => {
-      var _a, _b, _c, _d, _e, _f;
-      const partition = (0, getResolvedPartition_1.getResolvedPartition)(region, { partitionHash });
-      const resolvedRegion = region in regionHash ? region : (_b = (_a = partitionHash[partition]) === null || _a === void 0 ? void 0 : _a.endpoint) !== null && _b !== void 0 ? _b : region;
+    }, "getResolvedSigningRegion");
+    var getRegionInfo = /* @__PURE__ */ __name((region, {
+      useFipsEndpoint = false,
+      useDualstackEndpoint = false,
+      signingService,
+      regionHash,
+      partitionHash
+    }) => {
+      var _a, _b, _c, _d, _e;
+      const partition = getResolvedPartition(region, { partitionHash });
+      const resolvedRegion = region in regionHash ? region : ((_a = partitionHash[partition]) == null ? void 0 : _a.endpoint) ?? region;
       const hostnameOptions = { useFipsEndpoint, useDualstackEndpoint };
-      const regionHostname = (0, getHostnameFromVariants_1.getHostnameFromVariants)((_c = regionHash[resolvedRegion]) === null || _c === void 0 ? void 0 : _c.variants, hostnameOptions);
-      const partitionHostname = (0, getHostnameFromVariants_1.getHostnameFromVariants)((_d = partitionHash[partition]) === null || _d === void 0 ? void 0 : _d.variants, hostnameOptions);
-      const hostname = (0, getResolvedHostname_1.getResolvedHostname)(resolvedRegion, { regionHostname, partitionHostname });
+      const regionHostname = getHostnameFromVariants((_b = regionHash[resolvedRegion]) == null ? void 0 : _b.variants, hostnameOptions);
+      const partitionHostname = getHostnameFromVariants((_c = partitionHash[partition]) == null ? void 0 : _c.variants, hostnameOptions);
+      const hostname = getResolvedHostname(resolvedRegion, { regionHostname, partitionHostname });
       if (hostname === void 0) {
         throw new Error(`Endpoint resolution failed for: ${{ resolvedRegion, useFipsEndpoint, useDualstackEndpoint }}`);
       }
-      const signingRegion = (0, getResolvedSigningRegion_1.getResolvedSigningRegion)(hostname, {
-        signingRegion: (_e = regionHash[resolvedRegion]) === null || _e === void 0 ? void 0 : _e.signingRegion,
+      const signingRegion = getResolvedSigningRegion(hostname, {
+        signingRegion: (_d = regionHash[resolvedRegion]) == null ? void 0 : _d.signingRegion,
         regionRegex: partitionHash[partition].regionRegex,
         useFipsEndpoint
       });
@@ -6875,51 +6095,48 @@ var require_getRegionInfo = __commonJS({
         signingService,
         hostname,
         ...signingRegion && { signingRegion },
-        ...((_f = regionHash[resolvedRegion]) === null || _f === void 0 ? void 0 : _f.signingService) && {
+        ...((_e = regionHash[resolvedRegion]) == null ? void 0 : _e.signingService) && {
           signingService: regionHash[resolvedRegion].signingService
         }
       };
-    };
-    exports2.getRegionInfo = getRegionInfo;
-  }
-});
-
-// ../../../node_modules/@smithy/config-resolver/dist-cjs/regionInfo/index.js
-var require_regionInfo = __commonJS({
-  "../../../node_modules/@smithy/config-resolver/dist-cjs/regionInfo/index.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
-    tslib_1.__exportStar(require_PartitionHash(), exports2);
-    tslib_1.__exportStar(require_RegionHash(), exports2);
-    tslib_1.__exportStar(require_getRegionInfo(), exports2);
-  }
-});
-
-// ../../../node_modules/@smithy/config-resolver/dist-cjs/index.js
-var require_dist_cjs21 = __commonJS({
-  "../../../node_modules/@smithy/config-resolver/dist-cjs/index.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
-    tslib_1.__exportStar(require_endpointsConfig(), exports2);
-    tslib_1.__exportStar(require_regionConfig(), exports2);
-    tslib_1.__exportStar(require_regionInfo(), exports2);
+    }, "getRegionInfo");
   }
 });
 
 // ../../../node_modules/@smithy/middleware-content-length/dist-cjs/index.js
 var require_dist_cjs22 = __commonJS({
-  "../../../node_modules/@smithy/middleware-content-length/dist-cjs/index.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.getContentLengthPlugin = exports2.contentLengthMiddlewareOptions = exports2.contentLengthMiddleware = void 0;
-    var protocol_http_1 = require_dist_cjs2();
+  "../../../node_modules/@smithy/middleware-content-length/dist-cjs/index.js"(exports2, module2) {
+    var __defProp2 = Object.defineProperty;
+    var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
+    var __getOwnPropNames2 = Object.getOwnPropertyNames;
+    var __hasOwnProp2 = Object.prototype.hasOwnProperty;
+    var __name = (target, value) => __defProp2(target, "name", { value, configurable: true });
+    var __export2 = (target, all) => {
+      for (var name in all)
+        __defProp2(target, name, { get: all[name], enumerable: true });
+    };
+    var __copyProps2 = (to, from, except, desc) => {
+      if (from && typeof from === "object" || typeof from === "function") {
+        for (let key of __getOwnPropNames2(from))
+          if (!__hasOwnProp2.call(to, key) && key !== except)
+            __defProp2(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc2(from, key)) || desc.enumerable });
+      }
+      return to;
+    };
+    var __toCommonJS2 = (mod) => __copyProps2(__defProp2({}, "__esModule", { value: true }), mod);
+    var src_exports = {};
+    __export2(src_exports, {
+      contentLengthMiddleware: () => contentLengthMiddleware,
+      contentLengthMiddlewareOptions: () => contentLengthMiddlewareOptions,
+      getContentLengthPlugin: () => getContentLengthPlugin
+    });
+    module2.exports = __toCommonJS2(src_exports);
+    var import_protocol_http = require_dist_cjs2();
     var CONTENT_LENGTH_HEADER = "content-length";
     function contentLengthMiddleware(bodyLengthChecker) {
       return (next) => async (args) => {
         const request2 = args.request;
-        if (protocol_http_1.HttpRequest.isInstance(request2)) {
+        if (import_protocol_http.HttpRequest.isInstance(request2)) {
           const { body, headers } = request2;
           if (body && Object.keys(headers).map((str) => str.toLowerCase()).indexOf(CONTENT_LENGTH_HEADER) === -1) {
             try {
@@ -6938,140 +6155,18 @@ var require_dist_cjs22 = __commonJS({
         });
       };
     }
-    exports2.contentLengthMiddleware = contentLengthMiddleware;
-    exports2.contentLengthMiddlewareOptions = {
+    __name(contentLengthMiddleware, "contentLengthMiddleware");
+    var contentLengthMiddlewareOptions = {
       step: "build",
       tags: ["SET_CONTENT_LENGTH", "CONTENT_LENGTH"],
       name: "contentLengthMiddleware",
       override: true
     };
-    var getContentLengthPlugin = (options) => ({
+    var getContentLengthPlugin = /* @__PURE__ */ __name((options) => ({
       applyToStack: (clientStack) => {
-        clientStack.add(contentLengthMiddleware(options.bodyLengthChecker), exports2.contentLengthMiddlewareOptions);
+        clientStack.add(contentLengthMiddleware(options.bodyLengthChecker), contentLengthMiddlewareOptions);
       }
-    });
-    exports2.getContentLengthPlugin = getContentLengthPlugin;
-  }
-});
-
-// ../../../node_modules/@smithy/middleware-endpoint/dist-cjs/service-customizations/s3.js
-var require_s3 = __commonJS({
-  "../../../node_modules/@smithy/middleware-endpoint/dist-cjs/service-customizations/s3.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.isArnBucketName = exports2.isDnsCompatibleBucketName = exports2.S3_HOSTNAME_PATTERN = exports2.DOT_PATTERN = exports2.resolveParamsForS3 = void 0;
-    var resolveParamsForS3 = async (endpointParams) => {
-      const bucket = (endpointParams === null || endpointParams === void 0 ? void 0 : endpointParams.Bucket) || "";
-      if (typeof endpointParams.Bucket === "string") {
-        endpointParams.Bucket = bucket.replace(/#/g, encodeURIComponent("#")).replace(/\?/g, encodeURIComponent("?"));
-      }
-      if ((0, exports2.isArnBucketName)(bucket)) {
-        if (endpointParams.ForcePathStyle === true) {
-          throw new Error("Path-style addressing cannot be used with ARN buckets");
-        }
-      } else if (!(0, exports2.isDnsCompatibleBucketName)(bucket) || bucket.indexOf(".") !== -1 && !String(endpointParams.Endpoint).startsWith("http:") || bucket.toLowerCase() !== bucket || bucket.length < 3) {
-        endpointParams.ForcePathStyle = true;
-      }
-      if (endpointParams.DisableMultiRegionAccessPoints) {
-        endpointParams.disableMultiRegionAccessPoints = true;
-        endpointParams.DisableMRAP = true;
-      }
-      return endpointParams;
-    };
-    exports2.resolveParamsForS3 = resolveParamsForS3;
-    var DOMAIN_PATTERN = /^[a-z0-9][a-z0-9\.\-]{1,61}[a-z0-9]$/;
-    var IP_ADDRESS_PATTERN = /(\d+\.){3}\d+/;
-    var DOTS_PATTERN = /\.\./;
-    exports2.DOT_PATTERN = /\./;
-    exports2.S3_HOSTNAME_PATTERN = /^(.+\.)?s3(-fips)?(\.dualstack)?[.-]([a-z0-9-]+)\./;
-    var isDnsCompatibleBucketName = (bucketName) => DOMAIN_PATTERN.test(bucketName) && !IP_ADDRESS_PATTERN.test(bucketName) && !DOTS_PATTERN.test(bucketName);
-    exports2.isDnsCompatibleBucketName = isDnsCompatibleBucketName;
-    var isArnBucketName = (bucketName) => {
-      const [arn, partition, service, region, account, typeOrId] = bucketName.split(":");
-      const isArn = arn === "arn" && bucketName.split(":").length >= 6;
-      const isValidArn = [arn, partition, service, account, typeOrId].filter(Boolean).length === 5;
-      if (isArn && !isValidArn) {
-        throw new Error(`Invalid ARN: ${bucketName} was an invalid ARN.`);
-      }
-      return arn === "arn" && !!partition && !!service && !!account && !!typeOrId;
-    };
-    exports2.isArnBucketName = isArnBucketName;
-  }
-});
-
-// ../../../node_modules/@smithy/middleware-endpoint/dist-cjs/service-customizations/index.js
-var require_service_customizations = __commonJS({
-  "../../../node_modules/@smithy/middleware-endpoint/dist-cjs/service-customizations/index.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
-    tslib_1.__exportStar(require_s3(), exports2);
-  }
-});
-
-// ../../../node_modules/@smithy/middleware-endpoint/dist-cjs/adaptors/createConfigValueProvider.js
-var require_createConfigValueProvider = __commonJS({
-  "../../../node_modules/@smithy/middleware-endpoint/dist-cjs/adaptors/createConfigValueProvider.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.createConfigValueProvider = void 0;
-    var createConfigValueProvider = (configKey, canonicalEndpointParamKey, config) => {
-      const configProvider = async () => {
-        var _a;
-        const configValue = (_a = config[configKey]) !== null && _a !== void 0 ? _a : config[canonicalEndpointParamKey];
-        if (typeof configValue === "function") {
-          return configValue();
-        }
-        return configValue;
-      };
-      if (configKey === "credentialScope" || canonicalEndpointParamKey === "CredentialScope") {
-        return async () => {
-          var _a;
-          const credentials = typeof config.credentials === "function" ? await config.credentials() : config.credentials;
-          const configValue = (_a = credentials === null || credentials === void 0 ? void 0 : credentials.credentialScope) !== null && _a !== void 0 ? _a : credentials === null || credentials === void 0 ? void 0 : credentials.CredentialScope;
-          return configValue;
-        };
-      }
-      if (configKey === "endpoint" || canonicalEndpointParamKey === "endpoint") {
-        return async () => {
-          const endpoint = await configProvider();
-          if (endpoint && typeof endpoint === "object") {
-            if ("url" in endpoint) {
-              return endpoint.url.href;
-            }
-            if ("hostname" in endpoint) {
-              const { protocol, hostname, port, path } = endpoint;
-              return `${protocol}//${hostname}${port ? ":" + port : ""}${path}`;
-            }
-          }
-          return endpoint;
-        };
-      }
-      return configProvider;
-    };
-    exports2.createConfigValueProvider = createConfigValueProvider;
-  }
-});
-
-// ../../../node_modules/@smithy/node-config-provider/dist-cjs/fromEnv.js
-var require_fromEnv = __commonJS({
-  "../../../node_modules/@smithy/node-config-provider/dist-cjs/fromEnv.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.fromEnv = void 0;
-    var property_provider_1 = require_dist_cjs6();
-    var fromEnv = (envVarSelector) => async () => {
-      try {
-        const config = envVarSelector(process.env);
-        if (config === void 0) {
-          throw new Error();
-        }
-        return config;
-      } catch (e) {
-        throw new property_provider_1.CredentialsProviderError(e.message || `Cannot load config from environment variables with getter: ${envVarSelector}`);
-      }
-    };
-    exports2.fromEnv = fromEnv;
+    }), "getContentLengthPlugin");
   }
 });
 
@@ -7090,7 +6185,7 @@ var require_getHomeDir = __commonJS({
       }
       return "DEFAULT";
     };
-    var getHomeDir = () => {
+    var getHomeDir2 = () => {
       const { HOME, USERPROFILE, HOMEPATH, HOMEDRIVE = `C:${path_1.sep}` } = process.env;
       if (HOME)
         return HOME;
@@ -7103,20 +6198,7 @@ var require_getHomeDir = __commonJS({
         homeDirCache[homeDirCacheKey] = (0, os_1.homedir)();
       return homeDirCache[homeDirCacheKey];
     };
-    exports2.getHomeDir = getHomeDir;
-  }
-});
-
-// ../../../node_modules/@smithy/shared-ini-file-loader/dist-cjs/getProfileName.js
-var require_getProfileName = __commonJS({
-  "../../../node_modules/@smithy/shared-ini-file-loader/dist-cjs/getProfileName.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.getProfileName = exports2.DEFAULT_PROFILE = exports2.ENV_PROFILE = void 0;
-    exports2.ENV_PROFILE = "AWS_PROFILE";
-    exports2.DEFAULT_PROFILE = "default";
-    var getProfileName = (init) => init.profile || process.env[exports2.ENV_PROFILE] || exports2.DEFAULT_PROFILE;
-    exports2.getProfileName = getProfileName;
+    exports2.getHomeDir = getHomeDir2;
   }
 });
 
@@ -7129,12 +6211,12 @@ var require_getSSOTokenFilepath = __commonJS({
     var crypto_1 = require("crypto");
     var path_1 = require("path");
     var getHomeDir_1 = require_getHomeDir();
-    var getSSOTokenFilepath = (id) => {
+    var getSSOTokenFilepath2 = (id) => {
       const hasher = (0, crypto_1.createHash)("sha1");
       const cacheName = hasher.update(id).digest("hex");
       return (0, path_1.join)((0, getHomeDir_1.getHomeDir)(), ".aws", "sso", "cache", `${cacheName}.json`);
     };
-    exports2.getSSOTokenFilepath = getSSOTokenFilepath;
+    exports2.getSSOTokenFilepath = getSSOTokenFilepath2;
   }
 });
 
@@ -7147,125 +6229,12 @@ var require_getSSOTokenFromFile = __commonJS({
     var fs_1 = require("fs");
     var getSSOTokenFilepath_1 = require_getSSOTokenFilepath();
     var { readFile } = fs_1.promises;
-    var getSSOTokenFromFile = async (id) => {
+    var getSSOTokenFromFile2 = async (id) => {
       const ssoTokenFilepath = (0, getSSOTokenFilepath_1.getSSOTokenFilepath)(id);
       const ssoTokenText = await readFile(ssoTokenFilepath, "utf8");
       return JSON.parse(ssoTokenText);
     };
-    exports2.getSSOTokenFromFile = getSSOTokenFromFile;
-  }
-});
-
-// ../../../node_modules/@smithy/shared-ini-file-loader/dist-cjs/getConfigData.js
-var require_getConfigData = __commonJS({
-  "../../../node_modules/@smithy/shared-ini-file-loader/dist-cjs/getConfigData.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.getConfigData = void 0;
-    var types_1 = require_dist_cjs();
-    var loadSharedConfigFiles_1 = require_loadSharedConfigFiles();
-    var getConfigData = (data) => Object.entries(data).filter(([key]) => {
-      const indexOfSeparator = key.indexOf(loadSharedConfigFiles_1.CONFIG_PREFIX_SEPARATOR);
-      if (indexOfSeparator === -1) {
-        return false;
-      }
-      return Object.values(types_1.IniSectionType).includes(key.substring(0, indexOfSeparator));
-    }).reduce((acc, [key, value]) => {
-      const indexOfSeparator = key.indexOf(loadSharedConfigFiles_1.CONFIG_PREFIX_SEPARATOR);
-      const updatedKey = key.substring(0, indexOfSeparator) === types_1.IniSectionType.PROFILE ? key.substring(indexOfSeparator + 1) : key;
-      acc[updatedKey] = value;
-      return acc;
-    }, {
-      ...data.default && { default: data.default }
-    });
-    exports2.getConfigData = getConfigData;
-  }
-});
-
-// ../../../node_modules/@smithy/shared-ini-file-loader/dist-cjs/getConfigFilepath.js
-var require_getConfigFilepath = __commonJS({
-  "../../../node_modules/@smithy/shared-ini-file-loader/dist-cjs/getConfigFilepath.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.getConfigFilepath = exports2.ENV_CONFIG_PATH = void 0;
-    var path_1 = require("path");
-    var getHomeDir_1 = require_getHomeDir();
-    exports2.ENV_CONFIG_PATH = "AWS_CONFIG_FILE";
-    var getConfigFilepath = () => process.env[exports2.ENV_CONFIG_PATH] || (0, path_1.join)((0, getHomeDir_1.getHomeDir)(), ".aws", "config");
-    exports2.getConfigFilepath = getConfigFilepath;
-  }
-});
-
-// ../../../node_modules/@smithy/shared-ini-file-loader/dist-cjs/getCredentialsFilepath.js
-var require_getCredentialsFilepath = __commonJS({
-  "../../../node_modules/@smithy/shared-ini-file-loader/dist-cjs/getCredentialsFilepath.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.getCredentialsFilepath = exports2.ENV_CREDENTIALS_PATH = void 0;
-    var path_1 = require("path");
-    var getHomeDir_1 = require_getHomeDir();
-    exports2.ENV_CREDENTIALS_PATH = "AWS_SHARED_CREDENTIALS_FILE";
-    var getCredentialsFilepath = () => process.env[exports2.ENV_CREDENTIALS_PATH] || (0, path_1.join)((0, getHomeDir_1.getHomeDir)(), ".aws", "credentials");
-    exports2.getCredentialsFilepath = getCredentialsFilepath;
-  }
-});
-
-// ../../../node_modules/@smithy/shared-ini-file-loader/dist-cjs/parseIni.js
-var require_parseIni = __commonJS({
-  "../../../node_modules/@smithy/shared-ini-file-loader/dist-cjs/parseIni.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.parseIni = void 0;
-    var types_1 = require_dist_cjs();
-    var loadSharedConfigFiles_1 = require_loadSharedConfigFiles();
-    var prefixKeyRegex = /^([\w-]+)\s(["'])?([\w-@\+\.%:/]+)\2$/;
-    var profileNameBlockList = ["__proto__", "profile __proto__"];
-    var parseIni = (iniData) => {
-      const map = {};
-      let currentSection;
-      let currentSubSection;
-      for (const iniLine of iniData.split(/\r?\n/)) {
-        const trimmedLine = iniLine.split(/(^|\s)[;#]/)[0].trim();
-        const isSection = trimmedLine[0] === "[" && trimmedLine[trimmedLine.length - 1] === "]";
-        if (isSection) {
-          currentSection = void 0;
-          currentSubSection = void 0;
-          const sectionName = trimmedLine.substring(1, trimmedLine.length - 1);
-          const matches = prefixKeyRegex.exec(sectionName);
-          if (matches) {
-            const [, prefix, , name] = matches;
-            if (Object.values(types_1.IniSectionType).includes(prefix)) {
-              currentSection = [prefix, name].join(loadSharedConfigFiles_1.CONFIG_PREFIX_SEPARATOR);
-            }
-          } else {
-            currentSection = sectionName;
-          }
-          if (profileNameBlockList.includes(sectionName)) {
-            throw new Error(`Found invalid profile name "${sectionName}"`);
-          }
-        } else if (currentSection) {
-          const indexOfEqualsSign = trimmedLine.indexOf("=");
-          if (![0, -1].includes(indexOfEqualsSign)) {
-            const [name, value] = [
-              trimmedLine.substring(0, indexOfEqualsSign).trim(),
-              trimmedLine.substring(indexOfEqualsSign + 1).trim()
-            ];
-            if (value === "") {
-              currentSubSection = name;
-            } else {
-              if (currentSubSection && iniLine.trimStart() === iniLine) {
-                currentSubSection = void 0;
-              }
-              map[currentSection] = map[currentSection] || {};
-              const key = currentSubSection ? [currentSubSection, name].join(loadSharedConfigFiles_1.CONFIG_PREFIX_SEPARATOR) : name;
-              map[currentSection][key] = value;
-            }
-          }
-        }
-      }
-      return map;
-    };
-    exports2.parseIni = parseIni;
+    exports2.getSSOTokenFromFile = getSSOTokenFromFile2;
   }
 });
 
@@ -7288,77 +6257,141 @@ var require_slurpFile = __commonJS({
   }
 });
 
-// ../../../node_modules/@smithy/shared-ini-file-loader/dist-cjs/loadSharedConfigFiles.js
-var require_loadSharedConfigFiles = __commonJS({
-  "../../../node_modules/@smithy/shared-ini-file-loader/dist-cjs/loadSharedConfigFiles.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.loadSharedConfigFiles = exports2.CONFIG_PREFIX_SEPARATOR = void 0;
-    var getConfigData_1 = require_getConfigData();
-    var getConfigFilepath_1 = require_getConfigFilepath();
-    var getCredentialsFilepath_1 = require_getCredentialsFilepath();
-    var parseIni_1 = require_parseIni();
-    var slurpFile_1 = require_slurpFile();
-    var swallowError = () => ({});
-    exports2.CONFIG_PREFIX_SEPARATOR = ".";
-    var loadSharedConfigFiles = async (init = {}) => {
-      const { filepath = (0, getCredentialsFilepath_1.getCredentialsFilepath)(), configFilepath = (0, getConfigFilepath_1.getConfigFilepath)() } = init;
+// ../../../node_modules/@smithy/shared-ini-file-loader/dist-cjs/index.js
+var require_dist_cjs23 = __commonJS({
+  "../../../node_modules/@smithy/shared-ini-file-loader/dist-cjs/index.js"(exports2, module2) {
+    var __defProp2 = Object.defineProperty;
+    var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
+    var __getOwnPropNames2 = Object.getOwnPropertyNames;
+    var __hasOwnProp2 = Object.prototype.hasOwnProperty;
+    var __name = (target, value) => __defProp2(target, "name", { value, configurable: true });
+    var __export2 = (target, all) => {
+      for (var name in all)
+        __defProp2(target, name, { get: all[name], enumerable: true });
+    };
+    var __copyProps2 = (to, from, except, desc) => {
+      if (from && typeof from === "object" || typeof from === "function") {
+        for (let key of __getOwnPropNames2(from))
+          if (!__hasOwnProp2.call(to, key) && key !== except)
+            __defProp2(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc2(from, key)) || desc.enumerable });
+      }
+      return to;
+    };
+    var __reExport = (target, mod, secondTarget) => (__copyProps2(target, mod, "default"), secondTarget && __copyProps2(secondTarget, mod, "default"));
+    var __toCommonJS2 = (mod) => __copyProps2(__defProp2({}, "__esModule", { value: true }), mod);
+    var src_exports = {};
+    __export2(src_exports, {
+      CONFIG_PREFIX_SEPARATOR: () => CONFIG_PREFIX_SEPARATOR,
+      DEFAULT_PROFILE: () => DEFAULT_PROFILE,
+      ENV_PROFILE: () => ENV_PROFILE,
+      getProfileName: () => getProfileName,
+      loadSharedConfigFiles: () => loadSharedConfigFiles,
+      loadSsoSessionData: () => loadSsoSessionData,
+      parseKnownFiles: () => parseKnownFiles
+    });
+    module2.exports = __toCommonJS2(src_exports);
+    __reExport(src_exports, require_getHomeDir(), module2.exports);
+    var ENV_PROFILE = "AWS_PROFILE";
+    var DEFAULT_PROFILE = "default";
+    var getProfileName = /* @__PURE__ */ __name((init) => init.profile || process.env[ENV_PROFILE] || DEFAULT_PROFILE, "getProfileName");
+    __reExport(src_exports, require_getSSOTokenFilepath(), module2.exports);
+    __reExport(src_exports, require_getSSOTokenFromFile(), module2.exports);
+    var import_types = require_dist_cjs();
+    var getConfigData = /* @__PURE__ */ __name((data) => Object.entries(data).filter(([key]) => {
+      const indexOfSeparator = key.indexOf(CONFIG_PREFIX_SEPARATOR);
+      if (indexOfSeparator === -1) {
+        return false;
+      }
+      return Object.values(import_types.IniSectionType).includes(key.substring(0, indexOfSeparator));
+    }).reduce(
+      (acc, [key, value]) => {
+        const indexOfSeparator = key.indexOf(CONFIG_PREFIX_SEPARATOR);
+        const updatedKey = key.substring(0, indexOfSeparator) === import_types.IniSectionType.PROFILE ? key.substring(indexOfSeparator + 1) : key;
+        acc[updatedKey] = value;
+        return acc;
+      },
+      {
+        // Populate default profile, if present.
+        ...data.default && { default: data.default }
+      }
+    ), "getConfigData");
+    var import_path = require("path");
+    var import_getHomeDir = require_getHomeDir();
+    var ENV_CONFIG_PATH = "AWS_CONFIG_FILE";
+    var getConfigFilepath = /* @__PURE__ */ __name(() => process.env[ENV_CONFIG_PATH] || (0, import_path.join)((0, import_getHomeDir.getHomeDir)(), ".aws", "config"), "getConfigFilepath");
+    var import_getHomeDir2 = require_getHomeDir();
+    var ENV_CREDENTIALS_PATH = "AWS_SHARED_CREDENTIALS_FILE";
+    var getCredentialsFilepath = /* @__PURE__ */ __name(() => process.env[ENV_CREDENTIALS_PATH] || (0, import_path.join)((0, import_getHomeDir2.getHomeDir)(), ".aws", "credentials"), "getCredentialsFilepath");
+    var prefixKeyRegex = /^([\w-]+)\s(["'])?([\w-@\+\.%:/]+)\2$/;
+    var profileNameBlockList = ["__proto__", "profile __proto__"];
+    var parseIni = /* @__PURE__ */ __name((iniData) => {
+      const map = {};
+      let currentSection;
+      let currentSubSection;
+      for (const iniLine of iniData.split(/\r?\n/)) {
+        const trimmedLine = iniLine.split(/(^|\s)[;#]/)[0].trim();
+        const isSection = trimmedLine[0] === "[" && trimmedLine[trimmedLine.length - 1] === "]";
+        if (isSection) {
+          currentSection = void 0;
+          currentSubSection = void 0;
+          const sectionName = trimmedLine.substring(1, trimmedLine.length - 1);
+          const matches = prefixKeyRegex.exec(sectionName);
+          if (matches) {
+            const [, prefix, , name] = matches;
+            if (Object.values(import_types.IniSectionType).includes(prefix)) {
+              currentSection = [prefix, name].join(CONFIG_PREFIX_SEPARATOR);
+            }
+          } else {
+            currentSection = sectionName;
+          }
+          if (profileNameBlockList.includes(sectionName)) {
+            throw new Error(`Found invalid profile name "${sectionName}"`);
+          }
+        } else if (currentSection) {
+          const indexOfEqualsSign = trimmedLine.indexOf("=");
+          if (![0, -1].includes(indexOfEqualsSign)) {
+            const [name, value] = [
+              trimmedLine.substring(0, indexOfEqualsSign).trim(),
+              trimmedLine.substring(indexOfEqualsSign + 1).trim()
+            ];
+            if (value === "") {
+              currentSubSection = name;
+            } else {
+              if (currentSubSection && iniLine.trimStart() === iniLine) {
+                currentSubSection = void 0;
+              }
+              map[currentSection] = map[currentSection] || {};
+              const key = currentSubSection ? [currentSubSection, name].join(CONFIG_PREFIX_SEPARATOR) : name;
+              map[currentSection][key] = value;
+            }
+          }
+        }
+      }
+      return map;
+    }, "parseIni");
+    var import_slurpFile = require_slurpFile();
+    var swallowError = /* @__PURE__ */ __name(() => ({}), "swallowError");
+    var CONFIG_PREFIX_SEPARATOR = ".";
+    var loadSharedConfigFiles = /* @__PURE__ */ __name(async (init = {}) => {
+      const { filepath = getCredentialsFilepath(), configFilepath = getConfigFilepath() } = init;
       const parsedFiles = await Promise.all([
-        (0, slurpFile_1.slurpFile)(configFilepath, {
+        (0, import_slurpFile.slurpFile)(configFilepath, {
           ignoreCache: init.ignoreCache
-        }).then(parseIni_1.parseIni).then(getConfigData_1.getConfigData).catch(swallowError),
-        (0, slurpFile_1.slurpFile)(filepath, {
+        }).then(parseIni).then(getConfigData).catch(swallowError),
+        (0, import_slurpFile.slurpFile)(filepath, {
           ignoreCache: init.ignoreCache
-        }).then(parseIni_1.parseIni).catch(swallowError)
+        }).then(parseIni).catch(swallowError)
       ]);
       return {
         configFile: parsedFiles[0],
         credentialsFile: parsedFiles[1]
       };
-    };
-    exports2.loadSharedConfigFiles = loadSharedConfigFiles;
-  }
-});
-
-// ../../../node_modules/@smithy/shared-ini-file-loader/dist-cjs/getSsoSessionData.js
-var require_getSsoSessionData = __commonJS({
-  "../../../node_modules/@smithy/shared-ini-file-loader/dist-cjs/getSsoSessionData.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.getSsoSessionData = void 0;
-    var types_1 = require_dist_cjs();
-    var loadSharedConfigFiles_1 = require_loadSharedConfigFiles();
-    var getSsoSessionData = (data) => Object.entries(data).filter(([key]) => key.startsWith(types_1.IniSectionType.SSO_SESSION + loadSharedConfigFiles_1.CONFIG_PREFIX_SEPARATOR)).reduce((acc, [key, value]) => ({ ...acc, [key.split(loadSharedConfigFiles_1.CONFIG_PREFIX_SEPARATOR)[1]]: value }), {});
-    exports2.getSsoSessionData = getSsoSessionData;
-  }
-});
-
-// ../../../node_modules/@smithy/shared-ini-file-loader/dist-cjs/loadSsoSessionData.js
-var require_loadSsoSessionData = __commonJS({
-  "../../../node_modules/@smithy/shared-ini-file-loader/dist-cjs/loadSsoSessionData.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.loadSsoSessionData = void 0;
-    var getConfigFilepath_1 = require_getConfigFilepath();
-    var getSsoSessionData_1 = require_getSsoSessionData();
-    var parseIni_1 = require_parseIni();
-    var slurpFile_1 = require_slurpFile();
-    var swallowError = () => ({});
-    var loadSsoSessionData = async (init = {}) => {
-      var _a;
-      return (0, slurpFile_1.slurpFile)((_a = init.configFilepath) !== null && _a !== void 0 ? _a : (0, getConfigFilepath_1.getConfigFilepath)()).then(parseIni_1.parseIni).then(getSsoSessionData_1.getSsoSessionData).catch(swallowError);
-    };
-    exports2.loadSsoSessionData = loadSsoSessionData;
-  }
-});
-
-// ../../../node_modules/@smithy/shared-ini-file-loader/dist-cjs/mergeConfigFiles.js
-var require_mergeConfigFiles = __commonJS({
-  "../../../node_modules/@smithy/shared-ini-file-loader/dist-cjs/mergeConfigFiles.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.mergeConfigFiles = void 0;
-    var mergeConfigFiles = (...files) => {
+    }, "loadSharedConfigFiles");
+    var getSsoSessionData = /* @__PURE__ */ __name((data) => Object.entries(data).filter(([key]) => key.startsWith(import_types.IniSectionType.SSO_SESSION + CONFIG_PREFIX_SEPARATOR)).reduce((acc, [key, value]) => ({ ...acc, [key.substring(key.indexOf(CONFIG_PREFIX_SEPARATOR) + 1)]: value }), {}), "getSsoSessionData");
+    var import_slurpFile2 = require_slurpFile();
+    var swallowError2 = /* @__PURE__ */ __name(() => ({}), "swallowError");
+    var loadSsoSessionData = /* @__PURE__ */ __name(async (init = {}) => (0, import_slurpFile2.slurpFile)(init.configFilepath ?? getConfigFilepath()).then(parseIni).then(getSsoSessionData).catch(swallowError2), "loadSsoSessionData");
+    var mergeConfigFiles = /* @__PURE__ */ __name((...files) => {
       const merged = {};
       for (const file of files) {
         for (const [key, values] of Object.entries(file)) {
@@ -7370,63 +6403,58 @@ var require_mergeConfigFiles = __commonJS({
         }
       }
       return merged;
+    }, "mergeConfigFiles");
+    var parseKnownFiles = /* @__PURE__ */ __name(async (init) => {
+      const parsedFiles = await loadSharedConfigFiles(init);
+      return mergeConfigFiles(parsedFiles.configFile, parsedFiles.credentialsFile);
+    }, "parseKnownFiles");
+  }
+});
+
+// ../../../node_modules/@smithy/node-config-provider/dist-cjs/index.js
+var require_dist_cjs24 = __commonJS({
+  "../../../node_modules/@smithy/node-config-provider/dist-cjs/index.js"(exports2, module2) {
+    var __defProp2 = Object.defineProperty;
+    var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
+    var __getOwnPropNames2 = Object.getOwnPropertyNames;
+    var __hasOwnProp2 = Object.prototype.hasOwnProperty;
+    var __name = (target, value) => __defProp2(target, "name", { value, configurable: true });
+    var __export2 = (target, all) => {
+      for (var name in all)
+        __defProp2(target, name, { get: all[name], enumerable: true });
     };
-    exports2.mergeConfigFiles = mergeConfigFiles;
-  }
-});
-
-// ../../../node_modules/@smithy/shared-ini-file-loader/dist-cjs/parseKnownFiles.js
-var require_parseKnownFiles = __commonJS({
-  "../../../node_modules/@smithy/shared-ini-file-loader/dist-cjs/parseKnownFiles.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.parseKnownFiles = void 0;
-    var loadSharedConfigFiles_1 = require_loadSharedConfigFiles();
-    var mergeConfigFiles_1 = require_mergeConfigFiles();
-    var parseKnownFiles = async (init) => {
-      const parsedFiles = await (0, loadSharedConfigFiles_1.loadSharedConfigFiles)(init);
-      return (0, mergeConfigFiles_1.mergeConfigFiles)(parsedFiles.configFile, parsedFiles.credentialsFile);
+    var __copyProps2 = (to, from, except, desc) => {
+      if (from && typeof from === "object" || typeof from === "function") {
+        for (let key of __getOwnPropNames2(from))
+          if (!__hasOwnProp2.call(to, key) && key !== except)
+            __defProp2(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc2(from, key)) || desc.enumerable });
+      }
+      return to;
     };
-    exports2.parseKnownFiles = parseKnownFiles;
-  }
-});
-
-// ../../../node_modules/@smithy/shared-ini-file-loader/dist-cjs/types.js
-var require_types4 = __commonJS({
-  "../../../node_modules/@smithy/shared-ini-file-loader/dist-cjs/types.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-  }
-});
-
-// ../../../node_modules/@smithy/shared-ini-file-loader/dist-cjs/index.js
-var require_dist_cjs23 = __commonJS({
-  "../../../node_modules/@smithy/shared-ini-file-loader/dist-cjs/index.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
-    tslib_1.__exportStar(require_getHomeDir(), exports2);
-    tslib_1.__exportStar(require_getProfileName(), exports2);
-    tslib_1.__exportStar(require_getSSOTokenFilepath(), exports2);
-    tslib_1.__exportStar(require_getSSOTokenFromFile(), exports2);
-    tslib_1.__exportStar(require_loadSharedConfigFiles(), exports2);
-    tslib_1.__exportStar(require_loadSsoSessionData(), exports2);
-    tslib_1.__exportStar(require_parseKnownFiles(), exports2);
-    tslib_1.__exportStar(require_types4(), exports2);
-  }
-});
-
-// ../../../node_modules/@smithy/node-config-provider/dist-cjs/fromSharedConfigFiles.js
-var require_fromSharedConfigFiles = __commonJS({
-  "../../../node_modules/@smithy/node-config-provider/dist-cjs/fromSharedConfigFiles.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.fromSharedConfigFiles = void 0;
-    var property_provider_1 = require_dist_cjs6();
-    var shared_ini_file_loader_1 = require_dist_cjs23();
-    var fromSharedConfigFiles = (configSelector, { preferredFile = "config", ...init } = {}) => async () => {
-      const profile = (0, shared_ini_file_loader_1.getProfileName)(init);
-      const { configFile, credentialsFile } = await (0, shared_ini_file_loader_1.loadSharedConfigFiles)(init);
+    var __toCommonJS2 = (mod) => __copyProps2(__defProp2({}, "__esModule", { value: true }), mod);
+    var src_exports = {};
+    __export2(src_exports, {
+      loadConfig: () => loadConfig
+    });
+    module2.exports = __toCommonJS2(src_exports);
+    var import_property_provider = require_dist_cjs6();
+    var fromEnv = /* @__PURE__ */ __name((envVarSelector) => async () => {
+      try {
+        const config = envVarSelector(process.env);
+        if (config === void 0) {
+          throw new Error();
+        }
+        return config;
+      } catch (e) {
+        throw new import_property_provider.CredentialsProviderError(
+          e.message || `Cannot load config from environment variables with getter: ${envVarSelector}`
+        );
+      }
+    }, "fromEnv");
+    var import_shared_ini_file_loader = require_dist_cjs23();
+    var fromSharedConfigFiles = /* @__PURE__ */ __name((configSelector, { preferredFile = "config", ...init } = {}) => async () => {
+      const profile = (0, import_shared_ini_file_loader.getProfileName)(init);
+      const { configFile, credentialsFile } = await (0, import_shared_ini_file_loader.loadSharedConfigFiles)(init);
       const profileFromCredentials = credentialsFile[profile] || {};
       const profileFromConfig = configFile[profile] || {};
       const mergedProfile = preferredFile === "config" ? { ...profileFromCredentials, ...profileFromConfig } : { ...profileFromConfig, ...profileFromCredentials };
@@ -7438,48 +6466,20 @@ var require_fromSharedConfigFiles = __commonJS({
         }
         return configValue;
       } catch (e) {
-        throw new property_provider_1.CredentialsProviderError(e.message || `Cannot load config for profile ${profile} in SDK configuration files with getter: ${configSelector}`);
+        throw new import_property_provider.CredentialsProviderError(
+          e.message || `Cannot load config for profile ${profile} in SDK configuration files with getter: ${configSelector}`
+        );
       }
-    };
-    exports2.fromSharedConfigFiles = fromSharedConfigFiles;
-  }
-});
-
-// ../../../node_modules/@smithy/node-config-provider/dist-cjs/fromStatic.js
-var require_fromStatic2 = __commonJS({
-  "../../../node_modules/@smithy/node-config-provider/dist-cjs/fromStatic.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.fromStatic = void 0;
-    var property_provider_1 = require_dist_cjs6();
-    var isFunction = (func) => typeof func === "function";
-    var fromStatic = (defaultValue) => isFunction(defaultValue) ? async () => await defaultValue() : (0, property_provider_1.fromStatic)(defaultValue);
-    exports2.fromStatic = fromStatic;
-  }
-});
-
-// ../../../node_modules/@smithy/node-config-provider/dist-cjs/configLoader.js
-var require_configLoader = __commonJS({
-  "../../../node_modules/@smithy/node-config-provider/dist-cjs/configLoader.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.loadConfig = void 0;
-    var property_provider_1 = require_dist_cjs6();
-    var fromEnv_1 = require_fromEnv();
-    var fromSharedConfigFiles_1 = require_fromSharedConfigFiles();
-    var fromStatic_1 = require_fromStatic2();
-    var loadConfig = ({ environmentVariableSelector, configFileSelector, default: defaultValue }, configuration = {}) => (0, property_provider_1.memoize)((0, property_provider_1.chain)((0, fromEnv_1.fromEnv)(environmentVariableSelector), (0, fromSharedConfigFiles_1.fromSharedConfigFiles)(configFileSelector, configuration), (0, fromStatic_1.fromStatic)(defaultValue)));
-    exports2.loadConfig = loadConfig;
-  }
-});
-
-// ../../../node_modules/@smithy/node-config-provider/dist-cjs/index.js
-var require_dist_cjs24 = __commonJS({
-  "../../../node_modules/@smithy/node-config-provider/dist-cjs/index.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
-    tslib_1.__exportStar(require_configLoader(), exports2);
+    }, "fromSharedConfigFiles");
+    var isFunction = /* @__PURE__ */ __name((func) => typeof func === "function", "isFunction");
+    var fromStatic = /* @__PURE__ */ __name((defaultValue) => isFunction(defaultValue) ? async () => await defaultValue() : (0, import_property_provider.fromStatic)(defaultValue), "fromStatic");
+    var loadConfig = /* @__PURE__ */ __name(({ environmentVariableSelector, configFileSelector, default: defaultValue }, configuration = {}) => (0, import_property_provider.memoize)(
+      (0, import_property_provider.chain)(
+        fromEnv(environmentVariableSelector),
+        fromSharedConfigFiles(configFileSelector, configuration),
+        fromStatic(defaultValue)
+      )
+    ), "loadConfig");
   }
 });
 
@@ -7539,10 +6539,30 @@ var require_getEndpointFromConfig = __commonJS({
 
 // ../../../node_modules/@smithy/querystring-parser/dist-cjs/index.js
 var require_dist_cjs25 = __commonJS({
-  "../../../node_modules/@smithy/querystring-parser/dist-cjs/index.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.parseQueryString = void 0;
+  "../../../node_modules/@smithy/querystring-parser/dist-cjs/index.js"(exports2, module2) {
+    var __defProp2 = Object.defineProperty;
+    var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
+    var __getOwnPropNames2 = Object.getOwnPropertyNames;
+    var __hasOwnProp2 = Object.prototype.hasOwnProperty;
+    var __name = (target, value) => __defProp2(target, "name", { value, configurable: true });
+    var __export2 = (target, all) => {
+      for (var name in all)
+        __defProp2(target, name, { get: all[name], enumerable: true });
+    };
+    var __copyProps2 = (to, from, except, desc) => {
+      if (from && typeof from === "object" || typeof from === "function") {
+        for (let key of __getOwnPropNames2(from))
+          if (!__hasOwnProp2.call(to, key) && key !== except)
+            __defProp2(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc2(from, key)) || desc.enumerable });
+      }
+      return to;
+    };
+    var __toCommonJS2 = (mod) => __copyProps2(__defProp2({}, "__esModule", { value: true }), mod);
+    var src_exports = {};
+    __export2(src_exports, {
+      parseQueryString: () => parseQueryString
+    });
+    module2.exports = __toCommonJS2(src_exports);
     function parseQueryString(querystring) {
       const query = {};
       querystring = querystring.replace(/^\?/, "");
@@ -7564,25 +6584,45 @@ var require_dist_cjs25 = __commonJS({
       }
       return query;
     }
-    exports2.parseQueryString = parseQueryString;
+    __name(parseQueryString, "parseQueryString");
   }
 });
 
 // ../../../node_modules/@smithy/url-parser/dist-cjs/index.js
 var require_dist_cjs26 = __commonJS({
-  "../../../node_modules/@smithy/url-parser/dist-cjs/index.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.parseUrl = void 0;
-    var querystring_parser_1 = require_dist_cjs25();
-    var parseUrl = (url2) => {
+  "../../../node_modules/@smithy/url-parser/dist-cjs/index.js"(exports2, module2) {
+    var __defProp2 = Object.defineProperty;
+    var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
+    var __getOwnPropNames2 = Object.getOwnPropertyNames;
+    var __hasOwnProp2 = Object.prototype.hasOwnProperty;
+    var __name = (target, value) => __defProp2(target, "name", { value, configurable: true });
+    var __export2 = (target, all) => {
+      for (var name in all)
+        __defProp2(target, name, { get: all[name], enumerable: true });
+    };
+    var __copyProps2 = (to, from, except, desc) => {
+      if (from && typeof from === "object" || typeof from === "function") {
+        for (let key of __getOwnPropNames2(from))
+          if (!__hasOwnProp2.call(to, key) && key !== except)
+            __defProp2(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc2(from, key)) || desc.enumerable });
+      }
+      return to;
+    };
+    var __toCommonJS2 = (mod) => __copyProps2(__defProp2({}, "__esModule", { value: true }), mod);
+    var src_exports = {};
+    __export2(src_exports, {
+      parseUrl: () => parseUrl
+    });
+    module2.exports = __toCommonJS2(src_exports);
+    var import_querystring_parser = require_dist_cjs25();
+    var parseUrl = /* @__PURE__ */ __name((url2) => {
       if (typeof url2 === "string") {
-        return (0, exports2.parseUrl)(new URL(url2));
+        return parseUrl(new URL(url2));
       }
       const { hostname, pathname, port, protocol, search } = url2;
       let query;
       if (search) {
-        query = (0, querystring_parser_1.parseQueryString)(search);
+        query = (0, import_querystring_parser.parseQueryString)(search);
       }
       return {
         hostname,
@@ -7591,149 +6631,41 @@ var require_dist_cjs26 = __commonJS({
         path: pathname,
         query
       };
-    };
-    exports2.parseUrl = parseUrl;
+    }, "parseUrl");
   }
 });
 
-// ../../../node_modules/@smithy/middleware-endpoint/dist-cjs/adaptors/toEndpointV1.js
-var require_toEndpointV1 = __commonJS({
-  "../../../node_modules/@smithy/middleware-endpoint/dist-cjs/adaptors/toEndpointV1.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.toEndpointV1 = void 0;
-    var url_parser_1 = require_dist_cjs26();
-    var toEndpointV1 = (endpoint) => {
-      if (typeof endpoint === "object") {
-        if ("url" in endpoint) {
-          return (0, url_parser_1.parseUrl)(endpoint.url);
-        }
-        return endpoint;
-      }
-      return (0, url_parser_1.parseUrl)(endpoint);
+// ../../../node_modules/@smithy/middleware-serde/dist-cjs/index.js
+var require_dist_cjs27 = __commonJS({
+  "../../../node_modules/@smithy/middleware-serde/dist-cjs/index.js"(exports2, module2) {
+    var __defProp2 = Object.defineProperty;
+    var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
+    var __getOwnPropNames2 = Object.getOwnPropertyNames;
+    var __hasOwnProp2 = Object.prototype.hasOwnProperty;
+    var __name = (target, value) => __defProp2(target, "name", { value, configurable: true });
+    var __export2 = (target, all) => {
+      for (var name in all)
+        __defProp2(target, name, { get: all[name], enumerable: true });
     };
-    exports2.toEndpointV1 = toEndpointV1;
-  }
-});
-
-// ../../../node_modules/@smithy/middleware-endpoint/dist-cjs/adaptors/getEndpointFromInstructions.js
-var require_getEndpointFromInstructions = __commonJS({
-  "../../../node_modules/@smithy/middleware-endpoint/dist-cjs/adaptors/getEndpointFromInstructions.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.resolveParams = exports2.getEndpointFromInstructions = void 0;
-    var service_customizations_1 = require_service_customizations();
-    var createConfigValueProvider_1 = require_createConfigValueProvider();
-    var getEndpointFromConfig_1 = require_getEndpointFromConfig();
-    var toEndpointV1_1 = require_toEndpointV1();
-    var getEndpointFromInstructions = async (commandInput, instructionsSupplier, clientConfig, context) => {
-      if (!clientConfig.endpoint) {
-        const endpointFromConfig = await (0, getEndpointFromConfig_1.getEndpointFromConfig)(clientConfig.serviceId || "");
-        if (endpointFromConfig) {
-          clientConfig.endpoint = () => Promise.resolve((0, toEndpointV1_1.toEndpointV1)(endpointFromConfig));
-        }
+    var __copyProps2 = (to, from, except, desc) => {
+      if (from && typeof from === "object" || typeof from === "function") {
+        for (let key of __getOwnPropNames2(from))
+          if (!__hasOwnProp2.call(to, key) && key !== except)
+            __defProp2(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc2(from, key)) || desc.enumerable });
       }
-      const endpointParams = await (0, exports2.resolveParams)(commandInput, instructionsSupplier, clientConfig);
-      if (typeof clientConfig.endpointProvider !== "function") {
-        throw new Error("config.endpointProvider is not set.");
-      }
-      const endpoint = clientConfig.endpointProvider(endpointParams, context);
-      return endpoint;
+      return to;
     };
-    exports2.getEndpointFromInstructions = getEndpointFromInstructions;
-    var resolveParams = async (commandInput, instructionsSupplier, clientConfig) => {
-      var _a;
-      const endpointParams = {};
-      const instructions = ((_a = instructionsSupplier === null || instructionsSupplier === void 0 ? void 0 : instructionsSupplier.getEndpointParameterInstructions) === null || _a === void 0 ? void 0 : _a.call(instructionsSupplier)) || {};
-      for (const [name, instruction] of Object.entries(instructions)) {
-        switch (instruction.type) {
-          case "staticContextParams":
-            endpointParams[name] = instruction.value;
-            break;
-          case "contextParams":
-            endpointParams[name] = commandInput[instruction.name];
-            break;
-          case "clientContextParams":
-          case "builtInParams":
-            endpointParams[name] = await (0, createConfigValueProvider_1.createConfigValueProvider)(instruction.name, name, clientConfig)();
-            break;
-          default:
-            throw new Error("Unrecognized endpoint parameter instruction: " + JSON.stringify(instruction));
-        }
-      }
-      if (Object.keys(instructions).length === 0) {
-        Object.assign(endpointParams, clientConfig);
-      }
-      if (String(clientConfig.serviceId).toLowerCase() === "s3") {
-        await (0, service_customizations_1.resolveParamsForS3)(endpointParams);
-      }
-      return endpointParams;
-    };
-    exports2.resolveParams = resolveParams;
-  }
-});
-
-// ../../../node_modules/@smithy/middleware-endpoint/dist-cjs/adaptors/index.js
-var require_adaptors = __commonJS({
-  "../../../node_modules/@smithy/middleware-endpoint/dist-cjs/adaptors/index.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
-    tslib_1.__exportStar(require_getEndpointFromInstructions(), exports2);
-    tslib_1.__exportStar(require_toEndpointV1(), exports2);
-  }
-});
-
-// ../../../node_modules/@smithy/middleware-endpoint/dist-cjs/endpointMiddleware.js
-var require_endpointMiddleware = __commonJS({
-  "../../../node_modules/@smithy/middleware-endpoint/dist-cjs/endpointMiddleware.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.endpointMiddleware = void 0;
-    var util_middleware_1 = require_dist_cjs10();
-    var getEndpointFromInstructions_1 = require_getEndpointFromInstructions();
-    var endpointMiddleware = ({ config, instructions }) => {
-      return (next, context) => async (args) => {
-        var _a, _b, _c;
-        const endpoint = await (0, getEndpointFromInstructions_1.getEndpointFromInstructions)(args.input, {
-          getEndpointParameterInstructions() {
-            return instructions;
-          }
-        }, { ...config }, context);
-        context.endpointV2 = endpoint;
-        context.authSchemes = (_a = endpoint.properties) === null || _a === void 0 ? void 0 : _a.authSchemes;
-        const authScheme = (_b = context.authSchemes) === null || _b === void 0 ? void 0 : _b[0];
-        if (authScheme) {
-          context["signing_region"] = authScheme.signingRegion;
-          context["signing_service"] = authScheme.signingName;
-          const smithyContext = (0, util_middleware_1.getSmithyContext)(context);
-          const httpAuthOption = (_c = smithyContext === null || smithyContext === void 0 ? void 0 : smithyContext.selectedHttpAuthScheme) === null || _c === void 0 ? void 0 : _c.httpAuthOption;
-          if (httpAuthOption) {
-            httpAuthOption.signingProperties = Object.assign(httpAuthOption.signingProperties || {}, {
-              signing_region: authScheme.signingRegion,
-              signingRegion: authScheme.signingRegion,
-              signing_service: authScheme.signingName,
-              signingName: authScheme.signingName,
-              signingRegionSet: authScheme.signingRegionSet
-            }, authScheme.properties);
-          }
-        }
-        return next({
-          ...args
-        });
-      };
-    };
-    exports2.endpointMiddleware = endpointMiddleware;
-  }
-});
-
-// ../../../node_modules/@smithy/middleware-serde/dist-cjs/deserializerMiddleware.js
-var require_deserializerMiddleware = __commonJS({
-  "../../../node_modules/@smithy/middleware-serde/dist-cjs/deserializerMiddleware.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.deserializerMiddleware = void 0;
-    var deserializerMiddleware = (options, deserializer) => (next, context) => async (args) => {
+    var __toCommonJS2 = (mod) => __copyProps2(__defProp2({}, "__esModule", { value: true }), mod);
+    var src_exports = {};
+    __export2(src_exports, {
+      deserializerMiddleware: () => deserializerMiddleware,
+      deserializerMiddlewareOption: () => deserializerMiddlewareOption,
+      getSerdePlugin: () => getSerdePlugin,
+      serializerMiddleware: () => serializerMiddleware,
+      serializerMiddlewareOption: () => serializerMiddlewareOption
+    });
+    module2.exports = __toCommonJS2(src_exports);
+    var deserializerMiddleware = /* @__PURE__ */ __name((options, deserializer) => (next, context) => async (args) => {
       const { response } = await next(args);
       try {
         const parsed = await deserializer(response, options);
@@ -7748,23 +6680,18 @@ var require_deserializerMiddleware = __commonJS({
         if (!("$metadata" in error)) {
           const hint = `Deserialization error: to see the raw response, inspect the hidden field {error}.$response on this object.`;
           error.message += "\n  " + hint;
+          if (typeof error.$responseBodyText !== "undefined") {
+            if (error.$response) {
+              error.$response.body = error.$responseBodyText;
+            }
+          }
         }
         throw error;
       }
-    };
-    exports2.deserializerMiddleware = deserializerMiddleware;
-  }
-});
-
-// ../../../node_modules/@smithy/middleware-serde/dist-cjs/serializerMiddleware.js
-var require_serializerMiddleware = __commonJS({
-  "../../../node_modules/@smithy/middleware-serde/dist-cjs/serializerMiddleware.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.serializerMiddleware = void 0;
-    var serializerMiddleware = (options, serializer) => (next, context) => async (args) => {
+    }, "deserializerMiddleware");
+    var serializerMiddleware = /* @__PURE__ */ __name((options, serializer) => (next, context) => async (args) => {
       var _a;
-      const endpoint = ((_a = context.endpointV2) === null || _a === void 0 ? void 0 : _a.url) && options.urlParser ? async () => options.urlParser(context.endpointV2.url) : options.endpoint;
+      const endpoint = ((_a = context.endpointV2) == null ? void 0 : _a.url) && options.urlParser ? async () => options.urlParser(context.endpointV2.url) : options.endpoint;
       if (!endpoint) {
         throw new Error("No valid endpoint provider available.");
       }
@@ -7773,26 +6700,14 @@ var require_serializerMiddleware = __commonJS({
         ...args,
         request: request2
       });
-    };
-    exports2.serializerMiddleware = serializerMiddleware;
-  }
-});
-
-// ../../../node_modules/@smithy/middleware-serde/dist-cjs/serdePlugin.js
-var require_serdePlugin = __commonJS({
-  "../../../node_modules/@smithy/middleware-serde/dist-cjs/serdePlugin.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.getSerdePlugin = exports2.serializerMiddlewareOption = exports2.deserializerMiddlewareOption = void 0;
-    var deserializerMiddleware_1 = require_deserializerMiddleware();
-    var serializerMiddleware_1 = require_serializerMiddleware();
-    exports2.deserializerMiddlewareOption = {
+    }, "serializerMiddleware");
+    var deserializerMiddlewareOption = {
       name: "deserializerMiddleware",
       step: "deserialize",
       tags: ["DESERIALIZER"],
       override: true
     };
-    exports2.serializerMiddlewareOption = {
+    var serializerMiddlewareOption = {
       name: "serializerMiddleware",
       step: "serialize",
       tags: ["SERIALIZER"],
@@ -7801,517 +6716,241 @@ var require_serdePlugin = __commonJS({
     function getSerdePlugin(config, serializer, deserializer) {
       return {
         applyToStack: (commandStack) => {
-          commandStack.add((0, deserializerMiddleware_1.deserializerMiddleware)(config, deserializer), exports2.deserializerMiddlewareOption);
-          commandStack.add((0, serializerMiddleware_1.serializerMiddleware)(config, serializer), exports2.serializerMiddlewareOption);
+          commandStack.add(deserializerMiddleware(config, deserializer), deserializerMiddlewareOption);
+          commandStack.add(serializerMiddleware(config, serializer), serializerMiddlewareOption);
         }
       };
     }
-    exports2.getSerdePlugin = getSerdePlugin;
+    __name(getSerdePlugin, "getSerdePlugin");
   }
 });
 
-// ../../../node_modules/@smithy/middleware-serde/dist-cjs/index.js
-var require_dist_cjs27 = __commonJS({
-  "../../../node_modules/@smithy/middleware-serde/dist-cjs/index.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
-    tslib_1.__exportStar(require_deserializerMiddleware(), exports2);
-    tslib_1.__exportStar(require_serdePlugin(), exports2);
-    tslib_1.__exportStar(require_serializerMiddleware(), exports2);
-  }
-});
-
-// ../../../node_modules/@smithy/middleware-endpoint/dist-cjs/getEndpointPlugin.js
-var require_getEndpointPlugin = __commonJS({
-  "../../../node_modules/@smithy/middleware-endpoint/dist-cjs/getEndpointPlugin.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.getEndpointPlugin = exports2.endpointMiddlewareOptions = void 0;
-    var middleware_serde_1 = require_dist_cjs27();
-    var endpointMiddleware_1 = require_endpointMiddleware();
-    exports2.endpointMiddlewareOptions = {
+// ../../../node_modules/@smithy/middleware-endpoint/dist-cjs/index.js
+var require_dist_cjs28 = __commonJS({
+  "../../../node_modules/@smithy/middleware-endpoint/dist-cjs/index.js"(exports2, module2) {
+    var __defProp2 = Object.defineProperty;
+    var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
+    var __getOwnPropNames2 = Object.getOwnPropertyNames;
+    var __hasOwnProp2 = Object.prototype.hasOwnProperty;
+    var __name = (target, value) => __defProp2(target, "name", { value, configurable: true });
+    var __export2 = (target, all) => {
+      for (var name in all)
+        __defProp2(target, name, { get: all[name], enumerable: true });
+    };
+    var __copyProps2 = (to, from, except, desc) => {
+      if (from && typeof from === "object" || typeof from === "function") {
+        for (let key of __getOwnPropNames2(from))
+          if (!__hasOwnProp2.call(to, key) && key !== except)
+            __defProp2(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc2(from, key)) || desc.enumerable });
+      }
+      return to;
+    };
+    var __toCommonJS2 = (mod) => __copyProps2(__defProp2({}, "__esModule", { value: true }), mod);
+    var src_exports = {};
+    __export2(src_exports, {
+      endpointMiddleware: () => endpointMiddleware,
+      endpointMiddlewareOptions: () => endpointMiddlewareOptions,
+      getEndpointFromInstructions: () => getEndpointFromInstructions,
+      getEndpointPlugin: () => getEndpointPlugin,
+      resolveEndpointConfig: () => resolveEndpointConfig,
+      resolveParams: () => resolveParams,
+      toEndpointV1: () => toEndpointV1
+    });
+    module2.exports = __toCommonJS2(src_exports);
+    var resolveParamsForS3 = /* @__PURE__ */ __name(async (endpointParams) => {
+      const bucket = (endpointParams == null ? void 0 : endpointParams.Bucket) || "";
+      if (typeof endpointParams.Bucket === "string") {
+        endpointParams.Bucket = bucket.replace(/#/g, encodeURIComponent("#")).replace(/\?/g, encodeURIComponent("?"));
+      }
+      if (isArnBucketName(bucket)) {
+        if (endpointParams.ForcePathStyle === true) {
+          throw new Error("Path-style addressing cannot be used with ARN buckets");
+        }
+      } else if (!isDnsCompatibleBucketName(bucket) || bucket.indexOf(".") !== -1 && !String(endpointParams.Endpoint).startsWith("http:") || bucket.toLowerCase() !== bucket || bucket.length < 3) {
+        endpointParams.ForcePathStyle = true;
+      }
+      if (endpointParams.DisableMultiRegionAccessPoints) {
+        endpointParams.disableMultiRegionAccessPoints = true;
+        endpointParams.DisableMRAP = true;
+      }
+      return endpointParams;
+    }, "resolveParamsForS3");
+    var DOMAIN_PATTERN = /^[a-z0-9][a-z0-9\.\-]{1,61}[a-z0-9]$/;
+    var IP_ADDRESS_PATTERN = /(\d+\.){3}\d+/;
+    var DOTS_PATTERN = /\.\./;
+    var isDnsCompatibleBucketName = /* @__PURE__ */ __name((bucketName) => DOMAIN_PATTERN.test(bucketName) && !IP_ADDRESS_PATTERN.test(bucketName) && !DOTS_PATTERN.test(bucketName), "isDnsCompatibleBucketName");
+    var isArnBucketName = /* @__PURE__ */ __name((bucketName) => {
+      const [arn, partition, service, region, account, typeOrId] = bucketName.split(":");
+      const isArn = arn === "arn" && bucketName.split(":").length >= 6;
+      const isValidArn = [arn, partition, service, account, typeOrId].filter(Boolean).length === 5;
+      if (isArn && !isValidArn) {
+        throw new Error(`Invalid ARN: ${bucketName} was an invalid ARN.`);
+      }
+      return arn === "arn" && !!partition && !!service && !!account && !!typeOrId;
+    }, "isArnBucketName");
+    var createConfigValueProvider = /* @__PURE__ */ __name((configKey, canonicalEndpointParamKey, config) => {
+      const configProvider = /* @__PURE__ */ __name(async () => {
+        const configValue = config[configKey] ?? config[canonicalEndpointParamKey];
+        if (typeof configValue === "function") {
+          return configValue();
+        }
+        return configValue;
+      }, "configProvider");
+      if (configKey === "credentialScope" || canonicalEndpointParamKey === "CredentialScope") {
+        return async () => {
+          const credentials = typeof config.credentials === "function" ? await config.credentials() : config.credentials;
+          const configValue = (credentials == null ? void 0 : credentials.credentialScope) ?? (credentials == null ? void 0 : credentials.CredentialScope);
+          return configValue;
+        };
+      }
+      if (configKey === "endpoint" || canonicalEndpointParamKey === "endpoint") {
+        return async () => {
+          const endpoint = await configProvider();
+          if (endpoint && typeof endpoint === "object") {
+            if ("url" in endpoint) {
+              return endpoint.url.href;
+            }
+            if ("hostname" in endpoint) {
+              const { protocol, hostname, port, path } = endpoint;
+              return `${protocol}//${hostname}${port ? ":" + port : ""}${path}`;
+            }
+          }
+          return endpoint;
+        };
+      }
+      return configProvider;
+    }, "createConfigValueProvider");
+    var import_getEndpointFromConfig = require_getEndpointFromConfig();
+    var import_url_parser = require_dist_cjs26();
+    var toEndpointV1 = /* @__PURE__ */ __name((endpoint) => {
+      if (typeof endpoint === "object") {
+        if ("url" in endpoint) {
+          return (0, import_url_parser.parseUrl)(endpoint.url);
+        }
+        return endpoint;
+      }
+      return (0, import_url_parser.parseUrl)(endpoint);
+    }, "toEndpointV1");
+    var getEndpointFromInstructions = /* @__PURE__ */ __name(async (commandInput, instructionsSupplier, clientConfig, context) => {
+      if (!clientConfig.endpoint) {
+        const endpointFromConfig = await (0, import_getEndpointFromConfig.getEndpointFromConfig)(clientConfig.serviceId || "");
+        if (endpointFromConfig) {
+          clientConfig.endpoint = () => Promise.resolve(toEndpointV1(endpointFromConfig));
+        }
+      }
+      const endpointParams = await resolveParams(commandInput, instructionsSupplier, clientConfig);
+      if (typeof clientConfig.endpointProvider !== "function") {
+        throw new Error("config.endpointProvider is not set.");
+      }
+      const endpoint = clientConfig.endpointProvider(endpointParams, context);
+      return endpoint;
+    }, "getEndpointFromInstructions");
+    var resolveParams = /* @__PURE__ */ __name(async (commandInput, instructionsSupplier, clientConfig) => {
+      var _a;
+      const endpointParams = {};
+      const instructions = ((_a = instructionsSupplier == null ? void 0 : instructionsSupplier.getEndpointParameterInstructions) == null ? void 0 : _a.call(instructionsSupplier)) || {};
+      for (const [name, instruction] of Object.entries(instructions)) {
+        switch (instruction.type) {
+          case "staticContextParams":
+            endpointParams[name] = instruction.value;
+            break;
+          case "contextParams":
+            endpointParams[name] = commandInput[instruction.name];
+            break;
+          case "clientContextParams":
+          case "builtInParams":
+            endpointParams[name] = await createConfigValueProvider(instruction.name, name, clientConfig)();
+            break;
+          default:
+            throw new Error("Unrecognized endpoint parameter instruction: " + JSON.stringify(instruction));
+        }
+      }
+      if (Object.keys(instructions).length === 0) {
+        Object.assign(endpointParams, clientConfig);
+      }
+      if (String(clientConfig.serviceId).toLowerCase() === "s3") {
+        await resolveParamsForS3(endpointParams);
+      }
+      return endpointParams;
+    }, "resolveParams");
+    var import_util_middleware = require_dist_cjs10();
+    var endpointMiddleware = /* @__PURE__ */ __name(({
+      config,
+      instructions
+    }) => {
+      return (next, context) => async (args) => {
+        var _a, _b, _c;
+        const endpoint = await getEndpointFromInstructions(
+          args.input,
+          {
+            getEndpointParameterInstructions() {
+              return instructions;
+            }
+          },
+          { ...config },
+          context
+        );
+        context.endpointV2 = endpoint;
+        context.authSchemes = (_a = endpoint.properties) == null ? void 0 : _a.authSchemes;
+        const authScheme = (_b = context.authSchemes) == null ? void 0 : _b[0];
+        if (authScheme) {
+          context["signing_region"] = authScheme.signingRegion;
+          context["signing_service"] = authScheme.signingName;
+          const smithyContext = (0, import_util_middleware.getSmithyContext)(context);
+          const httpAuthOption = (_c = smithyContext == null ? void 0 : smithyContext.selectedHttpAuthScheme) == null ? void 0 : _c.httpAuthOption;
+          if (httpAuthOption) {
+            httpAuthOption.signingProperties = Object.assign(
+              httpAuthOption.signingProperties || {},
+              {
+                signing_region: authScheme.signingRegion,
+                signingRegion: authScheme.signingRegion,
+                signing_service: authScheme.signingName,
+                signingName: authScheme.signingName,
+                signingRegionSet: authScheme.signingRegionSet
+              },
+              authScheme.properties
+            );
+          }
+        }
+        return next({
+          ...args
+        });
+      };
+    }, "endpointMiddleware");
+    var import_middleware_serde = require_dist_cjs27();
+    var endpointMiddlewareOptions = {
       step: "serialize",
       tags: ["ENDPOINT_PARAMETERS", "ENDPOINT_V2", "ENDPOINT"],
       name: "endpointV2Middleware",
       override: true,
       relation: "before",
-      toMiddleware: middleware_serde_1.serializerMiddlewareOption.name
+      toMiddleware: import_middleware_serde.serializerMiddlewareOption.name
     };
-    var getEndpointPlugin = (config, instructions) => ({
+    var getEndpointPlugin = /* @__PURE__ */ __name((config, instructions) => ({
       applyToStack: (clientStack) => {
-        clientStack.addRelativeTo((0, endpointMiddleware_1.endpointMiddleware)({
-          config,
-          instructions
-        }), exports2.endpointMiddlewareOptions);
+        clientStack.addRelativeTo(
+          endpointMiddleware({
+            config,
+            instructions
+          }),
+          endpointMiddlewareOptions
+        );
       }
-    });
-    exports2.getEndpointPlugin = getEndpointPlugin;
-  }
-});
-
-// ../../../node_modules/@smithy/middleware-endpoint/dist-cjs/resolveEndpointConfig.js
-var require_resolveEndpointConfig = __commonJS({
-  "../../../node_modules/@smithy/middleware-endpoint/dist-cjs/resolveEndpointConfig.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.resolveEndpointConfig = void 0;
-    var util_middleware_1 = require_dist_cjs10();
-    var toEndpointV1_1 = require_toEndpointV1();
-    var resolveEndpointConfig = (input) => {
-      var _a, _b, _c;
-      const tls = (_a = input.tls) !== null && _a !== void 0 ? _a : true;
+    }), "getEndpointPlugin");
+    var resolveEndpointConfig = /* @__PURE__ */ __name((input) => {
+      const tls = input.tls ?? true;
       const { endpoint } = input;
-      const customEndpointProvider = endpoint != null ? async () => (0, toEndpointV1_1.toEndpointV1)(await (0, util_middleware_1.normalizeProvider)(endpoint)()) : void 0;
+      const customEndpointProvider = endpoint != null ? async () => toEndpointV1(await (0, import_util_middleware.normalizeProvider)(endpoint)()) : void 0;
       const isCustomEndpoint = !!endpoint;
       return {
         ...input,
         endpoint: customEndpointProvider,
         tls,
         isCustomEndpoint,
-        useDualstackEndpoint: (0, util_middleware_1.normalizeProvider)((_b = input.useDualstackEndpoint) !== null && _b !== void 0 ? _b : false),
-        useFipsEndpoint: (0, util_middleware_1.normalizeProvider)((_c = input.useFipsEndpoint) !== null && _c !== void 0 ? _c : false)
+        useDualstackEndpoint: (0, import_util_middleware.normalizeProvider)(input.useDualstackEndpoint ?? false),
+        useFipsEndpoint: (0, import_util_middleware.normalizeProvider)(input.useFipsEndpoint ?? false)
       };
-    };
-    exports2.resolveEndpointConfig = resolveEndpointConfig;
-  }
-});
-
-// ../../../node_modules/@smithy/middleware-endpoint/dist-cjs/types.js
-var require_types5 = __commonJS({
-  "../../../node_modules/@smithy/middleware-endpoint/dist-cjs/types.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-  }
-});
-
-// ../../../node_modules/@smithy/middleware-endpoint/dist-cjs/index.js
-var require_dist_cjs28 = __commonJS({
-  "../../../node_modules/@smithy/middleware-endpoint/dist-cjs/index.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
-    tslib_1.__exportStar(require_adaptors(), exports2);
-    tslib_1.__exportStar(require_endpointMiddleware(), exports2);
-    tslib_1.__exportStar(require_getEndpointPlugin(), exports2);
-    tslib_1.__exportStar(require_resolveEndpointConfig(), exports2);
-    tslib_1.__exportStar(require_types5(), exports2);
-  }
-});
-
-// ../../../node_modules/@smithy/util-retry/dist-cjs/config.js
-var require_config3 = __commonJS({
-  "../../../node_modules/@smithy/util-retry/dist-cjs/config.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.DEFAULT_RETRY_MODE = exports2.DEFAULT_MAX_ATTEMPTS = exports2.RETRY_MODES = void 0;
-    var RETRY_MODES;
-    (function(RETRY_MODES2) {
-      RETRY_MODES2["STANDARD"] = "standard";
-      RETRY_MODES2["ADAPTIVE"] = "adaptive";
-    })(RETRY_MODES = exports2.RETRY_MODES || (exports2.RETRY_MODES = {}));
-    exports2.DEFAULT_MAX_ATTEMPTS = 3;
-    exports2.DEFAULT_RETRY_MODE = RETRY_MODES.STANDARD;
-  }
-});
-
-// ../../../node_modules/@smithy/service-error-classification/dist-cjs/constants.js
-var require_constants3 = __commonJS({
-  "../../../node_modules/@smithy/service-error-classification/dist-cjs/constants.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.NODEJS_TIMEOUT_ERROR_CODES = exports2.TRANSIENT_ERROR_STATUS_CODES = exports2.TRANSIENT_ERROR_CODES = exports2.THROTTLING_ERROR_CODES = exports2.CLOCK_SKEW_ERROR_CODES = void 0;
-    exports2.CLOCK_SKEW_ERROR_CODES = [
-      "AuthFailure",
-      "InvalidSignatureException",
-      "RequestExpired",
-      "RequestInTheFuture",
-      "RequestTimeTooSkewed",
-      "SignatureDoesNotMatch"
-    ];
-    exports2.THROTTLING_ERROR_CODES = [
-      "BandwidthLimitExceeded",
-      "EC2ThrottledException",
-      "LimitExceededException",
-      "PriorRequestNotComplete",
-      "ProvisionedThroughputExceededException",
-      "RequestLimitExceeded",
-      "RequestThrottled",
-      "RequestThrottledException",
-      "SlowDown",
-      "ThrottledException",
-      "Throttling",
-      "ThrottlingException",
-      "TooManyRequestsException",
-      "TransactionInProgressException"
-    ];
-    exports2.TRANSIENT_ERROR_CODES = ["TimeoutError", "RequestTimeout", "RequestTimeoutException"];
-    exports2.TRANSIENT_ERROR_STATUS_CODES = [500, 502, 503, 504];
-    exports2.NODEJS_TIMEOUT_ERROR_CODES = ["ECONNRESET", "ECONNREFUSED", "EPIPE", "ETIMEDOUT"];
-  }
-});
-
-// ../../../node_modules/@smithy/service-error-classification/dist-cjs/index.js
-var require_dist_cjs29 = __commonJS({
-  "../../../node_modules/@smithy/service-error-classification/dist-cjs/index.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.isServerError = exports2.isTransientError = exports2.isThrottlingError = exports2.isClockSkewError = exports2.isRetryableByTrait = void 0;
-    var constants_1 = require_constants3();
-    var isRetryableByTrait = (error) => error.$retryable !== void 0;
-    exports2.isRetryableByTrait = isRetryableByTrait;
-    var isClockSkewError = (error) => constants_1.CLOCK_SKEW_ERROR_CODES.includes(error.name);
-    exports2.isClockSkewError = isClockSkewError;
-    var isThrottlingError = (error) => {
-      var _a, _b;
-      return ((_a = error.$metadata) === null || _a === void 0 ? void 0 : _a.httpStatusCode) === 429 || constants_1.THROTTLING_ERROR_CODES.includes(error.name) || ((_b = error.$retryable) === null || _b === void 0 ? void 0 : _b.throttling) == true;
-    };
-    exports2.isThrottlingError = isThrottlingError;
-    var isTransientError = (error) => {
-      var _a;
-      return constants_1.TRANSIENT_ERROR_CODES.includes(error.name) || constants_1.NODEJS_TIMEOUT_ERROR_CODES.includes((error === null || error === void 0 ? void 0 : error.code) || "") || constants_1.TRANSIENT_ERROR_STATUS_CODES.includes(((_a = error.$metadata) === null || _a === void 0 ? void 0 : _a.httpStatusCode) || 0);
-    };
-    exports2.isTransientError = isTransientError;
-    var isServerError = (error) => {
-      var _a;
-      if (((_a = error.$metadata) === null || _a === void 0 ? void 0 : _a.httpStatusCode) !== void 0) {
-        const statusCode = error.$metadata.httpStatusCode;
-        if (500 <= statusCode && statusCode <= 599 && !(0, exports2.isTransientError)(error)) {
-          return true;
-        }
-        return false;
-      }
-      return false;
-    };
-    exports2.isServerError = isServerError;
-  }
-});
-
-// ../../../node_modules/@smithy/util-retry/dist-cjs/DefaultRateLimiter.js
-var require_DefaultRateLimiter = __commonJS({
-  "../../../node_modules/@smithy/util-retry/dist-cjs/DefaultRateLimiter.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.DefaultRateLimiter = void 0;
-    var service_error_classification_1 = require_dist_cjs29();
-    var DefaultRateLimiter = class {
-      constructor(options) {
-        var _a, _b, _c, _d, _e;
-        this.currentCapacity = 0;
-        this.enabled = false;
-        this.lastMaxRate = 0;
-        this.measuredTxRate = 0;
-        this.requestCount = 0;
-        this.lastTimestamp = 0;
-        this.timeWindow = 0;
-        this.beta = (_a = options === null || options === void 0 ? void 0 : options.beta) !== null && _a !== void 0 ? _a : 0.7;
-        this.minCapacity = (_b = options === null || options === void 0 ? void 0 : options.minCapacity) !== null && _b !== void 0 ? _b : 1;
-        this.minFillRate = (_c = options === null || options === void 0 ? void 0 : options.minFillRate) !== null && _c !== void 0 ? _c : 0.5;
-        this.scaleConstant = (_d = options === null || options === void 0 ? void 0 : options.scaleConstant) !== null && _d !== void 0 ? _d : 0.4;
-        this.smooth = (_e = options === null || options === void 0 ? void 0 : options.smooth) !== null && _e !== void 0 ? _e : 0.8;
-        const currentTimeInSeconds = this.getCurrentTimeInSeconds();
-        this.lastThrottleTime = currentTimeInSeconds;
-        this.lastTxRateBucket = Math.floor(this.getCurrentTimeInSeconds());
-        this.fillRate = this.minFillRate;
-        this.maxCapacity = this.minCapacity;
-      }
-      getCurrentTimeInSeconds() {
-        return Date.now() / 1e3;
-      }
-      async getSendToken() {
-        return this.acquireTokenBucket(1);
-      }
-      async acquireTokenBucket(amount) {
-        if (!this.enabled) {
-          return;
-        }
-        this.refillTokenBucket();
-        if (amount > this.currentCapacity) {
-          const delay = (amount - this.currentCapacity) / this.fillRate * 1e3;
-          await new Promise((resolve) => setTimeout(resolve, delay));
-        }
-        this.currentCapacity = this.currentCapacity - amount;
-      }
-      refillTokenBucket() {
-        const timestamp = this.getCurrentTimeInSeconds();
-        if (!this.lastTimestamp) {
-          this.lastTimestamp = timestamp;
-          return;
-        }
-        const fillAmount = (timestamp - this.lastTimestamp) * this.fillRate;
-        this.currentCapacity = Math.min(this.maxCapacity, this.currentCapacity + fillAmount);
-        this.lastTimestamp = timestamp;
-      }
-      updateClientSendingRate(response) {
-        let calculatedRate;
-        this.updateMeasuredRate();
-        if ((0, service_error_classification_1.isThrottlingError)(response)) {
-          const rateToUse = !this.enabled ? this.measuredTxRate : Math.min(this.measuredTxRate, this.fillRate);
-          this.lastMaxRate = rateToUse;
-          this.calculateTimeWindow();
-          this.lastThrottleTime = this.getCurrentTimeInSeconds();
-          calculatedRate = this.cubicThrottle(rateToUse);
-          this.enableTokenBucket();
-        } else {
-          this.calculateTimeWindow();
-          calculatedRate = this.cubicSuccess(this.getCurrentTimeInSeconds());
-        }
-        const newRate = Math.min(calculatedRate, 2 * this.measuredTxRate);
-        this.updateTokenBucketRate(newRate);
-      }
-      calculateTimeWindow() {
-        this.timeWindow = this.getPrecise(Math.pow(this.lastMaxRate * (1 - this.beta) / this.scaleConstant, 1 / 3));
-      }
-      cubicThrottle(rateToUse) {
-        return this.getPrecise(rateToUse * this.beta);
-      }
-      cubicSuccess(timestamp) {
-        return this.getPrecise(this.scaleConstant * Math.pow(timestamp - this.lastThrottleTime - this.timeWindow, 3) + this.lastMaxRate);
-      }
-      enableTokenBucket() {
-        this.enabled = true;
-      }
-      updateTokenBucketRate(newRate) {
-        this.refillTokenBucket();
-        this.fillRate = Math.max(newRate, this.minFillRate);
-        this.maxCapacity = Math.max(newRate, this.minCapacity);
-        this.currentCapacity = Math.min(this.currentCapacity, this.maxCapacity);
-      }
-      updateMeasuredRate() {
-        const t = this.getCurrentTimeInSeconds();
-        const timeBucket = Math.floor(t * 2) / 2;
-        this.requestCount++;
-        if (timeBucket > this.lastTxRateBucket) {
-          const currentRate = this.requestCount / (timeBucket - this.lastTxRateBucket);
-          this.measuredTxRate = this.getPrecise(currentRate * this.smooth + this.measuredTxRate * (1 - this.smooth));
-          this.requestCount = 0;
-          this.lastTxRateBucket = timeBucket;
-        }
-      }
-      getPrecise(num) {
-        return parseFloat(num.toFixed(8));
-      }
-    };
-    exports2.DefaultRateLimiter = DefaultRateLimiter;
-  }
-});
-
-// ../../../node_modules/@smithy/util-retry/dist-cjs/constants.js
-var require_constants4 = __commonJS({
-  "../../../node_modules/@smithy/util-retry/dist-cjs/constants.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.REQUEST_HEADER = exports2.INVOCATION_ID_HEADER = exports2.NO_RETRY_INCREMENT = exports2.TIMEOUT_RETRY_COST = exports2.RETRY_COST = exports2.INITIAL_RETRY_TOKENS = exports2.THROTTLING_RETRY_DELAY_BASE = exports2.MAXIMUM_RETRY_DELAY = exports2.DEFAULT_RETRY_DELAY_BASE = void 0;
-    exports2.DEFAULT_RETRY_DELAY_BASE = 100;
-    exports2.MAXIMUM_RETRY_DELAY = 20 * 1e3;
-    exports2.THROTTLING_RETRY_DELAY_BASE = 500;
-    exports2.INITIAL_RETRY_TOKENS = 500;
-    exports2.RETRY_COST = 5;
-    exports2.TIMEOUT_RETRY_COST = 10;
-    exports2.NO_RETRY_INCREMENT = 1;
-    exports2.INVOCATION_ID_HEADER = "amz-sdk-invocation-id";
-    exports2.REQUEST_HEADER = "amz-sdk-request";
-  }
-});
-
-// ../../../node_modules/@smithy/util-retry/dist-cjs/defaultRetryBackoffStrategy.js
-var require_defaultRetryBackoffStrategy = __commonJS({
-  "../../../node_modules/@smithy/util-retry/dist-cjs/defaultRetryBackoffStrategy.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.getDefaultRetryBackoffStrategy = void 0;
-    var constants_1 = require_constants4();
-    var getDefaultRetryBackoffStrategy = () => {
-      let delayBase = constants_1.DEFAULT_RETRY_DELAY_BASE;
-      const computeNextBackoffDelay = (attempts) => {
-        return Math.floor(Math.min(constants_1.MAXIMUM_RETRY_DELAY, Math.random() * 2 ** attempts * delayBase));
-      };
-      const setDelayBase = (delay) => {
-        delayBase = delay;
-      };
-      return {
-        computeNextBackoffDelay,
-        setDelayBase
-      };
-    };
-    exports2.getDefaultRetryBackoffStrategy = getDefaultRetryBackoffStrategy;
-  }
-});
-
-// ../../../node_modules/@smithy/util-retry/dist-cjs/defaultRetryToken.js
-var require_defaultRetryToken = __commonJS({
-  "../../../node_modules/@smithy/util-retry/dist-cjs/defaultRetryToken.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.createDefaultRetryToken = void 0;
-    var constants_1 = require_constants4();
-    var createDefaultRetryToken = ({ retryDelay, retryCount, retryCost }) => {
-      const getRetryCount = () => retryCount;
-      const getRetryDelay = () => Math.min(constants_1.MAXIMUM_RETRY_DELAY, retryDelay);
-      const getRetryCost = () => retryCost;
-      return {
-        getRetryCount,
-        getRetryDelay,
-        getRetryCost
-      };
-    };
-    exports2.createDefaultRetryToken = createDefaultRetryToken;
-  }
-});
-
-// ../../../node_modules/@smithy/util-retry/dist-cjs/StandardRetryStrategy.js
-var require_StandardRetryStrategy = __commonJS({
-  "../../../node_modules/@smithy/util-retry/dist-cjs/StandardRetryStrategy.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.StandardRetryStrategy = void 0;
-    var config_1 = require_config3();
-    var constants_1 = require_constants4();
-    var defaultRetryBackoffStrategy_1 = require_defaultRetryBackoffStrategy();
-    var defaultRetryToken_1 = require_defaultRetryToken();
-    var StandardRetryStrategy = class {
-      constructor(maxAttempts) {
-        this.maxAttempts = maxAttempts;
-        this.mode = config_1.RETRY_MODES.STANDARD;
-        this.capacity = constants_1.INITIAL_RETRY_TOKENS;
-        this.retryBackoffStrategy = (0, defaultRetryBackoffStrategy_1.getDefaultRetryBackoffStrategy)();
-        this.maxAttemptsProvider = typeof maxAttempts === "function" ? maxAttempts : async () => maxAttempts;
-      }
-      async acquireInitialRetryToken(retryTokenScope) {
-        return (0, defaultRetryToken_1.createDefaultRetryToken)({
-          retryDelay: constants_1.DEFAULT_RETRY_DELAY_BASE,
-          retryCount: 0
-        });
-      }
-      async refreshRetryTokenForRetry(token, errorInfo) {
-        const maxAttempts = await this.getMaxAttempts();
-        if (this.shouldRetry(token, errorInfo, maxAttempts)) {
-          const errorType = errorInfo.errorType;
-          this.retryBackoffStrategy.setDelayBase(errorType === "THROTTLING" ? constants_1.THROTTLING_RETRY_DELAY_BASE : constants_1.DEFAULT_RETRY_DELAY_BASE);
-          const delayFromErrorType = this.retryBackoffStrategy.computeNextBackoffDelay(token.getRetryCount());
-          const retryDelay = errorInfo.retryAfterHint ? Math.max(errorInfo.retryAfterHint.getTime() - Date.now() || 0, delayFromErrorType) : delayFromErrorType;
-          const capacityCost = this.getCapacityCost(errorType);
-          this.capacity -= capacityCost;
-          return (0, defaultRetryToken_1.createDefaultRetryToken)({
-            retryDelay,
-            retryCount: token.getRetryCount() + 1,
-            retryCost: capacityCost
-          });
-        }
-        throw new Error("No retry token available");
-      }
-      recordSuccess(token) {
-        var _a;
-        this.capacity = Math.max(constants_1.INITIAL_RETRY_TOKENS, this.capacity + ((_a = token.getRetryCost()) !== null && _a !== void 0 ? _a : constants_1.NO_RETRY_INCREMENT));
-      }
-      getCapacity() {
-        return this.capacity;
-      }
-      async getMaxAttempts() {
-        try {
-          return await this.maxAttemptsProvider();
-        } catch (error) {
-          console.warn(`Max attempts provider could not resolve. Using default of ${config_1.DEFAULT_MAX_ATTEMPTS}`);
-          return config_1.DEFAULT_MAX_ATTEMPTS;
-        }
-      }
-      shouldRetry(tokenToRenew, errorInfo, maxAttempts) {
-        const attempts = tokenToRenew.getRetryCount() + 1;
-        return attempts < maxAttempts && this.capacity >= this.getCapacityCost(errorInfo.errorType) && this.isRetryableError(errorInfo.errorType);
-      }
-      getCapacityCost(errorType) {
-        return errorType === "TRANSIENT" ? constants_1.TIMEOUT_RETRY_COST : constants_1.RETRY_COST;
-      }
-      isRetryableError(errorType) {
-        return errorType === "THROTTLING" || errorType === "TRANSIENT";
-      }
-    };
-    exports2.StandardRetryStrategy = StandardRetryStrategy;
-  }
-});
-
-// ../../../node_modules/@smithy/util-retry/dist-cjs/AdaptiveRetryStrategy.js
-var require_AdaptiveRetryStrategy = __commonJS({
-  "../../../node_modules/@smithy/util-retry/dist-cjs/AdaptiveRetryStrategy.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.AdaptiveRetryStrategy = void 0;
-    var config_1 = require_config3();
-    var DefaultRateLimiter_1 = require_DefaultRateLimiter();
-    var StandardRetryStrategy_1 = require_StandardRetryStrategy();
-    var AdaptiveRetryStrategy = class {
-      constructor(maxAttemptsProvider, options) {
-        this.maxAttemptsProvider = maxAttemptsProvider;
-        this.mode = config_1.RETRY_MODES.ADAPTIVE;
-        const { rateLimiter } = options !== null && options !== void 0 ? options : {};
-        this.rateLimiter = rateLimiter !== null && rateLimiter !== void 0 ? rateLimiter : new DefaultRateLimiter_1.DefaultRateLimiter();
-        this.standardRetryStrategy = new StandardRetryStrategy_1.StandardRetryStrategy(maxAttemptsProvider);
-      }
-      async acquireInitialRetryToken(retryTokenScope) {
-        await this.rateLimiter.getSendToken();
-        return this.standardRetryStrategy.acquireInitialRetryToken(retryTokenScope);
-      }
-      async refreshRetryTokenForRetry(tokenToRenew, errorInfo) {
-        this.rateLimiter.updateClientSendingRate(errorInfo);
-        return this.standardRetryStrategy.refreshRetryTokenForRetry(tokenToRenew, errorInfo);
-      }
-      recordSuccess(token) {
-        this.rateLimiter.updateClientSendingRate({});
-        this.standardRetryStrategy.recordSuccess(token);
-      }
-    };
-    exports2.AdaptiveRetryStrategy = AdaptiveRetryStrategy;
-  }
-});
-
-// ../../../node_modules/@smithy/util-retry/dist-cjs/ConfiguredRetryStrategy.js
-var require_ConfiguredRetryStrategy = __commonJS({
-  "../../../node_modules/@smithy/util-retry/dist-cjs/ConfiguredRetryStrategy.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.ConfiguredRetryStrategy = void 0;
-    var constants_1 = require_constants4();
-    var StandardRetryStrategy_1 = require_StandardRetryStrategy();
-    var ConfiguredRetryStrategy = class extends StandardRetryStrategy_1.StandardRetryStrategy {
-      constructor(maxAttempts, computeNextBackoffDelay = constants_1.DEFAULT_RETRY_DELAY_BASE) {
-        super(typeof maxAttempts === "function" ? maxAttempts : async () => maxAttempts);
-        if (typeof computeNextBackoffDelay === "number") {
-          this.computeNextBackoffDelay = () => computeNextBackoffDelay;
-        } else {
-          this.computeNextBackoffDelay = computeNextBackoffDelay;
-        }
-      }
-      async refreshRetryTokenForRetry(tokenToRenew, errorInfo) {
-        const token = await super.refreshRetryTokenForRetry(tokenToRenew, errorInfo);
-        token.getRetryDelay = () => this.computeNextBackoffDelay(token.getRetryCount());
-        return token;
-      }
-    };
-    exports2.ConfiguredRetryStrategy = ConfiguredRetryStrategy;
-  }
-});
-
-// ../../../node_modules/@smithy/util-retry/dist-cjs/types.js
-var require_types6 = __commonJS({
-  "../../../node_modules/@smithy/util-retry/dist-cjs/types.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-  }
-});
-
-// ../../../node_modules/@smithy/util-retry/dist-cjs/index.js
-var require_dist_cjs30 = __commonJS({
-  "../../../node_modules/@smithy/util-retry/dist-cjs/index.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
-    tslib_1.__exportStar(require_AdaptiveRetryStrategy(), exports2);
-    tslib_1.__exportStar(require_ConfiguredRetryStrategy(), exports2);
-    tslib_1.__exportStar(require_DefaultRateLimiter(), exports2);
-    tslib_1.__exportStar(require_StandardRetryStrategy(), exports2);
-    tslib_1.__exportStar(require_config3(), exports2);
-    tslib_1.__exportStar(require_constants4(), exports2);
-    tslib_1.__exportStar(require_types6(), exports2);
+    }, "resolveEndpointConfig");
   }
 });
 
@@ -8648,346 +7287,433 @@ var init_esm_node = __esm({
   }
 });
 
-// ../../../node_modules/@smithy/middleware-retry/dist-cjs/defaultRetryQuota.js
-var require_defaultRetryQuota = __commonJS({
-  "../../../node_modules/@smithy/middleware-retry/dist-cjs/defaultRetryQuota.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.getDefaultRetryQuota = void 0;
-    var util_retry_1 = require_dist_cjs30();
-    var getDefaultRetryQuota = (initialRetryTokens, options) => {
-      var _a, _b, _c;
-      const MAX_CAPACITY = initialRetryTokens;
-      const noRetryIncrement = (_a = options === null || options === void 0 ? void 0 : options.noRetryIncrement) !== null && _a !== void 0 ? _a : util_retry_1.NO_RETRY_INCREMENT;
-      const retryCost = (_b = options === null || options === void 0 ? void 0 : options.retryCost) !== null && _b !== void 0 ? _b : util_retry_1.RETRY_COST;
-      const timeoutRetryCost = (_c = options === null || options === void 0 ? void 0 : options.timeoutRetryCost) !== null && _c !== void 0 ? _c : util_retry_1.TIMEOUT_RETRY_COST;
-      let availableCapacity = initialRetryTokens;
-      const getCapacityAmount = (error) => error.name === "TimeoutError" ? timeoutRetryCost : retryCost;
-      const hasRetryTokens = (error) => getCapacityAmount(error) <= availableCapacity;
-      const retrieveRetryTokens = (error) => {
-        if (!hasRetryTokens(error)) {
-          throw new Error("No retry token available");
-        }
-        const capacityAmount = getCapacityAmount(error);
-        availableCapacity -= capacityAmount;
-        return capacityAmount;
-      };
-      const releaseRetryTokens = (capacityReleaseAmount) => {
-        availableCapacity += capacityReleaseAmount !== null && capacityReleaseAmount !== void 0 ? capacityReleaseAmount : noRetryIncrement;
-        availableCapacity = Math.min(availableCapacity, MAX_CAPACITY);
-      };
-      return Object.freeze({
-        hasRetryTokens,
-        retrieveRetryTokens,
-        releaseRetryTokens
-      });
+// ../../../node_modules/@smithy/service-error-classification/dist-cjs/index.js
+var require_dist_cjs29 = __commonJS({
+  "../../../node_modules/@smithy/service-error-classification/dist-cjs/index.js"(exports2, module2) {
+    var __defProp2 = Object.defineProperty;
+    var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
+    var __getOwnPropNames2 = Object.getOwnPropertyNames;
+    var __hasOwnProp2 = Object.prototype.hasOwnProperty;
+    var __name = (target, value) => __defProp2(target, "name", { value, configurable: true });
+    var __export2 = (target, all) => {
+      for (var name in all)
+        __defProp2(target, name, { get: all[name], enumerable: true });
     };
-    exports2.getDefaultRetryQuota = getDefaultRetryQuota;
-  }
-});
-
-// ../../../node_modules/@smithy/middleware-retry/dist-cjs/delayDecider.js
-var require_delayDecider = __commonJS({
-  "../../../node_modules/@smithy/middleware-retry/dist-cjs/delayDecider.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.defaultDelayDecider = void 0;
-    var util_retry_1 = require_dist_cjs30();
-    var defaultDelayDecider = (delayBase, attempts) => Math.floor(Math.min(util_retry_1.MAXIMUM_RETRY_DELAY, Math.random() * 2 ** attempts * delayBase));
-    exports2.defaultDelayDecider = defaultDelayDecider;
-  }
-});
-
-// ../../../node_modules/@smithy/middleware-retry/dist-cjs/retryDecider.js
-var require_retryDecider = __commonJS({
-  "../../../node_modules/@smithy/middleware-retry/dist-cjs/retryDecider.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.defaultRetryDecider = void 0;
-    var service_error_classification_1 = require_dist_cjs29();
-    var defaultRetryDecider = (error) => {
-      if (!error) {
+    var __copyProps2 = (to, from, except, desc) => {
+      if (from && typeof from === "object" || typeof from === "function") {
+        for (let key of __getOwnPropNames2(from))
+          if (!__hasOwnProp2.call(to, key) && key !== except)
+            __defProp2(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc2(from, key)) || desc.enumerable });
+      }
+      return to;
+    };
+    var __toCommonJS2 = (mod) => __copyProps2(__defProp2({}, "__esModule", { value: true }), mod);
+    var src_exports = {};
+    __export2(src_exports, {
+      isClockSkewCorrectedError: () => isClockSkewCorrectedError,
+      isClockSkewError: () => isClockSkewError,
+      isRetryableByTrait: () => isRetryableByTrait,
+      isServerError: () => isServerError,
+      isThrottlingError: () => isThrottlingError,
+      isTransientError: () => isTransientError
+    });
+    module2.exports = __toCommonJS2(src_exports);
+    var CLOCK_SKEW_ERROR_CODES = [
+      "AuthFailure",
+      "InvalidSignatureException",
+      "RequestExpired",
+      "RequestInTheFuture",
+      "RequestTimeTooSkewed",
+      "SignatureDoesNotMatch"
+    ];
+    var THROTTLING_ERROR_CODES = [
+      "BandwidthLimitExceeded",
+      "EC2ThrottledException",
+      "LimitExceededException",
+      "PriorRequestNotComplete",
+      "ProvisionedThroughputExceededException",
+      "RequestLimitExceeded",
+      "RequestThrottled",
+      "RequestThrottledException",
+      "SlowDown",
+      "ThrottledException",
+      "Throttling",
+      "ThrottlingException",
+      "TooManyRequestsException",
+      "TransactionInProgressException"
+      // DynamoDB
+    ];
+    var TRANSIENT_ERROR_CODES = ["TimeoutError", "RequestTimeout", "RequestTimeoutException"];
+    var TRANSIENT_ERROR_STATUS_CODES = [500, 502, 503, 504];
+    var NODEJS_TIMEOUT_ERROR_CODES = ["ECONNRESET", "ECONNREFUSED", "EPIPE", "ETIMEDOUT"];
+    var isRetryableByTrait = /* @__PURE__ */ __name((error) => error.$retryable !== void 0, "isRetryableByTrait");
+    var isClockSkewError = /* @__PURE__ */ __name((error) => CLOCK_SKEW_ERROR_CODES.includes(error.name), "isClockSkewError");
+    var isClockSkewCorrectedError = /* @__PURE__ */ __name((error) => {
+      var _a;
+      return (_a = error.$metadata) == null ? void 0 : _a.clockSkewCorrected;
+    }, "isClockSkewCorrectedError");
+    var isThrottlingError = /* @__PURE__ */ __name((error) => {
+      var _a, _b;
+      return ((_a = error.$metadata) == null ? void 0 : _a.httpStatusCode) === 429 || THROTTLING_ERROR_CODES.includes(error.name) || ((_b = error.$retryable) == null ? void 0 : _b.throttling) == true;
+    }, "isThrottlingError");
+    var isTransientError = /* @__PURE__ */ __name((error) => {
+      var _a;
+      return isClockSkewCorrectedError(error) || TRANSIENT_ERROR_CODES.includes(error.name) || NODEJS_TIMEOUT_ERROR_CODES.includes((error == null ? void 0 : error.code) || "") || TRANSIENT_ERROR_STATUS_CODES.includes(((_a = error.$metadata) == null ? void 0 : _a.httpStatusCode) || 0);
+    }, "isTransientError");
+    var isServerError = /* @__PURE__ */ __name((error) => {
+      var _a;
+      if (((_a = error.$metadata) == null ? void 0 : _a.httpStatusCode) !== void 0) {
+        const statusCode = error.$metadata.httpStatusCode;
+        if (500 <= statusCode && statusCode <= 599 && !isTransientError(error)) {
+          return true;
+        }
         return false;
       }
-      return (0, service_error_classification_1.isRetryableByTrait)(error) || (0, service_error_classification_1.isClockSkewError)(error) || (0, service_error_classification_1.isThrottlingError)(error) || (0, service_error_classification_1.isTransientError)(error);
-    };
-    exports2.defaultRetryDecider = defaultRetryDecider;
+      return false;
+    }, "isServerError");
   }
 });
 
-// ../../../node_modules/@smithy/middleware-retry/dist-cjs/util.js
-var require_util3 = __commonJS({
-  "../../../node_modules/@smithy/middleware-retry/dist-cjs/util.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.asSdkError = void 0;
-    var asSdkError = (error) => {
-      if (error instanceof Error)
-        return error;
-      if (error instanceof Object)
-        return Object.assign(new Error(), error);
-      if (typeof error === "string")
-        return new Error(error);
-      return new Error(`AWS SDK error wrapper for ${error}`);
+// ../../../node_modules/@smithy/util-retry/dist-cjs/index.js
+var require_dist_cjs30 = __commonJS({
+  "../../../node_modules/@smithy/util-retry/dist-cjs/index.js"(exports2, module2) {
+    var __defProp2 = Object.defineProperty;
+    var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
+    var __getOwnPropNames2 = Object.getOwnPropertyNames;
+    var __hasOwnProp2 = Object.prototype.hasOwnProperty;
+    var __name = (target, value) => __defProp2(target, "name", { value, configurable: true });
+    var __export2 = (target, all) => {
+      for (var name in all)
+        __defProp2(target, name, { get: all[name], enumerable: true });
     };
-    exports2.asSdkError = asSdkError;
-  }
-});
-
-// ../../../node_modules/@smithy/middleware-retry/dist-cjs/StandardRetryStrategy.js
-var require_StandardRetryStrategy2 = __commonJS({
-  "../../../node_modules/@smithy/middleware-retry/dist-cjs/StandardRetryStrategy.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.StandardRetryStrategy = void 0;
-    var protocol_http_1 = require_dist_cjs2();
-    var service_error_classification_1 = require_dist_cjs29();
-    var util_retry_1 = require_dist_cjs30();
-    var uuid_1 = (init_esm_node(), __toCommonJS(esm_node_exports));
-    var defaultRetryQuota_1 = require_defaultRetryQuota();
-    var delayDecider_1 = require_delayDecider();
-    var retryDecider_1 = require_retryDecider();
-    var util_1 = require_util3();
-    var StandardRetryStrategy = class {
-      constructor(maxAttemptsProvider, options) {
-        var _a, _b, _c;
-        this.maxAttemptsProvider = maxAttemptsProvider;
-        this.mode = util_retry_1.RETRY_MODES.STANDARD;
-        this.retryDecider = (_a = options === null || options === void 0 ? void 0 : options.retryDecider) !== null && _a !== void 0 ? _a : retryDecider_1.defaultRetryDecider;
-        this.delayDecider = (_b = options === null || options === void 0 ? void 0 : options.delayDecider) !== null && _b !== void 0 ? _b : delayDecider_1.defaultDelayDecider;
-        this.retryQuota = (_c = options === null || options === void 0 ? void 0 : options.retryQuota) !== null && _c !== void 0 ? _c : (0, defaultRetryQuota_1.getDefaultRetryQuota)(util_retry_1.INITIAL_RETRY_TOKENS);
+    var __copyProps2 = (to, from, except, desc) => {
+      if (from && typeof from === "object" || typeof from === "function") {
+        for (let key of __getOwnPropNames2(from))
+          if (!__hasOwnProp2.call(to, key) && key !== except)
+            __defProp2(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc2(from, key)) || desc.enumerable });
       }
-      shouldRetry(error, attempts, maxAttempts) {
-        return attempts < maxAttempts && this.retryDecider(error) && this.retryQuota.hasRetryTokens(error);
+      return to;
+    };
+    var __toCommonJS2 = (mod) => __copyProps2(__defProp2({}, "__esModule", { value: true }), mod);
+    var src_exports = {};
+    __export2(src_exports, {
+      AdaptiveRetryStrategy: () => AdaptiveRetryStrategy,
+      ConfiguredRetryStrategy: () => ConfiguredRetryStrategy,
+      DEFAULT_MAX_ATTEMPTS: () => DEFAULT_MAX_ATTEMPTS,
+      DEFAULT_RETRY_DELAY_BASE: () => DEFAULT_RETRY_DELAY_BASE,
+      DEFAULT_RETRY_MODE: () => DEFAULT_RETRY_MODE,
+      DefaultRateLimiter: () => DefaultRateLimiter,
+      INITIAL_RETRY_TOKENS: () => INITIAL_RETRY_TOKENS,
+      INVOCATION_ID_HEADER: () => INVOCATION_ID_HEADER,
+      MAXIMUM_RETRY_DELAY: () => MAXIMUM_RETRY_DELAY,
+      NO_RETRY_INCREMENT: () => NO_RETRY_INCREMENT,
+      REQUEST_HEADER: () => REQUEST_HEADER,
+      RETRY_COST: () => RETRY_COST,
+      RETRY_MODES: () => RETRY_MODES,
+      StandardRetryStrategy: () => StandardRetryStrategy,
+      THROTTLING_RETRY_DELAY_BASE: () => THROTTLING_RETRY_DELAY_BASE,
+      TIMEOUT_RETRY_COST: () => TIMEOUT_RETRY_COST
+    });
+    module2.exports = __toCommonJS2(src_exports);
+    var RETRY_MODES = /* @__PURE__ */ ((RETRY_MODES2) => {
+      RETRY_MODES2["STANDARD"] = "standard";
+      RETRY_MODES2["ADAPTIVE"] = "adaptive";
+      return RETRY_MODES2;
+    })(RETRY_MODES || {});
+    var DEFAULT_MAX_ATTEMPTS = 3;
+    var DEFAULT_RETRY_MODE = "standard";
+    var import_service_error_classification = require_dist_cjs29();
+    var _DefaultRateLimiter = class _DefaultRateLimiter {
+      constructor(options) {
+        this.currentCapacity = 0;
+        this.enabled = false;
+        this.lastMaxRate = 0;
+        this.measuredTxRate = 0;
+        this.requestCount = 0;
+        this.lastTimestamp = 0;
+        this.timeWindow = 0;
+        this.beta = (options == null ? void 0 : options.beta) ?? 0.7;
+        this.minCapacity = (options == null ? void 0 : options.minCapacity) ?? 1;
+        this.minFillRate = (options == null ? void 0 : options.minFillRate) ?? 0.5;
+        this.scaleConstant = (options == null ? void 0 : options.scaleConstant) ?? 0.4;
+        this.smooth = (options == null ? void 0 : options.smooth) ?? 0.8;
+        const currentTimeInSeconds = this.getCurrentTimeInSeconds();
+        this.lastThrottleTime = currentTimeInSeconds;
+        this.lastTxRateBucket = Math.floor(this.getCurrentTimeInSeconds());
+        this.fillRate = this.minFillRate;
+        this.maxCapacity = this.minCapacity;
       }
-      async getMaxAttempts() {
-        let maxAttempts;
-        try {
-          maxAttempts = await this.maxAttemptsProvider();
-        } catch (error) {
-          maxAttempts = util_retry_1.DEFAULT_MAX_ATTEMPTS;
-        }
-        return maxAttempts;
+      getCurrentTimeInSeconds() {
+        return Date.now() / 1e3;
       }
-      async retry(next, args, options) {
-        let retryTokenAmount;
-        let attempts = 0;
-        let totalDelay = 0;
-        const maxAttempts = await this.getMaxAttempts();
-        const { request: request2 } = args;
-        if (protocol_http_1.HttpRequest.isInstance(request2)) {
-          request2.headers[util_retry_1.INVOCATION_ID_HEADER] = (0, uuid_1.v4)();
+      async getSendToken() {
+        return this.acquireTokenBucket(1);
+      }
+      async acquireTokenBucket(amount) {
+        if (!this.enabled) {
+          return;
         }
-        while (true) {
-          try {
-            if (protocol_http_1.HttpRequest.isInstance(request2)) {
-              request2.headers[util_retry_1.REQUEST_HEADER] = `attempt=${attempts + 1}; max=${maxAttempts}`;
-            }
-            if (options === null || options === void 0 ? void 0 : options.beforeRequest) {
-              await options.beforeRequest();
-            }
-            const { response, output } = await next(args);
-            if (options === null || options === void 0 ? void 0 : options.afterRequest) {
-              options.afterRequest(response);
-            }
-            this.retryQuota.releaseRetryTokens(retryTokenAmount);
-            output.$metadata.attempts = attempts + 1;
-            output.$metadata.totalRetryDelay = totalDelay;
-            return { response, output };
-          } catch (e) {
-            const err = (0, util_1.asSdkError)(e);
-            attempts++;
-            if (this.shouldRetry(err, attempts, maxAttempts)) {
-              retryTokenAmount = this.retryQuota.retrieveRetryTokens(err);
-              const delayFromDecider = this.delayDecider((0, service_error_classification_1.isThrottlingError)(err) ? util_retry_1.THROTTLING_RETRY_DELAY_BASE : util_retry_1.DEFAULT_RETRY_DELAY_BASE, attempts);
-              const delayFromResponse = getDelayFromRetryAfterHeader(err.$response);
-              const delay = Math.max(delayFromResponse || 0, delayFromDecider);
-              totalDelay += delay;
-              await new Promise((resolve) => setTimeout(resolve, delay));
-              continue;
-            }
-            if (!err.$metadata) {
-              err.$metadata = {};
-            }
-            err.$metadata.attempts = attempts;
-            err.$metadata.totalRetryDelay = totalDelay;
-            throw err;
-          }
+        this.refillTokenBucket();
+        if (amount > this.currentCapacity) {
+          const delay = (amount - this.currentCapacity) / this.fillRate * 1e3;
+          await new Promise((resolve) => setTimeout(resolve, delay));
         }
+        this.currentCapacity = this.currentCapacity - amount;
+      }
+      refillTokenBucket() {
+        const timestamp = this.getCurrentTimeInSeconds();
+        if (!this.lastTimestamp) {
+          this.lastTimestamp = timestamp;
+          return;
+        }
+        const fillAmount = (timestamp - this.lastTimestamp) * this.fillRate;
+        this.currentCapacity = Math.min(this.maxCapacity, this.currentCapacity + fillAmount);
+        this.lastTimestamp = timestamp;
+      }
+      updateClientSendingRate(response) {
+        let calculatedRate;
+        this.updateMeasuredRate();
+        if ((0, import_service_error_classification.isThrottlingError)(response)) {
+          const rateToUse = !this.enabled ? this.measuredTxRate : Math.min(this.measuredTxRate, this.fillRate);
+          this.lastMaxRate = rateToUse;
+          this.calculateTimeWindow();
+          this.lastThrottleTime = this.getCurrentTimeInSeconds();
+          calculatedRate = this.cubicThrottle(rateToUse);
+          this.enableTokenBucket();
+        } else {
+          this.calculateTimeWindow();
+          calculatedRate = this.cubicSuccess(this.getCurrentTimeInSeconds());
+        }
+        const newRate = Math.min(calculatedRate, 2 * this.measuredTxRate);
+        this.updateTokenBucketRate(newRate);
+      }
+      calculateTimeWindow() {
+        this.timeWindow = this.getPrecise(Math.pow(this.lastMaxRate * (1 - this.beta) / this.scaleConstant, 1 / 3));
+      }
+      cubicThrottle(rateToUse) {
+        return this.getPrecise(rateToUse * this.beta);
+      }
+      cubicSuccess(timestamp) {
+        return this.getPrecise(
+          this.scaleConstant * Math.pow(timestamp - this.lastThrottleTime - this.timeWindow, 3) + this.lastMaxRate
+        );
+      }
+      enableTokenBucket() {
+        this.enabled = true;
+      }
+      updateTokenBucketRate(newRate) {
+        this.refillTokenBucket();
+        this.fillRate = Math.max(newRate, this.minFillRate);
+        this.maxCapacity = Math.max(newRate, this.minCapacity);
+        this.currentCapacity = Math.min(this.currentCapacity, this.maxCapacity);
+      }
+      updateMeasuredRate() {
+        const t = this.getCurrentTimeInSeconds();
+        const timeBucket = Math.floor(t * 2) / 2;
+        this.requestCount++;
+        if (timeBucket > this.lastTxRateBucket) {
+          const currentRate = this.requestCount / (timeBucket - this.lastTxRateBucket);
+          this.measuredTxRate = this.getPrecise(currentRate * this.smooth + this.measuredTxRate * (1 - this.smooth));
+          this.requestCount = 0;
+          this.lastTxRateBucket = timeBucket;
+        }
+      }
+      getPrecise(num) {
+        return parseFloat(num.toFixed(8));
       }
     };
-    exports2.StandardRetryStrategy = StandardRetryStrategy;
-    var getDelayFromRetryAfterHeader = (response) => {
-      if (!protocol_http_1.HttpResponse.isInstance(response))
-        return;
-      const retryAfterHeaderName = Object.keys(response.headers).find((key) => key.toLowerCase() === "retry-after");
-      if (!retryAfterHeaderName)
-        return;
-      const retryAfter = response.headers[retryAfterHeaderName];
-      const retryAfterSeconds = Number(retryAfter);
-      if (!Number.isNaN(retryAfterSeconds))
-        return retryAfterSeconds * 1e3;
-      const retryAfterDate = new Date(retryAfter);
-      return retryAfterDate.getTime() - Date.now();
-    };
-  }
-});
-
-// ../../../node_modules/@smithy/middleware-retry/dist-cjs/AdaptiveRetryStrategy.js
-var require_AdaptiveRetryStrategy2 = __commonJS({
-  "../../../node_modules/@smithy/middleware-retry/dist-cjs/AdaptiveRetryStrategy.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.AdaptiveRetryStrategy = void 0;
-    var util_retry_1 = require_dist_cjs30();
-    var StandardRetryStrategy_1 = require_StandardRetryStrategy2();
-    var AdaptiveRetryStrategy = class extends StandardRetryStrategy_1.StandardRetryStrategy {
-      constructor(maxAttemptsProvider, options) {
-        const { rateLimiter, ...superOptions } = options !== null && options !== void 0 ? options : {};
-        super(maxAttemptsProvider, superOptions);
-        this.rateLimiter = rateLimiter !== null && rateLimiter !== void 0 ? rateLimiter : new util_retry_1.DefaultRateLimiter();
-        this.mode = util_retry_1.RETRY_MODES.ADAPTIVE;
+    __name(_DefaultRateLimiter, "DefaultRateLimiter");
+    var DefaultRateLimiter = _DefaultRateLimiter;
+    var DEFAULT_RETRY_DELAY_BASE = 100;
+    var MAXIMUM_RETRY_DELAY = 20 * 1e3;
+    var THROTTLING_RETRY_DELAY_BASE = 500;
+    var INITIAL_RETRY_TOKENS = 500;
+    var RETRY_COST = 5;
+    var TIMEOUT_RETRY_COST = 10;
+    var NO_RETRY_INCREMENT = 1;
+    var INVOCATION_ID_HEADER = "amz-sdk-invocation-id";
+    var REQUEST_HEADER = "amz-sdk-request";
+    var getDefaultRetryBackoffStrategy = /* @__PURE__ */ __name(() => {
+      let delayBase = DEFAULT_RETRY_DELAY_BASE;
+      const computeNextBackoffDelay = /* @__PURE__ */ __name((attempts) => {
+        return Math.floor(Math.min(MAXIMUM_RETRY_DELAY, Math.random() * 2 ** attempts * delayBase));
+      }, "computeNextBackoffDelay");
+      const setDelayBase = /* @__PURE__ */ __name((delay) => {
+        delayBase = delay;
+      }, "setDelayBase");
+      return {
+        computeNextBackoffDelay,
+        setDelayBase
+      };
+    }, "getDefaultRetryBackoffStrategy");
+    var createDefaultRetryToken = /* @__PURE__ */ __name(({
+      retryDelay,
+      retryCount,
+      retryCost
+    }) => {
+      const getRetryCount = /* @__PURE__ */ __name(() => retryCount, "getRetryCount");
+      const getRetryDelay = /* @__PURE__ */ __name(() => Math.min(MAXIMUM_RETRY_DELAY, retryDelay), "getRetryDelay");
+      const getRetryCost = /* @__PURE__ */ __name(() => retryCost, "getRetryCost");
+      return {
+        getRetryCount,
+        getRetryDelay,
+        getRetryCost
+      };
+    }, "createDefaultRetryToken");
+    var _StandardRetryStrategy = class _StandardRetryStrategy {
+      constructor(maxAttempts) {
+        this.maxAttempts = maxAttempts;
+        this.mode = "standard";
+        this.capacity = INITIAL_RETRY_TOKENS;
+        this.retryBackoffStrategy = getDefaultRetryBackoffStrategy();
+        this.maxAttemptsProvider = typeof maxAttempts === "function" ? maxAttempts : async () => maxAttempts;
       }
-      async retry(next, args) {
-        return super.retry(next, args, {
-          beforeRequest: async () => {
-            return this.rateLimiter.getSendToken();
-          },
-          afterRequest: (response) => {
-            this.rateLimiter.updateClientSendingRate(response);
-          }
+      async acquireInitialRetryToken(retryTokenScope) {
+        return createDefaultRetryToken({
+          retryDelay: DEFAULT_RETRY_DELAY_BASE,
+          retryCount: 0
         });
       }
+      async refreshRetryTokenForRetry(token, errorInfo) {
+        const maxAttempts = await this.getMaxAttempts();
+        if (this.shouldRetry(token, errorInfo, maxAttempts)) {
+          const errorType = errorInfo.errorType;
+          this.retryBackoffStrategy.setDelayBase(
+            errorType === "THROTTLING" ? THROTTLING_RETRY_DELAY_BASE : DEFAULT_RETRY_DELAY_BASE
+          );
+          const delayFromErrorType = this.retryBackoffStrategy.computeNextBackoffDelay(token.getRetryCount());
+          const retryDelay = errorInfo.retryAfterHint ? Math.max(errorInfo.retryAfterHint.getTime() - Date.now() || 0, delayFromErrorType) : delayFromErrorType;
+          const capacityCost = this.getCapacityCost(errorType);
+          this.capacity -= capacityCost;
+          return createDefaultRetryToken({
+            retryDelay,
+            retryCount: token.getRetryCount() + 1,
+            retryCost: capacityCost
+          });
+        }
+        throw new Error("No retry token available");
+      }
+      recordSuccess(token) {
+        this.capacity = Math.max(INITIAL_RETRY_TOKENS, this.capacity + (token.getRetryCost() ?? NO_RETRY_INCREMENT));
+      }
+      /**
+       * @returns the current available retry capacity.
+       *
+       * This number decreases when retries are executed and refills when requests or retries succeed.
+       */
+      getCapacity() {
+        return this.capacity;
+      }
+      async getMaxAttempts() {
+        try {
+          return await this.maxAttemptsProvider();
+        } catch (error) {
+          console.warn(`Max attempts provider could not resolve. Using default of ${DEFAULT_MAX_ATTEMPTS}`);
+          return DEFAULT_MAX_ATTEMPTS;
+        }
+      }
+      shouldRetry(tokenToRenew, errorInfo, maxAttempts) {
+        const attempts = tokenToRenew.getRetryCount() + 1;
+        return attempts < maxAttempts && this.capacity >= this.getCapacityCost(errorInfo.errorType) && this.isRetryableError(errorInfo.errorType);
+      }
+      getCapacityCost(errorType) {
+        return errorType === "TRANSIENT" ? TIMEOUT_RETRY_COST : RETRY_COST;
+      }
+      isRetryableError(errorType) {
+        return errorType === "THROTTLING" || errorType === "TRANSIENT";
+      }
     };
-    exports2.AdaptiveRetryStrategy = AdaptiveRetryStrategy;
+    __name(_StandardRetryStrategy, "StandardRetryStrategy");
+    var StandardRetryStrategy = _StandardRetryStrategy;
+    var _AdaptiveRetryStrategy = class _AdaptiveRetryStrategy {
+      constructor(maxAttemptsProvider, options) {
+        this.maxAttemptsProvider = maxAttemptsProvider;
+        this.mode = "adaptive";
+        const { rateLimiter } = options ?? {};
+        this.rateLimiter = rateLimiter ?? new DefaultRateLimiter();
+        this.standardRetryStrategy = new StandardRetryStrategy(maxAttemptsProvider);
+      }
+      async acquireInitialRetryToken(retryTokenScope) {
+        await this.rateLimiter.getSendToken();
+        return this.standardRetryStrategy.acquireInitialRetryToken(retryTokenScope);
+      }
+      async refreshRetryTokenForRetry(tokenToRenew, errorInfo) {
+        this.rateLimiter.updateClientSendingRate(errorInfo);
+        return this.standardRetryStrategy.refreshRetryTokenForRetry(tokenToRenew, errorInfo);
+      }
+      recordSuccess(token) {
+        this.rateLimiter.updateClientSendingRate({});
+        this.standardRetryStrategy.recordSuccess(token);
+      }
+    };
+    __name(_AdaptiveRetryStrategy, "AdaptiveRetryStrategy");
+    var AdaptiveRetryStrategy = _AdaptiveRetryStrategy;
+    var _ConfiguredRetryStrategy = class _ConfiguredRetryStrategy extends StandardRetryStrategy {
+      /**
+       * @param maxAttempts - the maximum number of retry attempts allowed.
+       *                      e.g., if set to 3, then 4 total requests are possible.
+       * @param computeNextBackoffDelay - a millisecond delay for each retry or a function that takes the retry attempt
+       *                                  and returns the delay.
+       *
+       * @example exponential backoff.
+       * ```js
+       * new Client({
+       *   retryStrategy: new ConfiguredRetryStrategy(3, (attempt) => attempt ** 2)
+       * });
+       * ```
+       * @example constant delay.
+       * ```js
+       * new Client({
+       *   retryStrategy: new ConfiguredRetryStrategy(3, 2000)
+       * });
+       * ```
+       */
+      constructor(maxAttempts, computeNextBackoffDelay = DEFAULT_RETRY_DELAY_BASE) {
+        super(typeof maxAttempts === "function" ? maxAttempts : async () => maxAttempts);
+        if (typeof computeNextBackoffDelay === "number") {
+          this.computeNextBackoffDelay = () => computeNextBackoffDelay;
+        } else {
+          this.computeNextBackoffDelay = computeNextBackoffDelay;
+        }
+      }
+      async refreshRetryTokenForRetry(tokenToRenew, errorInfo) {
+        const token = await super.refreshRetryTokenForRetry(tokenToRenew, errorInfo);
+        token.getRetryDelay = () => this.computeNextBackoffDelay(token.getRetryCount());
+        return token;
+      }
+    };
+    __name(_ConfiguredRetryStrategy, "ConfiguredRetryStrategy");
+    var ConfiguredRetryStrategy = _ConfiguredRetryStrategy;
   }
 });
 
-// ../../../node_modules/@smithy/middleware-retry/dist-cjs/configurations.js
-var require_configurations2 = __commonJS({
-  "../../../node_modules/@smithy/middleware-retry/dist-cjs/configurations.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.NODE_RETRY_MODE_CONFIG_OPTIONS = exports2.CONFIG_RETRY_MODE = exports2.ENV_RETRY_MODE = exports2.resolveRetryConfig = exports2.NODE_MAX_ATTEMPT_CONFIG_OPTIONS = exports2.CONFIG_MAX_ATTEMPTS = exports2.ENV_MAX_ATTEMPTS = void 0;
-    var util_middleware_1 = require_dist_cjs10();
-    var util_retry_1 = require_dist_cjs30();
-    exports2.ENV_MAX_ATTEMPTS = "AWS_MAX_ATTEMPTS";
-    exports2.CONFIG_MAX_ATTEMPTS = "max_attempts";
-    exports2.NODE_MAX_ATTEMPT_CONFIG_OPTIONS = {
-      environmentVariableSelector: (env) => {
-        const value = env[exports2.ENV_MAX_ATTEMPTS];
-        if (!value)
-          return void 0;
-        const maxAttempt = parseInt(value);
-        if (Number.isNaN(maxAttempt)) {
-          throw new Error(`Environment variable ${exports2.ENV_MAX_ATTEMPTS} mast be a number, got "${value}"`);
-        }
-        return maxAttempt;
-      },
-      configFileSelector: (profile) => {
-        const value = profile[exports2.CONFIG_MAX_ATTEMPTS];
-        if (!value)
-          return void 0;
-        const maxAttempt = parseInt(value);
-        if (Number.isNaN(maxAttempt)) {
-          throw new Error(`Shared config file entry ${exports2.CONFIG_MAX_ATTEMPTS} mast be a number, got "${value}"`);
-        }
-        return maxAttempt;
-      },
-      default: util_retry_1.DEFAULT_MAX_ATTEMPTS
+// ../../../node_modules/@smithy/middleware-stack/dist-cjs/index.js
+var require_dist_cjs31 = __commonJS({
+  "../../../node_modules/@smithy/middleware-stack/dist-cjs/index.js"(exports2, module2) {
+    var __defProp2 = Object.defineProperty;
+    var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
+    var __getOwnPropNames2 = Object.getOwnPropertyNames;
+    var __hasOwnProp2 = Object.prototype.hasOwnProperty;
+    var __name = (target, value) => __defProp2(target, "name", { value, configurable: true });
+    var __export2 = (target, all) => {
+      for (var name in all)
+        __defProp2(target, name, { get: all[name], enumerable: true });
     };
-    var resolveRetryConfig = (input) => {
-      var _a;
-      const { retryStrategy } = input;
-      const maxAttempts = (0, util_middleware_1.normalizeProvider)((_a = input.maxAttempts) !== null && _a !== void 0 ? _a : util_retry_1.DEFAULT_MAX_ATTEMPTS);
-      return {
-        ...input,
-        maxAttempts,
-        retryStrategy: async () => {
-          if (retryStrategy) {
-            return retryStrategy;
-          }
-          const retryMode = await (0, util_middleware_1.normalizeProvider)(input.retryMode)();
-          if (retryMode === util_retry_1.RETRY_MODES.ADAPTIVE) {
-            return new util_retry_1.AdaptiveRetryStrategy(maxAttempts);
-          }
-          return new util_retry_1.StandardRetryStrategy(maxAttempts);
-        }
-      };
-    };
-    exports2.resolveRetryConfig = resolveRetryConfig;
-    exports2.ENV_RETRY_MODE = "AWS_RETRY_MODE";
-    exports2.CONFIG_RETRY_MODE = "retry_mode";
-    exports2.NODE_RETRY_MODE_CONFIG_OPTIONS = {
-      environmentVariableSelector: (env) => env[exports2.ENV_RETRY_MODE],
-      configFileSelector: (profile) => profile[exports2.CONFIG_RETRY_MODE],
-      default: util_retry_1.DEFAULT_RETRY_MODE
-    };
-  }
-});
-
-// ../../../node_modules/@smithy/middleware-retry/dist-cjs/omitRetryHeadersMiddleware.js
-var require_omitRetryHeadersMiddleware = __commonJS({
-  "../../../node_modules/@smithy/middleware-retry/dist-cjs/omitRetryHeadersMiddleware.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.getOmitRetryHeadersPlugin = exports2.omitRetryHeadersMiddlewareOptions = exports2.omitRetryHeadersMiddleware = void 0;
-    var protocol_http_1 = require_dist_cjs2();
-    var util_retry_1 = require_dist_cjs30();
-    var omitRetryHeadersMiddleware = () => (next) => async (args) => {
-      const { request: request2 } = args;
-      if (protocol_http_1.HttpRequest.isInstance(request2)) {
-        delete request2.headers[util_retry_1.INVOCATION_ID_HEADER];
-        delete request2.headers[util_retry_1.REQUEST_HEADER];
+    var __copyProps2 = (to, from, except, desc) => {
+      if (from && typeof from === "object" || typeof from === "function") {
+        for (let key of __getOwnPropNames2(from))
+          if (!__hasOwnProp2.call(to, key) && key !== except)
+            __defProp2(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc2(from, key)) || desc.enumerable });
       }
-      return next(args);
+      return to;
     };
-    exports2.omitRetryHeadersMiddleware = omitRetryHeadersMiddleware;
-    exports2.omitRetryHeadersMiddlewareOptions = {
-      name: "omitRetryHeadersMiddleware",
-      tags: ["RETRY", "HEADERS", "OMIT_RETRY_HEADERS"],
-      relation: "before",
-      toMiddleware: "awsAuthMiddleware",
-      override: true
-    };
-    var getOmitRetryHeadersPlugin = (options) => ({
-      applyToStack: (clientStack) => {
-        clientStack.addRelativeTo((0, exports2.omitRetryHeadersMiddleware)(), exports2.omitRetryHeadersMiddlewareOptions);
-      }
+    var __toCommonJS2 = (mod) => __copyProps2(__defProp2({}, "__esModule", { value: true }), mod);
+    var src_exports = {};
+    __export2(src_exports, {
+      constructStack: () => constructStack
     });
-    exports2.getOmitRetryHeadersPlugin = getOmitRetryHeadersPlugin;
-  }
-});
-
-// ../../../node_modules/@smithy/smithy-client/dist-cjs/NoOpLogger.js
-var require_NoOpLogger = __commonJS({
-  "../../../node_modules/@smithy/smithy-client/dist-cjs/NoOpLogger.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.NoOpLogger = void 0;
-    var NoOpLogger = class {
-      trace() {
-      }
-      debug() {
-      }
-      info() {
-      }
-      warn() {
-      }
-      error() {
-      }
-    };
-    exports2.NoOpLogger = NoOpLogger;
-  }
-});
-
-// ../../../node_modules/@smithy/middleware-stack/dist-cjs/MiddlewareStack.js
-var require_MiddlewareStack = __commonJS({
-  "../../../node_modules/@smithy/middleware-stack/dist-cjs/MiddlewareStack.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.constructStack = void 0;
-    var getAllAliases = (name, aliases) => {
+    module2.exports = __toCommonJS2(src_exports);
+    var getAllAliases = /* @__PURE__ */ __name((name, aliases) => {
       const _aliases = [];
       if (name) {
         _aliases.push(name);
@@ -8998,19 +7724,21 @@ var require_MiddlewareStack = __commonJS({
         }
       }
       return _aliases;
-    };
-    var getMiddlewareNameWithAliases = (name, aliases) => {
+    }, "getAllAliases");
+    var getMiddlewareNameWithAliases = /* @__PURE__ */ __name((name, aliases) => {
       return `${name || "anonymous"}${aliases && aliases.length > 0 ? ` (a.k.a. ${aliases.join(",")})` : ""}`;
-    };
-    var constructStack = () => {
+    }, "getMiddlewareNameWithAliases");
+    var constructStack = /* @__PURE__ */ __name(() => {
       let absoluteEntries = [];
       let relativeEntries = [];
       let identifyOnResolve = false;
       const entriesNameSet = /* @__PURE__ */ new Set();
-      const sort = (entries) => entries.sort((a, b) => stepWeights[b.step] - stepWeights[a.step] || priorityWeights[b.priority || "normal"] - priorityWeights[a.priority || "normal"]);
-      const removeByName = (toRemove) => {
+      const sort = /* @__PURE__ */ __name((entries) => entries.sort(
+        (a, b) => stepWeights[b.step] - stepWeights[a.step] || priorityWeights[b.priority || "normal"] - priorityWeights[a.priority || "normal"]
+      ), "sort");
+      const removeByName = /* @__PURE__ */ __name((toRemove) => {
         let isRemoved = false;
-        const filterCb = (entry) => {
+        const filterCb = /* @__PURE__ */ __name((entry) => {
           const aliases = getAllAliases(entry.name, entry.aliases);
           if (aliases.includes(toRemove)) {
             isRemoved = true;
@@ -9020,14 +7748,14 @@ var require_MiddlewareStack = __commonJS({
             return false;
           }
           return true;
-        };
+        }, "filterCb");
         absoluteEntries = absoluteEntries.filter(filterCb);
         relativeEntries = relativeEntries.filter(filterCb);
         return isRemoved;
-      };
-      const removeByReference = (toRemove) => {
+      }, "removeByName");
+      const removeByReference = /* @__PURE__ */ __name((toRemove) => {
         let isRemoved = false;
-        const filterCb = (entry) => {
+        const filterCb = /* @__PURE__ */ __name((entry) => {
           if (entry.middleware === toRemove) {
             isRemoved = true;
             for (const alias of getAllAliases(entry.name, entry.aliases)) {
@@ -9036,12 +7764,12 @@ var require_MiddlewareStack = __commonJS({
             return false;
           }
           return true;
-        };
+        }, "filterCb");
         absoluteEntries = absoluteEntries.filter(filterCb);
         relativeEntries = relativeEntries.filter(filterCb);
         return isRemoved;
-      };
-      const cloneTo = (toStack) => {
+      }, "removeByReference");
+      const cloneTo = /* @__PURE__ */ __name((toStack) => {
         var _a;
         absoluteEntries.forEach((entry) => {
           toStack.add(entry.middleware, { ...entry });
@@ -9049,10 +7777,10 @@ var require_MiddlewareStack = __commonJS({
         relativeEntries.forEach((entry) => {
           toStack.addRelativeTo(entry.middleware, { ...entry });
         });
-        (_a = toStack.identifyOnResolve) === null || _a === void 0 ? void 0 : _a.call(toStack, stack.identifyOnResolve());
+        (_a = toStack.identifyOnResolve) == null ? void 0 : _a.call(toStack, stack.identifyOnResolve());
         return toStack;
-      };
-      const expandRelativeMiddlewareList = (from) => {
+      }, "cloneTo");
+      const expandRelativeMiddlewareList = /* @__PURE__ */ __name((from) => {
         const expandedMiddlewareList = [];
         from.before.forEach((entry) => {
           if (entry.before.length === 0 && entry.after.length === 0) {
@@ -9070,8 +7798,8 @@ var require_MiddlewareStack = __commonJS({
           }
         });
         return expandedMiddlewareList;
-      };
-      const getMiddlewareList = (debug = false) => {
+      }, "expandRelativeMiddlewareList");
+      const getMiddlewareList = /* @__PURE__ */ __name((debug = false) => {
         const normalizedAbsoluteEntries = [];
         const normalizedRelativeEntries = [];
         const normalizedEntriesNameMap = {};
@@ -9104,7 +7832,9 @@ var require_MiddlewareStack = __commonJS({
               if (debug) {
                 return;
               }
-              throw new Error(`${entry.toMiddleware} is not found when adding ${getMiddlewareNameWithAliases(entry.name, entry.aliases)} middleware ${entry.relation} ${entry.toMiddleware}`);
+              throw new Error(
+                `${entry.toMiddleware} is not found when adding ${getMiddlewareNameWithAliases(entry.name, entry.aliases)} middleware ${entry.relation} ${entry.toMiddleware}`
+              );
             }
             if (entry.relation === "after") {
               toMiddleware.after.push(entry);
@@ -9119,7 +7849,7 @@ var require_MiddlewareStack = __commonJS({
           return wholeList;
         }, []);
         return mainChain;
-      };
+      }, "getMiddlewareList");
       const stack = {
         add: (middleware, options = {}) => {
           const { name, override, aliases: _aliases } = options;
@@ -9135,16 +7865,20 @@ var require_MiddlewareStack = __commonJS({
               if (!override)
                 throw new Error(`Duplicate middleware name '${getMiddlewareNameWithAliases(name, _aliases)}'`);
               for (const alias of aliases) {
-                const toOverrideIndex = absoluteEntries.findIndex((entry2) => {
-                  var _a;
-                  return entry2.name === alias || ((_a = entry2.aliases) === null || _a === void 0 ? void 0 : _a.some((a) => a === alias));
-                });
+                const toOverrideIndex = absoluteEntries.findIndex(
+                  (entry2) => {
+                    var _a;
+                    return entry2.name === alias || ((_a = entry2.aliases) == null ? void 0 : _a.some((a) => a === alias));
+                  }
+                );
                 if (toOverrideIndex === -1) {
                   continue;
                 }
                 const toOverride = absoluteEntries[toOverrideIndex];
                 if (toOverride.step !== entry.step || entry.priority !== toOverride.priority) {
-                  throw new Error(`"${getMiddlewareNameWithAliases(toOverride.name, toOverride.aliases)}" middleware with ${toOverride.priority} priority in ${toOverride.step} step cannot be overridden by "${getMiddlewareNameWithAliases(name, _aliases)}" middleware with ${entry.priority} priority in ${entry.step} step.`);
+                  throw new Error(
+                    `"${getMiddlewareNameWithAliases(toOverride.name, toOverride.aliases)}" middleware with ${toOverride.priority} priority in ${toOverride.step} step cannot be overridden by "${getMiddlewareNameWithAliases(name, _aliases)}" middleware with ${entry.priority} priority in ${entry.step} step.`
+                  );
                 }
                 absoluteEntries.splice(toOverrideIndex, 1);
               }
@@ -9167,16 +7901,20 @@ var require_MiddlewareStack = __commonJS({
               if (!override)
                 throw new Error(`Duplicate middleware name '${getMiddlewareNameWithAliases(name, _aliases)}'`);
               for (const alias of aliases) {
-                const toOverrideIndex = relativeEntries.findIndex((entry2) => {
-                  var _a;
-                  return entry2.name === alias || ((_a = entry2.aliases) === null || _a === void 0 ? void 0 : _a.some((a) => a === alias));
-                });
+                const toOverrideIndex = relativeEntries.findIndex(
+                  (entry2) => {
+                    var _a;
+                    return entry2.name === alias || ((_a = entry2.aliases) == null ? void 0 : _a.some((a) => a === alias));
+                  }
+                );
                 if (toOverrideIndex === -1) {
                   continue;
                 }
                 const toOverride = relativeEntries[toOverrideIndex];
                 if (toOverride.toMiddleware !== entry.toMiddleware || toOverride.relation !== entry.relation) {
-                  throw new Error(`"${getMiddlewareNameWithAliases(toOverride.name, toOverride.aliases)}" middleware ${toOverride.relation} "${toOverride.toMiddleware}" middleware cannot be overridden by "${getMiddlewareNameWithAliases(name, _aliases)}" middleware ${entry.relation} "${entry.toMiddleware}" middleware.`);
+                  throw new Error(
+                    `"${getMiddlewareNameWithAliases(toOverride.name, toOverride.aliases)}" middleware ${toOverride.relation} "${toOverride.toMiddleware}" middleware cannot be overridden by "${getMiddlewareNameWithAliases(name, _aliases)}" middleware ${entry.relation} "${entry.toMiddleware}" middleware.`
+                  );
                 }
                 relativeEntries.splice(toOverrideIndex, 1);
               }
@@ -9187,7 +7925,7 @@ var require_MiddlewareStack = __commonJS({
           }
           relativeEntries.push(entry);
         },
-        clone: () => cloneTo((0, exports2.constructStack)()),
+        clone: () => cloneTo(constructStack()),
         use: (plugin) => {
           plugin.applyToStack(stack);
         },
@@ -9199,7 +7937,7 @@ var require_MiddlewareStack = __commonJS({
         },
         removeByTag: (toRemove) => {
           let isRemoved = false;
-          const filterCb = (entry) => {
+          const filterCb = /* @__PURE__ */ __name((entry) => {
             const { tags, name, aliases: _aliases } = entry;
             if (tags && tags.includes(toRemove)) {
               const aliases = getAllAliases(name, _aliases);
@@ -9210,23 +7948,24 @@ var require_MiddlewareStack = __commonJS({
               return false;
             }
             return true;
-          };
+          }, "filterCb");
           absoluteEntries = absoluteEntries.filter(filterCb);
           relativeEntries = relativeEntries.filter(filterCb);
           return isRemoved;
         },
         concat: (from) => {
-          var _a, _b;
-          const cloned = cloneTo((0, exports2.constructStack)());
+          var _a;
+          const cloned = cloneTo(constructStack());
           cloned.use(from);
-          cloned.identifyOnResolve(identifyOnResolve || cloned.identifyOnResolve() || ((_b = (_a = from.identifyOnResolve) === null || _a === void 0 ? void 0 : _a.call(from)) !== null && _b !== void 0 ? _b : false));
+          cloned.identifyOnResolve(
+            identifyOnResolve || cloned.identifyOnResolve() || (((_a = from.identifyOnResolve) == null ? void 0 : _a.call(from)) ?? false)
+          );
           return cloned;
         },
         applyToStack: cloneTo,
         identify: () => {
           return getMiddlewareList(true).map((mw) => {
-            var _a;
-            const step = (_a = mw.step) !== null && _a !== void 0 ? _a : mw.relation + " " + mw.toMiddleware;
+            const step = mw.step ?? mw.relation + " " + mw.toMiddleware;
             return getMiddlewareNameWithAliases(mw.name, mw.aliases) + " - " + step;
           });
         },
@@ -9246,8 +7985,7 @@ var require_MiddlewareStack = __commonJS({
         }
       };
       return stack;
-    };
-    exports2.constructStack = constructStack;
+    }, "constructStack");
     var stepWeights = {
       initialize: 5,
       serialize: 4,
@@ -9263,48 +8001,6 @@ var require_MiddlewareStack = __commonJS({
   }
 });
 
-// ../../../node_modules/@smithy/middleware-stack/dist-cjs/index.js
-var require_dist_cjs31 = __commonJS({
-  "../../../node_modules/@smithy/middleware-stack/dist-cjs/index.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
-    tslib_1.__exportStar(require_MiddlewareStack(), exports2);
-  }
-});
-
-// ../../../node_modules/@smithy/smithy-client/dist-cjs/client.js
-var require_client3 = __commonJS({
-  "../../../node_modules/@smithy/smithy-client/dist-cjs/client.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.Client = void 0;
-    var middleware_stack_1 = require_dist_cjs31();
-    var Client = class {
-      constructor(config) {
-        this.middlewareStack = (0, middleware_stack_1.constructStack)();
-        this.config = config;
-      }
-      send(command, optionsOrCb, cb) {
-        const options = typeof optionsOrCb !== "function" ? optionsOrCb : void 0;
-        const callback = typeof optionsOrCb === "function" ? optionsOrCb : cb;
-        const handler2 = command.resolveMiddleware(this.middlewareStack, this.config, options);
-        if (callback) {
-          handler2(command).then((result) => callback(null, result.output), (err) => callback(err)).catch(() => {
-          });
-        } else {
-          return handler2(command).then((result) => result.output);
-        }
-      }
-      destroy() {
-        if (this.config.requestHandler.destroy)
-          this.config.requestHandler.destroy();
-      }
-    };
-    exports2.Client = Client;
-  }
-});
-
 // ../../../node_modules/@smithy/util-base64/dist-cjs/fromBase64.js
 var require_fromBase64 = __commonJS({
   "../../../node_modules/@smithy/util-base64/dist-cjs/fromBase64.js"(exports2) {
@@ -9313,7 +8009,7 @@ var require_fromBase64 = __commonJS({
     exports2.fromBase64 = void 0;
     var util_buffer_from_1 = require_dist_cjs12();
     var BASE64_REGEX = /^[A-Za-z0-9+/]*={0,2}$/;
-    var fromBase64 = (input) => {
+    var fromBase642 = (input) => {
       if (input.length * 3 % 4 !== 0) {
         throw new TypeError(`Incorrect padding on base64 string.`);
       }
@@ -9323,7 +8019,7 @@ var require_fromBase64 = __commonJS({
       const buffer = (0, util_buffer_from_1.fromString)(input, "base64");
       return new Uint8Array(buffer.buffer, buffer.byteOffset, buffer.byteLength);
     };
-    exports2.fromBase64 = fromBase64;
+    exports2.fromBase64 = fromBase642;
   }
 });
 
@@ -9334,73 +8030,44 @@ var require_toBase64 = __commonJS({
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.toBase64 = void 0;
     var util_buffer_from_1 = require_dist_cjs12();
-    var toBase64 = (input) => (0, util_buffer_from_1.fromArrayBuffer)(input.buffer, input.byteOffset, input.byteLength).toString("base64");
-    exports2.toBase64 = toBase64;
+    var util_utf8_1 = require_dist_cjs13();
+    var toBase642 = (_input) => {
+      let input;
+      if (typeof _input === "string") {
+        input = (0, util_utf8_1.fromUtf8)(_input);
+      } else {
+        input = _input;
+      }
+      if (typeof input !== "object" || typeof input.byteOffset !== "number" || typeof input.byteLength !== "number") {
+        throw new Error("@smithy/util-base64: toBase64 encoder function only accepts string | Uint8Array.");
+      }
+      return (0, util_buffer_from_1.fromArrayBuffer)(input.buffer, input.byteOffset, input.byteLength).toString("base64");
+    };
+    exports2.toBase64 = toBase642;
   }
 });
 
 // ../../../node_modules/@smithy/util-base64/dist-cjs/index.js
 var require_dist_cjs32 = __commonJS({
-  "../../../node_modules/@smithy/util-base64/dist-cjs/index.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
-    tslib_1.__exportStar(require_fromBase64(), exports2);
-    tslib_1.__exportStar(require_toBase64(), exports2);
-  }
-});
-
-// ../../../node_modules/@smithy/util-stream/dist-cjs/blob/transforms.js
-var require_transforms = __commonJS({
-  "../../../node_modules/@smithy/util-stream/dist-cjs/blob/transforms.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.transformFromString = exports2.transformToString = void 0;
-    var util_base64_1 = require_dist_cjs32();
-    var util_utf8_1 = require_dist_cjs13();
-    var Uint8ArrayBlobAdapter_1 = require_Uint8ArrayBlobAdapter();
-    function transformToString(payload, encoding = "utf-8") {
-      if (encoding === "base64") {
-        return (0, util_base64_1.toBase64)(payload);
+  "../../../node_modules/@smithy/util-base64/dist-cjs/index.js"(exports2, module2) {
+    var __defProp2 = Object.defineProperty;
+    var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
+    var __getOwnPropNames2 = Object.getOwnPropertyNames;
+    var __hasOwnProp2 = Object.prototype.hasOwnProperty;
+    var __copyProps2 = (to, from, except, desc) => {
+      if (from && typeof from === "object" || typeof from === "function") {
+        for (let key of __getOwnPropNames2(from))
+          if (!__hasOwnProp2.call(to, key) && key !== except)
+            __defProp2(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc2(from, key)) || desc.enumerable });
       }
-      return (0, util_utf8_1.toUtf8)(payload);
-    }
-    exports2.transformToString = transformToString;
-    function transformFromString(str, encoding) {
-      if (encoding === "base64") {
-        return Uint8ArrayBlobAdapter_1.Uint8ArrayBlobAdapter.mutate((0, util_base64_1.fromBase64)(str));
-      }
-      return Uint8ArrayBlobAdapter_1.Uint8ArrayBlobAdapter.mutate((0, util_utf8_1.fromUtf8)(str));
-    }
-    exports2.transformFromString = transformFromString;
-  }
-});
-
-// ../../../node_modules/@smithy/util-stream/dist-cjs/blob/Uint8ArrayBlobAdapter.js
-var require_Uint8ArrayBlobAdapter = __commonJS({
-  "../../../node_modules/@smithy/util-stream/dist-cjs/blob/Uint8ArrayBlobAdapter.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.Uint8ArrayBlobAdapter = void 0;
-    var transforms_1 = require_transforms();
-    var Uint8ArrayBlobAdapter = class _Uint8ArrayBlobAdapter extends Uint8Array {
-      static fromString(source, encoding = "utf-8") {
-        switch (typeof source) {
-          case "string":
-            return (0, transforms_1.transformFromString)(source, encoding);
-          default:
-            throw new Error(`Unsupported conversion from ${typeof source} to Uint8ArrayBlobAdapter.`);
-        }
-      }
-      static mutate(source) {
-        Object.setPrototypeOf(source, _Uint8ArrayBlobAdapter.prototype);
-        return source;
-      }
-      transformToString(encoding = "utf-8") {
-        return (0, transforms_1.transformToString)(this, encoding);
-      }
+      return to;
     };
-    exports2.Uint8ArrayBlobAdapter = Uint8ArrayBlobAdapter;
+    var __reExport = (target, mod, secondTarget) => (__copyProps2(target, mod, "default"), secondTarget && __copyProps2(secondTarget, mod, "default"));
+    var __toCommonJS2 = (mod) => __copyProps2(__defProp2({}, "__esModule", { value: true }), mod);
+    var src_exports = {};
+    module2.exports = __toCommonJS2(src_exports);
+    __reExport(src_exports, require_fromBase64(), module2.exports);
+    __reExport(src_exports, require_toBase64(), module2.exports);
   }
 });
 
@@ -9411,7 +8078,7 @@ var require_getAwsChunkedEncodingStream = __commonJS({
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.getAwsChunkedEncodingStream = void 0;
     var stream_1 = require("stream");
-    var getAwsChunkedEncodingStream = (readableStream, options) => {
+    var getAwsChunkedEncodingStream2 = (readableStream, options) => {
       const { base64Encoder, bodyLengthChecker, checksumAlgorithmFn, checksumLocationName, streamHasher } = options;
       const checksumRequired = base64Encoder !== void 0 && checksumAlgorithmFn !== void 0 && checksumLocationName !== void 0 && streamHasher !== void 0;
       const digest = checksumRequired ? streamHasher(checksumAlgorithmFn, readableStream) : void 0;
@@ -9438,83 +8105,123 @@ var require_getAwsChunkedEncodingStream = __commonJS({
       });
       return awsChunkedEncodingStream;
     };
-    exports2.getAwsChunkedEncodingStream = getAwsChunkedEncodingStream;
+    exports2.getAwsChunkedEncodingStream = getAwsChunkedEncodingStream2;
   }
 });
 
 // ../../../node_modules/@smithy/querystring-builder/dist-cjs/index.js
 var require_dist_cjs33 = __commonJS({
-  "../../../node_modules/@smithy/querystring-builder/dist-cjs/index.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.buildQueryString = void 0;
-    var util_uri_escape_1 = require_dist_cjs14();
+  "../../../node_modules/@smithy/querystring-builder/dist-cjs/index.js"(exports2, module2) {
+    var __defProp2 = Object.defineProperty;
+    var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
+    var __getOwnPropNames2 = Object.getOwnPropertyNames;
+    var __hasOwnProp2 = Object.prototype.hasOwnProperty;
+    var __name = (target, value) => __defProp2(target, "name", { value, configurable: true });
+    var __export2 = (target, all) => {
+      for (var name in all)
+        __defProp2(target, name, { get: all[name], enumerable: true });
+    };
+    var __copyProps2 = (to, from, except, desc) => {
+      if (from && typeof from === "object" || typeof from === "function") {
+        for (let key of __getOwnPropNames2(from))
+          if (!__hasOwnProp2.call(to, key) && key !== except)
+            __defProp2(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc2(from, key)) || desc.enumerable });
+      }
+      return to;
+    };
+    var __toCommonJS2 = (mod) => __copyProps2(__defProp2({}, "__esModule", { value: true }), mod);
+    var src_exports = {};
+    __export2(src_exports, {
+      buildQueryString: () => buildQueryString
+    });
+    module2.exports = __toCommonJS2(src_exports);
+    var import_util_uri_escape = require_dist_cjs14();
     function buildQueryString(query) {
       const parts = [];
       for (let key of Object.keys(query).sort()) {
         const value = query[key];
-        key = (0, util_uri_escape_1.escapeUri)(key);
+        key = (0, import_util_uri_escape.escapeUri)(key);
         if (Array.isArray(value)) {
           for (let i = 0, iLen = value.length; i < iLen; i++) {
-            parts.push(`${key}=${(0, util_uri_escape_1.escapeUri)(value[i])}`);
+            parts.push(`${key}=${(0, import_util_uri_escape.escapeUri)(value[i])}`);
           }
         } else {
           let qsEntry = key;
           if (value || typeof value === "string") {
-            qsEntry += `=${(0, util_uri_escape_1.escapeUri)(value)}`;
+            qsEntry += `=${(0, import_util_uri_escape.escapeUri)(value)}`;
           }
           parts.push(qsEntry);
         }
       }
       return parts.join("&");
     }
-    exports2.buildQueryString = buildQueryString;
+    __name(buildQueryString, "buildQueryString");
   }
 });
 
-// ../../../node_modules/@smithy/node-http-handler/dist-cjs/constants.js
-var require_constants5 = __commonJS({
-  "../../../node_modules/@smithy/node-http-handler/dist-cjs/constants.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.NODEJS_TIMEOUT_ERROR_CODES = void 0;
-    exports2.NODEJS_TIMEOUT_ERROR_CODES = ["ECONNRESET", "EPIPE", "ETIMEDOUT"];
-  }
-});
-
-// ../../../node_modules/@smithy/node-http-handler/dist-cjs/get-transformed-headers.js
-var require_get_transformed_headers = __commonJS({
-  "../../../node_modules/@smithy/node-http-handler/dist-cjs/get-transformed-headers.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.getTransformedHeaders = void 0;
-    var getTransformedHeaders = (headers) => {
+// ../../../node_modules/@smithy/node-http-handler/dist-cjs/index.js
+var require_dist_cjs34 = __commonJS({
+  "../../../node_modules/@smithy/node-http-handler/dist-cjs/index.js"(exports2, module2) {
+    var __create2 = Object.create;
+    var __defProp2 = Object.defineProperty;
+    var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
+    var __getOwnPropNames2 = Object.getOwnPropertyNames;
+    var __getProtoOf2 = Object.getPrototypeOf;
+    var __hasOwnProp2 = Object.prototype.hasOwnProperty;
+    var __name = (target, value) => __defProp2(target, "name", { value, configurable: true });
+    var __export2 = (target, all) => {
+      for (var name in all)
+        __defProp2(target, name, { get: all[name], enumerable: true });
+    };
+    var __copyProps2 = (to, from, except, desc) => {
+      if (from && typeof from === "object" || typeof from === "function") {
+        for (let key of __getOwnPropNames2(from))
+          if (!__hasOwnProp2.call(to, key) && key !== except)
+            __defProp2(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc2(from, key)) || desc.enumerable });
+      }
+      return to;
+    };
+    var __toESM2 = (mod, isNodeMode, target) => (target = mod != null ? __create2(__getProtoOf2(mod)) : {}, __copyProps2(
+      // If the importer is in node compatibility mode or this is not an ESM
+      // file that has been converted to a CommonJS file using a Babel-
+      // compatible transform (i.e. "__esModule" has not been set), then set
+      // "default" to the CommonJS "module.exports" for node compatibility.
+      isNodeMode || !mod || !mod.__esModule ? __defProp2(target, "default", { value: mod, enumerable: true }) : target,
+      mod
+    ));
+    var __toCommonJS2 = (mod) => __copyProps2(__defProp2({}, "__esModule", { value: true }), mod);
+    var src_exports = {};
+    __export2(src_exports, {
+      DEFAULT_REQUEST_TIMEOUT: () => DEFAULT_REQUEST_TIMEOUT,
+      NodeHttp2Handler: () => NodeHttp2Handler,
+      NodeHttpHandler: () => NodeHttpHandler,
+      streamCollector: () => streamCollector
+    });
+    module2.exports = __toCommonJS2(src_exports);
+    var import_protocol_http = require_dist_cjs2();
+    var import_querystring_builder = require_dist_cjs33();
+    var import_http2 = require("http");
+    var import_https = require("https");
+    var NODEJS_TIMEOUT_ERROR_CODES = ["ECONNRESET", "EPIPE", "ETIMEDOUT"];
+    var getTransformedHeaders = /* @__PURE__ */ __name((headers) => {
       const transformedHeaders = {};
       for (const name of Object.keys(headers)) {
         const headerValues = headers[name];
         transformedHeaders[name] = Array.isArray(headerValues) ? headerValues.join(",") : headerValues;
       }
       return transformedHeaders;
-    };
-    exports2.getTransformedHeaders = getTransformedHeaders;
-  }
-});
-
-// ../../../node_modules/@smithy/node-http-handler/dist-cjs/set-connection-timeout.js
-var require_set_connection_timeout = __commonJS({
-  "../../../node_modules/@smithy/node-http-handler/dist-cjs/set-connection-timeout.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.setConnectionTimeout = void 0;
-    var setConnectionTimeout = (request2, reject, timeoutInMs = 0) => {
+    }, "getTransformedHeaders");
+    var setConnectionTimeout = /* @__PURE__ */ __name((request2, reject, timeoutInMs = 0) => {
       if (!timeoutInMs) {
         return;
       }
       const timeoutId = setTimeout(() => {
         request2.destroy();
-        reject(Object.assign(new Error(`Socket timed out without establishing a connection within ${timeoutInMs} ms`), {
-          name: "TimeoutError"
-        }));
+        reject(
+          Object.assign(new Error(`Socket timed out without establishing a connection within ${timeoutInMs} ms`), {
+            name: "TimeoutError"
+          })
+        );
       }, timeoutInMs);
       request2.on("socket", (socket) => {
         if (socket.connecting) {
@@ -9525,56 +8232,25 @@ var require_set_connection_timeout = __commonJS({
           clearTimeout(timeoutId);
         }
       });
-    };
-    exports2.setConnectionTimeout = setConnectionTimeout;
-  }
-});
-
-// ../../../node_modules/@smithy/node-http-handler/dist-cjs/set-socket-keep-alive.js
-var require_set_socket_keep_alive = __commonJS({
-  "../../../node_modules/@smithy/node-http-handler/dist-cjs/set-socket-keep-alive.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.setSocketKeepAlive = void 0;
-    var setSocketKeepAlive = (request2, { keepAlive, keepAliveMsecs }) => {
+    }, "setConnectionTimeout");
+    var setSocketKeepAlive = /* @__PURE__ */ __name((request2, { keepAlive, keepAliveMsecs }) => {
       if (keepAlive !== true) {
         return;
       }
       request2.on("socket", (socket) => {
         socket.setKeepAlive(keepAlive, keepAliveMsecs || 0);
       });
-    };
-    exports2.setSocketKeepAlive = setSocketKeepAlive;
-  }
-});
-
-// ../../../node_modules/@smithy/node-http-handler/dist-cjs/set-socket-timeout.js
-var require_set_socket_timeout = __commonJS({
-  "../../../node_modules/@smithy/node-http-handler/dist-cjs/set-socket-timeout.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.setSocketTimeout = void 0;
-    var setSocketTimeout = (request2, reject, timeoutInMs = 0) => {
+    }, "setSocketKeepAlive");
+    var setSocketTimeout = /* @__PURE__ */ __name((request2, reject, timeoutInMs = 0) => {
       request2.setTimeout(timeoutInMs, () => {
         request2.destroy();
         reject(Object.assign(new Error(`Connection timed out after ${timeoutInMs} ms`), { name: "TimeoutError" }));
       });
-    };
-    exports2.setSocketTimeout = setSocketTimeout;
-  }
-});
-
-// ../../../node_modules/@smithy/node-http-handler/dist-cjs/write-request-body.js
-var require_write_request_body = __commonJS({
-  "../../../node_modules/@smithy/node-http-handler/dist-cjs/write-request-body.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.writeRequestBody = void 0;
-    var stream_1 = require("stream");
+    }, "setSocketTimeout");
+    var import_stream = require("stream");
     var MIN_WAIT_TIME = 1e3;
     async function writeRequestBody(httpRequest, request2, maxContinueTimeoutMs = MIN_WAIT_TIME) {
-      var _a;
-      const headers = (_a = request2.headers) !== null && _a !== void 0 ? _a : {};
+      const headers = request2.headers ?? {};
       const expect = headers["Expect"] || headers["expect"];
       let timeoutId = -1;
       let hasError = false;
@@ -9600,44 +8276,32 @@ var require_write_request_body = __commonJS({
         writeBody(httpRequest, request2.body);
       }
     }
-    exports2.writeRequestBody = writeRequestBody;
+    __name(writeRequestBody, "writeRequestBody");
     function writeBody(httpRequest, body) {
-      if (body instanceof stream_1.Readable) {
+      if (body instanceof import_stream.Readable) {
         body.pipe(httpRequest);
-      } else if (body) {
-        httpRequest.end(Buffer.from(body));
-      } else {
-        httpRequest.end();
+        return;
       }
-    }
-  }
-});
-
-// ../../../node_modules/@smithy/node-http-handler/dist-cjs/node-http-handler.js
-var require_node_http_handler = __commonJS({
-  "../../../node_modules/@smithy/node-http-handler/dist-cjs/node-http-handler.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.NodeHttpHandler = exports2.DEFAULT_REQUEST_TIMEOUT = void 0;
-    var protocol_http_1 = require_dist_cjs2();
-    var querystring_builder_1 = require_dist_cjs33();
-    var http_1 = require("http");
-    var https_1 = require("https");
-    var constants_1 = require_constants5();
-    var get_transformed_headers_1 = require_get_transformed_headers();
-    var set_connection_timeout_1 = require_set_connection_timeout();
-    var set_socket_keep_alive_1 = require_set_socket_keep_alive();
-    var set_socket_timeout_1 = require_set_socket_timeout();
-    var write_request_body_1 = require_write_request_body();
-    exports2.DEFAULT_REQUEST_TIMEOUT = 0;
-    var NodeHttpHandler = class _NodeHttpHandler {
-      static create(instanceOrOptions) {
-        if (typeof (instanceOrOptions === null || instanceOrOptions === void 0 ? void 0 : instanceOrOptions.handle) === "function") {
-          return instanceOrOptions;
+      if (body) {
+        if (Buffer.isBuffer(body) || typeof body === "string") {
+          httpRequest.end(body);
+          return;
         }
-        return new _NodeHttpHandler(instanceOrOptions);
+        const uint8 = body;
+        if (typeof uint8 === "object" && uint8.buffer && typeof uint8.byteOffset === "number" && typeof uint8.byteLength === "number") {
+          httpRequest.end(Buffer.from(uint8.buffer, uint8.byteOffset, uint8.byteLength));
+          return;
+        }
+        httpRequest.end(Buffer.from(body));
+        return;
       }
+      httpRequest.end();
+    }
+    __name(writeBody, "writeBody");
+    var DEFAULT_REQUEST_TIMEOUT = 0;
+    var _NodeHttpHandler = class _NodeHttpHandler2 {
       constructor(options) {
+        this.socketWarningTimestamp = 0;
         this.metadata = { handlerProtocol: "http/1.1" };
         this.configProvider = new Promise((resolve, reject) => {
           if (typeof options === "function") {
@@ -9649,52 +8313,110 @@ var require_node_http_handler = __commonJS({
           }
         });
       }
+      /**
+       * @returns the input if it is an HttpHandler of any class,
+       * or instantiates a new instance of this handler.
+       */
+      static create(instanceOrOptions) {
+        if (typeof (instanceOrOptions == null ? void 0 : instanceOrOptions.handle) === "function") {
+          return instanceOrOptions;
+        }
+        return new _NodeHttpHandler2(instanceOrOptions);
+      }
+      /**
+       * @internal
+       *
+       * @param agent - http(s) agent in use by the NodeHttpHandler instance.
+       * @returns timestamp of last emitted warning.
+       */
+      static checkSocketUsage(agent, socketWarningTimestamp) {
+        var _a, _b;
+        const { sockets, requests, maxSockets } = agent;
+        if (typeof maxSockets !== "number" || maxSockets === Infinity) {
+          return socketWarningTimestamp;
+        }
+        const interval = 15e3;
+        if (Date.now() - interval < socketWarningTimestamp) {
+          return socketWarningTimestamp;
+        }
+        if (sockets && requests) {
+          for (const origin in sockets) {
+            const socketsInUse = ((_a = sockets[origin]) == null ? void 0 : _a.length) ?? 0;
+            const requestsEnqueued = ((_b = requests[origin]) == null ? void 0 : _b.length) ?? 0;
+            if (socketsInUse >= maxSockets && requestsEnqueued >= 2 * maxSockets) {
+              console.warn(
+                "@smithy/node-http-handler:WARN",
+                `socket usage at capacity=${socketsInUse} and ${requestsEnqueued} additional requests are enqueued.`,
+                "See https://docs.aws.amazon.com/sdk-for-javascript/v3/developer-guide/node-configuring-maxsockets.html",
+                "or increase socketAcquisitionWarningTimeout=(millis) in the NodeHttpHandler config."
+              );
+              return Date.now();
+            }
+          }
+        }
+        return socketWarningTimestamp;
+      }
       resolveDefaultConfig(options) {
         const { requestTimeout, connectionTimeout, socketTimeout, httpAgent, httpsAgent } = options || {};
         const keepAlive = true;
         const maxSockets = 50;
         return {
           connectionTimeout,
-          requestTimeout: requestTimeout !== null && requestTimeout !== void 0 ? requestTimeout : socketTimeout,
-          httpAgent: httpAgent || new http_1.Agent({ keepAlive, maxSockets }),
-          httpsAgent: httpsAgent || new https_1.Agent({ keepAlive, maxSockets })
+          requestTimeout: requestTimeout ?? socketTimeout,
+          httpAgent: (() => {
+            if (httpAgent instanceof import_http2.Agent || typeof (httpAgent == null ? void 0 : httpAgent.destroy) === "function") {
+              return httpAgent;
+            }
+            return new import_http2.Agent({ keepAlive, maxSockets, ...httpAgent });
+          })(),
+          httpsAgent: (() => {
+            if (httpsAgent instanceof import_https.Agent || typeof (httpsAgent == null ? void 0 : httpsAgent.destroy) === "function") {
+              return httpsAgent;
+            }
+            return new import_https.Agent({ keepAlive, maxSockets, ...httpsAgent });
+          })()
         };
       }
       destroy() {
         var _a, _b, _c, _d;
-        (_b = (_a = this.config) === null || _a === void 0 ? void 0 : _a.httpAgent) === null || _b === void 0 ? void 0 : _b.destroy();
-        (_d = (_c = this.config) === null || _c === void 0 ? void 0 : _c.httpsAgent) === null || _d === void 0 ? void 0 : _d.destroy();
+        (_b = (_a = this.config) == null ? void 0 : _a.httpAgent) == null ? void 0 : _b.destroy();
+        (_d = (_c = this.config) == null ? void 0 : _c.httpsAgent) == null ? void 0 : _d.destroy();
       }
       async handle(request2, { abortSignal } = {}) {
         if (!this.config) {
           this.config = await this.configProvider;
         }
+        let socketCheckTimeoutId;
         return new Promise((_resolve, _reject) => {
-          var _a, _b;
           let writeRequestBodyPromise = void 0;
-          const resolve = async (arg) => {
+          const resolve = /* @__PURE__ */ __name(async (arg) => {
             await writeRequestBodyPromise;
+            clearTimeout(socketCheckTimeoutId);
             _resolve(arg);
-          };
-          const reject = async (arg) => {
+          }, "resolve");
+          const reject = /* @__PURE__ */ __name(async (arg) => {
             await writeRequestBodyPromise;
             _reject(arg);
-          };
+          }, "reject");
           if (!this.config) {
             throw new Error("Node HTTP request handler config is not resolved");
           }
-          if (abortSignal === null || abortSignal === void 0 ? void 0 : abortSignal.aborted) {
+          if (abortSignal == null ? void 0 : abortSignal.aborted) {
             const abortError = new Error("Request aborted");
             abortError.name = "AbortError";
             reject(abortError);
             return;
           }
           const isSSL = request2.protocol === "https:";
-          const queryString = (0, querystring_builder_1.buildQueryString)(request2.query || {});
+          const agent = isSSL ? this.config.httpsAgent : this.config.httpAgent;
+          socketCheckTimeoutId = setTimeout(() => {
+            this.socketWarningTimestamp = _NodeHttpHandler2.checkSocketUsage(agent, this.socketWarningTimestamp);
+          }, this.config.socketAcquisitionWarningTimeout ?? (this.config.requestTimeout ?? 2e3) + (this.config.connectionTimeout ?? 1e3));
+          const queryString = (0, import_querystring_builder.buildQueryString)(request2.query || {});
           let auth = void 0;
           if (request2.username != null || request2.password != null) {
-            const username = (_a = request2.username) !== null && _a !== void 0 ? _a : "";
-            const password = (_b = request2.password) !== null && _b !== void 0 ? _b : "";
+            const username = request2.username ?? "";
+            const password = request2.password ?? "";
             auth = `${username}:${password}`;
           }
           let path = request2.path;
@@ -9710,28 +8432,28 @@ var require_node_http_handler = __commonJS({
             method: request2.method,
             path,
             port: request2.port,
-            agent: isSSL ? this.config.httpsAgent : this.config.httpAgent,
+            agent,
             auth
           };
-          const requestFunc = isSSL ? https_1.request : http_1.request;
+          const requestFunc = isSSL ? import_https.request : import_http2.request;
           const req = requestFunc(nodeHttpsOptions, (res) => {
-            const httpResponse = new protocol_http_1.HttpResponse({
+            const httpResponse = new import_protocol_http.HttpResponse({
               statusCode: res.statusCode || -1,
               reason: res.statusMessage,
-              headers: (0, get_transformed_headers_1.getTransformedHeaders)(res.headers),
+              headers: getTransformedHeaders(res.headers),
               body: res
             });
             resolve({ response: httpResponse });
           });
           req.on("error", (err) => {
-            if (constants_1.NODEJS_TIMEOUT_ERROR_CODES.includes(err.code)) {
+            if (NODEJS_TIMEOUT_ERROR_CODES.includes(err.code)) {
               reject(Object.assign(err, { name: "TimeoutError" }));
             } else {
               reject(err);
             }
           });
-          (0, set_connection_timeout_1.setConnectionTimeout)(req, reject, this.config.connectionTimeout);
-          (0, set_socket_timeout_1.setSocketTimeout)(req, reject, this.config.requestTimeout);
+          setConnectionTimeout(req, reject, this.config.connectionTimeout);
+          setSocketTimeout(req, reject, this.config.requestTimeout);
           if (abortSignal) {
             abortSignal.onabort = () => {
               req.abort();
@@ -9742,12 +8464,14 @@ var require_node_http_handler = __commonJS({
           }
           const httpAgent = nodeHttpsOptions.agent;
           if (typeof httpAgent === "object" && "keepAlive" in httpAgent) {
-            (0, set_socket_keep_alive_1.setSocketKeepAlive)(req, {
+            setSocketKeepAlive(req, {
+              // @ts-expect-error keepAlive is not public on httpAgent.
               keepAlive: httpAgent.keepAlive,
+              // @ts-expect-error keepAliveMsecs is not public on httpAgent.
               keepAliveMsecs: httpAgent.keepAliveMsecs
             });
           }
-          writeRequestBodyPromise = (0, write_request_body_1.writeRequestBody)(req, request2, this.config.requestTimeout).catch(_reject);
+          writeRequestBodyPromise = writeRequestBody(req, request2, this.config.requestTimeout).catch(_reject);
         });
       }
       updateHttpClientConfig(key, value) {
@@ -9760,24 +8484,17 @@ var require_node_http_handler = __commonJS({
         });
       }
       httpHandlerConfigs() {
-        var _a;
-        return (_a = this.config) !== null && _a !== void 0 ? _a : {};
+        return this.config ?? {};
       }
     };
-    exports2.NodeHttpHandler = NodeHttpHandler;
-  }
-});
-
-// ../../../node_modules/@smithy/node-http-handler/dist-cjs/node-http2-connection-pool.js
-var require_node_http2_connection_pool = __commonJS({
-  "../../../node_modules/@smithy/node-http-handler/dist-cjs/node-http2-connection-pool.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.NodeHttp2ConnectionPool = void 0;
-    var NodeHttp2ConnectionPool = class {
+    __name(_NodeHttpHandler, "NodeHttpHandler");
+    var NodeHttpHandler = _NodeHttpHandler;
+    var import_http22 = require("http2");
+    var import_http23 = __toESM2(require("http2"));
+    var _NodeHttp2ConnectionPool = class _NodeHttp2ConnectionPool {
       constructor(sessions) {
         this.sessions = [];
-        this.sessions = sessions !== null && sessions !== void 0 ? sessions : [];
+        this.sessions = sessions ?? [];
       }
       poll() {
         if (this.sessions.length > 0) {
@@ -9806,20 +8523,9 @@ var require_node_http2_connection_pool = __commonJS({
         }
       }
     };
-    exports2.NodeHttp2ConnectionPool = NodeHttp2ConnectionPool;
-  }
-});
-
-// ../../../node_modules/@smithy/node-http-handler/dist-cjs/node-http2-connection-manager.js
-var require_node_http2_connection_manager = __commonJS({
-  "../../../node_modules/@smithy/node-http-handler/dist-cjs/node-http2-connection-manager.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.NodeHttp2ConnectionManager = void 0;
-    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
-    var http2_1 = tslib_1.__importDefault(require("http2"));
-    var node_http2_connection_pool_1 = require_node_http2_connection_pool();
-    var NodeHttp2ConnectionManager = class {
+    __name(_NodeHttp2ConnectionPool, "NodeHttp2ConnectionPool");
+    var NodeHttp2ConnectionPool = _NodeHttp2ConnectionPool;
+    var _NodeHttp2ConnectionManager = class _NodeHttp2ConnectionManager {
       constructor(config) {
         this.sessionCache = /* @__PURE__ */ new Map();
         this.config = config;
@@ -9836,19 +8542,21 @@ var require_node_http2_connection_manager = __commonJS({
             return existingSession;
           }
         }
-        const session = http2_1.default.connect(url2);
+        const session = import_http23.default.connect(url2);
         if (this.config.maxConcurrency) {
           session.settings({ maxConcurrentStreams: this.config.maxConcurrency }, (err) => {
             if (err) {
-              throw new Error("Fail to set maxConcurrentStreams to " + this.config.maxConcurrency + "when creating new session for " + requestContext.destination.toString());
+              throw new Error(
+                "Fail to set maxConcurrentStreams to " + this.config.maxConcurrency + "when creating new session for " + requestContext.destination.toString()
+              );
             }
           });
         }
         session.unref();
-        const destroySessionCb = () => {
+        const destroySessionCb = /* @__PURE__ */ __name(() => {
           session.destroy();
           this.deleteSession(url2, session);
-        };
+        }, "destroySessionCb");
         session.on("goaway", destroySessionCb);
         session.on("error", destroySessionCb);
         session.on("frameError", destroySessionCb);
@@ -9856,11 +8564,16 @@ var require_node_http2_connection_manager = __commonJS({
         if (connectionConfiguration.requestTimeout) {
           session.setTimeout(connectionConfiguration.requestTimeout, destroySessionCb);
         }
-        const connectionPool = this.sessionCache.get(url2) || new node_http2_connection_pool_1.NodeHttp2ConnectionPool();
+        const connectionPool = this.sessionCache.get(url2) || new NodeHttp2ConnectionPool();
         connectionPool.offerLast(session);
         this.sessionCache.set(url2, connectionPool);
         return session;
       }
+      /**
+       * Delete a session from the connection pool.
+       * @param authority The authority of the session to delete.
+       * @param session The session to delete.
+       */
       deleteSession(authority, session) {
         const existingConnectionPool = this.sessionCache.get(authority);
         if (!existingConnectionPool) {
@@ -9875,7 +8588,7 @@ var require_node_http2_connection_manager = __commonJS({
       release(requestContext, session) {
         var _a;
         const cacheKey = this.getUrlString(requestContext);
-        (_a = this.sessionCache.get(cacheKey)) === null || _a === void 0 ? void 0 : _a.offerLast(session);
+        (_a = this.sessionCache.get(cacheKey)) == null ? void 0 : _a.offerLast(session);
       }
       destroy() {
         for (const [key, connectionPool] of this.sessionCache) {
@@ -9901,32 +8614,12 @@ var require_node_http2_connection_manager = __commonJS({
         return request2.destination.toString();
       }
     };
-    exports2.NodeHttp2ConnectionManager = NodeHttp2ConnectionManager;
-  }
-});
-
-// ../../../node_modules/@smithy/node-http-handler/dist-cjs/node-http2-handler.js
-var require_node_http2_handler = __commonJS({
-  "../../../node_modules/@smithy/node-http-handler/dist-cjs/node-http2-handler.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.NodeHttp2Handler = void 0;
-    var protocol_http_1 = require_dist_cjs2();
-    var querystring_builder_1 = require_dist_cjs33();
-    var http2_1 = require("http2");
-    var get_transformed_headers_1 = require_get_transformed_headers();
-    var node_http2_connection_manager_1 = require_node_http2_connection_manager();
-    var write_request_body_1 = require_write_request_body();
-    var NodeHttp2Handler = class _NodeHttp2Handler {
-      static create(instanceOrOptions) {
-        if (typeof (instanceOrOptions === null || instanceOrOptions === void 0 ? void 0 : instanceOrOptions.handle) === "function") {
-          return instanceOrOptions;
-        }
-        return new _NodeHttp2Handler(instanceOrOptions);
-      }
+    __name(_NodeHttp2ConnectionManager, "NodeHttp2ConnectionManager");
+    var NodeHttp2ConnectionManager = _NodeHttp2ConnectionManager;
+    var _NodeHttp2Handler = class _NodeHttp2Handler2 {
       constructor(options) {
         this.metadata = { handlerProtocol: "h2" };
-        this.connectionManager = new node_http2_connection_manager_1.NodeHttp2ConnectionManager({});
+        this.connectionManager = new NodeHttp2ConnectionManager({});
         this.configProvider = new Promise((resolve, reject) => {
           if (typeof options === "function") {
             options().then((opts) => {
@@ -9936,6 +8629,16 @@ var require_node_http2_handler = __commonJS({
             resolve(options || {});
           }
         });
+      }
+      /**
+       * @returns the input if it is an HttpHandler of any class,
+       * or instantiates a new instance of this handler.
+       */
+      static create(instanceOrOptions) {
+        if (typeof (instanceOrOptions == null ? void 0 : instanceOrOptions.handle) === "function") {
+          return instanceOrOptions;
+        }
+        return new _NodeHttp2Handler2(instanceOrOptions);
       }
       destroy() {
         this.connectionManager.destroy();
@@ -9950,18 +8653,18 @@ var require_node_http2_handler = __commonJS({
         }
         const { requestTimeout, disableConcurrentStreams } = this.config;
         return new Promise((_resolve, _reject) => {
-          var _a, _b, _c;
+          var _a;
           let fulfilled = false;
           let writeRequestBodyPromise = void 0;
-          const resolve = async (arg) => {
+          const resolve = /* @__PURE__ */ __name(async (arg) => {
             await writeRequestBodyPromise;
             _resolve(arg);
-          };
-          const reject = async (arg) => {
+          }, "resolve");
+          const reject = /* @__PURE__ */ __name(async (arg) => {
             await writeRequestBodyPromise;
             _reject(arg);
-          };
-          if (abortSignal === null || abortSignal === void 0 ? void 0 : abortSignal.aborted) {
+          }, "reject");
+          if (abortSignal == null ? void 0 : abortSignal.aborted) {
             fulfilled = true;
             const abortError = new Error("Request aborted");
             abortError.name = "AbortError";
@@ -9971,24 +8674,24 @@ var require_node_http2_handler = __commonJS({
           const { hostname, method, port, protocol, query } = request2;
           let auth = "";
           if (request2.username != null || request2.password != null) {
-            const username = (_a = request2.username) !== null && _a !== void 0 ? _a : "";
-            const password = (_b = request2.password) !== null && _b !== void 0 ? _b : "";
+            const username = request2.username ?? "";
+            const password = request2.password ?? "";
             auth = `${username}:${password}@`;
           }
           const authority = `${protocol}//${auth}${hostname}${port ? `:${port}` : ""}`;
           const requestContext = { destination: new URL(authority) };
           const session = this.connectionManager.lease(requestContext, {
-            requestTimeout: (_c = this.config) === null || _c === void 0 ? void 0 : _c.sessionTimeout,
+            requestTimeout: (_a = this.config) == null ? void 0 : _a.sessionTimeout,
             disableConcurrentStreams: disableConcurrentStreams || false
           });
-          const rejectWithDestroy = (err) => {
+          const rejectWithDestroy = /* @__PURE__ */ __name((err) => {
             if (disableConcurrentStreams) {
               this.destroySession(session);
             }
             fulfilled = true;
             reject(err);
-          };
-          const queryString = (0, querystring_builder_1.buildQueryString)(query || {});
+          }, "rejectWithDestroy");
+          const queryString = (0, import_querystring_builder.buildQueryString)(query || {});
           let path = request2.path;
           if (queryString) {
             path += `?${queryString}`;
@@ -9998,14 +8701,14 @@ var require_node_http2_handler = __commonJS({
           }
           const req = session.request({
             ...request2.headers,
-            [http2_1.constants.HTTP2_HEADER_PATH]: path,
-            [http2_1.constants.HTTP2_HEADER_METHOD]: method
+            [import_http22.constants.HTTP2_HEADER_PATH]: path,
+            [import_http22.constants.HTTP2_HEADER_METHOD]: method
           });
           session.ref();
           req.on("response", (headers) => {
-            const httpResponse = new protocol_http_1.HttpResponse({
+            const httpResponse = new import_protocol_http.HttpResponse({
               statusCode: headers[":status"] || -1,
-              headers: (0, get_transformed_headers_1.getTransformedHeaders)(headers),
+              headers: getTransformedHeaders(headers),
               body: req
             });
             fulfilled = true;
@@ -10036,7 +8739,9 @@ var require_node_http2_handler = __commonJS({
           });
           req.on("error", rejectWithDestroy);
           req.on("aborted", () => {
-            rejectWithDestroy(new Error(`HTTP/2 stream is abnormally aborted in mid-communication with result code ${req.rstCode}.`));
+            rejectWithDestroy(
+              new Error(`HTTP/2 stream is abnormally aborted in mid-communication with result code ${req.rstCode}.`)
+            );
           });
           req.on("close", () => {
             session.unref();
@@ -10047,7 +8752,7 @@ var require_node_http2_handler = __commonJS({
               rejectWithDestroy(new Error("Unexpected error: http2 request did not get a response"));
             }
           });
-          writeRequestBodyPromise = (0, write_request_body_1.writeRequestBody)(req, request2, requestTimeout);
+          writeRequestBodyPromise = writeRequestBody(req, request2, requestTimeout);
         });
       }
       updateHttpClientConfig(key, value) {
@@ -10060,27 +8765,21 @@ var require_node_http2_handler = __commonJS({
         });
       }
       httpHandlerConfigs() {
-        var _a;
-        return (_a = this.config) !== null && _a !== void 0 ? _a : {};
+        return this.config ?? {};
       }
+      /**
+       * Destroys a session.
+       * @param session The session to destroy.
+       */
       destroySession(session) {
         if (!session.destroyed) {
           session.destroy();
         }
       }
     };
-    exports2.NodeHttp2Handler = NodeHttp2Handler;
-  }
-});
-
-// ../../../node_modules/@smithy/node-http-handler/dist-cjs/stream-collector/collector.js
-var require_collector = __commonJS({
-  "../../../node_modules/@smithy/node-http-handler/dist-cjs/stream-collector/collector.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.Collector = void 0;
-    var stream_1 = require("stream");
-    var Collector = class extends stream_1.Writable {
+    __name(_NodeHttp2Handler, "NodeHttp2Handler");
+    var NodeHttp2Handler = _NodeHttp2Handler;
+    var _Collector = class _Collector extends import_stream.Writable {
       constructor() {
         super(...arguments);
         this.bufferedBytes = [];
@@ -10090,19 +8789,10 @@ var require_collector = __commonJS({
         callback();
       }
     };
-    exports2.Collector = Collector;
-  }
-});
-
-// ../../../node_modules/@smithy/node-http-handler/dist-cjs/stream-collector/index.js
-var require_stream_collector = __commonJS({
-  "../../../node_modules/@smithy/node-http-handler/dist-cjs/stream-collector/index.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.streamCollector = void 0;
-    var collector_1 = require_collector();
-    var streamCollector = (stream) => new Promise((resolve, reject) => {
-      const collector = new collector_1.Collector();
+    __name(_Collector, "Collector");
+    var Collector = _Collector;
+    var streamCollector = /* @__PURE__ */ __name((stream) => new Promise((resolve, reject) => {
+      const collector = new Collector();
       stream.pipe(collector);
       stream.on("error", (err) => {
         collector.end();
@@ -10113,20 +8803,7 @@ var require_stream_collector = __commonJS({
         const bytes = new Uint8Array(Buffer.concat(this.bufferedBytes));
         resolve(bytes);
       });
-    });
-    exports2.streamCollector = streamCollector;
-  }
-});
-
-// ../../../node_modules/@smithy/node-http-handler/dist-cjs/index.js
-var require_dist_cjs34 = __commonJS({
-  "../../../node_modules/@smithy/node-http-handler/dist-cjs/index.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
-    tslib_1.__exportStar(require_node_http_handler(), exports2);
-    tslib_1.__exportStar(require_node_http2_handler(), exports2);
-    tslib_1.__exportStar(require_stream_collector(), exports2);
+    }), "streamCollector");
   }
 });
 
@@ -10141,7 +8818,7 @@ var require_sdk_stream_mixin = __commonJS({
     var stream_1 = require("stream");
     var util_1 = require("util");
     var ERR_MSG_STREAM_HAS_BEEN_TRANSFORMED = "The stream has already been transformed.";
-    var sdkStreamMixin = (stream) => {
+    var sdkStreamMixin2 = (stream) => {
       var _a, _b;
       if (!(stream instanceof stream_1.Readable)) {
         const name = ((_b = (_a = stream === null || stream === void 0 ? void 0 : stream.__proto__) === null || _a === void 0 ? void 0 : _a.constructor) === null || _b === void 0 ? void 0 : _b.name) || stream;
@@ -10181,81 +8858,279 @@ var require_sdk_stream_mixin = __commonJS({
         }
       });
     };
-    exports2.sdkStreamMixin = sdkStreamMixin;
+    exports2.sdkStreamMixin = sdkStreamMixin2;
   }
 });
 
 // ../../../node_modules/@smithy/util-stream/dist-cjs/index.js
 var require_dist_cjs35 = __commonJS({
-  "../../../node_modules/@smithy/util-stream/dist-cjs/index.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
-    tslib_1.__exportStar(require_Uint8ArrayBlobAdapter(), exports2);
-    tslib_1.__exportStar(require_getAwsChunkedEncodingStream(), exports2);
-    tslib_1.__exportStar(require_sdk_stream_mixin(), exports2);
+  "../../../node_modules/@smithy/util-stream/dist-cjs/index.js"(exports2, module2) {
+    var __defProp2 = Object.defineProperty;
+    var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
+    var __getOwnPropNames2 = Object.getOwnPropertyNames;
+    var __hasOwnProp2 = Object.prototype.hasOwnProperty;
+    var __name = (target, value) => __defProp2(target, "name", { value, configurable: true });
+    var __export2 = (target, all) => {
+      for (var name in all)
+        __defProp2(target, name, { get: all[name], enumerable: true });
+    };
+    var __copyProps2 = (to, from, except, desc) => {
+      if (from && typeof from === "object" || typeof from === "function") {
+        for (let key of __getOwnPropNames2(from))
+          if (!__hasOwnProp2.call(to, key) && key !== except)
+            __defProp2(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc2(from, key)) || desc.enumerable });
+      }
+      return to;
+    };
+    var __reExport = (target, mod, secondTarget) => (__copyProps2(target, mod, "default"), secondTarget && __copyProps2(secondTarget, mod, "default"));
+    var __toCommonJS2 = (mod) => __copyProps2(__defProp2({}, "__esModule", { value: true }), mod);
+    var src_exports = {};
+    __export2(src_exports, {
+      Uint8ArrayBlobAdapter: () => Uint8ArrayBlobAdapter
+    });
+    module2.exports = __toCommonJS2(src_exports);
+    var import_util_base64 = require_dist_cjs32();
+    var import_util_utf8 = require_dist_cjs13();
+    function transformToString(payload, encoding = "utf-8") {
+      if (encoding === "base64") {
+        return (0, import_util_base64.toBase64)(payload);
+      }
+      return (0, import_util_utf8.toUtf8)(payload);
+    }
+    __name(transformToString, "transformToString");
+    function transformFromString(str, encoding) {
+      if (encoding === "base64") {
+        return Uint8ArrayBlobAdapter.mutate((0, import_util_base64.fromBase64)(str));
+      }
+      return Uint8ArrayBlobAdapter.mutate((0, import_util_utf8.fromUtf8)(str));
+    }
+    __name(transformFromString, "transformFromString");
+    var _Uint8ArrayBlobAdapter = class _Uint8ArrayBlobAdapter2 extends Uint8Array {
+      /**
+       * @param source - such as a string or Stream.
+       * @returns a new Uint8ArrayBlobAdapter extending Uint8Array.
+       */
+      static fromString(source, encoding = "utf-8") {
+        switch (typeof source) {
+          case "string":
+            return transformFromString(source, encoding);
+          default:
+            throw new Error(`Unsupported conversion from ${typeof source} to Uint8ArrayBlobAdapter.`);
+        }
+      }
+      /**
+       * @param source - Uint8Array to be mutated.
+       * @returns the same Uint8Array but with prototype switched to Uint8ArrayBlobAdapter.
+       */
+      static mutate(source) {
+        Object.setPrototypeOf(source, _Uint8ArrayBlobAdapter2.prototype);
+        return source;
+      }
+      /**
+       * @param encoding - default 'utf-8'.
+       * @returns the blob as string.
+       */
+      transformToString(encoding = "utf-8") {
+        return transformToString(this, encoding);
+      }
+    };
+    __name(_Uint8ArrayBlobAdapter, "Uint8ArrayBlobAdapter");
+    var Uint8ArrayBlobAdapter = _Uint8ArrayBlobAdapter;
+    __reExport(src_exports, require_getAwsChunkedEncodingStream(), module2.exports);
+    __reExport(src_exports, require_sdk_stream_mixin(), module2.exports);
   }
 });
 
-// ../../../node_modules/@smithy/smithy-client/dist-cjs/collect-stream-body.js
-var require_collect_stream_body = __commonJS({
-  "../../../node_modules/@smithy/smithy-client/dist-cjs/collect-stream-body.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.collectBody = void 0;
-    var util_stream_1 = require_dist_cjs35();
-    var collectBody = async (streamBody = new Uint8Array(), context) => {
+// ../../../node_modules/@smithy/smithy-client/dist-cjs/index.js
+var require_dist_cjs36 = __commonJS({
+  "../../../node_modules/@smithy/smithy-client/dist-cjs/index.js"(exports2, module2) {
+    var __defProp2 = Object.defineProperty;
+    var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
+    var __getOwnPropNames2 = Object.getOwnPropertyNames;
+    var __hasOwnProp2 = Object.prototype.hasOwnProperty;
+    var __name = (target, value) => __defProp2(target, "name", { value, configurable: true });
+    var __export2 = (target, all) => {
+      for (var name in all)
+        __defProp2(target, name, { get: all[name], enumerable: true });
+    };
+    var __copyProps2 = (to, from, except, desc) => {
+      if (from && typeof from === "object" || typeof from === "function") {
+        for (let key of __getOwnPropNames2(from))
+          if (!__hasOwnProp2.call(to, key) && key !== except)
+            __defProp2(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc2(from, key)) || desc.enumerable });
+      }
+      return to;
+    };
+    var __toCommonJS2 = (mod) => __copyProps2(__defProp2({}, "__esModule", { value: true }), mod);
+    var src_exports = {};
+    __export2(src_exports, {
+      Client: () => Client,
+      Command: () => Command,
+      LazyJsonString: () => LazyJsonString,
+      NoOpLogger: () => NoOpLogger,
+      SENSITIVE_STRING: () => SENSITIVE_STRING,
+      ServiceException: () => ServiceException,
+      StringWrapper: () => StringWrapper,
+      _json: () => _json,
+      collectBody: () => collectBody,
+      convertMap: () => convertMap,
+      createAggregatedClient: () => createAggregatedClient,
+      dateToUtcString: () => dateToUtcString,
+      decorateServiceException: () => decorateServiceException,
+      emitWarningIfUnsupportedVersion: () => emitWarningIfUnsupportedVersion,
+      expectBoolean: () => expectBoolean,
+      expectByte: () => expectByte,
+      expectFloat32: () => expectFloat32,
+      expectInt: () => expectInt,
+      expectInt32: () => expectInt32,
+      expectLong: () => expectLong,
+      expectNonNull: () => expectNonNull,
+      expectNumber: () => expectNumber,
+      expectObject: () => expectObject,
+      expectShort: () => expectShort,
+      expectString: () => expectString,
+      expectUnion: () => expectUnion,
+      extendedEncodeURIComponent: () => extendedEncodeURIComponent,
+      getArrayIfSingleItem: () => getArrayIfSingleItem,
+      getDefaultClientConfiguration: () => getDefaultClientConfiguration,
+      getDefaultExtensionConfiguration: () => getDefaultExtensionConfiguration,
+      getValueFromTextNode: () => getValueFromTextNode,
+      handleFloat: () => handleFloat,
+      limitedParseDouble: () => limitedParseDouble,
+      limitedParseFloat: () => limitedParseFloat,
+      limitedParseFloat32: () => limitedParseFloat32,
+      loadConfigsForDefaultMode: () => loadConfigsForDefaultMode,
+      logger: () => logger,
+      map: () => map,
+      parseBoolean: () => parseBoolean,
+      parseEpochTimestamp: () => parseEpochTimestamp,
+      parseRfc3339DateTime: () => parseRfc3339DateTime,
+      parseRfc3339DateTimeWithOffset: () => parseRfc3339DateTimeWithOffset,
+      parseRfc7231DateTime: () => parseRfc7231DateTime,
+      resolveDefaultRuntimeConfig: () => resolveDefaultRuntimeConfig,
+      resolvedPath: () => resolvedPath,
+      serializeFloat: () => serializeFloat,
+      splitEvery: () => splitEvery,
+      strictParseByte: () => strictParseByte,
+      strictParseDouble: () => strictParseDouble,
+      strictParseFloat: () => strictParseFloat,
+      strictParseFloat32: () => strictParseFloat32,
+      strictParseInt: () => strictParseInt,
+      strictParseInt32: () => strictParseInt32,
+      strictParseLong: () => strictParseLong,
+      strictParseShort: () => strictParseShort,
+      take: () => take,
+      throwDefaultError: () => throwDefaultError,
+      withBaseException: () => withBaseException
+    });
+    module2.exports = __toCommonJS2(src_exports);
+    var _NoOpLogger = class _NoOpLogger {
+      trace() {
+      }
+      debug() {
+      }
+      info() {
+      }
+      warn() {
+      }
+      error() {
+      }
+    };
+    __name(_NoOpLogger, "NoOpLogger");
+    var NoOpLogger = _NoOpLogger;
+    var import_middleware_stack = require_dist_cjs31();
+    var _Client = class _Client {
+      constructor(config) {
+        this.middlewareStack = (0, import_middleware_stack.constructStack)();
+        this.config = config;
+      }
+      send(command, optionsOrCb, cb) {
+        const options = typeof optionsOrCb !== "function" ? optionsOrCb : void 0;
+        const callback = typeof optionsOrCb === "function" ? optionsOrCb : cb;
+        const handler2 = command.resolveMiddleware(this.middlewareStack, this.config, options);
+        if (callback) {
+          handler2(command).then(
+            (result) => callback(null, result.output),
+            (err) => callback(err)
+          ).catch(
+            // prevent any errors thrown in the callback from triggering an
+            // unhandled promise rejection
+            () => {
+            }
+          );
+        } else {
+          return handler2(command).then((result) => result.output);
+        }
+      }
+      destroy() {
+        if (this.config.requestHandler.destroy)
+          this.config.requestHandler.destroy();
+      }
+    };
+    __name(_Client, "Client");
+    var Client = _Client;
+    var import_util_stream = require_dist_cjs35();
+    var collectBody = /* @__PURE__ */ __name(async (streamBody = new Uint8Array(), context) => {
       if (streamBody instanceof Uint8Array) {
-        return util_stream_1.Uint8ArrayBlobAdapter.mutate(streamBody);
+        return import_util_stream.Uint8ArrayBlobAdapter.mutate(streamBody);
       }
       if (!streamBody) {
-        return util_stream_1.Uint8ArrayBlobAdapter.mutate(new Uint8Array());
+        return import_util_stream.Uint8ArrayBlobAdapter.mutate(new Uint8Array());
       }
       const fromContext = context.streamCollector(streamBody);
-      return util_stream_1.Uint8ArrayBlobAdapter.mutate(await fromContext);
-    };
-    exports2.collectBody = collectBody;
-  }
-});
-
-// ../../../node_modules/@smithy/smithy-client/dist-cjs/command.js
-var require_command3 = __commonJS({
-  "../../../node_modules/@smithy/smithy-client/dist-cjs/command.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.Command = void 0;
-    var middleware_stack_1 = require_dist_cjs31();
-    var types_1 = require_dist_cjs();
-    var Command = class {
+      return import_util_stream.Uint8ArrayBlobAdapter.mutate(await fromContext);
+    }, "collectBody");
+    var import_types = require_dist_cjs();
+    var _Command = class _Command {
       constructor() {
-        this.middlewareStack = (0, middleware_stack_1.constructStack)();
+        this.middlewareStack = (0, import_middleware_stack.constructStack)();
       }
+      /**
+       * Factory for Command ClassBuilder.
+       * @internal
+       */
       static classBuilder() {
         return new ClassBuilder();
       }
-      resolveMiddlewareWithContext(clientStack, configuration, options, { middlewareFn, clientName, commandName, inputFilterSensitiveLog, outputFilterSensitiveLog, smithyContext, additionalContext, CommandCtor }) {
+      /**
+       * @internal
+       */
+      resolveMiddlewareWithContext(clientStack, configuration, options, {
+        middlewareFn,
+        clientName,
+        commandName,
+        inputFilterSensitiveLog,
+        outputFilterSensitiveLog,
+        smithyContext,
+        additionalContext,
+        CommandCtor
+      }) {
         for (const mw of middlewareFn.bind(this)(CommandCtor, clientStack, configuration, options)) {
           this.middlewareStack.use(mw);
         }
         const stack = clientStack.concat(this.middlewareStack);
-        const { logger } = configuration;
+        const { logger: logger2 } = configuration;
         const handlerExecutionContext = {
-          logger,
+          logger: logger2,
           clientName,
           commandName,
           inputFilterSensitiveLog,
           outputFilterSensitiveLog,
-          [types_1.SMITHY_CONTEXT_KEY]: {
+          [import_types.SMITHY_CONTEXT_KEY]: {
             ...smithyContext
           },
           ...additionalContext
         };
         const { requestHandler } = configuration;
-        return stack.resolve((request2) => requestHandler.handle(request2.request, options || {}), handlerExecutionContext);
+        return stack.resolve(
+          (request2) => requestHandler.handle(request2.request, options || {}),
+          handlerExecutionContext
+        );
       }
     };
-    exports2.Command = Command;
-    var ClassBuilder = class {
+    __name(_Command, "Command");
+    var Command = _Command;
+    var _ClassBuilder = class _ClassBuilder {
       constructor() {
         this._init = () => {
         };
@@ -10270,17 +9145,29 @@ var require_command3 = __commonJS({
         this._serializer = null;
         this._deserializer = null;
       }
+      /**
+       * Optional init callback.
+       */
       init(cb) {
         this._init = cb;
       }
+      /**
+       * Set the endpoint parameter instructions.
+       */
       ep(endpointParameterInstructions) {
         this._ep = endpointParameterInstructions;
         return this;
       }
+      /**
+       * Add any number of middleware.
+       */
       m(middlewareSupplier) {
         this._middlewareFn = middlewareSupplier;
         return this;
       }
+      /**
+       * Set the initial handler execution context Smithy field.
+       */
       s(service, operation, smithyContext = {}) {
         this._smithyContext = {
           service,
@@ -10289,42 +9176,70 @@ var require_command3 = __commonJS({
         };
         return this;
       }
+      /**
+       * Set the initial handler execution context.
+       */
       c(additionalContext = {}) {
         this._additionalContext = additionalContext;
         return this;
       }
+      /**
+       * Set constant string identifiers for the operation.
+       */
       n(clientName, commandName) {
         this._clientName = clientName;
         this._commandName = commandName;
         return this;
       }
+      /**
+       * Set the input and output sensistive log filters.
+       */
       f(inputFilter = (_) => _, outputFilter = (_) => _) {
         this._inputFilterSensitiveLog = inputFilter;
         this._outputFilterSensitiveLog = outputFilter;
         return this;
       }
+      /**
+       * Sets the serializer.
+       */
       ser(serializer) {
         this._serializer = serializer;
         return this;
       }
+      /**
+       * Sets the deserializer.
+       */
       de(deserializer) {
         this._deserializer = deserializer;
         return this;
       }
+      /**
+       * @returns a Command class with the classBuilder properties.
+       */
       build() {
+        var _a;
         const closure = this;
         let CommandRef;
-        return CommandRef = class extends Command {
+        return CommandRef = (_a = class extends Command {
+          /**
+           * @public
+           */
+          constructor(...[input]) {
+            super();
+            this.serialize = closure._serializer;
+            this.deserialize = closure._deserializer;
+            this.input = input ?? {};
+            closure._init(this);
+          }
+          /**
+           * @public
+           */
           static getEndpointParameterInstructions() {
             return closure._ep;
           }
-          constructor(input) {
-            super();
-            this.input = input;
-            this.serialize = closure._serializer;
-            this.deserialize = closure._deserializer;
-            closure._init(this);
-          }
+          /**
+           * @internal
+           */
           resolveMiddleware(stack, configuration, options) {
             return this.resolveMiddlewareWithContext(stack, configuration, options, {
               CommandCtor: CommandRef,
@@ -10337,32 +9252,16 @@ var require_command3 = __commonJS({
               additionalContext: closure._additionalContext
             });
           }
-        };
+        }, __name(_a, "CommandRef"), _a);
       }
     };
-  }
-});
-
-// ../../../node_modules/@smithy/smithy-client/dist-cjs/constants.js
-var require_constants6 = __commonJS({
-  "../../../node_modules/@smithy/smithy-client/dist-cjs/constants.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.SENSITIVE_STRING = void 0;
-    exports2.SENSITIVE_STRING = "***SensitiveInformation***";
-  }
-});
-
-// ../../../node_modules/@smithy/smithy-client/dist-cjs/create-aggregated-client.js
-var require_create_aggregated_client = __commonJS({
-  "../../../node_modules/@smithy/smithy-client/dist-cjs/create-aggregated-client.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.createAggregatedClient = void 0;
-    var createAggregatedClient = (commands, Client) => {
+    __name(_ClassBuilder, "ClassBuilder");
+    var ClassBuilder = _ClassBuilder;
+    var SENSITIVE_STRING = "***SensitiveInformation***";
+    var createAggregatedClient = /* @__PURE__ */ __name((commands, Client2) => {
       for (const command of Object.keys(commands)) {
         const CommandCtor = commands[command];
-        const methodImpl = async function(args, optionsOrCb, cb) {
+        const methodImpl = /* @__PURE__ */ __name(async function(args, optionsOrCb, cb) {
           const command2 = new CommandCtor(args);
           if (typeof optionsOrCb === "function") {
             this.send(command2, optionsOrCb);
@@ -10373,22 +9272,12 @@ var require_create_aggregated_client = __commonJS({
           } else {
             return this.send(command2, optionsOrCb);
           }
-        };
+        }, "methodImpl");
         const methodName = (command[0].toLowerCase() + command.slice(1)).replace(/Command$/, "");
-        Client.prototype[methodName] = methodImpl;
+        Client2.prototype[methodName] = methodImpl;
       }
-    };
-    exports2.createAggregatedClient = createAggregatedClient;
-  }
-});
-
-// ../../../node_modules/@smithy/smithy-client/dist-cjs/parse-utils.js
-var require_parse_utils = __commonJS({
-  "../../../node_modules/@smithy/smithy-client/dist-cjs/parse-utils.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.logger = exports2.strictParseByte = exports2.strictParseShort = exports2.strictParseInt32 = exports2.strictParseInt = exports2.strictParseLong = exports2.limitedParseFloat32 = exports2.limitedParseFloat = exports2.handleFloat = exports2.limitedParseDouble = exports2.strictParseFloat32 = exports2.strictParseFloat = exports2.strictParseDouble = exports2.expectUnion = exports2.expectString = exports2.expectObject = exports2.expectNonNull = exports2.expectByte = exports2.expectShort = exports2.expectInt32 = exports2.expectInt = exports2.expectLong = exports2.expectFloat32 = exports2.expectNumber = exports2.expectBoolean = exports2.parseBoolean = void 0;
-    var parseBoolean = (value) => {
+    }, "createAggregatedClient");
+    var parseBoolean = /* @__PURE__ */ __name((value) => {
       switch (value) {
         case "true":
           return true;
@@ -10397,15 +9286,14 @@ var require_parse_utils = __commonJS({
         default:
           throw new Error(`Unable to parse boolean value "${value}"`);
       }
-    };
-    exports2.parseBoolean = parseBoolean;
-    var expectBoolean = (value) => {
+    }, "parseBoolean");
+    var expectBoolean = /* @__PURE__ */ __name((value) => {
       if (value === null || value === void 0) {
         return void 0;
       }
       if (typeof value === "number") {
         if (value === 0 || value === 1) {
-          exports2.logger.warn(stackTraceWarning(`Expected boolean, got ${typeof value}: ${value}`));
+          logger.warn(stackTraceWarning(`Expected boolean, got ${typeof value}: ${value}`));
         }
         if (value === 0) {
           return false;
@@ -10417,7 +9305,7 @@ var require_parse_utils = __commonJS({
       if (typeof value === "string") {
         const lower = value.toLowerCase();
         if (lower === "false" || lower === "true") {
-          exports2.logger.warn(stackTraceWarning(`Expected boolean, got ${typeof value}: ${value}`));
+          logger.warn(stackTraceWarning(`Expected boolean, got ${typeof value}: ${value}`));
         }
         if (lower === "false") {
           return false;
@@ -10430,9 +9318,8 @@ var require_parse_utils = __commonJS({
         return value;
       }
       throw new TypeError(`Expected boolean, got ${typeof value}: ${value}`);
-    };
-    exports2.expectBoolean = expectBoolean;
-    var expectNumber = (value) => {
+    }, "expectBoolean");
+    var expectNumber = /* @__PURE__ */ __name((value) => {
       if (value === null || value === void 0) {
         return void 0;
       }
@@ -10440,7 +9327,7 @@ var require_parse_utils = __commonJS({
         const parsed = parseFloat(value);
         if (!Number.isNaN(parsed)) {
           if (String(parsed) !== String(value)) {
-            exports2.logger.warn(stackTraceWarning(`Expected number but observed string: ${value}`));
+            logger.warn(stackTraceWarning(`Expected number but observed string: ${value}`));
           }
           return parsed;
         }
@@ -10449,20 +9336,18 @@ var require_parse_utils = __commonJS({
         return value;
       }
       throw new TypeError(`Expected number, got ${typeof value}: ${value}`);
-    };
-    exports2.expectNumber = expectNumber;
+    }, "expectNumber");
     var MAX_FLOAT = Math.ceil(2 ** 127 * (2 - 2 ** -23));
-    var expectFloat32 = (value) => {
-      const expected = (0, exports2.expectNumber)(value);
+    var expectFloat32 = /* @__PURE__ */ __name((value) => {
+      const expected = expectNumber(value);
       if (expected !== void 0 && !Number.isNaN(expected) && expected !== Infinity && expected !== -Infinity) {
         if (Math.abs(expected) > MAX_FLOAT) {
           throw new TypeError(`Expected 32-bit float, got ${value}`);
         }
       }
       return expected;
-    };
-    exports2.expectFloat32 = expectFloat32;
-    var expectLong = (value) => {
+    }, "expectFloat32");
+    var expectLong = /* @__PURE__ */ __name((value) => {
       if (value === null || value === void 0) {
         return void 0;
       }
@@ -10470,23 +9355,19 @@ var require_parse_utils = __commonJS({
         return value;
       }
       throw new TypeError(`Expected integer, got ${typeof value}: ${value}`);
-    };
-    exports2.expectLong = expectLong;
-    exports2.expectInt = exports2.expectLong;
-    var expectInt32 = (value) => expectSizedInt(value, 32);
-    exports2.expectInt32 = expectInt32;
-    var expectShort = (value) => expectSizedInt(value, 16);
-    exports2.expectShort = expectShort;
-    var expectByte = (value) => expectSizedInt(value, 8);
-    exports2.expectByte = expectByte;
-    var expectSizedInt = (value, size) => {
-      const expected = (0, exports2.expectLong)(value);
+    }, "expectLong");
+    var expectInt = expectLong;
+    var expectInt32 = /* @__PURE__ */ __name((value) => expectSizedInt(value, 32), "expectInt32");
+    var expectShort = /* @__PURE__ */ __name((value) => expectSizedInt(value, 16), "expectShort");
+    var expectByte = /* @__PURE__ */ __name((value) => expectSizedInt(value, 8), "expectByte");
+    var expectSizedInt = /* @__PURE__ */ __name((value, size) => {
+      const expected = expectLong(value);
       if (expected !== void 0 && castInt(expected, size) !== expected) {
         throw new TypeError(`Expected ${size}-bit integer, got ${value}`);
       }
       return expected;
-    };
-    var castInt = (value, size) => {
+    }, "expectSizedInt");
+    var castInt = /* @__PURE__ */ __name((value, size) => {
       switch (size) {
         case 32:
           return Int32Array.of(value)[0];
@@ -10495,8 +9376,8 @@ var require_parse_utils = __commonJS({
         case 8:
           return Int8Array.of(value)[0];
       }
-    };
-    var expectNonNull = (value, location) => {
+    }, "castInt");
+    var expectNonNull = /* @__PURE__ */ __name((value, location) => {
       if (value === null || value === void 0) {
         if (location) {
           throw new TypeError(`Expected a non-null value for ${location}`);
@@ -10504,9 +9385,8 @@ var require_parse_utils = __commonJS({
         throw new TypeError("Expected a non-null value");
       }
       return value;
-    };
-    exports2.expectNonNull = expectNonNull;
-    var expectObject = (value) => {
+    }, "expectNonNull");
+    var expectObject = /* @__PURE__ */ __name((value) => {
       if (value === null || value === void 0) {
         return void 0;
       }
@@ -10515,9 +9395,8 @@ var require_parse_utils = __commonJS({
       }
       const receivedType = Array.isArray(value) ? "array" : typeof value;
       throw new TypeError(`Expected object, got ${receivedType}: ${value}`);
-    };
-    exports2.expectObject = expectObject;
-    var expectString = (value) => {
+    }, "expectObject");
+    var expectString = /* @__PURE__ */ __name((value) => {
       if (value === null || value === void 0) {
         return void 0;
       }
@@ -10525,17 +9404,16 @@ var require_parse_utils = __commonJS({
         return value;
       }
       if (["boolean", "number", "bigint"].includes(typeof value)) {
-        exports2.logger.warn(stackTraceWarning(`Expected string, got ${typeof value}: ${value}`));
+        logger.warn(stackTraceWarning(`Expected string, got ${typeof value}: ${value}`));
         return String(value);
       }
       throw new TypeError(`Expected string, got ${typeof value}: ${value}`);
-    };
-    exports2.expectString = expectString;
-    var expectUnion = (value) => {
+    }, "expectString");
+    var expectUnion = /* @__PURE__ */ __name((value) => {
       if (value === null || value === void 0) {
         return void 0;
       }
-      const asObject = (0, exports2.expectObject)(value);
+      const asObject = expectObject(value);
       const setKeys = Object.entries(asObject).filter(([, v]) => v != null).map(([k]) => k);
       if (setKeys.length === 0) {
         throw new TypeError(`Unions must have exactly one non-null member. None were found.`);
@@ -10544,48 +9422,43 @@ var require_parse_utils = __commonJS({
         throw new TypeError(`Unions must have exactly one non-null member. Keys ${setKeys} were not null.`);
       }
       return asObject;
-    };
-    exports2.expectUnion = expectUnion;
-    var strictParseDouble = (value) => {
+    }, "expectUnion");
+    var strictParseDouble = /* @__PURE__ */ __name((value) => {
       if (typeof value == "string") {
-        return (0, exports2.expectNumber)(parseNumber(value));
+        return expectNumber(parseNumber(value));
       }
-      return (0, exports2.expectNumber)(value);
-    };
-    exports2.strictParseDouble = strictParseDouble;
-    exports2.strictParseFloat = exports2.strictParseDouble;
-    var strictParseFloat32 = (value) => {
+      return expectNumber(value);
+    }, "strictParseDouble");
+    var strictParseFloat = strictParseDouble;
+    var strictParseFloat32 = /* @__PURE__ */ __name((value) => {
       if (typeof value == "string") {
-        return (0, exports2.expectFloat32)(parseNumber(value));
+        return expectFloat32(parseNumber(value));
       }
-      return (0, exports2.expectFloat32)(value);
-    };
-    exports2.strictParseFloat32 = strictParseFloat32;
+      return expectFloat32(value);
+    }, "strictParseFloat32");
     var NUMBER_REGEX = /(-?(?:0|[1-9]\d*)(?:\.\d+)?(?:[eE][+-]?\d+)?)|(-?Infinity)|(NaN)/g;
-    var parseNumber = (value) => {
+    var parseNumber = /* @__PURE__ */ __name((value) => {
       const matches = value.match(NUMBER_REGEX);
       if (matches === null || matches[0].length !== value.length) {
         throw new TypeError(`Expected real number, got implicit NaN`);
       }
       return parseFloat(value);
-    };
-    var limitedParseDouble = (value) => {
+    }, "parseNumber");
+    var limitedParseDouble = /* @__PURE__ */ __name((value) => {
       if (typeof value == "string") {
         return parseFloatString(value);
       }
-      return (0, exports2.expectNumber)(value);
-    };
-    exports2.limitedParseDouble = limitedParseDouble;
-    exports2.handleFloat = exports2.limitedParseDouble;
-    exports2.limitedParseFloat = exports2.limitedParseDouble;
-    var limitedParseFloat32 = (value) => {
+      return expectNumber(value);
+    }, "limitedParseDouble");
+    var handleFloat = limitedParseDouble;
+    var limitedParseFloat = limitedParseDouble;
+    var limitedParseFloat32 = /* @__PURE__ */ __name((value) => {
       if (typeof value == "string") {
         return parseFloatString(value);
       }
-      return (0, exports2.expectFloat32)(value);
-    };
-    exports2.limitedParseFloat32 = limitedParseFloat32;
-    var parseFloatString = (value) => {
+      return expectFloat32(value);
+    }, "limitedParseFloat32");
+    var parseFloatString = /* @__PURE__ */ __name((value) => {
       switch (value) {
         case "NaN":
           return NaN;
@@ -10596,52 +9469,38 @@ var require_parse_utils = __commonJS({
         default:
           throw new Error(`Unable to parse float value: ${value}`);
       }
-    };
-    var strictParseLong = (value) => {
+    }, "parseFloatString");
+    var strictParseLong = /* @__PURE__ */ __name((value) => {
       if (typeof value === "string") {
-        return (0, exports2.expectLong)(parseNumber(value));
+        return expectLong(parseNumber(value));
       }
-      return (0, exports2.expectLong)(value);
-    };
-    exports2.strictParseLong = strictParseLong;
-    exports2.strictParseInt = exports2.strictParseLong;
-    var strictParseInt32 = (value) => {
+      return expectLong(value);
+    }, "strictParseLong");
+    var strictParseInt = strictParseLong;
+    var strictParseInt32 = /* @__PURE__ */ __name((value) => {
       if (typeof value === "string") {
-        return (0, exports2.expectInt32)(parseNumber(value));
+        return expectInt32(parseNumber(value));
       }
-      return (0, exports2.expectInt32)(value);
-    };
-    exports2.strictParseInt32 = strictParseInt32;
-    var strictParseShort = (value) => {
+      return expectInt32(value);
+    }, "strictParseInt32");
+    var strictParseShort = /* @__PURE__ */ __name((value) => {
       if (typeof value === "string") {
-        return (0, exports2.expectShort)(parseNumber(value));
+        return expectShort(parseNumber(value));
       }
-      return (0, exports2.expectShort)(value);
-    };
-    exports2.strictParseShort = strictParseShort;
-    var strictParseByte = (value) => {
+      return expectShort(value);
+    }, "strictParseShort");
+    var strictParseByte = /* @__PURE__ */ __name((value) => {
       if (typeof value === "string") {
-        return (0, exports2.expectByte)(parseNumber(value));
+        return expectByte(parseNumber(value));
       }
-      return (0, exports2.expectByte)(value);
-    };
-    exports2.strictParseByte = strictParseByte;
-    var stackTraceWarning = (message) => {
+      return expectByte(value);
+    }, "strictParseByte");
+    var stackTraceWarning = /* @__PURE__ */ __name((message) => {
       return String(new TypeError(message).stack || message).split("\n").slice(0, 5).filter((s) => !s.includes("stackTraceWarning")).join("\n");
-    };
-    exports2.logger = {
+    }, "stackTraceWarning");
+    var logger = {
       warn: console.warn
     };
-  }
-});
-
-// ../../../node_modules/@smithy/smithy-client/dist-cjs/date-utils.js
-var require_date_utils = __commonJS({
-  "../../../node_modules/@smithy/smithy-client/dist-cjs/date-utils.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.parseEpochTimestamp = exports2.parseRfc7231DateTime = exports2.parseRfc3339DateTimeWithOffset = exports2.parseRfc3339DateTime = exports2.dateToUtcString = void 0;
-    var parse_utils_1 = require_parse_utils();
     var DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
     var MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
     function dateToUtcString(date) {
@@ -10658,9 +9517,9 @@ var require_date_utils = __commonJS({
       const secondsString = secondsInt < 10 ? `0${secondsInt}` : `${secondsInt}`;
       return `${DAYS[dayOfWeek]}, ${dayOfMonthString} ${MONTHS[month]} ${year} ${hoursString}:${minutesString}:${secondsString} GMT`;
     }
-    exports2.dateToUtcString = dateToUtcString;
+    __name(dateToUtcString, "dateToUtcString");
     var RFC3339 = new RegExp(/^(\d{4})-(\d{2})-(\d{2})[tT](\d{2}):(\d{2}):(\d{2})(?:\.(\d+))?[zZ]$/);
-    var parseRfc3339DateTime = (value) => {
+    var parseRfc3339DateTime = /* @__PURE__ */ __name((value) => {
       if (value === null || value === void 0) {
         return void 0;
       }
@@ -10672,14 +9531,15 @@ var require_date_utils = __commonJS({
         throw new TypeError("Invalid RFC-3339 date-time value");
       }
       const [_, yearStr, monthStr, dayStr, hours, minutes, seconds, fractionalMilliseconds] = match;
-      const year = (0, parse_utils_1.strictParseShort)(stripLeadingZeroes(yearStr));
+      const year = strictParseShort(stripLeadingZeroes(yearStr));
       const month = parseDateValue(monthStr, "month", 1, 12);
       const day = parseDateValue(dayStr, "day", 1, 31);
       return buildDate(year, month, day, { hours, minutes, seconds, fractionalMilliseconds });
-    };
-    exports2.parseRfc3339DateTime = parseRfc3339DateTime;
-    var RFC3339_WITH_OFFSET = new RegExp(/^(\d{4})-(\d{2})-(\d{2})[tT](\d{2}):(\d{2}):(\d{2})(?:\.(\d+))?(([-+]\d{2}\:\d{2})|[zZ])$/);
-    var parseRfc3339DateTimeWithOffset = (value) => {
+    }, "parseRfc3339DateTime");
+    var RFC3339_WITH_OFFSET = new RegExp(
+      /^(\d{4})-(\d{2})-(\d{2})[tT](\d{2}):(\d{2}):(\d{2})(?:\.(\d+))?(([-+]\d{2}\:\d{2})|[zZ])$/
+    );
+    var parseRfc3339DateTimeWithOffset = /* @__PURE__ */ __name((value) => {
       if (value === null || value === void 0) {
         return void 0;
       }
@@ -10691,7 +9551,7 @@ var require_date_utils = __commonJS({
         throw new TypeError("Invalid RFC-3339 date-time value");
       }
       const [_, yearStr, monthStr, dayStr, hours, minutes, seconds, fractionalMilliseconds, offsetStr] = match;
-      const year = (0, parse_utils_1.strictParseShort)(stripLeadingZeroes(yearStr));
+      const year = strictParseShort(stripLeadingZeroes(yearStr));
       const month = parseDateValue(monthStr, "month", 1, 12);
       const day = parseDateValue(dayStr, "day", 1, 31);
       const date = buildDate(year, month, day, { hours, minutes, seconds, fractionalMilliseconds });
@@ -10699,12 +9559,17 @@ var require_date_utils = __commonJS({
         date.setTime(date.getTime() - parseOffsetToMilliseconds(offsetStr));
       }
       return date;
-    };
-    exports2.parseRfc3339DateTimeWithOffset = parseRfc3339DateTimeWithOffset;
-    var IMF_FIXDATE = new RegExp(/^(?:Mon|Tue|Wed|Thu|Fri|Sat|Sun), (\d{2}) (Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) (\d{4}) (\d{1,2}):(\d{2}):(\d{2})(?:\.(\d+))? GMT$/);
-    var RFC_850_DATE = new RegExp(/^(?:Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday), (\d{2})-(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)-(\d{2}) (\d{1,2}):(\d{2}):(\d{2})(?:\.(\d+))? GMT$/);
-    var ASC_TIME = new RegExp(/^(?:Mon|Tue|Wed|Thu|Fri|Sat|Sun) (Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) ( [1-9]|\d{2}) (\d{1,2}):(\d{2}):(\d{2})(?:\.(\d+))? (\d{4})$/);
-    var parseRfc7231DateTime = (value) => {
+    }, "parseRfc3339DateTimeWithOffset");
+    var IMF_FIXDATE = new RegExp(
+      /^(?:Mon|Tue|Wed|Thu|Fri|Sat|Sun), (\d{2}) (Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) (\d{4}) (\d{1,2}):(\d{2}):(\d{2})(?:\.(\d+))? GMT$/
+    );
+    var RFC_850_DATE = new RegExp(
+      /^(?:Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday), (\d{2})-(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)-(\d{2}) (\d{1,2}):(\d{2}):(\d{2})(?:\.(\d+))? GMT$/
+    );
+    var ASC_TIME = new RegExp(
+      /^(?:Mon|Tue|Wed|Thu|Fri|Sat|Sun) (Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) ( [1-9]|\d{2}) (\d{1,2}):(\d{2}):(\d{2})(?:\.(\d+))? (\d{4})$/
+    );
+    var parseRfc7231DateTime = /* @__PURE__ */ __name((value) => {
       if (value === null || value === void 0) {
         return void 0;
       }
@@ -10714,27 +9579,38 @@ var require_date_utils = __commonJS({
       let match = IMF_FIXDATE.exec(value);
       if (match) {
         const [_, dayStr, monthStr, yearStr, hours, minutes, seconds, fractionalMilliseconds] = match;
-        return buildDate((0, parse_utils_1.strictParseShort)(stripLeadingZeroes(yearStr)), parseMonthByShortName(monthStr), parseDateValue(dayStr, "day", 1, 31), { hours, minutes, seconds, fractionalMilliseconds });
+        return buildDate(
+          strictParseShort(stripLeadingZeroes(yearStr)),
+          parseMonthByShortName(monthStr),
+          parseDateValue(dayStr, "day", 1, 31),
+          { hours, minutes, seconds, fractionalMilliseconds }
+        );
       }
       match = RFC_850_DATE.exec(value);
       if (match) {
         const [_, dayStr, monthStr, yearStr, hours, minutes, seconds, fractionalMilliseconds] = match;
-        return adjustRfc850Year(buildDate(parseTwoDigitYear(yearStr), parseMonthByShortName(monthStr), parseDateValue(dayStr, "day", 1, 31), {
-          hours,
-          minutes,
-          seconds,
-          fractionalMilliseconds
-        }));
+        return adjustRfc850Year(
+          buildDate(parseTwoDigitYear(yearStr), parseMonthByShortName(monthStr), parseDateValue(dayStr, "day", 1, 31), {
+            hours,
+            minutes,
+            seconds,
+            fractionalMilliseconds
+          })
+        );
       }
       match = ASC_TIME.exec(value);
       if (match) {
         const [_, monthStr, dayStr, hours, minutes, seconds, fractionalMilliseconds, yearStr] = match;
-        return buildDate((0, parse_utils_1.strictParseShort)(stripLeadingZeroes(yearStr)), parseMonthByShortName(monthStr), parseDateValue(dayStr.trimLeft(), "day", 1, 31), { hours, minutes, seconds, fractionalMilliseconds });
+        return buildDate(
+          strictParseShort(stripLeadingZeroes(yearStr)),
+          parseMonthByShortName(monthStr),
+          parseDateValue(dayStr.trimLeft(), "day", 1, 31),
+          { hours, minutes, seconds, fractionalMilliseconds }
+        );
       }
       throw new TypeError("Invalid RFC-7231 date-time value");
-    };
-    exports2.parseRfc7231DateTime = parseRfc7231DateTime;
-    var parseEpochTimestamp = (value) => {
+    }, "parseRfc7231DateTime");
+    var parseEpochTimestamp = /* @__PURE__ */ __name((value) => {
       if (value === null || value === void 0) {
         return void 0;
       }
@@ -10742,7 +9618,7 @@ var require_date_utils = __commonJS({
       if (typeof value === "number") {
         valueAsDouble = value;
       } else if (typeof value === "string") {
-        valueAsDouble = (0, parse_utils_1.strictParseDouble)(value);
+        valueAsDouble = strictParseDouble(value);
       } else {
         throw new TypeError("Epoch timestamps must be expressed as floating point numbers or their string representation");
       }
@@ -10750,37 +9626,57 @@ var require_date_utils = __commonJS({
         throw new TypeError("Epoch timestamps must be valid, non-Infinite, non-NaN numerics");
       }
       return new Date(Math.round(valueAsDouble * 1e3));
-    };
-    exports2.parseEpochTimestamp = parseEpochTimestamp;
-    var buildDate = (year, month, day, time) => {
+    }, "parseEpochTimestamp");
+    var buildDate = /* @__PURE__ */ __name((year, month, day, time) => {
       const adjustedMonth = month - 1;
       validateDayOfMonth(year, adjustedMonth, day);
-      return new Date(Date.UTC(year, adjustedMonth, day, parseDateValue(time.hours, "hour", 0, 23), parseDateValue(time.minutes, "minute", 0, 59), parseDateValue(time.seconds, "seconds", 0, 60), parseMilliseconds(time.fractionalMilliseconds)));
-    };
-    var parseTwoDigitYear = (value) => {
+      return new Date(
+        Date.UTC(
+          year,
+          adjustedMonth,
+          day,
+          parseDateValue(time.hours, "hour", 0, 23),
+          parseDateValue(time.minutes, "minute", 0, 59),
+          // seconds can go up to 60 for leap seconds
+          parseDateValue(time.seconds, "seconds", 0, 60),
+          parseMilliseconds(time.fractionalMilliseconds)
+        )
+      );
+    }, "buildDate");
+    var parseTwoDigitYear = /* @__PURE__ */ __name((value) => {
       const thisYear = (/* @__PURE__ */ new Date()).getUTCFullYear();
-      const valueInThisCentury = Math.floor(thisYear / 100) * 100 + (0, parse_utils_1.strictParseShort)(stripLeadingZeroes(value));
+      const valueInThisCentury = Math.floor(thisYear / 100) * 100 + strictParseShort(stripLeadingZeroes(value));
       if (valueInThisCentury < thisYear) {
         return valueInThisCentury + 100;
       }
       return valueInThisCentury;
-    };
+    }, "parseTwoDigitYear");
     var FIFTY_YEARS_IN_MILLIS = 50 * 365 * 24 * 60 * 60 * 1e3;
-    var adjustRfc850Year = (input) => {
+    var adjustRfc850Year = /* @__PURE__ */ __name((input) => {
       if (input.getTime() - (/* @__PURE__ */ new Date()).getTime() > FIFTY_YEARS_IN_MILLIS) {
-        return new Date(Date.UTC(input.getUTCFullYear() - 100, input.getUTCMonth(), input.getUTCDate(), input.getUTCHours(), input.getUTCMinutes(), input.getUTCSeconds(), input.getUTCMilliseconds()));
+        return new Date(
+          Date.UTC(
+            input.getUTCFullYear() - 100,
+            input.getUTCMonth(),
+            input.getUTCDate(),
+            input.getUTCHours(),
+            input.getUTCMinutes(),
+            input.getUTCSeconds(),
+            input.getUTCMilliseconds()
+          )
+        );
       }
       return input;
-    };
-    var parseMonthByShortName = (value) => {
+    }, "adjustRfc850Year");
+    var parseMonthByShortName = /* @__PURE__ */ __name((value) => {
       const monthIdx = MONTHS.indexOf(value);
       if (monthIdx < 0) {
         throw new TypeError(`Invalid month: ${value}`);
       }
       return monthIdx + 1;
-    };
+    }, "parseMonthByShortName");
     var DAYS_IN_MONTH = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
-    var validateDayOfMonth = (year, month, day) => {
+    var validateDayOfMonth = /* @__PURE__ */ __name((year, month, day) => {
       let maxDays = DAYS_IN_MONTH[month];
       if (month === 1 && isLeapYear(year)) {
         maxDays = 29;
@@ -10788,24 +9684,24 @@ var require_date_utils = __commonJS({
       if (day > maxDays) {
         throw new TypeError(`Invalid day for ${MONTHS[month]} in ${year}: ${day}`);
       }
-    };
-    var isLeapYear = (year) => {
+    }, "validateDayOfMonth");
+    var isLeapYear = /* @__PURE__ */ __name((year) => {
       return year % 4 === 0 && (year % 100 !== 0 || year % 400 === 0);
-    };
-    var parseDateValue = (value, type, lower, upper) => {
-      const dateVal = (0, parse_utils_1.strictParseByte)(stripLeadingZeroes(value));
+    }, "isLeapYear");
+    var parseDateValue = /* @__PURE__ */ __name((value, type, lower, upper) => {
+      const dateVal = strictParseByte(stripLeadingZeroes(value));
       if (dateVal < lower || dateVal > upper) {
         throw new TypeError(`${type} must be between ${lower} and ${upper}, inclusive`);
       }
       return dateVal;
-    };
-    var parseMilliseconds = (value) => {
+    }, "parseDateValue");
+    var parseMilliseconds = /* @__PURE__ */ __name((value) => {
       if (value === null || value === void 0) {
         return 0;
       }
-      return (0, parse_utils_1.strictParseFloat32)("0." + value) * 1e3;
-    };
-    var parseOffsetToMilliseconds = (value) => {
+      return strictParseFloat32("0." + value) * 1e3;
+    }, "parseMilliseconds");
+    var parseOffsetToMilliseconds = /* @__PURE__ */ __name((value) => {
       const directionStr = value[0];
       let direction = 1;
       if (directionStr == "+") {
@@ -10818,8 +9714,8 @@ var require_date_utils = __commonJS({
       const hour = Number(value.substring(1, 3));
       const minute = Number(value.substring(4, 6));
       return direction * (hour * 60 + minute) * 60 * 1e3;
-    };
-    var stripLeadingZeroes = (value) => {
+    }, "parseOffsetToMilliseconds");
+    var stripLeadingZeroes = /* @__PURE__ */ __name((value) => {
       let idx = 0;
       while (idx < value.length - 1 && value.charAt(idx) === "0") {
         idx++;
@@ -10828,27 +9724,19 @@ var require_date_utils = __commonJS({
         return value;
       }
       return value.slice(idx);
-    };
-  }
-});
-
-// ../../../node_modules/@smithy/smithy-client/dist-cjs/exceptions.js
-var require_exceptions = __commonJS({
-  "../../../node_modules/@smithy/smithy-client/dist-cjs/exceptions.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.decorateServiceException = exports2.ServiceException = void 0;
-    var ServiceException = class _ServiceException extends Error {
+    }, "stripLeadingZeroes");
+    var _ServiceException = class _ServiceException2 extends Error {
       constructor(options) {
         super(options.message);
-        Object.setPrototypeOf(this, _ServiceException.prototype);
+        Object.setPrototypeOf(this, _ServiceException2.prototype);
         this.name = options.name;
         this.$fault = options.$fault;
         this.$metadata = options.$metadata;
       }
     };
-    exports2.ServiceException = ServiceException;
-    var decorateServiceException = (exception, additions = {}) => {
+    __name(_ServiceException, "ServiceException");
+    var ServiceException = _ServiceException;
+    var decorateServiceException = /* @__PURE__ */ __name((exception, additions = {}) => {
       Object.entries(additions).filter(([, v]) => v !== void 0).forEach(([k, v]) => {
         if (exception[k] == void 0 || exception[k] === "") {
           exception[k] = v;
@@ -10858,54 +9746,29 @@ var require_exceptions = __commonJS({
       exception.message = message;
       delete exception.Message;
       return exception;
-    };
-    exports2.decorateServiceException = decorateServiceException;
-  }
-});
-
-// ../../../node_modules/@smithy/smithy-client/dist-cjs/default-error-handler.js
-var require_default_error_handler = __commonJS({
-  "../../../node_modules/@smithy/smithy-client/dist-cjs/default-error-handler.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.withBaseException = exports2.throwDefaultError = void 0;
-    var exceptions_1 = require_exceptions();
-    var throwDefaultError = ({ output, parsedBody, exceptionCtor, errorCode }) => {
+    }, "decorateServiceException");
+    var throwDefaultError = /* @__PURE__ */ __name(({ output, parsedBody, exceptionCtor, errorCode }) => {
       const $metadata = deserializeMetadata(output);
       const statusCode = $metadata.httpStatusCode ? $metadata.httpStatusCode + "" : void 0;
       const response = new exceptionCtor({
-        name: (parsedBody === null || parsedBody === void 0 ? void 0 : parsedBody.code) || (parsedBody === null || parsedBody === void 0 ? void 0 : parsedBody.Code) || errorCode || statusCode || "UnknownError",
+        name: (parsedBody == null ? void 0 : parsedBody.code) || (parsedBody == null ? void 0 : parsedBody.Code) || errorCode || statusCode || "UnknownError",
         $fault: "client",
         $metadata
       });
-      throw (0, exceptions_1.decorateServiceException)(response, parsedBody);
-    };
-    exports2.throwDefaultError = throwDefaultError;
-    var withBaseException = (ExceptionCtor) => {
+      throw decorateServiceException(response, parsedBody);
+    }, "throwDefaultError");
+    var withBaseException = /* @__PURE__ */ __name((ExceptionCtor) => {
       return ({ output, parsedBody, errorCode }) => {
-        (0, exports2.throwDefaultError)({ output, parsedBody, exceptionCtor: ExceptionCtor, errorCode });
+        throwDefaultError({ output, parsedBody, exceptionCtor: ExceptionCtor, errorCode });
       };
-    };
-    exports2.withBaseException = withBaseException;
-    var deserializeMetadata = (output) => {
-      var _a, _b;
-      return {
-        httpStatusCode: output.statusCode,
-        requestId: (_b = (_a = output.headers["x-amzn-requestid"]) !== null && _a !== void 0 ? _a : output.headers["x-amzn-request-id"]) !== null && _b !== void 0 ? _b : output.headers["x-amz-request-id"],
-        extendedRequestId: output.headers["x-amz-id-2"],
-        cfId: output.headers["x-amz-cf-id"]
-      };
-    };
-  }
-});
-
-// ../../../node_modules/@smithy/smithy-client/dist-cjs/defaults-mode.js
-var require_defaults_mode = __commonJS({
-  "../../../node_modules/@smithy/smithy-client/dist-cjs/defaults-mode.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.loadConfigsForDefaultMode = void 0;
-    var loadConfigsForDefaultMode = (mode) => {
+    }, "withBaseException");
+    var deserializeMetadata = /* @__PURE__ */ __name((output) => ({
+      httpStatusCode: output.statusCode,
+      requestId: output.headers["x-amzn-requestid"] ?? output.headers["x-amzn-request-id"] ?? output.headers["x-amz-request-id"],
+      extendedRequestId: output.headers["x-amz-id-2"],
+      cfId: output.headers["x-amz-cf-id"]
+    }), "deserializeMetadata");
+    var loadConfigsForDefaultMode = /* @__PURE__ */ __name((mode) => {
       switch (mode) {
         case "standard":
           return {
@@ -10930,41 +9793,17 @@ var require_defaults_mode = __commonJS({
         default:
           return {};
       }
-    };
-    exports2.loadConfigsForDefaultMode = loadConfigsForDefaultMode;
-  }
-});
-
-// ../../../node_modules/@smithy/smithy-client/dist-cjs/emitWarningIfUnsupportedVersion.js
-var require_emitWarningIfUnsupportedVersion = __commonJS({
-  "../../../node_modules/@smithy/smithy-client/dist-cjs/emitWarningIfUnsupportedVersion.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.emitWarningIfUnsupportedVersion = void 0;
+    }, "loadConfigsForDefaultMode");
     var warningEmitted = false;
-    var emitWarningIfUnsupportedVersion = (version2) => {
+    var emitWarningIfUnsupportedVersion = /* @__PURE__ */ __name((version2) => {
       if (version2 && !warningEmitted && parseInt(version2.substring(1, version2.indexOf("."))) < 14) {
         warningEmitted = true;
       }
-    };
-    exports2.emitWarningIfUnsupportedVersion = emitWarningIfUnsupportedVersion;
-  }
-});
-
-// ../../../node_modules/@smithy/smithy-client/dist-cjs/extensions/checksum.js
-var require_checksum4 = __commonJS({
-  "../../../node_modules/@smithy/smithy-client/dist-cjs/extensions/checksum.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.resolveChecksumRuntimeConfig = exports2.getChecksumConfiguration = exports2.AlgorithmId = void 0;
-    var types_1 = require_dist_cjs();
-    Object.defineProperty(exports2, "AlgorithmId", { enumerable: true, get: function() {
-      return types_1.AlgorithmId;
-    } });
-    var getChecksumConfiguration = (runtimeConfig) => {
+    }, "emitWarningIfUnsupportedVersion");
+    var getChecksumConfiguration = /* @__PURE__ */ __name((runtimeConfig) => {
       const checksumAlgorithms = [];
-      for (const id in types_1.AlgorithmId) {
-        const algorithmId = types_1.AlgorithmId[id];
+      for (const id in import_types.AlgorithmId) {
+        const algorithmId = import_types.AlgorithmId[id];
         if (runtimeConfig[algorithmId] === void 0) {
           continue;
         }
@@ -10982,26 +9821,15 @@ var require_checksum4 = __commonJS({
           return this._checksumAlgorithms;
         }
       };
-    };
-    exports2.getChecksumConfiguration = getChecksumConfiguration;
-    var resolveChecksumRuntimeConfig = (clientConfig) => {
+    }, "getChecksumConfiguration");
+    var resolveChecksumRuntimeConfig = /* @__PURE__ */ __name((clientConfig) => {
       const runtimeConfig = {};
       clientConfig.checksumAlgorithms().forEach((checksumAlgorithm) => {
         runtimeConfig[checksumAlgorithm.algorithmId()] = checksumAlgorithm.checksumConstructor();
       });
       return runtimeConfig;
-    };
-    exports2.resolveChecksumRuntimeConfig = resolveChecksumRuntimeConfig;
-  }
-});
-
-// ../../../node_modules/@smithy/smithy-client/dist-cjs/extensions/retry.js
-var require_retry3 = __commonJS({
-  "../../../node_modules/@smithy/smithy-client/dist-cjs/extensions/retry.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.resolveRetryRuntimeConfig = exports2.getRetryConfiguration = void 0;
-    var getRetryConfiguration = (runtimeConfig) => {
+    }, "resolveChecksumRuntimeConfig");
+    var getRetryConfiguration = /* @__PURE__ */ __name((runtimeConfig) => {
       let _retryStrategy = runtimeConfig.retryStrategy;
       return {
         setRetryStrategy(retryStrategy) {
@@ -11011,124 +9839,60 @@ var require_retry3 = __commonJS({
           return _retryStrategy;
         }
       };
-    };
-    exports2.getRetryConfiguration = getRetryConfiguration;
-    var resolveRetryRuntimeConfig = (retryStrategyConfiguration) => {
+    }, "getRetryConfiguration");
+    var resolveRetryRuntimeConfig = /* @__PURE__ */ __name((retryStrategyConfiguration) => {
       const runtimeConfig = {};
       runtimeConfig.retryStrategy = retryStrategyConfiguration.retryStrategy();
       return runtimeConfig;
-    };
-    exports2.resolveRetryRuntimeConfig = resolveRetryRuntimeConfig;
-  }
-});
-
-// ../../../node_modules/@smithy/smithy-client/dist-cjs/extensions/defaultExtensionConfiguration.js
-var require_defaultExtensionConfiguration2 = __commonJS({
-  "../../../node_modules/@smithy/smithy-client/dist-cjs/extensions/defaultExtensionConfiguration.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.resolveDefaultRuntimeConfig = exports2.getDefaultClientConfiguration = exports2.getDefaultExtensionConfiguration = void 0;
-    var checksum_1 = require_checksum4();
-    var retry_1 = require_retry3();
-    var getDefaultExtensionConfiguration = (runtimeConfig) => {
+    }, "resolveRetryRuntimeConfig");
+    var getDefaultExtensionConfiguration = /* @__PURE__ */ __name((runtimeConfig) => {
       return {
-        ...(0, checksum_1.getChecksumConfiguration)(runtimeConfig),
-        ...(0, retry_1.getRetryConfiguration)(runtimeConfig)
+        ...getChecksumConfiguration(runtimeConfig),
+        ...getRetryConfiguration(runtimeConfig)
       };
-    };
-    exports2.getDefaultExtensionConfiguration = getDefaultExtensionConfiguration;
-    exports2.getDefaultClientConfiguration = exports2.getDefaultExtensionConfiguration;
-    var resolveDefaultRuntimeConfig = (config) => {
+    }, "getDefaultExtensionConfiguration");
+    var getDefaultClientConfiguration = getDefaultExtensionConfiguration;
+    var resolveDefaultRuntimeConfig = /* @__PURE__ */ __name((config) => {
       return {
-        ...(0, checksum_1.resolveChecksumRuntimeConfig)(config),
-        ...(0, retry_1.resolveRetryRuntimeConfig)(config)
+        ...resolveChecksumRuntimeConfig(config),
+        ...resolveRetryRuntimeConfig(config)
       };
-    };
-    exports2.resolveDefaultRuntimeConfig = resolveDefaultRuntimeConfig;
-  }
-});
-
-// ../../../node_modules/@smithy/smithy-client/dist-cjs/extensions/index.js
-var require_extensions4 = __commonJS({
-  "../../../node_modules/@smithy/smithy-client/dist-cjs/extensions/index.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
-    tslib_1.__exportStar(require_defaultExtensionConfiguration2(), exports2);
-  }
-});
-
-// ../../../node_modules/@smithy/smithy-client/dist-cjs/extended-encode-uri-component.js
-var require_extended_encode_uri_component = __commonJS({
-  "../../../node_modules/@smithy/smithy-client/dist-cjs/extended-encode-uri-component.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.extendedEncodeURIComponent = void 0;
+    }, "resolveDefaultRuntimeConfig");
     function extendedEncodeURIComponent(str) {
       return encodeURIComponent(str).replace(/[!'()*]/g, function(c) {
         return "%" + c.charCodeAt(0).toString(16).toUpperCase();
       });
     }
-    exports2.extendedEncodeURIComponent = extendedEncodeURIComponent;
-  }
-});
-
-// ../../../node_modules/@smithy/smithy-client/dist-cjs/get-array-if-single-item.js
-var require_get_array_if_single_item = __commonJS({
-  "../../../node_modules/@smithy/smithy-client/dist-cjs/get-array-if-single-item.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.getArrayIfSingleItem = void 0;
-    var getArrayIfSingleItem = (mayBeArray) => Array.isArray(mayBeArray) ? mayBeArray : [mayBeArray];
-    exports2.getArrayIfSingleItem = getArrayIfSingleItem;
-  }
-});
-
-// ../../../node_modules/@smithy/smithy-client/dist-cjs/get-value-from-text-node.js
-var require_get_value_from_text_node = __commonJS({
-  "../../../node_modules/@smithy/smithy-client/dist-cjs/get-value-from-text-node.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.getValueFromTextNode = void 0;
-    var getValueFromTextNode = (obj) => {
+    __name(extendedEncodeURIComponent, "extendedEncodeURIComponent");
+    var getArrayIfSingleItem = /* @__PURE__ */ __name((mayBeArray) => Array.isArray(mayBeArray) ? mayBeArray : [mayBeArray], "getArrayIfSingleItem");
+    var getValueFromTextNode = /* @__PURE__ */ __name((obj) => {
       const textNodeName = "#text";
       for (const key in obj) {
         if (obj.hasOwnProperty(key) && obj[key][textNodeName] !== void 0) {
           obj[key] = obj[key][textNodeName];
         } else if (typeof obj[key] === "object" && obj[key] !== null) {
-          obj[key] = (0, exports2.getValueFromTextNode)(obj[key]);
+          obj[key] = getValueFromTextNode(obj[key]);
         }
       }
       return obj;
-    };
-    exports2.getValueFromTextNode = getValueFromTextNode;
-  }
-});
-
-// ../../../node_modules/@smithy/smithy-client/dist-cjs/lazy-json.js
-var require_lazy_json = __commonJS({
-  "../../../node_modules/@smithy/smithy-client/dist-cjs/lazy-json.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.LazyJsonString = exports2.StringWrapper = void 0;
-    var StringWrapper = function() {
+    }, "getValueFromTextNode");
+    var StringWrapper = /* @__PURE__ */ __name(function() {
       const Class = Object.getPrototypeOf(this).constructor;
       const Constructor = Function.bind.apply(String, [null, ...arguments]);
       const instance = new Constructor();
       Object.setPrototypeOf(instance, Class.prototype);
       return instance;
-    };
-    exports2.StringWrapper = StringWrapper;
-    exports2.StringWrapper.prototype = Object.create(String.prototype, {
+    }, "StringWrapper");
+    StringWrapper.prototype = Object.create(String.prototype, {
       constructor: {
-        value: exports2.StringWrapper,
+        value: StringWrapper,
         enumerable: false,
         writable: true,
         configurable: true
       }
     });
-    Object.setPrototypeOf(exports2.StringWrapper, String);
-    var LazyJsonString = class _LazyJsonString extends exports2.StringWrapper {
+    Object.setPrototypeOf(StringWrapper, String);
+    var _LazyJsonString = class _LazyJsonString2 extends StringWrapper {
       deserializeJSON() {
         return JSON.parse(super.toString());
       }
@@ -11136,24 +9900,16 @@ var require_lazy_json = __commonJS({
         return super.toString();
       }
       static fromObject(object) {
-        if (object instanceof _LazyJsonString) {
+        if (object instanceof _LazyJsonString2) {
           return object;
         } else if (object instanceof String || typeof object === "string") {
-          return new _LazyJsonString(object);
+          return new _LazyJsonString2(object);
         }
-        return new _LazyJsonString(JSON.stringify(object));
+        return new _LazyJsonString2(JSON.stringify(object));
       }
     };
-    exports2.LazyJsonString = LazyJsonString;
-  }
-});
-
-// ../../../node_modules/@smithy/smithy-client/dist-cjs/object-mapping.js
-var require_object_mapping = __commonJS({
-  "../../../node_modules/@smithy/smithy-client/dist-cjs/object-mapping.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.take = exports2.convertMap = exports2.map = void 0;
+    __name(_LazyJsonString, "LazyJsonString");
+    var LazyJsonString = _LazyJsonString;
     function map(arg0, arg1, arg2) {
       let target;
       let filter;
@@ -11180,38 +9936,42 @@ var require_object_mapping = __commonJS({
       }
       return target;
     }
-    exports2.map = map;
-    var convertMap = (target) => {
+    __name(map, "map");
+    var convertMap = /* @__PURE__ */ __name((target) => {
       const output = {};
       for (const [k, v] of Object.entries(target || {})) {
         output[k] = [, v];
       }
       return output;
-    };
-    exports2.convertMap = convertMap;
-    var take = (source, instructions) => {
+    }, "convertMap");
+    var take = /* @__PURE__ */ __name((source, instructions) => {
       const out = {};
       for (const key in instructions) {
         applyInstruction(out, source, instructions, key);
       }
       return out;
-    };
-    exports2.take = take;
-    var mapWithFilter = (target, filter, instructions) => {
-      return map(target, Object.entries(instructions).reduce((_instructions, [key, value]) => {
-        if (Array.isArray(value)) {
-          _instructions[key] = value;
-        } else {
-          if (typeof value === "function") {
-            _instructions[key] = [filter, value()];
-          } else {
-            _instructions[key] = [filter, value];
-          }
-        }
-        return _instructions;
-      }, {}));
-    };
-    var applyInstruction = (target, source, instructions, targetKey) => {
+    }, "take");
+    var mapWithFilter = /* @__PURE__ */ __name((target, filter, instructions) => {
+      return map(
+        target,
+        Object.entries(instructions).reduce(
+          (_instructions, [key, value]) => {
+            if (Array.isArray(value)) {
+              _instructions[key] = value;
+            } else {
+              if (typeof value === "function") {
+                _instructions[key] = [filter, value()];
+              } else {
+                _instructions[key] = [filter, value];
+              }
+            }
+            return _instructions;
+          },
+          {}
+        )
+      );
+    }, "mapWithFilter");
+    var applyInstruction = /* @__PURE__ */ __name((target, source, instructions, targetKey) => {
       if (source !== null) {
         let instruction = instructions[targetKey];
         if (typeof instruction === "function") {
@@ -11240,42 +10000,25 @@ var require_object_mapping = __commonJS({
           target[targetKey] = value;
         }
       }
-    };
-    var nonNullish = (_) => _ != null;
-    var pass = (_) => _;
-  }
-});
-
-// ../../../node_modules/@smithy/smithy-client/dist-cjs/resolve-path.js
-var require_resolve_path = __commonJS({
-  "../../../node_modules/@smithy/smithy-client/dist-cjs/resolve-path.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.resolvedPath = void 0;
-    var extended_encode_uri_component_1 = require_extended_encode_uri_component();
-    var resolvedPath = (resolvedPath2, input, memberName, labelValueProvider, uriLabel, isGreedyLabel) => {
+    }, "applyInstruction");
+    var nonNullish = /* @__PURE__ */ __name((_) => _ != null, "nonNullish");
+    var pass = /* @__PURE__ */ __name((_) => _, "pass");
+    var resolvedPath = /* @__PURE__ */ __name((resolvedPath2, input, memberName, labelValueProvider, uriLabel, isGreedyLabel) => {
       if (input != null && input[memberName] !== void 0) {
         const labelValue = labelValueProvider();
         if (labelValue.length <= 0) {
           throw new Error("Empty value provided for input HTTP label: " + memberName + ".");
         }
-        resolvedPath2 = resolvedPath2.replace(uriLabel, isGreedyLabel ? labelValue.split("/").map((segment) => (0, extended_encode_uri_component_1.extendedEncodeURIComponent)(segment)).join("/") : (0, extended_encode_uri_component_1.extendedEncodeURIComponent)(labelValue));
+        resolvedPath2 = resolvedPath2.replace(
+          uriLabel,
+          isGreedyLabel ? labelValue.split("/").map((segment) => extendedEncodeURIComponent(segment)).join("/") : extendedEncodeURIComponent(labelValue)
+        );
       } else {
         throw new Error("No value provided for input HTTP label: " + memberName + ".");
       }
       return resolvedPath2;
-    };
-    exports2.resolvedPath = resolvedPath;
-  }
-});
-
-// ../../../node_modules/@smithy/smithy-client/dist-cjs/ser-utils.js
-var require_ser_utils = __commonJS({
-  "../../../node_modules/@smithy/smithy-client/dist-cjs/ser-utils.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.serializeFloat = void 0;
-    var serializeFloat = (value) => {
+    }, "resolvedPath");
+    var serializeFloat = /* @__PURE__ */ __name((value) => {
       if (value !== value) {
         return "NaN";
       }
@@ -11287,23 +10030,13 @@ var require_ser_utils = __commonJS({
         default:
           return value;
       }
-    };
-    exports2.serializeFloat = serializeFloat;
-  }
-});
-
-// ../../../node_modules/@smithy/smithy-client/dist-cjs/serde-json.js
-var require_serde_json = __commonJS({
-  "../../../node_modules/@smithy/smithy-client/dist-cjs/serde-json.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2._json = void 0;
-    var _json = (obj) => {
+    }, "serializeFloat");
+    var _json = /* @__PURE__ */ __name((obj) => {
       if (obj == null) {
         return {};
       }
       if (Array.isArray(obj)) {
-        return obj.filter((_) => _ != null).map(exports2._json);
+        return obj.filter((_) => _ != null).map(_json);
       }
       if (typeof obj === "object") {
         const target = {};
@@ -11311,22 +10044,12 @@ var require_serde_json = __commonJS({
           if (obj[key] == null) {
             continue;
           }
-          target[key] = (0, exports2._json)(obj[key]);
+          target[key] = _json(obj[key]);
         }
         return target;
       }
       return obj;
-    };
-    exports2._json = _json;
-  }
-});
-
-// ../../../node_modules/@smithy/smithy-client/dist-cjs/split-every.js
-var require_split_every = __commonJS({
-  "../../../node_modules/@smithy/smithy-client/dist-cjs/split-every.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.splitEvery = void 0;
+    }, "_json");
     function splitEvery(value, delimiter, numDelimiters) {
       if (numDelimiters <= 0 || !Number.isInteger(numDelimiters)) {
         throw new Error("Invalid number of delimiters (" + numDelimiters + ") for splitEvery.");
@@ -11353,38 +10076,7 @@ var require_split_every = __commonJS({
       }
       return compoundSegments;
     }
-    exports2.splitEvery = splitEvery;
-  }
-});
-
-// ../../../node_modules/@smithy/smithy-client/dist-cjs/index.js
-var require_dist_cjs36 = __commonJS({
-  "../../../node_modules/@smithy/smithy-client/dist-cjs/index.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
-    tslib_1.__exportStar(require_NoOpLogger(), exports2);
-    tslib_1.__exportStar(require_client3(), exports2);
-    tslib_1.__exportStar(require_collect_stream_body(), exports2);
-    tslib_1.__exportStar(require_command3(), exports2);
-    tslib_1.__exportStar(require_constants6(), exports2);
-    tslib_1.__exportStar(require_create_aggregated_client(), exports2);
-    tslib_1.__exportStar(require_date_utils(), exports2);
-    tslib_1.__exportStar(require_default_error_handler(), exports2);
-    tslib_1.__exportStar(require_defaults_mode(), exports2);
-    tslib_1.__exportStar(require_emitWarningIfUnsupportedVersion(), exports2);
-    tslib_1.__exportStar(require_extensions4(), exports2);
-    tslib_1.__exportStar(require_exceptions(), exports2);
-    tslib_1.__exportStar(require_extended_encode_uri_component(), exports2);
-    tslib_1.__exportStar(require_get_array_if_single_item(), exports2);
-    tslib_1.__exportStar(require_get_value_from_text_node(), exports2);
-    tslib_1.__exportStar(require_lazy_json(), exports2);
-    tslib_1.__exportStar(require_object_mapping(), exports2);
-    tslib_1.__exportStar(require_parse_utils(), exports2);
-    tslib_1.__exportStar(require_resolve_path(), exports2);
-    tslib_1.__exportStar(require_ser_utils(), exports2);
-    tslib_1.__exportStar(require_serde_json(), exports2);
-    tslib_1.__exportStar(require_split_every(), exports2);
+    __name(splitEvery, "splitEvery");
   }
 });
 
@@ -11400,20 +10092,274 @@ var require_isStreamingPayload = __commonJS({
   }
 });
 
-// ../../../node_modules/@smithy/middleware-retry/dist-cjs/retryMiddleware.js
-var require_retryMiddleware = __commonJS({
-  "../../../node_modules/@smithy/middleware-retry/dist-cjs/retryMiddleware.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.getRetryAfterHint = exports2.getRetryPlugin = exports2.retryMiddlewareOptions = exports2.retryMiddleware = void 0;
-    var protocol_http_1 = require_dist_cjs2();
-    var service_error_classification_1 = require_dist_cjs29();
-    var smithy_client_1 = require_dist_cjs36();
-    var util_retry_1 = require_dist_cjs30();
-    var uuid_1 = (init_esm_node(), __toCommonJS(esm_node_exports));
-    var isStreamingPayload_1 = require_isStreamingPayload();
-    var util_1 = require_util3();
-    var retryMiddleware = (options) => (next, context) => async (args) => {
+// ../../../node_modules/@smithy/middleware-retry/dist-cjs/index.js
+var require_dist_cjs37 = __commonJS({
+  "../../../node_modules/@smithy/middleware-retry/dist-cjs/index.js"(exports2, module2) {
+    var __defProp2 = Object.defineProperty;
+    var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
+    var __getOwnPropNames2 = Object.getOwnPropertyNames;
+    var __hasOwnProp2 = Object.prototype.hasOwnProperty;
+    var __name = (target, value) => __defProp2(target, "name", { value, configurable: true });
+    var __export2 = (target, all) => {
+      for (var name in all)
+        __defProp2(target, name, { get: all[name], enumerable: true });
+    };
+    var __copyProps2 = (to, from, except, desc) => {
+      if (from && typeof from === "object" || typeof from === "function") {
+        for (let key of __getOwnPropNames2(from))
+          if (!__hasOwnProp2.call(to, key) && key !== except)
+            __defProp2(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc2(from, key)) || desc.enumerable });
+      }
+      return to;
+    };
+    var __toCommonJS2 = (mod) => __copyProps2(__defProp2({}, "__esModule", { value: true }), mod);
+    var src_exports = {};
+    __export2(src_exports, {
+      AdaptiveRetryStrategy: () => AdaptiveRetryStrategy,
+      CONFIG_MAX_ATTEMPTS: () => CONFIG_MAX_ATTEMPTS,
+      CONFIG_RETRY_MODE: () => CONFIG_RETRY_MODE,
+      ENV_MAX_ATTEMPTS: () => ENV_MAX_ATTEMPTS,
+      ENV_RETRY_MODE: () => ENV_RETRY_MODE,
+      NODE_MAX_ATTEMPT_CONFIG_OPTIONS: () => NODE_MAX_ATTEMPT_CONFIG_OPTIONS,
+      NODE_RETRY_MODE_CONFIG_OPTIONS: () => NODE_RETRY_MODE_CONFIG_OPTIONS,
+      StandardRetryStrategy: () => StandardRetryStrategy,
+      defaultDelayDecider: () => defaultDelayDecider,
+      defaultRetryDecider: () => defaultRetryDecider,
+      getOmitRetryHeadersPlugin: () => getOmitRetryHeadersPlugin,
+      getRetryAfterHint: () => getRetryAfterHint,
+      getRetryPlugin: () => getRetryPlugin,
+      omitRetryHeadersMiddleware: () => omitRetryHeadersMiddleware,
+      omitRetryHeadersMiddlewareOptions: () => omitRetryHeadersMiddlewareOptions,
+      resolveRetryConfig: () => resolveRetryConfig,
+      retryMiddleware: () => retryMiddleware,
+      retryMiddlewareOptions: () => retryMiddlewareOptions
+    });
+    module2.exports = __toCommonJS2(src_exports);
+    var import_protocol_http = require_dist_cjs2();
+    var import_uuid = (init_esm_node(), __toCommonJS(esm_node_exports));
+    var import_util_retry = require_dist_cjs30();
+    var getDefaultRetryQuota = /* @__PURE__ */ __name((initialRetryTokens, options) => {
+      const MAX_CAPACITY = initialRetryTokens;
+      const noRetryIncrement = (options == null ? void 0 : options.noRetryIncrement) ?? import_util_retry.NO_RETRY_INCREMENT;
+      const retryCost = (options == null ? void 0 : options.retryCost) ?? import_util_retry.RETRY_COST;
+      const timeoutRetryCost = (options == null ? void 0 : options.timeoutRetryCost) ?? import_util_retry.TIMEOUT_RETRY_COST;
+      let availableCapacity = initialRetryTokens;
+      const getCapacityAmount = /* @__PURE__ */ __name((error) => error.name === "TimeoutError" ? timeoutRetryCost : retryCost, "getCapacityAmount");
+      const hasRetryTokens = /* @__PURE__ */ __name((error) => getCapacityAmount(error) <= availableCapacity, "hasRetryTokens");
+      const retrieveRetryTokens = /* @__PURE__ */ __name((error) => {
+        if (!hasRetryTokens(error)) {
+          throw new Error("No retry token available");
+        }
+        const capacityAmount = getCapacityAmount(error);
+        availableCapacity -= capacityAmount;
+        return capacityAmount;
+      }, "retrieveRetryTokens");
+      const releaseRetryTokens = /* @__PURE__ */ __name((capacityReleaseAmount) => {
+        availableCapacity += capacityReleaseAmount ?? noRetryIncrement;
+        availableCapacity = Math.min(availableCapacity, MAX_CAPACITY);
+      }, "releaseRetryTokens");
+      return Object.freeze({
+        hasRetryTokens,
+        retrieveRetryTokens,
+        releaseRetryTokens
+      });
+    }, "getDefaultRetryQuota");
+    var defaultDelayDecider = /* @__PURE__ */ __name((delayBase, attempts) => Math.floor(Math.min(import_util_retry.MAXIMUM_RETRY_DELAY, Math.random() * 2 ** attempts * delayBase)), "defaultDelayDecider");
+    var import_service_error_classification = require_dist_cjs29();
+    var defaultRetryDecider = /* @__PURE__ */ __name((error) => {
+      if (!error) {
+        return false;
+      }
+      return (0, import_service_error_classification.isRetryableByTrait)(error) || (0, import_service_error_classification.isClockSkewError)(error) || (0, import_service_error_classification.isThrottlingError)(error) || (0, import_service_error_classification.isTransientError)(error);
+    }, "defaultRetryDecider");
+    var asSdkError = /* @__PURE__ */ __name((error) => {
+      if (error instanceof Error)
+        return error;
+      if (error instanceof Object)
+        return Object.assign(new Error(), error);
+      if (typeof error === "string")
+        return new Error(error);
+      return new Error(`AWS SDK error wrapper for ${error}`);
+    }, "asSdkError");
+    var _StandardRetryStrategy = class _StandardRetryStrategy {
+      constructor(maxAttemptsProvider, options) {
+        this.maxAttemptsProvider = maxAttemptsProvider;
+        this.mode = import_util_retry.RETRY_MODES.STANDARD;
+        this.retryDecider = (options == null ? void 0 : options.retryDecider) ?? defaultRetryDecider;
+        this.delayDecider = (options == null ? void 0 : options.delayDecider) ?? defaultDelayDecider;
+        this.retryQuota = (options == null ? void 0 : options.retryQuota) ?? getDefaultRetryQuota(import_util_retry.INITIAL_RETRY_TOKENS);
+      }
+      shouldRetry(error, attempts, maxAttempts) {
+        return attempts < maxAttempts && this.retryDecider(error) && this.retryQuota.hasRetryTokens(error);
+      }
+      async getMaxAttempts() {
+        let maxAttempts;
+        try {
+          maxAttempts = await this.maxAttemptsProvider();
+        } catch (error) {
+          maxAttempts = import_util_retry.DEFAULT_MAX_ATTEMPTS;
+        }
+        return maxAttempts;
+      }
+      async retry(next, args, options) {
+        let retryTokenAmount;
+        let attempts = 0;
+        let totalDelay = 0;
+        const maxAttempts = await this.getMaxAttempts();
+        const { request: request2 } = args;
+        if (import_protocol_http.HttpRequest.isInstance(request2)) {
+          request2.headers[import_util_retry.INVOCATION_ID_HEADER] = (0, import_uuid.v4)();
+        }
+        while (true) {
+          try {
+            if (import_protocol_http.HttpRequest.isInstance(request2)) {
+              request2.headers[import_util_retry.REQUEST_HEADER] = `attempt=${attempts + 1}; max=${maxAttempts}`;
+            }
+            if (options == null ? void 0 : options.beforeRequest) {
+              await options.beforeRequest();
+            }
+            const { response, output } = await next(args);
+            if (options == null ? void 0 : options.afterRequest) {
+              options.afterRequest(response);
+            }
+            this.retryQuota.releaseRetryTokens(retryTokenAmount);
+            output.$metadata.attempts = attempts + 1;
+            output.$metadata.totalRetryDelay = totalDelay;
+            return { response, output };
+          } catch (e) {
+            const err = asSdkError(e);
+            attempts++;
+            if (this.shouldRetry(err, attempts, maxAttempts)) {
+              retryTokenAmount = this.retryQuota.retrieveRetryTokens(err);
+              const delayFromDecider = this.delayDecider(
+                (0, import_service_error_classification.isThrottlingError)(err) ? import_util_retry.THROTTLING_RETRY_DELAY_BASE : import_util_retry.DEFAULT_RETRY_DELAY_BASE,
+                attempts
+              );
+              const delayFromResponse = getDelayFromRetryAfterHeader(err.$response);
+              const delay = Math.max(delayFromResponse || 0, delayFromDecider);
+              totalDelay += delay;
+              await new Promise((resolve) => setTimeout(resolve, delay));
+              continue;
+            }
+            if (!err.$metadata) {
+              err.$metadata = {};
+            }
+            err.$metadata.attempts = attempts;
+            err.$metadata.totalRetryDelay = totalDelay;
+            throw err;
+          }
+        }
+      }
+    };
+    __name(_StandardRetryStrategy, "StandardRetryStrategy");
+    var StandardRetryStrategy = _StandardRetryStrategy;
+    var getDelayFromRetryAfterHeader = /* @__PURE__ */ __name((response) => {
+      if (!import_protocol_http.HttpResponse.isInstance(response))
+        return;
+      const retryAfterHeaderName = Object.keys(response.headers).find((key) => key.toLowerCase() === "retry-after");
+      if (!retryAfterHeaderName)
+        return;
+      const retryAfter = response.headers[retryAfterHeaderName];
+      const retryAfterSeconds = Number(retryAfter);
+      if (!Number.isNaN(retryAfterSeconds))
+        return retryAfterSeconds * 1e3;
+      const retryAfterDate = new Date(retryAfter);
+      return retryAfterDate.getTime() - Date.now();
+    }, "getDelayFromRetryAfterHeader");
+    var _AdaptiveRetryStrategy = class _AdaptiveRetryStrategy extends StandardRetryStrategy {
+      constructor(maxAttemptsProvider, options) {
+        const { rateLimiter, ...superOptions } = options ?? {};
+        super(maxAttemptsProvider, superOptions);
+        this.rateLimiter = rateLimiter ?? new import_util_retry.DefaultRateLimiter();
+        this.mode = import_util_retry.RETRY_MODES.ADAPTIVE;
+      }
+      async retry(next, args) {
+        return super.retry(next, args, {
+          beforeRequest: async () => {
+            return this.rateLimiter.getSendToken();
+          },
+          afterRequest: (response) => {
+            this.rateLimiter.updateClientSendingRate(response);
+          }
+        });
+      }
+    };
+    __name(_AdaptiveRetryStrategy, "AdaptiveRetryStrategy");
+    var AdaptiveRetryStrategy = _AdaptiveRetryStrategy;
+    var import_util_middleware = require_dist_cjs10();
+    var ENV_MAX_ATTEMPTS = "AWS_MAX_ATTEMPTS";
+    var CONFIG_MAX_ATTEMPTS = "max_attempts";
+    var NODE_MAX_ATTEMPT_CONFIG_OPTIONS = {
+      environmentVariableSelector: (env) => {
+        const value = env[ENV_MAX_ATTEMPTS];
+        if (!value)
+          return void 0;
+        const maxAttempt = parseInt(value);
+        if (Number.isNaN(maxAttempt)) {
+          throw new Error(`Environment variable ${ENV_MAX_ATTEMPTS} mast be a number, got "${value}"`);
+        }
+        return maxAttempt;
+      },
+      configFileSelector: (profile) => {
+        const value = profile[CONFIG_MAX_ATTEMPTS];
+        if (!value)
+          return void 0;
+        const maxAttempt = parseInt(value);
+        if (Number.isNaN(maxAttempt)) {
+          throw new Error(`Shared config file entry ${CONFIG_MAX_ATTEMPTS} mast be a number, got "${value}"`);
+        }
+        return maxAttempt;
+      },
+      default: import_util_retry.DEFAULT_MAX_ATTEMPTS
+    };
+    var resolveRetryConfig = /* @__PURE__ */ __name((input) => {
+      const { retryStrategy } = input;
+      const maxAttempts = (0, import_util_middleware.normalizeProvider)(input.maxAttempts ?? import_util_retry.DEFAULT_MAX_ATTEMPTS);
+      return {
+        ...input,
+        maxAttempts,
+        retryStrategy: async () => {
+          if (retryStrategy) {
+            return retryStrategy;
+          }
+          const retryMode = await (0, import_util_middleware.normalizeProvider)(input.retryMode)();
+          if (retryMode === import_util_retry.RETRY_MODES.ADAPTIVE) {
+            return new import_util_retry.AdaptiveRetryStrategy(maxAttempts);
+          }
+          return new import_util_retry.StandardRetryStrategy(maxAttempts);
+        }
+      };
+    }, "resolveRetryConfig");
+    var ENV_RETRY_MODE = "AWS_RETRY_MODE";
+    var CONFIG_RETRY_MODE = "retry_mode";
+    var NODE_RETRY_MODE_CONFIG_OPTIONS = {
+      environmentVariableSelector: (env) => env[ENV_RETRY_MODE],
+      configFileSelector: (profile) => profile[CONFIG_RETRY_MODE],
+      default: import_util_retry.DEFAULT_RETRY_MODE
+    };
+    var omitRetryHeadersMiddleware = /* @__PURE__ */ __name(() => (next) => async (args) => {
+      const { request: request2 } = args;
+      if (import_protocol_http.HttpRequest.isInstance(request2)) {
+        delete request2.headers[import_util_retry.INVOCATION_ID_HEADER];
+        delete request2.headers[import_util_retry.REQUEST_HEADER];
+      }
+      return next(args);
+    }, "omitRetryHeadersMiddleware");
+    var omitRetryHeadersMiddlewareOptions = {
+      name: "omitRetryHeadersMiddleware",
+      tags: ["RETRY", "HEADERS", "OMIT_RETRY_HEADERS"],
+      relation: "before",
+      toMiddleware: "awsAuthMiddleware",
+      override: true
+    };
+    var getOmitRetryHeadersPlugin = /* @__PURE__ */ __name((options) => ({
+      applyToStack: (clientStack) => {
+        clientStack.addRelativeTo(omitRetryHeadersMiddleware(), omitRetryHeadersMiddlewareOptions);
+      }
+    }), "getOmitRetryHeadersPlugin");
+    var import_smithy_client = require_dist_cjs36();
+    var import_isStreamingPayload = require_isStreamingPayload();
+    var retryMiddleware = /* @__PURE__ */ __name((options) => (next, context) => async (args) => {
       var _a;
       let retryStrategy = await options.retryStrategy();
       const maxAttempts = await options.maxAttempts();
@@ -11424,14 +10370,14 @@ var require_retryMiddleware = __commonJS({
         let attempts = 0;
         let totalRetryDelay = 0;
         const { request: request2 } = args;
-        const isRequest = protocol_http_1.HttpRequest.isInstance(request2);
+        const isRequest = import_protocol_http.HttpRequest.isInstance(request2);
         if (isRequest) {
-          request2.headers[util_retry_1.INVOCATION_ID_HEADER] = (0, uuid_1.v4)();
+          request2.headers[import_util_retry.INVOCATION_ID_HEADER] = (0, import_uuid.v4)();
         }
         while (true) {
           try {
             if (isRequest) {
-              request2.headers[util_retry_1.REQUEST_HEADER] = `attempt=${attempts + 1}; max=${maxAttempts}`;
+              request2.headers[import_util_retry.REQUEST_HEADER] = `attempt=${attempts + 1}; max=${maxAttempts}`;
             }
             const { response, output } = await next(args);
             retryStrategy.recordSuccess(retryToken);
@@ -11440,9 +10386,11 @@ var require_retryMiddleware = __commonJS({
             return { response, output };
           } catch (e) {
             const retryErrorInfo = getRetryErrorInfo(e);
-            lastError = (0, util_1.asSdkError)(e);
-            if (isRequest && (0, isStreamingPayload_1.isStreamingPayload)(request2)) {
-              (_a = context.logger instanceof smithy_client_1.NoOpLogger ? console : context.logger) === null || _a === void 0 ? void 0 : _a.warn("An error was encountered in a non-retryable streaming request.");
+            lastError = asSdkError(e);
+            if (isRequest && (0, import_isStreamingPayload.isStreamingPayload)(request2)) {
+              (_a = context.logger instanceof import_smithy_client.NoOpLogger ? console : context.logger) == null ? void 0 : _a.warn(
+                "An error was encountered in a non-retryable streaming request."
+              );
               throw lastError;
             }
             try {
@@ -11463,47 +10411,46 @@ var require_retryMiddleware = __commonJS({
         }
       } else {
         retryStrategy = retryStrategy;
-        if (retryStrategy === null || retryStrategy === void 0 ? void 0 : retryStrategy.mode)
+        if (retryStrategy == null ? void 0 : retryStrategy.mode)
           context.userAgent = [...context.userAgent || [], ["cfg/retry-mode", retryStrategy.mode]];
         return retryStrategy.retry(next, args);
       }
-    };
-    exports2.retryMiddleware = retryMiddleware;
-    var isRetryStrategyV2 = (retryStrategy) => typeof retryStrategy.acquireInitialRetryToken !== "undefined" && typeof retryStrategy.refreshRetryTokenForRetry !== "undefined" && typeof retryStrategy.recordSuccess !== "undefined";
-    var getRetryErrorInfo = (error) => {
+    }, "retryMiddleware");
+    var isRetryStrategyV2 = /* @__PURE__ */ __name((retryStrategy) => typeof retryStrategy.acquireInitialRetryToken !== "undefined" && typeof retryStrategy.refreshRetryTokenForRetry !== "undefined" && typeof retryStrategy.recordSuccess !== "undefined", "isRetryStrategyV2");
+    var getRetryErrorInfo = /* @__PURE__ */ __name((error) => {
       const errorInfo = {
+        error,
         errorType: getRetryErrorType(error)
       };
-      const retryAfterHint = (0, exports2.getRetryAfterHint)(error.$response);
+      const retryAfterHint = getRetryAfterHint(error.$response);
       if (retryAfterHint) {
         errorInfo.retryAfterHint = retryAfterHint;
       }
       return errorInfo;
-    };
-    var getRetryErrorType = (error) => {
-      if ((0, service_error_classification_1.isThrottlingError)(error))
+    }, "getRetryErrorInfo");
+    var getRetryErrorType = /* @__PURE__ */ __name((error) => {
+      if ((0, import_service_error_classification.isThrottlingError)(error))
         return "THROTTLING";
-      if ((0, service_error_classification_1.isTransientError)(error))
+      if ((0, import_service_error_classification.isTransientError)(error))
         return "TRANSIENT";
-      if ((0, service_error_classification_1.isServerError)(error))
+      if ((0, import_service_error_classification.isServerError)(error))
         return "SERVER_ERROR";
       return "CLIENT_ERROR";
-    };
-    exports2.retryMiddlewareOptions = {
+    }, "getRetryErrorType");
+    var retryMiddlewareOptions = {
       name: "retryMiddleware",
       tags: ["RETRY"],
       step: "finalizeRequest",
       priority: "high",
       override: true
     };
-    var getRetryPlugin = (options) => ({
+    var getRetryPlugin = /* @__PURE__ */ __name((options) => ({
       applyToStack: (clientStack) => {
-        clientStack.add((0, exports2.retryMiddleware)(options), exports2.retryMiddlewareOptions);
+        clientStack.add(retryMiddleware(options), retryMiddlewareOptions);
       }
-    });
-    exports2.getRetryPlugin = getRetryPlugin;
-    var getRetryAfterHint = (response) => {
-      if (!protocol_http_1.HttpResponse.isInstance(response))
+    }), "getRetryPlugin");
+    var getRetryAfterHint = /* @__PURE__ */ __name((response) => {
+      if (!import_protocol_http.HttpResponse.isInstance(response))
         return;
       const retryAfterHeaderName = Object.keys(response.headers).find((key) => key.toLowerCase() === "retry-after");
       if (!retryAfterHeaderName)
@@ -11514,24 +10461,7 @@ var require_retryMiddleware = __commonJS({
         return new Date(retryAfterSeconds * 1e3);
       const retryAfterDate = new Date(retryAfter);
       return retryAfterDate;
-    };
-    exports2.getRetryAfterHint = getRetryAfterHint;
-  }
-});
-
-// ../../../node_modules/@smithy/middleware-retry/dist-cjs/index.js
-var require_dist_cjs37 = __commonJS({
-  "../../../node_modules/@smithy/middleware-retry/dist-cjs/index.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
-    tslib_1.__exportStar(require_AdaptiveRetryStrategy2(), exports2);
-    tslib_1.__exportStar(require_StandardRetryStrategy2(), exports2);
-    tslib_1.__exportStar(require_configurations2(), exports2);
-    tslib_1.__exportStar(require_delayDecider(), exports2);
-    tslib_1.__exportStar(require_omitRetryHeadersMiddleware(), exports2);
-    tslib_1.__exportStar(require_retryDecider(), exports2);
-    tslib_1.__exportStar(require_retryMiddleware(), exports2);
+    }, "getRetryAfterHint");
   }
 });
 
@@ -11978,7 +10908,7 @@ var require_models_0 = __commonJS({
 });
 
 // ../../../node_modules/fast-xml-parser/src/util.js
-var require_util4 = __commonJS({
+var require_util2 = __commonJS({
   "../../../node_modules/fast-xml-parser/src/util.js"(exports2) {
     "use strict";
     var nameStartChar = ":A-Za-z_\\u00C0-\\u00D6\\u00D8-\\u00F6\\u00F8-\\u02FF\\u0370-\\u037D\\u037F-\\u1FFF\\u200C-\\u200D\\u2070-\\u218F\\u2C00-\\u2FEF\\u3001-\\uD7FF\\uF900-\\uFDCF\\uFDF0-\\uFFFD";
@@ -12040,7 +10970,7 @@ var require_util4 = __commonJS({
 var require_validator = __commonJS({
   "../../../node_modules/fast-xml-parser/src/validator.js"(exports2) {
     "use strict";
-    var util = require_util4();
+    var util = require_util2();
     var defaultOptions = {
       allowBooleanAttributes: false,
       //A tag can have attributes without any value
@@ -12435,7 +11365,7 @@ var require_xmlNode = __commonJS({
 // ../../../node_modules/fast-xml-parser/src/xmlparser/DocTypeReader.js
 var require_DocTypeReader = __commonJS({
   "../../../node_modules/fast-xml-parser/src/xmlparser/DocTypeReader.js"(exports2, module2) {
-    var util = require_util4();
+    var util = require_util2();
     function readDocType(xmlData, i) {
       const entities = {};
       if (xmlData[i + 3] === "O" && xmlData[i + 4] === "C" && xmlData[i + 5] === "T" && xmlData[i + 6] === "Y" && xmlData[i + 7] === "P" && xmlData[i + 8] === "E") {
@@ -12642,7 +11572,7 @@ var require_strnum = __commonJS({
 var require_OrderedObjParser = __commonJS({
   "../../../node_modules/fast-xml-parser/src/xmlparser/OrderedObjParser.js"(exports2, module2) {
     "use strict";
-    var util = require_util4();
+    var util = require_util2();
     var xmlNode = require_xmlNode();
     var readDocType = require_DocTypeReader();
     var toNumber = require_strnum();
@@ -14894,7 +13824,7 @@ var require_defaultStsRoleAssumers = __commonJS({
 });
 
 // ../../../node_modules/@aws-sdk/credential-provider-env/dist-cjs/fromEnv.js
-var require_fromEnv2 = __commonJS({
+var require_fromEnv = __commonJS({
   "../../../node_modules/@aws-sdk/credential-provider-env/dist-cjs/fromEnv.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
@@ -14929,39 +13859,74 @@ var require_dist_cjs39 = __commonJS({
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
-    tslib_1.__exportStar(require_fromEnv2(), exports2);
+    tslib_1.__exportStar(require_fromEnv(), exports2);
   }
 });
 
-// ../../../node_modules/@smithy/credential-provider-imds/dist-cjs/remoteProvider/httpRequest.js
-var require_httpRequest2 = __commonJS({
-  "../../../node_modules/@smithy/credential-provider-imds/dist-cjs/remoteProvider/httpRequest.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.httpRequest = void 0;
-    var property_provider_1 = require_dist_cjs6();
-    var buffer_1 = require("buffer");
-    var http_1 = require("http");
+// ../../../node_modules/@smithy/credential-provider-imds/dist-cjs/index.js
+var require_dist_cjs40 = __commonJS({
+  "../../../node_modules/@smithy/credential-provider-imds/dist-cjs/index.js"(exports2, module2) {
+    var __defProp2 = Object.defineProperty;
+    var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
+    var __getOwnPropNames2 = Object.getOwnPropertyNames;
+    var __hasOwnProp2 = Object.prototype.hasOwnProperty;
+    var __name = (target, value) => __defProp2(target, "name", { value, configurable: true });
+    var __export2 = (target, all) => {
+      for (var name in all)
+        __defProp2(target, name, { get: all[name], enumerable: true });
+    };
+    var __copyProps2 = (to, from, except, desc) => {
+      if (from && typeof from === "object" || typeof from === "function") {
+        for (let key of __getOwnPropNames2(from))
+          if (!__hasOwnProp2.call(to, key) && key !== except)
+            __defProp2(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc2(from, key)) || desc.enumerable });
+      }
+      return to;
+    };
+    var __toCommonJS2 = (mod) => __copyProps2(__defProp2({}, "__esModule", { value: true }), mod);
+    var src_exports = {};
+    __export2(src_exports, {
+      DEFAULT_MAX_RETRIES: () => DEFAULT_MAX_RETRIES,
+      DEFAULT_TIMEOUT: () => DEFAULT_TIMEOUT,
+      ENV_CMDS_AUTH_TOKEN: () => ENV_CMDS_AUTH_TOKEN,
+      ENV_CMDS_FULL_URI: () => ENV_CMDS_FULL_URI,
+      ENV_CMDS_RELATIVE_URI: () => ENV_CMDS_RELATIVE_URI,
+      Endpoint: () => Endpoint,
+      fromContainerMetadata: () => fromContainerMetadata,
+      fromInstanceMetadata: () => fromInstanceMetadata,
+      getInstanceMetadataEndpoint: () => getInstanceMetadataEndpoint,
+      httpRequest: () => httpRequest,
+      providerConfigFromInit: () => providerConfigFromInit
+    });
+    module2.exports = __toCommonJS2(src_exports);
+    var import_url = require("url");
+    var import_property_provider = require_dist_cjs6();
+    var import_buffer = require("buffer");
+    var import_http2 = require("http");
     function httpRequest(options) {
       return new Promise((resolve, reject) => {
         var _a;
-        const req = (0, http_1.request)({
+        const req = (0, import_http2.request)({
           method: "GET",
           ...options,
-          hostname: (_a = options.hostname) === null || _a === void 0 ? void 0 : _a.replace(/^\[(.+)\]$/, "$1")
+          // Node.js http module doesn't accept hostname with square brackets
+          // Refs: https://github.com/nodejs/node/issues/39738
+          hostname: (_a = options.hostname) == null ? void 0 : _a.replace(/^\[(.+)\]$/, "$1")
         });
         req.on("error", (err) => {
-          reject(Object.assign(new property_provider_1.ProviderError("Unable to connect to instance metadata service"), err));
+          reject(Object.assign(new import_property_provider.ProviderError("Unable to connect to instance metadata service"), err));
           req.destroy();
         });
         req.on("timeout", () => {
-          reject(new property_provider_1.ProviderError("TimeoutError from instance metadata service"));
+          reject(new import_property_provider.ProviderError("TimeoutError from instance metadata service"));
           req.destroy();
         });
         req.on("response", (res) => {
           const { statusCode = 400 } = res;
           if (statusCode < 200 || 300 <= statusCode) {
-            reject(Object.assign(new property_provider_1.ProviderError("Error response received from instance metadata service"), { statusCode }));
+            reject(
+              Object.assign(new import_property_provider.ProviderError("Error response received from instance metadata service"), { statusCode })
+            );
             req.destroy();
           }
           const chunks = [];
@@ -14969,105 +13934,61 @@ var require_httpRequest2 = __commonJS({
             chunks.push(chunk);
           });
           res.on("end", () => {
-            resolve(buffer_1.Buffer.concat(chunks));
+            resolve(import_buffer.Buffer.concat(chunks));
             req.destroy();
           });
         });
         req.end();
       });
     }
-    exports2.httpRequest = httpRequest;
-  }
-});
-
-// ../../../node_modules/@smithy/credential-provider-imds/dist-cjs/remoteProvider/ImdsCredentials.js
-var require_ImdsCredentials = __commonJS({
-  "../../../node_modules/@smithy/credential-provider-imds/dist-cjs/remoteProvider/ImdsCredentials.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.fromImdsCredentials = exports2.isImdsCredentials = void 0;
-    var isImdsCredentials = (arg) => Boolean(arg) && typeof arg === "object" && typeof arg.AccessKeyId === "string" && typeof arg.SecretAccessKey === "string" && typeof arg.Token === "string" && typeof arg.Expiration === "string";
-    exports2.isImdsCredentials = isImdsCredentials;
-    var fromImdsCredentials = (creds) => ({
+    __name(httpRequest, "httpRequest");
+    var isImdsCredentials = /* @__PURE__ */ __name((arg) => Boolean(arg) && typeof arg === "object" && typeof arg.AccessKeyId === "string" && typeof arg.SecretAccessKey === "string" && typeof arg.Token === "string" && typeof arg.Expiration === "string", "isImdsCredentials");
+    var fromImdsCredentials = /* @__PURE__ */ __name((creds) => ({
       accessKeyId: creds.AccessKeyId,
       secretAccessKey: creds.SecretAccessKey,
       sessionToken: creds.Token,
       expiration: new Date(creds.Expiration)
-    });
-    exports2.fromImdsCredentials = fromImdsCredentials;
-  }
-});
-
-// ../../../node_modules/@smithy/credential-provider-imds/dist-cjs/remoteProvider/RemoteProviderInit.js
-var require_RemoteProviderInit = __commonJS({
-  "../../../node_modules/@smithy/credential-provider-imds/dist-cjs/remoteProvider/RemoteProviderInit.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.providerConfigFromInit = exports2.DEFAULT_MAX_RETRIES = exports2.DEFAULT_TIMEOUT = void 0;
-    exports2.DEFAULT_TIMEOUT = 1e3;
-    exports2.DEFAULT_MAX_RETRIES = 0;
-    var providerConfigFromInit = ({ maxRetries = exports2.DEFAULT_MAX_RETRIES, timeout = exports2.DEFAULT_TIMEOUT }) => ({ maxRetries, timeout });
-    exports2.providerConfigFromInit = providerConfigFromInit;
-  }
-});
-
-// ../../../node_modules/@smithy/credential-provider-imds/dist-cjs/remoteProvider/retry.js
-var require_retry4 = __commonJS({
-  "../../../node_modules/@smithy/credential-provider-imds/dist-cjs/remoteProvider/retry.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.retry = void 0;
-    var retry = (toRetry, maxRetries) => {
+    }), "fromImdsCredentials");
+    var DEFAULT_TIMEOUT = 1e3;
+    var DEFAULT_MAX_RETRIES = 0;
+    var providerConfigFromInit = /* @__PURE__ */ __name(({
+      maxRetries = DEFAULT_MAX_RETRIES,
+      timeout = DEFAULT_TIMEOUT
+    }) => ({ maxRetries, timeout }), "providerConfigFromInit");
+    var retry = /* @__PURE__ */ __name((toRetry, maxRetries) => {
       let promise = toRetry();
       for (let i = 0; i < maxRetries; i++) {
         promise = promise.catch(toRetry);
       }
       return promise;
-    };
-    exports2.retry = retry;
-  }
-});
-
-// ../../../node_modules/@smithy/credential-provider-imds/dist-cjs/fromContainerMetadata.js
-var require_fromContainerMetadata = __commonJS({
-  "../../../node_modules/@smithy/credential-provider-imds/dist-cjs/fromContainerMetadata.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.fromContainerMetadata = exports2.ENV_CMDS_AUTH_TOKEN = exports2.ENV_CMDS_RELATIVE_URI = exports2.ENV_CMDS_FULL_URI = void 0;
-    var property_provider_1 = require_dist_cjs6();
-    var url_1 = require("url");
-    var httpRequest_1 = require_httpRequest2();
-    var ImdsCredentials_1 = require_ImdsCredentials();
-    var RemoteProviderInit_1 = require_RemoteProviderInit();
-    var retry_1 = require_retry4();
-    exports2.ENV_CMDS_FULL_URI = "AWS_CONTAINER_CREDENTIALS_FULL_URI";
-    exports2.ENV_CMDS_RELATIVE_URI = "AWS_CONTAINER_CREDENTIALS_RELATIVE_URI";
-    exports2.ENV_CMDS_AUTH_TOKEN = "AWS_CONTAINER_AUTHORIZATION_TOKEN";
-    var fromContainerMetadata = (init = {}) => {
-      const { timeout, maxRetries } = (0, RemoteProviderInit_1.providerConfigFromInit)(init);
-      return () => (0, retry_1.retry)(async () => {
+    }, "retry");
+    var ENV_CMDS_FULL_URI = "AWS_CONTAINER_CREDENTIALS_FULL_URI";
+    var ENV_CMDS_RELATIVE_URI = "AWS_CONTAINER_CREDENTIALS_RELATIVE_URI";
+    var ENV_CMDS_AUTH_TOKEN = "AWS_CONTAINER_AUTHORIZATION_TOKEN";
+    var fromContainerMetadata = /* @__PURE__ */ __name((init = {}) => {
+      const { timeout, maxRetries } = providerConfigFromInit(init);
+      return () => retry(async () => {
         const requestOptions = await getCmdsUri();
         const credsResponse = JSON.parse(await requestFromEcsImds(timeout, requestOptions));
-        if (!(0, ImdsCredentials_1.isImdsCredentials)(credsResponse)) {
-          throw new property_provider_1.CredentialsProviderError("Invalid response received from instance metadata service.");
+        if (!isImdsCredentials(credsResponse)) {
+          throw new import_property_provider.CredentialsProviderError("Invalid response received from instance metadata service.");
         }
-        return (0, ImdsCredentials_1.fromImdsCredentials)(credsResponse);
+        return fromImdsCredentials(credsResponse);
       }, maxRetries);
-    };
-    exports2.fromContainerMetadata = fromContainerMetadata;
-    var requestFromEcsImds = async (timeout, options) => {
-      if (process.env[exports2.ENV_CMDS_AUTH_TOKEN]) {
+    }, "fromContainerMetadata");
+    var requestFromEcsImds = /* @__PURE__ */ __name(async (timeout, options) => {
+      if (process.env[ENV_CMDS_AUTH_TOKEN]) {
         options.headers = {
           ...options.headers,
-          Authorization: process.env[exports2.ENV_CMDS_AUTH_TOKEN]
+          Authorization: process.env[ENV_CMDS_AUTH_TOKEN]
         };
       }
-      const buffer = await (0, httpRequest_1.httpRequest)({
+      const buffer = await httpRequest({
         ...options,
         timeout
       });
       return buffer.toString();
-    };
+    }, "requestFromEcsImds");
     var CMDS_IP = "169.254.170.2";
     var GREENGRASS_HOSTS = {
       localhost: true,
@@ -15077,186 +13998,118 @@ var require_fromContainerMetadata = __commonJS({
       "http:": true,
       "https:": true
     };
-    var getCmdsUri = async () => {
-      if (process.env[exports2.ENV_CMDS_RELATIVE_URI]) {
+    var getCmdsUri = /* @__PURE__ */ __name(async () => {
+      if (process.env[ENV_CMDS_RELATIVE_URI]) {
         return {
           hostname: CMDS_IP,
-          path: process.env[exports2.ENV_CMDS_RELATIVE_URI]
+          path: process.env[ENV_CMDS_RELATIVE_URI]
         };
       }
-      if (process.env[exports2.ENV_CMDS_FULL_URI]) {
-        const parsed = (0, url_1.parse)(process.env[exports2.ENV_CMDS_FULL_URI]);
+      if (process.env[ENV_CMDS_FULL_URI]) {
+        const parsed = (0, import_url.parse)(process.env[ENV_CMDS_FULL_URI]);
         if (!parsed.hostname || !(parsed.hostname in GREENGRASS_HOSTS)) {
-          throw new property_provider_1.CredentialsProviderError(`${parsed.hostname} is not a valid container metadata service hostname`, false);
+          throw new import_property_provider.CredentialsProviderError(
+            `${parsed.hostname} is not a valid container metadata service hostname`,
+            false
+          );
         }
         if (!parsed.protocol || !(parsed.protocol in GREENGRASS_PROTOCOLS)) {
-          throw new property_provider_1.CredentialsProviderError(`${parsed.protocol} is not a valid container metadata service protocol`, false);
+          throw new import_property_provider.CredentialsProviderError(
+            `${parsed.protocol} is not a valid container metadata service protocol`,
+            false
+          );
         }
         return {
           ...parsed,
           port: parsed.port ? parseInt(parsed.port, 10) : void 0
         };
       }
-      throw new property_provider_1.CredentialsProviderError(`The container metadata credential provider cannot be used unless the ${exports2.ENV_CMDS_RELATIVE_URI} or ${exports2.ENV_CMDS_FULL_URI} environment variable is set`, false);
-    };
-  }
-});
-
-// ../../../node_modules/@smithy/credential-provider-imds/dist-cjs/error/InstanceMetadataV1FallbackError.js
-var require_InstanceMetadataV1FallbackError = __commonJS({
-  "../../../node_modules/@smithy/credential-provider-imds/dist-cjs/error/InstanceMetadataV1FallbackError.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.InstanceMetadataV1FallbackError = void 0;
-    var property_provider_1 = require_dist_cjs6();
-    var InstanceMetadataV1FallbackError = class _InstanceMetadataV1FallbackError extends property_provider_1.CredentialsProviderError {
+      throw new import_property_provider.CredentialsProviderError(
+        `The container metadata credential provider cannot be used unless the ${ENV_CMDS_RELATIVE_URI} or ${ENV_CMDS_FULL_URI} environment variable is set`,
+        false
+      );
+    }, "getCmdsUri");
+    var _InstanceMetadataV1FallbackError = class _InstanceMetadataV1FallbackError2 extends import_property_provider.CredentialsProviderError {
       constructor(message, tryNextLink = true) {
         super(message, tryNextLink);
         this.tryNextLink = tryNextLink;
         this.name = "InstanceMetadataV1FallbackError";
-        Object.setPrototypeOf(this, _InstanceMetadataV1FallbackError.prototype);
+        Object.setPrototypeOf(this, _InstanceMetadataV1FallbackError2.prototype);
       }
     };
-    exports2.InstanceMetadataV1FallbackError = InstanceMetadataV1FallbackError;
-  }
-});
-
-// ../../../node_modules/@smithy/credential-provider-imds/dist-cjs/config/Endpoint.js
-var require_Endpoint = __commonJS({
-  "../../../node_modules/@smithy/credential-provider-imds/dist-cjs/config/Endpoint.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.Endpoint = void 0;
-    var Endpoint;
-    (function(Endpoint2) {
+    __name(_InstanceMetadataV1FallbackError, "InstanceMetadataV1FallbackError");
+    var InstanceMetadataV1FallbackError = _InstanceMetadataV1FallbackError;
+    var import_node_config_provider = require_dist_cjs24();
+    var import_url_parser = require_dist_cjs26();
+    var Endpoint = /* @__PURE__ */ ((Endpoint2) => {
       Endpoint2["IPv4"] = "http://169.254.169.254";
       Endpoint2["IPv6"] = "http://[fd00:ec2::254]";
-    })(Endpoint = exports2.Endpoint || (exports2.Endpoint = {}));
-  }
-});
-
-// ../../../node_modules/@smithy/credential-provider-imds/dist-cjs/config/EndpointConfigOptions.js
-var require_EndpointConfigOptions = __commonJS({
-  "../../../node_modules/@smithy/credential-provider-imds/dist-cjs/config/EndpointConfigOptions.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.ENDPOINT_CONFIG_OPTIONS = exports2.CONFIG_ENDPOINT_NAME = exports2.ENV_ENDPOINT_NAME = void 0;
-    exports2.ENV_ENDPOINT_NAME = "AWS_EC2_METADATA_SERVICE_ENDPOINT";
-    exports2.CONFIG_ENDPOINT_NAME = "ec2_metadata_service_endpoint";
-    exports2.ENDPOINT_CONFIG_OPTIONS = {
-      environmentVariableSelector: (env) => env[exports2.ENV_ENDPOINT_NAME],
-      configFileSelector: (profile) => profile[exports2.CONFIG_ENDPOINT_NAME],
+      return Endpoint2;
+    })(Endpoint || {});
+    var ENV_ENDPOINT_NAME = "AWS_EC2_METADATA_SERVICE_ENDPOINT";
+    var CONFIG_ENDPOINT_NAME = "ec2_metadata_service_endpoint";
+    var ENDPOINT_CONFIG_OPTIONS = {
+      environmentVariableSelector: (env) => env[ENV_ENDPOINT_NAME],
+      configFileSelector: (profile) => profile[CONFIG_ENDPOINT_NAME],
       default: void 0
     };
-  }
-});
-
-// ../../../node_modules/@smithy/credential-provider-imds/dist-cjs/config/EndpointMode.js
-var require_EndpointMode = __commonJS({
-  "../../../node_modules/@smithy/credential-provider-imds/dist-cjs/config/EndpointMode.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.EndpointMode = void 0;
-    var EndpointMode;
-    (function(EndpointMode2) {
+    var EndpointMode = /* @__PURE__ */ ((EndpointMode2) => {
       EndpointMode2["IPv4"] = "IPv4";
       EndpointMode2["IPv6"] = "IPv6";
-    })(EndpointMode = exports2.EndpointMode || (exports2.EndpointMode = {}));
-  }
-});
-
-// ../../../node_modules/@smithy/credential-provider-imds/dist-cjs/config/EndpointModeConfigOptions.js
-var require_EndpointModeConfigOptions = __commonJS({
-  "../../../node_modules/@smithy/credential-provider-imds/dist-cjs/config/EndpointModeConfigOptions.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.ENDPOINT_MODE_CONFIG_OPTIONS = exports2.CONFIG_ENDPOINT_MODE_NAME = exports2.ENV_ENDPOINT_MODE_NAME = void 0;
-    var EndpointMode_1 = require_EndpointMode();
-    exports2.ENV_ENDPOINT_MODE_NAME = "AWS_EC2_METADATA_SERVICE_ENDPOINT_MODE";
-    exports2.CONFIG_ENDPOINT_MODE_NAME = "ec2_metadata_service_endpoint_mode";
-    exports2.ENDPOINT_MODE_CONFIG_OPTIONS = {
-      environmentVariableSelector: (env) => env[exports2.ENV_ENDPOINT_MODE_NAME],
-      configFileSelector: (profile) => profile[exports2.CONFIG_ENDPOINT_MODE_NAME],
-      default: EndpointMode_1.EndpointMode.IPv4
+      return EndpointMode2;
+    })(EndpointMode || {});
+    var ENV_ENDPOINT_MODE_NAME = "AWS_EC2_METADATA_SERVICE_ENDPOINT_MODE";
+    var CONFIG_ENDPOINT_MODE_NAME = "ec2_metadata_service_endpoint_mode";
+    var ENDPOINT_MODE_CONFIG_OPTIONS = {
+      environmentVariableSelector: (env) => env[ENV_ENDPOINT_MODE_NAME],
+      configFileSelector: (profile) => profile[CONFIG_ENDPOINT_MODE_NAME],
+      default: "IPv4"
+      /* IPv4 */
     };
-  }
-});
-
-// ../../../node_modules/@smithy/credential-provider-imds/dist-cjs/utils/getInstanceMetadataEndpoint.js
-var require_getInstanceMetadataEndpoint = __commonJS({
-  "../../../node_modules/@smithy/credential-provider-imds/dist-cjs/utils/getInstanceMetadataEndpoint.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.getInstanceMetadataEndpoint = void 0;
-    var node_config_provider_1 = require_dist_cjs24();
-    var url_parser_1 = require_dist_cjs26();
-    var Endpoint_1 = require_Endpoint();
-    var EndpointConfigOptions_1 = require_EndpointConfigOptions();
-    var EndpointMode_1 = require_EndpointMode();
-    var EndpointModeConfigOptions_1 = require_EndpointModeConfigOptions();
-    var getInstanceMetadataEndpoint = async () => (0, url_parser_1.parseUrl)(await getFromEndpointConfig() || await getFromEndpointModeConfig());
-    exports2.getInstanceMetadataEndpoint = getInstanceMetadataEndpoint;
-    var getFromEndpointConfig = async () => (0, node_config_provider_1.loadConfig)(EndpointConfigOptions_1.ENDPOINT_CONFIG_OPTIONS)();
-    var getFromEndpointModeConfig = async () => {
-      const endpointMode = await (0, node_config_provider_1.loadConfig)(EndpointModeConfigOptions_1.ENDPOINT_MODE_CONFIG_OPTIONS)();
+    var getInstanceMetadataEndpoint = /* @__PURE__ */ __name(async () => (0, import_url_parser.parseUrl)(await getFromEndpointConfig() || await getFromEndpointModeConfig()), "getInstanceMetadataEndpoint");
+    var getFromEndpointConfig = /* @__PURE__ */ __name(async () => (0, import_node_config_provider.loadConfig)(ENDPOINT_CONFIG_OPTIONS)(), "getFromEndpointConfig");
+    var getFromEndpointModeConfig = /* @__PURE__ */ __name(async () => {
+      const endpointMode = await (0, import_node_config_provider.loadConfig)(ENDPOINT_MODE_CONFIG_OPTIONS)();
       switch (endpointMode) {
-        case EndpointMode_1.EndpointMode.IPv4:
-          return Endpoint_1.Endpoint.IPv4;
-        case EndpointMode_1.EndpointMode.IPv6:
-          return Endpoint_1.Endpoint.IPv6;
+        case "IPv4":
+          return "http://169.254.169.254";
+        case "IPv6":
+          return "http://[fd00:ec2::254]";
         default:
-          throw new Error(`Unsupported endpoint mode: ${endpointMode}. Select from ${Object.values(EndpointMode_1.EndpointMode)}`);
+          throw new Error(`Unsupported endpoint mode: ${endpointMode}. Select from ${Object.values(EndpointMode)}`);
       }
-    };
-  }
-});
-
-// ../../../node_modules/@smithy/credential-provider-imds/dist-cjs/utils/getExtendedInstanceMetadataCredentials.js
-var require_getExtendedInstanceMetadataCredentials = __commonJS({
-  "../../../node_modules/@smithy/credential-provider-imds/dist-cjs/utils/getExtendedInstanceMetadataCredentials.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.getExtendedInstanceMetadataCredentials = void 0;
+    }, "getFromEndpointModeConfig");
     var STATIC_STABILITY_REFRESH_INTERVAL_SECONDS = 5 * 60;
     var STATIC_STABILITY_REFRESH_INTERVAL_JITTER_WINDOW_SECONDS = 5 * 60;
     var STATIC_STABILITY_DOC_URL = "https://docs.aws.amazon.com/sdkref/latest/guide/feature-static-credentials.html";
-    var getExtendedInstanceMetadataCredentials = (credentials, logger) => {
-      var _a;
+    var getExtendedInstanceMetadataCredentials = /* @__PURE__ */ __name((credentials, logger) => {
       const refreshInterval = STATIC_STABILITY_REFRESH_INTERVAL_SECONDS + Math.floor(Math.random() * STATIC_STABILITY_REFRESH_INTERVAL_JITTER_WINDOW_SECONDS);
       const newExpiration = new Date(Date.now() + refreshInterval * 1e3);
-      logger.warn("Attempting credential expiration extension due to a credential service availability issue. A refresh of these credentials will be attempted after ${new Date(newExpiration)}.\nFor more information, please visit: " + STATIC_STABILITY_DOC_URL);
-      const originalExpiration = (_a = credentials.originalExpiration) !== null && _a !== void 0 ? _a : credentials.expiration;
+      logger.warn(
+        `Attempting credential expiration extension due to a credential service availability issue. A refresh of these credentials will be attempted after ${new Date(newExpiration)}.
+For more information, please visit: ` + STATIC_STABILITY_DOC_URL
+      );
+      const originalExpiration = credentials.originalExpiration ?? credentials.expiration;
       return {
         ...credentials,
         ...originalExpiration ? { originalExpiration } : {},
         expiration: newExpiration
       };
-    };
-    exports2.getExtendedInstanceMetadataCredentials = getExtendedInstanceMetadataCredentials;
-  }
-});
-
-// ../../../node_modules/@smithy/credential-provider-imds/dist-cjs/utils/staticStabilityProvider.js
-var require_staticStabilityProvider = __commonJS({
-  "../../../node_modules/@smithy/credential-provider-imds/dist-cjs/utils/staticStabilityProvider.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.staticStabilityProvider = void 0;
-    var getExtendedInstanceMetadataCredentials_1 = require_getExtendedInstanceMetadataCredentials();
-    var staticStabilityProvider = (provider, options = {}) => {
-      const logger = (options === null || options === void 0 ? void 0 : options.logger) || console;
+    }, "getExtendedInstanceMetadataCredentials");
+    var staticStabilityProvider = /* @__PURE__ */ __name((provider, options = {}) => {
+      const logger = (options == null ? void 0 : options.logger) || console;
       let pastCredentials;
       return async () => {
         let credentials;
         try {
           credentials = await provider();
           if (credentials.expiration && credentials.expiration.getTime() < Date.now()) {
-            credentials = (0, getExtendedInstanceMetadataCredentials_1.getExtendedInstanceMetadataCredentials)(credentials, logger);
+            credentials = getExtendedInstanceMetadataCredentials(credentials, logger);
           }
         } catch (e) {
           if (pastCredentials) {
             logger.warn("Credential renew failed: ", e);
-            credentials = (0, getExtendedInstanceMetadataCredentials_1.getExtendedInstanceMetadataCredentials)(pastCredentials, logger);
+            credentials = getExtendedInstanceMetadataCredentials(pastCredentials, logger);
           } else {
             throw e;
           }
@@ -15264,61 +14117,46 @@ var require_staticStabilityProvider = __commonJS({
         pastCredentials = credentials;
         return credentials;
       };
-    };
-    exports2.staticStabilityProvider = staticStabilityProvider;
-  }
-});
-
-// ../../../node_modules/@smithy/credential-provider-imds/dist-cjs/fromInstanceMetadata.js
-var require_fromInstanceMetadata = __commonJS({
-  "../../../node_modules/@smithy/credential-provider-imds/dist-cjs/fromInstanceMetadata.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.fromInstanceMetadata = void 0;
-    var node_config_provider_1 = require_dist_cjs24();
-    var property_provider_1 = require_dist_cjs6();
-    var InstanceMetadataV1FallbackError_1 = require_InstanceMetadataV1FallbackError();
-    var httpRequest_1 = require_httpRequest2();
-    var ImdsCredentials_1 = require_ImdsCredentials();
-    var RemoteProviderInit_1 = require_RemoteProviderInit();
-    var retry_1 = require_retry4();
-    var getInstanceMetadataEndpoint_1 = require_getInstanceMetadataEndpoint();
-    var staticStabilityProvider_1 = require_staticStabilityProvider();
+    }, "staticStabilityProvider");
     var IMDS_PATH = "/latest/meta-data/iam/security-credentials/";
     var IMDS_TOKEN_PATH = "/latest/api/token";
     var AWS_EC2_METADATA_V1_DISABLED = "AWS_EC2_METADATA_V1_DISABLED";
     var PROFILE_AWS_EC2_METADATA_V1_DISABLED = "ec2_metadata_v1_disabled";
     var X_AWS_EC2_METADATA_TOKEN = "x-aws-ec2-metadata-token";
-    var fromInstanceMetadata = (init = {}) => (0, staticStabilityProvider_1.staticStabilityProvider)(getInstanceImdsProvider(init), { logger: init.logger });
-    exports2.fromInstanceMetadata = fromInstanceMetadata;
-    var getInstanceImdsProvider = (init) => {
+    var fromInstanceMetadata = /* @__PURE__ */ __name((init = {}) => staticStabilityProvider(getInstanceImdsProvider(init), { logger: init.logger }), "fromInstanceMetadata");
+    var getInstanceImdsProvider = /* @__PURE__ */ __name((init) => {
       let disableFetchToken = false;
       const { logger, profile } = init;
-      const { timeout, maxRetries } = (0, RemoteProviderInit_1.providerConfigFromInit)(init);
-      const getCredentials = async (maxRetries2, options) => {
+      const { timeout, maxRetries } = providerConfigFromInit(init);
+      const getCredentials = /* @__PURE__ */ __name(async (maxRetries2, options) => {
         var _a;
-        const isImdsV1Fallback = disableFetchToken || ((_a = options.headers) === null || _a === void 0 ? void 0 : _a[X_AWS_EC2_METADATA_TOKEN]) == null;
+        const isImdsV1Fallback = disableFetchToken || ((_a = options.headers) == null ? void 0 : _a[X_AWS_EC2_METADATA_TOKEN]) == null;
         if (isImdsV1Fallback) {
           let fallbackBlockedFromProfile = false;
           let fallbackBlockedFromProcessEnv = false;
-          const configValue = await (0, node_config_provider_1.loadConfig)({
-            environmentVariableSelector: (env) => {
-              const envValue = env[AWS_EC2_METADATA_V1_DISABLED];
-              fallbackBlockedFromProcessEnv = !!envValue && envValue !== "false";
-              if (envValue === void 0) {
-                throw new property_provider_1.CredentialsProviderError(`${AWS_EC2_METADATA_V1_DISABLED} not set in env, checking config file next.`);
-              }
-              return fallbackBlockedFromProcessEnv;
+          const configValue = await (0, import_node_config_provider.loadConfig)(
+            {
+              environmentVariableSelector: (env) => {
+                const envValue = env[AWS_EC2_METADATA_V1_DISABLED];
+                fallbackBlockedFromProcessEnv = !!envValue && envValue !== "false";
+                if (envValue === void 0) {
+                  throw new import_property_provider.CredentialsProviderError(
+                    `${AWS_EC2_METADATA_V1_DISABLED} not set in env, checking config file next.`
+                  );
+                }
+                return fallbackBlockedFromProcessEnv;
+              },
+              configFileSelector: (profile2) => {
+                const profileValue = profile2[PROFILE_AWS_EC2_METADATA_V1_DISABLED];
+                fallbackBlockedFromProfile = !!profileValue && profileValue !== "false";
+                return fallbackBlockedFromProfile;
+              },
+              default: false
             },
-            configFileSelector: (profile2) => {
-              const profileValue = profile2[PROFILE_AWS_EC2_METADATA_V1_DISABLED];
-              fallbackBlockedFromProfile = !!profileValue && profileValue !== "false";
-              return fallbackBlockedFromProfile;
-            },
-            default: false
-          }, {
-            profile
-          })();
+            {
+              profile
+            }
+          )();
           if (init.ec2MetadataV1Disabled || configValue) {
             const causes = [];
             if (init.ec2MetadataV1Disabled)
@@ -15327,10 +14165,14 @@ var require_fromInstanceMetadata = __commonJS({
               causes.push(`config file profile (${PROFILE_AWS_EC2_METADATA_V1_DISABLED})`);
             if (fallbackBlockedFromProcessEnv)
               causes.push(`process environment variable (${AWS_EC2_METADATA_V1_DISABLED})`);
-            throw new InstanceMetadataV1FallbackError_1.InstanceMetadataV1FallbackError(`AWS EC2 Metadata v1 fallback has been blocked by AWS SDK configuration in the following: [${causes.join(", ")}].`);
+            throw new InstanceMetadataV1FallbackError(
+              `AWS EC2 Metadata v1 fallback has been blocked by AWS SDK configuration in the following: [${causes.join(
+                ", "
+              )}].`
+            );
           }
         }
-        const imdsProfile = (await (0, retry_1.retry)(async () => {
+        const imdsProfile = (await retry(async () => {
           let profile2;
           try {
             profile2 = await getProfile(options);
@@ -15342,7 +14184,7 @@ var require_fromInstanceMetadata = __commonJS({
           }
           return profile2;
         }, maxRetries2)).trim();
-        return (0, retry_1.retry)(async () => {
+        return retry(async () => {
           let creds;
           try {
             creds = await getCredentialsFromProfile(imdsProfile, options);
@@ -15354,25 +14196,25 @@ var require_fromInstanceMetadata = __commonJS({
           }
           return creds;
         }, maxRetries2);
-      };
+      }, "getCredentials");
       return async () => {
-        const endpoint = await (0, getInstanceMetadataEndpoint_1.getInstanceMetadataEndpoint)();
+        const endpoint = await getInstanceMetadataEndpoint();
         if (disableFetchToken) {
-          logger === null || logger === void 0 ? void 0 : logger.debug("AWS SDK Instance Metadata", "using v1 fallback (no token fetch)");
+          logger == null ? void 0 : logger.debug("AWS SDK Instance Metadata", "using v1 fallback (no token fetch)");
           return getCredentials(maxRetries, { ...endpoint, timeout });
         } else {
           let token;
           try {
             token = (await getMetadataToken({ ...endpoint, timeout })).toString();
           } catch (error) {
-            if ((error === null || error === void 0 ? void 0 : error.statusCode) === 400) {
+            if ((error == null ? void 0 : error.statusCode) === 400) {
               throw Object.assign(error, {
                 message: "EC2 Metadata token request returned error"
               });
             } else if (error.message === "TimeoutError" || [403, 404, 405].includes(error.statusCode)) {
               disableFetchToken = true;
             }
-            logger === null || logger === void 0 ? void 0 : logger.debug("AWS SDK Instance Metadata", "using v1 fallback (initial)");
+            logger == null ? void 0 : logger.debug("AWS SDK Instance Metadata", "using v1 fallback (initial)");
             return getCredentials(maxRetries, { ...endpoint, timeout });
           }
           return getCredentials(maxRetries, {
@@ -15384,56 +14226,28 @@ var require_fromInstanceMetadata = __commonJS({
           });
         }
       };
-    };
-    var getMetadataToken = async (options) => (0, httpRequest_1.httpRequest)({
+    }, "getInstanceImdsProvider");
+    var getMetadataToken = /* @__PURE__ */ __name(async (options) => httpRequest({
       ...options,
       path: IMDS_TOKEN_PATH,
       method: "PUT",
       headers: {
         "x-aws-ec2-metadata-token-ttl-seconds": "21600"
       }
-    });
-    var getProfile = async (options) => (await (0, httpRequest_1.httpRequest)({ ...options, path: IMDS_PATH })).toString();
-    var getCredentialsFromProfile = async (profile, options) => {
-      const credsResponse = JSON.parse((await (0, httpRequest_1.httpRequest)({
-        ...options,
-        path: IMDS_PATH + profile
-      })).toString());
-      if (!(0, ImdsCredentials_1.isImdsCredentials)(credsResponse)) {
-        throw new property_provider_1.CredentialsProviderError("Invalid response received from instance metadata service.");
+    }), "getMetadataToken");
+    var getProfile = /* @__PURE__ */ __name(async (options) => (await httpRequest({ ...options, path: IMDS_PATH })).toString(), "getProfile");
+    var getCredentialsFromProfile = /* @__PURE__ */ __name(async (profile, options) => {
+      const credsResponse = JSON.parse(
+        (await httpRequest({
+          ...options,
+          path: IMDS_PATH + profile
+        })).toString()
+      );
+      if (!isImdsCredentials(credsResponse)) {
+        throw new import_property_provider.CredentialsProviderError("Invalid response received from instance metadata service.");
       }
-      return (0, ImdsCredentials_1.fromImdsCredentials)(credsResponse);
-    };
-  }
-});
-
-// ../../../node_modules/@smithy/credential-provider-imds/dist-cjs/types.js
-var require_types7 = __commonJS({
-  "../../../node_modules/@smithy/credential-provider-imds/dist-cjs/types.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-  }
-});
-
-// ../../../node_modules/@smithy/credential-provider-imds/dist-cjs/index.js
-var require_dist_cjs40 = __commonJS({
-  "../../../node_modules/@smithy/credential-provider-imds/dist-cjs/index.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.getInstanceMetadataEndpoint = exports2.httpRequest = void 0;
-    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
-    tslib_1.__exportStar(require_fromContainerMetadata(), exports2);
-    tslib_1.__exportStar(require_fromInstanceMetadata(), exports2);
-    tslib_1.__exportStar(require_RemoteProviderInit(), exports2);
-    tslib_1.__exportStar(require_types7(), exports2);
-    var httpRequest_1 = require_httpRequest2();
-    Object.defineProperty(exports2, "httpRequest", { enumerable: true, get: function() {
-      return httpRequest_1.httpRequest;
-    } });
-    var getInstanceMetadataEndpoint_1 = require_getInstanceMetadataEndpoint();
-    Object.defineProperty(exports2, "getInstanceMetadataEndpoint", { enumerable: true, get: function() {
-      return getInstanceMetadataEndpoint_1.getInstanceMetadataEndpoint;
-    } });
+      return fromImdsCredentials(credsResponse);
+    }, "getCredentialsFromProfile");
   }
 });
 
@@ -15825,59 +14639,101 @@ var require_dist_cjs42 = __commonJS({
 
 // ../../../node_modules/@smithy/hash-node/dist-cjs/index.js
 var require_dist_cjs43 = __commonJS({
-  "../../../node_modules/@smithy/hash-node/dist-cjs/index.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.Hash = void 0;
-    var util_buffer_from_1 = require_dist_cjs12();
-    var util_utf8_1 = require_dist_cjs13();
-    var buffer_1 = require("buffer");
-    var crypto_1 = require("crypto");
-    var Hash = class {
+  "../../../node_modules/@smithy/hash-node/dist-cjs/index.js"(exports2, module2) {
+    var __defProp2 = Object.defineProperty;
+    var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
+    var __getOwnPropNames2 = Object.getOwnPropertyNames;
+    var __hasOwnProp2 = Object.prototype.hasOwnProperty;
+    var __name = (target, value) => __defProp2(target, "name", { value, configurable: true });
+    var __export2 = (target, all) => {
+      for (var name in all)
+        __defProp2(target, name, { get: all[name], enumerable: true });
+    };
+    var __copyProps2 = (to, from, except, desc) => {
+      if (from && typeof from === "object" || typeof from === "function") {
+        for (let key of __getOwnPropNames2(from))
+          if (!__hasOwnProp2.call(to, key) && key !== except)
+            __defProp2(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc2(from, key)) || desc.enumerable });
+      }
+      return to;
+    };
+    var __toCommonJS2 = (mod) => __copyProps2(__defProp2({}, "__esModule", { value: true }), mod);
+    var src_exports = {};
+    __export2(src_exports, {
+      Hash: () => Hash
+    });
+    module2.exports = __toCommonJS2(src_exports);
+    var import_util_buffer_from = require_dist_cjs12();
+    var import_util_utf8 = require_dist_cjs13();
+    var import_buffer = require("buffer");
+    var import_crypto4 = require("crypto");
+    var _Hash = class _Hash {
       constructor(algorithmIdentifier, secret) {
         this.algorithmIdentifier = algorithmIdentifier;
         this.secret = secret;
         this.reset();
       }
       update(toHash, encoding) {
-        this.hash.update((0, util_utf8_1.toUint8Array)(castSourceData(toHash, encoding)));
+        this.hash.update((0, import_util_utf8.toUint8Array)(castSourceData(toHash, encoding)));
       }
       digest() {
         return Promise.resolve(this.hash.digest());
       }
       reset() {
-        this.hash = this.secret ? (0, crypto_1.createHmac)(this.algorithmIdentifier, castSourceData(this.secret)) : (0, crypto_1.createHash)(this.algorithmIdentifier);
+        this.hash = this.secret ? (0, import_crypto4.createHmac)(this.algorithmIdentifier, castSourceData(this.secret)) : (0, import_crypto4.createHash)(this.algorithmIdentifier);
       }
     };
-    exports2.Hash = Hash;
+    __name(_Hash, "Hash");
+    var Hash = _Hash;
     function castSourceData(toCast, encoding) {
-      if (buffer_1.Buffer.isBuffer(toCast)) {
+      if (import_buffer.Buffer.isBuffer(toCast)) {
         return toCast;
       }
       if (typeof toCast === "string") {
-        return (0, util_buffer_from_1.fromString)(toCast, encoding);
+        return (0, import_util_buffer_from.fromString)(toCast, encoding);
       }
       if (ArrayBuffer.isView(toCast)) {
-        return (0, util_buffer_from_1.fromArrayBuffer)(toCast.buffer, toCast.byteOffset, toCast.byteLength);
+        return (0, import_util_buffer_from.fromArrayBuffer)(toCast.buffer, toCast.byteOffset, toCast.byteLength);
       }
-      return (0, util_buffer_from_1.fromArrayBuffer)(toCast);
+      return (0, import_util_buffer_from.fromArrayBuffer)(toCast);
     }
+    __name(castSourceData, "castSourceData");
   }
 });
 
-// ../../../node_modules/@smithy/util-body-length-node/dist-cjs/calculateBodyLength.js
-var require_calculateBodyLength = __commonJS({
-  "../../../node_modules/@smithy/util-body-length-node/dist-cjs/calculateBodyLength.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.calculateBodyLength = void 0;
-    var fs_1 = require("fs");
-    var calculateBodyLength = (body) => {
+// ../../../node_modules/@smithy/util-body-length-node/dist-cjs/index.js
+var require_dist_cjs44 = __commonJS({
+  "../../../node_modules/@smithy/util-body-length-node/dist-cjs/index.js"(exports2, module2) {
+    var __defProp2 = Object.defineProperty;
+    var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
+    var __getOwnPropNames2 = Object.getOwnPropertyNames;
+    var __hasOwnProp2 = Object.prototype.hasOwnProperty;
+    var __name = (target, value) => __defProp2(target, "name", { value, configurable: true });
+    var __export2 = (target, all) => {
+      for (var name in all)
+        __defProp2(target, name, { get: all[name], enumerable: true });
+    };
+    var __copyProps2 = (to, from, except, desc) => {
+      if (from && typeof from === "object" || typeof from === "function") {
+        for (let key of __getOwnPropNames2(from))
+          if (!__hasOwnProp2.call(to, key) && key !== except)
+            __defProp2(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc2(from, key)) || desc.enumerable });
+      }
+      return to;
+    };
+    var __toCommonJS2 = (mod) => __copyProps2(__defProp2({}, "__esModule", { value: true }), mod);
+    var src_exports = {};
+    __export2(src_exports, {
+      calculateBodyLength: () => calculateBodyLength
+    });
+    module2.exports = __toCommonJS2(src_exports);
+    var import_fs = require("fs");
+    var calculateBodyLength = /* @__PURE__ */ __name((body) => {
       if (!body) {
         return 0;
       }
       if (typeof body === "string") {
-        return Buffer.from(body).length;
+        return Buffer.byteLength(body);
       } else if (typeof body.byteLength === "number") {
         return body.byteLength;
       } else if (typeof body.size === "number") {
@@ -15885,23 +14741,12 @@ var require_calculateBodyLength = __commonJS({
       } else if (typeof body.start === "number" && typeof body.end === "number") {
         return body.end + 1 - body.start;
       } else if (typeof body.path === "string" || Buffer.isBuffer(body.path)) {
-        return (0, fs_1.lstatSync)(body.path).size;
+        return (0, import_fs.lstatSync)(body.path).size;
       } else if (typeof body.fd === "number") {
-        return (0, fs_1.fstatSync)(body.fd).size;
+        return (0, import_fs.fstatSync)(body.fd).size;
       }
       throw new Error(`Body Length computation failed for ${body}`);
-    };
-    exports2.calculateBodyLength = calculateBodyLength;
-  }
-});
-
-// ../../../node_modules/@smithy/util-body-length-node/dist-cjs/index.js
-var require_dist_cjs44 = __commonJS({
-  "../../../node_modules/@smithy/util-body-length-node/dist-cjs/index.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
-    tslib_1.__exportStar(require_calculateBodyLength(), exports2);
+    }, "calculateBodyLength");
   }
 });
 
@@ -15982,30 +14827,54 @@ var require_runtimeConfig_shared = __commonJS({
   }
 });
 
-// ../../../node_modules/@smithy/util-defaults-mode-node/dist-cjs/constants.js
-var require_constants7 = __commonJS({
-  "../../../node_modules/@smithy/util-defaults-mode-node/dist-cjs/constants.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.IMDS_REGION_PATH = exports2.DEFAULTS_MODE_OPTIONS = exports2.ENV_IMDS_DISABLED = exports2.AWS_DEFAULT_REGION_ENV = exports2.AWS_REGION_ENV = exports2.AWS_EXECUTION_ENV = void 0;
-    exports2.AWS_EXECUTION_ENV = "AWS_EXECUTION_ENV";
-    exports2.AWS_REGION_ENV = "AWS_REGION";
-    exports2.AWS_DEFAULT_REGION_ENV = "AWS_DEFAULT_REGION";
-    exports2.ENV_IMDS_DISABLED = "AWS_EC2_METADATA_DISABLED";
-    exports2.DEFAULTS_MODE_OPTIONS = ["in-region", "cross-region", "mobile", "standard", "legacy"];
-    exports2.IMDS_REGION_PATH = "/latest/meta-data/placement/region";
-  }
-});
-
-// ../../../node_modules/@smithy/util-defaults-mode-node/dist-cjs/defaultsModeConfig.js
-var require_defaultsModeConfig = __commonJS({
-  "../../../node_modules/@smithy/util-defaults-mode-node/dist-cjs/defaultsModeConfig.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.NODE_DEFAULTS_MODE_CONFIG_OPTIONS = void 0;
+// ../../../node_modules/@smithy/util-defaults-mode-node/dist-cjs/index.js
+var require_dist_cjs45 = __commonJS({
+  "../../../node_modules/@smithy/util-defaults-mode-node/dist-cjs/index.js"(exports2, module2) {
+    var __create2 = Object.create;
+    var __defProp2 = Object.defineProperty;
+    var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
+    var __getOwnPropNames2 = Object.getOwnPropertyNames;
+    var __getProtoOf2 = Object.getPrototypeOf;
+    var __hasOwnProp2 = Object.prototype.hasOwnProperty;
+    var __name = (target, value) => __defProp2(target, "name", { value, configurable: true });
+    var __export2 = (target, all) => {
+      for (var name in all)
+        __defProp2(target, name, { get: all[name], enumerable: true });
+    };
+    var __copyProps2 = (to, from, except, desc) => {
+      if (from && typeof from === "object" || typeof from === "function") {
+        for (let key of __getOwnPropNames2(from))
+          if (!__hasOwnProp2.call(to, key) && key !== except)
+            __defProp2(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc2(from, key)) || desc.enumerable });
+      }
+      return to;
+    };
+    var __toESM2 = (mod, isNodeMode, target) => (target = mod != null ? __create2(__getProtoOf2(mod)) : {}, __copyProps2(
+      // If the importer is in node compatibility mode or this is not an ESM
+      // file that has been converted to a CommonJS file using a Babel-
+      // compatible transform (i.e. "__esModule" has not been set), then set
+      // "default" to the CommonJS "module.exports" for node compatibility.
+      isNodeMode || !mod || !mod.__esModule ? __defProp2(target, "default", { value: mod, enumerable: true }) : target,
+      mod
+    ));
+    var __toCommonJS2 = (mod) => __copyProps2(__defProp2({}, "__esModule", { value: true }), mod);
+    var src_exports = {};
+    __export2(src_exports, {
+      resolveDefaultsModeConfig: () => resolveDefaultsModeConfig
+    });
+    module2.exports = __toCommonJS2(src_exports);
+    var import_config_resolver = require_dist_cjs21();
+    var import_node_config_provider = require_dist_cjs24();
+    var import_property_provider = require_dist_cjs6();
+    var AWS_EXECUTION_ENV = "AWS_EXECUTION_ENV";
+    var AWS_REGION_ENV = "AWS_REGION";
+    var AWS_DEFAULT_REGION_ENV = "AWS_DEFAULT_REGION";
+    var ENV_IMDS_DISABLED = "AWS_EC2_METADATA_DISABLED";
+    var DEFAULTS_MODE_OPTIONS = ["in-region", "cross-region", "mobile", "standard", "legacy"];
+    var IMDS_REGION_PATH = "/latest/meta-data/placement/region";
     var AWS_DEFAULTS_MODE_ENV = "AWS_DEFAULTS_MODE";
     var AWS_DEFAULTS_MODE_CONFIG = "defaults_mode";
-    exports2.NODE_DEFAULTS_MODE_CONFIG_OPTIONS = {
+    var NODE_DEFAULTS_MODE_CONFIG_OPTIONS = {
       environmentVariableSelector: (env) => {
         return env[AWS_DEFAULTS_MODE_ENV];
       },
@@ -16014,24 +14883,12 @@ var require_defaultsModeConfig = __commonJS({
       },
       default: "legacy"
     };
-  }
-});
-
-// ../../../node_modules/@smithy/util-defaults-mode-node/dist-cjs/resolveDefaultsModeConfig.js
-var require_resolveDefaultsModeConfig = __commonJS({
-  "../../../node_modules/@smithy/util-defaults-mode-node/dist-cjs/resolveDefaultsModeConfig.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.resolveDefaultsModeConfig = void 0;
-    var config_resolver_1 = require_dist_cjs21();
-    var credential_provider_imds_1 = require_dist_cjs40();
-    var node_config_provider_1 = require_dist_cjs24();
-    var property_provider_1 = require_dist_cjs6();
-    var constants_1 = require_constants7();
-    var defaultsModeConfig_1 = require_defaultsModeConfig();
-    var resolveDefaultsModeConfig = ({ region = (0, node_config_provider_1.loadConfig)(config_resolver_1.NODE_REGION_CONFIG_OPTIONS), defaultsMode = (0, node_config_provider_1.loadConfig)(defaultsModeConfig_1.NODE_DEFAULTS_MODE_CONFIG_OPTIONS) } = {}) => (0, property_provider_1.memoize)(async () => {
+    var resolveDefaultsModeConfig = /* @__PURE__ */ __name(({
+      region = (0, import_node_config_provider.loadConfig)(import_config_resolver.NODE_REGION_CONFIG_OPTIONS),
+      defaultsMode = (0, import_node_config_provider.loadConfig)(NODE_DEFAULTS_MODE_CONFIG_OPTIONS)
+    } = {}) => (0, import_property_provider.memoize)(async () => {
       const mode = typeof defaultsMode === "function" ? await defaultsMode() : defaultsMode;
-      switch (mode === null || mode === void 0 ? void 0 : mode.toLowerCase()) {
+      switch (mode == null ? void 0 : mode.toLowerCase()) {
         case "auto":
           return resolveNodeDefaultsModeAuto(region);
         case "in-region":
@@ -16039,15 +14896,16 @@ var require_resolveDefaultsModeConfig = __commonJS({
         case "mobile":
         case "standard":
         case "legacy":
-          return Promise.resolve(mode === null || mode === void 0 ? void 0 : mode.toLocaleLowerCase());
+          return Promise.resolve(mode == null ? void 0 : mode.toLocaleLowerCase());
         case void 0:
           return Promise.resolve("legacy");
         default:
-          throw new Error(`Invalid parameter for "defaultsMode", expect ${constants_1.DEFAULTS_MODE_OPTIONS.join(", ")}, got ${mode}`);
+          throw new Error(
+            `Invalid parameter for "defaultsMode", expect ${DEFAULTS_MODE_OPTIONS.join(", ")}, got ${mode}`
+          );
       }
-    });
-    exports2.resolveDefaultsModeConfig = resolveDefaultsModeConfig;
-    var resolveNodeDefaultsModeAuto = async (clientRegion) => {
+    }), "resolveDefaultsModeConfig");
+    var resolveNodeDefaultsModeAuto = /* @__PURE__ */ __name(async (clientRegion) => {
       if (clientRegion) {
         const resolvedRegion = typeof clientRegion === "function" ? await clientRegion() : clientRegion;
         const inferredRegion = await inferPhysicalRegion();
@@ -16061,30 +14919,20 @@ var require_resolveDefaultsModeConfig = __commonJS({
         }
       }
       return "standard";
-    };
-    var inferPhysicalRegion = async () => {
-      var _a;
-      if (process.env[constants_1.AWS_EXECUTION_ENV] && (process.env[constants_1.AWS_REGION_ENV] || process.env[constants_1.AWS_DEFAULT_REGION_ENV])) {
-        return (_a = process.env[constants_1.AWS_REGION_ENV]) !== null && _a !== void 0 ? _a : process.env[constants_1.AWS_DEFAULT_REGION_ENV];
+    }, "resolveNodeDefaultsModeAuto");
+    var inferPhysicalRegion = /* @__PURE__ */ __name(async () => {
+      if (process.env[AWS_EXECUTION_ENV] && (process.env[AWS_REGION_ENV] || process.env[AWS_DEFAULT_REGION_ENV])) {
+        return process.env[AWS_REGION_ENV] ?? process.env[AWS_DEFAULT_REGION_ENV];
       }
-      if (!process.env[constants_1.ENV_IMDS_DISABLED]) {
+      if (!process.env[ENV_IMDS_DISABLED]) {
         try {
-          const endpoint = await (0, credential_provider_imds_1.getInstanceMetadataEndpoint)();
-          return (await (0, credential_provider_imds_1.httpRequest)({ ...endpoint, path: constants_1.IMDS_REGION_PATH })).toString();
+          const { getInstanceMetadataEndpoint, httpRequest } = await Promise.resolve().then(() => __toESM2(require_dist_cjs40()));
+          const endpoint = await getInstanceMetadataEndpoint();
+          return (await httpRequest({ ...endpoint, path: IMDS_REGION_PATH })).toString();
         } catch (e) {
         }
       }
-    };
-  }
-});
-
-// ../../../node_modules/@smithy/util-defaults-mode-node/dist-cjs/index.js
-var require_dist_cjs45 = __commonJS({
-  "../../../node_modules/@smithy/util-defaults-mode-node/dist-cjs/index.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
-    tslib_1.__exportStar(require_resolveDefaultsModeConfig(), exports2);
+    }, "inferPhysicalRegion");
   }
 });
 
@@ -16138,7 +14986,7 @@ var require_runtimeConfig = __commonJS({
 });
 
 // ../../../node_modules/@aws-sdk/region-config-resolver/dist-cjs/extensions/index.js
-var require_extensions5 = __commonJS({
+var require_extensions2 = __commonJS({
   "../../../node_modules/@aws-sdk/region-config-resolver/dist-cjs/extensions/index.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
@@ -16174,7 +15022,7 @@ var require_extensions5 = __commonJS({
 });
 
 // ../../../node_modules/@aws-sdk/region-config-resolver/dist-cjs/regionConfig/config.js
-var require_config4 = __commonJS({
+var require_config = __commonJS({
   "../../../node_modules/@aws-sdk/region-config-resolver/dist-cjs/regionConfig/config.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
@@ -16195,7 +15043,7 @@ var require_config4 = __commonJS({
 });
 
 // ../../../node_modules/@aws-sdk/region-config-resolver/dist-cjs/regionConfig/isFipsRegion.js
-var require_isFipsRegion2 = __commonJS({
+var require_isFipsRegion = __commonJS({
   "../../../node_modules/@aws-sdk/region-config-resolver/dist-cjs/regionConfig/isFipsRegion.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
@@ -16206,25 +15054,25 @@ var require_isFipsRegion2 = __commonJS({
 });
 
 // ../../../node_modules/@aws-sdk/region-config-resolver/dist-cjs/regionConfig/getRealRegion.js
-var require_getRealRegion2 = __commonJS({
+var require_getRealRegion = __commonJS({
   "../../../node_modules/@aws-sdk/region-config-resolver/dist-cjs/regionConfig/getRealRegion.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.getRealRegion = void 0;
-    var isFipsRegion_1 = require_isFipsRegion2();
+    var isFipsRegion_1 = require_isFipsRegion();
     var getRealRegion = (region) => (0, isFipsRegion_1.isFipsRegion)(region) ? ["fips-aws-global", "aws-fips"].includes(region) ? "us-east-1" : region.replace(/fips-(dkr-|prod-)?|-fips/, "") : region;
     exports2.getRealRegion = getRealRegion;
   }
 });
 
 // ../../../node_modules/@aws-sdk/region-config-resolver/dist-cjs/regionConfig/resolveRegionConfig.js
-var require_resolveRegionConfig2 = __commonJS({
+var require_resolveRegionConfig = __commonJS({
   "../../../node_modules/@aws-sdk/region-config-resolver/dist-cjs/regionConfig/resolveRegionConfig.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.resolveRegionConfig = void 0;
-    var getRealRegion_1 = require_getRealRegion2();
-    var isFipsRegion_1 = require_isFipsRegion2();
+    var getRealRegion_1 = require_getRealRegion();
+    var isFipsRegion_1 = require_isFipsRegion();
     var resolveRegionConfig = (input) => {
       const { region, useFipsEndpoint } = input;
       if (!region) {
@@ -16253,13 +15101,13 @@ var require_resolveRegionConfig2 = __commonJS({
 });
 
 // ../../../node_modules/@aws-sdk/region-config-resolver/dist-cjs/regionConfig/index.js
-var require_regionConfig2 = __commonJS({
+var require_regionConfig = __commonJS({
   "../../../node_modules/@aws-sdk/region-config-resolver/dist-cjs/regionConfig/index.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
-    tslib_1.__exportStar(require_config4(), exports2);
-    tslib_1.__exportStar(require_resolveRegionConfig2(), exports2);
+    tslib_1.__exportStar(require_config(), exports2);
+    tslib_1.__exportStar(require_resolveRegionConfig(), exports2);
   }
 });
 
@@ -16269,8 +15117,8 @@ var require_dist_cjs46 = __commonJS({
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
-    tslib_1.__exportStar(require_extensions5(), exports2);
-    tslib_1.__exportStar(require_regionConfig2(), exports2);
+    tslib_1.__exportStar(require_extensions2(), exports2);
+    tslib_1.__exportStar(require_regionConfig(), exports2);
   }
 });
 
@@ -17188,7 +16036,7 @@ var require_ListAccountsPaginator = __commonJS({
 });
 
 // ../../../node_modules/@aws-sdk/client-sso/dist-cjs/pagination/index.js
-var require_pagination3 = __commonJS({
+var require_pagination2 = __commonJS({
   "../../../node_modules/@aws-sdk/client-sso/dist-cjs/pagination/index.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
@@ -17219,7 +16067,7 @@ var require_dist_cjs47 = __commonJS({
     tslib_1.__exportStar(require_SSOClient(), exports2);
     tslib_1.__exportStar(require_SSO(), exports2);
     tslib_1.__exportStar(require_commands(), exports2);
-    tslib_1.__exportStar(require_pagination3(), exports2);
+    tslib_1.__exportStar(require_pagination2(), exports2);
     tslib_1.__exportStar(require_models(), exports2);
     var SSOServiceException_1 = require_SSOServiceException();
     Object.defineProperty(exports2, "SSOServiceException", { enumerable: true, get: function() {
@@ -18136,7 +16984,7 @@ var require_client_sso_oidc_node = __commonJS({
 });
 
 // ../../../node_modules/@aws-sdk/token-providers/dist-cjs/constants.js
-var require_constants8 = __commonJS({
+var require_constants2 = __commonJS({
   "../../../node_modules/@aws-sdk/token-providers/dist-cjs/constants.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
@@ -18194,7 +17042,7 @@ var require_validateTokenExpiry = __commonJS({
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.validateTokenExpiry = void 0;
     var property_provider_1 = require_dist_cjs6();
-    var constants_1 = require_constants8();
+    var constants_1 = require_constants2();
     var validateTokenExpiry = (token) => {
       if (token.expiration && token.expiration.getTime() < Date.now()) {
         throw new property_provider_1.TokenProviderError(`Token is expired. ${constants_1.REFRESH_MESSAGE}`, false);
@@ -18211,7 +17059,7 @@ var require_validateTokenKey = __commonJS({
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.validateTokenKey = void 0;
     var property_provider_1 = require_dist_cjs6();
-    var constants_1 = require_constants8();
+    var constants_1 = require_constants2();
     var validateTokenKey = (key, value, forRefresh = false) => {
       if (typeof value === "undefined") {
         throw new property_provider_1.TokenProviderError(`Value not present for '${key}' in SSO Token${forRefresh ? ". Cannot refresh" : ""}. ${constants_1.REFRESH_MESSAGE}`, false);
@@ -18247,7 +17095,7 @@ var require_fromSso = __commonJS({
     exports2.fromSso = void 0;
     var property_provider_1 = require_dist_cjs6();
     var shared_ini_file_loader_1 = require_dist_cjs23();
-    var constants_1 = require_constants8();
+    var constants_1 = require_constants2();
     var getNewSsoOidcToken_1 = require_getNewSsoOidcToken();
     var validateTokenExpiry_1 = require_validateTokenExpiry();
     var validateTokenKey_1 = require_validateTokenKey();
@@ -18324,7 +17172,7 @@ var require_fromSso = __commonJS({
 });
 
 // ../../../node_modules/@aws-sdk/token-providers/dist-cjs/fromStatic.js
-var require_fromStatic3 = __commonJS({
+var require_fromStatic = __commonJS({
   "../../../node_modules/@aws-sdk/token-providers/dist-cjs/fromStatic.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
@@ -18363,7 +17211,7 @@ var require_dist_cjs48 = __commonJS({
     var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     tslib_1.__exportStar(require_client_sso_oidc_node(), exports2);
     tslib_1.__exportStar(require_fromSso(), exports2);
-    tslib_1.__exportStar(require_fromStatic3(), exports2);
+    tslib_1.__exportStar(require_fromStatic(), exports2);
     tslib_1.__exportStar(require_nodeProvider(), exports2);
   }
 });
@@ -18508,7 +17356,7 @@ var require_fromSSO = __commonJS({
 });
 
 // ../../../node_modules/@aws-sdk/credential-provider-sso/dist-cjs/types.js
-var require_types8 = __commonJS({
+var require_types2 = __commonJS({
   "../../../node_modules/@aws-sdk/credential-provider-sso/dist-cjs/types.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
@@ -18523,7 +17371,7 @@ var require_dist_cjs49 = __commonJS({
     var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     tslib_1.__exportStar(require_fromSSO(), exports2);
     tslib_1.__exportStar(require_isSsoProfile(), exports2);
-    tslib_1.__exportStar(require_types8(), exports2);
+    tslib_1.__exportStar(require_types2(), exports2);
     tslib_1.__exportStar(require_validateSsoProfile(), exports2);
   }
 });
@@ -25137,7 +23985,7 @@ var require_ListStateMachinesPaginator = __commonJS({
 });
 
 // ../../../node_modules/@aws-sdk/client-sfn/dist-cjs/pagination/index.js
-var require_pagination4 = __commonJS({
+var require_pagination3 = __commonJS({
   "../../../node_modules/@aws-sdk/client-sfn/dist-cjs/pagination/index.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
@@ -25171,7 +24019,7 @@ var require_dist_cjs54 = __commonJS({
     tslib_1.__exportStar(require_SFNClient(), exports2);
     tslib_1.__exportStar(require_SFN(), exports2);
     tslib_1.__exportStar(require_commands3(), exports2);
-    tslib_1.__exportStar(require_pagination4(), exports2);
+    tslib_1.__exportStar(require_pagination3(), exports2);
     tslib_1.__exportStar(require_models3(), exports2);
     var SFNServiceException_1 = require_SFNServiceException();
     Object.defineProperty(exports2, "SFNServiceException", { enumerable: true, get: function() {
@@ -31917,7 +30765,7 @@ var init_parameter_types = __esm({
     "use strict";
     zlib = __toESM(require("zlib"));
     typeCoercionStateMachine = () => {
-      const encoded = "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";
+      const encoded = "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";
       const decoded = JSON.parse(zlib.brotliDecompressSync(Buffer.from(encoded, "base64")).toString());
       typeCoercionStateMachine = () => decoded;
       return decoded;
@@ -31954,6 +30802,16 @@ function coerceValueToNumber(x) {
   }
   return x;
 }
+function coerceValueToDate(x) {
+  if (typeof x === "string" || typeof x === "number") {
+    const date = new Date(x);
+    if (isNaN(date.getTime())) {
+      return x;
+    }
+    return date;
+  }
+  return x;
+}
 var Coercer;
 var init_coerce_api_parameters = __esm({
   "../sdk-v2-to-v3-adapter/lib/coerce-api-parameters.ts"() {
@@ -31978,6 +30836,8 @@ var init_coerce_api_parameters = __esm({
             return coerceValueToUint8Array(value);
           case "n":
             return coerceValueToNumber(value);
+          case "d":
+            return coerceValueToDate(value);
         }
         if (Array.isArray(value)) {
           const elState = this.progress("*", state);
@@ -32042,6 +30902,7 @@ var require_sdk_v2_to_v3 = __commonJS({
       autoscaling: "auto-scaling",
       autoscalingplans: "auto-scaling-plans",
       backupgateway: "backup-gateway",
+      bedrockruntime: "bedrock-runtime",
       cur: "cost-and-usage-report-service",
       chimesdkidentity: "chime-sdk-identity",
       chimesdkmediapipelines: "chime-sdk-media-pipelines",
@@ -32105,6 +30966,7 @@ var require_sdk_v2_to_v3 = __commonJS({
       kinesisvideomedia: "kinesis-video-media",
       kinesisvideosignalingchannels: "kinesis-video-signaling",
       kinesisvideowebrtcstorage: "kinesis-video-webrtc-storage",
+      launchwizard: "launch-wizard",
       lexmodelbuildingservice: "lex-model-building-service",
       lexmodelsv2: "lex-models-v2",
       lexruntime: "lex-runtime-service",
@@ -32270,6 +31132,9 @@ var require_sdk_v3_metadata = __commonJS({
       "auto-scaling": {
         iamPrefix: "autoscaling"
       },
+      b2bi: {
+        iamPrefix: "b2bi"
+      },
       "backup-gateway": {
         iamPrefix: "backup-gateway"
       },
@@ -32281,6 +31146,21 @@ var require_sdk_v3_metadata = __commonJS({
       },
       batch: {
         iamPrefix: "batch"
+      },
+      "bcm-data-exports": {
+        iamPrefix: "bcm-data-exports"
+      },
+      "bedrock-agent-runtime": {
+        iamPrefix: "bedrock"
+      },
+      "bedrock-agent": {
+        iamPrefix: "bedrock"
+      },
+      "bedrock-runtime": {
+        iamPrefix: "bedrock"
+      },
+      bedrock: {
+        iamPrefix: "bedrock"
       },
       billingconductor: {
         iamPrefix: "billingconductor"
@@ -32312,6 +31192,9 @@ var require_sdk_v3_metadata = __commonJS({
       cleanrooms: {
         iamPrefix: "cleanrooms"
       },
+      cleanroomsml: {
+        iamPrefix: "cleanrooms-ml"
+      },
       cloud9: {
         iamPrefix: "cloud9"
       },
@@ -32323,6 +31206,9 @@ var require_sdk_v3_metadata = __commonJS({
       },
       cloudformation: {
         iamPrefix: "cloudformation"
+      },
+      "cloudfront-keyvaluestore": {
+        iamPrefix: "cloudfront-keyvaluestore"
       },
       cloudfront: {
         iamPrefix: "cloudfront"
@@ -32433,6 +31319,9 @@ var require_sdk_v3_metadata = __commonJS({
       "cost-explorer": {
         iamPrefix: "ce"
       },
+      "cost-optimization-hub": {
+        iamPrefix: "cost-optimization-hub"
+      },
       "customer-profiles": {
         iamPrefix: "profile"
       },
@@ -32450,6 +31339,9 @@ var require_sdk_v3_metadata = __commonJS({
       },
       datasync: {
         iamPrefix: "datasync"
+      },
+      datazone: {
+        iamPrefix: "datazone"
       },
       dax: {
         iamPrefix: "dax"
@@ -32510,6 +31402,9 @@ var require_sdk_v3_metadata = __commonJS({
       },
       efs: {
         iamPrefix: "elasticfilesystem"
+      },
+      "eks-auth": {
+        iamPrefix: "eks-auth"
       },
       eks: {
         iamPrefix: "eks"
@@ -32577,14 +31472,14 @@ var require_sdk_v3_metadata = __commonJS({
       frauddetector: {
         iamPrefix: "frauddetector"
       },
+      freetier: {
+        iamPrefix: "freetier"
+      },
       fsx: {
         iamPrefix: "fsx"
       },
       gamelift: {
         iamPrefix: "gamelift"
-      },
-      gamesparks: {
-        iamPrefix: "gamesparks"
       },
       glacier: {
         iamPrefix: "glacier"
@@ -32627,6 +31522,9 @@ var require_sdk_v3_metadata = __commonJS({
       },
       imagebuilder: {
         iamPrefix: "imagebuilder"
+      },
+      "inspector-scan": {
+        iamPrefix: "inspector-scan"
       },
       inspector: {
         iamPrefix: "inspector"
@@ -32745,6 +31643,9 @@ var require_sdk_v3_metadata = __commonJS({
       lambda: {
         iamPrefix: "lambda"
       },
+      "launch-wizard": {
+        iamPrefix: "launchwizard"
+      },
       "lex-model-building-service": {
         iamPrefix: "lex"
       },
@@ -32787,9 +31688,6 @@ var require_sdk_v3_metadata = __commonJS({
       "machine-learning": {
         iamPrefix: "machinelearning"
       },
-      macie: {
-        iamPrefix: "macie"
-      },
       macie2: {
         iamPrefix: "macie2"
       },
@@ -32799,11 +31697,17 @@ var require_sdk_v3_metadata = __commonJS({
       managedblockchain: {
         iamPrefix: "managedblockchain"
       },
+      "marketplace-agreement": {
+        iamPrefix: "aws-marketplace"
+      },
       "marketplace-catalog": {
         iamPrefix: "aws-marketplace"
       },
       "marketplace-commerce-analytics": {
         iamPrefix: "marketplacecommerceanalytics"
+      },
+      "marketplace-deployment": {
+        iamPrefix: "aws-marketplace"
       },
       "marketplace-entitlement-service": {
         iamPrefix: "aws-marketplace"
@@ -32874,6 +31778,9 @@ var require_sdk_v3_metadata = __commonJS({
       mwaa: {
         iamPrefix: "airflow"
       },
+      "neptune-graph": {
+        iamPrefix: "neptune-graph"
+      },
       neptune: {
         iamPrefix: "rds"
       },
@@ -32885,6 +31792,9 @@ var require_sdk_v3_metadata = __commonJS({
       },
       networkmanager: {
         iamPrefix: "networkmanager"
+      },
+      networkmonitor: {
+        iamPrefix: "networkmonitor"
       },
       nimble: {
         iamPrefix: "nimble"
@@ -32967,6 +31877,12 @@ var require_sdk_v3_metadata = __commonJS({
       proton: {
         iamPrefix: "proton"
       },
+      qbusiness: {
+        iamPrefix: "qbusiness"
+      },
+      qconnect: {
+        iamPrefix: "wisdom"
+      },
       "qldb-session": {
         iamPrefix: "qldb",
         commands: [
@@ -33005,6 +31921,9 @@ var require_sdk_v3_metadata = __commonJS({
       },
       rekognitionstreaming: {
         iamPrefix: "rekognition"
+      },
+      repostspace: {
+        iamPrefix: "repostspace"
       },
       resiliencehub: {
         iamPrefix: "resiliencehub"
@@ -33161,7 +32080,7 @@ var require_sdk_v3_metadata = __commonJS({
         iamPrefix: "sso"
       },
       "sso-oidc": {
-        iamPrefix: "awsssooidc"
+        iamPrefix: "sso-oauth"
       },
       sso: {
         iamPrefix: "awsssoportal"
@@ -33171,6 +32090,9 @@ var require_sdk_v3_metadata = __commonJS({
       },
       sts: {
         iamPrefix: "sts"
+      },
+      supplychain: {
+        iamPrefix: "scn"
       },
       "support-app": {
         iamPrefix: "supportapp"
@@ -33208,6 +32130,9 @@ var require_sdk_v3_metadata = __commonJS({
       translate: {
         iamPrefix: "translate"
       },
+      trustedadvisor: {
+        iamPrefix: "trustedadvisor"
+      },
       verifiedpermissions: {
         iamPrefix: "verifiedpermissions"
       },
@@ -33243,6 +32168,9 @@ var require_sdk_v3_metadata = __commonJS({
       },
       workmailmessageflow: {
         iamPrefix: "workmailmessageflow"
+      },
+      "workspaces-thin-client": {
+        iamPrefix: "thinclient"
       },
       "workspaces-web": {
         iamPrefix: "workspaces-web"

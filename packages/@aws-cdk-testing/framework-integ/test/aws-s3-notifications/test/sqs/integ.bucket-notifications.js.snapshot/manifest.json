@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e2c7344db2dc1c217796ad3be9c2142d61ff0013678470f520369be0ab2fae68.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/1c5aca83ff701fa5fd29bd490508c69fb5c00d30c02231aebc3aa33f57f87acf.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -80,6 +80,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "Bucket25524B414"
+          }
+        ],
+        "/sqs-bucket-notifications/Bucket2/auto-deletion-log-group/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Bucket2autodeletionloggroup2975EB8E"
           }
         ],
         "/sqs-bucket-notifications/Bucket2/Policy/Resource": [
@@ -174,7 +180,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/add9c9ae94a30c6b88e1648f7467b2cc40603b5608d452bf68ee6dba187a3e0e.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/afc0c1d6048534c88c0d7fee5a9970548aeb63ad0a48c7adeb6c9b8b55f5e35e.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
