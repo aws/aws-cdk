@@ -404,6 +404,14 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
+  "SourceBucketautodeletionloggroupBB33C125": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "RetentionInDays": 90
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
   "SourceBucketPolicy703DFBF9": {
    "Type": "AWS::S3::BucketPolicy",
    "Properties": {
@@ -494,6 +502,21 @@
      {
       "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
      }
+    ],
+    "Policies": [
+     {
+      "PolicyName": "Inline",
+      "PolicyDocument": {
+       "Version": "2012-10-17",
+       "Statement": [
+        {
+         "Effect": "Deny",
+         "Action": "logs:CreateLogGroup",
+         "Resource": "*"
+        }
+       ]
+      }
+     }
     ]
    }
   },
@@ -509,6 +532,11 @@
     "Timeout": 900,
     "MemorySize": 128,
     "Handler": "index.handler",
+    "LoggingConfig": {
+     "LogGroup": {
+      "Ref": "SourceBucketautodeletionloggroupBB33C125"
+     }
+    },
     "Role": {
      "Fn::GetAtt": [
       "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092",
