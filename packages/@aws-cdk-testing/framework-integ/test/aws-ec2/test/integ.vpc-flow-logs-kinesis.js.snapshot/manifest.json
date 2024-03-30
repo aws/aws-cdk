@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/15ab7a43930076b3ba30441a3ad30e2430af8728118f471662ebc91250727922.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/d8f49464ea7f7d82ef247f7e9e1ace0f7be5d6fb9e4df7e66bf2e55fa95fea7a.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -212,6 +212,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "Bucket83908E77"
+          }
+        ],
+        "/FlowLogsTestStack/Bucket/auto-deletion-log-group/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BucketautodeletionloggroupAE7EF139"
           }
         ],
         "/FlowLogsTestStack/Bucket/Policy/Resource": [
