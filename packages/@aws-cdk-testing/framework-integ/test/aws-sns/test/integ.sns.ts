@@ -40,6 +40,12 @@ class SNSInteg extends Stack {
       successFeedbackRole: feedbackRole,
       successFeedbackSampleRate: 50,
     });
+
+    new Topic(this, 'MyTopicSignatureVersion', {
+      topicName: 'fooTopicSignatureVersion',
+      displayName: 'fooDisplayNameSignatureVersion',
+      signatureVersion: '2',
+    });
   }
 }
 
