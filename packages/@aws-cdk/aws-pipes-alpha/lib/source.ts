@@ -99,11 +99,6 @@ export interface ISource {
    * Grant the pipe role read access to the source.
    */
   grantRead(grantee: IRole): void;
-
-  /**
-   * Grant the pipe role write access to the dead-letter target.
-   */
-  grantDlqPush?(grantee: IRole): void;
 }
 
 /**
