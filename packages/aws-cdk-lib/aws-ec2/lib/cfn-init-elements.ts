@@ -1125,14 +1125,15 @@ export interface SystemdConfigFileOptions {
   readonly afterNetwork?: boolean;
 
   /**
-   * Include environment variables when process is running
+   * Environment variables to load when the process is running.
    *
    * @default - No environment variables set
    */
   readonly environmentVariables?: Record<string, string>;
 
   /**
-   * Include file to load environment variables from when process is running
+   * Loads environment variables from files when the process is running.
+   * Must use absolute paths.
    *
    * @default - No environment files
    */
