@@ -5,8 +5,9 @@ import { Construct } from 'constructs';
 import { IEnrichment } from './enrichment';
 import { IFilter } from './filter';
 import { ILogDestination, IncludeExecutionData, LogLevel } from './logs';
-import { ISource } from './source';
+import { ISource, SourceWithDlq } from './source';
 import { ITarget } from './target';
+import { Source } from 'aws-cdk-lib/aws-codebuild';
 
 /**
  * Interface representing a created or an imported `Pipe`.
@@ -233,7 +234,7 @@ export class Pipe extends PipeBase {
      */
     const source = props.source.bind(this);
     props.source.grantRead(this.pipeRole);
-    if (props.source.grantDlqPush) {
+    if (props.source instanceof SourceWithDlq) {
       props.source.grantDlqPush(this.pipeRole);
     }
 
