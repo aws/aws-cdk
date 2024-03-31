@@ -411,27 +411,32 @@ export class ReplicationConfiguration {
    */
   public readonly availabilityZone?: string;
 
-  constructor(props: ReplicationConfiguration) {
-    if (props.availabilityZone && !Token.isUnresolved(props.availabilityZone) && !props.region) {
+  constructor(options: {
+    destinationFileSystem?: IFileSystem;
+    kmsKey?: kms.IKey;
+    region?: string;
+    availabilityZone?: string;
+  } = {}) {
+    if (options.availabilityZone && !Token.isUnresolved(options.availabilityZone) && !options.region) {
       throw new Error('\'replicationConfiguration.availabilityZone\' cannot be specified without \'replicationConfiguration.region\'');
     }
 
-    if (!props.destinationFileSystem && !props.region) {
+    if (!options.destinationFileSystem && !options.region) {
       throw new Error('\'replicationConfiguration.region\' or \'replicationConfiguration.destinationFileSystem\' is required');
     }
 
-    if (props.destinationFileSystem && (props.region || props.availabilityZone || props.kmsKey)) {
+    if (options.destinationFileSystem && (options.region || options.availabilityZone || options.kmsKey)) {
       throw new Error('Cannot configure \'replicationConfiguration.region\', \'replicationConfiguration.availabilityZone\' or \'replicationConfiguration.kmsKey\' when \'replicationConfiguration.destinationFileSystem\' is set');
     }
 
-    if (props.region && !Token.isUnresolved(props.region) && !/^[a-z]{2}-((iso[a-z]{0,1}-)|(gov-)){0,1}[a-z]+-{0,1}[0-9]{0,1}$/.test(props.region)) {
+    if (options.region && !Token.isUnresolved(options.region) && !/^[a-z]{2}-((iso[a-z]{0,1}-)|(gov-)){0,1}[a-z]+-{0,1}[0-9]{0,1}$/.test(options.region)) {
       throw new Error('\'replicationConfiguration.region\' is invalid.');
     }
 
-    this.destinationFileSystem = props.destinationFileSystem;
-    this.kmsKey = props.kmsKey;
-    this.region = props.region;
-    this.availabilityZone = props.availabilityZone;
+    this.destinationFileSystem = options.destinationFileSystem;
+    this.kmsKey = options.kmsKey;
+    this.region = options.region;
+    this.availabilityZone = options.availabilityZone;
   }
 }
 
