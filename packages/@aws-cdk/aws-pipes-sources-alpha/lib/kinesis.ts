@@ -1,13 +1,9 @@
 import { IPipe, SourceConfig, SourceWithDlq } from '@aws-cdk/aws-pipes-alpha';
 import { IRole } from 'aws-cdk-lib/aws-iam';
 import { IStream } from 'aws-cdk-lib/aws-kinesis';
-import { ITopic } from 'aws-cdk-lib/aws-sns';
-import { IQueue } from 'aws-cdk-lib/aws-sqs';
 import { KinesisStartingPosition } from './enums';
 import {
   StreamSourceParameters,
-  getDeadLetterTargetArn,
-  grantDlqPush,
   validateBatchSize,
   validateMaximumBatchingWindow,
   validateMaximumRecordAge,
@@ -44,14 +40,12 @@ export interface KinesisSourceParameters extends StreamSourceParameters {
 export class KinesisSource extends SourceWithDlq {
   private readonly stream: IStream;
   private sourceParameters;
-  private deadLetterTarget?: IQueue | ITopic;
 
   constructor(stream: IStream, parameters: KinesisSourceParameters) {
-    super(stream.streamArn, getDeadLetterTargetArn(parameters.deadLetterTarget));
+    super(stream.streamArn, parameters.deadLetterTarget);
 
     this.stream = stream;
     this.sourceParameters = parameters;
-    this.deadLetterTarget = this.sourceParameters.deadLetterTarget;
 
     validateBatchSize(this.sourceParameters.batchSize);
     validateMaximumBatchingWindow(this.sourceParameters.maximumBatchingWindow?.toSeconds());
@@ -84,9 +78,5 @@ export class KinesisSource extends SourceWithDlq {
 
   grantRead(grantee: IRole): void {
     this.stream.grantRead(grantee);
-  }
-
-  grantDlqPush(grantee: IRole): void {
-    grantDlqPush(grantee, this.deadLetterTarget);
   }
 }

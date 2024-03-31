@@ -1,6 +1,9 @@
 import { IRole } from 'aws-cdk-lib/aws-iam';
 import { CfnPipe } from 'aws-cdk-lib/aws-pipes';
 import { IPipe } from './pipe';
+import { ITopic, Topic } from 'aws-cdk-lib/aws-sns';
+import { IQueue, Queue } from 'aws-cdk-lib/aws-sqs';
+
 /**
  * Source properties.
  *
@@ -105,19 +108,37 @@ export interface ISource {
  * Source interface with dead-letter target
  */
 interface ISourceWithDlq extends ISource {
-  grantDlqPush(grantee: IRole): void;
+  grantDlqPush(grantee: IRole, deadLetterTarget?: IQueue | ITopic): void;
 }
 
 export abstract class SourceWithDlq implements ISourceWithDlq {
   readonly sourceArn: string;
+  readonly deadLetterTarget?: IQueue | ITopic;
   readonly deadLetterTargetArn?: string;
 
-  constructor(sourceArn: string, deadLetterTargetArn?: string) {
+  constructor(sourceArn: string, deadLetterTarget?: IQueue | ITopic) {
     this.sourceArn = sourceArn;
-    this.deadLetterTargetArn = deadLetterTargetArn;
+    this.deadLetterTarget = deadLetterTarget;
+    this.deadLetterTargetArn = this.getDeadLetterTargetArn(deadLetterTarget);
   }
 
   abstract bind(pipe: IPipe): SourceConfig;
   abstract grantRead(grantee: IRole): void;
-  abstract grantDlqPush(grantee: IRole): void;
+
+  public grantDlqPush(grantee: IRole, deadLetterTarget?: IQueue | ITopic) {
+    if (deadLetterTarget instanceof Queue) {
+      deadLetterTarget.grantSendMessages(grantee);
+    } else if (deadLetterTarget instanceof Topic) {
+      deadLetterTarget.grantPublish(grantee);
+    }
+  }
+
+  protected getDeadLetterTargetArn(dlq?: IQueue | ITopic): string | undefined {
+    if (dlq instanceof Queue) {
+      return dlq.queueArn;
+    } else if (dlq instanceof Topic) {
+      return dlq.topicArn;
+    }
+    return undefined;
+  }
 }

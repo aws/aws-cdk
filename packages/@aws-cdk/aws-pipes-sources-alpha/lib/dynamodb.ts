@@ -1,13 +1,9 @@
 import { IPipe, SourceConfig, SourceWithDlq } from '@aws-cdk/aws-pipes-alpha';
 import { ITableV2 } from 'aws-cdk-lib/aws-dynamodb';
 import { IRole } from 'aws-cdk-lib/aws-iam';
-import { ITopic } from 'aws-cdk-lib/aws-sns';
-import { IQueue } from 'aws-cdk-lib/aws-sqs';
 import { DynamoDBStartingPosition } from './enums';
 import {
   StreamSourceParameters,
-  grantDlqPush,
-  getDeadLetterTargetArn,
   validateBatchSize,
   validateMaximumBatchingWindow,
   validateMaximumRecordAge,
@@ -33,18 +29,16 @@ export interface DynamoDBSourceParameters extends StreamSourceParameters {
 export class DynamoDBSource extends SourceWithDlq {
   private readonly table: ITableV2;
   private sourceParameters: DynamoDBSourceParameters;
-  private deadLetterTarget?: IQueue | ITopic;
 
   constructor(table: ITableV2, parameters: DynamoDBSourceParameters) {
     if (table.tableStreamArn === undefined) {
       throw new Error('Table does not have a stream defined, cannot create pipes source');
     }
 
-    super(table.tableStreamArn, getDeadLetterTargetArn(parameters.deadLetterTarget));
+    super(table.tableStreamArn, parameters.deadLetterTarget);
 
     this.table = table;
     this.sourceParameters = parameters;
-    this.deadLetterTarget = this.sourceParameters.deadLetterTarget;
 
     validateBatchSize(this.sourceParameters.batchSize);
     validateMaximumBatchingWindow(this.sourceParameters.maximumBatchingWindow?.toSeconds());
@@ -72,9 +66,5 @@ export class DynamoDBSource extends SourceWithDlq {
 
   grantRead(grantee: IRole): void {
     this.table.grantStreamRead(grantee);
-  }
-
-  grantDlqPush(grantee: IRole): void {
-    grantDlqPush(grantee, this.deadLetterTarget);
   }
 }
