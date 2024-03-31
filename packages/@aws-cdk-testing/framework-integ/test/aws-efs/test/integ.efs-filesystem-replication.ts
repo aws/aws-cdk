@@ -18,11 +18,7 @@ const kmsKey = new kms.Key(stack, 'Key', {
 new efs.FileSystem(stack, 'oneZoneReplicationFileSystem', {
   vpc,
   removalPolicy: cdk.RemovalPolicy.DESTROY,
-  replicationConfiguration: {
-    kmsKey,
-    region: 'us-east-1',
-    availabilityZone: 'us-east-1a',
-  },
+  replicationConfiguration: efs.ReplicationConfiguration.oneZoneFileSystem('us-east-1', 'us-east-1a', kmsKey),
 });
 
 const destination = new efs.FileSystem(stack, 'destinationFileSystem', {
@@ -34,12 +30,9 @@ const destination = new efs.FileSystem(stack, 'destinationFileSystem', {
 new efs.FileSystem(stack, 'existFileSystemReplication', {
   vpc,
   removalPolicy: cdk.RemovalPolicy.DESTROY,
-  replicationConfiguration: {
-    destinationFileSystem: destination,
-  },
+  replicationConfiguration: efs.ReplicationConfiguration.destinationFileSystem(destination),
 });
 
 new integ.IntegTest(app, 'efsReplicationIntegTest', {
   testCases: [stack],
 });
-app.synth();
