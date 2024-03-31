@@ -125,6 +125,9 @@ export abstract class SourceWithDlq implements ISource {
   abstract bind(pipe: IPipe): SourceConfig;
   abstract grantRead(grantee: IRole): void;
 
+  /**
+   * Grants the pipe role permission to publish to the dead-letter target.
+   */
   public grantDlqPush(grantee: IRole, deadLetterTarget?: IQueue | ITopic) {
     if (deadLetterTarget instanceof Queue) {
       deadLetterTarget.grantSendMessages(grantee);
