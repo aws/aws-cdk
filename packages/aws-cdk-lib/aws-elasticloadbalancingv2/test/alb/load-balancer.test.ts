@@ -2,6 +2,7 @@ import { Construct } from 'constructs';
 import { Match, Template } from '../../../assertions';
 import { Metric } from '../../../aws-cloudwatch';
 import * as ec2 from '../../../aws-ec2';
+import { Key } from '../../../aws-kms';
 import * as s3 from '../../../aws-s3';
 import * as cdk from '../../../core';
 import * as elbv2 from '../../lib';
@@ -309,11 +310,16 @@ describe('tests', () => {
       }
     }
 
-    function loggingSetup(): { stack: cdk.Stack; bucket: s3.Bucket; lb: elbv2.ApplicationLoadBalancer } {
+    function loggingSetup(withEncryption: boolean = false ): { stack: cdk.Stack; bucket: s3.Bucket; lb: elbv2.ApplicationLoadBalancer } {
       const app = new cdk.App();
       const stack = new cdk.Stack(app, undefined, { env: { region: 'us-east-1' } });
       const vpc = new ec2.Vpc(stack, 'Stack');
-      const bucket = new s3.Bucket(stack, 'AccessLoggingBucket');
+      let bucketProps = {};
+      if (withEncryption) {
+        const kmsKey = new Key(stack, 'TestKMSKey');
+        bucketProps = { ...bucketProps, encryption: s3.BucketEncryption.KMS, encyptionKey: kmsKey };
+      }
+      const bucket = new s3.Bucket(stack, 'AccessLogBucket', { ...bucketProps });
       const lb = new elbv2.ApplicationLoadBalancer(stack, 'LB', { vpc });
       return { stack, bucket, lb };
     }
@@ -334,7 +340,7 @@ describe('tests', () => {
           },
           {
             Key: 'access_logs.s3.bucket',
-            Value: { Ref: 'AccessLoggingBucketA6D88F29' },
+            Value: { Ref: 'AccessLogBucketDA470295' },
           },
           {
             Key: 'access_logs.s3.prefix',
@@ -354,7 +360,7 @@ describe('tests', () => {
       // THEN
       // verify the ALB depends on the bucket policy
       Template.fromStack(stack).hasResource('AWS::ElasticLoadBalancingV2::LoadBalancer', {
-        DependsOn: ['AccessLoggingBucketPolicy700D7CC6'],
+        DependsOn: ['AccessLogBucketPolicyF52D2D01'],
       });
     });
 
@@ -376,7 +382,7 @@ describe('tests', () => {
               Effect: 'Allow',
               Principal: { AWS: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::127311923021:root']] } },
               Resource: {
-                'Fn::Join': ['', [{ 'Fn::GetAtt': ['AccessLoggingBucketA6D88F29', 'Arn'] }, '/AWSLogs/',
+                'Fn::Join': ['', [{ 'Fn::GetAtt': ['AccessLogBucketDA470295', 'Arn'] }, '/AWSLogs/',
                   { Ref: 'AWS::AccountId' }, '/*']],
               },
             },
@@ -385,7 +391,7 @@ describe('tests', () => {
               Effect: 'Allow',
               Principal: { Service: 'delivery.logs.amazonaws.com' },
               Resource: {
-                'Fn::Join': ['', [{ 'Fn::GetAtt': ['AccessLoggingBucketA6D88F29', 'Arn'] }, '/AWSLogs/',
+                'Fn::Join': ['', [{ 'Fn::GetAtt': ['AccessLogBucketDA470295', 'Arn'] }, '/AWSLogs/',
                   { Ref: 'AWS::AccountId' }, '/*']],
               },
               Condition: { StringEquals: { 's3:x-amz-acl': 'bucket-owner-full-control' } },
@@ -395,7 +401,7 @@ describe('tests', () => {
               Effect: 'Allow',
               Principal: { Service: 'delivery.logs.amazonaws.com' },
               Resource: {
-                'Fn::GetAtt': ['AccessLoggingBucketA6D88F29', 'Arn'],
+                'Fn::GetAtt': ['AccessLogBucketDA470295', 'Arn'],
               },
             },
           ],
@@ -420,7 +426,7 @@ describe('tests', () => {
           },
           {
             Key: 'access_logs.s3.bucket',
-            Value: { Ref: 'AccessLoggingBucketA6D88F29' },
+            Value: { Ref: 'AccessLogBucketDA470295' },
           },
           {
             Key: 'access_logs.s3.prefix',
@@ -439,7 +445,7 @@ describe('tests', () => {
               Effect: 'Allow',
               Principal: { AWS: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::127311923021:root']] } },
               Resource: {
-                'Fn::Join': ['', [{ 'Fn::GetAtt': ['AccessLoggingBucketA6D88F29', 'Arn'] }, '/prefix-of-access-logs/AWSLogs/',
+                'Fn::Join': ['', [{ 'Fn::GetAtt': ['AccessLogBucketDA470295', 'Arn'] }, '/prefix-of-access-logs/AWSLogs/',
                   { Ref: 'AWS::AccountId' }, '/*']],
               },
             },
@@ -448,7 +454,7 @@ describe('tests', () => {
               Effect: 'Allow',
               Principal: { Service: 'delivery.logs.amazonaws.com' },
               Resource: {
-                'Fn::Join': ['', [{ 'Fn::GetAtt': ['AccessLoggingBucketA6D88F29', 'Arn'] }, '/prefix-of-access-logs/AWSLogs/',
+                'Fn::Join': ['', [{ 'Fn::GetAtt': ['AccessLogBucketDA470295', 'Arn'] }, '/prefix-of-access-logs/AWSLogs/',
                   { Ref: 'AWS::AccountId' }, '/*']],
               },
               Condition: { StringEquals: { 's3:x-amz-acl': 'bucket-owner-full-control' } },
@@ -458,12 +464,25 @@ describe('tests', () => {
               Effect: 'Allow',
               Principal: { Service: 'delivery.logs.amazonaws.com' },
               Resource: {
-                'Fn::GetAtt': ['AccessLoggingBucketA6D88F29', 'Arn'],
+                'Fn::GetAtt': ['AccessLogBucketDA470295', 'Arn'],
               },
             },
           ],
         },
       });
+    });
+
+    test('bucket with KMS throws validation error', () => {
+      //GIVEN
+      const { stack, bucket, lb } = loggingSetup(true);
+
+      // WHEN
+      const logAccessLogFunctionTest = () => lb.logAccessLogs(bucket);
+
+      // THEN
+      // verify failure in case the access log bucket is encrypted with KMS
+      expect(logAccessLogFunctionTest).toThrow('Encryption key detected. Bucket encryption using KMS keys is unsupported');
+
     });
 
     test('access logging on imported bucket', () => {

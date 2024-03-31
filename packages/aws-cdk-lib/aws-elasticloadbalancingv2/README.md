@@ -249,6 +249,24 @@ const lb = new elbv2.ApplicationLoadBalancer(this, 'LB', {
 
 For more information, see [Load balancer attributes](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/application-load-balancers.html#load-balancer-attributes)
 
+### Setting up Access Log Bucket on Application Load Balancer
+
+The only server-side encryption option that's supported is Amazon S3-managed keys (SSE-S3). For more information
+Documentation: https://docs.aws.amazon.com/elasticloadbalancing/latest/application/enable-access-logging.html
+
+```ts 
+
+declare const vpc: ec2.Vpc;
+
+const bucket = new s3.Bucket(this, 'ALBAccessLogsBucket',{ 
+  encryption: s3.BucketEncryption.S3_MANAGED,
+  });
+
+const lb = new elbv2.ApplicationLoadBalancer(this, 'LB', { vpc });
+lb.logAccessLogs(bucket);
+
+```
+
 ## Defining a Network Load Balancer
 
 Network Load Balancers are defined in a similar way to Application Load
