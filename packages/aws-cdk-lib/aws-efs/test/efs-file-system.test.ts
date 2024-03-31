@@ -988,7 +988,7 @@ describe('replication configuration', () => {
     });
     new FileSystem(stack, 'EfsFileSystem', {
       vpc,
-      replicationConfiguration: ReplicationConfiguration.destinationFileSystem(destination),
+      replicationConfiguration: ReplicationConfiguration.existingFileSystem(destination),
     });
 
     // THEN

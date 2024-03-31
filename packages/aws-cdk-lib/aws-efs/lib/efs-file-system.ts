@@ -363,7 +363,7 @@ export class ReplicationConfiguration {
    *
    * @param destinationFileSystem The existing destination file system for the replication
    */
-  public static destinationFileSystem(destinationFileSystem: IFileSystem): ReplicationConfiguration {
+  public static existingFileSystem(destinationFileSystem: IFileSystem): ReplicationConfiguration {
     return new ReplicationConfiguration({ destinationFileSystem });
   }
 

@@ -30,7 +30,7 @@ const destination = new efs.FileSystem(stack, 'destinationFileSystem', {
 new efs.FileSystem(stack, 'existFileSystemReplication', {
   vpc,
   removalPolicy: cdk.RemovalPolicy.DESTROY,
-  replicationConfiguration: efs.ReplicationConfiguration.destinationFileSystem(destination),
+  replicationConfiguration: efs.ReplicationConfiguration.existingFileSystem(destination),
 });
 
 new integ.IntegTest(app, 'efsReplicationIntegTest', {
