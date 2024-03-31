@@ -49,6 +49,7 @@ describe('AwsWebSocketIntegration', () => {
           timeout: Duration.seconds(10),
           responses: [{ responseKey: WebSocketIntegrationResponseKey.success }],
         }),
+        returnResponse: true,
       },
     });
 

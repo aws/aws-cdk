@@ -66,6 +66,7 @@ describe('LambdaWebSocketIntegration', () => {
             responses: [{ responseKey: WebSocketIntegrationResponseKey.success }],
           },
         ),
+        returnResponse: true,
       },
     });
 
