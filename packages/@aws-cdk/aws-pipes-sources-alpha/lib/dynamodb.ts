@@ -22,6 +22,7 @@ export interface DynamoDBSourceParameters extends StreamSourceParameters {
 export class DynamoDBSource extends StreamSource {
   private readonly table: ITableV2;
   private readonly startingPosition: DynamoDBStartingPosition;
+  private readonly deadLetterTargetArn?: string;
 
   constructor(table: ITableV2, parameters: DynamoDBSourceParameters) {
     if (table.tableStreamArn === undefined) {
@@ -31,6 +32,7 @@ export class DynamoDBSource extends StreamSource {
     super(table.tableStreamArn, parameters);
     this.table = table;
     this.startingPosition = parameters.startingPosition;
+    this.deadLetterTargetArn = this.getDeadLetterTargetArn(this.deadLetterTarget);
   }
 
   bind(_pipe: IPipe): SourceConfig {

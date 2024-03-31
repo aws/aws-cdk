@@ -104,15 +104,22 @@ export interface ISource {
   grantRead(grantee: IRole): void;
 }
 
+/**
+ * Sources that support a dead-letter target
+ */
 export abstract class SourceWithDlq implements ISource {
+  /**
+   * The ARN of the source resource.
+   */
   readonly sourceArn: string;
+  /**
+   * The dead-letter SQS queue or SNS topic.
+   */
   readonly deadLetterTarget?: IQueue | ITopic;
-  readonly deadLetterTargetArn?: string;
 
   constructor(sourceArn: string, deadLetterTarget?: IQueue | ITopic) {
     this.sourceArn = sourceArn;
     this.deadLetterTarget = deadLetterTarget;
-    this.deadLetterTargetArn = this.getDeadLetterTargetArn(deadLetterTarget);
   }
 
   abstract bind(pipe: IPipe): SourceConfig;

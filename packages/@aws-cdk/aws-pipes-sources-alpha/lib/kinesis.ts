@@ -34,12 +34,14 @@ export class KinesisSource extends StreamSource {
   private readonly stream: IStream;
   private readonly startingPosition: KinesisStartingPosition;
   private readonly startingPositionTimestamp?: string;
+  private readonly deadLetterTargetArn?: string;
 
   constructor(stream: IStream, parameters: KinesisSourceParameters) {
     super(stream.streamArn, parameters);
     this.stream = stream;
     this.startingPosition = parameters.startingPosition;
     this.startingPositionTimestamp = parameters.startingPositionTimestamp;
+    this.deadLetterTargetArn = this.getDeadLetterTargetArn(this.deadLetterTarget);
 
     if (this.startingPositionTimestamp && this.startingPosition !== KinesisStartingPosition.AT_TIMESTAMP) {
       throw new Error(`Timestamp only valid with StartingPosition AT_TIMESTAMP for Kinesis streams, received ${this.startingPosition}`);
