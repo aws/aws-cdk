@@ -119,11 +119,11 @@ export async function isHotswappableEcsServiceChange(
 
         // Step 3 - wait for the service deployments triggered in Step 2 to finish
         // configure a custom Waiter
-        (sdk.ecs() as any).api.waiters.deploymentToFinish = {
-          name: 'DeploymentToFinish',
+        (sdk.ecs() as any).api.waiters.deploymentCompleted = {
+          name: 'DeploymentCompleted',
           operation: 'describeServices',
-          delay: 10,
-          maxAttempts: 60,
+          delay: 6,
+          maxAttempts: 100,
           acceptors: [
             {
               matcher: 'pathAny',
@@ -143,16 +143,26 @@ export async function isHotswappableEcsServiceChange(
               expected: 'INACTIVE',
               state: 'failure',
             },
+
+            // failure if any services report a deployment with status FAILED
             {
               matcher: 'path',
-              argument: "length(services[].deployments[? status == 'PRIMARY' && runningCount < desiredCount][]) == `0`",
+              argument: "length(services[].deployments[? rolloutState == 'FAILED'][]) > `0`",
+              expected: true,
+              state: 'failure',
+            },
+
+            // wait for all services to report only a single deployment
+            {
+              matcher: 'path',
+              argument: 'length(services[? length(deployments) > `1`]) == `0`',
               expected: true,
               state: 'success',
             },
           ],
         };
-        // create a custom Waiter that uses the deploymentToFinish configuration added above
-        const deploymentWaiter = new (AWS as any).ResourceWaiter(sdk.ecs(), 'deploymentToFinish');
+        // create a custom Waiter that uses the deploymentCompleted configuration added above
+        const deploymentWaiter = new (AWS as any).ResourceWaiter(sdk.ecs(), 'deploymentCompleted');
         // wait for all of the waiters to finish
         await Promise.all(Object.entries(servicePerClusterUpdates).map(([clusterName, serviceUpdates]) => {
           return deploymentWaiter.wait({
