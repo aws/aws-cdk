@@ -5,7 +5,6 @@ import {
   WebSocketRouteIntegrationBindOptions,
   PassthroughBehavior,
   ContentHandling,
-  WebSocketIntegrationResponse,
   WebSocketIntegrationResponseProps,
 } from '../../../aws-apigatewayv2';
 import { IRole } from '../../../aws-iam';
