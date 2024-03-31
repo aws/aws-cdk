@@ -1,10 +1,8 @@
 import {
-  WebSocketRouteIntegration,
   WebSocketIntegrationType,
   WebSocketRouteIntegrationBindOptions,
   WebSocketRouteIntegrationConfig,
   ContentHandling,
-  WebSocketIntegrationResponse,
   WebSocketIntegrationResponseProps,
   WebSocketTwoWayRouteIntegration,
 } from '../../../aws-apigatewayv2';
