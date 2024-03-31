@@ -1,3 +1,4 @@
+import { SourceWithDlq } from '@aws-cdk/aws-pipes-alpha';
 import { Duration } from 'aws-cdk-lib';
 import { ITopic } from 'aws-cdk-lib/aws-sns';
 import { IQueue } from 'aws-cdk-lib/aws-sqs';
@@ -76,7 +77,24 @@ export interface StreamSourceParameters {
   readonly parallelizationFactor?: number;
 }
 
-export function validateBatchSize(batchSize?: number) {
+export abstract class StreamSource extends SourceWithDlq {
+  readonly sourceArn: string;
+  readonly sourceParameters: StreamSourceParameters;
+
+  constructor(sourceArn: string, sourceParameters: StreamSourceParameters) {
+    super(sourceArn, sourceParameters.deadLetterTarget);
+    this.sourceArn = sourceArn;
+    this.sourceParameters = sourceParameters;
+
+    validateBatchSize(this.sourceParameters.batchSize);
+    validateMaximumBatchingWindow(this.sourceParameters.maximumBatchingWindow?.toSeconds());
+    validateMaximumRecordAge(this.sourceParameters.maximumRecordAge?.toSeconds());
+    validateMaxiumRetryAttemps(this.sourceParameters.maximumRetryAttempts);
+    validateParallelizationFactor(this.sourceParameters.parallelizationFactor);
+  }
+}
+
+function validateBatchSize(batchSize?: number) {
   if (batchSize !== undefined) {
     if (batchSize < 1 || batchSize > 10000) {
       throw new Error(`Batch size must be between 1 and 10000, received ${batchSize}`);
@@ -84,7 +102,7 @@ export function validateBatchSize(batchSize?: number) {
   }
 }
 
-export function validateMaximumBatchingWindow(window?: number) {
+function validateMaximumBatchingWindow(window?: number) {
   if (window !== undefined) {
     // only need to check upper bound since Duration amounts cannot be negative
     if (window > 300) {
@@ -93,7 +111,7 @@ export function validateMaximumBatchingWindow(window?: number) {
   }
 }
 
-export function validateMaximumRecordAge(age?: number) {
+function validateMaximumRecordAge(age?: number) {
   if (age !== undefined) {
     if (age < 60 || age > 604800) {
       throw new Error(`Maximum record age in seconds must be between 60 and 604800 (leave undefined for infinite), received ${age}`);
@@ -101,7 +119,7 @@ export function validateMaximumRecordAge(age?: number) {
   }
 }
 
-export function validateMaxiumRetryAttemps(attempts?: number) {
+function validateMaxiumRetryAttemps(attempts?: number) {
   if (attempts !== undefined) {
     if (attempts < -1 || attempts > 10000) {
       throw new Error(`Maximum retry attempts must be between -1 and 10000, received ${attempts}`);
@@ -109,11 +127,10 @@ export function validateMaxiumRetryAttemps(attempts?: number) {
   }
 }
 
-export function validateParallelizationFactor(factor?: number) {
+function validateParallelizationFactor(factor?: number) {
   if (factor !== undefined) {
     if (factor < 1 || factor > 10) {
       throw new Error(`Parallelization factor must be between 1 and 10, received ${factor}`);
     }
   }
 }
-

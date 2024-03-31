@@ -1,15 +1,8 @@
-import { IPipe, SourceConfig, SourceWithDlq } from '@aws-cdk/aws-pipes-alpha';
+import { IPipe, SourceConfig } from '@aws-cdk/aws-pipes-alpha';
 import { IRole } from 'aws-cdk-lib/aws-iam';
 import { IStream } from 'aws-cdk-lib/aws-kinesis';
 import { KinesisStartingPosition } from './enums';
-import {
-  StreamSourceParameters,
-  validateBatchSize,
-  validateMaximumBatchingWindow,
-  validateMaximumRecordAge,
-  validateMaxiumRetryAttemps,
-  validateParallelizationFactor,
-} from './streamSource';
+import { StreamSource, StreamSourceParameters } from './streamSource';
 
 /**
  * Parameters for the Kinesis source.
@@ -37,24 +30,19 @@ export interface KinesisSourceParameters extends StreamSourceParameters {
 /**
  * A source that reads from Kinesis.
  */
-export class KinesisSource extends SourceWithDlq {
+export class KinesisSource extends StreamSource {
   private readonly stream: IStream;
-  private sourceParameters;
+  private readonly startingPosition: KinesisStartingPosition;
+  private readonly startingPositionTimestamp?: string;
 
   constructor(stream: IStream, parameters: KinesisSourceParameters) {
-    super(stream.streamArn, parameters.deadLetterTarget);
-
+    super(stream.streamArn, parameters);
     this.stream = stream;
-    this.sourceParameters = parameters;
+    this.startingPosition = parameters.startingPosition;
+    this.startingPositionTimestamp = parameters.startingPositionTimestamp;
 
-    validateBatchSize(this.sourceParameters.batchSize);
-    validateMaximumBatchingWindow(this.sourceParameters.maximumBatchingWindow?.toSeconds());
-    validateMaximumRecordAge(this.sourceParameters.maximumRecordAge?.toSeconds());
-    validateMaxiumRetryAttemps(this.sourceParameters.maximumRetryAttempts);
-    validateParallelizationFactor(this.sourceParameters.parallelizationFactor);
-
-    if (this.sourceParameters.startingPositionTimestamp && this.sourceParameters.startingPosition !== KinesisStartingPosition.AT_TIMESTAMP) {
-      throw new Error(`Timestamp only valid with StartingPosition AT_TIMESTAMP for Kinesis streams, received ${this.sourceParameters.startingPosition}`);
+    if (this.startingPositionTimestamp && this.startingPosition !== KinesisStartingPosition.AT_TIMESTAMP) {
+      throw new Error(`Timestamp only valid with StartingPosition AT_TIMESTAMP for Kinesis streams, received ${this.startingPosition}`);
     }
   }
 
@@ -69,8 +57,8 @@ export class KinesisSource extends SourceWithDlq {
           maximumRetryAttempts: this.sourceParameters.maximumRetryAttempts,
           onPartialBatchItemFailure: this.sourceParameters.onPartialBatchItemFailure,
           parallelizationFactor: this.sourceParameters.parallelizationFactor,
-          startingPosition: this.sourceParameters.startingPosition,
-          startingPositionTimestamp: this.sourceParameters.startingPositionTimestamp,
+          startingPosition: this.startingPosition,
+          startingPositionTimestamp: this.startingPositionTimestamp,
         },
       },
     };

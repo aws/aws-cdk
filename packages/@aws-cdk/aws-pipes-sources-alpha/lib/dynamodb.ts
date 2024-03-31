@@ -1,15 +1,8 @@
-import { IPipe, SourceConfig, SourceWithDlq } from '@aws-cdk/aws-pipes-alpha';
+import { IPipe, SourceConfig } from '@aws-cdk/aws-pipes-alpha';
 import { ITableV2 } from 'aws-cdk-lib/aws-dynamodb';
 import { IRole } from 'aws-cdk-lib/aws-iam';
 import { DynamoDBStartingPosition } from './enums';
-import {
-  StreamSourceParameters,
-  validateBatchSize,
-  validateMaximumBatchingWindow,
-  validateMaximumRecordAge,
-  validateMaxiumRetryAttemps,
-  validateParallelizationFactor,
-} from './streamSource';
+import { StreamSource, StreamSourceParameters } from './streamSource';
 
 /**
  * Parameters for the DynamoDB source.
@@ -26,25 +19,18 @@ export interface DynamoDBSourceParameters extends StreamSourceParameters {
 /**
  * A source that reads from an DynamoDB stream.
  */
-export class DynamoDBSource extends SourceWithDlq {
+export class DynamoDBSource extends StreamSource {
   private readonly table: ITableV2;
-  private sourceParameters: DynamoDBSourceParameters;
+  private readonly startingPosition: DynamoDBStartingPosition;
 
   constructor(table: ITableV2, parameters: DynamoDBSourceParameters) {
     if (table.tableStreamArn === undefined) {
       throw new Error('Table does not have a stream defined, cannot create pipes source');
     }
 
-    super(table.tableStreamArn, parameters.deadLetterTarget);
-
+    super(table.tableStreamArn, parameters);
     this.table = table;
-    this.sourceParameters = parameters;
-
-    validateBatchSize(this.sourceParameters.batchSize);
-    validateMaximumBatchingWindow(this.sourceParameters.maximumBatchingWindow?.toSeconds());
-    validateMaximumRecordAge(this.sourceParameters.maximumRecordAge?.toSeconds());
-    validateMaxiumRetryAttemps(this.sourceParameters.maximumRetryAttempts);
-    validateParallelizationFactor(this.sourceParameters.parallelizationFactor);
+    this.startingPosition = parameters.startingPosition;
   }
 
   bind(_pipe: IPipe): SourceConfig {
@@ -58,7 +44,7 @@ export class DynamoDBSource extends SourceWithDlq {
           maximumRetryAttempts: this.sourceParameters.maximumRetryAttempts,
           onPartialBatchItemFailure: this.sourceParameters.onPartialBatchItemFailure,
           parallelizationFactor: this.sourceParameters.parallelizationFactor,
-          startingPosition: this.sourceParameters.startingPosition,
+          startingPosition: this.startingPosition,
         },
       },
     };

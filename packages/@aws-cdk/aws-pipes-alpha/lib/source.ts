@@ -1,8 +1,8 @@
 import { IRole } from 'aws-cdk-lib/aws-iam';
 import { CfnPipe } from 'aws-cdk-lib/aws-pipes';
-import { IPipe } from './pipe';
 import { ITopic, Topic } from 'aws-cdk-lib/aws-sns';
 import { IQueue, Queue } from 'aws-cdk-lib/aws-sqs';
+import { IPipe } from './pipe';
 
 /**
  * Source properties.
@@ -104,14 +104,7 @@ export interface ISource {
   grantRead(grantee: IRole): void;
 }
 
-/**
- * Source interface with dead-letter target
- */
-interface ISourceWithDlq extends ISource {
-  grantDlqPush(grantee: IRole, deadLetterTarget?: IQueue | ITopic): void;
-}
-
-export abstract class SourceWithDlq implements ISourceWithDlq {
+export abstract class SourceWithDlq implements ISource {
   readonly sourceArn: string;
   readonly deadLetterTarget?: IQueue | ITopic;
   readonly deadLetterTargetArn?: string;
