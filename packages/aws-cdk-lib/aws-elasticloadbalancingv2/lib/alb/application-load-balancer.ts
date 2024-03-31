@@ -84,6 +84,8 @@ export interface ApplicationLoadBalancerProps extends BaseLoadBalancerProps {
    *
    * Both headers are in OpenSSL format.
    *
+   * @see https://docs.aws.amazon.com/elasticloadbalancing/latest/application/application-load-balancers.html#load-balancer-attributes
+   *
    * @default false
    */
   readonly xAmznTlsVersionAndCipherSuiteHeaders?: boolean;
@@ -91,6 +93,8 @@ export interface ApplicationLoadBalancerProps extends BaseLoadBalancerProps {
   /**
    * Indicates whether the X-Forwarded-For header should preserve the source port
    * that the client used to connect to the load balancer.
+   *
+   * @see https://docs.aws.amazon.com/elasticloadbalancing/latest/application/application-load-balancers.html#load-balancer-attributes
    *
    * @default false
    */
@@ -105,7 +109,8 @@ export interface ApplicationLoadBalancerProps extends BaseLoadBalancerProps {
   readonly xffHeaderProcessingMode?: XffHeaderProcessingMode;
 
   /**
-   * Indicates whether to allow a WAF-enabled load balancer to route requests to targets if it is unable to forward the request to AWS WAF.
+   * Indicates whether to allow a WAF-enabled load balancer to route requests to targets
+   * if it is unable to forward the request to AWS WAF.
    *
    * @default false
    */
@@ -113,19 +118,23 @@ export interface ApplicationLoadBalancerProps extends BaseLoadBalancerProps {
 }
 
 /**
- * Processing mode of the X-Forwarded-For header in the HTTP request before the Application Load Balancer sends the request to the target.
+ * Processing mode of the X-Forwarded-For header in the HTTP request
+ * before the Application Load Balancer sends the request to the target.
  */
 export enum XffHeaderProcessingMode {
   /**
-   * Application Load Balancer adds the client IP address (of the last hop) to the X-Forwarded-For header in the HTTP request before it sends it to targets.
+   * Application Load Balancer adds the client IP address (of the last hop) to the X-Forwarded-For header
+   * in the HTTP request before it sends it to targets.
    */
   APPEND = 'append',
   /**
-   *  Application Load Balancer preserves the X-Forwarded-For header in the HTTP request, and sends it to targets without any change.
+   * Application Load Balancer preserves the X-Forwarded-For header in the HTTP request,
+   * and sends it to targets without any change.
    */
   PRESERVE = 'preserve',
   /**
-   * Application Load Balancer removes the X-Forwarded-For header in the HTTP request before it sends it to targets.
+   * Application Load Balancer removes the X-Forwarded-For header
+   * in the HTTP request before it sends it to targets.
    */
   REMOVE = 'remove',
 }
