@@ -1,11 +1,11 @@
 import {
-  WebSocketRouteIntegration,
   WebSocketIntegrationType,
   WebSocketRouteIntegrationConfig,
   WebSocketRouteIntegrationBindOptions,
   PassthroughBehavior,
   ContentHandling,
   WebSocketIntegrationResponseProps,
+  WebSocketTwoWayRouteIntegration,
 } from '../../../aws-apigatewayv2';
 import { IRole } from '../../../aws-iam';
 import { Duration } from '../../../core';
@@ -98,7 +98,7 @@ export interface WebSocketAwsIntegrationProps {
 /**
  * AWS WebSocket AWS Type Integration
  */
-export class WebSocketAwsIntegration extends WebSocketRouteIntegration {
+export class WebSocketAwsIntegration extends WebSocketTwoWayRouteIntegration {
   /**
    * @param id id of the underlying integration construct
    */
@@ -120,14 +120,5 @@ export class WebSocketAwsIntegration extends WebSocketRouteIntegration {
       templateSelectionExpression: this.props.templateSelectionExpression,
       timeout: this.props.timeout,
     };
-  }
-
-  /**
-   * Add a response to this integration
-   *
-   * @param response The response to add
-   */
-  addResponse(response: WebSocketIntegrationResponseProps) {
-    super.addResponse(response);
   }
 }

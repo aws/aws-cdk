@@ -1,5 +1,5 @@
 import { Match, Template } from '../../../assertions';
-import { ContentHandling, WebSocketApi, WebSocketIntegrationResponseKey, WebSocketIntegrationResponseProps, WebSocketIntegrationType, WebSocketRouteIntegration, WebSocketRouteIntegrationBindOptions, WebSocketRouteIntegrationConfig } from '../../../aws-apigatewayv2';
+import { ContentHandling, WebSocketApi, WebSocketIntegrationResponseKey, WebSocketIntegrationResponseProps, WebSocketIntegrationType, WebSocketRouteIntegration, WebSocketRouteIntegrationBindOptions, WebSocketRouteIntegrationConfig, WebSocketTwoWayRouteIntegration } from '../../../aws-apigatewayv2';
 import * as iam from '../../../aws-iam';
 import { Stack } from '../../../core';
 
@@ -18,7 +18,7 @@ interface WebSocketTestRouteIntegrationConfig {
   readonly responses?: WebSocketIntegrationResponseProps[];
 }
 
-class WebSocketTestIntegration extends WebSocketRouteIntegration {
+class WebSocketTestIntegration extends WebSocketTwoWayRouteIntegration {
   constructor(id: string, private readonly props: WebSocketTestRouteIntegrationConfig) {
     super(id);
   }
@@ -87,7 +87,7 @@ describe('WebSocketIntegrationRespons', () => {
       ],
     });
 
-    api.addRoute('$default', { integration });
+    api.addRoute('$default', { integration, returnResponse: true });
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Integration', {
@@ -129,7 +129,7 @@ describe('WebSocketIntegrationRespons', () => {
       ],
     });
 
-    api.addRoute('$default', { integration });
+    api.addRoute('$default', { integration, returnResponse: true });
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Integration', {
@@ -166,7 +166,7 @@ describe('WebSocketIntegrationRespons', () => {
     });
     integration.addResponse({ responseKey: WebSocketIntegrationResponseKey.clientError });
 
-    api.addRoute('$default', { integration });
+    api.addRoute('$default', { integration, returnResponse: true });
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Integration', {
@@ -210,7 +210,7 @@ describe('WebSocketIntegrationRespons', () => {
 
     // THEN
     expect(
-      () => api.addRoute('$default', { integration }),
+      () => api.addRoute('$default', { integration, returnResponse: true }),
     ).toThrow(/Duplicate integration response key/);
   });
 
@@ -231,7 +231,27 @@ describe('WebSocketIntegrationRespons', () => {
 
     // THEN
     expect(
-      () => api.addRoute('$default', { integration }),
+      () => api.addRoute('$default', { integration, returnResponse: true }),
     ).toThrow(/Duplicate integration response key/);
+  });
+
+  test('throws if returnResponse is not set to true', () => {
+    // GIVEN
+    const stack = new Stack();
+    const role = new iam.Role(stack, 'MyRole', { assumedBy: new iam.ServicePrincipal('foo') });
+    const api = new WebSocketApi(stack, 'Api');
+
+    // THEN
+    const integration = new WebSocketTestIntegration('TestIntegration', {
+      integrationUri: 'https://example.com',
+      responses: [
+        { responseKey: WebSocketIntegrationResponseKey.default },
+      ],
+    });
+
+    // THEN
+    expect(
+      () => api.addRoute('$default', { integration }),
+    ).toThrow(/Setting up integration responses without setting up returnResponse to true will have no effect/);
   });
 });

@@ -204,14 +204,20 @@ export interface WebSocketRouteIntegrationBindOptions {
    * this will be used as their parent scope.
    */
   readonly scope: Construct;
+
+  /**
+   * Should the route send a response to the client
+   * @default false
+   */
+  readonly returnResponse?: boolean;
 }
 
 /**
- * The interface that various route integration classes will inherit.
+ * The abstract class that all route integration classes will implement.
  */
 export abstract class WebSocketRouteIntegration {
-  private integration?: WebSocketIntegration;
-  private responses: WebSocketIntegrationResponseProps[] = [];
+  protected integration?: WebSocketIntegration;
+  protected config?: WebSocketRouteIntegrationConfig;
 
   /**
    * Initialize an integration for a route on websocket api.
@@ -229,23 +235,66 @@ export abstract class WebSocketRouteIntegration {
     }
 
     if (!this.integration) {
-      const config = this.bind(options);
+      this.config = this.bind(options);
 
       this.integration = new WebSocketIntegration(options.scope, this.id, {
         webSocketApi: options.route.webSocketApi,
-        integrationType: config.type,
-        integrationUri: config.uri,
-        integrationMethod: config.method,
-        contentHandling: config.contentHandling,
-        credentialsRole: config.credentialsRole,
-        requestTemplates: config.requestTemplates,
-        requestParameters: config.requestParameters,
-        timeout: config.timeout,
-        passthroughBehavior: config.passthroughBehavior,
-        templateSelectionExpression: config.templateSelectionExpression,
+        integrationType: this.config.type,
+        integrationUri: this.config.uri,
+        integrationMethod: this.config.method,
+        contentHandling: this.config.contentHandling,
+        credentialsRole: this.config.credentialsRole,
+        requestTemplates: this.config.requestTemplates,
+        requestParameters: this.config.requestParameters,
+        timeout: this.config.timeout,
+        passthroughBehavior: this.config.passthroughBehavior,
+        templateSelectionExpression: this.config.templateSelectionExpression,
       });
+    }
 
-      this.responses.push(...config.responses ?? []);
+    return { integrationId: this.integration.integrationId };
+  }
+
+  /**
+   * Bind this integration to the route.
+   */
+  public abstract bind(options: WebSocketRouteIntegrationBindOptions): WebSocketRouteIntegrationConfig;
+}
+
+/**
+ * The abstract class that all two-way communication route integration classes will implement.
+ */
+export abstract class WebSocketTwoWayRouteIntegration extends WebSocketRouteIntegration {
+  private responses: WebSocketIntegrationResponseProps[] = [];
+
+  /**
+   * Initialize an integration for a route on websocket api.
+   * @param id id of the underlying `WebSocketIntegration` construct.
+   */
+  constructor(id: string) {
+    super(id);
+  }
+
+  /**
+   * Internal method called when binding this integration to the route.
+   * @internal
+   */
+  public _bindToRoute(options: WebSocketRouteIntegrationBindOptions): { readonly integrationId: string } {
+    const requiresBinding = !this.integration;
+    const result = super._bindToRoute(options);
+
+    if (requiresBinding) {
+      // This should never happen, super._bindToRoute must have set up the integration
+      if (!this.config || !this.integration) {
+        throw new Error('Missing integration setup during WebSocketRouteIntegration._bindToRoute');
+      }
+
+      this.responses.push(...this.config.responses ?? []);
+      if (this.responses.length && !options.returnResponse) {
+        // FIXME change to a warning?
+        throw new Error('Setting up integration responses without setting up returnResponse to true will have no effect, and is likely a mistake.');
+      }
+
       this.responses.reduce<{ [key: string]: string }>((acc, props) => {
         if (props.responseKey.key in acc) {
           throw new Error(`Duplicate integration response key: "${props.responseKey.key}"`);
@@ -261,7 +310,7 @@ export abstract class WebSocketRouteIntegration {
       }
     }
 
-    return { integrationId: this.integration.integrationId };
+    return result;
   }
 
   /**
@@ -269,14 +318,9 @@ export abstract class WebSocketRouteIntegration {
    *
    * @param response The response to add
    */
-  protected addResponse(response: WebSocketIntegrationResponseProps) {
+  addResponse(response: WebSocketIntegrationResponseProps) {
     this.responses.push(response);
   }
-
-  /**
-   * Bind this integration to the route.
-   */
-  public abstract bind(options: WebSocketRouteIntegrationBindOptions): WebSocketRouteIntegrationConfig;
 }
 
 /**

@@ -77,7 +77,9 @@ export interface WebSocketIntegrationResponseProps {
   readonly responseKey: WebSocketIntegrationResponseKey;
 
   /**
-   * TODO
+   * The templates that are used to transform the integration response body.
+   * Specify templates as key-value pairs, with a content type as the key and
+   * a template as the value.
    *
    * @default - No response templates
    */
@@ -92,9 +94,20 @@ export interface WebSocketIntegrationResponseProps {
   readonly contentHandling?: ContentHandling;
 
   /**
-   * TODO
+   * The response parameters from the backend response that API Gateway sends
+   * to the method response.
+   *
+   * Use the destination as the key and the source as the value:
+   *
+   * - The destination must be an existing response parameter in the
+   *   MethodResponse property.
+   * - The source must be an existing method request parameter or a static
+   *   value. You must enclose static values in single quotation marks and
+   *   pre-encode these values based on the destination specified in the
+   *   request.
    *
    * @default - No response parameters
+   * @example { 'method.response.header.Content-Type': "'application/json'" }
    */
   readonly responseParameters?: { [key: string]: string };
 

@@ -6,6 +6,7 @@ import {
   ContentHandling,
   WebSocketIntegrationResponse,
   WebSocketIntegrationResponseProps,
+  WebSocketTwoWayRouteIntegration,
 } from '../../../aws-apigatewayv2';
 import { ServicePrincipal } from '../../../aws-iam';
 import { IFunction } from '../../../aws-lambda';
@@ -43,7 +44,7 @@ export interface WebSocketLambdaIntegrationProps {
 /**
  * Lambda WebSocket Integration
  */
-export class WebSocketLambdaIntegration extends WebSocketRouteIntegration {
+export class WebSocketLambdaIntegration extends WebSocketTwoWayRouteIntegration {
 
   private readonly _id: string;
 
@@ -87,14 +88,5 @@ export class WebSocketLambdaIntegration extends WebSocketRouteIntegration {
       contentHandling: this.props.contentHandling,
       responses: this.props.responses,
     };
-  }
-
-  /**
-   * Add a response to this integration
-   *
-   * @param response The response to add
-   */
-  addResponse(response: WebSocketIntegrationResponse) {
-    super.addResponse(response);
   }
 }
