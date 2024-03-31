@@ -117,7 +117,7 @@ export abstract class SourceWithDlq implements ISourceWithDlq {
     this.deadLetterTargetArn = deadLetterTargetArn;
   }
 
-  abstract grantDlqPush(grantee: IRole): void;
   abstract bind(pipe: IPipe): SourceConfig;
   abstract grantRead(grantee: IRole): void;
+  abstract grantDlqPush(grantee: IRole): void;
 }
