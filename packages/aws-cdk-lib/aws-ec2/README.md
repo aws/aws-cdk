@@ -1426,6 +1426,22 @@ ec2.CloudFormationInit.fromElements(
 );
 ```
 
+If your services require environment variables, you can use the `environmentVariables` or `environmentFiles`
+parameter to do so:
+```ts
+new ec2.InitConfig([
+  ec2.InitFile.fromString('/myvars.env', 'VAR_FROM_FILE="VAR_FROM_FILE"'),
+  ec2.InitService.systemdConfigFile('myapp', {
+    command: '/usr/bin/python3 -m http.server 8080',
+    cwd: '/var/www/html',
+    environmentVariables: {
+      MY_VAR: 'MY_VAR',
+    },
+    environmentFiles: ['/myvars.env'],
+  }),
+])
+```
+
 ### Bastion Hosts
 
 A bastion host functions as an instance used to access servers and resources in a VPC without open up the complete VPC on a network level.
