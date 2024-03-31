@@ -10,6 +10,7 @@
 - [WebSocket APIs](#websocket-apis)
   - [Lambda WebSocket Integration](#lambda-websocket-integration)
   - [AWS WebSocket Integration](#aws-websocket-integration)
+  - [Integration Responses](#integration-responses)
 
 ## HTTP APIs
 
@@ -307,3 +308,45 @@ webSocketApi.addRoute('$connect', {
 
 You can also set additional properties to change the behavior of your integration, such as `contentHandling`.
 See [Working with binary media types for WebSocket APIs](https://docs.aws.amazon.com/apigateway/latest/developerguide/websocket-api-develop-binary-media-types.html).
+
+
+### Integration Responses
+
+```ts
+import * as integrations from 'aws-cdk-lib/aws-apigatewayv2-integrations';
+
+const webSocketApi = new apigwv2.WebSocketApi(this, 'mywsapi');
+new apigwv2.WebSocketStage(this, 'mystage', {
+  webSocketApi,
+  stageName: 'dev',
+  autoDeploy: true,
+});
+
+declare const messageHandler: lambda.Function;
+const integration = new integrations.WebSocketLambdaIntegration(
+  'SendMessageIntegration',
+  messageHandler,
+  {
+    responses: [
+      // Default response key, will be used if no other matched
+      { responseKey: integrations.WebSocketIntegrationResponseKey.default },
+      // Success response key, will match all 2xx response HTTP status codes
+      { responseKey: integrations.WebSocketIntegrationResponseKey.success },
+      // You can also create custom response integrations for specific status codes
+      {
+        responseKey: integrations.WebSocketIntegrationResponseKey.fromStatusCode(404),
+        contentHandling: ContentHandling.CONVERT_TO_BINARY,
+        responseParameters: {
+          'method.response.header.Accept': "'application/json'",
+        },
+        templateSelectionExpression: '$default',
+        responseTemplates: {
+          'application/json': '{ "message": $context.error.message, "statusCode": 404 }',
+        },
+      },
+    ],
+  },
+);
+
+webSocketApi.addRoute('sendMessage', { integration });
+```
