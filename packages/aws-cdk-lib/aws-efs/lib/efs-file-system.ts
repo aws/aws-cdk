@@ -357,42 +357,82 @@ export interface FileSystemAttributes {
   readonly fileSystemArn?: string;
 }
 
-/**
- * Replication configuration for the file system.
- */
-export interface ReplicationConfiguration {
+export class ReplicationConfiguration {
+  /**
+   * Specify the existing destination file system for the replication.
+   *
+   * @param destinationFileSystem The existing destination file system for the replication
+   */
+  public static destinationFileSystem(destinationFileSystem: IFileSystem): ReplicationConfiguration {
+    return new ReplicationConfiguration({ destinationFileSystem });
+  }
+
+  /**
+   * Create a new regional destination file system for the replication.
+   *
+   * @param region The AWS Region in which the destination file system is located. Default is the region of the stack.
+   * @param kmsKey  AWS KMS key used to protect the encrypted file system. Default is service-managed KMS key for Amazon EFS.
+   */
+  public static regionalFileSystem(region?: string, kmsKey?: kms.IKey): ReplicationConfiguration {
+    return new ReplicationConfiguration({ region, kmsKey });
+  }
+
+  /**
+   * Create a new one zone destination file system for the replication.
+   *
+   * @param region The AWS Region in which the destination file system is located.
+   * @param availabilityZone The availability zone name of the destination file system. You have to specify the `region` property for the region that the specified availability zone belongs to.
+   * @param kmsKey AWS KMS key used to protect the encrypted file system. Default is service-managed KMS key for Amazon EFS.
+   */
+  public static oneZoneFileSystem(region: string, availabilityZone: string, kmsKey?: kms.IKey): ReplicationConfiguration {
+    return new ReplicationConfiguration({ region, availabilityZone, kmsKey });
+  }
+
   /**
    * The existing destination file system for the replication.
    *
    * You cannot configure `kmsKey`, `region` and `availabilityZone` when `destinationFileSystem` is set.
-   *
-   * @default - create a new file system for the replication destination
    */
-  readonly destinationFileSystem?: IFileSystem;
+  public readonly destinationFileSystem?: IFileSystem;
 
   /**
    * AWS KMS key used to protect the encrypted file system.
-   *
-   * @default - service-managed KMS key for Amazon EFS is used
    */
-  readonly kmsKey?: kms.IKey;
+  public readonly kmsKey?: kms.IKey;
 
   /**
    * The AWS Region in which the destination file system is located.
-   *
-   * @default - the region of the stack
    */
-  readonly region?: string;
+  public readonly region?: string;
 
   /**
    * The availability zone name of the destination file system.
    * One zone file system is used as the destination file system when this property is set.
-   *
-   * You have to specify the `region` property for the region that the specified availability zone belongs to.
-   *
-   * @default - create regional file system for the replication destination
    */
-  readonly availabilityZone?: string;
+  public readonly availabilityZone?: string;
+
+  constructor(props: ReplicationConfiguration) {
+    if (props.availabilityZone && !Token.isUnresolved(props.availabilityZone) && !props.region) {
+      throw new Error('\'replicationConfiguration.availabilityZone\' cannot be specified without \'replicationConfiguration.region\'');
+    }
+
+    if (!props.destinationFileSystem && !props.region) {
+      throw new Error('\'replicationConfiguration.region\' or \'replicationConfiguration.destinationFileSystem\' is required');
+    }
+
+    if (props.destinationFileSystem && (props.region || props.availabilityZone || props.kmsKey)) {
+      throw new Error('Cannot configure \'replicationConfiguration.region\', \'replicationConfiguration.availabilityZone\' or \'replicationConfiguration.kmsKey\' when \'replicationConfiguration.destinationFileSystem\' is set');
+    }
+
+    if (props.region && !Token.isUnresolved(props.region) && !/^[a-z]{2}-((iso[a-z]{0,1}-)|(gov-)){0,1}[a-z]+-{0,1}[0-9]{0,1}$/.test(props.region)) {
+      throw new Error('\'replicationConfiguration.region\' is invalid.');
+    }
+
+    this.destinationFileSystem = props.destinationFileSystem;
+    this.kmsKey = props.kmsKey;
+    this.region = props.region;
+    this.availabilityZone = props.availabilityZone;
+  }
 }
 
 enum ClientAction {
@@ -599,27 +639,8 @@ export class FileSystem extends FileSystemBase {
       throw new Error('ThroughputMode ELASTIC is not supported for file systems with performanceMode MAX_IO');
     }
 
-    if (props.replicationConfiguration) {
-      const { destinationFileSystem, region, availabilityZone, kmsKey } = props.replicationConfiguration;
-      if (props.replicationOverwriteProtection === ReplicationOverwriteProtection.DISABLED) {
-        throw new Error('Cannot configure \'replicationConfiguration\' when \'replicationOverwriteProtection\' is set to \'DISABLED\'');
-      }
-
-      if (availabilityZone && !Token.isUnresolved(availabilityZone) && !region) {
-        throw new Error('\'replicationConfiguration.availabilityZone\' cannot be specified without \'replicationConfiguration.region\'');
-      }
-
-      if (!destinationFileSystem && !region) {
-        throw new Error('\'replicationConfiguration.region\' or \'replicationConfiguration.destinationFileSystem\' is required');
-      }
-
-      if (destinationFileSystem && (region || availabilityZone || kmsKey)) {
-        throw new Error('Cannot configure \'replicationConfiguration.region\', \'replicationConfiguration.availabilityZone\' or \'replicationConfiguration.kmsKey\' when \'replicationConfiguration.destinationFileSystem\' is set');
-      }
-
-      if (region && !Token.isUnresolved(region) && !/^[a-z]{2}-((iso[a-z]{0,1}-)|(gov-)){0,1}[a-z]+-{0,1}[0-9]{0,1}$/.test(region)) {
-        throw new Error('\'replicationConfiguration.region\' is invalid.');
-      }
+    if (props.replicationConfiguration && props.replicationOverwriteProtection === ReplicationOverwriteProtection.DISABLED) {
+      throw new Error('Cannot configure \'replicationConfiguration\' when \'replicationOverwriteProtection\' is set to \'DISABLED\'');
     }
 
     // we explictly use 'undefined' to represent 'false' to maintain backwards compatibility since

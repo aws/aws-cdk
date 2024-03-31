@@ -5,6 +5,7 @@ import * as kms from '../../aws-kms';
 import { App, RemovalPolicy, Size, Stack, Tags } from '../../core';
 import * as cxapi from '../../cx-api';
 import { FileSystem, LifecyclePolicy, PerformanceMode, ThroughputMode, OutOfInfrequentAccessPolicy, ReplicationOverwriteProtection } from '../lib';
+import { ReplicationConfiguration } from '../lib/efs-file-system';
 
 let stack = new Stack();
 let vpc = new ec2.Vpc(stack, 'VPC');
@@ -960,13 +961,11 @@ test.each([
 });
 
 describe('replication configuration', () => {
-  test('default settings', () => {
+  test('regional file system', () => {
     // WHEN
     new FileSystem(stack, 'EfsFileSystem', {
       vpc,
-      replicationConfiguration: {
-        region: 'ap-northeast-1',
-      },
+      replicationConfiguration: ReplicationConfiguration.regionalFileSystem('ap-northeast-1'),
     });
 
     // THEN
@@ -981,7 +980,7 @@ describe('replication configuration', () => {
     });
   });
 
-  test('with destination file system', () => {
+  test('specify destination file system', () => {
     // WHEN
     const destination = new FileSystem(stack, 'DestinationFileSystem', {
       vpc,
@@ -989,9 +988,7 @@ describe('replication configuration', () => {
     });
     new FileSystem(stack, 'EfsFileSystem', {
       vpc,
-      replicationConfiguration: {
-        destinationFileSystem: destination,
-      },
+      replicationConfiguration: ReplicationConfiguration.destinationFileSystem(destination),
     });
 
     // THEN
@@ -1008,15 +1005,15 @@ describe('replication configuration', () => {
     });
   });
 
-  test('with full settings', () => {
+  test('one zone file system', () => {
     // WHEN
     new FileSystem(stack, 'EfsFileSystem', {
       vpc,
-      replicationConfiguration: {
-        kmsKey: new kms.Key(stack, 'customKey'),
-        region: 'us-east-1',
-        availabilityZone: 'us-east-1a',
-      },
+      replicationConfiguration: ReplicationConfiguration.oneZoneFileSystem(
+        'us-east-1',
+        'us-east-1a',
+        new kms.Key(stack, 'customKey'),
+      ),
     });
 
     // THEN
@@ -1043,9 +1040,7 @@ describe('replication configuration', () => {
     expect(() => {
       new FileSystem(stack, 'EfsFileSystem', {
         vpc,
-        replicationConfiguration: {
-          region: 'us-east-1',
-        },
+        replicationConfiguration: ReplicationConfiguration.regionalFileSystem('ap-northeast-1'),
         replicationOverwriteProtection: ReplicationOverwriteProtection.DISABLED,
       });
     }).toThrow('Cannot configure \'replicationConfiguration\' when \'replicationOverwriteProtection\' is set to \'DISABLED\'');
@@ -1062,10 +1057,10 @@ describe('replication configuration', () => {
     expect(() => {
       new FileSystem(stack, 'EfsFileSystem', {
         vpc,
-        replicationConfiguration: {
+        replicationConfiguration: new ReplicationConfiguration({
           destinationFileSystem: destination,
           region: 'us-east-1',
-        },
+        }),
       });
     }).toThrow('Cannot configure \'replicationConfiguration.region\', \'replicationConfiguration.availabilityZone\' or \'replicationConfiguration.kmsKey\' when \'replicationConfiguration.destinationFileSystem\' is set');
   });
@@ -1081,10 +1076,10 @@ describe('replication configuration', () => {
     expect(() => {
       new FileSystem(stack, 'EfsFileSystem', {
         vpc,
-        replicationConfiguration: {
+        replicationConfiguration: new ReplicationConfiguration({
           destinationFileSystem: destination,
           kmsKey: new kms.Key(stack, 'customKey'),
-        },
+        }),
       });
     }).toThrow('Cannot configure \'replicationConfiguration.region\', \'replicationConfiguration.availabilityZone\' or \'replicationConfiguration.kmsKey\' when \'replicationConfiguration.destinationFileSystem\' is set');
   });
@@ -1094,7 +1089,7 @@ describe('replication configuration', () => {
     expect(() => {
       new FileSystem(stack, 'EfsFileSystem', {
         vpc,
-        replicationConfiguration: {},
+        replicationConfiguration: new ReplicationConfiguration({}),
       });
     }).toThrow('\'replicationConfiguration.region\' or \'replicationConfiguration.destinationFileSystem\' is required');
   });
@@ -1104,9 +1099,7 @@ describe('replication configuration', () => {
     expect(() => {
       new FileSystem(stack, 'EfsFileSystem', {
         vpc,
-        replicationConfiguration: {
-          region: 'invalid-region',
-        },
+        replicationConfiguration: ReplicationConfiguration.regionalFileSystem('invalid-region'),
       });
     }).toThrow('\'replicationConfiguration.region\' is invalid.');
   });
@@ -1116,9 +1109,9 @@ describe('replication configuration', () => {
     expect(() => {
       new FileSystem(stack, 'EfsFileSystem', {
         vpc,
-        replicationConfiguration: {
+        replicationConfiguration: new ReplicationConfiguration({
           availabilityZone: 'us-east-1a',
-        },
+        }),
       });
     }).toThrow('\'replicationConfiguration.availabilityZone\' cannot be specified without \'replicationConfiguration.region\'');
   });
