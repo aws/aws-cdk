@@ -56,6 +56,7 @@ new ec2.Instance(stack, 'Instance2', {
           environmentVariables: {
             MY_VAR: 'its me :)',
           },
+          environmentFiles: ['/myvars.env'],
         }),
       ]),
     },
