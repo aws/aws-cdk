@@ -3,7 +3,6 @@ import { HttpApi, HttpIntegrationSubtype, HttpRoute, HttpRouteKey, ParameterMapp
 import * as sqs from '../../../aws-sqs';
 import { App, Stack } from '../../../core';
 import { HttpSqsIntegration } from '../../lib';
-import { Queue } from '../../../aws-sqs/lib/queue';
 
 describe('SqsIntegration', () => {
   test('default', () => {
