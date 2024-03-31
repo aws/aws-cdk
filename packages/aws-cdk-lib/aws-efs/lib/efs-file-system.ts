@@ -357,6 +357,16 @@ export interface FileSystemAttributes {
   readonly fileSystemArn?: string;
 }
 
+interface ReplicationConfigurationProps {
+  destinationFileSystem?: IFileSystem;
+  kmsKey?: kms.IKey;
+  region?: string;
+  availabilityZone?: string;
+}
+
+/**
+ * EFS Replication Configuration
+ */
 export class ReplicationConfiguration {
   /**
    * Specify the existing destination file system for the replication.
@@ -411,12 +421,7 @@ export class ReplicationConfiguration {
    */
   public readonly availabilityZone?: string;
 
-  constructor(options: {
-    destinationFileSystem?: IFileSystem;
-    kmsKey?: kms.IKey;
-    region?: string;
-    availabilityZone?: string;
-  } = {}) {
+  constructor(options: ReplicationConfigurationProps) {
     if (options.availabilityZone && !Token.isUnresolved(options.availabilityZone) && !options.region) {
       throw new Error('\'replicationConfiguration.availabilityZone\' cannot be specified without \'replicationConfiguration.region\'');
     }
