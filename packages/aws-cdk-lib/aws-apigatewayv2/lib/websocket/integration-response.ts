@@ -1,6 +1,6 @@
 import { Construct } from 'constructs';
 import { ContentHandling, IWebSocketIntegration } from './integration';
-import { IResource, Names, Resource } from '../../../core';
+import { IResource, Resource } from '../../../core';
 import { CfnIntegrationResponse } from '../apigatewayv2.generated';
 
 /**
@@ -62,15 +62,26 @@ export class WebSocketIntegrationResponseKey {
     return new WebSocketIntegrationResponseKey(`/${httpStatusRegExp.source}/`);
   }
 
+  /**
+   * WebSocket integration response private constructor
+   *
+   * @param key The key of the integration response
+   */
   private constructor(readonly key: string) {}
+
+  /** String representation of the integration response key */
+  public toString(): string {
+    return this.key;
+  }
 }
 
 /**
- * WebSocket integration response properties
+ * WebSocket integration response properties, used internally for Integration implementations
+ * The integration will add itself these props during the bind process
  *
  * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-websocket-api-integration-responses.html
  */
-export interface WebSocketIntegrationResponseProps {
+export interface InternalWebSocketIntegrationResponseProps {
   /**
    * The HTTP status code or regular expression the response will be mapped to
    */
@@ -121,61 +132,63 @@ export interface WebSocketIntegrationResponseProps {
 }
 
 /**
+ * WebSocket integration response properties
+ *
+ * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-websocket-api-integration-responses.html
+ */
+export interface WebSocketIntegrationResponseProps extends InternalWebSocketIntegrationResponseProps {
+  /**
+   * The WebSocket Integration to associate the response with
+   */
+  readonly integration: IWebSocketIntegration;
+}
+
+/**
  * Represents an Integration Response for an WebSocket API.
  */
 export interface IWebSocketIntegrationResponse extends IResource {
-  /**
-   * The integration the response will be mapped to
-   */
+  /** The WebSocket Integration associated with this Response */
   readonly integration: IWebSocketIntegration;
 
   /**
-   * The integration response key.
+   * Id of the integration response.
+   * @attribute
    */
-  readonly responseKey: WebSocketIntegrationResponseKey;
+  readonly integrationResponseId: string;
 }
 
 /**
  * WebSocket Integration Response resource class
+ * @resource AWS::ApiGatewayV2::IntegrationResponse
  */
 export class WebSocketIntegrationResponse extends Resource implements IWebSocketIntegrationResponse {
-  /**
-   * The integration response key.
-   */
-  readonly responseKey: WebSocketIntegrationResponseKey;
+  public readonly integrationResponseId: string;
+  public readonly integration: IWebSocketIntegration;
 
   /**
    * Generate an array of WebSocket Integration Response resources from a map
    * and associate them with a given WebSocket Integration
    *
    * @param scope The parent construct
-   * @param integration The WebSocket Integration to associate the responses with
+   * @param id The name of the integration response construct
    * @param props The configuration properties to create WebSocket Integration Responses from
    */
   constructor(
     scope: Construct,
-    readonly integration: IWebSocketIntegration,
+    id: string,
     props: WebSocketIntegrationResponseProps,
   ) {
-    super(
-      scope,
-      Names.nodeUniqueId(integration.node) + slugify(props.responseKey.key) + 'IntegrationResponse',
-    );
-
-    new CfnIntegrationResponse(this, 'Resource', {
-      apiId: this.integration.webSocketApi.apiId,
-      integrationId: this.integration.integrationId,
+    super(scope, id);
+    const { ref } = new CfnIntegrationResponse(this, 'Resource', {
+      apiId: props.integration.webSocketApi.apiId,
+      integrationId: props.integration.integrationId,
       integrationResponseKey: props.responseKey.key,
       responseTemplates: props.responseTemplates,
       contentHandlingStrategy: props.contentHandling,
       responseParameters: props.responseParameters,
       templateSelectionExpression: props.templateSelectionExpression,
     });
-
-    this.responseKey = props.responseKey;
+    this.integrationResponseId = ref;
+    this.integration = props.integration;
   }
-}
-
-function slugify(x: string): string {
-  return x.replace(/[^a-zA-Z0-9]/g, '');
 }

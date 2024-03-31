@@ -4,8 +4,8 @@ import {
   WebSocketRouteIntegrationBindOptions,
   PassthroughBehavior,
   ContentHandling,
-  WebSocketIntegrationResponseProps,
   WebSocketTwoWayRouteIntegration,
+  InternalWebSocketIntegrationResponseProps,
 } from '../../../aws-apigatewayv2';
 import { IRole } from '../../../aws-iam';
 import { Duration } from '../../../core';
@@ -66,7 +66,7 @@ export interface WebSocketAwsIntegrationProps {
    * @default - No response configuration provided.
    * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-websocket-api-integration-responses.html
    */
-  readonly responses?: WebSocketIntegrationResponseProps[];
+  readonly responses?: InternalWebSocketIntegrationResponseProps[];
 
   /**
    * The template selection expression for the integration.

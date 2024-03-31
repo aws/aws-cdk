@@ -76,11 +76,6 @@ export class WebSocketRoute extends Resource implements IWebSocketRoute {
   public readonly webSocketApi: IWebSocketApi;
   public readonly routeKey: string;
 
-  /**
-   * Integration response ID
-   */
-  public readonly integrationResponseId?: string;
-
   constructor(scope: Construct, id: string, props: WebSocketRouteProps) {
     super(scope, id);
 

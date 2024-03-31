@@ -1,5 +1,5 @@
 import { Match, Template } from '../../../assertions';
-import { ContentHandling, WebSocketApi, WebSocketIntegrationResponseKey, WebSocketIntegrationResponseProps, WebSocketIntegrationType, WebSocketRouteIntegration, WebSocketRouteIntegrationBindOptions, WebSocketRouteIntegrationConfig, WebSocketTwoWayRouteIntegration } from '../../../aws-apigatewayv2';
+import { ContentHandling, InternalWebSocketIntegrationResponseProps, WebSocketApi, WebSocketIntegrationResponseKey, WebSocketIntegrationType, WebSocketRouteIntegrationBindOptions, WebSocketRouteIntegrationConfig, WebSocketTwoWayRouteIntegration } from '../../../aws-apigatewayv2';
 import * as iam from '../../../aws-iam';
 import { Stack } from '../../../core';
 
@@ -15,7 +15,7 @@ interface WebSocketTestRouteIntegrationConfig {
    * @default - No response configuration provided.
    * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-websocket-api-integration-responses.html
    */
-  readonly responses?: WebSocketIntegrationResponseProps[];
+  readonly responses?: InternalWebSocketIntegrationResponseProps[];
 }
 
 class WebSocketTestIntegration extends WebSocketTwoWayRouteIntegration {
@@ -36,7 +36,7 @@ class WebSocketTestIntegration extends WebSocketTwoWayRouteIntegration {
    *
    * @param response The response to add
    */
-  addResponse(response: WebSocketIntegrationResponseProps) {
+  addResponse(response: InternalWebSocketIntegrationResponseProps) {
     super.addResponse(response);
   }
 }

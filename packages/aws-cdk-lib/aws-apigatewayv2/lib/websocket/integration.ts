@@ -1,10 +1,10 @@
 import { Construct } from 'constructs';
 import { IWebSocketApi } from './api';
-import { WebSocketIntegrationResponse, WebSocketIntegrationResponseProps } from './integration-response';
+import { InternalWebSocketIntegrationResponseProps, WebSocketIntegrationResponse } from './integration-response';
 import { IWebSocketRoute } from './route';
 import { CfnIntegration } from '.././index';
 import { IRole } from '../../../aws-iam';
-import { Duration, Resource } from '../../../core';
+import { Duration, Names, Resource } from '../../../core';
 import { IIntegration } from '../common';
 
 /**
@@ -265,7 +265,7 @@ export abstract class WebSocketRouteIntegration {
  * The abstract class that all two-way communication route integration classes will implement.
  */
 export abstract class WebSocketTwoWayRouteIntegration extends WebSocketRouteIntegration {
-  private responses: WebSocketIntegrationResponseProps[] = [];
+  private responses: InternalWebSocketIntegrationResponseProps[] = [];
 
   /**
    * Initialize an integration for a route on websocket api.
@@ -305,8 +305,13 @@ export abstract class WebSocketTwoWayRouteIntegration extends WebSocketRouteInte
         return acc;
       }, {});
 
-      for (const response of this.responses) {
-        new WebSocketIntegrationResponse(options.scope, this.integration, response);
+      for (const responseProps of this.responses) {
+        new WebSocketIntegrationResponse(
+          options.scope,
+          // FIXME any better way to generate a unique id?
+          Names.nodeUniqueId(this.integration.node) + slugify(responseProps.responseKey.key) + 'IntegrationResponse',
+          { ...responseProps, integration: this.integration },
+        );
       }
     }
 
@@ -318,7 +323,7 @@ export abstract class WebSocketTwoWayRouteIntegration extends WebSocketRouteInte
    *
    * @param response The response to add
    */
-  addResponse(response: WebSocketIntegrationResponseProps) {
+  addResponse(response: InternalWebSocketIntegrationResponseProps) {
     this.responses.push(response);
   }
 }
@@ -379,7 +384,7 @@ export interface WebSocketRouteIntegrationConfig {
    * @default - No response configuration provided.
    * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-websocket-api-integration-responses.html
    */
-  readonly responses?: WebSocketIntegrationResponseProps[];
+  readonly responses?: InternalWebSocketIntegrationResponseProps[];
 
   /**
    * Template selection expression
@@ -402,4 +407,8 @@ export interface WebSocketRouteIntegrationConfig {
    * @default - No pass through bahavior.
    */
   readonly passthroughBehavior?: PassthroughBehavior;
+}
+
+function slugify(x: string): string {
+  return x.replace(/[^a-zA-Z0-9]/g, '');
 }
