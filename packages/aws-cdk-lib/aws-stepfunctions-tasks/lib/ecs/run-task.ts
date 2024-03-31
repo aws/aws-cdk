@@ -28,10 +28,10 @@ export interface EcsRunTaskProps extends sfn.TaskStateBaseProps {
   readonly taskDefinition: ecs.TaskDefinition;
 
   /**
-  * The revision number of ECS task definition family
-  *
-  * @default - '$latest'
-  */
+   * The revision number of ECS task definition family
+   *
+   * @default - '$latest'
+   */
   readonly revisionNumber?: number;
 
   /**
@@ -87,7 +87,7 @@ export interface EcsRunTaskProps extends sfn.TaskStateBaseProps {
    *
    * @see https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_RunTask.html#ECS-RunTask-request-enableExecuteCommand
    *
-   * @default - false
+   * @default false
    */
   readonly enableExecuteCommand?: boolean;
 }
