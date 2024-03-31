@@ -357,11 +357,32 @@ export interface FileSystemAttributes {
   readonly fileSystemArn?: string;
 }
 
-interface ReplicationConfigurationProps {
-  destinationFileSystem?: IFileSystem;
-  kmsKey?: kms.IKey;
-  region?: string;
-  availabilityZone?: string;
+/**
+ * Properties for the ReplicationConfiguration.
+ */
+export interface ReplicationConfigurationProps {
+  /**
+   * The existing destination file system for the replication.
+   *
+   * You cannot configure `kmsKey`, `region` and `availabilityZone` when `destinationFileSystem` is set.
+   */
+  readonly destinationFileSystem?: IFileSystem;
+
+  /**
+   * AWS KMS key used to protect the encrypted file system.
+   */
+  readonly kmsKey?: kms.IKey;
+
+  /**
+   * The AWS Region in which the destination file system is located.
+   */
+  readonly region?: string;
+
+  /**
+   * The availability zone name of the destination file system.
+   * One zone file system is used as the destination file system when this property is set.
+   */
+  readonly availabilityZone?: string;
 }
 
 /**
@@ -400,8 +421,6 @@ export class ReplicationConfiguration {
 
   /**
    * The existing destination file system for the replication.
-   *
-   * You cannot configure `kmsKey`, `region` and `availabilityZone` when `destinationFileSystem` is set.
    */
   public readonly destinationFileSystem?: IFileSystem;
 
