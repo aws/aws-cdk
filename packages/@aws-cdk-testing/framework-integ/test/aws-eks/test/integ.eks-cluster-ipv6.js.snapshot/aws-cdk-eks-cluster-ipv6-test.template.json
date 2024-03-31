@@ -4677,7 +4677,7 @@
       "OpenIdConnectIssuerUrl"
      ]
     },
-    "CodeHash": "9243a37c51ef38f361f19b938e8dd0cd37fd4a2c18460dca4546ad79d72b465c"
+    "CodeHash": "d366404a4ce081ae11ff6b9205567ba734c94125a75aabf82e3f30bf321a2897"
    },
    "DependsOn": [
     "CIDR6"
@@ -4824,7 +4824,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
        },
-       "/fd71a94cb3c2a0119c8579011bf76c1207c1facb6034a1dbcb3c221f9f3f53a8.json"
+       "/2ac37a40fe5913d3c399ce9a94d7997afea0e6b11fef3a8d17d919bfff173b7f.json"
       ]
      ]
     }
@@ -4870,7 +4870,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
        },
-       "/17f94cdd83c5b9a47e0cb9cb42d0a5c5d6f80592a6a74581c901f4cc653a5484.json"
+       "/37ebb72c4d10b5286b87f8ccaf807f17d8f4142729bf4113e487d29fcbfdedae.json"
       ]
      ]
     }
@@ -4988,11 +4988,12 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
      },
-     "S3Key": "9243a37c51ef38f361f19b938e8dd0cd37fd4a2c18460dca4546ad79d72b465c.zip"
+     "S3Key": "d366404a4ce081ae11ff6b9205567ba734c94125a75aabf82e3f30bf321a2897.zip"
     },
     "Timeout": 900,
     "MemorySize": 128,
     "Handler": "__entrypoint__.handler",
+    "LoggingConfig": {},
     "Role": {
      "Fn::GetAtt": [
       "CustomAWSCDKOpenIdConnectProviderCustomResourceProviderRole517FED65",
@@ -5034,11 +5035,12 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
      },
-     "S3Key": "7e3e77a5ee3d2db0eeb9f1ca27d1864b68dcd5f1ef5f72269689043834710c60.zip"
+     "S3Key": "c03b8f212b49247638b0cd360b2b1ce85e385761ff33d5dc4328c5240a6bb39e.zip"
     },
     "Timeout": 900,
     "MemorySize": 128,
     "Handler": "__entrypoint__.handler",
+    "LoggingConfig": {},
     "Role": {
      "Fn::GetAtt": [
       "AWSCDKCfnUtilsProviderCustomResourceProviderRoleFE0EE867",
