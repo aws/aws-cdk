@@ -607,6 +607,7 @@ const runTask = new tasks.EcsRunTask(this, 'RunFargate', {
 ```
 
 #### ECS enable Exec
+
 By setting the property [`enableExecuteCommand`](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_RunTask.html#ECS-RunTask-request-enableExecuteCommand) to `true`, you can enable the [ECS Exec feature](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-exec.html) for the task for either Fargate or EC2 launch types.
 
 ```ts
