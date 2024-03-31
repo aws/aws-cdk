@@ -1,4 +1,5 @@
 import { Duration } from 'aws-cdk-lib';
+import { IRole } from 'aws-cdk-lib/aws-iam';
 import { ITopic, Topic } from 'aws-cdk-lib/aws-sns';
 import { IQueue, Queue } from 'aws-cdk-lib/aws-sqs';
 import { OnPartialBatchItemFailure } from './enums';
@@ -124,4 +125,12 @@ export function getDeadLetterTargetArn(dlq?: IQueue | ITopic): string | undefine
     return dlq.topicArn;
   }
   return undefined;
+}
+
+export function grantDlqPush(grantee: IRole, deadLetterTarget?: IQueue | ITopic) {
+  if (deadLetterTarget instanceof Queue) {
+    deadLetterTarget.grantSendMessages(grantee);
+  } else if (deadLetterTarget instanceof Topic) {
+    deadLetterTarget.grantPublish(grantee);
+  }
 }

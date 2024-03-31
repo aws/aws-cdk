@@ -105,3 +105,24 @@ export interface ISource {
    */
   grantDlqPush?(grantee: IRole): void;
 }
+
+/**
+ * Source interface with dead-letter target
+ */
+interface ISourceWithDlq extends ISource {
+  grantDlqPush(grantee: IRole): void;
+}
+
+export abstract class SourceWithDlq implements ISourceWithDlq {
+  readonly sourceArn: string;
+  readonly deadLetterTargetArn?: string;
+
+  constructor(sourceArn: string, deadLetterTargetArn?: string) {
+    this.sourceArn = sourceArn;
+    this.deadLetterTargetArn = deadLetterTargetArn;
+  }
+
+  abstract grantDlqPush(grantee: IRole): void;
+  abstract bind(pipe: IPipe): SourceConfig;
+  abstract grantRead(grantee: IRole): void;
+}

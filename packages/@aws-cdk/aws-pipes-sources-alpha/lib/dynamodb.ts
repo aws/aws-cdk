@@ -1,18 +1,19 @@
-import { IPipe, ISource, SourceConfig } from '@aws-cdk/aws-pipes-alpha';
+import { IPipe, SourceConfig, SourceWithDlq } from '@aws-cdk/aws-pipes-alpha';
 import { ITableV2 } from 'aws-cdk-lib/aws-dynamodb';
 import { IRole } from 'aws-cdk-lib/aws-iam';
-import { ITopic, Topic } from 'aws-cdk-lib/aws-sns';
-import { IQueue, Queue } from 'aws-cdk-lib/aws-sqs';
+import { ITopic } from 'aws-cdk-lib/aws-sns';
+import { IQueue } from 'aws-cdk-lib/aws-sqs';
 import { DynamoDBStartingPosition } from './enums';
 import {
   StreamSourceParameters,
+  grantDlqPush,
   getDeadLetterTargetArn,
   validateBatchSize,
   validateMaximumBatchingWindow,
   validateMaximumRecordAge,
   validateMaxiumRetryAttemps,
   validateParallelizationFactor,
-} from './streamSourceProps';
+} from './streamSource';
 
 /**
  * Parameters for the DynamoDB source.
@@ -29,22 +30,19 @@ export interface DynamoDBSourceParameters extends StreamSourceParameters {
 /**
  * A source that reads from an DynamoDB stream.
  */
-export class DynamoDBSource implements ISource {
+export class DynamoDBSource extends SourceWithDlq {
   private readonly table: ITableV2;
-  readonly sourceArn: string;
   private sourceParameters: DynamoDBSourceParameters;
-
   private deadLetterTarget?: IQueue | ITopic;
-  private deadLetterTargetArn?: string;
 
   constructor(table: ITableV2, parameters: DynamoDBSourceParameters) {
-    this.table = table;
-
     if (table.tableStreamArn === undefined) {
       throw new Error('Table does not have a stream defined, cannot create pipes source');
     }
 
-    this.sourceArn = table.tableStreamArn;
+    super(table.tableStreamArn, getDeadLetterTargetArn(parameters.deadLetterTarget));
+
+    this.table = table;
     this.sourceParameters = parameters;
     this.deadLetterTarget = this.sourceParameters.deadLetterTarget;
 
@@ -53,8 +51,6 @@ export class DynamoDBSource implements ISource {
     validateMaximumRecordAge(this.sourceParameters.maximumRecordAge?.toSeconds());
     validateMaxiumRetryAttemps(this.sourceParameters.maximumRetryAttempts);
     validateParallelizationFactor(this.sourceParameters.parallelizationFactor);
-
-    this.deadLetterTargetArn = getDeadLetterTargetArn(this.sourceParameters.deadLetterTarget);
   }
 
   bind(_pipe: IPipe): SourceConfig {
@@ -79,10 +75,6 @@ export class DynamoDBSource implements ISource {
   }
 
   grantDlqPush(grantee: IRole): void {
-    if (this.deadLetterTarget instanceof Queue) {
-      this.deadLetterTarget.grantSendMessages(grantee);
-    } else if (this.deadLetterTarget instanceof Topic) {
-      this.deadLetterTarget.grantPublish(grantee);
-    }
+    grantDlqPush(grantee, this.deadLetterTarget);
   }
 }

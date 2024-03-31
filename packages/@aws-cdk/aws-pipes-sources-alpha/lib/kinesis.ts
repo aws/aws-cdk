@@ -1,18 +1,19 @@
-import { IPipe, ISource, SourceConfig } from '@aws-cdk/aws-pipes-alpha';
+import { IPipe, SourceConfig, SourceWithDlq } from '@aws-cdk/aws-pipes-alpha';
 import { IRole } from 'aws-cdk-lib/aws-iam';
 import { IStream } from 'aws-cdk-lib/aws-kinesis';
-import { ITopic, Topic } from 'aws-cdk-lib/aws-sns';
-import { IQueue, Queue } from 'aws-cdk-lib/aws-sqs';
+import { ITopic } from 'aws-cdk-lib/aws-sns';
+import { IQueue } from 'aws-cdk-lib/aws-sqs';
 import { KinesisStartingPosition } from './enums';
 import {
   StreamSourceParameters,
   getDeadLetterTargetArn,
+  grantDlqPush,
   validateBatchSize,
   validateMaximumBatchingWindow,
   validateMaximumRecordAge,
   validateMaxiumRetryAttemps,
   validateParallelizationFactor,
-} from './streamSourceProps';
+} from './streamSource';
 
 /**
  * Parameters for the Kinesis source.
@@ -40,17 +41,15 @@ export interface KinesisSourceParameters extends StreamSourceParameters {
 /**
  * A source that reads from Kinesis.
  */
-export class KinesisSource implements ISource {
+export class KinesisSource extends SourceWithDlq {
   private readonly stream: IStream;
-  readonly sourceArn;
   private sourceParameters;
-
   private deadLetterTarget?: IQueue | ITopic;
-  private deadLetterTargetArn?: string;
 
   constructor(stream: IStream, parameters: KinesisSourceParameters) {
+    super(stream.streamArn, getDeadLetterTargetArn(parameters.deadLetterTarget));
+
     this.stream = stream;
-    this.sourceArn = stream.streamArn;
     this.sourceParameters = parameters;
     this.deadLetterTarget = this.sourceParameters.deadLetterTarget;
 
@@ -59,11 +58,10 @@ export class KinesisSource implements ISource {
     validateMaximumRecordAge(this.sourceParameters.maximumRecordAge?.toSeconds());
     validateMaxiumRetryAttemps(this.sourceParameters.maximumRetryAttempts);
     validateParallelizationFactor(this.sourceParameters.parallelizationFactor);
+
     if (this.sourceParameters.startingPositionTimestamp && this.sourceParameters.startingPosition !== KinesisStartingPosition.AT_TIMESTAMP) {
       throw new Error(`Timestamp only valid with StartingPosition AT_TIMESTAMP for Kinesis streams, received ${this.sourceParameters.startingPosition}`);
     }
-
-    this.deadLetterTargetArn = getDeadLetterTargetArn(this.sourceParameters.deadLetterTarget);
   }
 
   bind(_pipe: IPipe): SourceConfig {
@@ -89,10 +87,6 @@ export class KinesisSource implements ISource {
   }
 
   grantDlqPush(grantee: IRole): void {
-    if (this.deadLetterTarget instanceof Queue) {
-      this.deadLetterTarget.grantSendMessages(grantee);
-    } else if (this.deadLetterTarget instanceof Topic) {
-      this.deadLetterTarget.grantPublish(grantee);
-    }
+    grantDlqPush(grantee, this.deadLetterTarget);
   }
 }
