@@ -1,6 +1,6 @@
 import { WebSocketLambdaIntegration } from './../../lib/websocket/lambda';
 import { Template } from '../../../assertions';
-import { ContentHandling, WebSocketApi } from '../../../aws-apigatewayv2';
+import { ContentHandling, WebSocketApi, WebSocketIntegrationResponseKey } from '../../../aws-apigatewayv2';
 import { Code, Function } from '../../../aws-lambda';
 import * as lambda from '../../../aws-lambda';
 import { Duration, Stack } from '../../../core';
@@ -63,6 +63,7 @@ describe('LambdaWebSocketIntegration', () => {
           {
             timeout: Duration.seconds(10),
             contentHandling: ContentHandling.CONVERT_TO_TEXT,
+            responses: [{ responseKey: WebSocketIntegrationResponseKey.success }],
           },
         ),
       },
@@ -74,6 +75,11 @@ describe('LambdaWebSocketIntegration', () => {
       IntegrationUri,
       TimeoutInMillis: 10000,
       ContentHandlingStrategy: 'CONVERT_TO_TEXT',
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::IntegrationResponse', {
+      ApiId: { Ref: 'ApiF70053CD' },
+      IntegrationId: { Ref: 'ApiconnectRouteIntegration5AB58E39' },
+      IntegrationResponseKey: '/2\\d{2}/',
     });
   });
 });

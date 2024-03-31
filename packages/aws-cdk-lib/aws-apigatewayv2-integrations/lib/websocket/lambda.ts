@@ -5,6 +5,7 @@ import {
   WebSocketRouteIntegrationConfig,
   ContentHandling,
   WebSocketIntegrationResponse,
+  WebSocketIntegrationResponseProps,
 } from '../../../aws-apigatewayv2';
 import { ServicePrincipal } from '../../../aws-iam';
 import { IFunction } from '../../../aws-lambda';
@@ -36,7 +37,7 @@ export interface WebSocketLambdaIntegrationProps {
    * @default - No response configuration provided.
    * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-websocket-api-integration-responses.html
    */
-  readonly responses?: WebSocketIntegrationResponse[];
+  readonly responses?: WebSocketIntegrationResponseProps[];
 }
 
 /**

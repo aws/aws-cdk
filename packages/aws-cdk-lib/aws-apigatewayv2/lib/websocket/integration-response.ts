@@ -10,22 +10,22 @@ export class WebSocketIntegrationResponseKey {
   /**
    * Match all responses
    */
-  public static default= new WebSocketIntegrationResponseKey('$default');
+  public static default = new WebSocketIntegrationResponseKey('$default');
 
   /**
    * Match all 2xx responses (HTTP success codes)
    */
-  public static success= WebSocketIntegrationResponseKey.fromStatusRegExp('/2\d{2}/');
+  public static success = WebSocketIntegrationResponseKey.fromStatusRegExp(/2\d{2}/.source);
 
   /**
    * Match all 4xx responses (HTTP client error codes)
    */
-  public static clientError= WebSocketIntegrationResponseKey.fromStatusRegExp('/4\d{2}/');
+  public static clientError = WebSocketIntegrationResponseKey.fromStatusRegExp(/4\d{2}/.source);
 
   /**
    * Match all 5xx responses (HTTP server error codes)
    */
-  public static serverError= WebSocketIntegrationResponseKey.fromStatusRegExp('/5\d{2}/');
+  public static serverError = WebSocketIntegrationResponseKey.fromStatusRegExp(/5\d{2}/.source);
 
   /**
    * Generate an integration response key from an HTTP status code
@@ -46,7 +46,10 @@ export class WebSocketIntegrationResponseKey {
    *
    * @example
    * // Match all 20x status codes
-   * WebSocketIntegrationResponseKey.fromStatusRegExp('/20\d/')
+   * WebSocketIntegrationResponseKey.fromStatusRegExp('20\\d')
+   *
+   * // Match all 4xx status codes, using RegExp
+   * WebSocketIntegrationResponseKey.fromStatusRegExp(/4\d{2}/.source)
    *
    * @param httpStatusRegExpStr HTTP status code regular expression string representation
    * @see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp
@@ -55,12 +58,6 @@ export class WebSocketIntegrationResponseKey {
    */
   public static fromStatusRegExp(httpStatusRegExpStr: string): WebSocketIntegrationResponseKey {
     const httpStatusRegExp = new RegExp(httpStatusRegExpStr);
-
-    if (httpStatusRegExp.flags) {
-      throw new Error(
-        `RegExp flags are not supported, got '${httpStatusRegExp}', expected '/${httpStatusRegExp.source}/'`,
-      );
-    }
 
     return new WebSocketIntegrationResponseKey(`/${httpStatusRegExp.source}/`);
   }
@@ -75,12 +72,13 @@ export class WebSocketIntegrationResponseKey {
  */
 export interface WebSocketIntegrationResponseProps {
   /**
-   * The HTTP status code the response will be mapped to
+   * The HTTP status code or regular expression the response will be mapped to
    */
   readonly responseKey: WebSocketIntegrationResponseKey;
 
   /**
    * TODO
+   *
    * @default - No response templates
    */
   readonly responseTemplates?: { [contentType: string]: string };
@@ -95,6 +93,7 @@ export interface WebSocketIntegrationResponseProps {
 
   /**
    * TODO
+   *
    * @default - No response parameters
    */
   readonly responseParameters?: { [key: string]: string };
