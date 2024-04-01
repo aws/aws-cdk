@@ -90,7 +90,7 @@ export interface CommonAutoScalingGroupProps {
   /**
    * The SSH keypair to grant access to the instance.
    *
-   * `keyName`, `launchTemplate` and `mixedInstancesPolicy` must not be specified 
+   * `keyName`, `launchTemplate` and `mixedInstancesPolicy` must not be specified
    *  when this property is specified
    *
    * @default - No SSH access will be possible.
@@ -1393,8 +1393,8 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
           role: this.role,
         });
 
-        let keyUsageType: { keyPair?: ec2.IKeyPair, keyName?: string } = {};
-        
+        let keyUsageType: { keyPair?: ec2.IKeyPair; keyName?: string } = {};
+
         if (props.keyPair) {
           keyUsageType = { keyPair: props.keyPair };
         } else {
