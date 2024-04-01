@@ -34,6 +34,23 @@ class TestBucketDeployment extends cdk.Stack {
       retainOnDelete: false, // default is true, which will block the integration test cleanup
     });
 
+    const vpc = new ec2.Vpc(this, 'InlineVpc', { restrictDefaultSecurityGroup: false })
+    const sg1 = new ec2.SecurityGroup(this, 's3deploy-sg', {
+      vpc,
+      allowAllOutbound: false,
+      disableInlineRules: false,
+    })
+    sg1.addEgressRule(ec2.Peer.ipv4('10.0.0.0/8'), ec2.Port.tcp(443))
+
+    new s3deploy.BucketDeployment(this, 'DeployWithSecurityGroup', {
+      sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
+      destinationBucket,
+      destinationKeyPrefix: 'data/',
+      vpc,
+      securityGroups: [sg1],
+      retainOnDelete: false, // default is true, which will block the integration test cleanup
+    });
+
     const bucket2 = new s3.Bucket(this, 'Destination2', {
       removalPolicy: cdk.RemovalPolicy.DESTROY,
       autoDeleteObjects: true, // needed for integration test cleanup
