@@ -140,7 +140,7 @@
         {
          "Ref": "MyTable794EDED1"
         },
-        "\",\n        \"Item\": {\n          \"id\": { \"S\": \"$context.requestId\" },\n          \"userData\": { \"S\": $input.json('$.data') },\n        },\n      }"
+        "\",\n        \"Item\": {\n          \"id\": { \"S\": \"$context.requestId\" },\n          \"userData\": { \"S\": $input.json('$.data') }\n        }\n      }"
        ]
       ]
      }
