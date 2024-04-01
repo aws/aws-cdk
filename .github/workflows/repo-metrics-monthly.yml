@@ -30,7 +30,7 @@ jobs:
         echo "last_month=$first_day..$last_day" >> "$GITHUB_ENV"
 
     - name: Report on issues
-      uses: github/issue-metrics@v2
+      uses: github/issue-metrics@v3
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         SEARCH_QUERY: 'repo:aws/aws-cdk is:issue created:${{ env.last_month }} -reason:"not planned"'
@@ -44,7 +44,7 @@ jobs:
         assignees: evgenyka
         
     - name: Report on PRs
-      uses: github/issue-metrics@v2
+      uses: github/issue-metrics@v3
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         SEARCH_QUERY: 'repo:aws/aws-cdk is:pr created:${{ env.last_month }} -is:draft'
