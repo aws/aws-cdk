@@ -1,8 +1,9 @@
 import { App, Stack } from 'aws-cdk-lib';
-
 import { Template } from 'aws-cdk-lib/assertions';
 import { Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
-import { TestEnrichment, TestSource, TestTarget } from './test-classes';
+import { Topic } from 'aws-cdk-lib/aws-sns';
+import { Queue } from 'aws-cdk-lib/aws-sqs';
+import { TestEnrichment, TestSource, TestSourceWithDlq, TestTarget } from './test-classes';
 import { DesiredState, IEnrichment, ILogDestination, IPipe, ISource, ITarget, IncludeExecutionData, LogDestinationConfig, LogLevel, Pipe } from '../lib';
 
 class TestLogDestination implements ILogDestination {
@@ -185,6 +186,36 @@ describe('Pipe', () => {
       },
       );
 
+    });
+
+    test('grantDlqPush is called for sources with an SNS topic DLQ', () => {
+      // WHEN
+      const topic = new Topic(stack, 'MyTopic');
+      const sourceWithDlq = new TestSourceWithDlq(topic);
+
+      new Pipe(stack, 'TestPipe', {
+        pipeName: 'TestPipe',
+        source: sourceWithDlq,
+        target,
+      });
+
+      // THEN
+      expect(sourceWithDlq.grantDlqPush).toHaveBeenCalled();
+    });
+
+    test('grantDlqPush is called for sources with an SQS queue DLQ', () => {
+      // WHEN
+      const queue = new Queue(stack, 'MyQueue');
+      const sourceWithDlq = new TestSourceWithDlq(queue);
+
+      new Pipe(stack, 'TestPipe', {
+        pipeName: 'TestPipe',
+        source: sourceWithDlq,
+        target,
+      });
+
+      // THEN
+      expect(sourceWithDlq.grantDlqPush).toHaveBeenCalled();
     });
   });
 

@@ -1,5 +1,7 @@
 import { CfnPipe } from 'aws-cdk-lib/aws-pipes';
-import { EnrichmentParametersConfig, IEnrichment, ILogDestination, IPipe, ISource, ITarget, LogDestinationConfig, SourceConfig, SourceParameters } from '../lib';
+import { ITopic } from 'aws-cdk-lib/aws-sns';
+import { IQueue } from 'aws-cdk-lib/aws-sqs';
+import { EnrichmentParametersConfig, IEnrichment, ILogDestination, IPipe, ISource, ITarget, LogDestinationConfig, SourceConfig, SourceParameters, SourceWithDlq } from '../lib';
 
 export class TestSource implements ISource {
   readonly sourceArn = 'source-arn';
@@ -15,6 +17,23 @@ export class TestSource implements ISource {
   bind(_pipe: IPipe): SourceConfig {
     return {
       sourceParameters: this.sourceParameters,
+    };
+  }
+}
+
+export class TestSourceWithDlq extends SourceWithDlq {
+  deadLetterTarget?: IQueue | ITopic;
+  public grantRead = jest.fn();
+  public grantDlqPush = jest.fn();
+
+  constructor(deadLetterTarget: IQueue | ITopic) {
+    super('source-arn', deadLetterTarget);
+    this.deadLetterTarget = deadLetterTarget;
+  }
+
+  bind(_pipe: IPipe): SourceConfig {
+    return {
+      sourceParameters: {},
     };
   }
 }
