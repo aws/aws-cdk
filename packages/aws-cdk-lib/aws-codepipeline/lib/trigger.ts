@@ -260,35 +260,8 @@ export class Trigger {
       const pushFilter = this.props.gitConfiguration.pushFilter;
       const pullRequestFilter = this.props.gitConfiguration.pullRequestFilter;
 
-      const push: CfnPipeline.GitPushFilterProperty[] | undefined = pushFilter?.map(filter => {
-        const tags: CfnPipeline.GitTagFilterCriteriaProperty | undefined = {
-          // set to undefined if empty array because CloudFormation does not accept empty array
-          excludes: filter.tagsExcludes?.length ? filter.tagsExcludes : undefined,
-          includes: filter.tagsIncludes?.length ? filter.tagsIncludes : undefined,
-        };
-        return { tags };
-      });
-      const pullRequest: CfnPipeline.GitPullRequestFilterProperty[] | undefined = pullRequestFilter?.map(filter => {
-        const branches: CfnPipeline.GitBranchFilterCriteriaProperty | undefined =
-          filter.branchesExcludes?.length || filter.branchesIncludes?.length ? {
-            // set to undefined if empty array because CloudFormation does not accept empty array
-            excludes: filter.branchesExcludes?.length ? filter.branchesExcludes : undefined,
-            includes: filter.branchesIncludes?.length ? filter.branchesIncludes : undefined,
-          } : undefined;
-        const filePaths: CfnPipeline.GitFilePathFilterCriteriaProperty | undefined =
-          filter.filePathsExcludes?.length || filter.filePathsIncludes?.length ? {
-            // set to undefined if empty array because CloudFormation does not accept empty array
-            excludes: filter.filePathsExcludes?.length ? filter.filePathsExcludes : undefined,
-            includes: filter.filePathsIncludes?.length ? filter.filePathsIncludes : undefined,
-          } : undefined;
-        // set to all events if empty array or undefined because CloudFormation does not accept empty array and undefined
-        const events: string[] = filter.events?.length ? Array.from(new Set(filter.events)) : [
-          GitPullRequestEvent.OPEN,
-          GitPullRequestEvent.UPDATED,
-          GitPullRequestEvent.CLOSED,
-        ];
-        return { branches, filePaths, events };
-      });
+      const push = this.renderPushFilter(pushFilter);
+      const pullRequest = this.renderPullRequestFilter(pullRequestFilter);
 
       gitConfiguration = {
         // set to undefined if empty array because CloudFormation does not accept empty array
@@ -303,5 +276,40 @@ export class Trigger {
       gitConfiguration,
       providerType: this.props.providerType,
     };
+  }
+
+  private renderPushFilter(pushFilter?: GitPushFilter[]): CfnPipeline.GitPushFilterProperty[] | undefined {
+    return pushFilter?.map(filter => {
+      const tags: CfnPipeline.GitTagFilterCriteriaProperty | undefined = {
+        // set to undefined if empty array because CloudFormation does not accept empty array
+        excludes: filter.tagsExcludes?.length ? filter.tagsExcludes : undefined,
+        includes: filter.tagsIncludes?.length ? filter.tagsIncludes : undefined,
+      };
+      return { tags };
+    });
+  }
+
+  private renderPullRequestFilter(pullRequest?: GitPullRequestFilter[]): CfnPipeline.GitPullRequestFilterProperty[] | undefined {
+    return pullRequest?.map(filter => {
+      const branches: CfnPipeline.GitBranchFilterCriteriaProperty | undefined =
+        filter.branchesExcludes?.length || filter.branchesIncludes?.length ? {
+          // set to undefined if empty array because CloudFormation does not accept empty array
+          excludes: filter.branchesExcludes?.length ? filter.branchesExcludes : undefined,
+          includes: filter.branchesIncludes?.length ? filter.branchesIncludes : undefined,
+        } : undefined;
+      const filePaths: CfnPipeline.GitFilePathFilterCriteriaProperty | undefined =
+        filter.filePathsExcludes?.length || filter.filePathsIncludes?.length ? {
+          // set to undefined if empty array because CloudFormation does not accept empty array
+          excludes: filter.filePathsExcludes?.length ? filter.filePathsExcludes : undefined,
+          includes: filter.filePathsIncludes?.length ? filter.filePathsIncludes : undefined,
+        } : undefined;
+      // set to all events if empty array or undefined because CloudFormation does not accept empty array and undefined
+      const events: string[] = filter.events?.length ? Array.from(new Set(filter.events)) : [
+        GitPullRequestEvent.OPEN,
+        GitPullRequestEvent.UPDATED,
+        GitPullRequestEvent.CLOSED,
+      ];
+      return { branches, filePaths, events };
+    });
   }
 }
