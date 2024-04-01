@@ -239,3 +239,6 @@ removed:aws-cdk-lib.custom_resources.LogOptions
 removed:aws-cdk-lib.custom_resources.WaiterStateMachineProps
 removed:aws-cdk-lib.custom_resources.ProviderProps.disableWaiterStateMachineLogging
 removed:aws-cdk-lib.custom_resources.ProviderProps.waiterStateMachineLogOptions
+
+# This member was added but never implemented, and could not have suited a proper implementation
+removed:aws-cdk-lib.aws_apigatewayv2.WebSocketRoute.integrationResponseId
