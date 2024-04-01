@@ -1,6 +1,6 @@
 import { Construct, IConstruct, Node } from 'constructs';
 import * as lambda from '../../aws-lambda';
-import { CustomResource, Duration } from '../../core';
+import { CustomResource, Duration, CustomResourceProvider } from '../../core';
 import { TriggerProvider } from '../../custom-resource-handlers/dist/triggers/trigger-provider.generated';
 
 /**
@@ -111,12 +111,13 @@ export interface TriggerProps extends TriggerOptions {
  * Triggers an AWS Lambda function during deployment.
  */
 export class Trigger extends Construct implements ITrigger {
+  crProvider: CustomResourceProvider;
   constructor(scope: Construct, id: string, props: TriggerProps) {
     super(scope, id);
 
-    const provider = TriggerProvider.getOrCreateProvider(this, 'AWSCDK.TriggerCustomResourceProvider');
+    this.crProvider = TriggerProvider.getOrCreateProvider(this, 'AWSCDK.TriggerCustomResourceProvider');
 
-    provider.addToRolePolicy({
+    this.crProvider.addToRolePolicy({
       Effect: 'Allow',
       Action: ['lambda:InvokeFunction'],
       Resource: [`${props.handler.functionArn}:*`],
@@ -124,7 +125,7 @@ export class Trigger extends Construct implements ITrigger {
 
     new CustomResource(this, 'Default', {
       resourceType: 'Custom::Trigger',
-      serviceToken: provider.serviceToken,
+      serviceToken: this.crProvider.serviceToken,
       properties: {
         HandlerArn: props.handler.currentVersion.functionArn,
         InvocationType: props.invocationType ?? 'RequestResponse',
