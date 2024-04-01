@@ -8,7 +8,7 @@ import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 /*
  * Stack verification steps:
  * 1. Connect: 'wscat -c <endpoint-in-the-stack-output>'. Should connect successfully
- * 2. Sending: '> {"action":"putItem", "data": "valid"}' should return {sucess: true}
+ * 2. Sending: '> {"action":"putItem", "data": "valid"}' should return {success: true}
  *    and add an item to the table, with the userData field set to "valid"
  * 2. Sending: '> {"action":"putItem", "data": 1}' should return {error: "Bad request"} and not insert an item to the table
  */

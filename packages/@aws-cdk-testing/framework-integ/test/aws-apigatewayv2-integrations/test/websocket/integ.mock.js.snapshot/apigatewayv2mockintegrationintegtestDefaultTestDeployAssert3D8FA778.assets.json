@@ -1,15 +1,15 @@
 {
   "version": "36.0.0",
   "files": {
-    "7cf95007ced5671e325821ac7178a5c0ede1f7caaa2ac8e08bff1eb3b4ea7883": {
+    "21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22": {
       "source": {
-        "path": "integ-mock-websocket-integration.template.json",
+        "path": "apigatewayv2mockintegrationintegtestDefaultTestDeployAssert3D8FA778.template.json",
         "packaging": "file"
       },
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "7cf95007ced5671e325821ac7178a5c0ede1f7caaa2ac8e08bff1eb3b4ea7883.json",
+          "objectKey": "21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
