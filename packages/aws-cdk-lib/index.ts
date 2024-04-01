@@ -226,6 +226,7 @@ export * as aws_scheduler from './aws-scheduler';
 export * as aws_sdb from './aws-sdb';
 export * as aws_secretsmanager from './aws-secretsmanager';
 export * as aws_securityhub from './aws-securityhub';
+export * as aws_securitylake from './aws-securitylake';
 export * as aws_servicecatalog from './aws-servicecatalog';
 export * as aws_servicecatalogappregistry from './aws-servicecatalogappregistry';
 export * as aws_servicediscovery from './aws-servicediscovery';
