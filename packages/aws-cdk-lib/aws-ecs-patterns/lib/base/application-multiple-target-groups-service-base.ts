@@ -122,7 +122,7 @@ export interface ApplicationMultipleTargetGroupsServiceBaseProps {
    * @see https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_DeploymentConfiguration.html
    * @default - 0 if daemon, otherwise 50
    */
-  readonly minimumHealthyPercent?: number;
+  readonly minHealthyPercent?: number;
 }
 
 /**
