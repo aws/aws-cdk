@@ -78,6 +78,7 @@
     },
     "AuthorizationType": "NONE",
     "RouteKey": "$default",
+    "RouteResponseSelectionExpression": "$default",
     "Target": {
      "Fn::Join": [
       "",
@@ -91,13 +92,24 @@
     }
    }
   },
-  "mywsapiconnectRouteDynamodbPutItem9E189A39": {
+  "mywsapidefaultRouteResponse9B924040": {
+   "Type": "AWS::ApiGatewayV2::RouteResponse",
+   "Properties": {
+    "ApiId": {
+     "Ref": "mywsapi32E6CE11"
+    },
+    "RouteId": {
+     "Ref": "mywsapidefaultRouteE9382DF8"
+    },
+    "RouteResponseKey": "$default"
+   }
+  },
+  "mywsapiputItemRouteDynamodbPutItem3BF52E5B": {
    "Type": "AWS::ApiGatewayV2::Integration",
    "Properties": {
     "ApiId": {
      "Ref": "mywsapi32E6CE11"
     },
-    "ContentHandlingStrategy": "CONVERT_TO_BINARY",
     "CredentialsArn": {
      "Fn::GetAtt": [
       "ApiGatewayRoleD2518903",
@@ -118,20 +130,17 @@
       ]
      ]
     },
-    "PassthroughBehavior": "WHEN_NO_TEMPLATES",
-    "RequestParameters": {
-     "integration.request.header.Content-Type": "'application/x-www-form-urlencoded'"
-    },
+    "PassthroughBehavior": "NEVER",
     "RequestTemplates": {
-     "application/json": {
+     "$default": {
       "Fn::Join": [
        "",
        [
-        "{\"TableName\":\"",
+        "{\n        \"TableName\": \"",
         {
          "Ref": "MyTable794EDED1"
         },
-        "\",\"Item\":{\"id\":{\"S\":\"$context.requestId\"}}}"
+        "\",\n        \"Item\": {\n          \"id\": { \"S\": \"$context.requestId\" },\n          \"userData\": { \"S\": $input.json('$.data') },\n        },\n      }"
        ]
       ]
      }
@@ -140,25 +149,68 @@
     "TimeoutInMillis": 10000
    }
   },
-  "mywsapiconnectRoute45A0ED6A": {
+  "mywsapiputItemRouteintegawswebsocketintegrationmywsapiputItemRouteDynamodbPutItem8D520CE3defaultIntegrationResponse2F8E9302": {
+   "Type": "AWS::ApiGatewayV2::IntegrationResponse",
+   "Properties": {
+    "ApiId": {
+     "Ref": "mywsapi32E6CE11"
+    },
+    "IntegrationId": {
+     "Ref": "mywsapiputItemRouteDynamodbPutItem3BF52E5B"
+    },
+    "IntegrationResponseKey": "$default",
+    "ResponseTemplates": {
+     "application/json": "{\"success\":true}"
+    }
+   }
+  },
+  "mywsapiputItemRouteintegawswebsocketintegrationmywsapiputItemRouteDynamodbPutItem8D520CE34d2IntegrationResponseF586C3A5": {
+   "Type": "AWS::ApiGatewayV2::IntegrationResponse",
+   "Properties": {
+    "ApiId": {
+     "Ref": "mywsapi32E6CE11"
+    },
+    "IntegrationId": {
+     "Ref": "mywsapiputItemRouteDynamodbPutItem3BF52E5B"
+    },
+    "IntegrationResponseKey": "/4\\d{2}/",
+    "ResponseTemplates": {
+     "application/json": "{\"error\":\"Bad request\"}"
+    }
+   }
+  },
+  "mywsapiputItemRoute3F16A651": {
    "Type": "AWS::ApiGatewayV2::Route",
    "Properties": {
     "ApiId": {
      "Ref": "mywsapi32E6CE11"
     },
     "AuthorizationType": "NONE",
-    "RouteKey": "$connect",
+    "RouteKey": "putItem",
+    "RouteResponseSelectionExpression": "$default",
     "Target": {
      "Fn::Join": [
       "",
       [
        "integrations/",
        {
-        "Ref": "mywsapiconnectRouteDynamodbPutItem9E189A39"
+        "Ref": "mywsapiputItemRouteDynamodbPutItem3BF52E5B"
        }
       ]
      ]
     }
+   }
+  },
+  "mywsapiputItemRouteResponse6A675D0F": {
+   "Type": "AWS::ApiGatewayV2::RouteResponse",
+   "Properties": {
+    "ApiId": {
+     "Ref": "mywsapi32E6CE11"
+    },
+    "RouteId": {
+     "Ref": "mywsapiputItemRoute3F16A651"
+    },
+    "RouteResponseKey": "$default"
    }
   },
   "DevStage520A913F": {
@@ -169,6 +221,30 @@
     },
     "AutoDeploy": true,
     "StageName": "dev"
+   }
+  }
+ },
+ "Outputs": {
+  "ApiEndpoint": {
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "wss://",
+      {
+       "Ref": "mywsapi32E6CE11"
+      },
+      ".execute-api.",
+      {
+       "Ref": "AWS::Region"
+      },
+      ".",
+      {
+       "Ref": "AWS::URLSuffix"
+      },
+      "/dev"
+     ]
+    ]
    }
   }
  },

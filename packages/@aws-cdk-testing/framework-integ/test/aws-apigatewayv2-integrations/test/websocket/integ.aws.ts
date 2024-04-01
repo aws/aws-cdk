@@ -1,13 +1,16 @@
-import { ContentHandling, HttpMethod, PassthroughBehavior, WebSocketApi, WebSocketStage } from 'aws-cdk-lib/aws-apigatewayv2';
+import { HttpMethod, PassthroughBehavior, WebSocketApi, WebSocketIntegrationResponseKey, WebSocketStage } from 'aws-cdk-lib/aws-apigatewayv2';
 import * as dynamodb from 'aws-cdk-lib/aws-dynamodb';
 import * as iam from 'aws-cdk-lib/aws-iam';
-import { App, Duration, RemovalPolicy, Stack } from 'aws-cdk-lib';
+import { App, CfnOutput, Duration, RemovalPolicy, Stack } from 'aws-cdk-lib';
 import { WebSocketAwsIntegration, WebSocketMockIntegration } from 'aws-cdk-lib/aws-apigatewayv2-integrations';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
 /*
  * Stack verification steps:
- * 1. Verify manually that the integration has type "MOCK"
+ * 1. Connect: 'wscat -c <endpoint-in-the-stack-output>'. Should connect successfully
+ * 2. Sending: '> {"action":"putItem", "data": "valid"}' should return {sucess: true}
+ *    and add an item to the table, with the userData field set to "valid"
+ * 2. Sending: '> {"action":"putItem", "data": 1}' should return {error: "Bad request"} and not insert an item to the table
  */
 
 const app = new App();
@@ -27,40 +30,55 @@ const apiRole = new iam.Role(stack, 'ApiGatewayRole', {
 });
 
 const webSocketApi = new WebSocketApi(stack, 'mywsapi', {
-  defaultRouteOptions: { integration: new WebSocketMockIntegration('DefaultIntegration') },
+  defaultRouteOptions: {
+    integration: new WebSocketMockIntegration('DefaultIntegration'),
+    returnResponse: true,
+  },
 });
 
 // Optionally, create a WebSocket stage
-new WebSocketStage(stack, 'DevStage', {
+const stage = new WebSocketStage(stack, 'DevStage', {
   webSocketApi: webSocketApi,
   stageName: 'dev',
   autoDeploy: true,
 });
 
-webSocketApi.addRoute('$connect', {
+webSocketApi.addRoute('putItem', {
   integration: new WebSocketAwsIntegration('DynamodbPutItem', {
     integrationUri: `arn:aws:apigateway:${stack.region}:dynamodb:action/PutItem`,
     integrationMethod: HttpMethod.POST,
     credentialsRole: apiRole,
-    requestParameters: {
-      'integration.request.header.Content-Type': '\'application/x-www-form-urlencoded\'',
-    },
     requestTemplates: {
-      'application/json': JSON.stringify({
-        TableName: table.tableName,
-        Item: {
-          id: {
-            S: '$context.requestId',
-          },
-        },
-      }),
+      $default: `{
+        "TableName": "${table.tableName}",
+        "Item": {
+          "id": { "S": "$context.requestId" },
+          "userData": { "S": $input.json('$.data') }
+        }
+      }`,
     },
+    responses: [
+      {
+        responseKey: WebSocketIntegrationResponseKey.default,
+        responseTemplates: {
+          'application/json': JSON.stringify({ success: true }),
+        },
+      },
+      {
+        responseKey: WebSocketIntegrationResponseKey.clientError,
+        responseTemplates: {
+          'application/json': JSON.stringify({ error: 'Bad request' }),
+        },
+      },
+    ],
     templateSelectionExpression: '\\$default',
-    passthroughBehavior: PassthroughBehavior.WHEN_NO_TEMPLATES,
-    contentHandling: ContentHandling.CONVERT_TO_BINARY,
+    passthroughBehavior: PassthroughBehavior.NEVER,
     timeout: Duration.seconds(10),
   }),
+  returnResponse: true,
 });
+
+new CfnOutput(stack, 'ApiEndpoint', { value: stage.url });
 
 new IntegTest(app, 'apigatewayv2-aws-integration-integ-test', {
   testCases: [stack],

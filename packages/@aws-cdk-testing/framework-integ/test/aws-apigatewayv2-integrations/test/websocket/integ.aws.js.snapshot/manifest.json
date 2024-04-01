@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/636fdd026b7f14567bc975abac73dfbac55058665c31d090375174adc715aab5.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/9fa081d322ebd6590989ef309a45cd2247a2605ec463da5bb2e4794fa6233c68.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -72,22 +72,52 @@
             "data": "mywsapidefaultRouteE9382DF8"
           }
         ],
-        "/integ-aws-websocket-integration/mywsapi/$connect-Route/DynamodbPutItem/Resource": [
+        "/integ-aws-websocket-integration/mywsapi/$default-Route/Response": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "mywsapiconnectRouteDynamodbPutItem9E189A39"
+            "data": "mywsapidefaultRouteResponse9B924040"
           }
         ],
-        "/integ-aws-websocket-integration/mywsapi/$connect-Route/Resource": [
+        "/integ-aws-websocket-integration/mywsapi/putItem-Route/DynamodbPutItem/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "mywsapiconnectRoute45A0ED6A"
+            "data": "mywsapiputItemRouteDynamodbPutItem3BF52E5B"
+          }
+        ],
+        "/integ-aws-websocket-integration/mywsapi/putItem-Route/integawswebsocketintegrationmywsapiputItemRouteDynamodbPutItem8D520CE3defaultIntegrationResponse/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "mywsapiputItemRouteintegawswebsocketintegrationmywsapiputItemRouteDynamodbPutItem8D520CE3defaultIntegrationResponse2F8E9302"
+          }
+        ],
+        "/integ-aws-websocket-integration/mywsapi/putItem-Route/integawswebsocketintegrationmywsapiputItemRouteDynamodbPutItem8D520CE34d2IntegrationResponse/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "mywsapiputItemRouteintegawswebsocketintegrationmywsapiputItemRouteDynamodbPutItem8D520CE34d2IntegrationResponseF586C3A5"
+          }
+        ],
+        "/integ-aws-websocket-integration/mywsapi/putItem-Route/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "mywsapiputItemRoute3F16A651"
+          }
+        ],
+        "/integ-aws-websocket-integration/mywsapi/putItem-Route/Response": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "mywsapiputItemRouteResponse6A675D0F"
           }
         ],
         "/integ-aws-websocket-integration/DevStage/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "DevStage520A913F"
+          }
+        ],
+        "/integ-aws-websocket-integration/ApiEndpoint": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ApiEndpoint"
           }
         ],
         "/integ-aws-websocket-integration/BootstrapVersion": [

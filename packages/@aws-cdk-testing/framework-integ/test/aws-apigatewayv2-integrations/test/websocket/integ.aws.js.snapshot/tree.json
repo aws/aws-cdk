@@ -173,6 +173,7 @@
                         },
                         "authorizationType": "NONE",
                         "routeKey": "$default",
+                        "routeResponseSelectionExpression": "$default",
                         "target": {
                           "Fn::Join": [
                             "",
@@ -190,6 +191,26 @@
                       "fqn": "aws-cdk-lib.aws_apigatewayv2.CfnRoute",
                       "version": "0.0.0"
                     }
+                  },
+                  "Response": {
+                    "id": "Response",
+                    "path": "integ-aws-websocket-integration/mywsapi/$default-Route/Response",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::ApiGatewayV2::RouteResponse",
+                      "aws:cdk:cloudformation:props": {
+                        "apiId": {
+                          "Ref": "mywsapi32E6CE11"
+                        },
+                        "routeId": {
+                          "Ref": "mywsapidefaultRouteE9382DF8"
+                        },
+                        "routeResponseKey": "$default"
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_apigatewayv2.CfnRouteResponse",
+                      "version": "0.0.0"
+                    }
                   }
                 },
                 "constructInfo": {
@@ -197,24 +218,23 @@
                   "version": "0.0.0"
                 }
               },
-              "$connect-Route": {
-                "id": "$connect-Route",
-                "path": "integ-aws-websocket-integration/mywsapi/$connect-Route",
+              "putItem-Route": {
+                "id": "putItem-Route",
+                "path": "integ-aws-websocket-integration/mywsapi/putItem-Route",
                 "children": {
                   "DynamodbPutItem": {
                     "id": "DynamodbPutItem",
-                    "path": "integ-aws-websocket-integration/mywsapi/$connect-Route/DynamodbPutItem",
+                    "path": "integ-aws-websocket-integration/mywsapi/putItem-Route/DynamodbPutItem",
                     "children": {
                       "Resource": {
                         "id": "Resource",
-                        "path": "integ-aws-websocket-integration/mywsapi/$connect-Route/DynamodbPutItem/Resource",
+                        "path": "integ-aws-websocket-integration/mywsapi/putItem-Route/DynamodbPutItem/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::ApiGatewayV2::Integration",
                           "aws:cdk:cloudformation:props": {
                             "apiId": {
                               "Ref": "mywsapi32E6CE11"
                             },
-                            "contentHandlingStrategy": "CONVERT_TO_BINARY",
                             "credentialsArn": {
                               "Fn::GetAtt": [
                                 "ApiGatewayRoleD2518903",
@@ -235,20 +255,17 @@
                                 ]
                               ]
                             },
-                            "passthroughBehavior": "WHEN_NO_TEMPLATES",
-                            "requestParameters": {
-                              "integration.request.header.Content-Type": "'application/x-www-form-urlencoded'"
-                            },
+                            "passthroughBehavior": "NEVER",
                             "requestTemplates": {
-                              "application/json": {
+                              "$default": {
                                 "Fn::Join": [
                                   "",
                                   [
-                                    "{\"TableName\":\"",
+                                    "{\n        \"TableName\": \"",
                                     {
                                       "Ref": "MyTable794EDED1"
                                     },
-                                    "\",\"Item\":{\"id\":{\"S\":\"$context.requestId\"}}}"
+                                    "\",\n        \"Item\": {\n          \"id\": { \"S\": \"$context.requestId\" },\n          \"userData\": { \"S\": $input.json('$.data') },\n        },\n      }"
                                   ]
                                 ]
                               }
@@ -268,9 +285,75 @@
                       "version": "0.0.0"
                     }
                   },
+                  "integawswebsocketintegrationmywsapiputItemRouteDynamodbPutItem8D520CE3defaultIntegrationResponse": {
+                    "id": "integawswebsocketintegrationmywsapiputItemRouteDynamodbPutItem8D520CE3defaultIntegrationResponse",
+                    "path": "integ-aws-websocket-integration/mywsapi/putItem-Route/integawswebsocketintegrationmywsapiputItemRouteDynamodbPutItem8D520CE3defaultIntegrationResponse",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "integ-aws-websocket-integration/mywsapi/putItem-Route/integawswebsocketintegrationmywsapiputItemRouteDynamodbPutItem8D520CE3defaultIntegrationResponse/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::ApiGatewayV2::IntegrationResponse",
+                          "aws:cdk:cloudformation:props": {
+                            "apiId": {
+                              "Ref": "mywsapi32E6CE11"
+                            },
+                            "integrationId": {
+                              "Ref": "mywsapiputItemRouteDynamodbPutItem3BF52E5B"
+                            },
+                            "integrationResponseKey": "$default",
+                            "responseTemplates": {
+                              "application/json": "{\"success\":true}"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_apigatewayv2.CfnIntegrationResponse",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_apigatewayv2.WebSocketIntegrationResponse",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "integawswebsocketintegrationmywsapiputItemRouteDynamodbPutItem8D520CE34d2IntegrationResponse": {
+                    "id": "integawswebsocketintegrationmywsapiputItemRouteDynamodbPutItem8D520CE34d2IntegrationResponse",
+                    "path": "integ-aws-websocket-integration/mywsapi/putItem-Route/integawswebsocketintegrationmywsapiputItemRouteDynamodbPutItem8D520CE34d2IntegrationResponse",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "integ-aws-websocket-integration/mywsapi/putItem-Route/integawswebsocketintegrationmywsapiputItemRouteDynamodbPutItem8D520CE34d2IntegrationResponse/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::ApiGatewayV2::IntegrationResponse",
+                          "aws:cdk:cloudformation:props": {
+                            "apiId": {
+                              "Ref": "mywsapi32E6CE11"
+                            },
+                            "integrationId": {
+                              "Ref": "mywsapiputItemRouteDynamodbPutItem3BF52E5B"
+                            },
+                            "integrationResponseKey": "/4\\d{2}/",
+                            "responseTemplates": {
+                              "application/json": "{\"error\":\"Bad request\"}"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_apigatewayv2.CfnIntegrationResponse",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_apigatewayv2.WebSocketIntegrationResponse",
+                      "version": "0.0.0"
+                    }
+                  },
                   "Resource": {
                     "id": "Resource",
-                    "path": "integ-aws-websocket-integration/mywsapi/$connect-Route/Resource",
+                    "path": "integ-aws-websocket-integration/mywsapi/putItem-Route/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::ApiGatewayV2::Route",
                       "aws:cdk:cloudformation:props": {
@@ -278,14 +361,15 @@
                           "Ref": "mywsapi32E6CE11"
                         },
                         "authorizationType": "NONE",
-                        "routeKey": "$connect",
+                        "routeKey": "putItem",
+                        "routeResponseSelectionExpression": "$default",
                         "target": {
                           "Fn::Join": [
                             "",
                             [
                               "integrations/",
                               {
-                                "Ref": "mywsapiconnectRouteDynamodbPutItem9E189A39"
+                                "Ref": "mywsapiputItemRouteDynamodbPutItem3BF52E5B"
                               }
                             ]
                           ]
@@ -294,6 +378,26 @@
                     },
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_apigatewayv2.CfnRoute",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Response": {
+                    "id": "Response",
+                    "path": "integ-aws-websocket-integration/mywsapi/putItem-Route/Response",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::ApiGatewayV2::RouteResponse",
+                      "aws:cdk:cloudformation:props": {
+                        "apiId": {
+                          "Ref": "mywsapi32E6CE11"
+                        },
+                        "routeId": {
+                          "Ref": "mywsapiputItemRoute3F16A651"
+                        },
+                        "routeResponseKey": "$default"
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_apigatewayv2.CfnRouteResponse",
                       "version": "0.0.0"
                     }
                   }
@@ -334,6 +438,14 @@
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_apigatewayv2.WebSocketStage",
+              "version": "0.0.0"
+            }
+          },
+          "ApiEndpoint": {
+            "id": "ApiEndpoint",
+            "path": "integ-aws-websocket-integration/ApiEndpoint",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnOutput",
               "version": "0.0.0"
             }
           },
