@@ -1,6 +1,6 @@
 import { WebSocketMockIntegration } from './../../lib/websocket/mock';
 import { Template } from '../../../assertions';
-import { WebSocketApi } from '../../../aws-apigatewayv2';
+import { WebSocketApi, WebSocketIntegrationResponseKey } from '../../../aws-apigatewayv2';
 import { Stack } from '../../../core';
 
 describe('MockWebSocketIntegration', () => {
@@ -17,6 +17,32 @@ describe('MockWebSocketIntegration', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Integration', {
       IntegrationType: 'MOCK',
       IntegrationUri: '',
+    });
+  });
+
+  test('can set custom properties', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    new WebSocketApi(stack, 'Api', {
+      defaultRouteOptions: {
+        integration: new WebSocketMockIntegration('DefaultIntegration', {
+          responses: [{ responseKey: WebSocketIntegrationResponseKey.success }],
+        }),
+        returnResponse: true,
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Integration', {
+      IntegrationType: 'MOCK',
+      IntegrationUri: '',
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::IntegrationResponse', {
+      ApiId: { Ref: 'ApiF70053CD' },
+      IntegrationId: { Ref: 'ApidefaultRouteDefaultIntegrationE3602C1B' },
+      IntegrationResponseKey: '/2\\d{2}/',
     });
   });
 });

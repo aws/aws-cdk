@@ -63,7 +63,6 @@ describe('LambdaWebSocketIntegration', () => {
           {
             timeout: Duration.seconds(10),
             contentHandling: ContentHandling.CONVERT_TO_TEXT,
-            responses: [{ responseKey: WebSocketIntegrationResponseKey.success }],
           },
         ),
         returnResponse: true,
@@ -76,11 +75,6 @@ describe('LambdaWebSocketIntegration', () => {
       IntegrationUri,
       TimeoutInMillis: 10000,
       ContentHandlingStrategy: 'CONVERT_TO_TEXT',
-    });
-    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::IntegrationResponse', {
-      ApiId: { Ref: 'ApiF70053CD' },
-      IntegrationId: { Ref: 'ApiconnectRouteIntegration5AB58E39' },
-      IntegrationResponseKey: '/2\\d{2}/',
     });
   });
 });

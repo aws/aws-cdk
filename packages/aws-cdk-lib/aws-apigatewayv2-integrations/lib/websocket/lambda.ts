@@ -3,8 +3,7 @@ import {
   WebSocketRouteIntegrationBindOptions,
   WebSocketRouteIntegrationConfig,
   ContentHandling,
-  WebSocketTwoWayRouteIntegration,
-  InternalWebSocketIntegrationResponseProps,
+  WebSocketRouteIntegration,
 } from '../../../aws-apigatewayv2';
 import { ServicePrincipal } from '../../../aws-iam';
 import { IFunction } from '../../../aws-lambda';
@@ -29,21 +28,12 @@ export interface WebSocketLambdaIntegrationProps {
    * the route response or method response without modification.
    */
   readonly contentHandling?: ContentHandling;
-
-  /**
-   * Integration responses configuration
-   *
-   * @default - No response configuration provided.
-   * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-websocket-api-integration-responses.html
-   */
-  readonly responses?: InternalWebSocketIntegrationResponseProps[];
 }
 
 /**
  * Lambda WebSocket Integration
  */
-export class WebSocketLambdaIntegration extends WebSocketTwoWayRouteIntegration {
-
+export class WebSocketLambdaIntegration extends WebSocketRouteIntegration {
   private readonly _id: string;
 
   /**
@@ -84,7 +74,6 @@ export class WebSocketLambdaIntegration extends WebSocketTwoWayRouteIntegration 
       uri: integrationUri,
       timeout: this.props.timeout,
       contentHandling: this.props.contentHandling,
-      responses: this.props.responses,
     };
   }
 }
