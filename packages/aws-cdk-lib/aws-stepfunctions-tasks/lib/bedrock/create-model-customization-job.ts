@@ -47,10 +47,14 @@ export interface ITag {
 export interface IBedrockCreateModelCustomizationJobVpcConfig {
   /**
    * VPC configuration security groups
+   *
+   * The maximum number of security groups is 5.
    */
   readonly securityGroups: ec2.ISecurityGroup[];
   /**
    * VPC configuration subnets
+   *
+   * The maximum number of subnets is 16.
    */
   readonly subnets: ec2.ISubnet[];
 }
@@ -63,37 +67,48 @@ export interface BedrockCreateModelCustomizationJobProps extends sfn.TaskStateBa
    * The base model.
    */
   readonly baseModel: bedrock.IModel;
+
   /**
    * A unique, case-sensitive identifier to ensure that the API request completes no more than one time.
    * If this token matches a previous request, Amazon Bedrock ignores the request, but does not return an error.
    *
+   * The maximum length is 256 characters and it needs to satisfy the regular expression ^[a-zA-Z0-9](-*[a-zA-Z0-9])*$.
    * @see https://docs.aws.amazon.com/AWSEC2/latest/APIReference/Run_Instance_Idempotency.html
    *
    * @default - no client request token
    */
   readonly clientRequestToken?: string;
+
   /**
    * The customization type.
    *
    * @default FINE_TUNING
    */
   readonly customizationType?: CustomizationType;
+
   /**
    * The custom model is encrypted at rest using this key.
    *
    * @default - no encryption
    */
-  readonly kmsKey?: kms.IKey;
+  readonly customModelKmsKey?: kms.IKey;
+
   /**
    * A name for the resulting custom model.
+   *
+   * The maximum length is 63 characters and it needs to satisfy the regular expression ^([0-9a-zA-Z][_-]?)+$.
    */
   readonly customModelName: string;
+
   /**
    * Tags to attach to the resulting custom model.
+   *
+   * The maximum number of tags is 200.
    *
    * @default - no tags
    */
   readonly customModelTags?: ITag[];
+
   /**
    * Parameters related to tuning the model.
    *
@@ -102,34 +117,29 @@ export interface BedrockCreateModelCustomizationJobProps extends sfn.TaskStateBa
    * @default - use default hyperparameters
    */
   readonly hyperParameters?: { [key: string]: string };
+
   /**
    * A name for the fine-tuning job.
+   *
+   * The maximum length is 63 characters and it needs to satisfy the regular expression ^[a-zA-Z0-9](-*[a-zA-Z0-9\+\-\.])*$.
    */
   readonly jobName: string;
+
   /**
    * Tags to attach to the job.
+   * The maximum number of tags is 200.
    *
    * @default - no tags
    */
   readonly jobTags?: ITag[];
+
   /**
    * The S3 URI where the output data is stored.
    *
    * @see https://docs.aws.amazon.com/bedrock/latest/APIReference/API_OutputDataConfig.html
    */
   readonly outputDataS3Uri: string;
-  /**
-   * The S3 URI where the training data is stored.
-   *
-   * @see https://docs.aws.amazon.com/bedrock/latest/APIReference/API_TrainingDataConfig.html
-   */
-  readonly trainingDataS3Uri: string;
-  /**
-   * The S3 URI where the validation data is stored.
-   *
-   * @see https://docs.aws.amazon.com/bedrock/latest/APIReference/API_Validator.html
-   */
-  readonly validationDataS3Uri: string[];
+
   /**
    * The IAM role that Amazon Bedrock can assume to perform tasks on your behalf.
    *
@@ -140,6 +150,23 @@ export interface BedrockCreateModelCustomizationJobProps extends sfn.TaskStateBa
    * @default - use auto generated role
    */
   readonly role?: iam.IRole;
+
+  /**
+   * The S3 URI where the training data is stored.
+   *
+   * @see https://docs.aws.amazon.com/bedrock/latest/APIReference/API_TrainingDataConfig.html
+   */
+  readonly trainingDataS3Uri: string;
+
+  /**
+   * The S3 URI where the validation data is stored.
+   * 
+   * The maximum number of validation data S3 URIs is 10.
+   *
+   * @see https://docs.aws.amazon.com/bedrock/latest/APIReference/API_Validator.html
+   */
+  readonly validationDataS3Uri: string[];
+
   /**
    * Configuration parameters for the private Virtual Private Cloud (VPC) that contains the resources you are using for this job.
    *
@@ -158,8 +185,8 @@ export class BedrockCreateModelCustomizationJob extends sfn.TaskStateBase {
     sfn.IntegrationPattern.RUN_JOB,
   ];
 
-  protected readonly taskMetrics: sfn.TaskMetricsConfig | undefined;
-  protected readonly taskPolicies: iam.PolicyStatement[] | undefined;
+  protected readonly taskMetrics?: sfn.TaskMetricsConfig;
+  protected readonly taskPolicies?: iam.PolicyStatement[];
 
   private readonly integrationPattern: sfn.IntegrationPattern;
   private _role: iam.IRole;
@@ -193,6 +220,11 @@ export class BedrockCreateModelCustomizationJob extends sfn.TaskStateBase {
     return this._role;
   }
 
+  /**
+   * Configure the IAM role for the bedrock create model customization job
+   *
+   * @see https://docs.aws.amazon.com/bedrock/latest/userguide/model-customization-code-samples.html
+   */
   private renderBedrockCreateModelCustomizationJobRole(): iam.IRole {
     if (this.props.role) {
       return this.props.role;
@@ -214,57 +246,57 @@ export class BedrockCreateModelCustomizationJob extends sfn.TaskStateBase {
                 ],
                 resources: ['*'],
               }),
-            ] : []),
-            new iam.PolicyStatement({
-              actions: ['ec2:CreateNetworkInterface'],
-              resources: [
-                stack.formatArn({
+              new iam.PolicyStatement({
+                actions: ['ec2:CreateNetworkInterface'],
+                resources: [
+                  stack.formatArn({
+                    service: 'ec2',
+                    resource: 'network-interface',
+                    resourceName: '*',
+                  }),
+                  stack.formatArn({
+                    service: 'ec2',
+                    resource: 'security-group',
+                    resourceName: '*',
+                  }),
+                  stack.formatArn({
+                    service: 'ec2',
+                    resource: 'subnet',
+                    resourceName: '*',
+                  }),
+                ],
+              }),
+              new iam.PolicyStatement({
+                actions: ['ec2:CreateTags'],
+                resources: [stack.formatArn({
                   service: 'ec2',
                   resource: 'network-interface',
                   resourceName: '*',
-                }),
-                stack.formatArn({
-                  service: 'ec2',
-                  resource: 'security-group',
-                  resourceName: '*',
-                }),
-                stack.formatArn({
-                  service: 'ec2',
-                  resource: 'subnet',
-                  resourceName: '*',
-                }),
-              ],
-            }),
-            new iam.PolicyStatement({
-              actions: ['ec2:CreateTags'],
-              resources: [stack.formatArn({
-                service: 'ec2',
-                resource: 'network-interface',
-                resourceName: '*',
-              })],
-              conditions: {
-                StringEquals: {
-                  'ec2:CreateAction': 'CreateNetworkInterface',
+                })],
+                conditions: {
+                  StringEquals: {
+                    'ec2:CreateAction': 'CreateNetworkInterface',
+                  },
                 },
-              },
-            }),
-            new iam.PolicyStatement({
-              actions: [
-                'ec2:CreateNetworkInterfacePermission',
-                'ec2:DeleteNetworkInterface',
-                'ec2:DeleteNetworkInterfacePermission',
-              ],
-              resources: ['*'],
-              conditions: {
-                StringEquals: {
-                  'ec2:Subnet': [
-                    ...(this.props.vpcConfig
-                      ? this.props.vpcConfig.subnets.map((subnet) => subnet.subnetId)
-                      : []),
-                  ],
+              }),
+              new iam.PolicyStatement({
+                actions: [
+                  'ec2:CreateNetworkInterfacePermission',
+                  'ec2:DeleteNetworkInterface',
+                  'ec2:DeleteNetworkInterfacePermission',
+                ],
+                resources: ['*'],
+                conditions: {
+                  StringEquals: {
+                    'ec2:Subnet': [
+                      ...(this.props.vpcConfig
+                        ? this.props.vpcConfig.subnets.map((subnet) => subnet.subnetId)
+                        : []),
+                    ],
+                  },
                 },
-              },
-            }),
+              }),
+            ] : []),
             new iam.PolicyStatement({
               actions: ['s3:GetObject'],
               resources: [
@@ -309,12 +341,12 @@ export class BedrockCreateModelCustomizationJob extends sfn.TaskStateBase {
         actions: ['iam:PassRole'],
         resources: [this._role.roleArn],
       }),
-      ...(this.props.kmsKey
+      ...(this.props.customModelKmsKey
         ? [
           new iam.PolicyStatement({
             // TODO - this should be more specific
             actions: ['kms:*'],
-            resources: [this.props.kmsKey.keyArn],
+            resources: [this.props.customModelKmsKey.keyArn],
           }),
         ]
         : []),
@@ -324,19 +356,19 @@ export class BedrockCreateModelCustomizationJob extends sfn.TaskStateBase {
 
   private validateStringLength(name: string, min: number, max: number, value?: string): void {
     if (value !== undefined && !Token.isUnresolved(value) && (value.length < min || value.length > max)) {
-      throw new Error(`${name} must be between ${min} and ${max} characters long`);
+      throw new Error(`${name} must be between ${min} and ${max} characters long, got: ${value.length}`);
     }
   }
 
   private validatePattern(name: string, pattern: RegExp, value?: string): void {
     if (value !== undefined && !Token.isUnresolved(value) && !pattern.test(value)) {
-      throw new Error(`${name} must match the pattern ${pattern.toString()}`);
+      throw new Error(`${name} must match the pattern ${pattern.toString()}, got: ${value}`);
     }
   }
 
   private validateArrayLength(name: string, min: number, max: number, value?: any[]): void {
     if (value !== undefined && (value.length < min || value.length > max)) {
-      throw new Error(`${name} must be between ${min} and ${max} items long`);
+      throw new Error(`${name} must be between ${min} and ${max} items long, got: ${value.length}`);
     }
   }
 
@@ -370,7 +402,7 @@ export class BedrockCreateModelCustomizationJob extends sfn.TaskStateBase {
         BaseModelIdentifier: this.props.baseModel.modelArn,
         ClientRequestToken: this.props.clientRequestToken,
         CustomizationType: this.props.customizationType,
-        CustomModelKmsKeyId: this.props.kmsKey?.keyArn,
+        CustomModelKmsKeyId: this.props.customModelKmsKey?.keyArn,
         CustomModelName: this.props.customModelName,
         CustomModelTags: this.props.customModelTags?.map((tag) => ({ Key: tag.key, Value: tag.value })),
         HyperParameters: this.props.hyperParameters,
