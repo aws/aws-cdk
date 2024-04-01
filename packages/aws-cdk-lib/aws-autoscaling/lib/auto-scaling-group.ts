@@ -88,6 +88,16 @@ export interface CommonAutoScalingGroupProps {
   readonly keyName?: string;
 
   /**
+   * The SSH keypair to grant access to the instance.
+   *
+   * `keyName`, `launchTemplate` and `mixedInstancesPolicy` must not be specified 
+   *  when this property is specified
+   *
+   * @default - No SSH access will be possible.
+   */
+  readonly keyPair?: ec2.IKeyPair;
+
+  /**
    * Where to place instances within the VPC
    *
    * @default - All Private subnets.
@@ -1355,6 +1365,10 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
         throw new Error('Setting \'instanceType\' is required when \'launchTemplate\' and \'mixedInstancesPolicy\' is not set');
       }
 
+      if (props.keyName && props.keyPair) {
+        throw new Error('Cannot specify both of \'keyName\' and \'keyPair\'; prefer \'keyPair\'');
+      }
+
       Tags.of(this).add(NAME_TAG, this.node.path);
 
       this.securityGroup = props.securityGroup || new ec2.SecurityGroup(this, 'InstanceSecurityGroup', {
@@ -1381,6 +1395,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
 
         launchTemplateFromConfig = new ec2.LaunchTemplate(this, 'LaunchTemplate', {
           machineImage: props.machineImage,
+          keyPair: props.keyPair,
           keyName: props.keyName,
           instanceType: props.instanceType,
           detailedMonitoring: props.instanceMonitoring !== undefined && props.instanceMonitoring === Monitoring.DETAILED,
@@ -1397,6 +1412,10 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
       } else {
         this._connections = new ec2.Connections({ securityGroups: [this.securityGroup] });
         this.securityGroups = [this.securityGroup];
+
+        if (props.keyPair) {
+          throw new Error('Can only use \'keyPair\' when feature flag \'AUTOSCALING_GENERATE_LAUNCH_TEMPLATE\' is set');
+        }
 
         // use delayed evaluation
         const imageConfig = props.machineImage.getImage(this);
