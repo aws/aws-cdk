@@ -16,6 +16,8 @@ import { parseLoadBalancerFullName } from '../shared/util';
 
 /**
  * Properties for defining an Application Load Balancer
+ *
+ * @see https://docs.aws.amazon.com/elasticloadbalancing/latest/application/application-load-balancers.html#load-balancer-attributes
  */
 export interface ApplicationLoadBalancerProps extends BaseLoadBalancerProps {
   /**
@@ -87,8 +89,6 @@ export interface ApplicationLoadBalancerProps extends BaseLoadBalancerProps {
    *
    * Both headers are in OpenSSL format.
    *
-   * @see https://docs.aws.amazon.com/elasticloadbalancing/latest/application/application-load-balancers.html#load-balancer-attributes
-   *
    * @default false
    */
   readonly xAmznTlsVersionAndCipherSuiteHeaders?: boolean;
@@ -96,8 +96,6 @@ export interface ApplicationLoadBalancerProps extends BaseLoadBalancerProps {
   /**
    * Indicates whether the X-Forwarded-For header should preserve the source port
    * that the client used to connect to the load balancer.
-   *
-   * @see https://docs.aws.amazon.com/elasticloadbalancing/latest/application/application-load-balancers.html#load-balancer-attributes
    *
    * @default false
    */
