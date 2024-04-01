@@ -135,7 +135,7 @@
     "mime-types": "^2.1.35"
   },
   "devDependencies": {
-    "@aws-cdk/aws-service-spec": "^0.0.60",
+    "@aws-cdk/aws-service-spec": "^0.0.61",
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/custom-resource-handlers": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
@@ -442,6 +442,7 @@
     "./aws-sdb": "./aws-sdb/index.js",
     "./aws-secretsmanager": "./aws-secretsmanager/index.js",
     "./aws-securityhub": "./aws-securityhub/index.js",
+    "./aws-securitylake": "./aws-securitylake/index.js",
     "./aws-servicecatalog": "./aws-servicecatalog/index.js",
     "./aws-servicecatalogappregistry": "./aws-servicecatalogappregistry/index.js",
     "./aws-servicediscovery": "./aws-servicediscovery/index.js",
