@@ -52,6 +52,7 @@ const mySecurityGroup = new ec2.SecurityGroup(this, 'SecurityGroup', { vpc });
 new autoscaling.AutoScalingGroup(this, 'ASG', {
   vpc,
   instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.MICRO),
+  machineImage: ec2.MachineImage.latestAmazonLinux2(),
   securityGroup: mySecurityGroup,
 });
 ```
