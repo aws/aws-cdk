@@ -380,7 +380,46 @@ const task = new tasks.BedrockInvokeModel(this, 'Prompt Model', {
 
 ### createModelCustomizationJob
 
-WIP
+The [CreateModelCustomizationJob](https://docs.aws.amazon.com/bedrock/latest/APIReference/API_CreateModelCustomizationJob.html) API creates a fine-tuning job to customize a base model.
+
+
+```ts
+import * as bedrock from 'aws-cdk-lib/aws-bedrock';
+import * as s3 from 'aws-cdk-lib/aws-s3';
+
+declare const outputBucket: s3.IBucket;
+declare const trainingBucket: s3.IBucket;
+declare const validationBucket: s3.IBucket;
+declare const kmsKey: kms.IKey;
+declare const vpc: ec2.IVpc;
+
+const model = bedrock.FoundationModel.fromFoundationModelId(
+  this,
+  'Model',
+  bedrock.FoundationModelIdentifier.AMAZON_TITAN_TEXT_G1_EXPRESS_V1,
+);
+
+const task = new tasks.BedrockCreateModelCustomizationJob(this, 'CreateModelCustomizationJob2', {
+  baseModel: model,
+  clientRequestToken: 'MyToken', // optional
+  customizationType: CustomizationType.FINE_TUNING, // optional
+  customModelKmsKey: kmsKey, // optional
+  customModelName: 'MyCustomModel',
+  customModelTags: [{ key: 'key1', value: 'value1' }], // optional
+  hyperParameters: {
+    batchSize: '10',
+  }, // optional
+  jobName: 'MyCustomizationJob',
+  jobTags: [{ key: 'key2', value: 'value2' }], // optional
+  outputDataS3Uri: outputBucket.s3UrlForObject(),
+  trainingDataS3Uri: trainingBucket.s3UrlForObject(),
+  validationDataS3Uri: [validationBucket.s3UrlForObject()],
+  vpcConfig: {
+    securityGroups: [new ec2.SecurityGroup(stack, 'SecurityGroup', { vpc })],
+    subnets: vpc.isolatedSubnets,
+  }, // optional
+});
+```
 
 ## CodeBuild
 

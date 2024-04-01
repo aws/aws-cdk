@@ -45,7 +45,7 @@ const taskConfig = {
   baseModel: model,
   clientRequestToken: 'MyToken',
   customizationType: CustomizationType.FINE_TUNING,
-  kmsKey,
+  customModelKmsKey: kmsKey,
   customModelName: 'MyCustomModel',
   customModelTags: [{ key: 'key1', value: 'value1' }],
   hyperParameters: {
