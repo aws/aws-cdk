@@ -1,6 +1,6 @@
 {
  "Resources": {
-  "MyRubyLambdaServiceRoleDC227070": {
+  "MyRuby33LambdaServiceRole51E65E25": {
    "Type": "AWS::IAM::Role",
    "Properties": {
     "AssumeRolePolicyDocument": {
@@ -31,7 +31,7 @@
     ]
    }
   },
-  "MyRubyLambdaAFED834F": {
+  "MyRuby33Lambda335A543E": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
     "Code": {
@@ -40,27 +40,27 @@
      },
      "S3Key": "b9d265a7298dcf7774794746a1aac25ee61dc998230526747e062aeaff88af86.zip"
     },
+    "Handler": "index.main",
     "Role": {
      "Fn::GetAtt": [
-      "MyRubyLambdaServiceRoleDC227070",
+      "MyRuby33LambdaServiceRole51E65E25",
       "Arn"
      ]
     },
-    "Handler": "index.main",
-    "Runtime": "ruby3.2"
+    "Runtime": "ruby3.3"
    },
    "DependsOn": [
-    "MyRubyLambdaServiceRoleDC227070"
+    "MyRuby33LambdaServiceRole51E65E25"
    ]
   }
  },
  "Outputs": {
-  "ExportsOutputRefMyRubyLambdaAFED834FC50AFB5F": {
+  "ExportsOutputRefMyRuby33Lambda335A543E78F0067A": {
    "Value": {
-    "Ref": "MyRubyLambdaAFED834F"
+    "Ref": "MyRuby33Lambda335A543E"
    },
    "Export": {
-    "Name": "lambda-test-assets-file:ExportsOutputRefMyRubyLambdaAFED834FC50AFB5F"
+    "Name": "lambda-test-assets-file-for-ruby33:ExportsOutputRefMyRuby33Lambda335A543E78F0067A"
    }
   }
  },

@@ -1,5 +1,5 @@
 import { Key } from 'aws-cdk-lib/aws-kms';
-import { App, Stack, StackProps } from 'aws-cdk-lib';
+import { App, Stack, StackProps, RemovalPolicy, Duration } from 'aws-cdk-lib';
 import { LoggingProtocol, Topic } from 'aws-cdk-lib/aws-sns';
 import { ManagedPolicy, PolicyDocument, PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 
@@ -7,7 +7,10 @@ class SNSInteg extends Stack {
   constructor(scope: App, id: string, props?: StackProps) {
     super(scope, id, props);
 
-    const key = new Key(this, 'CustomKey');
+    const key = new Key(this, 'CustomKey', {
+      pendingWindow: Duration.days(7),
+      removalPolicy: RemovalPolicy.DESTROY,
+    });
 
     const topic = new Topic(this, 'MyTopic', {
       topicName: 'fooTopic',
