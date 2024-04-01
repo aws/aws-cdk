@@ -185,42 +185,27 @@ You can configure the custom parameter mappings of the SQS integration using the
 
 The default parameter mapping settings for each subtype are as follows:
 
-`SQS_SEND_MESSAGE`:
-
 ```ts
+import * as sqs from 'aws-cdk-lib/aws-sqs';
 declare const queue: sqs.IQueue;
 
+// SQS_SEND_MESSAGE
 new apigwv2.ParameterMapping()
   .custom('QueueUrl', queue.queueUrl)
   // The `MessageBody` is expected to be in the request body.
   .custom('MessageBody', '$request.body.MessageBody');
-```
 
-`SQS_RECEIVE_MESSAGE`:
-
-```ts
-declare const queue: sqs.IQueue;
-
+// SQS_RECEIVE_MESSAGE
 new apigwv2.ParameterMapping()
-  .custom('QueueUrl', queue.queueUrl).
-```
+  .custom('QueueUrl', queue.queueUrl);
 
-`SQS_DELETE_MESSAGE`:
-
-```ts
-declare const queue: sqs.IQueue;
-
+// SQS_DELETE_MESSAGE
 new apigwv2.ParameterMapping()
   .custom('QueueUrl', queue.queueUrl)
   // The `ReceiptHandle` is expected to be in the request body.
   .custom('ReceiptHandle', '$request.body.ReceiptHandle');
-```
 
-`SQS_PURGE_QUEUE`:
-
-```ts
-declare const queue: sqs.IQueue;
-
+// SQS_PURGE_QUEUE
 new apigwv2.ParameterMapping()
   .custom('QueueUrl', queue.queueUrl);
 ```
