@@ -26,7 +26,7 @@ export class TestProvider extends CustomResourceProviderBase {
     super(scope, id, {
       ...props,
       "codeDirectory": path.join(__dirname, 'my-handler'),
-      "runtimeName": "nodejs18.x"
+      "runtimeName": "nodejs20.x"
     });
   }
 }

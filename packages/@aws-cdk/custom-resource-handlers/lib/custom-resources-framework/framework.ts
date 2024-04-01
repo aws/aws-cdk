@@ -9,7 +9,7 @@ export class HandlerFrameworkModule extends Module {
   /**
    * The latest nodejs runtime version available across all AWS regions.
    */
-  private static readonly DEFAULT_RUNTIME = Runtime.NODEJS_18_X;
+  private static readonly DEFAULT_RUNTIME = Runtime.NODEJS_20_X;
 
   private readonly renderer = new TypeScriptRenderer();
   private readonly externalModules = new Map<string, boolean>();

@@ -6,6 +6,11 @@ import * as path from 'path';
  */
 export enum Runtime {
   /**
+   * The NodeJs 20.x runtime
+   */
+  NODEJS_20_X = 'nodejs20.x',
+
+  /**
    * The NodeJs 18.x runtime
    */
   NODEJS_18_X = 'nodejs18.x',
@@ -65,7 +70,7 @@ export interface ComponentProps {
   /**
    * The runtime that is compatible with the framework component's source code.
    *
-   * @default Runtime.NODEJS_18_X
+   * @default Runtime.NODEJS_20_X
    */
   readonly runtime?: Runtime;
 
