@@ -77,8 +77,17 @@ export interface StreamSourceParameters {
   readonly parallelizationFactor?: number;
 }
 
+/**
+ * Streaming sources.
+ */
 export abstract class StreamSource extends SourceWithDlq {
+  /**
+   * The ARN of the source resource.
+   */
   readonly sourceArn: string;
+  /**
+   * Base parameters for streaming sources.
+   */
   readonly sourceParameters: StreamSourceParameters;
 
   constructor(sourceArn: string, sourceParameters: StreamSourceParameters) {
