@@ -28,6 +28,8 @@ describe('MockWebSocketIntegration', () => {
     new WebSocketApi(stack, 'Api', {
       defaultRouteOptions: {
         integration: new WebSocketMockIntegration('DefaultIntegration', {
+          requestTemplates: { 'application/json': '{ "statusCode": 200 }' },
+          templateSelectionExpression: '\\$default',
           responses: [{ responseKey: WebSocketIntegrationResponseKey.success }],
         }),
         returnResponse: true,
@@ -38,6 +40,8 @@ describe('MockWebSocketIntegration', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Integration', {
       IntegrationType: 'MOCK',
       IntegrationUri: '',
+      RequestTemplates: { 'application/json': '{ "statusCode": 200 }' },
+      TemplateSelectionExpression: '\\$default',
     });
     Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::IntegrationResponse', {
       ApiId: { Ref: 'ApiF70053CD' },

@@ -11,6 +11,25 @@ import {
  */
 export interface WebSocketMockIntegrationProps {
   /**
+   * A map of Apache Velocity templates that are applied on the request
+   * payload.
+   *
+   * ```
+   *   { "application/json": "{ \"statusCode\": 200 }" }
+   * ```
+   *
+   * @default - No request template provided to the integration.
+   */
+  readonly requestTemplates?: { [contentType: string]: string };
+
+  /**
+   * The template selection expression for the integration.
+   *
+   * @default - No template selection expression provided.
+   */
+  readonly templateSelectionExpression?: string;
+
+  /**
    * Integration responses configuration
    *
    * @default - No response configuration provided.
@@ -36,6 +55,8 @@ export class WebSocketMockIntegration extends WebSocketTwoWayRouteIntegration {
     return {
       type: WebSocketIntegrationType.MOCK,
       uri: '',
+      requestTemplates: this.props.requestTemplates,
+      templateSelectionExpression: this.props.templateSelectionExpression,
       responses: this.props.responses,
     };
   }
