@@ -1426,8 +1426,9 @@ ec2.CloudFormationInit.fromElements(
 );
 ```
 
-If your services require environment variables, you can use the `environmentVariables` or `environmentFiles`
-parameter to do so:
+You can use the `environmentVariables` or `environmentFiles` parameters to specify environment variables
+for your services:
+
 ```ts
 new ec2.InitConfig([
   ec2.InitFile.fromString('/myvars.env', 'VAR_FROM_FILE="VAR_FROM_FILE"'),
