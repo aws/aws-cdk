@@ -105,7 +105,7 @@ export interface ISource {
 }
 
 /**
- * Sources that support a dead-letter target
+ * Sources that support a dead-letter target.
  */
 export abstract class SourceWithDlq implements ISource {
   /**
@@ -136,6 +136,9 @@ export abstract class SourceWithDlq implements ISource {
     }
   }
 
+  /**
+   * Retrieves the ARN from the dead-letter SQS queue or SNS topic.
+   */
   protected getDeadLetterTargetArn(dlq?: IQueue | ITopic): string | undefined {
     if (dlq instanceof Queue) {
       return dlq.queueArn;
