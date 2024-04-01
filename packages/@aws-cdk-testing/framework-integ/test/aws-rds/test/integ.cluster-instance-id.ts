@@ -14,9 +14,11 @@ const stack = new cdk.Stack(app);
 const vpc = new ec2.Vpc(stack, 'VPC');
 
 new rds.DatabaseCluster(stack, 'Database', {
+  // engine-versions: https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_rds.AuroraMysqlEngineVersion.html
   engine: rds.DatabaseClusterEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_3_01_0 }),
   writer: rds.ClusterInstance.provisioned('Instance', {
-    instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.SMALL),
+    // aws rds describe-orderable-db-instance-options --engine aurora-mysql --engine-version 8.0.mysql_aurora.3.01.0
+    instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.MEDIUM),
   }),
   readers: [rds.ClusterInstance.provisioned('reader')],
   instanceUpdateBehaviour: rds.InstanceUpdateBehaviour.ROLLING,
