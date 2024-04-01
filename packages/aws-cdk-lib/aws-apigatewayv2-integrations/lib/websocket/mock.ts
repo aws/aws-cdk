@@ -6,6 +6,9 @@ import {
   InternalWebSocketIntegrationResponseProps,
 } from '../../../aws-apigatewayv2';
 
+/**
+ * Props for Mock type integration for a WebSocket Api.
+ */
 export interface WebSocketMockIntegrationProps {
   /**
    * Integration responses configuration
