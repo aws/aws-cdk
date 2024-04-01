@@ -160,7 +160,7 @@ export interface BedrockCreateModelCustomizationJobProps extends sfn.TaskStateBa
 
   /**
    * The S3 URI where the validation data is stored.
-   * 
+   *
    * The maximum number of validation data S3 URIs is 10.
    *
    * @see https://docs.aws.amazon.com/bedrock/latest/APIReference/API_Validator.html
