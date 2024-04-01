@@ -230,7 +230,7 @@ const lb = new elbv2.ApplicationLoadBalancer(this, 'LB', {
   // Whether the load balancer blocks traffic through the Internet Gateway (IGW).
   denyAllIgwTraffic: false,
 
-  // Whether to preserve Host header in the request to the target
+  // Whether to preserve host header in the request to the target
   preserveHostHeader: true,
 
   // Whether to add the TLS information header to the request
