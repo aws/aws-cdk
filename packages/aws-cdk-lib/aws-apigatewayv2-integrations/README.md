@@ -126,13 +126,12 @@ This allows the HTTP API to send, receive and delete messages from an SQS queue.
 The following code configures a Step Functions integrations:
 
 ```ts
-import * as apigwv2 from 'aws-cdk-lib/aws-apigatewayv2';
 import * as sqs from 'aws-cdk-lib/aws-sqs';
 import { HttpSqsIntegration } from 'aws-cdk-lib/aws-apigatewayv2-integrations';
 
-const queue = new sqs.Queue(this, 'Queue');
+declare const queue: sqs.IQueue;
+declare const httpApi: apigwv2.HttpApi;
 
-const httpApi = new apigwv2.HttpApi(this, 'Api');
 // default integration (send message)
 httpApi.addRoutes({
   path: '/default',
