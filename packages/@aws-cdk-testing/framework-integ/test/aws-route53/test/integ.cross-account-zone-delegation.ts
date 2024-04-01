@@ -39,7 +39,6 @@ const crossAccount = process.env.CDK_INTEG_CROSS_ACCOUNT || '234567890123'; // t
 const delegationRoleName = 'MyUniqueDelegationRole';
 
 const parentZoneName = 'uniqueexample.com';
-const subZoneName = 'sub.uniqueexample.com';
 
 class ParentStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
@@ -56,12 +55,17 @@ class ParentStack extends cdk.Stack {
   }
 }
 
+interface ChildStackProps extends cdk.StackProps {
+  readonly subZoneName: string;
+  readonly assumeRoleRegion?: string;
+}
+
 class ChildStack extends cdk.Stack {
-  constructor(scope: Construct, id: string, props?: cdk.StackProps) {
+  constructor(scope: Construct, id: string, props: ChildStackProps) {
     super(scope, id, props);
 
     const subZone = new route53.PublicHostedZone(this, 'SubZone', {
-      zoneName: subZoneName,
+      zoneName: props.subZoneName,
     });
 
     const delegationRoleArn = cdk.Stack.of(this).formatArn({
@@ -77,6 +81,7 @@ class ChildStack extends cdk.Stack {
       delegatedZone: subZone,
       parentHostedZoneName: parentZoneName,
       delegationRole,
+      assumeRoleRegion: props.assumeRoleRegion,
     });
   }
 }
@@ -93,6 +98,7 @@ const childStack = new ChildStack(app, 'child-stack', {
     account: crossAccount,
     region: 'us-east-1',
   },
+  subZoneName: 'sub.uniqueexample.com',
 });
 
 const childOptInStack = new ChildStack(app, 'child-opt-in-stack', {
@@ -100,12 +106,23 @@ const childOptInStack = new ChildStack(app, 'child-opt-in-stack', {
     account: crossAccount,
     region: 'af-south-1',
   },
+  subZoneName: 'sub2.uniqueexample.com',
+});
+
+const childOptInStackWithAssumeRoleRegion = new ChildStack(app, 'child-opt-in-stack-with-assume-role-region', {
+  env: {
+    account: crossAccount,
+    region: 'af-south-1',
+  },
+  assumeRoleRegion: 'eu-west-1',
+  subZoneName: 'sub3.uniqueexample.com',
 });
 
 childStack.addDependency(parentStack);
 childOptInStack.addDependency(parentStack);
+childOptInStackWithAssumeRoleRegion.addDependency(parentStack);
 
 new IntegTest(app, 'Route53CrossAccountInteg', {
-  testCases: [childStack, childOptInStack],
+  testCases: [childStack, childOptInStack, childOptInStackWithAssumeRoleRegion],
   diffAssets: true,
 });
