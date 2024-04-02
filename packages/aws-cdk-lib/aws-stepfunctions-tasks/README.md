@@ -34,6 +34,7 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
     - [SubmitJob](#submitjob)
   - [Bedrock](#bedrock)
     - [InvokeModel](#invokemodel)
+    - [CreateModelCustomizationJob](#createmodelcustomizationjob)
   - [CodeBuild](#codebuild)
     - [StartBuild](#startbuild)
   - [DynamoDB](#dynamodb)
@@ -385,7 +386,7 @@ The [CreateModelCustomizationJob](https://docs.aws.amazon.com/bedrock/latest/API
 
 ```ts
 import * as bedrock from 'aws-cdk-lib/aws-bedrock';
-import * as s3 from 'aws-cdk-lib/aws-s3';
+import * as kms from 'aws-cdk-lib/aws-kms';
 
 declare const outputBucket: s3.IBucket;
 declare const trainingBucket: s3.IBucket;
@@ -402,7 +403,7 @@ const model = bedrock.FoundationModel.fromFoundationModelId(
 const task = new tasks.BedrockCreateModelCustomizationJob(this, 'CreateModelCustomizationJob2', {
   baseModel: model,
   clientRequestToken: 'MyToken', // optional
-  customizationType: CustomizationType.FINE_TUNING, // optional
+  customizationType: tasks.CustomizationType.FINE_TUNING, // optional
   customModelKmsKey: kmsKey, // optional
   customModelName: 'MyCustomModel',
   customModelTags: [{ key: 'key1', value: 'value1' }], // optional
