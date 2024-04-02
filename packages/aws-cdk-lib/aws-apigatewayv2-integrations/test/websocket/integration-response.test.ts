@@ -1,5 +1,5 @@
 import { Match, Template } from '../../../assertions';
-import { ContentHandling, InternalWebSocketIntegrationResponseProps, WebSocketApi, WebSocketIntegrationResponseKey, WebSocketIntegrationType, WebSocketRouteIntegrationBindOptions, WebSocketRouteIntegrationConfig, WebSocketTwoWayRouteIntegration } from '../../../aws-apigatewayv2';
+import { ContentHandling, InternalWebSocketIntegrationResponseProps, WebSocketApi, WebSocketIntegration, WebSocketIntegrationResponse, WebSocketIntegrationResponseKey, WebSocketIntegrationType, WebSocketRouteIntegrationBindOptions, WebSocketRouteIntegrationConfig, WebSocketTwoWayRouteIntegration } from '../../../aws-apigatewayv2';
 import * as iam from '../../../aws-iam';
 import { Stack } from '../../../core';
 
@@ -72,14 +72,70 @@ describe('WebSocketIntegrationResponseKey', () => {
   });
 });
 
-describe('WebSocketIntegrationRespons', () => {
+describe('WebSocketIntegrationResponse from constructor', () => {
+  test('can create an integration response', () => {
+    // GIVEN
+    const stack = new Stack();
+    const api = new WebSocketApi(stack, 'Api');
+    const integration = new WebSocketTestIntegration('TestIntegration', {
+      integrationUri: 'https://example.com',
+      responses: [
+        { responseKey: WebSocketIntegrationResponseKey.default },
+      ],
+    });
+    api.addRoute('$default', { integration, returnResponse: true });
+
+    // WHEN
+    new WebSocketIntegrationResponse(stack, 'IntegrationResponse', {
+      integration,
+      responseKey: WebSocketIntegrationResponseKey.default,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Integration', {
+      IntegrationType: 'TEST',
+      IntegrationUri: 'https://example.com',
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::IntegrationResponse', {
+      ApiId: { Ref: 'ApiF70053CD' },
+      IntegrationId: { Ref: 'ApidefaultRouteTestIntegration7AF569F1' },
+      IntegrationResponseKey: '$default',
+      TemplateSelectionExpression: Match.absent(),
+      ContentHandling: Match.absent(),
+      ResponseParameters: Match.absent(),
+      ResponseTemplates: Match.absent(),
+    });
+  });
+
+  test('throws if addRoute has not been ran', () => {
+
+    // GIVEN
+    const stack = new Stack();
+    const api = new WebSocketApi(stack, 'Api');
+    const integration = new WebSocketTestIntegration('TestIntegration', {
+      integrationUri: 'https://example.com',
+      responses: [
+        { responseKey: WebSocketIntegrationResponseKey.default },
+      ],
+    });
+
+    // THEN
+    expect(() =>
+      new WebSocketIntegrationResponse(stack, 'IntegrationResponse', {
+        integration,
+        responseKey: WebSocketIntegrationResponseKey.default,
+      }),
+    ).toThrow(/This integration has not been associated to an API route/);
+  });
+});
+
+describe('WebSocketIntegrationResponse from properties', () => {
   test('can set an integration response', () => {
     // GIVEN
     const stack = new Stack();
-    const role = new iam.Role(stack, 'MyRole', { assumedBy: new iam.ServicePrincipal('foo') });
     const api = new WebSocketApi(stack, 'Api');
 
-    // THEN
+    // WHEN
     const integration = new WebSocketTestIntegration('TestIntegration', {
       integrationUri: 'https://example.com',
       responses: [
@@ -108,10 +164,9 @@ describe('WebSocketIntegrationRespons', () => {
   test('can set custom integration response properties', () => {
     // GIVEN
     const stack = new Stack();
-    const role = new iam.Role(stack, 'MyRole', { assumedBy: new iam.ServicePrincipal('foo') });
     const api = new WebSocketApi(stack, 'Api');
 
-    // THEN
+    // WHEN
     const integration = new WebSocketTestIntegration('TestIntegration', {
       integrationUri: 'https://example.com',
       responses: [
@@ -154,10 +209,9 @@ describe('WebSocketIntegrationRespons', () => {
   test('can add integration responses', () => {
     // GIVEN
     const stack = new Stack();
-    const role = new iam.Role(stack, 'MyRole', { assumedBy: new iam.ServicePrincipal('foo') });
     const api = new WebSocketApi(stack, 'Api');
 
-    // THEN
+    // WHEN
     const integration = new WebSocketTestIntegration('TestIntegration', {
       integrationUri: 'https://example.com',
       responses: [
@@ -196,10 +250,9 @@ describe('WebSocketIntegrationRespons', () => {
   test('throws if duplicate response key is set', () => {
     // GIVEN
     const stack = new Stack();
-    const role = new iam.Role(stack, 'MyRole', { assumedBy: new iam.ServicePrincipal('foo') });
     const api = new WebSocketApi(stack, 'Api');
 
-    // THEN
+    // WHEN
     const integration = new WebSocketTestIntegration('TestIntegration', {
       integrationUri: 'https://example.com',
       responses: [
@@ -220,7 +273,7 @@ describe('WebSocketIntegrationRespons', () => {
     const role = new iam.Role(stack, 'MyRole', { assumedBy: new iam.ServicePrincipal('foo') });
     const api = new WebSocketApi(stack, 'Api');
 
-    // THEN
+    // WHEN
     const integration = new WebSocketTestIntegration('TestIntegration', {
       integrationUri: 'https://example.com',
       responses: [
@@ -238,10 +291,9 @@ describe('WebSocketIntegrationRespons', () => {
   test('throws if returnResponse is not set to true', () => {
     // GIVEN
     const stack = new Stack();
-    const role = new iam.Role(stack, 'MyRole', { assumedBy: new iam.ServicePrincipal('foo') });
     const api = new WebSocketApi(stack, 'Api');
 
-    // THEN
+    // WHEN
     const integration = new WebSocketTestIntegration('TestIntegration', {
       integrationUri: 'https://example.com',
       responses: [

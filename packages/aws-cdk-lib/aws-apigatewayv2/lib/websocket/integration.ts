@@ -259,6 +259,29 @@ export abstract class WebSocketRouteIntegration {
    * Bind this integration to the route.
    */
   public abstract bind(options: WebSocketRouteIntegrationBindOptions): WebSocketRouteIntegrationConfig;
+
+  /**
+   * The WebSocket API identifier
+   * @throws an error if this integration has not been bound to a route first
+   */
+  public get webSocketApiId(): string {
+    if (!this.integration) {
+      throw new Error('This integration has not been associated to an API route');
+    }
+    return this.integration.webSocketApi.apiId;
+  }
+
+  /**
+   * The WebSocket Integration identifier
+   * @throws an error if this integration has not been bound to a route first
+   */
+  public get integrationId(): string {
+    if (!this.integration) {
+      throw new Error('This integration has not been associated to an API route');
+    }
+
+    return this.integration.integrationId;
+  }
 }
 
 /**
@@ -310,7 +333,7 @@ export abstract class WebSocketTwoWayRouteIntegration extends WebSocketRouteInte
           options.scope,
           // FIXME any better way to generate a unique id?
           Names.nodeUniqueId(this.integration.node) + slugify(responseProps.responseKey.key) + 'IntegrationResponse',
-          { ...responseProps, integration: this.integration },
+          { ...responseProps, integration: this },
         );
       }
     }

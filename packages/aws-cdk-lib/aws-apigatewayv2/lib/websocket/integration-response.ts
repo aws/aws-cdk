@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { ContentHandling, IWebSocketIntegration } from './integration';
+import { ContentHandling, WebSocketRouteIntegration } from './integration';
 import { IResource, Resource } from '../../../core';
 import { CfnIntegrationResponse } from '../apigatewayv2.generated';
 
@@ -140,7 +140,7 @@ export interface WebSocketIntegrationResponseProps extends InternalWebSocketInte
   /**
    * The WebSocket Integration to associate the response with
    */
-  readonly integration: IWebSocketIntegration;
+  readonly integration: WebSocketRouteIntegration;
 }
 
 /**
@@ -148,7 +148,7 @@ export interface WebSocketIntegrationResponseProps extends InternalWebSocketInte
  */
 export interface IWebSocketIntegrationResponse extends IResource {
   /** The WebSocket Integration associated with this Response */
-  readonly integration: IWebSocketIntegration;
+  readonly integration: WebSocketRouteIntegration;
 
   /**
    * Id of the integration response.
@@ -163,7 +163,7 @@ export interface IWebSocketIntegrationResponse extends IResource {
  */
 export class WebSocketIntegrationResponse extends Resource implements IWebSocketIntegrationResponse {
   public readonly integrationResponseId: string;
-  public readonly integration: IWebSocketIntegration;
+  public readonly integration: WebSocketRouteIntegration;
 
   /**
    * Generate an array of WebSocket Integration Response resources from a map
@@ -180,7 +180,7 @@ export class WebSocketIntegrationResponse extends Resource implements IWebSocket
   ) {
     super(scope, id);
     const { ref } = new CfnIntegrationResponse(this, 'Resource', {
-      apiId: props.integration.webSocketApi.apiId,
+      apiId: props.integration.webSocketApiId,
       integrationId: props.integration.integrationId,
       integrationResponseKey: props.responseKey.key,
       responseTemplates: props.responseTemplates,
