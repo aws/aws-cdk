@@ -1714,6 +1714,38 @@ describe('tests', () => {
       expect(applicationListenerRule).toBeDefined();
       expect(applicationListenerRule!.node.id).toBe(identifierToken); // Should not have `Rule` suffix
     });
+
+    test('backwards compatibility', () => {
+      // GIVEN
+      const context = { [cxapi.ALBV2_EXTERNALAPPLICATIONLISTENER_LEGACY_ADDTARGETGROUP_LOGICALID]: true };
+      const app = new cdk.App({ context });
+      const stack = new cdk.Stack(app, 'stack', {
+        env: {
+          account: '123456789012',
+          region: 'us-west-2',
+        },
+      });
+      const vpc = new ec2.Vpc(stack, 'Stack');
+      const targetGroup = new elbv2.ApplicationTargetGroup(stack, 'TargetGroup', { vpc, port: 80 });
+      const listener = elbv2.ApplicationListener.fromLookup(stack, 'a', {
+        loadBalancerTags: {
+          some: 'tag',
+        },
+      });
+
+      // WHEN
+      const identifierToken = 'SuperMagicToken';
+      listener.addTargetGroups(identifierToken, {
+        conditions: [elbv2.ListenerCondition.pathPatterns(['/fake'])],
+        priority: 42,
+        targetGroups: [targetGroup],
+      });
+
+      // THEN
+      const applicationListenerRule = listener.node.children.find((v)=> v.hasOwnProperty('conditions'));
+      expect(applicationListenerRule).toBeDefined();
+      expect(applicationListenerRule!.node.id).toBe(identifierToken); // Should NOT have `Rule` suffix
+    });
   });
 
   test('not allowed to specify defaultTargetGroups and defaultAction together', () => {

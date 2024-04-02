@@ -625,8 +625,9 @@ abstract class ExternalApplicationListener extends Resource implements IApplicat
     checkAddRuleProps(props);
 
     if (props.priority !== undefined) {
+      const idSuffix = FeatureFlags.of(this).isEnabled(cxapi.ALBV2_EXTERNALAPPLICATIONLISTENER_LEGACY_ADDTARGETGROUP_LOGICALID) ? '' : 'Rule';
       // New rule
-      new ApplicationListenerRule(this, id, {
+      new ApplicationListenerRule(this, id + idSuffix, {
         listener: this,
         priority: props.priority,
         ...props,

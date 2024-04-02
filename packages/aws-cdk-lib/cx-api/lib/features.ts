@@ -102,6 +102,7 @@ export const CODEPIPELINE_CROSS_ACCOUNT_KEYS_DEFAULT_VALUE_TO_FALSE = '@aws-cdk/
 export const CODEPIPELINE_DEFAULT_PIPELINE_TYPE_TO_V2 = '@aws-cdk/aws-codepipeline:defaultPipelineTypeToV2';
 export const KMS_REDUCE_CROSS_ACCOUNT_REGION_POLICY_SCOPE = '@aws-cdk/aws-kms:reduceCrossAccountRegionPolicyScope';
 export const ALBV2_EXTERNALAPPLICATIONLISTENER_SWITCH_FROM_ADDTARGETGROUP_TO_ADDACTION = '@aws-cdk/aws-elasticloadbalancingv2:ExternalApplicationListener-noRuleSuffixForAddAction';
+export const ALBV2_EXTERNALAPPLICATIONLISTENER_LEGACY_ADDTARGETGROUP_LOGICALID = '@aws-cdk/aws-elasticloadbalancingv2:ExternalApplicationListener-addTargetGroupLegacyLogicalId';
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
@@ -1056,6 +1057,25 @@ export const FLAGS: Record<string, FlagInfo> = {
     introducedIn: { v2: 'V2NEXT' },
     recommendedValue: false,
   },
+
+  //////////////////////////////////////////////////////////////////////
+  [ALBV2_EXTERNALAPPLICATIONLISTENER_LEGACY_ADDTARGETGROUP_LOGICALID]: {
+    type: FlagType.ApiDefault,
+    summary: 'When enabled, reverts to the legacy logicalId naming for \`ListenerRule\`s created by the \`addTargetGroups()\` method.',
+    compatibilityWithOldBehaviorMd: `Enable this feature flag to revert to the old behavior.`,
+    detailsMd: `
+      The legacy behavior for the \`addTargetGroups()\` method did not add the \`Rule\` suffix to the logicalId of the \`ListenerRule\`
+      which it generated. This was inconsistent with all the other methods which create \`ListenerRule\`s.
+
+      Replacing \`ListenerRule\`s is disruptive since they have a unique \`priority\`.
+      This means that when Cfn tries to create the new replacement, it will fail, blocking the upgrade path.
+
+      Setting this feature flag will cause the \`addTargetGroups()\` method to not add the \`Rule\` suffix on the logicalId.
+      This should only be set to support deployed infrastructure.
+    `,
+    introducedIn: { v2: 'V2NEXT' },
+    recommendedValue: false,
+  }
 };
 
 const CURRENT_MV = 'v2';

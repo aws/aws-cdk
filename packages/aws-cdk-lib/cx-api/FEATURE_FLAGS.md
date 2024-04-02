@@ -69,6 +69,7 @@ Flags come in three types:
 | [@aws-cdk/aws-kms:reduceCrossAccountRegionPolicyScope](#aws-cdkaws-kmsreducecrossaccountregionpolicyscope) | When enabled, IAM Policy created from KMS key grant will reduce the resource scope to this key only. | 2.134.0 | (fix) |
 | [@aws-cdk/aws-elasticloadbalancingv2:ExternalApplicationListener-noRuleSuffixForAddAction](#aws-cdkaws-elasticloadbalancingv2externalapplicationlistener-norulesuffixforaddaction) | When enabled, you can switch from the `addTargetGroups()` method of declaring a `ListenerRule` to the `addAction()` method,
 without changing the logicalId and replacing your resource. | V2NEXT | (fix) |
+| [@aws-cdk/aws-elasticloadbalancingv2:ExternalApplicationListener-addTargetGroupLegacyLogicalId](#aws-cdkaws-elasticloadbalancingv2externalapplicationlistener-addtargetgrouplegacylogicalid) | When enabled, the `addTargetGroups()` method will use the legacy naming conventions (no `Rule` suffix) for `ListenerRule`s. | V2NEXT | (fix) |
 
 <!-- END table -->
 
@@ -1274,6 +1275,20 @@ without changing the logicalId and replacing your resource.* (fix)
 
 Setting this feature flag will cause the `addAction()` method to not add the `Rule` suffix on the logicalId.
 This allows you to switch from the `addTargetGroups()` method without having CloudFormation deadlock while attempting to replace the resource.
+
+
+| Since | Default | Recommended |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| V2NEXT | `false` | `false` |
+
+
+### aws-cdkaws-elasticloadbalancingv2externalapplicationlistener-addtargetgrouplegacylogicalid
+
+*When enabled, the `addTargetGroups()` method will use the legacy naming conventions (no `Rule` suffix) for `ListenerRule`s.* (fix)
+
+Setting this feature flag will case the `addTargetGroups()` method to revert to the legacy behavior and not add the `Rule` suffix on the logicalId for the `ListenerRule` it creates.
+This allows you to upgrade to the latest version of the CDK without having CloudFormation deadlock while attempting to replace the resource.
 
 
 | Since | Default | Recommended |
