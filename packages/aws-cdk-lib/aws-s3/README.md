@@ -634,6 +634,20 @@ switching this to `false` in a CDK version _before_ `1.126.0` will lead to
 all objects in the bucket being deleted. Be sure to update your bucket resources
 by deploying with CDK version `1.126.0` or later **before** switching this value to `false`.
 
+
+### Controlling log retention for the bucket deletion log group
+
+Retention for logs related to autoDeleteObjects events can be configured on the bucket.
+
+```ts
+const bucket = new s3.Bucket(this, 'MyTempFileBucket', {
+  removalPolicy: cdk.RemovalPolicy.DESTROY,
+  autoDeleteObjects: true,
+  autoDeleteObjectsLogRetention: RetentionDays.ONE_MONTH,
+  autoDeleteObjectsLogRemovalPolicy: RemovalPolicy.RETAIN,
+});
+```
+
 ## Transfer Acceleration
 
 [Transfer Acceleration](https://docs.aws.amazon.com/AmazonS3/latest/userguide/transfer-acceleration.html) can be configured to enable fast, easy, and secure transfers of files over long distances:
