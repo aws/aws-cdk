@@ -2,6 +2,27 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.135.0](https://github.com/aws/aws-cdk/compare/v2.134.0...v2.135.0) (2024-04-01)
+
+
+### Features
+
+* **lambda:** adding support for Ruby3.3 lambda runtime ([#29680](https://github.com/aws/aws-cdk/issues/29680)) ([e63c777](https://github.com/aws/aws-cdk/commit/e63c7770ea0a7ec12353973cdf64015f9a4121f1))
+* update L1 CloudFormation resource definitions ([#29677](https://github.com/aws/aws-cdk/issues/29677)) ([99e9589](https://github.com/aws/aws-cdk/commit/99e9589487e0455a0622380fa50248b811d9131d)), closes [/docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-serverless-v2.requirements.html#aurora-serverless-v2](https://github.com/aws//docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-serverless-v2.requirements.html/issues/aurora-serverless-v2) [/docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-serverless-v2.requirements.html#aurora-serverless-v2](https://github.com/aws//docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-serverless-v2.requirements.html/issues/aurora-serverless-v2)
+* **route53:** allow specifying an STS region when creating a cross-account zone delegation ([#29466](https://github.com/aws/aws-cdk/issues/29466)) ([fe4bc1d](https://github.com/aws/aws-cdk/commit/fe4bc1dccae89ace70f3dab81b7e7545173d5750))
+* **sns:** add signature version prop ([#29543](https://github.com/aws/aws-cdk/issues/29543)) ([dffedca](https://github.com/aws/aws-cdk/commit/dffedca154f7cb31a5cefc24c638ad069577c836)), closes [#29539](https://github.com/aws/aws-cdk/issues/29539)
+
+
+### Bug Fixes
+
+* **cli:** cdk watch for Lambdas with Advanced Logging Controls do not stream logs to the terminal ([#29451](https://github.com/aws/aws-cdk/issues/29451)) ([4dbf5c8](https://github.com/aws/aws-cdk/commit/4dbf5c8414fa130c328807dc1d701d8a301d66fc)), closes [#29448](https://github.com/aws/aws-cdk/issues/29448) [/github.com/aws/aws-cdk/blob/main/packages/aws-cdk/lib/api/logs/find-cloudwatch-logs.ts#L114](https://github.com/aws//github.com/aws/aws-cdk/blob/main/packages/aws-cdk/lib/api/logs/find-cloudwatch-logs.ts/issues/L114)
+* **cli:** ecs hotswap deployment waits correctly for success or failure ([#28448](https://github.com/aws/aws-cdk/issues/28448)) ([5c30255](https://github.com/aws/aws-cdk/commit/5c30255b70b51ef760a72a64769614c0297e6c94))
+* **ec2:** global vpc endpoint support ([#29563](https://github.com/aws/aws-cdk/issues/29563)) ([df48fd7](https://github.com/aws/aws-cdk/commit/df48fd781a476ada79b6b49f006a60f33f73d409)), closes [#29560](https://github.com/aws/aws-cdk/issues/29560) [10.0.0.2#53](https://github.com/aws/10.0.0.2/issues/53) [10.0.0.2#53](https://github.com/aws/10.0.0.2/issues/53)
+* **eks:** missing support for "InstanceTypes" attribute assignment for AL2023 AMIs ([#29505](https://github.com/aws/aws-cdk/issues/29505)) ([e77ce26](https://github.com/aws/aws-cdk/commit/e77ce26091a3890f5b025e794374a95e2ce61fb1)), closes [#29335](https://github.com/aws/aws-cdk/issues/29335)
+* **events-targets:** hardcoded AWS partition in ECS task resource ARN ([#29633](https://github.com/aws/aws-cdk/issues/29633)) ([69cff2e](https://github.com/aws/aws-cdk/commit/69cff2eda84dacfe265d518fc88ccf55930f59c4)), closes [#29610](https://github.com/aws/aws-cdk/issues/29610)
+* **route53:** allow records with a weight of 0 ([#29595](https://github.com/aws/aws-cdk/issues/29595)) ([cc7e95b](https://github.com/aws/aws-cdk/commit/cc7e95ba91848345352981a141559170c375a0d2)), closes [#29556](https://github.com/aws/aws-cdk/issues/29556)
+* add validation for ALB access log bucket when KMS key is provided ([#29382](https://github.com/aws/aws-cdk/issues/29382)) ([2cc2449](https://github.com/aws/aws-cdk/commit/2cc24499bf62b6dd48ae9bd265c38a6847f75a3f)), closes [#22031](https://github.com/aws/aws-cdk/issues/22031)
+
 ## [2.134.0](https://github.com/aws/aws-cdk/compare/v2.133.0...v2.134.0) (2024-03-26)
 
 
