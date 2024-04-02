@@ -318,7 +318,7 @@ Additionally, some integrations allow you to manipulate and customize your respo
 See [Setting up a WebSocket API integration responses in API Gateway](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-websocket-api-integration-responses.html).
 
 ```ts
-import * as integrations from 'aws-cdk-lib/aws-apigatewayv2-integrations';
+import { WebSocketAwsIntegration } from 'aws-cdk-lib/aws-apigatewayv2-integrations';
 
 const webSocketApi = new apigwv2.WebSocketApi(this, 'mywsapi');
 new apigwv2.WebSocketStage(this, 'mystage', {

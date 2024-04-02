@@ -32,7 +32,7 @@ export class WebSocketIntegrationResponseKey {
    *
    * @example
    * // Match 403 status code
-   * WebSocketIntegrationResponseKey.fromStatusCode(403)
+   * apigwv2.WebSocketIntegrationResponseKey.fromStatusCode(403)
    *
    * @param httpStatusCode HTTP status code of the mapped response
    */
@@ -46,10 +46,10 @@ export class WebSocketIntegrationResponseKey {
    *
    * @example
    * // Match all 20x status codes
-   * WebSocketIntegrationResponseKey.fromStatusRegExp('20\\d')
+   * apigwv2.WebSocketIntegrationResponseKey.fromStatusRegExp('20\\d')
    *
    * // Match all 4xx status codes, using RegExp
-   * WebSocketIntegrationResponseKey.fromStatusRegExp(/4\d{2}/.source)
+   * apigwv2.WebSocketIntegrationResponseKey.fromStatusRegExp(/4\d{2}/.source)
    *
    * @param httpStatusRegExpStr HTTP status code regular expression string representation
    * @see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp
@@ -118,7 +118,6 @@ export interface InternalWebSocketIntegrationResponseProps {
    *   request.
    *
    * @default - No response parameters
-   * @example { 'method.response.header.Content-Type': "'application/json'" }
    */
   readonly responseParameters?: { [key: string]: string };
 
