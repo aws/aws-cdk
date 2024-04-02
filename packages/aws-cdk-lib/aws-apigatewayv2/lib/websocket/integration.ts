@@ -285,9 +285,10 @@ export abstract class WebSocketRouteIntegration {
 }
 
 /**
- * The abstract class that all two-way communication route integration classes will implement.
+ * The abstract class that two-way communication route integration classes
+ * with customized responses will implement.
  */
-export abstract class WebSocketTwoWayRouteIntegration extends WebSocketRouteIntegration {
+export abstract class CustomResponseWebSocketRoute extends WebSocketRouteIntegration {
   private responses: InternalWebSocketIntegrationResponseProps[] = [];
 
   /**

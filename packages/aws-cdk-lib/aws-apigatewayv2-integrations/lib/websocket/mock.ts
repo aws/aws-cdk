@@ -2,7 +2,7 @@ import {
   WebSocketIntegrationType,
   WebSocketRouteIntegrationConfig,
   WebSocketRouteIntegrationBindOptions,
-  WebSocketTwoWayRouteIntegration,
+  CustomResponseWebSocketRoute,
   InternalWebSocketIntegrationResponseProps,
 } from '../../../aws-apigatewayv2';
 
@@ -41,7 +41,7 @@ export interface WebSocketMockIntegrationProps {
 /**
  * Mock WebSocket Integration
  */
-export class WebSocketMockIntegration extends WebSocketTwoWayRouteIntegration {
+export class WebSocketMockIntegration extends CustomResponseWebSocketRoute {
 
   /**
    * @param id id of the underlying integration construct

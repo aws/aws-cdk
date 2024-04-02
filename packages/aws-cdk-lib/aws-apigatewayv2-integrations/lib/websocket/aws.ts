@@ -4,7 +4,7 @@ import {
   WebSocketRouteIntegrationBindOptions,
   PassthroughBehavior,
   ContentHandling,
-  WebSocketTwoWayRouteIntegration,
+  CustomResponseWebSocketRoute,
   InternalWebSocketIntegrationResponseProps,
 } from '../../../aws-apigatewayv2';
 import { IRole } from '../../../aws-iam';
@@ -98,7 +98,7 @@ export interface WebSocketAwsIntegrationProps {
 /**
  * AWS WebSocket AWS Type Integration
  */
-export class WebSocketAwsIntegration extends WebSocketTwoWayRouteIntegration {
+export class WebSocketAwsIntegration extends CustomResponseWebSocketRoute {
   /**
    * @param id id of the underlying integration construct
    */

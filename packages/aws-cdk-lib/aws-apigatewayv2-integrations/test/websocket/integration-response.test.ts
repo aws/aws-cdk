@@ -1,5 +1,5 @@
 import { Match, Template } from '../../../assertions';
-import { ContentHandling, InternalWebSocketIntegrationResponseProps, WebSocketApi, WebSocketIntegration, WebSocketIntegrationResponse, WebSocketIntegrationResponseKey, WebSocketIntegrationType, WebSocketRouteIntegrationBindOptions, WebSocketRouteIntegrationConfig, WebSocketTwoWayRouteIntegration } from '../../../aws-apigatewayv2';
+import { ContentHandling, InternalWebSocketIntegrationResponseProps, WebSocketApi, WebSocketIntegration, WebSocketIntegrationResponse, WebSocketIntegrationResponseKey, WebSocketIntegrationType, WebSocketRouteIntegrationBindOptions, WebSocketRouteIntegrationConfig, CustomResponseWebSocketRoute } from '../../../aws-apigatewayv2';
 import * as iam from '../../../aws-iam';
 import { Stack } from '../../../core';
 
@@ -18,7 +18,7 @@ interface WebSocketTestRouteIntegrationConfig {
   readonly responses?: InternalWebSocketIntegrationResponseProps[];
 }
 
-class WebSocketTestIntegration extends WebSocketTwoWayRouteIntegration {
+class WebSocketTestIntegration extends CustomResponseWebSocketRoute {
   constructor(id: string, private readonly props: WebSocketTestRouteIntegrationConfig) {
     super(id);
   }
