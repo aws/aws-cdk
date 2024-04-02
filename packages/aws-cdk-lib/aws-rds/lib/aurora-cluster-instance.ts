@@ -223,7 +223,7 @@ export interface ClusterInstanceOptions {
    */
   readonly publiclyAccessible?: boolean;
 
-    /**
+  /**
    * A preferred maintenance window day/time range. Should be specified as a range ddd:hh24:mi-ddd:hh24:mi (24H Clock UTC).
    *
    * Example: 'Sun:23:45-Mon:00:15'
@@ -232,7 +232,7 @@ export interface ClusterInstanceOptions {
    * each AWS Region, occurring on a random day of the week.
    * @see https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/USER_UpgradeDBInstance.Maintenance.html#Concepts.DBMaintenance
    */
-    readonly preferredMaintenanceWindow?: string;
+  readonly preferredMaintenanceWindow?: string;
 
   /**
    * The parameters in the DBParameterGroup to create automatically
