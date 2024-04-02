@@ -81,40 +81,33 @@ This is to prevent deployment failures due to cross-AZ configurations.
 You can create a replica of your EFS file system in the AWS Region of your preference.
 
 ```ts
-import * as kms from 'aws-cdk-lib/aws-kms';
-
 declare const vpc: ec2.Vpc;
-declare const kmsKey: kms.Key;
 
-// auto generate a replication destination file system
-new efs.FileSystem(this, 'ReplicationSourceFileSystem1', {
+// auto generate a regional replication destination file system
+new efs.FileSystem(this, 'RegionalReplicationFileSystem', {
   vpc,
-  replicationConfiguration: {
-    kmsKey, // optional
-    region: 'us-east-1',
-    availabilityZone: 'us-east-1a', // optional, Specifying the AZ means creating a One Zone file system as the replication destination
-  }
+  replicationConfiguration: efs.ReplicationConfiguration.regionalFileSystem('us-west-2'),
 });
 
-// specify the replication destination file system
+// auto generate a one zone replication destination file system
+new efs.FileSystem(this, 'OneZoneReplicationFileSystem', {
+  vpc,
+  replicationConfiguration: efs.ReplicationConfiguration.oneZoneFileSystem('us-east-1', 'us-east-1a'),
+});
+
 const destinationFileSystem = new efs.FileSystem(this, 'DestinationFileSystem', {
   vpc,
   // set as the read-only file system for use as a replication destination
   replicationOverwriteProtection: efs.ReplicationOverwriteProtection.DISABLED,
 });
-
-new efs.FileSystem(this, 'ReplicationSourceFileSystem2', {
+// specify the replication destination file system
+new efs.FileSystem(this, 'ReplicationFileSystem', {
   vpc,
-  replicationConfiguration: {
-    destinationFileSystem,
-    // cannot configure other properties when destinationFileSystem is specified
-  }
+  replicationConfiguration: efs.ReplicationConfiguration.existingFileSystem(destinationFileSystem),
 });
 ```
 
 **Note**: EFS now supports only one replication destination and thus allows specifying just one `replicationConfiguration` for each file system.
-
-**Note**: You have to specify either `region` or `destinationFileSystem` when creating a replication destination file system.
 
 > Visit [Replicating file systems](https://docs.aws.amazon.com/efs/latest/ug/efs-replication.html) for more details.
 
