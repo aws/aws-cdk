@@ -1686,7 +1686,7 @@ describe('tests', () => {
 
     test('compatibility mode for addAction', () => {
       // GIVEN
-      const context = { [cxapi.ENABLE_ALBV2_EXTERNALAPPLICATIONLISTENER_ADDTARGETGROUP_TO_ADDACTION_MIGRATION]: true };
+      const context = { [cxapi.ALBV2_EXTERNALAPPLICATIONLISTENER_SWITCH_FROM_ADDTARGETGROUP_TO_ADDACTION]: true };
       const app = new cdk.App({ context });
       const stack = new cdk.Stack(app, 'stack', {
         env: {
@@ -1713,38 +1713,6 @@ describe('tests', () => {
       const applicationListenerRule = listener.node.children.find((v)=> v.hasOwnProperty('conditions'));
       expect(applicationListenerRule).toBeDefined();
       expect(applicationListenerRule!.node.id).toBe(identifierToken); // Should not have `Rule` suffix
-    });
-
-    test('consistent', () => {
-      // GIVEN
-      const context = { [cxapi.ENABLE_ALBV2_EXTERNALAPPLICATIONLISTENER_ADDTARGETGROUP_CONSISTENT_LOGICALID]: true };
-      const app = new cdk.App({ context });
-      const stack = new cdk.Stack(app, 'stack', {
-        env: {
-          account: '123456789012',
-          region: 'us-west-2',
-        },
-      });
-      const vpc = new ec2.Vpc(stack, 'Stack');
-      const targetGroup = new elbv2.ApplicationTargetGroup(stack, 'TargetGroup', { vpc, port: 80 });
-      const listener = elbv2.ApplicationListener.fromLookup(stack, 'a', {
-        loadBalancerTags: {
-          some: 'tag',
-        },
-      });
-
-      // WHEN
-      const identifierToken = 'SuperMagicToken';
-      listener.addTargetGroups(identifierToken, {
-        conditions: [elbv2.ListenerCondition.pathPatterns(['/fake'])],
-        priority: 42,
-        targetGroups: [targetGroup],
-      });
-
-      // THEN
-      const applicationListenerRule = listener.node.children.find((v)=> v.hasOwnProperty('conditions'));
-      expect(applicationListenerRule).toBeDefined();
-      expect(applicationListenerRule!.node.id).toBe(identifierToken + 'Rule'); // Should have `Rule` suffix
     });
   });
 
