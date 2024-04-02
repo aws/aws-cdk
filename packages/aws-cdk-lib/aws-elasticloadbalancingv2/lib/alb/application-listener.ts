@@ -626,7 +626,7 @@ abstract class ExternalApplicationListener extends Resource implements IApplicat
 
     if (props.priority !== undefined) {
       // New rule
-      new ApplicationListenerRule(this, id + 'Rule', {
+      new ApplicationListenerRule(this, id, {
         listener: this,
         priority: props.priority,
         ...props,
