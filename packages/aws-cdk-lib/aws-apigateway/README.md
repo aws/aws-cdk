@@ -267,6 +267,10 @@ The following example uses sets up two Resources '/pets' and '/books' in separat
 
 [Resources grouped into nested stacks](test/integ.restapi-import.lit.ts)
 
+> **Warning:** With the above code, no Deployment is created even if there are changes to the resources, and the latest resources are not reflected.
+To create a Deployment, you need to use [`Deployment.addToLogicalId()`](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_apigateway.Deployment.html#addwbrtowbrlogicalwbriddata).
+Currently, it is possible to work around this issue with a workaround implementation. Please refer to the [related issue](https://github.com/aws/aws-cdk/issues/13526).
+
 ## Integration Targets
 
 Methods are associated with backend integrations, which are invoked when this
