@@ -79,13 +79,15 @@ const chain = sfn.Chain
   .next(task2)
   .next(new sfn.Pass(stack, 'Done'));
 
-new sfn.StateMachine(stack, 'StateMachine', {
+const stateMachine = new sfn.StateMachine(stack, 'StateMachine', {
   definitionBody: sfn.DefinitionBody.fromChainable(chain),
   timeout: cdk.Duration.seconds(30),
 });
 
-new IntegTest(app, 'InvokeModel', {
+const integ = new IntegTest(app, 'InvokeModel', {
   testCases: [stack],
 });
 
-app.synth();
+integ.assertions.awsApiCall('StepFunctions', 'startExecution', {
+  stateMachineArn: stateMachine.stateMachineArn,
+}).waitForAssertions();
