@@ -30,10 +30,11 @@
       }
      ],
      "Version": "2012-10-17"
-    }
+    },
+    "PendingWindowInDays": 7
    },
-   "UpdateReplacePolicy": "Retain",
-   "DeletionPolicy": "Retain"
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "MyTopic86869434": {
    "Type": "AWS::SNS::Topic",

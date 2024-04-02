@@ -609,6 +609,9 @@
   "aws-securityhub": [
     "AWS::SecurityHub"
   ],
+  "aws-securitylake": [
+    "AWS::SecurityLake"
+  ],
   "aws-servicecatalog": [
     "AWS::ServiceCatalog"
   ],
