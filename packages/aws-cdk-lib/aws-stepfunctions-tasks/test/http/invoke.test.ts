@@ -61,8 +61,7 @@ describe('AWS::StepFunctions::Tasks::HttpInvoke', () => {
         'custom-header': 'custom-value',
       }),
       method: sfn.TaskInput.fromText('POST'),
-      arrayEncodingFormat: lib.ArrayEncodingFormat.BRACKETS,
-      urlEncodeBody: true,
+      urlEncodingFormat: lib.URLEncodingFormat.BRACKETS,
       queryStringParameters: sfn.TaskInput.fromObject({
         foo: 'bar',
       }),
@@ -81,7 +80,7 @@ describe('AWS::StepFunctions::Tasks::HttpInvoke', () => {
       Transform: {
         RequestBodyEncoding: 'URL_ENCODED',
         RequestEncodingOptions: {
-          ArrayFormat: lib.ArrayEncodingFormat.BRACKETS,
+          ArrayFormat: lib.URLEncodingFormat.BRACKETS,
         },
       },
       QueryParameters: {
@@ -90,13 +89,13 @@ describe('AWS::StepFunctions::Tasks::HttpInvoke', () => {
     });
   });
 
-  test('invoke with request body encoding and default arrayEncodingFormat', () => {
+  test('invoke with default urlEncodingFormat', () => {
     const task = new lib.HttpInvoke(stack, 'Task', {
       apiRoot: 'https://api.example.com',
       apiEndpoint: sfn.TaskInput.fromText('path/to/resource'),
       method: sfn.TaskInput.fromText('POST'),
       connection,
-      urlEncodeBody: true,
+      urlEncodingFormat: lib.URLEncodingFormat.DEFAULT,
     });
 
     expectTaskWithParameters(task, {
@@ -111,6 +110,24 @@ describe('AWS::StepFunctions::Tasks::HttpInvoke', () => {
       Transform: {
         RequestBodyEncoding: 'URL_ENCODED',
       },
+    });
+  });
+
+  test('invoke with no urlEncodingFormat', () => {
+    const task = new lib.HttpInvoke(stack, 'Task', {
+      apiRoot: 'https://api.example.com',
+      apiEndpoint: sfn.TaskInput.fromText('path/to/resource'),
+      method: sfn.TaskInput.fromText('POST'),
+      connection,
+      urlEncodingFormat: lib.URLEncodingFormat.NONE,
+    });
+
+    expectTaskWithParameters(task, {
+      ApiEndpoint: 'https://api.example.com/path/to/resource',
+      Authentication: {
+        ConnectionArn: stack.resolve(connection.connectionArn),
+      },
+      Method: 'POST',
     });
   });
 });

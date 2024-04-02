@@ -7,7 +7,7 @@ import { integrationResourceArn } from '../private/task-utils';
 /**
  * The style used when applying URL encoding to array values.
  */
-export enum ArrayEncodingFormat {
+export enum URLEncodingFormat {
   /**
    * Encode arrays using brackets. For example, {'array': ['a','b','c']} encodes to 'array[]=a&array[]=b&array[]=c'
    */
@@ -17,13 +17,41 @@ export enum ArrayEncodingFormat {
    */
   COMMAS = 'COMMAS',
   /**
+   * Apply the default URL encoding style (INDICES).
+   */
+  DEFAULT = 'DEFAULT',
+  /**
    * Encode arrays using the index value. For example, {'array': ['a','b','c']} encodes to 'array[0]=a&array[1]=b&array[2]=c'
    */
   INDICES = 'INDICES',
   /**
+   * Do not apply URL encoding.
+   */
+  NONE = 'NONE',
+  /**
    * Repeat key for each item in the array. For example, {'array': ['a','b','c']} encodes to 'array[]=a&array[]=b&array[]=c'
    */
   REPEAT = 'REPEAT',
+}
+
+/**
+ * The StepFunctions parameters for the http:invoke task.
+ */
+interface TaskParameters {
+  ApiEndpoint: string;
+  Authentication: {
+    ConnectionArn: string;
+  };
+  Method: string;
+  Headers?: { [key: string]: string };
+  RequestBody?: string;
+  QueryParameters?: { [key: string]: string };
+  Transform?: {
+    RequestBodyEncoding: string;
+    RequestEncodingOptions?: {
+      ArrayFormat: string;
+    };
+  };
 }
 
 /**
@@ -78,21 +106,15 @@ export interface HttpInvokeProps extends sfn.TaskStateBaseProps {
   readonly queryStringParameters?: sfn.TaskInput;
 
   /**
-   * When `true`, the HTTP request body is the URL-encoded form data of the `RequestBody` field.
-   * When `false` (default), the HTTP request body is the JSON-serialized `RequestBody` field.
-   * If set to `true`, also sets 'content-type' header to 'application/x-www-form-urlencoded'.
+   * Determines whether to apply URL encoding to the request body, and which array encoding format to use.
    *
-   * @default - No encoding.
-   */
-  readonly urlEncodeBody?: boolean;
-
-  /**
-   * The format of the array encoding.
-   * Only used if `urlEncodeBody` is `true`.
+   * `URLEncodingFormat.NONE` passes the JSON-serialized `RequestBody` field as the HTTP request body.
+   * Otherwise, the HTTP request body is the URL-encoded form data of the `RequestBody` field using the
+   * specified array encoding format, and the `Content-Type` header is set to `application/x-www-form-urlencoded`.
    *
-   * @default - ArrayEncodingFormat.INDICES
+   * @default - URLEncodingFormat.NONE
    */
-  readonly arrayEncodingFormat?: ArrayEncodingFormat;
+  readonly urlEncodingFormat?: URLEncodingFormat;
 }
 
 /**
@@ -143,29 +165,30 @@ export class HttpInvoke extends sfn.TaskStateBase {
   }
 
   private buildTaskParameters() {
-    let headers: { [key: string]: string }| undefined = this.props.headers?.value;
-
-    if (this.props.urlEncodeBody) {
-      headers = { ...headers, 'Content-Type': 'application/x-www-form-urlencoded' };
-    }
-
-    const urlEncodeTransform = {
-      RequestBodyEncoding: 'URL_ENCODED',
-      RequestEncodingOptions: this.props.arrayEncodingFormat == null ? undefined : {
-        ArrayFormat: this.props.arrayEncodingFormat,
-      },
-    };
-
-    return {
+    const parameters: TaskParameters = {
       ApiEndpoint: `${this.props.apiRoot}/${this.props.apiEndpoint.value}`,
       Authentication: {
         ConnectionArn: this.props.connection.connectionArn,
       },
       Method: this.props.method.value,
-      Headers: headers,
+      Headers: this.props.headers?.value,
       RequestBody: this.props.body?.value,
       QueryParameters: this.props.queryStringParameters?.value,
-      Transform: this.props.urlEncodeBody ? urlEncodeTransform : undefined,
     };
+
+    if (this.props.urlEncodingFormat != null && this.props.urlEncodingFormat !== URLEncodingFormat.NONE) {
+      parameters.Headers = { ...parameters.Headers, 'Content-Type': 'application/x-www-form-urlencoded' };
+      parameters.Transform = {
+        RequestBodyEncoding: 'URL_ENCODED',
+      };
+
+      if (this.props.urlEncodingFormat !== URLEncodingFormat.DEFAULT) {
+        parameters.Transform.RequestEncodingOptions = {
+          ArrayFormat: this.props.urlEncodingFormat,
+        };
+      }
+    }
+
+    return parameters;
   }
 }
