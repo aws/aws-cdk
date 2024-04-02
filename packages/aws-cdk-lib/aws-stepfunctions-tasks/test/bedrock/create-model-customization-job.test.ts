@@ -104,115 +104,6 @@ describe('create model customization job', () => {
           PolicyDocument: {
             Statement: [
               {
-                Action: 'ec2:CreateNetworkInterface',
-                Effect: 'Allow',
-                Resource: [
-                  {
-                    'Fn::Join': [
-                      '',
-                      [
-                        'arn:',
-                        {
-                          Ref: 'AWS::Partition',
-                        },
-                        ':ec2:',
-                        {
-                          Ref: 'AWS::Region',
-                        },
-                        ':',
-                        {
-                          Ref: 'AWS::AccountId',
-                        },
-                        ':network-interface/*',
-                      ],
-                    ],
-                  },
-                  {
-                    'Fn::Join': [
-                      '',
-                      [
-                        'arn:',
-                        {
-                          Ref: 'AWS::Partition',
-                        },
-                        ':ec2:',
-                        {
-                          Ref: 'AWS::Region',
-                        },
-                        ':',
-                        {
-                          Ref: 'AWS::AccountId',
-                        },
-                        ':security-group/*',
-                      ],
-                    ],
-                  },
-                  {
-                    'Fn::Join': [
-                      '',
-                      [
-                        'arn:',
-                        {
-                          Ref: 'AWS::Partition',
-                        },
-                        ':ec2:',
-                        {
-                          Ref: 'AWS::Region',
-                        },
-                        ':',
-                        {
-                          Ref: 'AWS::AccountId',
-                        },
-                        ':subnet/*',
-                      ],
-                    ],
-                  },
-                ],
-              },
-              {
-                Action: 'ec2:CreateTags',
-                Condition: {
-                  StringEquals: {
-                    'ec2:CreateAction': 'CreateNetworkInterface',
-                  },
-                },
-                Effect: 'Allow',
-                Resource: {
-                  'Fn::Join': [
-                    '',
-                    [
-                      'arn:',
-                      {
-                        Ref: 'AWS::Partition',
-                      },
-                      ':ec2:',
-                      {
-                        Ref: 'AWS::Region',
-                      },
-                      ':',
-                      {
-                        Ref: 'AWS::AccountId',
-                      },
-                      ':network-interface/*',
-                    ],
-                  ],
-                },
-              },
-              {
-                Action: [
-                  'ec2:CreateNetworkInterfacePermission',
-                  'ec2:DeleteNetworkInterface',
-                  'ec2:DeleteNetworkInterfacePermission',
-                ],
-                Condition: {
-                  StringEquals: {
-                    'ec2:Subnet': [],
-                  },
-                },
-                Effect: 'Allow',
-                Resource: '*',
-              },
-              {
                 Action: 's3:GetObject',
                 Effect: 'Allow',
                 Resource: [
@@ -388,7 +279,7 @@ describe('create model customization job', () => {
       baseModel: bedrock.FoundationModel.fromFoundationModelId(stack, 'Model', bedrock.FoundationModelIdentifier.ANTHROPIC_CLAUDE_INSTANT_V1),
       clientRequestToken: 'token',
       customizationType: CustomizationType.FINE_TUNING,
-      kmsKey,
+      customModelKmsKey: kmsKey,
       customModelName: 'custom-model',
       customModelTags: [{ key: 'key1', value: 'value1' }],
       hyperParameters: { key: 'value' },
