@@ -32,8 +32,7 @@ export interface CapacityConfig {
   /**
    * The hardware configuration of the computer that hosts the dedicated master
    * node, such as `m3.medium.search`. For valid values, see [Supported
-   * Instance Types]
-   * (https://docs.aws.amazon.com/opensearch-service/latest/developerguide/supported-instance-types.html)
+   * Instance Types](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/supported-instance-types.html)
    * in the Amazon OpenSearch Service Developer Guide.
    *
    * @default - r5.large.search
@@ -66,8 +65,8 @@ export interface CapacityConfig {
 
   /**
    * The instance type for your UltraWarm node, such as `ultrawarm1.medium.search`.
-   * For valid values, see [UltraWarm Storage Limits]
-   * (https://docs.aws.amazon.com/opensearch-service/latest/developerguide/limits.html#limits-ultrawarm)
+   * For valid values, see [UltraWarm Storage
+   * Limits](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/limits.html#limits-ultrawarm)
    * in the Amazon OpenSearch Service Developer Guide.
    *
    * @default - ultrawarm1.medium.search
@@ -76,10 +75,11 @@ export interface CapacityConfig {
 
   /**
    * Indicates whether Multi-AZ with Standby deployment option is enabled.
-   * For more information, see [Multi-AZ with Standby]
-   * (https://docs.aws.amazon.com/opensearch-service/latest/developerguide/managedomains-multiaz.html#managedomains-za-standby)
+   * For more information, see [Multi-AZ with
+   * Standby](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/managedomains-multiaz.html#managedomains-za-standby)
    *
-   * @default - no multi-az with standby
+   * @default - multi-az with standby if the feature flag `ENABLE_OPENSEARCH_MULTIAZ_WITH_STANDBY`
+   * is true, no multi-az with standby otherwise
    */
   readonly multiAzWithStandbyEnabled?: boolean;
 }
@@ -95,8 +95,7 @@ export interface ZoneAwarenessConfig {
    * in the same region to prevent data loss and minimize downtime in the event
    * of node or data center failure. Don't enable zone awareness if your cluster
    * has no replica index shards or is a single-node cluster. For more information,
-   * see [Configuring a Multi-AZ Domain]
-   * (https://docs.aws.amazon.com/opensearch-service/latest/developerguide/managedomains-multiaz.html)
+   * see [Configuring a Multi-AZ Domain](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/managedomains-multiaz.html)
    * in the Amazon OpenSearch Service Developer Guide.
    *
    * @default - false
@@ -115,8 +114,7 @@ export interface ZoneAwarenessConfig {
 /**
  * The configurations of Amazon Elastic Block Store (Amazon EBS) volumes that
  * are attached to data nodes in the Amazon OpenSearch Service domain. For more information, see
- * [Amazon EBS]
- * (https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/AmazonEBS.html)
+ * [Amazon EBS](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/AmazonEBS.html)
  * in the Amazon Elastic Compute Cloud Developer Guide.
  */
 export interface EbsOptions {
@@ -149,8 +147,7 @@ export interface EbsOptions {
    * The size (in GiB) of the EBS volume for each data node. The minimum and
    * maximum size of an EBS volume depends on the EBS volume type and the
    * instance type to which it is attached.  For  valid values, see
-   * [EBS volume size limits]
-   * (https://docs.aws.amazon.com/opensearch-service/latest/developerguide/limits.html#ebsresource)
+   * [EBS volume size limits](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/limits.html#ebsresource)
    * in the Amazon OpenSearch Service Developer Guide.
    *
    * @default 10
@@ -1724,6 +1721,7 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
 
     // Setup logging
     const logGroups: logs.ILogGroup[] = [];
+    const logPublishing: Record<string, any> = {};
 
     if (props.logging?.slowSearchLogEnabled) {
       this.slowSearchLogGroup = props.logging.slowSearchLogGroup ??
@@ -1732,6 +1730,14 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
         });
 
       logGroups.push(this.slowSearchLogGroup);
+      logPublishing.SEARCH_SLOW_LOGS = {
+        enabled: true,
+        cloudWatchLogsLogGroupArn: this.slowSearchLogGroup.logGroupArn,
+      };
+    } else if (props.logging?.slowSearchLogEnabled === false) {
+      logPublishing.SEARCH_SLOW_LOGS = {
+        enabled: false,
+      };
     };
 
     if (props.logging?.slowIndexLogEnabled) {
@@ -1741,6 +1747,14 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
         });
 
       logGroups.push(this.slowIndexLogGroup);
+      logPublishing.INDEX_SLOW_LOGS = {
+        enabled: true,
+        cloudWatchLogsLogGroupArn: this.slowIndexLogGroup.logGroupArn,
+      };
+    } else if (props.logging?.slowIndexLogEnabled === false) {
+      logPublishing.INDEX_SLOW_LOGS = {
+        enabled: false,
+      };
     };
 
     if (props.logging?.appLogEnabled) {
@@ -1750,6 +1764,14 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
         });
 
       logGroups.push(this.appLogGroup);
+      logPublishing.ES_APPLICATION_LOGS = {
+        enabled: true,
+        cloudWatchLogsLogGroupArn: this.appLogGroup.logGroupArn,
+      };
+    } else if (props.logging?.appLogEnabled === false) {
+      logPublishing.ES_APPLICATION_LOGS = {
+        enabled: false,
+      };
     };
 
     if (props.logging?.auditLogEnabled) {
@@ -1759,6 +1781,14 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
         });
 
       logGroups.push(this.auditLogGroup);
+      logPublishing.AUDIT_LOGS = {
+        enabled: true,
+        cloudWatchLogsLogGroupArn: this.auditLogGroup?.logGroupArn,
+      };
+    } else if (props.logging?.auditLogEnabled === false) {
+      logPublishing.AUDIT_LOGS = {
+        enabled: false,
+      };
     };
 
     let logGroupResourcePolicy: LogGroupResourcePolicy | null = null;
@@ -1779,36 +1809,6 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
       });
     }
 
-    const logPublishing: Record<string, any> = {};
-
-    if (this.appLogGroup) {
-      logPublishing.ES_APPLICATION_LOGS = {
-        enabled: true,
-        cloudWatchLogsLogGroupArn: this.appLogGroup.logGroupArn,
-      };
-    }
-
-    if (this.slowSearchLogGroup) {
-      logPublishing.SEARCH_SLOW_LOGS = {
-        enabled: true,
-        cloudWatchLogsLogGroupArn: this.slowSearchLogGroup.logGroupArn,
-      };
-    }
-
-    if (this.slowIndexLogGroup) {
-      logPublishing.INDEX_SLOW_LOGS = {
-        enabled: true,
-        cloudWatchLogsLogGroupArn: this.slowIndexLogGroup.logGroupArn,
-      };
-    }
-
-    if (this.auditLogGroup) {
-      logPublishing.AUDIT_LOGS = {
-        enabled: this.auditLogGroup != null,
-        cloudWatchLogsLogGroupArn: this.auditLogGroup?.logGroupArn,
-      };
-    }
-
     let customEndpointCertificate: acm.ICertificate | undefined;
     if (props.customEndpoint) {
       if (props.customEndpoint.certificate) {
@@ -1826,6 +1826,10 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
       if (cdk.FeatureFlags.of(this).isEnabled(cxapi.ENABLE_OPENSEARCH_MULTIAZ_WITH_STANDBY)) {
         multiAzWithStandbyEnabled = true;
       }
+    }
+
+    if (isSomeInstanceType('t3') && multiAzWithStandbyEnabled) {
+      throw new Error('T3 instance type does not support Multi-AZ with standby feature.');
     }
 
     const offPeakWindowEnabled = props.offPeakWindowEnabled ?? props.offPeakWindowStart !== undefined;

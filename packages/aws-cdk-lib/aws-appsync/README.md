@@ -757,6 +757,33 @@ const api = new appsync.GraphqlApi(this, 'api', {
 });
 ```
 
+## Query Depth Limits
+
+By default, queries are able to process an unlimited amount of nested levels.
+Limiting queries to a specified amount of nested levels has potential implications for the performance and flexibility of your project.
+
+```ts
+const api = new appsync.GraphqlApi(this, 'api', {
+  name: 'LimitQueryDepths',
+  definition: appsync.Definition.fromFile(path.join(__dirname, 'appsync.schema.graphql')),
+  queryDepthLimit: 2,
+});
+```
+
+## Resolver Count Limits
+
+You can control how many resolvers each query can process. 
+By default, each query can process up to 10000 resolvers. 
+By setting a limit AppSync will not handle any resolvers past a certain number limit.
+
+```ts
+const api = new appsync.GraphqlApi(this, 'api', {
+  name: 'LimitResolverCount',
+  definition: appsync.Definition.fromFile(path.join(__dirname, 'appsync.schema.graphql')),
+  resolverCountLimit: 2,
+});
+```
+
 ## Environment Variables
 
 To use environment variables in resolvers, you can use the `environmentVariables` property and

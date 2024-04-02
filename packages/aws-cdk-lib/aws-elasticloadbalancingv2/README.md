@@ -193,7 +193,7 @@ If you do not provide any options for this method, it redirects HTTP port 80 to 
 By default all ingress traffic will be allowed on the source port. If you want to be more selective with your
 ingress rules then set `open: false` and use the listener's `connections` object to selectively grant access to the listener.
 
-### Load Balancer attributes
+### Application Load Balancer attributes
 
 You can modify attributes of Application Load Balancers:
 
@@ -220,10 +220,37 @@ const lb = new elbv2.ApplicationLoadBalancer(this, 'LB', {
 
   // The type of IP addresses to use.
   ipAddressType: elbv2.IpAddressType.IPV4,
+
+  // The duration of client keep-alive connections
+  clientKeepAlive: Duration.seconds(500),
+
+  // Whether cross-zone load balancing is enabled.
+  crossZoneEnabled: true,
+
+  // Whether the load balancer blocks traffic through the Internet Gateway (IGW).
+  denyAllIgwTraffic: false
 });
 ```
 
 For more information, see [Load balancer attributes](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/application-load-balancers.html#load-balancer-attributes)
+
+### Setting up Access Log Bucket on Application Load Balancer
+
+The only server-side encryption option that's supported is Amazon S3-managed keys (SSE-S3). For more information
+Documentation: https://docs.aws.amazon.com/elasticloadbalancing/latest/application/enable-access-logging.html
+
+```ts 
+
+declare const vpc: ec2.Vpc;
+
+const bucket = new s3.Bucket(this, 'ALBAccessLogsBucket',{ 
+  encryption: s3.BucketEncryption.S3_MANAGED,
+  });
+
+const lb = new elbv2.ApplicationLoadBalancer(this, 'LB', { vpc });
+lb.logAccessLogs(bucket);
+
+```
 
 ## Defining a Network Load Balancer
 
@@ -257,6 +284,21 @@ listener.addTargets('AppFleet', {
 });
 ```
 
+### Enforce security group inbound rules on PrivateLink traffic for a Network Load Balancer
+
+You can indicate whether to evaluate inbound security group rules for traffic 
+sent to a Network Load Balancer through AWS PrivateLink.
+The evaluation is enabled by default.
+
+```ts
+declare const vpc: ec2.Vpc;
+
+const nlb = new elbv2.NetworkLoadBalancer(this, 'LB', {
+  vpc,
+  enforceSecurityGroupInboundRulesOnPrivateLinkTraffic: true,
+});
+```
+
 One thing to keep in mind is that network load balancers do not have security
 groups, and no automatic security group configuration is done for you. You will
 have to configure the security groups of the target yourself to allow traffic by
@@ -266,6 +308,7 @@ Balancers](https://docs.aws.amazon.com/elasticloadbalancing/latest/network/load-
 and [Register targets with your Target
 Group](https://docs.aws.amazon.com/elasticloadbalancing/latest/network/target-group-register-targets.html)
 for more information.
+
 
 ### Dualstack Network Load Balancer
 
@@ -281,6 +324,29 @@ const lb = new elbv2.NetworkLoadBalancer(this, 'LB', {
 ```
 
 You cannot add UDP or TCP_UDP listeners to a dualstack Network Load Balancer.
+
+### Network Load Balancer attributes
+
+You can modify attributes of Network Load Balancers:
+
+```ts
+declare const vpc: ec2.Vpc;
+
+const lb = new elbv2.NetworkLoadBalancer(this, 'LB', {
+  vpc,
+  // Whether deletion protection is enabled.
+  deletionProtection: true,
+
+  // Whether cross-zone load balancing is enabled.
+  crossZoneEnabled: true,
+
+  // Whether the load balancer blocks traffic through the Internet Gateway (IGW).
+  denyAllIgwTraffic: false,
+
+  // Indicates how traffic is distributed among the load balancer Availability Zones.
+  clientRoutingPolicy: elbv2.ClientRoutingPolicy.AVAILABILITY_ZONE_AFFINITY,
+});
+```
 
 ## Targets and Target Groups
 
@@ -331,6 +397,26 @@ const tg2 = new elbv2.ApplicationTargetGroup(this, 'TG2', {
   port: 80,
   stickinessCookieDuration: Duration.minutes(5),
   stickinessCookieName: 'MyDeliciousCookie',
+  vpc,
+});
+```
+
+### Slow start mode for your Application Load Balancer
+
+By default, a target starts to receive its full share of requests as soon as it is registered with a target group and passes an initial health check. Using slow start mode gives targets time to warm up before the load balancer sends them a full share of requests.
+
+After you enable slow start for a target group, its targets enter slow start mode when they are considered healthy by the target group. A target in slow start mode exits slow start mode when the configured slow start duration period elapses or the target becomes unhealthy. The load balancer linearly increases the number of requests that it can send to a target in slow start mode. After a healthy target exits slow start mode, the load balancer can send it a full share of requests.
+
+The allowed range is 30-900 seconds (15 minutes). The default is 0 seconds (disabled).
+
+```ts
+declare const vpc: ec2.Vpc;
+
+// Target group with slow start mode enabled
+const tg = new elbv2.ApplicationTargetGroup(this, 'TG', {
+  targetType: elbv2.TargetType.INSTANCE,
+  slowStart: Duration.seconds(60),
+  port: 80,
   vpc,
 });
 ```
