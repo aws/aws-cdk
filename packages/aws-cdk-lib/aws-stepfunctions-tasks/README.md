@@ -1070,7 +1070,7 @@ new tasks.GlueDataBrewStartJobRun(this, 'Task', {
 
 Step Functions supports [calling third-party APIs](https://docs.aws.amazon.com/step-functions/latest/dg/connect-third-party-apis.html) with credentials managed by Amazon EventBridge [Connections](https://docs.aws.amazon.com/eventbridge/latest/APIReference/API_Connection.html).
 
-The following snippet creates a new API destination Connection, and uses it to make a POST request to the specified URL. The endpoint response is available at the `$.ResponseBody` path.
+The following snippet creates a new API destination connection, and uses it to make a POST request to the specified URL. The endpoint response is available at the `$.ResponseBody` path.
 
 ```ts
 import * as events from 'aws-cdk-lib/aws-events';
