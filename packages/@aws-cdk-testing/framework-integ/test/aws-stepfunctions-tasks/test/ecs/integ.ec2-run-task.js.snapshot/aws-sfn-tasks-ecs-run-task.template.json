@@ -1379,7 +1379,7 @@
          "Arn"
         ]
        },
-       "\",\"TaskDefinition\":\"awssfntasksecsruntaskTaskDef75140181\",\"Overrides\":{\"ContainerOverrides\":[{\"Name\":\"Container\",\"Environment\":[{\"Name\":\"SOME_KEY\",\"Value.$\":\"$.SomeKey\"}]}]},\"LaunchType\":\"EC2\"}}}}"
+       "\",\"TaskDefinition\":\"awssfntasksecsruntaskTaskDef75140181\",\"Overrides\":{\"ContainerOverrides\":[{\"Name\":\"Container\",\"Environment\":[{\"Name\":\"SOME_KEY\",\"Value.$\":\"$.SomeKey\"}]}]},\"LaunchType\":\"EC2\",\"EnableExecuteCommand\":true}}}}"
       ]
      ]
     },

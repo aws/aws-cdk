@@ -1,7 +1,7 @@
 {
   "version": "36.0.0",
   "files": {
-    "95e3c66ed03d4b413dbfdca27bdc41c19f0035e7aab4e92a1fa335f02cd8b768": {
+    "a2ab39fe0d946767a488ce04eb51fffb041276b29879387f4fe7dcad7f577c37": {
       "source": {
         "path": "aws-sfn-tasks-ecs-run-task.template.json",
         "packaging": "file"
@@ -9,7 +9,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "95e3c66ed03d4b413dbfdca27bdc41c19f0035e7aab4e92a1fa335f02cd8b768.json",
+          "objectKey": "a2ab39fe0d946767a488ce04eb51fffb041276b29879387f4fe7dcad7f577c37.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
