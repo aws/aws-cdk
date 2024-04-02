@@ -1042,7 +1042,7 @@ export const FLAGS: Record<string, FlagInfo> = {
     type: FlagType.VisibleContext,
     summary: 'When enabled, you can switch from the \`addTargetGroups()\` method of declaring a \`ListenerRule\` to the \`addAction()\` method, without changing the logicalId and replacing your resource.',
     detailsMd: `
-      When migrating from a less complex to a more complex use of ALB,
+      When switching from a less complex to a more complex use of ALB,
       you will eventually need features not available in the \`addTargetGroups()\` convenience method.
       In this case you will want to use the \`addAction()\` method.
       Without this feature being activated, the change will also add a \`Rule\` suffix to the logicalId of your \`ListnerRule\`,
