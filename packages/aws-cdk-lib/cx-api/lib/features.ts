@@ -1045,7 +1045,7 @@ export const FLAGS: Record<string, FlagInfo> = {
       When switching from a less complex to a more complex use of ALB,
       you will eventually need features not available in the \`addTargetGroups()\` convenience method.
       In this case you will want to use the \`addAction()\` method.
-      Without this feature being activated, the change will also add a \`Rule\` suffix to the logicalId of your \`ListnerRule\`,
+      When this feature is not enabled, switching over to \`addAction()\` from using \`addTargetGroups()\` will add a \`Rule\` suffix to the logicalId of your \`ListnerRule\`,
       causing CloudFormation to attempt to replace the resource.
       Since ListenerRules have a unique priority,
       CloudFormation will always fail when generating the new ListenerRule.
