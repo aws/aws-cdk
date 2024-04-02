@@ -200,12 +200,11 @@ export class Trigger {
 
   private validate() {
     if (this.props.gitConfiguration) {
-      const sourceAction = this.props.gitConfiguration.sourceAction;
+      const { sourceAction, pushFilter, pullRequestFilter } = this.props.gitConfiguration;
+
       if (sourceAction.actionProperties.provider !== 'CodeStarSourceConnection') {
         throw new Error(`provider for actionProperties in sourceAction with name '${sourceAction.actionProperties.actionName}' must be 'CodeStarSourceConnection', got '${sourceAction.actionProperties.provider}'`);
       }
-
-      const { pushFilter, pullRequestFilter } = this.props.gitConfiguration;
 
       if (pushFilter?.length && pullRequestFilter?.length) {
         throw new Error(`cannot specify both pushFilter and pullRequestFilter for the trigger with sourceAction with name '${sourceAction.actionProperties.actionName}'`);
@@ -257,8 +256,7 @@ export class Trigger {
   public _render(): CfnPipeline.PipelineTriggerDeclarationProperty {
     let gitConfiguration: CfnPipeline.GitConfigurationProperty | undefined;
     if (this.props.gitConfiguration) {
-      const sourceAction = this.props.gitConfiguration.sourceAction;
-      const { pushFilter, pullRequestFilter } = this.props.gitConfiguration;
+      const { sourceAction, pushFilter, pullRequestFilter } = this.props.gitConfiguration;
 
       const push = this.renderPushFilter(pushFilter);
       const pullRequest = this.renderPullRequestFilter(pullRequestFilter);
