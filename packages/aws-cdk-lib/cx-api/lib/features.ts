@@ -1038,7 +1038,7 @@ export const FLAGS: Record<string, FlagInfo> = {
   },
 
   //////////////////////////////////////////////////////////////////////
-  [ENABLE_ALBV2_EXTERNALAPPLICATIONLISTENER_ADDTARGETGROUP_TO_ADDACTION_MIGRATION]: {
+  [ALBV2_EXTERNALAPPLICATIONLISTENER_SWITCH_FROM_ADDTARGETGROUP_TO_ADDACTION]: {
     type: FlagType.VisibleContext,
     summary: 'When enabled, you can migrate from the \`addTargetGroups()\` method of declaring a \`ListenerRule\` to the \`addAction()\` method, without changing the logicalId and replacing your resource.',
     detailsMd: `
