@@ -155,12 +155,12 @@ export class Trigger {
 
   private validate() {
     if (this.props.gitConfiguration) {
-      const sourceAction = this.props.gitConfiguration.sourceAction;
+      const { sourceAction, pushFilter } = this.props.gitConfiguration;
+
       if (sourceAction.actionProperties.provider !== 'CodeStarSourceConnection') {
         throw new Error(`provider for actionProperties in sourceAction with name '${sourceAction.actionProperties.actionName}' must be 'CodeStarSourceConnection', got '${sourceAction.actionProperties.provider}'`);
       }
 
-      const pushFilter = this.props.gitConfiguration.pushFilter;
       if (pushFilter !== undefined && pushFilter.length > 3) {
         throw new Error(`length of pushFilter for sourceAction with name '${sourceAction.actionProperties.actionName}' must be less than or equal to 3, got ${pushFilter.length}`);
       }
@@ -205,8 +205,7 @@ export class Trigger {
   public _render(): CfnPipeline.PipelineTriggerDeclarationProperty {
     let gitConfiguration: CfnPipeline.GitConfigurationProperty | undefined;
     if (this.props.gitConfiguration) {
-      const sourceAction = this.props.gitConfiguration.sourceAction;
-      const pushFilter = this.props.gitConfiguration.pushFilter;
+      const { sourceAction, pushFilter } = this.props.gitConfiguration;
 
       const push = this.renderPushFilter(pushFilter);
 
