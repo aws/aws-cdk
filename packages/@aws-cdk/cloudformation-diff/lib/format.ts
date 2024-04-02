@@ -30,7 +30,7 @@ export interface FormatStream extends NodeJS.WritableStream {
 export function formatDifferences(
   stream: FormatStream,
   templateDiff: TemplateDiff,
-  logicalToPathMap: { [logicalId: string]: string } = { },
+  logicalToPathMap: { [logicalId: string]: string } = {},
   context: number = 3) {
   const formatter = new Formatter(stream, logicalToPathMap, templateDiff, context);
 
@@ -59,7 +59,7 @@ export function formatDifferences(
 export function formatSecurityChanges(
   stream: NodeJS.WritableStream,
   templateDiff: TemplateDiff,
-  logicalToPathMap: {[logicalId: string]: string} = {},
+  logicalToPathMap: { [logicalId: string]: string } = {},
   context?: number) {
   const formatter = new Formatter(stream, logicalToPathMap, templateDiff, context);
 
@@ -254,7 +254,7 @@ class Formatter {
           const oldStr = JSON.stringify(oldObject, null, 2);
           const newStr = JSON.stringify(newObject, null, 2);
           const diff = _diffStrings(oldStr, newStr, this.context);
-          for (let i = 0 ; i < diff.length ; i++) {
+          for (let i = 0; i < diff.length; i++) {
             this.print('%s   %s %s', linePrefix, i === 0 ? '└─' : '  ', diff[i]);
           }
         } else {
@@ -466,7 +466,7 @@ function _diffStrings(oldStr: string, newStr: string, context: number): string[]
   function _findIndent(lines: string[]): number {
     let indent = Number.MAX_SAFE_INTEGER;
     for (const line of lines) {
-      for (let i = 1 ; i < line.length ; i++) {
+      for (let i = 1; i < line.length; i++) {
         if (line.charAt(i) !== ' ') {
           indent = indent > i - 1 ? i - 1 : indent;
           break;
