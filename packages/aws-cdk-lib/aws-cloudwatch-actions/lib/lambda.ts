@@ -23,12 +23,20 @@ export class LambdaAction implements cloudwatch.IAlarmAction {
    */
   bind(scope: Construct, alarm: cloudwatch.IAlarm): cloudwatch.AlarmActionConfig {
     const idPrefix = FeatureFlags.of(scope).isEnabled(LAMBDA_PERMISSION_LOGICAL_ID_FOR_LAMBDA_ACTION) ? alarm.node.id : '';
-    this.lambdaFunction.addPermission(`${idPrefix}AlarmPermission`, {
-      sourceAccount: Stack.of(scope).account,
-      action: 'lambda:InvokeFunction',
-      sourceArn: alarm.alarmArn,
-      principal: new iam.ServicePrincipal('lambda.alarms.cloudwatch.amazonaws.com'),
-    });
+    const permissionId = `${idPrefix}AlarmPermission`;
+    const permissionNode = this.lambdaFunction.permissionsNode.tryFindChild(permissionId) as lambda.CfnPermission | undefined;
+
+    // If the Lambda permission has already been added to this function
+    // we skip adding it to avoid an exception being thrown
+    // see https://github.com/aws/aws-cdk/issues/29514
+    if (permissionNode?.sourceArn !== alarm.alarmArn) {
+      this.lambdaFunction.addPermission(permissionId, {
+        sourceAccount: Stack.of(scope).account,
+        action: 'lambda:InvokeFunction',
+        sourceArn: alarm.alarmArn,
+        principal: new iam.ServicePrincipal('lambda.alarms.cloudwatch.amazonaws.com'),
+      });
+    }
 
     return {
       alarmActionArn: this.lambdaFunction.functionArn,
