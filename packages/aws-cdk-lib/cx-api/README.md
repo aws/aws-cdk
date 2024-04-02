@@ -315,7 +315,7 @@ _cdk.json_
 Enable this feature flag if you have deployed a `ListenerRule` using the `addTargetGroups()`
 convenience method against an `ExternalApplicationListener` and you need to migrate to
 using the `addAction()` method for more complex rule configurations.
-This will prevent the logicalId from changing.
+This will prevent `Rule` from being added as a suffix to the logicalId so that the logicalId will remain the same.
 
 Do not enable this if you have already deployed `ListenerRule` resources using the
 `addAction()` method.
