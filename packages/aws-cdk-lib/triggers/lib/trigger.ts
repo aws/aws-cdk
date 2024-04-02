@@ -111,6 +111,10 @@ export interface TriggerProps extends TriggerOptions {
  * Triggers an AWS Lambda function during deployment.
  */
 export class Trigger extends Construct implements ITrigger {
+  /**
+   * Singleton Trigger provider
+   * @type {CustomResourceProvider} 
+   */
   crProvider: CustomResourceProvider;
   constructor(scope: Construct, id: string, props: TriggerProps) {
     super(scope, id);
