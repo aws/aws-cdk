@@ -1051,7 +1051,7 @@ export const FLAGS: Record<string, FlagInfo> = {
       CloudFormation will always fail when generating the new ListenerRule.
 
       Setting this feature flag will cause the \`addAction()\` method to not add the \`Rule\` suffix on the logicalId,
-      enabling a migration from the \`addTargetGroups()\` method.
+      allowing you to switch from the \`addTargetGroups()\` method without having CloudFormation generate a new resource.
 
       For new resources, see instead the ${ENABLE_ALBV2_EXTERNALAPPLICATIONLISTENER_ADDTARGETGROUP_CONSISTENT_LOGICALID} flag.
     `,
