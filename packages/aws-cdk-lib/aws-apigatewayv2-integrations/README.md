@@ -312,6 +312,11 @@ See [Working with binary media types for WebSocket APIs](https://docs.aws.amazon
 
 ### Integration Responses
 
+You can set up your integrations to send responses to your WebSocket client, using the [`returnResponse`](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_apigatewayv2.WebSocketRouteOptions.html#returnresponse) field.
+
+Additionally, some integrations allow you to manipulate and customize your responses, mapped by HTTP response code. This can be done via the `responses` field, or the `addResponse` method.
+See [Setting up a WebSocket API integration responses in API Gateway](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-websocket-api-integration-responses.html).
+
 ```ts
 import * as integrations from 'aws-cdk-lib/aws-apigatewayv2-integrations';
 
@@ -322,31 +327,29 @@ new apigwv2.WebSocketStage(this, 'mystage', {
   autoDeploy: true,
 });
 
-declare const messageHandler: lambda.Function;
-const integration = new integrations.WebSocketLambdaIntegration(
-  'SendMessageIntegration',
-  messageHandler,
-  {
-    responses: [
-      // Default response key, will be used if no other matched
-      { responseKey: integrations.WebSocketIntegrationResponseKey.default },
-      // Success response key, will match all 2xx response HTTP status codes
-      { responseKey: integrations.WebSocketIntegrationResponseKey.success },
-      // You can also create custom response integrations for specific status codes
-      {
-        responseKey: integrations.WebSocketIntegrationResponseKey.fromStatusCode(404),
-        contentHandling: ContentHandling.CONVERT_TO_BINARY,
-        responseParameters: {
-          'method.response.header.Accept': "'application/json'",
-        },
-        templateSelectionExpression: '$default',
-        responseTemplates: {
-          'application/json': '{ "message": $context.error.message, "statusCode": 404 }',
-        },
-      },
-    ],
-  },
-);
+declare const integration: WebSocketAwsIntegration;
 
-webSocketApi.addRoute('sendMessage', { integration });
+// Default response key, will be used if no other matched
+integration.addResponse({ responseKey: apigwv2.WebSocketIntegrationResponseKey.default });
+
+integration.addResponse({ 
+  // Success response key, will match all 2xx response HTTP status codes
+  responseKey: apigwv2.WebSocketIntegrationResponseKey.success,
+  responseTemplates: {
+    'application/json': JSON.stringify({ success: true }),
+  },
+});
+
+integration.addResponse({ 
+  // You can also create custom response integrations for specific status codes
+  responseKey: apigwv2.WebSocketIntegrationResponseKey.fromStatusCode(404),
+  responseTemplates: {
+    'application/json': JSON.stringify({
+      error: 'Not found',
+      requestId: '$context.requestId',
+    }),
+  },
+});
+
+webSocketApi.addRoute('putItem', { integration, returnResponse: true });
 ```
