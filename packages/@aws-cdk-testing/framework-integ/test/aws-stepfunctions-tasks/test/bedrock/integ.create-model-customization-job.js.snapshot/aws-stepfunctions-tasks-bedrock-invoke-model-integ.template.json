@@ -227,7 +227,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "4554b47be6f57b68c6c7a7391dcc73894866d2377fe174883351e7639097f292.zip"
+     "S3Key": "e978ad4ad0dca7e1c6be5f49cbbd1c5a150ee050c24052fedfe5a42f835d55da.zip"
     },
     "Timeout": 900,
     "MemorySize": 128,
@@ -540,115 +540,6 @@
       "PolicyDocument": {
        "Statement": [
         {
-         "Action": "ec2:CreateNetworkInterface",
-         "Effect": "Allow",
-         "Resource": [
-          {
-           "Fn::Join": [
-            "",
-            [
-             "arn:",
-             {
-              "Ref": "AWS::Partition"
-             },
-             ":ec2:",
-             {
-              "Ref": "AWS::Region"
-             },
-             ":",
-             {
-              "Ref": "AWS::AccountId"
-             },
-             ":network-interface/*"
-            ]
-           ]
-          },
-          {
-           "Fn::Join": [
-            "",
-            [
-             "arn:",
-             {
-              "Ref": "AWS::Partition"
-             },
-             ":ec2:",
-             {
-              "Ref": "AWS::Region"
-             },
-             ":",
-             {
-              "Ref": "AWS::AccountId"
-             },
-             ":security-group/*"
-            ]
-           ]
-          },
-          {
-           "Fn::Join": [
-            "",
-            [
-             "arn:",
-             {
-              "Ref": "AWS::Partition"
-             },
-             ":ec2:",
-             {
-              "Ref": "AWS::Region"
-             },
-             ":",
-             {
-              "Ref": "AWS::AccountId"
-             },
-             ":subnet/*"
-            ]
-           ]
-          }
-         ]
-        },
-        {
-         "Action": "ec2:CreateTags",
-         "Condition": {
-          "StringEquals": {
-           "ec2:CreateAction": "CreateNetworkInterface"
-          }
-         },
-         "Effect": "Allow",
-         "Resource": {
-          "Fn::Join": [
-           "",
-           [
-            "arn:",
-            {
-             "Ref": "AWS::Partition"
-            },
-            ":ec2:",
-            {
-             "Ref": "AWS::Region"
-            },
-            ":",
-            {
-             "Ref": "AWS::AccountId"
-            },
-            ":network-interface/*"
-           ]
-          ]
-         }
-        },
-        {
-         "Action": [
-          "ec2:CreateNetworkInterfacePermission",
-          "ec2:DeleteNetworkInterface",
-          "ec2:DeleteNetworkInterfacePermission"
-         ],
-         "Condition": {
-          "StringEquals": {
-           "ec2:Subnet": []
-          }
-         },
-         "Effect": "Allow",
-         "Resource": "*"
-        },
-        {
          "Action": "s3:GetObject",
          "Effect": "Allow",
          "Resource": [
@@ -952,6 +843,16 @@
    ],
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
+  }
+ },
+ "Outputs": {
+  "ExportsOutputRefStateMachine2E01A3A5BA46F753": {
+   "Value": {
+    "Ref": "StateMachine2E01A3A5"
+   },
+   "Export": {
+    "Name": "aws-stepfunctions-tasks-bedrock-invoke-model-integ:ExportsOutputRefStateMachine2E01A3A5BA46F753"
+   }
   }
  },
  "Parameters": {
