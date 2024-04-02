@@ -144,3 +144,25 @@ test('trigger with optional properties', () => {
     ExecuteOnHandlerChange: false,
   });
 });
+
+test('trigger provider is accessible and modifyable', () => {
+  // GIVEN
+  const stack = new Stack();
+  const func = new lambda.Function(stack, 'MyFunction', {
+    handler: 'index.handler',
+    runtime: THE_RUNTIME,
+    code: lambda.Code.fromInline('foo'),
+  });
+
+  // WHEN
+  const trigger = new triggers.Trigger(stack, 'MyTrigger', {
+    handler: func,
+  });
+
+  // THEN
+  expect(trigger.crProvider).toBeDefined();
+  const providerLambda = trigger.crProvider.node.defaultChild;
+  expect(providerLambda).toBeDefined();
+  const providerRole = trigger.crProvider.node.tryFindChild('Role');
+  expect(providerRole).toBeDefined();
+});
