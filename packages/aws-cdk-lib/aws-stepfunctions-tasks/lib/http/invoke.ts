@@ -6,23 +6,22 @@ import { integrationResourceArn } from '../private/task-utils';
 
 /**
  * The style used when applying URL encoding to array values.
- *
  */
 export enum ArrayEncodingFormat {
   /**
-   * Encode arrays using brackets. For example, {"array": ["a","b","c"]} encodes to "array[]=a&array[]=b&array[]=c"
+   * Encode arrays using brackets. For example, {'array': ['a','b','c']} encodes to 'array[]=a&array[]=b&array[]=c'
    */
   BRACKETS = 'BRACKETS',
   /**
-   * Encode arrays using commas. For example, {"array": ["a","b","c"]} encodes to "array=a,b,c,d"
+   * Encode arrays using commas. For example, {'array': ['a','b','c']} encodes to 'array=a,b,c,d'
    */
   COMMAS = 'COMMAS',
   /**
-   * Encode arrays using the index value. For example, {"array": ["a","b","c"]} encodes to "array[0]=a&array[1]=b&array[2]=c"
+   * Encode arrays using the index value. For example, {'array': ['a','b','c']} encodes to 'array[0]=a&array[1]=b&array[2]=c'
    */
   INDICES = 'INDICES',
   /**
-   * Repeat key for each item in the array. For example, {"array": ["a","b","c"]} encodes to "array[]=a&array[]=b&array[]=c"
+   * Repeat key for each item in the array. For example, {'array': ['a','b','c']} encodes to 'array[]=a&array[]=b&array[]=c'
    */
   REPEAT = 'REPEAT',
 }
@@ -33,28 +32,26 @@ export enum ArrayEncodingFormat {
 export interface HttpInvokeProps extends sfn.TaskStateBaseProps {
   /**
    * Permissions are granted to call all resources under this path.
-   * @example "https://api.example.com"
    *
+   * @example 'https://api.example.com'
    */
   readonly apiRoot: string;
 
   /**
    * The API endpoint to call, relative to `apiRoot`.
-   * @example sfn.TaskInput.fromText("path/to/resource")
-   *
+   * @example sfn.TaskInput.fromText('path/to/resource')
    */
   readonly apiEndpoint: sfn.TaskInput;
 
   /**
    * The HTTP method to use.
-   * @example sfn.TaskInput.fromText("GET")
    *
+   * @example sfn.TaskInput.fromText('GET')
    */
   readonly method: sfn.TaskInput;
 
   /**
    * The EventBridge Connection to use for authentication.
-   *
    */
   readonly connection: events.IConnection;
 
@@ -68,14 +65,14 @@ export interface HttpInvokeProps extends sfn.TaskStateBaseProps {
   /**
    * The headers to send to the HTTP endpoint.
    *
-   * @default - No additional headers are added to the request.
    * @example sfn.TaskInput.fromObject({ 'Content-Type': 'application/json' })
+   *
+   * @default - No additional headers are added to the request.
    */
   readonly headers?: sfn.TaskInput;
 
   /**
    * The query string parameters to send to the HTTP endpoint.
-   *
    * @default - No query string parameters are sent in the request.
    */
   readonly queryStringParameters?: sfn.TaskInput;
@@ -100,17 +97,12 @@ export interface HttpInvokeProps extends sfn.TaskStateBaseProps {
 
 /**
  * A Step Functions Task to call a public third-party API.
- *
  */
 export class HttpInvoke extends sfn.TaskStateBase {
   protected readonly taskMetrics?: sfn.TaskMetricsConfig;
   protected readonly taskPolicies?: iam.PolicyStatement[];
 
-  constructor(
-    scope: Construct,
-    id: string,
-    private readonly props: HttpInvokeProps,
-  ) {
+  constructor(scope: Construct, id: string, private readonly props: HttpInvokeProps) {
     super(scope, id, props);
 
     this.taskPolicies = this.buildTaskPolicyStatements();
@@ -118,10 +110,9 @@ export class HttpInvoke extends sfn.TaskStateBase {
 
   /**
    * Provides the HTTP Invoke service integration task configuration.
-  */
-  /**
+   *
    * @internal
-  */
+   */
   protected _renderTask(): any {
     return {
       Resource: integrationResourceArn('http', 'invoke'),
