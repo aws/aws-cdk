@@ -261,11 +261,11 @@
                                 "Fn::Join": [
                                   "",
                                   [
-                                    "{\n        \"TableName\": \"",
+                                    "{\n\"TableName\": \"",
                                     {
                                       "Ref": "MyTable794EDED1"
                                     },
-                                    "\",\n        \"Item\": {\n          \"id\": { \"S\": \"$context.requestId\" },\n          \"userData\": { \"S\": $input.json('$.data') }\n        }\n      }"
+                                    "\",\n\"Item\": {\n\"id\": { \"S\": \"$context.requestId\" },\n\"userData\": { \"S\": $input.json('$.data') }\n}\n}"
                                   ]
                                 ]
                               }
@@ -336,7 +336,7 @@
                             },
                             "integrationResponseKey": "/4\\d{2}/",
                             "responseTemplates": {
-                              "application/json": "{\"error\":\"Bad request\"}"
+                              "application/json": "{\n\"error\": \"Bad request\",\n\"message\": $input.json('$.Message')\n}"
                             }
                           }
                         },

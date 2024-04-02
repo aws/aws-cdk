@@ -8,9 +8,12 @@ import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 /*
  * Stack verification steps:
  * 1. Connect: 'wscat -c <endpoint-in-the-stack-output>'. Should connect successfully
- * 2. Sending: '> {"action":"putItem", "data": "valid"}' should return {success: true}
+ * 2. Sending: '> {"action":"putItem", "data": "valid"}' should return
+ *    '< {"success": true}'
  *    and add an item to the table, with the userData field set to "valid"
- * 2. Sending: '> {"action":"putItem", "data": 1}' should return {error: "Bad request"} and not insert an item to the table
+ * 3. Sending: '> {"action":"putItem", "data": 1}' should return
+ *    '< {"error": "Bad request", "message": "NUMBER_VALUE cannot be converted to String"}'
+ *    and not insert an item to the table
  */
 
 const app = new App();
@@ -49,7 +52,7 @@ webSocketApi.addRoute('putItem', {
     integrationMethod: HttpMethod.POST,
     credentialsRole: apiRole,
     requestTemplates: {
-      $default: `{
+      $default: json`{
         "TableName": "${table.tableName}",
         "Item": {
           "id": { "S": "$context.requestId" },
@@ -67,7 +70,11 @@ webSocketApi.addRoute('putItem', {
       {
         responseKey: WebSocketIntegrationResponseKey.clientError,
         responseTemplates: {
-          'application/json': JSON.stringify({ error: 'Bad request' }),
+          'application/json':
+          json`{
+            "error": "Bad request",
+            "message": $input.json('$.Message')
+          }`,
         },
       },
     ],
@@ -90,3 +97,10 @@ new IntegTest(app, 'apigatewayv2-aws-integration-integ-test', {
     },
   },
 });
+
+// remove indentation
+function json(inputs: TemplateStringsArray, ...variables: string[]) {
+  return inputs
+    .map((input, index) => input + (variables[index] ?? '')).join('')
+    .split('\n').map((line) => line.trim()).join('\n');
+}

@@ -317,6 +317,8 @@ You can set up your integrations to send responses to your WebSocket client, usi
 Additionally, some integrations allow you to manipulate and customize your responses, mapped by HTTP response code. This can be done via the `responses` field, or the `addResponse` method.
 See [Setting up a WebSocket API integration responses in API Gateway](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-websocket-api-integration-responses.html).
 
+Similarly to `requestTemplates`, `responseTemplates` can use context or response dependant variables. In the case of an integration response, `$input` will be replaced by the response contents. See [API Gateway WebSocket API mapping template reference](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-websocket-api-mapping-template-reference.html)
+
 ```ts
 import { WebSocketAwsIntegration } from 'aws-cdk-lib/aws-apigatewayv2-integrations';
 
@@ -344,10 +346,10 @@ integration.addResponse({
   // You can also create custom response integrations for specific status codes
   responseKey: apigwv2.WebSocketIntegrationResponseKey.fromStatusCode(404),
   responseTemplates: {
-    'application/json': JSON.stringify({
-      error: 'Not found',
-      requestId: '$context.requestId',
-    }),
+    'application/json': `{
+      "error": "Not found",
+      "message": $input.json('$.Message')
+    }`,
   },
 });
 
