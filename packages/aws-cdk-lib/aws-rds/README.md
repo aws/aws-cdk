@@ -1224,3 +1224,15 @@ new rds.DatabaseCluster(this, 'DatabaseCluster', {
   preferredMaintenanceWindow: 'Sat:22:15-Sat:22:45',
 });
 ```
+You can also use writer or readers props like:
+
+```ts
+new DatabaseCluster(stack, 'DatabaseCluster', {
+  engine: DatabaseClusterEngine.AURORA,
+  vpc: vpc,
+  writer: ClusterInstance.provisioned('Instance1', {
+    preferredMaintenanceWindow: 'Sat:22:15-Sat:22:45',
+  }),
+  preferredMaintenanceWindow: 'Sat:22:15-Sat:22:45',
+});
+```
