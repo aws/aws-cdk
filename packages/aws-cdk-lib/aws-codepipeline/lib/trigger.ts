@@ -105,10 +105,12 @@ export enum GitPullRequestEvent {
    * OPEN
    */
   OPEN = 'OPEN',
+
   /**
    * UPDATED
    */
   UPDATED = 'UPDATED',
+
   /**
    * CLOSED
    */
@@ -203,8 +205,7 @@ export class Trigger {
         throw new Error(`provider for actionProperties in sourceAction with name '${sourceAction.actionProperties.actionName}' must be 'CodeStarSourceConnection', got '${sourceAction.actionProperties.provider}'`);
       }
 
-      const pushFilter = this.props.gitConfiguration.pushFilter;
-      const pullRequestFilter = this.props.gitConfiguration.pullRequestFilter;
+      const { pushFilter, pullRequestFilter } = this.props.gitConfiguration;
 
       if (pushFilter?.length && pullRequestFilter?.length) {
         throw new Error(`cannot specify both pushFilter and pullRequestFilter for the trigger with sourceAction with name '${sourceAction.actionProperties.actionName}'`);
@@ -257,8 +258,7 @@ export class Trigger {
     let gitConfiguration: CfnPipeline.GitConfigurationProperty | undefined;
     if (this.props.gitConfiguration) {
       const sourceAction = this.props.gitConfiguration.sourceAction;
-      const pushFilter = this.props.gitConfiguration.pushFilter;
-      const pullRequestFilter = this.props.gitConfiguration.pullRequestFilter;
+      const { pushFilter, pullRequestFilter } = this.props.gitConfiguration;
 
       const push = this.renderPushFilter(pushFilter);
       const pullRequest = this.renderPullRequestFilter(pullRequestFilter);
