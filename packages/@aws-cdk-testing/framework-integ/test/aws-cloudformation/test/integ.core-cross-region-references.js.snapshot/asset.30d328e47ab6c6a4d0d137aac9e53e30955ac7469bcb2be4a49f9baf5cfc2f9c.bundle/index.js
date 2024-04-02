@@ -3550,7 +3550,15 @@ var require_dist_cjs13 = __commonJS({
       }
       return new Uint8Array(data);
     }, "toUint8Array");
-    var toUtf8 = /* @__PURE__ */ __name((input) => (0, import_util_buffer_from.fromArrayBuffer)(input.buffer, input.byteOffset, input.byteLength).toString("utf8"), "toUtf8");
+    var toUtf8 = /* @__PURE__ */ __name((input) => {
+      if (typeof input === "string") {
+        return input;
+      }
+      if (typeof input !== "object" || typeof input.byteOffset !== "number" || typeof input.byteLength !== "number") {
+        throw new Error("@smithy/util-utf8: toUtf8 encoder function only accepts string | Uint8Array.");
+      }
+      return (0, import_util_buffer_from.fromArrayBuffer)(input.buffer, input.byteOffset, input.byteLength).toString("utf8");
+    }, "toUtf8");
   }
 });
 
@@ -6379,7 +6387,7 @@ var require_dist_cjs23 = __commonJS({
         credentialsFile: parsedFiles[1]
       };
     }, "loadSharedConfigFiles");
-    var getSsoSessionData = /* @__PURE__ */ __name((data) => Object.entries(data).filter(([key]) => key.startsWith(import_types.IniSectionType.SSO_SESSION + CONFIG_PREFIX_SEPARATOR)).reduce((acc, [key, value]) => ({ ...acc, [key.split(CONFIG_PREFIX_SEPARATOR)[1]]: value }), {}), "getSsoSessionData");
+    var getSsoSessionData = /* @__PURE__ */ __name((data) => Object.entries(data).filter(([key]) => key.startsWith(import_types.IniSectionType.SSO_SESSION + CONFIG_PREFIX_SEPARATOR)).reduce((acc, [key, value]) => ({ ...acc, [key.substring(key.indexOf(CONFIG_PREFIX_SEPARATOR) + 1)]: value }), {}), "getSsoSessionData");
     var import_slurpFile2 = require_slurpFile();
     var swallowError2 = /* @__PURE__ */ __name(() => ({}), "swallowError");
     var loadSsoSessionData = /* @__PURE__ */ __name(async (init = {}) => (0, import_slurpFile2.slurpFile)(init.configFilepath ?? getConfigFilepath()).then(parseIni).then(getSsoSessionData).catch(swallowError2), "loadSsoSessionData");
@@ -6672,6 +6680,11 @@ var require_dist_cjs27 = __commonJS({
         if (!("$metadata" in error)) {
           const hint = `Deserialization error: to see the raw response, inspect the hidden field {error}.$response on this object.`;
           error.message += "\n  " + hint;
+          if (typeof error.$responseBodyText !== "undefined") {
+            if (error.$response) {
+              error.$response.body = error.$responseBodyText;
+            }
+          }
         }
         throw error;
       }
@@ -7297,6 +7310,7 @@ var require_dist_cjs29 = __commonJS({
     var __toCommonJS2 = (mod) => __copyProps2(__defProp2({}, "__esModule", { value: true }), mod);
     var src_exports = {};
     __export2(src_exports, {
+      isClockSkewCorrectedError: () => isClockSkewCorrectedError,
       isClockSkewError: () => isClockSkewError,
       isRetryableByTrait: () => isRetryableByTrait,
       isServerError: () => isServerError,
@@ -7334,13 +7348,17 @@ var require_dist_cjs29 = __commonJS({
     var NODEJS_TIMEOUT_ERROR_CODES = ["ECONNRESET", "ECONNREFUSED", "EPIPE", "ETIMEDOUT"];
     var isRetryableByTrait = /* @__PURE__ */ __name((error) => error.$retryable !== void 0, "isRetryableByTrait");
     var isClockSkewError = /* @__PURE__ */ __name((error) => CLOCK_SKEW_ERROR_CODES.includes(error.name), "isClockSkewError");
+    var isClockSkewCorrectedError = /* @__PURE__ */ __name((error) => {
+      var _a;
+      return (_a = error.$metadata) == null ? void 0 : _a.clockSkewCorrected;
+    }, "isClockSkewCorrectedError");
     var isThrottlingError = /* @__PURE__ */ __name((error) => {
       var _a, _b;
       return ((_a = error.$metadata) == null ? void 0 : _a.httpStatusCode) === 429 || THROTTLING_ERROR_CODES.includes(error.name) || ((_b = error.$retryable) == null ? void 0 : _b.throttling) == true;
     }, "isThrottlingError");
     var isTransientError = /* @__PURE__ */ __name((error) => {
       var _a;
-      return TRANSIENT_ERROR_CODES.includes(error.name) || NODEJS_TIMEOUT_ERROR_CODES.includes((error == null ? void 0 : error.code) || "") || TRANSIENT_ERROR_STATUS_CODES.includes(((_a = error.$metadata) == null ? void 0 : _a.httpStatusCode) || 0);
+      return isClockSkewCorrectedError(error) || TRANSIENT_ERROR_CODES.includes(error.name) || NODEJS_TIMEOUT_ERROR_CODES.includes((error == null ? void 0 : error.code) || "") || TRANSIENT_ERROR_STATUS_CODES.includes(((_a = error.$metadata) == null ? void 0 : _a.httpStatusCode) || 0);
     }, "isTransientError");
     var isServerError = /* @__PURE__ */ __name((error) => {
       var _a;
@@ -8012,7 +8030,19 @@ var require_toBase64 = __commonJS({
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.toBase64 = void 0;
     var util_buffer_from_1 = require_dist_cjs12();
-    var toBase642 = (input) => (0, util_buffer_from_1.fromArrayBuffer)(input.buffer, input.byteOffset, input.byteLength).toString("base64");
+    var util_utf8_1 = require_dist_cjs13();
+    var toBase642 = (_input) => {
+      let input;
+      if (typeof _input === "string") {
+        input = (0, util_utf8_1.fromUtf8)(_input);
+      } else {
+        input = _input;
+      }
+      if (typeof input !== "object" || typeof input.byteOffset !== "number" || typeof input.byteLength !== "number") {
+        throw new Error("@smithy/util-base64: toBase64 encoder function only accepts string | Uint8Array.");
+      }
+      return (0, util_buffer_from_1.fromArrayBuffer)(input.buffer, input.byteOffset, input.byteLength).toString("base64");
+    };
     exports2.toBase64 = toBase642;
   }
 });
@@ -8250,16 +8280,28 @@ var require_dist_cjs34 = __commonJS({
     function writeBody(httpRequest, body) {
       if (body instanceof import_stream.Readable) {
         body.pipe(httpRequest);
-      } else if (body) {
-        httpRequest.end(Buffer.from(body));
-      } else {
-        httpRequest.end();
+        return;
       }
+      if (body) {
+        if (Buffer.isBuffer(body) || typeof body === "string") {
+          httpRequest.end(body);
+          return;
+        }
+        const uint8 = body;
+        if (typeof uint8 === "object" && uint8.buffer && typeof uint8.byteOffset === "number" && typeof uint8.byteLength === "number") {
+          httpRequest.end(Buffer.from(uint8.buffer, uint8.byteOffset, uint8.byteLength));
+          return;
+        }
+        httpRequest.end(Buffer.from(body));
+        return;
+      }
+      httpRequest.end();
     }
     __name(writeBody, "writeBody");
     var DEFAULT_REQUEST_TIMEOUT = 0;
     var _NodeHttpHandler = class _NodeHttpHandler2 {
       constructor(options) {
+        this.socketWarningTimestamp = 0;
         this.metadata = { handlerProtocol: "http/1.1" };
         this.configProvider = new Promise((resolve, reject) => {
           if (typeof options === "function") {
@@ -8281,6 +8323,39 @@ var require_dist_cjs34 = __commonJS({
         }
         return new _NodeHttpHandler2(instanceOrOptions);
       }
+      /**
+       * @internal
+       *
+       * @param agent - http(s) agent in use by the NodeHttpHandler instance.
+       * @returns timestamp of last emitted warning.
+       */
+      static checkSocketUsage(agent, socketWarningTimestamp) {
+        var _a, _b;
+        const { sockets, requests, maxSockets } = agent;
+        if (typeof maxSockets !== "number" || maxSockets === Infinity) {
+          return socketWarningTimestamp;
+        }
+        const interval = 15e3;
+        if (Date.now() - interval < socketWarningTimestamp) {
+          return socketWarningTimestamp;
+        }
+        if (sockets && requests) {
+          for (const origin in sockets) {
+            const socketsInUse = ((_a = sockets[origin]) == null ? void 0 : _a.length) ?? 0;
+            const requestsEnqueued = ((_b = requests[origin]) == null ? void 0 : _b.length) ?? 0;
+            if (socketsInUse >= maxSockets && requestsEnqueued >= 2 * maxSockets) {
+              console.warn(
+                "@smithy/node-http-handler:WARN",
+                `socket usage at capacity=${socketsInUse} and ${requestsEnqueued} additional requests are enqueued.`,
+                "See https://docs.aws.amazon.com/sdk-for-javascript/v3/developer-guide/node-configuring-maxsockets.html",
+                "or increase socketAcquisitionWarningTimeout=(millis) in the NodeHttpHandler config."
+              );
+              return Date.now();
+            }
+          }
+        }
+        return socketWarningTimestamp;
+      }
       resolveDefaultConfig(options) {
         const { requestTimeout, connectionTimeout, socketTimeout, httpAgent, httpsAgent } = options || {};
         const keepAlive = true;
@@ -8288,8 +8363,18 @@ var require_dist_cjs34 = __commonJS({
         return {
           connectionTimeout,
           requestTimeout: requestTimeout ?? socketTimeout,
-          httpAgent: httpAgent || new import_http2.Agent({ keepAlive, maxSockets }),
-          httpsAgent: httpsAgent || new import_https.Agent({ keepAlive, maxSockets })
+          httpAgent: (() => {
+            if (httpAgent instanceof import_http2.Agent || typeof (httpAgent == null ? void 0 : httpAgent.destroy) === "function") {
+              return httpAgent;
+            }
+            return new import_http2.Agent({ keepAlive, maxSockets, ...httpAgent });
+          })(),
+          httpsAgent: (() => {
+            if (httpsAgent instanceof import_https.Agent || typeof (httpsAgent == null ? void 0 : httpsAgent.destroy) === "function") {
+              return httpsAgent;
+            }
+            return new import_https.Agent({ keepAlive, maxSockets, ...httpsAgent });
+          })()
         };
       }
       destroy() {
@@ -8301,10 +8386,12 @@ var require_dist_cjs34 = __commonJS({
         if (!this.config) {
           this.config = await this.configProvider;
         }
+        let socketCheckTimeoutId;
         return new Promise((_resolve, _reject) => {
           let writeRequestBodyPromise = void 0;
           const resolve = /* @__PURE__ */ __name(async (arg) => {
             await writeRequestBodyPromise;
+            clearTimeout(socketCheckTimeoutId);
             _resolve(arg);
           }, "resolve");
           const reject = /* @__PURE__ */ __name(async (arg) => {
@@ -8321,6 +8408,10 @@ var require_dist_cjs34 = __commonJS({
             return;
           }
           const isSSL = request2.protocol === "https:";
+          const agent = isSSL ? this.config.httpsAgent : this.config.httpAgent;
+          socketCheckTimeoutId = setTimeout(() => {
+            this.socketWarningTimestamp = _NodeHttpHandler2.checkSocketUsage(agent, this.socketWarningTimestamp);
+          }, this.config.socketAcquisitionWarningTimeout ?? (this.config.requestTimeout ?? 2e3) + (this.config.connectionTimeout ?? 1e3));
           const queryString = (0, import_querystring_builder.buildQueryString)(request2.query || {});
           let auth = void 0;
           if (request2.username != null || request2.password != null) {
@@ -8341,7 +8432,7 @@ var require_dist_cjs34 = __commonJS({
             method: request2.method,
             path,
             port: request2.port,
-            agent: isSSL ? this.config.httpsAgent : this.config.httpAgent,
+            agent,
             auth
           };
           const requestFunc = isSSL ? import_https.request : import_http2.request;
@@ -9133,11 +9224,11 @@ var require_dist_cjs36 = __commonJS({
           /**
            * @public
            */
-          constructor(input) {
+          constructor(...[input]) {
             super();
-            this.input = input;
             this.serialize = closure._serializer;
             this.deserialize = closure._deserializer;
+            this.input = input ?? {};
             closure._init(this);
           }
           /**
@@ -10328,6 +10419,7 @@ var require_dist_cjs37 = __commonJS({
     var isRetryStrategyV2 = /* @__PURE__ */ __name((retryStrategy) => typeof retryStrategy.acquireInitialRetryToken !== "undefined" && typeof retryStrategy.refreshRetryTokenForRetry !== "undefined" && typeof retryStrategy.recordSuccess !== "undefined", "isRetryStrategyV2");
     var getRetryErrorInfo = /* @__PURE__ */ __name((error) => {
       const errorInfo = {
+        error,
         errorType: getRetryErrorType(error)
       };
       const retryAfterHint = getRetryAfterHint(error.$response);
@@ -13799,6 +13891,7 @@ var require_dist_cjs40 = __commonJS({
       ENV_CMDS_AUTH_TOKEN: () => ENV_CMDS_AUTH_TOKEN,
       ENV_CMDS_FULL_URI: () => ENV_CMDS_FULL_URI,
       ENV_CMDS_RELATIVE_URI: () => ENV_CMDS_RELATIVE_URI,
+      Endpoint: () => Endpoint,
       fromContainerMetadata: () => fromContainerMetadata,
       fromInstanceMetadata: () => fromInstanceMetadata,
       getInstanceMetadataEndpoint: () => getInstanceMetadataEndpoint,
@@ -13948,6 +14041,11 @@ var require_dist_cjs40 = __commonJS({
     var InstanceMetadataV1FallbackError = _InstanceMetadataV1FallbackError;
     var import_node_config_provider = require_dist_cjs24();
     var import_url_parser = require_dist_cjs26();
+    var Endpoint = /* @__PURE__ */ ((Endpoint2) => {
+      Endpoint2["IPv4"] = "http://169.254.169.254";
+      Endpoint2["IPv6"] = "http://[fd00:ec2::254]";
+      return Endpoint2;
+    })(Endpoint || {});
     var ENV_ENDPOINT_NAME = "AWS_EC2_METADATA_SERVICE_ENDPOINT";
     var CONFIG_ENDPOINT_NAME = "ec2_metadata_service_endpoint";
     var ENDPOINT_CONFIG_OPTIONS = {
@@ -13988,7 +14086,8 @@ var require_dist_cjs40 = __commonJS({
       const refreshInterval = STATIC_STABILITY_REFRESH_INTERVAL_SECONDS + Math.floor(Math.random() * STATIC_STABILITY_REFRESH_INTERVAL_JITTER_WINDOW_SECONDS);
       const newExpiration = new Date(Date.now() + refreshInterval * 1e3);
       logger.warn(
-        "Attempting credential expiration extension due to a credential service availability issue. A refresh of these credentials will be attempted after ${new Date(newExpiration)}.\nFor more information, please visit: " + STATIC_STABILITY_DOC_URL
+        `Attempting credential expiration extension due to a credential service availability issue. A refresh of these credentials will be attempted after ${new Date(newExpiration)}.
+For more information, please visit: ` + STATIC_STABILITY_DOC_URL
       );
       const originalExpiration = credentials.originalExpiration ?? credentials.expiration;
       return {
@@ -14634,7 +14733,7 @@ var require_dist_cjs44 = __commonJS({
         return 0;
       }
       if (typeof body === "string") {
-        return Buffer.from(body).length;
+        return Buffer.byteLength(body);
       } else if (typeof body.byteLength === "number") {
         return body.byteLength;
       } else if (typeof body.size === "number") {
@@ -14731,9 +14830,11 @@ var require_runtimeConfig_shared = __commonJS({
 // ../../../node_modules/@smithy/util-defaults-mode-node/dist-cjs/index.js
 var require_dist_cjs45 = __commonJS({
   "../../../node_modules/@smithy/util-defaults-mode-node/dist-cjs/index.js"(exports2, module2) {
+    var __create2 = Object.create;
     var __defProp2 = Object.defineProperty;
     var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
     var __getOwnPropNames2 = Object.getOwnPropertyNames;
+    var __getProtoOf2 = Object.getPrototypeOf;
     var __hasOwnProp2 = Object.prototype.hasOwnProperty;
     var __name = (target, value) => __defProp2(target, "name", { value, configurable: true });
     var __export2 = (target, all) => {
@@ -14748,6 +14849,14 @@ var require_dist_cjs45 = __commonJS({
       }
       return to;
     };
+    var __toESM2 = (mod, isNodeMode, target) => (target = mod != null ? __create2(__getProtoOf2(mod)) : {}, __copyProps2(
+      // If the importer is in node compatibility mode or this is not an ESM
+      // file that has been converted to a CommonJS file using a Babel-
+      // compatible transform (i.e. "__esModule" has not been set), then set
+      // "default" to the CommonJS "module.exports" for node compatibility.
+      isNodeMode || !mod || !mod.__esModule ? __defProp2(target, "default", { value: mod, enumerable: true }) : target,
+      mod
+    ));
     var __toCommonJS2 = (mod) => __copyProps2(__defProp2({}, "__esModule", { value: true }), mod);
     var src_exports = {};
     __export2(src_exports, {
@@ -14755,7 +14864,6 @@ var require_dist_cjs45 = __commonJS({
     });
     module2.exports = __toCommonJS2(src_exports);
     var import_config_resolver = require_dist_cjs21();
-    var import_credential_provider_imds = require_dist_cjs40();
     var import_node_config_provider = require_dist_cjs24();
     var import_property_provider = require_dist_cjs6();
     var AWS_EXECUTION_ENV = "AWS_EXECUTION_ENV";
@@ -14818,8 +14926,9 @@ var require_dist_cjs45 = __commonJS({
       }
       if (!process.env[ENV_IMDS_DISABLED]) {
         try {
-          const endpoint = await (0, import_credential_provider_imds.getInstanceMetadataEndpoint)();
-          return (await (0, import_credential_provider_imds.httpRequest)({ ...endpoint, path: IMDS_REGION_PATH })).toString();
+          const { getInstanceMetadataEndpoint, httpRequest } = await Promise.resolve().then(() => __toESM2(require_dist_cjs40()));
+          const endpoint = await getInstanceMetadataEndpoint();
+          return (await httpRequest({ ...endpoint, path: IMDS_REGION_PATH })).toString();
         } catch (e) {
         }
       }

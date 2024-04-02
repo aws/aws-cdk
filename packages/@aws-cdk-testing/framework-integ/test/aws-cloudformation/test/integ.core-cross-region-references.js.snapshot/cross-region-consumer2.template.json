@@ -143,11 +143,12 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-west-2"
      },
-     "S3Key": "214c0a1c55832d2c26686c93062b90cfd4031cef0e1b5964eb2117b1dae7bb43.zip"
+     "S3Key": "b9536659d3370f43ff14b165155a584cff2826a52ce2a1d03d524e47f4933cbf.zip"
     },
     "Timeout": 900,
     "MemorySize": 128,
     "Handler": "__entrypoint__.handler",
+    "LoggingConfig": {},
     "Role": {
      "Fn::GetAtt": [
       "CustomCrossRegionExportReaderCustomResourceProviderRole10531BBD",

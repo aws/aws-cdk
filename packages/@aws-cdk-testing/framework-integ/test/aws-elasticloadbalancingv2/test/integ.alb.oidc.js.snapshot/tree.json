@@ -721,11 +721,11 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::CertificateManager::Certificate",
                   "aws:cdk:cloudformation:props": {
-                    "domainName": "*.example.com",
+                    "domainName": "kishiel.people.amazon.dev",
                     "domainValidationOptions": [
                       {
-                        "domainName": "*.example.com",
-                        "hostedZoneId": "Z23ABC4XYZL05B"
+                        "domainName": "kishiel.people.amazon.dev",
+                        "hostedZoneId": "Z06359582W7INYSMJ08SM"
                       }
                     ],
                     "tags": [
@@ -805,7 +805,7 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::Cognito::UserPoolDomain",
                       "aws:cdk:cloudformation:props": {
-                        "domain": "z23abc4xyzl05b",
+                        "domain": "z06359582w7inysmj08sm",
                         "userPoolId": {
                           "Ref": "UserPool6BA7E5F2"
                         }
@@ -844,7 +844,7 @@
                           "aws.cognito.signin.user.admin"
                         ],
                         "callbackUrLs": [
-                          "https://*.example.com/oauth2/idpresponse"
+                          "https://kishiel.people.amazon.dev/oauth2/idpresponse"
                         ],
                         "generateSecret": true,
                         "supportedIdentityProviders": [
@@ -1321,8 +1321,8 @@
                         ]
                       }
                     },
-                    "hostedZoneId": "Z23ABC4XYZL05B",
-                    "name": "example.com.",
+                    "hostedZoneId": "Z06359582W7INYSMJ08SM",
+                    "name": "kishiel.people.amazon.dev.",
                     "type": "A"
                   }
                 },
@@ -1610,7 +1610,7 @@
                       "variables": {
                         "TEST_USERNAME": "test-user@example.com",
                         "TEST_PASSWORD": "TestUser@123",
-                        "TEST_URL": "https://*.example.com"
+                        "TEST_URL": "https://kishiel.people.amazon.dev"
                       }
                     },
                     "functionName": "cdk-integ-alb-oidc-signin-handler",

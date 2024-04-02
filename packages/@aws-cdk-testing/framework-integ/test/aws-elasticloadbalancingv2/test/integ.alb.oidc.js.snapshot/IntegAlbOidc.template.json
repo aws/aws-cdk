@@ -494,6 +494,7 @@
     "Timeout": 900,
     "MemorySize": 128,
     "Handler": "__entrypoint__.handler",
+    "LoggingConfig": {},
     "Role": {
      "Fn::GetAtt": [
       "CustomVpcRestrictDefaultSGCustomResourceProviderRole26592FE0",
@@ -510,11 +511,11 @@
   "Certificate4E7ABB08": {
    "Type": "AWS::CertificateManager::Certificate",
    "Properties": {
-    "DomainName": "*.example.com",
+    "DomainName": "kishiel.people.amazon.dev",
     "DomainValidationOptions": [
      {
-      "DomainName": "*.example.com",
-      "HostedZoneId": "Z23ABC4XYZL05B"
+      "DomainName": "kishiel.people.amazon.dev",
+      "HostedZoneId": "Z06359582W7INYSMJ08SM"
      }
     ],
     "Tags": [
@@ -566,7 +567,7 @@
   "UserPoolDomainD0EA232A": {
    "Type": "AWS::Cognito::UserPoolDomain",
    "Properties": {
-    "Domain": "z23abc4xyzl05b",
+    "Domain": "z06359582w7inysmj08sm",
     "UserPoolId": {
      "Ref": "UserPool6BA7E5F2"
     }
@@ -587,7 +588,7 @@
      "aws.cognito.signin.user.admin"
     ],
     "CallbackURLs": [
-     "https://*.example.com/oauth2/idpresponse"
+     "https://kishiel.people.amazon.dev/oauth2/idpresponse"
     ],
     "GenerateSecret": true,
     "SupportedIdentityProviders": [
@@ -936,8 +937,8 @@
       ]
      }
     },
-    "HostedZoneId": "Z23ABC4XYZL05B",
-    "Name": "example.com.",
+    "HostedZoneId": "Z06359582W7INYSMJ08SM",
+    "Name": "kishiel.people.amazon.dev.",
     "Type": "A"
    }
   },
@@ -962,7 +963,7 @@
       ]
      ]
     },
-    "InstallLatestAwsSdk": false
+    "InstallLatestAwsSdk": "false"
    },
    "DependsOn": [
     "UserCustomResourcePolicyC2EB5139"
@@ -1024,7 +1025,7 @@
       ]
      ]
     },
-    "InstallLatestAwsSdk": false
+    "InstallLatestAwsSdk": "false"
    },
    "DependsOn": [
     "UserCustomResourcePolicyC2EB5139",
@@ -1108,7 +1109,7 @@
      "Variables": {
       "TEST_USERNAME": "test-user@example.com",
       "TEST_PASSWORD": "TestUser@123",
-      "TEST_URL": "https://*.example.com"
+      "TEST_URL": "https://kishiel.people.amazon.dev"
      }
     },
     "FunctionName": "cdk-integ-alb-oidc-signin-handler",
