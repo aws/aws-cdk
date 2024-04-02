@@ -131,6 +131,7 @@ export interface WebSocketIntegrationProps {
    * ```
    *
    * @default - No request templates required.
+   * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-websocket-api-mapping-template-reference.html
    */
   readonly requestTemplates?: { [contentType: string]: string };
 
