@@ -416,7 +416,7 @@ const task = new tasks.BedrockCreateModelCustomizationJob(this, 'CreateModelCust
   trainingDataS3Uri: trainingBucket.s3UrlForObject(),
   validationDataS3Uri: [validationBucket.s3UrlForObject()],
   vpcConfig: {
-    securityGroups: [new ec2.SecurityGroup(stack, 'SecurityGroup', { vpc })],
+    securityGroups: [new ec2.SecurityGroup(this, 'SecurityGroup', { vpc })],
     subnets: vpc.isolatedSubnets,
   }, // optional
 });
