@@ -620,17 +620,13 @@ abstract class ExternalApplicationListener extends Resource implements IApplicat
    *
    * It's possible to add conditions to the TargetGroups added in this way.
    * At least one TargetGroup must be added without conditions.
-   *
-   * Warning, when creating new resources, we strongly recommend setting the
-   * ENABLE_ALBV2_EXTERNALAPPLICATIONLISTENER_ADDTARGETGROUP_TO_ADDACTION_MIGRATION feature flag.
    */
   public addTargetGroups(id: string, props: AddApplicationTargetGroupsProps): void {
     checkAddRuleProps(props);
 
     if (props.priority !== undefined) {
-      const idSuffix = FeatureFlags.of(this).isEnabled(cxapi.ENABLE_ALBV2_EXTERNALAPPLICATIONLISTENER_ADDTARGETGROUP_CONSISTENT_LOGICALID) ? 'Rule' : '';
       // New rule
-      new ApplicationListenerRule(this, id + idSuffix, {
+      new ApplicationListenerRule(this, id + 'Rule', {
         listener: this,
         priority: props.priority,
         ...props,
@@ -672,13 +668,14 @@ abstract class ExternalApplicationListener extends Resource implements IApplicat
    * Warning, if you are attempting to migrate an existing `ListenerAction`
    * which was declared by the {@link addTargetGroups} method, you will
    * need to enable the
-   * ENABLE_ALBV2_EXTERNALAPPLICATIONLISTENER_ADDTARGETGROUP_CONSISTENT_LOGICALID feature flag.
+   * `@aws-cdk/aws-elasticloadbalancingv2:ExternalApplicationListener-noRuleSuffixForAddAction`
+   * feature flag.
    */
   public addAction(id: string, props: AddApplicationActionProps): void {
     checkAddRuleProps(props);
 
     if (props.priority !== undefined) {
-      const idSuffix = FeatureFlags.of(this).isEnabled(cxapi.ENABLE_ALBV2_EXTERNALAPPLICATIONLISTENER_ADDTARGETGROUP_TO_ADDACTION_MIGRATION) ? '' : 'Rule';
+      const idSuffix = FeatureFlags.of(this).isEnabled(cxapi.ALBV2_EXTERNALAPPLICATIONLISTENER_SWITCH_FROM_ADDTARGETGROUP_TO_ADDACTION) ? '' : 'Rule';
       // New rule
       //
       // TargetGroup.registerListener is called inside ApplicationListenerRule.
