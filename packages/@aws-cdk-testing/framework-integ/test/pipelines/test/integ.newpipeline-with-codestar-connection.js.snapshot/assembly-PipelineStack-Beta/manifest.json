@@ -1,89 +1,60 @@
 {
   "version": "36.0.0",
   "artifacts": {
-    "SNSInteg.assets": {
+    "PipelineStackBetaStack1E6541489.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "SNSInteg.assets.json",
+        "file": "PipelineStackBetaStack1E6541489.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "SNSInteg": {
+    "PipelineStackBetaStack1E6541489": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "SNSInteg.template.json",
+        "templateFile": "PipelineStackBetaStack1E6541489.template.json",
         "terminationProtection": false,
-        "validateOnSynth": false,
+        "validateOnSynth": true,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/d8c06dbfa1cbebf5e980040ba6d3b54dfab8d5cff21d8291d207717c4868bf4c.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/0cb2dea76b65bd66a374af57914e8583b3c20712b5758474102ef97620d68ec5.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "SNSInteg.assets"
+          "PipelineStackBetaStack1E6541489.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
           "requiresBootstrapStackVersion": 8,
           "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
-        }
+        },
+        "stackName": "Beta-Stack1"
       },
       "dependencies": [
-        "SNSInteg.assets"
+        "PipelineStackBetaStack1E6541489.assets"
       ],
       "metadata": {
-        "/SNSInteg/CustomKey/Resource": [
+        "/PipelineStack/Beta/Stack1/Queue/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "CustomKey1E6D0D07"
+            "data": "Queue4A7E3555"
           }
         ],
-        "/SNSInteg/MyTopic/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyTopic86869434"
-          }
-        ],
-        "/SNSInteg/FeedbackRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "FeedbackRoleCAF84E5C"
-          }
-        ],
-        "/SNSInteg/Policy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "Policy23B91518"
-          }
-        ],
-        "/SNSInteg/MyTopicSignatureVersion/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyTopicSignatureVersionEDDB6A3B"
-          }
-        ],
-        "/SNSInteg/BootstrapVersion": [
+        "/PipelineStack/Beta/Stack1/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/SNSInteg/CheckBootstrapVersion": [
+        "/PipelineStack/Beta/Stack1/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "SNSInteg"
-    },
-    "Tree": {
-      "type": "cdk:tree",
-      "properties": {
-        "file": "tree.json"
-      }
+      "displayName": "PipelineStack/Beta/Stack1"
     }
   }
 }
