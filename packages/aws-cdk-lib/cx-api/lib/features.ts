@@ -1040,7 +1040,7 @@ export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
   [ALBV2_EXTERNALAPPLICATIONLISTENER_SWITCH_FROM_ADDTARGETGROUP_TO_ADDACTION]: {
     type: FlagType.VisibleContext,
-    summary: 'When enabled, you can migrate from the \`addTargetGroups()\` method of declaring a \`ListenerRule\` to the \`addAction()\` method, without changing the logicalId and replacing your resource.',
+    summary: 'When enabled, you can switch from the \`addTargetGroups()\` method of declaring a \`ListenerRule\` to the \`addAction()\` method, without changing the logicalId and replacing your resource.',
     detailsMd: `
       When migrating from a less complex to a more complex use of ALB,
       you will eventually need features not available in the \`addTargetGroups()\` convenience method.
