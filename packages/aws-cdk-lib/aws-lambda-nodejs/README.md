@@ -118,7 +118,7 @@ used by your function. Otherwise bundling will fail.
 ## Local bundling
 
 If `esbuild` is available it will be used to bundle your code in your environment. Otherwise,
-bundling will happen in a [Lambda compatible Docker container](https://gallery.ecr.aws/sam/build-nodejs18.x)
+bundling will happen in a [Lambda compatible Docker container](https://gallery.ecr.aws/sam/build-nodejs20.x)
 with the Docker platform based on the target architecture of the Lambda function.
 
 For macOS the recommended approach is to install `esbuild` as Docker volume performance is really poor.
