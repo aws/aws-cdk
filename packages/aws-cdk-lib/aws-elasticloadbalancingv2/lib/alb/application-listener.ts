@@ -7,7 +7,7 @@ import { ApplicationTargetGroup, IApplicationLoadBalancerTarget, IApplicationTar
 import { ListenerCondition } from './conditions';
 import * as ec2 from '../../../aws-ec2';
 import * as cxschema from '../../../cloud-assembly-schema';
-import { Duration, Lazy, Resource, Token } from '../../../core';
+import { Duration, FeatureFlags, Lazy, Resource, Token } from '../../../core';
 import * as cxapi from '../../../cx-api';
 import { BaseListener, BaseListenerLookupOptions, IListener } from '../shared/base-listener';
 import { HealthCheck } from '../shared/base-target-group';
@@ -664,15 +664,22 @@ abstract class ExternalApplicationListener extends Resource implements IApplicat
    * It is not possible to add a default action to an imported IApplicationListener.
    * In order to add actions to an imported IApplicationListener a `priority`
    * must be provided.
+   *
+   * Warning, if you are attempting to migrate an existing `ListenerAction`
+   * which was declared by the {@link addTargetGroups} method, you will
+   * need to enable the
+   * `@aws-cdk/aws-elasticloadbalancingv2:ExternalApplicationListener-noRuleSuffixForAddAction`
+   * feature flag.
    */
   public addAction(id: string, props: AddApplicationActionProps): void {
     checkAddRuleProps(props);
 
     if (props.priority !== undefined) {
+      const idSuffix = FeatureFlags.of(this).isEnabled(cxapi.ALBV2_EXTERNALAPPLICATIONLISTENER_SWITCH_FROM_ADDTARGETGROUP_TO_ADDACTION) ? '' : 'Rule';
       // New rule
       //
       // TargetGroup.registerListener is called inside ApplicationListenerRule.
-      new ApplicationListenerRule(this, id + 'Rule', {
+      new ApplicationListenerRule(this, id + idSuffix, {
         listener: this,
         priority: props.priority,
         ...props,
