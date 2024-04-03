@@ -1228,10 +1228,10 @@ new rds.DatabaseCluster(this, 'DatabaseCluster', {
 You can also set the preferred maintenance window via reader and writer props:
 
 ```ts
-new DatabaseCluster(stack, 'DatabaseCluster', {
+new DatabaseCluster(this, 'DatabaseCluster', {
   engine: DatabaseClusterEngine.AURORA,
   vpc: vpc,
-  writer: ClusterInstance.provisioned('DBInstance', {
+  writer: ClusterInstance.provisioned('WriterInstance', {
     preferredMaintenanceWindow: 'Sat:22:15-Sat:22:45',
   }),
   preferredMaintenanceWindow: 'Sat:22:15-Sat:22:45',
