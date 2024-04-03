@@ -1231,7 +1231,7 @@ You can also set the preferred maintenance window via reader and writer props:
 new DatabaseCluster(stack, 'DatabaseCluster', {
   engine: DatabaseClusterEngine.AURORA,
   vpc: vpc,
-  writer: ClusterInstance.provisioned('Instance1', {
+  writer: ClusterInstance.provisioned('DBInstance', {
     preferredMaintenanceWindow: 'Sat:22:15-Sat:22:45',
   }),
   preferredMaintenanceWindow: 'Sat:22:15-Sat:22:45',
