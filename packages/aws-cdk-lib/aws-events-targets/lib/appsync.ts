@@ -68,14 +68,13 @@ export class AppSync implements events.IRuleTarget {
       ...bindBaseTargetConfig(this.props),
       arn: this.appsyncApi.graphQLEndpointArn,
       role,
-      deadLetterConfig: this.props?.deadLetterQueue && { arn: this.props.deadLetterQueue?.queueArn },
-      input: this.props?.variables,
+      deadLetterConfig: this.props.deadLetterQueue && { arn: this.props.deadLetterQueue?.queueArn },
+      input: this.props.variables,
       targetResource: this.appsyncApi,
       appSyncParameters: {
-        graphQlOperation: this.props?.graphQLOperation,
+        graphQlOperation: this.props.graphQLOperation,
       },
     };
   }
-
 }
 
