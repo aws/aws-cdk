@@ -348,7 +348,7 @@ const rule = new events.Rule(this, 'Rule', {
 Use the `AppSync` target to trigger an AppSync GraphQL API. You need to
 create an `AppSync.GraphqlApi` configured with `AWS_IAM` authorization mode.
 
-The code snippet below creates a AppSync GraphQL API target that is invoked every hour, calling the `publish` mutation.
+The code snippet below creates an AppSync GraphQL API target that is invoked every hour, calling the `publish` mutation.
 
 ```ts
 import * as appsync from 'aws-cdk-lib/aws-appsync';
