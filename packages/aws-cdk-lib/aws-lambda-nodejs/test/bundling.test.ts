@@ -11,8 +11,9 @@ import { PackageInstallation } from '../lib/package-installation';
 import { Charset, LogLevel, OutputFormat, SourceMapMode } from '../lib/types';
 import * as util from '../lib/util';
 
-const STANDARD_RUNTIME = Runtime.NODEJS_20_X;
-const STANDARD_TARGET = 'node20';
+const STANDARD_RUNTIME = Runtime.NODEJS_18_X;
+const STANDARD_TARGET = 'node18';
+const LATEST_TARGET = 'node20';
 const STANDARD_EXTERNAL = '@aws-sdk/*';
 
 let detectPackageInstallationMock: jest.SpyInstance<PackageInstallation | undefined>;
@@ -313,12 +314,12 @@ test('esbuild bundling source map default', () => {
   });
 });
 
-test('esbuild bundling without aws-sdk v3 when use greater than or equal Runtime.NODEJS_20_X', () => {
+test('esbuild bundling without aws-sdk v3 when use greater than or equal Runtime.NODEJS_18_X', () => {
   Bundling.bundle(stack, {
     entry,
     projectRoot,
     depsLockFilePath,
-    runtime: Runtime.NODEJS_20_X,
+    runtime: Runtime.NODEJS_18_X,
     architecture: Architecture.X86_64,
   });
 
@@ -339,7 +340,7 @@ test('esbuild bundling includes aws-sdk', () => {
     entry,
     projectRoot,
     depsLockFilePath,
-    runtime: Runtime.NODEJS_20_X,
+    runtime: Runtime.NODEJS_18_X,
     architecture: Architecture.X86_64,
     bundleAwsSDK: true,
   });
@@ -911,7 +912,7 @@ test('bundling using NODEJS_LATEST doesn\'t externalize anything by default', ()
     bundling: expect.objectContaining({
       command: [
         'bash', '-c',
-        `esbuild --bundle "/asset-input/lib/handler.ts" --target=${STANDARD_TARGET} --platform=node --outfile="/asset-output/index.js"`,
+        `esbuild --bundle "/asset-input/lib/handler.ts" --target=${LATEST_TARGET} --platform=node --outfile="/asset-output/index.js"`,
       ],
     }),
   });
@@ -943,19 +944,19 @@ test('bundling with <= Node16 does not warn with default externalModules', () =>
   });
 
   Annotations.fromStack(myStack).hasNoWarning('*',
-    'If you are relying on AWS SDK v3 to be present in the Lambda environment already, please explicitly configure a NodeJS runtime of Node 20 or higher. [ack: @aws-cdk/aws-lambda-nodejs:sdkV3NotInRuntime]',
+    'If you are relying on AWS SDK v3 to be present in the Lambda environment already, please explicitly configure a NodeJS runtime of Node 18 or higher. [ack: @aws-cdk/aws-lambda-nodejs:sdkV3NotInRuntime]',
   );
   Annotations.fromStack(myStack).hasNoWarning('*',
     'If you are relying on AWS SDK v2 to be present in the Lambda environment already, please explicitly configure a NodeJS runtime of Node 16 or lower. [ack: @aws-cdk/aws-lambda-nodejs:sdkV2NotInRuntime]',
   );
 });
 
-test('bundling with >= Node20 warns when sdk v3 is external', () => {
+test('bundling with >= Node18 warns when sdk v3 is external', () => {
   Bundling.bundle(stack, {
     entry,
     projectRoot,
     depsLockFilePath,
-    runtime: Runtime.NODEJS_20_X,
+    runtime: Runtime.NODEJS_18_X,
     architecture: Architecture.X86_64,
     externalModules: ['aws-sdk'],
   });
@@ -965,18 +966,18 @@ test('bundling with >= Node20 warns when sdk v3 is external', () => {
   );
 });
 
-test('bundling with >= Node20 does not warn with default externalModules', () => {
+test('bundling with >= Node18 does not warn with default externalModules', () => {
   const myStack = new Stack(app, 'MyTestStack3');
   Bundling.bundle(myStack, {
     entry,
     projectRoot,
     depsLockFilePath,
-    runtime: Runtime.NODEJS_20_X,
+    runtime: Runtime.NODEJS_18_X,
     architecture: Architecture.X86_64,
   });
 
   Annotations.fromStack(myStack).hasNoWarning('*',
-    'If you are relying on AWS SDK v3 to be present in the Lambda environment already, please explicitly configure a NodeJS runtime of Node 20 or higher. [ack: @aws-cdk/aws-lambda-nodejs:sdkV3NotInRuntime]',
+    'If you are relying on AWS SDK v3 to be present in the Lambda environment already, please explicitly configure a NodeJS runtime of Node 18 or higher. [ack: @aws-cdk/aws-lambda-nodejs:sdkV3NotInRuntime]',
   );
   Annotations.fromStack(myStack).hasNoWarning('*',
     'If you are relying on AWS SDK v2 to be present in the Lambda environment already, please explicitly configure a NodeJS runtime of Node 16 or lower. [ack: @aws-cdk/aws-lambda-nodejs:sdkV2NotInRuntime]',
