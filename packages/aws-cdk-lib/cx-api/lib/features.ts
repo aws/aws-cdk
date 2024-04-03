@@ -101,6 +101,7 @@ export const LAMBDA_PERMISSION_LOGICAL_ID_FOR_LAMBDA_ACTION = '@aws-cdk/aws-clou
 export const CODEPIPELINE_CROSS_ACCOUNT_KEYS_DEFAULT_VALUE_TO_FALSE = '@aws-cdk/aws-codepipeline:crossAccountKeysDefaultValueToFalse';
 export const CODEPIPELINE_DEFAULT_PIPELINE_TYPE_TO_V2 = '@aws-cdk/aws-codepipeline:defaultPipelineTypeToV2';
 export const KMS_REDUCE_CROSS_ACCOUNT_REGION_POLICY_SCOPE = '@aws-cdk/aws-kms:reduceCrossAccountRegionPolicyScope';
+export const ALBV2_EXTERNALAPPLICATIONLISTENER_SWITCH_FROM_ADDTARGETGROUP_TO_ADDACTION = '@aws-cdk/aws-elasticloadbalancingv2:ExternalApplicationListener-noRuleSuffixForAddAction';
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
@@ -1031,8 +1032,29 @@ export const FLAGS: Record<string, FlagInfo> = {
       When this feature flag is enabled and calling KMS key grant method, the created IAM policy will reduce the resource scope from
       '*' to this specific granting KMS key.
     `,
-    introducedIn: { v2: 'V2NEXT' },
+    introducedIn: { v2: '2.134.0' },
     recommendedValue: true,
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [ALBV2_EXTERNALAPPLICATIONLISTENER_SWITCH_FROM_ADDTARGETGROUP_TO_ADDACTION]: {
+    type: FlagType.VisibleContext,
+    summary: 'When enabled, you can switch from the \`addTargetGroups()\` method of declaring a \`ListenerRule\` to the \`addAction()\` method, without changing the logicalId and replacing your resource.',
+    detailsMd: `
+      When switching from a less complex to a more complex use of ALB,
+      you will eventually need features not available in the \`addTargetGroups()\` convenience method.
+      In this case you will want to use the \`addAction()\` method.
+      Before this feature is enabled, switching over to \`addAction()\` from using \`addTargetGroups()\` 
+      will add a \`Rule\` suffix to the logicalId of your \`ListenerRule\`,
+      causing CloudFormation to attempt to replace the resource.
+      Since \`ListenerRule\`s have a unique priority,
+      CloudFormation will always fail when generating the new \`ListenerRule\`.
+
+      Setting this feature flag will cause the \`addAction()\` method to not add the \`Rule\` suffix on the logicalId.
+      This allows you to switch from the \`addTargetGroups()\` method without having CloudFormation deadlock while attempting to replace the resource.
+    `,
+    introducedIn: { v2: 'V2NEXT' },
+    recommendedValue: false,
   },
 };
 
