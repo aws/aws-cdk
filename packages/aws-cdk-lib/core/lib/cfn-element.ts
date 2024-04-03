@@ -95,14 +95,16 @@ export abstract class CfnElement extends Construct {
         'Make sure you are calling "overrideLogicalId" before Stack.exportValue');
     }
 
-    if (!newLogicalId) {
-      throw new Error('Cannot set an empty logical ID');
-    }
-    if (newLogicalId.length > 255) {
-      throw new Error(`Invalid logical ID override: '${newLogicalId}'. It must be at most 255 characters long, got ${newLogicalId.length} characters.`);
-    }
-    if (!newLogicalId.match(/^[A-Za-z0-9]+$/)) {
-      throw new Error(`Invalid logical ID override: '${newLogicalId}'. It must only contain alphanumeric characters.`);
+    if (!Token.isUnresolved(newLogicalId)) {
+      if (!newLogicalId) {
+        throw new Error('Cannot set an empty logical ID');
+      }
+      if (newLogicalId.length > 255) {
+        throw new Error(`Invalid logical ID override: '${newLogicalId}'. It must be at most 255 characters long, got ${newLogicalId.length} characters.`);
+      }
+      if (!newLogicalId.match(/^[A-Za-z0-9]+$/)) {
+        throw new Error(`Invalid logical ID override: '${newLogicalId}'. It must only contain alphanumeric characters.`);
+      }
     }
 
     this._logicalIdOverride = newLogicalId;

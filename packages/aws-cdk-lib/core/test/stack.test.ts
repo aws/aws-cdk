@@ -1446,6 +1446,39 @@ describe('stack', () => {
     });
   });
 
+  test('do not throw if overrideLogicalId is unresolved', () => {
+    // GIVEN: manual
+    const appM = new App();
+    const producerM = new Stack(appM, 'Producer');
+    const resourceM = new CfnResource(producerM, 'ResourceXXX', { type: 'AWS::Resource' });
+
+    // THEN - producers are the same
+    resourceM.overrideLogicalId(Lazy.string({ produce: () => 'INVALID_LOGICAL_ID' }));
+    producerM.exportValue(resourceM.getAtt('Att'));
+
+    const template = appM.synth().getStackByName(producerM.stackName).template;
+    expect(template).toMatchObject({
+      Outputs: {
+        ExportsOutputFnGetAttINVALIDLOGICALIDAtt6CB9E5B9: {
+          Export: {
+            Name: 'Producer:ExportsOutputFnGetAttINVALIDLOGICALIDAtt6CB9E5B9',
+          },
+          Value: {
+            'Fn::GetAtt': [
+              'INVALID_LOGICAL_ID',
+              'Att',
+            ],
+          },
+        },
+      },
+      Resources: {
+        INVALID_LOGICAL_ID: {
+          Type: 'AWS::Resource',
+        },
+      },
+    });
+  });
+
   test('automatic cross-stack references and manual exports look the same: nested stack edition', () => {
     // GIVEN: automatic
     const appA = new App();
