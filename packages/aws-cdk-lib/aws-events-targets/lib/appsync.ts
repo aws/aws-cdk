@@ -27,12 +27,6 @@ export interface AppSyncGraphQLAPIProps extends TargetBaseProps {
    */
   readonly eventRole?: iam.IRole;
 
-  /**
-   * The GraphQL mutation fields that the rule should be granted access to. Used if a role is not provided.
-   * @default - empty array
-   */
-  readonly mutationFields?: string[];
-
 }
 
 /**
