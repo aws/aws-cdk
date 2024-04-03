@@ -67,6 +67,8 @@ Flags come in three types:
 | [@aws-cdk/aws-codepipeline:crossAccountKeysDefaultValueToFalse](#aws-cdkaws-codepipelinecrossaccountkeysdefaultvaluetofalse) | Enables Pipeline to set the default value for crossAccountKeys to false. | 2.127.0 | (default) |
 | [@aws-cdk/aws-codepipeline:defaultPipelineTypeToV2](#aws-cdkaws-codepipelinedefaultpipelinetypetov2) | Enables Pipeline to set the default pipeline type to V2. | 2.133.0 | (default) |
 | [@aws-cdk/aws-kms:reduceCrossAccountRegionPolicyScope](#aws-cdkaws-kmsreducecrossaccountregionpolicyscope) | When enabled, IAM Policy created from KMS key grant will reduce the resource scope to this key only. | 2.134.0 | (fix) |
+| [@aws-cdk/aws-elasticloadbalancingv2:ExternalApplicationListener-noRuleSuffixForAddAction](#aws-cdkaws-elasticloadbalancingv2externalapplicationlistener-norulesuffixforaddaction) | When enabled, you can switch from the `addTargetGroups()` method of declaring a `ListenerRule` to the `addAction()` method,
+without changing the logicalId and replacing your resource. | V2NEXT | (fix) |
 
 <!-- END table -->
 
@@ -1263,6 +1265,21 @@ When this feature flag is enabled and calling KMS key grant method, the created 
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
 | 2.134.0 | `false` | `true` |
+
+
+### @aws-cdk/aws-elasticloadbalancingv2:ExternalApplicationListener-noRuleSuffixForAddAction
+
+*When enabled, you can switch from the `addTargetGroups()` method of declaring a `ListenerRule` to the `addAction()` method,
+without changing the logicalId and replacing your resource.* (fix)
+
+Setting this feature flag will cause the `addAction()` method to not add the `Rule` suffix on the logicalId.
+This allows you to switch from the `addTargetGroups()` method without having CloudFormation deadlock while attempting to replace the resource.
+
+
+| Since | Default | Recommended |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| V2NEXT | `false` | `false` |
 
 
 <!-- END details -->
