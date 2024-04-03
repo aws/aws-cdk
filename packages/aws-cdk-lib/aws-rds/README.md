@@ -1232,7 +1232,7 @@ declare const vpc: ec2.Vpc;
 new rds.DatabaseCluster(this, 'DatabaseCluster', {
   engine: rds.DatabaseClusterEngine.AURORA,
   vpc: vpc,
-  writer: ClusterInstance.provisioned('WriterInstance', {
+  writer: rds.ClusterInstance.provisioned('WriterInstance', {
     preferredMaintenanceWindow: 'Sat:22:15-Sat:22:45',
   }),
   preferredMaintenanceWindow: 'Sat:22:15-Sat:22:45',
