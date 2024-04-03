@@ -1224,7 +1224,8 @@ new rds.DatabaseCluster(this, 'DatabaseCluster', {
   preferredMaintenanceWindow: 'Sat:22:15-Sat:22:45',
 });
 ```
-You can also use writer or readers props like:
+
+You can also set the preferred maintenance window via reader and writer props:
 
 ```ts
 new DatabaseCluster(stack, 'DatabaseCluster', {
