@@ -128,6 +128,7 @@ describe('export writer provider', () => {
             Timeout: 900,
             MemorySize: 128,
             Handler: '__entrypoint__.handler',
+            LoggingConfig: {},
             Role: {
               'Fn::GetAtt': [
                 'CustomCrossRegionExportWriterCustomResourceProviderRoleC951B1E1',
@@ -156,6 +157,7 @@ describe('export writer provider', () => {
               S3Key: expect.any(String),
             },
             Handler: '__entrypoint__.handler',
+            LoggingConfig: {},
             MemorySize: 128,
             Role: {
               'Fn::GetAtt': [
@@ -489,6 +491,7 @@ describe('export writer provider', () => {
             Timeout: 900,
             MemorySize: 128,
             Handler: '__entrypoint__.handler',
+            LoggingConfig: {},
             Role: {
               'Fn::GetAtt': [
                 'CustomCrossRegionExportWriterCustomResourceProviderRoleC951B1E1',
@@ -517,6 +520,7 @@ describe('export writer provider', () => {
               S3Key: expect.any(String),
             },
             Handler: '__entrypoint__.handler',
+            LoggingConfig: {},
             MemorySize: 128,
             Role: {
               'Fn::GetAtt': [

@@ -245,6 +245,7 @@ describe('custom resource provider', () => {
             Timeout: 900,
             MemorySize: 128,
             Handler: '__entrypoint__.handler',
+            LoggingConfig: {},
             Role: {
               'Fn::GetAtt': [
                 'CustomMyResourceTypeCustomResourceProviderRoleBD5E655F',
