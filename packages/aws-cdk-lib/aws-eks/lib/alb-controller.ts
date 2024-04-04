@@ -271,6 +271,27 @@ export interface AlbControllerOptions {
    * @default - Corresponds to the predefined version.
    */
   readonly policy?: any;
+
+  /**
+   * Override values to be used by the chart.
+   * For nested values use a nested dictionary. For example:
+   * values: {
+   *  autoscaling: false,
+   *  ingressClassParams: { create: true }
+   * }
+   *
+   * Note that the following values are set by the controller and cannot be overridden:
+   * - clusterName
+   * - serviceAccount.create
+   * - serviceAccount.name
+   * - region
+   * - vpcId
+   * - image.repository
+   * - image.tag
+   *
+   * @default - No values are provided to the chart.
+   */
+  readonly values?: {[key: string]: any};
 }
 
 /**
@@ -342,6 +363,7 @@ export class AlbController extends Construct {
       wait: true,
       timeout: Duration.minutes(15),
       values: {
+        ...(props.values ?? {}),
         clusterName: props.cluster.clusterName,
         serviceAccount: {
           create: false,
