@@ -193,7 +193,15 @@ export interface AwsSdkCall {
   /**
    * A property used to configure logging during lambda function execution.
    *
-   * @default Logging.on()
+   * Note: The default Logging configuration is all. This configuration will enable logging on all logging
+   * properties defined on the LoggingOptions interface. Specifically:
+   *  - logHandlerEvent
+   *  - logApiResponse
+   *  - logResponseObject
+   *  - logSdkVersion
+   *  - logErrors
+   *
+   * @default Logging.all()
    */
   readonly logging?: Logging;
 }
