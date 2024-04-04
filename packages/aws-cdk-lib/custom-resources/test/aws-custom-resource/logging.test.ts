@@ -73,4 +73,17 @@ describe('render logging', () => {
       logErrors: false,
     });
   });
+
+  test('off', () => {
+    // GIVEN
+    const logging = Logging.off();
+
+    // WHEN / THEN
+    expect(logging._render()).toEqual({
+      logHandlerEvent: false,
+      logApiResponse: false,
+      logResponseObject: false,
+      logErrors: false,
+    });
+  })
 });
