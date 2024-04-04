@@ -1,5 +1,7 @@
 /**
- * Matches the definition of AwsSdkCall in packages/aws-cdk-lib/custom-resources/lib/aws-custom-resource/aws-custom-resource.ts
+ * Mostly matches the definition of AwsSdkCall in packages/aws-cdk-lib/custom-resources/lib/aws-custom-resource/aws-custom-resource.ts
+ * The logging property is configured via the Logging class. Before passing an AwsSdkCall via the event object the internal render
+ * method will be called on the Logging instance. This representation includes logging properties after render has been called.
  */
 export interface AwsSdkCall {
   readonly service: string;
@@ -19,4 +21,9 @@ export interface AwsSdkCall {
   readonly outputPath?: string;
   readonly outputPaths?: string[];
   readonly assumedRoleArn?: string;
+  readonly logHandlerEvent: boolean;
+  readonly logApiResponse: boolean;
+  readonly logResponseObject: boolean;
+  readonly logSdkVersion: boolean;
+  readonly logErrors: boolean;
 }

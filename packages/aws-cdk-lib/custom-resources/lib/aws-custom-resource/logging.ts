@@ -60,7 +60,7 @@ export interface LoggingOptions {
 }
 
 /**
- * A class used to configure Logging during for AwsCustomResource.
+ * A class used to configure Logging during for AwsCustomResource SDK calls.
  */
 export abstract class Logging {
   /**

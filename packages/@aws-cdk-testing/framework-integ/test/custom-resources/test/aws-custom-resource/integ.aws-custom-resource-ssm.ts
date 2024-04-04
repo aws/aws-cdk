@@ -43,11 +43,11 @@ class GetParameterStack extends Stack {
           WithDecryption: true,
         },
         physicalResourceId: PhysicalResourceId.of(Date.now().toString()),
+        logging,
       },
       policy: AwsCustomResourcePolicy.fromSdkCalls({
         resources: AwsCustomResourcePolicy.ANY_RESOURCE,
       }),
-      logging,
     });
   }
 }

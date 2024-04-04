@@ -62,10 +62,16 @@ function patchSdk(awsSdk: any): any {
 
 /* eslint-disable @typescript-eslint/no-require-imports, import/no-extraneous-dependencies */
 export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent, context: AWSLambda.Context) {
-  const logHandlerEvent = event.ResourceProperties.LogHandlerEvent === 'true';
-  const logResponseObject = event.ResourceProperties.LogResponseObject === 'true';
-  const logSdkVersion = event.ResourceProperties.LogSdkVersion === 'true';
-  const logErrors = event.ResourceProperties.LogErrors === 'true';
+  event.ResourceProperties.Create = decodeCall(event.ResourceProperties.Create);
+  event.ResourceProperties.Update = decodeCall(event.ResourceProperties.Update);
+  event.ResourceProperties.Delete = decodeCall(event.ResourceProperties.Delete);
+
+  const call: AwsSdkCall | undefined = event.ResourceProperties[event.RequestType];
+
+  const logHandlerEvent = call?.logHandlerEvent ?? true;
+  const logResponseObject = call?.logResponseObject ?? true;
+  const logSdkVersion = call?.logSdkVersion ?? true;
+  const logErrors = call?.logErrors ?? true;
 
   try {
     let AWS: any;
@@ -100,9 +106,6 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
       console.log('AWS SDK VERSION: ' + AWS.VERSION);
     }
 
-    event.ResourceProperties.Create = decodeCall(event.ResourceProperties.Create);
-    event.ResourceProperties.Update = decodeCall(event.ResourceProperties.Update);
-    event.ResourceProperties.Delete = decodeCall(event.ResourceProperties.Delete);
     // Default physical resource id
     let physicalResourceId: string;
     switch (event.RequestType) {
@@ -120,10 +123,8 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
 
     let flatData: { [key: string]: string } = {};
     let data: { [key: string]: string } = {};
-    const call: AwsSdkCall | undefined = event.ResourceProperties[event.RequestType];
 
     if (call) {
-
       let credentials;
       if (call.assumedRoleArn) {
         const timestamp = (new Date()).getTime();
@@ -182,7 +183,9 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
 
     await respond(event, 'SUCCESS', 'OK', physicalResourceId, data, logResponseObject);
   } catch (e: any) {
-    console.log(e);
+    if (logErrors) {
+      console.log(e);
+    }
     await respond(event, 'FAILED', e.message || 'Internal Error', context.logStreamName, {}, logResponseObject);
   }
 }

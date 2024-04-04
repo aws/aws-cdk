@@ -1337,12 +1337,12 @@ describe('logging configuration', () => {
         physicalResourceId: {
           id: 'loggroup',
         },
+        LogHandlerEvent: true,
+        LogApiResponse: true,
+        LogResponseObject: true,
+        LogSdkVersion: true,
+        LogErrors: true,
       }),
-      LogHandlerEvent: true,
-      LogApiResponse: true,
-      LogResponseObject: true,
-      LogSdkVersion: true,
-      LogErrors: true,
     });
   });
 
@@ -1362,9 +1362,9 @@ describe('logging configuration', () => {
           retentionInDays: 90,
         },
         physicalResourceId: PhysicalResourceId.of('loggroup'),
+        logging,
       },
       policy: AwsCustomResourcePolicy.fromSdkCalls({ resources: AwsCustomResourcePolicy.ANY_RESOURCE }),
-      logging,
     });
 
     // THEN
@@ -1379,12 +1379,12 @@ describe('logging configuration', () => {
         physicalResourceId: {
           id: 'loggroup',
         },
+        LogHandlerEvent: true,
+        LogApiResponse: true,
+        LogResponseObject: true,
+        LogSdkVersion: true,
+        LogErrors: true,
       }),
-      LogHandlerEvent: true,
-      LogApiResponse: true,
-      LogResponseObject: true,
-      LogSdkVersion: true,
-      LogErrors: true,
     });
   });
 
@@ -1406,9 +1406,9 @@ describe('logging configuration', () => {
           retentionInDays: 90,
         },
         physicalResourceId: PhysicalResourceId.of('loggroup'),
+        logging,
       },
       policy: AwsCustomResourcePolicy.fromSdkCalls({ resources: AwsCustomResourcePolicy.ANY_RESOURCE }),
-      logging,
     });
 
     // THEN
@@ -1423,12 +1423,12 @@ describe('logging configuration', () => {
         physicalResourceId: {
           id: 'loggroup',
         },
+        LogHandlerEvent: true,
+        LogApiResponse: false,
+        LogResponseObject: false,
+        LogSdkVersion: false,
+        LogErrors: false,
       }),
-      LogHandlerEvent: true,
-      LogApiResponse: false,
-      LogResponseObject: false,
-      LogSdkVersion: false,
-      LogErrors: false,
     });
   });
 
@@ -1450,9 +1450,9 @@ describe('logging configuration', () => {
           retentionInDays: 90,
         },
         physicalResourceId: PhysicalResourceId.of('loggroup'),
+        logging,
       },
       policy: AwsCustomResourcePolicy.fromSdkCalls({ resources: AwsCustomResourcePolicy.ANY_RESOURCE }),
-      logging,
     });
 
     // THEN
@@ -1467,12 +1467,12 @@ describe('logging configuration', () => {
         physicalResourceId: {
           id: 'loggroup',
         },
+        LogHandlerEvent: false,
+        LogApiResponse: true,
+        LogResponseObject: false,
+        LogSdkVersion: false,
+        LogErrors: false,
       }),
-      LogHandlerEvent: false,
-      LogApiResponse: true,
-      LogResponseObject: false,
-      LogSdkVersion: false,
-      LogErrors: false,
     });
   });
 
@@ -1494,9 +1494,9 @@ describe('logging configuration', () => {
           retentionInDays: 90,
         },
         physicalResourceId: PhysicalResourceId.of('loggroup'),
+        logging,
       },
       policy: AwsCustomResourcePolicy.fromSdkCalls({ resources: AwsCustomResourcePolicy.ANY_RESOURCE }),
-      logging,
     });
 
     // THEN
@@ -1511,12 +1511,12 @@ describe('logging configuration', () => {
         physicalResourceId: {
           id: 'loggroup',
         },
+        LogHandlerEvent: false,
+        LogApiResponse: false,
+        LogResponseObject: true,
+        LogSdkVersion: false,
+        LogErrors: false,
       }),
-      LogHandlerEvent: false,
-      LogApiResponse: false,
-      LogResponseObject: true,
-      LogSdkVersion: false,
-      LogErrors: false,
     });
   });
 
@@ -1538,9 +1538,9 @@ describe('logging configuration', () => {
           retentionInDays: 90,
         },
         physicalResourceId: PhysicalResourceId.of('loggroup'),
+        logging,
       },
       policy: AwsCustomResourcePolicy.fromSdkCalls({ resources: AwsCustomResourcePolicy.ANY_RESOURCE }),
-      logging,
     });
 
     // THEN
@@ -1555,12 +1555,12 @@ describe('logging configuration', () => {
         physicalResourceId: {
           id: 'loggroup',
         },
+        LogHandlerEvent: false,
+        LogApiResponse: false,
+        LogResponseObject: false,
+        LogSdkVersion: true,
+        LogErrors: false,
       }),
-      LogHandlerEvent: false,
-      LogApiResponse: false,
-      LogResponseObject: false,
-      LogSdkVersion: true,
-      LogErrors: false,
     });
   });
 
@@ -1582,9 +1582,9 @@ describe('logging configuration', () => {
           retentionInDays: 90,
         },
         physicalResourceId: PhysicalResourceId.of('loggroup'),
+        logging,
       },
       policy: AwsCustomResourcePolicy.fromSdkCalls({ resources: AwsCustomResourcePolicy.ANY_RESOURCE }),
-      logging,
     });
 
     // THEN
@@ -1599,12 +1599,88 @@ describe('logging configuration', () => {
         physicalResourceId: {
           id: 'loggroup',
         },
+        LogHandlerEvent: false,
+        LogApiResponse: false,
+        LogResponseObject: false,
+        LogSdkVersion: false,
+        LogErrors: true,
       }),
-      LogHandlerEvent: false,
-      LogApiResponse: false,
-      LogResponseObject: false,
-      LogSdkVersion: false,
-      LogErrors: true,
+    });
+  });
+
+  test('different logging configurations for different sdk calls', () => {
+    // GIVEN
+    const stack = new Stack();
+    const createLogging = Logging.selective({
+      logErrors: true,
+      logHandlerEvent: true,
+    });
+    const updateLogging = Logging.selective({
+      logErrors: true,
+    });
+
+    // WHEN
+    new AwsCustomResource(stack, 'AwsSdk', {
+      resourceType: 'Custom::AWS',
+      onCreate: {
+        service: 'CloudWatchLogs',
+        action: 'putRetentionPolicy',
+        parameters: {
+          logGroupName: '/aws/lambda/loggroup',
+          retentionInDays: 90,
+        },
+        physicalResourceId: PhysicalResourceId.of('loggroup'),
+        logging: createLogging,
+      },
+      onUpdate: {
+        service: 's3',
+        action: 'putObject',
+        parameters: {
+          Bucket: 'my-bucket',
+          Key: 'my-key',
+          Body: 'my-body',
+        },
+        physicalResourceId: PhysicalResourceId.fromResponse('ETag'),
+        logging: updateLogging,
+      },
+      policy: AwsCustomResourcePolicy.fromSdkCalls({ resources: AwsCustomResourcePolicy.ANY_RESOURCE }),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('Custom::AWS', {
+      Create: JSON.stringify({
+        service: 'CloudWatchLogs',
+        action: 'putRetentionPolicy',
+        parameters: {
+          logGroupName: '/aws/lambda/loggroup',
+          retentionInDays: 90,
+        },
+        physicalResourceId: {
+          id: 'loggroup',
+        },
+        LogHandlerEvent: true,
+        LogApiResponse: false,
+        LogResponseObject: false,
+        LogSdkVersion: false,
+        LogErrors: true,
+      }),
+      Update: JSON.stringify({
+        service: 's3',
+        action: 'putObject',
+        parameters: {
+          Bucket: 'my-bucket',
+          Key: 'my-key',
+          Body: 'my-body',
+        },
+        physicalResourceId: {
+          id: 'ETag',
+        },
+        LogHandlerEvent: false,
+        LogApiResponse: false,
+        LogResponseObject: false,
+        LogSdkVersion: false,
+        LogErrors: true,
+      }),
     });
   });
 });

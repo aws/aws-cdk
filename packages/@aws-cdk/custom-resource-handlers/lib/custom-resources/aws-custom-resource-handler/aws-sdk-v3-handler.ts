@@ -78,16 +78,19 @@ async function loadAwsSdk(
 
 /* eslint-disable @typescript-eslint/no-require-imports, import/no-extraneous-dependencies */
 export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent, context: AWSLambda.Context) {
-  const logHandlerEvent = event.ResourceProperties.LogHandlerEvent === 'true';
-  const logApiResponse = event.ResourceProperties.LogApiResponse === 'true';
-  const logResponseObject = event.ResourceProperties.LogResponseObject === 'true';
-  const logSdkVersion = event.ResourceProperties.LogSdkVersion === 'true';
-  const logErrors = event.ResourceProperties.LogErrors === 'true';
+  event.ResourceProperties.Create = decodeCall(event.ResourceProperties.Create);
+  event.ResourceProperties.Update = decodeCall(event.ResourceProperties.Update);
+  event.ResourceProperties.Delete = decodeCall(event.ResourceProperties.Delete);
+
+  const call: AwsSdkCall | undefined = event.ResourceProperties[event.RequestType];
+
+  const logHandlerEvent = call?.logHandlerEvent ?? true;
+  const logApiResponse = call?.logApiResponse ?? true;
+  const logResponseObject = call?.logResponseObject ?? true;
+  const logSdkVersion = call?.logSdkVersion ?? true;
+  const logErrors = call?.logErrors ?? true;
 
   try {
-    event.ResourceProperties.Create = decodeCall(event.ResourceProperties.Create);
-    event.ResourceProperties.Update = decodeCall(event.ResourceProperties.Update);
-    event.ResourceProperties.Delete = decodeCall(event.ResourceProperties.Delete);
     let data: { [key: string]: string } = {};
 
     // Default physical resource id
@@ -104,7 +107,7 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
         physicalResourceId = event.ResourceProperties[event.RequestType]?.physicalResourceId?.id ?? event.PhysicalResourceId;
         break;
     }
-    const call: AwsSdkCall | undefined = event.ResourceProperties[event.RequestType];
+
     if (call) {
       const apiCall = new ApiCall(call.service, call.action);
 

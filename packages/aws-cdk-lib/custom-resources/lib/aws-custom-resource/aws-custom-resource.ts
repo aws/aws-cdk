@@ -189,6 +189,13 @@ export interface AwsSdkCall {
    * @default - run without assuming role
    */
   readonly assumedRoleArn?: string;
+
+  /**
+   * A property used to configure logging during lambda function execution.
+   *
+   * @default Logging.on()
+   */
+  readonly logging?: Logging;
 }
 
 /**
@@ -395,13 +402,6 @@ export interface AwsCustomResourceProps {
    * @default - the Vpc default strategy if not specified
    */
   readonly vpcSubnets?: ec2.SubnetSelection;
-
-  /**
-   * A property used to configure logging during lambda function execution.
-   *
-   * @default Logging.on()
-   */
-  readonly logging?: Logging;
 }
 
 /**
@@ -501,11 +501,10 @@ export class AwsCustomResource extends Construct implements iam.IGrantable {
       pascalCaseProperties: true,
       removalPolicy: props.removalPolicy,
       properties: {
-        create: create && this.encodeJson(create),
-        update: props.onUpdate && this.encodeJson(props.onUpdate),
-        delete: props.onDelete && this.encodeJson(props.onDelete),
+        create: create && this.formatSdkCall(create),
+        update: props.onUpdate && this.formatSdkCall(props.onUpdate),
+        delete: props.onDelete && this.formatSdkCall(props.onDelete),
         installLatestAwsSdk,
-        ...(props.logging ?? Logging.on())._render(),
       },
     });
 
@@ -581,6 +580,15 @@ export class AwsCustomResource extends Construct implements iam.IGrantable {
   public getResponseField(dataPath: string): string {
     AwsCustomResource.breakIgnoreErrorsCircuit([this.props.onCreate, this.props.onUpdate], 'getDataString');
     return this.customResource.getAttString(dataPath);
+  }
+
+  private formatSdkCall(sdkCall: AwsSdkCall) {
+    const { logging, ...call } = sdkCall;
+    const renderedLogging = (logging ?? Logging.on())._render();
+    return this.encodeJson({
+      ...call,
+      ...renderedLogging,
+    });
   }
 
   private encodeJson(obj: any) {

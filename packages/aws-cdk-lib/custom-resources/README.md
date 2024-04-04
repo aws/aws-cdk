@@ -607,7 +607,7 @@ new cr.AwsCustomResource(this, 'ListObjects', {
 Note that even if you restrict the output of your custom resource you can still use any
 path in `PhysicalResourceId.fromResponse()`.
 
-### Custom Resource Logging
+### Custom Resource Logging for SDK Calls
 
 By default, logging occurs during execution of the singleton Lambda used by a custom resource. The data being logged includes:
 * The event object that is received by the Lambda handler
@@ -616,7 +616,7 @@ By default, logging occurs during execution of the singleton Lambda used by a cu
 * SDK versioning information
 * Caught and uncaught errors
 
-The `logging` property defined on the `AwsCustomResourceProps` interface allows control over what data is being logged and is configurable via an instance of the `Logging` class. The `Logging` class exposes three options that can be used to configure logging:
+The `logging` property defined on the `AwsSdkCall` interface allows control over what data is being logged on a per SDK call basis. This is configurable via an instance of the `Logging` class. The `Logging` class exposes three options that can be used to configure logging:
 1. `Logging.on()` which enables logging of all data. This is the default `logging` configuration.
 2. `Logging.off()` which prevents logging of all data.
 3. `Logging.selective()` which provides selective control over what data will be logged. This configuration option is particularly useful for situations where the API call response may contain sensitive information.
@@ -667,11 +667,11 @@ const getParameter = new cr.AwsCustomResource(this, 'GetParameter', {
       WithDecryption: true,
     },
     physicalResourceId: cr.PhysicalResourceId.of(Date.now().toString()),
+    logging,
   },
   policy: cr.AwsCustomResourcePolicy.fromSdkCalls({
     resources: cr.AwsCustomResourcePolicy.ANY_RESOURCE,
   }),
-  logging,
 });
 ```
 
