@@ -21,8 +21,10 @@ export function forceSdkInstallation() {
 /**
  * Installs latest AWS SDK v3
  */
-function installLatestSdk(packageName: string): void {
-  console.log(`Installing latest AWS SDK v3: ${packageName}`);
+function installLatestSdk(packageName: string, logSdkVersion: boolean): void {
+  if (logSdkVersion) {
+    console.log(`Installing latest AWS SDK v3: ${packageName}`);
+  }
   // Both HOME and --prefix are needed here because /tmp is the only writable location
   execSync(
     `NPM_CONFIG_UPDATE_NOTIFIER=false HOME=/tmp npm install ${JSON.stringify(packageName)} --omit=dev --no-package-lock --no-save --prefix /tmp`,
@@ -39,6 +41,7 @@ interface AwsSdk {
 
 async function loadAwsSdk(
   packageName: string,
+  logSdkVersion: boolean,
   logErrors: boolean,
   installLatestAwsSdk?: 'true' | 'false',
 ) {
@@ -46,7 +49,7 @@ async function loadAwsSdk(
   try {
     if (!installedSdk[packageName] && installLatestAwsSdk === 'true') {
       try {
-        installLatestSdk(packageName);
+        installLatestSdk(packageName, logSdkVersion);
         // MUST use require here. Dynamic import() do not support importing from directories
         // esbuild-disable unsupported-require-call -- not esbuildable but that's fine
         awsSdk = require(`/tmp/node_modules/${packageName}`);
@@ -75,10 +78,11 @@ async function loadAwsSdk(
 
 /* eslint-disable @typescript-eslint/no-require-imports, import/no-extraneous-dependencies */
 export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent, context: AWSLambda.Context) {
-  let logHandlerEvent = event.ResourceProperties.LogHandlerEvent === 'true';
-  let logApiResponse = event.ResourceProperties.LogApiResponse === 'true';
-  let logResponseObject = event.ResourceProperties.LogResponseObject === 'true';
-  let logErrors = event.ResourceProperties.LogErrors === 'true';
+  const logHandlerEvent = event.ResourceProperties.LogHandlerEvent === 'true';
+  const logApiResponse = event.ResourceProperties.LogApiResponse === 'true';
+  const logResponseObject = event.ResourceProperties.LogResponseObject === 'true';
+  const logSdkVersion = event.ResourceProperties.LogSdkVersion === 'true';
+  const logErrors = event.ResourceProperties.LogErrors === 'true';
 
   try {
     event.ResourceProperties.Create = decodeCall(event.ResourceProperties.Create);
@@ -104,7 +108,12 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
     if (call) {
       const apiCall = new ApiCall(call.service, call.action);
 
-      let awsSdk: AwsSdk | Promise<AwsSdk> = loadAwsSdk(apiCall.v3PackageName, logErrors, event.ResourceProperties.InstallLatestAwsSdk);
+      let awsSdk: AwsSdk | Promise<AwsSdk> = loadAwsSdk(
+        apiCall.v3PackageName,
+        logSdkVersion,
+        logErrors,
+        event.ResourceProperties.InstallLatestAwsSdk,
+      );
 
       if (logHandlerEvent) {
         console.log(JSON.stringify({ ...event, ResponseURL: '...' }));

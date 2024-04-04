@@ -1341,6 +1341,7 @@ describe('logging configuration', () => {
       LogHandlerEvent: true,
       LogApiResponse: true,
       LogResponseObject: true,
+      LogSdkVersion: true,
       LogErrors: true,
     });
   });
@@ -1382,6 +1383,7 @@ describe('logging configuration', () => {
       LogHandlerEvent: true,
       LogApiResponse: true,
       LogResponseObject: true,
+      LogSdkVersion: true,
       LogErrors: true,
     });
   });
@@ -1425,6 +1427,7 @@ describe('logging configuration', () => {
       LogHandlerEvent: false,
       LogApiResponse: true,
       LogResponseObject: true,
+      LogSdkVersion: true,
       LogErrors: true,
     });
   });
@@ -1468,6 +1471,7 @@ describe('logging configuration', () => {
       LogHandlerEvent: true,
       LogApiResponse: false,
       LogResponseObject: true,
+      LogSdkVersion: true,
       LogErrors: true,
     });
   });
@@ -1511,6 +1515,51 @@ describe('logging configuration', () => {
       LogHandlerEvent: true,
       LogApiResponse: true,
       LogResponseObject: false,
+      LogSdkVersion: true,
+      LogErrors: true,
+    });
+  });
+
+  test('selective logging with logSdkVersion as false', () => {
+    // GIVEN
+    const stack = new Stack();
+    const logging = Logging.selective({
+      logSdkVersion: false,
+    });
+
+    // WHEN
+    new AwsCustomResource(stack, 'AwsSdk', {
+      resourceType: 'Custom::LogRetentionPolicy',
+      onCreate: {
+        service: 'CloudWatchLogs',
+        action: 'putRetentionPolicy',
+        parameters: {
+          logGroupName: '/aws/lambda/loggroup',
+          retentionInDays: 90,
+        },
+        physicalResourceId: PhysicalResourceId.of('loggroup'),
+      },
+      policy: AwsCustomResourcePolicy.fromSdkCalls({ resources: AwsCustomResourcePolicy.ANY_RESOURCE }),
+      logging,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('Custom::LogRetentionPolicy', {
+      Create: JSON.stringify({
+        service: 'CloudWatchLogs',
+        action: 'putRetentionPolicy',
+        parameters: {
+          logGroupName: '/aws/lambda/loggroup',
+          retentionInDays: 90,
+        },
+        physicalResourceId: {
+          id: 'loggroup',
+        },
+      }),
+      LogHandlerEvent: true,
+      LogApiResponse: true,
+      LogResponseObject: true,
+      LogSdkVersion: false,
       LogErrors: true,
     });
   });
@@ -1554,6 +1603,7 @@ describe('logging configuration', () => {
       LogHandlerEvent: true,
       LogApiResponse: true,
       LogResponseObject: true,
+      LogSdkVersion: true,
       LogErrors: false,
     });
   });

@@ -24,6 +24,13 @@ export interface LoggingProps {
   readonly logResponseObject?: boolean;
 
   /**
+   * Whether or not to log the AWS SDK version used for API calls during lambda execution.
+   *
+   * @default true
+   */
+  readonly logSdkVersion?: boolean;
+
+  /**
    * Whether or not to log errors that were encountered during lambda execution.
    *
    * @default true
@@ -70,6 +77,7 @@ export abstract class Logging {
           logHandlerEvent: false,
           logApiResponse: false,
           logResponseObject: false,
+          logSdkVersion: false,
           logErrors: false,
         });
       }
@@ -92,6 +100,11 @@ export abstract class Logging {
   private readonly logResponseObject: boolean;
 
   /**
+   * Whether or not to log the AWS SDK version used for API calls during lambda execution.
+   */
+  private readonly logSdkVersion: boolean;
+
+  /**
    * Whether or not to log errors that were encountered during lambda execution.
    */
   private readonly logErrors: boolean;
@@ -100,6 +113,7 @@ export abstract class Logging {
     this.logHandlerEvent = props.logHandlerEvent ?? true;
     this.logApiResponse = props.logApiResponse ?? true;
     this.logResponseObject = props.logResponseObject ?? true;
+    this.logSdkVersion = props.logSdkVersion ?? true;
     this.logErrors = props.logErrors ?? true;
   }
 
@@ -111,6 +125,7 @@ export abstract class Logging {
       logHandlerEvent: this.logHandlerEvent,
       logApiResponse: this.logApiResponse,
       logResponseObject: this.logResponseObject,
+      logSdkVersion: this.logSdkVersion,
       logErrors: this.logErrors,
     };
   }

@@ -62,9 +62,10 @@ function patchSdk(awsSdk: any): any {
 
 /* eslint-disable @typescript-eslint/no-require-imports, import/no-extraneous-dependencies */
 export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent, context: AWSLambda.Context) {
-  let logHandlerEvent = event.ResourceProperties.LogHandlerEvent === 'true';
-  let logResponseObject = event.ResourceProperties.LogResponseObject === 'true';
-  let logErrors = event.ResourceProperties.LogErrors === 'true';
+  const logHandlerEvent = event.ResourceProperties.LogHandlerEvent === 'true';
+  const logResponseObject = event.ResourceProperties.LogResponseObject === 'true';
+  const logSdkVersion = event.ResourceProperties.LogSdkVersion === 'true';
+  const logErrors = event.ResourceProperties.LogErrors === 'true';
 
   try {
     let AWS: any;
@@ -95,7 +96,9 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
       console.log(JSON.stringify({ ...event, ResponseURL: '...' }));
     }
 
-    console.log('AWS SDK VERSION: ' + AWS.VERSION);
+    if (logSdkVersion) {
+      console.log('AWS SDK VERSION: ' + AWS.VERSION);
+    }
 
     event.ResourceProperties.Create = decodeCall(event.ResourceProperties.Create);
     event.ResourceProperties.Update = decodeCall(event.ResourceProperties.Update);

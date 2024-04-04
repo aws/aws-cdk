@@ -10,6 +10,7 @@ describe('render logging', () => {
       logHandlerEvent: true,
       logApiResponse: true,
       logResponseObject: true,
+      logSdkVersion: true,
       logErrors: true,
     });
   });
@@ -25,6 +26,7 @@ describe('render logging', () => {
       logHandlerEvent: false,
       logApiResponse: true,
       logResponseObject: true,
+      logSdkVersion: true,
       logErrors: true,
     });
   });
@@ -40,6 +42,7 @@ describe('render logging', () => {
       logHandlerEvent: true,
       logApiResponse: false,
       logResponseObject: true,
+      logSdkVersion: true,
       logErrors: true,
     });
   });
@@ -55,6 +58,23 @@ describe('render logging', () => {
       logHandlerEvent: true,
       logApiResponse: true,
       logResponseObject: false,
+      logSdkVersion: true,
+      logErrors: true,
+    });
+  });
+
+  test('selective with logSdkVersion as false', () => {
+    // GIVEN
+    const logging = Logging.selective({
+      logResponseObject: false,
+    });
+
+    // WHEN / THEN
+    expect(logging._render()).toEqual({
+      logHandlerEvent: true,
+      logApiResponse: true,
+      logResponseObject: true,
+      logSdkVersion: false,
       logErrors: true,
     });
   });
@@ -70,6 +90,7 @@ describe('render logging', () => {
       logHandlerEvent: true,
       logApiResponse: true,
       logResponseObject: true,
+      logSdkVersion: true,
       logErrors: false,
     });
   });
@@ -83,7 +104,8 @@ describe('render logging', () => {
       logHandlerEvent: false,
       logApiResponse: false,
       logResponseObject: false,
+      logSdkVersion: true,
       logErrors: false,
     });
-  })
+  });
 });
