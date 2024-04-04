@@ -17,7 +17,7 @@
        {
         "Fn::ImportValue": "CreateParameterStack:ExportsOutputRefSecretA720EF052D953DED"
        },
-       "\",\"WithDecryption\":true},\"physicalResourceId\":{\"id\":\"1712241235808\"},\"logHandlerEvent\":true,\"logApiResponse\":false,\"logResponseObject\":false,\"logSdkVersion\":false,\"logErrors\":true}"
+       "\",\"WithDecryption\":true},\"physicalResourceId\":{\"id\":\"1712259180529\"},\"logApiResponseData\":false}"
       ]
      ]
     },
@@ -29,7 +29,7 @@
        {
         "Fn::ImportValue": "CreateParameterStack:ExportsOutputRefSecretA720EF052D953DED"
        },
-       "\",\"WithDecryption\":true},\"physicalResourceId\":{\"id\":\"1712241235808\"},\"logHandlerEvent\":true,\"logApiResponse\":false,\"logResponseObject\":false,\"logSdkVersion\":false,\"logErrors\":true}"
+       "\",\"WithDecryption\":true},\"physicalResourceId\":{\"id\":\"1712259180529\"},\"logApiResponseData\":false}"
       ]
      ]
     },
@@ -100,7 +100,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "4344ec111f75146a01717bb1f5750e52c31d7aa0c0b2d7ee0c753e0220a5c710.zip"
+     "S3Key": "5fadf4047b5a97a67e008d348e6980afdc307accf0412f6cd6def3836193092d.zip"
     },
     "Handler": "index.handler",
     "Role": {
