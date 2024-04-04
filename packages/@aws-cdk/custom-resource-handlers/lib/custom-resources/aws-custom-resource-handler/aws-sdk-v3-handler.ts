@@ -21,10 +21,8 @@ export function forceSdkInstallation() {
 /**
  * Installs latest AWS SDK v3
  */
-function installLatestSdk(packageName: string, logSdkVersion: boolean): void {
-  if (logSdkVersion) {
-    console.log(`Installing latest AWS SDK v3: ${packageName}`);
-  }
+function installLatestSdk(packageName: string): void {
+  console.log(`Installing latest AWS SDK v3: ${packageName}`);
   // Both HOME and --prefix are needed here because /tmp is the only writable location
   execSync(
     `NPM_CONFIG_UPDATE_NOTIFIER=false HOME=/tmp npm install ${JSON.stringify(packageName)} --omit=dev --no-package-lock --no-save --prefix /tmp`,
@@ -41,22 +39,18 @@ interface AwsSdk {
 
 async function loadAwsSdk(
   packageName: string,
-  logSdkVersion: boolean,
-  logErrors: boolean,
   installLatestAwsSdk?: 'true' | 'false',
 ) {
   let awsSdk: AwsSdk;
   try {
     if (!installedSdk[packageName] && installLatestAwsSdk === 'true') {
       try {
-        installLatestSdk(packageName, logSdkVersion);
+        installLatestSdk(packageName);
         // MUST use require here. Dynamic import() do not support importing from directories
         // esbuild-disable unsupported-require-call -- not esbuildable but that's fine
         awsSdk = require(`/tmp/node_modules/${packageName}`);
       } catch (e) {
-        if (logErrors) {
-          console.log(`Failed to install latest AWS SDK v3. Falling back to pre-installed version. Error: ${e}`);
-        }
+        console.log(`Failed to install latest AWS SDK v3. Falling back to pre-installed version. Error: ${e}`);
         // MUST use require as dynamic import() does not support importing from directories
         // esbuild-disable unsupported-require-call -- not esbuildable but that's fine
         return require(packageName); // Fallback to pre-installed version
@@ -86,11 +80,7 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
 
   // if there is a call there will always be logging configured -- otherwise, in the event of no call, logging
   // wasn't configure so just default to existing behavior
-  const logHandlerEvent = call?.logHandlerEvent ?? true;
-  const logApiResponse = call?.logApiResponse ?? true;
-  const logResponseObject = call?.logResponseObject ?? true;
-  const logSdkVersion = call?.logSdkVersion ?? true;
-  const logErrors = call?.logErrors ?? true;
+  const logApiResponseData = call?.logApiResponseData ?? true;
 
   try {
     let data: { [key: string]: string } = {};
@@ -113,16 +103,9 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
     if (call) {
       const apiCall = new ApiCall(call.service, call.action);
 
-      let awsSdk: AwsSdk | Promise<AwsSdk> = loadAwsSdk(
-        apiCall.v3PackageName,
-        logSdkVersion,
-        logErrors,
-        event.ResourceProperties.InstallLatestAwsSdk,
-      );
+      let awsSdk: AwsSdk | Promise<AwsSdk> = loadAwsSdk(apiCall.v3PackageName, event.ResourceProperties.InstallLatestAwsSdk);
 
-      if (logHandlerEvent) {
-        console.log(JSON.stringify({ ...event, ResponseURL: '...' }));
-      }
+      console.log(JSON.stringify({ ...event, ResponseURL: '...' }));
 
       let credentials;
       if (call.assumedRoleArn) {
@@ -153,7 +136,7 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
           flattenResponse: true,
         });
 
-        if (logApiResponse) {
+        if (logApiResponseData) {
           console.log('API response', response);
         }
 
@@ -186,9 +169,9 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
       }
     }
 
-    await respond(event, 'SUCCESS', 'OK', physicalResourceId, data, logResponseObject);
+    await respond(event, 'SUCCESS', 'OK', physicalResourceId, data, logApiResponseData);
   } catch (e: any) {
     console.log(e);
-    await respond(event, 'FAILED', e.message || 'Internal Error', context.logStreamName, {}, logResponseObject);
+    await respond(event, 'FAILED', e.message || 'Internal Error', context.logStreamName, {}, logApiResponseData);
   }
 }

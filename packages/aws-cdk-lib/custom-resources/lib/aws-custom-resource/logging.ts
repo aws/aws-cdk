@@ -1,62 +1,13 @@
 /**
- * Options used to initialize Logging.
+ * Properties used to initialize Logging.
  */
-export interface LoggingOptions {
+export interface LoggingProps {
   /**
-   * Whether or not to log the event object received by the lambda handler.
+   * Whether or not to log data associated with the API call response.
    *
-   * @default false
+   * @default true
    */
-  readonly logHandlerEvent?: boolean;
-
-  /**
-   * Whether or not to log the response returned from the API call.
-   *
-   * @default false
-   */
-  readonly logApiResponse?: boolean;
-
-  /**
-   * Whether or not to log the response object that will be returned by the lambda.
-   *
-   * Example response object:
-   *
-   * {
-   *   "Status": "SUCCESS",
-   *   "Reason": "OK",
-   *   "PhysicalResourceId": "1234567890123",
-   *   "StackId": "arn:aws:cloudformation:us-west-2:123456789012:stack/Test/043tyub2-194e-4cy2-a969-9891ghj6cd0d",
-   *   "RequestId": "a16y677a-a8b6-41a6-bf7b-7644586861a5",
-   *   "LogicalResourceId": "Sercret",
-   *   "NoEcho": false,
-   *   "Data": {
-   *     "region": "us-west-2",
-   *     "Parameter.ARN": "arn:aws:ssm:us-west-2:123456789012:parameter/Test/Parameter",
-   *     "Parameter.DataType": "text",
-   *     "Parameter.Name": "/Test/Parameter",
-   *     "Parameter.Type": "SecureString",
-   *     "Parameter.Value": "ThisIsSecret!123",
-   *     "Parameter.Version": 1
-   *   }
-   * }
-   *
-   * @default false
-   */
-  readonly logResponseObject?: boolean;
-
-  /**
-   * Whether or not to log the AWS SDK version used for API calls during lambda execution.
-   *
-   * @default false
-   */
-  readonly logSdkVersion?: boolean;
-
-  /**
-   * Whether or not to log errors that were encountered during lambda execution.
-   *
-   * @default false
-   */
-  readonly logErrors?: boolean;
+  readonly logApiResponseData?: boolean;
 }
 
 /**
@@ -72,82 +23,36 @@ export abstract class Logging {
   public static all(): Logging {
     return new (class extends Logging {
       public constructor() {
-        super({
-          logHandlerEvent: true,
-          logApiResponse: true,
-          logResponseObject: true,
-          logSdkVersion: true,
-          logErrors: true,
-        });
-      }
-    })();
-  }
-
-  /**
-   * Enables selective logging of logged data in the lambda handler.
-   */
-  public static selective(options: LoggingOptions = {}): Logging {
-    return new (class extends Logging {
-      public constructor() {
-        super({ ...options });
-      }
-    })();
-  }
-
-  /**
-   * Turns off all logging in the lambda handler.
-   */
-  public static off(): Logging {
-    return new (class extends Logging {
-      public constructor() {
         super();
       }
     })();
   }
 
   /**
-   * Whether or not to log the event object received by the lambda handler.
+   * Hides logging of data associated with the API call response. This includes hiding the raw API
+   * call response and the `Data` field associated with the lambda handler response.
    */
-  private readonly logHandlerEvent: boolean;
+  public static withDataHidden(): Logging {
+    return new (class extends Logging {
+      public constructor() {
+        super({ logApiResponseData: false });
+      }
+    })();
+  }
 
   /**
-   * Whether or not to log the API call response.
+   * Whether or not to log data associated with the API call response.
    */
-  private readonly logApiResponse: boolean;
+  private logApiResponseData?: boolean;
 
-  /**
-   * Whether or not to log the response object that will be returned by the lambda.
-   */
-  private readonly logResponseObject: boolean;
-
-  /**
-   * Whether or not to log the AWS SDK version used for API calls during lambda execution.
-   */
-  private readonly logSdkVersion: boolean;
-
-  /**
-   * Whether or not to log errors that were encountered during lambda execution.
-   */
-  private readonly logErrors: boolean;
-
-  protected constructor(props: LoggingOptions = {}) {
-    this.logHandlerEvent = props.logHandlerEvent ?? false;
-    this.logApiResponse = props.logApiResponse ?? false;
-    this.logResponseObject = props.logResponseObject ?? false;
-    this.logSdkVersion = props.logSdkVersion ?? false;
-    this.logErrors = props.logErrors ?? false;
+  protected constructor(props: LoggingProps = {}) {
+    this.logApiResponseData = props.logApiResponseData ?? true;
   }
 
   /**
    * @internal
    */
   public _render() {
-    return {
-      logHandlerEvent: this.logHandlerEvent,
-      logApiResponse: this.logApiResponse,
-      logResponseObject: this.logResponseObject,
-      logSdkVersion: this.logSdkVersion,
-      logErrors: this.logErrors,
-    };
+    return { logApiResponseData: this.logApiResponseData };
   }
 }

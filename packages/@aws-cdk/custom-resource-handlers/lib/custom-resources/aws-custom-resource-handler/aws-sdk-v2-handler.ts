@@ -70,10 +70,7 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
 
   // if there is a call there will always be logging configured -- otherwise, in the event of no call, logging
   // wasn't configure so just default to existing behavior
-  const logHandlerEvent = call?.logHandlerEvent ?? true;
-  const logResponseObject = call?.logResponseObject ?? true;
-  const logSdkVersion = call?.logSdkVersion ?? true;
-  const logErrors = call?.logErrors ?? true;
+  const logApiResponseData = call?.logApiResponseData ?? true;
 
   try {
     let AWS: any;
@@ -82,9 +79,7 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
         installLatestSdk();
         AWS = require('/tmp/node_modules/aws-sdk');
       } catch (e) {
-        if (logErrors) {
-          console.log(`Failed to install latest AWS SDK v2: ${e}`);
-        }
+        console.log(`Failed to install latest AWS SDK v2: ${e}`);
         AWS = require('aws-sdk'); // Fallback to pre-installed version
       }
     } else if (latestSdkInstalled) {
@@ -95,18 +90,11 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
     try {
       AWS = patchSdk(AWS);
     } catch (e) {
-      if (logErrors) {
-        console.log(`Failed to patch AWS SDK: ${e}. Proceeding with the installed copy.`);
-      }
+      console.log(`Failed to patch AWS SDK: ${e}. Proceeding with the installed copy.`);
     }
 
-    if (logHandlerEvent) {
-      console.log(JSON.stringify({ ...event, ResponseURL: '...' }));
-    }
-
-    if (logSdkVersion) {
-      console.log('AWS SDK VERSION: ' + AWS.VERSION);
-    }
+    console.log(JSON.stringify({ ...event, ResponseURL: '...' }));
+    console.log('AWS SDK VERSION: ' + AWS.VERSION);
 
     // Default physical resource id
     let physicalResourceId: string;
@@ -183,11 +171,9 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
       }
     }
 
-    await respond(event, 'SUCCESS', 'OK', physicalResourceId, data, logResponseObject);
+    await respond(event, 'SUCCESS', 'OK', physicalResourceId, data, logApiResponseData);
   } catch (e: any) {
-    if (logErrors) {
-      console.log(e);
-    }
-    await respond(event, 'FAILED', e.message || 'Internal Error', context.logStreamName, {}, logResponseObject);
+    console.log(e);
+    await respond(event, 'FAILED', e.message || 'Internal Error', context.logStreamName, {}, logApiResponseData);
   }
 }

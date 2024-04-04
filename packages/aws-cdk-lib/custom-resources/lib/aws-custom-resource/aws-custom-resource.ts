@@ -194,12 +194,7 @@ export interface AwsSdkCall {
    * A property used to configure logging during lambda function execution.
    *
    * Note: The default Logging configuration is all. This configuration will enable logging on all logging
-   * properties defined on the LoggingOptions interface. Specifically:
-   *  - logHandlerEvent
-   *  - logApiResponse
-   *  - logResponseObject
-   *  - logSdkVersion
-   *  - logErrors
+   * properties defined on the LoggingProps interface.
    *
    * @default Logging.all()
    */
@@ -592,7 +587,7 @@ export class AwsCustomResource extends Construct implements iam.IGrantable {
 
   private formatSdkCall(sdkCall: AwsSdkCall) {
     const { logging, ...call } = sdkCall;
-    const renderedLogging = (logging ?? Logging.on())._render();
+    const renderedLogging = (logging ?? Logging.all())._render();
     return this.encodeJson({
       ...call,
       ...renderedLogging,
