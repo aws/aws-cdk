@@ -1,7 +1,7 @@
 /**
  * Properties used to initialize Logging.
  */
-export interface LoggingProps {
+interface LoggingProps {
   /**
    * Whether or not to log data associated with the API call response.
    *
