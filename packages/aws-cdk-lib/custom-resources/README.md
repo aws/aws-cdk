@@ -618,9 +618,9 @@ By default, logging occurs during execution of the singleton Lambda used by a cu
 
 The `logging` property defined on the `AwsSdkCall` interface allows control over what data is being logged on a per SDK call basis. This is configurable via an instance of the `Logging` class. The `Logging` class exposes two options that can be used to configure logging:
 1. `Logging.all()` which enables logging of all data. This is the default `logging` configuration.
-2. `Logging.withDataHidden()` which prevents logging of all data associated with API call response including logging the raw API call response and the `Data` field on the Lambda handler response object. This configuration option is particularly useful for situations where the API call response may contain sensitive information.
+2. `Logging.withDataHidden()` which prevents logging of all data associated with the API call response, including logging the raw API call response and the `Data` field on the Lambda handler response object. This configuration option is particularly useful for situations where the API call response may contain sensitive information.
 
-For further context about `Logging.withDataHidden()`, consider a user who might be making an API call that is returning sensitive information that they may want to keep hidden in CloudWatch Logs. To do this, they would configure `logging` with `Logging.withHiddenData()`:
+For further context about `Logging.withDataHidden()`, consider a user who might be making an API call that is returning sensitive information that they may want to keep hidden. To do this, they would configure `logging` with `Logging.withDataHidden()`:
 
 ```ts
 const getParameter = new cr.AwsCustomResource(this, 'GetParameter', {
@@ -632,7 +632,7 @@ const getParameter = new cr.AwsCustomResource(this, 'GetParameter', {
       WithDecryption: true,
     },
     physicalResourceId: cr.PhysicalResourceId.of(Date.now().toString()),
-    logging: Logging.withHiddenData(),
+    logging: Logging.withDataHidden(),
   },
   policy: cr.AwsCustomResourcePolicy.fromSdkCalls({
     resources: cr.AwsCustomResourcePolicy.ANY_RESOURCE,
@@ -654,7 +654,7 @@ With this configuration option set, the raw API call response would not be logge
 }
 ```
 
-For comparison, configuring `logging` with `Logging.all()` would result in the raw API call response being logged as well as the full response object:
+For comparison, configuring `logging` with `Logging.all()` would result in the raw API call response being logged, as well as the full response object:
 
 ```
 {
