@@ -60,7 +60,7 @@ export interface LoggingOptions {
 }
 
 /**
- * A class that represents Logging that will take place during lambda execution.
+ * A class used to configure Logging during for AwsCustomResource.
  */
 export abstract class Logging {
   /**
