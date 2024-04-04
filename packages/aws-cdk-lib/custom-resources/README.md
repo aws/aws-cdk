@@ -607,6 +607,51 @@ new cr.AwsCustomResource(this, 'ListObjects', {
 Note that even if you restrict the output of your custom resource you can still use any
 path in `PhysicalResourceId.fromResponse()`.
 
+### Custom Resource Logging
+
+By default, logging will occur during execution of the singleton Lambda used by a custom resource. The data being logged includes:
+* The event object received by the Lambda handler
+* The response received after making an API call
+* The response object that the Lambda handler will return
+* SDK versioning information
+* Caught and uncaught errors
+
+The `logging` property defined on the `AwsCustomResourceProps` interface allows you to control what data is being logged via the `Logging` class. The `Logging` class exposes three public static methods:
+* `Logging.on()` which will enable logging of all data in the Lambda handler. This is the default logging level.
+* `Logging.off()` which will turn off all logging in the Lambda handler.
+* `Logging.selective()` which allows you to selectively control what data is logged. This is particularly useful for situations where the API call response may contain sensitive data.
+
+When using `Logging.selective()` you will be able to control what data is logged via `LoggingProps`. `LoggingProps` is an interface that exposes the following flags:
+* `logHandlerEvent` - this determines whether or not the event object received by the handler will be logged.
+* `logApiResponse` - this determines whether or not the API call response will be logged.
+* `logResponseObject` - this determines whether or not the response object that will be returned by the Lambda will be logged.
+* `logSdkVersion` - this determines whether or not the AWS SDK version being used for API calls will be logged.
+* `logErrors` - this determines whether or not caught and uncaught errors will be logged.
+
+As an example, consider a user who may not want to have the API call response logged. To do this, they would configure `logging` with `Logging.selective()` and set the `logApiResponse` flag to `false`:
+
+```ts
+const logging = Logging.selective({
+  logApiResponse: false,
+});
+
+const getParameter = new cr.AwsCustomResource(this, 'GetParameter', {
+  onUpdate: {
+    service: 'SSM',
+    action: 'GetParameter',
+    parameters: {
+      Name: 'my-parameter',
+      WithDecryption: true,
+    },
+    physicalResourceId: cr.PhysicalResourceId.of(Date.now().toString()),
+  },
+  policy: cr.AwsCustomResourcePolicy.fromSdkCalls({
+    resources: cr.AwsCustomResourcePolicy.ANY_RESOURCE,
+  }),
+  logging, // API call response will not be logged
+});
+```
+
 ### Custom Resource Examples
 
 #### Get the latest version of a secure SSM parameter
