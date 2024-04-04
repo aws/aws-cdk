@@ -609,22 +609,22 @@ path in `PhysicalResourceId.fromResponse()`.
 
 ### Custom Resource Logging
 
-By default, logging will occur during execution of the singleton Lambda used by a custom resource. The data being logged includes:
-* The event object received by the Lambda handler
+By default, logging occurs during execution of the singleton Lambda used by a custom resource. The data being logged includes:
+* The event object that is received by the Lambda handler
 * The response received after making an API call
 * The response object that the Lambda handler will return
 * SDK versioning information
 * Caught and uncaught errors
 
-The `logging` property defined on the `AwsCustomResourceProps` interface allows you to control what data is being logged via the `Logging` class. The `Logging` class exposes three public static methods:
-* `Logging.on()` which will enable logging of all data in the Lambda handler. This is the default logging level.
-* `Logging.off()` which will turn off all logging in the Lambda handler.
-* `Logging.selective()` which allows you to selectively control what data is logged. This is particularly useful for situations where the API call response may contain sensitive data.
+The `logging` property defined on the `AwsCustomResourceProps` interface allows control over what data is being logged and is configurable via an instance of the `Logging` class. The `Logging` class exposes three options that can be used to configure logging:
+1. `Logging.on()` which enables logging of all data. This is the default `logging` configuration.
+2. `Logging.off()` which prevents logging of all data.
+3. `Logging.selective()` which provides selective control over what data will be logged. This configuration option is particularly useful for situations where the API call response may contain sensitive information.
 
-When using `Logging.selective()` you will be able to control what data is logged via `LoggingOptions`. `LoggingOptions` is an interface that exposes the following flags:
-* `logHandlerEvent` - this determines whether or not the event object received by the handler will be logged.
-* `logApiResponse` - this determines whether or not the API call response will be logged.
-* `logResponseObject` - this determines whether or not the response object that will be returned by the Lambda will be logged. The following is an example of a response object:
+When using `Logging.selective()` as the `logging` configuration, the `LoggingOptions` interface is used to selective what data will be logged. The `LoggingOptions` interface exposes the following flags:
+* `logHandlerEvent` which determines whether or not the event object received by the Lambda handler will be logged
+* `logApiResponse` which determines whether or not the API call response will be logged
+* `logResponseObject` which determines whether or not the response object return by the Lambda handler will be logged. The following is an example of the structure of a response object:
 
 ```
 {
@@ -647,12 +647,10 @@ When using `Logging.selective()` you will be able to control what data is logged
 }
 ```
 
-* `logSdkVersion` - this determines whether or not the AWS SDK version being used for API calls will be logged.
-* `logErrors` - this determines whether or not caught and uncaught errors will be logged.
+* `logSdkVersion` which determines whether or not the AWS SDK version will be logged
+* `logErrors` which determines whether or not caugh and uncaught errors encountered during execution will be logged
 
-As an example, consider a user who may not want to have the API call response logged. To do this, they would configure `logging` with `Logging.selective()` and set the `logApiResponse` flag to `false`:
-
-As an example, consider a user who may want to control what information is logged to conceal sensitive data. To do this, they would configure `logging` with `Logging.selective()` and configure `LoggingOptions` with what data they want logged:
+For further context about selective `logging`, consider a user who may want to just see the event object and execution errors. To do this, they would configure `logging` with `Logging.selective()` and set the `logEventHandler` and `logErrors` flags to `true`:
 
 ```ts
 const logging = Logging.selective({
