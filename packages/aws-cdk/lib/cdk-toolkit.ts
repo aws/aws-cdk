@@ -20,6 +20,7 @@ import { StackActivityProgress } from './api/util/cloudformation/stack-activity-
 import { generateCdkApp, generateStack, readFromPath, readFromStack, setEnvironment, parseSourceOptions, generateTemplate, FromScan, TemplateSourceOptions, GenerateTemplateOutput, CfnTemplateGeneratorProvider, writeMigrateJsonFile, buildGenertedTemplateOutput, buildCfnClient, appendWarningsToReadme, isThereAWarning } from './commands/migrate';
 import { printSecurityDiff, printStackDiff, RequireApproval } from './diff';
 import { ResourceImporter, removeNonImportResources } from './import';
+import { listStacks } from './list-stacks';
 import { data, debug, error, highlight, print, success, warning, withCorkedLogging } from './logging';
 import { deserializeStructure, serializeStructure } from './serialize';
 import { Configuration, PROJECT_CONFIG } from './settings';
@@ -135,20 +136,32 @@ export class CdkToolkit {
         throw new Error(`There is no file at ${options.templatePath}`);
       }
 
-      const changeSet = options.changeSet ? await createDiffChangeSet({
-        stack: stacks.firstStack,
-        uuid: uuid.v4(),
-        willExecute: false,
-        deployments: this.props.deployments,
-        sdkProvider: this.props.sdkProvider,
-        parameters: Object.assign({}, parameterMap['*'], parameterMap[stacks.firstStack.stackName]),
-        stream,
-      }) : undefined;
+      let changeSet = undefined;
+
+      if (options.changeSet) {
+        const stackExists = await this.props.deployments.stackExists({
+          stack: stacks.firstStack,
+          deployName: stacks.firstStack.stackName,
+        });
+        if (stackExists) {
+          changeSet = await createDiffChangeSet({
+            stack: stacks.firstStack,
+            uuid: uuid.v4(),
+            deployments: this.props.deployments,
+            willExecute: false,
+            sdkProvider: this.props.sdkProvider,
+            parameters: Object.assign({}, parameterMap['*'], parameterMap[stacks.firstStack.stackName]),
+            stream,
+          });
+        } else {
+          debug(`the stack '${stacks.firstStack.stackName}' has not been deployed to CloudFormation, skipping changeset creation.`);
+        }
+      }
 
       const template = deserializeStructure(await fs.readFile(options.templatePath, { encoding: 'UTF-8' }));
       diffs = options.securityOnly
         ? numberFromBool(printSecurityDiff(template, stacks.firstStack, RequireApproval.Broadening, changeSet))
-        : printStackDiff(template, stacks.firstStack, strict, contextLines, quiet, changeSet, stream);
+        : printStackDiff(template, stacks.firstStack.template, strict, contextLines, quiet, changeSet, false, stream);
     } else {
       // Compare N stacks against deployed templates
       for (const stack of stacks.stackArtifacts) {
@@ -156,27 +169,40 @@ export class CdkToolkit {
           stream.write(format('Stack %s\n', chalk.bold(stack.displayName)));
         }
 
-        const templateWithNames = await this.props.deployments.readCurrentTemplateWithNestedStacks(
+        const templateWithNestedStacks = await this.props.deployments.readCurrentTemplateWithNestedStacks(
           stack, options.compareAgainstProcessedTemplate,
         );
-        const currentTemplate = templateWithNames.deployedTemplate;
-        const nestedStackCount = templateWithNames.nestedStackCount;
+        const currentTemplate = templateWithNestedStacks.deployedRootTemplate;
+        const nestedStacks = templateWithNestedStacks.nestedStacks;
 
         const resourcesToImport = await this.tryGetResources(await this.props.deployments.resolveEnvironment(stack));
         if (resourcesToImport) {
           removeNonImportResources(stack);
         }
 
-        const changeSet = options.changeSet ? await createDiffChangeSet({
-          stack,
-          uuid: uuid.v4(),
-          deployments: this.props.deployments,
-          willExecute: false,
-          sdkProvider: this.props.sdkProvider,
-          parameters: Object.assign({}, parameterMap['*'], parameterMap[stacks.firstStack.stackName]),
-          resourcesToImport,
-          stream,
-        }) : undefined;
+        let changeSet = undefined;
+
+        if (options.changeSet) {
+          // only perform this check if we're going to make a changeset. This check requires permissions that --no-changeset users might not have.
+          const stackExists = await this.props.deployments.stackExists({
+            stack: stack,
+            deployName: stack.stackName,
+          });
+          if (stackExists) {
+            changeSet = await createDiffChangeSet({
+              stack,
+              uuid: uuid.v4(),
+              deployments: this.props.deployments,
+              willExecute: false,
+              sdkProvider: this.props.sdkProvider,
+              parameters: Object.assign({}, parameterMap['*'], parameterMap[stack.stackName]),
+              resourcesToImport,
+              stream,
+            });
+          } else {
+            debug(`the stack '${stack.stackName}' has not been deployed to CloudFormation, skipping changeset creation.`);
+          }
+        }
 
         if (resourcesToImport) {
           stream.write('Parameters and rules created during migration do not affect resource configuration.\n');
@@ -184,10 +210,10 @@ export class CdkToolkit {
 
         const stackCount =
         options.securityOnly
-          ? (numberFromBool(printSecurityDiff(currentTemplate, stack, RequireApproval.Broadening, changeSet)) > 0 ? 1 : 0)
-          : (printStackDiff(currentTemplate, stack, strict, contextLines, quiet, changeSet, stream) > 0 ? 1 : 0);
+          ? (numberFromBool(printSecurityDiff(currentTemplate, stack, RequireApproval.Broadening, changeSet)))
+          : (printStackDiff(currentTemplate, stack, strict, contextLines, quiet, changeSet, !!resourcesToImport, stream, nestedStacks));
 
-        diffs += stackCount + nestedStackCount;
+        diffs += stackCount;
       }
     }
 
@@ -613,16 +639,37 @@ export class CdkToolkit {
     }
   }
 
-  public async list(selectors: string[], options: { long?: boolean; json?: boolean } = { }): Promise<number> {
-    const stacks = await this.selectStacksForList(selectors);
+  public async list(selectors: string[], options: { long?: boolean; json?: boolean; showDeps?: boolean } = { }): Promise<number> {
+    const stacks = await listStacks(this, {
+      selectors: selectors,
+    });
 
-    // if we are in "long" mode, emit the array as-is (JSON/YAML)
+    if (options.long && options.showDeps) {
+      data(serializeStructure(stacks, options.json ?? false));
+      return 0;
+    }
+
+    if (options.showDeps) {
+      const stackDeps = [];
+
+      for (const stack of stacks) {
+        stackDeps.push({
+          id: stack.id,
+          dependencies: stack.dependencies,
+        });
+      }
+
+      data(serializeStructure(stackDeps, options.json ?? false));
+      return 0;
+    }
+
     if (options.long) {
       const long = [];
-      for (const stack of stacks.stackArtifacts) {
+
+      for (const stack of stacks) {
         long.push({
-          id: stack.hierarchicalId,
-          name: stack.stackName,
+          id: stack.id,
+          name: stack.name,
           environment: stack.environment,
         });
       }
@@ -631,8 +678,8 @@ export class CdkToolkit {
     }
 
     // just print stack IDs
-    for (const stack of stacks.stackArtifacts) {
-      data(stack.hierarchicalId);
+    for (const stack of stacks) {
+      data(stack.id);
     }
 
     return 0; // exit-code
@@ -905,7 +952,7 @@ export class CdkToolkit {
     return assembly.stackById(stacks.firstStack.id);
   }
 
-  private assembly(cacheCloudAssembly?: boolean): Promise<CloudAssembly> {
+  public assembly(cacheCloudAssembly?: boolean): Promise<CloudAssembly> {
     return this.props.cloudExecutable.synthesize(cacheCloudAssembly);
   }
 
