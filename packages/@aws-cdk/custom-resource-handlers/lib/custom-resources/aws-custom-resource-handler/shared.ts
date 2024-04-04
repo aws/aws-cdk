@@ -43,7 +43,7 @@ export function filterKeys(object: object, pred: (key: string) => boolean) {
 
 type Event = AWSLambda.CloudFormationCustomResourceEvent
 
-export function respond(event: Event, responseStatus: string, reason: string, physicalResourceId: string, data: any) {
+export function respond(event: Event, responseStatus: string, reason: string, physicalResourceId: string, data: any, logResponseObject: boolean) {
   const responseBody = JSON.stringify({
     Status: responseStatus,
     Reason: reason,
@@ -55,8 +55,10 @@ export function respond(event: Event, responseStatus: string, reason: string, ph
     Data: data,
   });
 
-  // eslint-disable-next-line no-console
-  console.log('Responding', responseBody);
+  if (logResponseObject) {
+    // eslint-disable-next-line no-console
+    console.log('Responding', responseBody);
+  }
 
   // eslint-disable-next-line @typescript-eslint/no-require-imports
   const parsedUrl = require('url').parse(event.ResponseURL);

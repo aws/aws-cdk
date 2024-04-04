@@ -7,6 +7,7 @@ import { Annotations } from '../../../core';
 import { AwsCustomResourceSingletonFunction } from '../../../custom-resource-handlers/dist/custom-resources/aws-custom-resource-provider.generated';
 import * as cxapi from '../../../cx-api';
 import { awsSdkToIamAction } from '../helpers-internal/sdk-info';
+import { Logging } from './logging';
 
 // Shared definition with packages/@aws-cdk/custom-resource-handlers/lib/custom-resources/aws-custom-resource-handler/shared.ts
 const PHYSICAL_RESOURCE_ID_REFERENCE = 'PHYSICAL:RESOURCEID:';
@@ -394,6 +395,13 @@ export interface AwsCustomResourceProps {
    * @default - the Vpc default strategy if not specified
    */
   readonly vpcSubnets?: ec2.SubnetSelection;
+
+  /**
+   * Enables logging
+   *
+   * @default Logging.on()
+   */
+  readonly logging?: Logging;
 }
 
 /**
@@ -497,6 +505,10 @@ export class AwsCustomResource extends Construct implements iam.IGrantable {
         update: props.onUpdate && this.encodeJson(props.onUpdate),
         delete: props.onDelete && this.encodeJson(props.onDelete),
         installLatestAwsSdk,
+        logHandlerEvent: props.logging?.logHandlerEvent ?? true,
+        logApiResponse: props.logging?.logApiResponse ?? true,
+        logRespondeObject: props.logging?.logResponseObject ?? true,
+        logErrors: props.logging?.logErrors ?? true,
       },
     });
 
