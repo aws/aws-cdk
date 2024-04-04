@@ -60,7 +60,7 @@ export function respond(event: Event, responseStatus: string, reason: string, ph
     console.log('Responding', JSON.stringify(responseObject));
   } else {
     const { Data, ...filteredResponseObject } = responseObject;
-    console.log('Response', filteredResponseObject);
+    console.log('Response', JSON.stringify(filteredResponseObject));
   }
 
   // eslint-disable-next-line @typescript-eslint/no-require-imports
