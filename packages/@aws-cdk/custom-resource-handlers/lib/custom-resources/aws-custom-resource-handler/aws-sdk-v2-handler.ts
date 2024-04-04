@@ -62,6 +62,10 @@ function patchSdk(awsSdk: any): any {
 
 /* eslint-disable @typescript-eslint/no-require-imports, import/no-extraneous-dependencies */
 export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent, context: AWSLambda.Context) {
+  let logHandlerEvent = event.ResourceProperties.LogHandlerEvent === 'true';
+  let logResponseObject = event.ResourceProperties.LogResponseObject === 'true';
+  let logErrors = event.ResourceProperties.LogErrors === 'true';
+
   try {
     let AWS: any;
     if (!latestSdkInstalled && event.ResourceProperties.InstallLatestAwsSdk === 'true') {
@@ -69,7 +73,9 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
         installLatestSdk();
         AWS = require('/tmp/node_modules/aws-sdk');
       } catch (e) {
-        console.log(`Failed to install latest AWS SDK v2: ${e}`);
+        if (logErrors) {
+          console.log(`Failed to install latest AWS SDK v2: ${e}`);
+        }
         AWS = require('aws-sdk'); // Fallback to pre-installed version
       }
     } else if (latestSdkInstalled) {
@@ -80,10 +86,14 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
     try {
       AWS = patchSdk(AWS);
     } catch (e) {
-      console.log(`Failed to patch AWS SDK: ${e}. Proceeding with the installed copy.`);
+      if (logErrors) {
+        console.log(`Failed to patch AWS SDK: ${e}. Proceeding with the installed copy.`);
+      }
     }
 
-    console.log(JSON.stringify({ ...event, ResponseURL: '...' }));
+    if (logHandlerEvent) {
+      console.log(JSON.stringify({ ...event, ResponseURL: '...' }));
+    }
     console.log('AWS SDK VERSION: ' + AWS.VERSION);
 
     event.ResourceProperties.Create = decodeCall(event.ResourceProperties.Create);
@@ -166,9 +176,9 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
       }
     }
 
-    await respond(event, 'SUCCESS', 'OK', physicalResourceId, data);
+    await respond(event, 'SUCCESS', 'OK', physicalResourceId, data, logResponseObject);
   } catch (e: any) {
     console.log(e);
-    await respond(event, 'FAILED', e.message || 'Internal Error', context.logStreamName, {});
+    await respond(event, 'FAILED', e.message || 'Internal Error', context.logStreamName, {}, logResponseObject);
   }
 }

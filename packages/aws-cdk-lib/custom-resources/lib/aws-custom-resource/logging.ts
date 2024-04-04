@@ -12,6 +12,8 @@ export interface LoggingProps {
   /**
    * Whether or not to log the response returned from the API call.
    *
+   * Note: This property is only relevant when using SDK v3.
+   *
    * @default true
    */
   readonly logApiResponse?: boolean;
