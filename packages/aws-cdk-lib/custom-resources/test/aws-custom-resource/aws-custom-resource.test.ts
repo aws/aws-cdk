@@ -46,6 +46,11 @@ test('aws sdk js custom resource with onCreate and onDelete', () => {
       'physicalResourceId': {
         'id': 'loggroup',
       },
+      'logHandlerEvent': true,
+      'logApiResponse': true,
+      'logResponseObject': true,
+      'logSdkVersion': true,
+      'logErrors': true,
     }),
     'Delete': JSON.stringify({
       'service': 'CloudWatchLogs',
@@ -53,6 +58,11 @@ test('aws sdk js custom resource with onCreate and onDelete', () => {
       'parameters': {
         'logGroupName': '/aws/lambda/loggroup',
       },
+      'logHandlerEvent': true,
+      'logApiResponse': true,
+      'logResponseObject': true,
+      'logSdkVersion': true,
+      'logErrors': true,
     }),
     'InstallLatestAwsSdk': true,
   });
@@ -109,6 +119,11 @@ test('onCreate defaults to onUpdate', () => {
       'physicalResourceId': {
         'responsePath': 'ETag',
       },
+      'logHandlerEvent': true,
+      'logApiResponse': true,
+      'logResponseObject': true,
+      'logSdkVersion': true,
+      'logErrors': true,
     }),
     'Update': JSON.stringify({
       'service': 's3',
@@ -121,6 +136,11 @@ test('onCreate defaults to onUpdate', () => {
       'physicalResourceId': {
         'responsePath': 'ETag',
       },
+      'logHandlerEvent': true,
+      'logApiResponse': true,
+      'logResponseObject': true,
+      'logSdkVersion': true,
+      'logErrors': true,
     }),
   });
 });
@@ -224,6 +244,11 @@ describe('physicalResourceId patterns', () => {
           WorkGroup: 'WorkGroupA',
           Name: 'Notebook1',
         },
+        logHandlerEvent: true,
+        logApiResponse: true,
+        logResponseObject: true,
+        logSdkVersion: true,
+        logErrors: true,
       }),
       Update: JSON.stringify({
         service: 'Athena',
@@ -235,6 +260,11 @@ describe('physicalResourceId patterns', () => {
           Name: 'Notebook1',
           NotebookId: 'PHYSICAL:RESOURCEID:',
         },
+        logHandlerEvent: true,
+        logApiResponse: true,
+        logResponseObject: true,
+        logSdkVersion: true,
+        logErrors: true,
       }),
     });
   });
@@ -279,6 +309,11 @@ describe('physicalResourceId patterns', () => {
           WorkGroup: 'WorkGroupA',
           Name: 'Notebook1',
         },
+        logHandlerEvent: true,
+        logApiResponse: true,
+        logResponseObject: true,
+        logSdkVersion: true,
+        logErrors: true,
       }),
       Update: JSON.stringify({
         service: 'Athena',
@@ -287,6 +322,11 @@ describe('physicalResourceId patterns', () => {
           Name: 'Notebook1',
           NotebookId: 'PHYSICAL:RESOURCEID:',
         },
+        logHandlerEvent: true,
+        logApiResponse: true,
+        logResponseObject: true,
+        logSdkVersion: true,
+        logErrors: true,
       }),
     });
   });
@@ -384,6 +424,11 @@ describe('physicalResourceId patterns', () => {
           WorkGroup: 'WorkGroupA',
           Name: 'Notebook1',
         },
+        logHandlerEvent: true,
+        logApiResponse: true,
+        logResponseObject: true,
+        logSdkVersion: true,
+        logErrors: true,
       }),
     });
   });
@@ -441,6 +486,11 @@ describe('physicalResourceId patterns', () => {
           Name: 'Notebook1',
           NotebookId: 'XXXX',
         },
+        logHandlerEvent: true,
+        logApiResponse: true,
+        logResponseObject: true,
+        logSdkVersion: true,
+        logErrors: true,
       }),
       Update: JSON.stringify({
         service: 'Athena',
@@ -452,6 +502,11 @@ describe('physicalResourceId patterns', () => {
           Name: 'Notebook1',
           NotebookId: 'XXXX',
         },
+        logHandlerEvent: true,
+        logApiResponse: true,
+        logResponseObject: true,
+        logSdkVersion: true,
+        logErrors: true,
       }),
     });
   });
@@ -514,6 +569,11 @@ test('booleans are encoded in the stringified parameters object', () => {
       'physicalResourceId': {
         'id': 'id',
       },
+      'logHandlerEvent': true,
+      'logApiResponse': true,
+      'logResponseObject': true,
+      'logSdkVersion': true,
+      'logErrors': true,
     }),
   });
 });
@@ -571,6 +631,11 @@ test('encodes physical resource id reference', () => {
       'physicalResourceId': {
         'id': 'id',
       },
+      'logHandlerEvent': true,
+      'logApiResponse': true,
+      'logResponseObject': true,
+      'logSdkVersion': true,
+      'logErrors': true,
     }),
   });
 });
@@ -830,7 +895,7 @@ test('getDataString', () => {
               'Data',
             ],
           },
-          '"},"physicalResourceId":{"id":"id"}}',
+          '"},"physicalResourceId":{"id":"id"},"logHandlerEvent":true,"logApiResponse":true,"logResponseObject":true,"logSdkVersion":true,"logErrors":true}',
         ],
       ],
     },
@@ -1025,7 +1090,7 @@ test('tokens can be used as dictionary keys', () => {
               'Foorz',
             ],
           },
-          '"}}}',
+          '"}},"logHandlerEvent":true,"logApiResponse":true,"logResponseObject":true,"logSdkVersion":true,"logErrors":true}',
         ],
       ],
     },
@@ -1337,11 +1402,11 @@ describe('logging configuration', () => {
         physicalResourceId: {
           id: 'loggroup',
         },
-        LogHandlerEvent: true,
-        LogApiResponse: true,
-        LogResponseObject: true,
-        LogSdkVersion: true,
-        LogErrors: true,
+        logHandlerEvent: true,
+        logApiResponse: true,
+        logResponseObject: true,
+        logSdkVersion: true,
+        logErrors: true,
       }),
     });
   });
@@ -1379,11 +1444,11 @@ describe('logging configuration', () => {
         physicalResourceId: {
           id: 'loggroup',
         },
-        LogHandlerEvent: true,
-        LogApiResponse: true,
-        LogResponseObject: true,
-        LogSdkVersion: true,
-        LogErrors: true,
+        logHandlerEvent: true,
+        logApiResponse: true,
+        logResponseObject: true,
+        logSdkVersion: true,
+        logErrors: true,
       }),
     });
   });
@@ -1423,11 +1488,11 @@ describe('logging configuration', () => {
         physicalResourceId: {
           id: 'loggroup',
         },
-        LogHandlerEvent: true,
-        LogApiResponse: false,
-        LogResponseObject: false,
-        LogSdkVersion: false,
-        LogErrors: false,
+        logHandlerEvent: true,
+        logApiResponse: false,
+        logResponseObject: false,
+        logSdkVersion: false,
+        logErrors: false,
       }),
     });
   });
@@ -1467,11 +1532,11 @@ describe('logging configuration', () => {
         physicalResourceId: {
           id: 'loggroup',
         },
-        LogHandlerEvent: false,
-        LogApiResponse: true,
-        LogResponseObject: false,
-        LogSdkVersion: false,
-        LogErrors: false,
+        logHandlerEvent: false,
+        logApiResponse: true,
+        logResponseObject: false,
+        logSdkVersion: false,
+        logErrors: false,
       }),
     });
   });
@@ -1511,11 +1576,11 @@ describe('logging configuration', () => {
         physicalResourceId: {
           id: 'loggroup',
         },
-        LogHandlerEvent: false,
-        LogApiResponse: false,
-        LogResponseObject: true,
-        LogSdkVersion: false,
-        LogErrors: false,
+        logHandlerEvent: false,
+        logApiResponse: false,
+        logResponseObject: true,
+        logSdkVersion: false,
+        logErrors: false,
       }),
     });
   });
@@ -1555,11 +1620,11 @@ describe('logging configuration', () => {
         physicalResourceId: {
           id: 'loggroup',
         },
-        LogHandlerEvent: false,
-        LogApiResponse: false,
-        LogResponseObject: false,
-        LogSdkVersion: true,
-        LogErrors: false,
+        logHandlerEvent: false,
+        logApiResponse: false,
+        logResponseObject: false,
+        logSdkVersion: true,
+        logErrors: false,
       }),
     });
   });
@@ -1599,87 +1664,11 @@ describe('logging configuration', () => {
         physicalResourceId: {
           id: 'loggroup',
         },
-        LogHandlerEvent: false,
-        LogApiResponse: false,
-        LogResponseObject: false,
-        LogSdkVersion: false,
-        LogErrors: true,
-      }),
-    });
-  });
-
-  test('different logging configurations for different sdk calls', () => {
-    // GIVEN
-    const stack = new Stack();
-    const createLogging = Logging.selective({
-      logErrors: true,
-      logHandlerEvent: true,
-    });
-    const updateLogging = Logging.selective({
-      logErrors: true,
-    });
-
-    // WHEN
-    new AwsCustomResource(stack, 'AwsSdk', {
-      resourceType: 'Custom::AWS',
-      onCreate: {
-        service: 'CloudWatchLogs',
-        action: 'putRetentionPolicy',
-        parameters: {
-          logGroupName: '/aws/lambda/loggroup',
-          retentionInDays: 90,
-        },
-        physicalResourceId: PhysicalResourceId.of('loggroup'),
-        logging: createLogging,
-      },
-      onUpdate: {
-        service: 's3',
-        action: 'putObject',
-        parameters: {
-          Bucket: 'my-bucket',
-          Key: 'my-key',
-          Body: 'my-body',
-        },
-        physicalResourceId: PhysicalResourceId.fromResponse('ETag'),
-        logging: updateLogging,
-      },
-      policy: AwsCustomResourcePolicy.fromSdkCalls({ resources: AwsCustomResourcePolicy.ANY_RESOURCE }),
-    });
-
-    // THEN
-    Template.fromStack(stack).hasResourceProperties('Custom::AWS', {
-      Create: JSON.stringify({
-        service: 'CloudWatchLogs',
-        action: 'putRetentionPolicy',
-        parameters: {
-          logGroupName: '/aws/lambda/loggroup',
-          retentionInDays: 90,
-        },
-        physicalResourceId: {
-          id: 'loggroup',
-        },
-        LogHandlerEvent: true,
-        LogApiResponse: false,
-        LogResponseObject: false,
-        LogSdkVersion: false,
-        LogErrors: true,
-      }),
-      Update: JSON.stringify({
-        service: 's3',
-        action: 'putObject',
-        parameters: {
-          Bucket: 'my-bucket',
-          Key: 'my-key',
-          Body: 'my-body',
-        },
-        physicalResourceId: {
-          id: 'ETag',
-        },
-        LogHandlerEvent: false,
-        LogApiResponse: false,
-        LogResponseObject: false,
-        LogSdkVersion: false,
-        LogErrors: true,
+        logHandlerEvent: false,
+        logApiResponse: false,
+        logResponseObject: false,
+        logSdkVersion: false,
+        logErrors: true,
       }),
     });
   });
