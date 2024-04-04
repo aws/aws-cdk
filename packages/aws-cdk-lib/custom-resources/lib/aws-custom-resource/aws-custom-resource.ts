@@ -1,4 +1,5 @@
 import { Construct } from 'constructs';
+import { Logging } from './logging';
 import * as ec2 from '../../../aws-ec2';
 import * as iam from '../../../aws-iam';
 import * as logs from '../../../aws-logs';
@@ -7,7 +8,6 @@ import { Annotations } from '../../../core';
 import { AwsCustomResourceSingletonFunction } from '../../../custom-resource-handlers/dist/custom-resources/aws-custom-resource-provider.generated';
 import * as cxapi from '../../../cx-api';
 import { awsSdkToIamAction } from '../helpers-internal/sdk-info';
-import { Logging } from './logging';
 
 // Shared definition with packages/@aws-cdk/custom-resource-handlers/lib/custom-resources/aws-custom-resource-handler/shared.ts
 const PHYSICAL_RESOURCE_ID_REFERENCE = 'PHYSICAL:RESOURCEID:';
@@ -494,6 +494,8 @@ export class AwsCustomResource extends Construct implements iam.IGrantable {
       ].join(' '));
     }
 
+    const logging = props.logging ?? Logging.on();
+
     const create = props.onCreate || props.onUpdate;
     this.customResource = new cdk.CustomResource(this, 'Resource', {
       resourceType: props.resourceType || 'Custom::AWS',
@@ -505,10 +507,7 @@ export class AwsCustomResource extends Construct implements iam.IGrantable {
         update: props.onUpdate && this.encodeJson(props.onUpdate),
         delete: props.onDelete && this.encodeJson(props.onDelete),
         installLatestAwsSdk,
-        logHandlerEvent: props.logging?.logHandlerEvent ?? true,
-        logApiResponse: props.logging?.logApiResponse ?? true,
-        logRespondeObject: props.logging?.logResponseObject ?? true,
-        logErrors: props.logging?.logErrors ?? true,
+        ...logging._render(),
       },
     });
 
