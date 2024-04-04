@@ -66,7 +66,7 @@ describe('render logging', () => {
   test('selective with logSdkVersion', () => {
     // GIVEN
     const logging = Logging.selective({
-      logResponseObject: true,
+      logSdkVersion: true,
     });
 
     // WHEN / THEN
