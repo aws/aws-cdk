@@ -19,6 +19,7 @@ export enum CustomizationType {
    * Provide labeled data in order to train a model to improve performance on specific tasks.
    */
   FINE_TUNING = 'FINE_TUNING',
+
   /**
    * Continued pre-training
    *
