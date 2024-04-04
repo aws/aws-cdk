@@ -652,9 +652,12 @@ When using `Logging.selective()` you will be able to control what data is logged
 
 As an example, consider a user who may not want to have the API call response logged. To do this, they would configure `logging` with `Logging.selective()` and set the `logApiResponse` flag to `false`:
 
+As an example, consider a user who may want to control what information is logged to conceal sensitive data. To do this, they would configure `logging` with `Logging.selective()` and configure `LoggingProps` with what data they want logged:
+
 ```ts
 const logging = Logging.selective({
-  logApiResponse: false,
+  logEventHandler: true,
+  logErrors: true,
 });
 
 const getParameter = new cr.AwsCustomResource(this, 'GetParameter', {
