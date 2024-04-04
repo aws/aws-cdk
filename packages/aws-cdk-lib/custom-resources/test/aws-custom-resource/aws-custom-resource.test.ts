@@ -4,7 +4,7 @@ import * as iam from '../../../aws-iam';
 import * as logs from '../../../aws-logs';
 import * as cdk from '../../../core';
 import { App, Stack } from '../../../core';
-import { AwsCustomResource, AwsCustomResourcePolicy, PhysicalResourceId, PhysicalResourceIdReference } from '../../lib';
+import { AwsCustomResource, AwsCustomResourcePolicy, Logging, PhysicalResourceId, PhysicalResourceIdReference } from '../../lib';
 
 /* eslint-disable quote-props */
 
@@ -1302,5 +1302,259 @@ test('can specify removal policy', () => {
   // THEN
   Template.fromStack(stack).hasResource('Custom::AWS', {
     DeletionPolicy: 'Retain',
+  });
+});
+
+describe('logging configuration', () => {
+  test('logging is on by default', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    new AwsCustomResource(stack, 'AwsSdk', {
+      resourceType: 'Custom::LogRetentionPolicy',
+      onCreate: {
+        service: 'CloudWatchLogs',
+        action: 'putRetentionPolicy',
+        parameters: {
+          logGroupName: '/aws/lambda/loggroup',
+          retentionInDays: 90,
+        },
+        physicalResourceId: PhysicalResourceId.of('loggroup'),
+      },
+      policy: AwsCustomResourcePolicy.fromSdkCalls({ resources: AwsCustomResourcePolicy.ANY_RESOURCE }),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('Custom::LogRetentionPolicy', {
+      Create: JSON.stringify({
+        service: 'CloudWatchLogs',
+        action: 'putRetentionPolicy',
+        parameters: {
+          logGroupName: '/aws/lambda/loggroup',
+          retentionInDays: 90,
+        },
+        physicalResourceId: {
+          id: 'loggroup',
+        },
+      }),
+      LogHandlerEvent: true,
+      LogApiResponse: true,
+      LogResponseObject: true,
+      LogErrors: true,
+    });
+  });
+
+  test('with logging on set explicitly', () => {
+    // GIVEN
+    const stack = new Stack();
+    const logging = Logging.on();
+
+    // WHEN
+    new AwsCustomResource(stack, 'AwsSdk', {
+      resourceType: 'Custom::LogRetentionPolicy',
+      onCreate: {
+        service: 'CloudWatchLogs',
+        action: 'putRetentionPolicy',
+        parameters: {
+          logGroupName: '/aws/lambda/loggroup',
+          retentionInDays: 90,
+        },
+        physicalResourceId: PhysicalResourceId.of('loggroup'),
+      },
+      policy: AwsCustomResourcePolicy.fromSdkCalls({ resources: AwsCustomResourcePolicy.ANY_RESOURCE }),
+      logging,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('Custom::LogRetentionPolicy', {
+      Create: JSON.stringify({
+        service: 'CloudWatchLogs',
+        action: 'putRetentionPolicy',
+        parameters: {
+          logGroupName: '/aws/lambda/loggroup',
+          retentionInDays: 90,
+        },
+        physicalResourceId: {
+          id: 'loggroup',
+        },
+      }),
+      LogHandlerEvent: true,
+      LogApiResponse: true,
+      LogResponseObject: true,
+      LogErrors: true,
+    });
+  });
+
+  test('selective logging with logHandlerEvent as false', () => {
+    // GIVEN
+    const stack = new Stack();
+    const logging = Logging.selective({
+      logHandlerEvent: false,
+    });
+
+    // WHEN
+    new AwsCustomResource(stack, 'AwsSdk', {
+      resourceType: 'Custom::LogRetentionPolicy',
+      onCreate: {
+        service: 'CloudWatchLogs',
+        action: 'putRetentionPolicy',
+        parameters: {
+          logGroupName: '/aws/lambda/loggroup',
+          retentionInDays: 90,
+        },
+        physicalResourceId: PhysicalResourceId.of('loggroup'),
+      },
+      policy: AwsCustomResourcePolicy.fromSdkCalls({ resources: AwsCustomResourcePolicy.ANY_RESOURCE }),
+      logging,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('Custom::LogRetentionPolicy', {
+      Create: JSON.stringify({
+        service: 'CloudWatchLogs',
+        action: 'putRetentionPolicy',
+        parameters: {
+          logGroupName: '/aws/lambda/loggroup',
+          retentionInDays: 90,
+        },
+        physicalResourceId: {
+          id: 'loggroup',
+        },
+      }),
+      LogHandlerEvent: false,
+      LogApiResponse: true,
+      LogResponseObject: true,
+      LogErrors: true,
+    });
+  });
+
+  test('selective logging with logApiResponse as false', () => {
+    // GIVEN
+    const stack = new Stack();
+    const logging = Logging.selective({
+      logApiResponse: false,
+    });
+
+    // WHEN
+    new AwsCustomResource(stack, 'AwsSdk', {
+      resourceType: 'Custom::LogRetentionPolicy',
+      onCreate: {
+        service: 'CloudWatchLogs',
+        action: 'putRetentionPolicy',
+        parameters: {
+          logGroupName: '/aws/lambda/loggroup',
+          retentionInDays: 90,
+        },
+        physicalResourceId: PhysicalResourceId.of('loggroup'),
+      },
+      policy: AwsCustomResourcePolicy.fromSdkCalls({ resources: AwsCustomResourcePolicy.ANY_RESOURCE }),
+      logging,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('Custom::LogRetentionPolicy', {
+      Create: JSON.stringify({
+        service: 'CloudWatchLogs',
+        action: 'putRetentionPolicy',
+        parameters: {
+          logGroupName: '/aws/lambda/loggroup',
+          retentionInDays: 90,
+        },
+        physicalResourceId: {
+          id: 'loggroup',
+        },
+      }),
+      LogHandlerEvent: true,
+      LogApiResponse: false,
+      LogResponseObject: true,
+      LogErrors: true,
+    });
+  });
+
+  test('selective logging with logResponseObject as false', () => {
+    // GIVEN
+    const stack = new Stack();
+    const logging = Logging.selective({
+      logResponseObject: false,
+    });
+
+    // WHEN
+    new AwsCustomResource(stack, 'AwsSdk', {
+      resourceType: 'Custom::LogRetentionPolicy',
+      onCreate: {
+        service: 'CloudWatchLogs',
+        action: 'putRetentionPolicy',
+        parameters: {
+          logGroupName: '/aws/lambda/loggroup',
+          retentionInDays: 90,
+        },
+        physicalResourceId: PhysicalResourceId.of('loggroup'),
+      },
+      policy: AwsCustomResourcePolicy.fromSdkCalls({ resources: AwsCustomResourcePolicy.ANY_RESOURCE }),
+      logging,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('Custom::LogRetentionPolicy', {
+      Create: JSON.stringify({
+        service: 'CloudWatchLogs',
+        action: 'putRetentionPolicy',
+        parameters: {
+          logGroupName: '/aws/lambda/loggroup',
+          retentionInDays: 90,
+        },
+        physicalResourceId: {
+          id: 'loggroup',
+        },
+      }),
+      LogHandlerEvent: true,
+      LogApiResponse: true,
+      LogResponseObject: false,
+      LogErrors: true,
+    });
+  });
+
+  test('selective logging with logErrors as false', () => {
+    // GIVEN
+    const stack = new Stack();
+    const logging = Logging.selective({
+      logErrors: false,
+    });
+
+    // WHEN
+    new AwsCustomResource(stack, 'AwsSdk', {
+      resourceType: 'Custom::LogRetentionPolicy',
+      onCreate: {
+        service: 'CloudWatchLogs',
+        action: 'putRetentionPolicy',
+        parameters: {
+          logGroupName: '/aws/lambda/loggroup',
+          retentionInDays: 90,
+        },
+        physicalResourceId: PhysicalResourceId.of('loggroup'),
+      },
+      policy: AwsCustomResourcePolicy.fromSdkCalls({ resources: AwsCustomResourcePolicy.ANY_RESOURCE }),
+      logging,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('Custom::LogRetentionPolicy', {
+      Create: JSON.stringify({
+        service: 'CloudWatchLogs',
+        action: 'putRetentionPolicy',
+        parameters: {
+          logGroupName: '/aws/lambda/loggroup',
+          retentionInDays: 90,
+        },
+        physicalResourceId: {
+          id: 'loggroup',
+        },
+      }),
+      LogHandlerEvent: true,
+      LogApiResponse: true,
+      LogResponseObject: true,
+      LogErrors: false,
+    });
   });
 });

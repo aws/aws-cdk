@@ -52,7 +52,7 @@ export abstract class Logging {
   /**
    * Enables selective logging of logged data in the lambda handler.
    */
-  public static selective(props: LoggingProps): Logging {
+  public static selective(props: LoggingProps = {}): Logging {
     return new (class extends Logging {
       public constructor() {
         super({ ...props });

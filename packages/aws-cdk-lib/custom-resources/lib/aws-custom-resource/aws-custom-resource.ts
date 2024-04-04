@@ -494,8 +494,6 @@ export class AwsCustomResource extends Construct implements iam.IGrantable {
       ].join(' '));
     }
 
-    const logging = props.logging ?? Logging.on();
-
     const create = props.onCreate || props.onUpdate;
     this.customResource = new cdk.CustomResource(this, 'Resource', {
       resourceType: props.resourceType || 'Custom::AWS',
@@ -507,7 +505,7 @@ export class AwsCustomResource extends Construct implements iam.IGrantable {
         update: props.onUpdate && this.encodeJson(props.onUpdate),
         delete: props.onDelete && this.encodeJson(props.onDelete),
         installLatestAwsSdk,
-        ...logging._render(),
+        ...(props.logging ?? Logging.on())._render(),
       },
     });
 

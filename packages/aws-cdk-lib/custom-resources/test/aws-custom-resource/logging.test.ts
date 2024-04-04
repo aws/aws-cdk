@@ -1,78 +1,76 @@
-import { Template } from '../../../assertions';
-import { Stack } from '../../../core';
-import { AwsCustomResource, PhysicalResourceId } from '../../lib';
 import { Logging } from '../../lib/aws-custom-resource/logging';
 
-describe('logging configuration', () => {
-  test('logging is on by default', () => {
+describe('render logging', () => {
+  test('on', () => {
     // GIVEN
-    const stack = new Stack();
+    const logging = Logging.on();
 
-    // WHEN
-    new AwsCustomResource(stack, 'AwsSdk', {
-      resourceType: 'Custom::LogRetentionPolicy',
-      onCreate: {
-        service: 'CloudWatchLogs',
-        action: 'putRetentionPolicy',
-        parameters: {
-          logGroupName: '/aws/lambda/loggroup',
-          retentionInDays: 90,
-        },
-        physicalResourceId: PhysicalResourceId.of('loggroup'),
-      },
-    });
-
-    // THEN
-    Template.fromStack(stack).hasResourceProperties('Custom::LogRetentionPolicy', {
-      Create: JSON.stringify({
-        service: 'CloudWatchLogs',
-        action: 'putRetentionPolicy',
-        parameters: {
-          logGroupName: '/aws/lambda/loggroup',
-          retentionInDays: 90,
-        },
-        physicalResourceId: {
-          id: 'loggroup',
-        },
-      }),
-      InstallLatestAwsSdk: true,
+    // WHEN/THEN
+    expect(logging._render()).toEqual({
+      logHandlerEvent: true,
+      logApiResponse: true,
+      logResponseObject: true,
+      logErrors: true,
     });
   });
 
-  test('with logging on set explicitly', () => {
+  test('selective with logHandlerEvent as false', () => {
     // GIVEN
-    const stack = new Stack();
-    const logging = Logging.on();
-
-    // WHEN
-    new AwsCustomResource(stack, 'AwsSdk', {
-      resourceType: 'Custom::LogRetentionPolicy',
-      onCreate: {
-        service: 'CloudWatchLogs',
-        action: 'putRetentionPolicy',
-        parameters: {
-          logGroupName: '/aws/lambda/loggroup',
-          retentionInDays: 90,
-        },
-        physicalResourceId: PhysicalResourceId.of('loggroup'),
-      },
-      logging,
+    const logging = Logging.selective({
+      logHandlerEvent: false,
     });
 
-    // THEN
-    Template.fromStack(stack).hasResourceProperties('Custom::LogRetentionPolicy', {
-      Create: JSON.stringify({
-        service: 'CloudWatchLogs',
-        action: 'putRetentionPolicy',
-        parameters: {
-          logGroupName: '/aws/lambda/loggroup',
-          retentionInDays: 90,
-        },
-        physicalResourceId: {
-          id: 'loggroup',
-        },
-      }),
-      InstallLatestAwsSdk: true,
+    // WHEN / THEN
+    expect(logging._render()).toEqual({
+      logHandlerEvent: false,
+      logApiResponse: true,
+      logResponseObject: true,
+      logErrors: true,
+    });
+  });
+
+  test('selective with logApiResponse as false', () => {
+    // GIVEN
+    const logging = Logging.selective({
+      logApiResponse: false,
+    });
+
+    // WHEN / THEN
+    expect(logging._render()).toEqual({
+      logHandlerEvent: true,
+      logApiResponse: false,
+      logResponseObject: true,
+      logErrors: true,
+    });
+  });
+
+  test('selective with logResponseObject as false', () => {
+    // GIVEN
+    const logging = Logging.selective({
+      logResponseObject: false,
+    });
+
+    // WHEN / THEN
+    expect(logging._render()).toEqual({
+      logHandlerEvent: true,
+      logApiResponse: true,
+      logResponseObject: false,
+      logErrors: true,
+    });
+  });
+
+  test('selective with logErrors as false', () => {
+    // GIVEN
+    const logging = Logging.selective({
+      logErrors: false,
+    });
+
+    // WHEN / THEN
+    expect(logging._render()).toEqual({
+      logHandlerEvent: true,
+      logApiResponse: true,
+      logResponseObject: true,
+      logErrors: false,
     });
   });
 });
