@@ -29,11 +29,6 @@ class GetParameterStack extends Stack {
   public constructor(scope: Construct, id: string, props: GetParameterStackProps) {
     super(scope, id, props);
 
-    const logging = Logging.selective({
-      logHandlerEvent: true,
-      logErrors: true,
-    });
-
     new AwsCustomResource(this, 'GetSecret', {
       onUpdate: {
         service: 'SSM',
@@ -43,7 +38,7 @@ class GetParameterStack extends Stack {
           WithDecryption: true,
         },
         physicalResourceId: PhysicalResourceId.of(Date.now().toString()),
-        logging,
+        logging: Logging.withDataHidden(),
       },
       policy: AwsCustomResourcePolicy.fromSdkCalls({
         resources: AwsCustomResourcePolicy.ANY_RESOURCE,
