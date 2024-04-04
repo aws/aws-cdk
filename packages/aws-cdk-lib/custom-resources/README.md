@@ -624,7 +624,29 @@ The `logging` property defined on the `AwsCustomResourceProps` interface allows 
 When using `Logging.selective()` you will be able to control what data is logged via `LoggingProps`. `LoggingProps` is an interface that exposes the following flags:
 * `logHandlerEvent` - this determines whether or not the event object received by the handler will be logged.
 * `logApiResponse` - this determines whether or not the API call response will be logged.
-* `logResponseObject` - this determines whether or not the response object that will be returned by the Lambda will be logged.
+* `logResponseObject` - this determines whether or not the response object that will be returned by the Lambda will be logged. The following is an example of a response object:
+
+```
+{
+  "Status": "SUCCESS",
+  "Reason": "OK",
+  "PhysicalResourceId": "1234567890123",
+  "StackId": "arn:aws:cloudformation:us-west-2:123456789012:stack/Test/043tyub2-194e-4cy2-a969-9891ghj6cd0d",
+  "RequestId": "a16y677a-a8b6-41a6-bf7b-7644586861a5",
+  "LogicalResourceId": "Sercret",
+  "NoEcho": false,
+  "Data": {
+    "region": "us-west-2",
+    "Parameter.ARN": "arn:aws:ssm:us-west-2:123456789012:parameter/Test/Parameter",
+    "Parameter.DataType": "text",
+    "Parameter.Name": "/Test/Parameter",
+    "Parameter.Type": "SecureString",
+    "Parameter.Value": "ThisIsSecret!123",
+    "Parameter.Version": 1
+  }
+}
+```
+
 * `logSdkVersion` - this determines whether or not the AWS SDK version being used for API calls will be logged.
 * `logErrors` - this determines whether or not caught and uncaught errors will be logged.
 

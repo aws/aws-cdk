@@ -19,6 +19,27 @@ export interface LoggingProps {
   /**
    * Whether or not to log the response object that will be returned by the lambda.
    *
+   * Example response object:
+   *
+   * {
+   *   "Status": "SUCCESS",
+   *   "Reason": "OK",
+   *   "PhysicalResourceId": "1234567890123",
+   *   "StackId": "arn:aws:cloudformation:us-west-2:123456789012:stack/Test/043tyub2-194e-4cy2-a969-9891ghj6cd0d",
+   *   "RequestId": "a16y677a-a8b6-41a6-bf7b-7644586861a5",
+   *   "LogicalResourceId": "Sercret",
+   *   "NoEcho": false,
+   *   "Data": {
+   *     "region": "us-west-2",
+   *     "Parameter.ARN": "arn:aws:ssm:us-west-2:123456789012:parameter/Test/Parameter",
+   *     "Parameter.DataType": "text",
+   *     "Parameter.Name": "/Test/Parameter",
+   *     "Parameter.Type": "SecureString",
+   *     "Parameter.Value": "ThisIsSecret!123",
+   *     "Parameter.Version": 1
+   *   }
+   * }
+   *
    * @default true
    */
   readonly logResponseObject?: boolean;
