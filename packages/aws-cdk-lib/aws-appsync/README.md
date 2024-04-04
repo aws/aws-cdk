@@ -817,7 +817,6 @@ declare const rule: events.Rule;
 declare const api: appsync.GraphqlApi;
 
 rule.addTarget(new targets.AppSync(api, {
-  mutationFields: ['publish'],
   graphQLOperation: 'mutation Publish($message: String!){ publish(message: $message) { message } }',
   variables: events.RuleTargetInput.fromObject({
     message: 'hello world',

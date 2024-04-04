@@ -359,7 +359,6 @@ const rule = new events.Rule(this, 'Rule', {
 });
 
 rule.addTarget(new targets.AppSync(api, {
-  mutationFields: ['publish'],
   graphQLOperation: 'mutation Publish($message: String!){ publish(message: $message) { message } }',
   variables: events.RuleTargetInput.fromObject({
     message: 'hello world',
