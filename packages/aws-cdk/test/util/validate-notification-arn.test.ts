@@ -26,5 +26,10 @@ describe('validate sns arns', () => {
     const arn = 'arn:aws:sns:eu-west-1:123456789876:foo-bar_baz';
     expect(validateSnsTopicArn(arn)).toEqual(true);
   });
+
+  test('AWS China partition', () => {
+    const arn = 'arn:aws-cn:sns:cn-northwest-1:123456789876:foo-bar';
+    expect(validateSnsTopicArn(arn)).toEqual(true);
+  });
 });
 
