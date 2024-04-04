@@ -50,7 +50,7 @@ describe('render logging', () => {
   test('selective with logResponseObject', () => {
     // GIVEN
     const logging = Logging.selective({
-      logResponseObject: false,
+      logResponseObject: true,
     });
 
     // WHEN / THEN
@@ -66,7 +66,7 @@ describe('render logging', () => {
   test('selective with logSdkVersion', () => {
     // GIVEN
     const logging = Logging.selective({
-      logResponseObject: false,
+      logResponseObject: true,
     });
 
     // WHEN / THEN
@@ -82,7 +82,7 @@ describe('render logging', () => {
   test('selective with logErrors', () => {
     // GIVEN
     const logging = Logging.selective({
-      logErrors: false,
+      logErrors: true,
     });
 
     // WHEN / THEN
