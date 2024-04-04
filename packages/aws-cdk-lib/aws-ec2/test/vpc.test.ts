@@ -1651,7 +1651,7 @@ describe('vpc', () => {
         // See https://github.com/aws/aws-cdk/issues/27527
         // securityGroup,
       });
-      const vpc = new Vpc(stack, 'TheVPC', { natGatewayProvider });
+      new Vpc(stack, 'TheVPC', { natGatewayProvider });
 
       // THEN
       Template.fromStack(stack).resourceCountIs('AWS::EC2::Instance', 3);
@@ -1678,6 +1678,56 @@ describe('vpc', () => {
         ],
       });
 
+    });
+
+    test('throws if both defaultAllowedTraffic and allowAllTraffic are set', () => {
+      // GIVEN
+      const stack = getTestStack();
+
+      // THEN
+      expect(() => {
+        new Vpc(stack, 'TheVPC', {
+          natGatewayProvider: NatProvider.instanceV2({
+            instanceType: InstanceType.of(InstanceClass.T3, InstanceSize.SMALL),
+            defaultAllowedTraffic: NatTrafficDirection.OUTBOUND_ONLY,
+            allowAllTraffic: true,
+          }),
+          natGateways: 1,
+        });
+      }).toThrow("Can not specify both of 'defaultAllowedTraffic' and 'defaultAllowedTraffic'; prefer 'defaultAllowedTraffic'");
+    });
+
+    test('throws if both keyName and keyPair are set', () => {
+      // GIVEN
+      const stack = getTestStack();
+
+      // THEN
+      expect(() => {
+        new Vpc(stack, 'TheVPC', {
+          natGatewayProvider: NatProvider.instanceV2({
+            instanceType: InstanceType.of(InstanceClass.T3, InstanceSize.SMALL),
+            keyPair: KeyPair.fromKeyPairName(stack, 'KeyPair', 'KeyPairName'),
+            keyName: 'KeyPairName',
+          }),
+          natGateways: 1,
+        });
+      }).toThrow("Cannot specify both of 'keyName' and 'keyPair'; prefer 'keyPair'");
+    });
+
+    test('throws if creditSpecification is set with a non-burstable instance type', () => {
+      // GIVEN
+      const stack = getTestStack();
+
+      // THEN
+      expect(() => {
+        new Vpc(stack, 'TheVPC', {
+          natGatewayProvider: NatProvider.instanceV2({
+            instanceType: InstanceType.of(InstanceClass.C3, InstanceSize.SMALL),
+            creditSpecification: CpuCredits.UNLIMITED,
+          }),
+          natGateways: 1,
+        });
+      }).toThrow(/creditSpecification is supported only for .* instance type/);
     });
 
     test('natGateways controls amount of NAT instances', () => {
