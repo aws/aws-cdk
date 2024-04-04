@@ -621,7 +621,7 @@ The `logging` property defined on the `AwsCustomResourceProps` interface allows 
 * `Logging.off()` which will turn off all logging in the Lambda handler.
 * `Logging.selective()` which allows you to selectively control what data is logged. This is particularly useful for situations where the API call response may contain sensitive data.
 
-When using `Logging.selective()` you will be able to control what data is logged via `LoggingProps`. `LoggingProps` is an interface that exposes the following flags:
+When using `Logging.selective()` you will be able to control what data is logged via `LoggingOptions`. `LoggingOptions` is an interface that exposes the following flags:
 * `logHandlerEvent` - this determines whether or not the event object received by the handler will be logged.
 * `logApiResponse` - this determines whether or not the API call response will be logged.
 * `logResponseObject` - this determines whether or not the response object that will be returned by the Lambda will be logged. The following is an example of a response object:
@@ -652,7 +652,7 @@ When using `Logging.selective()` you will be able to control what data is logged
 
 As an example, consider a user who may not want to have the API call response logged. To do this, they would configure `logging` with `Logging.selective()` and set the `logApiResponse` flag to `false`:
 
-As an example, consider a user who may want to control what information is logged to conceal sensitive data. To do this, they would configure `logging` with `Logging.selective()` and configure `LoggingProps` with what data they want logged:
+As an example, consider a user who may want to control what information is logged to conceal sensitive data. To do this, they would configure `logging` with `Logging.selective()` and configure `LoggingOptions` with what data they want logged:
 
 ```ts
 const logging = Logging.selective({

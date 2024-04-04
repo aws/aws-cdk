@@ -1,0 +1,13 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "SSMGetParameterInteg/DefaultTest": {
+      "stacks": [
+        "CreateParameterStack",
+        "GetParameterStack"
+      ],
+      "assertionStack": "SSMGetParameterInteg/DefaultTest/DeployAssert",
+      "assertionStackName": "SSMGetParameterIntegDefaultTestDeployAssertD1159C8F"
+    }
+  }
+}
