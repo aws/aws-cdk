@@ -4,14 +4,6 @@
     "id": "App",
     "path": "",
     "children": {
-      "Tree": {
-        "id": "Tree",
-        "path": "Tree",
-        "constructInfo": {
-          "fqn": "constructs.Construct",
-          "version": "10.1.85"
-        }
-      },
       "FlinkAppCodeFromBucketTest": {
         "id": "FlinkAppCodeFromBucketTest",
         "path": "FlinkAppCodeFromBucketTest",
@@ -24,21 +16,21 @@
                 "id": "Stage",
                 "path": "FlinkAppCodeFromBucketTest/CodeAsset/Stage",
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.1.85"
+                  "fqn": "aws-cdk-lib.AssetStaging",
+                  "version": "0.0.0"
                 }
               },
               "AssetBucket": {
                 "id": "AssetBucket",
                 "path": "FlinkAppCodeFromBucketTest/CodeAsset/AssetBucket",
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-s3.BucketBase",
+                  "fqn": "aws-cdk-lib.aws_s3.BucketBase",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-s3-assets.Asset",
+              "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
               "version": "0.0.0"
             }
           },
@@ -50,6 +42,14 @@
                 "id": "Role",
                 "path": "FlinkAppCodeFromBucketTest/App/Role",
                 "children": {
+                  "ImportRole": {
+                    "id": "ImportRole",
+                    "path": "FlinkAppCodeFromBucketTest/App/Role/ImportRole",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
                   "Resource": {
                     "id": "Resource",
                     "path": "FlinkAppCodeFromBucketTest/App/Role/Resource",
@@ -71,7 +71,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-iam.CfnRole",
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
                       "version": "0.0.0"
                     }
                   },
@@ -210,19 +210,19 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-iam.CfnPolicy",
+                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
                           "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-iam.Policy",
+                      "fqn": "aws-cdk-lib.aws_iam.Policy",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-iam.Role",
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
                   "version": "0.0.0"
                 }
               },
@@ -232,13 +232,6 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::KinesisAnalyticsV2::Application",
                   "aws:cdk:cloudformation:props": {
-                    "runtimeEnvironment": "FLINK-1_11",
-                    "serviceExecutionRole": {
-                      "Fn::GetAtt": [
-                        "AppRole1AF9B530",
-                        "Arn"
-                      ]
-                    },
                     "applicationConfiguration": {
                       "applicationCodeConfiguration": {
                         "codeContent": {
@@ -266,11 +259,18 @@
                       "applicationSnapshotConfiguration": {
                         "snapshotsEnabled": true
                       }
+                    },
+                    "runtimeEnvironment": "FLINK-1_18",
+                    "serviceExecutionRole": {
+                      "Fn::GetAtt": [
+                        "AppRole1AF9B530",
+                        "Arn"
+                      ]
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-kinesisanalytics.CfnApplicationV2",
+                  "fqn": "aws-cdk-lib.aws_kinesisanalytics.CfnApplicationV2",
                   "version": "0.0.0"
                 }
               },
@@ -288,13 +288,13 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-logs.CfnLogGroup",
+                      "fqn": "aws-cdk-lib.aws_logs.CfnLogGroup",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-logs.LogGroup",
+                  "fqn": "aws-cdk-lib.aws_logs.LogGroup",
                   "version": "0.0.0"
                 }
               },
@@ -314,13 +314,13 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-logs.CfnLogStream",
+                      "fqn": "aws-cdk-lib.aws_logs.CfnLogStream",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-logs.LogStream",
+                  "fqn": "aws-cdk-lib.aws_logs.LogStream",
                   "version": "0.0.0"
                 }
               },
@@ -365,26 +365,50 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-kinesisanalytics.CfnApplicationCloudWatchLoggingOptionV2",
+                  "fqn": "aws-cdk-lib.aws_kinesisanalytics.CfnApplicationCloudWatchLoggingOptionV2",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-kinesisanalytics-flink.Application",
+              "fqn": "@aws-cdk/aws-kinesisanalytics-flink-alpha.Application",
+              "version": "0.0.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "FlinkAppCodeFromBucketTest/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "FlinkAppCodeFromBucketTest/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnRule",
               "version": "0.0.0"
             }
           }
         },
         "constructInfo": {
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.85"
+          "version": "10.3.0"
         }
       }
     },
     "constructInfo": {
-      "fqn": "constructs.Construct",
-      "version": "10.1.85"
+      "fqn": "aws-cdk-lib.App",
+      "version": "0.0.0"
     }
   }
 }
