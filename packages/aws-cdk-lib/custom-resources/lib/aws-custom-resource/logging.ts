@@ -1,7 +1,7 @@
 /**
- * Properties used to initialize Logging.
+ * Options used to initialize Logging.
  */
-export interface LoggingProps {
+export interface LoggingOptions {
   /**
    * Whether or not to log the event object received by the lambda handler.
    *
@@ -86,10 +86,10 @@ export abstract class Logging {
   /**
    * Enables selective logging of logged data in the lambda handler.
    */
-  public static selective(props: LoggingProps = {}): Logging {
+  public static selective(options: LoggingOptions = {}): Logging {
     return new (class extends Logging {
       public constructor() {
-        super({ ...props });
+        super({ ...options });
       }
     })();
   }
@@ -130,7 +130,7 @@ export abstract class Logging {
    */
   private readonly logErrors: boolean;
 
-  protected constructor(props: LoggingProps = {}) {
+  protected constructor(props: LoggingOptions = {}) {
     this.logHandlerEvent = props.logHandlerEvent ?? false;
     this.logApiResponse = props.logApiResponse ?? false;
     this.logResponseObject = props.logResponseObject ?? false;
