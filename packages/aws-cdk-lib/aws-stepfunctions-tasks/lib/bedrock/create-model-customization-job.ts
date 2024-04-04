@@ -35,6 +35,7 @@ export interface ITag {
    * Key for the tag.
    */
   readonly key: string;
+
   /**
    * Value for the tag.
    */
