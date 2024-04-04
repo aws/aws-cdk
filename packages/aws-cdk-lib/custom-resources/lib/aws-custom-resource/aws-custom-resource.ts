@@ -397,7 +397,7 @@ export interface AwsCustomResourceProps {
   readonly vpcSubnets?: ec2.SubnetSelection;
 
   /**
-   * Enables logging
+   * A property used to enable or disable logging of data during lambda function execution.
    *
    * @default Logging.on()
    */

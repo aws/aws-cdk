@@ -94,6 +94,7 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
     if (logHandlerEvent) {
       console.log(JSON.stringify({ ...event, ResponseURL: '...' }));
     }
+
     console.log('AWS SDK VERSION: ' + AWS.VERSION);
 
     event.ResourceProperties.Create = decodeCall(event.ResourceProperties.Create);
