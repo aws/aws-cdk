@@ -1388,55 +1388,11 @@ describe('logging configuration', () => {
     });
   });
 
-  test('selective logging with logHandlerEvent as false', () => {
+  test('selective logging with logHandlerEvent', () => {
     // GIVEN
     const stack = new Stack();
     const logging = Logging.selective({
-      logHandlerEvent: false,
-    });
-
-    // WHEN
-    new AwsCustomResource(stack, 'AwsSdk', {
-      resourceType: 'Custom::LogRetentionPolicy',
-      onCreate: {
-        service: 'CloudWatchLogs',
-        action: 'putRetentionPolicy',
-        parameters: {
-          logGroupName: '/aws/lambda/loggroup',
-          retentionInDays: 90,
-        },
-        physicalResourceId: PhysicalResourceId.of('loggroup'),
-      },
-      policy: AwsCustomResourcePolicy.fromSdkCalls({ resources: AwsCustomResourcePolicy.ANY_RESOURCE }),
-      logging,
-    });
-
-    // THEN
-    Template.fromStack(stack).hasResourceProperties('Custom::LogRetentionPolicy', {
-      Create: JSON.stringify({
-        service: 'CloudWatchLogs',
-        action: 'putRetentionPolicy',
-        parameters: {
-          logGroupName: '/aws/lambda/loggroup',
-          retentionInDays: 90,
-        },
-        physicalResourceId: {
-          id: 'loggroup',
-        },
-      }),
-      LogHandlerEvent: false,
-      LogApiResponse: true,
-      LogResponseObject: true,
-      LogSdkVersion: true,
-      LogErrors: true,
-    });
-  });
-
-  test('selective logging with logApiResponse as false', () => {
-    // GIVEN
-    const stack = new Stack();
-    const logging = Logging.selective({
-      logApiResponse: false,
+      logHandlerEvent: true,
     });
 
     // WHEN
@@ -1470,17 +1426,17 @@ describe('logging configuration', () => {
       }),
       LogHandlerEvent: true,
       LogApiResponse: false,
-      LogResponseObject: true,
-      LogSdkVersion: true,
-      LogErrors: true,
+      LogResponseObject: false,
+      LogSdkVersion: false,
+      LogErrors: false,
     });
   });
 
-  test('selective logging with logResponseObject as false', () => {
+  test('selective logging with logApiResponse', () => {
     // GIVEN
     const stack = new Stack();
     const logging = Logging.selective({
-      logResponseObject: false,
+      logApiResponse: true,
     });
 
     // WHEN
@@ -1512,19 +1468,19 @@ describe('logging configuration', () => {
           id: 'loggroup',
         },
       }),
-      LogHandlerEvent: true,
+      LogHandlerEvent: false,
       LogApiResponse: true,
       LogResponseObject: false,
-      LogSdkVersion: true,
-      LogErrors: true,
+      LogSdkVersion: false,
+      LogErrors: false,
     });
   });
 
-  test('selective logging with logSdkVersion as false', () => {
+  test('selective logging with logResponseObject', () => {
     // GIVEN
     const stack = new Stack();
     const logging = Logging.selective({
-      logSdkVersion: false,
+      logResponseObject: true,
     });
 
     // WHEN
@@ -1556,19 +1512,19 @@ describe('logging configuration', () => {
           id: 'loggroup',
         },
       }),
-      LogHandlerEvent: true,
-      LogApiResponse: true,
+      LogHandlerEvent: false,
+      LogApiResponse: false,
       LogResponseObject: true,
       LogSdkVersion: false,
-      LogErrors: true,
+      LogErrors: false,
     });
   });
 
-  test('selective logging with logErrors as false', () => {
+  test('selective logging with logSdkVersion', () => {
     // GIVEN
     const stack = new Stack();
     const logging = Logging.selective({
-      logErrors: false,
+      logSdkVersion: true,
     });
 
     // WHEN
@@ -1600,11 +1556,55 @@ describe('logging configuration', () => {
           id: 'loggroup',
         },
       }),
-      LogHandlerEvent: true,
-      LogApiResponse: true,
-      LogResponseObject: true,
+      LogHandlerEvent: false,
+      LogApiResponse: false,
+      LogResponseObject: false,
       LogSdkVersion: true,
       LogErrors: false,
+    });
+  });
+
+  test('selective logging with logErrors', () => {
+    // GIVEN
+    const stack = new Stack();
+    const logging = Logging.selective({
+      logErrors: true,
+    });
+
+    // WHEN
+    new AwsCustomResource(stack, 'AwsSdk', {
+      resourceType: 'Custom::LogRetentionPolicy',
+      onCreate: {
+        service: 'CloudWatchLogs',
+        action: 'putRetentionPolicy',
+        parameters: {
+          logGroupName: '/aws/lambda/loggroup',
+          retentionInDays: 90,
+        },
+        physicalResourceId: PhysicalResourceId.of('loggroup'),
+      },
+      policy: AwsCustomResourcePolicy.fromSdkCalls({ resources: AwsCustomResourcePolicy.ANY_RESOURCE }),
+      logging,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('Custom::LogRetentionPolicy', {
+      Create: JSON.stringify({
+        service: 'CloudWatchLogs',
+        action: 'putRetentionPolicy',
+        parameters: {
+          logGroupName: '/aws/lambda/loggroup',
+          retentionInDays: 90,
+        },
+        physicalResourceId: {
+          id: 'loggroup',
+        },
+      }),
+      LogHandlerEvent: false,
+      LogApiResponse: false,
+      LogResponseObject: false,
+      LogSdkVersion: false,
+      LogErrors: true,
     });
   });
 });

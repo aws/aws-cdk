@@ -5,14 +5,14 @@ export interface LoggingProps {
   /**
    * Whether or not to log the event object received by the lambda handler.
    *
-   * @default true
+   * @default false
    */
   readonly logHandlerEvent?: boolean;
 
   /**
    * Whether or not to log the response returned from the API call.
    *
-   * @default true
+   * @default false
    */
   readonly logApiResponse?: boolean;
 
@@ -40,21 +40,21 @@ export interface LoggingProps {
    *   }
    * }
    *
-   * @default true
+   * @default false
    */
   readonly logResponseObject?: boolean;
 
   /**
    * Whether or not to log the AWS SDK version used for API calls during lambda execution.
    *
-   * @default true
+   * @default false
    */
   readonly logSdkVersion?: boolean;
 
   /**
    * Whether or not to log errors that were encountered during lambda execution.
    *
-   * @default true
+   * @default false
    */
   readonly logErrors?: boolean;
 }
@@ -72,7 +72,13 @@ export abstract class Logging {
   public static on(): Logging {
     return new (class extends Logging {
       public constructor() {
-        super();
+        super({
+          logHandlerEvent: true,
+          logApiResponse: true,
+          logResponseObject: true,
+          logSdkVersion: true,
+          logErrors: true,
+        });
       }
     })();
   }
@@ -94,13 +100,7 @@ export abstract class Logging {
   public static off(): Logging {
     return new (class extends Logging {
       public constructor() {
-        super({
-          logHandlerEvent: false,
-          logApiResponse: false,
-          logResponseObject: false,
-          logSdkVersion: false,
-          logErrors: false,
-        });
+        super();
       }
     })();
   }
@@ -131,11 +131,11 @@ export abstract class Logging {
   private readonly logErrors: boolean;
 
   protected constructor(props: LoggingProps = {}) {
-    this.logHandlerEvent = props.logHandlerEvent ?? true;
-    this.logApiResponse = props.logApiResponse ?? true;
-    this.logResponseObject = props.logResponseObject ?? true;
-    this.logSdkVersion = props.logSdkVersion ?? true;
-    this.logErrors = props.logErrors ?? true;
+    this.logHandlerEvent = props.logHandlerEvent ?? false;
+    this.logApiResponse = props.logApiResponse ?? false;
+    this.logResponseObject = props.logResponseObject ?? false;
+    this.logSdkVersion = props.logSdkVersion ?? false;
+    this.logErrors = props.logErrors ?? false;
   }
 
   /**

@@ -30,8 +30,8 @@ class GetParameterStack extends Stack {
     super(scope, id, props);
 
     const logging = Logging.selective({
-      logApiResponse: false,
-      logResponseObject: false,
+      logHandlerEvent: true,
+      logErrors: true,
     });
 
     new AwsCustomResource(this, 'GetSecret', {

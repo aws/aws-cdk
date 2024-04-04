@@ -15,39 +15,39 @@ describe('render logging', () => {
     });
   });
 
-  test('selective with logHandlerEvent as false', () => {
+  test('selective with logHandlerEvent', () => {
     // GIVEN
     const logging = Logging.selective({
-      logHandlerEvent: false,
-    });
-
-    // WHEN / THEN
-    expect(logging._render()).toEqual({
-      logHandlerEvent: false,
-      logApiResponse: true,
-      logResponseObject: true,
-      logSdkVersion: true,
-      logErrors: true,
-    });
-  });
-
-  test('selective with logApiResponse as false', () => {
-    // GIVEN
-    const logging = Logging.selective({
-      logApiResponse: false,
+      logHandlerEvent: true,
     });
 
     // WHEN / THEN
     expect(logging._render()).toEqual({
       logHandlerEvent: true,
       logApiResponse: false,
-      logResponseObject: true,
-      logSdkVersion: true,
-      logErrors: true,
+      logResponseObject: false,
+      logSdkVersion: false,
+      logErrors: false,
     });
   });
 
-  test('selective with logResponseObject as false', () => {
+  test('selective with logApiResponse', () => {
+    // GIVEN
+    const logging = Logging.selective({
+      logApiResponse: true,
+    });
+
+    // WHEN / THEN
+    expect(logging._render()).toEqual({
+      logHandlerEvent: false,
+      logApiResponse: true,
+      logResponseObject: false,
+      logSdkVersion: false,
+      logErrors: false,
+    });
+  });
+
+  test('selective with logResponseObject', () => {
     // GIVEN
     const logging = Logging.selective({
       logResponseObject: false,
@@ -55,31 +55,31 @@ describe('render logging', () => {
 
     // WHEN / THEN
     expect(logging._render()).toEqual({
-      logHandlerEvent: true,
-      logApiResponse: true,
-      logResponseObject: false,
-      logSdkVersion: true,
-      logErrors: true,
-    });
-  });
-
-  test('selective with logSdkVersion as false', () => {
-    // GIVEN
-    const logging = Logging.selective({
-      logResponseObject: false,
-    });
-
-    // WHEN / THEN
-    expect(logging._render()).toEqual({
-      logHandlerEvent: true,
-      logApiResponse: true,
+      logHandlerEvent: false,
+      logApiResponse: false,
       logResponseObject: true,
       logSdkVersion: false,
-      logErrors: true,
+      logErrors: false,
     });
   });
 
-  test('selective with logErrors as false', () => {
+  test('selective with logSdkVersion', () => {
+    // GIVEN
+    const logging = Logging.selective({
+      logResponseObject: false,
+    });
+
+    // WHEN / THEN
+    expect(logging._render()).toEqual({
+      logHandlerEvent: false,
+      logApiResponse: false,
+      logResponseObject: false,
+      logSdkVersion: true,
+      logErrors: false,
+    });
+  });
+
+  test('selective with logErrors', () => {
     // GIVEN
     const logging = Logging.selective({
       logErrors: false,
@@ -87,11 +87,11 @@ describe('render logging', () => {
 
     // WHEN / THEN
     expect(logging._render()).toEqual({
-      logHandlerEvent: true,
-      logApiResponse: true,
-      logResponseObject: true,
-      logSdkVersion: true,
-      logErrors: false,
+      logHandlerEvent: false,
+      logApiResponse: false,
+      logResponseObject: false,
+      logSdkVersion: false,
+      logErrors: true,
     });
   });
 
@@ -104,7 +104,7 @@ describe('render logging', () => {
       logHandlerEvent: false,
       logApiResponse: false,
       logResponseObject: false,
-      logSdkVersion: true,
+      logSdkVersion: false,
       logErrors: false,
     });
   });
