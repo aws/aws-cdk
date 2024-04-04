@@ -336,7 +336,7 @@ describe('non-nested stacks', () => {
     expect(exitCode).toBe(0);
   });
 
-  test('diff does not check for stack existence when changeSet is false', async () => {
+  test('diff does not check for stack existence when --no-change-set is passed, async () => {
     // GIVEN
     const buffer = new StringWritable();
 
