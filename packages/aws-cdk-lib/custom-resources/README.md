@@ -671,7 +671,7 @@ const getParameter = new cr.AwsCustomResource(this, 'GetParameter', {
   policy: cr.AwsCustomResourcePolicy.fromSdkCalls({
     resources: cr.AwsCustomResourcePolicy.ANY_RESOURCE,
   }),
-  logging, // API call response will not be logged
+  logging,
 });
 ```
 
