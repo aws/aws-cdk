@@ -16,6 +16,20 @@ describe('code', () => {
   });
 
   describe('lambda.Code.fromAsset', () => {
+    test('fails if path is empty', () => {
+      // GIVEN
+      const fileAsset = lambda.Code.fromAsset('');
+
+      // THEN
+      expect(() => defineFunction(fileAsset)).toThrow(/Asset path cannot be empty/);
+    });
+    test('fails if path does not exist', () => {
+      // GIVEN
+      const fileAsset = lambda.Code.fromAsset('/path/not/found/' + Math.random() * 999999);
+
+      // THEN
+      expect(() => defineFunction(fileAsset)).toThrow(/Cannot find asset/);
+    });
     test('fails if a non-zip asset is used', () => {
       // GIVEN
       const fileAsset = lambda.Code.fromAsset(path.join(__dirname, 'my-lambda-handler', 'index.py'));
