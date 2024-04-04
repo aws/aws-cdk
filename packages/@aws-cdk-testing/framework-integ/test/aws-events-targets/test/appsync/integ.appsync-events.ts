@@ -36,7 +36,6 @@ export const response = (ctx) => ctx.args.message
       schedule: events.Schedule.rate(cdk.Duration.minutes(1)),
     });
     timer.addTarget(new targets.AppSync(api, {
-      mutationFields: ['publish'],
       graphQLOperation,
       variables: events.RuleTargetInput.fromObject({
         message: 'hello world',

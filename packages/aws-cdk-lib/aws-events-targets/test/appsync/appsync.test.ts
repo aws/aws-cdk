@@ -2,61 +2,88 @@ import * as path from 'path';
 import { Template } from '../../../assertions';
 import * as appsync from '../../../aws-appsync';
 import * as events from '../../../aws-events';
+import * as iam from '../../../aws-iam';
 import * as sqs from '../../../aws-sqs';
 import * as cdk from '../../../core';
 import * as targets from '../../lib';
 
-// GIVEN
-let stack: cdk.Stack;
-beforeEach(() => {
-  stack = new cdk.Stack();
+describe('AppSync GraphQL API target', () => {
+  let stack: cdk.Stack;
+  beforeEach(() => {
+    stack = new cdk.Stack();
+  });
+
+  test('fails when AWS_IAM auth is not configured', () => {
+    const noiam_api = new appsync.GraphqlApi(stack, 'noiamApi', {
+      name: 'no_iam_api',
+      definition: appsync.Definition.fromFile(path.join(__dirname, 'appsync.test.graphql')),
+    });
+
+    const graphQLOperation = 'mutation Publish($message: String!){ publish(message: $message) { event } }';
+    const rule = new events.Rule(stack, 'Rule', {
+      schedule: events.Schedule.rate(cdk.Duration.minutes(1)),
+    });
+
+    expect(() => {
+      rule.addTarget(new targets.AppSync(noiam_api, {
+        graphQLOperation,
+        variables: events.RuleTargetInput.fromObject({
+          message: events.EventField.fromPath('$.detail'),
+        }),
+      }));
+    }).toThrow('You must have AWS_IAM authorization mode enabled on your API to configure an AppSync target');
+  });
+
+  test('allows secondary auth with AWS_IAM configured', () => {
+    const sec_api = new appsync.GraphqlApi(stack, 'sec_api', {
+      name: 'no_iam_api',
+      definition: appsync.Definition.fromFile(path.join(__dirname, 'appsync.test.graphql')),
+      authorizationConfig: { additionalAuthorizationModes: [{ authorizationType: appsync.AuthorizationType.IAM }] },
+    });
+
+    const graphQLOperation = 'mutation Publish($message: String!){ publish(message: $message) { event } }';
+    const rule = new events.Rule(stack, 'Rule', {
+      schedule: events.Schedule.rate(cdk.Duration.minutes(1)),
+    });
+
+    expect(() => {
+      rule.addTarget(new targets.AppSync(sec_api, {
+        graphQLOperation,
+        variables: events.RuleTargetInput.fromObject({
+          message: events.EventField.fromPath('$.detail'),
+        }),
+      }));
+    }).not.toThrow('You must have AWS_IAM authorization mode enabled on your API to configure an AppSync target');
+  });
+
+  test('fails when VISIBILITY is not "GLOBAL"', () => {
+    const sec_api = new appsync.GraphqlApi(stack, 'sec_api', {
+      name: 'no_iam_api',
+      visibility: appsync.Visibility.PRIVATE,
+      definition: appsync.Definition.fromFile(path.join(__dirname, 'appsync.test.graphql')),
+      authorizationConfig: { additionalAuthorizationModes: [{ authorizationType: appsync.AuthorizationType.IAM }] },
+    });
+
+    const graphQLOperation = 'mutation Publish($message: String!){ publish(message: $message) { event } }';
+    const rule = new events.Rule(stack, 'Rule', {
+      schedule: events.Schedule.rate(cdk.Duration.minutes(1)),
+    });
+
+    expect(() => {
+      rule.addTarget(new targets.AppSync(sec_api, {
+        graphQLOperation,
+        variables: events.RuleTargetInput.fromObject({
+          message: events.EventField.fromPath('$.detail'),
+        }),
+      }));
+    }).toThrow('Your API visibility must be "GLOBAL"');
+  });
+
 });
 
-test('fails when AWS_IAM auth is not configured', () => {
-  const noiam_api = new appsync.GraphqlApi(stack, 'noiamApi', {
-    name: 'no_iam_api',
-    definition: appsync.Definition.fromFile(path.join(__dirname, 'appsync.test.graphql')),
-  });
-
-  const graphQLOperation = 'mutation Publish($message: String!){ publish(message: $message) { event } }';
-  const rule = new events.Rule(stack, 'Rule', {
-    schedule: events.Schedule.rate(cdk.Duration.minutes(1)),
-  });
-
-  expect(() => {
-    rule.addTarget(new targets.AppSync(noiam_api, {
-      graphQLOperation,
-      variables: events.RuleTargetInput.fromObject({
-        message: events.EventField.fromPath('$.detail'),
-      }),
-    }));
-  }).toThrow('You must have AWS_IAM authorization mode enabled on your API to configure an AppSync target');
-});
-
-test('allows secondary auth with AWS_IAM configured', () => {
-  const sec_api = new appsync.GraphqlApi(stack, 'sec_api', {
-    name: 'no_iam_api',
-    definition: appsync.Definition.fromFile(path.join(__dirname, 'appsync.test.graphql')),
-    authorizationConfig: { additionalAuthorizationModes: [{ authorizationType: appsync.AuthorizationType.IAM }] },
-  });
-
-  const graphQLOperation = 'mutation Publish($message: String!){ publish(message: $message) { event } }';
-  const rule = new events.Rule(stack, 'Rule', {
-    schedule: events.Schedule.rate(cdk.Duration.minutes(1)),
-  });
-
-  expect(() => {
-    rule.addTarget(new targets.AppSync(sec_api, {
-      graphQLOperation,
-      variables: events.RuleTargetInput.fromObject({
-        message: events.EventField.fromPath('$.detail'),
-      }),
-    }));
-  }).not.toThrow('You must have AWS_IAM authorization mode enabled on your API to configure an AppSync target');
-});
-
-describe('with proper auth', () => {
+describe('AppSync API with AWS_IAM auth', () => {
   let api: appsync.GraphqlApi;
+  let stack: cdk.Stack;
   beforeEach(() => {
     stack = new cdk.Stack();
     api = new appsync.GraphqlApi(stack, 'baseApi', {
@@ -117,7 +144,6 @@ describe('with proper auth', () => {
       variables: events.RuleTargetInput.fromObject({
         message: events.EventField.fromPath('$.detail'),
       }),
-      mutationFields: ['publish'],
       deadLetterQueue: queue,
     }));
 
@@ -216,16 +242,18 @@ describe('with proper auth', () => {
         Version: '2012-10-17',
       },
     });
-
-  // console.log(stack)
   });
 
-  test('use single mutation field', () => {
+  test('a role is provided', () => {
 
     const graphQLOperation = 'mutation Publish($message: String!){ publish(message: $message) { event } }';
     const rule = new events.Rule(stack, 'Rule', {
       schedule: events.Schedule.rate(cdk.Duration.minutes(1)),
     });
+    const eventRole = new iam.Role(stack, 'role', {
+      assumedBy: new iam.ServicePrincipal('events.amazonaws.com'),
+    });
+    api.grantMutation(eventRole, 'publish');
 
     // WHEN
     rule.addTarget(new targets.AppSync(api, {
@@ -233,8 +261,7 @@ describe('with proper auth', () => {
       variables: events.RuleTargetInput.fromObject({
         message: events.EventField.fromPath('$.detail'),
       }),
-      mutationFields: ['publish'],
-    // mutationFields: ['publish', 'send', 'push'],
+      eventRole,
     }));
 
     // THEN
@@ -250,12 +277,44 @@ describe('with proper auth', () => {
           },
           RoleArn: {
             'Fn::GetAtt': [
-              'baseApiEventsRoleAC472BD7',
+              'roleC7B7E775',
               'Arn',
             ],
           },
         },
       ],
+    });
+  });
+
+  test('a role is not provided', () => {
+
+    const graphQLOperation = 'mutation Publish($message: String!){ publish(message: $message) { event } }';
+    const rule = new events.Rule(stack, 'Rule', {
+      schedule: events.Schedule.rate(cdk.Duration.minutes(1)),
+    });
+
+    // WHEN
+    rule.addTarget(new targets.AppSync(api, {
+      graphQLOperation,
+      variables: events.RuleTargetInput.fromObject({
+        message: events.EventField.fromPath('$.detail'),
+      }),
+    }));
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [{
+          Action: 'appsync:GraphQL',
+          Effect: 'Allow',
+          Resource:
+            {
+              'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':appsync:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':apis/', { 'Fn::GetAtt': ['baseApiCDA4D43A', 'ApiId'] }, '/types/Mutation/*']],
+            },
+
+        }],
+        Version: '2012-10-17',
+      },
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
@@ -273,77 +332,6 @@ describe('with proper auth', () => {
       },
     });
 
-    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
-      PolicyName: 'baseApiEventsRoleDefaultPolicy94199357',
-      PolicyDocument: {
-        Statement: [{
-          Action: 'appsync:GraphQL',
-          Effect: 'Allow',
-          Resource:
-        {
-          'Fn::Join': [
-            '', [
-              'arn:',
-              { Ref: 'AWS::Partition' },
-              ':appsync:',
-              { Ref: 'AWS::Region' },
-              ':',
-              { Ref: 'AWS::AccountId' },
-              ':apis/',
-              { 'Fn::GetAtt': ['baseApiCDA4D43A', 'ApiId'] },
-              '/types/Mutation/fields/publish',
-            ],
-          ],
-        },
-        }],
-        Version: '2012-10-17',
-      },
-    });
-
-  // console.log(stack)
-  });
-
-  test('use multiple mutation fields', () => {
-
-    const graphQLOperation = 'mutation Publish($message: String!){ publish(message: $message) { event } }';
-    const rule = new events.Rule(stack, 'Rule', {
-      schedule: events.Schedule.rate(cdk.Duration.minutes(1)),
-    });
-
-    // WHEN
-    rule.addTarget(new targets.AppSync(api, {
-      graphQLOperation,
-      variables: events.RuleTargetInput.fromObject({
-        message: events.EventField.fromPath('$.detail'),
-      }),
-      mutationFields: ['publish', 'send', 'push'],
-    }));
-
-    // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
-      PolicyName: 'baseApiEventsRoleDefaultPolicy94199357',
-      PolicyDocument: {
-        Statement: [{
-          Action: 'appsync:GraphQL',
-          Effect: 'Allow',
-          Resource:
-          [
-            {
-              'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':appsync:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':apis/', { 'Fn::GetAtt': ['baseApiCDA4D43A', 'ApiId'] }, '/types/Mutation/fields/publish']],
-            },
-            {
-              'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':appsync:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':apis/', { 'Fn::GetAtt': ['baseApiCDA4D43A', 'ApiId'] }, '/types/Mutation/fields/send']],
-            },
-            {
-              'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':appsync:', { Ref: 'AWS::Region' }, ':', { Ref: 'AWS::AccountId' }, ':apis/', { 'Fn::GetAtt': ['baseApiCDA4D43A', 'ApiId'] }, '/types/Mutation/fields/push']],
-            },
-          ],
-        }],
-        Version: '2012-10-17',
-      },
-    });
-
-  // console.log(stack)
   });
 
 });

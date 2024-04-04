@@ -104,7 +104,7 @@
             "ApiId"
            ]
           },
-          "/types/Mutation/fields/publish"
+          "/types/Mutation/*"
          ]
         ]
        }

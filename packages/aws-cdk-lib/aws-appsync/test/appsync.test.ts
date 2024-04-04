@@ -242,7 +242,7 @@ test('log retention will appear whenever logconfig is set', () => {
 
 test('when visibility is set it should be used when creating the API', () => {
   // WHEN
-  new appsync.GraphqlApi(stack, 'api-x-ray', {
+  const api2 = new appsync.GraphqlApi(stack, 'api-visibility', {
     authorizationConfig: {},
     name: 'api',
     schema: appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.test.graphql')),
@@ -253,6 +253,37 @@ test('when visibility is set it should be used when creating the API', () => {
   Template.fromStack(stack).hasResourceProperties('AWS::AppSync::GraphQLApi', {
     Visibility: 'PRIVATE',
   });
+
+  expect(api2.visibility === appsync.Visibility.PRIVATE);
+});
+
+test('when visibility is set to "GLOBAL" it should be used when creating the API', () => {
+  // WHEN
+  const api2 = new appsync.GraphqlApi(stack, 'api-visibility', {
+    authorizationConfig: {},
+    name: 'api',
+    schema: appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.test.graphql')),
+    visibility: appsync.Visibility.GLOBAL,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::AppSync::GraphQLApi', {
+    Visibility: 'GLOBAL',
+  });
+
+  expect(api2.visibility === appsync.Visibility.GLOBAL);
+});
+
+test('when visibility is not set, the construct value should defalut to GLOBAL', () => {
+  // WHEN
+  const api2 = new appsync.GraphqlApi(stack, 'api-visibility', {
+    authorizationConfig: {},
+    name: 'api',
+    schema: appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.test.graphql')),
+  });
+
+  // THEN
+  expect(api.visibility === appsync.Visibility.GLOBAL);
 });
 
 test('appsync should support deprecated schema property', () => {
