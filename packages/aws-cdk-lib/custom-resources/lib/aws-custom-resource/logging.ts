@@ -60,7 +60,7 @@ export interface LoggingOptions {
 }
 
 /**
- * A class used to configure Logging during for AwsCustomResource SDK calls.
+ * A class used to configure Logging during AwsCustomResource SDK calls.
  */
 export abstract class Logging {
   /**
@@ -69,7 +69,7 @@ export abstract class Logging {
    * This includes the event object, the API call response, all fields in the response object
    * returned by the lambda, and any errors encountered.
    */
-  public static on(): Logging {
+  public static all(): Logging {
     return new (class extends Logging {
       public constructor() {
         super({

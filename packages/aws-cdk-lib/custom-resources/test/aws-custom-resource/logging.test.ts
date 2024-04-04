@@ -3,7 +3,7 @@ import { Logging } from '../../lib/aws-custom-resource/logging';
 describe('render logging', () => {
   test('on', () => {
     // GIVEN
-    const logging = Logging.on();
+    const logging = Logging.all();
 
     // WHEN/THEN
     expect(logging._render()).toEqual({

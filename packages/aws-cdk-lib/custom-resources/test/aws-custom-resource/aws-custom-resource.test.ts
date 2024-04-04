@@ -1414,7 +1414,7 @@ describe('logging configuration', () => {
   test('with logging on set explicitly', () => {
     // GIVEN
     const stack = new Stack();
-    const logging = Logging.on();
+    const logging = Logging.all();
 
     // WHEN
     new AwsCustomResource(stack, 'AwsSdk', {
