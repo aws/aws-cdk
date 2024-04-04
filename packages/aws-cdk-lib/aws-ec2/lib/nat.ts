@@ -511,6 +511,7 @@ export class NatInstanceProviderV2 extends NatProvider implements IConnectable {
         securityGroup: this._securityGroup,
         keyPair: this.props.keyPair,
         keyName: this.props.keyName,
+        creditSpecification: this.props.creditSpecification,
         userData,
       });
       // NAT instance routes all traffic, both ways

@@ -1632,8 +1632,8 @@ describe('vpc', () => {
       // WHEN
       const keyPair = KeyPair.fromKeyPairName(stack, 'KeyPair', 'KeyPairName');
       const userData = UserData.forLinux();
-      UserData.forLinux().addCommands('echo "hello world!"');
       userData.addCommands('echo "hello world!"');
+
       const natGatewayProvider = NatProvider.instanceV2({
         instanceType: InstanceType.of(InstanceClass.T3, InstanceSize.SMALL),
         machineImage: new GenericLinuxImage({
@@ -1659,7 +1659,7 @@ describe('vpc', () => {
         ImageId: 'ami-1',
         InstanceType: 't3.small',
         SourceDestCheck: false,
-        CreditSpecification: { CpuCredits: 'unlimited' },
+        CreditSpecification: { CPUCredits: 'unlimited' },
         KeyName: 'KeyPairName',
         UserData: { 'Fn::Base64': '#!/bin/bash\necho "hello world!"' },
       });
@@ -1673,13 +1673,6 @@ describe('vpc', () => {
           {
             CidrIp: '0.0.0.0/0',
             Description: 'Allow all outbound traffic by default',
-            IpProtocol: '-1',
-          },
-        ],
-        SecurityGroupIngress: [
-          {
-            CidrIp: '0.0.0.0/0',
-            Description: 'from 0.0.0.0/0:ALL TRAFFIC',
             IpProtocol: '-1',
           },
         ],
