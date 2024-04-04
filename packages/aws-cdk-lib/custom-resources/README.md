@@ -616,15 +616,45 @@ By default, logging occurs during execution of the singleton Lambda used by a cu
 * SDK versioning information
 * Caught and uncaught errors
 
-The `logging` property defined on the `AwsSdkCall` interface allows control over what data is being logged on a per SDK call basis. This is configurable via an instance of the `Logging` class. The `Logging` class exposes three options that can be used to configure logging:
+The `logging` property defined on the `AwsSdkCall` interface allows control over what data is being logged on a per SDK call basis. This is configurable via an instance of the `Logging` class. The `Logging` class exposes two options that can be used to configure logging:
 1. `Logging.all()` which enables logging of all data. This is the default `logging` configuration.
-2. `Logging.off()` which prevents logging of all data.
-3. `Logging.selective()` which provides selective control over what data will be logged. This configuration option is particularly useful for situations where the API call response may contain sensitive information.
+2. `Logging.withDataHidden()` which prevents logging of all data associated with API call response including logging the raw API call response and the `Data` field on the Lambda handler response object. This configuration option is particularly useful for situations where the API call response may contain sensitive information.
 
-When using `Logging.selective()` as the `logging` configuration, the `LoggingOptions` interface is used to selective what data will be logged. The `LoggingOptions` interface exposes the following flags:
-* `logHandlerEvent` which determines whether or not the event object received by the Lambda handler will be logged
-* `logApiResponse` which determines whether or not the API call response will be logged
-* `logResponseObject` which determines whether or not the response object return by the Lambda handler will be logged. The following is an example of the structure of a response object:
+For further context about `Logging.withDataHidden()`, consider a user who might be making an API call that is returning sensitive information that they may want to keep hidden in CloudWatch Logs. To do this, they would configure `logging` with `Logging.withHiddenData()`:
+
+```ts
+const getParameter = new cr.AwsCustomResource(this, 'GetParameter', {
+  onUpdate: {
+    service: 'SSM',
+    action: 'GetParameter',
+    parameters: {
+      Name: 'my-parameter',
+      WithDecryption: true,
+    },
+    physicalResourceId: cr.PhysicalResourceId.of(Date.now().toString()),
+    logging: Logging.withHiddenData(),
+  },
+  policy: cr.AwsCustomResourcePolicy.fromSdkCalls({
+    resources: cr.AwsCustomResourcePolicy.ANY_RESOURCE,
+  }),
+});
+```
+
+With this configuration option set, the raw API call response would not be logged and the `Data` field of the response object would be hidden:
+
+```
+{
+  "Status": "SUCCESS",
+  "Reason": "OK",
+  "PhysicalResourceId": "1234567890123",
+  "StackId": "arn:aws:cloudformation:us-west-2:123456789012:stack/Test/043tyub2-194e-4cy2-a969-9891ghj6cd0d",
+  "RequestId": "a16y677a-a8b6-41a6-bf7b-7644586861a5",
+  "LogicalResourceId": "Sercret",
+  "NoEcho": false,
+}
+```
+
+For comparison, configuring `logging` with `Logging.all()` would result in the raw API call response being logged as well as the full response object:
 
 ```
 {
@@ -645,34 +675,6 @@ When using `Logging.selective()` as the `logging` configuration, the `LoggingOpt
     "Parameter.Version": 1
   }
 }
-```
-
-* `logSdkVersion` which determines whether or not the AWS SDK version will be logged
-* `logErrors` which determines whether or not caugh and uncaught errors encountered during execution will be logged
-
-For further context about selective `logging`, consider a user who may want to just see the event object and execution errors. To do this, they would configure `logging` with `Logging.selective()` and set the `logEventHandler` and `logErrors` flags to `true`:
-
-```ts
-const logging = Logging.selective({
-  logEventHandler: true,
-  logErrors: true,
-});
-
-const getParameter = new cr.AwsCustomResource(this, 'GetParameter', {
-  onUpdate: {
-    service: 'SSM',
-    action: 'GetParameter',
-    parameters: {
-      Name: 'my-parameter',
-      WithDecryption: true,
-    },
-    physicalResourceId: cr.PhysicalResourceId.of(Date.now().toString()),
-    logging,
-  },
-  policy: cr.AwsCustomResourcePolicy.fromSdkCalls({
-    resources: cr.AwsCustomResourcePolicy.ANY_RESOURCE,
-  }),
-});
 ```
 
 ### Custom Resource Examples
