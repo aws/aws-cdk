@@ -35,6 +35,9 @@ import {
   CpuCredits,
   InstanceClass,
   InstanceSize,
+  KeyPair,
+  SecurityGroup,
+  UserData,
 } from '../lib';
 
 describe('vpc', () => {
@@ -1597,6 +1600,68 @@ describe('vpc', () => {
         ImageId: 'ami-1',
         InstanceType: 'q86.mega',
         SourceDestCheck: false,
+      });
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::Route', {
+        RouteTableId: { Ref: 'TheVPCPrivateSubnet1RouteTableF6513BC2' },
+        DestinationCidrBlock: '0.0.0.0/0',
+        InstanceId: { Ref: 'TheVPCPublicSubnet1NatInstanceCC514192' },
+      });
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroup', {
+        SecurityGroupEgress: [
+          {
+            CidrIp: '0.0.0.0/0',
+            Description: 'Allow all outbound traffic by default',
+            IpProtocol: '-1',
+          },
+        ],
+        SecurityGroupIngress: [
+          {
+            CidrIp: '0.0.0.0/0',
+            Description: 'from 0.0.0.0/0:ALL TRAFFIC',
+            IpProtocol: '-1',
+          },
+        ],
+      });
+
+    });
+
+    test('Can customize NAT instances V2 properties', () => {
+      // GIVEN
+      const stack = getTestStack();
+
+      // WHEN
+      const keyPair = KeyPair.fromKeyPairName(stack, 'KeyPair', 'KeyPairName');
+      const userData = UserData.forLinux();
+      UserData.forLinux().addCommands('echo "hello world!"');
+      userData.addCommands('echo "hello world!"');
+      const natGatewayProvider = NatProvider.instanceV2({
+        instanceType: InstanceType.of(InstanceClass.T3, InstanceSize.SMALL),
+        machineImage: new GenericLinuxImage({
+          'us-east-1': 'ami-1',
+        }),
+
+        creditSpecification: CpuCredits.UNLIMITED,
+        defaultAllowedTraffic: NatTrafficDirection.OUTBOUND_ONLY,
+        keyPair,
+        userData,
+
+        // Unusuable in its current state
+        // The VPC is required to create the security group,
+        // but the NAT Provider is required to create the VPC
+        // See https://github.com/aws/aws-cdk/issues/27527
+        // securityGroup,
+      });
+      const vpc = new Vpc(stack, 'TheVPC', { natGatewayProvider });
+
+      // THEN
+      Template.fromStack(stack).resourceCountIs('AWS::EC2::Instance', 3);
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::Instance', {
+        ImageId: 'ami-1',
+        InstanceType: 't3.small',
+        SourceDestCheck: false,
+        CreditSpecification: { CpuCredits: 'unlimited' },
+        KeyName: 'KeyPairName',
+        UserData: { 'Fn::Base64': '#!/bin/bash\necho "hello world!"' },
       });
       Template.fromStack(stack).hasResourceProperties('AWS::EC2::Route', {
         RouteTableId: { Ref: 'TheVPCPrivateSubnet1RouteTableF6513BC2' },
