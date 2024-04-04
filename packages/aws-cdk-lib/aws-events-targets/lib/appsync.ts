@@ -16,8 +16,10 @@ export interface AppSyncGraphQLAPIProps extends TargetBaseProps {
 
   /**
    * The variables that are include in the GraphQL operation.
+   *
+   * @default - The entire event is used
    */
-  readonly variables: events.RuleTargetInput;
+  readonly variables?: events.RuleTargetInput;
 
   /**
    * The role to assume before invoking the target
@@ -51,11 +53,16 @@ export class AppSync implements events.IRuleTarget {
       throw new Error('You must have AWS_IAM authorization mode enabled on your API to configure an AppSync target');
     }
 
+    // make sure this is a 'public' (i.e.: 'GLOBAL') API
+    if (this.appsyncApi.visibility !== appsync.Visibility.GLOBAL) {
+      throw new Error('Your API visibility must be "GLOBAL"');
+    }
+
     const role = this.props.eventRole || singletonEventRole(this.appsyncApi);
 
     // if a role was not provided, attach a permission
     if (!this.props.eventRole) {
-      this.appsyncApi.grantMutation(role, ...(this.props.mutationFields ?? []));
+      this.appsyncApi.grantMutation(role);
     }
 
     return {
