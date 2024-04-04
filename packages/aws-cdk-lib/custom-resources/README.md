@@ -617,7 +617,7 @@ By default, logging occurs during execution of the singleton Lambda used by a cu
 * Caught and uncaught errors
 
 The `logging` property defined on the `AwsSdkCall` interface allows control over what data is being logged on a per SDK call basis. This is configurable via an instance of the `Logging` class. The `Logging` class exposes three options that can be used to configure logging:
-1. `Logging.on()` which enables logging of all data. This is the default `logging` configuration.
+1. `Logging.all()` which enables logging of all data. This is the default `logging` configuration.
 2. `Logging.off()` which prevents logging of all data.
 3. `Logging.selective()` which provides selective control over what data will be logged. This configuration option is particularly useful for situations where the API call response may contain sensitive information.
 
