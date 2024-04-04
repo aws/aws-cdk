@@ -1654,6 +1654,7 @@ describe('vpc', () => {
       new Vpc(stack, 'TheVPC', { natGatewayProvider });
 
       // THEN
+      expect(natGatewayProvider.gatewayInstances.length).toBe(3);
       Template.fromStack(stack).resourceCountIs('AWS::EC2::Instance', 3);
       Template.fromStack(stack).hasResourceProperties('AWS::EC2::Instance', {
         ImageId: 'ami-1',
@@ -1754,17 +1755,19 @@ describe('vpc', () => {
       const stack = getTestStack();
 
       // WHEN
-      new Vpc(stack, 'TheVPC', {
-        natGatewayProvider: NatProvider.instanceV2({
-          instanceType: new InstanceType('q86.mega'),
-          machineImage: new GenericLinuxImage({
-            'us-east-1': 'ami-1',
-          }),
+      const natGatewayProvider = NatProvider.instanceV2({
+        instanceType: new InstanceType('q86.mega'),
+        machineImage: new GenericLinuxImage({
+          'us-east-1': 'ami-1',
         }),
+      });
+      new Vpc(stack, 'TheVPC', {
+        natGatewayProvider,
         natGateways: 1,
       });
 
       // THEN
+      expect(natGatewayProvider.gatewayInstances.length).toBe(1);
       Template.fromStack(stack).resourceCountIs('AWS::EC2::Instance', 1);
     });
 

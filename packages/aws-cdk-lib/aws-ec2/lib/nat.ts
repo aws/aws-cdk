@@ -446,7 +446,7 @@ class PrefSet<A> {
 export class NatInstanceProviderV2 extends NatProvider implements IConnectable {
   /**
    * Amazon Linux 2023 NAT instance user data commands
-   *  Enable iptables on the instance, enable persistent IP forwarding, configure NAT on instance
+   * Enable iptables on the instance, enable persistent IP forwarding, configure NAT on instance
    * @see https://docs.aws.amazon.com/vpc/latest/userguide/VPC_NAT_Instance.html#create-nat-ami
    */
   public static readonly DEFAULT_USER_DATA_COMMANDS = [
@@ -463,6 +463,13 @@ export class NatInstanceProviderV2 extends NatProvider implements IConnectable {
   private gateways: PrefSet<Instance> = new PrefSet<Instance>();
   private _securityGroup?: ISecurityGroup;
   private _connections?: Connections;
+
+  /**
+   * Array of gateway instances spawned by the provider after internal configuration
+   */
+  public get gatewayInstances(): Instance[] {
+    return this.gateways.values().map(([, instance]) => instance);
+  }
 
   constructor(private readonly props: NatInstanceProps) {
     super();
