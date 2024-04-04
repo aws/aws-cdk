@@ -240,7 +240,7 @@ new ec2.Vpc(this, 'TheVPC', {
   natGateways: 2,
 });
 
-for (const gateway of natGatewayProvider.gatewayInstances) {
+for (const gateway of provider.gatewayInstances) {
   bucket.grantWrite(gateway);
 }
 ```
