@@ -19,12 +19,12 @@ const amznLinux2023 = ec2.MachineImage.latestAmazonLinux2023({
 
 // Pick a Windows edition to use
 const windows2022 = ec2.MachineImage.latestWindows(
-  ec2.WindowsLatestVersion.WINDOWS_SERVER_2022_ENGLISH_FULL_BASE,
+  ec2.WindowsVersion.WINDOWS_SERVER_2022_ENGLISH_FULL_BASE,
 );
 
 // You can also select a specific datestamped version of Windows
 // This will prevent the CDK from replacing your instance when
-// a new version of `WindowsLatestVersion.WINDOWS_SERVER_2022_ENGLISH_FULL_BASE` becomes available
+// a new version of `WindowsVersion.WINDOWS_SERVER_2022_ENGLISH_FULL_BASE` becomes available
 const windows2024_02_14 = ec2.MachineImage.specificWindows(
   ec2.WindowsSpecificVersion.WINDOWS_SERVER_2022_ENGLISH_FULL_BASE_2024_02_14,
 );

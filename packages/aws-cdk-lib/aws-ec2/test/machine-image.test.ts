@@ -439,7 +439,7 @@ describe('windows', () => {
   test('latestWindows', () => {
     // WHEN
     ec2.MachineImage.latestWindows(
-      ec2.WindowsLatestVersion.WINDOWS_SERVER_2022_ENGLISH_CORE_BASE,
+      ec2.WindowsVersion.WINDOWS_SERVER_2022_ENGLISH_CORE_BASE,
     ).getImage(stack);
 
     // THEN
@@ -453,7 +453,7 @@ describe('windows', () => {
     app = new App();
     stack = new Stack(app, 'Stack');
     ec2.MachineImage.latestWindows(
-      ec2.WindowsLatestVersion.WINDOWS_SERVER_2022_ENGLISH_CORE_BASE,
+      ec2.WindowsVersion.WINDOWS_SERVER_2022_ENGLISH_CORE_BASE,
     ).getImage(stack);
 
     // THEN
