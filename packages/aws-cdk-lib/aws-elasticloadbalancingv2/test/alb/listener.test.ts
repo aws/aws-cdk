@@ -1698,6 +1698,71 @@ describe('tests', () => {
     }).toThrow(/Specify at most one/);
   });
 
+  describe('Rule suffix for logicalId', () => {
+    interface TestCase {
+      readonly removeRuleSuffixFromLogicalId: boolean;
+    };
+    const testCases: TestCase[] = [
+      { removeRuleSuffixFromLogicalId: true },
+      { removeRuleSuffixFromLogicalId: false },
+    ];
+    test.each<TestCase>(testCases)('addTargetGroups %s', ({ removeRuleSuffixFromLogicalId }) => {
+      // GIVEN
+      const identifierToken = 'SuperMagicToken';
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'TestStack', { env: {account: '123456789012', region: 'us-east-1'} });
+      const vpc = new ec2.Vpc(stack, 'Stack');
+      const targetGroup = new elbv2.ApplicationTargetGroup(stack, 'TargetGroup', { vpc, port: 80 });
+      const listener = elbv2.ApplicationListener.fromLookup(stack, 'a', {
+        loadBalancerTags: {
+          some: 'tag',
+        },
+      });
+
+      // WHEN
+      listener.addTargetGroups(identifierToken, {
+        conditions: [elbv2.ListenerCondition.pathPatterns(['/fake'])],
+        priority: 42,
+        targetGroups: [targetGroup],
+        removeRuleSuffixFromLogicalId,
+      });
+
+      // THEN
+      const expectedLogicalId = removeRuleSuffixFromLogicalId ? identifierToken : identifierToken + 'Rule';
+      const applicationListenerRule = listener.node.children.find((v)=> v.hasOwnProperty('conditions'));
+      expect(applicationListenerRule).toBeDefined();
+      expect(applicationListenerRule!.node.id).toBe(expectedLogicalId);
+    });
+
+    test.each<TestCase>(testCases)('addAction %s', ({ removeRuleSuffixFromLogicalId }) => {
+      // GIVEN
+      const identifierToken = 'SuperMagicToken';
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'TestStack', { env: {account: '123456789012', region: 'us-east-1'} });
+      const vpc = new ec2.Vpc(stack, 'Stack');
+      const targetGroup = new elbv2.ApplicationTargetGroup(stack, 'TargetGroup', { vpc, port: 80 });
+      const listener = elbv2.ApplicationListener.fromLookup(stack, 'a', {
+        loadBalancerTags: {
+          some: 'tag',
+        },
+      });
+
+      // WHEN
+      listener.addAction(identifierToken, {
+        action: elbv2.ListenerAction.weightedForward([{ targetGroup, weight: 1 }]),
+        conditions: [elbv2.ListenerCondition.pathPatterns(['/fake'])],
+        priority: 42,
+        removeRuleSuffixFromLogicalId,
+      });
+
+      // THEN
+      const expectedLogicalId = removeRuleSuffixFromLogicalId ? identifierToken : identifierToken + 'Rule';
+      const applicationListenerRule = listener.node.children.find((v)=> v.hasOwnProperty('conditions'));
+      expect(applicationListenerRule).toBeDefined();
+      expect(applicationListenerRule!.node.id).toBe(expectedLogicalId);
+    });
+  });
+
   describe('lookup', () => {
     test('Can look up an ApplicationListener', () => {
       // GIVEN
