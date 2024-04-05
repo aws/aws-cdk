@@ -1,6 +1,6 @@
 import { Construct } from 'constructs';
 import { DnsValidatedCertificate, ICertificate, Certificate, CertificateValidation } from '../../aws-certificatemanager';
-import { CloudFrontWebDistribution, OriginProtocolPolicy, PriceClass, ViewerCertificate, ViewerProtocolPolicy } from '../../aws-cloudfront';
+import { CloudFrontWebDistribution, OriginProtocolPolicy, PriceClass, ViewerCertificate, ViewerProtocolPolicy, LoggingConfiguration } from '../../aws-cloudfront';
 import { ARecord, AaaaRecord, IHostedZone, RecordTarget } from '../../aws-route53';
 import { CloudFrontTarget } from '../../aws-route53-targets';
 import { BlockPublicAccess, Bucket, RedirectProtocol } from '../../aws-s3';
@@ -46,6 +46,15 @@ export interface HttpsRedirectProps {
    * @default - A new certificate is created in us-east-1 (N. Virginia)
    */
   readonly certificate?: ICertificate;
+
+  /**
+   * The AWS Certificate Manager (ACM) certificate that will be associated with
+   * the CloudFront distribution that will be created. If provided, the certificate must be
+   * stored in us-east-1 (N. Virginia)
+   *
+   * @default - Access logging won't be enabled on the resulting Cloudfront distribution
+   */
+  readonly loggingConfig?: LoggingConfiguration;
 }
 
 /**
@@ -58,6 +67,10 @@ export class HttpsRedirect extends Construct {
 
     const domainNames = props.recordNames ?? [props.zone.zoneName];
 
+    if (props.loggingConfig) {
+
+    }
+    
     if (props.certificate) {
       const certificateRegion = Stack.of(this).splitArn(props.certificate.certificateArn, ArnFormat.SLASH_RESOURCE_NAME).region;
       if (!Token.isUnresolved(certificateRegion) && certificateRegion !== 'us-east-1') {
