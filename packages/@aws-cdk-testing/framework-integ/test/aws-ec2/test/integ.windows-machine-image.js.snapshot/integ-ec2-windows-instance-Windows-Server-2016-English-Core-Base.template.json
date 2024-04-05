@@ -10,7 +10,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base/Vpc"
+      "Value": "integ-ec2-windows-instance-Windows-Server-2016-English-Core-Base/Vpc"
      }
     ]
    }
@@ -32,7 +32,7 @@
      },
      {
       "Key": "Name",
-      "Value": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base/Vpc/PublicSubnet1"
+      "Value": "integ-ec2-windows-instance-Windows-Server-2016-English-Core-Base/Vpc/PublicSubnet1"
      }
     ],
     "VpcId": {
@@ -46,7 +46,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base/Vpc/PublicSubnet1"
+      "Value": "integ-ec2-windows-instance-Windows-Server-2016-English-Core-Base/Vpc/PublicSubnet1"
      }
     ],
     "VpcId": {
@@ -87,7 +87,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base/Vpc/PublicSubnet1"
+      "Value": "integ-ec2-windows-instance-Windows-Server-2016-English-Core-Base/Vpc/PublicSubnet1"
      }
     ]
    }
@@ -107,7 +107,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base/Vpc/PublicSubnet1"
+      "Value": "integ-ec2-windows-instance-Windows-Server-2016-English-Core-Base/Vpc/PublicSubnet1"
      }
     ]
    },
@@ -133,7 +133,7 @@
      },
      {
       "Key": "Name",
-      "Value": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base/Vpc/PublicSubnet2"
+      "Value": "integ-ec2-windows-instance-Windows-Server-2016-English-Core-Base/Vpc/PublicSubnet2"
      }
     ],
     "VpcId": {
@@ -147,7 +147,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base/Vpc/PublicSubnet2"
+      "Value": "integ-ec2-windows-instance-Windows-Server-2016-English-Core-Base/Vpc/PublicSubnet2"
      }
     ],
     "VpcId": {
@@ -188,7 +188,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base/Vpc/PublicSubnet2"
+      "Value": "integ-ec2-windows-instance-Windows-Server-2016-English-Core-Base/Vpc/PublicSubnet2"
      }
     ]
    }
@@ -208,7 +208,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base/Vpc/PublicSubnet2"
+      "Value": "integ-ec2-windows-instance-Windows-Server-2016-English-Core-Base/Vpc/PublicSubnet2"
      }
     ]
    },
@@ -234,7 +234,7 @@
      },
      {
       "Key": "Name",
-      "Value": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base/Vpc/PublicSubnet3"
+      "Value": "integ-ec2-windows-instance-Windows-Server-2016-English-Core-Base/Vpc/PublicSubnet3"
      }
     ],
     "VpcId": {
@@ -248,7 +248,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base/Vpc/PublicSubnet3"
+      "Value": "integ-ec2-windows-instance-Windows-Server-2016-English-Core-Base/Vpc/PublicSubnet3"
      }
     ],
     "VpcId": {
@@ -289,7 +289,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base/Vpc/PublicSubnet3"
+      "Value": "integ-ec2-windows-instance-Windows-Server-2016-English-Core-Base/Vpc/PublicSubnet3"
      }
     ]
    }
@@ -309,7 +309,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base/Vpc/PublicSubnet3"
+      "Value": "integ-ec2-windows-instance-Windows-Server-2016-English-Core-Base/Vpc/PublicSubnet3"
      }
     ]
    },
@@ -335,7 +335,7 @@
      },
      {
       "Key": "Name",
-      "Value": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base/Vpc/PrivateSubnet1"
+      "Value": "integ-ec2-windows-instance-Windows-Server-2016-English-Core-Base/Vpc/PrivateSubnet1"
      }
     ],
     "VpcId": {
@@ -349,7 +349,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base/Vpc/PrivateSubnet1"
+      "Value": "integ-ec2-windows-instance-Windows-Server-2016-English-Core-Base/Vpc/PrivateSubnet1"
      }
     ],
     "VpcId": {
@@ -397,7 +397,7 @@
      },
      {
       "Key": "Name",
-      "Value": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base/Vpc/PrivateSubnet2"
+      "Value": "integ-ec2-windows-instance-Windows-Server-2016-English-Core-Base/Vpc/PrivateSubnet2"
      }
     ],
     "VpcId": {
@@ -411,7 +411,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base/Vpc/PrivateSubnet2"
+      "Value": "integ-ec2-windows-instance-Windows-Server-2016-English-Core-Base/Vpc/PrivateSubnet2"
      }
     ],
     "VpcId": {
@@ -459,7 +459,7 @@
      },
      {
       "Key": "Name",
-      "Value": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base/Vpc/PrivateSubnet3"
+      "Value": "integ-ec2-windows-instance-Windows-Server-2016-English-Core-Base/Vpc/PrivateSubnet3"
      }
     ],
     "VpcId": {
@@ -473,7 +473,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base/Vpc/PrivateSubnet3"
+      "Value": "integ-ec2-windows-instance-Windows-Server-2016-English-Core-Base/Vpc/PrivateSubnet3"
      }
     ],
     "VpcId": {
@@ -510,7 +510,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base/Vpc"
+      "Value": "integ-ec2-windows-instance-Windows-Server-2016-English-Core-Base/Vpc"
      }
     ]
    }
@@ -529,7 +529,7 @@
   "InstanceInstanceSecurityGroupF0E2D5BE": {
    "Type": "AWS::EC2::SecurityGroup",
    "Properties": {
-    "GroupDescription": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base/Instance/InstanceSecurityGroup",
+    "GroupDescription": "integ-ec2-windows-instance-Windows-Server-2016-English-Core-Base/Instance/InstanceSecurityGroup",
     "SecurityGroupEgress": [
      {
       "CidrIp": "0.0.0.0/0",
@@ -540,7 +540,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base/Instance"
+      "Value": "integ-ec2-windows-instance-Windows-Server-2016-English-Core-Base/Instance"
      }
     ],
     "VpcId": {
@@ -566,7 +566,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base/Instance"
+      "Value": "integ-ec2-windows-instance-Windows-Server-2016-English-Core-Base/Instance"
      }
     ]
    }
@@ -589,7 +589,7 @@
      "Ref": "InstanceInstanceProfileAB5AEF02"
     },
     "ImageId": {
-     "Ref": "SsmParameterValueawsserviceamiwindowslatestWindowsServer2022EnglishFullBaseC96584B6F00A464EAD1953AFF4B05118Parameter"
+     "Ref": "SsmParameterValueawsserviceamiwindowslatestWindowsServer2016EnglishCoreBaseC96584B6F00A464EAD1953AFF4B05118Parameter"
     },
     "InstanceType": "t3.nano",
     "SecurityGroupIds": [
@@ -606,7 +606,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base/Instance"
+      "Value": "integ-ec2-windows-instance-Windows-Server-2016-English-Core-Base/Instance"
      }
     ],
     "UserData": {
@@ -619,9 +619,9 @@
   }
  },
  "Parameters": {
-  "SsmParameterValueawsserviceamiwindowslatestWindowsServer2022EnglishFullBaseC96584B6F00A464EAD1953AFF4B05118Parameter": {
+  "SsmParameterValueawsserviceamiwindowslatestWindowsServer2016EnglishCoreBaseC96584B6F00A464EAD1953AFF4B05118Parameter": {
    "Type": "AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>",
-   "Default": "/aws/service/ami-windows-latest/Windows_Server-2022-English-Full-Base"
+   "Default": "/aws/service/ami-windows-latest/Windows_Server-2016-English-Core-Base"
   },
   "BootstrapVersion": {
    "Type": "AWS::SSM::Parameter::Value<String>",

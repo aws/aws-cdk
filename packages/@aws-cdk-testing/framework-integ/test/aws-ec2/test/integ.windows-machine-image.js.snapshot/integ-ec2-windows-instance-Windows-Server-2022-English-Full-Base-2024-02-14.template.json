@@ -10,7 +10,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc"
+      "Value": "integ-ec2-windows-instance-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc"
      }
     ]
    }
@@ -32,7 +32,7 @@
      },
      {
       "Key": "Name",
-      "Value": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc/PublicSubnet1"
+      "Value": "integ-ec2-windows-instance-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc/PublicSubnet1"
      }
     ],
     "VpcId": {
@@ -46,7 +46,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc/PublicSubnet1"
+      "Value": "integ-ec2-windows-instance-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc/PublicSubnet1"
      }
     ],
     "VpcId": {
@@ -87,7 +87,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc/PublicSubnet1"
+      "Value": "integ-ec2-windows-instance-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc/PublicSubnet1"
      }
     ]
    }
@@ -107,7 +107,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc/PublicSubnet1"
+      "Value": "integ-ec2-windows-instance-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc/PublicSubnet1"
      }
     ]
    },
@@ -133,7 +133,7 @@
      },
      {
       "Key": "Name",
-      "Value": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc/PublicSubnet2"
+      "Value": "integ-ec2-windows-instance-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc/PublicSubnet2"
      }
     ],
     "VpcId": {
@@ -147,7 +147,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc/PublicSubnet2"
+      "Value": "integ-ec2-windows-instance-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc/PublicSubnet2"
      }
     ],
     "VpcId": {
@@ -188,7 +188,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc/PublicSubnet2"
+      "Value": "integ-ec2-windows-instance-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc/PublicSubnet2"
      }
     ]
    }
@@ -208,7 +208,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc/PublicSubnet2"
+      "Value": "integ-ec2-windows-instance-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc/PublicSubnet2"
      }
     ]
    },
@@ -234,7 +234,7 @@
      },
      {
       "Key": "Name",
-      "Value": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc/PublicSubnet3"
+      "Value": "integ-ec2-windows-instance-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc/PublicSubnet3"
      }
     ],
     "VpcId": {
@@ -248,7 +248,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc/PublicSubnet3"
+      "Value": "integ-ec2-windows-instance-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc/PublicSubnet3"
      }
     ],
     "VpcId": {
@@ -289,7 +289,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc/PublicSubnet3"
+      "Value": "integ-ec2-windows-instance-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc/PublicSubnet3"
      }
     ]
    }
@@ -309,7 +309,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc/PublicSubnet3"
+      "Value": "integ-ec2-windows-instance-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc/PublicSubnet3"
      }
     ]
    },
@@ -335,7 +335,7 @@
      },
      {
       "Key": "Name",
-      "Value": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc/PrivateSubnet1"
+      "Value": "integ-ec2-windows-instance-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc/PrivateSubnet1"
      }
     ],
     "VpcId": {
@@ -349,7 +349,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc/PrivateSubnet1"
+      "Value": "integ-ec2-windows-instance-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc/PrivateSubnet1"
      }
     ],
     "VpcId": {
@@ -397,7 +397,7 @@
      },
      {
       "Key": "Name",
-      "Value": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc/PrivateSubnet2"
+      "Value": "integ-ec2-windows-instance-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc/PrivateSubnet2"
      }
     ],
     "VpcId": {
@@ -411,7 +411,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc/PrivateSubnet2"
+      "Value": "integ-ec2-windows-instance-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc/PrivateSubnet2"
      }
     ],
     "VpcId": {
@@ -459,7 +459,7 @@
      },
      {
       "Key": "Name",
-      "Value": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc/PrivateSubnet3"
+      "Value": "integ-ec2-windows-instance-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc/PrivateSubnet3"
      }
     ],
     "VpcId": {
@@ -473,7 +473,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc/PrivateSubnet3"
+      "Value": "integ-ec2-windows-instance-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc/PrivateSubnet3"
      }
     ],
     "VpcId": {
@@ -510,7 +510,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc"
+      "Value": "integ-ec2-windows-instance-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc"
      }
     ]
    }
@@ -529,7 +529,7 @@
   "InstanceInstanceSecurityGroupF0E2D5BE": {
    "Type": "AWS::EC2::SecurityGroup",
    "Properties": {
-    "GroupDescription": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base-2024-02-14/Instance/InstanceSecurityGroup",
+    "GroupDescription": "integ-ec2-windows-instance-Windows-Server-2022-English-Full-Base-2024-02-14/Instance/InstanceSecurityGroup",
     "SecurityGroupEgress": [
      {
       "CidrIp": "0.0.0.0/0",
@@ -540,7 +540,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base-2024-02-14/Instance"
+      "Value": "integ-ec2-windows-instance-Windows-Server-2022-English-Full-Base-2024-02-14/Instance"
      }
     ],
     "VpcId": {
@@ -566,7 +566,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base-2024-02-14/Instance"
+      "Value": "integ-ec2-windows-instance-Windows-Server-2022-English-Full-Base-2024-02-14/Instance"
      }
     ]
    }
@@ -604,7 +604,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base-2024-02-14/Instance"
+      "Value": "integ-ec2-windows-instance-Windows-Server-2022-English-Full-Base-2024-02-14/Instance"
      }
     ],
     "UserData": {

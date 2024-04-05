@@ -4,17 +4,353 @@
     "id": "App",
     "path": "",
     "children": {
-      "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base": {
-        "id": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base",
-        "path": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base",
+      "integ-ec2-windows-image-id-Windows-Server-2022-Japanese-Full-SQL-2017-Web": {
+        "id": "integ-ec2-windows-image-id-Windows-Server-2022-Japanese-Full-SQL-2017-Web",
+        "path": "integ-ec2-windows-image-id-Windows-Server-2022-Japanese-Full-SQL-2017-Web",
+        "children": {
+          "SsmParameterValue:--aws--service--ami-windows-latest--Windows_Server-2022-Japanese-Full-SQL_2017_Web:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": {
+            "id": "SsmParameterValue:--aws--service--ami-windows-latest--Windows_Server-2022-Japanese-Full-SQL_2017_Web:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter",
+            "path": "integ-ec2-windows-image-id-Windows-Server-2022-Japanese-Full-SQL-2017-Web/SsmParameterValue:--aws--service--ami-windows-latest--Windows_Server-2022-Japanese-Full-SQL_2017_Web:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "SsmParameterValue:--aws--service--ami-windows-latest--Windows_Server-2022-Japanese-Full-SQL_2017_Web:C96584B6-F00A-464E-AD19-53AFF4B05118": {
+            "id": "SsmParameterValue:--aws--service--ami-windows-latest--Windows_Server-2022-Japanese-Full-SQL_2017_Web:C96584B6-F00A-464E-AD19-53AFF4B05118",
+            "path": "integ-ec2-windows-image-id-Windows-Server-2022-Japanese-Full-SQL-2017-Web/SsmParameterValue:--aws--service--ami-windows-latest--Windows_Server-2022-Japanese-Full-SQL_2017_Web:C96584B6-F00A-464E-AD19-53AFF4B05118",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.Resource",
+              "version": "0.0.0"
+            }
+          },
+          "ImageId": {
+            "id": "ImageId",
+            "path": "integ-ec2-windows-image-id-Windows-Server-2022-Japanese-Full-SQL-2017-Web/ImageId",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnOutput",
+              "version": "0.0.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "integ-ec2-windows-image-id-Windows-Server-2022-Japanese-Full-SQL-2017-Web/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "integ-ec2-windows-image-id-Windows-Server-2022-Japanese-Full-SQL-2017-Web/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnRule",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "integ-ec2-windows-image-id-Windows-Server-2016-English-Full-Base": {
+        "id": "integ-ec2-windows-image-id-Windows-Server-2016-English-Full-Base",
+        "path": "integ-ec2-windows-image-id-Windows-Server-2016-English-Full-Base",
+        "children": {
+          "SsmParameterValue:--aws--service--ami-windows-latest--Windows_Server-2016-English-Full-Base:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": {
+            "id": "SsmParameterValue:--aws--service--ami-windows-latest--Windows_Server-2016-English-Full-Base:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter",
+            "path": "integ-ec2-windows-image-id-Windows-Server-2016-English-Full-Base/SsmParameterValue:--aws--service--ami-windows-latest--Windows_Server-2016-English-Full-Base:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "SsmParameterValue:--aws--service--ami-windows-latest--Windows_Server-2016-English-Full-Base:C96584B6-F00A-464E-AD19-53AFF4B05118": {
+            "id": "SsmParameterValue:--aws--service--ami-windows-latest--Windows_Server-2016-English-Full-Base:C96584B6-F00A-464E-AD19-53AFF4B05118",
+            "path": "integ-ec2-windows-image-id-Windows-Server-2016-English-Full-Base/SsmParameterValue:--aws--service--ami-windows-latest--Windows_Server-2016-English-Full-Base:C96584B6-F00A-464E-AD19-53AFF4B05118",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.Resource",
+              "version": "0.0.0"
+            }
+          },
+          "ImageId": {
+            "id": "ImageId",
+            "path": "integ-ec2-windows-image-id-Windows-Server-2016-English-Full-Base/ImageId",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnOutput",
+              "version": "0.0.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "integ-ec2-windows-image-id-Windows-Server-2016-English-Full-Base/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "integ-ec2-windows-image-id-Windows-Server-2016-English-Full-Base/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnRule",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "integ-ec2-windows-image-id-Windows-Server-2019-English-Full-Base": {
+        "id": "integ-ec2-windows-image-id-Windows-Server-2019-English-Full-Base",
+        "path": "integ-ec2-windows-image-id-Windows-Server-2019-English-Full-Base",
+        "children": {
+          "SsmParameterValue:--aws--service--ami-windows-latest--Windows_Server-2019-English-Full-Base:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": {
+            "id": "SsmParameterValue:--aws--service--ami-windows-latest--Windows_Server-2019-English-Full-Base:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter",
+            "path": "integ-ec2-windows-image-id-Windows-Server-2019-English-Full-Base/SsmParameterValue:--aws--service--ami-windows-latest--Windows_Server-2019-English-Full-Base:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "SsmParameterValue:--aws--service--ami-windows-latest--Windows_Server-2019-English-Full-Base:C96584B6-F00A-464E-AD19-53AFF4B05118": {
+            "id": "SsmParameterValue:--aws--service--ami-windows-latest--Windows_Server-2019-English-Full-Base:C96584B6-F00A-464E-AD19-53AFF4B05118",
+            "path": "integ-ec2-windows-image-id-Windows-Server-2019-English-Full-Base/SsmParameterValue:--aws--service--ami-windows-latest--Windows_Server-2019-English-Full-Base:C96584B6-F00A-464E-AD19-53AFF4B05118",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.Resource",
+              "version": "0.0.0"
+            }
+          },
+          "ImageId": {
+            "id": "ImageId",
+            "path": "integ-ec2-windows-image-id-Windows-Server-2019-English-Full-Base/ImageId",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnOutput",
+              "version": "0.0.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "integ-ec2-windows-image-id-Windows-Server-2019-English-Full-Base/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "integ-ec2-windows-image-id-Windows-Server-2019-English-Full-Base/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnRule",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "integ-ec2-windows-image-id-Windows-Server-2022-English-Core-ECS-Optimized": {
+        "id": "integ-ec2-windows-image-id-Windows-Server-2022-English-Core-ECS-Optimized",
+        "path": "integ-ec2-windows-image-id-Windows-Server-2022-English-Core-ECS-Optimized",
+        "children": {
+          "SsmParameterValue:--aws--service--ami-windows-latest--Windows_Server-2022-English-Core-ECS_Optimized:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": {
+            "id": "SsmParameterValue:--aws--service--ami-windows-latest--Windows_Server-2022-English-Core-ECS_Optimized:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter",
+            "path": "integ-ec2-windows-image-id-Windows-Server-2022-English-Core-ECS-Optimized/SsmParameterValue:--aws--service--ami-windows-latest--Windows_Server-2022-English-Core-ECS_Optimized:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "SsmParameterValue:--aws--service--ami-windows-latest--Windows_Server-2022-English-Core-ECS_Optimized:C96584B6-F00A-464E-AD19-53AFF4B05118": {
+            "id": "SsmParameterValue:--aws--service--ami-windows-latest--Windows_Server-2022-English-Core-ECS_Optimized:C96584B6-F00A-464E-AD19-53AFF4B05118",
+            "path": "integ-ec2-windows-image-id-Windows-Server-2022-English-Core-ECS-Optimized/SsmParameterValue:--aws--service--ami-windows-latest--Windows_Server-2022-English-Core-ECS_Optimized:C96584B6-F00A-464E-AD19-53AFF4B05118",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.Resource",
+              "version": "0.0.0"
+            }
+          },
+          "ImageId": {
+            "id": "ImageId",
+            "path": "integ-ec2-windows-image-id-Windows-Server-2022-English-Core-ECS-Optimized/ImageId",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnOutput",
+              "version": "0.0.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "integ-ec2-windows-image-id-Windows-Server-2022-English-Core-ECS-Optimized/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "integ-ec2-windows-image-id-Windows-Server-2022-English-Core-ECS-Optimized/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnRule",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "integ-ec2-windows-image-id-Windows-Server-2022-Japanese-Full-SQL-2017-Web-2023-12-13": {
+        "id": "integ-ec2-windows-image-id-Windows-Server-2022-Japanese-Full-SQL-2017-Web-2023-12-13",
+        "path": "integ-ec2-windows-image-id-Windows-Server-2022-Japanese-Full-SQL-2017-Web-2023-12-13",
+        "children": {
+          "ImageId": {
+            "id": "ImageId",
+            "path": "integ-ec2-windows-image-id-Windows-Server-2022-Japanese-Full-SQL-2017-Web-2023-12-13/ImageId",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnOutput",
+              "version": "0.0.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "integ-ec2-windows-image-id-Windows-Server-2022-Japanese-Full-SQL-2017-Web-2023-12-13/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "integ-ec2-windows-image-id-Windows-Server-2022-Japanese-Full-SQL-2017-Web-2023-12-13/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnRule",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "integ-ec2-windows-image-id-Windows-Server-2016-English-Full-Base-2023-11-15": {
+        "id": "integ-ec2-windows-image-id-Windows-Server-2016-English-Full-Base-2023-11-15",
+        "path": "integ-ec2-windows-image-id-Windows-Server-2016-English-Full-Base-2023-11-15",
+        "children": {
+          "ImageId": {
+            "id": "ImageId",
+            "path": "integ-ec2-windows-image-id-Windows-Server-2016-English-Full-Base-2023-11-15/ImageId",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnOutput",
+              "version": "0.0.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "integ-ec2-windows-image-id-Windows-Server-2016-English-Full-Base-2023-11-15/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "integ-ec2-windows-image-id-Windows-Server-2016-English-Full-Base-2023-11-15/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnRule",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "integ-ec2-windows-image-id-Windows-Server-2019-English-Full-Base-2023-12-13": {
+        "id": "integ-ec2-windows-image-id-Windows-Server-2019-English-Full-Base-2023-12-13",
+        "path": "integ-ec2-windows-image-id-Windows-Server-2019-English-Full-Base-2023-12-13",
+        "children": {
+          "ImageId": {
+            "id": "ImageId",
+            "path": "integ-ec2-windows-image-id-Windows-Server-2019-English-Full-Base-2023-12-13/ImageId",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnOutput",
+              "version": "0.0.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "integ-ec2-windows-image-id-Windows-Server-2019-English-Full-Base-2023-12-13/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "integ-ec2-windows-image-id-Windows-Server-2019-English-Full-Base-2023-12-13/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnRule",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "integ-ec2-windows-image-id-Windows-Server-2022-English-Core-ECS-Optimized-2024-01-10": {
+        "id": "integ-ec2-windows-image-id-Windows-Server-2022-English-Core-ECS-Optimized-2024-01-10",
+        "path": "integ-ec2-windows-image-id-Windows-Server-2022-English-Core-ECS-Optimized-2024-01-10",
+        "children": {
+          "ImageId": {
+            "id": "ImageId",
+            "path": "integ-ec2-windows-image-id-Windows-Server-2022-English-Core-ECS-Optimized-2024-01-10/ImageId",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnOutput",
+              "version": "0.0.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "integ-ec2-windows-image-id-Windows-Server-2022-English-Core-ECS-Optimized-2024-01-10/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "integ-ec2-windows-image-id-Windows-Server-2022-English-Core-ECS-Optimized-2024-01-10/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnRule",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "integ-ec2-windows-instance-Windows-Server-2016-English-Core-Base": {
+        "id": "integ-ec2-windows-instance-Windows-Server-2016-English-Core-Base",
+        "path": "integ-ec2-windows-instance-Windows-Server-2016-English-Core-Base",
         "children": {
           "Vpc": {
             "id": "Vpc",
-            "path": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base/Vpc",
+            "path": "integ-ec2-windows-instance-Windows-Server-2016-English-Core-Base/Vpc",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base/Vpc/Resource",
+                "path": "integ-ec2-windows-instance-Windows-Server-2016-English-Core-Base/Vpc/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EC2::VPC",
                   "aws:cdk:cloudformation:props": {
@@ -25,7 +361,7 @@
                     "tags": [
                       {
                         "key": "Name",
-                        "value": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base/Vpc"
+                        "value": "integ-ec2-windows-instance-Windows-Server-2016-English-Core-Base/Vpc"
                       }
                     ]
                   }
@@ -37,11 +373,11 @@
               },
               "PublicSubnet1": {
                 "id": "PublicSubnet1",
-                "path": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base/Vpc/PublicSubnet1",
+                "path": "integ-ec2-windows-instance-Windows-Server-2016-English-Core-Base/Vpc/PublicSubnet1",
                 "children": {
                   "Subnet": {
                     "id": "Subnet",
-                    "path": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base/Vpc/PublicSubnet1/Subnet",
+                    "path": "integ-ec2-windows-instance-Windows-Server-2016-English-Core-Base/Vpc/PublicSubnet1/Subnet",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
@@ -59,7 +395,7 @@
                           },
                           {
                             "key": "Name",
-                            "value": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base/Vpc/PublicSubnet1"
+                            "value": "integ-ec2-windows-instance-Windows-Server-2016-English-Core-Base/Vpc/PublicSubnet1"
                           }
                         ],
                         "vpcId": {
@@ -74,7 +410,7 @@
                   },
                   "Acl": {
                     "id": "Acl",
-                    "path": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base/Vpc/PublicSubnet1/Acl",
+                    "path": "integ-ec2-windows-instance-Windows-Server-2016-English-Core-Base/Vpc/PublicSubnet1/Acl",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
@@ -82,14 +418,14 @@
                   },
                   "RouteTable": {
                     "id": "RouteTable",
-                    "path": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base/Vpc/PublicSubnet1/RouteTable",
+                    "path": "integ-ec2-windows-instance-Windows-Server-2016-English-Core-Base/Vpc/PublicSubnet1/RouteTable",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base/Vpc/PublicSubnet1"
+                            "value": "integ-ec2-windows-instance-Windows-Server-2016-English-Core-Base/Vpc/PublicSubnet1"
                           }
                         ],
                         "vpcId": {
@@ -104,7 +440,7 @@
                   },
                   "RouteTableAssociation": {
                     "id": "RouteTableAssociation",
-                    "path": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base/Vpc/PublicSubnet1/RouteTableAssociation",
+                    "path": "integ-ec2-windows-instance-Windows-Server-2016-English-Core-Base/Vpc/PublicSubnet1/RouteTableAssociation",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
                       "aws:cdk:cloudformation:props": {
@@ -123,7 +459,7 @@
                   },
                   "DefaultRoute": {
                     "id": "DefaultRoute",
-                    "path": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base/Vpc/PublicSubnet1/DefaultRoute",
+                    "path": "integ-ec2-windows-instance-Windows-Server-2016-English-Core-Base/Vpc/PublicSubnet1/DefaultRoute",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
@@ -143,7 +479,7 @@
                   },
                   "EIP": {
                     "id": "EIP",
-                    "path": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base/Vpc/PublicSubnet1/EIP",
+                    "path": "integ-ec2-windows-instance-Windows-Server-2016-English-Core-Base/Vpc/PublicSubnet1/EIP",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::EIP",
                       "aws:cdk:cloudformation:props": {
@@ -151,7 +487,7 @@
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base/Vpc/PublicSubnet1"
+                            "value": "integ-ec2-windows-instance-Windows-Server-2016-English-Core-Base/Vpc/PublicSubnet1"
                           }
                         ]
                       }
@@ -163,7 +499,7 @@
                   },
                   "NATGateway": {
                     "id": "NATGateway",
-                    "path": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base/Vpc/PublicSubnet1/NATGateway",
+                    "path": "integ-ec2-windows-instance-Windows-Server-2016-English-Core-Base/Vpc/PublicSubnet1/NATGateway",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::NatGateway",
                       "aws:cdk:cloudformation:props": {
@@ -179,7 +515,7 @@
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base/Vpc/PublicSubnet1"
+                            "value": "integ-ec2-windows-instance-Windows-Server-2016-English-Core-Base/Vpc/PublicSubnet1"
                           }
                         ]
                       }
@@ -197,11 +533,11 @@
               },
               "PublicSubnet2": {
                 "id": "PublicSubnet2",
-                "path": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base/Vpc/PublicSubnet2",
+                "path": "integ-ec2-windows-instance-Windows-Server-2016-English-Core-Base/Vpc/PublicSubnet2",
                 "children": {
                   "Subnet": {
                     "id": "Subnet",
-                    "path": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base/Vpc/PublicSubnet2/Subnet",
+                    "path": "integ-ec2-windows-instance-Windows-Server-2016-English-Core-Base/Vpc/PublicSubnet2/Subnet",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
@@ -219,7 +555,7 @@
                           },
                           {
                             "key": "Name",
-                            "value": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base/Vpc/PublicSubnet2"
+                            "value": "integ-ec2-windows-instance-Windows-Server-2016-English-Core-Base/Vpc/PublicSubnet2"
                           }
                         ],
                         "vpcId": {
@@ -234,7 +570,7 @@
                   },
                   "Acl": {
                     "id": "Acl",
-                    "path": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base/Vpc/PublicSubnet2/Acl",
+                    "path": "integ-ec2-windows-instance-Windows-Server-2016-English-Core-Base/Vpc/PublicSubnet2/Acl",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
@@ -242,14 +578,14 @@
                   },
                   "RouteTable": {
                     "id": "RouteTable",
-                    "path": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base/Vpc/PublicSubnet2/RouteTable",
+                    "path": "integ-ec2-windows-instance-Windows-Server-2016-English-Core-Base/Vpc/PublicSubnet2/RouteTable",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base/Vpc/PublicSubnet2"
+                            "value": "integ-ec2-windows-instance-Windows-Server-2016-English-Core-Base/Vpc/PublicSubnet2"
                           }
                         ],
                         "vpcId": {
@@ -264,7 +600,7 @@
                   },
                   "RouteTableAssociation": {
                     "id": "RouteTableAssociation",
-                    "path": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base/Vpc/PublicSubnet2/RouteTableAssociation",
+                    "path": "integ-ec2-windows-instance-Windows-Server-2016-English-Core-Base/Vpc/PublicSubnet2/RouteTableAssociation",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
                       "aws:cdk:cloudformation:props": {
@@ -283,7 +619,7 @@
                   },
                   "DefaultRoute": {
                     "id": "DefaultRoute",
-                    "path": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base/Vpc/PublicSubnet2/DefaultRoute",
+                    "path": "integ-ec2-windows-instance-Windows-Server-2016-English-Core-Base/Vpc/PublicSubnet2/DefaultRoute",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
@@ -303,7 +639,7 @@
                   },
                   "EIP": {
                     "id": "EIP",
-                    "path": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base/Vpc/PublicSubnet2/EIP",
+                    "path": "integ-ec2-windows-instance-Windows-Server-2016-English-Core-Base/Vpc/PublicSubnet2/EIP",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::EIP",
                       "aws:cdk:cloudformation:props": {
@@ -311,7 +647,7 @@
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base/Vpc/PublicSubnet2"
+                            "value": "integ-ec2-windows-instance-Windows-Server-2016-English-Core-Base/Vpc/PublicSubnet2"
                           }
                         ]
                       }
@@ -323,7 +659,7 @@
                   },
                   "NATGateway": {
                     "id": "NATGateway",
-                    "path": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base/Vpc/PublicSubnet2/NATGateway",
+                    "path": "integ-ec2-windows-instance-Windows-Server-2016-English-Core-Base/Vpc/PublicSubnet2/NATGateway",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::NatGateway",
                       "aws:cdk:cloudformation:props": {
@@ -339,7 +675,7 @@
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base/Vpc/PublicSubnet2"
+                            "value": "integ-ec2-windows-instance-Windows-Server-2016-English-Core-Base/Vpc/PublicSubnet2"
                           }
                         ]
                       }
@@ -357,11 +693,11 @@
               },
               "PublicSubnet3": {
                 "id": "PublicSubnet3",
-                "path": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base/Vpc/PublicSubnet3",
+                "path": "integ-ec2-windows-instance-Windows-Server-2016-English-Core-Base/Vpc/PublicSubnet3",
                 "children": {
                   "Subnet": {
                     "id": "Subnet",
-                    "path": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base/Vpc/PublicSubnet3/Subnet",
+                    "path": "integ-ec2-windows-instance-Windows-Server-2016-English-Core-Base/Vpc/PublicSubnet3/Subnet",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
@@ -379,7 +715,7 @@
                           },
                           {
                             "key": "Name",
-                            "value": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base/Vpc/PublicSubnet3"
+                            "value": "integ-ec2-windows-instance-Windows-Server-2016-English-Core-Base/Vpc/PublicSubnet3"
                           }
                         ],
                         "vpcId": {
@@ -394,7 +730,7 @@
                   },
                   "Acl": {
                     "id": "Acl",
-                    "path": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base/Vpc/PublicSubnet3/Acl",
+                    "path": "integ-ec2-windows-instance-Windows-Server-2016-English-Core-Base/Vpc/PublicSubnet3/Acl",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
@@ -402,14 +738,14 @@
                   },
                   "RouteTable": {
                     "id": "RouteTable",
-                    "path": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base/Vpc/PublicSubnet3/RouteTable",
+                    "path": "integ-ec2-windows-instance-Windows-Server-2016-English-Core-Base/Vpc/PublicSubnet3/RouteTable",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base/Vpc/PublicSubnet3"
+                            "value": "integ-ec2-windows-instance-Windows-Server-2016-English-Core-Base/Vpc/PublicSubnet3"
                           }
                         ],
                         "vpcId": {
@@ -424,7 +760,7 @@
                   },
                   "RouteTableAssociation": {
                     "id": "RouteTableAssociation",
-                    "path": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base/Vpc/PublicSubnet3/RouteTableAssociation",
+                    "path": "integ-ec2-windows-instance-Windows-Server-2016-English-Core-Base/Vpc/PublicSubnet3/RouteTableAssociation",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
                       "aws:cdk:cloudformation:props": {
@@ -443,7 +779,7 @@
                   },
                   "DefaultRoute": {
                     "id": "DefaultRoute",
-                    "path": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base/Vpc/PublicSubnet3/DefaultRoute",
+                    "path": "integ-ec2-windows-instance-Windows-Server-2016-English-Core-Base/Vpc/PublicSubnet3/DefaultRoute",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
@@ -463,7 +799,7 @@
                   },
                   "EIP": {
                     "id": "EIP",
-                    "path": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base/Vpc/PublicSubnet3/EIP",
+                    "path": "integ-ec2-windows-instance-Windows-Server-2016-English-Core-Base/Vpc/PublicSubnet3/EIP",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::EIP",
                       "aws:cdk:cloudformation:props": {
@@ -471,7 +807,7 @@
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base/Vpc/PublicSubnet3"
+                            "value": "integ-ec2-windows-instance-Windows-Server-2016-English-Core-Base/Vpc/PublicSubnet3"
                           }
                         ]
                       }
@@ -483,7 +819,7 @@
                   },
                   "NATGateway": {
                     "id": "NATGateway",
-                    "path": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base/Vpc/PublicSubnet3/NATGateway",
+                    "path": "integ-ec2-windows-instance-Windows-Server-2016-English-Core-Base/Vpc/PublicSubnet3/NATGateway",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::NatGateway",
                       "aws:cdk:cloudformation:props": {
@@ -499,7 +835,7 @@
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base/Vpc/PublicSubnet3"
+                            "value": "integ-ec2-windows-instance-Windows-Server-2016-English-Core-Base/Vpc/PublicSubnet3"
                           }
                         ]
                       }
@@ -517,11 +853,11 @@
               },
               "PrivateSubnet1": {
                 "id": "PrivateSubnet1",
-                "path": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base/Vpc/PrivateSubnet1",
+                "path": "integ-ec2-windows-instance-Windows-Server-2016-English-Core-Base/Vpc/PrivateSubnet1",
                 "children": {
                   "Subnet": {
                     "id": "Subnet",
-                    "path": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base/Vpc/PrivateSubnet1/Subnet",
+                    "path": "integ-ec2-windows-instance-Windows-Server-2016-English-Core-Base/Vpc/PrivateSubnet1/Subnet",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
@@ -539,7 +875,7 @@
                           },
                           {
                             "key": "Name",
-                            "value": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base/Vpc/PrivateSubnet1"
+                            "value": "integ-ec2-windows-instance-Windows-Server-2016-English-Core-Base/Vpc/PrivateSubnet1"
                           }
                         ],
                         "vpcId": {
@@ -554,7 +890,7 @@
                   },
                   "Acl": {
                     "id": "Acl",
-                    "path": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base/Vpc/PrivateSubnet1/Acl",
+                    "path": "integ-ec2-windows-instance-Windows-Server-2016-English-Core-Base/Vpc/PrivateSubnet1/Acl",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
@@ -562,14 +898,14 @@
                   },
                   "RouteTable": {
                     "id": "RouteTable",
-                    "path": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base/Vpc/PrivateSubnet1/RouteTable",
+                    "path": "integ-ec2-windows-instance-Windows-Server-2016-English-Core-Base/Vpc/PrivateSubnet1/RouteTable",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base/Vpc/PrivateSubnet1"
+                            "value": "integ-ec2-windows-instance-Windows-Server-2016-English-Core-Base/Vpc/PrivateSubnet1"
                           }
                         ],
                         "vpcId": {
@@ -584,7 +920,7 @@
                   },
                   "RouteTableAssociation": {
                     "id": "RouteTableAssociation",
-                    "path": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base/Vpc/PrivateSubnet1/RouteTableAssociation",
+                    "path": "integ-ec2-windows-instance-Windows-Server-2016-English-Core-Base/Vpc/PrivateSubnet1/RouteTableAssociation",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
                       "aws:cdk:cloudformation:props": {
@@ -603,7 +939,7 @@
                   },
                   "DefaultRoute": {
                     "id": "DefaultRoute",
-                    "path": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base/Vpc/PrivateSubnet1/DefaultRoute",
+                    "path": "integ-ec2-windows-instance-Windows-Server-2016-English-Core-Base/Vpc/PrivateSubnet1/DefaultRoute",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
@@ -629,11 +965,11 @@
               },
               "PrivateSubnet2": {
                 "id": "PrivateSubnet2",
-                "path": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base/Vpc/PrivateSubnet2",
+                "path": "integ-ec2-windows-instance-Windows-Server-2016-English-Core-Base/Vpc/PrivateSubnet2",
                 "children": {
                   "Subnet": {
                     "id": "Subnet",
-                    "path": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base/Vpc/PrivateSubnet2/Subnet",
+                    "path": "integ-ec2-windows-instance-Windows-Server-2016-English-Core-Base/Vpc/PrivateSubnet2/Subnet",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
@@ -651,7 +987,7 @@
                           },
                           {
                             "key": "Name",
-                            "value": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base/Vpc/PrivateSubnet2"
+                            "value": "integ-ec2-windows-instance-Windows-Server-2016-English-Core-Base/Vpc/PrivateSubnet2"
                           }
                         ],
                         "vpcId": {
@@ -666,7 +1002,7 @@
                   },
                   "Acl": {
                     "id": "Acl",
-                    "path": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base/Vpc/PrivateSubnet2/Acl",
+                    "path": "integ-ec2-windows-instance-Windows-Server-2016-English-Core-Base/Vpc/PrivateSubnet2/Acl",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
@@ -674,14 +1010,14 @@
                   },
                   "RouteTable": {
                     "id": "RouteTable",
-                    "path": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base/Vpc/PrivateSubnet2/RouteTable",
+                    "path": "integ-ec2-windows-instance-Windows-Server-2016-English-Core-Base/Vpc/PrivateSubnet2/RouteTable",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base/Vpc/PrivateSubnet2"
+                            "value": "integ-ec2-windows-instance-Windows-Server-2016-English-Core-Base/Vpc/PrivateSubnet2"
                           }
                         ],
                         "vpcId": {
@@ -696,7 +1032,7 @@
                   },
                   "RouteTableAssociation": {
                     "id": "RouteTableAssociation",
-                    "path": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base/Vpc/PrivateSubnet2/RouteTableAssociation",
+                    "path": "integ-ec2-windows-instance-Windows-Server-2016-English-Core-Base/Vpc/PrivateSubnet2/RouteTableAssociation",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
                       "aws:cdk:cloudformation:props": {
@@ -715,7 +1051,7 @@
                   },
                   "DefaultRoute": {
                     "id": "DefaultRoute",
-                    "path": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base/Vpc/PrivateSubnet2/DefaultRoute",
+                    "path": "integ-ec2-windows-instance-Windows-Server-2016-English-Core-Base/Vpc/PrivateSubnet2/DefaultRoute",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
@@ -741,11 +1077,11 @@
               },
               "PrivateSubnet3": {
                 "id": "PrivateSubnet3",
-                "path": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base/Vpc/PrivateSubnet3",
+                "path": "integ-ec2-windows-instance-Windows-Server-2016-English-Core-Base/Vpc/PrivateSubnet3",
                 "children": {
                   "Subnet": {
                     "id": "Subnet",
-                    "path": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base/Vpc/PrivateSubnet3/Subnet",
+                    "path": "integ-ec2-windows-instance-Windows-Server-2016-English-Core-Base/Vpc/PrivateSubnet3/Subnet",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
@@ -763,7 +1099,7 @@
                           },
                           {
                             "key": "Name",
-                            "value": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base/Vpc/PrivateSubnet3"
+                            "value": "integ-ec2-windows-instance-Windows-Server-2016-English-Core-Base/Vpc/PrivateSubnet3"
                           }
                         ],
                         "vpcId": {
@@ -778,7 +1114,7 @@
                   },
                   "Acl": {
                     "id": "Acl",
-                    "path": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base/Vpc/PrivateSubnet3/Acl",
+                    "path": "integ-ec2-windows-instance-Windows-Server-2016-English-Core-Base/Vpc/PrivateSubnet3/Acl",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
@@ -786,14 +1122,14 @@
                   },
                   "RouteTable": {
                     "id": "RouteTable",
-                    "path": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base/Vpc/PrivateSubnet3/RouteTable",
+                    "path": "integ-ec2-windows-instance-Windows-Server-2016-English-Core-Base/Vpc/PrivateSubnet3/RouteTable",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base/Vpc/PrivateSubnet3"
+                            "value": "integ-ec2-windows-instance-Windows-Server-2016-English-Core-Base/Vpc/PrivateSubnet3"
                           }
                         ],
                         "vpcId": {
@@ -808,7 +1144,7 @@
                   },
                   "RouteTableAssociation": {
                     "id": "RouteTableAssociation",
-                    "path": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base/Vpc/PrivateSubnet3/RouteTableAssociation",
+                    "path": "integ-ec2-windows-instance-Windows-Server-2016-English-Core-Base/Vpc/PrivateSubnet3/RouteTableAssociation",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
                       "aws:cdk:cloudformation:props": {
@@ -827,7 +1163,7 @@
                   },
                   "DefaultRoute": {
                     "id": "DefaultRoute",
-                    "path": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base/Vpc/PrivateSubnet3/DefaultRoute",
+                    "path": "integ-ec2-windows-instance-Windows-Server-2016-English-Core-Base/Vpc/PrivateSubnet3/DefaultRoute",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
@@ -853,14 +1189,14 @@
               },
               "IGW": {
                 "id": "IGW",
-                "path": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base/Vpc/IGW",
+                "path": "integ-ec2-windows-instance-Windows-Server-2016-English-Core-Base/Vpc/IGW",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EC2::InternetGateway",
                   "aws:cdk:cloudformation:props": {
                     "tags": [
                       {
                         "key": "Name",
-                        "value": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base/Vpc"
+                        "value": "integ-ec2-windows-instance-Windows-Server-2016-English-Core-Base/Vpc"
                       }
                     ]
                   }
@@ -872,7 +1208,7 @@
               },
               "VPCGW": {
                 "id": "VPCGW",
-                "path": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base/Vpc/VPCGW",
+                "path": "integ-ec2-windows-instance-Windows-Server-2016-English-Core-Base/Vpc/VPCGW",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EC2::VPCGatewayAttachment",
                   "aws:cdk:cloudformation:props": {
@@ -897,19 +1233,19 @@
           },
           "Instance": {
             "id": "Instance",
-            "path": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base/Instance",
+            "path": "integ-ec2-windows-instance-Windows-Server-2016-English-Core-Base/Instance",
             "children": {
               "InstanceSecurityGroup": {
                 "id": "InstanceSecurityGroup",
-                "path": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base/Instance/InstanceSecurityGroup",
+                "path": "integ-ec2-windows-instance-Windows-Server-2016-English-Core-Base/Instance/InstanceSecurityGroup",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base/Instance/InstanceSecurityGroup/Resource",
+                    "path": "integ-ec2-windows-instance-Windows-Server-2016-English-Core-Base/Instance/InstanceSecurityGroup/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
                       "aws:cdk:cloudformation:props": {
-                        "groupDescription": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base/Instance/InstanceSecurityGroup",
+                        "groupDescription": "integ-ec2-windows-instance-Windows-Server-2016-English-Core-Base/Instance/InstanceSecurityGroup",
                         "securityGroupEgress": [
                           {
                             "cidrIp": "0.0.0.0/0",
@@ -920,7 +1256,7 @@
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base/Instance"
+                            "value": "integ-ec2-windows-instance-Windows-Server-2016-English-Core-Base/Instance"
                           }
                         ],
                         "vpcId": {
@@ -941,11 +1277,11 @@
               },
               "InstanceRole": {
                 "id": "InstanceRole",
-                "path": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base/Instance/InstanceRole",
+                "path": "integ-ec2-windows-instance-Windows-Server-2016-English-Core-Base/Instance/InstanceRole",
                 "children": {
                   "ImportInstanceRole": {
                     "id": "ImportInstanceRole",
-                    "path": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base/Instance/InstanceRole/ImportInstanceRole",
+                    "path": "integ-ec2-windows-instance-Windows-Server-2016-English-Core-Base/Instance/InstanceRole/ImportInstanceRole",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
@@ -953,7 +1289,7 @@
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base/Instance/InstanceRole/Resource",
+                    "path": "integ-ec2-windows-instance-Windows-Server-2016-English-Core-Base/Instance/InstanceRole/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                       "aws:cdk:cloudformation:props": {
@@ -972,7 +1308,7 @@
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base/Instance"
+                            "value": "integ-ec2-windows-instance-Windows-Server-2016-English-Core-Base/Instance"
                           }
                         ]
                       }
@@ -990,7 +1326,7 @@
               },
               "InstanceProfile": {
                 "id": "InstanceProfile",
-                "path": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base/Instance/InstanceProfile",
+                "path": "integ-ec2-windows-instance-Windows-Server-2016-English-Core-Base/Instance/InstanceProfile",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::IAM::InstanceProfile",
                   "aws:cdk:cloudformation:props": {
@@ -1008,7 +1344,7 @@
               },
               "Resource": {
                 "id": "Resource",
-                "path": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base/Instance/Resource",
+                "path": "integ-ec2-windows-instance-Windows-Server-2016-English-Core-Base/Instance/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EC2::Instance",
                   "aws:cdk:cloudformation:props": {
@@ -1017,7 +1353,7 @@
                       "Ref": "InstanceInstanceProfileAB5AEF02"
                     },
                     "imageId": {
-                      "Ref": "SsmParameterValueawsserviceamiwindowslatestWindowsServer2022EnglishFullBaseC96584B6F00A464EAD1953AFF4B05118Parameter"
+                      "Ref": "SsmParameterValueawsserviceamiwindowslatestWindowsServer2016EnglishCoreBaseC96584B6F00A464EAD1953AFF4B05118Parameter"
                     },
                     "instanceType": "t3.nano",
                     "securityGroupIds": [
@@ -1034,7 +1370,7 @@
                     "tags": [
                       {
                         "key": "Name",
-                        "value": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base/Instance"
+                        "value": "integ-ec2-windows-instance-Windows-Server-2016-English-Core-Base/Instance"
                       }
                     ],
                     "userData": {
@@ -1053,17 +1389,17 @@
               "version": "0.0.0"
             }
           },
-          "SsmParameterValue:--aws--service--ami-windows-latest--Windows_Server-2022-English-Full-Base:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": {
-            "id": "SsmParameterValue:--aws--service--ami-windows-latest--Windows_Server-2022-English-Full-Base:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter",
-            "path": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base/SsmParameterValue:--aws--service--ami-windows-latest--Windows_Server-2022-English-Full-Base:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter",
+          "SsmParameterValue:--aws--service--ami-windows-latest--Windows_Server-2016-English-Core-Base:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": {
+            "id": "SsmParameterValue:--aws--service--ami-windows-latest--Windows_Server-2016-English-Core-Base:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter",
+            "path": "integ-ec2-windows-instance-Windows-Server-2016-English-Core-Base/SsmParameterValue:--aws--service--ami-windows-latest--Windows_Server-2016-English-Core-Base:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter",
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnParameter",
               "version": "0.0.0"
             }
           },
-          "SsmParameterValue:--aws--service--ami-windows-latest--Windows_Server-2022-English-Full-Base:C96584B6-F00A-464E-AD19-53AFF4B05118": {
-            "id": "SsmParameterValue:--aws--service--ami-windows-latest--Windows_Server-2022-English-Full-Base:C96584B6-F00A-464E-AD19-53AFF4B05118",
-            "path": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base/SsmParameterValue:--aws--service--ami-windows-latest--Windows_Server-2022-English-Full-Base:C96584B6-F00A-464E-AD19-53AFF4B05118",
+          "SsmParameterValue:--aws--service--ami-windows-latest--Windows_Server-2016-English-Core-Base:C96584B6-F00A-464E-AD19-53AFF4B05118": {
+            "id": "SsmParameterValue:--aws--service--ami-windows-latest--Windows_Server-2016-English-Core-Base:C96584B6-F00A-464E-AD19-53AFF4B05118",
+            "path": "integ-ec2-windows-instance-Windows-Server-2016-English-Core-Base/SsmParameterValue:--aws--service--ami-windows-latest--Windows_Server-2016-English-Core-Base:C96584B6-F00A-464E-AD19-53AFF4B05118",
             "constructInfo": {
               "fqn": "aws-cdk-lib.Resource",
               "version": "0.0.0"
@@ -1071,7 +1407,7 @@
           },
           "BootstrapVersion": {
             "id": "BootstrapVersion",
-            "path": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base/BootstrapVersion",
+            "path": "integ-ec2-windows-instance-Windows-Server-2016-English-Core-Base/BootstrapVersion",
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnParameter",
               "version": "0.0.0"
@@ -1079,7 +1415,7 @@
           },
           "CheckBootstrapVersion": {
             "id": "CheckBootstrapVersion",
-            "path": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base/CheckBootstrapVersion",
+            "path": "integ-ec2-windows-instance-Windows-Server-2016-English-Core-Base/CheckBootstrapVersion",
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnRule",
               "version": "0.0.0"
@@ -1091,17 +1427,17 @@
           "version": "0.0.0"
         }
       },
-      "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base-2024-02-14": {
-        "id": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base-2024-02-14",
-        "path": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base-2024-02-14",
+      "integ-ec2-windows-instance-Windows-Server-2022-English-Full-Base-2024-02-14": {
+        "id": "integ-ec2-windows-instance-Windows-Server-2022-English-Full-Base-2024-02-14",
+        "path": "integ-ec2-windows-instance-Windows-Server-2022-English-Full-Base-2024-02-14",
         "children": {
           "Vpc": {
             "id": "Vpc",
-            "path": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc",
+            "path": "integ-ec2-windows-instance-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc/Resource",
+                "path": "integ-ec2-windows-instance-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EC2::VPC",
                   "aws:cdk:cloudformation:props": {
@@ -1112,7 +1448,7 @@
                     "tags": [
                       {
                         "key": "Name",
-                        "value": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc"
+                        "value": "integ-ec2-windows-instance-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc"
                       }
                     ]
                   }
@@ -1124,11 +1460,11 @@
               },
               "PublicSubnet1": {
                 "id": "PublicSubnet1",
-                "path": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc/PublicSubnet1",
+                "path": "integ-ec2-windows-instance-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc/PublicSubnet1",
                 "children": {
                   "Subnet": {
                     "id": "Subnet",
-                    "path": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc/PublicSubnet1/Subnet",
+                    "path": "integ-ec2-windows-instance-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc/PublicSubnet1/Subnet",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
@@ -1146,7 +1482,7 @@
                           },
                           {
                             "key": "Name",
-                            "value": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc/PublicSubnet1"
+                            "value": "integ-ec2-windows-instance-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc/PublicSubnet1"
                           }
                         ],
                         "vpcId": {
@@ -1161,7 +1497,7 @@
                   },
                   "Acl": {
                     "id": "Acl",
-                    "path": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc/PublicSubnet1/Acl",
+                    "path": "integ-ec2-windows-instance-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc/PublicSubnet1/Acl",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
@@ -1169,14 +1505,14 @@
                   },
                   "RouteTable": {
                     "id": "RouteTable",
-                    "path": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc/PublicSubnet1/RouteTable",
+                    "path": "integ-ec2-windows-instance-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc/PublicSubnet1/RouteTable",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc/PublicSubnet1"
+                            "value": "integ-ec2-windows-instance-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc/PublicSubnet1"
                           }
                         ],
                         "vpcId": {
@@ -1191,7 +1527,7 @@
                   },
                   "RouteTableAssociation": {
                     "id": "RouteTableAssociation",
-                    "path": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc/PublicSubnet1/RouteTableAssociation",
+                    "path": "integ-ec2-windows-instance-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc/PublicSubnet1/RouteTableAssociation",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
                       "aws:cdk:cloudformation:props": {
@@ -1210,7 +1546,7 @@
                   },
                   "DefaultRoute": {
                     "id": "DefaultRoute",
-                    "path": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc/PublicSubnet1/DefaultRoute",
+                    "path": "integ-ec2-windows-instance-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc/PublicSubnet1/DefaultRoute",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
@@ -1230,7 +1566,7 @@
                   },
                   "EIP": {
                     "id": "EIP",
-                    "path": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc/PublicSubnet1/EIP",
+                    "path": "integ-ec2-windows-instance-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc/PublicSubnet1/EIP",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::EIP",
                       "aws:cdk:cloudformation:props": {
@@ -1238,7 +1574,7 @@
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc/PublicSubnet1"
+                            "value": "integ-ec2-windows-instance-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc/PublicSubnet1"
                           }
                         ]
                       }
@@ -1250,7 +1586,7 @@
                   },
                   "NATGateway": {
                     "id": "NATGateway",
-                    "path": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc/PublicSubnet1/NATGateway",
+                    "path": "integ-ec2-windows-instance-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc/PublicSubnet1/NATGateway",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::NatGateway",
                       "aws:cdk:cloudformation:props": {
@@ -1266,7 +1602,7 @@
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc/PublicSubnet1"
+                            "value": "integ-ec2-windows-instance-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc/PublicSubnet1"
                           }
                         ]
                       }
@@ -1284,11 +1620,11 @@
               },
               "PublicSubnet2": {
                 "id": "PublicSubnet2",
-                "path": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc/PublicSubnet2",
+                "path": "integ-ec2-windows-instance-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc/PublicSubnet2",
                 "children": {
                   "Subnet": {
                     "id": "Subnet",
-                    "path": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc/PublicSubnet2/Subnet",
+                    "path": "integ-ec2-windows-instance-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc/PublicSubnet2/Subnet",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
@@ -1306,7 +1642,7 @@
                           },
                           {
                             "key": "Name",
-                            "value": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc/PublicSubnet2"
+                            "value": "integ-ec2-windows-instance-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc/PublicSubnet2"
                           }
                         ],
                         "vpcId": {
@@ -1321,7 +1657,7 @@
                   },
                   "Acl": {
                     "id": "Acl",
-                    "path": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc/PublicSubnet2/Acl",
+                    "path": "integ-ec2-windows-instance-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc/PublicSubnet2/Acl",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
@@ -1329,14 +1665,14 @@
                   },
                   "RouteTable": {
                     "id": "RouteTable",
-                    "path": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc/PublicSubnet2/RouteTable",
+                    "path": "integ-ec2-windows-instance-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc/PublicSubnet2/RouteTable",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc/PublicSubnet2"
+                            "value": "integ-ec2-windows-instance-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc/PublicSubnet2"
                           }
                         ],
                         "vpcId": {
@@ -1351,7 +1687,7 @@
                   },
                   "RouteTableAssociation": {
                     "id": "RouteTableAssociation",
-                    "path": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc/PublicSubnet2/RouteTableAssociation",
+                    "path": "integ-ec2-windows-instance-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc/PublicSubnet2/RouteTableAssociation",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
                       "aws:cdk:cloudformation:props": {
@@ -1370,7 +1706,7 @@
                   },
                   "DefaultRoute": {
                     "id": "DefaultRoute",
-                    "path": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc/PublicSubnet2/DefaultRoute",
+                    "path": "integ-ec2-windows-instance-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc/PublicSubnet2/DefaultRoute",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
@@ -1390,7 +1726,7 @@
                   },
                   "EIP": {
                     "id": "EIP",
-                    "path": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc/PublicSubnet2/EIP",
+                    "path": "integ-ec2-windows-instance-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc/PublicSubnet2/EIP",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::EIP",
                       "aws:cdk:cloudformation:props": {
@@ -1398,7 +1734,7 @@
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc/PublicSubnet2"
+                            "value": "integ-ec2-windows-instance-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc/PublicSubnet2"
                           }
                         ]
                       }
@@ -1410,7 +1746,7 @@
                   },
                   "NATGateway": {
                     "id": "NATGateway",
-                    "path": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc/PublicSubnet2/NATGateway",
+                    "path": "integ-ec2-windows-instance-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc/PublicSubnet2/NATGateway",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::NatGateway",
                       "aws:cdk:cloudformation:props": {
@@ -1426,7 +1762,7 @@
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc/PublicSubnet2"
+                            "value": "integ-ec2-windows-instance-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc/PublicSubnet2"
                           }
                         ]
                       }
@@ -1444,11 +1780,11 @@
               },
               "PublicSubnet3": {
                 "id": "PublicSubnet3",
-                "path": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc/PublicSubnet3",
+                "path": "integ-ec2-windows-instance-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc/PublicSubnet3",
                 "children": {
                   "Subnet": {
                     "id": "Subnet",
-                    "path": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc/PublicSubnet3/Subnet",
+                    "path": "integ-ec2-windows-instance-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc/PublicSubnet3/Subnet",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
@@ -1466,7 +1802,7 @@
                           },
                           {
                             "key": "Name",
-                            "value": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc/PublicSubnet3"
+                            "value": "integ-ec2-windows-instance-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc/PublicSubnet3"
                           }
                         ],
                         "vpcId": {
@@ -1481,7 +1817,7 @@
                   },
                   "Acl": {
                     "id": "Acl",
-                    "path": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc/PublicSubnet3/Acl",
+                    "path": "integ-ec2-windows-instance-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc/PublicSubnet3/Acl",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
@@ -1489,14 +1825,14 @@
                   },
                   "RouteTable": {
                     "id": "RouteTable",
-                    "path": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc/PublicSubnet3/RouteTable",
+                    "path": "integ-ec2-windows-instance-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc/PublicSubnet3/RouteTable",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc/PublicSubnet3"
+                            "value": "integ-ec2-windows-instance-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc/PublicSubnet3"
                           }
                         ],
                         "vpcId": {
@@ -1511,7 +1847,7 @@
                   },
                   "RouteTableAssociation": {
                     "id": "RouteTableAssociation",
-                    "path": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc/PublicSubnet3/RouteTableAssociation",
+                    "path": "integ-ec2-windows-instance-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc/PublicSubnet3/RouteTableAssociation",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
                       "aws:cdk:cloudformation:props": {
@@ -1530,7 +1866,7 @@
                   },
                   "DefaultRoute": {
                     "id": "DefaultRoute",
-                    "path": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc/PublicSubnet3/DefaultRoute",
+                    "path": "integ-ec2-windows-instance-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc/PublicSubnet3/DefaultRoute",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
@@ -1550,7 +1886,7 @@
                   },
                   "EIP": {
                     "id": "EIP",
-                    "path": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc/PublicSubnet3/EIP",
+                    "path": "integ-ec2-windows-instance-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc/PublicSubnet3/EIP",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::EIP",
                       "aws:cdk:cloudformation:props": {
@@ -1558,7 +1894,7 @@
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc/PublicSubnet3"
+                            "value": "integ-ec2-windows-instance-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc/PublicSubnet3"
                           }
                         ]
                       }
@@ -1570,7 +1906,7 @@
                   },
                   "NATGateway": {
                     "id": "NATGateway",
-                    "path": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc/PublicSubnet3/NATGateway",
+                    "path": "integ-ec2-windows-instance-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc/PublicSubnet3/NATGateway",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::NatGateway",
                       "aws:cdk:cloudformation:props": {
@@ -1586,7 +1922,7 @@
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc/PublicSubnet3"
+                            "value": "integ-ec2-windows-instance-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc/PublicSubnet3"
                           }
                         ]
                       }
@@ -1604,11 +1940,11 @@
               },
               "PrivateSubnet1": {
                 "id": "PrivateSubnet1",
-                "path": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc/PrivateSubnet1",
+                "path": "integ-ec2-windows-instance-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc/PrivateSubnet1",
                 "children": {
                   "Subnet": {
                     "id": "Subnet",
-                    "path": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc/PrivateSubnet1/Subnet",
+                    "path": "integ-ec2-windows-instance-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc/PrivateSubnet1/Subnet",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
@@ -1626,7 +1962,7 @@
                           },
                           {
                             "key": "Name",
-                            "value": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc/PrivateSubnet1"
+                            "value": "integ-ec2-windows-instance-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc/PrivateSubnet1"
                           }
                         ],
                         "vpcId": {
@@ -1641,7 +1977,7 @@
                   },
                   "Acl": {
                     "id": "Acl",
-                    "path": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc/PrivateSubnet1/Acl",
+                    "path": "integ-ec2-windows-instance-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc/PrivateSubnet1/Acl",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
@@ -1649,14 +1985,14 @@
                   },
                   "RouteTable": {
                     "id": "RouteTable",
-                    "path": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc/PrivateSubnet1/RouteTable",
+                    "path": "integ-ec2-windows-instance-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc/PrivateSubnet1/RouteTable",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc/PrivateSubnet1"
+                            "value": "integ-ec2-windows-instance-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc/PrivateSubnet1"
                           }
                         ],
                         "vpcId": {
@@ -1671,7 +2007,7 @@
                   },
                   "RouteTableAssociation": {
                     "id": "RouteTableAssociation",
-                    "path": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc/PrivateSubnet1/RouteTableAssociation",
+                    "path": "integ-ec2-windows-instance-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc/PrivateSubnet1/RouteTableAssociation",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
                       "aws:cdk:cloudformation:props": {
@@ -1690,7 +2026,7 @@
                   },
                   "DefaultRoute": {
                     "id": "DefaultRoute",
-                    "path": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc/PrivateSubnet1/DefaultRoute",
+                    "path": "integ-ec2-windows-instance-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc/PrivateSubnet1/DefaultRoute",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
@@ -1716,11 +2052,11 @@
               },
               "PrivateSubnet2": {
                 "id": "PrivateSubnet2",
-                "path": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc/PrivateSubnet2",
+                "path": "integ-ec2-windows-instance-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc/PrivateSubnet2",
                 "children": {
                   "Subnet": {
                     "id": "Subnet",
-                    "path": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc/PrivateSubnet2/Subnet",
+                    "path": "integ-ec2-windows-instance-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc/PrivateSubnet2/Subnet",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
@@ -1738,7 +2074,7 @@
                           },
                           {
                             "key": "Name",
-                            "value": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc/PrivateSubnet2"
+                            "value": "integ-ec2-windows-instance-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc/PrivateSubnet2"
                           }
                         ],
                         "vpcId": {
@@ -1753,7 +2089,7 @@
                   },
                   "Acl": {
                     "id": "Acl",
-                    "path": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc/PrivateSubnet2/Acl",
+                    "path": "integ-ec2-windows-instance-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc/PrivateSubnet2/Acl",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
@@ -1761,14 +2097,14 @@
                   },
                   "RouteTable": {
                     "id": "RouteTable",
-                    "path": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc/PrivateSubnet2/RouteTable",
+                    "path": "integ-ec2-windows-instance-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc/PrivateSubnet2/RouteTable",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc/PrivateSubnet2"
+                            "value": "integ-ec2-windows-instance-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc/PrivateSubnet2"
                           }
                         ],
                         "vpcId": {
@@ -1783,7 +2119,7 @@
                   },
                   "RouteTableAssociation": {
                     "id": "RouteTableAssociation",
-                    "path": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc/PrivateSubnet2/RouteTableAssociation",
+                    "path": "integ-ec2-windows-instance-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc/PrivateSubnet2/RouteTableAssociation",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
                       "aws:cdk:cloudformation:props": {
@@ -1802,7 +2138,7 @@
                   },
                   "DefaultRoute": {
                     "id": "DefaultRoute",
-                    "path": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc/PrivateSubnet2/DefaultRoute",
+                    "path": "integ-ec2-windows-instance-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc/PrivateSubnet2/DefaultRoute",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
@@ -1828,11 +2164,11 @@
               },
               "PrivateSubnet3": {
                 "id": "PrivateSubnet3",
-                "path": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc/PrivateSubnet3",
+                "path": "integ-ec2-windows-instance-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc/PrivateSubnet3",
                 "children": {
                   "Subnet": {
                     "id": "Subnet",
-                    "path": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc/PrivateSubnet3/Subnet",
+                    "path": "integ-ec2-windows-instance-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc/PrivateSubnet3/Subnet",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
@@ -1850,7 +2186,7 @@
                           },
                           {
                             "key": "Name",
-                            "value": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc/PrivateSubnet3"
+                            "value": "integ-ec2-windows-instance-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc/PrivateSubnet3"
                           }
                         ],
                         "vpcId": {
@@ -1865,7 +2201,7 @@
                   },
                   "Acl": {
                     "id": "Acl",
-                    "path": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc/PrivateSubnet3/Acl",
+                    "path": "integ-ec2-windows-instance-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc/PrivateSubnet3/Acl",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
@@ -1873,14 +2209,14 @@
                   },
                   "RouteTable": {
                     "id": "RouteTable",
-                    "path": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc/PrivateSubnet3/RouteTable",
+                    "path": "integ-ec2-windows-instance-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc/PrivateSubnet3/RouteTable",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc/PrivateSubnet3"
+                            "value": "integ-ec2-windows-instance-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc/PrivateSubnet3"
                           }
                         ],
                         "vpcId": {
@@ -1895,7 +2231,7 @@
                   },
                   "RouteTableAssociation": {
                     "id": "RouteTableAssociation",
-                    "path": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc/PrivateSubnet3/RouteTableAssociation",
+                    "path": "integ-ec2-windows-instance-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc/PrivateSubnet3/RouteTableAssociation",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
                       "aws:cdk:cloudformation:props": {
@@ -1914,7 +2250,7 @@
                   },
                   "DefaultRoute": {
                     "id": "DefaultRoute",
-                    "path": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc/PrivateSubnet3/DefaultRoute",
+                    "path": "integ-ec2-windows-instance-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc/PrivateSubnet3/DefaultRoute",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
@@ -1940,14 +2276,14 @@
               },
               "IGW": {
                 "id": "IGW",
-                "path": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc/IGW",
+                "path": "integ-ec2-windows-instance-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc/IGW",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EC2::InternetGateway",
                   "aws:cdk:cloudformation:props": {
                     "tags": [
                       {
                         "key": "Name",
-                        "value": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc"
+                        "value": "integ-ec2-windows-instance-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc"
                       }
                     ]
                   }
@@ -1959,7 +2295,7 @@
               },
               "VPCGW": {
                 "id": "VPCGW",
-                "path": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc/VPCGW",
+                "path": "integ-ec2-windows-instance-Windows-Server-2022-English-Full-Base-2024-02-14/Vpc/VPCGW",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EC2::VPCGatewayAttachment",
                   "aws:cdk:cloudformation:props": {
@@ -1984,19 +2320,19 @@
           },
           "Instance": {
             "id": "Instance",
-            "path": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base-2024-02-14/Instance",
+            "path": "integ-ec2-windows-instance-Windows-Server-2022-English-Full-Base-2024-02-14/Instance",
             "children": {
               "InstanceSecurityGroup": {
                 "id": "InstanceSecurityGroup",
-                "path": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base-2024-02-14/Instance/InstanceSecurityGroup",
+                "path": "integ-ec2-windows-instance-Windows-Server-2022-English-Full-Base-2024-02-14/Instance/InstanceSecurityGroup",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base-2024-02-14/Instance/InstanceSecurityGroup/Resource",
+                    "path": "integ-ec2-windows-instance-Windows-Server-2022-English-Full-Base-2024-02-14/Instance/InstanceSecurityGroup/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
                       "aws:cdk:cloudformation:props": {
-                        "groupDescription": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base-2024-02-14/Instance/InstanceSecurityGroup",
+                        "groupDescription": "integ-ec2-windows-instance-Windows-Server-2022-English-Full-Base-2024-02-14/Instance/InstanceSecurityGroup",
                         "securityGroupEgress": [
                           {
                             "cidrIp": "0.0.0.0/0",
@@ -2007,7 +2343,7 @@
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base-2024-02-14/Instance"
+                            "value": "integ-ec2-windows-instance-Windows-Server-2022-English-Full-Base-2024-02-14/Instance"
                           }
                         ],
                         "vpcId": {
@@ -2028,11 +2364,11 @@
               },
               "InstanceRole": {
                 "id": "InstanceRole",
-                "path": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base-2024-02-14/Instance/InstanceRole",
+                "path": "integ-ec2-windows-instance-Windows-Server-2022-English-Full-Base-2024-02-14/Instance/InstanceRole",
                 "children": {
                   "ImportInstanceRole": {
                     "id": "ImportInstanceRole",
-                    "path": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base-2024-02-14/Instance/InstanceRole/ImportInstanceRole",
+                    "path": "integ-ec2-windows-instance-Windows-Server-2022-English-Full-Base-2024-02-14/Instance/InstanceRole/ImportInstanceRole",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
@@ -2040,7 +2376,7 @@
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base-2024-02-14/Instance/InstanceRole/Resource",
+                    "path": "integ-ec2-windows-instance-Windows-Server-2022-English-Full-Base-2024-02-14/Instance/InstanceRole/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                       "aws:cdk:cloudformation:props": {
@@ -2059,7 +2395,7 @@
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base-2024-02-14/Instance"
+                            "value": "integ-ec2-windows-instance-Windows-Server-2022-English-Full-Base-2024-02-14/Instance"
                           }
                         ]
                       }
@@ -2077,7 +2413,7 @@
               },
               "InstanceProfile": {
                 "id": "InstanceProfile",
-                "path": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base-2024-02-14/Instance/InstanceProfile",
+                "path": "integ-ec2-windows-instance-Windows-Server-2022-English-Full-Base-2024-02-14/Instance/InstanceProfile",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::IAM::InstanceProfile",
                   "aws:cdk:cloudformation:props": {
@@ -2095,7 +2431,7 @@
               },
               "Resource": {
                 "id": "Resource",
-                "path": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base-2024-02-14/Instance/Resource",
+                "path": "integ-ec2-windows-instance-Windows-Server-2022-English-Full-Base-2024-02-14/Instance/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EC2::Instance",
                   "aws:cdk:cloudformation:props": {
@@ -2119,7 +2455,7 @@
                     "tags": [
                       {
                         "key": "Name",
-                        "value": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base-2024-02-14/Instance"
+                        "value": "integ-ec2-windows-instance-Windows-Server-2022-English-Full-Base-2024-02-14/Instance"
                       }
                     ],
                     "userData": {
@@ -2140,7 +2476,7 @@
           },
           "BootstrapVersion": {
             "id": "BootstrapVersion",
-            "path": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base-2024-02-14/BootstrapVersion",
+            "path": "integ-ec2-windows-instance-Windows-Server-2022-English-Full-Base-2024-02-14/BootstrapVersion",
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnParameter",
               "version": "0.0.0"
@@ -2148,7 +2484,7 @@
           },
           "CheckBootstrapVersion": {
             "id": "CheckBootstrapVersion",
-            "path": "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base-2024-02-14/CheckBootstrapVersion",
+            "path": "integ-ec2-windows-instance-Windows-Server-2022-English-Full-Base-2024-02-14/CheckBootstrapVersion",
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnRule",
               "version": "0.0.0"

@@ -4,8 +4,16 @@
   "testCases": {
     "windows-machine-image-integ-test/DefaultTest": {
       "stacks": [
-        "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base",
-        "integ-ec2-windows-image-test-Windows-Server-2022-English-Full-Base-2024-02-14"
+        "integ-ec2-windows-image-id-Windows-Server-2022-Japanese-Full-SQL-2017-Web",
+        "integ-ec2-windows-image-id-Windows-Server-2016-English-Full-Base",
+        "integ-ec2-windows-image-id-Windows-Server-2019-English-Full-Base",
+        "integ-ec2-windows-image-id-Windows-Server-2022-English-Core-ECS-Optimized",
+        "integ-ec2-windows-image-id-Windows-Server-2022-Japanese-Full-SQL-2017-Web-2023-12-13",
+        "integ-ec2-windows-image-id-Windows-Server-2016-English-Full-Base-2023-11-15",
+        "integ-ec2-windows-image-id-Windows-Server-2019-English-Full-Base-2023-12-13",
+        "integ-ec2-windows-image-id-Windows-Server-2022-English-Core-ECS-Optimized-2024-01-10",
+        "integ-ec2-windows-instance-Windows-Server-2016-English-Core-Base",
+        "integ-ec2-windows-instance-Windows-Server-2022-English-Full-Base-2024-02-14"
       ],
       "assertionStack": "windows-machine-image-integ-test/DefaultTest/DeployAssert",
       "assertionStackName": "windowsmachineimageintegtestDefaultTestDeployAssertB65E22D7"
