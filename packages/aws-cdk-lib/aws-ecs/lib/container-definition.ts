@@ -844,7 +844,7 @@ export class ContainerDefinition extends Construct {
       dependsOn: cdk.Lazy.any({ produce: () => this.containerDependencies.map(renderContainerDependency) }, { omitEmptyArray: true }),
       dnsSearchDomains: this.props.dnsSearchDomains,
       dnsServers: this.props.dnsServers,
-      dockerLabels: this.dockerLabels,
+      dockerLabels: Object.keys(this.dockerLabels).length ? this.dockerLabels : undefined,
       dockerSecurityOptions: this.props.dockerSecurityOptions,
       entryPoint: this.props.entryPoint,
       essential: this.essential,
