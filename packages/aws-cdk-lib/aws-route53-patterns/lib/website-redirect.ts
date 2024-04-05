@@ -102,7 +102,7 @@ export class HttpsRedirect extends Construct {
     };
 
     if (props.loggingConfig) {
-      cloudFrontWebDistributionProps.loggingConfig = loggingConfig;
+      cloudFrontWebDistributionProps.loggingConfig = props.loggingConfig;
     }
     
     const redirectDist = new CloudFrontWebDistribution(this, 'RedirectDistribution', cloudFrontWebDistributionProps);
