@@ -1157,6 +1157,58 @@ describe('container definition', () => {
     });
   });
 
+  test('can add docker label to the container definition', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
+
+    // WHEN
+    const container = taskDefinition.addContainer('cont', {
+      image: ecs.ContainerImage.fromRegistry('test'),
+      memoryLimitMiB: 1024,
+      dockerLabels: {
+        FIRST_DOCKER_LABEL: 'first',
+      },
+    });
+    container.addDockerLabel('SECOND_DOCKER_LABEL', 'second');
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
+      ContainerDefinitions: [
+        Match.objectLike({
+          DockerLabels: {
+            FIRST_DOCKER_LABEL: 'first',
+            SECOND_DOCKER_LABEL: 'second',
+          },
+        }),
+      ],
+    });
+  });
+
+  test('can add docker label to container definition with no docker labels', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
+
+    // WHEN
+    const container = taskDefinition.addContainer('cont', {
+      image: ecs.ContainerImage.fromRegistry('test'),
+      memoryLimitMiB: 1024,
+    });
+    container.addDockerLabel('DOCKER_LABEL', 'value');
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
+      ContainerDefinitions: [
+        Match.objectLike({
+          DockerLabels: {
+            DOCKER_LABEL: 'value',
+          },
+        }),
+      ],
+    });
+  });
+
   test('can add environment variables to the container definition', () => {
     // GIVEN
     const stack = new cdk.Stack();

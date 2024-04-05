@@ -506,6 +506,8 @@ export class ContainerDefinition extends Construct {
 
   private readonly secrets: CfnTaskDefinition.SecretProperty[] = [];
 
+  private readonly dockerLabels: { [key: string]: string };
+
   private readonly environment: { [key: string]: string };
 
   private _namedPorts: Map<string, PortMapping>;
@@ -539,6 +541,12 @@ export class ContainerDefinition extends Construct {
       for (const [name, secret] of Object.entries(props.secrets)) {
         this.addSecret(name, secret);
       }
+    }
+
+    if (props.dockerLabels) {
+      this.dockerLabels = { ...props.dockerLabels };
+    } else {
+      this.dockerLabels = {};
     }
 
     if (props.environment) {
@@ -657,6 +665,13 @@ export class ContainerDefinition extends Construct {
    */
   public addEnvironment(name: string, value: string) {
     this.environment[name] = value;
+  }
+
+  /**
+   * This method adds a Docker label to the container.
+   */
+  public addDockerLabel(name: string, value: string) {
+    this.dockerLabels[name] = value;
   }
 
   /**
@@ -829,7 +844,7 @@ export class ContainerDefinition extends Construct {
       dependsOn: cdk.Lazy.any({ produce: () => this.containerDependencies.map(renderContainerDependency) }, { omitEmptyArray: true }),
       dnsSearchDomains: this.props.dnsSearchDomains,
       dnsServers: this.props.dnsServers,
-      dockerLabels: this.props.dockerLabels,
+      dockerLabels: this.dockerLabels,
       dockerSecurityOptions: this.props.dockerSecurityOptions,
       entryPoint: this.props.entryPoint,
       essential: this.essential,
