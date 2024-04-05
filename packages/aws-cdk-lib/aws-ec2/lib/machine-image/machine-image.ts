@@ -9,7 +9,7 @@ import * as cxschema from '../../../cloud-assembly-schema';
 import { ContextProvider, CfnMapping, Aws, Stack, Token } from '../../../core';
 import * as cxapi from '../../../cx-api';
 import { UserData } from '../user-data';
-import { WindowsSpecificVersion, WindowsVersion } from '../windows-versions';
+import { WindowsLatestVersion, WindowsSpecificVersion, WindowsVersion } from '../windows-versions';
 
 /**
  * Factory functions for standard Amazon Machine Image objects.
@@ -26,7 +26,7 @@ export abstract class MachineImage {
    * If you want to use a specific datestamped version of the image,
    * use the {@link MachineImage.specificWindows} method instead.
    */
-  public static latestWindows(version: WindowsVersion, props?: WindowsImageProps): IMachineImage {
+  public static latestWindows(version: WindowsLatestVersion, props?: WindowsImageProps): IMachineImage {
     return new WindowsImage(version, props);
   }
 
