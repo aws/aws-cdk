@@ -196,7 +196,6 @@ export class CdkToolkit {
           let stackExists = false;
           try {
             // only perform this check if we're going to make a changeset. This check requires permissions that --no-changeset users might not have.
-            // the call should now use the lookup role, but keep behind the flag since we only need it if the changeset is being made
             stackExists = await this.props.deployments.stackExists({
               stack,
               deployName: stack.stackName,
