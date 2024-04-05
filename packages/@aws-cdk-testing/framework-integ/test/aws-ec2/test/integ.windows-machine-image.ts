@@ -18,10 +18,8 @@ interface TestCaseProps extends StackProps {
 export class ImageIdTestCase extends Stack {
   constructor(scope: Construct, id: string, props: TestCaseProps) {
     super(scope, id, props);
-    this.node.setContext(EC2_RESTRICT_DEFAULT_SECURITY_GROUP, false);
-    const machineImage = props.machineImage;
 
-    new CfnOutput(this, 'ImageId', { value: machineImage.getImage(this).imageId });
+    new CfnOutput(this, 'ImageId', { value: props.machineImage.getImage(this).imageId });
   }
 }
 
