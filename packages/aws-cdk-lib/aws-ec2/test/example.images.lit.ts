@@ -24,7 +24,7 @@ const windows2022 = ec2.MachineImage.latestWindows(
 
 // You can also select a specific datestamped version of Windows
 // This will prevent the CDK from replacing your instance when
-// a new version of`WindowsVersion.WINDOWS_SERVER_2022_ENGLISH_FULL_BASE` becomes available
+// a new version of `WindowsVersion.WINDOWS_SERVER_2022_ENGLISH_FULL_BASE` becomes available
 const windows2024_02_14 = ec2.MachineImage.specificWindows(
   ec2.WindowsSpecificVersion.WINDOWS_SERVER_2022_ENGLISH_FULL_BASE_2024_02_14,
 );
