@@ -1,7 +1,7 @@
 import * as path from 'path';
 import { Template } from 'aws-cdk-lib/assertions';
 import { Bucket } from 'aws-cdk-lib/aws-s3';
-import { Stack } from 'aws-cdk-lib';
+import { Stack } from 'aws-cdk-lib/core';
 import { FirewallDomainList, FirewallDomains } from '../lib';
 
 let stack: Stack;
@@ -29,6 +29,20 @@ test('domain list from strings', () => {
   });
 });
 
+test('domain list from asset', () => {
+  // WHEN
+  new FirewallDomainList(stack, 'List', {
+    domains: FirewallDomains.fromAsset(path.join(__dirname, 'domains.txt')),
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Route53Resolver::FirewallDomainList', {
+    DomainFileUrl: {
+      'Fn::Sub': 's3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e820b3f07bf66854be0dfd6f3ec357a10d644f2011069e5ad07d42f4f89ed35a.txt',
+    },
+  });
+});
+
 test('domain list from S3 URL', () => {
   // WHEN
   new FirewallDomainList(stack, 'List', {
@@ -50,20 +64,6 @@ test('domain list from S3', () => {
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::Route53Resolver::FirewallDomainList', {
     DomainFileUrl: 's3://bucket/prefix/object',
-  });
-});
-
-test('domain list from asset', () => {
-  // WHEN
-  new FirewallDomainList(stack, 'List', {
-    domains: FirewallDomains.fromAsset(path.join(__dirname, 'domains.txt')),
-  });
-
-  // THEN
-  Template.fromStack(stack).hasResourceProperties('AWS::Route53Resolver::FirewallDomainList', {
-    DomainFileUrl: {
-      'Fn::Sub': 's3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e820b3f07bf66854be0dfd6f3ec357a10d644f2011069e5ad07d42f4f89ed35a.txt',
-    },
   });
 });
 
