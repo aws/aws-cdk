@@ -195,10 +195,17 @@ export class Topic extends TopicBase {
    * @param attrs the attributes of the topic to import
    */
   public static fromTopicAttributes(scope: Construct, id: string, attrs: TopicAttributes): ITopic {
+    const topicName = Stack.of(scope).splitArn(attrs.topicArn, ArnFormat.NO_RESOURCE_NAME).resource;
+    const fifo = topicName.endsWith('.fifo');
+
+    if (attrs.contentBasedDeduplication && !fifo) {
+      throw new Error('Cannot import topic; contentBasedDeduplication is only available for FIFO SNS topics.');
+    }
+
     class Import extends TopicBase {
       public readonly topicArn = attrs.topicArn;
-      public readonly topicName = Stack.of(scope).splitArn(attrs.topicArn, ArnFormat.NO_RESOURCE_NAME).resource;
-      public readonly fifo = this.topicName.endsWith('.fifo');
+      public readonly topicName = topicName;
+      public readonly fifo = fifo;
       public readonly contentBasedDeduplication = attrs.contentBasedDeduplication || false;
       protected autoCreatePolicy: boolean = false;
     }

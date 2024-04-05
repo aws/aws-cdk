@@ -486,6 +486,17 @@ describe('Topic', () => {
     expect(imported.contentBasedDeduplication).toEqual(true);
   });
 
+  test('fromTopicAttributes throws with contentBasedDeduplication on non-fifo topic', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    expect(() => sns.Topic.fromTopicAttributes(stack, 'Imported', {
+      topicArn: 'arn:aws:sns:*:123456789012:mytopic',
+      contentBasedDeduplication: true,
+    })).toThrow(/Cannot import topic; contentBasedDeduplication is only available for FIFO SNS topics./);
+  });
+
   test('sets account for imported topic env', () => {
     // GIVEN
     const stack = new cdk.Stack();
