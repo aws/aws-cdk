@@ -11,9 +11,8 @@ import { PackageInstallation } from '../lib/package-installation';
 import { Charset, LogLevel, OutputFormat, SourceMapMode } from '../lib/types';
 import * as util from '../lib/util';
 
-const STANDARD_RUNTIME = Runtime.NODEJS_18_X;
-const STANDARD_TARGET = 'node18';
-const LATEST_TARGET = 'node20';
+const STANDARD_RUNTIME = Runtime.NODEJS_20_X;
+const STANDARD_TARGET = 'node20';
 const STANDARD_EXTERNAL = '@aws-sdk/*';
 
 let detectPackageInstallationMock: jest.SpyInstance<PackageInstallation | undefined>;
@@ -319,7 +318,7 @@ test('esbuild bundling without aws-sdk v3 when use greater than or equal Runtime
     entry,
     projectRoot,
     depsLockFilePath,
-    runtime: Runtime.NODEJS_18_X,
+    runtime: Runtime.NODEJS_20_X,
     architecture: Architecture.X86_64,
   });
 
@@ -340,7 +339,7 @@ test('esbuild bundling includes aws-sdk', () => {
     entry,
     projectRoot,
     depsLockFilePath,
-    runtime: Runtime.NODEJS_18_X,
+    runtime: Runtime.NODEJS_20_X,
     architecture: Architecture.X86_64,
     bundleAwsSDK: true,
   });
@@ -912,7 +911,7 @@ test('bundling using NODEJS_LATEST doesn\'t externalize anything by default', ()
     bundling: expect.objectContaining({
       command: [
         'bash', '-c',
-        `esbuild --bundle "/asset-input/lib/handler.ts" --target=${LATEST_TARGET} --platform=node --outfile="/asset-output/index.js"`,
+        `esbuild --bundle "/asset-input/lib/handler.ts" --target=${STANDARD_TARGET} --platform=node --outfile="/asset-output/index.js"`,
       ],
     }),
   });
