@@ -1,6 +1,6 @@
 import { Construct } from 'constructs';
 import { DnsValidatedCertificate, ICertificate, Certificate, CertificateValidation } from '../../aws-certificatemanager';
-import { CloudFrontWebDistribution, OriginProtocolPolicy, PriceClass, ViewerCertificate, ViewerProtocolPolicy, LoggingConfiguration } from '../../aws-cloudfront';
+import { CloudFrontWebDistribution, CloudFrontWebDistributionProps, LoggingConfiguration, OriginProtocolPolicy, PriceClass, ViewerCertificate, ViewerProtocolPolicy } from '../../aws-cloudfront';
 import { ARecord, AaaaRecord, IHostedZone, RecordTarget } from '../../aws-route53';
 import { CloudFrontTarget } from '../../aws-route53-targets';
 import { BlockPublicAccess, Bucket, RedirectProtocol } from '../../aws-s3';
@@ -66,10 +66,6 @@ export class HttpsRedirect extends Construct {
     super(scope, id);
 
     const domainNames = props.recordNames ?? [props.zone.zoneName];
-
-    if (props.loggingConfig) {
-
-    }
     
     if (props.certificate) {
       const certificateRegion = Stack.of(this).splitArn(props.certificate.certificateArn, ArnFormat.SLASH_RESOURCE_NAME).region;
@@ -87,7 +83,8 @@ export class HttpsRedirect extends Construct {
       removalPolicy: RemovalPolicy.DESTROY,
       blockPublicAccess: BlockPublicAccess.BLOCK_ALL,
     });
-    const redirectDist = new CloudFrontWebDistribution(this, 'RedirectDistribution', {
+    
+    const cloudFrontWebDistributionProps: CloudFrontWebDistributionProps = {
       defaultRootObject: '',
       originConfigs: [{
         behaviors: [{ isDefaultBehavior: true }],
@@ -102,7 +99,13 @@ export class HttpsRedirect extends Construct {
       comment: `Redirect to ${props.targetDomain} from ${domainNames.join(', ')}`,
       priceClass: PriceClass.PRICE_CLASS_ALL,
       viewerProtocolPolicy: ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
-    });
+    };
+
+    if (props.loggingConfig) {
+      cloudFrontWebDistributionProps.loggingConfig = loggingConfig;
+    }
+    
+    const redirectDist = new CloudFrontWebDistribution(this, 'RedirectDistribution', cloudFrontWebDistributionProps);
 
     domainNames.forEach((domainName) => {
       const hash = md5hash(domainName).slice(0, 6);
