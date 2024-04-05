@@ -1,5 +1,5 @@
 {
-  "version": "34.0.0",
+  "version": "36.0.0",
   "artifacts": {
     "aws-cdk-rds-integ-with-feature-flag.assets": {
       "type": "cdk:asset-manifest",
@@ -14,10 +14,11 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "aws-cdk-rds-integ-with-feature-flag.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/6ef7bb16723c1bb9cf7146bc933297a5225c070c914722f051953fcd6623a3f3.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/1b82c3c46023a245fe7505b943253e15f3431b4cb0adbc63fbac9a9e5b4e3e9e.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -210,7 +211,10 @@
         "/aws-cdk-rds-integ-with-feature-flag/Database/Instance1": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DatabaseInstance1844F58FD"
+            "data": "DatabaseInstance1844F58FD",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: MAY_REPLACE"
+            ]
           }
         ],
         "/aws-cdk-rds-integ-with-feature-flag/Database/Instance2Wrapper/InstanceParameterGroup/Resource": [
@@ -222,7 +226,10 @@
         "/aws-cdk-rds-integ-with-feature-flag/Database/Instance2": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DatabaseInstance2AA380DEE"
+            "data": "DatabaseInstance2AA380DEE",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: MAY_REPLACE"
+            ]
           }
         ],
         "/aws-cdk-rds-integ-with-feature-flag/Database/Instance3Wrapper/InstanceParameterGroup/Resource": [
@@ -234,7 +241,10 @@
         "/aws-cdk-rds-integ-with-feature-flag/Database/Instance3": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DatabaseInstance32FCBA185"
+            "data": "DatabaseInstance32FCBA185",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: MAY_REPLACE"
+            ]
           }
         ],
         "/aws-cdk-rds-integ-with-feature-flag/ClusterIamAccess/Resource": [
