@@ -72,3 +72,27 @@ new patterns.HttpsRedirect(this, 'Redirect', {
 It is safe to upgrade to `@aws-cdk/aws-route53-patterns:useCertificate` since
 the new certificate will be created and updated on the CloudFront distribution
 before the old certificate is deleted.
+
+If you'd like to enable access logs on the resulting CloudFront distribution, create a [LoggingConfiguration](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_cloudfront.LoggingConfiguration.html) object like the example below and pass it to the construct:
+
+```ts
+import { aws_cloudfront as cloudfront } from 'aws-cdk-lib';
+import { aws_s3 as s3 } from 'aws-cdk-lib';
+
+declare const bucket: s3.Bucket;
+const loggingConfig: cloudfront.LoggingConfiguration = {
+  bucket: bucket,
+  includeCookies: false,
+  prefix: 'prefix',
+};
+
+new patterns.HttpsRedirect(this, 'Redirect', {
+  recordNames: ['foo.example.com'],
+  targetDomain: 'bar.example.com',
+  zone: route53.HostedZone.fromHostedZoneAttributes(this, 'HostedZone', {
+    hostedZoneId: 'ID',
+    zoneName: 'example.com',
+  }),
+  loggingConfig: loggingConfig,
+});
+```
