@@ -536,6 +536,7 @@
      "Ref": "DatabaseSubnets56F17B9A"
     },
     "Engine": "aurora-mysql",
+    "PreferredMaintenanceWindow": "Sat:22:15-Sat:22:45",
     "PubliclyAccessible": true
    },
    "DependsOn": [
@@ -547,7 +548,7 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "DatabaseInstanceParameterGroup6968C5BF": {
+  "DatabaseInstance2WrapperInstanceParameterGroup61FBD67B": {
    "Type": "AWS::RDS::DBParameterGroup",
    "Properties": {
     "Description": "Parameter group for aurora-mysql8.0",
@@ -563,12 +564,13 @@
     },
     "DBInstanceClass": "db.t3.medium",
     "DBParameterGroupName": {
-     "Ref": "DatabaseInstanceParameterGroup6968C5BF"
+     "Ref": "DatabaseInstance2WrapperInstanceParameterGroup61FBD67B"
     },
     "DBSubnetGroupName": {
      "Ref": "DatabaseSubnets56F17B9A"
     },
     "Engine": "aurora-mysql",
+    "PreferredMaintenanceWindow": "Sat:22:15-Sat:22:45",
     "PubliclyAccessible": true
    },
    "DependsOn": [
