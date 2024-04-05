@@ -502,7 +502,6 @@ describe('windows', () => {
         ec2.WindowsSpecificVersion.WINDOWS_SERVER_2022_ENGLISH_CORE_BASE_2024_02_14,
       ).getImage(stack).imageId;
     }).toThrow(/Cannot retrieve value from context provider ami since account\/region are not specified at the stack level/);
-
   });
 });
 
