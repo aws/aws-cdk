@@ -869,6 +869,7 @@
     "docs-public-apis:aws-cdk-lib.aws_ec2.OperatingSystemType.*",
     "docs-public-apis:aws-cdk-lib.aws_ec2.Protocol.*",
     "docs-public-apis:aws-cdk-lib.aws_ec2.WindowsVersion.*",
+    "docs-public-apis:aws-cdk-lib.aws_ec2.WindowsLatestVersion.*",
     "docs-public-apis:aws-cdk-lib.aws_ecs.Capability.*",
     "docs-public-apis:aws-cdk-lib.aws_ecs.ContainerDependencyCondition",
     "docs-public-apis:aws-cdk-lib.aws_ecs.GelfCompressionType.*",
