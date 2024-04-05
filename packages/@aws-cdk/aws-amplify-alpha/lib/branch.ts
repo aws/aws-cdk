@@ -246,7 +246,7 @@ class AmplifyAssetDeploymentProvider extends NestedStack {
             ],
           }),
         ],
-        runtime: Runtime.NODEJS_20_X,
+        runtime: Runtime.NODEJS_LATEST,
       },
     );
 
@@ -262,7 +262,7 @@ class AmplifyAssetDeploymentProvider extends NestedStack {
             actions: ['amplify:GetJob*'],
           }),
         ],
-        runtime: Runtime.NODEJS_20_X,
+        runtime: Runtime.NODEJS_LATEST,
       },
     );
 
