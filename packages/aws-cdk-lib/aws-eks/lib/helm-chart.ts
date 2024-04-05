@@ -33,7 +33,6 @@ export interface HelmChartOptions {
    * The repository which contains the chart. For example: https://charts.helm.sh/stable/
    * @default - No repository will be used, which means that the chart needs to be an absolute URL.
    */
-
   readonly repository?: string;
 
   /**
