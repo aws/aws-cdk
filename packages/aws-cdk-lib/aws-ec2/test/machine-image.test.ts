@@ -435,6 +435,77 @@ test('throw error if virtualization param is set for Amazon Linux 2023', () => {
   }).toThrow(/Virtualization parameter does not exist in SSM parameter name for Amazon Linux 2023./);
 });
 
+describe('windows', () => {
+  test('latestWindows', () => {
+    // WHEN
+    ec2.MachineImage.latestWindows(
+      ec2.WindowsVersion.WINDOWS_SERVER_2022_ENGLISH_CORE_BASE,
+    ).getImage(stack);
+
+    // THEN
+    Template.fromStack(stack).hasParameter('*', {
+      Type: 'AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>',
+      Default: '/aws/service/ami-windows-latest/Windows_Server-2022-English-Core-Base',
+    });
+  });
+  test('latestWindows in agnostic stack', () => {
+    // WHEN
+    app = new App();
+    stack = new Stack(app, 'Stack');
+    ec2.MachineImage.latestWindows(
+      ec2.WindowsVersion.WINDOWS_SERVER_2022_ENGLISH_CORE_BASE,
+    ).getImage(stack);
+
+    // THEN
+    Template.fromStack(stack).hasParameter('*', {
+      Type: 'AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>',
+      Default: '/aws/service/ami-windows-latest/Windows_Server-2022-English-Core-Base',
+    });
+  });
+
+  test('specificWindows', () => {
+    // WHEN
+    const ami = ec2.MachineImage.specificWindows(
+      ec2.WindowsSpecificVersion.WINDOWS_SERVER_2022_ENGLISH_CORE_BASE_2024_02_14,
+    ).getImage(stack).imageId;
+
+    // THEN
+    const missing = app.synth().manifest.missing || [];
+    expect(missing).toEqual([
+      {
+        key: 'ami:account=1234:filters.image-type.0=machine:filters.name.0=Windows_Server-2022-English-Core-Base-2024.02.14:filters.platform.0=windows:filters.state.0=available:owners.0=amazon:region=testregion',
+        props: {
+          account: '1234',
+          region: 'testregion',
+          lookupRoleArn: 'arn:${AWS::Partition}:iam::1234:role/cdk-hnb659fds-lookup-role-1234-testregion',
+          owners: ['amazon'],
+          filters: {
+            'name': ['Windows_Server-2022-English-Core-Base-2024.02.14'],
+            'platform': ['windows'],
+            'state': ['available'],
+            'image-type': ['machine'],
+          },
+        },
+        provider: 'ami',
+      },
+    ]);
+  });
+
+  test('specificWindows throws in agnostic stack', () => {
+    // WHEN
+    app = new App();
+    stack = new Stack(app, 'Stack');
+
+    // THEN
+    expect(() => {
+      ec2.MachineImage.specificWindows(
+        ec2.WindowsSpecificVersion.WINDOWS_SERVER_2022_ENGLISH_CORE_BASE_2024_02_14,
+      ).getImage(stack).imageId;
+    }).toThrow(/Cannot retrieve value from context provider ami since account\/region are not specified at the stack level/);
+
+  });
+});
+
 function isWindowsUserData(ud: ec2.UserData) {
   return ud.render().indexOf('powershell') > -1;
 }

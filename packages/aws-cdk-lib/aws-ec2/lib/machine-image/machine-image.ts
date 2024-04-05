@@ -9,7 +9,7 @@ import * as cxschema from '../../../cloud-assembly-schema';
 import { ContextProvider, CfnMapping, Aws, Stack, Token } from '../../../core';
 import * as cxapi from '../../../cx-api';
 import { UserData } from '../user-data';
-import { WindowsVersion } from '../windows-versions';
+import { WindowsSpecificVersion, WindowsVersion } from '../windows-versions';
 
 /**
  * Factory functions for standard Amazon Machine Image objects.
@@ -22,6 +22,9 @@ export abstract class MachineImage {
    * deployment. Be aware this will cause your instances to be replaced when a
    * new version of the image becomes available. Do not store stateful information
    * on the instance if you are using this image.
+   *
+   * If you want to use a specific datestamped version of the image,
+   * use the {@link MachineImage.specificWindows} method instead.
    */
   public static latestWindows(version: WindowsVersion, props?: WindowsImageProps): IMachineImage {
     return new WindowsImage(version, props);
@@ -102,6 +105,23 @@ export abstract class MachineImage {
    */
   public static latestAmazonLinux(props?: AmazonLinuxImageProps): IMachineImage {
     return new AmazonLinuxImage(props);
+  }
+
+  /**
+   * A Windows image with a specific datestamped version
+   *
+   * If you want to use the latest version version of the image,
+   * use the {@link MachineImage.latestWindows} method instead.
+   *
+   * This function can not be used in environment-agnostic stacks.
+   */
+  public static specificWindows(version: WindowsSpecificVersion, props: WindowsImageProps = {}): IMachineImage {
+    return MachineImage.lookup({
+      name: version,
+      owners: ['amazon'],
+      windows: true,
+      userData: props.userData,
+    });
   }
 
   /**
