@@ -1710,7 +1710,7 @@ describe('tests', () => {
       // GIVEN
       const identifierToken = 'SuperMagicToken';
       const app = new cdk.App();
-      const stack = new cdk.Stack(app, 'TestStack', { env: {account: '123456789012', region: 'us-east-1'} });
+      const stack = new cdk.Stack(app, 'TestStack', { env: { account: '123456789012', region: 'us-east-1' } });
       const vpc = new ec2.Vpc(stack, 'Stack');
       const targetGroup = new elbv2.ApplicationTargetGroup(stack, 'TargetGroup', { vpc, port: 80 });
       const listener = elbv2.ApplicationListener.fromLookup(stack, 'a', {
@@ -1738,7 +1738,7 @@ describe('tests', () => {
       // GIVEN
       const identifierToken = 'SuperMagicToken';
       const app = new cdk.App();
-      const stack = new cdk.Stack(app, 'TestStack', { env: {account: '123456789012', region: 'us-east-1'} });
+      const stack = new cdk.Stack(app, 'TestStack', { env: { account: '123456789012', region: 'us-east-1' } });
       const vpc = new ec2.Vpc(stack, 'Stack');
       const targetGroup = new elbv2.ApplicationTargetGroup(stack, 'TargetGroup', { vpc, port: 80 });
       const listener = elbv2.ApplicationListener.fromLookup(stack, 'a', {
