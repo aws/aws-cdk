@@ -1,6 +1,6 @@
 // The SDK is only used to reference `DescribeChangeSetOutput`, so the SDK is added as a devDependency.
 // The SDK should not make network calls here
-import type { CloudFormation } from 'aws-sdk';
+import { DescribeChangeSetCommandOutput } from '@aws-sdk/client-cloudformation';
 import * as impl from './diff';
 import * as types from './diff/types';
 import { deepEqual, diffKeyedEntities, unionOf } from './diff/util';
@@ -45,7 +45,7 @@ const DIFF_HANDLERS: HandlerRegistry = {
 export function fullDiff(
   currentTemplate: { [key: string]: any },
   newTemplate: { [key: string]: any },
-  changeSet?: CloudFormation.DescribeChangeSetOutput,
+  changeSet?: DescribeChangeSetCommandOutput,
   isImport?: boolean,
 ): types.TemplateDiff {
 
@@ -212,7 +212,7 @@ function deepCopy(x: any): any {
   return x;
 }
 
-function addImportInformation(diff: types.TemplateDiff, changeSet: CloudFormation.DescribeChangeSetOutput) {
+function addImportInformation(diff: types.TemplateDiff, changeSet: DescribeChangeSetCommandOutput) {
   const imports = findResourceImports(changeSet);
   diff.resources.forEachDifference((logicalId: string, change: types.ResourceDifference) => {
     if (imports.includes(logicalId)) {
@@ -227,7 +227,7 @@ function makeAllResourceChangesImports(diff: types.TemplateDiff) {
   });
 }
 
-function filterFalsePositives(diff: types.TemplateDiff, changeSet: CloudFormation.DescribeChangeSetOutput) {
+function filterFalsePositives(diff: types.TemplateDiff, changeSet: DescribeChangeSetCommandOutput) {
   const replacements = findResourceReplacements(changeSet);
   diff.resources.forEachDifference((logicalId: string, change: types.ResourceDifference) => {
     if (change.resourceType.includes('AWS::Serverless')) {
@@ -268,7 +268,7 @@ function filterFalsePositives(diff: types.TemplateDiff, changeSet: CloudFormatio
   });
 }
 
-function findResourceImports(changeSet: CloudFormation.DescribeChangeSetOutput): string[] {
+function findResourceImports(changeSet: DescribeChangeSetCommandOutput): string[] {
   const importedResourceLogicalIds = [];
   for (const resourceChange of changeSet.Changes ?? []) {
     if (resourceChange.ResourceChange?.Action === 'Import') {
@@ -279,7 +279,7 @@ function findResourceImports(changeSet: CloudFormation.DescribeChangeSetOutput):
   return importedResourceLogicalIds;
 }
 
-function findResourceReplacements(changeSet: CloudFormation.DescribeChangeSetOutput): types.ResourceReplacements {
+function findResourceReplacements(changeSet: DescribeChangeSetCommandOutput): types.ResourceReplacements {
   const replacements: types.ResourceReplacements = {};
   for (const resourceChange of changeSet.Changes ?? []) {
     const propertiesReplaced: { [propName: string]: types.ChangeSetReplacement } = {};

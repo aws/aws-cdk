@@ -26,6 +26,7 @@
     "@aws-cdk/aws-service-spec": "^0.0.61",
     "@aws-cdk/service-spec-types": "^0.0.61",
     "aws-sdk": "2.1586.0",
+    "aws-sdk-js-codemod": "^1.2.5",
     "chalk": "^4",
     "diff": "^5.2.0",
     "fast-deep-equal": "^3.1.3",
