@@ -606,13 +606,16 @@ taskDefinition.addContainer('container', {
 You can add labels to the container with the `dockerLabels` prop or `addDockerLabel`:
 
 ```ts
-const container = taskDefinition.addContainer('cont', {
+declare const taskDefinition: ecs.TaskDefinition;
+
+taskDefinition.addContainer('cont', {
   image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
   memoryLimitMiB: 1024,
   dockerLabels: {
     foo: 'bar',
   },
 });
+
 container.addDockerLabel('label', 'value');
 ```
 
