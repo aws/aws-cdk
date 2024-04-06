@@ -624,8 +624,6 @@ export enum WindowsVersion {
  */
 export enum WindowsSpecificVersion {
   /** EKS Optimized - Start */
-  /** 2023.11.14 version of {@link WindowsVersion.WINDOWS_SERVER_2019_ENGLISH_CORE_EKS_OPTIMIZED_1_24} */
-  WINDOWS_SERVER_2019_ENGLISH_CORE_EKS_OPTIMIZED_1_24_2023_11_14 = 'Windows_Server-2019-English-Core-EKS_Optimized-1.24-2023.11.14',
   /** 2023.12.12 version of {@link WindowsVersion.WINDOWS_SERVER_2019_ENGLISH_CORE_EKS_OPTIMIZED_1_24} */
   WINDOWS_SERVER_2019_ENGLISH_CORE_EKS_OPTIMIZED_1_24_2023_12_12 = 'Windows_Server-2019-English-Core-EKS_Optimized-1.24-2023.12.12',
   /** 2024.01.09 version of {@link WindowsVersion.WINDOWS_SERVER_2019_ENGLISH_CORE_EKS_OPTIMIZED_1_24} */
@@ -633,8 +631,6 @@ export enum WindowsSpecificVersion {
   /** 2024.02.13 version of {@link WindowsVersion.WINDOWS_SERVER_2019_ENGLISH_CORE_EKS_OPTIMIZED_1_24} */
   WINDOWS_SERVER_2019_ENGLISH_CORE_EKS_OPTIMIZED_1_24_2024_02_13 = 'Windows_Server-2019-English-Core-EKS_Optimized-1.24-2024.02.13',
 
-  /** 2023.11.14 version of {@link WindowsVersion.WINDOWS_SERVER_2019_ENGLISH_CORE_EKS_OPTIMIZED_1_25} */
-  WINDOWS_SERVER_2019_ENGLISH_CORE_EKS_OPTIMIZED_1_25_2023_11_14 = 'Windows_Server-2019-English-Core-EKS_Optimized-1.25-2023.11.14',
   /** 2023.12.12 version of {@link WindowsVersion.WINDOWS_SERVER_2019_ENGLISH_CORE_EKS_OPTIMIZED_1_25} */
   WINDOWS_SERVER_2019_ENGLISH_CORE_EKS_OPTIMIZED_1_25_2023_12_12 = 'Windows_Server-2019-English-Core-EKS_Optimized-1.25-2023.12.12',
   /** 2024.01.09 version of {@link WindowsVersion.WINDOWS_SERVER_2019_ENGLISH_CORE_EKS_OPTIMIZED_1_25} */
@@ -642,8 +638,6 @@ export enum WindowsSpecificVersion {
   /** 2024.02.13 version of {@link WindowsVersion.WINDOWS_SERVER_2019_ENGLISH_CORE_EKS_OPTIMIZED_1_25} */
   WINDOWS_SERVER_2019_ENGLISH_CORE_EKS_OPTIMIZED_1_25_2024_02_13 = 'Windows_Server-2019-English-Core-EKS_Optimized-1.25-2024.02.13',
 
-  /** 2023.11.14 version of {@link WindowsVersion.WINDOWS_SERVER_2019_ENGLISH_CORE_EKS_OPTIMIZED_1_26} */
-  WINDOWS_SERVER_2019_ENGLISH_CORE_EKS_OPTIMIZED_1_26_2023_11_14 = 'Windows_Server-2019-English-Core-EKS_Optimized-1.26-2023.11.14',
   /** 2023.12.12 version of {@link WindowsVersion.WINDOWS_SERVER_2019_ENGLISH_CORE_EKS_OPTIMIZED_1_26} */
   WINDOWS_SERVER_2019_ENGLISH_CORE_EKS_OPTIMIZED_1_26_2023_12_12 = 'Windows_Server-2019-English-Core-EKS_Optimized-1.26-2023.12.12',
   /** 2024.01.09 version of {@link WindowsVersion.WINDOWS_SERVER_2019_ENGLISH_CORE_EKS_OPTIMIZED_1_26} */
@@ -651,8 +645,6 @@ export enum WindowsSpecificVersion {
   /** 2024.02.13 version of {@link WindowsVersion.WINDOWS_SERVER_2019_ENGLISH_CORE_EKS_OPTIMIZED_1_26} */
   WINDOWS_SERVER_2019_ENGLISH_CORE_EKS_OPTIMIZED_1_26_2024_02_13 = 'Windows_Server-2019-English-Core-EKS_Optimized-1.26-2024.02.13',
 
-  /** 2023.11.14 version of {@link WindowsVersion.WINDOWS_SERVER_2019_ENGLISH_CORE_EKS_OPTIMIZED_1_27} */
-  WINDOWS_SERVER_2019_ENGLISH_CORE_EKS_OPTIMIZED_1_27_2023_11_14 = 'Windows_Server-2019-English-Core-EKS_Optimized-1.27-2023.11.14',
   /** 2023.12.12 version of {@link WindowsVersion.WINDOWS_SERVER_2019_ENGLISH_CORE_EKS_OPTIMIZED_1_27} */
   WINDOWS_SERVER_2019_ENGLISH_CORE_EKS_OPTIMIZED_1_27_2023_12_12 = 'Windows_Server-2019-English-Core-EKS_Optimized-1.27-2023.12.12',
   /** 2024.01.09 version of {@link WindowsVersion.WINDOWS_SERVER_2019_ENGLISH_CORE_EKS_OPTIMIZED_1_27} */
@@ -660,8 +652,6 @@ export enum WindowsSpecificVersion {
   /** 2024.02.13 version of {@link WindowsVersion.WINDOWS_SERVER_2019_ENGLISH_CORE_EKS_OPTIMIZED_1_27} */
   WINDOWS_SERVER_2019_ENGLISH_CORE_EKS_OPTIMIZED_1_27_2024_02_13 = 'Windows_Server-2019-English-Core-EKS_Optimized-1.27-2024.02.13',
 
-  /** 2023.11.14 version of {@link WindowsVersion.WINDOWS_SERVER_2019_ENGLISH_CORE_EKS_OPTIMIZED_1_28} */
-  WINDOWS_SERVER_2019_ENGLISH_CORE_EKS_OPTIMIZED_1_28_2023_11_14 = 'Windows_Server-2019-English-Core-EKS_Optimized-1.28-2023.11.14',
   /** 2023.12.12 version of {@link WindowsVersion.WINDOWS_SERVER_2019_ENGLISH_CORE_EKS_OPTIMIZED_1_28} */
   WINDOWS_SERVER_2019_ENGLISH_CORE_EKS_OPTIMIZED_1_28_2023_12_12 = 'Windows_Server-2019-English-Core-EKS_Optimized-1.28-2023.12.12',
   /** 2024.01.09 version of {@link WindowsVersion.WINDOWS_SERVER_2019_ENGLISH_CORE_EKS_OPTIMIZED_1_28} */
@@ -678,8 +668,6 @@ export enum WindowsSpecificVersion {
   /** 2024.02.13 version of {@link WindowsVersion.WINDOWS_SERVER_2019_ENGLISH_CORE_EKS_OPTIMIZED_1_29} */
   WINDOWS_SERVER_2019_ENGLISH_CORE_EKS_OPTIMIZED_1_29_2024_02_13 = 'Windows_Server-2019-English-Core-EKS_Optimized-1.29-2024.02.13',
 
-  /** 2023.11.14 version of {@link WindowsVersion.WINDOWS_SERVER_2019_ENGLISH_FULL_EKS_OPTIMIZED_1_24} */
-  WINDOWS_SERVER_2019_ENGLISH_FULL_EKS_OPTIMIZED_1_24_2023_11_14 = 'Windows_Server-2019-English-Full-EKS_Optimized-1.24-2023.11.14',
   /** 2023.12.12 version of {@link WindowsVersion.WINDOWS_SERVER_2019_ENGLISH_FULL_EKS_OPTIMIZED_1_24} */
   WINDOWS_SERVER_2019_ENGLISH_FULL_EKS_OPTIMIZED_1_24_2023_12_12 = 'Windows_Server-2019-English-Full-EKS_Optimized-1.24-2023.12.12',
   /** 2024.01.09 version of {@link WindowsVersion.WINDOWS_SERVER_2019_ENGLISH_FULL_EKS_OPTIMIZED_1_24} */
@@ -687,8 +675,6 @@ export enum WindowsSpecificVersion {
   /** 2024.02.13 version of {@link WindowsVersion.WINDOWS_SERVER_2019_ENGLISH_FULL_EKS_OPTIMIZED_1_24} */
   WINDOWS_SERVER_2019_ENGLISH_FULL_EKS_OPTIMIZED_1_24_2024_02_13 = 'Windows_Server-2019-English-Full-EKS_Optimized-1.24-2024.02.13',
 
-  /** 2023.11.14 version of {@link WindowsVersion.WINDOWS_SERVER_2019_ENGLISH_FULL_EKS_OPTIMIZED_1_25} */
-  WINDOWS_SERVER_2019_ENGLISH_FULL_EKS_OPTIMIZED_1_25_2023_11_14 = 'Windows_Server-2019-English-Full-EKS_Optimized-1.25-2023.11.14',
   /** 2023.12.12 version of {@link WindowsVersion.WINDOWS_SERVER_2019_ENGLISH_FULL_EKS_OPTIMIZED_1_25} */
   WINDOWS_SERVER_2019_ENGLISH_FULL_EKS_OPTIMIZED_1_25_2023_12_12 = 'Windows_Server-2019-English-Full-EKS_Optimized-1.25-2023.12.12',
   /** 2024.01.09 version of {@link WindowsVersion.WINDOWS_SERVER_2019_ENGLISH_FULL_EKS_OPTIMIZED_1_25} */
@@ -696,8 +682,6 @@ export enum WindowsSpecificVersion {
   /** 2024.02.13 version of {@link WindowsVersion.WINDOWS_SERVER_2019_ENGLISH_FULL_EKS_OPTIMIZED_1_25} */
   WINDOWS_SERVER_2019_ENGLISH_FULL_EKS_OPTIMIZED_1_25_2024_02_13 = 'Windows_Server-2019-English-Full-EKS_Optimized-1.25-2024.02.13',
 
-  /** 2023.11.14 version of {@link WindowsVersion.WINDOWS_SERVER_2019_ENGLISH_FULL_EKS_OPTIMIZED_1_26} */
-  WINDOWS_SERVER_2019_ENGLISH_FULL_EKS_OPTIMIZED_1_26_2023_11_14 = 'Windows_Server-2019-English-Full-EKS_Optimized-1.26-2023.11.14',
   /** 2023.12.12 version of {@link WindowsVersion.WINDOWS_SERVER_2019_ENGLISH_FULL_EKS_OPTIMIZED_1_26} */
   WINDOWS_SERVER_2019_ENGLISH_FULL_EKS_OPTIMIZED_1_26_2023_12_12 = 'Windows_Server-2019-English-Full-EKS_Optimized-1.26-2023.12.12',
   /** 2024.01.09 version of {@link WindowsVersion.WINDOWS_SERVER_2019_ENGLISH_FULL_EKS_OPTIMIZED_1_26} */
@@ -705,8 +689,6 @@ export enum WindowsSpecificVersion {
   /** 2024.02.13 version of {@link WindowsVersion.WINDOWS_SERVER_2019_ENGLISH_FULL_EKS_OPTIMIZED_1_26} */
   WINDOWS_SERVER_2019_ENGLISH_FULL_EKS_OPTIMIZED_1_26_2024_02_13 = 'Windows_Server-2019-English-Full-EKS_Optimized-1.26-2024.02.13',
 
-  /** 2023.11.14 version of {@link WindowsVersion.WINDOWS_SERVER_2019_ENGLISH_FULL_EKS_OPTIMIZED_1_27} */
-  WINDOWS_SERVER_2019_ENGLISH_FULL_EKS_OPTIMIZED_1_27_2023_11_14 = 'Windows_Server-2019-English-Full-EKS_Optimized-1.27-2023.11.14',
   /** 2023.12.12 version of {@link WindowsVersion.WINDOWS_SERVER_2019_ENGLISH_FULL_EKS_OPTIMIZED_1_27} */
   WINDOWS_SERVER_2019_ENGLISH_FULL_EKS_OPTIMIZED_1_27_2023_12_12 = 'Windows_Server-2019-English-Full-EKS_Optimized-1.27-2023.12.12',
   /** 2024.01.09 version of {@link WindowsVersion.WINDOWS_SERVER_2019_ENGLISH_FULL_EKS_OPTIMIZED_1_27} */
@@ -714,8 +696,6 @@ export enum WindowsSpecificVersion {
   /** 2024.02.13 version of {@link WindowsVersion.WINDOWS_SERVER_2019_ENGLISH_FULL_EKS_OPTIMIZED_1_27} */
   WINDOWS_SERVER_2019_ENGLISH_FULL_EKS_OPTIMIZED_1_27_2024_02_13 = 'Windows_Server-2019-English-Full-EKS_Optimized-1.27-2024.02.13',
 
-  /** 2023.11.14 version of {@link WindowsVersion.WINDOWS_SERVER_2019_ENGLISH_FULL_EKS_OPTIMIZED_1_28} */
-  WINDOWS_SERVER_2019_ENGLISH_FULL_EKS_OPTIMIZED_1_28_2023_11_14 = 'Windows_Server-2019-English-Full-EKS_Optimized-1.28-2023.11.14',
   /** 2023.12.12 version of {@link WindowsVersion.WINDOWS_SERVER_2019_ENGLISH_FULL_EKS_OPTIMIZED_1_28} */
   WINDOWS_SERVER_2019_ENGLISH_FULL_EKS_OPTIMIZED_1_28_2023_12_12 = 'Windows_Server-2019-English-Full-EKS_Optimized-1.28-2023.12.12',
   /** 2024.01.09 version of {@link WindowsVersion.WINDOWS_SERVER_2019_ENGLISH_FULL_EKS_OPTIMIZED_1_28} */
@@ -732,8 +712,6 @@ export enum WindowsSpecificVersion {
   /** 2024.02.13 version of {@link WindowsVersion.WINDOWS_SERVER_2019_ENGLISH_FULL_EKS_OPTIMIZED_1_29} */
   WINDOWS_SERVER_2019_ENGLISH_FULL_EKS_OPTIMIZED_1_29_2024_02_13 = 'Windows_Server-2019-English-Full-EKS_Optimized-1.29-2024.02.13',
 
-  /** 2023.11.14 version of {@link WindowsVersion.WINDOWS_SERVER_2022_ENGLISH_CORE_EKS_OPTIMIZED_1_24} */
-  WINDOWS_SERVER_2022_ENGLISH_CORE_EKS_OPTIMIZED_1_24_2023_11_14 = 'Windows_Server-2022-English-Core-EKS_Optimized-1.24-2023.11.14',
   /** 2023.12.12 version of {@link WindowsVersion.WINDOWS_SERVER_2022_ENGLISH_CORE_EKS_OPTIMIZED_1_24} */
   WINDOWS_SERVER_2022_ENGLISH_CORE_EKS_OPTIMIZED_1_24_2023_12_12 = 'Windows_Server-2022-English-Core-EKS_Optimized-1.24-2023.12.12',
   /** 2024.01.11 version of {@link WindowsVersion.WINDOWS_SERVER_2022_ENGLISH_CORE_EKS_OPTIMIZED_1_24} */
@@ -741,8 +719,6 @@ export enum WindowsSpecificVersion {
   /** 2024.02.13 version of {@link WindowsVersion.WINDOWS_SERVER_2022_ENGLISH_CORE_EKS_OPTIMIZED_1_24} */
   WINDOWS_SERVER_2022_ENGLISH_CORE_EKS_OPTIMIZED_1_24_2024_02_13 = 'Windows_Server-2022-English-Core-EKS_Optimized-1.24-2024.02.13',
 
-  /** 2023.11.14 version of {@link WindowsVersion.WINDOWS_SERVER_2022_ENGLISH_CORE_EKS_OPTIMIZED_1_25} */
-  WINDOWS_SERVER_2022_ENGLISH_CORE_EKS_OPTIMIZED_1_25_2023_11_14 = 'Windows_Server-2022-English-Core-EKS_Optimized-1.25-2023.11.14',
   /** 2023.12.12 version of {@link WindowsVersion.WINDOWS_SERVER_2022_ENGLISH_CORE_EKS_OPTIMIZED_1_25} */
   WINDOWS_SERVER_2022_ENGLISH_CORE_EKS_OPTIMIZED_1_25_2023_12_12 = 'Windows_Server-2022-English-Core-EKS_Optimized-1.25-2023.12.12',
   /** 2024.01.11 version of {@link WindowsVersion.WINDOWS_SERVER_2022_ENGLISH_CORE_EKS_OPTIMIZED_1_25} */
@@ -750,8 +726,6 @@ export enum WindowsSpecificVersion {
   /** 2024.02.13 version of {@link WindowsVersion.WINDOWS_SERVER_2022_ENGLISH_CORE_EKS_OPTIMIZED_1_25} */
   WINDOWS_SERVER_2022_ENGLISH_CORE_EKS_OPTIMIZED_1_25_2024_02_13 = 'Windows_Server-2022-English-Core-EKS_Optimized-1.25-2024.02.13',
 
-  /** 2023.11.14 version of {@link WindowsVersion.WINDOWS_SERVER_2022_ENGLISH_CORE_EKS_OPTIMIZED_1_26} */
-  WINDOWS_SERVER_2022_ENGLISH_CORE_EKS_OPTIMIZED_1_26_2023_11_14 = 'Windows_Server-2022-English-Core-EKS_Optimized-1.26-2023.11.14',
   /** 2023.12.12 version of {@link WindowsVersion.WINDOWS_SERVER_2022_ENGLISH_CORE_EKS_OPTIMIZED_1_26} */
   WINDOWS_SERVER_2022_ENGLISH_CORE_EKS_OPTIMIZED_1_26_2023_12_12 = 'Windows_Server-2022-English-Core-EKS_Optimized-1.26-2023.12.12',
   /** 2024.01.11 version of {@link WindowsVersion.WINDOWS_SERVER_2022_ENGLISH_CORE_EKS_OPTIMIZED_1_26} */
@@ -759,8 +733,6 @@ export enum WindowsSpecificVersion {
   /** 2024.02.13 version of {@link WindowsVersion.WINDOWS_SERVER_2022_ENGLISH_CORE_EKS_OPTIMIZED_1_26} */
   WINDOWS_SERVER_2022_ENGLISH_CORE_EKS_OPTIMIZED_1_26_2024_02_13 = 'Windows_Server-2022-English-Core-EKS_Optimized-1.26-2024.02.13',
 
-  /** 2023.11.14 version of {@link WindowsVersion.WINDOWS_SERVER_2022_ENGLISH_CORE_EKS_OPTIMIZED_1_27} */
-  WINDOWS_SERVER_2022_ENGLISH_CORE_EKS_OPTIMIZED_1_27_2023_11_14 = 'Windows_Server-2022-English-Core-EKS_Optimized-1.27-2023.11.14',
   /** 2023.12.12 version of {@link WindowsVersion.WINDOWS_SERVER_2022_ENGLISH_CORE_EKS_OPTIMIZED_1_27} */
   WINDOWS_SERVER_2022_ENGLISH_CORE_EKS_OPTIMIZED_1_27_2023_12_12 = 'Windows_Server-2022-English-Core-EKS_Optimized-1.27-2023.12.12',
   /** 2024.01.11 version of {@link WindowsVersion.WINDOWS_SERVER_2022_ENGLISH_CORE_EKS_OPTIMIZED_1_27} */
@@ -768,8 +740,6 @@ export enum WindowsSpecificVersion {
   /** 2024.02.13 version of {@link WindowsVersion.WINDOWS_SERVER_2022_ENGLISH_CORE_EKS_OPTIMIZED_1_27} */
   WINDOWS_SERVER_2022_ENGLISH_CORE_EKS_OPTIMIZED_1_27_2024_02_13 = 'Windows_Server-2022-English-Core-EKS_Optimized-1.27-2024.02.13',
 
-  /** 2023.11.14 version of {@link WindowsVersion.WINDOWS_SERVER_2022_ENGLISH_CORE_EKS_OPTIMIZED_1_28} */
-  WINDOWS_SERVER_2022_ENGLISH_CORE_EKS_OPTIMIZED_1_28_2023_11_14 = 'Windows_Server-2022-English-Core-EKS_Optimized-1.28-2023.11.14',
   /** 2023.12.12 version of {@link WindowsVersion.WINDOWS_SERVER_2022_ENGLISH_CORE_EKS_OPTIMIZED_1_28} */
   WINDOWS_SERVER_2022_ENGLISH_CORE_EKS_OPTIMIZED_1_28_2023_12_12 = 'Windows_Server-2022-English-Core-EKS_Optimized-1.28-2023.12.12',
   /** 2024.01.11 version of {@link WindowsVersion.WINDOWS_SERVER_2022_ENGLISH_CORE_EKS_OPTIMIZED_1_28} */
@@ -786,8 +756,6 @@ export enum WindowsSpecificVersion {
   /** 2024.02.13 version of {@link WindowsVersion.WINDOWS_SERVER_2022_ENGLISH_CORE_EKS_OPTIMIZED_1_29} */
   WINDOWS_SERVER_2022_ENGLISH_CORE_EKS_OPTIMIZED_1_29_2024_02_13 = 'Windows_Server-2022-English-Core-EKS_Optimized-1.29-2024.02.13',
 
-  /** 2023.11.14 version of {@link WindowsVersion.WINDOWS_SERVER_2022_ENGLISH_FULL_EKS_OPTIMIZED_1_24} */
-  WINDOWS_SERVER_2022_ENGLISH_FULL_EKS_OPTIMIZED_1_24_2023_11_14 = 'Windows_Server-2022-English-Full-EKS_Optimized-1.24-2023.11.14',
   /** 2023.12.12 version of {@link WindowsVersion.WINDOWS_SERVER_2022_ENGLISH_FULL_EKS_OPTIMIZED_1_24} */
   WINDOWS_SERVER_2022_ENGLISH_FULL_EKS_OPTIMIZED_1_24_2023_12_12 = 'Windows_Server-2022-English-Full-EKS_Optimized-1.24-2023.12.12',
   /** 2024.01.09 version of {@link WindowsVersion.WINDOWS_SERVER_2022_ENGLISH_FULL_EKS_OPTIMIZED_1_24} */
@@ -795,8 +763,6 @@ export enum WindowsSpecificVersion {
   /** 2024.02.13 version of {@link WindowsVersion.WINDOWS_SERVER_2022_ENGLISH_FULL_EKS_OPTIMIZED_1_24} */
   WINDOWS_SERVER_2022_ENGLISH_FULL_EKS_OPTIMIZED_1_24_2024_02_13 = 'Windows_Server-2022-English-Full-EKS_Optimized-1.24-2024.02.13',
 
-  /** 2023.11.14 version of {@link WindowsVersion.WINDOWS_SERVER_2022_ENGLISH_FULL_EKS_OPTIMIZED_1_25} */
-  WINDOWS_SERVER_2022_ENGLISH_FULL_EKS_OPTIMIZED_1_25_2023_11_14 = 'Windows_Server-2022-English-Full-EKS_Optimized-1.25-2023.11.14',
   /** 2023.12.12 version of {@link WindowsVersion.WINDOWS_SERVER_2022_ENGLISH_FULL_EKS_OPTIMIZED_1_25} */
   WINDOWS_SERVER_2022_ENGLISH_FULL_EKS_OPTIMIZED_1_25_2023_12_12 = 'Windows_Server-2022-English-Full-EKS_Optimized-1.25-2023.12.12',
   /** 2024.01.09 version of {@link WindowsVersion.WINDOWS_SERVER_2022_ENGLISH_FULL_EKS_OPTIMIZED_1_25} */
@@ -804,8 +770,6 @@ export enum WindowsSpecificVersion {
   /** 2024.02.13 version of {@link WindowsVersion.WINDOWS_SERVER_2022_ENGLISH_FULL_EKS_OPTIMIZED_1_25} */
   WINDOWS_SERVER_2022_ENGLISH_FULL_EKS_OPTIMIZED_1_25_2024_02_13 = 'Windows_Server-2022-English-Full-EKS_Optimized-1.25-2024.02.13',
 
-  /** 2023.11.14 version of {@link WindowsVersion.WINDOWS_SERVER_2022_ENGLISH_FULL_EKS_OPTIMIZED_1_26} */
-  WINDOWS_SERVER_2022_ENGLISH_FULL_EKS_OPTIMIZED_1_26_2023_11_14 = 'Windows_Server-2022-English-Full-EKS_Optimized-1.26-2023.11.14',
   /** 2023.12.12 version of {@link WindowsVersion.WINDOWS_SERVER_2022_ENGLISH_FULL_EKS_OPTIMIZED_1_26} */
   WINDOWS_SERVER_2022_ENGLISH_FULL_EKS_OPTIMIZED_1_26_2023_12_12 = 'Windows_Server-2022-English-Full-EKS_Optimized-1.26-2023.12.12',
   /** 2024.01.09 version of {@link WindowsVersion.WINDOWS_SERVER_2022_ENGLISH_FULL_EKS_OPTIMIZED_1_26} */
@@ -813,8 +777,6 @@ export enum WindowsSpecificVersion {
   /** 2024.02.13 version of {@link WindowsVersion.WINDOWS_SERVER_2022_ENGLISH_FULL_EKS_OPTIMIZED_1_26} */
   WINDOWS_SERVER_2022_ENGLISH_FULL_EKS_OPTIMIZED_1_26_2024_02_13 = 'Windows_Server-2022-English-Full-EKS_Optimized-1.26-2024.02.13',
 
-  /** 2023.11.14 version of {@link WindowsVersion.WINDOWS_SERVER_2022_ENGLISH_FULL_EKS_OPTIMIZED_1_27} */
-  WINDOWS_SERVER_2022_ENGLISH_FULL_EKS_OPTIMIZED_1_27_2023_11_14 = 'Windows_Server-2022-English-Full-EKS_Optimized-1.27-2023.11.14',
   /** 2023.12.12 version of {@link WindowsVersion.WINDOWS_SERVER_2022_ENGLISH_FULL_EKS_OPTIMIZED_1_27} */
   WINDOWS_SERVER_2022_ENGLISH_FULL_EKS_OPTIMIZED_1_27_2023_12_12 = 'Windows_Server-2022-English-Full-EKS_Optimized-1.27-2023.12.12',
   /** 2024.01.09 version of {@link WindowsVersion.WINDOWS_SERVER_2022_ENGLISH_FULL_EKS_OPTIMIZED_1_27} */
@@ -822,8 +784,6 @@ export enum WindowsSpecificVersion {
   /** 2024.02.13 version of {@link WindowsVersion.WINDOWS_SERVER_2022_ENGLISH_FULL_EKS_OPTIMIZED_1_27} */
   WINDOWS_SERVER_2022_ENGLISH_FULL_EKS_OPTIMIZED_1_27_2024_02_13 = 'Windows_Server-2022-English-Full-EKS_Optimized-1.27-2024.02.13',
 
-  /** 2023.11.14 version of {@link WindowsVersion.WINDOWS_SERVER_2022_ENGLISH_FULL_EKS_OPTIMIZED_1_28} */
-  WINDOWS_SERVER_2022_ENGLISH_FULL_EKS_OPTIMIZED_1_28_2023_11_14 = 'Windows_Server-2022-English-Full-EKS_Optimized-1.28-2023.11.14',
   /** 2023.12.12 version of {@link WindowsVersion.WINDOWS_SERVER_2022_ENGLISH_FULL_EKS_OPTIMIZED_1_28} */
   WINDOWS_SERVER_2022_ENGLISH_FULL_EKS_OPTIMIZED_1_28_2023_12_12 = 'Windows_Server-2022-English-Full-EKS_Optimized-1.28-2023.12.12',
   /** 2024.01.09 version of {@link WindowsVersion.WINDOWS_SERVER_2022_ENGLISH_FULL_EKS_OPTIMIZED_1_28} */
@@ -940,8 +900,6 @@ export enum WindowsSpecificVersion {
   /** 2024.02.14 version of {@link WindowsVersion.WINDOWS_SERVER_2016_ENGLISH_FULL_BASE} */
   WINDOWS_SERVER_2016_ENGLISH_FULL_BASE_2024_02_14 = 'Windows_Server-2016-English-Full-Base-2024.02.14',
 
-  /** 2023.11.14 version of {@link WindowsVersion.WINDOWS_SERVER_2016_ENGLISH_FULL_ECS_OPTIMIZED} */
-  WINDOWS_SERVER_2016_ENGLISH_FULL_ECS_OPTIMIZED_2023_11_14 = 'Windows_Server-2016-English-Full-ECS_Optimized-2023.11.14',
   /** 2023.12.12 version of {@link WindowsVersion.WINDOWS_SERVER_2016_ENGLISH_FULL_ECS_OPTIMIZED} */
   WINDOWS_SERVER_2016_ENGLISH_FULL_ECS_OPTIMIZED_2023_12_12 = 'Windows_Server-2016-English-Full-ECS_Optimized-2023.12.12',
   /** 2024.01.09 version of {@link WindowsVersion.WINDOWS_SERVER_2016_ENGLISH_FULL_ECS_OPTIMIZED} */
@@ -1373,8 +1331,6 @@ export enum WindowsSpecificVersion {
   /** 2024.02.14 version of {@link WindowsVersion.WINDOWS_SERVER_2019_ENGLISH_CORE_BASE} */
   WINDOWS_SERVER_2019_ENGLISH_CORE_BASE_2024_02_14 = 'Windows_Server-2019-English-Core-Base-2024.02.14',
 
-  /** 2023.11.14 version of {@link WindowsVersion.WINDOWS_SERVER_2019_ENGLISH_CORE_ECS_OPTIMIZED} */
-  WINDOWS_SERVER_2019_ENGLISH_CORE_ECS_OPTIMIZED_2023_11_14 = 'Windows_Server-2019-English-Core-ECS_Optimized-2023.11.14',
   /** 2023.12.12 version of {@link WindowsVersion.WINDOWS_SERVER_2019_ENGLISH_CORE_ECS_OPTIMIZED} */
   WINDOWS_SERVER_2019_ENGLISH_CORE_ECS_OPTIMIZED_2023_12_12 = 'Windows_Server-2019-English-Core-ECS_Optimized-2023.12.12',
   /** 2024.01.09 version of {@link WindowsVersion.WINDOWS_SERVER_2019_ENGLISH_CORE_ECS_OPTIMIZED} */
@@ -1399,8 +1355,6 @@ export enum WindowsSpecificVersion {
   /** 2024.02.14 version of {@link WindowsVersion.WINDOWS_SERVER_2019_ENGLISH_FULL_BASE} */
   WINDOWS_SERVER_2019_ENGLISH_FULL_BASE_2024_02_14 = 'Windows_Server-2019-English-Full-Base-2024.02.14',
 
-  /** 2023.11.14 version of {@link WindowsVersion.WINDOWS_SERVER_2019_ENGLISH_FULL_ECS_OPTIMIZED} */
-  WINDOWS_SERVER_2019_ENGLISH_FULL_ECS_OPTIMIZED_2023_11_14 = 'Windows_Server-2019-English-Full-ECS_Optimized-2023.11.14',
   /** 2023.12.12 version of {@link WindowsVersion.WINDOWS_SERVER_2019_ENGLISH_FULL_ECS_OPTIMIZED} */
   WINDOWS_SERVER_2019_ENGLISH_FULL_ECS_OPTIMIZED_2023_12_12 = 'Windows_Server-2019-English-Full-ECS_Optimized-2023.12.12',
   /** 2024.01.09 version of {@link WindowsVersion.WINDOWS_SERVER_2019_ENGLISH_FULL_ECS_OPTIMIZED} */
@@ -1831,8 +1785,6 @@ export enum WindowsSpecificVersion {
   /** 2024.02.14 version of {@link WindowsVersion.WINDOWS_SERVER_2022_ENGLISH_CORE_BASE} */
   WINDOWS_SERVER_2022_ENGLISH_CORE_BASE_2024_02_14 = 'Windows_Server-2022-English-Core-Base-2024.02.14',
 
-  /** 2023.11.14 version of {@link WindowsVersion.WINDOWS_SERVER_2022_ENGLISH_CORE_ECS_OPTIMIZED} */
-  WINDOWS_SERVER_2022_ENGLISH_CORE_ECS_OPTIMIZED_2023_11_14 = 'Windows_Server-2022-English-Core-ECS_Optimized-2023.11.14',
   /** 2023.12.12 version of {@link WindowsVersion.WINDOWS_SERVER_2022_ENGLISH_CORE_ECS_OPTIMIZED} */
   WINDOWS_SERVER_2022_ENGLISH_CORE_ECS_OPTIMIZED_2023_12_12 = 'Windows_Server-2022-English-Core-ECS_Optimized-2023.12.12',
   /** 2024.01.10 version of {@link WindowsVersion.WINDOWS_SERVER_2022_ENGLISH_CORE_ECS_OPTIMIZED} */
@@ -1849,8 +1801,6 @@ export enum WindowsSpecificVersion {
   /** 2024.02.14 version of {@link WindowsVersion.WINDOWS_SERVER_2022_ENGLISH_FULL_BASE} */
   WINDOWS_SERVER_2022_ENGLISH_FULL_BASE_2024_02_14 = 'Windows_Server-2022-English-Full-Base-2024.02.14',
 
-  /** 2023.11.14 version of {@link WindowsVersion.WINDOWS_SERVER_2022_ENGLISH_FULL_ECS_OPTIMIZED} */
-  WINDOWS_SERVER_2022_ENGLISH_FULL_ECS_OPTIMIZED_2023_11_14 = 'Windows_Server-2022-English-Full-ECS_Optimized-2023.11.14',
   /** 2023.12.12 version of {@link WindowsVersion.WINDOWS_SERVER_2022_ENGLISH_FULL_ECS_OPTIMIZED} */
   WINDOWS_SERVER_2022_ENGLISH_FULL_ECS_OPTIMIZED_2023_12_12 = 'Windows_Server-2022-English-Full-ECS_Optimized-2023.12.12',
   /** 2024.01.09 version of {@link WindowsVersion.WINDOWS_SERVER_2022_ENGLISH_FULL_ECS_OPTIMIZED} */
