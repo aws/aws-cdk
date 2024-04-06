@@ -611,27 +611,29 @@ import { Tags } from 'aws-cdk-lib/assertions';
 const app = new App();
 const stack = new Stack(app, 'MyStack', {
   tags: {
-    'tag-name': 'tag-value'
-  }
+    'tag-name': 'tag-value',
+  },
 });
 ```
 
 It is possible to test against these values:
 
 ```ts
+const tags = Tags.fromStack(stack);
+
 // using a default 'objectLike' Matcher
-Tags.fromStack(stack).hasValues({
-  'tag-name': 'tag-value'
+tags.hasValues({
+  'tag-name': 'tag-value',
 });
 
 // ... with Matchers embedded
-Tags.fromStack(stack).hasValues({
-  'tag-name': Match.stringLikeRegexp('-value$')
+tags.hasValues({
+  'tag-name': Match.stringLikeRegexp('value'),
 });
 
 // or another object Matcher at the top level
-Tags.fromStack(stack).hasValues(Match.objectEquals({
-  'tag-name': Match.anyValue()
+tags.hasValues(Match.objectEquals({
+  'tag-name': Match.anyValue(),
 }));
 ```
 
@@ -640,10 +642,10 @@ rather than `undefined`. To make this more obvious, there is a `hasNone()`
 method that can be used in place of `Match.exactly({})`. If `Match.absent()` is
 passed, an error will result.
 
-```ts nofixture
+```ts
 // no tags present
 Tags.fromStack(stack).hasNone();
 
 // don't use absent() at the top level, it won't work
-expect(() => { Tags.fromStack(stack).hasValues(Match.absent()); }).toThrow();
+expect(() => { Tags.fromStack(stack).hasValues(Match.absent()); }).toThrow(/will never match/i);
 ```
