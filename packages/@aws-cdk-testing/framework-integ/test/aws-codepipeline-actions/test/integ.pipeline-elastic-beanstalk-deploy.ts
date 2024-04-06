@@ -45,12 +45,8 @@ const serviceRole = new iam.Role(stack, 'service-role', {
   roleName: 'codepipeline-elasticbeanstalk-action-test-serivce-role',
   assumedBy: new iam.ServicePrincipal('elasticbeanstalk.amazonaws.com'),
   managedPolicies: [
-    {
-      managedPolicyArn: 'arn:aws:iam::aws:policy/service-role/AWSElasticBeanstalkEnhancedHealth',
-    },
-    {
-      managedPolicyArn: 'arn:aws:iam::aws:policy/AWSElasticBeanstalkManagedUpdatesCustomerRolePolicy',
-    },
+    iam.ManagedPolicy.fromAwsManagedPolicyName('AWSElasticBeanstalkEnhancedHealth'),
+    iam.ManagedPolicy.fromAwsManagedPolicyName('AWSElasticBeanstalkManagedUpdatesCustomerRolePolicy'),
   ],
 });
 
@@ -58,15 +54,9 @@ const instanceProfileRole = new iam.Role(stack, 'instance-profile-role', {
   roleName: 'codepipeline-elasticbeanstalk-action-test-instance-profile-role',
   assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
   managedPolicies: [
-    {
-      managedPolicyArn: 'arn:aws:iam::aws:policy/AWSElasticBeanstalkWebTier',
-    },
-    {
-      managedPolicyArn: 'arn:aws:iam::aws:policy/AWSElasticBeanstalkMulticontainerDocker',
-    },
-    {
-      managedPolicyArn: 'arn:aws:iam::aws:policy/AWSElasticBeanstalkWorkerTier',
-    },
+    iam.ManagedPolicy.fromAwsManagedPolicyName('AWSElasticBeanstalkWebTier'),
+    iam.ManagedPolicy.fromAwsManagedPolicyName('AWSElasticBeanstalkMulticontainerDocker'),
+    iam.ManagedPolicy.fromAwsManagedPolicyName('AWSElasticBeanstalkWorkerTier'),
   ],
 });
 

@@ -19,6 +19,12 @@ export interface IManagedPolicy {
    * @attribute
    */
   readonly managedPolicyArn: string;
+
+  /**
+   * The name of the managed policy
+   * @attribute
+   */
+  readonly managedPolicyName: string;
 }
 
 /**
@@ -117,6 +123,7 @@ export class ManagedPolicy extends Resource implements IManagedPolicy, IGrantabl
         resource: 'policy',
         resourceName: managedPolicyName,
       });
+      public readonly managedPolicyName = managedPolicyName;
     }
     return new Import(scope, id);
   }
@@ -143,6 +150,7 @@ export class ManagedPolicy extends Resource implements IManagedPolicy, IGrantabl
   public static fromManagedPolicyArn(scope: Construct, id: string, managedPolicyArn: string): IManagedPolicy {
     class Import extends Resource implements IManagedPolicy {
       public readonly managedPolicyArn = managedPolicyArn;
+      public readonly managedPolicyName = Stack.of(scope).splitArn(managedPolicyArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName!;
     }
     return new Import(scope, id);
   }
@@ -166,6 +174,7 @@ export class ManagedPolicy extends Resource implements IManagedPolicy, IGrantabl
         resource: 'policy',
         resourceName: managedPolicyName,
       });
+      public readonly managedPolicyName = managedPolicyName;
     }
     return new AwsManagedPolicy();
   }

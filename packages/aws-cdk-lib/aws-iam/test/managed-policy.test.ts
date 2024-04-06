@@ -21,6 +21,7 @@ describe('managed policy', () => {
         ':iam::aws:policy/service-role/SomePolicy',
       ]],
     });
+    expect(stack.resolve(mp.managedPolicyName)).toEqual('service-role/SomePolicy');
   });
 
   test('simple customer managed policy', () => {
@@ -33,12 +34,14 @@ describe('managed policy', () => {
         ':iam::1234:policy/SomeCustomerPolicy',
       ]],
     });
+    expect(stack.resolve(mp.managedPolicyName)).toEqual('SomeCustomerPolicy');
   });
 
   test('managed policy by arn', () => {
     const mp = ManagedPolicy.fromManagedPolicyArn(stack, 'MyManagedPolicyByArn', 'arn:aws:iam::1234:policy/my-policy');
 
     expect(stack.resolve(mp.managedPolicyArn)).toEqual('arn:aws:iam::1234:policy/my-policy');
+    expect(stack.resolve(mp.managedPolicyName)).toEqual('my-policy');
   });
 
   test('managed policy with statements', () => {
