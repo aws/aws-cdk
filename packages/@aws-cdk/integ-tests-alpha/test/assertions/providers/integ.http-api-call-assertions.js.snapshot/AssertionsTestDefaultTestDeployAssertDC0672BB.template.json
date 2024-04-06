@@ -32,7 +32,7 @@
      }
     },
     "expected": "{\"$ObjectLike\":{\"status\":200,\"ok\":true,\"body\":\"Hello!\"}}",
-    "salt": "1712159826870"
+    "salt": "1712412601309"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -67,7 +67,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "30d328e47ab6c6a4d0d137aac9e53e30955ac7469bcb2be4a49f9baf5cfc2f9c.zip"
+     "S3Key": "980ab41b674bbe2a714081b8b83c3b7bc45c4f8bb52a347bc93fc308857eadec.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
@@ -118,7 +118,7 @@
      }
     },
     "expected": "{\"$ObjectLike\":{\"status\":200,\"ok\":true,\"body\":\"Received body: {\\\"key\\\":\\\"value\\\"}\"}}",
-    "salt": "1712159826872"
+    "salt": "1712412601310"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -155,7 +155,7 @@
      }
     },
     "expected": "{\"$ObjectLike\":{\"status\":403,\"ok\":false}}",
-    "salt": "1712159826872"
+    "salt": "1712412601310"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -173,7 +173,7 @@
      "url": "https://httpbin.org/get?key=value#hash"
     },
     "expected": "{\"$ObjectLike\":{\"status\":200,\"ok\":true,\"body\":{\"url\":\"https://httpbin.org/get?key=value\",\"args\":{\"key\":\"value\"}}}}",
-    "salt": "1712159826872"
+    "salt": "1712412601310"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -198,7 +198,7 @@
      }
     },
     "expected": "{\"$ObjectLike\":{\"status\":200,\"ok\":true,\"body\":{\"url\":\"https://httpbin.org/post\",\"json\":{\"key\":\"value\"}}}}",
-    "salt": "1712159826873"
+    "salt": "1712412601311"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -216,7 +216,7 @@
      "url": "https://httpbin.org/status/403"
     },
     "expected": "{\"$ObjectLike\":{\"status\":403,\"ok\":false}}",
-    "salt": "1712159826873"
+    "salt": "1712412601311"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
