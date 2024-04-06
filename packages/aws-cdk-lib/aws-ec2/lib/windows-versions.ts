@@ -482,7 +482,6 @@ export enum WindowsVersion {
   WINDOWS_SERVER_2016_KOREAN_FULL_SQL_2016_SP1_STANDARD = 'Windows_Server-2016-Korean-Full-SQL_2016_SP1_Standard',
   /** @deprecated - reached Microsoft End-of-Support */
   WINDOWS_SERVER_2016_KOREAN_FULL_SQL_2016_SP2_STANDARD = 'Windows_Server-2016-Korean-Full-SQL_2016_SP2_Standard',
-  /** @deprecated - reached Microsoft End-of-Support */
   WINDOWS_SERVER_2016_KOREAN_FULL_SQL_2016_SP3_STANDARD = 'Windows_Server-2016-Korean-Full-SQL_2016_SP3_Standard',
   WINDOWS_SERVER_2016_POLISH_FULL_BASE = 'Windows_Server-2016-Polish-Full-Base',
   /** @deprecated - use {@link WINDOWS_SERVER_2016_PORTUGUESE_BRAZIL_FULL_BASE} */
