@@ -1209,7 +1209,7 @@ describe('container definition', () => {
     });
   });
 
-  test('docker labels should be absent if not supplied', () => {
+  test('docker labels should be absent if empty object is provided', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
@@ -1218,6 +1218,7 @@ describe('container definition', () => {
     taskDefinition.addContainer('cont', {
       image: ecs.ContainerImage.fromRegistry('test'),
       memoryLimitMiB: 1024,
+      dockerLabels: {},
     });
 
     // THEN
