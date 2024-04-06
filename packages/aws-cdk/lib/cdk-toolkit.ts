@@ -139,10 +139,19 @@ export class CdkToolkit {
       let changeSet = undefined;
 
       if (options.changeSet) {
-        const stackExists = await this.props.deployments.stackExists({
-          stack: stacks.firstStack,
-          deployName: stacks.firstStack.stackName,
-        });
+        let stackExists = false;
+        try {
+          stackExists = await this.props.deployments.stackExists({
+            stack: stacks.firstStack,
+            deployName: stacks.firstStack.stackName,
+            tryLookupRole: true,
+          });
+        } catch (e: any) {
+          debug(e.message);
+          stream.write('Checking if the stack exists before creating the changeset has failed, will base the diff on template differences (run again with -v to see the reason)\n');
+          stackExists = false;
+        }
+
         if (stackExists) {
           changeSet = await createDiffChangeSet({
             stack: stacks.firstStack,
@@ -154,7 +163,7 @@ export class CdkToolkit {
             stream,
           });
         } else {
-          debug(`the stack '${stacks.firstStack.stackName}' has not been deployed to CloudFormation, skipping changeset creation.`);
+          debug(`the stack '${stacks.firstStack.stackName}' has not been deployed to CloudFormation or describeStacks call failed, skipping changeset creation.`);
         }
       }
 
@@ -183,11 +192,20 @@ export class CdkToolkit {
         let changeSet = undefined;
 
         if (options.changeSet) {
-          // only perform this check if we're going to make a changeset. This check requires permissions that --no-changeset users might not have.
-          const stackExists = await this.props.deployments.stackExists({
-            stack: stack,
-            deployName: stack.stackName,
-          });
+
+          let stackExists = false;
+          try {
+            stackExists = await this.props.deployments.stackExists({
+              stack,
+              deployName: stack.stackName,
+              tryLookupRole: true,
+            });
+          } catch (e: any) {
+            debug(e.message);
+            stream.write('Checking if the stack exists before creating the changeset has failed, will base the diff on template differences (run again with -v to see the reason)\n');
+            stackExists = false;
+          }
+
           if (stackExists) {
             changeSet = await createDiffChangeSet({
               stack,
@@ -200,7 +218,7 @@ export class CdkToolkit {
               stream,
             });
           } else {
-            debug(`the stack '${stack.stackName}' has not been deployed to CloudFormation, skipping changeset creation.`);
+            debug(`the stack '${stack.stackName}' has not been deployed to CloudFormation or describeStacks call failed, skipping changeset creation.`);
           }
         }
 
