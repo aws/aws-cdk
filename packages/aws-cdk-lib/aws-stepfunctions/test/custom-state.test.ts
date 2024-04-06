@@ -1,4 +1,5 @@
 import { render } from './private/render-util';
+import { Annotations, Match } from '../../assertions';
 import * as cdk from '../../core';
 import * as sfn from '../lib';
 import { Errors } from '../lib/types';
@@ -450,5 +451,75 @@ describe('Custom State', () => {
         },
       },
     );
+  });
+
+  test('expect warning message to be emitted when retries specified both in stateJson and through addRetry()', () => {
+    const customState = new sfn.CustomState(stack, 'my custom task', {
+      stateJson: {
+        Type: 'Task',
+        Resource: 'arn:aws:states:::dynamodb:putItem',
+        Parameters: {
+          TableName: 'my-cool-table',
+          Item: {
+            id: {
+              S: 'my-entry',
+            },
+          },
+        },
+        Retry: [{
+          ErrorEquals: ['States.TaskFailed'],
+        }],
+      },
+    });
+
+    customState.addRetry({
+      errors: [sfn.Errors.TIMEOUT],
+      interval: cdk.Duration.seconds(10),
+      maxAttempts: 5,
+    });
+
+    new sfn.StateMachine(stack, 'StateMachine', {
+      definition: sfn.Chain.start(customState),
+      timeout: cdk.Duration.seconds(30),
+    });
+
+    Annotations.fromStack(stack).hasWarning('/Default/my custom task', Match.stringLikeRegexp('CustomState constructs can configure state retries'));
+  });
+
+  test('expect warning message to be emitted when catchers specified both in stateJson and through addCatch()', () => {
+    const customState = new sfn.CustomState(stack, 'my custom task', {
+      stateJson: {
+        Type: 'Task',
+        Resource: 'arn:aws:states:::dynamodb:putItem',
+        Parameters: {
+          TableName: 'my-cool-table',
+          Item: {
+            id: {
+              S: 'my-entry',
+            },
+          },
+        },
+        Catch: [
+          {
+            ErrorEquals: ['States.Timeout'],
+            Next: 'Failed',
+          },
+        ],
+      },
+    });
+
+    const failure = new sfn.Fail(stack, 'Failed', {
+      error: 'DidNotWork',
+      cause: 'We got stuck',
+    });
+
+    customState.addCatch(failure, { errors: [Errors.TIMEOUT] });
+
+    new sfn.StateMachine(stack, 'StateMachine', {
+      definition: sfn.Chain.start(customState),
+      timeout: cdk.Duration.seconds(30),
+    });
+
+    Annotations.fromStack(stack).hasWarning('/Default/my custom task', Match.stringLikeRegexp('CustomState constructs can configure state catchers'));
   });
 });
