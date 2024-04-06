@@ -686,7 +686,7 @@ test('Running a task with WAIT_FOR_TASK_TOKEN and task token in environment', ()
   })).not.toThrow();
 });
 
-test('Set revision number of ECS task denition family', () => {
+test('Set revision number of ECS task definition family', () => {
   // When
   const taskDefinition = new ecs.TaskDefinition(stack, 'TD', {
     memoryMiB: '512',
@@ -753,4 +753,51 @@ test('Set revision number of ECS task denition family', () => {
       Type: 'Task',
     },
   );
+});
+
+test('set enableExecuteCommand', () => {
+  const taskDefinition = new ecs.TaskDefinition(stack, 'TD', {
+    compatibility: ecs.Compatibility.EC2,
+  });
+  taskDefinition.addContainer('TheContainer', {
+    image: ecs.ContainerImage.fromRegistry('foo/bar'),
+    memoryLimitMiB: 256,
+  });
+
+  // WHEN
+  const runTask = new tasks.EcsRunTask(stack, 'Run', {
+    integrationPattern: sfn.IntegrationPattern.RUN_JOB,
+    launchTarget: new tasks.EcsEc2LaunchTarget(),
+    cluster,
+    taskDefinition,
+    enableExecuteCommand: true,
+  });
+
+  new sfn.StateMachine(stack, 'SM', {
+    definitionBody: sfn.DefinitionBody.fromChainable(runTask),
+  });
+
+  // THEN
+  expect(stack.resolve(runTask.toStateJson())).toEqual({
+    End: true,
+    Parameters: {
+      Cluster: { 'Fn::GetAtt': ['ClusterEB0386A7', 'Arn'] },
+      LaunchType: 'EC2',
+      TaskDefinition: 'TD',
+      EnableExecuteCommand: true,
+    },
+    Resource: {
+      'Fn::Join': [
+        '',
+        [
+          'arn:',
+          {
+            Ref: 'AWS::Partition',
+          },
+          ':states:::ecs:runTask.sync',
+        ],
+      ],
+    },
+    Type: 'Task',
+  });
 });
