@@ -154,6 +154,24 @@ export enum LoggingProtocol {
 }
 
 /**
+ * Represents an SNS topic defined outside of this stack.
+ */
+export interface TopicAttributes {
+  /**
+   * The ARN of the SNS topic.
+   */
+  readonly topicArn: string;
+
+  /**
+   * Whether content-based deduplication is enabled.
+   * Only applicable for FIFO topics.
+   *
+   * @default false
+   */
+  readonly contentBasedDeduplication?: boolean;
+}
+
+/**
  * A new SNS topic
  */
 export class Topic extends TopicBase {
@@ -166,16 +184,34 @@ export class Topic extends TopicBase {
    * @param topicArn topic ARN (i.e. arn:aws:sns:us-east-2:444455556666:MyTopic)
    */
   public static fromTopicArn(scope: Construct, id: string, topicArn: string): ITopic {
+    return Topic.fromTopicAttributes(scope, id, { topicArn });
+  };
+
+  /**
+   * Import an existing SNS topic provided a topic attributes
+   *
+   * @param scope The parent creating construct
+   * @param id The construct's name
+   * @param attrs the attributes of the topic to import
+   */
+  public static fromTopicAttributes(scope: Construct, id: string, attrs: TopicAttributes): ITopic {
+    const topicName = Stack.of(scope).splitArn(attrs.topicArn, ArnFormat.NO_RESOURCE_NAME).resource;
+    const fifo = topicName.endsWith('.fifo');
+
+    if (attrs.contentBasedDeduplication && !fifo) {
+      throw new Error('Cannot import topic; contentBasedDeduplication is only available for FIFO SNS topics.');
+    }
+
     class Import extends TopicBase {
-      public readonly topicArn = topicArn;
-      public readonly topicName = Stack.of(scope).splitArn(topicArn, ArnFormat.NO_RESOURCE_NAME).resource;
-      public readonly fifo = this.topicName.endsWith('.fifo');
-      public readonly contentBasedDeduplication = false;
+      public readonly topicArn = attrs.topicArn;
+      public readonly topicName = topicName;
+      public readonly fifo = fifo;
+      public readonly contentBasedDeduplication = attrs.contentBasedDeduplication || false;
       protected autoCreatePolicy: boolean = false;
     }
 
     return new Import(scope, id, {
-      environmentFromArn: topicArn,
+      environmentFromArn: attrs.topicArn,
     });
   }
 
