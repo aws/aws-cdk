@@ -1379,6 +1379,7 @@ export class Project extends ProjectBase {
         : undefined,
       certificate: env.certificate?.bucket.arnForObjects(env.certificate.objectKey),
       privilegedMode: env.privileged || false,
+      fleet: env.fleet,
       computeType: env.computeType || this.buildImage.defaultComputeType,
       environmentVariables: hasEnvironmentVars
         ? Project.serializeEnvVariables(vars, props.checkSecretsInPlainTextEnvVariables ?? true, this)
@@ -1613,6 +1614,13 @@ export interface BuildEnvironment {
   readonly computeType?: ComputeType;
 
   /**
+   * Fleet, TODO
+   *
+   * @default - No fleet will be attached to the project
+   */
+  readonly fleet?: IFleet;
+
+  /**
    * Indicates how the project builds Docker images. Specify true to enable
    * running the Docker daemon inside a Docker container. This value must be
    * set to true only if this build project will be used to build Docker
@@ -1740,6 +1748,7 @@ interface LinuxBuildImageProps {
 // Keep around to resolve a circular dependency until removing deprecated ARM image constants from LinuxBuildImage
 // eslint-disable-next-line import/order
 import { LinuxArmBuildImage } from './linux-arm-build-image';
+import { IFleet } from './fleet';
 
 /**
  * A CodeBuild image running x86-64 Linux.
