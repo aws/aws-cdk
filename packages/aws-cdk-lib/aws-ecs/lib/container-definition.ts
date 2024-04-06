@@ -543,11 +543,7 @@ export class ContainerDefinition extends Construct {
       }
     }
 
-    if (props.dockerLabels) {
-      this.dockerLabels = { ...props.dockerLabels };
-    } else {
-      this.dockerLabels = {};
-    }
+    this.dockerLabels = { ...props.dockerLabels };
 
     if (props.environment) {
       this.environment = { ...props.environment };

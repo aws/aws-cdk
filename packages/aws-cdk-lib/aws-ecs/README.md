@@ -603,7 +603,7 @@ taskDefinition.addContainer('container', {
 
 ## Docker labels
 
-You can add labels to the container with the `dockerLabels` prop or `addDockerLabel`:
+You can add labels to the container with the `dockerLabels` property or with the `addDockerLabel` method:
 
 ```ts
 declare const taskDefinition: ecs.TaskDefinition;

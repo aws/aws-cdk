@@ -1209,6 +1209,27 @@ describe('container definition', () => {
     });
   });
 
+  test('docker labels should be absent if not supplied', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
+
+    // WHEN
+    taskDefinition.addContainer('cont', {
+      image: ecs.ContainerImage.fromRegistry('test'),
+      memoryLimitMiB: 1024,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
+      ContainerDefinitions: [
+        Match.objectLike({
+          DockerLabels: Match.absent(),
+        }),
+      ],
+    });
+  });
+
   test('can add environment variables to the container definition', () => {
     // GIVEN
     const stack = new cdk.Stack();
