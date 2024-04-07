@@ -1,6 +1,6 @@
 import { Construct } from 'constructs';
 import { CfnFleet } from './codebuild.generated';
-import { Arn, ArnFormat, IResource, Lazy, Names, Resource, Stack, Token } from '../../core';
+import { Arn, ArnFormat, IResource, Resource, Stack, Token } from '../../core';
 
 /**
  * The properties of a CodeBuild Fleet.
@@ -112,7 +112,7 @@ export class Fleet extends Resource implements IFleet {
    */
   public readonly fleetName: string;
 
-  constructor(scope: Construct, id: string, props: FleetProps) {
+  constructor(scope: Construct, id: string, props: FleetProps = {}) {
     super(scope, id, {
       physicalName: props.fleetName,
     });
@@ -126,11 +126,11 @@ export class Fleet extends Resource implements IFleet {
       }
     }
 
-    if (props.baseCapacity ?? 1 < 1) {
+    if ((props.baseCapacity ?? 1) < 1) {
       throw new Error('baseCapacity must be greater than or equal to 1');
     }
 
-    const { ref } = new CfnFleet(scope, id, {
+    const { ref } = new CfnFleet(this, 'Resource', {
       name: props.fleetName,
       baseCapacity: props.baseCapacity,
       computeType: props.computeType,
