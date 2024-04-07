@@ -87,7 +87,18 @@ describe('create model customization job', () => {
         CustomModelName: 'custom-model',
         JobName: 'job-name',
         OutputDataConfig: {
-          S3Uri: outputDataBucket.s3UrlForObject('output-data'),
+          S3Uri: {
+            'Fn::Join': [
+              '',
+              [
+                's3://',
+                {
+                  Ref: 'OutputBucket7114EB27',
+                },
+                '/output-data',
+              ],
+            ],
+          },
         },
         RoleArn: {
           'Fn::GetAtt': [
@@ -96,12 +107,49 @@ describe('create model customization job', () => {
           ],
         },
         TrainingDataConfig: {
-          S3Uri: trainingDataBucket.s3UrlForObject('training-data'),
+          S3Uri: {
+            'Fn::Join': [
+              '',
+              [
+                's3://',
+                {
+                  Ref: 'TrainingDataBucketC87619AE',
+                },
+                '/training-data',
+              ],
+            ],
+          },
         },
         ValidationDataConfig: {
           Validators: [
-            { S3Uri: validationDataBucket.s3UrlForObject('validation-data1') },
-            { S3Uri: validationDataBucket.s3UrlForObject('validation-data2') },
+            {
+              S3Uri: {
+                'Fn::Join': [
+                  '',
+                  [
+                    's3://',
+                    {
+                      Ref: 'ValidationDataBucket54C7C688',
+                    },
+                    '/validation-data1',
+                  ],
+                ],
+              },
+            },
+            {
+              S3Uri: {
+                'Fn::Join': [
+                  '',
+                  [
+                    's3://',
+                    {
+                      Ref: 'ValidationDataBucket54C7C688',
+                    },
+                    '/validation-data2',
+                  ],
+                ],
+              },
+            },
           ],
         },
       },
@@ -126,50 +174,58 @@ describe('create model customization job', () => {
           PolicyDocument: {
             Statement: [
               {
-                Action: 's3:GetObject',
+                Action: ['s3:GetObject', 's3:ListBucket'],
                 Effect: 'Allow',
                 Resource: [
                   {
-                    'Fn::Join': [
-                      '',
-                      [
-                        'arn:',
-                        {
-                          Ref: 'AWS::Partition',
-                        },
-                        ':s3:::training-data',
-                      ],
-                    ],
+                    'Fn::GetAtt': ['TrainingDataBucketC87619AE', 'Arn'],
                   },
                   {
                     'Fn::Join': [
                       '',
                       [
-                        'arn:',
                         {
-                          Ref: 'AWS::Partition',
+                          'Fn::GetAtt': ['TrainingDataBucketC87619AE', 'Arn'],
                         },
-                        ':s3:::validation-data',
+                        '/*',
+                      ],
+                    ],
+                  },
+                  {
+                    'Fn::GetAtt': ['ValidationDataBucket54C7C688', 'Arn'],
+                  },
+                  {
+                    'Fn::Join': [
+                      '',
+                      [
+                        {
+                          'Fn::GetAtt': ['ValidationDataBucket54C7C688', 'Arn'],
+                        },
+                        '/*',
                       ],
                     ],
                   },
                 ],
               },
               {
-                Action: 's3:PutObject',
+                Action: ['s3:GetObject', 's3:PutObject', 's3:ListBucket'],
                 Effect: 'Allow',
-                Resource: {
-                  'Fn::Join': [
-                    '',
-                    [
-                      'arn:',
-                      {
-                        Ref: 'AWS::Partition',
-                      },
-                      ':s3:::output-data',
+                Resource: [
+                  {
+                    'Fn::GetAtt': ['OutputBucket7114EB27', 'Arn'],
+                  },
+                  {
+                    'Fn::Join': [
+                      '',
+                      [
+                        {
+                          'Fn::GetAtt': ['OutputBucket7114EB27', 'Arn'],
+                        },
+                        '/*',
+                      ],
                     ],
-                  ],
-                },
+                  },
+                ],
               },
             ],
             Version: '2012-10-17',
@@ -394,7 +450,18 @@ describe('create model customization job', () => {
         JobName: 'job-name',
         JobTags: [{ Key: 'key2', Value: 'value2' }],
         OutputDataConfig: {
-          S3Uri: 's3://output-data',
+          S3Uri: {
+            'Fn::Join': [
+              '',
+              [
+                's3://',
+                {
+                  Ref: 'OutputBucket7114EB27',
+                },
+                '/output-data',
+              ],
+            ],
+          },
         },
         RoleArn: {
           'Fn::GetAtt': [
@@ -403,10 +470,47 @@ describe('create model customization job', () => {
           ],
         },
         TrainingDataConfig: {
-          S3Uri: 's3://training-data',
+          S3Uri: {
+            'Fn::Join': [
+              '',
+              [
+                's3://',
+                {
+                  Ref: 'TrainingDataBucketC87619AE',
+                },
+                '/training-data',
+              ],
+            ],
+          },
         },
         ValidationDataConfig: {
-          Validators: [{ S3Uri: 's3://validation-data' }],
+          Validators: [{
+            S3Uri: {
+              'Fn::Join': [
+                '',
+                [
+                  's3://',
+                  {
+                    Ref: 'ValidationDataBucket54C7C688',
+                  },
+                  '/validation-data1',
+                ],
+              ],
+            },
+          }, {
+            S3Uri: {
+              'Fn::Join': [
+                '',
+                [
+                  's3://',
+                  {
+                    Ref: 'ValidationDataBucket54C7C688',
+                  },
+                  '/validation-data2',
+                ],
+              ],
+            },
+          }],
         },
         VpcConfig: {
           SecurityGroupIds: [
@@ -464,7 +568,7 @@ describe('create model customization job', () => {
           prefix: 'validation-data2',
         },
       ],
-    })).toThrow(/clientRequestToken must be between 1 and 256 characters long/);
+    })).toThrow(`clientRequestToken must be between 1 and 256 characters long, got: ${tokenLength}`);
   });
 
   test.each([
@@ -538,7 +642,7 @@ describe('create model customization job', () => {
           prefix: 'validation-data2',
         },
       ],
-    })).toThrow(/customModelName must be between 1 and 63 characters long/);
+    })).toThrow(`customModelName must be between 1 and 63 characters long, got: ${nameLength}`);
   });
 
   test.each([
@@ -609,7 +713,7 @@ describe('create model customization job', () => {
           prefix: 'validation-data2',
         },
       ],
-    })).toThrow('customModelTags must be between 0 and 200 items long');
+    })).toThrow('customModelTags must be between 0 and 200 items long, got: 201');
   });
 
   test.each([
@@ -645,7 +749,7 @@ describe('create model customization job', () => {
           prefix: 'validation-data2',
         },
       ],
-    })).toThrow(/jobName must be between 1 and 63 characters long/);
+    })).toThrow(`jobName must be between 1 and 63 characters long, got: ${nameLength}`);
   });
 
   test.each([
@@ -715,7 +819,7 @@ describe('create model customization job', () => {
           prefix: 'validation-data2',
         },
       ],
-    })).toThrow('jobTags must be between 0 and 200 items long');
+    })).toThrow('jobTags must be between 0 and 200 items long, got: 201');
   });
 
   test('throw error for invalid validation data s3 uri length', () => {
@@ -738,17 +842,11 @@ describe('create model customization job', () => {
         bucket: trainingDataBucket,
         prefix: 'training-data',
       },
-      validationData: [
-        {
-          bucket: validationDataBucket,
-          prefix: 'validation-data1',
-        },
-        {
-          bucket: validationDataBucket,
-          prefix: 'validation-data2',
-        },
-      ],
-    })).toThrow('validationDataS3Uri must be between 1 and 10 items long');
+      validationData: Array(11).map((_, index) => ({
+        bucket: validationDataBucket,
+        prefix: `validation-data${index}`,
+      })),
+    })).toThrow('validationData must be between 1 and 10 items long, got: 11');
   });
 
   test('throw error for invalid securityGroups length', () => {
@@ -786,7 +884,7 @@ describe('create model customization job', () => {
         securityGroups: Array(6).fill(new ec2.SecurityGroup(stack, 'SecurityGroup', { vpc })),
         subnets: vpc.privateSubnets,
       },
-    })).toThrow('securityGroups must be between 1 and 5 items long');
+    })).toThrow('securityGroups must be between 1 and 5 items long, got: 6');
   });
 
   test('throw error for invalid subnets length', () => {
@@ -824,6 +922,6 @@ describe('create model customization job', () => {
         securityGroups: [new ec2.SecurityGroup(stack, 'SecurityGroup', { vpc })],
         subnets: Array(17).fill(vpc.privateSubnets[0]),
       },
-    })).toThrow('subnets must be between 1 and 16 items long');
+    })).toThrow('subnets must be between 1 and 16 items long, got: 17');
   });
 });
