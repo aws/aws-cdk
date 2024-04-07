@@ -3,8 +3,9 @@ import * as bedrock from '../../../aws-bedrock';
 import * as ec2 from '../../../aws-ec2';
 import * as iam from '../../../aws-iam';
 import * as kms from '../../../aws-kms';
+import * as s3 from '../../../aws-s3';
 import * as sfn from '../../../aws-stepfunctions';
-import { Aws, Stack, Token } from '../../../core';
+import { Stack, Token } from '../../../core';
 import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
 
 /**
@@ -41,6 +42,22 @@ export interface ITag {
    * Value for the tag.
    */
   readonly value: string;
+}
+
+/**
+ * S3 bucket configuration for data storage destination.
+ */
+export interface BucketConfiguration {
+  /**
+   * The S3 bucket.
+   */
+  readonly bucket: s3.IBucket;
+  /**
+   * The prefix for the S3 bucket.
+   *
+   * @default - no prefix
+   */
+  readonly prefix?: string;
 }
 
 /**
@@ -137,11 +154,11 @@ export interface BedrockCreateModelCustomizationJobProps extends sfn.TaskStateBa
   readonly jobTags?: ITag[];
 
   /**
-   * The S3 URI where the output data is stored.
+   * The S3 bucket configuration where the output data is stored.
    *
    * @see https://docs.aws.amazon.com/bedrock/latest/APIReference/API_OutputDataConfig.html
    */
-  readonly outputDataS3Uri: string;
+  readonly outputData: BucketConfiguration;
 
   /**
    * The IAM role that Amazon Bedrock can assume to perform tasks on your behalf.
@@ -155,20 +172,20 @@ export interface BedrockCreateModelCustomizationJobProps extends sfn.TaskStateBa
   readonly role?: iam.IRole;
 
   /**
-   * The S3 URI where the training data is stored.
+   * The S3 bucket configuration where the training data is stored.
    *
    * @see https://docs.aws.amazon.com/bedrock/latest/APIReference/API_TrainingDataConfig.html
    */
-  readonly trainingDataS3Uri: string;
+  readonly trainingData: BucketConfiguration;
 
   /**
-   * The S3 URI where the validation data is stored.
+   * The S3 bucket configuration where the validation data is stored.
    *
-   * The maximum number of validation data S3 URIs is 10.
+   * The maximum number is 10.
    *
    * @see https://docs.aws.amazon.com/bedrock/latest/APIReference/API_Validator.html
    */
-  readonly validationDataS3Uri: string[];
+  readonly validationData: BucketConfiguration[];
 
   /**
    * Configuration parameters for the private Virtual Private Cloud (VPC) that contains the resources you are using for this job.
@@ -206,7 +223,7 @@ export class BedrockCreateModelCustomizationJob extends sfn.TaskStateBase {
     this.validateStringLength('jobName', 1, 63, props.jobName);
     this.validatePattern('jobName', /^[a-zA-Z0-9](-*[a-zA-Z0-9\+\-\.])*$/, props.jobName);
     this.validateArrayLength('jobTags', 0, 200, props.jobTags);
-    this.validateArrayLength('validationDataS3Uri', 1, 10, props.validationDataS3Uri);
+    this.validateArrayLength('validationData', 1, 10, props.validationData);
     this.validateArrayLength('securityGroups', 1, 5, props.vpcConfig?.securityGroups);
     this.validateArrayLength('subnets', 1, 16, props.vpcConfig?.subnets);
 
@@ -226,90 +243,34 @@ export class BedrockCreateModelCustomizationJob extends sfn.TaskStateBase {
   /**
    * Configure the IAM role for the bedrock create model customization job
    *
-   * @see https://docs.aws.amazon.com/bedrock/latest/userguide/model-customization-code-samples.html
+   * @see https://docs.aws.amazon.com/bedrock/latest/userguide/vpc-model-customization.html
+   * @see https://docs.aws.amazon.com/bedrock/latest/userguide/model-customization-iam-role.html
    */
   private renderBedrockCreateModelCustomizationJobRole(): iam.IRole {
     if (this.props.role) {
       return this.props.role;
     }
-    const stack = Stack.of(this);
     const role = new iam.Role(this, 'BedrockRole', {
       assumedBy: new iam.ServicePrincipal('bedrock.amazonaws.com'),
       inlinePolicies: {
         BedrockCreateModelCustomizationJob: new iam.PolicyDocument({
           statements: [
-            ...(this.props.vpcConfig ? [
-              new iam.PolicyStatement({
-                actions: [
-                  'ec2:DescribeNetworkInterfaces',
-                  'ec2:DescribeVpcs',
-                  'ec2:DescribeDhcpOptions',
-                  'ec2:DescribeSubnets',
-                  'ec2:DescribeSecurityGroups',
-                ],
-                resources: ['*'],
-              }),
-              new iam.PolicyStatement({
-                actions: ['ec2:CreateNetworkInterface'],
-                resources: [
-                  stack.formatArn({
-                    service: 'ec2',
-                    resource: 'network-interface',
-                    resourceName: '*',
-                  }),
-                  stack.formatArn({
-                    service: 'ec2',
-                    resource: 'security-group',
-                    resourceName: '*',
-                  }),
-                  stack.formatArn({
-                    service: 'ec2',
-                    resource: 'subnet',
-                    resourceName: '*',
-                  }),
-                ],
-              }),
-              new iam.PolicyStatement({
-                actions: ['ec2:CreateTags'],
-                resources: [stack.formatArn({
-                  service: 'ec2',
-                  resource: 'network-interface',
-                  resourceName: '*',
-                })],
-                conditions: {
-                  StringEquals: {
-                    'ec2:CreateAction': 'CreateNetworkInterface',
-                  },
-                },
-              }),
-              new iam.PolicyStatement({
-                actions: [
-                  'ec2:CreateNetworkInterfacePermission',
-                  'ec2:DeleteNetworkInterface',
-                  'ec2:DeleteNetworkInterfacePermission',
-                ],
-                resources: ['*'],
-                conditions: {
-                  StringEquals: {
-                    'ec2:Subnet': [
-                      ...(this.props.vpcConfig
-                        ? this.props.vpcConfig.subnets.map((subnet) => subnet.subnetId)
-                        : []),
-                    ],
-                  },
-                },
-              }),
-            ] : []),
+            ...(this.props.vpcConfig ? this.createVpcConfigPolicyStatement() : []),
             new iam.PolicyStatement({
-              actions: ['s3:GetObject'],
+              actions: ['s3:GetObject', 's3:ListBucket'],
               resources: [
-                this.s3UriToArn(this.props.trainingDataS3Uri),
-                ...(this.props.validationDataS3Uri.map((s3Uri) => this.s3UriToArn(s3Uri))),
+                this.props.trainingData.bucket.bucketArn,
+                `${this.props.trainingData.bucket.bucketArn}/*`,
+                ...(this.props.validationData.map((bucketConfig) => bucketConfig.bucket.bucketArn)),
+                ...this.props.validationData.map((bucketConfig) => `${bucketConfig.bucket.bucketArn}/*`),
               ],
             }),
             new iam.PolicyStatement({
-              actions: ['s3:PutObject'],
-              resources: [this.s3UriToArn(this.props.outputDataS3Uri)],
+              actions: ['s3:GetObject', 's3:PutObject', 's3:ListBucket'],
+              resources: [
+                this.props.outputData.bucket.bucketArn,
+                `${this.props.outputData.bucket.bucketArn}/*`,
+              ],
             }),
           ],
         }),
@@ -317,6 +278,119 @@ export class BedrockCreateModelCustomizationJob extends sfn.TaskStateBase {
     });
 
     return role;
+  }
+
+  private createVpcConfigPolicyStatement(): iam.PolicyStatement[] {
+    const vpcConfig = this.props.vpcConfig;
+    if (!vpcConfig) {
+      throw new Error('vpcConfig is required');
+    }
+
+    return [
+      new iam.PolicyStatement({
+        actions: [
+          'ec2:DescribeNetworkInterfaces',
+          'ec2:DescribeVpcs',
+          'ec2:DescribeDhcpOptions',
+          'ec2:DescribeSubnets',
+          'ec2:DescribeSecurityGroups',
+        ],
+        resources: ['*'],
+      }),
+      new iam.PolicyStatement({
+        actions: ['ec2:CreateNetworkInterface'],
+        resources: [
+          Stack.of(this).formatArn({
+            service: 'ec2',
+            resource: 'network-interface',
+            resourceName: '*',
+          }),
+        ],
+        conditions: [
+          {
+            StringEquals: {
+              'aws:RequestTag/BedrockManaged': ['true'],
+            },
+            ArnEquals: {
+              'aws:RequestTag/BedrockModelCustomizationJobArn': [
+                Stack.of(this).formatArn({
+                  service: 'bedrock',
+                  resource: 'model-customization-job',
+                  resourceName: '*',
+                }),
+              ],
+            },
+          },
+        ],
+      }),
+      new iam.PolicyStatement({
+        actions: ['ec2:CreateNetworkInterface'],
+        resources: [
+          ...this.props.vpcConfig.securityGroups.map(
+            (sg) => Stack.of(this).formatArn({
+              service: 'ec2',
+              resource: 'security-group',
+              resourceName: sg.securityGroupId,
+            })),
+          ...this.props.vpcConfig.subnets.map(
+            (subnet) => Stack.of(this).formatArn({
+              service: 'ec2',
+              resource: 'subnet',
+              resourceName: subnet.subnetId,
+            }),
+          ),
+        ],
+      }),
+      new iam.PolicyStatement({
+        actions: [
+          'ec2:CreateNetworkInterfacePermission',
+          'ec2:DeleteNetworkInterface',
+          'ec2:DeleteNetworkInterfacePermission',
+        ],
+        resources: ['*'],
+        conditions: {
+          ArnEquals: {
+            'ec2:Subnet': this.props.vpcConfig.subnets.map(
+              (subnet) => Stack.of(this).formatArn({
+                service: 'ec2',
+                resource: 'subnet',
+                resourceName: subnet.subnetId,
+              })),
+            'ec2:ResourceTag/BedrockModelCustomizationJobArn': [
+              Stack.of(this).formatArn({
+                service: 'bedrock',
+                resource: 'model-customization-job',
+                resourceName: '*',
+              }),
+            ],
+          },
+          StringEquals: {
+            'ec2:ResourceTag/BedrockManaged': 'true',
+          },
+        },
+      }),
+      new iam.PolicyStatement({
+        actions: ['ec2:CreateTags'],
+        resources: [
+          Stack.of(this).formatArn({
+            service: 'ec2',
+            resource: 'network-interface',
+            resourceName: '*',
+          }),
+        ],
+        conditions: {
+          'StringEquals': {
+            'ec2:CreateAction': ['CreateNetworkInterface'],
+          },
+          'ForAllValues:StringEquals': {
+            'aws:TagKeys': [
+              'BedrockManaged',
+              'BedrockModelCustomizationJobArn',
+            ],
+          },
+        },
+      }),
+    ];
   }
 
   private renderPolicyStatements(): iam.PolicyStatement[] {
@@ -347,9 +421,9 @@ export class BedrockCreateModelCustomizationJob extends sfn.TaskStateBase {
       ...(this.props.customModelKmsKey
         ? [
           new iam.PolicyStatement({
-            // TODO - this should be more specific
-            actions: ['kms:*'],
-            resources: [this.props.customModelKmsKey.keyArn],
+            principals: [new iam.ArnPrincipal(this._role.roleArn)],
+            actions: ['kms:Decrypt', 'kms:GenerateDataKey', 'kms:DescribeKey', 'kms:CreateGrant'],
+            resources: ['*'],
           }),
         ]
         : []),
@@ -375,24 +449,6 @@ export class BedrockCreateModelCustomizationJob extends sfn.TaskStateBase {
     }
   }
 
-  private s3UriToArn(s3Uri: string): string {
-    const bucketOnlyPattern = /^s3:\/\/([^\/]+)$/;
-    const bucketAndKeyPattern = /^s3:\/\/([^\/]+)\/(.+)$/;
-    if (bucketOnlyPattern.test(s3Uri)) {
-      const match = s3Uri.match(bucketOnlyPattern);
-      if (!match) throw new Error(`Invalid S3 URI: ${s3Uri}`);
-      const [, bucket] = match;
-      return `arn:${Aws.PARTITION}:s3:::${bucket}`;
-    } else if (bucketAndKeyPattern.test(s3Uri)) {
-      const match = s3Uri.match(bucketAndKeyPattern);
-      if (!match) throw new Error(`Invalid S3 URI: ${s3Uri}`);
-      const [, bucket, objectKey] = match;
-      return `arn:${Aws.PARTITION}:s3:::${bucket}/${objectKey}`;
-    } else {
-      throw new Error(`Unsupported S3 URI format: ${s3Uri}`);
-    }
-  }
-
   /**
    * Provides the Bedrock CreateModelCustomizationJob service integration task configuration
    *
@@ -412,14 +468,16 @@ export class BedrockCreateModelCustomizationJob extends sfn.TaskStateBase {
         JobName: this.props.jobName,
         JobTags: this.props.jobTags?.map((tag) => ({ Key: tag.key, Value: tag.value })),
         OutputDataConfig: {
-          S3Uri: this.props.outputDataS3Uri,
+          S3Uri: this.props.outputData.bucket.s3UrlForObject(this.props.outputData.prefix),
         },
         RoleArn: this._role.roleArn,
         TrainingDataConfig: {
-          S3Uri: this.props.trainingDataS3Uri,
+          S3Uri: this.props.trainingData.bucket.s3UrlForObject(this.props.trainingData.prefix),
         },
         ValidationDataConfig: {
-          Validators: this.props.validationDataS3Uri.map((s3Uri) => ({ S3Uri: s3Uri })),
+          Validators: this.props.validationData.map(
+            (bucketConfig) => ({ S3Uri: bucketConfig.bucket.s3UrlForObject(bucketConfig.prefix) }),
+          ),
         },
         VpcConfig: this.props.vpcConfig ? {
           SecurityGroupIds: this.props.vpcConfig.securityGroups.map((sg) => sg.securityGroupId),
