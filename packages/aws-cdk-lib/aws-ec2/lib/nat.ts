@@ -250,7 +250,7 @@ export interface NatInstanceProps {
   /**
    * Custom user data to run on the NAT instances
    *
-   * @default UserData.forLinux().addCommands(...NatInstanceProviderV2.DEFAULT_USER_DATA_COMMANDS);  - Appropriate user data commands to initialize and convifgure the NAT instances
+   * @default UserData.forLinux().addCommands(...NatInstanceProviderV2.DEFAULT_USER_DATA_COMMANDS);  - Appropriate user data commands to initialize and configure the NAT instances
    * @see https://docs.aws.amazon.com/vpc/latest/userguide/VPC_NAT_Instance.html#create-nat-ami
    */
   readonly userData?: UserData;

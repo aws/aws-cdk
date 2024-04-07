@@ -218,7 +218,7 @@ new ec2.Vpc(this, 'TheVPC', {
 provider.connections.allowFrom(ec2.Peer.ipv4('1.2.3.4/8'), ec2.Port.tcp(80));
 ```
 
-You can also customize the characteritics of your NAT instances, as well as their initialization scripts:
+You can also customize the characteristics of your NAT instances, as well as their initialization scripts:
 
 ```ts
 declare const bucket: s3.Bucket;
