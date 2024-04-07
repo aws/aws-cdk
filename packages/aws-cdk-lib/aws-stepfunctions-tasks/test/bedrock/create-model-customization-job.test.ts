@@ -4,6 +4,7 @@ import * as ec2 from '../../../aws-ec2';
 import * as iam from '../../../aws-iam';
 import * as kms from '../../../aws-kms';
 import * as sfn from '../../../aws-stepfunctions';
+import * as s3 from '../../../aws-s3';
 import * as cdk from '../../../core';
 import { BedrockCreateModelCustomizationJob, CustomizationType } from '../../lib/bedrock/create-model-customization-job';
 
@@ -11,15 +12,33 @@ describe('create model customization job', () => {
   test('default settings', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    const outputDataBucket = new s3.Bucket(stack, 'OutputBucket');
+    const trainingDataBucket = new s3.Bucket(stack, 'TrainingDataBucket');
+    const validationDataBucket = new s3.Bucket(stack, 'ValidationDataBucket');
 
     // WHEN
     const task = new BedrockCreateModelCustomizationJob(stack, 'Invoke', {
       baseModel: bedrock.FoundationModel.fromFoundationModelId(stack, 'Model', bedrock.FoundationModelIdentifier.ANTHROPIC_CLAUDE_INSTANT_V1),
       customModelName: 'custom-model',
       jobName: 'job-name',
-      outputDataS3Uri: 's3://output-data',
-      trainingDataS3Uri: 's3://training-data',
-      validationDataS3Uri: ['s3://validation-data'],
+      outputData: {
+        bucket: outputDataBucket,
+        prefix: 'output-data',
+      },
+      trainingData: {
+        bucket: trainingDataBucket,
+        prefix: 'training-data',
+      },
+      validationData: [
+        {
+          bucket: validationDataBucket,
+          prefix: 'validation-data1',
+        },
+        {
+          bucket: validationDataBucket,
+          prefix: 'validation-data2',
+        },
+      ],
     });
 
     new sfn.StateMachine(stack, 'StateMachine', {
@@ -68,7 +87,7 @@ describe('create model customization job', () => {
         CustomModelName: 'custom-model',
         JobName: 'job-name',
         OutputDataConfig: {
-          S3Uri: 's3://output-data',
+          S3Uri: outputDataBucket.s3UrlForObject('output-data'),
         },
         RoleArn: {
           'Fn::GetAtt': [
@@ -77,10 +96,13 @@ describe('create model customization job', () => {
           ],
         },
         TrainingDataConfig: {
-          S3Uri: 's3://training-data',
+          S3Uri: trainingDataBucket.s3UrlForObject('training-data'),
         },
         ValidationDataConfig: {
-          Validators: [{ S3Uri: 's3://validation-data' }],
+          Validators: [
+            { S3Uri: validationDataBucket.s3UrlForObject('validation-data1') },
+            { S3Uri: validationDataBucket.s3UrlForObject('validation-data2') },
+          ],
         },
       },
     });
@@ -273,6 +295,9 @@ describe('create model customization job', () => {
     const stack = new cdk.Stack();
     const kmsKey = new kms.Key(stack, 'KmsKey');
     const vpc = new ec2.Vpc(stack, 'Vpc');
+    const outputDataBucket = new s3.Bucket(stack, 'OutputBucket');
+    const trainingDataBucket = new s3.Bucket(stack, 'TrainingDataBucket');
+    const validationDataBucket = new s3.Bucket(stack, 'ValidationDataBucket');
 
     // WHEN
     const task = new BedrockCreateModelCustomizationJob(stack, 'Invoke', {
@@ -285,9 +310,24 @@ describe('create model customization job', () => {
       hyperParameters: { key: 'value' },
       jobName: 'job-name',
       jobTags: [{ key: 'key2', value: 'value2' }],
-      outputDataS3Uri: 's3://output-data',
-      trainingDataS3Uri: 's3://training-data',
-      validationDataS3Uri: ['s3://validation-data'],
+      outputData: {
+        bucket: outputDataBucket,
+        prefix: 'output-data',
+      },
+      trainingData: {
+        bucket: trainingDataBucket,
+        prefix: 'training-data',
+      },
+      validationData: [
+        {
+          bucket: validationDataBucket,
+          prefix: 'validation-data1',
+        },
+        {
+          bucket: validationDataBucket,
+          prefix: 'validation-data2',
+        },
+      ],
       role: new iam.Role(stack, 'Role', {
         assumedBy: new iam.ServicePrincipal('bedrock.amazonaws.com'),
       }),
@@ -396,6 +436,9 @@ describe('create model customization job', () => {
   ])('throw error for invalid client request token length %s', (tokenLength) => {
     // GIVEN
     const stack = new cdk.Stack();
+    const outputDataBucket = new s3.Bucket(stack, 'OutputBucket');
+    const trainingDataBucket = new s3.Bucket(stack, 'TrainingDataBucket');
+    const validationDataBucket = new s3.Bucket(stack, 'ValidationDataBucket');
 
     // THEN
     expect(() => new BedrockCreateModelCustomizationJob(stack, 'Invoke', {
@@ -403,9 +446,24 @@ describe('create model customization job', () => {
       clientRequestToken: 'a'.repeat(tokenLength),
       customModelName: 'custom-model',
       jobName: 'job-name',
-      outputDataS3Uri: 's3://output-data',
-      trainingDataS3Uri: 's3://training-data',
-      validationDataS3Uri: ['s3://validation-data'],
+      outputData: {
+        bucket: outputDataBucket,
+        prefix: 'output-data',
+      },
+      trainingData: {
+        bucket: trainingDataBucket,
+        prefix: 'training-data',
+      },
+      validationData: [
+        {
+          bucket: validationDataBucket,
+          prefix: 'validation-data1',
+        },
+        {
+          bucket: validationDataBucket,
+          prefix: 'validation-data2',
+        },
+      ],
     })).toThrow(/clientRequestToken must be between 1 and 256 characters long/);
   });
 
@@ -416,6 +474,9 @@ describe('create model customization job', () => {
   ])('throw error for invalid client request token format %s', (token) => {
     // GIVEN
     const stack = new cdk.Stack();
+    const outputDataBucket = new s3.Bucket(stack, 'OutputBucket');
+    const trainingDataBucket = new s3.Bucket(stack, 'TrainingDataBucket');
+    const validationDataBucket = new s3.Bucket(stack, 'ValidationDataBucket');
 
     // THEN
     expect(() => new BedrockCreateModelCustomizationJob(stack, 'Invoke', {
@@ -423,9 +484,24 @@ describe('create model customization job', () => {
       clientRequestToken: token,
       customModelName: 'custom-model',
       jobName: 'job-name',
-      outputDataS3Uri: 's3://output-data',
-      trainingDataS3Uri: 's3://training-data',
-      validationDataS3Uri: ['s3://validation-data'],
+      outputData: {
+        bucket: outputDataBucket,
+        prefix: 'output-data',
+      },
+      trainingData: {
+        bucket: trainingDataBucket,
+        prefix: 'training-data',
+      },
+      validationData: [
+        {
+          bucket: validationDataBucket,
+          prefix: 'validation-data1',
+        },
+        {
+          bucket: validationDataBucket,
+          prefix: 'validation-data2',
+        },
+      ],
     })).toThrow('clientRequestToken must match the pattern /^[a-zA-Z0-9](-*[a-zA-Z0-9])*$/');
   });
 
@@ -435,15 +511,33 @@ describe('create model customization job', () => {
   ])('throw error for invalid custom model name length %s', (nameLength) => {
     // GIVEN
     const stack = new cdk.Stack();
+    const outputDataBucket = new s3.Bucket(stack, 'OutputBucket');
+    const trainingDataBucket = new s3.Bucket(stack, 'TrainingDataBucket');
+    const validationDataBucket = new s3.Bucket(stack, 'ValidationDataBucket');
 
     // THEN
     expect(() => new BedrockCreateModelCustomizationJob(stack, 'Invoke', {
       baseModel: bedrock.FoundationModel.fromFoundationModelId(stack, 'Model', bedrock.FoundationModelIdentifier.ANTHROPIC_CLAUDE_INSTANT_V1),
       customModelName: 'a'.repeat(nameLength),
       jobName: 'job-name',
-      outputDataS3Uri: 's3://output-data',
-      trainingDataS3Uri: 's3://training-data',
-      validationDataS3Uri: ['s3://validation-data'],
+      outputData: {
+        bucket: outputDataBucket,
+        prefix: 'output-data',
+      },
+      trainingData: {
+        bucket: trainingDataBucket,
+        prefix: 'training-data',
+      },
+      validationData: [
+        {
+          bucket: validationDataBucket,
+          prefix: 'validation-data1',
+        },
+        {
+          bucket: validationDataBucket,
+          prefix: 'validation-data2',
+        },
+      ],
     })).toThrow(/customModelName must be between 1 and 63 characters long/);
   });
 
@@ -454,21 +548,42 @@ describe('create model customization job', () => {
   ])('throw error for invalid custom model name format %s', (name) => {
     // GIVEN
     const stack = new cdk.Stack();
+    const outputDataBucket = new s3.Bucket(stack, 'OutputBucket');
+    const trainingDataBucket = new s3.Bucket(stack, 'TrainingDataBucket');
+    const validationDataBucket = new s3.Bucket(stack, 'ValidationDataBucket');
 
     // THEN
     expect(() => new BedrockCreateModelCustomizationJob(stack, 'Invoke', {
       baseModel: bedrock.FoundationModel.fromFoundationModelId(stack, 'Model', bedrock.FoundationModelIdentifier.ANTHROPIC_CLAUDE_INSTANT_V1),
       customModelName: name,
       jobName: 'job-name',
-      outputDataS3Uri: 's3://output-data',
-      trainingDataS3Uri: 's3://training-data',
-      validationDataS3Uri: ['s3://validation-data'],
+      outputData: {
+        bucket: outputDataBucket,
+        prefix: 'output-data',
+      },
+      trainingData: {
+        bucket: trainingDataBucket,
+        prefix: 'training-data',
+      },
+      validationData: [
+        {
+          bucket: validationDataBucket,
+          prefix: 'validation-data1',
+        },
+        {
+          bucket: validationDataBucket,
+          prefix: 'validation-data2',
+        },
+      ],
     })).toThrow('customModelName must match the pattern /^([0-9a-zA-Z][_-]?)+$/');
   });
 
   test('throw error for invalid custom model tags length', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    const outputDataBucket = new s3.Bucket(stack, 'OutputBucket');
+    const trainingDataBucket = new s3.Bucket(stack, 'TrainingDataBucket');
+    const validationDataBucket = new s3.Bucket(stack, 'ValidationDataBucket');
 
     // THEN
     expect(() => new BedrockCreateModelCustomizationJob(stack, 'Invoke', {
@@ -476,9 +591,24 @@ describe('create model customization job', () => {
       customModelName: 'custom-model',
       customModelTags: Array(201).fill({ key: 'key', value: 'value' }),
       jobName: 'job-name',
-      outputDataS3Uri: 's3://output-data',
-      trainingDataS3Uri: 's3://training-data',
-      validationDataS3Uri: ['s3://validation-data'],
+      outputData: {
+        bucket: outputDataBucket,
+        prefix: 'output-data',
+      },
+      trainingData: {
+        bucket: trainingDataBucket,
+        prefix: 'training-data',
+      },
+      validationData: [
+        {
+          bucket: validationDataBucket,
+          prefix: 'validation-data1',
+        },
+        {
+          bucket: validationDataBucket,
+          prefix: 'validation-data2',
+        },
+      ],
     })).toThrow('customModelTags must be between 0 and 200 items long');
   });
 
@@ -488,15 +618,33 @@ describe('create model customization job', () => {
   ])('throw error for invalid job name length %s', (nameLength) => {
     // GIVEN
     const stack = new cdk.Stack();
+    const outputDataBucket = new s3.Bucket(stack, 'OutputBucket');
+    const trainingDataBucket = new s3.Bucket(stack, 'TrainingDataBucket');
+    const validationDataBucket = new s3.Bucket(stack, 'ValidationDataBucket');
 
     // THEN
     expect(() => new BedrockCreateModelCustomizationJob(stack, 'Invoke', {
       baseModel: bedrock.FoundationModel.fromFoundationModelId(stack, 'Model', bedrock.FoundationModelIdentifier.ANTHROPIC_CLAUDE_INSTANT_V1),
       customModelName: 'custom-model',
       jobName: 'a'.repeat(nameLength),
-      outputDataS3Uri: 's3://output-data',
-      trainingDataS3Uri: 's3://training-data',
-      validationDataS3Uri: ['s3://validation-data'],
+      outputData: {
+        bucket: outputDataBucket,
+        prefix: 'output-data',
+      },
+      trainingData: {
+        bucket: trainingDataBucket,
+        prefix: 'training-data',
+      },
+      validationData: [
+        {
+          bucket: validationDataBucket,
+          prefix: 'validation-data1',
+        },
+        {
+          bucket: validationDataBucket,
+          prefix: 'validation-data2',
+        },
+      ],
     })).toThrow(/jobName must be between 1 and 63 characters long/);
   });
 
@@ -506,21 +654,42 @@ describe('create model customization job', () => {
   ])('throw error for invalid job name format %s', (name) => {
     // GIVEN
     const stack = new cdk.Stack();
+    const outputDataBucket = new s3.Bucket(stack, 'OutputBucket');
+    const trainingDataBucket = new s3.Bucket(stack, 'TrainingDataBucket');
+    const validationDataBucket = new s3.Bucket(stack, 'ValidationDataBucket');
 
     // THEN
     expect(() => new BedrockCreateModelCustomizationJob(stack, 'Invoke', {
       baseModel: bedrock.FoundationModel.fromFoundationModelId(stack, 'Model', bedrock.FoundationModelIdentifier.ANTHROPIC_CLAUDE_INSTANT_V1),
       customModelName: 'custom-model',
       jobName: name,
-      outputDataS3Uri: 's3://output-data',
-      trainingDataS3Uri: 's3://training-data',
-      validationDataS3Uri: ['s3://validation-data'],
+      outputData: {
+        bucket: outputDataBucket,
+        prefix: 'output-data',
+      },
+      trainingData: {
+        bucket: trainingDataBucket,
+        prefix: 'training-data',
+      },
+      validationData: [
+        {
+          bucket: validationDataBucket,
+          prefix: 'validation-data1',
+        },
+        {
+          bucket: validationDataBucket,
+          prefix: 'validation-data2',
+        },
+      ],
     })).toThrow('jobName must match the pattern /^[a-zA-Z0-9](-*[a-zA-Z0-9\\+\\-\\.])*$/');
   });
 
   test('throw error for invalid job tags length', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    const outputDataBucket = new s3.Bucket(stack, 'OutputBucket');
+    const trainingDataBucket = new s3.Bucket(stack, 'TrainingDataBucket');
+    const validationDataBucket = new s3.Bucket(stack, 'ValidationDataBucket');
 
     // THEN
     expect(() => new BedrockCreateModelCustomizationJob(stack, 'Invoke', {
@@ -528,24 +697,57 @@ describe('create model customization job', () => {
       customModelName: 'custom-model',
       jobName: 'job-name',
       jobTags: Array(201).fill({ key: 'key', value: 'value' }),
-      outputDataS3Uri: 's3://output-data',
-      trainingDataS3Uri: 's3://training-data',
-      validationDataS3Uri: ['s3://validation-data'],
+      outputData: {
+        bucket: outputDataBucket,
+        prefix: 'output-data',
+      },
+      trainingData: {
+        bucket: trainingDataBucket,
+        prefix: 'training-data',
+      },
+      validationData: [
+        {
+          bucket: validationDataBucket,
+          prefix: 'validation-data1',
+        },
+        {
+          bucket: validationDataBucket,
+          prefix: 'validation-data2',
+        },
+      ],
     })).toThrow('jobTags must be between 0 and 200 items long');
   });
 
   test('throw error for invalid validation data s3 uri length', () => {
     // GIVEN
     const stack = new cdk.Stack();
+    const outputDataBucket = new s3.Bucket(stack, 'OutputBucket');
+    const trainingDataBucket = new s3.Bucket(stack, 'TrainingDataBucket');
+    const validationDataBucket = new s3.Bucket(stack, 'ValidationDataBucket');
 
     // THEN
     expect(() => new BedrockCreateModelCustomizationJob(stack, 'Invoke', {
       baseModel: bedrock.FoundationModel.fromFoundationModelId(stack, 'Model', bedrock.FoundationModelIdentifier.ANTHROPIC_CLAUDE_INSTANT_V1),
       customModelName: 'custom-model',
       jobName: 'job-name',
-      outputDataS3Uri: 's3://output-data',
-      trainingDataS3Uri: 's3://training-data',
-      validationDataS3Uri: Array(11).fill('s3://validation-data'),
+      outputData: {
+        bucket: outputDataBucket,
+        prefix: 'output-data',
+      },
+      trainingData: {
+        bucket: trainingDataBucket,
+        prefix: 'training-data',
+      },
+      validationData: [
+        {
+          bucket: validationDataBucket,
+          prefix: 'validation-data1',
+        },
+        {
+          bucket: validationDataBucket,
+          prefix: 'validation-data2',
+        },
+      ],
     })).toThrow('validationDataS3Uri must be between 1 and 10 items long');
   });
 
@@ -553,15 +755,33 @@ describe('create model customization job', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'Vpc');
+    const outputDataBucket = new s3.Bucket(stack, 'OutputBucket');
+    const trainingDataBucket = new s3.Bucket(stack, 'TrainingDataBucket');
+    const validationDataBucket = new s3.Bucket(stack, 'ValidationDataBucket');
 
     // THEN
     expect(() => new BedrockCreateModelCustomizationJob(stack, 'Invoke', {
       baseModel: bedrock.FoundationModel.fromFoundationModelId(stack, 'Model', bedrock.FoundationModelIdentifier.ANTHROPIC_CLAUDE_INSTANT_V1),
       customModelName: 'custom-model',
       jobName: 'job-name',
-      outputDataS3Uri: 's3://output-data',
-      trainingDataS3Uri: 's3://training-data',
-      validationDataS3Uri: ['s3://validation-data'],
+      outputData: {
+        bucket: outputDataBucket,
+        prefix: 'output-data',
+      },
+      trainingData: {
+        bucket: trainingDataBucket,
+        prefix: 'training-data',
+      },
+      validationData: [
+        {
+          bucket: validationDataBucket,
+          prefix: 'validation-data1',
+        },
+        {
+          bucket: validationDataBucket,
+          prefix: 'validation-data2',
+        },
+      ],
       vpcConfig: {
         securityGroups: Array(6).fill(new ec2.SecurityGroup(stack, 'SecurityGroup', { vpc })),
         subnets: vpc.privateSubnets,
@@ -573,15 +793,33 @@ describe('create model customization job', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const vpc = new ec2.Vpc(stack, 'Vpc');
+    const outputDataBucket = new s3.Bucket(stack, 'OutputBucket');
+    const trainingDataBucket = new s3.Bucket(stack, 'TrainingDataBucket');
+    const validationDataBucket = new s3.Bucket(stack, 'ValidationDataBucket');
 
     // THEN
     expect(() => new BedrockCreateModelCustomizationJob(stack, 'Invoke', {
       baseModel: bedrock.FoundationModel.fromFoundationModelId(stack, 'Model', bedrock.FoundationModelIdentifier.ANTHROPIC_CLAUDE_INSTANT_V1),
       customModelName: 'custom-model',
       jobName: 'job-name',
-      outputDataS3Uri: 's3://output-data',
-      trainingDataS3Uri: 's3://training-data',
-      validationDataS3Uri: ['s3://validation-data'],
+      outputData: {
+        bucket: outputDataBucket,
+        prefix: 'output-data',
+      },
+      trainingData: {
+        bucket: trainingDataBucket,
+        prefix: 'training-data',
+      },
+      validationData: [
+        {
+          bucket: validationDataBucket,
+          prefix: 'validation-data1',
+        },
+        {
+          bucket: validationDataBucket,
+          prefix: 'validation-data2',
+        },
+      ],
       vpcConfig: {
         securityGroups: [new ec2.SecurityGroup(stack, 'SecurityGroup', { vpc })],
         subnets: Array(17).fill(vpc.privateSubnets[0]),
