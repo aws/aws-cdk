@@ -7,6 +7,7 @@ import { CfnProject } from './codebuild.generated';
 import { CodePipelineArtifacts } from './codepipeline-artifacts';
 import { ComputeType } from './compute-type';
 import { IFileSystemLocation } from './file-location';
+import { IFleet } from './fleet';
 import { LinuxArmLambdaBuildImage } from './linux-arm-lambda-build-image';
 import { LinuxLambdaBuildImage } from './linux-lambda-build-image';
 import { NoArtifacts } from './no-artifacts';
@@ -1379,7 +1380,7 @@ export class Project extends ProjectBase {
         : undefined,
       certificate: env.certificate?.bucket.arnForObjects(env.certificate.objectKey),
       privilegedMode: env.privileged || false,
-      fleet: env.fleet,
+      fleet: Lazy.any({ produce: () => this.configureFleet(env) }),
       computeType: env.computeType || this.buildImage.defaultComputeType,
       environmentVariables: hasEnvironmentVars
         ? Project.serializeEnvVariables(vars, props.checkSecretsInPlainTextEnvVariables ?? true, this)
@@ -1409,6 +1410,15 @@ export class Project extends ProjectBase {
     return this._secondaryArtifacts.length === 0
       ? undefined
       : this._secondaryArtifacts;
+  }
+
+  private configureFleet({ fleet }: BuildEnvironment): CfnProject.ProjectFleetProperty | undefined {
+    if (!fleet) {
+      return undefined;
+    }
+
+    const { fleetArn } = fleet;
+    return { fleetArn };
   }
 
   /**
@@ -1614,9 +1624,15 @@ export interface BuildEnvironment {
   readonly computeType?: ComputeType;
 
   /**
-   * Fleet, TODO
+   * Fleet resource for a reserved capacity CodeBuild project.
    *
-   * @default - No fleet will be attached to the project
+   * Fleets allow for process builds or tests to run immediately and reduces build durations,
+   * by reserving compute resources for your projects.
+   *
+   * You will be charged for the resources in the fleet, even if they are idle.
+   *
+   * @default - No fleet will be attached to the project, which will remain on-demand.
+   * @see https://docs.aws.amazon.com/codebuild/latest/userguide/fleets.html
    */
   readonly fleet?: IFleet;
 
@@ -1748,7 +1764,6 @@ interface LinuxBuildImageProps {
 // Keep around to resolve a circular dependency until removing deprecated ARM image constants from LinuxBuildImage
 // eslint-disable-next-line import/order
 import { LinuxArmBuildImage } from './linux-arm-build-image';
-import { IFleet } from './fleet';
 
 /**
  * A CodeBuild image running x86-64 Linux.

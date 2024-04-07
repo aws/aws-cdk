@@ -1,9 +1,9 @@
 import { Construct } from 'constructs';
 import { CfnFleet } from './codebuild.generated';
-import { Arn, ArnFormat, IResource, Resource, Stack, Token } from '../../core';
+import { Arn, ArnFormat, IResource, Resource, Token } from '../../core';
 
 /**
- * The properties of a CodeBuild Fleet.
+ * Construction properties of a CodeBuild {@link Fleet}.
  */
 export interface FleetProps {
   /**
@@ -14,32 +14,26 @@ export interface FleetProps {
   readonly fleetName?: string;
 
   /**
-   * The initial number of machines allocated to the compute ﬂeet.
+   * The number of machines allocated to the compute ﬂeet.
    * Deﬁnes the number of builds that can run in parallel.
    *
    * Minimum value of 1.
-   *
-   * @default 1
    */
-  readonly baseCapacity?: number;
+  readonly baseCapacity: number;
 
   /**
    * The instance type of the compute fleet.
-   *
-   * @default - TODO
    */
-  readonly computeType?: FleetComputeType;
+  readonly computeType: FleetComputeType;
 
   /**
    * The environment type of the fleet.
-   *
-   * @default - TODO
    */
-  readonly environmentType?: FleetEnvironmentType;
+  readonly environmentType: FleetEnvironmentType;
 }
 
 /**
- * The interface representing a CodeBuild Fleet.
+ * Represents a {@link Fleet} for a reserved capacity CodeBuild project.
  */
 export interface IFleet extends IResource {
   /**
@@ -56,7 +50,14 @@ export interface IFleet extends IResource {
 }
 
 /**
- * The CodeBuild Fleet.
+ * Fleet for a reserved capacity CodeBuild project.
+ *
+ * Fleets allow for process builds or tests to run immediately and reduces build durations,
+ * by reserving compute resources for your projects.
+ *
+ * You will be charged for the resources in the fleet, even if they are idle.
+ *
+ * @see https://docs.aws.amazon.com/codebuild/latest/userguide/fleets.html
  */
 export class Fleet extends Resource implements IFleet {
   /**
@@ -68,38 +69,11 @@ export class Fleet extends Resource implements IFleet {
    */
   public static fromFleetArn(scope: Construct, id: string, fleetArn: string): IFleet {
     class Import extends Resource implements IFleet {
-      public readonly fleetName = Arn.extractResourceName(fleetArn, 'fleet');
+      public readonly fleetName = Arn.split(fleetArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName!.split(':')[0];
       public readonly fleetArn = fleetArn;
     }
 
     return new Import(scope, id);
-  }
-
-  /**
-   * Creates a Fleet construct that represents an external fleet.
-   *
-   * @param scope The scope creating construct (usually `this`).
-   * @param id The construct's id.
-   * @param fleetName name of external fleet.
-   */
-  public static fromFleetName(scope: Construct, id: string, fleetName: string): IFleet {
-    class Import extends Resource implements IFleet {
-      public readonly fleetName = fleetName;
-      public readonly fleetArn = Fleet.buildFleetArn(scope, fleetName);
-    }
-
-    return new Import(scope, id);
-  }
-
-  // TODO see Alias.fromAliasAttributes
-
-  private static buildFleetArn(scope: Construct, fleetName: string) : string {
-    return Stack.of(scope).formatArn({
-      service: 'codebuild',
-      resource: 'fleet',
-      resourceName: fleetName,
-      arnFormat: ArnFormat.SLASH_RESOURCE_NAME,
-    });
   }
 
   /**
@@ -112,11 +86,7 @@ export class Fleet extends Resource implements IFleet {
    */
   public readonly fleetName: string;
 
-  constructor(scope: Construct, id: string, props: FleetProps = {}) {
-    super(scope, id, {
-      physicalName: props.fleetName,
-    });
-
+  constructor(scope: Construct, id: string, props: FleetProps) {
     if (props.fleetName && !Token.isUnresolved(props.fleetName)) {
       if (props.fleetName.length < 2) {
         throw new Error(`Fleet name can not be shorter than 2 characters but has ${props.fleetName.length} characters.`);
@@ -126,20 +96,28 @@ export class Fleet extends Resource implements IFleet {
       }
     }
 
+    super(scope, id, { physicalName: props.fleetName });
+
     if ((props.baseCapacity ?? 1) < 1) {
       throw new Error('baseCapacity must be greater than or equal to 1');
     }
 
-    const { ref } = new CfnFleet(this, 'Resource', {
+    // TODO check computeType and environmentType compatibility
+
+    const resource = new CfnFleet(this, 'Resource', {
       name: props.fleetName,
       baseCapacity: props.baseCapacity,
       computeType: props.computeType,
       environmentType: props.environmentType,
     });
 
-    const resourceName = this.getResourceNameAttribute(ref);
-    this.fleetArn = Fleet.buildFleetArn(this, resourceName);
-    this.fleetName = resourceName;
+    this.fleetArn = this.getResourceArnAttribute(resource.attrArn, {
+      service: 'codebuild',
+      resource: 'fleet',
+      resourceName: this.physicalName,
+      arnFormat: ArnFormat.SLASH_RESOURCE_NAME,
+    });
+    this.fleetName = this.getResourceNameAttribute(resource.ref);
   }
 }
 
