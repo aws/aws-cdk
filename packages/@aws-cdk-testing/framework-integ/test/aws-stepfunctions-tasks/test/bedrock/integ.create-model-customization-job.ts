@@ -3,9 +3,9 @@ import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as kms from 'aws-cdk-lib/aws-kms';
 import * as sfn from 'aws-cdk-lib/aws-stepfunctions';
 import * as s3 from 'aws-cdk-lib/aws-s3';
+import * as tasks from 'aws-cdk-lib/aws-stepfunctions-tasks';
 import * as cdk from 'aws-cdk-lib';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
-import { BedrockCreateModelCustomizationJob, CustomizationType } from 'aws-cdk-lib/aws-stepfunctions-tasks';
 
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-stepfunctions-tasks-bedrock-invoke-model-integ');
@@ -41,10 +41,10 @@ const kmsKey = new kms.Key(stack, 'KmsKey', {
   removalPolicy: cdk.RemovalPolicy.DESTROY,
 });
 
-const taskConfig = {
+const taskConfig: tasks.BedrockCreateModelCustomizationJobProps = {
   baseModel: model,
   clientRequestToken: 'MyToken',
-  customizationType: CustomizationType.FINE_TUNING,
+  customizationType: tasks.CustomizationType.FINE_TUNING,
   customModelKmsKey: kmsKey,
   customModelName: 'MyCustomModel',
   customModelTags: [{ key: 'key1', value: 'value1' }],
@@ -53,18 +53,33 @@ const taskConfig = {
   },
   jobName: 'MyCustomizationJob',
   jobTags: [{ key: 'key2', value: 'value2' }],
-  outputDataS3Uri: outputBucket.s3UrlForObject(),
-  trainingDataS3Uri: trainingBucket.s3UrlForObject(),
-  validationDataS3Uri: [validationBucket.s3UrlForObject()],
+  outputData: {
+    bucket: outputBucket,
+    prefix: 'output-data',
+  },
+  trainingData: {
+    bucket: trainingBucket,
+    prefix: 'training-data',
+  },
+  validationData: [
+    {
+      bucket: validationBucket,
+      prefix: 'validation-data1',
+    },
+    {
+      bucket: validationBucket,
+      prefix: 'validation-data2',
+    },
+  ],
   vpcConfig: {
     securityGroups: [new ec2.SecurityGroup(stack, 'SecurityGroup', { vpc })],
     subnets: vpc.isolatedSubnets,
   },
 };
 
-const task1 = new BedrockCreateModelCustomizationJob(stack, 'CreateModelCustomizationJob1', taskConfig);
+const task1 = new tasks.BedrockCreateModelCustomizationJob(stack, 'CreateModelCustomizationJob1', taskConfig);
 
-const task2 = new BedrockCreateModelCustomizationJob(stack, 'CreateModelCustomizationJob2', {
+const task2 = new tasks.BedrockCreateModelCustomizationJob(stack, 'CreateModelCustomizationJob2', {
   ...taskConfig,
   clientRequestToken: 'MyToken2',
   customModelName: 'MyCustomModel2',
