@@ -224,6 +224,17 @@ export interface ClusterInstanceOptions {
   readonly publiclyAccessible?: boolean;
 
   /**
+   * A preferred maintenance window day/time range. Should be specified as a range ddd:hh24:mi-ddd:hh24:mi (24H Clock UTC).
+   *
+   * Example: 'Sun:23:45-Mon:00:15'
+   *
+   * @default - 30-minute window selected at random from an 8-hour block of time for
+   * each AWS Region, occurring on a random day of the week.
+   * @see https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/USER_UpgradeDBInstance.Maintenance.html#Concepts.DBMaintenance
+   */
+  readonly preferredMaintenanceWindow?: string;
+
+  /**
    * The parameters in the DBParameterGroup to create automatically
    *
    * You can only specify parameterGroup or parameters but not both.
@@ -499,6 +510,7 @@ class AuroraClusterInstance extends Resource implements IAuroraClusterInstance {
         // Instance properties
         dbInstanceClass: props.instanceType ? databaseInstanceType(instanceType) : undefined,
         publiclyAccessible,
+        preferredMaintenanceWindow: props.preferredMaintenanceWindow,
         enablePerformanceInsights: enablePerformanceInsights || props.enablePerformanceInsights, // fall back to undefined if not set
         performanceInsightsKmsKeyId: props.performanceInsightEncryptionKey?.keyArn,
         performanceInsightsRetentionPeriod: enablePerformanceInsights
