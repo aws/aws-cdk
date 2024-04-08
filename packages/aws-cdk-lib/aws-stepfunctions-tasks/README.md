@@ -412,9 +412,20 @@ const task = new tasks.BedrockCreateModelCustomizationJob(this, 'CreateModelCust
   }, // optional
   jobName: 'MyCustomizationJob',
   jobTags: [{ key: 'key2', value: 'value2' }], // optional
-  outputDataS3Uri: outputBucket.s3UrlForObject(),
-  trainingDataS3Uri: trainingBucket.s3UrlForObject(),
-  validationDataS3Uri: [validationBucket.s3UrlForObject()],
+  outputData: {
+    bucket: outputBucket,
+    prefix: 'output-data', // optional
+  },
+  trainingData: {
+    bucket: trainingBucket,
+    prefix: 'training-data', // optional
+  },
+  validationData: [
+    {
+      bucket: validationBucket,
+      prefix: 'validation-data1', // optional
+    },
+  ],
   vpcConfig: {
     securityGroups: [new ec2.SecurityGroup(this, 'SecurityGroup', { vpc })],
     subnets: vpc.isolatedSubnets,
