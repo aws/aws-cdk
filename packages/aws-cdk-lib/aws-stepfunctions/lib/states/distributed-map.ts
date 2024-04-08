@@ -172,7 +172,7 @@ export class DistributedMap extends MapBase implements INextable {
         errors.push('label must be 40 characters or less');
       }
 
-      let labelRegex = /[\s\?\*\<\>\{\}\\[\]\:\;\,\|\^\~\$\#\%\&\`\"]|[\u0000-\u001f]|[\u007f-\u009f]/gi
+      let labelRegex = /[\s\?\*\<\>\{\}\\[\]\:\;\,\|\^\~\$\#\%\&\`\"]|[\u0000-\u001f]|[\u007f-\u009f]/gi;
       if (labelRegex.test(this.label)) {
         errors.push('label cannot contain any whitespace or special characters');
       }
