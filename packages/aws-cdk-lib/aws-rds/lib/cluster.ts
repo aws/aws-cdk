@@ -994,6 +994,7 @@ class ImportedDatabaseCluster extends DatabaseClusterBase implements IDatabaseCl
       defaultPort,
     });
     this.engine = attrs.engine;
+    this.secret = attrs.secret;
 
     this._clusterEndpoint = (attrs.clusterEndpointAddress && attrs.port) ? new Endpoint(attrs.clusterEndpointAddress, attrs.port) : undefined;
     this._clusterReadEndpoint = (attrs.readerEndpointAddress && attrs.port) ? new Endpoint(attrs.readerEndpointAddress, attrs.port) : undefined;
