@@ -16,7 +16,7 @@
        [
         "https://",
         {
-         "Fn::ImportValue": "aws-cdk-vpc-nat-instances-v2:ExportsOutputRefHttpProxyPrivateApiA55E154DBF80C6A7"
+         "Fn::ImportValue": "aws-cdk-vpc-nat-instance-v2-custom:ExportsOutputRefHttpProxyPrivateApiA55E154DBF80C6A7"
         },
         ".execute-api.",
         {
@@ -33,7 +33,7 @@
      "fetchOptions": {}
     },
     "expected": "{\"$ObjectLike\":{\"status\":200}}",
-    "salt": "1712250328629"
+    "salt": "1712258454703"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -57,6 +57,35 @@
      {
       "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
      }
+    ],
+    "Policies": [
+     {
+      "PolicyName": "Inline",
+      "PolicyDocument": {
+       "Version": "2012-10-17",
+       "Statement": [
+        {
+         "Action": [
+          "s3:GetObject"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Effect": "Allow",
+         "Action": [
+          "s3:GetObject",
+          "s3:ListBucket"
+         ],
+         "Resource": [
+          "*"
+         ]
+        }
+       ]
+      }
+     }
     ]
    }
   },
@@ -79,6 +108,38 @@
      ]
     }
    }
+  },
+  "AwsApiCallS3getObject5655b5d2bee66c57a8f8484e63c287a4": {
+   "Type": "Custom::DeployAssert@SdkCallS3getObject",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "S3",
+    "api": "getObject",
+    "parameters": {
+     "Bucket": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "aws-cdk-vpc-nat-instance-v2-custom:ExportsOutputRefBucket83908E7781C90AC0"
+        },
+        "\""
+       ]
+      ]
+     },
+     "Key": "\"hello.txt\""
+    },
+    "flattenResponse": "false",
+    "salt": "1712258454704"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   }
  },
  "Outputs": {
