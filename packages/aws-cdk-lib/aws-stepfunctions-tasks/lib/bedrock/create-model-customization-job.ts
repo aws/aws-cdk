@@ -306,22 +306,20 @@ export class BedrockCreateModelCustomizationJob extends sfn.TaskStateBase {
             resourceName: '*',
           }),
         ],
-        conditions: [
-          {
-            StringEquals: {
-              'aws:RequestTag/BedrockManaged': ['true'],
-            },
-            ArnEquals: {
-              'aws:RequestTag/BedrockModelCustomizationJobArn': [
-                Stack.of(this).formatArn({
-                  service: 'bedrock',
-                  resource: 'model-customization-job',
-                  resourceName: '*',
-                }),
-              ],
-            },
+        conditions: {
+          StringEquals: {
+            'aws:RequestTag/BedrockManaged': ['true'],
           },
-        ],
+          ArnEquals: {
+            'aws:RequestTag/BedrockModelCustomizationJobArn': [
+              Stack.of(this).formatArn({
+                service: 'bedrock',
+                resource: 'model-customization-job',
+                resourceName: '*',
+              }),
+            ],
+          },
+        },
       }),
       new iam.PolicyStatement({
         actions: ['ec2:CreateNetworkInterface'],

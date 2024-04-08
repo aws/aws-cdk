@@ -1,0 +1,32 @@
+{
+  "version": "36.0.0",
+  "files": {
+    "e978ad4ad0dca7e1c6be5f49cbbd1c5a150ee050c24052fedfe5a42f835d55da": {
+      "source": {
+        "path": "asset.e978ad4ad0dca7e1c6be5f49cbbd1c5a150ee050c24052fedfe5a42f835d55da",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "e978ad4ad0dca7e1c6be5f49cbbd1c5a150ee050c24052fedfe5a42f835d55da.zip",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "68e4fe5b0ed8c26f8fb6130f8028f388a2939d1f825029d4abba6a6cf66d8d46": {
+      "source": {
+        "path": "aws-stepfunctions-tasks-bedrock-invoke-model-integ.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "68e4fe5b0ed8c26f8fb6130f8028f388a2939d1f825029d4abba6a6cf66d8d46.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
