@@ -1699,16 +1699,21 @@ describe('tests', () => {
   });
 
   describe('Rule suffix for logicalId', () => {
+    const identifierToken = 'SuperMagicToken';
     interface TestCase {
-      readonly removeRuleSuffixFromLogicalId: boolean;
+      readonly removeRuleSuffixFromLogicalId?: boolean;
+      readonly expectedLogicalId: string;
     };
-    const testCases: TestCase[] = [
-      { removeRuleSuffixFromLogicalId: true },
-      { removeRuleSuffixFromLogicalId: false },
+    const nonDefaultTestCases: TestCase[] = [
+      { removeRuleSuffixFromLogicalId: true, expectedLogicalId: identifierToken },
+      { removeRuleSuffixFromLogicalId: false, expectedLogicalId: identifierToken + 'Rule' },
     ];
-    test.each<TestCase>(testCases)('addTargetGroups %s', ({ removeRuleSuffixFromLogicalId }) => {
+    test.each<TestCase>([
+      // Default is to not have the `Rule` suffix, per legacy behavior.
+      { removeRuleSuffixFromLogicalId: undefined, expectedLogicalId: identifierToken },
+      ...nonDefaultTestCases,
+    ])('addTargetGroups %s', ({ removeRuleSuffixFromLogicalId, expectedLogicalId }) => {
       // GIVEN
-      const identifierToken = 'SuperMagicToken';
       const app = new cdk.App();
       const stack = new cdk.Stack(app, 'TestStack', { env: { account: '123456789012', region: 'us-east-1' } });
       const vpc = new ec2.Vpc(stack, 'Stack');
@@ -1728,15 +1733,17 @@ describe('tests', () => {
       });
 
       // THEN
-      const expectedLogicalId = removeRuleSuffixFromLogicalId ? identifierToken : identifierToken + 'Rule';
       const applicationListenerRule = listener.node.children.find((v)=> v.hasOwnProperty('conditions'));
       expect(applicationListenerRule).toBeDefined();
       expect(applicationListenerRule!.node.id).toBe(expectedLogicalId);
     });
 
-    test.each<TestCase>(testCases)('addAction %s', ({ removeRuleSuffixFromLogicalId }) => {
+    test.each<TestCase>([
+      // Default is consistent, which means it has the `Rule` suffix. This means no change from legacy behavior
+      { removeRuleSuffixFromLogicalId: undefined, expectedLogicalId: identifierToken + 'Rule' },
+      ...nonDefaultTestCases,
+    ])('addAction %s', ({ removeRuleSuffixFromLogicalId, expectedLogicalId }) => {
       // GIVEN
-      const identifierToken = 'SuperMagicToken';
       const app = new cdk.App();
       const stack = new cdk.Stack(app, 'TestStack', { env: { account: '123456789012', region: 'us-east-1' } });
       const vpc = new ec2.Vpc(stack, 'Stack');
@@ -1756,7 +1763,6 @@ describe('tests', () => {
       });
 
       // THEN
-      const expectedLogicalId = removeRuleSuffixFromLogicalId ? identifierToken : identifierToken + 'Rule';
       const applicationListenerRule = listener.node.children.find((v)=> v.hasOwnProperty('conditions'));
       expect(applicationListenerRule).toBeDefined();
       expect(applicationListenerRule!.node.id).toBe(expectedLogicalId);
