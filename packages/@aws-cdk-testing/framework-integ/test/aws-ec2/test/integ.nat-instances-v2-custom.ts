@@ -5,25 +5,46 @@ import * as apigwv2 from 'aws-cdk-lib/aws-apigatewayv2';
 import * as integrations from 'aws-cdk-lib/aws-apigatewayv2-integrations';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as elbv2 from 'aws-cdk-lib/aws-elasticloadbalancingv2';
+import * as s3 from 'aws-cdk-lib/aws-s3';
 import { EC2_RESTRICT_DEFAULT_SECURITY_GROUP } from 'aws-cdk-lib/cx-api';
 
 class NatInstanceStack extends cdk.Stack {
   public readonly apiUrl: string;
+  public readonly bucketName: string;
 
   constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
     this.node.setContext(EC2_RESTRICT_DEFAULT_SECURITY_GROUP, false);
 
-    // Configure the `natGatewayProvider` when defining a Vpc
+    const bucket = new s3.Bucket(this, 'Bucket', {
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+      autoDeleteObjects: true,
+    });
+
+    const keyPair = new ec2.KeyPair(this, 'KeyPair');
+    const userData = ec2.UserData.forLinux();
+    userData.addCommands(
+      ...ec2.NatInstanceProviderV2.DEFAULT_USER_DATA_COMMANDS,
+      'echo "hello world!" > hello.txt',
+      `aws s3 cp hello.txt s3://${bucket.bucketName}`,
+    );
+
     const natGatewayProvider = ec2.NatProvider.instanceV2({
       instanceType: new ec2.InstanceType('t3.small'),
+      creditSpecification: ec2.CpuCredits.UNLIMITED,
+      defaultAllowedTraffic: ec2.NatTrafficDirection.OUTBOUND_ONLY,
+      keyPair,
+      userData,
     });
 
     const vpc = new ec2.Vpc(this, 'MyVpc', {
       natGatewayProvider,
-      // The 'natGateways' parameter now controls the number of NAT instances
       natGateways: 2,
     });
+
+    for (const gateway of natGatewayProvider.gatewayInstances) {
+      bucket.grantWrite(gateway);
+    }
 
     Array.isArray(vpc);
     Array.isArray(natGatewayProvider.configuredGateways);
@@ -40,15 +61,27 @@ class NatInstanceStack extends cdk.Stack {
 
     assert(httpApi.url, 'httpApi.url cannot be empty');
     this.apiUrl = httpApi.url;
+    this.bucketName = bucket.bucketName;
   }
 }
 
 const app = new cdk.App();
-const stack = new NatInstanceStack(app, 'aws-cdk-vpc-nat-instances-v2');
+const stack = new NatInstanceStack(app, 'aws-cdk-vpc-nat-instance-v2-custom');
 
-const integ = new IntegTest(app, 'nat-instance-v2-integ-test', {
+const integ = new IntegTest(app, 'nat-instance-v2-custom-integ-test', {
   testCases: [stack],
+
 });
 
 integ.assertions.httpApiCall(stack.apiUrl, {})
   .expect(ExpectedResult.objectLike({ status: 200 }));
+
+const { provider: getObjectCallProvider } = integ.assertions.awsApiCall(
+  'S3', 'getObject', { Bucket: stack.bucketName, Key: 'hello.txt' },
+);
+
+getObjectCallProvider.addToRolePolicy({
+  Effect: 'Allow',
+  Action: ['s3:GetObject', 's3:ListBucket'],
+  Resource: ['*'],
+});

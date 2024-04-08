@@ -1,5 +1,155 @@
 {
  "Resources": {
+  "Bucket83908E77": {
+   "Type": "AWS::S3::Bucket",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "aws-cdk:auto-delete-objects",
+      "Value": "true"
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "BucketPolicyE9A3008A": {
+   "Type": "AWS::S3::BucketPolicy",
+   "Properties": {
+    "Bucket": {
+     "Ref": "Bucket83908E77"
+    },
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "s3:DeleteObject*",
+        "s3:GetBucket*",
+        "s3:List*",
+        "s3:PutBucketPolicy"
+       ],
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": {
+         "Fn::GetAtt": [
+          "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092",
+          "Arn"
+         ]
+        }
+       },
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "Bucket83908E77",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "Bucket83908E77",
+             "Arn"
+            ]
+           },
+           "/*"
+          ]
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "BucketAutoDeleteObjectsCustomResourceBAFD23C2": {
+   "Type": "Custom::S3AutoDeleteObjects",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F",
+      "Arn"
+     ]
+    },
+    "BucketName": {
+     "Ref": "Bucket83908E77"
+    }
+   },
+   "DependsOn": [
+    "BucketPolicyE9A3008A"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+     }
+    ]
+   }
+  },
+  "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "54e6f07bf3aea46d100719f3b21fe0fb45ae789ee372d42d8cdfb97e21aba96c.zip"
+    },
+    "Timeout": 900,
+    "MemorySize": 128,
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs18.x",
+    "Description": {
+     "Fn::Join": [
+      "",
+      [
+       "Lambda function for auto-deleting objects in ",
+       {
+        "Ref": "Bucket83908E77"
+       },
+       " S3 bucket."
+      ]
+     ]
+    }
+   },
+   "DependsOn": [
+    "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
+   ]
+  },
+  "KeyPair1622897B": {
+   "Type": "AWS::EC2::KeyPair",
+   "Properties": {
+    "KeyFormat": "pem",
+    "KeyName": "awscdkvpcnatinstancev2customKeyPairC77B5B62",
+    "KeyType": "rsa"
+   }
+  },
   "MyVpcF9F0CA6F": {
    "Type": "AWS::EC2::VPC",
    "Properties": {
@@ -10,7 +160,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-vpc-nat-instances-v2/MyVpc"
+      "Value": "aws-cdk-vpc-nat-instance-v2-custom/MyVpc"
      }
     ]
    }
@@ -39,7 +189,7 @@
      },
      {
       "Key": "Name",
-      "Value": "aws-cdk-vpc-nat-instances-v2/MyVpc/PublicSubnet1"
+      "Value": "aws-cdk-vpc-nat-instance-v2-custom/MyVpc/PublicSubnet1"
      }
     ],
     "VpcId": {
@@ -53,7 +203,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-vpc-nat-instances-v2/MyVpc/PublicSubnet1"
+      "Value": "aws-cdk-vpc-nat-instance-v2-custom/MyVpc/PublicSubnet1"
      }
     ],
     "VpcId": {
@@ -105,7 +255,57 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-vpc-nat-instances-v2/MyVpc/PublicSubnet1/NatInstance"
+      "Value": "aws-cdk-vpc-nat-instance-v2-custom/MyVpc/PublicSubnet1/NatInstance"
+     }
+    ]
+   }
+  },
+  "MyVpcPublicSubnet1NatInstanceInstanceRoleDefaultPolicy2ED76C74": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "s3:Abort*",
+        "s3:DeleteObject*",
+        "s3:PutObject",
+        "s3:PutObjectLegalHold",
+        "s3:PutObjectRetention",
+        "s3:PutObjectTagging",
+        "s3:PutObjectVersionTagging"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "Bucket83908E77",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "Bucket83908E77",
+             "Arn"
+            ]
+           },
+           "/*"
+          ]
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "MyVpcPublicSubnet1NatInstanceInstanceRoleDefaultPolicy2ED76C74",
+    "Roles": [
+     {
+      "Ref": "MyVpcPublicSubnet1NatInstanceInstanceRole394B648D"
      }
     ]
    }
@@ -131,6 +331,9 @@
       }
      ]
     },
+    "CreditSpecification": {
+     "CPUCredits": "unlimited"
+    },
     "IamInstanceProfile": {
      "Ref": "MyVpcPublicSubnet1NatInstanceInstanceProfile2FD934CB"
     },
@@ -138,6 +341,9 @@
      "Ref": "SsmParameterValueawsserviceamiamazonlinuxlatestal2023amikernel61x8664C96584B6F00A464EAD1953AFF4B05118Parameter"
     },
     "InstanceType": "t3.small",
+    "KeyName": {
+     "Ref": "KeyPair1622897B"
+    },
     "SecurityGroupIds": [
      {
       "Fn::GetAtt": [
@@ -153,14 +359,25 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-vpc-nat-instances-v2/MyVpc/PublicSubnet1/NatInstance"
+      "Value": "aws-cdk-vpc-nat-instance-v2-custom/MyVpc/PublicSubnet1/NatInstance"
      }
     ],
     "UserData": {
-     "Fn::Base64": "#!/bin/bash\nyum install iptables-services -y\nsystemctl enable iptables\nsystemctl start iptables\necho \"net.ipv4.ip_forward=1\" > /etc/sysctl.d/custom-ip-forwarding.conf\nsudo sysctl -p /etc/sysctl.d/custom-ip-forwarding.conf\nsudo /sbin/iptables -t nat -A POSTROUTING -o $(route | awk '/^default/{print $NF}') -j MASQUERADE\nsudo /sbin/iptables -F FORWARD\nsudo service iptables save"
+     "Fn::Base64": {
+      "Fn::Join": [
+       "",
+       [
+        "#!/bin/bash\nyum install iptables-services -y\nsystemctl enable iptables\nsystemctl start iptables\necho \"net.ipv4.ip_forward=1\" > /etc/sysctl.d/custom-ip-forwarding.conf\nsudo sysctl -p /etc/sysctl.d/custom-ip-forwarding.conf\nsudo /sbin/iptables -t nat -A POSTROUTING -o $(route | awk '/^default/{print $NF}') -j MASQUERADE\nsudo /sbin/iptables -F FORWARD\nsudo service iptables save\necho \"hello world!\" > hello.txt\naws s3 cp hello.txt s3://",
+        {
+         "Ref": "Bucket83908E77"
+        }
+       ]
+      ]
+     }
     }
    },
    "DependsOn": [
+    "MyVpcPublicSubnet1NatInstanceInstanceRoleDefaultPolicy2ED76C74",
     "MyVpcPublicSubnet1NatInstanceInstanceRole394B648D"
    ]
   },
@@ -188,7 +405,7 @@
      },
      {
       "Key": "Name",
-      "Value": "aws-cdk-vpc-nat-instances-v2/MyVpc/PublicSubnet2"
+      "Value": "aws-cdk-vpc-nat-instance-v2-custom/MyVpc/PublicSubnet2"
      }
     ],
     "VpcId": {
@@ -202,7 +419,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-vpc-nat-instances-v2/MyVpc/PublicSubnet2"
+      "Value": "aws-cdk-vpc-nat-instance-v2-custom/MyVpc/PublicSubnet2"
      }
     ],
     "VpcId": {
@@ -254,7 +471,57 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-vpc-nat-instances-v2/MyVpc/PublicSubnet2/NatInstance"
+      "Value": "aws-cdk-vpc-nat-instance-v2-custom/MyVpc/PublicSubnet2/NatInstance"
+     }
+    ]
+   }
+  },
+  "MyVpcPublicSubnet2NatInstanceInstanceRoleDefaultPolicy8E0E9073": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "s3:Abort*",
+        "s3:DeleteObject*",
+        "s3:PutObject",
+        "s3:PutObjectLegalHold",
+        "s3:PutObjectRetention",
+        "s3:PutObjectTagging",
+        "s3:PutObjectVersionTagging"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "Bucket83908E77",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "Bucket83908E77",
+             "Arn"
+            ]
+           },
+           "/*"
+          ]
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "MyVpcPublicSubnet2NatInstanceInstanceRoleDefaultPolicy8E0E9073",
+    "Roles": [
+     {
+      "Ref": "MyVpcPublicSubnet2NatInstanceInstanceRoleFD8EE84D"
      }
     ]
    }
@@ -280,6 +547,9 @@
       }
      ]
     },
+    "CreditSpecification": {
+     "CPUCredits": "unlimited"
+    },
     "IamInstanceProfile": {
      "Ref": "MyVpcPublicSubnet2NatInstanceInstanceProfile5AB09EF6"
     },
@@ -287,6 +557,9 @@
      "Ref": "SsmParameterValueawsserviceamiamazonlinuxlatestal2023amikernel61x8664C96584B6F00A464EAD1953AFF4B05118Parameter"
     },
     "InstanceType": "t3.small",
+    "KeyName": {
+     "Ref": "KeyPair1622897B"
+    },
     "SecurityGroupIds": [
      {
       "Fn::GetAtt": [
@@ -302,14 +575,25 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-vpc-nat-instances-v2/MyVpc/PublicSubnet2/NatInstance"
+      "Value": "aws-cdk-vpc-nat-instance-v2-custom/MyVpc/PublicSubnet2/NatInstance"
      }
     ],
     "UserData": {
-     "Fn::Base64": "#!/bin/bash\nyum install iptables-services -y\nsystemctl enable iptables\nsystemctl start iptables\necho \"net.ipv4.ip_forward=1\" > /etc/sysctl.d/custom-ip-forwarding.conf\nsudo sysctl -p /etc/sysctl.d/custom-ip-forwarding.conf\nsudo /sbin/iptables -t nat -A POSTROUTING -o $(route | awk '/^default/{print $NF}') -j MASQUERADE\nsudo /sbin/iptables -F FORWARD\nsudo service iptables save"
+     "Fn::Base64": {
+      "Fn::Join": [
+       "",
+       [
+        "#!/bin/bash\nyum install iptables-services -y\nsystemctl enable iptables\nsystemctl start iptables\necho \"net.ipv4.ip_forward=1\" > /etc/sysctl.d/custom-ip-forwarding.conf\nsudo sysctl -p /etc/sysctl.d/custom-ip-forwarding.conf\nsudo /sbin/iptables -t nat -A POSTROUTING -o $(route | awk '/^default/{print $NF}') -j MASQUERADE\nsudo /sbin/iptables -F FORWARD\nsudo service iptables save\necho \"hello world!\" > hello.txt\naws s3 cp hello.txt s3://",
+        {
+         "Ref": "Bucket83908E77"
+        }
+       ]
+      ]
+     }
     }
    },
    "DependsOn": [
+    "MyVpcPublicSubnet2NatInstanceInstanceRoleDefaultPolicy8E0E9073",
     "MyVpcPublicSubnet2NatInstanceInstanceRoleFD8EE84D"
    ]
   },
@@ -337,7 +621,7 @@
      },
      {
       "Key": "Name",
-      "Value": "aws-cdk-vpc-nat-instances-v2/MyVpc/PrivateSubnet1"
+      "Value": "aws-cdk-vpc-nat-instance-v2-custom/MyVpc/PrivateSubnet1"
      }
     ],
     "VpcId": {
@@ -351,7 +635,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-vpc-nat-instances-v2/MyVpc/PrivateSubnet1"
+      "Value": "aws-cdk-vpc-nat-instance-v2-custom/MyVpc/PrivateSubnet1"
      }
     ],
     "VpcId": {
@@ -406,7 +690,7 @@
      },
      {
       "Key": "Name",
-      "Value": "aws-cdk-vpc-nat-instances-v2/MyVpc/PrivateSubnet2"
+      "Value": "aws-cdk-vpc-nat-instance-v2-custom/MyVpc/PrivateSubnet2"
      }
     ],
     "VpcId": {
@@ -420,7 +704,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-vpc-nat-instances-v2/MyVpc/PrivateSubnet2"
+      "Value": "aws-cdk-vpc-nat-instance-v2-custom/MyVpc/PrivateSubnet2"
      }
     ],
     "VpcId": {
@@ -457,7 +741,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-vpc-nat-instances-v2/MyVpc"
+      "Value": "aws-cdk-vpc-nat-instance-v2-custom/MyVpc"
      }
     ]
    }
@@ -484,17 +768,10 @@
       "IpProtocol": "-1"
      }
     ],
-    "SecurityGroupIngress": [
-     {
-      "CidrIp": "0.0.0.0/0",
-      "Description": "from 0.0.0.0/0:ALL TRAFFIC",
-      "IpProtocol": "-1"
-     }
-    ],
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-vpc-nat-instances-v2/MyVpc"
+      "Value": "aws-cdk-vpc-nat-instance-v2-custom/MyVpc"
      }
     ],
     "VpcId": {
@@ -534,7 +811,7 @@
   "ALBSecurityGroup8B8624F8": {
    "Type": "AWS::EC2::SecurityGroup",
    "Properties": {
-    "GroupDescription": "Automatically created Security Group for ELB awscdkvpcnatinstancesv2ALB92DFD50B",
+    "GroupDescription": "Automatically created Security Group for ELB awscdkvpcnatinstancev2customALBE92A582F",
     "SecurityGroupEgress": [
      {
       "CidrIp": "255.255.255.255/32",
@@ -641,7 +918,7 @@
   "HttpProxyPrivateApiVpcLink190366CAE": {
    "Type": "AWS::ApiGatewayV2::VpcLink",
    "Properties": {
-    "Name": "awscdkvpcnatinstancesv2HttpProxyPrivateApiVpcLink196266F3B",
+    "Name": "awscdkvpcnatinstancev2customHttpProxyPrivateApiVpcLink1EFB62D9D",
     "SecurityGroupIds": [],
     "SubnetIds": [
      {
@@ -681,7 +958,15 @@
     "Ref": "HttpProxyPrivateApiA55E154D"
    },
    "Export": {
-    "Name": "aws-cdk-vpc-nat-instances-v2:ExportsOutputRefHttpProxyPrivateApiA55E154DBF80C6A7"
+    "Name": "aws-cdk-vpc-nat-instance-v2-custom:ExportsOutputRefHttpProxyPrivateApiA55E154DBF80C6A7"
+   }
+  },
+  "ExportsOutputRefBucket83908E7781C90AC0": {
+   "Value": {
+    "Ref": "Bucket83908E77"
+   },
+   "Export": {
+    "Name": "aws-cdk-vpc-nat-instance-v2-custom:ExportsOutputRefBucket83908E7781C90AC0"
    }
   }
  },
