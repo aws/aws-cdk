@@ -326,13 +326,13 @@ export class BedrockCreateModelCustomizationJob extends sfn.TaskStateBase {
       new iam.PolicyStatement({
         actions: ['ec2:CreateNetworkInterface'],
         resources: [
-          ...this.props.vpcConfig.securityGroups.map(
+          ...vpcConfig.securityGroups.map(
             (sg) => Stack.of(this).formatArn({
               service: 'ec2',
               resource: 'security-group',
               resourceName: sg.securityGroupId,
             })),
-          ...this.props.vpcConfig.subnets.map(
+          ...vpcConfig.subnets.map(
             (subnet) => Stack.of(this).formatArn({
               service: 'ec2',
               resource: 'subnet',
@@ -350,7 +350,7 @@ export class BedrockCreateModelCustomizationJob extends sfn.TaskStateBase {
         resources: ['*'],
         conditions: {
           ArnEquals: {
-            'ec2:Subnet': this.props.vpcConfig.subnets.map(
+            'ec2:Subnet': vpcConfig.subnets.map(
               (subnet) => Stack.of(this).formatArn({
                 service: 'ec2',
                 resource: 'subnet',

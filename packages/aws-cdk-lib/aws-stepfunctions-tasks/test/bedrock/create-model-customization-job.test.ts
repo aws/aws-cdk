@@ -3,8 +3,8 @@ import * as bedrock from '../../../aws-bedrock';
 import * as ec2 from '../../../aws-ec2';
 import * as iam from '../../../aws-iam';
 import * as kms from '../../../aws-kms';
-import * as sfn from '../../../aws-stepfunctions';
 import * as s3 from '../../../aws-s3';
+import * as sfn from '../../../aws-stepfunctions';
 import * as cdk from '../../../core';
 import { BedrockCreateModelCustomizationJob, CustomizationType } from '../../lib/bedrock/create-model-customization-job';
 
