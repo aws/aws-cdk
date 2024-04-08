@@ -99,7 +99,7 @@ const stateMachine = new sfn.StateMachine(stack, 'StateMachine', {
   timeout: cdk.Duration.seconds(30),
 });
 
-const integ = new IntegTest(app, 'InvokeModel', {
+const integ = new IntegTest(app, 'CreateModelCustomizationJob', {
   testCases: [stack],
 });
 
