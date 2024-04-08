@@ -75,12 +75,12 @@ new IntegTest(app, 'windows-machine-image-integ-test', {
   enableLookups: true,
 });
 
-function getMachineImage (version: Version) {
+function getMachineImage(version: Version) {
   return Object.values(ec2.WindowsVersion).includes(version as ec2.WindowsVersion) ?
     ec2.MachineImage.latestWindows(version as ec2.WindowsVersion) :
     ec2.MachineImage.specificWindows(version as ec2.WindowsSpecificVersion);
 }
 
-function generateStackName (prefix: string, version: string) {
+function generateStackName(prefix: string, version: string) {
   return `integ-ec2-windows-${prefix}-${version.replace(/[_.]/g, '-')}`;
 }
