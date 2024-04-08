@@ -405,7 +405,7 @@ describe('stack exists checks', () => {
         Changes: [
           {
             ResourceChange: {
-              Action: 'Dummy',
+              Action: 'Add',
               LogicalResourceId: 'Object',
             },
           },
