@@ -421,7 +421,7 @@ export class BedrockCreateModelCustomizationJob extends sfn.TaskStateBase {
       ...(this.props.customModelKmsKey
         ? [
           new iam.PolicyStatement({
-            principals: [new iam.ArnPrincipal(this._role.roleArn)],
+            // principals: [new iam.ArnPrincipal(this._role.roleArn)],
             actions: ['kms:Decrypt', 'kms:GenerateDataKey', 'kms:DescribeKey', 'kms:CreateGrant'],
             resources: ['*'],
           }),
