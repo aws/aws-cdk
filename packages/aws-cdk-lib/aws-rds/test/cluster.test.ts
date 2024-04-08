@@ -233,6 +233,57 @@ describe('cluster new api', () => {
         PreferredMaintenanceWindow: PREFERRED_MAINTENANCE_WINDOW,
       }));
     });
+    test('preferredMaintenanceWindow provided in writer', () => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+
+      const PREFERRED_MAINTENANCE_WINDOW: string = 'Sun:12:00-Sun:13:00';
+
+      // WHEN
+      new DatabaseCluster(stack, 'Database', {
+        engine: DatabaseClusterEngine.AURORA,
+        vpc: vpc,
+        writer: ClusterInstance.provisioned('Instance1', {
+          preferredMaintenanceWindow: PREFERRED_MAINTENANCE_WINDOW,
+        }),
+      });
+
+      // THEN
+      const template = Template.fromStack(stack);
+      // maintenance window is set
+      template.hasResourceProperties('AWS::RDS::DBInstance', Match.objectLike({
+        PreferredMaintenanceWindow: PREFERRED_MAINTENANCE_WINDOW,
+      }));
+    });
+    test('preferredMaintenanceWindow provided in readers', () => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+
+      const PREFERRED_MAINTENANCE_WINDOW: string = 'Sun:12:00-Sun:13:00';
+
+      // WHEN
+      new DatabaseCluster(stack, 'Database', {
+        engine: DatabaseClusterEngine.AURORA,
+        vpc: vpc,
+        writer: ClusterInstance.provisioned('Instance1', {
+          // No preferredMaintenanceWindow set
+        }),
+        readers: [
+          ClusterInstance.provisioned('Instance2', {
+            preferredMaintenanceWindow: PREFERRED_MAINTENANCE_WINDOW,
+          }),
+        ],
+      });
+
+      // THEN
+      const template = Template.fromStack(stack);
+      // maintenance window is set
+      template.hasResourceProperties('AWS::RDS::DBInstance', Match.objectLike({
+        PreferredMaintenanceWindow: PREFERRED_MAINTENANCE_WINDOW,
+      }));
+    });
   });
 
   describe('migrate from instanceProps', () => {
