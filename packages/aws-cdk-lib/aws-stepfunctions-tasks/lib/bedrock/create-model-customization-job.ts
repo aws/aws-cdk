@@ -231,6 +231,14 @@ export class BedrockCreateModelCustomizationJob extends sfn.TaskStateBase {
 
     this._role = this.renderBedrockCreateModelCustomizationJobRole();
     this.taskPolicies = this.renderPolicyStatements();
+
+    if (this.props.customModelKmsKey) {
+      this.props.customModelKmsKey.addToResourcePolicy(new iam.PolicyStatement({
+        actions: ['kms:Decrypt', 'kms:GenerateDataKey', 'kms:DescribeKey', 'kms:CreateGrant'],
+        resources: ['*'],
+        principals: [new iam.ArnPrincipal(this._role.roleArn)],
+      }));
+    }
   }
 
   /**
@@ -416,14 +424,6 @@ export class BedrockCreateModelCustomizationJob extends sfn.TaskStateBase {
         actions: ['iam:PassRole'],
         resources: [this._role.roleArn],
       }),
-      ...(this.props.customModelKmsKey
-        ? [
-          new iam.PolicyStatement({
-            actions: ['kms:Decrypt', 'kms:GenerateDataKey', 'kms:DescribeKey', 'kms:CreateGrant'],
-            resources: ['*'],
-          }),
-        ]
-        : []),
     ];
     return policyStatements;
   }
