@@ -55,6 +55,8 @@ export abstract class ExpectedResult {
    * ExpectedResult.exact({
    *   stringParam: 'hello',
    * });
+   *
+   * @see https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.assertions.Match.html#static-exactpattern
    */
   public static exact(expected: any): ExpectedResult {
     return {
@@ -74,11 +76,15 @@ export abstract class ExpectedResult {
    *   stringParam: 'hello',
    *   numberParam: 3,
    *   booleanParam: true,
+   *   objectParam: { prop1: 'value', prop2: 'value' },
    * };
    * // pass
    * ExpectedResult.objectLike({
    *   stringParam: 'hello',
+   *   objectParam: { prop1: 'value' },
    * });
+   *
+   * @see https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.assertions.Match.html#static-objectwbrlikepattern
    */
   public static objectLike(expected: { [key: string]: any }): ExpectedResult {
     return {
@@ -108,6 +114,8 @@ export abstract class ExpectedResult {
    *     stringParam: 'hello',
    *   },
    * ]);
+   *
+   * @see https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.assertions.Match.html#static-arraywbrwithpattern
    */
   public static arrayWith(expected: any[]): ExpectedResult {
     return {
@@ -126,6 +134,8 @@ export abstract class ExpectedResult {
    *
    * // pass
    * ExpectedResult.stringLikeRegexp('value');
+   *
+   * @see https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.assertions.Match.html#static-stringwbrlikewbrregexppattern
    */
   public static stringLikeRegexp(expected: string): ExpectedResult {
     return {
