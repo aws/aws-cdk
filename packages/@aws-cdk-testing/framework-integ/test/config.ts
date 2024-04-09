@@ -17,4 +17,4 @@ export const STANDARD_NODEJS_RUNTIME = Runtime.NODEJS_18_X;
  * The runtime should be the lowest runtime currently supported by the AWS CDK.
  * Updating this value will require you to run a lot of integration tests.
  */
-export const STANDARD_CUSTOM_RESOURCE_PROVIDER_RUNTIME = CustomResourceProviderRuntime.NODEJS_18_X;
+export const STANDARD_CUSTOM_RESOURCE_PROVIDER_RUNTIME = CustomResourceProviderRuntime.NODEJS_20_X;
