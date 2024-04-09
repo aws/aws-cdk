@@ -56,7 +56,7 @@ describe('kinesis source', () => {
       onPartialBatchItemFailure: OnPartialBatchItemFailure.AUTOMATIC_BISECT,
       parallelizationFactor: 10,
       startingPosition: KinesisStartingPosition.AT_TIMESTAMP,
-      startingPositionTimestamp: '2024-01-01T00:00:00Z',
+      startingPositionTimestamp: new Date(Date.UTC(2024, 0, 1, 0, 0, 0)),
     });
 
     new Pipe(stack, 'MyPipe', {
@@ -87,7 +87,7 @@ describe('kinesis source', () => {
           OnPartialBatchItemFailure: 'AUTOMATIC_BISECT',
           ParallelizationFactor: 10,
           StartingPosition: 'AT_TIMESTAMP',
-          StartingPositionTimestamp: '2024-01-01T00:00:00Z',
+          StartingPositionTimestamp: '2024-01-01T00:00:00.000Z',
         },
       },
     });
@@ -108,7 +108,7 @@ describe('kinesis source', () => {
       onPartialBatchItemFailure: OnPartialBatchItemFailure.AUTOMATIC_BISECT,
       parallelizationFactor: 10,
       startingPosition: KinesisStartingPosition.AT_TIMESTAMP,
-      startingPositionTimestamp: '2024-01-01T00:00:00Z',
+      startingPositionTimestamp: new Date(Date.UTC(2024, 0, 1, 0, 0, 0)),
     });
 
     new Pipe(stack, 'MyPipe', {
@@ -144,7 +144,7 @@ describe('kinesis source', () => {
           OnPartialBatchItemFailure: 'AUTOMATIC_BISECT',
           ParallelizationFactor: 10,
           StartingPosition: 'AT_TIMESTAMP',
-          StartingPositionTimestamp: '2024-01-01T00:00:00Z',
+          StartingPositionTimestamp: '2024-01-01T00:00:00.000Z',
         },
       },
     });
@@ -184,7 +184,7 @@ describe('kinesis source parameters validation', () => {
     expect(() => {
       new KinesisSource(stream, {
         startingPosition: KinesisStartingPosition.LATEST,
-        startingPositionTimestamp: '2024-01-01T00:00:00Z',
+        startingPositionTimestamp: new Date(Date.UTC(2024, 0, 1, 0, 0, 0)),
       });
     }).toThrow('Timestamp only valid with StartingPosition AT_TIMESTAMP for Kinesis streams, received LATEST');
   });

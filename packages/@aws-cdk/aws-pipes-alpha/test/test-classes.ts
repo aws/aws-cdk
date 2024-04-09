@@ -1,7 +1,19 @@
+import { Role } from 'aws-cdk-lib/aws-iam';
 import { CfnPipe } from 'aws-cdk-lib/aws-pipes';
-import { ITopic } from 'aws-cdk-lib/aws-sns';
-import { IQueue } from 'aws-cdk-lib/aws-sqs';
-import { EnrichmentParametersConfig, IEnrichment, ILogDestination, IPipe, ISource, ITarget, LogDestinationConfig, SourceConfig, SourceParameters, SourceWithDlq } from '../lib';
+import { ITopic, Topic } from 'aws-cdk-lib/aws-sns';
+import { IQueue, Queue } from 'aws-cdk-lib/aws-sqs';
+import {
+  EnrichmentParametersConfig,
+  IEnrichment,
+  ILogDestination,
+  IPipe,
+  ISource,
+  ITarget,
+  LogDestinationConfig,
+  SourceConfig,
+  SourceParameters,
+  SourceWithDeadLetterTarget,
+} from '../lib';
 
 export class TestSource implements ISource {
   readonly sourceArn = 'source-arn';
@@ -21,14 +33,21 @@ export class TestSource implements ISource {
   }
 }
 
-export class TestSourceWithDlq extends SourceWithDlq {
+export class TestSourceWithDeadLetterTarget extends SourceWithDeadLetterTarget {
   deadLetterTarget?: IQueue | ITopic;
   public grantRead = jest.fn();
-  public grantDlqPush = jest.fn();
 
   constructor(deadLetterTarget: IQueue | ITopic) {
     super('source-arn', deadLetterTarget);
     this.deadLetterTarget = deadLetterTarget;
+  }
+
+  grantPush(grantee: Role, deadLetterTarget?: IQueue | ITopic) {
+    if (deadLetterTarget instanceof Queue) {
+      deadLetterTarget.grantSendMessages(grantee);
+    } else if (deadLetterTarget instanceof Topic) {
+      deadLetterTarget.grantPublish(grantee);
+    }
   }
 
   bind(_pipe: IPipe): SourceConfig {

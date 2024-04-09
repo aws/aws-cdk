@@ -114,7 +114,7 @@
       "OnPartialBatchItemFailure": "AUTOMATIC_BISECT",
       "ParallelizationFactor": 1,
       "StartingPosition": "AT_TIMESTAMP",
-      "StartingPositionTimestamp": "2024-01-01T00:00:00Z"
+      "StartingPositionTimestamp": "2024-01-01T00:00:00.000Z"
      }
     },
     "Target": {

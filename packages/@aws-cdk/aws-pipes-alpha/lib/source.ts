@@ -107,7 +107,7 @@ export interface ISource {
 /**
  * Sources that support a dead-letter target.
  */
-export abstract class SourceWithDlq implements ISource {
+export abstract class SourceWithDeadLetterTarget implements ISource {
   /**
    * The ARN of the source resource.
    */
@@ -128,7 +128,7 @@ export abstract class SourceWithDlq implements ISource {
   /**
    * Grants the pipe role permission to publish to the dead-letter target.
    */
-  public grantDlqPush(grantee: IRole, deadLetterTarget?: IQueue | ITopic) {
+  public grantPush(grantee: IRole, deadLetterTarget?: IQueue | ITopic) {
     if (deadLetterTarget instanceof Queue) {
       deadLetterTarget.grantSendMessages(grantee);
     } else if (deadLetterTarget instanceof Topic) {

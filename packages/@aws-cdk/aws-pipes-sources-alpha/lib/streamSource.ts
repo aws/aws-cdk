@@ -1,4 +1,4 @@
-import { SourceWithDlq } from '@aws-cdk/aws-pipes-alpha';
+import { SourceWithDeadLetterTarget } from '@aws-cdk/aws-pipes-alpha';
 import { Duration } from 'aws-cdk-lib';
 import { ITopic } from 'aws-cdk-lib/aws-sns';
 import { IQueue } from 'aws-cdk-lib/aws-sqs';
@@ -80,7 +80,7 @@ export interface StreamSourceParameters {
 /**
  * Streaming sources.
  */
-export abstract class StreamSource extends SourceWithDlq {
+export abstract class StreamSource extends SourceWithDeadLetterTarget {
   /**
    * The ARN of the source resource.
    */

@@ -19,12 +19,12 @@ export interface KinesisSourceParameters extends StreamSourceParameters {
    * With StartingPosition set to AT_TIMESTAMP, the time from which to start reading, in ISO 8601 format.
    *
    * @example
-   * '2025-01-01T00:00:00Z'
+   * new Date(Date.UTC(1969, 10, 20, 0, 0, 0))
    *
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-pipes-pipe-pipesourcekinesisstreamparameters.html#cfn-pipes-pipe-pipesourcekinesisstreamparameters-startingpositiontimestamp
    * @default - no starting position timestamp
    */
-  readonly startingPositionTimestamp?: string;
+  readonly startingPositionTimestamp?: Date;
 }
 
 /**
@@ -33,7 +33,7 @@ export interface KinesisSourceParameters extends StreamSourceParameters {
 export class KinesisSource extends StreamSource {
   private readonly stream: IStream;
   private readonly startingPosition: KinesisStartingPosition;
-  private readonly startingPositionTimestamp?: string;
+  private readonly startingPositionTimestamp?: Date;
   private readonly deadLetterTargetArn?: string;
 
   constructor(stream: IStream, parameters: KinesisSourceParameters) {
@@ -60,7 +60,7 @@ export class KinesisSource extends StreamSource {
           onPartialBatchItemFailure: this.sourceParameters.onPartialBatchItemFailure,
           parallelizationFactor: this.sourceParameters.parallelizationFactor,
           startingPosition: this.startingPosition,
-          startingPositionTimestamp: this.startingPositionTimestamp,
+          startingPositionTimestamp: this.startingPositionTimestamp?.toISOString(),
         },
       },
     };
