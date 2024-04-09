@@ -126,9 +126,14 @@ describe('Rds Data Source configuration', () => {
       api: importedApi,
     });
 
-    // THEN validate Constructor enabled DataAPI on Datasource
+    // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBCluster', {
       EnableHttpEndpoint: true,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::DataSource', {
+      Type: 'RELATIONAL_DATABASE',
+      Name: 'RdsDataSourceAuroraV1',
     });
   });
 
@@ -358,9 +363,14 @@ describe('Rds Data Source Serverless V2 configuration', () => {
       api: importedApi,
     });
 
-    // THEN validate Constructor enabled DataAPI on Datasource
+    // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBCluster', {
       EnableHttpEndpoint: true,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::DataSource', {
+      Type: 'RELATIONAL_DATABASE',
+      Name: 'RdsDataSourceAuroraV2',
     });
   });
 
