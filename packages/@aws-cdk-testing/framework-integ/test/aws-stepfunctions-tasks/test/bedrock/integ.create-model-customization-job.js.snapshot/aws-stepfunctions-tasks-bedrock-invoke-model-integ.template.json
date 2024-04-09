@@ -287,6 +287,32 @@
         }
        },
        "Resource": "*"
+      },
+      {
+       "Action": [
+        "kms:CreateGrant",
+        "kms:Decrypt",
+        "kms:DescribeKey",
+        "kms:GenerateDataKey"
+       ],
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": [
+         {
+          "Fn::GetAtt": [
+           "CreateModelCustomizationJob1BedrockRole25A3ECD3",
+           "Arn"
+          ]
+         },
+         {
+          "Fn::GetAtt": [
+           "CreateModelCustomizationJob2BedrockRole06A5EE64",
+           "Arn"
+          ]
+         }
+        ]
+       },
+       "Resource": "*"
       }
      ],
      "Version": "2012-10-17"
@@ -894,16 +920,6 @@
          ]
         }
        ]
-      },
-      {
-       "Action": [
-        "kms:CreateGrant",
-        "kms:Decrypt",
-        "kms:DescribeKey",
-        "kms:GenerateDataKey"
-       ],
-       "Effect": "Allow",
-       "Resource": "*"
       }
      ],
      "Version": "2012-10-17"
