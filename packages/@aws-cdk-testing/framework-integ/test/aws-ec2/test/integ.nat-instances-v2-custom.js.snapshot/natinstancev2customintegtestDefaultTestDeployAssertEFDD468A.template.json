@@ -1,7 +1,7 @@
 {
  "Resources": {
-  "LambdaInvokeec8ae1d1a74c1e6701caf81677da8383": {
-   "Type": "Custom::DeployAssert@SdkCallLambdainvoke",
+  "HttpApiCall5667927ff42f0a5713f7f2c90e9178c5": {
+   "Type": "Custom::DeployAssert@HttpCall",
    "Properties": {
     "ServiceToken": {
      "Fn::GetAtt": [
@@ -9,34 +9,34 @@
       "Arn"
      ]
     },
-    "service": "Lambda",
-    "api": "invoke",
-    "expected": "{\"$ObjectLike\":{\"Payload\":\"{\\\"statusCode\\\":200,\\\"body\\\":\\\"\\\\\\\"Hello from Lambda!\\\\\\\"\\\"}\"}}",
     "parameters": {
-     "FunctionName": {
-      "Fn::ImportValue": "lambda-test-assets-file:ExportsOutputRefMyRubyLambdaAFED834FC50AFB5F"
-     }
+     "url": {
+      "Fn::Join": [
+       "",
+       [
+        "https://",
+        {
+         "Fn::ImportValue": "aws-cdk-vpc-nat-instance-v2-custom:ExportsOutputRefHttpProxyPrivateApiA55E154DBF80C6A7"
+        },
+        ".execute-api.",
+        {
+         "Ref": "AWS::Region"
+        },
+        ".",
+        {
+         "Ref": "AWS::URLSuffix"
+        },
+        "/"
+       ]
+      ]
+     },
+     "fetchOptions": {}
     },
-    "flattenResponse": "false",
-    "salt": "1684943375556"
+    "expected": "{\"$ObjectLike\":{\"status\":200}}",
+    "salt": "1712258454703"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
-  },
-  "LambdaInvokeec8ae1d1a74c1e6701caf81677da8383Invoke42FF4B85": {
-   "Type": "AWS::Lambda::Permission",
-   "Properties": {
-    "Action": "lambda:InvokeFunction",
-    "FunctionName": {
-     "Fn::ImportValue": "lambda-test-assets-file:ExportsOutputRefMyRubyLambdaAFED834FC50AFB5F"
-    },
-    "Principal": {
-     "Fn::GetAtt": [
-      "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73",
-      "Arn"
-     ]
-    }
-   }
   },
   "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73": {
    "Type": "AWS::IAM::Role",
@@ -66,7 +66,7 @@
        "Statement": [
         {
          "Action": [
-          "lambda:Invoke"
+          "s3:GetObject"
          ],
          "Effect": "Allow",
          "Resource": [
@@ -74,34 +74,13 @@
          ]
         },
         {
-         "Action": [
-          "lambda:InvokeFunction"
-         ],
          "Effect": "Allow",
+         "Action": [
+          "s3:GetObject",
+          "s3:ListBucket"
+         ],
          "Resource": [
-          {
-           "Fn::Join": [
-            "",
-            [
-             "arn:",
-             {
-              "Ref": "AWS::Partition"
-             },
-             ":lambda:",
-             {
-              "Ref": "AWS::Region"
-             },
-             ":",
-             {
-              "Ref": "AWS::AccountId"
-             },
-             ":function:",
-             {
-              "Fn::ImportValue": "lambda-test-assets-file:ExportsOutputRefMyRubyLambdaAFED834FC50AFB5F"
-             }
-            ]
-           ]
-          }
+          "*"
          ]
         }
        ]
@@ -113,12 +92,12 @@
   "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
-    "Runtime": "nodejs14.x",
+    "Runtime": "nodejs18.x",
     "Code": {
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "ae370e1010629b78f494346f49ceef3ab2875718f20e6c808114e6aa770c7bf3.zip"
+     "S3Key": "30d328e47ab6c6a4d0d137aac9e53e30955ac7469bcb2be4a49f9baf5cfc2f9c.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
@@ -129,13 +108,45 @@
      ]
     }
    }
+  },
+  "AwsApiCallS3getObject5655b5d2bee66c57a8f8484e63c287a4": {
+   "Type": "Custom::DeployAssert@SdkCallS3getObject",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "S3",
+    "api": "getObject",
+    "parameters": {
+     "Bucket": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "aws-cdk-vpc-nat-instance-v2-custom:ExportsOutputRefBucket83908E7781C90AC0"
+        },
+        "\""
+       ]
+      ]
+     },
+     "Key": "\"hello.txt\""
+    },
+    "flattenResponse": "false",
+    "salt": "1712258454704"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   }
  },
  "Outputs": {
-  "AssertionResultsLambdaInvokeec8ae1d1a74c1e6701caf81677da8383": {
+  "AssertionResultsHttpApiCall5667927ff42f0a5713f7f2c90e9178c5": {
    "Value": {
     "Fn::GetAtt": [
-     "LambdaInvokeec8ae1d1a74c1e6701caf81677da8383",
+     "HttpApiCall5667927ff42f0a5713f7f2c90e9178c5",
      "assertion"
     ]
    }
