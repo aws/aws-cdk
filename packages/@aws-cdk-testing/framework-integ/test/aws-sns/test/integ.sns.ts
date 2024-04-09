@@ -44,11 +44,25 @@ class SNSInteg extends Stack {
       successFeedbackSampleRate: 50,
     });
 
+    // Topic with signatureVersion
     new Topic(this, 'MyTopicSignatureVersion', {
       topicName: 'fooTopicSignatureVersion',
       displayName: 'fooDisplayNameSignatureVersion',
       signatureVersion: '2',
     });
+
+    // Can import topic
+    const topic2 = new Topic(this, 'MyTopic2', {
+      topicName: 'fooTopic2',
+      displayName: 'fooDisplayName2',
+      masterKey: key,
+    });
+    const importedTopic = Topic.fromTopicArn(this, 'ImportedTopic', topic2.topicArn);
+
+    const publishRole = new Role(this, 'PublishRole', {
+      assumedBy: new ServicePrincipal('s3.amazonaws.com'),
+    });
+    importedTopic.grantPublish(publishRole);
   }
 }
 
