@@ -233,7 +233,7 @@ export class Pipe extends PipeBase {
      */
     const source = props.source.bind(this);
     props.source.grantRead(this.pipeRole);
-    if (props.source instanceof SourceWithDeadLetterTarget) {
+    if (SourceWithDeadLetterTarget.isSourceWithDeadLetterTarget(props.source)) {
       props.source.grantPush(this.pipeRole, props.source.deadLetterTarget);
     }
 
