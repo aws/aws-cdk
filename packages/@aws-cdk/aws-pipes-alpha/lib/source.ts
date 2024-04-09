@@ -145,11 +145,11 @@ export abstract class SourceWithDeadLetterTarget implements ISource {
   /**
    * Retrieves the ARN from the dead-letter SQS queue or SNS topic.
    */
-  protected getDeadLetterTargetArn(dlq?: IQueue | ITopic): string | undefined {
-    if (dlq instanceof Queue) {
-      return dlq.queueArn;
-    } else if (dlq instanceof Topic) {
-      return dlq.topicArn;
+  protected getDeadLetterTargetArn(deadLetterTarget?: IQueue | ITopic): string | undefined {
+    if (deadLetterTarget instanceof Queue) {
+      return deadLetterTarget.queueArn;
+    } else if (deadLetterTarget instanceof Topic) {
+      return deadLetterTarget.topicArn;
     }
     return undefined;
   }
