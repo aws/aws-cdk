@@ -83,15 +83,19 @@ export interface CommonAutoScalingGroupProps {
    *
    * `launchTemplate` and `mixedInstancesPolicy` must not be specified when this property is specified
    *
+   * You can either specify `keyPair` or `keyName`, not both.
+   *
    * @default - No SSH access will be possible.
+   * @deprecated - Use `keyPair` instead - https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_ec2-readme.html#using-an-existing-ec2-key-pair
    */
   readonly keyName?: string;
 
   /**
    * The SSH keypair to grant access to the instance.
    *
-   * `keyName`, `launchTemplate` and `mixedInstancesPolicy` must not be specified
-   *  when this property is specified
+   * `launchTemplate` and `mixedInstancesPolicy` must not be specified when this property is specified.
+   *
+   * You can either specify `keyPair` or `keyName`, not both.
    *
    * @default - No SSH access will be possible.
    */
