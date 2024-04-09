@@ -19,7 +19,7 @@ import { Bucket } from 'aws-cdk-lib/aws-s3';
 import { Job, JobProperties } from './job';
 import { Construct } from 'constructs';
 import { JobType, GlueVersion, JobLanguage, PythonVersion, WorkerType } from '../constants';
-import { SparkUIProps, SparkUILoggingLocation, validateSparkUiPrefix, cleanSparkUiPrefixForGrant } from './spark-ui';
+import { SparkUIProps, SparkUILoggingLocation, validateSparkUiPrefix, cleanSparkUiPrefixForGrant } from './spark-ui-utils';
 
 /**
  * Properties for creating a Python Spark ETL job
