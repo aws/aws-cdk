@@ -93,6 +93,8 @@ export interface CommonAutoScalingGroupProps {
   /**
    * The SSH keypair to grant access to the instance.
    *
+   * Feature flag `AUTOSCALING_GENERATE_LAUNCH_TEMPLATE` must be enabled to use this property.
+   *
    * `launchTemplate` and `mixedInstancesPolicy` must not be specified when this property is specified.
    *
    * You can either specify `keyPair` or `keyName`, not both.
