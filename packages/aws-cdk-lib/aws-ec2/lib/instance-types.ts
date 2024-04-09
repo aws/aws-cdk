@@ -224,6 +224,11 @@ export enum InstanceClass {
   MEMORY5_AMD_NVME_DRIVE = 'memory5-amd-nvme-drive',
 
   /**
+   * Memory optimized instances based on AMD EPYC with local NVME drive, 5th generation
+   */
+  R5AD = 'r5ad',
+
+  /**
    * High memory instances (3TB) based on Intel Xeon Platinum 8176M (Skylake) processors, 1st generation
    */
   HIGH_MEMORY_3TB_1 = 'high-memory-3tb-1',
@@ -282,11 +287,6 @@ export enum InstanceClass {
    * High memory instances (24TB) based on Intel Xeon Scalable (Cascade Lake) processors, 1st generation
    */
   U_24TB1 = 'u-24tb1',
-
-  /**
-   * Memory optimized instances based on AMD EPYC with local NVME drive, 5th generation
-   */
-  R5AD = 'r5ad',
 
   /**
    * Memory optimized instances that are also EBS-optimized, 5th generation
@@ -612,19 +612,29 @@ export enum InstanceClass {
   STORAGE_COMPUTE_1 = 'storage-compute-1',
 
   /**
+   * Storage/compute balanced instances, 1st generation
+   */
+  H1 = 'h1',
+
+  /**
+   * High performance computing powered by AWS Trainium
+   */
+  TRAINING_ACCELERATOR1 = 'training-accelerator1',
+
+  /**
    * High performance computing powered by AWS Trainium
    */
   TRN1 = 'trn1',
 
   /**
-   * High performance computing powered by AWS Trainium
+   * Network-optimized high performance computing powered by AWS Trainium
    */
-  TRN1N = 'trn1n',
+  TRAINING_ACCELERATOR1_ENHANCED_NETWORK = 'training-accelerator1-enhanced-network',
 
   /**
-   * Storage/compute balanced instances, 1st generation
+   * Network-optimized high performance computing powered by AWS Trainium
    */
-  H1 = 'h1',
+  TRN1N = 'trn1n',
 
   /**
    * I/O-optimized instances, 3rd generation
@@ -742,7 +752,7 @@ export enum InstanceClass {
   MEMORY_INTENSIVE_1_EXTENDED = 'memory-intensive-1-extended',
 
   /**
-   * Memory-intensive instances, 1st generation
+   * Memory-intensive instances, extended, 1st generation
    */
   X1E = 'x1e',
 
@@ -881,7 +891,7 @@ export enum InstanceClass {
   P2 = 'p2',
 
   /**
-   * Parallel-processing optimized instances, 3nd generation
+   * Parallel-processing optimized instances, 3rd generation
    */
   PARALLEL3 = 'parallel3',
 
@@ -891,7 +901,7 @@ export enum InstanceClass {
   P3 = 'p3',
 
   /**
-   * Parallel-processing optimized instances with local NVME drive for high performance computing, 3nd generation
+   * Parallel-processing optimized instances with local NVME drive for high performance computing, 3rd generation
    */
   PARALLEL3_NVME_DRIVE_HIGH_PERFORMANCE = 'parallel3-nvme-drive-high-performance',
 
@@ -1111,6 +1121,36 @@ export enum InstanceClass {
   MAC1 = 'mac1',
 
   /**
+   * Macintosh instances built on Apple Mac mini 2020 computers, 2nd generation with Apple silicon M1 processors
+   */
+  MACINTOSH2_M1 = 'macintosh2-m1',
+
+  /**
+   * Macintosh instances built on Apple Mac mini 2020 computers, 2nd generation with Apple silicon M1 processors
+   */
+  MAC2 = 'mac2',
+
+  /**
+   * Macintosh instances built on Apple Mac mini 2023 computers, 2nd generation with Apple silicon M2 processors
+   */
+  MACINTOSH2_M2 = 'macintosh2-m2',
+
+  /**
+   * Macintosh instances built on Apple Mac mini 2023 computers, 2nd generation with Apple silicon M2 processors
+   */
+  MAC2_M2 = 'mac2-m2',
+
+  /**
+   * Macintosh instances built on Apple Mac mini 2023 computers, 2nd generation with Apple silicon M2 Pro processors
+   */
+  MACINTOSH2_M2_PRO = 'macintosh2-m2-pro',
+
+  /**
+   * Macintosh instances built on Apple Mac mini 2023 computers, 2nd generation with Apple silicon M2 Pro processors
+   */
+  MAC2_M2PRO = 'mac2-m2pro',
+
+  /**
    * Multi-stream video transcoding instances for resolutions up to 4K UHD, 1st generation
    */
   VIDEO_TRANSCODING1 = 'video-transcoding1',
@@ -1131,6 +1171,36 @@ export enum InstanceClass {
   HPC6A = 'hpc6a',
 
   /**
+   * High performance computing with local NVME drive based on 6th generation with Intel Xeon Scalable processors (3rd generation processors code named Ice Lake), 6th generation
+   */
+  HIGH_PERFORMANCE_COMPUTING6_INTEL_NVME_DRIVE = 'high-performance-computing6-intel-nvme-drive',
+
+  /**
+   * High performance computing with local NVME drive based on 6th generation with Intel Xeon Scalable processors (3rd generation processors code named Ice Lake), 6th generation
+   */
+  HPC6ID = 'hpc6id',
+
+  /**
+   * High performance computing based on AMD EPYC, 7th generation
+   */
+  HIGH_PERFORMANCE_COMPUTING7_AMD = 'high-performance-computing7-amd',
+
+  /**
+   * High performance computing based on AMD EPYC, 7th generation
+   */
+  HPC7A = 'hpc7a',
+
+  /**
+   * High performance computing based on Graviton, 7th generation
+   */
+  HIGH_PERFORMANCE_COMPUTING7_GRAVITON = 'high-performance-computing7-graviton',
+
+  /**
+   * High performance computing based on Graviton, 7th generation
+   */
+  HPC7G = 'hpc7g',
+
+  /**
    * Deep learning instances powered by Gaudi accelerators from Habana Labs (an Intel company), 1st generation
    */
   DEEP_LEARNING1 = 'deep-learning1',
@@ -1139,6 +1209,16 @@ export enum InstanceClass {
    * Deep learning instances powered by Gaudi accelerators from Habana Labs (an Intel company), 1st generation
    */
   DL1 = 'dl1',
+
+  /**
+   * Deep learning instances powered by Qualcomm AI 100 Standard accelerators, 2nd generation
+   */
+  DEEP_LEARNING2_QUALCOMM = 'deep-learning2-qualcomm',
+
+  /**
+   * Deep learning instances powered by Qualcomm AI 100 Standard accelerators, 2nd generation
+   */
+  DL2Q = 'dl2q',
 }
 
 /**
@@ -1261,7 +1341,12 @@ export enum InstanceSize {
   XLARGE56 = '56xlarge',
 
   /**
-   * Instance size XLARGE56 (112xlarge)
+   * Instance size XLARGE96 (96xlarge)
+   */
+  XLARGE96 = '96xlarge',
+
+  /**
+   * Instance size XLARGE112 (112xlarge)
    */
   XLARGE112 = '112xlarge',
 
@@ -1269,6 +1354,26 @@ export enum InstanceSize {
    * Instance size METAL (metal)
    */
   METAL = 'metal',
+
+  /**
+   * Instance size XLARGE16METAL (metal-16xl)
+   */
+  XLARGE16METAL = 'metal-16xl',
+
+  /**
+   * Instance size XLARGE24METAL (metal-24xl)
+   */
+  XLARGE24METAL = 'metal-24xl',
+
+  /**
+   * Instance size XLARGE32METAL (metal-32xl)
+   */
+  XLARGE32METAL = 'metal-32xl',
+
+  /**
+   * Instance size XLARGE48METAL (metal-48xl)
+   */
+  XLARGE48METAL = 'metal-48xl',
 }
 
 /**
@@ -1405,7 +1510,9 @@ export class InstanceType {
       [InstanceClass.D3]: 'd3',
       [InstanceClass.STORAGE3_ENHANCED_NETWORK]: 'd3en',
       [InstanceClass.D3EN]: 'd3en',
+      [InstanceClass.TRAINING_ACCELERATOR1]: 'trn1',
       [InstanceClass.TRN1]: 'trn1',
+      [InstanceClass.TRAINING_ACCELERATOR1_ENHANCED_NETWORK]: 'trn1n',
       [InstanceClass.TRN1N]: 'trn1n',
       [InstanceClass.STORAGE_COMPUTE_1]: 'h1',
       [InstanceClass.H1]: 'h1',
@@ -1495,10 +1602,22 @@ export class InstanceType {
       [InstanceClass.INF2]: 'inf2',
       [InstanceClass.MACINTOSH1_INTEL]: 'mac1',
       [InstanceClass.MAC1]: 'mac1',
+      [InstanceClass.MACINTOSH2_M1]: 'mac2',
+      [InstanceClass.MAC2]: 'mac2',
+      [InstanceClass.MACINTOSH2_M2]: 'mac2-m2',
+      [InstanceClass.MAC2_M2]: 'mac2-m2',
+      [InstanceClass.MACINTOSH2_M2_PRO]: 'mac2-m2pro',
+      [InstanceClass.MAC2_M2PRO]: 'mac2-m2pro',
       [InstanceClass.VIDEO_TRANSCODING1]: 'vt1',
       [InstanceClass.VT1]: 'vt1',
       [InstanceClass.HIGH_PERFORMANCE_COMPUTING6_AMD]: 'hpc6a',
       [InstanceClass.HPC6A]: 'hpc6a',
+      [InstanceClass.HIGH_PERFORMANCE_COMPUTING6_INTEL_NVME_DRIVE]: 'hpc6id',
+      [InstanceClass.HPC6ID]: 'hpc6id',
+      [InstanceClass.HIGH_PERFORMANCE_COMPUTING7_AMD]: 'hpc7a',
+      [InstanceClass.HPC7A]: 'hpc7a',
+      [InstanceClass.HIGH_PERFORMANCE_COMPUTING7_GRAVITON]: 'hpc7g',
+      [InstanceClass.HPC7G]: 'hpc7g',
       [InstanceClass.I4I]: 'i4i',
       [InstanceClass.IO4_INTEL]: 'i4i',
       [InstanceClass.X2IEDN]: 'x2iedn',
@@ -1509,6 +1628,8 @@ export class InstanceType {
       [InstanceClass.MEMORY_INTENSIVE_2_XTZ_INTEL]: 'x2iezn',
       [InstanceClass.DEEP_LEARNING1]: 'dl1',
       [InstanceClass.DL1]: 'dl1',
+      [InstanceClass.DEEP_LEARNING2_QUALCOMM]: 'dl2q',
+      [InstanceClass.DL2Q]: 'dl2q',
     };
     return new InstanceType(`${instanceClassMap[instanceClass] ?? instanceClass}.${instanceSize}`);
   }
@@ -1553,6 +1674,13 @@ export class InstanceType {
       throw new Error('Malformed instance type identifier');
     }
     return instanceClassId[1] === otherInstanceClassId[1];
+  }
+
+  /**
+   * Return whether this instance type is a burstable instance type
+   */
+  public isBurstable(): boolean {
+    return this.instanceTypeIdentifier.startsWith('t3') || this.instanceTypeIdentifier.startsWith('t4g') || this.instanceTypeIdentifier.startsWith('t2');
   }
 
 }

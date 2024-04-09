@@ -227,6 +227,11 @@ export class Runtime {
   public static readonly DOTNET_6 = new Runtime('dotnet6', RuntimeFamily.DOTNET_CORE);
 
   /**
+   * The .NET 8 runtime (dotnet8)
+   */
+  public static readonly DOTNET_8 = new Runtime('dotnet8', RuntimeFamily.DOTNET_CORE);
+
+  /**
    * The .NET Core 1.0 runtime (dotnetcore1.0)
    * @deprecated Legacy runtime no longer supported by AWS Lambda. Migrate to the latest .NET Core runtime.
    */
@@ -272,6 +277,11 @@ export class Runtime {
    * The Ruby 3.2 runtime (ruby3.2)
    */
   public static readonly RUBY_3_2 = new Runtime('ruby3.2', RuntimeFamily.RUBY);
+
+  /**
+  * The Ruby 3.3 runtime (ruby3.3)
+  */
+  public static readonly RUBY_3_3 = new Runtime('ruby3.3', RuntimeFamily.RUBY);
 
   /**
    * The custom provided runtime (provided)

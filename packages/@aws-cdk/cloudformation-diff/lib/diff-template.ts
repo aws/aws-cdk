@@ -1,11 +1,13 @@
 // The SDK is only used to reference `DescribeChangeSetOutput`, so the SDK is added as a devDependency.
 // The SDK should not make network calls here
-import type { CloudFormation } from 'aws-sdk';
+import type { DescribeChangeSetOutput as DescribeChangeSet } from '@aws-sdk/client-cloudformation';
 import * as impl from './diff';
 import * as types from './diff/types';
 import { deepEqual, diffKeyedEntities, unionOf } from './diff/util';
 
 export * from './diff/types';
+
+export type DescribeChangeSetOutput = DescribeChangeSet;
 
 type DiffHandler = (diff: types.ITemplateDiff, oldValue: any, newValue: any) => void;
 type HandlerRegistry = { [section: string]: DiffHandler };
@@ -45,21 +47,24 @@ const DIFF_HANDLERS: HandlerRegistry = {
 export function fullDiff(
   currentTemplate: { [key: string]: any },
   newTemplate: { [key: string]: any },
-  changeSet?: CloudFormation.DescribeChangeSetOutput,
+  changeSet?: DescribeChangeSetOutput,
+  isImport?: boolean,
 ): types.TemplateDiff {
 
   normalize(currentTemplate);
   normalize(newTemplate);
   const theDiff = diffTemplate(currentTemplate, newTemplate);
   if (changeSet) {
-    filterFalsePositivies(theDiff, changeSet);
+    filterFalsePositives(theDiff, changeSet);
     addImportInformation(theDiff, changeSet);
+  } else if (isImport) {
+    makeAllResourceChangesImports(theDiff);
   }
 
   return theDiff;
 }
 
-function diffTemplate(
+export function diffTemplate(
   currentTemplate: { [key: string]: any },
   newTemplate: { [key: string]: any },
 ): types.TemplateDiff {
@@ -209,7 +214,7 @@ function deepCopy(x: any): any {
   return x;
 }
 
-function addImportInformation(diff: types.TemplateDiff, changeSet: CloudFormation.DescribeChangeSetOutput) {
+function addImportInformation(diff: types.TemplateDiff, changeSet: DescribeChangeSetOutput) {
   const imports = findResourceImports(changeSet);
   diff.resources.forEachDifference((logicalId: string, change: types.ResourceDifference) => {
     if (imports.includes(logicalId)) {
@@ -218,9 +223,19 @@ function addImportInformation(diff: types.TemplateDiff, changeSet: CloudFormatio
   });
 }
 
-function filterFalsePositivies(diff: types.TemplateDiff, changeSet: CloudFormation.DescribeChangeSetOutput) {
+function makeAllResourceChangesImports(diff: types.TemplateDiff) {
+  diff.resources.forEachDifference((_logicalId: string, change: types.ResourceDifference) => {
+    change.isImport = true;
+  });
+}
+
+function filterFalsePositives(diff: types.TemplateDiff, changeSet: DescribeChangeSetOutput) {
   const replacements = findResourceReplacements(changeSet);
   diff.resources.forEachDifference((logicalId: string, change: types.ResourceDifference) => {
+    if (change.resourceType.includes('AWS::Serverless')) {
+      // CFN applies the SAM transform before creating the changeset, so the changeset contains no information about SAM resources
+      return;
+    }
     change.forEachDifference((type: 'Property' | 'Other', name: string, value: types.Difference<any> | types.PropertyDifference<any>) => {
       if (type === 'Property') {
         if (!replacements[logicalId]) {
@@ -255,7 +270,7 @@ function filterFalsePositivies(diff: types.TemplateDiff, changeSet: CloudFormati
   });
 }
 
-function findResourceImports(changeSet: CloudFormation.DescribeChangeSetOutput): string[] {
+function findResourceImports(changeSet: DescribeChangeSetOutput): string[] {
   const importedResourceLogicalIds = [];
   for (const resourceChange of changeSet.Changes ?? []) {
     if (resourceChange.ResourceChange?.Action === 'Import') {
@@ -266,7 +281,7 @@ function findResourceImports(changeSet: CloudFormation.DescribeChangeSetOutput):
   return importedResourceLogicalIds;
 }
 
-function findResourceReplacements(changeSet: CloudFormation.DescribeChangeSetOutput): types.ResourceReplacements {
+function findResourceReplacements(changeSet: DescribeChangeSetOutput): types.ResourceReplacements {
   const replacements: types.ResourceReplacements = {};
   for (const resourceChange of changeSet.Changes ?? []) {
     const propertiesReplaced: { [propName: string]: types.ChangeSetReplacement } = {};

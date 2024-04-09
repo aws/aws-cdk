@@ -97,6 +97,16 @@ export class TypeConverter {
   }
 
   /**
+   * Return the appropriate typewriter type for a servicespec type for modern tags
+   * Unlike typeFromProperty, we want to default to use the newest type instead.
+   */
+  public typeFromPropertyForModernTags(property: Property): Type {
+    // For backwards compatibility reasons we always have to use the original type
+    const types = this.typeHistoryFromProperty(property);
+    return this.typeFromSpecType(types[types.length - 1]);
+  }
+
+  /**
    * Return the full type history for a servicespec property
    */
   public typeHistoryFromProperty(property: Property): PropertyType[] {

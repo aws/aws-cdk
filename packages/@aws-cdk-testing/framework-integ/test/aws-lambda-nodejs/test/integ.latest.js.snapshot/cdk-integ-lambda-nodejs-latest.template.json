@@ -38,7 +38,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "6ce083eb2441f090467fba2edf5b09bfaf50233b25bf8f9302a3b7abf78b9f5a.zip"
+     "S3Key": "f9b0f4d8625cbe898e0489f6ac67297230716f8ccea80be6f26c8793a9e220ac.zip"
     },
     "Environment": {
      "Variables": {

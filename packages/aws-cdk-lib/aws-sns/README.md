@@ -19,6 +19,19 @@ const topic = new sns.Topic(this, 'Topic', {
 });
 ```
 
+Add an SNS Topic to your stack with a specified signature version, which corresponds 
+to the hashing algorithm used while creating the signature of the notifications, 
+subscription confirmations, or unsubscribe confirmation messages sent by Amazon SNS.
+
+The default signature version is `1` (`SHA1`).
+SNS also supports signature version `2` (`SHA256`).
+
+```ts
+const topic = new sns.Topic(this, 'Topic', {
+  signatureVersion: '2',
+});
+```
+
 Note that FIFO topics require a topic name to be provided. The required `.fifo` suffix will be automatically generated and added to the topic name if it is not explicitly provided.
 
 ## Subscriptions
@@ -208,6 +221,44 @@ const topicPolicy = new sns.TopicPolicy(this, 'Policy', {
 });
 ```
 
+### Enforce encryption of data in transit when publishing to a topic
+
+You can enforce SSL when creating a topic policy by setting the `enforceSSL` flag:
+
+```ts
+const topic = new sns.Topic(this, 'Topic');
+const policyDocument = new iam.PolicyDocument({
+  assignSids: true,
+  statements: [
+    new iam.PolicyStatement({
+      actions: ["sns:Publish"],
+      principals: [new iam.ServicePrincipal('s3.amazonaws.com')],
+      resources: [topic.topicArn],
+    }),
+  ],
+});
+
+const topicPolicy = new sns.TopicPolicy(this, 'Policy', {
+  topics: [topic],
+  policyDocument,
+  enforceSSL: true,
+});
+```
+
+Similiarly you can enforce SSL by setting the `enforceSSL` flag on the topic:
+
+```ts
+const topic = new sns.Topic(this, 'TopicAddPolicy', {
+  enforceSSL: true,
+});
+
+topic.addToResourcePolicy(new iam.PolicyStatement({
+  principals: [new iam.ServicePrincipal('s3.amazonaws.com')],
+  actions: ['sns:Publish'],
+  resources: [topic.topicArn],
+}));
+```
+
 ## Delivery status logging
 
 Amazon SNS provides support to log the delivery status of notification messages sent to topics with the following Amazon SNS endpoints:
@@ -256,10 +307,9 @@ Message archiving provides the ability to archive a single copy of all messages 
 You can store published messages within your topic by enabling the message archive policy on the topic, which enables message archiving for all subscriptions linked to that topic.
 Messages can be archived for a minimum of one day to a maximum of 365 days.
 
-Example with a archive policy for SQS:
+Example with an archive policy:
 
 ```ts
-declare const role: iam.Role;
 const topic = new sns.Topic(this, 'MyTopic', {
   fifo: true,
   messageRetentionPeriodInDays: 7,
