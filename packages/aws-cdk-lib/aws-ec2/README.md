@@ -237,7 +237,7 @@ const provider = ec2.NatProvider.instanceV2({
   defaultAllowedTraffic: ec2.NatTrafficDirection.NONE,
 });
 
-new ec2.Vpc(this, 'TheVPC', {
+const vpc = new ec2.Vpc(this, 'TheVPC', {
   natGatewayProvider: provider,
   natGateways: 2,
 });
