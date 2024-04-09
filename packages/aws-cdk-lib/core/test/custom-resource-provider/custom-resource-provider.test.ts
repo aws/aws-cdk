@@ -6,7 +6,7 @@ import { CUSTOMIZE_ROLES_CONTEXT_KEY } from '../../lib/helpers-internal';
 import { toCloudFormation } from '../util';
 
 const TEST_HANDLER = `${__dirname}/mock-provider`;
-const STANDARD_PROVIDER = CustomResourceProviderRuntime.NODEJS_18_X;
+const STANDARD_PROVIDER = CustomResourceProviderRuntime.NODEJS_20_X;
 
 describe('custom resource provider', () => {
   describe('customize roles', () => {
