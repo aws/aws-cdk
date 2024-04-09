@@ -1748,6 +1748,9 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
     if (props.keyName) {
       throw new Error('Setting \'keyName\' must not be set when \'launchTemplate\' or \'mixedInstancesPolicy\' is set');
     }
+    if (props.keyPair) {
+      throw new Error('Setting \'keyPair\' must not be set when \'launchTemplate\' or \'mixedInstancesPolicy\' is set');
+    }
     if (props.instanceMonitoring) {
       throw new Error('Setting \'instanceMonitoring\' must not be set when \'launchTemplate\' or \'mixedInstancesPolicy\' is set');
     }
