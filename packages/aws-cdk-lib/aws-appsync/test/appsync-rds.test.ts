@@ -113,6 +113,25 @@ describe('Rds Data Source configuration', () => {
     });
   });
 
+  test('create new RdsDataSource with Aurora Serverless V1 cluster', () => {
+    // WHEN
+    const importedApi = appsync.GraphqlApi.fromGraphqlApiAttributes(stack, 'importedApi', {
+      graphqlApiId: api.apiId,
+    });
+
+    new appsync.RdsDataSource(stack, 'RdsDataSourceAuroraV1', {
+      serverlessCluster: serverlessCluster,
+      secretStore: secret,
+      databaseName: 'Animals',
+      api: importedApi,
+    });
+
+    // THEN validate Constructor enabled DataAPI on Datasource
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBCluster', {
+      EnableHttpEndpoint: true,
+    });
+  });
+
   test('rds cluster arn saved to RdsHttpEndpointConfig', () => {
     // WHEN
     api.addRdsDataSource('ds', serverlessCluster, secret);
@@ -323,6 +342,25 @@ describe('Rds Data Source Serverless V2 configuration', () => {
           }],
         }],
       },
+    });
+  });
+
+  test('create new RdsDataSource with Aurora Serverless V2 cluster', () => {
+    // WHEN
+    const importedApi = appsync.GraphqlApi.fromGraphqlApiAttributes(stack, 'importedApi', {
+      graphqlApiId: api.apiId,
+    });
+
+    new appsync.RdsDataSource(stack, 'RdsDataSourceAuroraV2', {
+      serverlessCluster: serverlessClusterV2,
+      secretStore: secret,
+      databaseName: 'Animals',
+      api: importedApi,
+    });
+
+    // THEN validate Constructor enabled DataAPI on Datasource
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBCluster', {
+      EnableHttpEndpoint: true,
     });
   });
 
