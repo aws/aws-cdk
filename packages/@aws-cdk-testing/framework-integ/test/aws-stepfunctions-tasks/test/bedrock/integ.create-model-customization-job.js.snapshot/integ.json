@@ -1,12 +1,12 @@
 {
   "version": "36.0.0",
   "testCases": {
-    "InvokeModel/DefaultTest": {
+    "CreateModelCustomizationJob/DefaultTest": {
       "stacks": [
         "aws-stepfunctions-tasks-bedrock-invoke-model-integ"
       ],
-      "assertionStack": "InvokeModel/DefaultTest/DeployAssert",
-      "assertionStackName": "InvokeModelDefaultTestDeployAssert9C0D2DFC"
+      "assertionStack": "CreateModelCustomizationJob/DefaultTest/DeployAssert",
+      "assertionStackName": "CreateModelCustomizationJobDefaultTestDeployAssertEC679DFE"
     }
   }
 }

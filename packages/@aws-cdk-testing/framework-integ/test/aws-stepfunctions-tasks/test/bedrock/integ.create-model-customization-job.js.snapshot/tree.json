@@ -391,6 +391,32 @@
                             }
                           },
                           "Resource": "*"
+                        },
+                        {
+                          "Action": [
+                            "kms:CreateGrant",
+                            "kms:Decrypt",
+                            "kms:DescribeKey",
+                            "kms:GenerateDataKey"
+                          ],
+                          "Effect": "Allow",
+                          "Principal": {
+                            "AWS": [
+                              {
+                                "Fn::GetAtt": [
+                                  "CreateModelCustomizationJob1BedrockRole25A3ECD3",
+                                  "Arn"
+                                ]
+                              },
+                              {
+                                "Fn::GetAtt": [
+                                  "CreateModelCustomizationJob2BedrockRole06A5EE64",
+                                  "Arn"
+                                ]
+                              }
+                            ]
+                          },
+                          "Resource": "*"
                         }
                       ],
                       "Version": "2012-10-17"
@@ -1144,16 +1170,6 @@
                                       ]
                                     }
                                   ]
-                                },
-                                {
-                                  "Action": [
-                                    "kms:CreateGrant",
-                                    "kms:Decrypt",
-                                    "kms:DescribeKey",
-                                    "kms:GenerateDataKey"
-                                  ],
-                                  "Effect": "Allow",
-                                  "Resource": "*"
                                 }
                               ],
                               "Version": "2012-10-17"
@@ -1355,17 +1371,17 @@
           "version": "0.0.0"
         }
       },
-      "InvokeModel": {
-        "id": "InvokeModel",
-        "path": "InvokeModel",
+      "CreateModelCustomizationJob": {
+        "id": "CreateModelCustomizationJob",
+        "path": "CreateModelCustomizationJob",
         "children": {
           "DefaultTest": {
             "id": "DefaultTest",
-            "path": "InvokeModel/DefaultTest",
+            "path": "CreateModelCustomizationJob/DefaultTest",
             "children": {
               "Default": {
                 "id": "Default",
-                "path": "InvokeModel/DefaultTest/Default",
+                "path": "CreateModelCustomizationJob/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
                   "version": "10.3.0"
@@ -1373,19 +1389,19 @@
               },
               "DeployAssert": {
                 "id": "DeployAssert",
-                "path": "InvokeModel/DefaultTest/DeployAssert",
+                "path": "CreateModelCustomizationJob/DefaultTest/DeployAssert",
                 "children": {
                   "AwsApiCallStepFunctionsstartExecutionc5cc0786542148808c24d8ebf111c7aa": {
                     "id": "AwsApiCallStepFunctionsstartExecutionc5cc0786542148808c24d8ebf111c7aa",
-                    "path": "InvokeModel/DefaultTest/DeployAssert/AwsApiCallStepFunctionsstartExecutionc5cc0786542148808c24d8ebf111c7aa",
+                    "path": "CreateModelCustomizationJob/DefaultTest/DeployAssert/AwsApiCallStepFunctionsstartExecutionc5cc0786542148808c24d8ebf111c7aa",
                     "children": {
                       "SdkProvider": {
                         "id": "SdkProvider",
-                        "path": "InvokeModel/DefaultTest/DeployAssert/AwsApiCallStepFunctionsstartExecutionc5cc0786542148808c24d8ebf111c7aa/SdkProvider",
+                        "path": "CreateModelCustomizationJob/DefaultTest/DeployAssert/AwsApiCallStepFunctionsstartExecutionc5cc0786542148808c24d8ebf111c7aa/SdkProvider",
                         "children": {
                           "AssertionsProvider": {
                             "id": "AssertionsProvider",
-                            "path": "InvokeModel/DefaultTest/DeployAssert/AwsApiCallStepFunctionsstartExecutionc5cc0786542148808c24d8ebf111c7aa/SdkProvider/AssertionsProvider",
+                            "path": "CreateModelCustomizationJob/DefaultTest/DeployAssert/AwsApiCallStepFunctionsstartExecutionc5cc0786542148808c24d8ebf111c7aa/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
                               "version": "10.3.0"
@@ -1399,11 +1415,11 @@
                       },
                       "Default": {
                         "id": "Default",
-                        "path": "InvokeModel/DefaultTest/DeployAssert/AwsApiCallStepFunctionsstartExecutionc5cc0786542148808c24d8ebf111c7aa/Default",
+                        "path": "CreateModelCustomizationJob/DefaultTest/DeployAssert/AwsApiCallStepFunctionsstartExecutionc5cc0786542148808c24d8ebf111c7aa/Default",
                         "children": {
                           "Default": {
                             "id": "Default",
-                            "path": "InvokeModel/DefaultTest/DeployAssert/AwsApiCallStepFunctionsstartExecutionc5cc0786542148808c24d8ebf111c7aa/Default/Default",
+                            "path": "CreateModelCustomizationJob/DefaultTest/DeployAssert/AwsApiCallStepFunctionsstartExecutionc5cc0786542148808c24d8ebf111c7aa/Default/Default",
                             "constructInfo": {
                               "fqn": "aws-cdk-lib.CfnResource",
                               "version": "0.0.0"
@@ -1417,15 +1433,15 @@
                       },
                       "WaitFor": {
                         "id": "WaitFor",
-                        "path": "InvokeModel/DefaultTest/DeployAssert/AwsApiCallStepFunctionsstartExecutionc5cc0786542148808c24d8ebf111c7aa/WaitFor",
+                        "path": "CreateModelCustomizationJob/DefaultTest/DeployAssert/AwsApiCallStepFunctionsstartExecutionc5cc0786542148808c24d8ebf111c7aa/WaitFor",
                         "children": {
                           "IsCompleteProvider": {
                             "id": "IsCompleteProvider",
-                            "path": "InvokeModel/DefaultTest/DeployAssert/AwsApiCallStepFunctionsstartExecutionc5cc0786542148808c24d8ebf111c7aa/WaitFor/IsCompleteProvider",
+                            "path": "CreateModelCustomizationJob/DefaultTest/DeployAssert/AwsApiCallStepFunctionsstartExecutionc5cc0786542148808c24d8ebf111c7aa/WaitFor/IsCompleteProvider",
                             "children": {
                               "AssertionsProvider": {
                                 "id": "AssertionsProvider",
-                                "path": "InvokeModel/DefaultTest/DeployAssert/AwsApiCallStepFunctionsstartExecutionc5cc0786542148808c24d8ebf111c7aa/WaitFor/IsCompleteProvider/AssertionsProvider",
+                                "path": "CreateModelCustomizationJob/DefaultTest/DeployAssert/AwsApiCallStepFunctionsstartExecutionc5cc0786542148808c24d8ebf111c7aa/WaitFor/IsCompleteProvider/AssertionsProvider",
                                 "constructInfo": {
                                   "fqn": "constructs.Construct",
                                   "version": "10.3.0"
@@ -1433,7 +1449,7 @@
                               },
                               "Invoke": {
                                 "id": "Invoke",
-                                "path": "InvokeModel/DefaultTest/DeployAssert/AwsApiCallStepFunctionsstartExecutionc5cc0786542148808c24d8ebf111c7aa/WaitFor/IsCompleteProvider/Invoke",
+                                "path": "CreateModelCustomizationJob/DefaultTest/DeployAssert/AwsApiCallStepFunctionsstartExecutionc5cc0786542148808c24d8ebf111c7aa/WaitFor/IsCompleteProvider/Invoke",
                                 "constructInfo": {
                                   "fqn": "aws-cdk-lib.CfnResource",
                                   "version": "0.0.0"
@@ -1447,11 +1463,11 @@
                           },
                           "TimeoutProvider": {
                             "id": "TimeoutProvider",
-                            "path": "InvokeModel/DefaultTest/DeployAssert/AwsApiCallStepFunctionsstartExecutionc5cc0786542148808c24d8ebf111c7aa/WaitFor/TimeoutProvider",
+                            "path": "CreateModelCustomizationJob/DefaultTest/DeployAssert/AwsApiCallStepFunctionsstartExecutionc5cc0786542148808c24d8ebf111c7aa/WaitFor/TimeoutProvider",
                             "children": {
                               "AssertionsProvider": {
                                 "id": "AssertionsProvider",
-                                "path": "InvokeModel/DefaultTest/DeployAssert/AwsApiCallStepFunctionsstartExecutionc5cc0786542148808c24d8ebf111c7aa/WaitFor/TimeoutProvider/AssertionsProvider",
+                                "path": "CreateModelCustomizationJob/DefaultTest/DeployAssert/AwsApiCallStepFunctionsstartExecutionc5cc0786542148808c24d8ebf111c7aa/WaitFor/TimeoutProvider/AssertionsProvider",
                                 "constructInfo": {
                                   "fqn": "constructs.Construct",
                                   "version": "10.3.0"
@@ -1459,7 +1475,7 @@
                               },
                               "Invoke": {
                                 "id": "Invoke",
-                                "path": "InvokeModel/DefaultTest/DeployAssert/AwsApiCallStepFunctionsstartExecutionc5cc0786542148808c24d8ebf111c7aa/WaitFor/TimeoutProvider/Invoke",
+                                "path": "CreateModelCustomizationJob/DefaultTest/DeployAssert/AwsApiCallStepFunctionsstartExecutionc5cc0786542148808c24d8ebf111c7aa/WaitFor/TimeoutProvider/Invoke",
                                 "constructInfo": {
                                   "fqn": "aws-cdk-lib.CfnResource",
                                   "version": "0.0.0"
@@ -1473,7 +1489,7 @@
                           },
                           "Role": {
                             "id": "Role",
-                            "path": "InvokeModel/DefaultTest/DeployAssert/AwsApiCallStepFunctionsstartExecutionc5cc0786542148808c24d8ebf111c7aa/WaitFor/Role",
+                            "path": "CreateModelCustomizationJob/DefaultTest/DeployAssert/AwsApiCallStepFunctionsstartExecutionc5cc0786542148808c24d8ebf111c7aa/WaitFor/Role",
                             "constructInfo": {
                               "fqn": "aws-cdk-lib.CfnResource",
                               "version": "0.0.0"
@@ -1481,7 +1497,7 @@
                           },
                           "Resource": {
                             "id": "Resource",
-                            "path": "InvokeModel/DefaultTest/DeployAssert/AwsApiCallStepFunctionsstartExecutionc5cc0786542148808c24d8ebf111c7aa/WaitFor/Resource",
+                            "path": "CreateModelCustomizationJob/DefaultTest/DeployAssert/AwsApiCallStepFunctionsstartExecutionc5cc0786542148808c24d8ebf111c7aa/WaitFor/Resource",
                             "constructInfo": {
                               "fqn": "aws-cdk-lib.CfnResource",
                               "version": "0.0.0"
@@ -1501,11 +1517,11 @@
                   },
                   "SingletonFunction1488541a7b23466481b69b4408076b81": {
                     "id": "SingletonFunction1488541a7b23466481b69b4408076b81",
-                    "path": "InvokeModel/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81",
+                    "path": "CreateModelCustomizationJob/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81",
                     "children": {
                       "Staging": {
                         "id": "Staging",
-                        "path": "InvokeModel/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Staging",
+                        "path": "CreateModelCustomizationJob/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Staging",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.AssetStaging",
                           "version": "0.0.0"
@@ -1513,7 +1529,7 @@
                       },
                       "Role": {
                         "id": "Role",
-                        "path": "InvokeModel/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role",
+                        "path": "CreateModelCustomizationJob/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.CfnResource",
                           "version": "0.0.0"
@@ -1521,7 +1537,7 @@
                       },
                       "Handler": {
                         "id": "Handler",
-                        "path": "InvokeModel/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler",
+                        "path": "CreateModelCustomizationJob/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.CfnResource",
                           "version": "0.0.0"
@@ -1535,11 +1551,11 @@
                   },
                   "SingletonFunction76b3e830a873425f8453eddd85c86925": {
                     "id": "SingletonFunction76b3e830a873425f8453eddd85c86925",
-                    "path": "InvokeModel/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925",
+                    "path": "CreateModelCustomizationJob/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925",
                     "children": {
                       "Staging": {
                         "id": "Staging",
-                        "path": "InvokeModel/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Staging",
+                        "path": "CreateModelCustomizationJob/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Staging",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.AssetStaging",
                           "version": "0.0.0"
@@ -1547,7 +1563,7 @@
                       },
                       "Role": {
                         "id": "Role",
-                        "path": "InvokeModel/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Role",
+                        "path": "CreateModelCustomizationJob/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Role",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.CfnResource",
                           "version": "0.0.0"
@@ -1555,7 +1571,7 @@
                       },
                       "Handler": {
                         "id": "Handler",
-                        "path": "InvokeModel/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Handler",
+                        "path": "CreateModelCustomizationJob/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Handler",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.CfnResource",
                           "version": "0.0.0"
@@ -1569,11 +1585,11 @@
                   },
                   "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a": {
                     "id": "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a",
-                    "path": "InvokeModel/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a",
+                    "path": "CreateModelCustomizationJob/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a",
                     "children": {
                       "Staging": {
                         "id": "Staging",
-                        "path": "InvokeModel/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Staging",
+                        "path": "CreateModelCustomizationJob/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Staging",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.AssetStaging",
                           "version": "0.0.0"
@@ -1581,7 +1597,7 @@
                       },
                       "Role": {
                         "id": "Role",
-                        "path": "InvokeModel/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Role",
+                        "path": "CreateModelCustomizationJob/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Role",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.CfnResource",
                           "version": "0.0.0"
@@ -1589,7 +1605,7 @@
                       },
                       "Handler": {
                         "id": "Handler",
-                        "path": "InvokeModel/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Handler",
+                        "path": "CreateModelCustomizationJob/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Handler",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.CfnResource",
                           "version": "0.0.0"
@@ -1603,7 +1619,7 @@
                   },
                   "BootstrapVersion": {
                     "id": "BootstrapVersion",
-                    "path": "InvokeModel/DefaultTest/DeployAssert/BootstrapVersion",
+                    "path": "CreateModelCustomizationJob/DefaultTest/DeployAssert/BootstrapVersion",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.CfnParameter",
                       "version": "0.0.0"
@@ -1611,7 +1627,7 @@
                   },
                   "CheckBootstrapVersion": {
                     "id": "CheckBootstrapVersion",
-                    "path": "InvokeModel/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "path": "CreateModelCustomizationJob/DefaultTest/DeployAssert/CheckBootstrapVersion",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.CfnRule",
                       "version": "0.0.0"
