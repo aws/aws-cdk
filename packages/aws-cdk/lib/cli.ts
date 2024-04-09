@@ -22,7 +22,7 @@ import { CdkToolkit, AssetBuildTime } from '../lib/cdk-toolkit';
 import { realHandler as context } from '../lib/commands/context';
 import { realHandler as docs } from '../lib/commands/docs';
 import { realHandler as doctor } from '../lib/commands/doctor';
-import { MIGRATE_SUPPORTED_LANGUAGES } from '../lib/commands/migrate';
+import { MIGRATE_SUPPORTED_LANGUAGES, getMigrateScanType } from '../lib/commands/migrate';
 import { RequireApproval } from '../lib/diff';
 import { availableInitLanguages, cliInit, printAvailableTemplates } from '../lib/init';
 import { data, debug, error, print, setLogLevel, setCI } from '../lib/logging';
@@ -87,7 +87,8 @@ async function parseCommandLineArguments(args: string[]) {
     .option('no-color', { type: 'boolean', desc: 'Removes colors and other style from console output', default: false })
     .option('ci', { type: 'boolean', desc: 'Force CI detection. If CI=true then logs will be sent to stdout instead of stderr', default: process.env.CI !== undefined })
     .command(['list [STACKS..]', 'ls [STACKS..]'], 'Lists all stacks in the app', (yargs: Argv) => yargs
-      .option('long', { type: 'boolean', default: false, alias: 'l', desc: 'Display environment information for each stack' }),
+      .option('long', { type: 'boolean', default: false, alias: 'l', desc: 'Display environment information for each stack' })
+      .option('show-dependencies', { type: 'boolean', default: false, alias: 'd', desc: 'Display stack dependency information for each stack' }),
     )
     .command(['synthesize [STACKS..]', 'synth [STACKS..]'], 'Synthesizes and prints the CloudFormation template for this stack', (yargs: Argv) => yargs
       .option('exclusively', { type: 'boolean', alias: 'e', desc: 'Only synthesize requested stacks, don\'t include dependencies' })
@@ -264,7 +265,7 @@ async function parseCommandLineArguments(args: string[]) {
       .option('fail', { type: 'boolean', desc: 'Fail with exit code 1 in case of diff' })
       .option('processed', { type: 'boolean', desc: 'Whether to compare against the template with Transforms already processed', default: false })
       .option('quiet', { type: 'boolean', alias: 'q', desc: 'Do not print stack name and default message when there is no diff to stdout', default: false })
-      .option('change-set', { type: 'boolean', desc: 'Whether to create a changeset to analyze resource replacements. In this mode, diff will use the deploy role instead of the lookup role.', default: true }))
+      .option('change-set', { type: 'boolean', alias: 'changeset', desc: 'Whether to create a changeset to analyze resource replacements. In this mode, diff will use the deploy role instead of the lookup role.', default: true }))
     .command('metadata [STACK]', 'Returns all metadata associated with this stack')
     .command(['acknowledge [ID]', 'ack [ID]'], 'Acknowledge a notice so that it does not show up anymore')
     .command('notices', 'Returns a list of relevant notices')
@@ -281,6 +282,21 @@ async function parseCommandLineArguments(args: string[]) {
       .option('from-path', { type: 'string', desc: 'The path to the CloudFormation template to migrate. Use this for locally stored templates' })
       .option('from-stack', { type: 'boolean', desc: 'Use this flag to retrieve the template for an existing CloudFormation stack' })
       .option('output-path', { type: 'string', desc: 'The output path for the migrated CDK app' })
+      .option('from-scan', {
+        type: 'string',
+        desc: 'Determines if a new scan should be created, or the last successful existing scan should be used ' +
+          '\n options are "new" or "most-recent"',
+      })
+      .option('filter', {
+        type: 'array',
+        desc: 'Filters the resource scan based on the provided criteria in the following format: "key1=value1,key2=value2"' +
+          '\n This field can be passed multiple times for OR style filtering: ' +
+          '\n filtering options: ' +
+          '\n resource-identifier: A key-value pair that identifies the target resource. i.e. {"ClusterName", "myCluster"}' +
+          '\n resource-type-prefix: A string that represents a type-name prefix. i.e. "AWS::DynamoDB::"' +
+          '\n tag-key: a string that matches resources with at least one tag with the provided key. i.e. "myTagKey"' +
+          '\n tag-value: a string that matches resources with at least one tag with the provided value. i.e. "myTagValue"',
+      })
       .option('compress', { type: 'boolean', desc: 'Use this flag to zip the generated CDK app' }),
     )
     .command('context', 'Manage cached context values', (yargs: Argv) => yargs
@@ -483,7 +499,7 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
 
       case 'ls':
       case 'list':
-        return cli.list(args.STACKS, { long: args.long, json: argv.json });
+        return cli.list(args.STACKS, { long: args.long, json: argv.json, showDeps: args.showDependencies });
 
       case 'diff':
         const enableDiffNoFail = isFeatureEnabled(configuration, cxapi.ENABLE_DIFF_NO_FAIL_CONTEXT);
@@ -679,6 +695,8 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
           fromStack: args['from-stack'],
           language: args.language,
           outputPath: args['output-path'],
+          fromScan: getMigrateScanType(args['from-scan']),
+          filter: args.filter,
           account: args.account,
           region: args.region,
           compress: args.compress,

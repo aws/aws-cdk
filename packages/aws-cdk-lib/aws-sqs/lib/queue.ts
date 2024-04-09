@@ -411,7 +411,7 @@ export class Queue extends QueueBase {
       redrivePermission: props.redriveAllowPolicy.redrivePermission
       // When `sourceQueues` is provided in `redriveAllowPolicy`, `redrivePermission` defaults to allow specified queues (`BY_QUEUE`);
       // otherwise, it defaults to allow all queues (`ALLOW_ALL`).
-        ?? props.redriveAllowPolicy.sourceQueues ? RedrivePermission.BY_QUEUE : RedrivePermission.ALLOW_ALL,
+        ?? (props.redriveAllowPolicy.sourceQueues ? RedrivePermission.BY_QUEUE : RedrivePermission.ALLOW_ALL),
       sourceQueueArns: props.redriveAllowPolicy.sourceQueues?.map(q => q.queueArn),
     } : undefined;
 
@@ -445,9 +445,9 @@ export class Queue extends QueueBase {
     this.encryptionType = encryptionType;
 
     function _determineEncryptionProps(this: Queue): {
-      encryptionProps: EncryptionProps,
-      encryptionMasterKey?: kms.IKey,
-      encryptionType: QueueEncryption | undefined
+      encryptionProps: EncryptionProps;
+      encryptionMasterKey?: kms.IKey;
+      encryptionType: QueueEncryption | undefined;
     } {
       let encryption = props.encryption;
 

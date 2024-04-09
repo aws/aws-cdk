@@ -24,7 +24,7 @@ export interface ProductStackHistoryProps {
   /**
    * If this is set to true, the ProductStack will not be overwritten if a snapshot is found for the currentVersionName.
    */
-  readonly currentVersionLocked: boolean
+  readonly currentVersionLocked: boolean;
 
   /**
    * The description of the product version
@@ -43,7 +43,7 @@ export interface ProductStackHistoryProps {
    * The directory where template snapshots will be stored
    * @default 'product-stack-snapshots'
    */
-  readonly directory?: string
+  readonly directory?: string;
 }
 
 /**

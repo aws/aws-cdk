@@ -175,6 +175,18 @@ new route53.ARecord(this, 'ARecordLatency1', {
 });
 ```
 
+To enable [multivalue answer routing](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/routing-policy-multivalue.html), use the `multivalueAnswer` parameter:
+
+```ts
+declare const myZone: route53.HostedZone;
+
+new route53.ARecord(this, 'ARecordMultiValue1', {
+  zone: myZone,
+  target: route53.RecordTarget.fromIpAddresses('1.2.3.4'),
+  multiValueAnswer: true,
+});
+```
+
 To specify a unique identifier to differentiate among multiple resource record sets that have the same combination of name and type, use the `setIdentifier` parameter:
 
 ```ts
@@ -290,6 +302,35 @@ new route53.CrossAccountZoneDelegationRecord(this, 'delegate', {
   delegatedZone: subZone,
   parentHostedZoneName: 'someexample.com', // or you can use parentHostedZoneId
   delegationRole,
+});
+```
+
+Delegating the hosted zone requires assuming a role in the parent hosted zone's account.
+In order for the assumed credentials to be valid, the resource must assume the role using
+an STS endpoint in a region where both the subdomain's account and the parent's account
+are opted-in. By default, this region is determined automatically, but if you need to
+change the region used for the AssumeRole call, specify `assumeRoleRegion`:
+
+```ts
+const subZone = new route53.PublicHostedZone(this, 'SubZone', {
+  zoneName: 'sub.someexample.com',
+});
+
+// import the delegation role by constructing the roleArn
+const delegationRoleArn = Stack.of(this).formatArn({
+  region: '', // IAM is global in each partition
+  service: 'iam',
+  account: 'parent-account-id',
+  resource: 'role',
+  resourceName: 'MyDelegationRole',
+});
+const delegationRole = iam.Role.fromRoleArn(this, 'DelegationRole', delegationRoleArn);
+
+new route53.CrossAccountZoneDelegationRecord(this, 'delegate', {
+  delegatedZone: subZone,
+  parentHostedZoneName: 'someexample.com', // or you can use parentHostedZoneId
+  delegationRole,
+  assumeRoleRegion: "us-east-1",
 });
 ```
 

@@ -19,7 +19,7 @@ export interface ServiceManagedVolumeProps {
   *
   * @default - undefined
   */
-  readonly managedEBSVolume?: ServiceManagedEBSVolumeConfiguration
+  readonly managedEBSVolume?: ServiceManagedEBSVolumeConfiguration;
 }
 
 /**
@@ -296,7 +296,7 @@ export class ServiceManagedVolume extends Construct {
     }
 
     // Validate IOPS range if specified.
-    const iopsRanges: { [key: string]: { min: number, max: number } } = {};
+    const iopsRanges: { [key: string]: { min: number; max: number } } = {};
     iopsRanges[ec2.EbsDeviceVolumeType.GP3]= { min: 3000, max: 16000 };
     iopsRanges[ec2.EbsDeviceVolumeType.IO1]= { min: 100, max: 64000 };
     iopsRanges[ec2.EbsDeviceVolumeType.IO2]= { min: 100, max: 256000 };

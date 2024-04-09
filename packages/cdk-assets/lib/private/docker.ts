@@ -43,7 +43,7 @@ export interface DockerDomainCredentials {
 
 enum InspectImageErrorCode {
   Docker = 1,
-  Podman = 125
+  Podman = 125,
 }
 
 export interface DockerCacheOption {

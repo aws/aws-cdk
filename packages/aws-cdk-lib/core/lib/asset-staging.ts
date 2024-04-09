@@ -34,7 +34,7 @@ interface StagedAsset {
   /**
    * The packaging of the asset
    */
-  readonly packaging: FileAssetPackaging,
+  readonly packaging: FileAssetPackaging;
 
   /**
    * Whether this asset is an archive
@@ -610,9 +610,9 @@ function findSingleFile(directory: string, archiveOnly: boolean): string | undef
 }
 
 interface BundledAsset {
-  path: string,
-  packaging: FileAssetPackaging,
-  extension?: string
+  path: string;
+  packaging: FileAssetPackaging;
+  extension?: string;
 }
 
 /**

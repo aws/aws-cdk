@@ -28,7 +28,7 @@ export enum IpPreference {
    * Use IPv6 when sending traffic to a local application.
    * First attempt to use IPv6 and fall back to IPv4 for service discovery.
    */
-  IPV6_PREFERRED = 'IPv6_PREFERRED'
+  IPV6_PREFERRED = 'IPv6_PREFERRED',
 }
 
 /**

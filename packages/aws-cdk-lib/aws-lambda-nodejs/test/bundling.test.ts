@@ -245,6 +245,7 @@ test('esbuild bundling with esbuild options', () => {
       '--resolve-extensions': '.ts,.js',
       '--splitting': true,
       '--keep-names': '',
+      '--out-extension': '.js=.mjs',
     },
   });
 
@@ -264,7 +265,7 @@ test('esbuild bundling with esbuild options', () => {
           '--log-level=silent --keep-names --tsconfig=/asset-input/lib/custom-tsconfig.ts',
           '--metafile=/asset-output/index.meta.json --banner:js="/* comments */" --footer:js="/* comments */"',
           '--main-fields=module,main --inject:./my-shim.js',
-          '--log-limit="0" --resolve-extensions=".ts,.js" --splitting --keep-names',
+          '--log-limit="0" --resolve-extensions=".ts,.js" --splitting --keep-names --out-extension:".js=.mjs"',
         ].join(' '),
       ],
     }),
@@ -328,6 +329,28 @@ test('esbuild bundling without aws-sdk v3 when use greater than or equal Runtime
       command: [
         'bash', '-c',
         `esbuild --bundle "/asset-input/lib/handler.ts" --target=${STANDARD_TARGET} --platform=node --outfile="/asset-output/index.js" --external:@aws-sdk/*`,
+      ],
+    }),
+  });
+});
+
+test('esbuild bundling includes aws-sdk', () => {
+  Bundling.bundle(stack, {
+    entry,
+    projectRoot,
+    depsLockFilePath,
+    runtime: Runtime.NODEJS_18_X,
+    architecture: Architecture.X86_64,
+    bundleAwsSDK: true,
+  });
+
+  // Correctly bundles with esbuild
+  expect(Code.fromAsset).toHaveBeenCalledWith(path.dirname(depsLockFilePath), {
+    assetHashType: AssetHashType.OUTPUT,
+    bundling: expect.objectContaining({
+      command: [
+        'bash', '-c',
+        `esbuild --bundle "/asset-input/lib/handler.ts" --target=${STANDARD_TARGET} --platform=node --outfile="/asset-output/index.js"`,
       ],
     }),
   });
@@ -626,7 +649,7 @@ test('esbuild bundling with projectRoot', () => {
 });
 
 test('esbuild bundling with projectRoot and externals and dependencies', () => {
-  const repoRoot = path.join(__dirname, '../../../..');
+  const repoRoot = path.join(__dirname, '..', '..', '..', '..');
   const packageLock = path.join(repoRoot, 'common', 'package-lock.json');
   Bundling.bundle(stack, {
     entry: __filename,

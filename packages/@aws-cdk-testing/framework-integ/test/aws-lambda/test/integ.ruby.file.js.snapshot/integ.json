@@ -1,12 +1,13 @@
 {
-  "version": "32.0.0",
+  "version": "36.0.0",
   "testCases": {
-    "IntegTest/DefaultTest": {
+    "RubyRuntimeTest/DefaultTest": {
       "stacks": [
-        "lambda-test-assets-file"
+        "lambda-test-assets-file-for-ruby32",
+        "lambda-test-assets-file-for-ruby33"
       ],
-      "assertionStack": "IntegTest/DefaultTest/DeployAssert",
-      "assertionStackName": "IntegTestDefaultTestDeployAssertE3E7D2A4"
+      "assertionStack": "RubyRuntimeTest/DefaultTest/DeployAssert",
+      "assertionStackName": "RubyRuntimeTestDefaultTestDeployAssert42E8EBE5"
     }
   }
 }

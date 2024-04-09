@@ -14,7 +14,7 @@ export interface IGatewayRoute extends cdk.IResource {
    *
    * @attribute
    */
-  readonly gatewayRouteName: string,
+  readonly gatewayRouteName: string;
 
   /**
    * The Amazon Resource Name (ARN) for the GatewayRoute

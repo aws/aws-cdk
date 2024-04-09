@@ -9,7 +9,7 @@ let stderrMock: jest.SpyInstance;
 let pool: workerpool.WorkerPool;
 let spawnSyncMock: jest.SpyInstance;
 beforeAll(() => {
-  pool = workerpool.pool(path.join(__dirname, './mock-extract_worker.js'));
+  pool = workerpool.pool(path.join(__dirname, 'mock-extract_worker.js'));
 });
 beforeEach(() => {
   jest.spyOn(fs, 'moveSync').mockImplementation(() => { return true; });

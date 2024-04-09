@@ -2,9 +2,11 @@ import { Connections, IConnectable } from './connections';
 import { Instance } from './instance';
 import { InstanceType } from './instance-types';
 import { IKeyPair } from './key-pair';
-import { IMachineImage, LookupMachineImage } from './machine-image';
+import { CpuCredits } from './launch-template';
+import { AmazonLinuxGeneration, AmazonLinuxImage, IMachineImage, LookupMachineImage } from './machine-image';
 import { Port } from './port';
 import { ISecurityGroup, SecurityGroup } from './security-group';
+import { UserData } from './user-data';
 import { PrivateSubnet, PublicSubnet, RouterType, Vpc } from './vpc';
 import * as iam from '../../aws-iam';
 import { Fn, Token } from '../../core';
@@ -37,12 +39,12 @@ export interface GatewayConfig {
   /**
    * Availability Zone
    */
-  readonly az: string
+  readonly az: string;
 
   /**
    * Identity of gateway spawned by the provider
    */
-  readonly gatewayId: string
+  readonly gatewayId: string;
 }
 
 /**
@@ -75,9 +77,27 @@ export abstract class NatProvider {
    * your own NatProvider based on AutoScaling groups if you need that.
    *
    * @see https://docs.aws.amazon.com/vpc/latest/userguide/VPC_NAT_Instance.html
+   *
+   * @deprecated use instanceV2. 'instance' is deprecated since NatInstanceProvider
+   * uses a instance image that has reached EOL on Dec 31 2023
    */
   public static instance(props: NatInstanceProps): NatInstanceProvider {
     return new NatInstanceProvider(props);
+  }
+
+  /**
+   * Use NAT instances to provide NAT services for your VPC
+   *
+   * NAT instances are managed by you, but in return allow more configuration.
+   *
+   * Be aware that instances created using this provider will not be
+   * automatically replaced if they are stopped for any reason. You should implement
+   * your own NatProvider based on AutoScaling groups if you need that.
+   *
+   * @see https://docs.aws.amazon.com/vpc/latest/userguide/VPC_NAT_Instance.html
+   */
+  public static instanceV2(props: NatInstanceProps): NatInstanceProviderV2 {
+    return new NatInstanceProviderV2(props);
   }
 
   /**
@@ -218,6 +238,22 @@ export interface NatInstanceProps {
    * @default NatTrafficDirection.INBOUND_AND_OUTBOUND
    */
   readonly defaultAllowedTraffic?: NatTrafficDirection;
+
+  /**
+   * Specifying the CPU credit type for burstable EC2 instance types (T2, T3, T3a, etc).
+   * The unlimited CPU credit option is not supported for T3 instances with dedicated host (`host`) tenancy.
+   *
+   * @default - T2 instances are standard, while T3, T4g, and T3a instances are unlimited.
+   */
+  readonly creditSpecification?: CpuCredits;
+
+  /**
+   * Custom user data to run on the NAT instances
+   *
+   * @default UserData.forLinux().addCommands(...NatInstanceProviderV2.DEFAULT_USER_DATA_COMMANDS);  - Appropriate user data commands to initialize and configure the NAT instances
+   * @see https://docs.aws.amazon.com/vpc/latest/userguide/VPC_NAT_Instance.html#create-nat-ami
+   */
+  readonly userData?: UserData;
 }
 
 /**
@@ -271,6 +307,9 @@ class NatGatewayProvider extends NatProvider {
 
 /**
  * NAT provider which uses NAT Instances
+ *
+ * @deprecated use NatInstanceProviderV2. NatInstanceProvider is deprecated since
+ * the instance image used has reached EOL on Dec 31 2023
  */
 export class NatInstanceProvider extends NatProvider implements IConnectable {
   private gateways: PrefSet<Instance> = new PrefSet<Instance>();
@@ -294,7 +333,7 @@ export class NatInstanceProvider extends NatProvider implements IConnectable {
       (this.props.allowAllTraffic ?? true ? NatTrafficDirection.INBOUND_AND_OUTBOUND : NatTrafficDirection.OUTBOUND_ONLY);
 
     // Create the NAT instances. They can share a security group and a Role.
-    const machineImage = this.props.machineImage || new NatInstanceImage();
+    const machineImage = this.props.machineImage ?? new NatInstanceImage();
     this._securityGroup = this.props.securityGroup ?? new SecurityGroup(options.vpc, 'NatSecurityGroup', {
       vpc: options.vpc,
       description: 'Security Group for NAT instances',
@@ -323,6 +362,7 @@ export class NatInstanceProvider extends NatProvider implements IConnectable {
         role,
         keyPair: this.props.keyPair,
         keyName: this.props.keyName,
+        creditSpecification: this.props.creditSpecification,
       });
       // NAT instance routes all traffic, both ways
       this.gateways.add(sub.availabilityZone, natInstance);
@@ -396,6 +436,133 @@ class PrefSet<A> {
 
   public values(): Array<[string, A]> {
     return this.vals;
+  }
+}
+
+/**
+ * Modern NAT provider which uses NAT Instances.
+ * The instance uses Amazon Linux 2023 as the operating system.
+ */
+export class NatInstanceProviderV2 extends NatProvider implements IConnectable {
+  /**
+   * Amazon Linux 2023 NAT instance user data commands
+   * Enable iptables on the instance, enable persistent IP forwarding, configure NAT on instance
+   * @see https://docs.aws.amazon.com/vpc/latest/userguide/VPC_NAT_Instance.html#create-nat-ami
+   */
+  public static readonly DEFAULT_USER_DATA_COMMANDS = [
+    'yum install iptables-services -y',
+    'systemctl enable iptables',
+    'systemctl start iptables',
+    'echo "net.ipv4.ip_forward=1" > /etc/sysctl.d/custom-ip-forwarding.conf',
+    'sudo sysctl -p /etc/sysctl.d/custom-ip-forwarding.conf',
+    "sudo /sbin/iptables -t nat -A POSTROUTING -o $(route | awk '/^default/{print $NF}') -j MASQUERADE",
+    'sudo /sbin/iptables -F FORWARD',
+    'sudo service iptables save',
+  ];
+
+  private gateways: PrefSet<Instance> = new PrefSet<Instance>();
+  private _securityGroup?: ISecurityGroup;
+  private _connections?: Connections;
+
+  /**
+   * Array of gateway instances spawned by the provider after internal configuration
+   */
+  public get gatewayInstances(): Instance[] {
+    return this.gateways.values().map(([, instance]) => instance);
+  }
+
+  constructor(private readonly props: NatInstanceProps) {
+    super();
+
+    if (props.defaultAllowedTraffic !== undefined && props.allowAllTraffic !== undefined) {
+      throw new Error('Can not specify both of \'defaultAllowedTraffic\' and \'defaultAllowedTraffic\'; prefer \'defaultAllowedTraffic\'');
+    }
+
+    if (props.keyName && props.keyPair) {
+      throw new Error('Cannot specify both of \'keyName\' and \'keyPair\'; prefer \'keyPair\'');
+    }
+  }
+
+  public configureNat(options: ConfigureNatOptions) {
+    const defaultDirection = this.props.defaultAllowedTraffic ??
+      (this.props.allowAllTraffic ?? true ? NatTrafficDirection.INBOUND_AND_OUTBOUND : NatTrafficDirection.OUTBOUND_ONLY);
+
+    // Create the NAT instances. They can share a security group and a Role. The new NAT instance created uses latest
+    // Amazon Linux 2023 image. This is important since the original NatInstanceProvider uses an instance image that has
+    // reached EOL on Dec 31 2023
+    const machineImage = this.props.machineImage || new AmazonLinuxImage({ generation: AmazonLinuxGeneration.AMAZON_LINUX_2023 });
+    this._securityGroup = this.props.securityGroup ?? new SecurityGroup(options.vpc, 'NatSecurityGroup', {
+      vpc: options.vpc,
+      description: 'Security Group for NAT instances',
+      allowAllOutbound: isOutboundAllowed(defaultDirection),
+    });
+    this._connections = new Connections({ securityGroups: [this._securityGroup] });
+
+    if (isInboundAllowed(defaultDirection)) {
+      this.connections.allowFromAnyIpv4(Port.allTraffic());
+    }
+
+    let userData = this.props.userData;
+    if (!userData) {
+      userData = UserData.forLinux();
+      userData.addCommands(...NatInstanceProviderV2.DEFAULT_USER_DATA_COMMANDS);
+    }
+
+    for (const sub of options.natSubnets) {
+      const natInstance = new Instance(sub, 'NatInstance', {
+        instanceType: this.props.instanceType,
+        machineImage,
+        sourceDestCheck: false, // Required for NAT
+        vpc: options.vpc,
+        vpcSubnets: { subnets: [sub] },
+        securityGroup: this._securityGroup,
+        keyPair: this.props.keyPair,
+        keyName: this.props.keyName,
+        creditSpecification: this.props.creditSpecification,
+        userData,
+      });
+      // NAT instance routes all traffic, both ways
+      this.gateways.add(sub.availabilityZone, natInstance);
+    }
+
+    // Add routes to them in the private subnets
+    for (const sub of options.privateSubnets) {
+      this.configureSubnet(sub);
+    }
+  }
+
+  /**
+   * The Security Group associated with the NAT instances
+   */
+  public get securityGroup(): ISecurityGroup {
+    if (!this._securityGroup) {
+      throw new Error('Pass the NatInstanceProvider to a Vpc before accessing \'securityGroup\'');
+    }
+    return this._securityGroup;
+  }
+
+  /**
+   * Manage the Security Groups associated with the NAT instances
+   */
+  public get connections(): Connections {
+    if (!this._connections) {
+      throw new Error('Pass the NatInstanceProvider to a Vpc before accessing \'connections\'');
+    }
+    return this._connections;
+  }
+
+  public get configuredGateways(): GatewayConfig[] {
+    return this.gateways.values().map(x => ({ az: x[0], gatewayId: x[1].instanceId }));
+  }
+
+  public configureSubnet(subnet: PrivateSubnet) {
+    const az = subnet.availabilityZone;
+    const gatewayId = this.gateways.pick(az).instanceId;
+    subnet.addRoute('DefaultRoute', {
+      routerType: RouterType.INSTANCE,
+      routerId: gatewayId,
+      enablesInternetConnectivity: true,
+    });
   }
 }
 

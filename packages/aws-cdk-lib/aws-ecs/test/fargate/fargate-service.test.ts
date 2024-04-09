@@ -1353,6 +1353,8 @@ describe('fargate service', () => {
               ingressPortOverride: 1000,
               port: 80,
               dnsName: 'api',
+              idleTimeout: cdk.Duration.seconds(10),
+              perRequestTimeout: cdk.Duration.seconds(10),
             },
           ],
           namespace: 'cool',
@@ -1376,6 +1378,10 @@ describe('fargate service', () => {
                     DnsName: 'api',
                   },
                 ],
+                Timeout: {
+                  IdleTimeoutSeconds: 10,
+                  PerRequestTimeoutSeconds: 10,
+                },
               },
             ],
             LogConfiguration: {
@@ -1386,6 +1392,139 @@ describe('fargate service', () => {
             },
           },
         });
+      });
+
+      test('can set idleTimeout without perRequestTimeout', () => {
+        // WHEN
+        new cloudmap.HttpNamespace(stack, 'httpnamespace', {
+          name: 'cool',
+        });
+        service.enableServiceConnect({
+          services: [
+            {
+              portMappingName: 'api',
+              idleTimeout: cdk.Duration.seconds(10),
+            },
+          ],
+          namespace: 'cool',
+        });
+
+        Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+          ServiceConnectConfiguration: {
+            Enabled: true,
+            Namespace: 'cool',
+            Services: [
+              {
+                PortName: 'api',
+                Timeout: {
+                  IdleTimeoutSeconds: 10,
+                  PerRequestTimeoutSeconds: Match.absent(),
+                },
+              },
+            ],
+          },
+        });
+      });
+
+      test('can set perRequestTimeout without idleTimeout', () => {
+        // WHEN
+        new cloudmap.HttpNamespace(stack, 'httpnamespace', {
+          name: 'cool',
+        });
+        service.enableServiceConnect({
+          services: [
+            {
+              portMappingName: 'api',
+              perRequestTimeout: cdk.Duration.seconds(10),
+            },
+          ],
+          namespace: 'cool',
+        });
+
+        Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+          ServiceConnectConfiguration: {
+            Enabled: true,
+            Namespace: 'cool',
+            Services: [
+              {
+                PortName: 'api',
+                Timeout: {
+                  IdleTimeoutSeconds: Match.absent(),
+                  PerRequestTimeoutSeconds: 10,
+                },
+              },
+            ],
+          },
+        });
+      });
+
+      test('can set idleTimeout and perRequestTimeout to 0', () => {
+        // WHEN
+        new cloudmap.HttpNamespace(stack, 'httpnamespace', {
+          name: 'cool',
+        });
+        service.enableServiceConnect({
+          services: [
+            {
+              portMappingName: 'api',
+              idleTimeout: cdk.Duration.seconds(0),
+              perRequestTimeout: cdk.Duration.seconds(0),
+            },
+          ],
+          namespace: 'cool',
+        });
+
+        Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+          ServiceConnectConfiguration: {
+            Enabled: true,
+            Namespace: 'cool',
+            Services: [
+              {
+                PortName: 'api',
+                Timeout: {
+                  IdleTimeoutSeconds: 0,
+                  PerRequestTimeoutSeconds: 0,
+                },
+              },
+            ],
+          },
+        });
+      });
+
+      test('throws if idleTimeout is less than 1 second and not 0', () => {
+        // WHEN
+        new cloudmap.HttpNamespace(stack, 'httpnamespace', {
+          name: 'cool',
+        });
+        expect(() => {
+          service.enableServiceConnect({
+            services: [
+              {
+                portMappingName: 'api',
+                idleTimeout: cdk.Duration.millis(10),
+              },
+            ],
+            namespace: 'cool',
+          });
+        }).toThrow(/idleTimeout must be at least 1 second or 0 to disable it, got 10ms./);
+      });
+
+      test('throws if perRequestTimeout is less than 1 second and not 0', () => {
+        // WHEN
+        new cloudmap.HttpNamespace(stack, 'httpnamespace', {
+          name: 'cool',
+        });
+        expect(() => {
+          service.enableServiceConnect({
+            services: [
+              {
+                portMappingName: 'api',
+                perRequestTimeout: cdk.Duration.millis(10),
+              },
+            ],
+            namespace: 'cool',
+          });
+        }).toThrow(/perRequestTimeout must be at least 1 second or 0 to disable it, got 10ms./);
       });
 
       test('with no alias name', () => {

@@ -509,8 +509,8 @@ export class Metric implements IMetric {
     }
 
     var dimsArray = Object.keys(dims);
-    if (dimsArray?.length > 10) {
-      throw new Error(`The maximum number of dimensions is 10, received ${dimsArray.length}`);
+    if (dimsArray?.length > 30) {
+      throw new Error(`The maximum number of dimensions is 30, received ${dimsArray.length}`);
     }
 
     dimsArray.map(key => {
@@ -625,7 +625,7 @@ export class MathExpression implements IMetric {
     const missingIdentifiers = allIdentifiersInExpression(this.expression).filter(i => !this.usingMetrics[i]);
 
     const warnings: { [id: string]: string } = {};
-    if (!this.expression.toUpperCase().match('\\s*SELECT|SEARCH|METRICS\\s.*') && missingIdentifiers.length > 0) {
+    if (!this.expression.toUpperCase().match('\\s*INSIGHT_RULE_METRIC|SELECT|SEARCH|METRICS\\s.*') && missingIdentifiers.length > 0) {
       warnings['CloudWatch:Math:UnknownIdentifier'] = `Math expression '${this.expression}' references unknown identifiers: ${missingIdentifiers.join(', ')}. Please add them to the 'usingMetrics' map.`;
     }
 

@@ -21,7 +21,9 @@ const app = new cdk.App();
 
 const stack = new cdk.Stack(app, 'aws-glue-job');
 
-const script = glue.Code.fromAsset(path.join(__dirname, 'job-script/hello_world.py'));
+const script = glue.Code.fromAsset(path.join(__dirname, 'job-script', 'hello_world.py'));
+const scriptResolveOptions = glue.Code.fromAsset(path.join(__dirname, 'job-script', 'resolve_options.py'));
+const moduleUtils = glue.Code.fromAsset(path.join(__dirname, 'module', 'utils.zip'));
 
 [glue.GlueVersion.V2_0, glue.GlueVersion.V3_0, glue.GlueVersion.V4_0].forEach((glueVersion) => {
   const etlJob = new glue.Job(stack, 'EtlJob' + glueVersion.name, {
@@ -69,6 +71,9 @@ const script = glue.Code.fromAsset(path.join(__dirname, 'job-script/hello_world.
       arg1: 'value1',
       arg2: 'value2',
     },
+    sparkUI: {
+      enabled: true,
+    },
     tags: {
       key: 'value',
     },
@@ -113,7 +118,8 @@ new glue.Job(stack, 'RayJob', {
     glueVersion: glue.GlueVersion.V4_0,
     pythonVersion: glue.PythonVersion.THREE_NINE,
     runtime: glue.Runtime.RAY_TWO_FOUR,
-    script,
+    s3PythonModules: [moduleUtils],
+    script: scriptResolveOptions,
   }),
   workerType: glue.WorkerType.Z_2X,
   workerCount: 2,

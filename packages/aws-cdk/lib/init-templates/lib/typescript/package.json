@@ -9,13 +9,13 @@
     "test": "jest"
   },
   "devDependencies": {
-    "@types/jest": "^29.5.11",
-    "@types/node": "20.11.6",
+    "@types/jest": "^29.5.12",
+    "@types/node": "20.11.30",
     "aws-cdk-lib": "%cdk-version%",
     "constructs": "%constructs-version%",
     "jest": "^29.7.0",
     "ts-jest": "^29.1.2",
-    "typescript": "~5.3.3"
+    "typescript": "~5.4.3"
   },
   "peerDependencies": {
     "aws-cdk-lib": "%cdk-version%",

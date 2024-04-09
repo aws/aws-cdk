@@ -692,7 +692,7 @@ export class Volume extends VolumeBase {
       }
       // Enforce minimum & maximum IOPS:
       // https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-volume.html
-      const iopsRanges: { [key: string]: { Min: number, Max: number } } = {};
+      const iopsRanges: { [key: string]: { Min: number; Max: number } } = {};
       iopsRanges[EbsDeviceVolumeType.GENERAL_PURPOSE_SSD_GP3] = { Min: 3000, Max: 16000 };
       iopsRanges[EbsDeviceVolumeType.PROVISIONED_IOPS_SSD] = { Min: 100, Max: 64000 };
       iopsRanges[EbsDeviceVolumeType.PROVISIONED_IOPS_SSD_IO2] = { Min: 100, Max: 256000 };
@@ -740,7 +740,7 @@ export class Volume extends VolumeBase {
       const size = props.size.toGibibytes({ rounding: SizeRoundingBehavior.FAIL });
       // Enforce minimum & maximum volume size:
       // https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-volume.html
-      const sizeRanges: { [key: string]: { Min: number, Max: number } } = {};
+      const sizeRanges: { [key: string]: { Min: number; Max: number } } = {};
       sizeRanges[EbsDeviceVolumeType.GENERAL_PURPOSE_SSD] = { Min: 1, Max: 16384 };
       sizeRanges[EbsDeviceVolumeType.GENERAL_PURPOSE_SSD_GP3] = { Min: 1, Max: 16384 };
       sizeRanges[EbsDeviceVolumeType.PROVISIONED_IOPS_SSD] = { Min: 4, Max: 16384 };

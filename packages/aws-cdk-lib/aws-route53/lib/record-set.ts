@@ -125,7 +125,7 @@ export enum RecordType {
    *
    * @see https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/ResourceRecordTypes.html#TXTFormat
    */
-  TXT = 'TXT'
+  TXT = 'TXT',
 }
 
 /**
@@ -216,6 +216,13 @@ export interface RecordSetOptions {
   readonly region?: string;
 
   /**
+   * Whether to return multiple values, such as IP addresses for your web servers, in response to DNS queries.
+   *
+   * @default false
+   */
+  readonly multiValueAnswer?: boolean;
+
+  /**
    * A string used to distinguish between different records with the same combination of DNS name and type.
    * It can only be set when either weight or geoLocation is defined.
    *
@@ -284,6 +291,7 @@ export class RecordSet extends Resource implements IRecordSet {
   private readonly geoLocation?: GeoLocation;
   private readonly weight?: number;
   private readonly region?: string;
+  private readonly multiValueAnswer?: boolean;
 
   constructor(scope: Construct, id: string, props: RecordSetProps) {
     super(scope, id);
@@ -294,18 +302,27 @@ export class RecordSet extends Resource implements IRecordSet {
     if (props.setIdentifier && (props.setIdentifier.length < 1 || props.setIdentifier.length > 128)) {
       throw new Error(`setIdentifier must be between 1 and 128 characters long, got: ${props.setIdentifier.length}`);
     }
-    if (props.setIdentifier && !props.weight && !props.geoLocation && !props.region) {
+    if (props.setIdentifier && props.weight === undefined && !props.geoLocation && !props.region && !props.multiValueAnswer) {
       throw new Error('setIdentifier can only be specified for non-simple routing policies');
     }
+    if (props.multiValueAnswer && props.target.aliasTarget) {
+      throw new Error('multiValueAnswer cannot be specified for alias record');
+    }
 
-    let nonSimpleRoutingPolicies = [props.geoLocation, props.region, props.weight].filter((variable) => variable !== undefined).length;
+    const nonSimpleRoutingPolicies = [
+      props.geoLocation,
+      props.region,
+      props.weight,
+      props.multiValueAnswer,
+    ].filter((variable) => variable !== undefined).length;
     if (nonSimpleRoutingPolicies > 1) {
-      throw new Error('Only one of region, weight, or geoLocation can be defined');
+      throw new Error('Only one of region, weight, multiValueAnswer or geoLocation can be defined');
     }
 
     this.geoLocation = props.geoLocation;
     this.weight = props.weight;
     this.region = props.region;
+    this.multiValueAnswer = props.multiValueAnswer;
 
     const ttl = props.target.aliasTarget ? undefined : ((props.ttl && props.ttl.toSeconds()) ?? 1800).toString();
 
@@ -324,6 +341,7 @@ export class RecordSet extends Resource implements IRecordSet {
         countryCode: props.geoLocation.countryCode,
         subdivisionCode: props.geoLocation.subdivisionCode,
       } : undefined,
+      multiValueAnswer: props.multiValueAnswer,
       setIdentifier: props.setIdentifier ?? this.configureSetIdentifier(),
       weight: props.weight,
       region: props.region,
@@ -387,13 +405,18 @@ export class RecordSet extends Resource implements IRecordSet {
       return identifier;
     }
 
-    if (this.weight) {
+    if (this.weight !== undefined) {
       const idPrefix = `WEIGHT_${this.weight}_ID_`;
       return this.createIdentifier(idPrefix);
     }
 
     if (this.region) {
       const idPrefix= `REGION_${this.region}_ID_`;
+      return this.createIdentifier(idPrefix);
+    }
+
+    if (this.multiValueAnswer) {
+      const idPrefix = 'MVA_ID_';
       return this.createIdentifier(idPrefix);
     }
 
@@ -836,6 +859,13 @@ export interface CrossAccountZoneDelegationRecordProps {
    * @default RemovalPolicy.DESTROY
    */
   readonly removalPolicy?: RemovalPolicy;
+
+  /**
+   * Region from which to obtain temporary credentials.
+   *
+   * @default - the Route53 signing region in the current partition
+   */
+  readonly assumeRoleRegion?: string;
 }
 
 /**
@@ -874,6 +904,7 @@ export class CrossAccountZoneDelegationRecord extends Construct {
         DelegatedZoneName: props.delegatedZone.zoneName,
         DelegatedZoneNameServers: props.delegatedZone.hostedZoneNameServers!,
         TTL: (props.ttl || Duration.days(2)).toSeconds(),
+        AssumeRoleRegion: props.assumeRoleRegion,
       },
     });
 

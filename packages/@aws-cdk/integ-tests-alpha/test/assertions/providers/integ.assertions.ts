@@ -12,6 +12,11 @@ const ssmParameter = new CfnResource(stack, 'Utf8Parameter', {
   },
 });
 
+const queue = new CfnResource(stack, 'Queue', {
+  type: 'AWS::SQS::Queue',
+  properties: {},
+});
+
 const integ = new IntegTest(app, 'AssertionsTest', {
   testCases: [stack],
 });
@@ -40,4 +45,60 @@ const secondAssertion = integ.assertions.awsApiCall('SSM', 'getParameter', {
   }),
 );
 
-firstAssertion.next(secondAssertion);
+// use v3 package name and command class name
+const thirdAssertion = integ.assertions.awsApiCall('@aws-sdk/client-ssm', 'GetParameterCommand', {
+  Name: ssmParameter.ref,
+  WithDecryption: true,
+}).expect(
+  ExpectedResult.objectLike({
+    Parameter: {
+      Type: 'String',
+      Value: 'ABCDEFGHIJKLMNOPQRSTUVWXYZÅÄÖ!"#¤%&/()=?`´^*+~_-.,:;<>|',
+    },
+  }),
+);
+
+// use v3 client name and command class name
+const forthAssertion = integ.assertions.awsApiCall('ssm', 'GetParameterCommand', {
+  Name: ssmParameter.ref,
+  WithDecryption: true,
+}).expect(
+  ExpectedResult.objectLike({
+    Parameter: {
+      Type: 'String',
+      Value: 'ABCDEFGHIJKLMNOPQRSTUVWXYZÅÄÖ!"#¤%&/()=?`´^*+~_-.,:;<>|',
+    },
+  }),
+);
+
+const metricAssertion = integ.assertions.awsApiCall('CloudWatch', 'getMetricData', {
+  MetricDataQueries: [
+    {
+      Id: 'id1',
+      MetricStat: {
+        Metric: {
+          Namespace: 'AWS/SQS',
+          MetricName: 'NumberOfMessagesReceived',
+          Dimensions: [
+            {
+              Name: 'QueueName',
+              Value: queue.getAtt('QueueName').toString(),
+            },
+          ],
+        },
+        Period: 60,
+        Stat: 'Sum',
+      },
+      ReturnData: true,
+    },
+  ],
+  StartTime: new Date(Date.now() - 24 * 60 * 60 * 1000),
+  EndTime: new Date(),
+});
+metricAssertion.provider.addToRolePolicy({
+  Effect: 'Allow',
+  Action: ['cloudwatch:GetMetricData'],
+  Resource: ['*'],
+});
+
+firstAssertion.next(secondAssertion).next(thirdAssertion).next(forthAssertion).next(metricAssertion);

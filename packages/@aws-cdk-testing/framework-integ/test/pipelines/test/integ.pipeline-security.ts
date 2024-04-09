@@ -44,6 +44,7 @@ export class TestCdkStack extends Stack {
     });
 
     const pipeline = new cdkp.CdkPipeline(this, 'TestPipeline', {
+      crossAccountKeys: true,
       selfMutating: false,
       pipelineName: 'TestPipeline',
       cloudAssemblyArtifact,
@@ -97,8 +98,9 @@ export class TestCdkStack extends Stack {
 }
 
 const app = new App({
-  context: {
+  postCliContext: {
     '@aws-cdk/core:newStyleStackSynthesis': 'true',
+    '@aws-cdk/aws-codepipeline:defaultPipelineTypeToV2': false,
   },
 });
 const stack = new TestCdkStack(app, 'PipelineSecurityStack', {

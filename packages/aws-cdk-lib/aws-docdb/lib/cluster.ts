@@ -135,9 +135,14 @@ export interface DatabaseClusterProps {
    * removal policy also applies to the implicit security group created for the
    * cluster if one is not supplied as a parameter.
    *
+   * When set to `SNAPSHOT`, the removal policy for the instances and the security group
+   * will default to `DESTROY` as those resources do not support the policy.
+   *
+   * Use the `instanceRemovalPolicy` and `securityGroupRemovalPolicy` to change the behavior.
+   *
    * @default - Retain cluster.
    */
-  readonly removalPolicy?: RemovalPolicy
+  readonly removalPolicy?: RemovalPolicy;
 
   /**
    * Specifies whether this cluster can be deleted. If deletionProtection is
@@ -190,6 +195,28 @@ export interface DatabaseClusterProps {
    * @default - false
    */
   readonly enablePerformanceInsights?: boolean;
+
+  /**
+   * The removal policy to apply to the cluster's instances.
+   *
+   * Cannot be set to `SNAPSHOT`.
+   *
+   * @default - `RemovalPolicy.DESTROY` when `removalPolicy` is set to `SNAPSHOT`, `removalPolicy` otherwise.
+   *
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-attribute-deletionpolicy.html
+   */
+  readonly instanceRemovalPolicy?: RemovalPolicy;
+
+  /**
+   * The removal policy to apply to the cluster's security group.
+   *
+   * Cannot be set to `SNAPSHOT`.
+   *
+   * @default - `RemovalPolicy.DESTROY` when `removalPolicy` is set to `SNAPSHOT`, `removalPolicy` otherwise.
+   *
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-attribute-deletionpolicy.html
+   */
+  readonly securityGroupRemovalPolicy?: RemovalPolicy;
 }
 
 /**
@@ -421,14 +448,15 @@ export class DatabaseCluster extends DatabaseClusterBase {
         vpc: this.vpc,
       });
       // HACK: Use an escape-hatch to apply a consistent removal policy to the
-      // security group so we don't get errors when trying to delete the stack
-      (securityGroup.node.defaultChild as CfnResource).applyRemovalPolicy(props.removalPolicy, {
+      // security group so we don't get errors when trying to delete the stack.
+      const securityGroupRemovalPolicy = this.getSecurityGroupRemovalPolicy(props);
+      (securityGroup.node.defaultChild as CfnResource).applyRemovalPolicy(securityGroupRemovalPolicy, {
         applyToUpdateReplacePolicy: true,
       });
     }
     this.securityGroupId = securityGroup.securityGroupId;
 
-    // Create the CloudwatchLogsConfiguratoin
+    // Create the CloudwatchLogsConfiguration
     const enableCloudwatchLogsExports: string[] = [];
     if (props.exportAuditLogsToCloudWatch) {
       enableCloudwatchLogsExports.push('audit');
@@ -504,6 +532,8 @@ export class DatabaseCluster extends DatabaseClusterBase {
       throw new Error('At least one instance is required');
     }
 
+    const instanceRemovalPolicy = this.getInstanceRemovalPolicy(props);
+
     for (let i = 0; i < instanceCount; i++) {
       const instanceIndex = i + 1;
 
@@ -519,7 +549,7 @@ export class DatabaseCluster extends DatabaseClusterBase {
         enablePerformanceInsights: props.enablePerformanceInsights,
       });
 
-      instance.applyRemovalPolicy(props.removalPolicy, {
+      instance.applyRemovalPolicy(instanceRemovalPolicy, {
         applyToUpdateReplacePolicy: true,
       });
 
@@ -550,6 +580,24 @@ export class DatabaseCluster extends DatabaseClusterBase {
         });
       }
     }
+  }
+
+  private getInstanceRemovalPolicy(props: DatabaseClusterProps) {
+    if (props.instanceRemovalPolicy === RemovalPolicy.SNAPSHOT) {
+      throw new Error('AWS::DocDB::DBInstance does not support the SNAPSHOT removal policy');
+    }
+    if (props.instanceRemovalPolicy) return props.instanceRemovalPolicy;
+    return !props.removalPolicy || props.removalPolicy !== RemovalPolicy.SNAPSHOT ?
+      props.removalPolicy : RemovalPolicy.DESTROY;
+  }
+
+  private getSecurityGroupRemovalPolicy(props: DatabaseClusterProps) {
+    if (props.securityGroupRemovalPolicy === RemovalPolicy.SNAPSHOT) {
+      throw new Error('AWS::EC2::SecurityGroup does not support the SNAPSHOT removal policy');
+    }
+    if (props.securityGroupRemovalPolicy) return props.securityGroupRemovalPolicy;
+    return !props.removalPolicy || props.removalPolicy !== RemovalPolicy.SNAPSHOT ?
+      props.removalPolicy : RemovalPolicy.DESTROY;
   }
 
   /**

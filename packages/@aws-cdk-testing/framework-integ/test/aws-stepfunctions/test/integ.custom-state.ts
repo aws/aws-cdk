@@ -23,6 +23,11 @@ const stateJson = {
     },
   },
   ResultPath: null,
+  Retry: [{
+    ErrorEquals: [sfn.Errors.PERMISSIONS],
+    IntervalSeconds: 20,
+    MaxAttempts: 2,
+  }],
 };
 
 const failure = new sfn.Fail(stack, 'failed', {
@@ -34,14 +39,18 @@ const custom = new sfn.CustomState(stack, 'my custom task', {
   stateJson,
 });
 
+const customWithInlineRetry = new sfn.CustomState(stack, 'my custom task with inline Retriers', {
+  stateJson,
+});
+
 custom.addCatch(failure);
 custom.addRetry({
-  errors: [sfn.Errors.ALL],
+  errors: [sfn.Errors.TIMEOUT],
   interval: cdk.Duration.seconds(10),
   maxAttempts: 5,
 });
 
-const chain = sfn.Chain.start(custom).next(finalStatus);
+const chain = sfn.Chain.start(custom).next(customWithInlineRetry).next(finalStatus);
 
 const sm = new sfn.StateMachine(stack, 'StateMachine', {
   definition: chain,

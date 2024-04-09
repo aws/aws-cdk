@@ -1,6 +1,9 @@
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Template } from '../../assertions';
+import * as cloudfront from '../../aws-cloudfront';
+import * as origins from '../../aws-cloudfront-origins';
 import * as iam from '../../aws-iam';
+import * as targets from '../../aws-route53-targets';
 import { Duration, RemovalPolicy, Stack } from '../../core';
 import * as route53 from '../lib';
 
@@ -808,6 +811,60 @@ describe('record set', () => {
     });
   });
 
+  test('Cross account zone delegation record with stsRegion', () => {
+    // GIVEN
+    const stack = new Stack();
+    const parentZone = new route53.PublicHostedZone(stack, 'ParentHostedZone', {
+      zoneName: 'myzone.com',
+      crossAccountZoneDelegationPrincipal: new iam.AccountPrincipal('123456789012'),
+    });
+
+    // WHEN
+    const childZone = new route53.PublicHostedZone(stack, 'ChildHostedZone', {
+      zoneName: 'sub.myzone.com',
+    });
+    new route53.CrossAccountZoneDelegationRecord(stack, 'Delegation', {
+      delegatedZone: childZone,
+      parentHostedZoneId: parentZone.hostedZoneId,
+      delegationRole: parentZone.crossAccountZoneDelegationRole!,
+      ttl: Duration.seconds(60),
+      removalPolicy: RemovalPolicy.RETAIN,
+      assumeRoleRegion: 'fake-region-1',
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('Custom::CrossAccountZoneDelegation', {
+      ServiceToken: {
+        'Fn::GetAtt': [
+          'CustomCrossAccountZoneDelegationCustomResourceProviderHandler44A84265',
+          'Arn',
+        ],
+      },
+      AssumeRoleArn: {
+        'Fn::GetAtt': [
+          'ParentHostedZoneCrossAccountZoneDelegationRole95B1C36E',
+          'Arn',
+        ],
+      },
+      ParentZoneId: {
+        Ref: 'ParentHostedZoneC2BD86E1',
+      },
+      DelegatedZoneName: 'sub.myzone.com',
+      DelegatedZoneNameServers: {
+        'Fn::GetAtt': [
+          'ChildHostedZone4B14AC71',
+          'NameServers',
+        ],
+      },
+      TTL: 60,
+      AssumeRoleRegion: 'fake-region-1',
+    });
+    Template.fromStack(stack).hasResource('Custom::CrossAccountZoneDelegation', {
+      DeletionPolicy: 'Retain',
+      UpdateReplacePolicy: 'Retain',
+    });
+  });
+
   testDeprecated('Cross account zone delegation record with parentHostedZoneName', () => {
     // GIVEN
     const stack = new Stack();
@@ -1130,6 +1187,39 @@ describe('record set', () => {
     });
   });
 
+  test('with weight of 0', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    const zone = new route53.HostedZone(stack, 'HostedZone', {
+      zoneName: 'myzone',
+    });
+
+    // WHEN
+    new route53.RecordSet(stack, 'RecordSet', {
+      zone,
+      recordName: 'www',
+      recordType: route53.RecordType.CNAME,
+      target: route53.RecordTarget.fromValues('zzz'),
+      weight: 0,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Route53::RecordSet', {
+      Name: 'www.myzone.',
+      Type: 'CNAME',
+      HostedZoneId: {
+        Ref: 'HostedZoneDB99F866',
+      },
+      ResourceRecords: [
+        'zzz',
+      ],
+      TTL: '1800',
+      Weight: 0,
+      SetIdentifier: 'WEIGHT_0_ID_RecordSet',
+    });
+  });
+
   test.each([
     [-1],
     [256],
@@ -1170,7 +1260,10 @@ describe('record set', () => {
     { weight: 20, geoLocation: route53.GeoLocation.continent(route53.Continent.EUROPE) },
     { weight: 20, region: 'us-east-1' },
     { geoLocation: route53.GeoLocation.continent(route53.Continent.EUROPE), region: 'us-east-1' },
-    { weight: 20, geoLocation: route53.GeoLocation.continent(route53.Continent.EUROPE), region: 'us-east-1' },
+    { multiValueAnswer: true, geoLocation: route53.GeoLocation.continent(route53.Continent.EUROPE) },
+    { multiValueAnswer: true, region: 'us-east-1' },
+    { multiValueAnswer: true, weight: 20 },
+    { weight: 20, geoLocation: route53.GeoLocation.continent(route53.Continent.EUROPE), region: 'us-east-1', multiValueAnswer: true },
   ])('throw error for the simultaneous definition of weight, geoLocation and region', (props) => {
     // GIVEN
     const stack = new Stack();
@@ -1185,7 +1278,7 @@ describe('record set', () => {
       target: route53.RecordTarget.fromValues('zzz'),
       setIdentifier: 'uniqueId',
       ...props,
-    })).toThrow('Only one of region, weight, or geoLocation can be defined');
+    })).toThrow('Only one of region, weight, multiValueAnswer or geoLocation can be defined');
   });
 
   test('throw error for the definition of setIdentifier without weight, geoLocation or region', () => {
@@ -1203,4 +1296,57 @@ describe('record set', () => {
       setIdentifier: 'uniqueId',
     })).toThrow('setIdentifier can only be specified for non-simple routing policies');
   });
+
+  test('with multiValueAnswer', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    const zone = new route53.HostedZone(stack, 'HostedZone', { zoneName: 'myzone' });
+
+    // WHEN
+    new route53.RecordSet(stack, 'RecordSet', {
+      zone,
+      recordName: 'www',
+      recordType: route53.RecordType.CNAME,
+      target: route53.RecordTarget.fromValues('zzz'),
+      multiValueAnswer: true,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Route53::RecordSet', {
+      HostedZoneId: {
+        Ref: 'HostedZoneDB99F866',
+      },
+      MultiValueAnswer: true,
+      Name: 'www.myzone.',
+      ResourceRecords: [
+        'zzz',
+      ],
+      SetIdentifier: 'MVA_ID_RecordSet',
+      TTL: '1800',
+      Type: 'CNAME',
+    });
+  });
+
+  test('throw error for the definition of multiValueAnswer for alias record', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    const distribution = new cloudfront.Distribution(stack, 'Distribution', {
+      defaultBehavior: {
+        origin: new origins.HttpOrigin('www.example.com'),
+      },
+    });
+    const zone = new route53.HostedZone(stack, 'HostedZone', { zoneName: 'myzone' });
+
+    // THEN
+    expect(() => new route53.RecordSet(stack, 'Basic', {
+      zone,
+      recordName: 'www',
+      recordType: route53.RecordType.A,
+      target: route53.RecordTarget.fromAlias(new targets.CloudFrontTarget(distribution)),
+      multiValueAnswer: true,
+    })).toThrow('multiValueAnswer cannot be specified for alias record');
+  });
 });
+

@@ -3,7 +3,7 @@ import { CfnTopic } from './sns.generated';
 import { ITopic, TopicBase } from './topic-base';
 import { IRole } from '../../aws-iam';
 import { IKey } from '../../aws-kms';
-import { ArnFormat, Lazy, Names, Stack } from '../../core';
+import { ArnFormat, Lazy, Names, Stack, Token } from '../../core';
 
 /**
  * Properties for a new SNS topic
@@ -51,17 +51,47 @@ export interface TopicProps {
   /**
    * The list of delivery status logging configurations for the topic.
    *
-   * For more information, see https://docs.aws.amazon.com/sns/latest/dg/sns-topic-attributes.html.
+   * @see https://docs.aws.amazon.com/sns/latest/dg/sns-topic-attributes.html.
    *
    * @default None
    */
   readonly loggingConfigs?: LoggingConfig[];
+
+  /**
+   * The number of days Amazon SNS retains messages.
+   *
+   * It can only be set for FIFO topics.
+   *
+   * @see https://docs.aws.amazon.com/sns/latest/dg/fifo-message-archiving-replay.html
+   *
+   * @default - do not archive messages
+   */
+  readonly messageRetentionPeriodInDays?: number;
+
+  /**
+   * Adds a statement to enforce encryption of data in transit when publishing to the topic.
+   *
+   * @see https://docs.aws.amazon.com/sns/latest/dg/sns-security-best-practices.html#enforce-encryption-data-in-transit.
+   *
+   * @default false
+   */
+  readonly enforceSSL?: boolean;
+
+  /**
+   * The signature version corresponds to the hashing algorithm used while creating the signature of the notifications,
+   * subscription confirmations, or unsubscribe confirmation messages sent by Amazon SNS.
+   *
+   * @see https://docs.aws.amazon.com/sns/latest/dg/sns-verify-signature-of-message.html.
+   *
+   * @default 1
+   */
+  readonly signatureVersion?: string;
 }
 
 /**
  * A logging configuration for delivery status of messages sent from SNS topic to subscribed endpoints.
  *
- * For more information, see https://docs.aws.amazon.com/sns/latest/dg/sns-topic-attributes.html.
+ * @see https://docs.aws.amazon.com/sns/latest/dg/sns-topic-attributes.html.
  */
 export interface LoggingConfig {
   /**
@@ -124,6 +154,24 @@ export enum LoggingProtocol {
 }
 
 /**
+ * Represents an SNS topic defined outside of this stack.
+ */
+export interface TopicAttributes {
+  /**
+   * The ARN of the SNS topic.
+   */
+  readonly topicArn: string;
+
+  /**
+   * Whether content-based deduplication is enabled.
+   * Only applicable for FIFO topics.
+   *
+   * @default false
+   */
+  readonly contentBasedDeduplication?: boolean;
+}
+
+/**
  * A new SNS topic
  */
 export class Topic extends TopicBase {
@@ -136,16 +184,34 @@ export class Topic extends TopicBase {
    * @param topicArn topic ARN (i.e. arn:aws:sns:us-east-2:444455556666:MyTopic)
    */
   public static fromTopicArn(scope: Construct, id: string, topicArn: string): ITopic {
+    return Topic.fromTopicAttributes(scope, id, { topicArn });
+  };
+
+  /**
+   * Import an existing SNS topic provided a topic attributes
+   *
+   * @param scope The parent creating construct
+   * @param id The construct's name
+   * @param attrs the attributes of the topic to import
+   */
+  public static fromTopicAttributes(scope: Construct, id: string, attrs: TopicAttributes): ITopic {
+    const topicName = Stack.of(scope).splitArn(attrs.topicArn, ArnFormat.NO_RESOURCE_NAME).resource;
+    const fifo = topicName.endsWith('.fifo');
+
+    if (attrs.contentBasedDeduplication && !fifo) {
+      throw new Error('Cannot import topic; contentBasedDeduplication is only available for FIFO SNS topics.');
+    }
+
     class Import extends TopicBase {
-      public readonly topicArn = topicArn;
-      public readonly topicName = Stack.of(scope).splitArn(topicArn, ArnFormat.NO_RESOURCE_NAME).resource;
-      public readonly fifo = this.topicName.endsWith('.fifo');
-      public readonly contentBasedDeduplication = false;
+      public readonly topicArn = attrs.topicArn;
+      public readonly topicName = topicName;
+      public readonly fifo = fifo;
+      public readonly contentBasedDeduplication = attrs.contentBasedDeduplication || false;
       protected autoCreatePolicy: boolean = false;
     }
 
     return new Import(scope, id, {
-      environmentFromArn: topicArn,
+      environmentFromArn: attrs.topicArn,
     });
   }
 
@@ -163,8 +229,20 @@ export class Topic extends TopicBase {
       physicalName: props.topicName,
     });
 
+    this.enforceSSL = props.enforceSSL;
+
     if (props.contentBasedDeduplication && !props.fifo) {
       throw new Error('Content based deduplication can only be enabled for FIFO SNS topics.');
+    }
+    if (props.messageRetentionPeriodInDays && !props.fifo) {
+      throw new Error('`messageRetentionPeriodInDays` is only valid for FIFO SNS topics.');
+    }
+    if (
+      props.messageRetentionPeriodInDays !== undefined
+      && !Token.isUnresolved(props.messageRetentionPeriodInDays)
+      && (!Number.isInteger(props.messageRetentionPeriodInDays) || props.messageRetentionPeriodInDays > 365 || props.messageRetentionPeriodInDays < 1)
+    ) {
+      throw new Error('`messageRetentionPeriodInDays` must be an integer between 1 and 365');
     }
 
     if (props.loggingConfigs) {
@@ -175,7 +253,7 @@ export class Topic extends TopicBase {
     if (props.fifo && props.topicName && !props.topicName.endsWith('.fifo')) {
       cfnTopicName = this.physicalName + '.fifo';
     } else if (props.fifo && !props.topicName) {
-      // Max lenght allowed by CloudFormation is 256, we subtract 5 to allow for ".fifo" suffix
+      // Max length allowed by CloudFormation is 256, we subtract 5 to allow for ".fifo" suffix
       const prefixName = Names.uniqueResourceName(this, {
         maxLength: 256 - 5,
         separator: '-',
@@ -185,12 +263,25 @@ export class Topic extends TopicBase {
       cfnTopicName = this.physicalName;
     }
 
+    if (
+      props.signatureVersion &&
+      !Token.isUnresolved(props.signatureVersion) &&
+      props.signatureVersion !== '1' &&
+      props.signatureVersion !== '2'
+    ) {
+      throw new Error(`signatureVersion must be "1" or "2", received: "${props.signatureVersion}"`);
+    }
+
     const resource = new CfnTopic(this, 'Resource', {
+      archivePolicy: props.messageRetentionPeriodInDays ? {
+        MessageRetentionPeriod: props.messageRetentionPeriodInDays,
+      } : undefined,
       displayName: props.displayName,
       topicName: cfnTopicName,
       kmsMasterKeyId: props.masterKey && props.masterKey.keyArn,
       contentBasedDeduplication: props.contentBasedDeduplication,
       fifoTopic: props.fifo,
+      signatureVersion: props.signatureVersion,
       deliveryStatusLogging: Lazy.any({ produce: () => this.renderLoggingConfigs() }, { omitEmptyArray: true }),
     });
 
