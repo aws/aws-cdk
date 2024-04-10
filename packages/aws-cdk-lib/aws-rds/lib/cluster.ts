@@ -465,12 +465,12 @@ export abstract class DatabaseClusterBase extends Resource implements IDatabaseC
    */
   public abstract readonly connections: ec2.Connections;
 
-  protected abstract enableDataApi?: boolean;
-
   /**
-   * Secret in SecretsManager to store the database cluster user credentials.
+   * The secret attached to this cluster
    */
-  public abstract readonly secret?: secretsmanager.ISecret;
+  public abstract readonly secret?: secretsmanager.ISecret
+
+  protected abstract enableDataApi?: boolean;
 
   /**
    * The ARN of the cluster
@@ -526,12 +526,14 @@ export abstract class DatabaseClusterBase extends Resource implements IDatabaseC
     }
 
     this.enableDataApi = true;
-    this.secret?.grantRead(grantee);
-    return iam.Grant.addToPrincipal({
-      actions: DATA_API_ACTIONS,
+    const ret = iam.Grant.addToPrincipal({
       grantee,
+      actions: DATA_API_ACTIONS,
       resourceArns: [this.clusterArn],
+      scope: this,
     });
+    this.secret?.grantRead(grantee);
+    return ret;
   }
 }
 
@@ -551,6 +553,11 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
 
   private readonly domainId?: string;
   private readonly domainRole?: iam.IRole;
+
+  /**
+   * Secret in SecretsManager to store the database cluster user credentials.
+   */
+  public abstract readonly secret?: secretsmanager.ISecret;
 
   /**
    * The VPC network to place the cluster in.
