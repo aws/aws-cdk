@@ -273,7 +273,7 @@ describe('Rds Data Source Serverless V2 configuration', () => {
 
   test('appsync creates correct policy ServerlessV2', () => {
     // WHEN
-    api.addRdsDataSource('dsV2', serverlessClusterV2, secret);
+    api.addRdsDataSourceV2('dsV2', serverlessClusterV2, secret);
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
@@ -376,7 +376,7 @@ describe('Rds Data Source Serverless V2 configuration', () => {
 
   test('rds cluster arn saved to RdsHttpEndpointConfig serverlessV2', () => {
     // WHEN
-    api.addRdsDataSource('dsV2', serverlessClusterV2, secret);
+    api.addRdsDataSourceV2('dsV2', serverlessClusterV2, secret);
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::AppSync::DataSource', {
@@ -403,7 +403,7 @@ describe('Rds Data Source Serverless V2 configuration', () => {
   test('databaseName saved to RdsHttpEndpointConfig serverlessV2', () => {
     // WHEN
     const testDatabaseName = 'testDatabaseName';
-    api.addRdsDataSource('dsV2', serverlessClusterV2, secret, testDatabaseName);
+    api.addRdsDataSourceV2('dsV2', serverlessClusterV2, secret, testDatabaseName);
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::AppSync::DataSource', {
@@ -430,7 +430,7 @@ describe('Rds Data Source Serverless V2 configuration', () => {
 
   test('default configuration produces name identical to the id serverlessV2', () => {
     // WHEN
-    api.addRdsDataSource('dsV2', serverlessClusterV2, secret);
+    api.addRdsDataSourceV2('dsV2', serverlessClusterV2, secret);
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::AppSync::DataSource', {
@@ -441,7 +441,7 @@ describe('Rds Data Source Serverless V2 configuration', () => {
 
   test('appsync configures name correctly serverlessV2', () => {
     // WHEN
-    api.addRdsDataSource('dsV2', serverlessClusterV2, secret, undefined, {
+    api.addRdsDataSourceV2('dsV2', serverlessClusterV2, secret, undefined, {
       name: 'custom',
     });
 
@@ -454,7 +454,7 @@ describe('Rds Data Source Serverless V2 configuration', () => {
 
   test('appsync configures name and description correctly ServerlessV2', () => {
     // WHEN
-    api.addRdsDataSource('dsV2', serverlessClusterV2, secret, undefined, {
+    api.addRdsDataSourceV2('dsV2', serverlessClusterV2, secret, undefined, {
       name: 'custom',
       description: 'custom description',
     });
@@ -470,8 +470,8 @@ describe('Rds Data Source Serverless V2 configuration', () => {
   test('appsync errors when creating multiple rds data sources with no configuration ServerlessV2', () => {
     // WHEN
     const when = () => {
-      api.addRdsDataSource('dsV2', serverlessClusterV2, secret);
-      api.addRdsDataSource('dsV2', serverlessClusterV2, secret);
+      api.addRdsDataSourceV2('dsV2', serverlessClusterV2, secret);
+      api.addRdsDataSourceV2('dsV2', serverlessClusterV2, secret);
     };
 
     // THEN
@@ -569,7 +569,7 @@ describe('adding rds data source Serverless V2 from imported api', () => {
     const importedApi = appsync.GraphqlApi.fromGraphqlApiAttributes(stack, 'importedApi', {
       graphqlApiId: api.apiId,
     });
-    importedApi.addRdsDataSource('dsV2', serverlessClusterV2, secret);
+    importedApi.addRdsDataSourceV2('dsV2', serverlessClusterV2, secret);
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::AppSync::DataSource', {
@@ -584,7 +584,7 @@ describe('adding rds data source Serverless V2 from imported api', () => {
       graphqlApiId: api.apiId,
       graphqlApiArn: api.arn,
     });
-    importedApi.addRdsDataSource('dsV2', serverlessClusterV2, secret);
+    importedApi.addRdsDataSourceV2('dsV2', serverlessClusterV2, secret);
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::AppSync::DataSource', {

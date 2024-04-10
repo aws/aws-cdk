@@ -184,7 +184,7 @@ const cluster = new rds.DatabaseCluster(this, 'AuroraClusterV2', {
 
 // Build a data source for AppSync to access the database.
 declare const api: appsync.GraphqlApi;
-const rdsDS = api.addRdsDataSource('rds', cluster, secret, 'demos');
+const rdsDS = api.addRdsDataSourceV2('rds', cluster, secret, 'demos');
 
 // Set up a resolver for an RDS query.
 rdsDS.createResolver('QueryGetDemosRdsResolver', {

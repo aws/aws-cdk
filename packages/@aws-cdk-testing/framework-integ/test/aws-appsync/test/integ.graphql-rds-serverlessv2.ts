@@ -44,7 +44,7 @@ class TestStack extends cdk.Stack {
       schema: appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.rds-serverlessv2.graphql')),
     });
 
-    const serverlessV2DS = api.addRdsDataSource('ds', cluster, secret, 'integdb');
+    const serverlessV2DS = api.addRdsDataSourceV2('ds', cluster, secret, 'integdb');
 
     const queryAllPostReqTemplate: string = `{
       "version": "2018-05-29",
