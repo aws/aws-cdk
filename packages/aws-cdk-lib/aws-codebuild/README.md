@@ -437,7 +437,7 @@ For more information, see [Working with reserved capacity in AWS CodeBuild](http
 ```ts
 const fleet = new codebuild.Fleet(this, 'Fleet', {
     computeType: codebuild.FleetComputeType.MEDIUM,
-    environmentType: codebuild.FleetEnvironmentType.LINUX_CONTAINER,
+    environmentType: codebuild.EnvironmentType.LINUX_CONTAINER,
     baseCapacity: 1,
 });
 
