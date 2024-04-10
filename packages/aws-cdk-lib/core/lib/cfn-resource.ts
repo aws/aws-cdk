@@ -620,7 +620,6 @@ export interface ICfnResourceOptions {
  *
  * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference.html
  */
-
 const MERGE_EXCLUDE_KEYS: string[] = [
   'Ref',
   'Fn::Base64',
@@ -639,6 +638,31 @@ const MERGE_EXCLUDE_KEYS: string[] = [
   'Fn::If',
   'Fn::Not',
   'Fn::Or',
+];
+/**
+ * Possible wafv2 empty objects edge cases
+ *  It likelly to have explictly empty keys and subkeys,
+ *
+ * This list will avoid the target be deleted at the end of the deepMerge
+ * MERGE_EXCLUDE_KEYS makes it be added to the target[key] but does not
+ * avoid the edge case keys be deleted at end as they will be empty all the way trough.
+ * i.e:
+ *   "Count": {}
+ *   // or
+ *   "Action": {"Count": {}}
+ *   // or
+ *   "FieldToMatch": {}
+ * https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-wafv2-webacl-ruleaction.html
+ */
+const DELETE_EXCLUDE_KEYS: string[] = [
+  'Action',
+  'Block',
+  'Captcha',
+  'Challenge',
+  'Count',
+  'UriPath',
+  'FieldToMatch',
+  'QueryString',
 ];
 
 /**
@@ -726,7 +750,17 @@ function deepMerge(target: any, ...sources: any[]) {
         // sibling concrete values alongside, so we can delete this tree.
         const output = target[key];
         if (typeof(output) === 'object' && Object.keys(output).length === 0) {
-          delete target[key];
+          /**
+           * Some edge cases like WafV2 properties are being deleted causing
+           * for instance `addOverrideProperty` and `addOverride` method to fail including
+           * the keys referenced at `DELETE_EXCLUDE_KEYS` constant to be delete when final template
+           * is rendered.
+           * This will allow these keys be supported and stop Cloudformation complain
+           * about the missing Property keys inside the Rule objects
+           */
+          if (!DELETE_EXCLUDE_KEYS.includes(key)) {
+            delete target[key];
+          }
         }
       } else if (value === undefined) {
         delete target[key];
