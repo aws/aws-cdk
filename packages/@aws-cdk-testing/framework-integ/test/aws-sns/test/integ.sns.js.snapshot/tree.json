@@ -105,7 +105,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_sns.Topic",
+              "fqn": "aws-cdk-lib.aws_sns.TopicBase",
               "version": "0.0.0"
             }
           },
@@ -228,7 +228,130 @@
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_sns.Topic",
+              "fqn": "aws-cdk-lib.aws_sns.TopicBase",
+              "version": "0.0.0"
+            }
+          },
+          "MyTopic2": {
+            "id": "MyTopic2",
+            "path": "SNSInteg/MyTopic2",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "SNSInteg/MyTopic2/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::SNS::Topic",
+                  "aws:cdk:cloudformation:props": {
+                    "displayName": "fooDisplayName2",
+                    "kmsMasterKeyId": {
+                      "Fn::GetAtt": [
+                        "CustomKey1E6D0D07",
+                        "Arn"
+                      ]
+                    },
+                    "topicName": "fooTopic2"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_sns.CfnTopic",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_sns.TopicBase",
+              "version": "0.0.0"
+            }
+          },
+          "ImportedTopic": {
+            "id": "ImportedTopic",
+            "path": "SNSInteg/ImportedTopic",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_sns.TopicBase",
+              "version": "0.0.0"
+            }
+          },
+          "PublishRole": {
+            "id": "PublishRole",
+            "path": "SNSInteg/PublishRole",
+            "children": {
+              "ImportPublishRole": {
+                "id": "ImportPublishRole",
+                "path": "SNSInteg/PublishRole/ImportPublishRole",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Resource",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "SNSInteg/PublishRole/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                  "aws:cdk:cloudformation:props": {
+                    "assumeRolePolicyDocument": {
+                      "Statement": [
+                        {
+                          "Action": "sts:AssumeRole",
+                          "Effect": "Allow",
+                          "Principal": {
+                            "Service": "s3.amazonaws.com"
+                          }
+                        }
+                      ],
+                      "Version": "2012-10-17"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                  "version": "0.0.0"
+                }
+              },
+              "DefaultPolicy": {
+                "id": "DefaultPolicy",
+                "path": "SNSInteg/PublishRole/DefaultPolicy",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "SNSInteg/PublishRole/DefaultPolicy/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                      "aws:cdk:cloudformation:props": {
+                        "policyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sns:Publish",
+                              "Effect": "Allow",
+                              "Resource": {
+                                "Ref": "MyTopic288CE2107"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "policyName": "PublishRoleDefaultPolicy9257B12D",
+                        "roles": [
+                          {
+                            "Ref": "PublishRoleF42F66B6"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.Policy",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_iam.Role",
               "version": "0.0.0"
             }
           },

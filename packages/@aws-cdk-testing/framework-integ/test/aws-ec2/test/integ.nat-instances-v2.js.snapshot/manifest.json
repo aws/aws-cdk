@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/48ef9ffa2dccd900a9cc067bf63064119b67fe363f5ad1257d4261278bcba220.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/40897c34ea5cfdc3e871073d9a6d2ed5fa2fe74e14bac35a85eb55799a36298e.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -79,10 +79,7 @@
         "/aws-cdk-vpc-nat-instances-v2/MyVpc/PublicSubnet1/NatInstance/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyVpcPublicSubnet1NatInstance8E94E5F7",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "MyVpcPublicSubnet1NatInstance8E94E5F7"
           }
         ],
         "/aws-cdk-vpc-nat-instances-v2/MyVpc/PublicSubnet2/Subnet": [
@@ -124,10 +121,7 @@
         "/aws-cdk-vpc-nat-instances-v2/MyVpc/PublicSubnet2/NatInstance/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyVpcPublicSubnet2NatInstance04BCE4E3",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "MyVpcPublicSubnet2NatInstance04BCE4E3"
           }
         ],
         "/aws-cdk-vpc-nat-instances-v2/MyVpc/PrivateSubnet1/Subnet": [
@@ -202,6 +196,78 @@
             "data": "SsmParameterValueawsserviceamiamazonlinuxlatestal2023amikernel61x8664C96584B6F00A464EAD1953AFF4B05118Parameter"
           }
         ],
+        "/aws-cdk-vpc-nat-instances-v2/ALB/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ALBAEE750D2"
+          }
+        ],
+        "/aws-cdk-vpc-nat-instances-v2/ALB/SecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ALBSecurityGroup8B8624F8"
+          }
+        ],
+        "/aws-cdk-vpc-nat-instances-v2/ALB/listener": [
+          {
+            "type": "aws:cdk:warning",
+            "data": "A default Action already existed on this Listener and was replaced. Configure exactly one default Action. [ack: @aws-cdk/aws-elbv2:listenerExistingDefaultActionReplaced]"
+          }
+        ],
+        "/aws-cdk-vpc-nat-instances-v2/ALB/listener/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ALBlistener54C7411C"
+          }
+        ],
+        "/aws-cdk-vpc-nat-instances-v2/ALB/listener/targetGroup": [
+          {
+            "type": "aws:cdk:warning",
+            "data": "When creating an empty TargetGroup, you should specify a 'targetType' (this warning may become an error in the future). [ack: @aws-cdk/aws-elbv2:targetGroupSpecifyTargetTypeForEmptyTargetGroup]"
+          }
+        ],
+        "/aws-cdk-vpc-nat-instances-v2/ALB/listener/targetGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ALBlistenertargetGroupE6516767"
+          }
+        ],
+        "/aws-cdk-vpc-nat-instances-v2/HttpProxyPrivateApi/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "HttpProxyPrivateApiA55E154D"
+          }
+        ],
+        "/aws-cdk-vpc-nat-instances-v2/HttpProxyPrivateApi/DefaultRoute/DefaultIntegration/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "HttpProxyPrivateApiDefaultRouteDefaultIntegration002C2760"
+          }
+        ],
+        "/aws-cdk-vpc-nat-instances-v2/HttpProxyPrivateApi/DefaultRoute/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "HttpProxyPrivateApiDefaultRoute1BDCA252"
+          }
+        ],
+        "/aws-cdk-vpc-nat-instances-v2/HttpProxyPrivateApi/VpcLink-1/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "HttpProxyPrivateApiVpcLink190366CAE"
+          }
+        ],
+        "/aws-cdk-vpc-nat-instances-v2/HttpProxyPrivateApi/DefaultStage/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "HttpProxyPrivateApiDefaultStage18B3706E"
+          }
+        ],
+        "/aws-cdk-vpc-nat-instances-v2/Exports/Output{\"Ref\":\"HttpProxyPrivateApiA55E154D\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefHttpProxyPrivateApiA55E154DBF80C6A7"
+          }
+        ],
         "/aws-cdk-vpc-nat-instances-v2/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
@@ -234,7 +300,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/1653c7b1287b3d55a55af62d82802be64f386157c787720636c156b14d796ed6.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -247,9 +313,34 @@
         }
       },
       "dependencies": [
+        "aws-cdk-vpc-nat-instances-v2",
         "natinstancev2integtestDefaultTestDeployAssertD7458A47.assets"
       ],
       "metadata": {
+        "/nat-instance-v2-integ-test/DefaultTest/DeployAssert/HttpApiCall5667927ff42f0a5713f7f2c90e9178c5/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "HttpApiCall5667927ff42f0a5713f7f2c90e9178c5"
+          }
+        ],
+        "/nat-instance-v2-integ-test/DefaultTest/DeployAssert/HttpApiCall5667927ff42f0a5713f7f2c90e9178c5/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsHttpApiCall5667927ff42f0a5713f7f2c90e9178c5"
+          }
+        ],
+        "/nat-instance-v2-integ-test/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+          }
+        ],
+        "/nat-instance-v2-integ-test/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+          }
+        ],
         "/nat-instance-v2-integ-test/DefaultTest/DeployAssert/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",

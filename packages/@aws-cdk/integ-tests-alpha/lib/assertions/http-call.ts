@@ -47,7 +47,7 @@ export class HttpApiCall extends ApiCallBase {
 
             new CfnOutput(node, 'AssertionResults', {
               value: result,
-            }).overrideLogicalId(`AssertionResults${id}`);
+            }).overrideLogicalId(`AssertionResults${id.replace(/[\W_]+/g, '')}`);
           }
         }
       },
