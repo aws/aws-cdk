@@ -94,9 +94,10 @@ describe('imports', () => {
     fs.rmSync('migrate.json');
   });
 
-  test('imports', async () => {
+  test('imports render correctly for a nonexistant stack without creating a changeset', async () => {
     // GIVEN
     const buffer = new StringWritable();
+    cloudFormation.stackExists = jest.fn().mockReturnValue(Promise.resolve(false));
 
     // WHEN
     const exitCode = await toolkit.diff({
@@ -107,6 +108,34 @@ describe('imports', () => {
 
     // THEN
     const plainTextOutput = buffer.data.replace(/\x1B\[[0-?]*[ -/]*[@-~]/g, '');
+    expect(cfn.createDiffChangeSet).not.toHaveBeenCalled();
+    expect(plainTextOutput).toContain(`Stack A
+Parameters and rules created during migration do not affect resource configuration.
+Resources
+[←] AWS::SQS::Queue Queue import
+[←] AWS::SQS::Queue Queue2 import
+[←] AWS::S3::Bucket Bucket import
+`);
+
+    expect(buffer.data.trim()).toContain('✨  Number of stacks with differences: 1');
+    expect(exitCode).toBe(0);
+  });
+
+  test('imports render correctly for an existing stack and diff creates a changeset', async () => {
+    // GIVEN
+    const buffer = new StringWritable();
+    cloudFormation.stackExists = jest.fn().mockReturnValue(Promise.resolve(true));
+
+    // WHEN
+    const exitCode = await toolkit.diff({
+      stackNames: ['A'],
+      stream: buffer,
+      changeSet: true,
+    });
+
+    // THEN
+    const plainTextOutput = buffer.data.replace(/\x1B\[[0-?]*[ -/]*[@-~]/g, '');
+    expect(cfn.createDiffChangeSet).toHaveBeenCalled();
     expect(plainTextOutput).toContain(`Stack A
 Parameters and rules created during migration do not affect resource configuration.
 Resources
@@ -305,6 +334,145 @@ describe('non-nested stacks', () => {
     expect(buffer.data.trim()).not.toContain('Stack A');
     expect(buffer.data.trim()).not.toContain('There were no differences');
     expect(exitCode).toBe(0);
+  });
+});
+
+describe('stack exists checks', () => {
+  beforeEach(() => {
+
+    jest.resetAllMocks();
+
+    cloudExecutable = new MockCloudExecutable({
+      stacks: [{
+        stackName: 'A',
+        template: { resource: 'A' },
+      },
+      {
+        stackName: 'B',
+        depends: ['A'],
+        template: { resource: 'B' },
+      },
+      {
+        stackName: 'C',
+        depends: ['A'],
+        template: { resource: 'C' },
+        metadata: {
+          '/resource': [
+            {
+              type: cxschema.ArtifactMetadataEntryType.ERROR,
+              data: 'this is an error',
+            },
+          ],
+        },
+      },
+      {
+        stackName: 'D',
+        template: { resource: 'D' },
+      }],
+    });
+
+    cloudFormation = instanceMockFrom(Deployments);
+
+    toolkit = new CdkToolkit({
+      cloudExecutable,
+      deployments: cloudFormation,
+      configuration: cloudExecutable.configuration,
+      sdkProvider: cloudExecutable.sdkProvider,
+    });
+
+    // Default implementations
+    cloudFormation.readCurrentTemplateWithNestedStacks.mockImplementation((stackArtifact: CloudFormationStackArtifact) => {
+      if (stackArtifact.stackName === 'D') {
+        return Promise.resolve({
+          deployedRootTemplate: { resource: 'D' },
+          nestedStacks: {},
+        });
+      }
+      return Promise.resolve({
+        deployedRootTemplate: {},
+        nestedStacks: {},
+      });
+    });
+    cloudFormation.deployStack.mockImplementation((options) => Promise.resolve({
+      noOp: true,
+      outputs: {},
+      stackArn: '',
+      stackArtifact: options.stack,
+    }));
+
+    jest.spyOn(cfn, 'createDiffChangeSet').mockImplementationOnce(async () => {
+      return {
+        Changes: [
+          {
+            ResourceChange: {
+              Action: 'Add',
+              LogicalResourceId: 'Object',
+            },
+          },
+        ],
+      };
+    });
+  });
+
+  test('diff does not check for stack existence when --no-change-set is passed', async () => {
+    // GIVEN
+    const buffer = new StringWritable();
+
+    // WHEN
+    const exitCode = await toolkit.diff({
+      stackNames: ['A', 'A'],
+      stream: buffer,
+      fail: false,
+      quiet: true,
+      changeSet: false,
+    });
+
+    // THEN
+    expect(exitCode).toBe(0);
+    expect(cloudFormation.stackExists).not.toHaveBeenCalled();
+  });
+
+  test('diff falls back to classic diff when stack does not exist', async () => {
+    // GIVEN
+    const buffer = new StringWritable();
+    cloudFormation.stackExists = jest.fn().mockReturnValue(Promise.resolve(false));
+
+    // WHEN
+    const exitCode = await toolkit.diff({
+      stackNames: ['A', 'A'],
+      stream: buffer,
+      fail: false,
+      quiet: true,
+      changeSet: true,
+    });
+
+    // THEN
+    expect(exitCode).toBe(0);
+    expect(cloudFormation.stackExists).toHaveBeenCalled();
+    expect(cfn.createDiffChangeSet).not.toHaveBeenCalled();
+  });
+
+  test('diff falls back to classic diff when stackExists call fails', async () => {
+    // GIVEN
+    const buffer = new StringWritable();
+
+    cloudFormation.stackExists.mockImplementation(() => {
+      throw new Error('Fail fail fail');
+    });
+
+    // WHEN
+    const exitCode = await toolkit.diff({
+      stackNames: ['A', 'A'],
+      stream: buffer,
+      fail: false,
+      quiet: true,
+      changeSet: true,
+    });
+
+    // THEN
+    expect(exitCode).toBe(0);
+    expect(cloudFormation.stackExists).toHaveBeenCalled();
+    expect(cfn.createDiffChangeSet).not.toHaveBeenCalled();
   });
 });
 
