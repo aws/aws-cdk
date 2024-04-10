@@ -20,10 +20,6 @@ All notable changes to this project will be documented in this file. See [standa
 * **sns:** contentBasedDeduplication is always false for imported topic ([#29542](https://github.com/aws/aws-cdk/issues/29542)) ([4a9e683](https://github.com/aws/aws-cdk/commit/4a9e68311018a42bc5961646dda4be6861f916a5)), closes [#29532](https://github.com/aws/aws-cdk/issues/29532)
 
 
-### Reverts
-
-* "chore(ec2): update WindowsVersions enum" ([#29737](https://github.com/aws/aws-cdk/issues/29737)) ([ccc63cf](https://github.com/aws/aws-cdk/commit/ccc63cf641c0b27fbbe50ded175b194d698006da)), closes [aws/aws-cdk#29435](https://github.com/aws/aws-cdk/issues/29435) [#29736](https://github.com/aws/aws-cdk/issues/29736)
-
 ## [2.136.1](https://github.com/aws/aws-cdk/compare/v2.136.0...v2.136.1) (2024-04-09)
 
 
