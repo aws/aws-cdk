@@ -259,9 +259,9 @@ const crossAccountRole = new iam.Role(this, 'CrossAccountRole', {
           resources: ['*'],
         }),
         new iam.PolicyStatement({
-          sid: 'GetHostedZoneAndChangeResourceRecordSet',
+          sid: 'GetHostedZoneAndChangeResourceRecordSets',
           effect: iam.Effect.ALLOW,
-          actions: ['route53:GetHostedZone', 'route53:ChangeResourceRecordSet'],
+          actions: ['route53:GetHostedZone', 'route53:ChangeResourceRecordSets'],
           // This example assumes the RecordSet subdomain.somexample.com
           // is contained in the HostedZone
           resources: ['arn:aws:route53:::hostedzone/HZID00000000000000000'],
