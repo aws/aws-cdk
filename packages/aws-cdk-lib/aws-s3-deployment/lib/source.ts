@@ -68,6 +68,31 @@ export class Source {
    *
    * Make sure you trust the producer of the archive.
    *
+   * If the `bucket` parameter is an "out-of-app" reference "imported" via static methods such
+   * as `s3.Bucket.fromBucketName`, be cautious about the bucket's encryption key. In general,
+   * CDK does not query for additional properties of imported constructs at synthesis time.
+   * For example, for a bucket created from `s3.Bucket.fromBucketName`, CDK does not know
+   * its `IBucket.encryptionKey` property, and therefore will NOT give KMS permissions to the
+   * Lambda execution role of the `BucketDeployment` construct. If you want the
+   * `kms:Decrypt` and `kms:DescribeKey` permissions on the bucket's encryption key
+   * to be added automatically, reference the imported bucket via `s3.Bucket.fromBucketAttributes`
+   * and pass in the `encryptionKey` attribute explicitly.
+   *
+   * @example
+   * declare const destinationBucket: s3.Bucket;
+   * const sourceBucket = s3.Bucket.fromBucketAttributes(this, 'SourceBucket', {
+   *   bucketArn: 'arn:aws:s3:::my-source-bucket-name',
+   *   encryptionKey: kms.Key.fromKeyArn(
+   *     this,
+   *     'SourceBucketEncryptionKey',
+   *     'arn:aws:kms:us-east-1:123456789012:key/<key-id>'
+   *   ),
+   * });
+   * const deployment = new s3deploy.BucketDeployment(this, 'DeployFiles', {
+   *   sources: [s3deploy.Source.bucket(sourceBucket, 'source.zip')],
+   *   destinationBucket,
+   * });
+   *
    * @param bucket The S3 Bucket
    * @param zipObjectKey The S3 object key of the zip file with contents
    */

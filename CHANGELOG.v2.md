@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.137.0](https://github.com/aws/aws-cdk/compare/v2.136.1...v2.137.0) (2024-04-10)
+
+
+### Features
+
+* **assertions:** add stack tagging assertions ([#29247](https://github.com/aws/aws-cdk/issues/29247)) ([72f189d](https://github.com/aws/aws-cdk/commit/72f189d3287313a03b1a73a03cb098340f7b2530)), closes [#27620](https://github.com/aws/aws-cdk/issues/27620)
+* **cloudfront:** adding support for inline KeyValueStore sources ([#29419](https://github.com/aws/aws-cdk/issues/29419)) ([5675010](https://github.com/aws/aws-cdk/commit/56750107ab1946d3ff0842b3615c5f37c4bc719f)), closes [#29204](https://github.com/aws/aws-cdk/issues/29204)
+* **ec2:** `NatInstanceProviderV2` improvements ([#29729](https://github.com/aws/aws-cdk/issues/29729)) ([4eb02a4](https://github.com/aws/aws-cdk/commit/4eb02a4692f87cd9c2cea9aec6d67a25d23ba9f7)), closes [#29720](https://github.com/aws/aws-cdk/issues/29720)
+* **elasticloadbalancingv2:** application load balancer attributes ([#29586](https://github.com/aws/aws-cdk/issues/29586)) ([067c4a5](https://github.com/aws/aws-cdk/commit/067c4a5740dfdcc6c383b85bbbe65798e02b2431)), closes [#29585](https://github.com/aws/aws-cdk/issues/29585)
+
+
+### Bug Fixes
+
+* **appsync:** source api association does not depend on schema ([#29455](https://github.com/aws/aws-cdk/issues/29455)) ([92a160b](https://github.com/aws/aws-cdk/commit/92a160bb0a2c6ca528fc3f4e3ca036d0c70e6ca5)), closes [#29044](https://github.com/aws/aws-cdk/issues/29044)
+* **s3-deployment:** `BucketDeployment` fails when bootstrap stack's `StagingBucket` is encrypted with customer managed KMS key ([#29540](https://github.com/aws/aws-cdk/issues/29540)) ([0b429fb](https://github.com/aws/aws-cdk/commit/0b429fb80e7820afb606d5424476444940166ade)), closes [#25100](https://github.com/aws/aws-cdk/issues/25100) [#25100](https://github.com/aws/aws-cdk/issues/25100) [#25100](https://github.com/aws/aws-cdk/issues/25100)
+* **sns:** contentBasedDeduplication is always false for imported topic ([#29542](https://github.com/aws/aws-cdk/issues/29542)) ([4a9e683](https://github.com/aws/aws-cdk/commit/4a9e68311018a42bc5961646dda4be6861f916a5)), closes [#29532](https://github.com/aws/aws-cdk/issues/29532)
+
+
 ## [2.136.1](https://github.com/aws/aws-cdk/compare/v2.136.0...v2.136.1) (2024-04-09)
 
 

@@ -246,6 +246,14 @@ export interface NatInstanceProps {
    * @default - T2 instances are standard, while T3, T4g, and T3a instances are unlimited.
    */
   readonly creditSpecification?: CpuCredits;
+
+  /**
+   * Custom user data to run on the NAT instances
+   *
+   * @default UserData.forLinux().addCommands(...NatInstanceProviderV2.DEFAULT_USER_DATA_COMMANDS);  - Appropriate user data commands to initialize and configure the NAT instances
+   * @see https://docs.aws.amazon.com/vpc/latest/userguide/VPC_NAT_Instance.html#create-nat-ami
+   */
+  readonly userData?: UserData;
 }
 
 /**
@@ -436,9 +444,32 @@ class PrefSet<A> {
  * The instance uses Amazon Linux 2023 as the operating system.
  */
 export class NatInstanceProviderV2 extends NatProvider implements IConnectable {
+  /**
+   * Amazon Linux 2023 NAT instance user data commands
+   * Enable iptables on the instance, enable persistent IP forwarding, configure NAT on instance
+   * @see https://docs.aws.amazon.com/vpc/latest/userguide/VPC_NAT_Instance.html#create-nat-ami
+   */
+  public static readonly DEFAULT_USER_DATA_COMMANDS = [
+    'yum install iptables-services -y',
+    'systemctl enable iptables',
+    'systemctl start iptables',
+    'echo "net.ipv4.ip_forward=1" > /etc/sysctl.d/custom-ip-forwarding.conf',
+    'sudo sysctl -p /etc/sysctl.d/custom-ip-forwarding.conf',
+    "sudo /sbin/iptables -t nat -A POSTROUTING -o $(route | awk '/^default/{print $NF}') -j MASQUERADE",
+    'sudo /sbin/iptables -F FORWARD',
+    'sudo service iptables save',
+  ];
+
   private gateways: PrefSet<Instance> = new PrefSet<Instance>();
   private _securityGroup?: ISecurityGroup;
   private _connections?: Connections;
+
+  /**
+   * Array of gateway instances spawned by the provider after internal configuration
+   */
+  public get gatewayInstances(): Instance[] {
+    return this.gateways.values().map(([, instance]) => instance);
+  }
 
   constructor(private readonly props: NatInstanceProps) {
     super();
@@ -471,19 +502,11 @@ export class NatInstanceProviderV2 extends NatProvider implements IConnectable {
       this.connections.allowFromAnyIpv4(Port.allTraffic());
     }
 
-    // Enable iptables on the instance, enable persistent IP forwarding, configure NAT on instance
-    // https://docs.aws.amazon.com/vpc/latest/userguide/VPC_NAT_Instance.html#create-nat-ami
-    const userData = UserData.forLinux();
-    userData.addCommands(
-      'yum install iptables-services -y',
-      'systemctl enable iptables',
-      'systemctl start iptables',
-      'echo "net.ipv4.ip_forward=1" > /etc/sysctl.d/custom-ip-forwarding.conf',
-      'sudo sysctl -p /etc/sysctl.d/custom-ip-forwarding.conf',
-      'sudo /sbin/iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE',
-      'sudo /sbin/iptables -F FORWARD',
-      'sudo service iptables save',
-    );
+    let userData = this.props.userData;
+    if (!userData) {
+      userData = UserData.forLinux();
+      userData.addCommands(...NatInstanceProviderV2.DEFAULT_USER_DATA_COMMANDS);
+    }
 
     for (const sub of options.natSubnets) {
       const natInstance = new Instance(sub, 'NatInstance', {
@@ -495,6 +518,7 @@ export class NatInstanceProviderV2 extends NatProvider implements IConnectable {
         securityGroup: this._securityGroup,
         keyPair: this.props.keyPair,
         keyName: this.props.keyName,
+        creditSpecification: this.props.creditSpecification,
         userData,
       });
       // NAT instance routes all traffic, both ways

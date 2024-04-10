@@ -176,6 +176,41 @@ test('Merged API throws when accessing schema property', () => {
   }).toThrowError('Schema does not exist for AppSync merged APIs.');
 });
 
+test('source api association depends on source schema', () => {
+  // WHEN
+  new appsync.GraphqlApi(stack, 'merged-api', {
+    name: 'api',
+    definition: appsync.Definition.fromSourceApis({
+      sourceApis: [
+        {
+          sourceApi: api1,
+        },
+      ],
+    }),
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResource('AWS::AppSync::SourceApiAssociation', {
+    DependsOn: [
+      'api1SchemaFFA53DB6',
+    ],
+    Properties: {
+      MergedApiIdentifier: {
+        'Fn::GetAtt': [
+          'mergedapiCE4CAF34',
+          'ApiId',
+        ],
+      },
+      SourceApiIdentifier: {
+        'Fn::GetAtt': [
+          'api1A91238E2',
+          'ApiId',
+        ],
+      },
+    },
+  });
+});
+
 function validateSourceApiAssociations(stackToValidate: cdk.Stack,
   expectedMergedApiExecutionRole: string,
   expectedPolicyName: string,
