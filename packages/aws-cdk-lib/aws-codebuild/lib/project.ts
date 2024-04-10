@@ -6,6 +6,7 @@ import { CodeBuildMetrics } from './codebuild-canned-metrics.generated';
 import { CfnProject } from './codebuild.generated';
 import { CodePipelineArtifacts } from './codepipeline-artifacts';
 import { ComputeType } from './compute-type';
+import { EnvironmentType } from './environment-type';
 import { IFileSystemLocation } from './file-location';
 import { IFleet } from './fleet';
 import { LinuxArmLambdaBuildImage } from './linux-arm-lambda-build-image';
@@ -27,7 +28,7 @@ import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as s3 from '../../aws-s3';
 import * as secretsmanager from '../../aws-secretsmanager';
-import { ArnFormat, Aws, Duration, IResource, Lazy, Names, PhysicalName, Reference, Resource, SecretValue, Stack, Token, TokenComparison, Tokenization } from '../../core';
+import { ArnFormat, Aws, Duration, IResolvable, IResource, Lazy, Names, PhysicalName, Reference, Resource, SecretValue, Stack, Token, TokenComparison, Tokenization } from '../../core';
 
 const VPC_POLICY_SYM = Symbol.for('@aws-cdk/aws-codebuild.roleVpcPolicy');
 
@@ -1380,7 +1381,7 @@ export class Project extends ProjectBase {
         : undefined,
       certificate: env.certificate?.bucket.arnForObjects(env.certificate.objectKey),
       privilegedMode: env.privileged || false,
-      fleet: Lazy.any({ produce: () => this.configureFleet(env) }),
+      fleet: this.configureFleet(env),
       computeType: env.computeType || this.buildImage.defaultComputeType,
       environmentVariables: hasEnvironmentVars
         ? Project.serializeEnvVariables(vars, props.checkSecretsInPlainTextEnvVariables ?? true, this)
@@ -1412,13 +1413,17 @@ export class Project extends ProjectBase {
       : this._secondaryArtifacts;
   }
 
-  private configureFleet({ fleet }: BuildEnvironment): CfnProject.ProjectFleetProperty | undefined {
+  private configureFleet({ fleet }: BuildEnvironment): IResolvable | undefined {
     if (!fleet) {
       return undefined;
     }
 
-    const { fleetArn } = fleet;
-    return { fleetArn };
+    // If the fleetArn is resolved, the fleet is imported and we cannot validate the environment type
+    if (Token.isUnresolved(fleet.fleetArn) && this.buildImage.type !== fleet.environmentType) {
+      throw new Error(`The environment type of the fleet (${fleet.environmentType}) must match the environment type of the build image (${this.buildImage.type})`);
+    }
+
+    return Lazy.any({ produce: () => ({ fleetArn: fleet.fleetArn }) });
   }
 
   /**
@@ -1946,7 +1951,7 @@ export class LinuxBuildImage implements IBuildImage {
     });
   }
 
-  public readonly type = 'LINUX_CONTAINER';
+  public readonly type = EnvironmentType.LINUX_CONTAINER as string;
   public readonly defaultComputeType = ComputeType.SMALL;
   public readonly imageId: string;
   public readonly imagePullPrincipalType?: ImagePullPrincipalType;
@@ -1987,7 +1992,12 @@ export enum WindowsImageType {
   /**
    * The WINDOWS_SERVER_2019_CONTAINER environment type
    */
-  SERVER_2019 = 'WINDOWS_SERVER_2019_CONTAINER',
+  SERVER_2019 = EnvironmentType.WINDOWS_SERVER_2019_CONTAINER,
+
+  /**
+   * The WINDOWS_SERVER_2022_CONTAINER environment type
+   */
+  SERVER_2022 = EnvironmentType.WINDOWS_SERVER_2022_CONTAINER,
 }
 
 /**

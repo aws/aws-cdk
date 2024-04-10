@@ -6,30 +6,45 @@ const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-project-fleet');
 
 const fleet = new codebuild.Fleet(stack, 'MyFleet', {
+  fleetName: 'MyFleet',
   baseCapacity: 1,
   computeType: codebuild.FleetComputeType.SMALL,
-  environmentType: codebuild.FleetEnvironmentType.LINUX_CONTAINER,
+  environmentType: codebuild.EnvironmentType.LINUX_CONTAINER,
 });
 
-new codebuild.Project(stack, 'MyProject', {
+const project = new codebuild.Project(stack, 'MyProject', {
   buildSpec: codebuild.BuildSpec.fromObject({
     version: '0.2',
     phases: {
-      build: {
-        commands: ['echo "Nothing to do!"'],
-      },
+      build: { commands: ['echo "Nothing to do!"'] },
     },
   }),
   environment: {
     fleet,
     buildImage: codebuild.LinuxBuildImage.STANDARD_7_0,
-    // TODO probably an error, add check
-    // computeType: codebuild.ComputeType.SMALL,
   },
 });
 
-new integ.IntegTest(app, 'FleetIntegTest', {
+const test = new integ.IntegTest(app, 'FleetIntegTest', {
   testCases: [stack],
+});
+
+const listFleets = test.assertions.awsApiCall('Codebuild', 'listFleets');
+listFleets.expect(integ.ExpectedResult.objectLike({
+  fleets: integ.Match.arrayWith([fleet.fleetArn]),
+}));
+
+const startBuild = test.assertions.awsApiCall('Codebuild', 'startBuild', { projectName: project.projectName });
+
+// Describe the build and wait for the status to be successful
+test.assertions.awsApiCall('CodeBuild', 'batchGetBuilds', {
+  ids: [startBuild.getAttString('build.id')],
+}).assertAtPath(
+  'builds.0.buildStatus',
+  integ.ExpectedResult.stringLikeRegexp('SUCCEEDED'),
+).waitForAssertions({
+  totalTimeout: cdk.Duration.minutes(5),
+  interval: cdk.Duration.seconds(30),
 });
 
 app.synth();

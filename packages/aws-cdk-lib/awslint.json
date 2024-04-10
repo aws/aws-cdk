@@ -861,6 +861,7 @@
     "docs-public-apis:aws-cdk-lib.aws_cloudwatch.VariableType",
     "docs-public-apis:aws-cdk-lib.aws_codebuild.BuildEnvironmentVariableType",
     "docs-public-apis:aws-cdk-lib.aws_codebuild.ComputeType.*",
+    "docs-public-apis:aws-cdk-lib.aws_codebuild.FleetComputeType.*",
     "docs-public-apis:aws-cdk-lib.aws_codecommit.RepositoryEventTrigger.*",
     "docs-public-apis:aws-cdk-lib.aws_codepipeline.ActionCategory",
     "docs-public-apis:aws-cdk-lib.aws_codepipeline.ActionCategory.*",

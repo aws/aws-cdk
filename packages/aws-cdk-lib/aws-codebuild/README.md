@@ -427,7 +427,10 @@ to process your build requests. While being able to scale and handle high load,
 on-demand resources can also be slow to provision.
 
 Reserved capacity fleets are an alternative to on-demand.
-Dedicated instances, maintained by CodeBuild, will be ready to fulfill your build requests immediately. Skipping the provisioning step in your project will reduce your build time, at the cost of paying for these reserved instances, even when idling, until they are released.
+Dedicated instances, maintained by CodeBuild,
+will be ready to fulfill your build requests immediately.
+Skipping the provisioning step in your project will reduce your build time,
+at the cost of paying for these reserved instances, even when idling, until they are released.
 
 For more information, see [Working with reserved capacity in AWS CodeBuild](https://docs.aws.amazon.com/codebuild/latest/userguide/fleets.html) in the CodeBuild documentation.
 

@@ -1,5 +1,7 @@
 import { Construct } from 'constructs';
 import { CfnFleet } from './codebuild.generated';
+import { ComputeType } from './compute-type';
+import { EnvironmentType } from './environment-type';
 import { Arn, ArnFormat, IResource, Resource, Token } from '../../core';
 
 /**
@@ -29,7 +31,7 @@ export interface FleetProps {
   /**
    * The environment type of the fleet.
    */
-  readonly environmentType: FleetEnvironmentType;
+  readonly environmentType: EnvironmentType;
 }
 
 /**
@@ -47,6 +49,16 @@ export interface IFleet extends IResource {
    * @attribute
    */
   readonly fleetName: string;
+
+  /**
+   * The compute type of the fleet.
+   */
+  readonly computeType: FleetComputeType;
+
+  /**
+   * The environment type of the fleet.
+   */
+  readonly environmentType: EnvironmentType;
 }
 
 /**
@@ -71,6 +83,13 @@ export class Fleet extends Resource implements IFleet {
     class Import extends Resource implements IFleet {
       public readonly fleetName = Arn.split(fleetArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName!.split(':')[0];
       public readonly fleetArn = fleetArn;
+
+      public get computeType(): FleetComputeType {
+        throw new Error('Cannot retrieve computeType property from an imported Fleet');
+      }
+      public get environmentType(): EnvironmentType {
+        throw new Error('Cannot retrieve environmentType property from an imported Fleet');
+      }
     }
 
     return new Import(scope, id);
@@ -85,6 +104,16 @@ export class Fleet extends Resource implements IFleet {
    * The name of the fleet
    */
   public readonly fleetName: string;
+
+  /**
+   * The compute type of the fleet.
+   */
+  public readonly computeType: FleetComputeType;
+
+  /**
+   * The environment type of the fleet.
+   */
+  public readonly environmentType: EnvironmentType;
 
   constructor(scope: Construct, id: string, props: FleetProps) {
     if (props.fleetName && !Token.isUnresolved(props.fleetName)) {
@@ -102,8 +131,6 @@ export class Fleet extends Resource implements IFleet {
       throw new Error('baseCapacity must be greater than or equal to 1');
     }
 
-    // TODO check computeType and environmentType compatibility
-
     const resource = new CfnFleet(this, 'Resource', {
       name: props.fleetName,
       baseCapacity: props.baseCapacity,
@@ -118,76 +145,20 @@ export class Fleet extends Resource implements IFleet {
       arnFormat: ArnFormat.SLASH_RESOURCE_NAME,
     });
     this.fleetName = this.getResourceNameAttribute(resource.ref);
+    this.computeType = props.computeType;
+    this.environmentType = props.environmentType;
   }
 }
 
 /**
- * The environment type of the fleet
- */
-export enum FleetEnvironmentType {
-  /**
-   * ARM container environment
-   */
-  ARM_CONTAINER = 'ARM_CONTAINER',
-
-  /**
-   * Linux container environment
-   */
-  LINUX_CONTAINER = 'LINUX_CONTAINER',
-
-  /**
-   * Linux GPU container environment
-   */
-  LINUX_GPU_CONTAINER = 'LINUX_GPU_CONTAINER',
-
-  /**
-   * Windows Server 2019 container environment
-   */
-  WINDOWS_SERVER_2019_CONTAINER = 'WINDOWS_SERVER_2019_CONTAINER',
-
-  /**
-   * Windows Server 2022 container environment
-   */
-  WINDOWS_SERVER_2022_CONTAINER = 'WINDOWS_SERVER_2022_CONTAINER',
-}
-
-/**
- * Build machine compute type.
+ * Fleet build machine compute type. Subset of Fleet compatible {@link ComputeType} values.
+ *
+ * @see https://docs.aws.amazon.com/codebuild/latest/userguide/build-env-ref-compute-types.html#environment.types
  */
 export enum FleetComputeType {
-  /**
-   * TODO
-   *
-   * @see https://docs.aws.amazon.com/codebuild/latest/userguide/build-env-ref-compute-types.html#environment.types
-   */
-  SMALL = 'BUILD_GENERAL1_SMALL',
-
-  /**
-   * TODO
-   *
-   * @see https://docs.aws.amazon.com/codebuild/latest/userguide/build-env-ref-compute-types.html#environment.types
-   */
-  MEDIUM = 'BUILD_GENERAL1_MEDIUM',
-
-  /**
-   * TODO
-   *
-   * @see https://docs.aws.amazon.com/codebuild/latest/userguide/build-env-ref-compute-types.html#environment.types
-   */
-  LARGE = 'BUILD_GENERAL1_LARGE',
-
-  /**
-   * TODO
-   *
-   * @see https://docs.aws.amazon.com/codebuild/latest/userguide/build-env-ref-compute-types.html#environment.types
-   */
-  X_LARGE = 'BUILD_GENERAL1_XLARGE',
-
-  /**
-   * TODO
-   *
-   * @see https://docs.aws.amazon.com/codebuild/latest/userguide/build-env-ref-compute-types.html#environment.types
-   */
-  X2_LARGE = 'BUILD_GENERAL1_2XLARGE',
-
+  SMALL = ComputeType.SMALL,
+  MEDIUM = ComputeType.MEDIUM,
+  LARGE = ComputeType.LARGE,
+  X_LARGE = ComputeType.X_LARGE,
+  X2_LARGE = ComputeType.X2_LARGE,
 }

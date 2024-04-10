@@ -1,5 +1,6 @@
 import { BuildSpec } from './build-spec';
 import { ComputeType } from './compute-type';
+import { EnvironmentType } from './environment-type';
 import { runScriptLinuxBuildSpec } from './private/run-script-linux-build-spec';
 import { BuildEnvironment, IBuildImage, ImagePullPrincipalType, DockerImageOptions } from './project';
 import * as ecr from '../../aws-ecr';
@@ -87,7 +88,7 @@ export class LinuxArmBuildImage implements IBuildImage {
     });
   }
 
-  public readonly type = 'ARM_CONTAINER';
+  public readonly type = EnvironmentType.ARM_CONTAINER as string;
   public readonly defaultComputeType = ComputeType.LARGE;
   public readonly imageId: string;
   public readonly imagePullPrincipalType?: ImagePullPrincipalType;

@@ -7,9 +7,9 @@ test('can construct a default fleet', () => {
   const stack = new cdk.Stack();
 
   // WHEN
-  new codebuild.Fleet(stack, 'Fleet', {
+  const fleet = new codebuild.Fleet(stack, 'Fleet', {
     computeType: codebuild.FleetComputeType.SMALL,
-    environmentType: codebuild.FleetEnvironmentType.LINUX_CONTAINER,
+    environmentType: codebuild.EnvironmentType.LINUX_CONTAINER,
     baseCapacity: 1,
   });
 
@@ -20,18 +20,22 @@ test('can construct a default fleet', () => {
     ComputeType: 'BUILD_GENERAL1_SMALL',
     EnvironmentType: 'LINUX_CONTAINER',
   });
+  expect(cdk.Token.isUnresolved(fleet.fleetName)).toBeTruthy();
+  expect(cdk.Token.isUnresolved(fleet.fleetArn)).toBeTruthy();
+  expect(fleet.computeType).toEqual(codebuild.FleetComputeType.SMALL);
+  expect(fleet.environmentType).toEqual(codebuild.EnvironmentType.LINUX_CONTAINER);
 });
 
-test('can construct a fleet with properties', () => {
+test('can construct a fleet with optional properties', () => {
   // GIVEN
   const stack = new cdk.Stack();
 
   // WHEN
-  new codebuild.Fleet(stack, 'Fleet', {
+  const fleet = new codebuild.Fleet(stack, 'Fleet', {
     fleetName: 'MyFleet',
     baseCapacity: 2,
     computeType: codebuild.FleetComputeType.SMALL,
-    environmentType: codebuild.FleetEnvironmentType.LINUX_CONTAINER,
+    environmentType: codebuild.EnvironmentType.LINUX_CONTAINER,
   });
 
   // THEN
@@ -41,6 +45,10 @@ test('can construct a fleet with properties', () => {
     ComputeType: 'BUILD_GENERAL1_SMALL',
     EnvironmentType: 'LINUX_CONTAINER',
   });
+  expect(cdk.Token.isUnresolved(fleet.fleetName)).toBeTruthy();
+  expect(cdk.Token.isUnresolved(fleet.fleetArn)).toBeTruthy();
+  expect(fleet.computeType).toEqual(codebuild.FleetComputeType.SMALL);
+  expect(fleet.environmentType).toEqual(codebuild.EnvironmentType.LINUX_CONTAINER);
 });
 
 test('can import with a concrete ARN', () => {
@@ -57,6 +65,7 @@ test('can import with a concrete ARN', () => {
     'arn:aws:codebuild:us-east-1:123456789012:fleet/MyFleet:298f98fb-ba69-4381-a663-c8d517dd61be',
   );
   expect(fleet.fleetName).toEqual('MyFleet');
+
 });
 
 test('throws if fleet name is longer than 128 characters', () => {
@@ -68,7 +77,7 @@ test('throws if fleet name is longer than 128 characters', () => {
     new codebuild.Fleet(stack, 'Fleet', {
       fleetName: 'a'.repeat(129),
       computeType: codebuild.FleetComputeType.SMALL,
-      environmentType: codebuild.FleetEnvironmentType.LINUX_CONTAINER,
+      environmentType: codebuild.EnvironmentType.LINUX_CONTAINER,
       baseCapacity: 1,
     });
   }).toThrow(/Fleet name can not be longer than 128 characters but has 129 characters./);
@@ -83,7 +92,7 @@ test('throws if fleet name is shorter than 2 characters', () => {
     new codebuild.Fleet(stack, 'Fleet', {
       fleetName: 'a',
       computeType: codebuild.FleetComputeType.SMALL,
-      environmentType: codebuild.FleetEnvironmentType.LINUX_CONTAINER,
+      environmentType: codebuild.EnvironmentType.LINUX_CONTAINER,
       baseCapacity: 1,
     });
   }).toThrow(/Fleet name can not be shorter than 2 characters but has 1 characters./);
@@ -98,8 +107,26 @@ test('throws if baseCapacity is less than 1', () => {
     new codebuild.Fleet(stack, 'Fleet', {
       fleetName: 'MyFleet',
       computeType: codebuild.FleetComputeType.SMALL,
-      environmentType: codebuild.FleetEnvironmentType.LINUX_CONTAINER,
+      environmentType: codebuild.EnvironmentType.LINUX_CONTAINER,
       baseCapacity: 0,
     });
   }).toThrow(/baseCapacity must be greater than or equal to 1/);
+});
+
+test('throws if trying to retrieve properties from an imported Fleet', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+
+  // WHEN
+  const fleet = codebuild.Fleet.fromFleetArn(stack, 'Fleet',
+    'arn:aws:codebuild:us-east-1:123456789012:fleet/MyFleet:298f98fb-ba69-4381-a663-c8d517dd61be',
+  );
+
+  // THEN
+  expect(() => {
+    return fleet.computeType;
+  }).toThrow(/Cannot retrieve computeType property from an imported Fleet/);
+  expect(() => {
+    return fleet.environmentType;
+  }).toThrow(/Cannot retrieve environmentType property from an imported Fleet/);
 });

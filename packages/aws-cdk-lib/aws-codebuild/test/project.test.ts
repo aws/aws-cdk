@@ -822,6 +822,99 @@ describe('Environment', () => {
       }),
     });
   });
+
+  test('can set fleet', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const bucket = s3.Bucket.fromBucketName(stack, 'Bucket', 'my-bucket'); // (stack, 'Bucket');
+    const fleet = new codebuild.Fleet(stack, 'Fleet', {
+      fleetName: 'MyFleet',
+      baseCapacity: 1,
+      computeType: codebuild.FleetComputeType.SMALL,
+      environmentType: codebuild.EnvironmentType.LINUX_CONTAINER,
+    });
+
+    // WHEN
+    new codebuild.Project(stack, 'Project', {
+      source: codebuild.Source.s3({
+        bucket,
+        path: 'path',
+      }),
+      environment: {
+        fleet,
+        buildImage: codebuild.LinuxBuildImage.STANDARD_7_0,
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Project', {
+      Environment: Match.objectLike({
+        ComputeType: 'BUILD_GENERAL1_SMALL',
+        Image: 'aws/codebuild/standard:7.0',
+        Type: 'LINUX_CONTAINER',
+        Fleet: {
+          FleetArn: { 'Fn::GetAtt': ['Fleet30813DF3', 'Arn'] },
+        },
+      }),
+    });
+  });
+
+  test('can set imported fleet', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const bucket = s3.Bucket.fromBucketName(stack, 'Bucket', 'my-bucket'); // (stack, 'Bucket');
+    const fleet = codebuild.Fleet.fromFleetArn(stack, 'Fleet', 'arn:aws:codebuild:us-east-1:123456789012:fleet/MyFleet:uuid');
+
+    // WHEN
+    new codebuild.Project(stack, 'Project', {
+      source: codebuild.Source.s3({
+        bucket,
+        path: 'path',
+      }),
+      environment: {
+        fleet,
+        buildImage: codebuild.LinuxBuildImage.STANDARD_7_0,
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Project', {
+      Environment: Match.objectLike({
+        ComputeType: 'BUILD_GENERAL1_SMALL',
+        Image: 'aws/codebuild/standard:7.0',
+        Type: 'LINUX_CONTAINER',
+        Fleet: {
+          FleetArn: 'arn:aws:codebuild:us-east-1:123456789012:fleet/MyFleet:uuid',
+        },
+      }),
+    });
+  });
+
+  test('throws when fleet environmentType does not match the buildImage', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const bucket = s3.Bucket.fromBucketName(stack, 'Bucket', 'my-bucket'); // (stack, 'Bucket');
+    const fleet = new codebuild.Fleet(stack, 'Fleet', {
+      fleetName: 'MyFleet',
+      baseCapacity: 1,
+      computeType: codebuild.FleetComputeType.SMALL,
+      environmentType: codebuild.EnvironmentType.LINUX_CONTAINER,
+    });
+
+    // THEN
+    expect(() => {
+      new codebuild.Project(stack, 'Project', {
+        source: codebuild.Source.s3({
+          bucket,
+          path: 'path',
+        }),
+        environment: {
+          fleet,
+          buildImage: codebuild.WindowsBuildImage.WIN_SERVER_CORE_2019_BASE_2_0,
+        },
+      });
+    }).toThrow('The environment type of the fleet (LINUX_CONTAINER) must match the environment type of the build image (WINDOWS_SERVER_2019_CONTAINER)');
+  });
 });
 
 describe('EnvironmentVariables', () => {
