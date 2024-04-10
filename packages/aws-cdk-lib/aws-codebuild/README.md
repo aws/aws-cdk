@@ -450,7 +450,8 @@ new codebuild.Project(this, 'Project', {
 })
 ```
 
-You can also import an existing fleet to share its resources across multiple projects:
+You can also import an existing fleet to share its resources
+among several projects across multiple stacks:
 
 ```ts
 new codebuild.Project(this, 'Project', {
