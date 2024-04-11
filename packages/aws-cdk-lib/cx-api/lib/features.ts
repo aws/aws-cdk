@@ -1039,7 +1039,7 @@ export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
   [EKS_NODEGROUP_NAME]: {
     type: FlagType.BugFix,
-    summary: 'When enabled, nodegroupName attribute of the provisioned EKS NodeGroup does not have the cluster name prefix',
+    summary: 'When enabled, nodegroupName attribute of the provisioned EKS NodeGroup will not have the cluster name prefix.',
     detailsMd: `
       When this feature flag is enabled, the nodegroupName attribute will be exactly the name of the nodegroup without
       any prefix.

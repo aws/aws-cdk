@@ -312,7 +312,7 @@ _cdk.json_
 
 * `@aws-cdk/aws-eks:nodegroupNameAttribute`
 
-When enabled, nodegroupName attribute of the provisioned EKS NodeGroup does not have the cluster name prefix.
+When enabled, nodegroupName attribute of the provisioned EKS NodeGroup will not have the cluster name prefix.
 
 When this feature flag is enabled, the nodegroupName attribute will be exactly the name of the nodegroup
 without any prefix.
