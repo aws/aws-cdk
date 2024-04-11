@@ -218,7 +218,8 @@ new ec2.Vpc(this, 'TheVPC', {
 provider.connections.allowFrom(ec2.Peer.ipv4('1.2.3.4/8'), ec2.Port.tcp(80));
 ```
 
-You can also customize the characteristics of your NAT instances, as well as their initialization scripts:
+You can also customize the characteristics of your NAT instances, including their security group,
+as well as their initialization scripts:
 
 ```ts
 declare const bucket: s3.Bucket;
@@ -233,15 +234,19 @@ userData.addCommands(
 const provider = ec2.NatProvider.instanceV2({
   instanceType: new ec2.InstanceType('t3.small'),
   creditSpecification: ec2.CpuCredits.UNLIMITED,
+  defaultAllowedTraffic: ec2.NatTrafficDirection.NONE,
 });
 
-new ec2.Vpc(this, 'TheVPC', {
+const vpc = new ec2.Vpc(this, 'TheVPC', {
   natGatewayProvider: provider,
   natGateways: 2,
 });
 
+const securityGroup = new ec2.SecurityGroup(this, 'SecurityGroup', { vpc });
+    securityGroup.addEgressRule(ec2.Peer.anyIpv4(), ec2.Port.tcp(443));
 for (const gateway of provider.gatewayInstances) {
   bucket.grantWrite(gateway);
+  gateway.addSecurityGroup(securityGroup);
 }
 ```
 
