@@ -6,7 +6,6 @@ import { IRole, ManagedPolicy, PolicyStatement, Role, ServicePrincipal } from '.
 import { IResource, Resource, Annotations, withResolved, FeatureFlags } from '../../core';
 import * as cxapi from '../../cx-api';
 
-
 /**
  * NodeGroup interface
  */
