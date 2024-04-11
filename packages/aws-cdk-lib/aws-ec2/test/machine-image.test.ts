@@ -435,6 +435,35 @@ test('throw error if virtualization param is set for Amazon Linux 2023', () => {
   }).toThrow(/Virtualization parameter does not exist in SSM parameter name for Amazon Linux 2023./);
 });
 
+describe('windows', () => {
+  test('latestWindows', () => {
+    // WHEN
+    ec2.MachineImage.latestWindows(
+      ec2.WindowsVersion.WINDOWS_SERVER_2022_ENGLISH_CORE_BASE,
+    ).getImage(stack);
+
+    // THEN
+    Template.fromStack(stack).hasParameter('*', {
+      Type: 'AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>',
+      Default: '/aws/service/ami-windows-latest/Windows_Server-2022-English-Core-Base',
+    });
+  });
+  test('latestWindows in agnostic stack', () => {
+    // WHEN
+    app = new App();
+    stack = new Stack(app, 'Stack');
+    ec2.MachineImage.latestWindows(
+      ec2.WindowsVersion.WINDOWS_SERVER_2022_ENGLISH_CORE_BASE,
+    ).getImage(stack);
+
+    // THEN
+    Template.fromStack(stack).hasParameter('*', {
+      Type: 'AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>',
+      Default: '/aws/service/ami-windows-latest/Windows_Server-2022-English-Core-Base',
+    });
+  });
+});
+
 function isWindowsUserData(ud: ec2.UserData) {
   return ud.render().indexOf('powershell') > -1;
 }
