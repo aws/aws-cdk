@@ -3,7 +3,9 @@ import { Cluster, ICluster, IpFamily } from './cluster';
 import { CfnNodegroup } from './eks.generated';
 import { InstanceType, ISecurityGroup, SubnetSelection, InstanceArchitecture, InstanceClass, InstanceSize } from '../../aws-ec2';
 import { IRole, ManagedPolicy, PolicyStatement, Role, ServicePrincipal } from '../../aws-iam';
-import { IResource, Resource, Annotations, withResolved } from '../../core';
+import { IResource, Resource, Annotations, withResolved, FeatureFlags } from '../../core';
+import * as cxapi from '../../cx-api';
+
 
 /**
  * NodeGroup interface
@@ -537,7 +539,12 @@ export class Nodegroup extends Resource implements INodegroup {
       resource: 'nodegroup',
       resourceName: this.physicalName,
     });
-    this.nodegroupName = this.getResourceNameAttribute(resource.ref);
+
+    if (FeatureFlags.of(this).isEnabled(cxapi.EKS_NODEGROUP_NAME)) {
+      this.nodegroupName = this.getResourceNameAttribute(resource.attrNodegroupName);
+    } else {
+      this.nodegroupName = this.getResourceNameAttribute(resource.ref);
+    }
   }
 
   private validateUpdateConfig(maxUnavailable?: number, maxUnavailablePercentage?: number) {

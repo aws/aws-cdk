@@ -101,6 +101,7 @@ export const LAMBDA_PERMISSION_LOGICAL_ID_FOR_LAMBDA_ACTION = '@aws-cdk/aws-clou
 export const CODEPIPELINE_CROSS_ACCOUNT_KEYS_DEFAULT_VALUE_TO_FALSE = '@aws-cdk/aws-codepipeline:crossAccountKeysDefaultValueToFalse';
 export const CODEPIPELINE_DEFAULT_PIPELINE_TYPE_TO_V2 = '@aws-cdk/aws-codepipeline:defaultPipelineTypeToV2';
 export const KMS_REDUCE_CROSS_ACCOUNT_REGION_POLICY_SCOPE = '@aws-cdk/aws-kms:reduceCrossAccountRegionPolicyScope';
+export const EKS_NODEGROUP_NAME = '@aws-cdk/aws-eks:nodegroupNameAttribute';
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
@@ -1032,6 +1033,17 @@ export const FLAGS: Record<string, FlagInfo> = {
       '*' to this specific granting KMS key.
     `,
     introducedIn: { v2: '2.134.0' },
+    recommendedValue: true,
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [EKS_NODEGROUP_NAME]: {
+    type: FlagType.BugFix,
+    summary: 'When enabled, nodegroupName attribute of the provisioned EKS NodeGroup does not have the cluster name prefix',
+    detailsMd: `
+      When this feature flag is enabled, the nodegroupName attribute will be exactly the name of the nodegroup only.
+    `,
+    introducedIn: { v2: '2.138.0' },
     recommendedValue: true,
   },
 };
