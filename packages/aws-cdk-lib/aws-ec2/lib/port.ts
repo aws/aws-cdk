@@ -208,8 +208,6 @@ export class Port {
   public static readonly HTTPS = Port.tcp(443);
   /** Well-known SMB port (TCP 445) */
   public static readonly SMB = Port.tcp(445);
-  /** Well-known SMTPS port (TCP 465) */
-  public static readonly SMTPS = Port.tcp(465);
   /** Well-known IMAPS port (TCP 993) */
   public static readonly IMAPS = Port.tcp(993);
   /** Well-known POP3S port (TCP 995) */
