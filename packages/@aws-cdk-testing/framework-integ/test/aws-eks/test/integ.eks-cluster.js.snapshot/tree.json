@@ -7365,14 +7365,6 @@
               "version": "0.0.0"
             }
           },
-          "NodegrouopName": {
-            "id": "NodegrouopName",
-            "path": "aws-cdk-eks-cluster/NodegrouopName",
-            "constructInfo": {
-              "fqn": "aws-cdk-lib.CfnOutput",
-              "version": "0.0.0"
-            }
-          },
           "BootstrapVersion": {
             "id": "BootstrapVersion",
             "path": "aws-cdk-eks-cluster/BootstrapVersion",
