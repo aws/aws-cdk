@@ -1,3 +1,4 @@
+"use strict";
 var __create = Object.create;
 var __defProp = Object.defineProperty;
 var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
@@ -6954,7 +6955,7 @@ var require_dist_cjs28 = __commonJS({
   }
 });
 
-// ../../../node_modules/uuid/dist/esm-node/rng.js
+// ../../../node_modules/@smithy/middleware-retry/node_modules/uuid/dist/esm-node/rng.js
 function rng() {
   if (poolPtr > rnds8Pool.length - 16) {
     import_crypto.default.randomFillSync(rnds8Pool);
@@ -6964,36 +6965,39 @@ function rng() {
 }
 var import_crypto, rnds8Pool, poolPtr;
 var init_rng = __esm({
-  "../../../node_modules/uuid/dist/esm-node/rng.js"() {
+  "../../../node_modules/@smithy/middleware-retry/node_modules/uuid/dist/esm-node/rng.js"() {
     import_crypto = __toESM(require("crypto"));
     rnds8Pool = new Uint8Array(256);
     poolPtr = rnds8Pool.length;
   }
 });
 
-// ../../../node_modules/uuid/dist/esm-node/regex.js
+// ../../../node_modules/@smithy/middleware-retry/node_modules/uuid/dist/esm-node/regex.js
 var regex_default;
 var init_regex = __esm({
-  "../../../node_modules/uuid/dist/esm-node/regex.js"() {
+  "../../../node_modules/@smithy/middleware-retry/node_modules/uuid/dist/esm-node/regex.js"() {
     regex_default = /^(?:[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}|00000000-0000-0000-0000-000000000000)$/i;
   }
 });
 
-// ../../../node_modules/uuid/dist/esm-node/validate.js
+// ../../../node_modules/@smithy/middleware-retry/node_modules/uuid/dist/esm-node/validate.js
 function validate(uuid) {
   return typeof uuid === "string" && regex_default.test(uuid);
 }
 var validate_default;
 var init_validate = __esm({
-  "../../../node_modules/uuid/dist/esm-node/validate.js"() {
+  "../../../node_modules/@smithy/middleware-retry/node_modules/uuid/dist/esm-node/validate.js"() {
     init_regex();
     validate_default = validate;
   }
 });
 
-// ../../../node_modules/uuid/dist/esm-node/stringify.js
+// ../../../node_modules/@smithy/middleware-retry/node_modules/uuid/dist/esm-node/stringify.js
+function unsafeStringify(arr, offset = 0) {
+  return byteToHex[arr[offset + 0]] + byteToHex[arr[offset + 1]] + byteToHex[arr[offset + 2]] + byteToHex[arr[offset + 3]] + "-" + byteToHex[arr[offset + 4]] + byteToHex[arr[offset + 5]] + "-" + byteToHex[arr[offset + 6]] + byteToHex[arr[offset + 7]] + "-" + byteToHex[arr[offset + 8]] + byteToHex[arr[offset + 9]] + "-" + byteToHex[arr[offset + 10]] + byteToHex[arr[offset + 11]] + byteToHex[arr[offset + 12]] + byteToHex[arr[offset + 13]] + byteToHex[arr[offset + 14]] + byteToHex[arr[offset + 15]];
+}
 function stringify(arr, offset = 0) {
-  const uuid = (byteToHex[arr[offset + 0]] + byteToHex[arr[offset + 1]] + byteToHex[arr[offset + 2]] + byteToHex[arr[offset + 3]] + "-" + byteToHex[arr[offset + 4]] + byteToHex[arr[offset + 5]] + "-" + byteToHex[arr[offset + 6]] + byteToHex[arr[offset + 7]] + "-" + byteToHex[arr[offset + 8]] + byteToHex[arr[offset + 9]] + "-" + byteToHex[arr[offset + 10]] + byteToHex[arr[offset + 11]] + byteToHex[arr[offset + 12]] + byteToHex[arr[offset + 13]] + byteToHex[arr[offset + 14]] + byteToHex[arr[offset + 15]]).toLowerCase();
+  const uuid = unsafeStringify(arr, offset);
   if (!validate_default(uuid)) {
     throw TypeError("Stringified UUID is invalid");
   }
@@ -7001,17 +7005,17 @@ function stringify(arr, offset = 0) {
 }
 var byteToHex, stringify_default;
 var init_stringify = __esm({
-  "../../../node_modules/uuid/dist/esm-node/stringify.js"() {
+  "../../../node_modules/@smithy/middleware-retry/node_modules/uuid/dist/esm-node/stringify.js"() {
     init_validate();
     byteToHex = [];
     for (let i = 0; i < 256; ++i) {
-      byteToHex.push((i + 256).toString(16).substr(1));
+      byteToHex.push((i + 256).toString(16).slice(1));
     }
     stringify_default = stringify;
   }
 });
 
-// ../../../node_modules/uuid/dist/esm-node/v1.js
+// ../../../node_modules/@smithy/middleware-retry/node_modules/uuid/dist/esm-node/v1.js
 function v1(options, buf, offset) {
   let i = buf && offset || 0;
   const b = buf || new Array(16);
@@ -7058,11 +7062,11 @@ function v1(options, buf, offset) {
   for (let n = 0; n < 6; ++n) {
     b[i + n] = node[n];
   }
-  return buf || stringify_default(b);
+  return buf || unsafeStringify(b);
 }
 var _nodeId, _clockseq, _lastMSecs, _lastNSecs, v1_default;
 var init_v1 = __esm({
-  "../../../node_modules/uuid/dist/esm-node/v1.js"() {
+  "../../../node_modules/@smithy/middleware-retry/node_modules/uuid/dist/esm-node/v1.js"() {
     init_rng();
     init_stringify();
     _lastMSecs = 0;
@@ -7071,7 +7075,7 @@ var init_v1 = __esm({
   }
 });
 
-// ../../../node_modules/uuid/dist/esm-node/parse.js
+// ../../../node_modules/@smithy/middleware-retry/node_modules/uuid/dist/esm-node/parse.js
 function parse(uuid) {
   if (!validate_default(uuid)) {
     throw TypeError("Invalid UUID");
@@ -7098,13 +7102,13 @@ function parse(uuid) {
 }
 var parse_default;
 var init_parse = __esm({
-  "../../../node_modules/uuid/dist/esm-node/parse.js"() {
+  "../../../node_modules/@smithy/middleware-retry/node_modules/uuid/dist/esm-node/parse.js"() {
     init_validate();
     parse_default = parse;
   }
 });
 
-// ../../../node_modules/uuid/dist/esm-node/v35.js
+// ../../../node_modules/@smithy/middleware-retry/node_modules/uuid/dist/esm-node/v35.js
 function stringToBytes(str) {
   str = unescape(encodeURIComponent(str));
   const bytes = [];
@@ -7113,15 +7117,16 @@ function stringToBytes(str) {
   }
   return bytes;
 }
-function v35_default(name, version2, hashfunc) {
+function v35(name, version2, hashfunc) {
   function generateUUID(value, namespace, buf, offset) {
+    var _namespace;
     if (typeof value === "string") {
       value = stringToBytes(value);
     }
     if (typeof namespace === "string") {
       namespace = parse_default(namespace);
     }
-    if (namespace.length !== 16) {
+    if (((_namespace = namespace) === null || _namespace === void 0 ? void 0 : _namespace.length) !== 16) {
       throw TypeError("Namespace must be array-like (16 iterable integer values, 0-255)");
     }
     let bytes = new Uint8Array(16 + value.length);
@@ -7137,7 +7142,7 @@ function v35_default(name, version2, hashfunc) {
       }
       return buf;
     }
-    return stringify_default(bytes);
+    return unsafeStringify(bytes);
   }
   try {
     generateUUID.name = name;
@@ -7149,7 +7154,7 @@ function v35_default(name, version2, hashfunc) {
 }
 var DNS, URL2;
 var init_v35 = __esm({
-  "../../../node_modules/uuid/dist/esm-node/v35.js"() {
+  "../../../node_modules/@smithy/middleware-retry/node_modules/uuid/dist/esm-node/v35.js"() {
     init_stringify();
     init_parse();
     DNS = "6ba7b810-9dad-11d1-80b4-00c04fd430c8";
@@ -7157,7 +7162,7 @@ var init_v35 = __esm({
   }
 });
 
-// ../../../node_modules/uuid/dist/esm-node/md5.js
+// ../../../node_modules/@smithy/middleware-retry/node_modules/uuid/dist/esm-node/md5.js
 function md5(bytes) {
   if (Array.isArray(bytes)) {
     bytes = Buffer.from(bytes);
@@ -7168,25 +7173,39 @@ function md5(bytes) {
 }
 var import_crypto2, md5_default;
 var init_md5 = __esm({
-  "../../../node_modules/uuid/dist/esm-node/md5.js"() {
+  "../../../node_modules/@smithy/middleware-retry/node_modules/uuid/dist/esm-node/md5.js"() {
     import_crypto2 = __toESM(require("crypto"));
     md5_default = md5;
   }
 });
 
-// ../../../node_modules/uuid/dist/esm-node/v3.js
+// ../../../node_modules/@smithy/middleware-retry/node_modules/uuid/dist/esm-node/v3.js
 var v3, v3_default;
 var init_v3 = __esm({
-  "../../../node_modules/uuid/dist/esm-node/v3.js"() {
+  "../../../node_modules/@smithy/middleware-retry/node_modules/uuid/dist/esm-node/v3.js"() {
     init_v35();
     init_md5();
-    v3 = v35_default("v3", 48, md5_default);
+    v3 = v35("v3", 48, md5_default);
     v3_default = v3;
   }
 });
 
-// ../../../node_modules/uuid/dist/esm-node/v4.js
+// ../../../node_modules/@smithy/middleware-retry/node_modules/uuid/dist/esm-node/native.js
+var import_crypto3, native_default;
+var init_native = __esm({
+  "../../../node_modules/@smithy/middleware-retry/node_modules/uuid/dist/esm-node/native.js"() {
+    import_crypto3 = __toESM(require("crypto"));
+    native_default = {
+      randomUUID: import_crypto3.default.randomUUID
+    };
+  }
+});
+
+// ../../../node_modules/@smithy/middleware-retry/node_modules/uuid/dist/esm-node/v4.js
 function v4(options, buf, offset) {
+  if (native_default.randomUUID && !buf && !options) {
+    return native_default.randomUUID();
+  }
   options = options || {};
   const rnds = options.random || (options.rng || rng)();
   rnds[6] = rnds[6] & 15 | 64;
@@ -7198,69 +7217,70 @@ function v4(options, buf, offset) {
     }
     return buf;
   }
-  return stringify_default(rnds);
+  return unsafeStringify(rnds);
 }
 var v4_default;
 var init_v4 = __esm({
-  "../../../node_modules/uuid/dist/esm-node/v4.js"() {
+  "../../../node_modules/@smithy/middleware-retry/node_modules/uuid/dist/esm-node/v4.js"() {
+    init_native();
     init_rng();
     init_stringify();
     v4_default = v4;
   }
 });
 
-// ../../../node_modules/uuid/dist/esm-node/sha1.js
+// ../../../node_modules/@smithy/middleware-retry/node_modules/uuid/dist/esm-node/sha1.js
 function sha1(bytes) {
   if (Array.isArray(bytes)) {
     bytes = Buffer.from(bytes);
   } else if (typeof bytes === "string") {
     bytes = Buffer.from(bytes, "utf8");
   }
-  return import_crypto3.default.createHash("sha1").update(bytes).digest();
+  return import_crypto4.default.createHash("sha1").update(bytes).digest();
 }
-var import_crypto3, sha1_default;
+var import_crypto4, sha1_default;
 var init_sha1 = __esm({
-  "../../../node_modules/uuid/dist/esm-node/sha1.js"() {
-    import_crypto3 = __toESM(require("crypto"));
+  "../../../node_modules/@smithy/middleware-retry/node_modules/uuid/dist/esm-node/sha1.js"() {
+    import_crypto4 = __toESM(require("crypto"));
     sha1_default = sha1;
   }
 });
 
-// ../../../node_modules/uuid/dist/esm-node/v5.js
+// ../../../node_modules/@smithy/middleware-retry/node_modules/uuid/dist/esm-node/v5.js
 var v5, v5_default;
 var init_v5 = __esm({
-  "../../../node_modules/uuid/dist/esm-node/v5.js"() {
+  "../../../node_modules/@smithy/middleware-retry/node_modules/uuid/dist/esm-node/v5.js"() {
     init_v35();
     init_sha1();
-    v5 = v35_default("v5", 80, sha1_default);
+    v5 = v35("v5", 80, sha1_default);
     v5_default = v5;
   }
 });
 
-// ../../../node_modules/uuid/dist/esm-node/nil.js
+// ../../../node_modules/@smithy/middleware-retry/node_modules/uuid/dist/esm-node/nil.js
 var nil_default;
 var init_nil = __esm({
-  "../../../node_modules/uuid/dist/esm-node/nil.js"() {
+  "../../../node_modules/@smithy/middleware-retry/node_modules/uuid/dist/esm-node/nil.js"() {
     nil_default = "00000000-0000-0000-0000-000000000000";
   }
 });
 
-// ../../../node_modules/uuid/dist/esm-node/version.js
+// ../../../node_modules/@smithy/middleware-retry/node_modules/uuid/dist/esm-node/version.js
 function version(uuid) {
   if (!validate_default(uuid)) {
     throw TypeError("Invalid UUID");
   }
-  return parseInt(uuid.substr(14, 1), 16);
+  return parseInt(uuid.slice(14, 15), 16);
 }
 var version_default;
 var init_version = __esm({
-  "../../../node_modules/uuid/dist/esm-node/version.js"() {
+  "../../../node_modules/@smithy/middleware-retry/node_modules/uuid/dist/esm-node/version.js"() {
     init_validate();
     version_default = version;
   }
 });
 
-// ../../../node_modules/uuid/dist/esm-node/index.js
+// ../../../node_modules/@smithy/middleware-retry/node_modules/uuid/dist/esm-node/index.js
 var esm_node_exports = {};
 __export(esm_node_exports, {
   NIL: () => nil_default,
@@ -7274,7 +7294,7 @@ __export(esm_node_exports, {
   version: () => version_default
 });
 var init_esm_node = __esm({
-  "../../../node_modules/uuid/dist/esm-node/index.js"() {
+  "../../../node_modules/@smithy/middleware-retry/node_modules/uuid/dist/esm-node/index.js"() {
     init_v1();
     init_v3();
     init_v4();
@@ -14666,7 +14686,7 @@ var require_dist_cjs43 = __commonJS({
     var import_util_buffer_from = require_dist_cjs12();
     var import_util_utf8 = require_dist_cjs13();
     var import_buffer = require("buffer");
-    var import_crypto4 = require("crypto");
+    var import_crypto5 = require("crypto");
     var _Hash = class _Hash {
       constructor(algorithmIdentifier, secret) {
         this.algorithmIdentifier = algorithmIdentifier;
@@ -14680,7 +14700,7 @@ var require_dist_cjs43 = __commonJS({
         return Promise.resolve(this.hash.digest());
       }
       reset() {
-        this.hash = this.secret ? (0, import_crypto4.createHmac)(this.algorithmIdentifier, castSourceData(this.secret)) : (0, import_crypto4.createHash)(this.algorithmIdentifier);
+        this.hash = this.secret ? (0, import_crypto5.createHmac)(this.algorithmIdentifier, castSourceData(this.secret)) : (0, import_crypto5.createHash)(this.algorithmIdentifier);
       }
     };
     __name(_Hash, "Hash");
@@ -32410,6 +32430,7 @@ var CustomResourceHandler = class {
   constructor(event, context) {
     this.event = event;
     this.context = context;
+    this.timedOut = false;
     this.timeout = setTimeout(async () => {
       await this.respond({
         status: "FAILED",
@@ -32421,9 +32442,6 @@ var CustomResourceHandler = class {
     this.event = event;
     this.physicalResourceId = extractPhysicalResourceId(event);
   }
-  physicalResourceId;
-  timeout;
-  timedOut = false;
   /**
    * Handles executing the custom resource event. If `stateMachineArn` is present
    * in the props then trigger the waiter statemachine
@@ -32557,7 +32575,6 @@ var AssertionHandler = class extends CustomResourceHandler {
   }
 };
 var MatchCreator = class {
-  parsedObj;
   constructor(obj) {
     this.parsedObj = {
       matcher: obj
