@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/507d58d75d14568b58322e0f4a8794e043b357384bf381e8a0ec11115ffcea18.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/88889d54b71a3d53a33cda01fae683ece81a3b92b13206de07579e5dcb02d45e.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -121,10 +121,7 @@
         "/aws-cdk-vpc-nat-instance-v2-custom/MyVpc/PublicSubnet1/NatInstance/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyVpcPublicSubnet1NatInstance8E94E5F7",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "MyVpcPublicSubnet1NatInstance8E94E5F7"
           }
         ],
         "/aws-cdk-vpc-nat-instance-v2-custom/MyVpc/PublicSubnet2/Subnet": [
@@ -172,10 +169,7 @@
         "/aws-cdk-vpc-nat-instance-v2-custom/MyVpc/PublicSubnet2/NatInstance/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyVpcPublicSubnet2NatInstance04BCE4E3",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
+            "data": "MyVpcPublicSubnet2NatInstance04BCE4E3"
           }
         ],
         "/aws-cdk-vpc-nat-instance-v2-custom/MyVpc/PrivateSubnet1/Subnet": [
@@ -248,6 +242,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "SsmParameterValueawsserviceamiamazonlinuxlatestal2023amikernel61x8664C96584B6F00A464EAD1953AFF4B05118Parameter"
+          }
+        ],
+        "/aws-cdk-vpc-nat-instance-v2-custom/SecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SecurityGroupDD263621"
           }
         ],
         "/aws-cdk-vpc-nat-instance-v2-custom/ALB/Resource": [
@@ -339,15 +339,6 @@
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
-        ],
-        "SecurityGroupDD263621": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "SecurityGroupDD263621",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
         ]
       },
       "displayName": "aws-cdk-vpc-nat-instance-v2-custom"
@@ -369,7 +360,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/5cd83a484875f9d6233167e37f30b900302111df0c13da4284a653312d75d2f0.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/27e505f777e93eb29657c433163eea53b041327f682383a9fcd815c1527ee71f.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
