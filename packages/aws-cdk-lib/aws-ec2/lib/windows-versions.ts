@@ -77,8 +77,8 @@ export enum WindowsVersion {
   WINDOWS_SERVER_2003_R2_SP2_LANGUAGE_PACKS_64BIT_BASE = 'Windows_Server-2003-R2_SP2-Language_Packs-64Bit-Base',
   /** 2003 - End */
   /** 2007 - Start */
-  /** @deprecated - reached Microsoft End-of-Support */
-  WINDOWS_SERVER_2007_R2_SP1_LANGUAGE_PACKS_64BIT_BASE = 'Windows_Server-2008-R2_SP1-Language_Packs-64Bit-Base',
+  /** @deprecated - use WINDOWS_SERVER_2008_R2_SP1_LANGUAGE_PACKS_64BIT_BASE, reached Microsoft End-of-Support */
+  WINDOWS_SERVER_2007_R2_SP1_LANGUAGE_PACKS_64BIT_BASE = 'Windows_Server-2007-R2_SP1-Language_Packs-64Bit-Base',
   /** 2007 - End */
   /** 2008 - Start */
   /** @deprecated - reached Microsoft End-of-Support */
@@ -122,10 +122,14 @@ export enum WindowsVersion {
   /** @deprecated - use WINDOWS_SERVER_2008_R2_SP1_PORTUGUESE_BRAZIL_64BIT_BASE */
   WINDOWS_SERVER_2008_R2_SP1_PORTUGESE_BRAZIL_64BIT_BASE = 'Windows_Server-2008-R2_SP1-Portugese_Brazil-64Bit-Base',
   /** @deprecated - reached Microsoft End-of-Support */
+  WINDOWS_SERVER_2008_R2_SP1_LANGUAGE_PACKS_64BIT_BASE = 'Windows_Server-2008-R2_SP1-Language_Packs-64Bit-Base',
+  /** @deprecated - reached Microsoft End-of-Support */
   // eslint-disable-next-line max-len
   WINDOWS_SERVER_2008_R2_SP1_LANGUAGE_PACKS_64BIT_SQL_2008_R2_SP3_STANDARD = 'Windows_Server-2008-R2_SP1-Language_Packs-64Bit-SQL_2008_R2_SP3_Standard',
+  /** @deprecated - use WINDOWS_SERVER_2008_R2_SP1_ENGLISH_64BIT_SQL_2012_RTM_SP2_ENTERPRISE, reached Microsoft End-of-Support */
+  WINDOWS_SERVER_2008_R2_SP1_ENGLISH_61BIT_SQL_2012_RTM_SP2_ENTERPRISE = 'Windows_Server-2008-R2_SP1-English-61Bit-SQL_2012_RTM_SP2_Enterprise',
   /** @deprecated - reached Microsoft End-of-Support */
-  WINDOWS_SERVER_2008_R2_SP1_ENGLISH_61BIT_SQL_2012_RTM_SP2_ENTERPRISE = 'Windows_Server-2008-R2_SP1-English-64Bit-SQL_2012_RTM_SP2_Enterprise',
+  WINDOWS_SERVER_2008_R2_SP1_ENGLISH_64BIT_SQL_2012_RTM_SP2_ENTERPRISE = 'Windows_Server-2008-R2_SP1-English-64Bit-SQL_2012_RTM_SP2_Enterprise',
   /** @deprecated - reached Microsoft End-of-Support */
   WINDOWS_SERVER_2008_R2_SP1_ENGLISH_64BIT_SQL_2012_SP4_STANDARD = 'Windows_Server-2008-R2_SP1-English-64Bit-SQL_2012_SP4_Standard',
   /** @deprecated - reached Microsoft End-of-Support */
@@ -160,10 +164,14 @@ export enum WindowsVersion {
   WINDOWS_SERVER_2012_R2_RTM_JAPANESE_64BIT_BASE = 'Windows_Server-2012-R2_RTM-Japanese-64Bit-Base',
   /** @deprecated - reached Microsoft End-of-Support */
   WINDOWS_SERVER_2012_RTM_ENGLISH_64BIT_SQL_2008_R2_SP3_EXPRESS = 'Windows_Server-2012-RTM-English-64Bit-SQL_2008_R2_SP3_Express',
+  /** @deprecated - use WINDOWS_SERVER_2012_R2_SP1_PORTUGUESE_BRAZIL_64BIT_CORE, reached Microsoft End-of-Support */
+  WINDOWS_SERVER_2008_R2_SP1_PORTUGUESE_BRAZIL_64BIT_CORE = 'Windows_Server-2008-R2_SP1-Portuguese_Brazil-64Bit-Core',
   /** @deprecated - reached Microsoft End-of-Support */
-  WINDOWS_SERVER_2012_R2_SP1_PORTUGUESE_BRAZIL_64BIT_CORE = 'Windows_Server-2008-R2_SP1-Portuguese_Brazil-64Bit-Core',
+  WINDOWS_SERVER_2012_R2_SP1_PORTUGUESE_BRAZIL_64BIT_CORE = 'Windows_Server-2012-R2_SP1-Portuguese_Brazil-64Bit-Core',
+  /** @deprecated - use WINDOWS_SERVER_2012_R2_SP1_PORTUGESE_BRAZIL_64BIT_CORE, reached Microsoft End-of-Support */
+  WINDOWS_SERVER_2008_R2_SP1_PORTUGESE_BRAZIL_64BIT_CORE = 'Windows_Server-2008-R2_SP1-Portugese_Brazil-64Bit-Core',
   /** @deprecated - use WINDOWS_SERVER_2012_R2_SP1_PORTUGUESE_BRAZIL_64BIT_CORE*/
-  WINDOWS_SERVER_2012_R2_SP1_PORTUGESE_BRAZIL_64BIT_CORE = 'Windows_Server-2008-R2_SP1-Portugese_Brazil-64Bit-Core',
+  WINDOWS_SERVER_2012_R2_SP1_PORTUGESE_BRAZIL_64BIT_CORE = 'Windows_Server-2012-R2_SP1-Portugese_Brazil-64Bit-Core',
   /** @deprecated - reached Microsoft End-of-Support */
   WINDOWS_SERVER_2012_R2_RTM_ENGLISH_64BIT_SQL_2016_SP2_STANDARD = 'Windows_Server-2012-R2_RTM-English-64Bit-SQL_2016_SP2_Standard',
   /** @deprecated - reached Microsoft End-of-Support */
@@ -202,8 +210,10 @@ export enum WindowsVersion {
   WINDOWS_SERVER_2012_RTM_ENGLISH_64BIT_SQL_2012_SP4_EXPRESS = 'Windows_Server-2012-RTM-English-64Bit-SQL_2012_SP4_Express',
   /** @deprecated - reached Microsoft End-of-Support */
   WINDOWS_SERVER_2012_RTM_ENGLISH_64BIT_SQL_2014_SP3_STANDARD = 'Windows_Server-2012-RTM-English-64Bit-SQL_2014_SP3_Standard',
+  /** @deprecated - use WINDOWS_SERVER_2012_RTM_JAPANESE_64BIT_SQL_2012_SP4_STANDARD, reached Microsoft End-of-Support */
+  WINDOWS_SERVER_2012_RTM_JAPANESE_64BIT_2012_SP4_STANDARD = 'Windows_Server-2012-RTM-Japanese-64Bit_2012_SP4_Standard',
   /** @deprecated - reached Microsoft End-of-Support */
-  WINDOWS_SERVER_2012_RTM_JAPANESE_64BIT_2012_SP4_STANDARD = 'Windows_Server-2012-RTM-Japanese-64Bit-SQL_2012_SP4_Standard',
+  WINDOWS_SERVER_2012_RTM_JAPANESE_64BIT_SQL_2012_SP4_STANDARD = 'Windows_Server-2012-RTM-Japanese-64Bit-SQL_2012_SP4_Standard',
   /** @deprecated - reached Microsoft End-of-Support */
   WINDOWS_SERVER_2012_R2_RTM_ENGLISH_64BIT_SQL_2014_SP2_EXPRESS = 'Windows_Server-2012-R2_RTM-English-64Bit-SQL_2014_SP2_Express',
   /** @deprecated - reached Microsoft End-of-Support */
@@ -218,8 +228,10 @@ export enum WindowsVersion {
   WINDOWS_SERVER_2012_R2_RTM_ENGLISH_64BIT_SQL_2014_SP3_ENTERPRISE = 'Windows_Server-2012-R2_RTM-English-64Bit-SQL_2014_SP3_Enterprise',
   /** @deprecated - reached Microsoft End-of-Support */
   WINDOWS_SERVER_2012_R2_RTM_JAPANESE_64BIT_SQL_2016_SP2_STANDARD = 'Windows_Server-2012-R2_RTM-Japanese-64Bit-SQL_2016_SP2_Standard',
+  /** @deprecated - use WINDOWS_SERVER_2012_RTM_ENGLISH_64BIT_SQL_2014_SP3_WEB, reached Microsoft End-of-Support */
+  WINDOWS_SERVER_2012_RTM_ENGLISH_64BIT_2014_SP3_WEB = 'Windows_Server-2012-RTM-English-64Bit_2014_SP3_Web',
   /** @deprecated - reached Microsoft End-of-Support */
-  WINDOWS_SERVER_2012_RTM_ENGLISH_64BIT_2014_SP3_WEB = 'Windows_Server-2012-RTM-English-64Bit-SQL_2014_SP3_Web',
+  WINDOWS_SERVER_2012_RTM_ENGLISH_64BIT_SQL_2014_SP3_WEB = 'Windows_Server-2012-RTM-English-64Bit-SQL_2014_SP3_Web',
   /** @deprecated - reached Microsoft End-of-Support */
   WINDOWS_SERVER_2012_RTM_SWEDISH_64BIT_BASE = 'Windows_Server-2012-RTM-Swedish-64Bit-Base',
   /** @deprecated - reached Microsoft End-of-Support */
@@ -260,8 +272,10 @@ export enum WindowsVersion {
   WINDOWS_SERVER_2012_RTM_ENGLISH_64BIT_SQL_2008_R2_SP3_STANDARD = 'Windows_Server-2012-RTM-English-64Bit-SQL_2008_R2_SP3_Standard',
   /** @deprecated - reached Microsoft End-of-Support */
   WINDOWS_SERVER_2012_R2_RTM_JAPANESE_64BIT_SQL_2016_SP1_STANDARD = 'Windows_Server-2012-R2_RTM-Japanese-64Bit-SQL_2016_SP1_Standard',
+  /** @deprecated - use WINDOWS_SERVER_2012_RTM_ENGLISH_64BIT_SQL_2008_R2_SP3_WEB, reached Microsoft End-of-Support */
+  WINDOWS_SERVER_2012_RTM_ENGLISH_64BIT_SQL_2007_R2_SP3_WEB = 'Windows_Server-2012-RTM-English-64Bit-SQL_2007_R2_SP3_Web',
   /** @deprecated - reached Microsoft End-of-Support */
-  WINDOWS_SERVER_2012_RTM_ENGLISH_64BIT_SQL_2007_R2_SP3_WEB = 'Windows_Server-2012-RTM-English-64Bit-SQL_2008_R2_SP3_Web',
+  WINDOWS_SERVER_2012_RTM_ENGLISH_64BIT_SQL_2008_R2_SP3_WEB = 'Windows_Server-2012-RTM-English-64Bit-SQL_2008_R2_SP3_Web',
   /** @deprecated - reached Microsoft End-of-Support */
   WINDOWS_SERVER_2012_RTM_JAPANESE_64BIT_SQL_2014_SP2_WEB = 'Windows_Server-2012-RTM-Japanese-64Bit-SQL_2014_SP2_Web',
   /** @deprecated - reached Microsoft End-of-Support */
@@ -274,10 +288,14 @@ export enum WindowsVersion {
   WINDOWS_SERVER_2012_R2_RTM_JAPANESE_64BIT_SQL_2014_SP2_EXPRESS = 'Windows_Server-2012-R2_RTM-Japanese-64Bit-SQL_2014_SP2_Express',
   /** @deprecated - reached Microsoft End-of-Support */
   WINDOWS_SERVER_2012_RTM_ENGLISH_64BIT_SQL_2012_SP4_STANDARD = 'Windows_Server-2012-RTM-English-64Bit-SQL_2012_SP4_Standard',
+  /** @deprecated - use WINDOWS_SERVER_2012_SP2_PORTUGUESE_BRAZIL_64BIT_BASE, reached Microsoft End-of-Support */
+  WINDOWS_SERVER_2008_SP2_PORTUGESE_BRAZIL_64BIT_BASE = 'Windows_Server-2008-SP2-Portugese_Brazil-64Bit-Base',
+  /** @deprecated - use WINDOWS_SERVER_2012_SP2_PORTUGUESE_BRAZIL_64BIT_BASE, reached Microsoft End-of-Support */
+  WINDOWS_SERVER_2008_SP2_PORTUGUESE_BRAZIL_64BIT_BASE = 'Windows_Server-2008-SP2-Portuguese_Brazil-64Bit-Base',
+  /** @deprecated - use WINDOWS_SERVER_2012_SP2_PORTUGUESE_BRAZIL_64BIT_BASE, reached Microsoft End-of-Support */
+  WINDOWS_SERVER_2012_SP2_PORTUGESE_BRAZIL_64BIT_BASE = 'Windows_Server-2012-SP2-Portugese_Brazil-64Bit-Base',
   /** @deprecated - reached Microsoft End-of-Support */
-  WINDOWS_SERVER_2012_SP2_PORTUGUESE_BRAZIL_64BIT_BASE = 'Windows_Server-2008-SP2-Portuguese_Brazil-64Bit-Base',
-  /** @deprecated - use WINDOWS_SERVER_2012_SP2_PORTUGUESE_BRAZIL_64BIT_BASE */
-  WINDOWS_SERVER_2012_SP2_PORTUGESE_BRAZIL_64BIT_BASE = 'Windows_Server-2008-SP2-Portugese_Brazil-64Bit-Base',
+  WINDOWS_SERVER_2012_SP2_PORTUGUESE_BRAZIL_64BIT_BASE = 'Windows_Server-2012-SP2-Portuguese_Brazil-64Bit-Base',
   /** @deprecated - reached Microsoft End-of-Support */
   WINDOWS_SERVER_2012_R2_RTM_ENGLISH_64BIT_SQL_2016_SP1_WEB = 'Windows_Server-2012-R2_RTM-English-64Bit-SQL_2016_SP1_Web',
   /** @deprecated - reached Microsoft End-of-Support */
@@ -288,8 +306,10 @@ export enum WindowsVersion {
   WINDOWS_SERVER_2012_RTM_JAPANESE_64BIT_BASE = 'Windows_Server-2012-RTM-Japanese-64Bit-Base',
   /** @deprecated - reached Microsoft End-of-Support */
   WINDOWS_SERVER_2012_R2_RTM_JAPANESE_64BIT_SQL_2016_SP1_ENTERPRISE = 'Windows_Server-2012-R2_RTM-Japanese-64Bit-SQL_2016_SP1_Enterprise',
+  /** @deprecated - use WINDOWS_SERVER_2012_R2_RTM_JAPANESE_64BIT_SQL_2016_SP2_EXPRESS, reached Microsoft End-of-Support */
+  WINDOWS_SERVER_2012_RTM_JAPANESE_64BIT_SQL_2016_SP2_EXPRESS = 'Windows_Server-2012-RTM-Japanese-64Bit-SQL_2016_SP2_Express',
   /** @deprecated - reached Microsoft End-of-Support */
-  WINDOWS_SERVER_2012_RTM_JAPANESE_64BIT_SQL_2016_SP2_EXPRESS = 'Windows_Server-2012-R2_RTM-Japanese-64Bit-SQL_2016_SP2_Express',
+  WINDOWS_SERVER_2012_R2_RTM_JAPANESE_64BIT_SQL_2016_SP2_EXPRESS = 'Windows_Server-2012-R2_RTM-Japanese-64Bit-SQL_2016_SP2_Express',
   /** @deprecated - reached Microsoft End-of-Support */
   WINDOWS_SERVER_2012_RTM_ENGLISH_64BIT_SQL_2014_SP3_EXPRESS = 'Windows_Server-2012-RTM-English-64Bit-SQL_2014_SP3_Express',
   /** @deprecated - reached Microsoft End-of-Support */
@@ -382,8 +402,10 @@ export enum WindowsVersion {
   /** @deprecated - reached Microsoft End-of-Support */
   WINDOWS_SERVER_2016_ENGLISH_CORE_SQL_2016_SP1_EXPRESS = 'Windows_Server-2016-English-Core-SQL_2016_SP1_Express',
   WINDOWS_SERVER_2016_ENGLISH_DEEP_LEARNING = 'Windows_Server-2016-English-Deep-Learning',
+  /** @deprecated - use WINDOWS_SERVER_2016_JAPANESE_FULL_SQL_2016_SP2_WEB, reached Microsoft End-of-Support */
+  WINDOWS_SERVER_2016_JAPANESE_FULL_FQL_2016_SP2_WEB = 'Windows_Server-2016-Japanese-Full-FQL_2016_SP2_Web',
   /** @deprecated - reached Microsoft End-of-Support */
-  WINDOWS_SERVER_2016_JAPANESE_FULL_FQL_2016_SP2_WEB = 'Windows_Server-2016-Japanese-Full-SQL_2016_SP2_Web',
+  WINDOWS_SERVER_2016_JAPANESE_FULL_SQL_2016_SP2_WEB = 'Windows_Server-2016-Japanese-Full-SQL_2016_SP2_Web',
   WINDOWS_SERVER_2016_KOREAN_FULL_BASE = 'Windows_Server-2016-Korean-Full-Base',
   /** @deprecated - reached Microsoft End-of-Support */
   WINDOWS_SERVER_2016_KOREAN_FULL_SQL_2016_SP2_STANDARD = 'Windows_Server-2016-Korean-Full-SQL_2016_SP2_Standard',

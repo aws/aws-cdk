@@ -462,6 +462,13 @@ describe('windows', () => {
       Default: '/aws/service/ami-windows-latest/Windows_Server-2022-English-Core-Base',
     });
   });
+
+  test('all windows version keys match their respective values', () => {
+    for (const [key, version] of Object.entries(ec2.WindowsVersion)) {
+      const versionKey = getWindowsVersionEnumKey(version);
+      expect(key).toEqual(versionKey);
+    }
+  });
 });
 
 function isWindowsUserData(ud: ec2.UserData) {
@@ -470,4 +477,8 @@ function isWindowsUserData(ud: ec2.UserData) {
 
 function isLinuxUserData(ud: ec2.UserData) {
   return ud.render().indexOf('bash') > -1;
+}
+
+function getWindowsVersionEnumKey(windowsVersion: ec2.WindowsVersion) {
+  return windowsVersion.toLocaleUpperCase().replace(/[-.]/g, '_');
 }
