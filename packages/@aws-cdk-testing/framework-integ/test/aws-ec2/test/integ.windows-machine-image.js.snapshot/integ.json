@@ -1,0 +1,15 @@
+{
+  "enableLookups": true,
+  "version": "36.0.0",
+  "testCases": {
+    "windows-machine-image-integ-test/DefaultTest": {
+      "stacks": [
+        "integ-ec2-windows-image-ids",
+        "integ-ec2-windows-instance-Windows-Server-2016-English-Core-Base",
+        "integ-ec2-windows-instance-Windows-Server-2022-Dutch-Full-Base"
+      ],
+      "assertionStack": "windows-machine-image-integ-test/DefaultTest/DeployAssert",
+      "assertionStackName": "windowsmachineimageintegtestDefaultTestDeployAssertB65E22D7"
+    }
+  }
+}

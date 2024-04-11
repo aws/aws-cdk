@@ -1,0 +1,20 @@
+{
+  "version": "36.0.0",
+  "files": {
+    "ff635b23b1a8753a3ad0a8d7cd461d5d2b7efeeec341d9dd40b1c38be1b4e4d0": {
+      "source": {
+        "path": "integ-ec2-windows-instance-Windows-Server-2016-English-Core-Base.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "12345678-test-region": {
+          "bucketName": "cdk-hnb659fds-assets-12345678-test-region",
+          "objectKey": "ff635b23b1a8753a3ad0a8d7cd461d5d2b7efeeec341d9dd40b1c38be1b4e4d0.json",
+          "region": "test-region",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-file-publishing-role-12345678-test-region"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
