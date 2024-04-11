@@ -1043,7 +1043,7 @@ export const FLAGS: Record<string, FlagInfo> = {
     detailsMd: `
       When this feature flag is enabled, the nodegroupName attribute will be exactly the name of the nodegroup only.
     `,
-    introducedIn: { v2: '2.138.0' },
+    introducedIn: { v2: 'V2NEXT' },
     recommendedValue: true,
   },
 };
