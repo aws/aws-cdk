@@ -350,6 +350,12 @@
        "MyVpcNatSecurityGroupAA76397E",
        "GroupId"
       ]
+     },
+     {
+      "Fn::GetAtt": [
+       "SecurityGroupDD263621",
+       "GroupId"
+      ]
      }
     ],
     "SourceDestCheck": false,
@@ -566,6 +572,12 @@
        "MyVpcNatSecurityGroupAA76397E",
        "GroupId"
       ]
+     },
+     {
+      "Fn::GetAtt": [
+       "SecurityGroupDD263621",
+       "GroupId"
+      ]
      }
     ],
     "SourceDestCheck": false,
@@ -763,15 +775,35 @@
     "GroupDescription": "Security Group for NAT instances",
     "SecurityGroupEgress": [
      {
-      "CidrIp": "0.0.0.0/0",
-      "Description": "Allow all outbound traffic by default",
-      "IpProtocol": "-1"
+      "CidrIp": "255.255.255.255/32",
+      "Description": "Disallow all traffic",
+      "FromPort": 252,
+      "IpProtocol": "icmp",
+      "ToPort": 86
      }
     ],
     "Tags": [
      {
       "Key": "Name",
       "Value": "aws-cdk-vpc-nat-instance-v2-custom/MyVpc"
+     }
+    ],
+    "VpcId": {
+     "Ref": "MyVpcF9F0CA6F"
+    }
+   }
+  },
+  "SecurityGroupDD263621": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "aws-cdk-vpc-nat-instance-v2-custom/SecurityGroup",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow egress to S3",
+      "FromPort": 443,
+      "IpProtocol": "tcp",
+      "ToPort": 443
      }
     ],
     "VpcId": {
