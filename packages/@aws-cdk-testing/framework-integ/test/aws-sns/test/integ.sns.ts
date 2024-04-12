@@ -1,5 +1,5 @@
 import { Key } from 'aws-cdk-lib/aws-kms';
-import { App, Stack, StackProps } from 'aws-cdk-lib';
+import { App, Stack, StackProps, RemovalPolicy, Duration } from 'aws-cdk-lib';
 import { LoggingProtocol, Topic } from 'aws-cdk-lib/aws-sns';
 import { ManagedPolicy, PolicyDocument, PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 
@@ -7,7 +7,10 @@ class SNSInteg extends Stack {
   constructor(scope: App, id: string, props?: StackProps) {
     super(scope, id, props);
 
-    const key = new Key(this, 'CustomKey');
+    const key = new Key(this, 'CustomKey', {
+      pendingWindow: Duration.days(7),
+      removalPolicy: RemovalPolicy.DESTROY,
+    });
 
     const topic = new Topic(this, 'MyTopic', {
       topicName: 'fooTopic',
@@ -40,6 +43,26 @@ class SNSInteg extends Stack {
       successFeedbackRole: feedbackRole,
       successFeedbackSampleRate: 50,
     });
+
+    // Topic with signatureVersion
+    new Topic(this, 'MyTopicSignatureVersion', {
+      topicName: 'fooTopicSignatureVersion',
+      displayName: 'fooDisplayNameSignatureVersion',
+      signatureVersion: '2',
+    });
+
+    // Can import topic
+    const topic2 = new Topic(this, 'MyTopic2', {
+      topicName: 'fooTopic2',
+      displayName: 'fooDisplayName2',
+      masterKey: key,
+    });
+    const importedTopic = Topic.fromTopicArn(this, 'ImportedTopic', topic2.topicArn);
+
+    const publishRole = new Role(this, 'PublishRole', {
+      assumedBy: new ServicePrincipal('s3.amazonaws.com'),
+    });
+    importedTopic.grantPublish(publishRole);
   }
 }
 

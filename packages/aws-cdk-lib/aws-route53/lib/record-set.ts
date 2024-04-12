@@ -302,7 +302,7 @@ export class RecordSet extends Resource implements IRecordSet {
     if (props.setIdentifier && (props.setIdentifier.length < 1 || props.setIdentifier.length > 128)) {
       throw new Error(`setIdentifier must be between 1 and 128 characters long, got: ${props.setIdentifier.length}`);
     }
-    if (props.setIdentifier && !props.weight && !props.geoLocation && !props.region && !props.multiValueAnswer) {
+    if (props.setIdentifier && props.weight === undefined && !props.geoLocation && !props.region && !props.multiValueAnswer) {
       throw new Error('setIdentifier can only be specified for non-simple routing policies');
     }
     if (props.multiValueAnswer && props.target.aliasTarget) {
@@ -405,7 +405,7 @@ export class RecordSet extends Resource implements IRecordSet {
       return identifier;
     }
 
-    if (this.weight) {
+    if (this.weight !== undefined) {
       const idPrefix = `WEIGHT_${this.weight}_ID_`;
       return this.createIdentifier(idPrefix);
     }
@@ -859,6 +859,13 @@ export interface CrossAccountZoneDelegationRecordProps {
    * @default RemovalPolicy.DESTROY
    */
   readonly removalPolicy?: RemovalPolicy;
+
+  /**
+   * Region from which to obtain temporary credentials.
+   *
+   * @default - the Route53 signing region in the current partition
+   */
+  readonly assumeRoleRegion?: string;
 }
 
 /**
@@ -897,6 +904,7 @@ export class CrossAccountZoneDelegationRecord extends Construct {
         DelegatedZoneName: props.delegatedZone.zoneName,
         DelegatedZoneNameServers: props.delegatedZone.hostedZoneNameServers!,
         TTL: (props.ttl || Duration.days(2)).toSeconds(),
+        AssumeRoleRegion: props.assumeRoleRegion,
       },
     });
 
