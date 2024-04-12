@@ -534,7 +534,7 @@
       }
      },
      "ImageId": {
-      "Ref": "SsmParameterValueawsserviceecsoptimizedamiamazonlinux2infrecommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
+      "Ref": "SsmParameterValueawsserviceecsoptimizedamiamazonlinux2kernel510infrecommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
      },
      "InstanceType": "t2.micro",
      "Monitoring": {
@@ -925,9 +925,9 @@
   }
  },
  "Parameters": {
-  "SsmParameterValueawsserviceecsoptimizedamiamazonlinux2infrecommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter": {
+  "SsmParameterValueawsserviceecsoptimizedamiamazonlinux2kernel510infrecommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter": {
    "Type": "AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>",
-   "Default": "/aws/service/ecs/optimized-ami/amazon-linux-2/inf/recommended/image_id"
+   "Default": "/aws/service/ecs/optimized-ami/amazon-linux-2/kernel-5.10/inf/recommended/image_id"
   },
   "BootstrapVersion": {
    "Type": "AWS::SSM::Parameter::Value<String>",

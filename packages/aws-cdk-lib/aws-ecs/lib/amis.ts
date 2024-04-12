@@ -138,7 +138,6 @@ export class EcsOptimizedAmi implements ec2.IMachineImage {
       // always default to Amazon Linux v2 regardless of HW
       this.generation = ec2.AmazonLinuxGeneration.AMAZON_LINUX_2;
     }
-
     // set the SSM parameter name
     this.amiParameterName = '/aws/service/'
       + (this.windowsVersion ? 'ami-windows-latest/' : 'ecs/optimized-ami/')
@@ -275,6 +274,7 @@ export class EcsOptimizedImage implements ec2.IMachineImage {
       + (this.generation === ec2.AmazonLinuxGeneration.AMAZON_LINUX_2 ? 'amazon-linux-2/' : '')
       + (this.generation === ec2.AmazonLinuxGeneration.AMAZON_LINUX_2023 ? 'amazon-linux-2023/' : '')
       + (this.windowsVersion ? `Windows_Server-${this.windowsVersion}-English-Full-ECS_Optimized/` : '')
+      + (this.generation === ec2.AmazonLinuxGeneration.AMAZON_LINUX_2 ? ec2.AmazonLinux2Kernel.CDK_LATEST.toString() + '/' : '')
       + (this.hwType === AmiHardwareType.GPU ? 'gpu/' : '')
       + (this.hwType === AmiHardwareType.ARM ? 'arm64/' : '')
       + (this.hwType === AmiHardwareType.NEURON ? 'inf/' : '')

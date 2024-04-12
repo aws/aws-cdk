@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/758add4abf782a712eea18984d2d3f66778882c56d0e19e18a2eb0a1c296430a.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/b1a88916d51fbba777109c8c46589007c4dd5d4144cb03a611bbc87ded2b7465.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -274,10 +274,10 @@
             "data": "ASGLifecycleHookDrainHookFE4AFEBE"
           }
         ],
-        "/integ-ecs-neuron-ami/SsmParameterValue:--aws--service--ecs--optimized-ami--amazon-linux-2--inf--recommended--image_id:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": [
+        "/integ-ecs-neuron-ami/SsmParameterValue:--aws--service--ecs--optimized-ami--amazon-linux-2--kernel-5.10--inf--recommended--image_id:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "SsmParameterValueawsserviceecsoptimizedamiamazonlinux2infrecommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
+            "data": "SsmParameterValueawsserviceecsoptimizedamiamazonlinux2kernel510infrecommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
           }
         ],
         "/integ-ecs-neuron-ami/EC2CapacityProvider/EC2CapacityProvider": [
