@@ -79,7 +79,7 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
   const call: AwsSdkCall | undefined = event.ResourceProperties[event.RequestType];
 
   // if there is a call there will always be logging configured -- otherwise, in the event of no call, logging
-  // wasn't configure so just default to existing behavior
+  // wasn't configured so just default to existing behavior
   const logApiResponseData = call?.logApiResponseData ?? true;
 
   try {
