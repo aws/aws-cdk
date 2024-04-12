@@ -14,9 +14,9 @@ import * as iam from 'aws-cdk-lib/aws-iam';
  * Get the status of the job run using
  *   `aws glue get-job-run --region us-east-1 --job-name <job name> --run-id <runId>`
  *
- * For example, to test the ShellJob
- * - Run: `aws glue start-job-run --region us-east-1 --job-name ShellJob`
- * - Get Status: `aws glue get-job-run --region us-east-1 --job-name ShellJob --run-id <runId output by the above command>`
+ * For example, to test the ETLJob
+ * - Run: `aws glue start-job-run --region us-east-1 --job-name ETLJob`
+ * - Get Status: `aws glue get-job-run --region us-east-1 --job-name ETLJob --run-id <runId output by the above command>`
  * - Check output: `aws logs get-log-events --region us-east-1 --log-group-name "/aws-glue/python-jobs/output" --log-stream-name "<runId>>` which should show "hello world"
  */
 
