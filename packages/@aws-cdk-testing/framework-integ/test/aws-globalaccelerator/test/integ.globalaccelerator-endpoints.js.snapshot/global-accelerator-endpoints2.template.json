@@ -489,7 +489,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "18d379b052acd60e0d086d5b19d9bef956ebc0bd018c5570960125aab0c7f837.zip"
+     "S3Key": "e978ad4ad0dca7e1c6be5f49cbbd1c5a150ee050c24052fedfe5a42f835d55da.zip"
     },
     "Timeout": 900,
     "MemorySize": 128,
@@ -575,7 +575,7 @@
        {
         "Ref": "Vpc8378EB38"
        },
-       "\"]}]},\"physicalResourceId\":{\"responsePath\":\"SecurityGroups.0.GroupId\"}}"
+       "\"]}]},\"physicalResourceId\":{\"responsePath\":\"SecurityGroups.0.GroupId\"},\"logApiResponseData\":true}"
       ]
      ]
     },
@@ -699,7 +699,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "e5178afc49b7c6a85127a67856ce958e4f0879ce6aad5e974cac2a088bf939db.zip"
+     "S3Key": "6c34b6e864223e202d50bb862e2bf066393d4cdf36229f8e1646425a5224a10b.zip"
     },
     "Handler": "index.handler",
     "Role": {
