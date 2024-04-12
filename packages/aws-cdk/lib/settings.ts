@@ -8,6 +8,7 @@ import * as util from './util';
 export type SettingsMap = {[key: string]: any};
 
 export const PROJECT_CONFIG = 'cdk.json';
+export const PROJECT_LOCAL_CONFIG = 'cdk.local.json';
 export const PROJECT_CONTEXT = 'cdk.context.json';
 export const USER_DEFAULTS = '~/.cdk.json';
 
@@ -111,6 +112,7 @@ export class Configuration {
    */
   public async load(): Promise<this> {
     const userConfig = await loadAndLog(USER_DEFAULTS);
+    const localConfig = await loadAndLog(PROJECT_LOCAL_CONFIG);
     this._projectConfig = await loadAndLog(PROJECT_CONFIG);
     this._projectContext = await loadAndLog(PROJECT_CONTEXT);
 
@@ -118,6 +120,9 @@ export class Configuration {
 
     if (userConfig.get(['build'])) {
       throw new Error('The `build` key cannot be specified in the user config (~/.cdk.json), specify it in the project config (cdk.json) instead');
+    }
+    if (localConfig.get(['build'])) {
+      throw new Error('The `build` key cannot be specified in the local config (cdk.local.json), specify it in the project config (cdk.json) instead');
     }
 
     const contextSources = [
@@ -135,6 +140,7 @@ export class Configuration {
     this.settings = this.defaultConfig
       .merge(userConfig)
       .merge(this.projectConfig)
+      .merge(localConfig)
       .merge(this.commandLineArguments)
       .makeReadOnly();
 
