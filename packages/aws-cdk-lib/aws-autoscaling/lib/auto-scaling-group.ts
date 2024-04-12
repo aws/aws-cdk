@@ -1399,14 +1399,6 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
           role: this.role,
         });
 
-        let keyUsageType: { keyPair?: ec2.IKeyPair; keyName?: string } = {};
-
-        if (props.keyPair) {
-          keyUsageType = { keyPair: props.keyPair };
-        } else {
-          keyUsageType = { keyName: props.keyName };
-        }
-
         launchTemplateFromConfig = new ec2.LaunchTemplate(this, 'LaunchTemplate', {
           machineImage: props.machineImage,
           instanceType: props.instanceType,
@@ -1417,7 +1409,8 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
           spotOptions: props.spotPrice !== undefined ? { maxPrice: parseFloat(props.spotPrice) } : undefined,
           blockDevices: props.blockDevices,
           instanceProfile,
-          ...keyUsageType,
+          keyPair: props.keyPair,
+          ...(props.keyName ? { keyName: props.keyName } : {}),
         });
 
         this.osType = launchTemplateFromConfig.osType!;
