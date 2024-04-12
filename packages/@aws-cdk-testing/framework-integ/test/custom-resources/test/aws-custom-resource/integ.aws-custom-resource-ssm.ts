@@ -37,7 +37,7 @@ class GetParameterStack extends Stack {
           Name: props.parameterName,
           WithDecryption: true,
         },
-        physicalResourceId: PhysicalResourceId.of(Date.now().toString()),
+        physicalResourceId: PhysicalResourceId.of(props.parameterName),
         logging: Logging.withDataHidden(),
       },
       policy: AwsCustomResourcePolicy.fromSdkCalls({
