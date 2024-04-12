@@ -62,16 +62,6 @@ function patchSdk(awsSdk: any): any {
 
 /* eslint-disable @typescript-eslint/no-require-imports, import/no-extraneous-dependencies */
 export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent, context: AWSLambda.Context) {
-  event.ResourceProperties.Create = decodeCall(event.ResourceProperties.Create);
-  event.ResourceProperties.Update = decodeCall(event.ResourceProperties.Update);
-  event.ResourceProperties.Delete = decodeCall(event.ResourceProperties.Delete);
-
-  const call: AwsSdkCall | undefined = event.ResourceProperties[event.RequestType];
-
-  // if there is a call there will always be logging configured -- otherwise, in the event of no call, logging
-  // wasn't configure so just default to existing behavior
-  const logApiResponseData = call?.logApiResponseData ?? true;
-
   try {
     let AWS: any;
     if (!latestSdkInstalled && event.ResourceProperties.InstallLatestAwsSdk === 'true') {
@@ -96,6 +86,10 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
     console.log(JSON.stringify({ ...event, ResponseURL: '...' }));
     console.log('AWS SDK VERSION: ' + AWS.VERSION);
 
+    event.ResourceProperties.Create = decodeCall(event.ResourceProperties.Create);
+    event.ResourceProperties.Update = decodeCall(event.ResourceProperties.Update);
+    event.ResourceProperties.Delete = decodeCall(event.ResourceProperties.Delete);
+
     // Default physical resource id
     let physicalResourceId: string;
     switch (event.RequestType) {
@@ -113,6 +107,10 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
 
     let flatData: { [key: string]: string } = {};
     let data: { [key: string]: string } = {};
+    const call: AwsSdkCall | undefined = event.ResourceProperties[event.RequestType];
+    // if there is a call there will always be logging configured -- otherwise, in the event of no call, logging
+    // wasn't configure so just default to existing behavior
+    const logApiResponseData = call?.logApiResponseData ?? true;
 
     if (call) {
       let credentials;
@@ -174,6 +172,6 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
     await respond(event, 'SUCCESS', 'OK', physicalResourceId, data, logApiResponseData);
   } catch (e: any) {
     console.log(e);
-    await respond(event, 'FAILED', e.message || 'Internal Error', context.logStreamName, {}, logApiResponseData);
+    await respond(event, 'FAILED', e.message || 'Internal Error', context.logStreamName, {}, true);
   }
 }
