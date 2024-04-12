@@ -54,7 +54,7 @@ async function minifyAndBundle(infile: string, outfile: string) {
     external: ['@aws-sdk/*', 'aws-sdk'],
     format: 'cjs',
     platform: 'node',
-    target: 'node18',
+    target: 'node20',
     bundle: true,
     minify: true,
     minifyWhitespace: true,

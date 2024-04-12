@@ -113,7 +113,7 @@ export class Runtime {
    * The latest NodeJS version currently available in ALL regions (not necessarily the latest NodeJS version
    * available in YOUR region).
    */
-  public static readonly NODEJS_LATEST = new Runtime('nodejs18.x', RuntimeFamily.NODEJS, { supportsInlineCode: true, isVariable: true });
+  public static readonly NODEJS_LATEST = new Runtime('nodejs20.x', RuntimeFamily.NODEJS, { supportsInlineCode: true, isVariable: true });
 
   /**
    * The Python 2.7 runtime (python2.7)

@@ -84,7 +84,7 @@ class LambdaFunctionProvider extends Construct {
     });
 
     const functionProperties: any = {
-      Runtime: 'nodejs18.x',
+      Runtime: 'nodejs20.x',
       Code: {
         S3Bucket: asset.bucketName,
         S3Key: asset.objectKey,

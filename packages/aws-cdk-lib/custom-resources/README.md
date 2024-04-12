@@ -657,7 +657,7 @@ const getParameter = new cr.AwsCustomResource(this, 'AssociateVPCWithHostedZone'
 
 #### Using AWS SDK for JavaScript v3
 
-`AwsCustomResource` uses Node 18 and AWS SDK v3 by default. You can specify the service as either the name of the SDK module, or just the service name. Using API Gateway as an example, the following formats are all accepted for `service`:
+`AwsCustomResource` uses Node 20 and AWS SDK v3 by default. You can specify the service as either the name of the SDK module, or just the service name. Using API Gateway as an example, the following formats are all accepted for `service`:
 
 * The SDKv3 service name: `api-gateway` (recommended)
 * The full SDKv3 package name: `@aws-sdk/client-api-gateway`

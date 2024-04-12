@@ -306,7 +306,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "85f7bb0ac0b4da3571afd49c891d631f4f07c0ef710a02046d3a9abd8d9d4604.zip"
+                          "s3Key": "f68b5f9bd2f33b64b7d7262a81f768cad9e377cf3a3c5b461eba94d3dfed1457.zip"
                         },
                         "environment": {
                           "variables": {
@@ -320,7 +320,7 @@
                             "Arn"
                           ]
                         },
-                        "runtime": "nodejs18.x"
+                        "runtime": "nodejs20.x"
                       }
                     },
                     "constructInfo": {
@@ -470,7 +470,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "85f7bb0ac0b4da3571afd49c891d631f4f07c0ef710a02046d3a9abd8d9d4604.zip"
+                          "s3Key": "f68b5f9bd2f33b64b7d7262a81f768cad9e377cf3a3c5b461eba94d3dfed1457.zip"
                         },
                         "environment": {
                           "variables": {
@@ -484,7 +484,7 @@
                             "Arn"
                           ]
                         },
-                        "runtime": "nodejs18.x"
+                        "runtime": "nodejs20.x"
                       }
                     },
                     "constructInfo": {
@@ -715,7 +715,7 @@
                                 "Arn"
                               ]
                             },
-                            "runtime": "nodejs18.x",
+                            "runtime": "nodejs20.x",
                             "timeout": 900
                           }
                         },
@@ -933,7 +933,7 @@
                                 "Arn"
                               ]
                             },
-                            "runtime": "nodejs18.x",
+                            "runtime": "nodejs20.x",
                             "timeout": 900
                           }
                         },
@@ -1151,7 +1151,7 @@
                                 "Arn"
                               ]
                             },
-                            "runtime": "nodejs18.x",
+                            "runtime": "nodejs20.x",
                             "timeout": 900
                           }
                         },
@@ -1353,7 +1353,7 @@
                           {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "/1163c3d0f1120a3cfb57d0d94150e38a75c6edff4b18c40af2ae7ca095958c9a.json"
+                          "/9ff1883193ec1903d5cc427e8d1166538cc7d68d3e47e0ecf98f6efd9a667119.json"
                         ]
                       ]
                     }

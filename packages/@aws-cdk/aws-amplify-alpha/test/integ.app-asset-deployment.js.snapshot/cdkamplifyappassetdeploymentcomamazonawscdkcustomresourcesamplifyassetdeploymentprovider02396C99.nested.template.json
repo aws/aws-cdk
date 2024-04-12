@@ -64,7 +64,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "85f7bb0ac0b4da3571afd49c891d631f4f07c0ef710a02046d3a9abd8d9d4604.zip"
+     "S3Key": "f68b5f9bd2f33b64b7d7262a81f768cad9e377cf3a3c5b461eba94d3dfed1457.zip"
     },
     "Environment": {
      "Variables": {
@@ -78,7 +78,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs18.x"
+    "Runtime": "nodejs20.x"
    },
    "DependsOn": [
     "amplifyassetdeploymentoneventServiceRoleDefaultPolicy2DF60B3E",
@@ -144,7 +144,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "85f7bb0ac0b4da3571afd49c891d631f4f07c0ef710a02046d3a9abd8d9d4604.zip"
+     "S3Key": "f68b5f9bd2f33b64b7d7262a81f768cad9e377cf3a3c5b461eba94d3dfed1457.zip"
     },
     "Environment": {
      "Variables": {
@@ -158,7 +158,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs18.x"
+    "Runtime": "nodejs20.x"
    },
    "DependsOn": [
     "amplifyassetdeploymentiscompleteServiceRoleDefaultPolicyC0D08321",
@@ -301,7 +301,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs18.x",
+    "Runtime": "nodejs20.x",
     "Timeout": 900
    },
    "DependsOn": [
@@ -435,7 +435,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs18.x",
+    "Runtime": "nodejs20.x",
     "Timeout": 900
    },
    "DependsOn": [
@@ -569,7 +569,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs18.x",
+    "Runtime": "nodejs20.x",
     "Timeout": 900
    },
    "DependsOn": [

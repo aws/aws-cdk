@@ -5,6 +5,17 @@ import * as path from 'path';
  * Handler framework runtimes used for code generation.
  */
 export enum Runtime {
+
+  /**
+   * The NodeJs Latest runtime
+   */
+  NODEJS_LATEST = 'nodejs20.x',
+
+  /**
+   * The NodeJs 20.x runtime
+   */
+  NODEJS_20_X = 'nodejs20.x',
+
   /**
    * The NodeJs 18.x runtime
    */
@@ -65,7 +76,7 @@ export interface ComponentProps {
   /**
    * The runtime that is compatible with the framework component's source code.
    *
-   * @default Runtime.NODEJS_18_X
+   * @default Runtime.NODEJS_LATEST
    */
   readonly runtime?: Runtime;
 
