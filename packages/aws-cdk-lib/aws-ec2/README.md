@@ -215,7 +215,7 @@ const provider = ec2.NatProvider.instanceV2({
 new ec2.Vpc(this, 'TheVPC', {
   natGatewayProvider: provider,
 });
-provider.connections.allowFrom(ec2.Peer.ipv4('1.2.3.4/8'), ec2.Port.tcp(80));
+provider.connections.allowFrom(ec2.Peer.ipv4('1.2.3.4/8'), ec2.Port.HTTP);
 ```
 
 You can also customize the characteristics of your NAT instances, including their security group,
@@ -266,7 +266,7 @@ const provider = ec2.NatProvider.instance({
 new ec2.Vpc(this, 'TheVPC', {
   natGatewayProvider: provider,
 });
-provider.connections.allowFrom(ec2.Peer.ipv4('1.2.3.4/8'), ec2.Port.tcp(80));
+provider.connections.allowFrom(ec2.Peer.ipv4('1.2.3.4/8'), ec2.Port.HTTP);
 ```
 
 ### Ip Address Management
@@ -724,13 +724,13 @@ declare const appFleet: autoscaling.AutoScalingGroup;
 declare const dbFleet: autoscaling.AutoScalingGroup;
 
 // Allow connections from anywhere
-loadBalancer.connections.allowFromAnyIpv4(ec2.Port.tcp(443), 'Allow inbound HTTPS');
+loadBalancer.connections.allowFromAnyIpv4(ec2.Port.HTTPS, 'Allow inbound HTTPS');
 
 // The same, but an explicit IP address
-loadBalancer.connections.allowFrom(ec2.Peer.ipv4('1.2.3.4/32'), ec2.Port.tcp(443), 'Allow inbound HTTPS');
+loadBalancer.connections.allowFrom(ec2.Peer.ipv4('1.2.3.4/32'), ec2.Port.HTTPS, 'Allow inbound HTTPS');
 
 // Allow connection between AutoScalingGroups
-appFleet.connections.allowTo(dbFleet, ec2.Port.tcp(443), 'App can call database');
+appFleet.connections.allowTo(dbFleet, ec2.Port.HTTPS, 'App can call database');
 ```
 
 ### Connection Peers
@@ -747,7 +747,7 @@ peer = ec2.Peer.anyIpv4();
 peer = ec2.Peer.ipv6('::0/0');
 peer = ec2.Peer.anyIpv6();
 peer = ec2.Peer.prefixList('pl-12345');
-appFleet.connections.allowTo(peer, ec2.Port.tcp(443), 'Allow outbound HTTPS');
+appFleet.connections.allowTo(peer, ec2.Port.HTTPS, 'Allow outbound HTTPS');
 ```
 
 Any object that has a security group can itself be used as a connection peer:
@@ -758,9 +758,9 @@ declare const fleet2: autoscaling.AutoScalingGroup;
 declare const appFleet: autoscaling.AutoScalingGroup;
 
 // These automatically create appropriate ingress and egress rules in both security groups
-fleet1.connections.allowTo(fleet2, ec2.Port.tcp(80), 'Allow between fleets');
+fleet1.connections.allowTo(fleet2, ec2.Port.HTTP, 'Allow between fleets');
 
-appFleet.connections.allowFromAnyIpv4(ec2.Port.tcp(80), 'Allow from load balancer');
+appFleet.connections.allowFromAnyIpv4(ec2.Port.HTTP, 'Allow from load balancer');
 ```
 
 ### Port Ranges
@@ -770,6 +770,7 @@ the connection specifier:
 
 ```ts
 ec2.Port.tcp(80)
+ec2.Port.HTTPS
 ec2.Port.tcpRange(60000, 65535)
 ec2.Port.allTcp()
 ec2.Port.allIcmp()
@@ -823,7 +824,7 @@ const mySecurityGroupWithoutInlineRules = new ec2.SecurityGroup(this, 'SecurityG
   disableInlineRules: true
 });
 //This will add the rule as an external cloud formation construct
-mySecurityGroupWithoutInlineRules.addIngressRule(ec2.Peer.anyIpv4(), ec2.Port.tcp(22), 'allow ssh access from the world');
+mySecurityGroupWithoutInlineRules.addIngressRule(ec2.Peer.anyIpv4(), ec2.Port.SSH, 'allow ssh access from the world');
 ```
 
 ### Importing an existing security group
