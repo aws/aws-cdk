@@ -97,6 +97,13 @@ export interface EcsOptimizedAmiProps {
    * @default false
    */
   readonly cachedInContext?: boolean;
+
+  /**
+   * What kernel version of Amazon Linux 2 to use
+   *
+   * @default none, uses the recommended kernel version
+   */
+  readonly kernel?: ec2.AmazonLinux2Kernel;
 }
 
 /*
@@ -217,11 +224,14 @@ export class EcsOptimizedImage implements ec2.IMachineImage {
    *
    * @param hardwareType ECS-optimized AMI variant to use
    */
-  public static amazonLinux2(hardwareType = AmiHardwareType.STANDARD, options: EcsOptimizedImageOptions = {}): EcsOptimizedImage {
+  public static amazonLinux2(hardwareType = AmiHardwareType.STANDARD, options: EcsOptimizedImageOptions & {
+    kernel?: ec2.AmazonLinux2Kernel;
+  } = {}): EcsOptimizedImage {
     return new EcsOptimizedImage({
       generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2,
       hardwareType,
       cachedInContext: options.cachedInContext,
+      kernel: options.kernel,
     });
   }
 
@@ -267,6 +277,14 @@ export class EcsOptimizedImage implements ec2.IMachineImage {
     } else {
       throw new Error('This error should never be thrown');
     }
+    const kernelPath = (() => {
+      if (!props.kernel) {
+        return '';
+      } else if (this.generation !== ec2.AmazonLinuxGeneration.AMAZON_LINUX_2) {
+        throw new Error('Kernel version can only be specified for Amazon Linux 2');
+      }
+      return props.kernel.toString() + '/';
+    })();
 
     // set the SSM parameter name
     this.amiParameterName = '/aws/service/'
@@ -275,7 +293,7 @@ export class EcsOptimizedImage implements ec2.IMachineImage {
       + (this.generation === ec2.AmazonLinuxGeneration.AMAZON_LINUX_2 ? 'amazon-linux-2/' : '')
       + (this.generation === ec2.AmazonLinuxGeneration.AMAZON_LINUX_2023 ? 'amazon-linux-2023/' : '')
       + (this.windowsVersion ? `Windows_Server-${this.windowsVersion}-English-Full-ECS_Optimized/` : '')
-      + (this.generation === ec2.AmazonLinuxGeneration.AMAZON_LINUX_2 ? ec2.AmazonLinux2Kernel.CDK_LATEST.toString() + '/' : '')
+      + (kernelPath)
       + (this.hwType === AmiHardwareType.GPU ? 'gpu/' : '')
       + (this.hwType === AmiHardwareType.ARM ? 'arm64/' : '')
       + (this.hwType === AmiHardwareType.NEURON ? 'inf/' : '')

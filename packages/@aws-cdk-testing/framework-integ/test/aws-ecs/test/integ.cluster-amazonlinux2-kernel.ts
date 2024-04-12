@@ -15,7 +15,10 @@ const cluster = new ecs.Cluster(stack, 'Cluster', {
 const autoScalingGroup = new autoscaling.AutoScalingGroup(stack, 'ASG', {
   vpc,
   instanceType: new ec2.InstanceType('t2.micro'),
-  machineImage: ecs.EcsOptimizedImage.amazonLinux2(),
+  machineImage: ecs.EcsOptimizedImage.amazonLinux2(
+    ecs.AmiHardwareType.STANDARD,
+    { kernel: ec2.AmazonLinux2Kernel.CDK_LATEST },
+  ),
   minCapacity: 0,
 });
 
