@@ -200,16 +200,10 @@ export interface EcsOptimizedImageOptions {
    * @default false
    */
   readonly cachedInContext?: boolean;
-}
-
-/**
- * Additional configuration properties for Amazon Linux 2 ECS Optimized AMI
- */
-export interface AmazonLinux2EcsOptimizedImageProps extends EcsOptimizedImageOptions {
   /**
-   * What kernel version of Amazon Linux 2 to use
+   * The kernel version to use with Amazon Linux 2
    *
-   * @default none, uses the recommended kernel version
+   * @default - The recommended kernel version
    */
   readonly kernel?: ec2.AmazonLinux2Kernel;
 }
@@ -224,6 +218,9 @@ export class EcsOptimizedImage implements ec2.IMachineImage {
    * @param hardwareType ECS-optimized AMI variant to use
    */
   public static amazonLinux2023(hardwareType = AmiHardwareType.STANDARD, options: EcsOptimizedImageOptions = {}): EcsOptimizedImage {
+    if (options.kernel) {
+      throw new Error('Kernel version can only be specified for Amazon Linux 2');
+    }
     return new EcsOptimizedImage({
       generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2023,
       hardwareType,
@@ -236,7 +233,7 @@ export class EcsOptimizedImage implements ec2.IMachineImage {
    *
    * @param hardwareType ECS-optimized AMI variant to use
    */
-  public static amazonLinux2(hardwareType = AmiHardwareType.STANDARD, options: AmazonLinux2EcsOptimizedImageProps = {}): EcsOptimizedImage {
+  public static amazonLinux2(hardwareType = AmiHardwareType.STANDARD, options: EcsOptimizedImageOptions = {}): EcsOptimizedImage {
     return new EcsOptimizedImage({
       generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2,
       hardwareType,
@@ -249,6 +246,9 @@ export class EcsOptimizedImage implements ec2.IMachineImage {
    * Construct an Amazon Linux AMI image from the latest ECS Optimized AMI published in SSM
    */
   public static amazonLinux(options: EcsOptimizedImageOptions = {}): EcsOptimizedImage {
+    if (options.kernel) {
+      throw new Error('Kernel version can only be specified for Amazon Linux 2');
+    }
     return new EcsOptimizedImage({
       generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX,
       cachedInContext: options.cachedInContext,
@@ -290,7 +290,7 @@ export class EcsOptimizedImage implements ec2.IMachineImage {
     const kernelPath = (() => {
       if (!props.kernel) {
         return '';
-      } else if (this.generation !== ec2.AmazonLinuxGeneration.AMAZON_LINUX_2) {
+      } else if (props.generation !== ec2.AmazonLinuxGeneration.AMAZON_LINUX_2) {
         throw new Error('Kernel version can only be specified for Amazon Linux 2');
       }
       return props.kernel.toString() + '/';
