@@ -4510,7 +4510,10 @@
   },
   "NodegroupName": {
    "Value": {
-    "Ref": "ClusterNodegroupDefaultCapacityDA0920A3"
+    "Fn::GetAtt": [
+     "ClusterNodegroupDefaultCapacityDA0920A3",
+     "NodegroupName"
+    ]
    }
   }
  },
