@@ -5,7 +5,7 @@ import * as iam from '../../../aws-iam';
 import * as kms from '../../../aws-kms';
 import * as s3 from '../../../aws-s3';
 import * as sfn from '../../../aws-stepfunctions';
-import { Stack, Token } from '../../../core';
+import { App, CfnResource, Stack, Token } from '../../../core';
 import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
 
 /**
@@ -75,8 +75,12 @@ export interface IBedrockCreateModelCustomizationJobVpcConfig {
    * VPC configuration subnets
    *
    * The maximum number of subnets is 16.
+   *
+   * @default - all subnets in the VPC
    */
-  readonly subnets: ec2.ISubnet[];
+  readonly subnets?: ec2.ISubnet[];
+
+  readonly vpc: ec2.IVpc;
 }
 
 /**
@@ -210,6 +214,7 @@ export class BedrockCreateModelCustomizationJob extends sfn.TaskStateBase {
 
   private readonly integrationPattern: sfn.IntegrationPattern;
   private _role: iam.IRole;
+  private readonly subnets: ec2.ISubnet[];
 
   constructor(scope: Construct, id: string, private readonly props: BedrockCreateModelCustomizationJobProps) {
     super(scope, id, props);
@@ -238,6 +243,25 @@ export class BedrockCreateModelCustomizationJob extends sfn.TaskStateBase {
         resources: ['*'],
         principals: [new iam.ArnPrincipal(this._role.roleArn)],
       }));
+    }
+
+    if (this.props.vpcConfig !== undefined) {
+      if (this.props.vpcConfig.subnets) {
+        this.subnets = this.props.vpcConfig.subnets;
+      } else {
+        // use all subnets in the VPC
+        this.subnets = this.props.vpcConfig.vpc.selectSubnets().subnets;
+      }
+      // validate that this.subnets includes not isolated subnets
+      const isOnlyIsolatedSubnets = this.subnets.every((subnet) => this.props.vpcConfig?.vpc.isolatedSubnets.includes(subnet));
+      const hasS3VpcEndpoint = App.of(this)?.node.findAll().some((resource) => {
+        return resource instanceof ec2.CfnVPCEndpoint
+          && resource.serviceName === `com.amazonaws.${Stack.of(this).region}.s3`
+          && resource.vpcId === this.props.vpcConfig?.vpc.vpcId;
+      });
+      if (isOnlyIsolatedSubnets && !hasS3VpcEndpoint) {
+        throw new Error('VPC configuration must include at least one subnet that is not an isolated subnet or a VPC endpoint to S3');
+      };
     }
   }
 
