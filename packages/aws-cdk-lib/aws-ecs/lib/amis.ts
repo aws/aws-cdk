@@ -202,6 +202,15 @@ export interface EcsOptimizedImageOptions {
   readonly cachedInContext?: boolean;
 }
 
+export interface AmazonLinux2EcsOptimizedImageProps extends EcsOptimizedImageOptions {
+  /**
+   * What kernel version of Amazon Linux 2 to use
+   *
+   * @default none, uses the recommended kernel version
+   */
+  readonly kernel?: ec2.AmazonLinux2Kernel;
+}
+
 /**
  * Construct a Linux or Windows machine image from the latest ECS Optimized AMI published in SSM
  */
@@ -224,9 +233,7 @@ export class EcsOptimizedImage implements ec2.IMachineImage {
    *
    * @param hardwareType ECS-optimized AMI variant to use
    */
-  public static amazonLinux2(hardwareType = AmiHardwareType.STANDARD, options: EcsOptimizedImageOptions & {
-    kernel?: ec2.AmazonLinux2Kernel;
-  } = {}): EcsOptimizedImage {
+  public static amazonLinux2(hardwareType = AmiHardwareType.STANDARD, options: AmazonLinux2EcsOptimizedImageProps = {}): EcsOptimizedImage {
     return new EcsOptimizedImage({
       generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2,
       hardwareType,

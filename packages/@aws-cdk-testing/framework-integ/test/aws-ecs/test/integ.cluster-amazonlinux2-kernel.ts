@@ -17,7 +17,7 @@ const autoScalingGroup = new autoscaling.AutoScalingGroup(stack, 'ASG', {
   instanceType: new ec2.InstanceType('t2.micro'),
   machineImage: ecs.EcsOptimizedImage.amazonLinux2(
     ecs.AmiHardwareType.STANDARD,
-    { kernel: ec2.AmazonLinux2Kernel.CDK_LATEST },
+    { kernel: ec2.AmazonLinux2Kernel.KERNEL_5_10 },
   ),
   minCapacity: 0,
 });
