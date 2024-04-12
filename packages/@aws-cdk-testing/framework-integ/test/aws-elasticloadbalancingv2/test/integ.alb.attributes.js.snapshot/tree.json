@@ -683,6 +683,26 @@
                         "value": "defensive"
                       },
                       {
+                        "key": "routing.http.preserve_host_header.enabled",
+                        "value": "true"
+                      },
+                      {
+                        "key": "routing.http.x_amzn_tls_version_and_cipher_suite.enabled",
+                        "value": "true"
+                      },
+                      {
+                        "key": "routing.http.xff_client_port.enabled",
+                        "value": "true"
+                      },
+                      {
+                        "key": "routing.http.xff_header_processing.mode",
+                        "value": "preserve"
+                      },
+                      {
+                        "key": "waf.fail_open.enabled",
+                        "value": "true"
+                      },
+                      {
                         "key": "client_keep_alive.seconds",
                         "value": "1000"
                       }

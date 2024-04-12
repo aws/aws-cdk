@@ -16,7 +16,7 @@ import { IEventBus } from '../../aws-events';
 import { Grant, IGrantable } from '../../aws-iam';
 import { IFunction } from '../../aws-lambda';
 import { IDomain as IOpenSearchDomain } from '../../aws-opensearchservice';
-import { IServerlessCluster } from '../../aws-rds';
+import { IDatabaseCluster, IServerlessCluster } from '../../aws-rds';
 import { ISecret } from '../../aws-secretsmanager';
 import { ArnFormat, CfnResource, IResource, Resource, Stack } from '../../core';
 
@@ -194,6 +194,23 @@ export interface IGraphqlApi extends IResource {
   ): RdsDataSource;
 
   /**
+   * add a new Rds Serverless V2 data source to this API
+   *
+   * @param id The data source's id
+   * @param serverlessCluster The serverless V2 cluster to interact with this data source
+   * @param secretStore The secret store that contains the username and password for the serverless cluster
+   * @param databaseName The optional name of the database to use within the cluster
+   * @param options The optional configuration for this data source
+   */
+  addRdsDataSourceV2(
+    id: string,
+    serverlessCluster: IDatabaseCluster,
+    secretStore: ISecret,
+    databaseName?: string,
+    options?: DataSourceOptions
+  ): RdsDataSource;
+
+  /**
    * add a new elasticsearch data source to this API
    *
    * @deprecated - use `addOpenSearchDataSource`
@@ -353,6 +370,31 @@ export abstract class GraphqlApiBase extends Resource implements IGraphqlApi {
   public addRdsDataSource(
     id: string,
     serverlessCluster: IServerlessCluster,
+    secretStore: ISecret,
+    databaseName?: string,
+    options?: DataSourceOptions,
+  ): RdsDataSource {
+    return new RdsDataSource(this, id, {
+      api: this,
+      name: options?.name,
+      description: options?.description,
+      serverlessCluster,
+      secretStore,
+      databaseName,
+    });
+  }
+
+  /**
+   * add a new Rds data source to this API
+   * @param id The data source's id
+   * @param serverlessCluster The serverless V2 cluster to interact with this data source
+   * @param secretStore The secret store that contains the username and password for the serverless cluster
+   * @param databaseName The optional name of the database to use within the cluster
+   * @param options The optional configuration for this data source
+   */
+  public addRdsDataSourceV2(
+    id: string,
+    serverlessCluster: IDatabaseCluster,
     secretStore: ISecret,
     databaseName?: string,
     options?: DataSourceOptions,
