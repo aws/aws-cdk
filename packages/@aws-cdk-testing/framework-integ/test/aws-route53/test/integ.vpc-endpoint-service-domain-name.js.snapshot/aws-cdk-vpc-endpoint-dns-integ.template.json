@@ -438,7 +438,7 @@
        {
         "Ref": "VPCES3AE7D565"
        },
-       "\",\"PrivateDnsName\":\"my-stuff.aws-cdk.dev\"},\"physicalResourceId\":{\"id\":\"awscdkvpcendpointdnsintegVPCES2D7BC258\"}}"
+       "\",\"PrivateDnsName\":\"my-stuff.aws-cdk.dev\"},\"physicalResourceId\":{\"id\":\"awscdkvpcendpointdnsintegVPCES2D7BC258\"},\"logApiResponseData\":true}"
       ]
      ]
     },
@@ -450,7 +450,7 @@
        {
         "Ref": "VPCES3AE7D565"
        },
-       "\",\"PrivateDnsName\":\"my-stuff.aws-cdk.dev\"},\"physicalResourceId\":{\"id\":\"awscdkvpcendpointdnsintegVPCES2D7BC258\"}}"
+       "\",\"PrivateDnsName\":\"my-stuff.aws-cdk.dev\"},\"physicalResourceId\":{\"id\":\"awscdkvpcendpointdnsintegVPCES2D7BC258\"},\"logApiResponseData\":true}"
       ]
      ]
     },
@@ -462,7 +462,7 @@
        {
         "Ref": "VPCES3AE7D565"
        },
-       "\",\"RemovePrivateDnsName\":true}}"
+       "\",\"RemovePrivateDnsName\":true},\"logApiResponseData\":true}"
       ]
      ]
     },
@@ -544,7 +544,7 @@
        {
         "Ref": "VPCES3AE7D565"
        },
-       "\"]},\"physicalResourceId\":{\"id\":\"0b26ca4969ad06c279e229b1b55b9bc2\"}}"
+       "\"]},\"physicalResourceId\":{\"id\":\"0b26ca4969ad06c279e229b1b55b9bc2\"},\"logApiResponseData\":true}"
       ]
      ]
     },
@@ -556,7 +556,7 @@
        {
         "Ref": "VPCES3AE7D565"
        },
-       "\"]},\"physicalResourceId\":{\"id\":\"0b26ca4969ad06c279e229b1b55b9bc2\"}}"
+       "\"]},\"physicalResourceId\":{\"id\":\"0b26ca4969ad06c279e229b1b55b9bc2\"},\"logApiResponseData\":true}"
       ]
      ]
     },
@@ -678,7 +678,7 @@
          ]
         ]
        },
-       "\"}}"
+       "\"},\"logApiResponseData\":true}"
       ]
      ]
     },
@@ -710,7 +710,7 @@
          ]
         ]
        },
-       "\"}}"
+       "\"},\"logApiResponseData\":true}"
       ]
      ]
     },
@@ -815,7 +815,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "482f9f5ffd706706c8ef3652699d6c945568786593d3571e4331ecb1f966c932.zip"
+     "S3Key": "6c34b6e864223e202d50bb862e2bf066393d4cdf36229f8e1646425a5224a10b.zip"
     },
     "Handler": "index.handler",
     "Role": {
