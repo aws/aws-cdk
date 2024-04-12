@@ -44,9 +44,7 @@ class GaStack extends Stack {
         new endpoints.InstanceEndpoint(instances[1]),
       ],
     });
-
     alb.connections.allowFrom(group.connectionsPeer('Peer', vpc), ec2.Port.tcp(443));
-
   }
 }
 
