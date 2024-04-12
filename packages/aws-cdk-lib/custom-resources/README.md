@@ -632,7 +632,7 @@ const getParameter = new cr.AwsCustomResource(this, 'GetParameter', {
       WithDecryption: true,
     },
     physicalResourceId: cr.PhysicalResourceId.of(Date.now().toString()),
-    logging: Logging.withDataHidden(),
+    logging: cr.Logging.withDataHidden(),
   },
   policy: cr.AwsCustomResourcePolicy.fromSdkCalls({
     resources: cr.AwsCustomResourcePolicy.ANY_RESOURCE,
