@@ -22,10 +22,10 @@
    "UpdateReplacePolicy": "Retain",
    "DeletionPolicy": "Retain"
   },
-  "MyUserDC45028B": {
+  "MyIamUser046086A4": {
    "Type": "AWS::IAM::User"
   },
-  "MyUserDefaultPolicy7B897426": {
+  "MyIamUserDefaultPolicy4B9C0A95": {
    "Type": "AWS::IAM::Policy",
    "Properties": {
     "PolicyDocument": {
@@ -58,10 +58,10 @@
      ],
      "Version": "2012-10-17"
     },
-    "PolicyName": "MyUserDefaultPolicy7B897426",
+    "PolicyName": "MyIamUserDefaultPolicy4B9C0A95",
     "Users": [
      {
-      "Ref": "MyUserDC45028B"
+      "Ref": "MyIamUser046086A4"
      }
     ]
    }

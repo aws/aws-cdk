@@ -16,7 +16,7 @@ repo.addToResourcePolicy(new iam.PolicyStatement({
   principals: [new iam.AnyPrincipal()],
 }));
 
-const user = new iam.User(stack, 'MyUser');
+const user = new iam.User(stack, 'MyIamUser');
 repo.grantRead(user);
 repo.grantPullPush(user);
 
