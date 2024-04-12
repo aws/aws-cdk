@@ -370,6 +370,13 @@ export interface TableOptions extends SchemaOptions {
    * @default - no data import from the S3 bucket
    */
   readonly importSource?: ImportSourceSpecification;
+
+  /**
+   * Resource policy to assign to DynamoDB Table.
+   *
+   * @default - No resource policy statements are added to the created table.
+   */
+  readonly resourcePolicy?: iam.PolicyDocument;
 }
 
 /**
@@ -1095,6 +1102,7 @@ export class Table extends TableBase {
       kinesisStreamSpecification: props.kinesisStream ? { streamArn: props.kinesisStream.streamArn } : undefined,
       deletionProtectionEnabled: props.deletionProtection,
       importSourceSpecification: this.renderImportSourceSpecification(props.importSource),
+      resourcePolicy: props.resourcePolicy? { policyDocument: props.resourcePolicy } : undefined,
     });
     this.table.applyRemovalPolicy(props.removalPolicy);
 
