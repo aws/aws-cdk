@@ -214,7 +214,7 @@ export class BedrockCreateModelCustomizationJob extends sfn.TaskStateBase {
 
   private readonly integrationPattern: sfn.IntegrationPattern;
   private _role: iam.IRole;
-  private readonly subnets: ec2.ISubnet[] = [];
+  private subnets: ec2.ISubnet[] = [];
 
   constructor(scope: Construct, id: string, private readonly props: BedrockCreateModelCustomizationJobProps) {
     super(scope, id, props);
@@ -234,6 +234,10 @@ export class BedrockCreateModelCustomizationJob extends sfn.TaskStateBase {
 
     validatePatternSupported(this.integrationPattern, BedrockCreateModelCustomizationJob.SUPPORTED_INTEGRATION_PATTERNS);
 
+    if (this.props.vpcConfig) {
+      this.validateVpcConfig(this.props.vpcConfig);
+    }
+
     this._role = this.renderBedrockCreateModelCustomizationJobRole();
     this.taskPolicies = this.renderPolicyStatements();
 
@@ -244,25 +248,6 @@ export class BedrockCreateModelCustomizationJob extends sfn.TaskStateBase {
         principals: [new iam.ArnPrincipal(this._role.roleArn)],
       }));
     }
-
-    if (this.props.vpcConfig !== undefined) {
-      if (this.props.vpcConfig.subnets) {
-        this.subnets = this.props.vpcConfig.subnets;
-      } else {
-        // use all subnets in the VPC
-        this.subnets = this.props.vpcConfig.vpc.selectSubnets().subnets;
-      }
-      // validate that this.subnets includes not isolated subnets
-      const isOnlyIsolatedSubnets = this.subnets.every((subnet) => this.props.vpcConfig?.vpc.isolatedSubnets.includes(subnet));
-      const hasS3VpcEndpoint = App.of(this)?.node.findAll().some((resource) => {
-        return resource instanceof ec2.CfnVPCEndpoint
-          && resource.serviceName === `com.amazonaws.${Stack.of(this).region}.s3`
-          && resource.vpcId === this.props.vpcConfig?.vpc.vpcId;
-      });
-      if (isOnlyIsolatedSubnets && !hasS3VpcEndpoint) {
-        throw new Error('VPC configuration must include at least one subnet that is not an isolated subnet or a VPC endpoint to S3');
-      };
-    }
   }
 
   /**
@@ -270,6 +255,26 @@ export class BedrockCreateModelCustomizationJob extends sfn.TaskStateBase {
    */
   public get role(): iam.IRole {
     return this._role;
+  }
+
+  private validateVpcConfig(vpcConfig: IBedrockCreateModelCustomizationJobVpcConfig): void {
+    if (vpcConfig.subnets) {
+      this.subnets = vpcConfig.subnets;
+    } else {
+      // use all subnets in the VPC
+      this.subnets = vpcConfig.vpc.selectSubnets().subnets;
+    }
+
+    const isOnlyIsolatedSubnets = this.subnets.every(
+      (subnet) => this.props.vpcConfig?.vpc.isolatedSubnets.includes(subnet));
+    const hasS3VpcEndpoint = App.of(this)?.node.findAll().some((resource) => (
+      resource instanceof ec2.CfnVPCEndpoint &&
+      resource.serviceName === `com.amazonaws.${Stack.of(this).region}.s3` &&
+      resource.vpcId === this.props.vpcConfig?.vpc.vpcId),
+    );
+    if (isOnlyIsolatedSubnets && !hasS3VpcEndpoint) {
+      throw new Error('VPC configuration must include at least one subnet that is not an isolated subnet or a VPC endpoint to S3');
+    };
   }
 
   /**
