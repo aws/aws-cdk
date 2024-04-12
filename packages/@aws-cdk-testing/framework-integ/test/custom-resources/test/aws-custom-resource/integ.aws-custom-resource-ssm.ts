@@ -1,5 +1,5 @@
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
-import { App, Stack, StackProps } from 'aws-cdk-lib';
+import { App, CfnOutput, Stack, StackProps } from 'aws-cdk-lib';
 import { StringParameter } from 'aws-cdk-lib/aws-ssm';
 import { AwsCustomResource, AwsCustomResourcePolicy, Logging, PhysicalResourceId } from 'aws-cdk-lib/custom-resources';
 import { Construct } from 'constructs';
@@ -29,7 +29,7 @@ class GetParameterStack extends Stack {
   public constructor(scope: Construct, id: string, props: GetParameterStackProps) {
     super(scope, id, props);
 
-    new AwsCustomResource(this, 'GetSecret', {
+    const getSecret = new AwsCustomResource(this, 'GetSecret', {
       onUpdate: {
         service: 'SSM',
         action: 'GetParameter',
@@ -44,6 +44,9 @@ class GetParameterStack extends Stack {
         resources: AwsCustomResourcePolicy.ANY_RESOURCE,
       }),
     });
+
+    const value = getSecret.getResponseField('Parameter.Value');
+    new CfnOutput(this, 'RevealSecret', { value });
   }
 }
 
