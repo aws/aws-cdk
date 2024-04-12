@@ -5,7 +5,7 @@ import * as iam from '../../../aws-iam';
 import * as kms from '../../../aws-kms';
 import * as s3 from '../../../aws-s3';
 import * as sfn from '../../../aws-stepfunctions';
-import { App, CfnResource, Stack, Token } from '../../../core';
+import { App, Stack, Token } from '../../../core';
 import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
 
 /**
@@ -214,7 +214,7 @@ export class BedrockCreateModelCustomizationJob extends sfn.TaskStateBase {
 
   private readonly integrationPattern: sfn.IntegrationPattern;
   private _role: iam.IRole;
-  private readonly subnets: ec2.ISubnet[];
+  private readonly subnets: ec2.ISubnet[] = [];
 
   constructor(scope: Construct, id: string, private readonly props: BedrockCreateModelCustomizationJobProps) {
     super(scope, id, props);
@@ -362,7 +362,7 @@ export class BedrockCreateModelCustomizationJob extends sfn.TaskStateBase {
               resource: 'security-group',
               resourceName: sg.securityGroupId,
             })),
-          ...vpcConfig.subnets.map(
+          ...this.subnets.map(
             (subnet) => Stack.of(this).formatArn({
               service: 'ec2',
               resource: 'subnet',
@@ -380,7 +380,7 @@ export class BedrockCreateModelCustomizationJob extends sfn.TaskStateBase {
         resources: ['*'],
         conditions: {
           ArnEquals: {
-            'ec2:Subnet': vpcConfig.subnets.map(
+            'ec2:Subnet': this.subnets.map(
               (subnet) => Stack.of(this).formatArn({
                 service: 'ec2',
                 resource: 'subnet',
@@ -502,7 +502,7 @@ export class BedrockCreateModelCustomizationJob extends sfn.TaskStateBase {
         },
         VpcConfig: this.props.vpcConfig ? {
           SecurityGroupIds: this.props.vpcConfig.securityGroups.map((sg) => sg.securityGroupId),
-          SubnetIds: this.props.vpcConfig.subnets.map((subnet) => subnet.subnetId),
+          SubnetIds: this.subnets.map((subnet) => subnet.subnetId),
         } : undefined,
       }),
     };
