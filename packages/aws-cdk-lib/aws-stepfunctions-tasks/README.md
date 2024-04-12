@@ -427,8 +427,9 @@ const task = new tasks.BedrockCreateModelCustomizationJob(this, 'CreateModelCust
     },
   ],
   vpcConfig: {
+    vpc,
     securityGroups: [new ec2.SecurityGroup(this, 'SecurityGroup', { vpc })],
-    subnets: vpc.isolatedSubnets,
+    subnets: vpc.publicSubnets, // optional
   }, // optional
 });
 ```

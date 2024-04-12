@@ -18,6 +18,11 @@ const vpc = new ec2.Vpc(stack, 'Vpc', {
       name: 'Private',
       subnetType: ec2.SubnetType.PRIVATE_ISOLATED,
     },
+    {
+      cidrMask: 24,
+      name: 'Public',
+      subnetType: ec2.SubnetType.PUBLIC,
+    },
   ],
 });
 
@@ -73,7 +78,8 @@ const taskConfig: tasks.BedrockCreateModelCustomizationJobProps = {
   ],
   vpcConfig: {
     securityGroups: [new ec2.SecurityGroup(stack, 'SecurityGroup', { vpc })],
-    subnets: vpc.isolatedSubnets,
+    subnets: vpc.publicSubnets,
+    vpc,
   },
 };
 
