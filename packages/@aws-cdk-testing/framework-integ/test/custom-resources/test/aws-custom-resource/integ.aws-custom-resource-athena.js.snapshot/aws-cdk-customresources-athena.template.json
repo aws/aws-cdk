@@ -144,11 +144,11 @@
        {
         "Ref": "AthenaResultBucketDF85B968"
        },
-       "\"},\"EngineVersion\":{\"SelectedEngineVersion\":\"PySpark engine version 3\"}}}}"
+       "\"},\"EngineVersion\":{\"SelectedEngineVersion\":\"PySpark engine version 3\"}}},\"logApiResponseData\":true}"
       ]
      ]
     },
-    "Delete": "{\"service\":\"Athena\",\"action\":\"deleteWorkGroup\",\"parameters\":{\"WorkGroup\":\"TestWG\"}}",
+    "Delete": "{\"service\":\"Athena\",\"action\":\"deleteWorkGroup\",\"parameters\":{\"WorkGroup\":\"TestWG\"},\"logApiResponseData\":true}",
     "InstallLatestAwsSdk": true
    },
    "UpdateReplacePolicy": "Delete",
@@ -161,7 +161,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "482f9f5ffd706706c8ef3652699d6c945568786593d3571e4331ecb1f966c932.zip"
+     "S3Key": "6c34b6e864223e202d50bb862e2bf066393d4cdf36229f8e1646425a5224a10b.zip"
     },
     "Handler": "index.handler",
     "Role": {
@@ -186,9 +186,9 @@
       "Arn"
      ]
     },
-    "Create": "{\"service\":\"Athena\",\"action\":\"createNotebook\",\"physicalResourceId\":{\"responsePath\":\"NotebookId\"},\"parameters\":{\"WorkGroup\":\"TestWG\",\"Name\":\"MyNotebook1\"}}",
-    "Update": "{\"service\":\"Athena\",\"action\":\"updateNotebookMetadata\",\"parameters\":{\"Name\":\"MyNotebook1\",\"NotebookId\":\"PHYSICAL:RESOURCEID:\"}}",
-    "Delete": "{\"service\":\"Athena\",\"action\":\"deleteNotebook\",\"parameters\":{\"NotebookId\":\"PHYSICAL:RESOURCEID:\"}}",
+    "Create": "{\"service\":\"Athena\",\"action\":\"createNotebook\",\"physicalResourceId\":{\"responsePath\":\"NotebookId\"},\"parameters\":{\"WorkGroup\":\"TestWG\",\"Name\":\"MyNotebook1\"},\"logApiResponseData\":true}",
+    "Update": "{\"service\":\"Athena\",\"action\":\"updateNotebookMetadata\",\"parameters\":{\"Name\":\"MyNotebook1\",\"NotebookId\":\"PHYSICAL:RESOURCEID:\"},\"logApiResponseData\":true}",
+    "Delete": "{\"service\":\"Athena\",\"action\":\"deleteNotebook\",\"parameters\":{\"NotebookId\":\"PHYSICAL:RESOURCEID:\"},\"logApiResponseData\":true}",
     "InstallLatestAwsSdk": true
    },
    "DependsOn": [
