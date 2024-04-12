@@ -4507,6 +4507,11 @@
    "Value": {
     "Ref": "Cluster9EE0221C"
    }
+  },
+  "NodegroupName": {
+   "Value": {
+    "Ref": "ClusterNodegroupDefaultCapacityDA0920A3"
+   }
   }
  },
  "Parameters": {
