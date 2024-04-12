@@ -72,17 +72,10 @@ async function loadAwsSdk(
 
 /* eslint-disable @typescript-eslint/no-require-imports, import/no-extraneous-dependencies */
 export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent, context: AWSLambda.Context) {
-  event.ResourceProperties.Create = decodeCall(event.ResourceProperties.Create);
-  event.ResourceProperties.Update = decodeCall(event.ResourceProperties.Update);
-  event.ResourceProperties.Delete = decodeCall(event.ResourceProperties.Delete);
-
-  const call: AwsSdkCall | undefined = event.ResourceProperties[event.RequestType];
-
-  // if there is a call there will always be logging configured -- otherwise, in the event of no call, logging
-  // wasn't configured so just default to existing behavior
-  const logApiResponseData = call?.logApiResponseData ?? true;
-
   try {
+    event.ResourceProperties.Create = decodeCall(event.ResourceProperties.Create);
+    event.ResourceProperties.Update = decodeCall(event.ResourceProperties.Update);
+    event.ResourceProperties.Delete = decodeCall(event.ResourceProperties.Delete);
     let data: { [key: string]: string } = {};
 
     // Default physical resource id
@@ -99,7 +92,10 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
         physicalResourceId = event.ResourceProperties[event.RequestType]?.physicalResourceId?.id ?? event.PhysicalResourceId;
         break;
     }
-
+    const call: AwsSdkCall | undefined = event.ResourceProperties[event.RequestType];
+    // if there is a call there will always be logging configured -- otherwise, in the event of no call, logging
+    // wasn't configured so just default to existing behavior
+    const logApiResponseData = call?.logApiResponseData ?? true;
     if (call) {
       const apiCall = new ApiCall(call.service, call.action);
 
@@ -172,6 +168,6 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
     await respond(event, 'SUCCESS', 'OK', physicalResourceId, data, logApiResponseData);
   } catch (e: any) {
     console.log(e);
-    await respond(event, 'FAILED', e.message || 'Internal Error', context.logStreamName, {}, logApiResponseData);
+    await respond(event, 'FAILED', e.message || 'Internal Error', context.logStreamName, {}, true);
   }
 }
