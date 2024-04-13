@@ -17,7 +17,7 @@ describe('create model customization job', () => {
     const validationDataBucket = new s3.Bucket(stack, 'ValidationDataBucket');
 
     // WHEN
-    const task = new BedrockCreateModelCustomizationJob(stack, 'Invoke', {
+    const task = new BedrockCreateModelCustomizationJob(stack, 'CreateModelCustomization', {
       baseModel: bedrock.FoundationModel.fromFoundationModelId(stack, 'Model', bedrock.FoundationModelIdentifier.ANTHROPIC_CLAUDE_INSTANT_V1),
       customModelName: 'custom-model',
       jobName: 'job-name',
@@ -102,7 +102,7 @@ describe('create model customization job', () => {
         },
         RoleArn: {
           'Fn::GetAtt': [
-            'InvokeBedrockRole4E197628',
+            'CreateModelCustomizationBedrockRole28756B71',
             'Arn',
           ],
         },
@@ -329,7 +329,7 @@ describe('create model customization job', () => {
             Effect: 'Allow',
             Resource: {
               'Fn::GetAtt': [
-                'InvokeBedrockRole4E197628',
+                'CreateModelCustomizationBedrockRole28756B71',
                 'Arn',
               ],
             },
@@ -356,7 +356,7 @@ describe('create model customization job', () => {
     const validationDataBucket = new s3.Bucket(stack, 'ValidationDataBucket');
 
     // WHEN
-    const task = new BedrockCreateModelCustomizationJob(stack, 'Invoke', {
+    const task = new BedrockCreateModelCustomizationJob(stack, 'CreateModelCustomization', {
       baseModel: bedrock.FoundationModel.fromFoundationModelId(stack, 'Model', bedrock.FoundationModelIdentifier.ANTHROPIC_CLAUDE_INSTANT_V1),
       clientRequestToken: 'token',
       customizationType: CustomizationType.FINE_TUNING,
@@ -387,11 +387,7 @@ describe('create model customization job', () => {
       role: new iam.Role(stack, 'Role', {
         assumedBy: new iam.ServicePrincipal('bedrock.amazonaws.com'),
       }),
-      vpcConfig: {
-        securityGroups: [new ec2.SecurityGroup(stack, 'SecurityGroup', { vpc })],
-        subnets: vpc.privateSubnets,
-        vpc,
-      },
+      vpc,
     });
 
     new sfn.StateMachine(stack, 'StateMachine', {
@@ -517,7 +513,7 @@ describe('create model customization job', () => {
           SecurityGroupIds: [
             {
               'Fn::GetAtt': [
-                'SecurityGroupDD263621',
+                'CreateModelCustomizationSecurityGroup28504032',
                 'GroupId',
               ],
             },
@@ -546,7 +542,7 @@ describe('create model customization job', () => {
     const validationDataBucket = new s3.Bucket(stack, 'ValidationDataBucket');
 
     // THEN
-    expect(() => new BedrockCreateModelCustomizationJob(stack, 'Invoke', {
+    expect(() => new BedrockCreateModelCustomizationJob(stack, 'CreateModelCustomization', {
       baseModel: bedrock.FoundationModel.fromFoundationModelId(stack, 'Model', bedrock.FoundationModelIdentifier.ANTHROPIC_CLAUDE_INSTANT_V1),
       clientRequestToken: 'a'.repeat(tokenLength),
       customModelName: 'custom-model',
@@ -584,7 +580,7 @@ describe('create model customization job', () => {
     const validationDataBucket = new s3.Bucket(stack, 'ValidationDataBucket');
 
     // THEN
-    expect(() => new BedrockCreateModelCustomizationJob(stack, 'Invoke', {
+    expect(() => new BedrockCreateModelCustomizationJob(stack, 'CreateModelCustomization', {
       baseModel: bedrock.FoundationModel.fromFoundationModelId(stack, 'Model', bedrock.FoundationModelIdentifier.ANTHROPIC_CLAUDE_INSTANT_V1),
       clientRequestToken: token,
       customModelName: 'custom-model',
@@ -621,7 +617,7 @@ describe('create model customization job', () => {
     const validationDataBucket = new s3.Bucket(stack, 'ValidationDataBucket');
 
     // THEN
-    expect(() => new BedrockCreateModelCustomizationJob(stack, 'Invoke', {
+    expect(() => new BedrockCreateModelCustomizationJob(stack, 'CreateModelCustomization', {
       baseModel: bedrock.FoundationModel.fromFoundationModelId(stack, 'Model', bedrock.FoundationModelIdentifier.ANTHROPIC_CLAUDE_INSTANT_V1),
       customModelName: 'a'.repeat(nameLength),
       jobName: 'job-name',
@@ -658,7 +654,7 @@ describe('create model customization job', () => {
     const validationDataBucket = new s3.Bucket(stack, 'ValidationDataBucket');
 
     // THEN
-    expect(() => new BedrockCreateModelCustomizationJob(stack, 'Invoke', {
+    expect(() => new BedrockCreateModelCustomizationJob(stack, 'CreateModelCustomization', {
       baseModel: bedrock.FoundationModel.fromFoundationModelId(stack, 'Model', bedrock.FoundationModelIdentifier.ANTHROPIC_CLAUDE_INSTANT_V1),
       customModelName: name,
       jobName: 'job-name',
@@ -691,7 +687,7 @@ describe('create model customization job', () => {
     const validationDataBucket = new s3.Bucket(stack, 'ValidationDataBucket');
 
     // THEN
-    expect(() => new BedrockCreateModelCustomizationJob(stack, 'Invoke', {
+    expect(() => new BedrockCreateModelCustomizationJob(stack, 'CreateModelCustomization', {
       baseModel: bedrock.FoundationModel.fromFoundationModelId(stack, 'Model', bedrock.FoundationModelIdentifier.ANTHROPIC_CLAUDE_INSTANT_V1),
       customModelName: 'custom-model',
       customModelTags: Array(201).fill({ key: 'key', value: 'value' }),
@@ -728,7 +724,7 @@ describe('create model customization job', () => {
     const validationDataBucket = new s3.Bucket(stack, 'ValidationDataBucket');
 
     // THEN
-    expect(() => new BedrockCreateModelCustomizationJob(stack, 'Invoke', {
+    expect(() => new BedrockCreateModelCustomizationJob(stack, 'CreateModelCustomization', {
       baseModel: bedrock.FoundationModel.fromFoundationModelId(stack, 'Model', bedrock.FoundationModelIdentifier.ANTHROPIC_CLAUDE_INSTANT_V1),
       customModelName: 'custom-model',
       jobName: 'a'.repeat(nameLength),
@@ -764,7 +760,7 @@ describe('create model customization job', () => {
     const validationDataBucket = new s3.Bucket(stack, 'ValidationDataBucket');
 
     // THEN
-    expect(() => new BedrockCreateModelCustomizationJob(stack, 'Invoke', {
+    expect(() => new BedrockCreateModelCustomizationJob(stack, 'CreateModelCustomization', {
       baseModel: bedrock.FoundationModel.fromFoundationModelId(stack, 'Model', bedrock.FoundationModelIdentifier.ANTHROPIC_CLAUDE_INSTANT_V1),
       customModelName: 'custom-model',
       jobName: name,
@@ -797,7 +793,7 @@ describe('create model customization job', () => {
     const validationDataBucket = new s3.Bucket(stack, 'ValidationDataBucket');
 
     // THEN
-    expect(() => new BedrockCreateModelCustomizationJob(stack, 'Invoke', {
+    expect(() => new BedrockCreateModelCustomizationJob(stack, 'CreateModelCustomization', {
       baseModel: bedrock.FoundationModel.fromFoundationModelId(stack, 'Model', bedrock.FoundationModelIdentifier.ANTHROPIC_CLAUDE_INSTANT_V1),
       customModelName: 'custom-model',
       jobName: 'job-name',
@@ -823,7 +819,7 @@ describe('create model customization job', () => {
     })).toThrow('jobTags must be between 0 and 200 items long, got: 201');
   });
 
-  test('throw error for invalid validation data s3 uri length', () => {
+  test('throw error for invalid validation data length', () => {
     // GIVEN
     const stack = new cdk.Stack();
     const outputDataBucket = new s3.Bucket(stack, 'OutputBucket');
@@ -831,7 +827,7 @@ describe('create model customization job', () => {
     const validationDataBucket = new s3.Bucket(stack, 'ValidationDataBucket');
 
     // THEN
-    expect(() => new BedrockCreateModelCustomizationJob(stack, 'Invoke', {
+    expect(() => new BedrockCreateModelCustomizationJob(stack, 'CreateModelCustomization', {
       baseModel: bedrock.FoundationModel.fromFoundationModelId(stack, 'Model', bedrock.FoundationModelIdentifier.ANTHROPIC_CLAUDE_INSTANT_V1),
       customModelName: 'custom-model',
       jobName: 'job-name',
@@ -848,309 +844,5 @@ describe('create model customization job', () => {
         prefix: `validation-data${index}`,
       })),
     })).toThrow('validationData must be between 1 and 10 items long, got: 11');
-  });
-
-  test('throw error for invalid securityGroups length', () => {
-    // GIVEN
-    const stack = new cdk.Stack();
-    const vpc = new ec2.Vpc(stack, 'Vpc');
-    const outputDataBucket = new s3.Bucket(stack, 'OutputBucket');
-    const trainingDataBucket = new s3.Bucket(stack, 'TrainingDataBucket');
-    const validationDataBucket = new s3.Bucket(stack, 'ValidationDataBucket');
-
-    // THEN
-    expect(() => new BedrockCreateModelCustomizationJob(stack, 'Invoke', {
-      baseModel: bedrock.FoundationModel.fromFoundationModelId(stack, 'Model', bedrock.FoundationModelIdentifier.ANTHROPIC_CLAUDE_INSTANT_V1),
-      customModelName: 'custom-model',
-      jobName: 'job-name',
-      outputData: {
-        bucket: outputDataBucket,
-        prefix: 'output-data',
-      },
-      trainingData: {
-        bucket: trainingDataBucket,
-        prefix: 'training-data',
-      },
-      validationData: [
-        {
-          bucket: validationDataBucket,
-          prefix: 'validation-data1',
-        },
-        {
-          bucket: validationDataBucket,
-          prefix: 'validation-data2',
-        },
-      ],
-      vpcConfig: {
-        securityGroups: Array(6).fill(new ec2.SecurityGroup(stack, 'SecurityGroup', { vpc })),
-        subnets: vpc.privateSubnets,
-        vpc,
-      },
-    })).toThrow('securityGroups must be between 1 and 5 items long, got: 6');
-  });
-
-  test('throw error for invalid subnets length', () => {
-    // GIVEN
-    const stack = new cdk.Stack();
-    const vpc = new ec2.Vpc(stack, 'Vpc');
-    const outputDataBucket = new s3.Bucket(stack, 'OutputBucket');
-    const trainingDataBucket = new s3.Bucket(stack, 'TrainingDataBucket');
-    const validationDataBucket = new s3.Bucket(stack, 'ValidationDataBucket');
-
-    // THEN
-    expect(() => new BedrockCreateModelCustomizationJob(stack, 'Invoke', {
-      baseModel: bedrock.FoundationModel.fromFoundationModelId(stack, 'Model', bedrock.FoundationModelIdentifier.ANTHROPIC_CLAUDE_INSTANT_V1),
-      customModelName: 'custom-model',
-      jobName: 'job-name',
-      outputData: {
-        bucket: outputDataBucket,
-        prefix: 'output-data',
-      },
-      trainingData: {
-        bucket: trainingDataBucket,
-        prefix: 'training-data',
-      },
-      validationData: [
-        {
-          bucket: validationDataBucket,
-          prefix: 'validation-data1',
-        },
-        {
-          bucket: validationDataBucket,
-          prefix: 'validation-data2',
-        },
-      ],
-      vpcConfig: {
-        securityGroups: [new ec2.SecurityGroup(stack, 'SecurityGroup', { vpc })],
-        subnets: Array(17).fill(vpc.privateSubnets[0]),
-        vpc,
-      },
-    })).toThrow('subnets must be between 1 and 16 items long, got: 17');
-  });
-
-  test('throw error for specify isolated subnets with no vpc endpoint', () => {
-    // GIVEN
-    const stack = new cdk.Stack();
-    const vpc = new ec2.Vpc(stack, 'Vpc', {
-      subnetConfiguration: [
-        {
-          cidrMask: 24,
-          name: 'isolated',
-          subnetType: ec2.SubnetType.ISOLATED,
-        },
-      ],
-    });
-    const outputDataBucket = new s3.Bucket(stack, 'OutputBucket');
-    const trainingDataBucket = new s3.Bucket(stack, 'TrainingDataBucket');
-    const validationDataBucket = new s3.Bucket(stack, 'ValidationDataBucket');
-
-    // THEN
-    expect(() => new BedrockCreateModelCustomizationJob(stack, 'Invoke', {
-      baseModel: bedrock.FoundationModel.fromFoundationModelId(stack, 'Model', bedrock.FoundationModelIdentifier.ANTHROPIC_CLAUDE_INSTANT_V1),
-      customModelName: 'custom-model',
-      jobName: 'job-name',
-      outputData: {
-        bucket: outputDataBucket,
-        prefix: 'output-data',
-      },
-      trainingData: {
-        bucket: trainingDataBucket,
-        prefix: 'training-data',
-      },
-      validationData: [
-        {
-          bucket: validationDataBucket,
-          prefix: 'validation-data1',
-        },
-        {
-          bucket: validationDataBucket,
-          prefix: 'validation-data2',
-        },
-      ],
-      vpcConfig: {
-        securityGroups: [new ec2.SecurityGroup(stack, 'SecurityGroup', { vpc })],
-        subnets: vpc.isolatedSubnets,
-        vpc,
-      },
-    })).toThrow('VPC configuration must include at least one subnet that is not an isolated subnet or a VPC endpoint to S3');
-  });
-
-  test('specify isolated subnets with gateway vpc endpoint', () => {
-    // GIVEN
-    const stack = new cdk.Stack();
-    const vpc = new ec2.Vpc(stack, 'Vpc', {
-      subnetConfiguration: [
-        {
-          cidrMask: 24,
-          name: 'isolated',
-          subnetType: ec2.SubnetType.ISOLATED,
-        },
-      ],
-    });
-    vpc.addGatewayEndpoint('S3Endpoint', {
-      service: ec2.GatewayVpcEndpointAwsService.S3,
-    });
-    const outputDataBucket = new s3.Bucket(stack, 'OutputBucket');
-    const trainingDataBucket = new s3.Bucket(stack, 'TrainingDataBucket');
-    const validationDataBucket = new s3.Bucket(stack, 'ValidationDataBucket');
-
-    // WHEN
-    const task = new BedrockCreateModelCustomizationJob(stack, 'Invoke', {
-      baseModel: bedrock.FoundationModel.fromFoundationModelId(stack, 'Model', bedrock.FoundationModelIdentifier.ANTHROPIC_CLAUDE_INSTANT_V1),
-      customModelName: 'custom-model',
-      jobName: 'job-name',
-      outputData: {
-        bucket: outputDataBucket,
-        prefix: 'output-data',
-      },
-      trainingData: {
-        bucket: trainingDataBucket,
-        prefix: 'training-data',
-      },
-      validationData: [
-        {
-          bucket: validationDataBucket,
-          prefix: 'validation-data1',
-        },
-        {
-          bucket: validationDataBucket,
-          prefix: 'validation-data2',
-        },
-      ],
-      vpcConfig: {
-        securityGroups: [new ec2.SecurityGroup(stack, 'SecurityGroup', { vpc })],
-        subnets: vpc.isolatedSubnets,
-        vpc,
-      },
-    });
-
-    new sfn.StateMachine(stack, 'StateMachine', {
-      definitionBody: sfn.DefinitionBody.fromChainable(
-        sfn.Chain
-          .start(new sfn.Pass(stack, 'Start'))
-          .next(task)
-          .next(new sfn.Pass(stack, 'Done')),
-      ),
-      timeout: cdk.Duration.seconds(30),
-    });
-
-    // THEN
-    expect(stack.resolve(task.toStateJson())).toEqual({
-      Type: 'Task',
-      Resource: {
-        'Fn::Join': [
-          '',
-          [
-            'arn:',
-            {
-              Ref: 'AWS::Partition',
-            },
-            ':states:::bedrock:createModelCustomizationJob',
-          ],
-        ],
-      },
-      Next: 'Done',
-      Parameters: {
-        BaseModelIdentifier: {
-          'Fn::Join': [
-            '',
-            [
-              'arn:',
-              {
-                Ref: 'AWS::Partition',
-              },
-              ':bedrock:',
-              {
-                Ref: 'AWS::Region',
-              },
-              '::foundation-model/anthropic.claude-instant-v1',
-            ],
-          ],
-        },
-        CustomModelName: 'custom-model',
-        JobName: 'job-name',
-        OutputDataConfig: {
-          S3Uri: {
-            'Fn::Join': [
-              '',
-              [
-                's3://',
-                {
-                  Ref: 'OutputBucket7114EB27',
-                },
-                '/output-data',
-              ],
-            ],
-          },
-        },
-        RoleArn: {
-          'Fn::GetAtt': [
-            'InvokeBedrockRole4E197628',
-            'Arn',
-          ],
-        },
-        TrainingDataConfig: {
-          S3Uri: {
-            'Fn::Join': [
-              '',
-              [
-                's3://',
-                {
-                  Ref: 'TrainingDataBucketC87619AE',
-                },
-                '/training-data',
-              ],
-            ],
-          },
-        },
-        ValidationDataConfig: {
-          Validators: [{
-            S3Uri: {
-              'Fn::Join': [
-                '',
-                [
-                  's3://',
-                  {
-                    Ref: 'ValidationDataBucket54C7C688',
-                  },
-                  '/validation-data1',
-                ],
-              ],
-            },
-          }, {
-            S3Uri: {
-              'Fn::Join': [
-                '',
-                [
-                  's3://',
-                  {
-                    Ref: 'ValidationDataBucket54C7C688',
-                  },
-                  '/validation-data2',
-                ],
-              ],
-            },
-          }],
-        },
-        VpcConfig: {
-          SecurityGroupIds: [
-            {
-              'Fn::GetAtt': [
-                'SecurityGroupDD263621',
-                'GroupId',
-              ],
-            },
-          ],
-          SubnetIds: [
-            {
-              Ref: 'VpcisolatedSubnet1SubnetE62B1B9B',
-            },
-            {
-              Ref: 'VpcisolatedSubnet2Subnet39217055',
-            },
-          ],
-        },
-      },
-    });
   });
 });
