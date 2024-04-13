@@ -77,7 +77,7 @@ export class Fleet extends Resource implements IFleet {
    *
    * @param scope The scope creating construct (usually `this`).
    * @param id The construct's id.
-   * @param fleetArn  The ARN of the fleet.
+   * @param fleetArn The ARN of the fleet.
    */
   public static fromFleetArn(scope: Construct, id: string, fleetArn: string): IFleet {
     class Import extends Resource implements IFleet {
