@@ -282,7 +282,6 @@ export class BedrockCreateModelCustomizationJob extends sfn.TaskStateBase {
   /**
    * Configure the IAM role for the bedrock create model customization job
    *
-   * @see https://docs.aws.amazon.com/bedrock/latest/userguide/vpc-model-customization.html
    * @see https://docs.aws.amazon.com/bedrock/latest/userguide/model-customization-iam-role.html
    */
   private renderBedrockCreateModelCustomizationJobRole(): iam.IRole {
