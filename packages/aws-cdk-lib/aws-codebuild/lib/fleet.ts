@@ -125,11 +125,11 @@ export class Fleet extends Resource implements IFleet {
       }
     }
 
-    super(scope, id, { physicalName: props.fleetName });
-
     if ((props.baseCapacity ?? 1) < 1) {
       throw new Error('baseCapacity must be greater than or equal to 1');
     }
+
+    super(scope, id, { physicalName: props.fleetName });
 
     const resource = new CfnFleet(this, 'Resource', {
       name: props.fleetName,
