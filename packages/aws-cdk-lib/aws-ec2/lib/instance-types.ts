@@ -1,5 +1,7 @@
 import type { InstanceTypeInfo } from '@aws-sdk/client-ec2';
 import * as instancePropertiesJsonData from '../data/instance-properties.json';
+import { BootMode, DiskType, FpgaDeviceInfo, GpuDeviceInfo, HypervisorType, InferenceAcceleratorDeviceInfo, InstanceDiskInfo, InstanceProperties, PlacementGroupStrategy, RootDeviceType, UsageClass, VirtualizationType } from './instance-properties';
+import { Size } from '../../core';
 
 type InstancePropertiesData = Omit<InstanceTypeInfo, 'InstanceType'>;
 const instancePropertiesData: {[InstanceType: string]: InstancePropertiesData} = instancePropertiesJsonData;
@@ -1383,26 +1385,6 @@ export enum InstanceSize {
 }
 
 /**
- * Instance type properties
- */
-export interface InstanceProperties {
-  /**
-   * If true, this instance type is current generation
-   *
-   * @default - not specified
-   */
-  readonly currentGeneration?: boolean;
-
-  /**
-   * If true, this instance type is eligible for the AWS free trial
-   *
-   * @see https://aws.amazon.com/free/
-   * @default - not specified
-   */
-  readonly freeTierEligible?: boolean;
-}
-
-/**
  * Instance type for EC2 instances
  *
  * This class takes a literal string, good if you already
@@ -1680,13 +1662,122 @@ export class InstanceType {
     return new InstanceType(`${instanceClassMap[instanceClass] ?? instanceClass}.${instanceSize}`);
   }
 
+  private static mapSupportedValue(value = '', opts = { supported: ['supported'] }): boolean | undefined {
+    if (opts.supported.includes(value)) return true;
+    if (value === 'unsupported') return false;
+
+    // Return undefined if the value is either undefined or unknown
+    return undefined;
+  }
+
   private static mapInstanceProperties(instanceTypeIdentifier: string): InstanceProperties | undefined {
     const data = instancePropertiesData[instanceTypeIdentifier];
     if (!data) return;
 
     return {
+      autoRecoverySupported: data.AutoRecoverySupported,
+      bareMetal: data.BareMetal,
+      burstablePerformanceSupported: data.BurstablePerformanceSupported,
       currentGeneration: data.CurrentGeneration,
+      dedicatedHostsSupported: data.DedicatedHostsSupported,
       freeTierEligible: data.FreeTierEligible,
+      hibernationSupported: data.HibernationSupported,
+      hypervisor: data.Hypervisor as HypervisorType | undefined,
+      instanceStorageSupported: data.InstanceStorageSupported,
+      memorySize: data.MemoryInfo?.SizeInMiB ? Size.mebibytes(data.MemoryInfo.SizeInMiB) : undefined,
+      nitroEnclavesSupported: InstanceType.mapSupportedValue(data.NitroEnclavesSupport),
+      nitroTpmSupported: InstanceType.mapSupportedValue(data.NitroTpmSupport),
+      supportedBootModes: data.SupportedBootModes as BootMode[] | undefined,
+      supportedNitroTpmVersions: data.NitroTpmInfo?.SupportedVersions,
+      supportedPlacementGroupStrategies: data.PlacementGroupInfo?.SupportedStrategies as PlacementGroupStrategy[],
+      supportedRootDeviceTypes: data.SupportedRootDeviceTypes as RootDeviceType[] | undefined,
+      supportedUsageClasses: data.SupportedUsageClasses as UsageClass[] | undefined,
+      supportedVirtualizationTypes: data.SupportedVirtualizationTypes as VirtualizationType[] | undefined,
+      ebsInfo: {
+        ebsOptimizedInfo: {
+          baselineBandwidthInMbps: data.EbsInfo?.EbsOptimizedInfo?.BaselineBandwidthInMbps,
+          baselineIops: data.EbsInfo?.EbsOptimizedInfo?.BaselineIops,
+          baselineThroughputInMBps: data.EbsInfo?.EbsOptimizedInfo?.BaselineThroughputInMBps,
+          maximumBandwidthInMbps: data.EbsInfo?.EbsOptimizedInfo?.MaximumBandwidthInMbps,
+          maximumIops: data.EbsInfo?.EbsOptimizedInfo?.MaximumIops,
+          maximumThroughputInMBps: data.EbsInfo?.EbsOptimizedInfo?.MaximumThroughputInMBps,
+        },
+        ebsOptimizedSupported: InstanceType.mapSupportedValue(data.EbsInfo?.EbsOptimizedSupport, { supported: ['supported', 'default'] }),
+        ebsOptimizedSupportedByDefault: data.EbsInfo?.EbsOptimizedSupport === 'default',
+        encryptionSupported: InstanceType.mapSupportedValue(data.EbsInfo?.EncryptionSupport),
+        nvmeSupported: InstanceType.mapSupportedValue(data.EbsInfo?.NvmeSupport, { supported: ['supported', 'required'] }),
+        nvmeRequired: data.EbsInfo?.NvmeSupport === 'required',
+      },
+      fpgaInfo: {
+        fpgas: data.FpgaInfo?.Fpgas?.map<FpgaDeviceInfo>((fpga) => ({
+          name: fpga.Name,
+          count: fpga.Count,
+          manufacturer: fpga.Manufacturer,
+          memorySize: fpga.MemoryInfo?.SizeInMiB ? Size.mebibytes(fpga.MemoryInfo.SizeInMiB) : undefined,
+        })),
+        totalFpgaMemory: data.FpgaInfo?.TotalFpgaMemoryInMiB ? Size.mebibytes(data.FpgaInfo?.TotalFpgaMemoryInMiB) : undefined,
+      },
+      gpuInfo: {
+        gpus: data.GpuInfo?.Gpus?.map<GpuDeviceInfo>((gpu) => ({
+          name: gpu.Name,
+          manufacturer: gpu.Manufacturer,
+          count: gpu.Count,
+          memorySize: gpu.MemoryInfo?.SizeInMiB ? Size.mebibytes(gpu.MemoryInfo.SizeInMiB) : undefined,
+        })),
+        totalGpuMemory: data.GpuInfo?.TotalGpuMemoryInMiB ? Size.mebibytes(data.GpuInfo?.TotalGpuMemoryInMiB) : undefined,
+      },
+      inferenceAcceleratorInfo: {
+        accelerators: data.InferenceAcceleratorInfo?.Accelerators?.map<InferenceAcceleratorDeviceInfo>((accelerator) => ({
+          name: accelerator.Name,
+          manufacturer: accelerator.Manufacturer,
+          count: accelerator.Count,
+          memoryInfo: accelerator.MemoryInfo?.SizeInMiB ?
+            Size.mebibytes(accelerator.MemoryInfo.SizeInMiB)
+            : undefined,
+        })),
+        totalInferenceMemory: data.InferenceAcceleratorInfo?.TotalInferenceMemoryInMiB ?
+          Size.mebibytes(data.InferenceAcceleratorInfo?.TotalInferenceMemoryInMiB)
+          : undefined,
+      },
+      instanceStorageInfo: {
+        disks: data.InstanceStorageInfo?.Disks?.map<InstanceDiskInfo>((disk) => ({
+          count: disk.Count,
+          size: disk.SizeInGB ? Size.gibibytes(disk.SizeInGB) : undefined,
+          type: disk.Type as DiskType,
+        })),
+        totalStorage: data.InstanceStorageInfo?.TotalSizeInGB ?
+          Size.gibibytes(data.InstanceStorageInfo.TotalSizeInGB) :
+          undefined,
+      },
+      // TODO waiting for @aws-sdk/client-ec2 dependency upgrade
+      /* mediaAcceleratorInfo: {
+        accelerators: data.MediaAcceleratorInfo?.Accelerators?.map<MediaAcceleratorDeviceInfo>((accelerator) => ({
+          name: accelerator.Name,
+          manufacturer: accelerator.Manufacturer,
+          count: accelerator.Count,
+        })),
+        totalMediaMemory: data.MediaAcceleratorInfo?.TotalMediaMemoryInMiB ?
+          Size.mebibytes(data.MediaAcceleratorInfo?.TotalMediaMemoryInMiB)
+          : undefined,
+      }, */
+      networkInfo: undefined,
+      // TODO waiting for @aws-sdk/client-ec2 dependency upgrade
+      /* neuronInfo: {
+        neurons: data.NeuronInfo?.Neurons?.map<NeuronDeviceInfo>((neuron) => ({
+          name: neuron.Name,
+          count: neuron.CoreInfo?.Count,
+          version: neuron.CoreInfo?.Version,
+          manufacturer: neuron.Manufacturer,
+          memorySize: neuron.MemoryInfo?.SizeInMiB ?
+            Size.mebibytes(neuron.MemoryInfo?.SizeInMiB)
+            : undefined,
+        })),
+        totalNeuronMemory: data.NeuronInfo?.TotalNeuronMemoryInMiB ?
+          Size.mebibytes(data.NeuronInfo?.TotalNeuronMemoryInMiB)
+          : undefined,
+      }, */
+      processorInfo: undefined,
+      vCpuInfo: undefined,
     };
   };
 
