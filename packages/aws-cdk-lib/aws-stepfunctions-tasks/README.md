@@ -34,9 +34,10 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
     - [SubmitJob](#submitjob)
   - [Bedrock](#bedrock)
     - [InvokeModel](#invokemodel)
-    - [CreateModelCustomizationJob](#createmodelcustomizationjob)
+    - [createModelCustomizationJob](#createmodelcustomizationjob)
   - [CodeBuild](#codebuild)
     - [StartBuild](#startbuild)
+    - [StartBuildBatch](#startbuildbatch)
   - [DynamoDB](#dynamodb)
     - [GetItem](#getitem)
     - [PutItem](#putitem)
@@ -46,6 +47,7 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
     - [RunTask](#runtask)
       - [EC2](#ec2)
       - [Fargate](#fargate)
+      - [ECS enable Exec](#ecs-enable-exec)
   - [EMR](#emr)
     - [Create Cluster](#create-cluster)
     - [Termination Protection](#termination-protection)
@@ -63,8 +65,8 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
   - [EventBridge](#eventbridge)
     - [Put Events](#put-events)
   - [Glue](#glue)
-    - [Start Job Run](#start-job-run)
-    - [Start Crawler Run](#startcrawlerrun)
+    - [StartJobRun](#startjobrun)
+    - [StartCrawlerRun](#startcrawlerrun)
   - [Glue DataBrew](#glue-databrew)
     - [Start Job Run](#start-job-run-1)
   - [Lambda](#lambda)
@@ -426,11 +428,7 @@ const task = new tasks.BedrockCreateModelCustomizationJob(this, 'CreateModelCust
       prefix: 'validation-data1', // optional
     },
   ],
-  vpcConfig: {
-    vpc,
-    securityGroups: [new ec2.SecurityGroup(this, 'SecurityGroup', { vpc })],
-    subnets: vpc.publicSubnets, // optional
-  }, // optional
+  vpc, // optional
 });
 ```
 
