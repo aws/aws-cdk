@@ -113,6 +113,8 @@ export interface BedrockCreateModelCustomizationJobProps extends sfn.TaskStateBa
   /**
    * The custom model is encrypted at rest using this key.
    *
+   * @see https://docs.aws.amazon.com/bedrock/latest/userguide/encryption-custom-job.html
+   *
    * @default - no encryption
    */
   readonly customModelKmsKey?: kms.IKey;
