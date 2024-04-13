@@ -1,6 +1,6 @@
 import type { InstanceTypeInfo } from '@aws-sdk/client-ec2';
 import * as instancePropertiesJsonData from '../data/instance-properties.json';
-import { BootMode, DiskType, FpgaDeviceInfo, GpuDeviceInfo, HypervisorType, InferenceAcceleratorDeviceInfo, InstanceDiskInfo, InstanceProperties, PlacementGroupStrategy, RootDeviceType, UsageClass, VirtualizationType } from './instance-properties';
+import { BootMode, DiskType, FpgaDeviceInfo, GpuDeviceInfo, HypervisorType, InferenceAcceleratorDeviceInfo, InstanceArchitecture, InstanceDiskInfo, InstanceProperties, NetworkCardInfo, PlacementGroupStrategy, ProcessorFeature, RootDeviceType, UsageClass, VirtualizationType } from './instance-properties';
 import { Size } from '../../core';
 
 type InstancePropertiesData = Omit<InstanceTypeInfo, 'InstanceType'>;
@@ -1230,21 +1230,6 @@ export enum InstanceClass {
 }
 
 /**
- * Identifies an instance's CPU architecture
- */
-export enum InstanceArchitecture {
-  /**
-   * ARM64 architecture
-   */
-  ARM_64 = 'arm64',
-
-  /**
-   * x86-64 architecture
-   */
-  X86_64 = 'x86_64',
-}
-
-/**
  * What size of instance to use
  */
 export enum InstanceSize {
@@ -1760,7 +1745,31 @@ export class InstanceType {
           Size.mebibytes(data.MediaAcceleratorInfo?.TotalMediaMemoryInMiB)
           : undefined,
       }, */
-      networkInfo: undefined,
+      networkInfo: {
+        defaultNetworkCardIndex: data.NetworkInfo?.DefaultNetworkCardIndex,
+        maximumEfaInterfaces: data.NetworkInfo?.EfaInfo?.MaximumEfaInterfaces,
+        efaSupported: data.NetworkInfo?.EfaSupported,
+        enaSupported: InstanceType.mapSupportedValue(data.NetworkInfo?.EnaSupport),
+        // This mapping is not a mistake, 'required' is being interpreted as supported by default.
+        // CloudFormation's 'required' does not accurately reflect the actual behavior, since
+        // the instance type can be successfully launched without the requirements of ENA
+        enaSupportedByDefault: data.NetworkInfo?.EnaSupport === 'required',
+        enaSrdSupported: data.NetworkInfo?.EnaSrdSupported,
+        encryptionInTransitSupported: data.NetworkInfo?.EncryptionInTransitSupported,
+        ipv4AddressesPerInterface: data.NetworkInfo?.Ipv4AddressesPerInterface,
+        ipv6AddressesPerInterface: data.NetworkInfo?.Ipv6AddressesPerInterface,
+        ipv6Supported: data.NetworkInfo?.Ipv6Supported,
+        maximumNetworkCards: data.NetworkInfo?.MaximumNetworkCards,
+        maximumNetworkInterfaces: data.NetworkInfo?.MaximumNetworkInterfaces,
+        networkPerformance: data.NetworkInfo?.NetworkPerformance,
+        networkCards: data.NetworkInfo?.NetworkCards?.map<NetworkCardInfo>((card) => ({
+          maximumNetworkInterfaces: card.MaximumNetworkInterfaces,
+          networkCardIndex: card.NetworkCardIndex,
+          networkPerformance: card.NetworkPerformance,
+          baselineBandwidthInGbps: card.BaselineBandwidthInGbps,
+          peakBandwidthInGbps: card.PeakBandwidthInGbps,
+        })),
+      },
       // TODO waiting for @aws-sdk/client-ec2 dependency upgrade
       /* neuronInfo: {
         neurons: data.NeuronInfo?.Neurons?.map<NeuronDeviceInfo>((neuron) => ({
@@ -1776,8 +1785,20 @@ export class InstanceType {
           Size.mebibytes(data.NeuronInfo?.TotalNeuronMemoryInMiB)
           : undefined,
       }, */
-      processorInfo: undefined,
-      vCpuInfo: undefined,
+      processorInfo: {
+        // TODO waiting for @aws-sdk/client-ec2 dependency upgrade
+        // manufacturer: data.ProcessorInfo?.manufacturer,
+        supportedArchitectures: data.ProcessorInfo?.SupportedArchitectures as InstanceArchitecture[] | undefined,
+        supportedFeatures: data.ProcessorInfo?.SupportedFeatures as ProcessorFeature[] | undefined,
+        sustainedClockSpeedInGhz: data.ProcessorInfo?.SustainedClockSpeedInGhz,
+      },
+      vCpuInfo: {
+        defaultCores: data.VCpuInfo?.DefaultCores,
+        defaultThreadsPerCore: data.VCpuInfo?.DefaultThreadsPerCore,
+        defaultVCpus: data.VCpuInfo?.DefaultVCpus,
+        validCores: data.VCpuInfo?.ValidCores,
+        validThreadsPerCore: data.VCpuInfo?.ValidThreadsPerCore,
+      },
     };
   };
 
@@ -1806,8 +1827,11 @@ export class InstanceType {
 
   /**
    * The instance's CPU architecture
+   *
+   * @deprecated - use {@link instanceProperties}
    */
   public get architecture(): InstanceArchitecture {
+    // TODO use data first
     // capture the family, generation, capabilities, and size portions of the instance type id
     const instanceTypeComponents = this.instanceTypeIdentifier.match(/^([a-z]+)(\d{1,2})([a-z\-]*)\.([a-z0-9\-]+)$/);
     if (instanceTypeComponents == null) {
@@ -1838,8 +1862,11 @@ export class InstanceType {
 
   /**
    * Return whether this instance type is a burstable instance type
+   *
+   * @deprecated - use {@link instanceProperties}
    */
   public isBurstable(): boolean {
+    // TODO use data first
     return this.instanceTypeIdentifier.startsWith('t3') || this.instanceTypeIdentifier.startsWith('t4g') || this.instanceTypeIdentifier.startsWith('t2');
   }
 

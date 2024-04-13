@@ -13,7 +13,7 @@ export interface InstanceProperties {
   readonly autoRecoverySupported?: boolean;
 
   /**
-   * If true, the instance is a bare metal instance type.
+   * If true, the instance is a bare metal instance type
    *
    * Not to be confused with {@link dedicatedHostsSupported dedicated hosts}
    *
@@ -23,7 +23,7 @@ export interface InstanceProperties {
   readonly bareMetal?: boolean;
 
   /**
-   * If true, the instance is a burstable performance `T*` instance type.
+   * If true, the instance is a burstable performance `T*` instance type
    *
    * @default - not specified
    * @see https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/burstable-performance-instances.html
@@ -200,6 +200,7 @@ export interface InstanceProperties {
    * Describes the network settings for the instance type
    *
    * @default - not specified
+   * @see https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-instance-network-bandwidth.html
    */
   readonly networkInfo?: NetworkInfo;
 
@@ -592,9 +593,164 @@ export interface MediaDeviceInfo {
 }
 
 /**
- * TODO
+ * Describes network settings
+ *
+ * @see https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-instance-network-bandwidth.html
  */
-export interface NetworkInfo {}
+export interface NetworkInfo {
+  /**
+   * The index of the default network card, starting at 0
+   *
+   * @default - not specified
+   */
+  readonly defaultNetworkCardIndex?: number;
+
+  /**
+   * The maximum number of Elastic Fabric Adapter (EFA)
+   * network interfaces for the instance type
+   *
+   * @default - not specified
+   * @see https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/efa.html
+   */
+  readonly maximumEfaInterfaces?: number;
+
+  /**
+   * If true, the instance type supports Elastic Fabric Adapter (EFA)
+   *
+   * @default - not specified
+   * @see https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/efa.html
+   */
+  readonly efaSupported?: boolean;
+
+  /**
+   * If true, the instance type supports Elastic Network Adapter (ENA)
+   *
+   * @default - not specified
+   * @see https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/enhanced-networking-ena.html
+   */
+  readonly enaSupported?: boolean;
+
+  /**
+   * If true, the instance type supports Elastic Network Adapter (ENA) Express,
+   * using AWS Scalable Reliable Datagram (SRD) technology
+   *
+   * @default - not specified
+   * @see https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ena-express.html
+   */
+  readonly enaSrdSupported?: boolean;
+
+  /**
+   * If true, the instance type is Elastic Network Adapter (ENA) by default,
+   * and cannot be disabled
+   *
+   * @default - not specified
+   * @see https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ebs-optimized.html#current
+   */
+  readonly enaSupportedByDefault?: boolean;
+
+  /**
+   * If true, the instance type automatically encrypts in-transit traffic between instances
+   *
+   * @default - not specified
+   * @see https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/data-protection.html#encryption-transit
+   */
+  readonly encryptionInTransitSupported?: boolean;
+
+  /**
+   * The maximum number of IPv4 addresses per network interface for the instance type
+   *
+   * @default - not specified
+   * @see https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/MultipleIP.html#working-with-multiple-ipv4
+   */
+  readonly ipv4AddressesPerInterface?: number;
+
+  /**
+   * The maximum number of IPv6 addresses per network interface for the instance type
+   *
+   * @default - not specified
+   * @see https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/MultipleIP.html#working-with-multiple-ipv6
+   */
+  readonly ipv6AddressesPerInterface?: number;
+
+  /**
+   * If true, the instance type supports IPv6
+   *
+   * @default - not specified
+   */
+  readonly ipv6Supported?: boolean;
+
+  /**
+   * The maximum number of network cards for the instance type
+   *
+   * @default - not specified
+   */
+  readonly maximumNetworkCards?: number;
+
+  /**
+   * The maximum number of network interfaces for the instance type
+   *
+   * @default - not specified
+   */
+  readonly maximumNetworkInterfaces?: number;
+
+  /**
+   * The maximum number of network interfaces for the instance type
+   *
+   * @default - not specified
+   * @see https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-instance-network-bandwidth.html
+   */
+  readonly networkPerformance?: string;
+
+  /**
+   * Describes the network cards for the instance type
+   *
+   * @default - not specified
+   */
+  readonly networkCards?: NetworkCardInfo[];
+}
+
+/**
+ * Describes network card settings
+ */
+export interface NetworkCardInfo {
+  /**
+   * The maximum number of network interfaces for the network card
+   *
+   * @default - not specified
+   */
+  readonly maximumNetworkInterfaces?: number;
+
+  /**
+   * The index of the network card, starting at 0
+   * TODO check starting index
+   *
+   * @default - not specified
+   */
+  readonly networkCardIndex?: number;
+
+  /**
+   * The network performance of the network card
+   *
+   * @default - not specified
+   * @see https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-instance-network-bandwidth.html
+   */
+  readonly networkPerformance?: string;
+
+  /**
+   * The baseline network performance of the network card, in Gbps
+   *
+   * @default - not specified
+   */
+  readonly baselineBandwidthInGbps?: number;
+
+  /**
+   * The peak (burst) network performance of the network card, in Gbps
+   *
+   * @default - not specified
+   */
+  readonly peakBandwidthInGbps?: number;
+}
+
 /**
  * Describe Neuron accelerator settings
  *
@@ -657,17 +813,79 @@ export interface NeuronDeviceInfo {
 }
 
 /**
- * TODO
+ * Describes processor settings
  */
-export interface PlacementGroupInfo {}
+export interface ProcessorInfo {
+  /**
+   * The manufacturer of the processor
+   *
+   * @default - not specified
+   */
+  readonly manufacturer?: string;
+
+  /**
+   * List of supported architectures by the instance type
+   *
+   * @default - not specified
+   */
+  readonly supportedArchitectures?: InstanceArchitecture[];
+
+  /**
+   * List of supported CPU features by the instance type
+   *
+   * @default - not specified
+   */
+  readonly supportedFeatures?: ProcessorFeature[];
+
+  /**
+   * The speed of the processor, in GHz
+   *
+   * @default - not specified
+   */
+  readonly sustainedClockSpeedInGhz?: number;
+}
+
 /**
- * TODO
+ * Describes vCPU (virtual CPU) settings
+ *
+ * @see https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/instance-optimize-cpu.html
  */
-export interface ProcessorInfo {}
-/**
- * TODO
- */
-export interface VcpuInfo {}
+export interface VcpuInfo {
+  /**
+   * The default number of cores for the instance type
+   *
+   * @default - not specified
+   */
+  readonly defaultCores?: number;
+
+  /**
+   * The default number of threads cores for the instance type
+   *
+   * @default - not specified
+   */
+  readonly defaultThreadsPerCore?: number;
+
+  /**
+   * The default number of vCPUs for the instance type
+   *
+   * @default - not specified
+   */
+  readonly defaultVCpus?: number;
+
+  /**
+   * The valid number of cores that can be configured for the instance type
+   *
+   * @default - not specified
+   */
+  readonly validCores?: number[];
+
+  /**
+   * The valid number of threads per core that can be configured for the instance type
+   *
+   * @default - not specified
+   */
+  readonly validThreadsPerCore?: number[];
+}
 
 /**
  * Instance hypervisor type
@@ -765,4 +983,32 @@ export enum PlacementGroupStrategy {
   PARTITION = 'partition',
   /** Spread */
   SPREAD = 'spread',
+}
+
+/**
+ * Identifies an instance's CPU architecture
+ */
+export enum InstanceArchitecture {
+  /** i386 architecture (32-bit) */
+  I386 = 'i386',
+  /** x86_64 architecture */
+  X86_64 = 'x86_64',
+  /** ARM architecture */
+  ARM_64 = 'arm64',
+  /** x86_64 architecture for Mac systems */
+  X86_64_MAC = 'x86_64_mac',
+  /** ARM architecture for Mac systems */
+  ARM_64_MAC = 'arm64_mac',
+}
+
+/**
+ * Instance processor features
+ */
+export enum ProcessorFeature {
+  /**
+   * AMD Secure Encrypted Virtualization-Secure Nested Paging (AMD SEV-SNP)
+   *
+   * @see https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/sev-snp.html
+   */
+  AMD_SEC_SNP = 'amd-sev-snp',
 }
