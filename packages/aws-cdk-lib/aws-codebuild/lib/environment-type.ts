@@ -1,10 +1,10 @@
 /**
- * The type of environment variables to use in a build project.
+ * Build environment type.
  *
  * @see https://docs.aws.amazon.com/codebuild/latest/userguide/build-env-ref-compute-types.html#environment.types
  */
 export enum EnvironmentType {
-  /** ARM Container */
+  /** ARM container */
   ARM_CONTAINER = 'ARM_CONTAINER',
   /** Linux container */
   LINUX_CONTAINER = 'LINUX_CONTAINER',

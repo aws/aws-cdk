@@ -39,13 +39,13 @@ export interface FleetProps {
  */
 export interface IFleet extends IResource {
   /**
-   * The ARN of the fleet
+   * The ARN of the fleet.
    * @attribute
    */
   readonly fleetArn: string;
 
   /**
-   * The name of the fleet
+   * The name of the fleet.
    * @attribute
    */
   readonly fleetName: string;
@@ -96,12 +96,12 @@ export class Fleet extends Resource implements IFleet {
   }
 
   /**
-   * The ARN of the fleet
+   * The ARN of the fleet.
    */
   public readonly fleetArn: string;
 
   /**
-   * The name of the fleet
+   * The name of the fleet.
    */
   public readonly fleetName: string;
 
