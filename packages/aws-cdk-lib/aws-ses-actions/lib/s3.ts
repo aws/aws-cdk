@@ -55,7 +55,8 @@ export class S3 implements ses.IReceiptRuleAction {
       resources: [this.props.bucket.arnForObjects(`${keyPattern}*`)],
       conditions: {
         StringEquals: {
-          'aws:Referer': cdk.Aws.ACCOUNT_ID,
+          'aws:SourceAccount': cdk.Aws.ACCOUNT_ID,
+          'aws:SourceArn': `arn:${cdk.Aws.PARTITION}:ses:${cdk.Aws.REGION}:${cdk.Aws.ACCOUNT_ID}:receipt-rule-set/*:receipt-rule/*`,
         },
       },
     });

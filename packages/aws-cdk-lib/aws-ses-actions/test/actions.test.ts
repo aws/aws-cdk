@@ -193,8 +193,22 @@ test('add s3 action', () => {
           Action: 's3:PutObject',
           Condition: {
             StringEquals: {
-              'aws:Referer': {
+              'aws:SourceAccount': {
                 Ref: 'AWS::AccountId',
+              },
+              'aws:SourceArn': {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    { Ref: 'AWS::Partition' },
+                    ':ses:',
+                    { Ref: 'AWS::Region' },
+                    ':',
+                    { Ref: 'AWS::AccountId' },
+                    ':receipt-rule-set/*:receipt-rule/*',
+                  ],
+                ],
               },
             },
           },
