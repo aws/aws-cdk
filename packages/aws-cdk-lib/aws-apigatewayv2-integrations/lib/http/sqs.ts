@@ -9,13 +9,11 @@ export interface HttpSqsIntegrationProps {
   /**
    * Specifies how to transform HTTP requests before sending them to the backend.
    *
-   * When the subtype is either `START_EXECUTION` or `START_SYNC_EXECUTION`,
-   * it is necessary to specify the `StateMachineArn`.
-   * Conversely, when the subtype is `STOP_EXECUTION`, the `ExecutionArn` must be specified.
+   * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-develop-integrations-aws-services.html#http-api-develop-integrations-aws-services-parameter-mapping
+   * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-develop-integrations-aws-services-reference.html
    *
-   * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-parameter-mapping.html
-   *
-   * @default - specify only `StateMachineArn`
+   * @default - specify `QueueUrl`. Additionally, set `MessageBody` to `$request.body.MessageBody` for `SQS_SEND_MESSAGE` subtype
+   * and set `ReceiptHandle` to `$request.body.ReceiptHandle` for `SQS_DELETE_MESSAGE` subtype.
    */
   readonly parameterMapping?: apigwv2.ParameterMapping;
 
