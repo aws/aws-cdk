@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/6733c502ed3cd9e032a51e459ad1ea7cef4687ed5f726a271a924a1751fe9f76.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/3da00f41ed2e6303d333e0801bc1eac9cada0976f0eaeb31dde3d665b37c52f3.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -40,40 +40,100 @@
             "data": "Vpc8378EB38"
           }
         ],
-        "/aws-stepfunctions-tasks-bedrock-invoke-model-integ/Vpc/PrivateSubnet1/Subnet": [
+        "/aws-stepfunctions-tasks-bedrock-invoke-model-integ/Vpc/IsolatedSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VpcPrivateSubnet1Subnet536B997A"
+            "data": "VpcIsolatedSubnet1SubnetE48C5737"
           }
         ],
-        "/aws-stepfunctions-tasks-bedrock-invoke-model-integ/Vpc/PrivateSubnet1/RouteTable": [
+        "/aws-stepfunctions-tasks-bedrock-invoke-model-integ/Vpc/IsolatedSubnet1/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VpcPrivateSubnet1RouteTableB2C5B500"
+            "data": "VpcIsolatedSubnet1RouteTable4771E3E5"
           }
         ],
-        "/aws-stepfunctions-tasks-bedrock-invoke-model-integ/Vpc/PrivateSubnet1/RouteTableAssociation": [
+        "/aws-stepfunctions-tasks-bedrock-invoke-model-integ/Vpc/IsolatedSubnet1/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VpcPrivateSubnet1RouteTableAssociation70C59FA6"
+            "data": "VpcIsolatedSubnet1RouteTableAssociationD300FCBB"
           }
         ],
-        "/aws-stepfunctions-tasks-bedrock-invoke-model-integ/Vpc/PrivateSubnet2/Subnet": [
+        "/aws-stepfunctions-tasks-bedrock-invoke-model-integ/Vpc/IsolatedSubnet2/Subnet": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VpcPrivateSubnet2Subnet3788AAA1"
+            "data": "VpcIsolatedSubnet2Subnet16364B91"
           }
         ],
-        "/aws-stepfunctions-tasks-bedrock-invoke-model-integ/Vpc/PrivateSubnet2/RouteTable": [
+        "/aws-stepfunctions-tasks-bedrock-invoke-model-integ/Vpc/IsolatedSubnet2/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VpcPrivateSubnet2RouteTableA678073B"
+            "data": "VpcIsolatedSubnet2RouteTable1D30AF7D"
           }
         ],
-        "/aws-stepfunctions-tasks-bedrock-invoke-model-integ/Vpc/PrivateSubnet2/RouteTableAssociation": [
+        "/aws-stepfunctions-tasks-bedrock-invoke-model-integ/Vpc/IsolatedSubnet2/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "VpcPrivateSubnet2RouteTableAssociationA89CAD56"
+            "data": "VpcIsolatedSubnet2RouteTableAssociationF7B18CCA"
+          }
+        ],
+        "/aws-stepfunctions-tasks-bedrock-invoke-model-integ/Vpc/PublicSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet1Subnet5C2D37C4"
+          }
+        ],
+        "/aws-stepfunctions-tasks-bedrock-invoke-model-integ/Vpc/PublicSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet1RouteTable6C95E38E"
+          }
+        ],
+        "/aws-stepfunctions-tasks-bedrock-invoke-model-integ/Vpc/PublicSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet1RouteTableAssociation97140677"
+          }
+        ],
+        "/aws-stepfunctions-tasks-bedrock-invoke-model-integ/Vpc/PublicSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet1DefaultRoute3DA9E72A"
+          }
+        ],
+        "/aws-stepfunctions-tasks-bedrock-invoke-model-integ/Vpc/PublicSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet2Subnet691E08A3"
+          }
+        ],
+        "/aws-stepfunctions-tasks-bedrock-invoke-model-integ/Vpc/PublicSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet2RouteTable94F7E489"
+          }
+        ],
+        "/aws-stepfunctions-tasks-bedrock-invoke-model-integ/Vpc/PublicSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet2RouteTableAssociationDD5762D8"
+          }
+        ],
+        "/aws-stepfunctions-tasks-bedrock-invoke-model-integ/Vpc/PublicSubnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet2DefaultRoute97F91067"
+          }
+        ],
+        "/aws-stepfunctions-tasks-bedrock-invoke-model-integ/Vpc/IGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcIGWD7BA715C"
+          }
+        ],
+        "/aws-stepfunctions-tasks-bedrock-invoke-model-integ/Vpc/VPCGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcVPCGWBF912B6E"
           }
         ],
         "/aws-stepfunctions-tasks-bedrock-invoke-model-integ/Vpc/RestrictDefaultSecurityGroupCustomResource/Default": [
@@ -118,10 +178,10 @@
             "data": "KmsKey46693ADD"
           }
         ],
-        "/aws-stepfunctions-tasks-bedrock-invoke-model-integ/SecurityGroup/Resource": [
+        "/aws-stepfunctions-tasks-bedrock-invoke-model-integ/CreateModelCustomizationJob1/SecurityGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "SecurityGroupDD263621"
+            "data": "CreateModelCustomizationJob1SecurityGroupF9731448"
           }
         ],
         "/aws-stepfunctions-tasks-bedrock-invoke-model-integ/CreateModelCustomizationJob1/BedrockRole/Resource": [
@@ -192,7 +252,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/03317ae179c99fffdc9309df6d60cc36a3242cdb6436b9bbd83ed6fe4b2f333d.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/bc2588d39e9bc35459bd9fa2c49c7337037ffd6852eaf94802120b8fd4b3d6ed.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [

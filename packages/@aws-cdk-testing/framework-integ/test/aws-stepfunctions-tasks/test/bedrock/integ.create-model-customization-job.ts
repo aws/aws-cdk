@@ -15,7 +15,7 @@ const vpc = new ec2.Vpc(stack, 'Vpc', {
   subnetConfiguration: [
     {
       cidrMask: 24,
-      name: 'Private',
+      name: 'Isolated',
       subnetType: ec2.SubnetType.PRIVATE_ISOLATED,
     },
     {
@@ -76,11 +76,7 @@ const taskConfig: tasks.BedrockCreateModelCustomizationJobProps = {
       prefix: 'validation-data2',
     },
   ],
-  vpcConfig: {
-    securityGroups: [new ec2.SecurityGroup(stack, 'SecurityGroup', { vpc })],
-    subnets: vpc.publicSubnets,
-    vpc,
-  },
+  vpc,
 };
 
 const task1 = new tasks.BedrockCreateModelCustomizationJob(stack, 'CreateModelCustomizationJob1', taskConfig);
@@ -91,7 +87,7 @@ const task2 = new tasks.BedrockCreateModelCustomizationJob(stack, 'CreateModelCu
   customModelName: 'MyCustomModel2',
   jobName: 'MyCustomizationJob2',
   integrationPattern: sfn.IntegrationPattern.RUN_JOB,
-  vpcConfig: undefined,
+  vpc: undefined,
 });
 
 const chain = sfn.Chain
