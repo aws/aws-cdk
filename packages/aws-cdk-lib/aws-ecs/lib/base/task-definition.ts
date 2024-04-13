@@ -375,6 +375,15 @@ export class TaskDefinition extends TaskDefinitionBase {
   public readonly ephemeralStorageGiB?: number;
 
   /**
+   * The process namespace to use for the containers in the task.
+   *
+   * Only supported for tasks that are hosted on AWS Fargate if the tasks
+   * are using platform version 1.4.0 or later (Linux).
+   * Not supported in Windows containers.
+   */
+  public readonly pidMode?: PidMode;
+
+  /**
    * The container definitions.
    */
   protected readonly containers = new Array<ContainerDefinition>();
@@ -455,6 +464,7 @@ export class TaskDefinition extends TaskDefinitionBase {
     }
 
     this.ephemeralStorageGiB = props.ephemeralStorageGiB;
+    this.pidMode = props.pidMode;
 
     // validate the cpu and memory size for the Windows operation system family.
     if (props.runtimePlatform?.operatingSystemFamily?.isWindows()) {
@@ -487,7 +497,7 @@ export class TaskDefinition extends TaskDefinitionBase {
       cpu: props.cpu,
       memory: props.memoryMiB,
       ipcMode: props.ipcMode,
-      pidMode: props.pidMode,
+      pidMode: this.pidMode,
       inferenceAccelerators: Lazy.any({
         produce: () =>
           !isFargateCompatible(this.compatibility) ? this.renderInferenceAccelerators() : undefined,
