@@ -144,7 +144,7 @@ export interface BedrockCreateModelCustomizationJobProps extends sfn.TaskStateBa
   /**
    * A name for the fine-tuning job.
    *
-   * The maximum length is 63 characters and it needs to satisfy the regular expression ^[a-zA-Z0-9](-*[a-zA-Z0-9\+\-\.])*$.
+   * The maximum length is 63 characters.
    */
   readonly jobName: string;
 
