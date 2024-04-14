@@ -121,7 +121,7 @@ export interface BedrockCreateModelCustomizationJobProps extends sfn.TaskStateBa
   /**
    * A name for the resulting custom model.
    *
-   * The maximum length is 63 characters and it needs to satisfy the regular expression ^([0-9a-zA-Z][_-]?)+$.
+   * The maximum length is 63 characters.
    */
   readonly customModelName: string;
 
