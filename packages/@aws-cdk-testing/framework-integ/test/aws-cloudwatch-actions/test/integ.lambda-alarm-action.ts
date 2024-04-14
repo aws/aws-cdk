@@ -40,6 +40,12 @@ class LambdaAlarmActionIntegrationTestStack extends Stack {
     alarm.addAlarmAction(new cloudwatchActions.LambdaAction(version));
     alarm.addAlarmAction(new cloudwatchActions.LambdaAction(aliasName));
     alarm.addAlarmAction(new cloudwatchActions.LambdaAction(alarmLambda));
+    alarm.addOkAction(new cloudwatchActions.LambdaAction(version));
+    alarm.addOkAction(new cloudwatchActions.LambdaAction(aliasName));
+    alarm.addOkAction(new cloudwatchActions.LambdaAction(alarmLambda));
+    alarm.addInsufficientDataAction(new cloudwatchActions.LambdaAction(version));
+    alarm.addInsufficientDataAction(new cloudwatchActions.LambdaAction(aliasName));
+    alarm.addInsufficientDataAction(new cloudwatchActions.LambdaAction(alarmLambda));
 
     if (isFeature) {
       const alarm2 = new cloudwatch.Alarm(this, `Alarm${lambdaIdSuffix}`, {
@@ -53,6 +59,12 @@ class LambdaAlarmActionIntegrationTestStack extends Stack {
       alarm2.addAlarmAction(new cloudwatchActions.LambdaAction(version));
       alarm2.addAlarmAction(new cloudwatchActions.LambdaAction(aliasName));
       alarm2.addAlarmAction(new cloudwatchActions.LambdaAction(alarmLambda));
+      alarm2.addOkAction(new cloudwatchActions.LambdaAction(version));
+      alarm2.addOkAction(new cloudwatchActions.LambdaAction(aliasName));
+      alarm2.addOkAction(new cloudwatchActions.LambdaAction(alarmLambda));
+      alarm2.addInsufficientDataAction(new cloudwatchActions.LambdaAction(version));
+      alarm2.addInsufficientDataAction(new cloudwatchActions.LambdaAction(aliasName));
+      alarm2.addInsufficientDataAction(new cloudwatchActions.LambdaAction(alarmLambda));
     }
   }
 }

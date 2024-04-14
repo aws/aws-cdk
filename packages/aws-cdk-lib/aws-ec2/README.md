@@ -194,6 +194,12 @@ If you prefer to use a custom AMI, use `machineImage:
 MachineImage.genericLinux({ ... })` and configure the right AMI ID for the
 regions you want to deploy to.
 
+> **Warning**
+> The NAT instances created using this method will be **unmonitored**.
+> They are not part of an Auto Scaling Group,
+> and if they become unavailable or are terminated for any reason,
+> will not be restarted or replaced.
+
 By default, the NAT instances will route all traffic. To control what traffic
 gets routed, pass a custom value for `defaultAllowedTraffic` and access the
 `NatInstanceProvider.connections` member after having passed the NAT provider to
@@ -212,9 +218,41 @@ new ec2.Vpc(this, 'TheVPC', {
 provider.connections.allowFrom(ec2.Peer.ipv4('1.2.3.4/8'), ec2.Port.tcp(80));
 ```
 
+You can also customize the characteristics of your NAT instances, including their security group,
+as well as their initialization scripts:
+
+```ts
+declare const bucket: s3.Bucket;
+
+const userData = ec2.UserData.forLinux();
+userData.addCommands(
+  ...ec2.NatInstanceProviderV2.DEFAULT_USER_DATA_COMMANDS,
+  'echo "hello world!" > hello.txt',
+  `aws s3 cp hello.txt s3://${bucket.bucketName}`,
+);
+
+const provider = ec2.NatProvider.instanceV2({
+  instanceType: new ec2.InstanceType('t3.small'),
+  creditSpecification: ec2.CpuCredits.UNLIMITED,
+  defaultAllowedTraffic: ec2.NatTrafficDirection.NONE,
+});
+
+const vpc = new ec2.Vpc(this, 'TheVPC', {
+  natGatewayProvider: provider,
+  natGateways: 2,
+});
+
+const securityGroup = new ec2.SecurityGroup(this, 'SecurityGroup', { vpc });
+    securityGroup.addEgressRule(ec2.Peer.anyIpv4(), ec2.Port.tcp(443));
+for (const gateway of provider.gatewayInstances) {
+  bucket.grantWrite(gateway);
+  gateway.addSecurityGroup(securityGroup);
+}
+```
+
 [using NAT instances](test/integ.nat-instances.lit.ts) [Deprecated]
 
-The construct will use the AWS official NAT instance AMI, which has already 
+The V1 `NatProvider.instance` construct will use the AWS official NAT instance AMI, which has already
 reached EOL on Dec 31, 2023. For more information, see the following blog post: 
 [Amazon Linux AMI end of life](https://aws.amazon.com/blogs/aws/update-on-amazon-linux-ami-end-of-life/).
 
