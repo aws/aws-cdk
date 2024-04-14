@@ -76,7 +76,11 @@ const taskConfig: tasks.BedrockCreateModelCustomizationJobProps = {
       prefix: 'validation-data2',
     },
   ],
-  vpc,
+  vpcConfig: {
+    vpc,
+    securityGroups: [new ec2.SecurityGroup(stack, 'SecurityGroup', { vpc })],
+    subnets: vpc.isolatedSubnets,
+  },
 };
 
 const task1 = new tasks.BedrockCreateModelCustomizationJob(stack, 'CreateModelCustomizationJob1', taskConfig);
@@ -87,7 +91,7 @@ const task2 = new tasks.BedrockCreateModelCustomizationJob(stack, 'CreateModelCu
   customModelName: 'MyCustomModel2',
   jobName: 'MyCustomizationJob2',
   integrationPattern: sfn.IntegrationPattern.RUN_JOB,
-  vpc: undefined,
+  vpcConfig: undefined,
 });
 
 const chain = sfn.Chain

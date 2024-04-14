@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/3da00f41ed2e6303d333e0801bc1eac9cada0976f0eaeb31dde3d665b37c52f3.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/d3211c59fc143d6cde8b7c702501ac55768dd27e2f253d75522e705f8d60ecec.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -178,10 +178,10 @@
             "data": "KmsKey46693ADD"
           }
         ],
-        "/aws-stepfunctions-tasks-bedrock-invoke-model-integ/CreateModelCustomizationJob1/SecurityGroup/Resource": [
+        "/aws-stepfunctions-tasks-bedrock-invoke-model-integ/SecurityGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "CreateModelCustomizationJob1SecurityGroupF9731448"
+            "data": "SecurityGroupDD263621"
           }
         ],
         "/aws-stepfunctions-tasks-bedrock-invoke-model-integ/CreateModelCustomizationJob1/BedrockRole/Resource": [
@@ -252,7 +252,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/bc2588d39e9bc35459bd9fa2c49c7337037ffd6852eaf94802120b8fd4b3d6ed.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/484055e312c2421fa032c6c321d3c5f4e4d231842f1ae6adc8f6be9c635aa747.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
