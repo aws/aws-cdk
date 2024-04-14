@@ -75,15 +75,8 @@ export interface IBedrockCreateModelCustomizationJobVpcConfig {
    * VPC configuration subnets
    *
    * The maximum number of subnets is 16.
-   *
-   * @default - use the first type of PRIVATE_WITH_EGRESS, ISOLATED, PUBLIC (in that order) that has any subnets.
    */
-  readonly subnets?: ec2.ISubnet[];
-
-  /**
-   * The VPC used to protect the training data and customization job.
-   */
-  readonly vpc: ec2.IVpc;
+  readonly subnets: ec2.ISubnet[];
 }
 
 /**
@@ -219,7 +212,6 @@ export class BedrockCreateModelCustomizationJob extends sfn.TaskStateBase {
 
   private readonly integrationPattern: sfn.IntegrationPattern;
   private _role: iam.IRole;
-  private subnets: ec2.ISubnet[] = [];
 
   constructor(scope: Construct, id: string, private readonly props: BedrockCreateModelCustomizationJobProps) {
     super(scope, id, props);
@@ -239,7 +231,6 @@ export class BedrockCreateModelCustomizationJob extends sfn.TaskStateBase {
 
     validatePatternSupported(this.integrationPattern, BedrockCreateModelCustomizationJob.SUPPORTED_INTEGRATION_PATTERNS);
 
-    this.subnets = props.vpcConfig?.subnets ?? props.vpcConfig?.vpc.selectSubnets().subnets ?? [];
     this._role = this.renderBedrockCreateModelCustomizationJobRole();
     this.taskPolicies = this.renderPolicyStatements();
 
@@ -349,7 +340,7 @@ export class BedrockCreateModelCustomizationJob extends sfn.TaskStateBase {
               resourceName: securityGroup.securityGroupId,
             }),
           ),
-          ...this.subnets.map(
+          ...vpcConfig.subnets.map(
             (subnet) => Stack.of(this).formatArn({
               service: 'ec2',
               resource: 'subnet',
@@ -367,7 +358,7 @@ export class BedrockCreateModelCustomizationJob extends sfn.TaskStateBase {
         resources: ['*'],
         conditions: {
           ArnEquals: {
-            'ec2:Subnet': this.subnets.map(
+            'ec2:Subnet': vpcConfig.subnets.map(
               (subnet) => Stack.of(this).formatArn({
                 service: 'ec2',
                 resource: 'subnet',
@@ -489,7 +480,7 @@ export class BedrockCreateModelCustomizationJob extends sfn.TaskStateBase {
         },
         VpcConfig: this.props.vpcConfig ? {
           SecurityGroupIds: this.props.vpcConfig.securityGroups.map((securityGroup) => securityGroup.securityGroupId),
-          SubnetIds: this.subnets.map((subnet) => subnet.subnetId),
+          SubnetIds: this.props.vpcConfig.subnets.map((subnet) => subnet.subnetId),
         } : undefined,
       }),
     };
