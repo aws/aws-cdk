@@ -92,7 +92,8 @@ export interface BedrockCreateModelCustomizationJobProps extends sfn.TaskStateBa
    * A unique, case-sensitive identifier to ensure that the API request completes no more than one time.
    * If this token matches a previous request, Amazon Bedrock ignores the request, but does not return an error.
    *
-   * The maximum length is 256 characters and it needs to satisfy the regular expression ^[a-zA-Z0-9](-*[a-zA-Z0-9])*$.
+   * The maximum length is 256 characters.
+   *
    * @see https://docs.aws.amazon.com/AWSEC2/latest/APIReference/Run_Instance_Idempotency.html
    *
    * @default - no client request token
