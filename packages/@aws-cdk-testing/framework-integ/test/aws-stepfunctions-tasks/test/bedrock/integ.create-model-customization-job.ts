@@ -77,7 +77,6 @@ const taskConfig: tasks.BedrockCreateModelCustomizationJobProps = {
     },
   ],
   vpcConfig: {
-    vpc,
     securityGroups: [new ec2.SecurityGroup(stack, 'SecurityGroup', { vpc })],
     subnets: vpc.isolatedSubnets,
   },
