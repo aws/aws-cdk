@@ -487,10 +487,10 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "CreateModelCustomizationJob1SecurityGroupF9731448": {
+  "SecurityGroupDD263621": {
    "Type": "AWS::EC2::SecurityGroup",
    "Properties": {
-    "GroupDescription": "aws-stepfunctions-tasks-bedrock-invoke-model-integ/CreateModelCustomizationJob1/SecurityGroup",
+    "GroupDescription": "aws-stepfunctions-tasks-bedrock-invoke-model-integ/SecurityGroup",
     "SecurityGroupEgress": [
      {
       "CidrIp": "0.0.0.0/0",
@@ -611,7 +611,7 @@
              ":security-group/",
              {
               "Fn::GetAtt": [
-               "CreateModelCustomizationJob1SecurityGroupF9731448",
+               "SecurityGroupDD263621",
                "GroupId"
               ]
              }
@@ -1150,7 +1150,7 @@
        "/validation-data2\"}]},\"VpcConfig\":{\"SecurityGroupIds\":[\"",
        {
         "Fn::GetAtt": [
-         "CreateModelCustomizationJob1SecurityGroupF9731448",
+         "SecurityGroupDD263621",
          "GroupId"
         ]
        },

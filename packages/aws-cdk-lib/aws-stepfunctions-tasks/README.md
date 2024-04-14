@@ -428,7 +428,11 @@ const task = new tasks.BedrockCreateModelCustomizationJob(this, 'CreateModelCust
       prefix: 'validation-data1', // optional
     },
   ],
-  vpc, // optional
+  vpcConfig: {
+    vpc,
+    securityGroups: [new ec2.SecurityGroup(this, 'SecurityGroup', { vpc })],
+    subnets: vpc.privateSubnets, // optional
+  }, // optional
 });
 ```
 

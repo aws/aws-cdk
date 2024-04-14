@@ -710,44 +710,44 @@
               "version": "0.0.0"
             }
           },
-          "CreateModelCustomizationJob1": {
-            "id": "CreateModelCustomizationJob1",
-            "path": "aws-stepfunctions-tasks-bedrock-invoke-model-integ/CreateModelCustomizationJob1",
+          "SecurityGroup": {
+            "id": "SecurityGroup",
+            "path": "aws-stepfunctions-tasks-bedrock-invoke-model-integ/SecurityGroup",
             "children": {
-              "SecurityGroup": {
-                "id": "SecurityGroup",
-                "path": "aws-stepfunctions-tasks-bedrock-invoke-model-integ/CreateModelCustomizationJob1/SecurityGroup",
-                "children": {
-                  "Resource": {
-                    "id": "Resource",
-                    "path": "aws-stepfunctions-tasks-bedrock-invoke-model-integ/CreateModelCustomizationJob1/SecurityGroup/Resource",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
-                      "aws:cdk:cloudformation:props": {
-                        "groupDescription": "aws-stepfunctions-tasks-bedrock-invoke-model-integ/CreateModelCustomizationJob1/SecurityGroup",
-                        "securityGroupEgress": [
-                          {
-                            "cidrIp": "0.0.0.0/0",
-                            "description": "Allow all outbound traffic by default",
-                            "ipProtocol": "-1"
-                          }
-                        ],
-                        "vpcId": {
-                          "Ref": "Vpc8378EB38"
-                        }
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-stepfunctions-tasks-bedrock-invoke-model-integ/SecurityGroup/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
+                  "aws:cdk:cloudformation:props": {
+                    "groupDescription": "aws-stepfunctions-tasks-bedrock-invoke-model-integ/SecurityGroup",
+                    "securityGroupEgress": [
+                      {
+                        "cidrIp": "0.0.0.0/0",
+                        "description": "Allow all outbound traffic by default",
+                        "ipProtocol": "-1"
                       }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_ec2.CfnSecurityGroup",
-                      "version": "0.0.0"
+                    ],
+                    "vpcId": {
+                      "Ref": "Vpc8378EB38"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_ec2.SecurityGroup",
+                  "fqn": "aws-cdk-lib.aws_ec2.CfnSecurityGroup",
                   "version": "0.0.0"
                 }
-              },
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_ec2.SecurityGroup",
+              "version": "0.0.0"
+            }
+          },
+          "CreateModelCustomizationJob1": {
+            "id": "CreateModelCustomizationJob1",
+            "path": "aws-stepfunctions-tasks-bedrock-invoke-model-integ/CreateModelCustomizationJob1",
+            "children": {
               "BedrockRole": {
                 "id": "BedrockRole",
                 "path": "aws-stepfunctions-tasks-bedrock-invoke-model-integ/CreateModelCustomizationJob1/BedrockRole",
@@ -872,7 +872,7 @@
                                           ":security-group/",
                                           {
                                             "Fn::GetAtt": [
-                                              "CreateModelCustomizationJob1SecurityGroupF9731448",
+                                              "SecurityGroupDD263621",
                                               "GroupId"
                                             ]
                                           }
@@ -1530,7 +1530,7 @@
                           "/validation-data2\"}]},\"VpcConfig\":{\"SecurityGroupIds\":[\"",
                           {
                             "Fn::GetAtt": [
-                              "CreateModelCustomizationJob1SecurityGroupF9731448",
+                              "SecurityGroupDD263621",
                               "GroupId"
                             ]
                           },
