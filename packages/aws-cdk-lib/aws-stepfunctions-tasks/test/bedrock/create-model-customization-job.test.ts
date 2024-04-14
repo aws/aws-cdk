@@ -387,7 +387,13 @@ describe('create model customization job', () => {
       role: new iam.Role(stack, 'Role', {
         assumedBy: new iam.ServicePrincipal('bedrock.amazonaws.com'),
       }),
-      vpc,
+      vpcConfig: {
+        vpc,
+        securityGroups: [
+          new ec2.SecurityGroup(stack, 'CreateModelCustomizationSecurityGroup', { vpc }),
+        ],
+        subnets: vpc.privateSubnets,
+      },
     });
 
     new sfn.StateMachine(stack, 'StateMachine', {
@@ -513,7 +519,198 @@ describe('create model customization job', () => {
           SecurityGroupIds: [
             {
               'Fn::GetAtt': [
-                'CreateModelCustomizationSecurityGroup28504032',
+                'CreateModelCustomizationSecurityGroup5C9DFED6',
+                'GroupId',
+              ],
+            },
+          ],
+          SubnetIds: [
+            {
+              Ref: 'VpcPrivateSubnet1Subnet536B997A',
+            },
+            {
+              Ref: 'VpcPrivateSubnet2Subnet3788AAA1',
+            },
+          ],
+        },
+      },
+    });
+  });
+
+  test('default subnet settings', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Vpc', {
+      subnetConfiguration: [
+        {
+          cidrMask: 24,
+          name: 'Public',
+          subnetType: ec2.SubnetType.PUBLIC,
+        },
+        {
+          cidrMask: 24,
+          name: 'Private',
+          subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS,
+        },
+        {
+          cidrMask: 24,
+          name: 'Isolated',
+          subnetType: ec2.SubnetType.PRIVATE_ISOLATED,
+        },
+      ],
+    });
+    const outputDataBucket = new s3.Bucket(stack, 'OutputBucket');
+    const trainingDataBucket = new s3.Bucket(stack, 'TrainingDataBucket');
+    const validationDataBucket = new s3.Bucket(stack, 'ValidationDataBucket');
+
+    // WHEN
+    const task = new BedrockCreateModelCustomizationJob(stack, 'CreateModelCustomization', {
+      baseModel: bedrock.FoundationModel.fromFoundationModelId(stack, 'Model', bedrock.FoundationModelIdentifier.ANTHROPIC_CLAUDE_INSTANT_V1),
+      customModelName: 'custom-model',
+      jobName: 'job-name',
+      outputData: {
+        bucket: outputDataBucket,
+        prefix: 'output-data',
+      },
+      trainingData: {
+        bucket: trainingDataBucket,
+        prefix: 'training-data',
+      },
+      validationData: [
+        {
+          bucket: validationDataBucket,
+          prefix: 'validation-data1',
+        },
+        {
+          bucket: validationDataBucket,
+          prefix: 'validation-data2',
+        },
+      ],
+      vpcConfig: {
+        vpc,
+        securityGroups: [
+          new ec2.SecurityGroup(stack, 'CreateModelCustomizationSecurityGroup', { vpc }),
+        ],
+        // Do not specify subnets. It results in using the all subnets in the VPC.
+      },
+    });
+
+    new sfn.StateMachine(stack, 'StateMachine', {
+      definitionBody: sfn.DefinitionBody.fromChainable(
+        sfn.Chain
+          .start(new sfn.Pass(stack, 'Start'))
+          .next(task)
+          .next(new sfn.Pass(stack, 'Done')),
+      ),
+      timeout: cdk.Duration.seconds(30),
+    });
+
+    // THEN
+    expect(stack.resolve(task.toStateJson())).toEqual({
+      Type: 'Task',
+      Resource: {
+        'Fn::Join': [
+          '',
+          [
+            'arn:',
+            {
+              Ref: 'AWS::Partition',
+            },
+            ':states:::bedrock:createModelCustomizationJob',
+          ],
+        ],
+      },
+      Next: 'Done',
+      Parameters: {
+        BaseModelIdentifier: {
+          'Fn::Join': [
+            '',
+            [
+              'arn:',
+              {
+                Ref: 'AWS::Partition',
+              },
+              ':bedrock:',
+              {
+                Ref: 'AWS::Region',
+              },
+              '::foundation-model/anthropic.claude-instant-v1',
+            ],
+          ],
+        },
+        CustomModelName: 'custom-model',
+        JobName: 'job-name',
+        OutputDataConfig: {
+          S3Uri: {
+            'Fn::Join': [
+              '',
+              [
+                's3://',
+                {
+                  Ref: 'OutputBucket7114EB27',
+                },
+                '/output-data',
+              ],
+            ],
+          },
+        },
+        RoleArn: {
+          'Fn::GetAtt': [
+            'CreateModelCustomizationBedrockRole28756B71',
+            'Arn',
+          ],
+        },
+        TrainingDataConfig: {
+          S3Uri: {
+            'Fn::Join': [
+              '',
+              [
+                's3://',
+                {
+                  Ref: 'TrainingDataBucketC87619AE',
+                },
+                '/training-data',
+              ],
+            ],
+          },
+        },
+        ValidationDataConfig: {
+          Validators: [
+            {
+              S3Uri: {
+                'Fn::Join': [
+                  '',
+                  [
+                    's3://',
+                    {
+                      Ref: 'ValidationDataBucket54C7C688',
+                    },
+                    '/validation-data1',
+                  ],
+                ],
+              },
+            },
+            {
+              S3Uri: {
+                'Fn::Join': [
+                  '',
+                  [
+                    's3://',
+                    {
+                      Ref: 'ValidationDataBucket54C7C688',
+                    },
+                    '/validation-data2',
+                  ],
+                ],
+              },
+            },
+          ],
+        },
+        VpcConfig: {
+          SecurityGroupIds: [
+            {
+              'Fn::GetAtt': [
+                'CreateModelCustomizationSecurityGroup5C9DFED6',
                 'GroupId',
               ],
             },
@@ -844,5 +1041,83 @@ describe('create model customization job', () => {
         prefix: `validation-data${index}`,
       })),
     })).toThrow('validationData must be between 1 and 10 items long, got: 11');
+  });
+
+  test('throw error for invalid securityGroups length', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Vpc');
+    const outputDataBucket = new s3.Bucket(stack, 'OutputBucket');
+    const trainingDataBucket = new s3.Bucket(stack, 'TrainingDataBucket');
+    const validationDataBucket = new s3.Bucket(stack, 'ValidationDataBucket');
+
+    // THEN
+    expect(() => new BedrockCreateModelCustomizationJob(stack, 'Invoke', {
+      baseModel: bedrock.FoundationModel.fromFoundationModelId(stack, 'Model', bedrock.FoundationModelIdentifier.ANTHROPIC_CLAUDE_INSTANT_V1),
+      customModelName: 'custom-model',
+      jobName: 'job-name',
+      outputData: {
+        bucket: outputDataBucket,
+        prefix: 'output-data',
+      },
+      trainingData: {
+        bucket: trainingDataBucket,
+        prefix: 'training-data',
+      },
+      validationData: [
+        {
+          bucket: validationDataBucket,
+          prefix: 'validation-data1',
+        },
+        {
+          bucket: validationDataBucket,
+          prefix: 'validation-data2',
+        },
+      ],
+      vpcConfig: {
+        securityGroups: Array(6).fill(new ec2.SecurityGroup(stack, 'SecurityGroup', { vpc })),
+        subnets: vpc.privateSubnets,
+        vpc,
+      },
+    })).toThrow('securityGroups must be between 1 and 5 items long, got: 6');
+  });
+
+  test('throw error for invalid subnets length', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Vpc');
+    const outputDataBucket = new s3.Bucket(stack, 'OutputBucket');
+    const trainingDataBucket = new s3.Bucket(stack, 'TrainingDataBucket');
+    const validationDataBucket = new s3.Bucket(stack, 'ValidationDataBucket');
+
+    // THEN
+    expect(() => new BedrockCreateModelCustomizationJob(stack, 'Invoke', {
+      baseModel: bedrock.FoundationModel.fromFoundationModelId(stack, 'Model', bedrock.FoundationModelIdentifier.ANTHROPIC_CLAUDE_INSTANT_V1),
+      customModelName: 'custom-model',
+      jobName: 'job-name',
+      outputData: {
+        bucket: outputDataBucket,
+        prefix: 'output-data',
+      },
+      trainingData: {
+        bucket: trainingDataBucket,
+        prefix: 'training-data',
+      },
+      validationData: [
+        {
+          bucket: validationDataBucket,
+          prefix: 'validation-data1',
+        },
+        {
+          bucket: validationDataBucket,
+          prefix: 'validation-data2',
+        },
+      ],
+      vpcConfig: {
+        securityGroups: [new ec2.SecurityGroup(stack, 'SecurityGroup', { vpc })],
+        subnets: Array(17).fill(vpc.privateSubnets[0]),
+        vpc,
+      },
+    })).toThrow('subnets must be between 1 and 16 items long, got: 17');
   });
 });
