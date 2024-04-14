@@ -78,7 +78,7 @@
          "Arn"
         ]
        },
-       "\\\"]}],\\\"Version\\\":\\\"2012-10-17\\\"}\"},\"physicalResourceId\":{\"id\":\"ESLogGroupPolicyc82ca7bfe2f2589b859ebab89e88da2efd284adfad\"}}"
+       "\\\"]}],\\\"Version\\\":\\\"2012-10-17\\\"}\"},\"physicalResourceId\":{\"id\":\"ESLogGroupPolicyc82ca7bfe2f2589b859ebab89e88da2efd284adfad\"},\"logApiResponseData\":true}"
       ]
      ]
     },
@@ -100,12 +100,12 @@
          "Arn"
         ]
        },
-       "\\\"]}],\\\"Version\\\":\\\"2012-10-17\\\"}\"},\"physicalResourceId\":{\"id\":\"ESLogGroupPolicyc82ca7bfe2f2589b859ebab89e88da2efd284adfad\"}}"
+       "\\\"]}],\\\"Version\\\":\\\"2012-10-17\\\"}\"},\"physicalResourceId\":{\"id\":\"ESLogGroupPolicyc82ca7bfe2f2589b859ebab89e88da2efd284adfad\"},\"logApiResponseData\":true}"
       ]
      ]
     },
-    "Delete": "{\"service\":\"CloudWatchLogs\",\"action\":\"deleteResourcePolicy\",\"parameters\":{\"policyName\":\"ESLogPolicyc82ca7bfe2f2589b859ebab89e88da2efd284adfad\"},\"ignoreErrorCodesMatching\":\"ResourceNotFoundException\"}",
-    "InstallLatestAwsSdk": false
+    "Delete": "{\"service\":\"CloudWatchLogs\",\"action\":\"deleteResourcePolicy\",\"parameters\":{\"policyName\":\"ESLogPolicyc82ca7bfe2f2589b859ebab89e88da2efd284adfad\"},\"ignoreErrorCodesMatching\":\"ResourceNotFoundException\",\"logApiResponseData\":true}",
+    "InstallLatestAwsSdk": "false"
    },
    "DependsOn": [
     "DomainESLogGroupPolicyc82ca7bfe2f2589b859ebab89e88da2efd284adfadCustomResourcePolicy0B41F6DF"
@@ -225,7 +225,7 @@
        {
         "Ref": "Domain66AC69E0"
        },
-       "AccessPolicy\"}}"
+       "AccessPolicy\"},\"logApiResponseData\":true}"
       ]
      ]
     },
@@ -249,7 +249,7 @@
        {
         "Ref": "Domain66AC69E0"
        },
-       "AccessPolicy\"}}"
+       "AccessPolicy\"},\"logApiResponseData\":true}"
       ]
      ]
     },
@@ -355,7 +355,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "482f9f5ffd706706c8ef3652699d6c945568786593d3571e4331ecb1f966c932.zip"
+     "S3Key": "746da84b10e215c552e68b6d2061024e4429f0386f43a35ef5e4d2940655692e.zip"
     },
     "Handler": "index.handler",
     "Role": {

@@ -742,7 +742,7 @@
        {
         "Ref": "VPCB9E5F0B4"
        },
-       "\"]}]},\"physicalResourceId\":{\"responsePath\":\"SecurityGroups.0.GroupId\"}}"
+       "\"]}]},\"physicalResourceId\":{\"responsePath\":\"SecurityGroups.0.GroupId\"},\"logApiResponseData\":true}"
       ]
      ]
     },
@@ -754,7 +754,7 @@
        {
         "Ref": "VPCB9E5F0B4"
        },
-       "\"]}]},\"physicalResourceId\":{\"responsePath\":\"SecurityGroups.0.GroupId\"}}"
+       "\"]}]},\"physicalResourceId\":{\"responsePath\":\"SecurityGroups.0.GroupId\"},\"logApiResponseData\":true}"
       ]
      ]
     },
@@ -829,7 +829,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "482f9f5ffd706706c8ef3652699d6c945568786593d3571e4331ecb1f966c932.zip"
+     "S3Key": "746da84b10e215c552e68b6d2061024e4429f0386f43a35ef5e4d2940655692e.zip"
     },
     "Handler": "index.handler",
     "Role": {
