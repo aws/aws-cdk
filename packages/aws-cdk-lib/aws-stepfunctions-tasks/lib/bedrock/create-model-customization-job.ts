@@ -61,6 +61,32 @@ export interface BucketConfiguration {
 }
 
 /**
+ * VPC configuration
+ */
+export interface IBedrockCreateModelCustomizationJobVpcConfig {
+  /**
+   * VPC configuration security groups
+   *
+   * The maximum number of security groups is 5.
+   */
+  readonly securityGroups: ec2.ISecurityGroup[];
+
+  /**
+   * VPC configuration subnets
+   *
+   * The maximum number of subnets is 16.
+   *
+   * @default - use the first type of PRIVATE_WITH_EGRESS, ISOLATED, PUBLIC (in that order) that has any subnets.
+   */
+  readonly subnets?: ec2.ISubnet[];
+
+  /**
+   * The VPC used to protect the training data and customization job.
+   */
+  readonly vpc: ec2.IVpc;
+}
+
+/**
  * Properties for invoking a Bedrock Model
  */
 export interface BedrockCreateModelCustomizationJobProps extends sfn.TaskStateBaseProps {
@@ -171,18 +197,11 @@ export interface BedrockCreateModelCustomizationJobProps extends sfn.TaskStateBa
   readonly validationData: BucketConfiguration[];
 
   /**
-   * The VPC used to protect the training data and customization job.
-   *
-   * The ENI used in this job will be created in one of the subnets among all the subnets possessed by the VPC.
-   *
-   * The minimum number of subnets for the VPC is 1.
-   * The maximum number of subnets for the VPC is 16.
-   *
-   * @see https://docs.aws.amazon.com/bedrock/latest/userguide/vpc-model-customization.html
+   * The VPC configuration.
    *
    * @default - no VPC configuration
    */
-  readonly vpc?: ec2.IVpc;
+  readonly vpcConfig?: IBedrockCreateModelCustomizationJobVpcConfig;
 }
 
 /**
@@ -200,17 +219,11 @@ export class BedrockCreateModelCustomizationJob extends sfn.TaskStateBase {
 
   private readonly integrationPattern: sfn.IntegrationPattern;
   private _role: iam.IRole;
-  private subnets: ec2.ISubnet[];
-  private securityGroup?: ec2.ISecurityGroup;
+  private subnets: ec2.ISubnet[] = [];
 
   constructor(scope: Construct, id: string, private readonly props: BedrockCreateModelCustomizationJobProps) {
     super(scope, id, props);
     this.integrationPattern = props.integrationPattern ?? sfn.IntegrationPattern.REQUEST_RESPONSE;
-    this.subnets = props.vpc?.selectSubnets().subnets ?? [];
-    this.securityGroup = props.vpc ? new ec2.SecurityGroup(this, 'SecurityGroup', {
-      vpc: props.vpc,
-      allowAllOutbound: true,
-    }) : undefined;
 
     this.validateStringLength('clientRequestToken', 1, 256, props.clientRequestToken);
     this.validatePattern('clientRequestToken', /^[a-zA-Z0-9](-*[a-zA-Z0-9])*$/, props.clientRequestToken);
@@ -221,9 +234,12 @@ export class BedrockCreateModelCustomizationJob extends sfn.TaskStateBase {
     this.validatePattern('jobName', /^[a-zA-Z0-9](-*[a-zA-Z0-9\+\-\.])*$/, props.jobName);
     this.validateArrayLength('jobTags', 0, 200, props.jobTags);
     this.validateArrayLength('validationData', 1, 10, props.validationData);
+    this.validateArrayLength('securityGroups', 1, 5, props.vpcConfig?.securityGroups);
+    this.validateArrayLength('subnets', 1, 16, props.vpcConfig?.subnets);
 
     validatePatternSupported(this.integrationPattern, BedrockCreateModelCustomizationJob.SUPPORTED_INTEGRATION_PATTERNS);
 
+    this.subnets = props.vpcConfig?.subnets ?? props.vpcConfig?.vpc.selectSubnets().subnets ?? [];
     this._role = this.renderBedrockCreateModelCustomizationJobRole();
     this.taskPolicies = this.renderPolicyStatements();
 
@@ -283,8 +299,8 @@ export class BedrockCreateModelCustomizationJob extends sfn.TaskStateBase {
   }
 
   private createVpcConfigPolicyStatement(): iam.PolicyStatement[] {
-    const vpc = this.props.vpc;
-    if (!vpc) {
+    const vpcConfig = this.props.vpcConfig;
+    if (!vpcConfig) {
       return [];
     }
 
@@ -326,11 +342,13 @@ export class BedrockCreateModelCustomizationJob extends sfn.TaskStateBase {
       new iam.PolicyStatement({
         actions: ['ec2:CreateNetworkInterface'],
         resources: [
-          Stack.of(this).formatArn({
-            service: 'ec2',
-            resource: 'security-group',
-            resourceName: this.securityGroup?.securityGroupId,
-          }),
+          ...vpcConfig.securityGroups.map(
+            (securityGroup) => Stack.of(this).formatArn({
+              service: 'ec2',
+              resource: 'security-group',
+              resourceName: securityGroup.securityGroupId,
+            }),
+          ),
           ...this.subnets.map(
             (subnet) => Stack.of(this).formatArn({
               service: 'ec2',
@@ -469,8 +487,8 @@ export class BedrockCreateModelCustomizationJob extends sfn.TaskStateBase {
             (bucketConfig) => ({ S3Uri: bucketConfig.bucket.s3UrlForObject(bucketConfig.prefix) }),
           ),
         },
-        VpcConfig: this.props.vpc ? {
-          SecurityGroupIds: [this.securityGroup?.securityGroupId],
+        VpcConfig: this.props.vpcConfig ? {
+          SecurityGroupIds: this.props.vpcConfig.securityGroups.map((securityGroup) => securityGroup.securityGroupId),
           SubnetIds: this.subnets.map((subnet) => subnet.subnetId),
         } : undefined,
       }),
