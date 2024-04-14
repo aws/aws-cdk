@@ -75,6 +75,7 @@ export interface IBedrockCreateModelCustomizationJobVpcConfig {
   /**
    * VPC configuration subnets
    *
+   * The minimum number of subnets is 1.
    * The maximum number of subnets is 16.
    */
   readonly subnets: ec2.ISubnet[];
