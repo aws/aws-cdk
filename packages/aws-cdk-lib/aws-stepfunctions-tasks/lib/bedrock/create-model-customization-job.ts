@@ -67,6 +67,7 @@ export interface IBedrockCreateModelCustomizationJobVpcConfig {
   /**
    * VPC configuration security groups
    *
+   * The minimum number of security groups is 1.
    * The maximum number of security groups is 5.
    */
   readonly securityGroups: ec2.ISecurityGroup[];
