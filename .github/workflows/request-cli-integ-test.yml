@@ -19,7 +19,7 @@ jobs:
           persist-credentials: false
       - name: Find changed cli files
         id: changed-cli-files
-        uses: tj-actions/changed-files@2d756ea4c53f7f6b397767d8723b3a10a9f35bf2
+        uses: tj-actions/changed-files@635f118699dd888d737c15018cd30aff2e0274f8
         with:
           base_sha: ${{ github.event.pull_request.base.sha }}
           files_yaml: |
