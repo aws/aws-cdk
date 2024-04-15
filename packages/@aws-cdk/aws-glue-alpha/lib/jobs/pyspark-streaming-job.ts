@@ -117,7 +117,7 @@ export class PySparkStreamingJob extends Job {
       },
       glueVersion: props.glueVersion ? props.glueVersion : GlueVersion.V4_0,
       workerType: props.workerType ? props.workerType : WorkerType.G_2X,
-      numberOfWorkers: props.numberOrWorkers,
+      numberOfWorkers: props.numberOrWorkers ? props.numberOrWorkers : 10,
       maxRetries: props.maxRetries,
       executionProperty: props.maxConcurrentRuns ? { maxConcurrentRuns: props.maxConcurrentRuns } : undefined,
       timeout: props.timeout?.toMinutes(),
