@@ -70,8 +70,11 @@ export interface MultiNodeContainer {
    * The index of the last node to run this container.
    *
    * The container is run on all nodes in the range [startNode, endNode] (inclusive)
+   *
+   * If this value is not specified, you must specify `numNodes`.
+   * @default - Batch assigns the highest possible node index.
    */
-  readonly endNode: number;
+  readonly endNode?: number;
 
   /**
    * The container that this node range will run
@@ -107,6 +110,14 @@ export interface MultiNodeJobDefinitionProps extends JobDefinitionProps {
    * @default 0
    */
   readonly mainNode?: number;
+
+  /**
+   * The total number of nodes used in this job.
+   * **Only specify if there is at least one container for which you have not specified `endNode`.**
+   *
+   * @default - computed based on the containers passed in.
+   */
+  readonly numNodes?: number;
 
   /**
    * Whether to propogate tags from the JobDefinition
@@ -165,14 +176,14 @@ export class MultiNodeJobDefinition extends JobDefinitionBase implements IMultiN
         mainNode: this.mainNode ?? 0,
         nodeRangeProperties: Lazy.any({
           produce: () => this.containers.map((container) => ({
-            targetNodes: container.startNode + ':' + container.endNode,
+            targetNodes: container.startNode + ':' + (container.endNode ?? ''),
             container: {
               ...container.container._renderContainerDefinition(),
               instanceType: this._instanceType?.toString(),
             },
           })),
         }),
-        numNodes: Lazy.number({
+        numNodes: props?.numNodes ?? Lazy.number({
           produce: () => computeNumNodes(this.containers),
         }),
       },
@@ -186,6 +197,7 @@ export class MultiNodeJobDefinition extends JobDefinitionBase implements IMultiN
     this.jobDefinitionName = this.getResourceNameAttribute(resource.ref);
 
     this.node.addValidation({ validate: () => validateContainers(this.containers) });
+    this.node.addValidation({ validate: () => validateNumNodesPropConflicts(this.containers, this.node.id, props?.numNodes) });
   }
 
   /**
@@ -209,6 +221,9 @@ function computeNumNodes(containers: MultiNodeContainer[]) {
   let result = 0;
 
   for (const container of containers) {
+    if (!container.endNode) {
+      throw new Error(`The multinode container '${container.container.node.id}' does not specify an end node, and its Job Definition does not specify 'numNodes'. Please either specify 'numNodes' or specify 'endNode' for every container in this Job Definition.`);
+    }
     result += container.endNode - container.startNode + 1;
   }
 
@@ -217,4 +232,30 @@ function computeNumNodes(containers: MultiNodeContainer[]) {
 
 function validateContainers(containers: MultiNodeContainer[]): string[] {
   return containers.length === 0 ? ['multinode job has no containers!'] : [];
+}
+
+function validateNumNodesPropConflicts(containers: MultiNodeContainer[], jobDefnName: string, numNodes?: number): string[] {
+  let allContainersSpecifyEndNode = true;
+  let noEndNodeContainers = [];
+  for (const container of containers ?? []) {
+    if (!container.endNode) {
+      allContainersSpecifyEndNode = false;
+      noEndNodeContainers.push(container.container.node.id);
+    }
+  }
+
+  if (numNodes && allContainersSpecifyEndNode) {
+    return [`All containers of Multinode Job Definition '${jobDefnName}' specify 'endNode', but the job definition specifies 'numNodes'! Do not specify 'endNode' for every container with 'numNodes', the CDK will compute the correct value for 'numNodes' if all containers have 'endNode' specified.`];
+  }
+
+  const returnValue = [];
+
+  if (!numNodes && !allContainersSpecifyEndNode) {
+    for (const containerId of noEndNodeContainers) {
+      returnValue.push(`The multinode container '${containerId}' does not specify an end node, and its Job Definition does not
+      specify 'numNodes'. Please either specify 'numNodes' or specify 'endNode' for every container in this Job Definition.`);
+    }
+  }
+
+  return [];
 }
