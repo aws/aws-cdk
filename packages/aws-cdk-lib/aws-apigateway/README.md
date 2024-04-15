@@ -268,8 +268,9 @@ The following example uses sets up two Resources '/pets' and '/books' in separat
 [Resources grouped into nested stacks](test/integ.restapi-import.lit.ts)
 
 > **Warning:** In the code above, an API Gateway deployment is created during the initial CDK deployment.
-However, if there are changes to the resources in subsequent CDK deployments, a new API Gateway deployment is not automatically created. As a result, the latest state of the resources is not reflected.
-To ensure the latest state of the resources is reflected, a manual deployment of the API Gateway is required after the CDK deployment.
+However, if there are changes to the resources in subsequent CDK deployments, a new API Gateway deployment is not
+automatically created. As a result, the latest state of the resources is not reflected. To ensure the latest state
+of the resources is reflected, a manual deployment of the API Gateway is required after the CDK deployment.
 
 ## Integration Targets
 
