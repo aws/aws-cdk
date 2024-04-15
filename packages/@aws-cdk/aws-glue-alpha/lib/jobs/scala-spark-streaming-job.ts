@@ -18,9 +18,8 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import { Bucket } from 'aws-cdk-lib/aws-s3';
 import { Job, JobProperties } from './job';
 import { Construct } from 'constructs';
-import { JobType, GlueVersion, JobLanguage, PythonVersion, WorkerType } from '../constants';
+import { JobType, GlueVersion, JobLanguage, WorkerType } from '../constants';
 import { SparkUIProps, SparkUILoggingLocation, validateSparkUiPrefix, cleanSparkUiPrefixForGrant } from './spark-ui-utils';
-
 
 /**
  * Properties for creating a Scala Spark ETL job
@@ -42,11 +41,12 @@ export interface ScalaSparkStreamingJobProps extends JobProperties {
    * Package and class name for the entry point of Glue job execution for
    * Java scripts
   **/
-  className: string;
+  readonly className: string;
 
   /**
    * Extra Jars S3 URL (optional)
    * S3 URL where additional jar dependencies are located
+   * @default - no extra jar files
   */
   readonly extraJars?: string[];
 }

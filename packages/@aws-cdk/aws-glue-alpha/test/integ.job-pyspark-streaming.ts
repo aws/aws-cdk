@@ -30,12 +30,12 @@ const iam_role = new iam.Role(stack, 'IAMServiceRole', {
   managedPolicies: [iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSGlueServiceRole')],
 });
 
-new glue.pySparkStreamingJob(stack, 'BasicPySparkStreamingJob', {
+new glue.PySparkStreamingJob(stack, 'BasicPySparkStreamingJob', {
   script: script,
   role: iam_role,
 });
 
-new glue.pySparkStreamingJob(stack, 'OverridePySparkStreamingJob', {
+new glue.PySparkStreamingJob(stack, 'OverridePySparkStreamingJob', {
   script: script,
   role: iam_role,
   description: 'Optional Override PySpark Streaming Job',

@@ -39,6 +39,7 @@ export interface PySparkStreamingJobProps extends JobProperties {
   /**
    * Extra Python Files S3 URL (optional)
    * S3 URL where additional python dependencies are located
+   * @default - no extra files
   */
   readonly extraPythonFiles?: string[];
 }
@@ -46,7 +47,7 @@ export interface PySparkStreamingJobProps extends JobProperties {
 /**
  * A Python Spark Streaming Glue Job
  */
-export class pySparkStreamingJob extends Job {
+export class PySparkStreamingJob extends Job {
 
   // Implement abstract Job attributes
   public readonly jobArn: string;
