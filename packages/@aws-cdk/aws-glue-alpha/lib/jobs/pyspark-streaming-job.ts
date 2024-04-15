@@ -113,7 +113,7 @@ export class PySparkStreamingJob extends Job {
       command: {
         name: JobType.STREAMING,
         scriptLocation: this.codeS3ObjectUrl(props.script),
-        pythonVersion: PythonVersion.THREE_NINE,
+        pythonVersion: PythonVersion.THREE,
       },
       glueVersion: props.glueVersion ? props.glueVersion : GlueVersion.V4_0,
       workerType: props.workerType ? props.workerType : WorkerType.G_2X,
