@@ -67,33 +67,4 @@ describe('amis', () => {
     });
   });
 
-  describe('Amazon Linux', () => {
-    test('Amazon Linux with kernel', () => {
-      // GIVEN
-      const app = new cdk.App();
-      new cdk.Stack(app);
-
-      // THEN
-      expect(() =>
-        ecs.EcsOptimizedImage.amazonLinux({
-          kernel: ec2.AmazonLinux2Kernel.KERNEL_5_10,
-        }),
-      ).toThrow(/Kernel version can only be specified for Amazon Linux 2/);
-    });
-  });
-
-  describe('Amazon Linux 2023', () => {
-    test('Amazon Linux 2023 with kernel', () => {
-      // GIVEN
-      const app = new cdk.App();
-      new cdk.Stack(app);
-
-      // THEN
-      expect(() =>
-        ecs.EcsOptimizedImage.amazonLinux2023(ecs.AmiHardwareType.STANDARD, {
-          kernel: ec2.AmazonLinux2Kernel.KERNEL_5_10,
-        }),
-      ).toThrow(/Kernel version can only be specified for Amazon Linux 2/);
-    });
-  });
 });

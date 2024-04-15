@@ -200,10 +200,13 @@ export interface EcsOptimizedImageOptions {
    * @default false
    */
   readonly cachedInContext?: boolean;
+}
+
+export interface AmazonLinux2EcsOptimizedImageProps extends EcsOptimizedImageOptions {
   /**
-   * The kernel version to use with Amazon Linux 2
+   * What kernel version of Amazon Linux 2 to use
    *
-   * @default - The recommended kernel version
+   * @default none, uses the recommended kernel version
    */
   readonly kernel?: ec2.AmazonLinux2Kernel;
 }
@@ -218,9 +221,6 @@ export class EcsOptimizedImage implements ec2.IMachineImage {
    * @param hardwareType ECS-optimized AMI variant to use
    */
   public static amazonLinux2023(hardwareType = AmiHardwareType.STANDARD, options: EcsOptimizedImageOptions = {}): EcsOptimizedImage {
-    if (options.kernel) {
-      throw new Error('Kernel version can only be specified for Amazon Linux 2');
-    }
     return new EcsOptimizedImage({
       generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2023,
       hardwareType,
@@ -233,7 +233,7 @@ export class EcsOptimizedImage implements ec2.IMachineImage {
    *
    * @param hardwareType ECS-optimized AMI variant to use
    */
-  public static amazonLinux2(hardwareType = AmiHardwareType.STANDARD, options: EcsOptimizedImageOptions = {}): EcsOptimizedImage {
+  public static amazonLinux2(hardwareType = AmiHardwareType.STANDARD, options: AmazonLinux2EcsOptimizedImageProps = {}): EcsOptimizedImage {
     return new EcsOptimizedImage({
       generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2,
       hardwareType,
@@ -246,9 +246,6 @@ export class EcsOptimizedImage implements ec2.IMachineImage {
    * Construct an Amazon Linux AMI image from the latest ECS Optimized AMI published in SSM
    */
   public static amazonLinux(options: EcsOptimizedImageOptions = {}): EcsOptimizedImage {
-    if (options.kernel) {
-      throw new Error('Kernel version can only be specified for Amazon Linux 2');
-    }
     return new EcsOptimizedImage({
       generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX,
       cachedInContext: options.cachedInContext,
