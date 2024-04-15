@@ -14,8 +14,9 @@ export interface IReceiptRuleAction {
    * Generate and apply the receipt rule action statement
    *
    * @param ruleSet The rule set the rule is being added to
+   * @internal
    */
-  applyPolicyStatement?(ruleSet: IReceiptRuleSet): void;
+  _applyPolicyStatement?(ruleSet: IReceiptRuleSet): void;
 }
 
 /**

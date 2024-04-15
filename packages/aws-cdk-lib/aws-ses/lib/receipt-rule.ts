@@ -157,7 +157,7 @@ export class ReceiptRule extends Resource implements IReceiptRule {
     }
 
     for (const action of this.actions) {
-      action.applyPolicyStatement?.(this.ruleSet);
+      action._applyPolicyStatement?.(this.ruleSet);
     }
 
     return this.actionProperties;

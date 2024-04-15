@@ -81,9 +81,12 @@ export class S3 implements ses.IReceiptRuleAction {
   }
 
   /**
+   * Generate and apply the receipt rule action statement
+   *
+   * @param ruleSet The rule set the rule is being added to
    * @internal
    */
-  public applyPolicyStatement(receiptRuleSet: ses.IReceiptRuleSet): void {
+  public _applyPolicyStatement(receiptRuleSet: ses.IReceiptRuleSet): void {
     if (!this.rule) {
       throw new Error('Cannot apply policy statement before binding the action to a receipt rule');
     }
