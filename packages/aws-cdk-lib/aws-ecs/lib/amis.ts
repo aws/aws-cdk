@@ -202,6 +202,9 @@ export interface EcsOptimizedImageOptions {
   readonly cachedInContext?: boolean;
 }
 
+/**
+ * Properties for Amazon Linux 2 ECS-optimized image
+ */
 export interface AmazonLinux2EcsOptimizedImageProps extends EcsOptimizedImageOptions {
   /**
    * What kernel version of Amazon Linux 2 to use
