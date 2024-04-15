@@ -178,9 +178,6 @@ test('add s3 action', () => {
         Ref: 'RuleSetE30C6C48',
       },
     },
-    DependsOn: [
-      'BucketPolicyE9A3008A',
-    ],
   });
 
   Template.fromStack(stack).hasResourceProperties('AWS::S3::BucketPolicy', {
@@ -206,7 +203,10 @@ test('add s3 action', () => {
                     { Ref: 'AWS::Region' },
                     ':',
                     { Ref: 'AWS::AccountId' },
-                    ':receipt-rule-set/*:receipt-rule/*',
+                    ':receipt-rule-set/',
+                    { Ref: 'RuleSetE30C6C48' },
+                    ':receipt-rule/',
+                    { Ref: 'RuleSetRule0B1D6BCA' },
                   ],
                 ],
               },
