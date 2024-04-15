@@ -99,11 +99,12 @@ export interface EcsOptimizedAmiProps {
   readonly cachedInContext?: boolean;
 
   /**
-   * What kernel version of Amazon Linux 2 to use
+   * Kernel version used.
+   * Only supported for Amazon Linux 2.
    *
    * @default none, uses the recommended kernel version
    */
-  readonly kernel?: ec2.AmazonLinux2Kernel;
+  readonly kernel?: string;
 }
 
 /*
@@ -241,7 +242,7 @@ export class EcsOptimizedImage implements ec2.IMachineImage {
       generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2,
       hardwareType,
       cachedInContext: options.cachedInContext,
-      kernel: options.kernel,
+      kernel: options.kernel?.toString(),
     });
   }
 
@@ -287,14 +288,9 @@ export class EcsOptimizedImage implements ec2.IMachineImage {
     } else {
       throw new Error('This error should never be thrown');
     }
-    const kernelPath = (() => {
-      if (!props.kernel) {
-        return '';
-      } else if (props.generation !== ec2.AmazonLinuxGeneration.AMAZON_LINUX_2) {
-        throw new Error('Kernel version can only be specified for Amazon Linux 2');
-      }
-      return props.kernel.toString() + '/';
-    })();
+    if (props.kernel && props.generation !== ec2.AmazonLinuxGeneration.AMAZON_LINUX_2) {
+      throw new Error('Kernel version is supported only for Amazon Linux 2');
+    }
 
     // set the SSM parameter name
     this.amiParameterName = '/aws/service/'
@@ -303,7 +299,7 @@ export class EcsOptimizedImage implements ec2.IMachineImage {
       + (this.generation === ec2.AmazonLinuxGeneration.AMAZON_LINUX_2 ? 'amazon-linux-2/' : '')
       + (this.generation === ec2.AmazonLinuxGeneration.AMAZON_LINUX_2023 ? 'amazon-linux-2023/' : '')
       + (this.windowsVersion ? `Windows_Server-${this.windowsVersion}-English-Full-ECS_Optimized/` : '')
-      + kernelPath
+      + (props.kernel ? `${props.kernel}/` : '')
       + (this.hwType === AmiHardwareType.GPU ? 'gpu/' : '')
       + (this.hwType === AmiHardwareType.ARM ? 'arm64/' : '')
       + (this.hwType === AmiHardwareType.NEURON ? 'inf/' : '')
