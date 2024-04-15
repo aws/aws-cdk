@@ -100,6 +100,11 @@ export class ScalaSparkStreamingJob extends Job {
     // Gather executable arguments
     const executableArgs = this.executableArguments(props);
 
+    // Mandatory className argument
+    if (props.className === undefined) {
+      throw new Error('className must be set for Scala ETL Jobs');
+    }
+
     // Conbine command line arguments into a single line item
     const defaultArguments = {
       ...executableArgs,
@@ -146,7 +151,8 @@ export class ScalaSparkStreamingJob extends Job {
   */
   private executableArguments(props: ScalaSparkStreamingJobProps) {
     const args: { [key: string]: string } = {};
-    args['--job-language'] = JobLanguage.PYTHON;
+    args['--job-language'] = JobLanguage.SCALA;
+    args['--class'] = props.className!;
 
     // TODO: Confirm with Glue service team what the mapping is from extra-x to job language, if any
     if (props.extraJars && props.extraJars?.length > 0) {
