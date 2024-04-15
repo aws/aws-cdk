@@ -19,6 +19,8 @@ export * from './jobs/pyspark-etl-job';
 // export * from './jobs/python-shell-job';
 // export * from './jobs/ray-job';
 // export * from './jobs/scala-spark-etl-job';
+export * from './jobs/pyspark-streaming-job';
+export * from './jobs/scala-spark-streaming-job';
 export * from './jobs/spark-ui-utils';
 // export * from './jobs/spark-etl-job';
 //export * from './jobs/streaming-job';
