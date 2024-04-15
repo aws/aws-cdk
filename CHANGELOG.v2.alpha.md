@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.137.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.136.1-alpha.0...v2.137.0-alpha.0) (2024-04-10)
+
+
+### Bug Fixes
+
+* **integ-tests:** `httpApiCall.expect` with resolved URL ([#29705](https://github.com/aws/aws-cdk/issues/29705)) ([49b4aa1](https://github.com/aws/aws-cdk/commit/49b4aa1e22062a3183dce7092e740af49fa951bf)), closes [#29700](https://github.com/aws/aws-cdk/issues/29700) [#29701](https://github.com/aws/aws-cdk/issues/29701)
+
+## [2.136.1-alpha.0](https://github.com/aws/aws-cdk/compare/v2.136.0-alpha.0...v2.136.1-alpha.0) (2024-04-09)
+
+## [2.136.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.135.0-alpha.0...v2.136.0-alpha.0) (2024-04-06)
+
+## [2.135.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.134.0-alpha.0...v2.135.0-alpha.0) (2024-04-01)
+
 ## [2.134.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.133.0-alpha.0...v2.134.0-alpha.0) (2024-03-26)
 
 
