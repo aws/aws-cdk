@@ -197,6 +197,25 @@ test('CodeBuild action role has the right AssumeRolePolicyDocument', () => {
   });
 });
 
+test('CodeBuild asset role has the right Principal', () => {
+  const pipelineStack = new cdk.Stack(app, 'PipelineStack', { env: PIPELINE_ENV });
+  new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk');
+
+  const template = Template.fromStack(pipelineStack);
+  template.hasResourceProperties('AWS::IAM::Role', {
+    AssumeRolePolicyDocument: {
+      Statement: [
+        {
+          Action: 'sts:AssumeRole',
+          Principal: {
+            Service: 'codebuild.amazonaws.com',
+          },
+        },
+      ],
+    },
+  });
+});
+
 test('CodePipeline throws when key rotation is enabled without enabling cross account keys', ()=>{
   const pipelineStack = new cdk.Stack(app, 'PipelineStack', { env: PIPELINE_ENV });
   const repo = new ccommit.Repository(pipelineStack, 'Repo', {

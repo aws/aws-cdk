@@ -982,14 +982,11 @@ export class CodePipeline extends PipelineBase {
       return existing;
     }
 
-    const stack = Stack.of(this);
-
     const rolePrefix = assetType === AssetType.DOCKER_IMAGE ? 'Docker' : 'File';
     const assetRole = new AssetSingletonRole(this.assetsScope, `${rolePrefix}Role`, {
       roleName: PhysicalName.GENERATE_IF_NEEDED,
       assumedBy: new iam.CompositePrincipal(
         new iam.ServicePrincipal('codebuild.amazonaws.com'),
-        new iam.AccountPrincipal(stack.account),
       ),
     });
 
