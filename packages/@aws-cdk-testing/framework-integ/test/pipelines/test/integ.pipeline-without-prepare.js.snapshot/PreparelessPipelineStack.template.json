@@ -124,7 +124,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs18.x",
+    "Runtime": "nodejs20.x",
     "Description": {
      "Fn::Join": [
       "",
