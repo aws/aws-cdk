@@ -78,6 +78,34 @@
     "PrincipalOrgID": "o-xxxxxxxxxx"
    }
   },
+  "MyLambdaInvokeZoBUDhNic8W9iwOX3PUHW4PxLYxcNvgQd0I750ZVGfQ48B59B4A": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "MyLambdaCCE802FB",
+      "Arn"
+     ]
+    },
+    "Principal": "*",
+    "PrincipalOrgID": "o-yyyyyyyyyy2"
+   }
+  },
+  "MyLambdaInvokefy1YgRC9j8kJQBgyNsNsleYXOlPp4RTnXEx2NNmcs4CE101ED": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "MyLambdaCCE802FB",
+      "Arn"
+     ]
+    },
+    "Principal": "*",
+    "PrincipalOrgID": "o-xxxxxxxxxx2"
+   }
+  },
   "MyLambdaFunctionUrlC2055677": {
    "Type": "AWS::Lambda::Url",
    "Properties": {

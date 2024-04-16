@@ -17,6 +17,10 @@ fn.grantInvoke(new iam.AnyPrincipal().inOrganization('o-yyyyyyyyyy'));
 
 fn.grantInvoke(new iam.OrganizationPrincipal('o-xxxxxxxxxx'));
 
+fn.grantInvokeV2(new iam.AnyPrincipal().inOrganization('o-yyyyyyyyyy2'));
+
+fn.grantInvokeV2(new iam.OrganizationPrincipal('o-xxxxxxxxxx2'));
+
 const fnUrl = fn.addFunctionUrl();
 const role = new iam.Role(stack, 'MyRole', {
   assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
