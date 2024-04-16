@@ -2,8 +2,9 @@ import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Match, Template } from '../../assertions';
 import * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
+import * as kms from '../../aws-kms';
 import * as cdk from '../../core';
-import { HostedZone, PrivateHostedZone, PublicHostedZone } from '../lib';
+import { HostedZone, PrivateHostedZone, PublicHostedZone, ZoneSigningOptions } from '../lib';
 
 describe('hosted zone', () => {
   describe('Hosted Zone', () => {
@@ -499,5 +500,94 @@ describe('Hosted Zone with dot', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::Route53::HostedZone', {
       Name: 'testZone.',
     });
+  });
+});
+
+describe('key signing key', () => {
+  test('enabling works via method', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const key = new kms.Key(stack, 'TestKey', {
+      keySpec: kms.KeySpec.ECC_NIST_P256,
+      keyUsage: kms.KeyUsage.SIGN_VERIFY,
+    });
+    const zone = new HostedZone(stack, 'HostedZone', {
+      zoneName: 'testZone',
+    });
+
+    // WHEN
+    zone.enableDnssec({
+      kmsKey: key,
+    });
+
+    // THEN
+    const template = Template.fromStack(stack);
+    template.hasResource('AWS::Route53::DNSSEC', {
+      Properties: {
+        HostedZoneId: stack.resolve(zone.hostedZoneId),
+      },
+    });
+    template.hasResource('AWS::Route53::KeySigningKey', {
+      Properties: {
+        KeyManagementServiceArn: stack.resolve(key.keyArn),
+        HostedZoneId: stack.resolve(zone.hostedZoneId),
+        Status: 'ACTIVE',
+      },
+    });
+  });
+
+  test('enabling sets KSK name correctly', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const key = new kms.Key(stack, 'TestKey', {
+      keySpec: kms.KeySpec.ECC_NIST_P256,
+      keyUsage: kms.KeyUsage.SIGN_VERIFY,
+    });
+    const zone = new HostedZone(stack, 'HostedZone', {
+      zoneName: 'testZone',
+    });
+
+    // WHEN
+    zone.enableDnssec({
+      kmsKey: key,
+      keySigningKeyName: 'testksk',
+    });
+
+    // THEN
+    const template = Template.fromStack(stack);
+    template.hasResource('AWS::Route53::DNSSEC', {
+      DependsOn: Match.anyValue(),
+      Properties: {
+        HostedZoneId: stack.resolve(zone.hostedZoneId),
+      },
+    });
+    template.hasResource('AWS::Route53::KeySigningKey', {
+      Properties: {
+        KeyManagementServiceArn: stack.resolve(key.keyArn),
+        HostedZoneId: stack.resolve(zone.hostedZoneId),
+        Status: 'ACTIVE',
+        Name: 'testksk',
+      },
+    });
+  });
+
+  test('attempting to enable DNSSEC twice fails', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const key = new kms.Key(stack, 'TestKey', {
+      keySpec: kms.KeySpec.ECC_NIST_P256,
+      keyUsage: kms.KeyUsage.SIGN_VERIFY,
+    });
+    const zone = new HostedZone(stack, 'HostedZone', {
+      zoneName: 'testZone',
+    });
+
+    // WHEN
+    zone.enableDnssec({
+      kmsKey: key,
+    });
+
+    // THEN
+    expect(() => zone.enableDnssec({ kmsKey: key })).toThrow('DNSSEC is already enabled for this hosted zone');
   });
 });

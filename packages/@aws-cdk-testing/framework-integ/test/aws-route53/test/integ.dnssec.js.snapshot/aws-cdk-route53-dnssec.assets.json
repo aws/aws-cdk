@@ -1,0 +1,19 @@
+{
+  "version": "36.0.0",
+  "files": {
+    "2b69b4bc6b7625472eab3367e63c8231391414b38c68f5e6fe105dc7009cb1d9": {
+      "source": {
+        "path": "aws-cdk-route53-dnssec.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "2b69b4bc6b7625472eab3367e63c8231391414b38c68f5e6fe105dc7009cb1d9.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
