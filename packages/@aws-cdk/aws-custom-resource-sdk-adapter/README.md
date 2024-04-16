@@ -1,6 +1,7 @@
 # AWS Custom Resource SDK Adapter
 
 The AWS custom resource SDK adapter is an internal collection of tools built to maintain compatibility with the contracts defined for `AwsCustomResource` and the current AWS SDK version. `AwsCustomResource` can be used where a single API call can fill a gap in CloudFormation coverage by allowing a user to specify a single API call specific to create, update, and delete stack events. Users specify a `service`, an `action`, and `parameters` as part of the `AwsSdkCall` interface which are used to dynamically invoke the API. Since `AwsCustomResource` was created while SDKv2 was active, it implicitly inherited the SDKv2 contract. As a result, migrating to newer SDK versions will result in breaking changes in the `AwsCustomResource` construct. In its current state, the AWS custom resource SDK adapter contains tooling that allows `AwsCustomResource` to make API calls and return the associated response using SDKv3. These tools include:
+
 * Input type coercion
 * Response coercion
 * Naming normalizaion
@@ -81,13 +82,16 @@ Users are able to retrieve values returned as a result of API calls they’ve de
 ## Naming Normalization
 
 Originally, the `AwsCustomResource` construct advertised that the `service` argument defined in the `AwsSdkCall` interface could be in any one of the following formats:
+
 * The SDK v2 constructor name: APIGateway
 * The SDK v2 constructor name in all lower case: apigateway (primary format)
 
 Similarly, the `action` argument defined in the `AwsSdkCall` interface was advertised as being permitted in any of the following formats:
+
 * The API call name: GetRestApi
 * The API call name with a lower case starting letter: getRestApi (primary format)
 
 Migrating `AwsCustomResource` to SDKv3 meant that the permitted `service` and `action` values for SDKv2 needed to be accepted as well as new formats with respect to SDKv3. As a result, naming normalization was established as a way to convert the `service` and `action` arguments into the format expected for SDKv3 API calls. To enable normalization of the `service` argument, the client package names map file from the `aws-sdk-js-codemod` repository is used and can be found [here](./lib/sdk-v2-to-v3.json). To enable normalization of the `action` argument a [sdk-v3-metadata](./lib/sdk-v3-metadata.json) file was extracted which contains the following information:
+
 * An IAM prefix for every `service`
 * A list of APIs that end in the word `Command` which allows us to disambiguate around these
