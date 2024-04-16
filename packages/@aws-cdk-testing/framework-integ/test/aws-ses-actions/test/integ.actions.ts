@@ -15,6 +15,9 @@ import { STANDARD_NODEJS_RUNTIME } from '../../config';
  * 2. Add a new user email address in the Workmail console
  * 3. Update the TEST_EMAIL constant with the email address of the user you created
  * 4. Deploy the stack with --no-clean, and send an email to the email address you created
+ * 5. Check the following:
+ *  - The email should be saved to the S3 bucket
+ *  - The SQS queue should receive receipt notifications
  */
 
 const TEST_EMAIL = 'test@cdk-test-123.awsapps.com';
