@@ -1163,6 +1163,31 @@ new tasks.GlueDataBrewStartJobRun(this, 'Task', {
 });
 ```
 
+## Invoke HTTP API
+
+Step Functions supports [calling third-party APIs](https://docs.aws.amazon.com/step-functions/latest/dg/connect-third-party-apis.html) with credentials managed by Amazon EventBridge [Connections](https://docs.aws.amazon.com/eventbridge/latest/APIReference/API_Connection.html).
+
+The following snippet creates a new API destination connection, and uses it to make a POST request to the specified URL. The endpoint response is available at the `$.ResponseBody` path.
+
+```ts
+import * as events from 'aws-cdk-lib/aws-events';
+
+const connection = new events.Connection(this, 'Connection', {
+  authorization: events.Authorization.basic('username', SecretValue.unsafePlainText('password')),
+});
+
+new tasks.HttpInvoke(this, 'Invoke HTTP API', {
+  apiRoot: 'https://api.example.com',
+  apiEndpoint: sfn.TaskInput.fromText('https://api.example.com/path/to/resource'),
+  body: sfn.TaskInput.fromObject({ foo: 'bar' }),
+  connection,
+  headers: sfn.TaskInput.fromObject({ 'Content-Type': 'application/json' }),
+  method: sfn.TaskInput.fromText('POST'),
+  queryStringParameters: sfn.TaskInput.fromObject({ id: '123' }),
+  urlEncodingFormat: tasks.URLEncodingFormat.BRACKETS,
+});
+```
+
 ## Lambda
 
 Step Functions supports [AWS Lambda](https://docs.aws.amazon.com/step-functions/latest/dg/connect-lambda.html) through the service integration pattern.
