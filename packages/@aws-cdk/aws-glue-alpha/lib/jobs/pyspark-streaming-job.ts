@@ -102,9 +102,9 @@ export class PySparkStreamingJob extends Job {
       ...this.checkNoReservedArgs(props.defaultArguments),
     };
 
-    if ((!props.workerType && props.numberOrWorkers !== undefined) || (props.workerType && props.numberOrWorkers === undefined)) {
-      throw new Error('Both workerType and numberOrWorkers must be set');
-    }
+    // if ((!props.workerType && props.numberOrWorkers !== undefined) || (props.workerType && props.numberOrWorkers === undefined)) {
+    //   throw new Error('Both workerType and numberOrWorkers must be set');
+    // }
 
     const jobResource = new CfnJob(this, 'Resource', {
       name: props.jobName,
