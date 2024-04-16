@@ -43,6 +43,37 @@ multinodeJob.addContainer({
   }),
 });
 
+const unlimitedMultinodeJob = new batch.MultiNodeJobDefinition(stack, 'UnlimitedNodeContainerJob', {
+  containers: [{
+    startNode: 0,
+    container: new batch.EcsEc2ContainerDefinition(stack, 'unlimitednodecontainer1', {
+      image: ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+      cpu: 256,
+      memory: Size.mebibytes(2048),
+    }),
+  }],
+  propagateTags: true,
+  numNodes: 20,
+});
+
+unlimitedMultinodeJob.addContainer({
+  startNode: 11,
+  container: new batch.EcsEc2ContainerDefinition(stack, 'unlimitednodecontainer2', {
+    image: ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+    cpu: 256,
+    memory: Size.mebibytes(2048),
+  }),
+});
+
+unlimitedMultinodeJob.addContainer({
+  startNode: 15,
+  container: new batch.EcsEc2ContainerDefinition(stack, 'unlimmitedcontainer3', {
+    image: ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+    cpu: 256,
+    memory: Size.mebibytes(2048),
+  }),
+});
+
 new integ.IntegTest(app, 'BatchMultiNodeJobDefinitionTest', {
   testCases: [stack],
 });

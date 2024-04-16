@@ -1,5 +1,5 @@
 {
-  "version": "34.0.0",
+  "version": "36.0.0",
   "artifacts": {
     "stack.assets": {
       "type": "cdk:asset-manifest",
@@ -14,10 +14,11 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "stack.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e0a079fad9490e60650bca4a35c6c90273204a816beb74fb80c7b5ae490208d1.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/536df3942835725f00ffdc81c12ff4c49236d191fc8eda8a1e07a000b3d88779.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -81,6 +82,48 @@
             "data": "multiContainerExecutionRoleDefaultPolicyE3E7D32C"
           }
         ],
+        "/stack/unlimitednodecontainer1/ExecutionRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "unlimitednodecontainer1ExecutionRole296EB7B9"
+          }
+        ],
+        "/stack/unlimitednodecontainer1/ExecutionRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "unlimitednodecontainer1ExecutionRoleDefaultPolicy6D5ED087"
+          }
+        ],
+        "/stack/UnlimitedNodeContainerJob/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "UnlimitedNodeContainerJob74FE19A6"
+          }
+        ],
+        "/stack/unlimitednodecontainer2/ExecutionRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "unlimitednodecontainer2ExecutionRoleD2524EBD"
+          }
+        ],
+        "/stack/unlimitednodecontainer2/ExecutionRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "unlimitednodecontainer2ExecutionRoleDefaultPolicyFB6CAE06"
+          }
+        ],
+        "/stack/unlimmitedcontainer3/ExecutionRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "unlimmitedcontainer3ExecutionRoleB159462D"
+          }
+        ],
+        "/stack/unlimmitedcontainer3/ExecutionRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "unlimmitedcontainer3ExecutionRoleDefaultPolicy280AA69A"
+          }
+        ],
         "/stack/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
@@ -109,6 +152,7 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "BatchMultiNodeJobDefinitionTestDefaultTestDeployAssertDB834B9D.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",

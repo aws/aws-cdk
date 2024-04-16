@@ -21,8 +21,7 @@
                     "path": "stack/myContainer/ExecutionRole/ImportExecutionRole",
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.2.70"
-
+                      "version": "10.3.0"
                     }
                   },
                   "Resource": {
@@ -47,7 +46,7 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.2.70"
+                      "version": "10.3.0"
                     }
                   },
                   "DefaultPolicy": {
@@ -102,19 +101,19 @@
                         },
                         "constructInfo": {
                           "fqn": "constructs.Construct",
-                          "version": "10.2.70"
+                          "version": "10.3.0"
                         }
                       }
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.2.70"
+                      "version": "10.3.0"
                     }
                   }
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.70"
+                  "version": "10.3.0"
                 }
               },
               "batchDefaultLogGroup": {
@@ -122,13 +121,13 @@
                 "path": "stack/myContainer/batchDefaultLogGroup",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.70"
+                  "version": "10.3.0"
                 }
               }
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.2.70"
+              "version": "10.3.0"
             }
           },
           "SingleContainerMultiNodeJob": {
@@ -182,13 +181,13 @@
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.70"
+                  "version": "10.3.0"
                 }
               }
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.2.70"
+              "version": "10.3.0"
             }
           },
           "multinodecontainer": {
@@ -204,7 +203,7 @@
                     "path": "stack/multinodecontainer/ExecutionRole/ImportExecutionRole",
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.2.70"
+                      "version": "10.3.0"
                     }
                   },
                   "Resource": {
@@ -229,7 +228,7 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.2.70"
+                      "version": "10.3.0"
                     }
                   },
                   "DefaultPolicy": {
@@ -284,19 +283,19 @@
                         },
                         "constructInfo": {
                           "fqn": "constructs.Construct",
-                          "version": "10.2.70"
+                          "version": "10.3.0"
                         }
                       }
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.2.70"
+                      "version": "10.3.0"
                     }
                   }
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.70"
+                  "version": "10.3.0"
                 }
               },
               "batchDefaultLogGroup": {
@@ -304,13 +303,13 @@
                 "path": "stack/multinodecontainer/batchDefaultLogGroup",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.70"
+                  "version": "10.3.0"
                 }
               }
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.2.70"
+              "version": "10.3.0"
             }
           },
           "MultiContainerMultiNodeJob": {
@@ -389,13 +388,13 @@
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.70"
+                  "version": "10.3.0"
                 }
               }
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.2.70"
+              "version": "10.3.0"
             }
           },
           "multiContainer": {
@@ -411,7 +410,7 @@
                     "path": "stack/multiContainer/ExecutionRole/ImportExecutionRole",
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.2.70"
+                      "version": "10.3.0"
                     }
                   },
                   "Resource": {
@@ -436,7 +435,7 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.2.70"
+                      "version": "10.3.0"
                     }
                   },
                   "DefaultPolicy": {
@@ -491,19 +490,19 @@
                         },
                         "constructInfo": {
                           "fqn": "constructs.Construct",
-                          "version": "10.2.70"
+                          "version": "10.3.0"
                         }
                       }
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.2.70"
+                      "version": "10.3.0"
                     }
                   }
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.70"
+                  "version": "10.3.0"
                 }
               },
               "batchDefaultLogGroup": {
@@ -511,13 +510,487 @@
                 "path": "stack/multiContainer/batchDefaultLogGroup",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.70"
+                  "version": "10.3.0"
                 }
               }
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.2.70"
+              "version": "10.3.0"
+            }
+          },
+          "unlimitednodecontainer1": {
+            "id": "unlimitednodecontainer1",
+            "path": "stack/unlimitednodecontainer1",
+            "children": {
+              "ExecutionRole": {
+                "id": "ExecutionRole",
+                "path": "stack/unlimitednodecontainer1/ExecutionRole",
+                "children": {
+                  "ImportExecutionRole": {
+                    "id": "ImportExecutionRole",
+                    "path": "stack/unlimitednodecontainer1/ExecutionRole/ImportExecutionRole",
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "stack/unlimitednodecontainer1/ExecutionRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "ecs-tasks.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
+                    }
+                  },
+                  "DefaultPolicy": {
+                    "id": "DefaultPolicy",
+                    "path": "stack/unlimitednodecontainer1/ExecutionRole/DefaultPolicy",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "stack/unlimitednodecontainer1/ExecutionRole/DefaultPolicy/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": [
+                                    "logs:CreateLogStream",
+                                    "logs:PutLogEvents"
+                                  ],
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::Join": [
+                                      "",
+                                      [
+                                        "arn:",
+                                        {
+                                          "Ref": "AWS::Partition"
+                                        },
+                                        ":logs:",
+                                        {
+                                          "Ref": "AWS::Region"
+                                        },
+                                        ":",
+                                        {
+                                          "Ref": "AWS::AccountId"
+                                        },
+                                        ":log-group:/aws/batch/job:*"
+                                      ]
+                                    ]
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "unlimitednodecontainer1ExecutionRoleDefaultPolicy6D5ED087",
+                            "roles": [
+                              {
+                                "Ref": "unlimitednodecontainer1ExecutionRole296EB7B9"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "constructs.Construct",
+                          "version": "10.3.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              },
+              "batchDefaultLogGroup": {
+                "id": "batchDefaultLogGroup",
+                "path": "stack/unlimitednodecontainer1/batchDefaultLogGroup",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
+            }
+          },
+          "UnlimitedNodeContainerJob": {
+            "id": "UnlimitedNodeContainerJob",
+            "path": "stack/UnlimitedNodeContainerJob",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "stack/UnlimitedNodeContainerJob/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Batch::JobDefinition",
+                  "aws:cdk:cloudformation:props": {
+                    "nodeProperties": {
+                      "mainNode": 0,
+                      "nodeRangeProperties": [
+                        {
+                          "targetNodes": "0:",
+                          "container": {
+                            "image": "amazon/amazon-ecs-sample",
+                            "environment": [],
+                            "executionRoleArn": {
+                              "Fn::GetAtt": [
+                                "unlimitednodecontainer1ExecutionRole296EB7B9",
+                                "Arn"
+                              ]
+                            },
+                            "readonlyRootFilesystem": false,
+                            "resourceRequirements": [
+                              {
+                                "type": "MEMORY",
+                                "value": "2048"
+                              },
+                              {
+                                "type": "VCPU",
+                                "value": "256"
+                              }
+                            ]
+                          }
+                        },
+                        {
+                          "targetNodes": "11:",
+                          "container": {
+                            "image": "amazon/amazon-ecs-sample",
+                            "environment": [],
+                            "executionRoleArn": {
+                              "Fn::GetAtt": [
+                                "unlimitednodecontainer2ExecutionRoleD2524EBD",
+                                "Arn"
+                              ]
+                            },
+                            "readonlyRootFilesystem": false,
+                            "resourceRequirements": [
+                              {
+                                "type": "MEMORY",
+                                "value": "2048"
+                              },
+                              {
+                                "type": "VCPU",
+                                "value": "256"
+                              }
+                            ]
+                          }
+                        },
+                        {
+                          "targetNodes": "15:",
+                          "container": {
+                            "image": "amazon/amazon-ecs-sample",
+                            "environment": [],
+                            "executionRoleArn": {
+                              "Fn::GetAtt": [
+                                "unlimmitedcontainer3ExecutionRoleB159462D",
+                                "Arn"
+                              ]
+                            },
+                            "readonlyRootFilesystem": false,
+                            "resourceRequirements": [
+                              {
+                                "type": "MEMORY",
+                                "value": "2048"
+                              },
+                              {
+                                "type": "VCPU",
+                                "value": "256"
+                              }
+                            ]
+                          }
+                        }
+                      ],
+                      "numNodes": 20
+                    },
+                    "platformCapabilities": [
+                      "EC2"
+                    ],
+                    "propagateTags": true,
+                    "retryStrategy": {},
+                    "timeout": {},
+                    "type": "multinode"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
+            }
+          },
+          "unlimitednodecontainer2": {
+            "id": "unlimitednodecontainer2",
+            "path": "stack/unlimitednodecontainer2",
+            "children": {
+              "ExecutionRole": {
+                "id": "ExecutionRole",
+                "path": "stack/unlimitednodecontainer2/ExecutionRole",
+                "children": {
+                  "ImportExecutionRole": {
+                    "id": "ImportExecutionRole",
+                    "path": "stack/unlimitednodecontainer2/ExecutionRole/ImportExecutionRole",
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "stack/unlimitednodecontainer2/ExecutionRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "ecs-tasks.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
+                    }
+                  },
+                  "DefaultPolicy": {
+                    "id": "DefaultPolicy",
+                    "path": "stack/unlimitednodecontainer2/ExecutionRole/DefaultPolicy",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "stack/unlimitednodecontainer2/ExecutionRole/DefaultPolicy/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": [
+                                    "logs:CreateLogStream",
+                                    "logs:PutLogEvents"
+                                  ],
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::Join": [
+                                      "",
+                                      [
+                                        "arn:",
+                                        {
+                                          "Ref": "AWS::Partition"
+                                        },
+                                        ":logs:",
+                                        {
+                                          "Ref": "AWS::Region"
+                                        },
+                                        ":",
+                                        {
+                                          "Ref": "AWS::AccountId"
+                                        },
+                                        ":log-group:/aws/batch/job:*"
+                                      ]
+                                    ]
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "unlimitednodecontainer2ExecutionRoleDefaultPolicyFB6CAE06",
+                            "roles": [
+                              {
+                                "Ref": "unlimitednodecontainer2ExecutionRoleD2524EBD"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "constructs.Construct",
+                          "version": "10.3.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              },
+              "batchDefaultLogGroup": {
+                "id": "batchDefaultLogGroup",
+                "path": "stack/unlimitednodecontainer2/batchDefaultLogGroup",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
+            }
+          },
+          "unlimmitedcontainer3": {
+            "id": "unlimmitedcontainer3",
+            "path": "stack/unlimmitedcontainer3",
+            "children": {
+              "ExecutionRole": {
+                "id": "ExecutionRole",
+                "path": "stack/unlimmitedcontainer3/ExecutionRole",
+                "children": {
+                  "ImportExecutionRole": {
+                    "id": "ImportExecutionRole",
+                    "path": "stack/unlimmitedcontainer3/ExecutionRole/ImportExecutionRole",
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "stack/unlimmitedcontainer3/ExecutionRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "ecs-tasks.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
+                    }
+                  },
+                  "DefaultPolicy": {
+                    "id": "DefaultPolicy",
+                    "path": "stack/unlimmitedcontainer3/ExecutionRole/DefaultPolicy",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "stack/unlimmitedcontainer3/ExecutionRole/DefaultPolicy/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": [
+                                    "logs:CreateLogStream",
+                                    "logs:PutLogEvents"
+                                  ],
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::Join": [
+                                      "",
+                                      [
+                                        "arn:",
+                                        {
+                                          "Ref": "AWS::Partition"
+                                        },
+                                        ":logs:",
+                                        {
+                                          "Ref": "AWS::Region"
+                                        },
+                                        ":",
+                                        {
+                                          "Ref": "AWS::AccountId"
+                                        },
+                                        ":log-group:/aws/batch/job:*"
+                                      ]
+                                    ]
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "unlimmitedcontainer3ExecutionRoleDefaultPolicy280AA69A",
+                            "roles": [
+                              {
+                                "Ref": "unlimmitedcontainer3ExecutionRoleB159462D"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "constructs.Construct",
+                          "version": "10.3.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              },
+              "batchDefaultLogGroup": {
+                "id": "batchDefaultLogGroup",
+                "path": "stack/unlimmitedcontainer3/batchDefaultLogGroup",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
             }
           },
           "BootstrapVersion": {
@@ -525,7 +998,7 @@
             "path": "stack/BootstrapVersion",
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.2.70"
+              "version": "10.3.0"
             }
           },
           "CheckBootstrapVersion": {
@@ -533,13 +1006,13 @@
             "path": "stack/CheckBootstrapVersion",
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.2.70"
+              "version": "10.3.0"
             }
           }
         },
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.2.70"
+          "version": "10.3.0"
         }
       },
       "BatchMultiNodeJobDefinitionTest": {
@@ -555,7 +1028,7 @@
                 "path": "BatchMultiNodeJobDefinitionTest/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.70"
+                  "version": "10.3.0"
                 }
               },
               "DeployAssert": {
@@ -567,7 +1040,7 @@
                     "path": "BatchMultiNodeJobDefinitionTest/DefaultTest/DeployAssert/BootstrapVersion",
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.2.70"
+                      "version": "10.3.0"
                     }
                   },
                   "CheckBootstrapVersion": {
@@ -575,13 +1048,13 @@
                     "path": "BatchMultiNodeJobDefinitionTest/DefaultTest/DeployAssert/CheckBootstrapVersion",
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.2.70"
+                      "version": "10.3.0"
                     }
                   }
                 },
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.70"
+                  "version": "10.3.0"
                 }
               }
             },
@@ -601,13 +1074,13 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.2.70"
+          "version": "10.3.0"
         }
       }
     },
     "constructInfo": {
       "fqn": "constructs.Construct",
-      "version": "10.2.70"
+      "version": "10.3.0"
     }
   }
 }
