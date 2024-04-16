@@ -100,7 +100,7 @@
      ]
     },
     "Delete": "{\"service\":\"CloudWatchLogs\",\"action\":\"deleteResourcePolicy\",\"parameters\":{\"policyName\":\"loggroupeventsEventsLogGroupPolicyloggroupeventsTimerC63340B025F606BE\"},\"ignoreErrorCodesMatching\":\"ResourceNotFoundException\"}",
-    "InstallLatestAwsSdk": false
+    "InstallLatestAwsSdk": "false"
    },
    "DependsOn": [
     "EventsLogGroupPolicyloggroupeventsTimerC63340B0CustomResourcePolicy67B796AA"
@@ -179,7 +179,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs18.x",
+    "Runtime": "nodejs20.x",
     "Timeout": 120
    },
    "DependsOn": [
@@ -275,7 +275,7 @@
      ]
     },
     "Delete": "{\"service\":\"CloudWatchLogs\",\"action\":\"deleteResourcePolicy\",\"parameters\":{\"policyName\":\"loggroupeventsEventsLogGroupPolicyloggroupeventsCustomRule99E1EEF62FFABD78\"},\"ignoreErrorCodesMatching\":\"ResourceNotFoundException\"}",
-    "InstallLatestAwsSdk": false
+    "InstallLatestAwsSdk": "false"
    },
    "DependsOn": [
     "EventsLogGroupPolicyloggroupeventsCustomRule99E1EEF6CustomResourcePolicy361E9A96"
@@ -406,7 +406,7 @@
      ]
     },
     "Delete": "{\"service\":\"CloudWatchLogs\",\"action\":\"deleteResourcePolicy\",\"parameters\":{\"policyName\":\"loggroupeventsEventsLogGroupPolicyloggroupeventsTimer37DF74C17EF314A8E\"},\"ignoreErrorCodesMatching\":\"ResourceNotFoundException\"}",
-    "InstallLatestAwsSdk": false
+    "InstallLatestAwsSdk": "false"
    },
    "DependsOn": [
     "EventsLogGroupPolicyloggroupeventsTimer37DF74C17CustomResourcePolicyAE930E1E"
