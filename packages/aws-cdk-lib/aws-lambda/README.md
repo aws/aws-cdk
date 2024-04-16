@@ -201,6 +201,17 @@ You can also restrict permissions given to AWS services by providing
 a source account or ARN (representing the account and identifier of the resource
 that accesses the function or layer).
 
+**Important**: Be aware that `fn.grantInvoke()` grants permission to the principal to call any version of the function, including all past ones. If you only want the principal to invoke the latest version, use `fn.grantInvokeV2()` instead.
+
+```ts
+// Grant permissions to a service
+declare const fn: lambda.Function;
+const principal = new iam.ServicePrincipal('my-service');
+
+fn.grantInvokeV2(principal, false);
+// false is the default and can be omitted
+```
+
 For more information, see
 [Granting function access to AWS services](https://docs.aws.amazon.com/lambda/latest/dg/access-control-resource-based.html#permissions-resource-serviceinvoke)
 in the AWS Lambda Developer Guide.
