@@ -115,7 +115,7 @@ export interface MultiNodeJobDefinitionProps extends JobDefinitionProps {
    * The total number of nodes used in this job.
    * **Only specify if there is at least one container for which you have not specified `endNode`.**
    *
-   * @default - computed based on the containers passed in.
+   * @default - computed from the `startNode` and `endNode` on all containers added to this job definition.
    */
   readonly numNodes?: number;
 
