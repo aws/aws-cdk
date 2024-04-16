@@ -7,7 +7,6 @@ import * as iam from '../../aws-iam';
  * Customize the AppSync GraphQL API target
  */
 export interface AppSyncGraphQLAPIProps extends TargetBaseProps {
-
   /**
    * The GraphQL operation; that is, the query, mutation, or subscription
    * to be parsed and executed by the GraphQL service.
@@ -28,7 +27,6 @@ export interface AppSyncGraphQLAPIProps extends TargetBaseProps {
    * @default - a new role with permissions to access mutations will be created
    */
   readonly eventRole?: iam.IRole;
-
 }
 
 /**
