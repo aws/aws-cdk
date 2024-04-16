@@ -548,13 +548,42 @@ To create an empty Key Value Store:
 const store = new cloudfront.KeyValueStore(this, 'KeyValueStore');
 ```
 
-To also include an initial set of value, the `source` property can be specified. For the
-structure of this file, see [Creating a file of key value pairs](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/kvs-with-functions-create-s3-kvp.html).
+To also include an initial set of values, the `source` property can be specified, either from a 
+local file or an inline string. For the structure of this file, see [Creating a file of key value pairs](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/kvs-with-functions-create-s3-kvp.html).
 
 ```ts
-const store = new cloudfront.KeyValueStore(this, 'KeyValueStore', {
-  keyValueStoreName: 'KeyValueStore',
+const storeAsset = new cloudfront.KeyValueStore(this, 'KeyValueStoreAsset', {
+  keyValueStoreName: 'KeyValueStoreAsset',
   source: cloudfront.ImportSource.fromAsset('path-to-data.json'),
+});
+
+const storeInline = new cloudfront.KeyValueStore(this, 'KeyValueStoreInline', {
+  keyValueStoreName: 'KeyValueStoreInline',
+  source: cloudfront.ImportSource.fromInline(JSON.stringify({
+    data: [
+      {
+        key: "key1",
+        value: "value1",
+      },
+      {
+        key: "key2",
+        value: "value2",
+      },
+    ],
+  })),
+});
+```
+
+The Key Value Store can then be associated to a function using the `cloudfront-js-2.0` runtime
+or newer:
+
+```ts
+const store = new cloudfront.KeyValueStore(this, 'KeyValueStore');
+new cloudfront.Function(this, 'Function', {
+  code: cloudfront.FunctionCode.fromInline('function handler(event) { return event.request }'),
+  // Note that JS_2_0 must be used for Key Value Store support
+  runtime: cloudfront.FunctionRuntime.JS_2_0,
+  keyValueStore: store,
 });
 ```
 
@@ -582,6 +611,60 @@ new cloudfront.Distribution(this, 'myDist', {
   logFilePrefix: 'distribution-access-logs/',
   logIncludesCookies: true,
 });
+```
+
+### CloudFront Distribution Metrics
+
+You can view operational metrics about your CloudFront distributions.
+
+#### Default CloudFront Distribution Metrics
+
+The [following metrics are available by default](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/viewing-cloudfront-metrics.html#monitoring-console.distributions) for all CloudFront distributions:
+
+- Total requests: The total number of viewer requests received by CloudFront for all HTTP methods and for both HTTP and HTTPS requests.
+- Total bytes uploaded: The total number of bytes that viewers uploaded to your origin with CloudFront, using POST and PUT requests.
+- Total bytes downloaded: The total number of bytes downloaded by viewers for GET, HEAD, and OPTIONS requests.
+- Total error rate: The percentage of all viewer requests for which the response's HTTP status code was 4xx or 5xx.
+- 4xx error rate: The percentage of all viewer requests for which the response's HTTP status code was 4xx.
+- 5xx error rate: The percentage of all viewer requests for which the response's HTTP status code was 5xx.
+
+```ts
+const dist = new cloudfront.Distribution(this, 'myDist', {
+  defaultBehavior: { origin: new origins.HttpOrigin('www.example.com') },
+});
+
+// Retrieving default distribution metrics
+const requestsMetric = dist.metricRequests();
+const bytesUploadedMetric = dist.metricBytesUploaded();
+const bytesDownloadedMetric = dist.metricBytesDownloaded();
+const totalErrorRateMetric = dist.metricTotalErrorRate();
+const http4xxErrorRateMetric = dist.metric4xxErrorRate();
+const http5xxErrorRateMetric = dist.metric5xxErrorRate();
+```
+
+#### Additional CloudFront Distribution Metrics
+
+You can enable [additional CloudFront distribution metrics](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/viewing-cloudfront-metrics.html#monitoring-console.distributions-additional), which include the following metrics:
+
+- 4xx and 5xx error rates: View 4xx and 5xx error rates by the specific HTTP status code, as a percentage of total requests.
+- Origin latency: See the total time spent from when CloudFront receives a request to when it provides a response to the network (not the viewer), for responses that are served from the origin, not the CloudFront cache.
+- Cache hit rate: View cache hits as a percentage of total cacheable requests, excluding errors.
+
+```ts
+const dist = new cloudfront.Distribution(this, 'myDist', {
+  defaultBehavior: { origin: new origins.HttpOrigin('www.example.com') },
+  publishAdditionalMetrics: true,
+});
+
+// Retrieving additional distribution metrics
+const latencyMetric = dist.metricOriginLatency();
+const cacheHitRateMetric = dist.metricCacheHitRate();
+const http401ErrorRateMetric = dist.metric401ErrorRate();
+const http403ErrorRateMetric = dist.metric403ErrorRate();
+const http404ErrorRateMetric = dist.metric404ErrorRate();
+const http502ErrorRateMetric = dist.metric502ErrorRate();
+const http503ErrorRateMetric = dist.metric503ErrorRate();
+const http504ErrorRateMetric = dist.metric504ErrorRate();
 ```
 
 ### HTTP Versions

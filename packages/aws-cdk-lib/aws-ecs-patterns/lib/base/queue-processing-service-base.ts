@@ -58,8 +58,7 @@ export interface QueueProcessingServiceBaseProps {
   /**
    * The desired number of instantiations of the task definition to keep running on the service.
    *
-   * @default - If the feature flag, ECS_REMOVE_DEFAULT_DESIRED_COUNT is false, the default is 1;
-   * if true, the minScalingCapacity is 1 for all new services and uses the existing services desired count
+   * @default - The minScalingCapacity is 1 for all new services and uses the existing services desired count
    * when updating an existing service.
    * @deprecated - Use `minScalingCapacity` or a literal object instead.
    */
@@ -128,16 +127,16 @@ export interface QueueProcessingServiceBaseProps {
   /**
    * Maximum capacity to scale to.
    *
-   * @default - If the feature flag, ECS_REMOVE_DEFAULT_DESIRED_COUNT is false, the default is (desiredTaskCount * 2); if true, the default is 2.
+   * @default 2
    */
-  readonly maxScalingCapacity?: number
+  readonly maxScalingCapacity?: number;
 
   /**
    * Minimum capacity to scale to.
    *
-   * @default - If the feature flag, ECS_REMOVE_DEFAULT_DESIRED_COUNT is false, the default is the desiredTaskCount; if true, the default is 1.
+   * @default 1
    */
-  readonly minScalingCapacity?: number
+  readonly minScalingCapacity?: number;
 
   /**
    * The intervals for scaling based on the SQS queue's ApproximateNumberOfMessagesVisible metric.
@@ -148,6 +147,19 @@ export interface QueueProcessingServiceBaseProps {
    * @default [{ upper: 0, change: -1 },{ lower: 100, change: +1 },{ lower: 500, change: +5 }]
    */
   readonly scalingSteps?: ScalingInterval[];
+
+  /**
+   * Grace period after scaling activity in seconds.
+   *
+   * Subsequent scale outs during the cooldown period are squashed so that only
+   * the biggest scale out happens.
+   *
+   * Subsequent scale ins during the cooldown period are ignored.
+   *
+   * @see https://docs.aws.amazon.com/autoscaling/application/APIReference/API_StepScalingPolicyConfiguration.html
+   * @default 300 seconds
+   */
+  readonly cooldown?: Duration;
 
   /**
    * The log driver to use.
@@ -296,6 +308,12 @@ export abstract class QueueProcessingServiceBase extends Construct {
   public readonly scalingSteps: ScalingInterval[];
 
   /**
+   * Grace period after scaling activity in seconds.
+   * @default 300 seconds
+   */
+  private readonly cooldown?: Duration;
+
+  /**
    * The AwsLogDriver to use for logging if logging is enabled.
    */
   public readonly logDriver?: LogDriver;
@@ -348,6 +366,11 @@ export abstract class QueueProcessingServiceBase extends Construct {
     const defaultScalingSteps = [{ upper: 0, change: -1 }, { lower: 100, change: +1 }, { lower: 500, change: +5 }];
     this.scalingSteps = props.scalingSteps ?? defaultScalingSteps;
 
+    if (props.cooldown && props.cooldown.toSeconds() > 999999999) {
+      throw new Error(`cooldown cannot be more than 999999999, found: ${props.cooldown.toSeconds()}`);
+    }
+    this.cooldown = props.cooldown;
+
     // Create log driver if logging is enabled
     const enableLogging = props.enableLogging ?? true;
     this.logDriver = props.logDriver ?? (enableLogging ? this.createAWSLogDriver(this.node.id) : undefined);
@@ -398,6 +421,7 @@ export abstract class QueueProcessingServiceBase extends Construct {
     scalingTarget.scaleOnMetric('QueueMessagesVisibleScaling', {
       metric: this.sqsQueue.metricApproximateNumberOfMessagesVisible(),
       scalingSteps: this.scalingSteps,
+      cooldown: this.cooldown,
     });
   }
 

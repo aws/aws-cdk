@@ -52,7 +52,7 @@
     "watch": "cdk-watch",
     "lint": "cdk-lint",
     "test": "cdk-test",
-    "integ": "integ-runner",
+    "integ": "integ-runner --language javascript",
     "pkglint": "pkglint -f",
     "package": "cdk-package",
     "awslint": "cdk-awslint",
@@ -79,7 +79,7 @@
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/integ-runner": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
-    "@types/jest": "^29.5.11",
+    "@types/jest": "^29.5.12",
     "aws-cdk-lib": "0.0.0",
     "constructs": "^10.0.0",
     "@aws-cdk/integ-tests-alpha": "0.0.0"

@@ -4,6 +4,7 @@ var constructs = require('constructs');
 if (process.env.PACKAGE_LAYOUT_VERSION === '1') {
   var cdk = require('@aws-cdk/core');
   var ec2 = require('@aws-cdk/aws-ec2');
+  var ecs = require('@aws-cdk/aws-ecs');
   var s3 = require('@aws-cdk/aws-s3');
   var ssm = require('@aws-cdk/aws-ssm');
   var iam = require('@aws-cdk/aws-iam');
@@ -17,13 +18,15 @@ if (process.env.PACKAGE_LAYOUT_VERSION === '1') {
     DefaultStackSynthesizer,
     LegacyStackSynthesizer,
     aws_ec2: ec2,
+    aws_ecs: ecs,
     aws_s3: s3,
     aws_ssm: ssm,
     aws_iam: iam,
     aws_sns: sns,
     aws_sqs: sqs,
     aws_lambda: lambda,
-    aws_ecr_assets: docker
+    aws_ecr_assets: docker,
+    Stack
   } = require('aws-cdk-lib');
 }
 
@@ -65,7 +68,60 @@ class YourStack extends cdk.Stack {
   }
 }
 
-class ImportableStack extends cdk.Stack {
+class ListMultipleDependentStack extends Stack {
+  constructor(scope, id) {
+    super(scope, id);
+
+    const dependentStack1 = new DependentStack1(this, 'DependentStack1');
+    const dependentStack2 = new DependentStack2(this, 'DependentStack2');
+
+    this.addDependency(dependentStack1);
+    this.addDependency(dependentStack2);
+  }
+}
+
+class DependentStack1 extends Stack {
+  constructor(scope, id) {
+    super(scope, id);
+
+  }
+}
+
+class DependentStack2 extends Stack {
+  constructor(scope, id) {
+    super(scope, id);
+
+  }
+}
+
+class ListStack extends Stack {
+  constructor(scope, id) {
+    super(scope, id);
+
+    const dependentStack = new DependentStack(this, 'DependentStack');
+
+    this.addDependency(dependentStack);
+  }
+}
+
+class DependentStack extends Stack {
+  constructor(scope, id) {
+    super(scope, id);
+
+    const innerDependentStack = new InnerDependentStack(this, 'InnerDependentStack');
+    
+    this.addDependency(innerDependentStack);
+  }
+}
+
+class InnerDependentStack extends Stack {
+  constructor(scope, id) {
+    super(scope, id);
+
+  }
+}
+
+class MigrateStack extends cdk.Stack {
   constructor(parent, id, props) {
     super(parent, id, props);
 
@@ -77,11 +133,50 @@ class ImportableStack extends cdk.Stack {
       new cdk.CfnOutput(this, 'QueueName', {
         value: queue.queueName,
       });
+
+      new cdk.CfnOutput(this, 'QueueUrl', {
+        value: queue.queueUrl,
+      });
+      
       new cdk.CfnOutput(this, 'QueueLogicalId', {
         value: queue.node.defaultChild.logicalId,
       });
     }
+    if (process.env.SAMPLE_RESOURCES) {
+      const myTopic = new sns.Topic(this, 'migratetopic1', {
+        removalPolicy: cdk.RemovalPolicy.DESTROY,
+      });
+      cdk.Tags.of(myTopic).add('tag1', 'value1');
+      const myTopic2 = new sns.Topic(this, 'migratetopic2', {
+        removalPolicy: cdk.RemovalPolicy.DESTROY,
+      });
+      cdk.Tags.of(myTopic2).add('tag2', 'value2');
+      const myQueue = new sqs.Queue(this, 'migratequeue1', {
+        removalPolicy: cdk.RemovalPolicy.DESTROY,
+      });
+      cdk.Tags.of(myQueue).add('tag3', 'value3');
+    }
+    if (process.env.LAMBDA_RESOURCES) {
+      const myFunction = new lambda.Function(this, 'migratefunction1', {
+        code: lambda.Code.fromInline('console.log("hello world")'),
+        handler: 'index.handler',
+        runtime: lambda.Runtime.NODEJS_18_X,
+      });
+      cdk.Tags.of(myFunction).add('lambda-tag', 'lambda-value');
 
+      const myFunction2 = new lambda.Function(this, 'migratefunction2', {
+        code: lambda.Code.fromInline('console.log("hello world2")'),
+        handler: 'index.handler',
+        runtime: lambda.Runtime.NODEJS_18_X,
+      });
+      cdk.Tags.of(myFunction2).add('lambda-tag', 'lambda-value');
+    }
+  }
+}
+
+class ImportableStack extends MigrateStack {
+  constructor(parent, id, props) {
+    super(parent, id, props);
     new cdk.CfnWaitConditionHandle(this, 'Handle');
   }
 }
@@ -264,6 +359,60 @@ class LambdaHotswapStack extends cdk.Stack {
   }
 }
 
+class EcsHotswapStack extends cdk.Stack {
+  constructor(parent, id, props) {
+    super(parent, id, props);
+
+    // define a simple vpc and cluster
+    const vpc = new ec2.Vpc(this, 'vpc', {
+      natGateways: 0,
+      subnetConfiguration: [
+        {
+          cidrMask: 24,
+          name: 'Public',
+          subnetType: ec2.SubnetType.PUBLIC,
+        },
+      ],
+      maxAzs: 1,
+    });
+    const cluster = new ecs.Cluster(this, 'cluster', {
+      vpc,
+    });
+
+    // allow stack to be used to test failed deployments
+    const image =
+      process.env.USE_INVALID_ECS_HOTSWAP_IMAGE == 'true'
+        ? 'nginx:invalidtag'
+        : 'nginx:alpine';
+
+    // deploy basic service
+    const taskDefinition = new ecs.FargateTaskDefinition(
+      this,
+      'task-definition'
+    );
+    taskDefinition.addContainer('nginx', {
+      image: ecs.ContainerImage.fromRegistry(image),
+      environment: {
+        SOME_VARIABLE: process.env.DYNAMIC_ECS_PROPERTY_VALUE ?? 'environment',
+      },
+      healthCheck: {
+        command: ['CMD-SHELL', 'exit 0'], // fake health check to speed up deployment
+        interval: cdk.Duration.seconds(5),
+      },
+    });
+    const service = new ecs.FargateService(this, 'service', {
+      cluster,
+      taskDefinition,
+      assignPublicIp: true, // required without NAT to pull image
+      circuitBreaker: { rollback: false },
+      desiredCount: 1,
+    });
+
+    new cdk.CfnOutput(this, 'ClusterName', { value: cluster.clusterName });
+    new cdk.CfnOutput(this, 'ServiceName', { value: service.serviceName });
+  }
+}
+
 class DockerStack extends cdk.Stack {
   constructor(parent, id, props) {
     super(parent, id, props);
@@ -439,6 +588,7 @@ switch (stackSet) {
 
     new LambdaStack(app, `${stackPrefix}-lambda`);
     new LambdaHotswapStack(app, `${stackPrefix}-lambda-hotswap`);
+    new EcsHotswapStack(app, `${stackPrefix}-ecs-hotswap`);
     new DockerStack(app, `${stackPrefix}-docker`);
     new DockerStackWithCustomFile(app, `${stackPrefix}-docker-with-custom-file`);
     const failed = new FailedStack(app, `${stackPrefix}-failed`)
@@ -459,6 +609,8 @@ switch (stackSet) {
 
     new StackWithNestedStack(app, `${stackPrefix}-with-nested-stack`);
     new StackWithNestedStackUsingParameters(app, `${stackPrefix}-with-nested-stack-using-parameters`);
+    new ListStack(app, `${stackPrefix}-list-stacks`)
+    new ListMultipleDependentStack(app, `${stackPrefix}-list-multiple-dependent-stacks`);
 
     new YourStack(app, `${stackPrefix}-termination-protection`, {
       terminationProtection: process.env.TERMINATION_PROTECTION !== 'FALSE' ? true : false,
@@ -469,6 +621,8 @@ switch (stackSet) {
     new BuiltinLambdaStack(app, `${stackPrefix}-builtin-lambda-function`);
 
     new ImportableStack(app, `${stackPrefix}-importable-stack`);
+
+    new MigrateStack(app, `${stackPrefix}-migrate-stack`);
 
     new ExportValueStack(app, `${stackPrefix}-export-value-stack`);
 
@@ -490,6 +644,9 @@ switch (stackSet) {
   case 'stage-with-errors':
     const stage = new StageWithError(app, `${stackPrefix}-stage-with-errors`);
     stage.synth({ validateOnSynthesis: true });
+    break;
+
+  case 'stage-with-no-stacks':
     break;
 
   default:

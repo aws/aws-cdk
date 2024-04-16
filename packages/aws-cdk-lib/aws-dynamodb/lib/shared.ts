@@ -142,7 +142,7 @@ export enum ProjectionType {
   /**
    * All of the table attributes are projected into the index.
    */
-  ALL = 'ALL'
+  ALL = 'ALL',
 }
 
 /**
@@ -215,7 +215,7 @@ export enum StreamViewType {
   /**
    * Only the key attributes of the modified item are written to the stream.
    */
-  KEYS_ONLY = 'KEYS_ONLY'
+  KEYS_ONLY = 'KEYS_ONLY',
 }
 
 /**

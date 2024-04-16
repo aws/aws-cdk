@@ -1,0 +1,12 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "issue-4324/DefaultTest": {
+      "stacks": [
+        "tester"
+      ],
+      "assertionStack": "issue-4324/DefaultTest/DeployAssert",
+      "assertionStackName": "issue4324DefaultTestDeployAssert63CED672"
+    }
+  }
+}

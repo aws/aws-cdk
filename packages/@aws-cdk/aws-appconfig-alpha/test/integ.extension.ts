@@ -1,8 +1,8 @@
+import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { Stack, App, Duration } from 'aws-cdk-lib';
 import { EventBus } from 'aws-cdk-lib/aws-events';
 import { Code, Function, Runtime } from 'aws-cdk-lib/aws-lambda';
 import { Topic } from 'aws-cdk-lib/aws-sns';
-import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { Queue } from 'aws-cdk-lib/aws-sqs';
 import {
   DeploymentStrategy,
@@ -31,7 +31,7 @@ const lambda = new Function(stack, 'MyFunction', {
   code: Code.fromInline('def handler(event, context):\n\tprint(\'The function has been invoked.\')'),
 });
 const app = new Application(stack, 'MyApplication', {
-  name: 'AppForExtensionTest',
+  applicationName: 'AppForExtensionTest',
 });
 const lambdaExtension = new Extension(stack, 'MyLambdaExtension', {
   actions: [
@@ -108,6 +108,10 @@ const hostedConfig = new HostedConfiguration(stack, 'HostedConfiguration', {
   }),
 });
 hostedConfig.node.addDependency(lambdaExtension, topicExtension, busExtension, queueExtension);
+
+/* resource deployment alone is sufficient because we already have the
+   corresponding resource handler tests to assert that resources can be
+   used after created */
 
 new IntegTest(app, 'appconfig-extension', {
   testCases: [stack],

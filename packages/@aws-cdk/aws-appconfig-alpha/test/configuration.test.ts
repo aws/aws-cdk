@@ -58,7 +58,7 @@ describe('configuration', () => {
   test('configuration with environments and no deployTo prop', () => {
     const stack = new cdk.Stack();
     const app = new Application(stack, 'MyAppConfig', {
-      name: 'MyApplication',
+      applicationName: 'MyApplication',
     });
     app.addEnvironment('MyEnv1');
     app.addEnvironment('MyEnv2');
@@ -96,7 +96,7 @@ describe('configuration', () => {
   test('configuration with environments and deployTo prop', () => {
     const stack = new cdk.Stack();
     const app = new Application(stack, 'MyAppConfig', {
-      name: 'MyApplication',
+      applicationName: 'MyApplication',
     });
     app.addEnvironment('MyEnv1');
     const env = app.addEnvironment('MyEnv2');
@@ -152,7 +152,7 @@ describe('configuration', () => {
   test('configuration using deploy method and no environment associated', () => {
     const stack = new cdk.Stack();
     const app = new Application(stack, 'MyAppConfig', {
-      name: 'MyApplication',
+      applicationName: 'MyApplication',
     });
     app.addEnvironment('MyEnv1');
     const env = app.addEnvironment('MyEnv2');
@@ -191,7 +191,7 @@ describe('configuration', () => {
   test('configuration using deploy method with environment associated', () => {
     const stack = new cdk.Stack();
     const app = new Application(stack, 'MyAppConfig', {
-      name: 'MyApplication',
+      applicationName: 'MyApplication',
     });
     const env1 = app.addEnvironment('MyEnv1');
     const env2 = app.addEnvironment('MyEnv2');
@@ -248,7 +248,7 @@ describe('configuration', () => {
   test('configuration with no environment associated and no deploy method used', () => {
     const stack = new cdk.Stack();
     const app = new Application(stack, 'MyAppConfig', {
-      name: 'MyApplication',
+      applicationName: 'MyApplication',
     });
     new HostedConfiguration(stack, 'MyHostedConfig', {
       content: ConfigurationContent.fromInlineText('This is my content'),
@@ -267,7 +267,7 @@ describe('configuration', () => {
   test('configuration with two configurations specified', () => {
     const stack = new cdk.Stack();
     const app = new Application(stack, 'MyAppConfig', {
-      name: 'MyApplication',
+      applicationName: 'MyApplication',
     });
     const env1 = app.addEnvironment('MyEnv1');
     const env2 = app.addEnvironment('MyEnv2');
@@ -382,7 +382,7 @@ describe('configuration', () => {
   test('configuration with two configurations and no deployment strategy specified', () => {
     const stack = new cdk.Stack();
     const app = new Application(stack, 'MyAppConfig', {
-      name: 'MyApplication',
+      applicationName: 'MyApplication',
     });
     const bucket = new Bucket(stack, 'MyBucket');
     new HostedConfiguration(stack, 'MyHostedConfig', {

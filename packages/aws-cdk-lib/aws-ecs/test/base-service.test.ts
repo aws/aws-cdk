@@ -298,3 +298,40 @@ test.each([
     DeploymentController: controllerInTemplate ? { Type: 'ECS' } : Match.absent(),
   });
 });
+
+test.each([
+  [true, true],
+  [false, false],
+  [undefined, undefined],
+])('circuitBreaker.enable is %p and circuitBreaker.rollback is %p', (enable, rollback) => {
+  // GIVEN
+  const app = new App();
+  const stack = new Stack(app, 'Stack');
+  const vpc = new ec2.Vpc(stack, 'Vpc');
+  const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+  const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
+  taskDefinition.addContainer('web', {
+    image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+  });
+
+  // WHEN
+  new ecs.FargateService(stack, 'FargateService', {
+    cluster,
+    taskDefinition,
+    circuitBreaker: {
+      enable,
+      rollback,
+    },
+  });
+
+  // THEN
+  const template = Template.fromStack(stack);
+  template.hasResourceProperties('AWS::ECS::Service', {
+    DeploymentConfiguration: {
+      DeploymentCircuitBreaker: {
+        Enable: enable ?? true,
+        Rollback: rollback ?? false,
+      },
+    },
+  });
+});

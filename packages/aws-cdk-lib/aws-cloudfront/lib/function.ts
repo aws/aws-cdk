@@ -1,6 +1,7 @@
 import * as fs from 'fs';
 import { Construct } from 'constructs';
 import { CfnFunction } from './cloudfront.generated';
+import { IKeyValueStore } from './key-value-store';
 import { IResource, Names, Resource, Stack } from '../../core';
 
 /**
@@ -132,9 +133,19 @@ export interface FunctionProps {
 
   /**
    * The runtime environment for the function.
-   * @default FunctionRuntime.JS_1_0
+   * @default FunctionRuntime.JS_1_0 (unless `keyValueStore` is specified, then `FunctionRuntime.JS_2_0`)
    */
   readonly runtime?: FunctionRuntime;
+
+  /**
+   * The Key Value Store to associate with this function.
+   *
+   * In order to associate a Key Value Store, the `runtime` must be
+   * `cloudfront-js-2.0` or newer.
+   *
+   * @default - no key value store is associated
+   */
+  readonly keyValueStore?: IKeyValueStore;
 }
 
 /**
@@ -179,7 +190,14 @@ export class Function extends Resource implements IFunction {
 
     this.functionName = props.functionName ?? this.generateName();
 
-    this.functionRuntime = props.runtime?.value ?? FunctionRuntime.JS_1_0.value;
+    const defaultFunctionRuntime = props.keyValueStore ? FunctionRuntime.JS_2_0.value : FunctionRuntime.JS_1_0.value;
+    this.functionRuntime = props.runtime?.value ?? defaultFunctionRuntime;
+
+    if (props.keyValueStore && this.functionRuntime === FunctionRuntime.JS_1_0.value) {
+      throw new Error(
+        `Key Value Stores cannot be associated to functions using the ${this.functionRuntime} runtime`,
+      );
+    }
 
     const resource = new CfnFunction(this, 'Resource', {
       autoPublish: true,
@@ -187,6 +205,7 @@ export class Function extends Resource implements IFunction {
       functionConfig: {
         comment: props.comment ?? this.functionName,
         runtime: this.functionRuntime,
+        keyValueStoreAssociations: props.keyValueStore ? [{ keyValueStoreArn: props.keyValueStore.keyValueStoreArn }] : undefined,
       },
       name: this.functionName,
     });

@@ -70,6 +70,14 @@ export enum NodegroupAmiType {
    * Windows Full 2022 (x86-64)
    */
   WINDOWS_FULL_2022_X86_64 = 'WINDOWS_FULL_2022_x86_64',
+  /**
+   * Amazon Linux 2023 (x86-64)
+   */
+  AL2023_X86_64_STANDARD = 'AL2023_x86_64_STANDARD',
+  /**
+   * Amazon Linux 2023 (ARM-64)
+   */
+  AL2023_ARM_64_STANDARD = 'AL2023_ARM_64_STANDARD',
 }
 
 /**
@@ -83,7 +91,7 @@ export enum CapacityType {
   /**
    * on-demand instances
    */
-  ON_DEMAND = 'ON_DEMAND'
+  ON_DEMAND = 'ON_DEMAND',
 }
 
 /**
@@ -421,7 +429,7 @@ export class Nodegroup extends Resource implements INodegroup {
 
       // if the user explicitly configured an ami type, make sure it's included in the possibleAmiTypes
       if (props.amiType && !possibleAmiTypes.includes(props.amiType)) {
-        throw new Error(`The specified AMI does not match the instance types architecture, either specify one of ${possibleAmiTypes.join(', ')} or don't specify any`);
+        throw new Error(`The specified AMI does not match the instance types architecture, either specify one of ${possibleAmiTypes.join(', ').toUpperCase()} or don't specify any`);
       }
 
       //if the user explicitly configured a Windows ami type, make sure the instanceType is allowed
@@ -555,15 +563,31 @@ export class Nodegroup extends Resource implements INodegroup {
  * AMI types of different architectures. Make sure AL2 is always the first element, which will be the default
  * AmiType if amiType and launchTemplateSpec are both undefined.
  */
-const arm64AmiTypes: NodegroupAmiType[] = [NodegroupAmiType.AL2_ARM_64, NodegroupAmiType.BOTTLEROCKET_ARM_64];
-const x8664AmiTypes: NodegroupAmiType[] = [NodegroupAmiType.AL2_X86_64, NodegroupAmiType.BOTTLEROCKET_X86_64,
-  NodegroupAmiType.WINDOWS_CORE_2019_X86_64, NodegroupAmiType.WINDOWS_CORE_2022_X86_64,
-  NodegroupAmiType.WINDOWS_FULL_2019_X86_64, NodegroupAmiType.WINDOWS_FULL_2022_X86_64];
-const windowsAmiTypes: NodegroupAmiType[] = [NodegroupAmiType.WINDOWS_CORE_2019_X86_64,
-  NodegroupAmiType.WINDOWS_CORE_2022_X86_64, NodegroupAmiType.WINDOWS_FULL_2019_X86_64,
-  NodegroupAmiType.WINDOWS_FULL_2022_X86_64];
-const gpuAmiTypes: NodegroupAmiType[] = [NodegroupAmiType.AL2_X86_64_GPU,
-  NodegroupAmiType.BOTTLEROCKET_X86_64_NVIDIA, NodegroupAmiType.BOTTLEROCKET_ARM_64_NVIDIA];
+const arm64AmiTypes: NodegroupAmiType[] = [
+  NodegroupAmiType.AL2_ARM_64,
+  NodegroupAmiType.AL2023_ARM_64_STANDARD,
+  NodegroupAmiType.BOTTLEROCKET_ARM_64,
+];
+const x8664AmiTypes: NodegroupAmiType[] = [
+  NodegroupAmiType.AL2_X86_64,
+  NodegroupAmiType.AL2023_X86_64_STANDARD,
+  NodegroupAmiType.BOTTLEROCKET_X86_64,
+  NodegroupAmiType.WINDOWS_CORE_2019_X86_64,
+  NodegroupAmiType.WINDOWS_CORE_2022_X86_64,
+  NodegroupAmiType.WINDOWS_FULL_2019_X86_64,
+  NodegroupAmiType.WINDOWS_FULL_2022_X86_64,
+];
+const windowsAmiTypes: NodegroupAmiType[] = [
+  NodegroupAmiType.WINDOWS_CORE_2019_X86_64,
+  NodegroupAmiType.WINDOWS_CORE_2022_X86_64,
+  NodegroupAmiType.WINDOWS_FULL_2019_X86_64,
+  NodegroupAmiType.WINDOWS_FULL_2022_X86_64,
+];
+const gpuAmiTypes: NodegroupAmiType[] = [
+  NodegroupAmiType.AL2_X86_64_GPU,
+  NodegroupAmiType.BOTTLEROCKET_X86_64_NVIDIA,
+  NodegroupAmiType.BOTTLEROCKET_ARM_64_NVIDIA,
+];
 
 /**
  * This function check if the instanceType is GPU instance.
@@ -611,7 +635,7 @@ function getPossibleAmiTypes(instanceTypes: InstanceType[]): NodegroupAmiType[] 
   const architectures: Set<AmiArchitecture> = new Set(instanceTypes.map(typeToArch));
 
   if (architectures.size === 0) { // protective code, the current implementation will never result in this.
-    throw new Error(`Cannot determine any ami type comptaible with instance types: ${instanceTypes.map(i => i.toString).join(',')}`);
+    throw new Error(`Cannot determine any ami type compatible with instance types: ${instanceTypes.map(i => i.toString).join(', ')}`);
   }
 
   if (architectures.size > 1) {

@@ -118,6 +118,7 @@ export async function execProgram(aws: SdkProvider, config: Configuration): Prom
         if (code === 0) {
           return ok();
         } else {
+          debug('failed command:', commandAndArgs);
           return fail(new Error(`Subprocess exited with error ${code}`));
         }
       });

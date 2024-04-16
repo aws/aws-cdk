@@ -1,0 +1,63 @@
+name: Sync repository from upstream
+on:
+  workflow_dispatch: {}
+  schedule:
+    - cron: 5 2 * * *
+
+env:
+  BRANCHES: main v2-release
+
+jobs:
+
+  # Check for the presence of a PROJEN_GITHUB_TOKEN secret.
+  #
+  # This is expected to contain a personal access token of someone who has
+  # permissions to bypass branch protection rules.
+  #
+  # If not present, we can only use GitHub Actions Token permissions,
+  # but this has the following downsides:
+  #
+  # - Those are bound by branch protection rules (so automated pushing won't work).
+  # - As soon as a workflow file needs to be changed, GitHub will reject the push.
+  #   Only Apps and Users can be allowed to modify workflows.
+  check-secret:
+    # Don't run on the target repo itself, only forks
+    if: github.repository != 'aws/aws-cdk'
+
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check for presence of PROJEN_GITHUB_TOKEN
+        id: check-secrets
+        run: |
+          if [ ! -z "${{ secrets.PROJEN_GITHUB_TOKEN }}" ]; then
+            echo "ok=true" >> $GITHUB_OUTPUT
+          else
+            echo "ok=false" >> $GITHUB_OUTPUT
+          fi
+    outputs:
+      ok: ${{ steps.check-secrets.outputs.ok }}
+
+  sync-branch:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    needs: [check-secret]
+    steps:
+      - name: Checkout using User Token
+        if: needs.check-secret.outputs.ok == 'true'
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.PROJEN_GITHUB_TOKEN }}
+
+      - name: Checkout using GitHub Actions permissions
+        if: needs.check-secret.outputs.ok == 'false'
+        uses: actions/checkout@v4
+
+      - name: Sync from aws/aws-cdk
+        run: |-
+          git remote add upstream https://github.com/aws/aws-cdk.git
+          git fetch upstream $BRANCHES
+
+          for branch in $BRANCHES; do
+            git push origin --force refs/remotes/upstream/$branch:refs/heads/$branch
+          done

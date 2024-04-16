@@ -1,4 +1,5 @@
 import { Construct } from 'constructs';
+import { Logging } from './logging';
 import * as ec2 from '../../../aws-ec2';
 import * as iam from '../../../aws-iam';
 import * as logs from '../../../aws-logs';
@@ -188,6 +189,21 @@ export interface AwsSdkCall {
    * @default - run without assuming role
    */
   readonly assumedRoleArn?: string;
+
+  /**
+   * A property used to configure logging during lambda function execution.
+   *
+   * Note: The default Logging configuration is all. This configuration will enable logging on all logged data
+   * in the lambda handler. This includes:
+   *  - The event object that is received by the lambda handler
+   *  - The response received after making a API call
+   *  - The response object that the lambda handler will return
+   *  - SDK versioning information
+   *  - Caught and uncaught errors
+   *
+   * @default Logging.all()
+   */
+  readonly logging?: Logging;
 }
 
 /**
@@ -204,7 +220,7 @@ export interface SdkCallsPolicyOptions {
    *
    * Note that will apply to ALL SDK calls.
    */
-  readonly resources: string[]
+  readonly resources: string[];
 
 }
 
@@ -323,15 +339,28 @@ export interface AwsCustomResourceProps {
    *
    * @default Duration.minutes(2)
    */
-  readonly timeout?: cdk.Duration
+  readonly timeout?: cdk.Duration;
 
   /**
    * The number of days log events of the singleton Lambda function implementing
    * this custom resource are kept in CloudWatch Logs.
    *
+   * This is a legacy API and we strongly recommend you migrate to `logGroup` if you can.
+   * `logGroup` allows you to create a fully customizable log group and instruct the Lambda function to send logs to it.
+   *
    * @default logs.RetentionDays.INFINITE
    */
   readonly logRetention?: logs.RetentionDays;
+
+  /**
+   * The Log Group used for logging of events emitted by the custom resource's lambda function.
+   *
+   * Providing a user-controlled log group was rolled out to commercial regions on 2023-11-16.
+   * If you are deploying to another type of region, please check regional availability first.
+   *
+   * @default - a default log group created by AWS Lambda
+   */
+  readonly logGroup?: logs.ILogGroup;
 
   /**
    * Whether to install the latest AWS SDK v2.
@@ -450,7 +479,10 @@ export class AwsCustomResource extends Construct implements iam.IGrantable {
       lambdaPurpose: 'AWS',
       timeout: props.timeout || cdk.Duration.minutes(2),
       role: props.role,
-      logRetention: props.logRetention,
+      // props.logRetention is deprecated, make sure we only set it if it is actually provided
+      // otherwise jsii will print warnings even for users that don't use this directly
+      ...(props.logRetention ? { logRetention: props.logRetention } : {}),
+      logGroup: props.logGroup,
       functionName: props.functionName,
       vpc: props.vpc,
       vpcSubnets: props.vpcSubnets,
@@ -477,9 +509,9 @@ export class AwsCustomResource extends Construct implements iam.IGrantable {
       pascalCaseProperties: true,
       removalPolicy: props.removalPolicy,
       properties: {
-        create: create && this.encodeJson(create),
-        update: props.onUpdate && this.encodeJson(props.onUpdate),
-        delete: props.onDelete && this.encodeJson(props.onDelete),
+        create: create && this.formatSdkCall(create),
+        update: props.onUpdate && this.formatSdkCall(props.onUpdate),
+        delete: props.onDelete && this.formatSdkCall(props.onDelete),
         installLatestAwsSdk,
       },
     });
@@ -556,6 +588,15 @@ export class AwsCustomResource extends Construct implements iam.IGrantable {
   public getResponseField(dataPath: string): string {
     AwsCustomResource.breakIgnoreErrorsCircuit([this.props.onCreate, this.props.onUpdate], 'getDataString');
     return this.customResource.getAttString(dataPath);
+  }
+
+  private formatSdkCall(sdkCall: AwsSdkCall) {
+    const { logging, ...call } = sdkCall;
+    const renderedLogging = (logging ?? Logging.all())._render();
+    return this.encodeJson({
+      ...call,
+      ...renderedLogging,
+    });
   }
 
   private encodeJson(obj: any) {

@@ -243,7 +243,7 @@ export interface DatabaseInstanceProps {
    *
    * @default RemovalPolicy.Retain
    */
-  readonly removalPolicy?: cdk.RemovalPolicy
+  readonly removalPolicy?: cdk.RemovalPolicy;
 }
 
 /**

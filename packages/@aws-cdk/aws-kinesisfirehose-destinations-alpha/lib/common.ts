@@ -86,7 +86,7 @@ export interface CommonDestinationS3Props {
    * The length of time that Firehose buffers incoming data before delivering
    * it to the S3 bucket.
    *
-   * Minimum: Duration.seconds(60)
+   * Minimum: Duration.seconds(0)
    * Maximum: Duration.seconds(900)
    *
    * @default Duration.seconds(300)

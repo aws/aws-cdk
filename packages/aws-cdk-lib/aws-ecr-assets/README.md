@@ -162,7 +162,14 @@ through the CDK CLI or through CI/CD workflows. To that end, the ECR repository 
 The mechanics of where these images are published and how are intentionally kept as an implementation detail, and the construct
 does not support customizations such as specifying the ECR repository name or tags.
 
-If you are looking for a way to _publish_ image assets to an ECR repository in your control, you should consider using
+We are testing a new experimental synthesizer, the
+[App Staging Synthesizer](https://docs.aws.amazon.com/cdk/api/v2/docs/app-staging-synthesizer-alpha-readme.html) that
+creates separate support stacks for each CDK application. Unlike the default stack synthesizer, the App Staging
+Synthesizer creates unique ECR repositories for each `DockerImageAsset`, allowing lifecycle policies to only retain the
+last `n` images. This is a great way to keep your ECR repositories clean and reduce cost. You can learn more about
+this feature in [this blog post](https://aws.amazon.com/blogs/devops/enhancing-resource-isolation-in-aws-cdk-with-the-app-staging-synthesizer/).
+
+Alternatively, If you are looking for a way to _publish_ image assets to an ECR repository in your control, you should consider using
 [cdklabs/cdk-ecr-deployment], which is able to replicate an image asset from the CDK-controlled ECR repository to a repository of
 your choice.
 
@@ -200,8 +207,7 @@ method. This will modify the IAM policy of the principal to allow it to
 pull images from this repository.
 
 If the pulling principal is not in the same account or is an AWS service that
-doesn't assume a role in your account (e.g. AWS CodeBuild), pull permissions
-must be granted on the __resource policy__ (and not on the principal's policy).
-To do that, you can use `asset.repository.addToResourcePolicy(statement)` to
-grant the desired principal the following permissions: "ecr:GetDownloadUrlForLayer",
+doesn't assume a role in your account (e.g. AWS CodeBuild), you must either copy the image to a new repository, or
+grant pull permissions on the resource policy of the repository. Since the repository is managed by the CDK bootstrap stack,
+the following permissions must be granted there, or granted manually on the repository: "ecr:GetDownloadUrlForLayer", 
 "ecr:BatchGetImage" and "ecr:BatchCheckLayerAvailability".

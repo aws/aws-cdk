@@ -25,7 +25,7 @@ export enum StateMachineType {
   /**
    * Standard Workflows are ideal for long-running, durable, and auditable workflows.
    */
-  STANDARD = 'STANDARD'
+  STANDARD = 'STANDARD',
 }
 
 /**
@@ -51,7 +51,7 @@ export enum LogLevel {
   /**
    * Log fatal errors
    */
-  FATAL = 'FATAL'
+  FATAL = 'FATAL',
 }
 
 /**
@@ -159,7 +159,6 @@ export interface StateMachineProps {
  * A new or imported state machine.
  */
 abstract class StateMachineBase extends Resource implements IStateMachine {
-
   /**
    * Import a state machine
    */
@@ -444,13 +443,22 @@ export class StateMachine extends StateMachineBase {
 
     this.stateMachineType = props.stateMachineType ?? StateMachineType.STANDARD;
 
+    let graph: StateGraph | undefined = undefined;
+    if (definitionBody instanceof ChainDefinitionBody) {
+      graph = new StateGraph(definitionBody.chainable.startState, 'State Machine definition');
+      graph.timeout = props.timeout;
+      for (const statement of graph.policyStatements) {
+        this.addToRolePolicy(statement);
+      }
+    }
+
     const resource = new CfnStateMachine(this, 'Resource', {
       stateMachineName: this.physicalName,
       stateMachineType: props.stateMachineType ?? undefined,
       roleArn: this.role.roleArn,
       loggingConfiguration: props.logs ? this.buildLoggingConfiguration(props.logs) : undefined,
       tracingConfiguration: props.tracingEnabled ? this.buildTracingConfiguration() : undefined,
-      ...definitionBody.bind(this, this.role, props),
+      ...definitionBody.bind(this, this.role, props, graph),
       definitionSubstitutions: props.definitionSubstitutions,
     });
     resource.applyRemovalPolicy(props.removalPolicy, { default: RemovalPolicy.DESTROY });
@@ -464,6 +472,11 @@ export class StateMachine extends StateMachineBase {
       resourceName: this.physicalName,
       arnFormat: ArnFormat.COLON_RESOURCE_NAME,
     });
+
+    if (definitionBody instanceof ChainDefinitionBody) {
+      graph!.bind(this);
+    }
+
     this.stateMachineRevisionId = resource.attrStateMachineRevisionId;
   }
 
@@ -673,7 +686,7 @@ export abstract class DefinitionBody {
     return new ChainDefinitionBody(chainable);
   }
 
-  public abstract bind(scope: Construct, sfnPrincipal: iam.IPrincipal, sfnProps: StateMachineProps): DefinitionConfig;
+  public abstract bind(scope: Construct, sfnPrincipal: iam.IPrincipal, sfnProps: StateMachineProps, graph?: StateGraph): DefinitionConfig;
 }
 
 export class FileDefinitionBody extends DefinitionBody {
@@ -681,7 +694,7 @@ export class FileDefinitionBody extends DefinitionBody {
     super();
   }
 
-  public bind(scope: Construct, _sfnPrincipal: iam.IPrincipal, _sfnProps: StateMachineProps): DefinitionConfig {
+  public bind(scope: Construct, _sfnPrincipal: iam.IPrincipal, _sfnProps: StateMachineProps, _graph?: StateGraph): DefinitionConfig {
     const asset = new s3_assets.Asset(scope, 'DefinitionBody', {
       path: this.path,
       ...this.options,
@@ -700,7 +713,7 @@ export class StringDefinitionBody extends DefinitionBody {
     super();
   }
 
-  public bind(_scope: Construct, _sfnPrincipal: iam.IPrincipal, _sfnProps: StateMachineProps): DefinitionConfig {
+  public bind(_scope: Construct, _sfnPrincipal: iam.IPrincipal, _sfnProps: StateMachineProps, _graph?: StateGraph): DefinitionConfig {
     return {
       definitionString: this.body,
     };
@@ -712,13 +725,8 @@ export class ChainDefinitionBody extends DefinitionBody {
     super();
   }
 
-  public bind(scope: Construct, sfnPrincipal: iam.IPrincipal, sfnProps: StateMachineProps): DefinitionConfig {
-    const graph = new StateGraph(this.chainable.startState, 'State Machine definition');
-    graph.timeout = sfnProps.timeout;
-    for (const statement of graph.policyStatements) {
-      sfnPrincipal.addToPrincipalPolicy(statement);
-    }
-    const graphJson = graph.toGraphJson();
+  public bind(scope: Construct, _sfnPrincipal: iam.IPrincipal, sfnProps: StateMachineProps, graph?: StateGraph): DefinitionConfig {
+    const graphJson = graph!.toGraphJson();
     return {
       definitionString: Stack.of(scope).toJsonString({ ...graphJson, Comment: sfnProps.comment }),
     };

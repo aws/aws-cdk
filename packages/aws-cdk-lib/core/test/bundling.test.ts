@@ -312,7 +312,7 @@ describe('bundling', () => {
       signal: null,
     });
 
-    const imagePath = path.join(__dirname, 'fs/fixtures/test1');
+    const imagePath = path.join(__dirname, 'fs', 'fixtures', 'test1');
     DockerImage.fromAsset(imagePath, {
       file: 'my-dockerfile',
     });
@@ -332,7 +332,7 @@ describe('bundling', () => {
       signal: null,
     });
 
-    const imagePath = path.join(__dirname, 'fs/fixtures/test1');
+    const imagePath = path.join(__dirname, 'fs', 'fixtures', 'test1');
     const image = DockerImage.fromAsset(imagePath, {
       file: 'my-dockerfile',
     });

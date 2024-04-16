@@ -1,0 +1,12 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "preTokenGenerationIntegTest/DefaultTest": {
+      "stacks": [
+        "integ-user-pool-pre-token-generation-v2"
+      ],
+      "assertionStack": "preTokenGenerationIntegTest/DefaultTest/DeployAssert",
+      "assertionStackName": "preTokenGenerationIntegTestDefaultTestDeployAssertF6CAA89D"
+    }
+  }
+}

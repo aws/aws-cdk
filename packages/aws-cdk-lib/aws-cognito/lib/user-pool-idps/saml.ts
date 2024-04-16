@@ -22,7 +22,7 @@ export interface UserPoolIdentityProviderSamlProps extends UserPoolIdentityProvi
    *
    * @default - no identifiers used
    */
-  readonly identifiers?: string[]
+  readonly identifiers?: string[];
 
   /**
    * The SAML metadata.
@@ -78,7 +78,7 @@ export class UserPoolIdentityProviderSamlMetadata {
 }
 
 /**
- * Represents a identity provider that integrates with SAML.
+ * Represents an identity provider that integrates with SAML.
  * @resource AWS::Cognito::UserPoolIdentityProvider
  */
 export class UserPoolIdentityProviderSaml extends UserPoolIdentityProviderBase {

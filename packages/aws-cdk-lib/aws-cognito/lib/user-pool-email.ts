@@ -60,7 +60,7 @@ export interface UserPoolSESOptions {
    *
    * @default - no domain
    */
-  readonly sesVerifiedDomain?: string
+  readonly sesVerifiedDomain?: string;
 }
 
 /**

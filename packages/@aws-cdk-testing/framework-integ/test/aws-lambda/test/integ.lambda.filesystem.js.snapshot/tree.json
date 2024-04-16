@@ -4,17 +4,17 @@
     "id": "App",
     "path": "",
     "children": {
-      "aws-cdk-lambda-1": {
-        "id": "aws-cdk-lambda-1",
-        "path": "aws-cdk-lambda-1",
+      "aws-cdk-efs": {
+        "id": "aws-cdk-efs",
+        "path": "aws-cdk-efs",
         "children": {
           "Vpc": {
             "id": "Vpc",
-            "path": "aws-cdk-lambda-1/Vpc",
+            "path": "aws-cdk-efs/Vpc",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "aws-cdk-lambda-1/Vpc/Resource",
+                "path": "aws-cdk-efs/Vpc/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EC2::VPC",
                   "aws:cdk:cloudformation:props": {
@@ -25,7 +25,7 @@
                     "tags": [
                       {
                         "key": "Name",
-                        "value": "aws-cdk-lambda-1/Vpc"
+                        "value": "aws-cdk-efs/Vpc"
                       }
                     ]
                   }
@@ -37,11 +37,11 @@
               },
               "PublicSubnet1": {
                 "id": "PublicSubnet1",
-                "path": "aws-cdk-lambda-1/Vpc/PublicSubnet1",
+                "path": "aws-cdk-efs/Vpc/PublicSubnet1",
                 "children": {
                   "Subnet": {
                     "id": "Subnet",
-                    "path": "aws-cdk-lambda-1/Vpc/PublicSubnet1/Subnet",
+                    "path": "aws-cdk-efs/Vpc/PublicSubnet1/Subnet",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
@@ -66,7 +66,7 @@
                           },
                           {
                             "key": "Name",
-                            "value": "aws-cdk-lambda-1/Vpc/PublicSubnet1"
+                            "value": "aws-cdk-efs/Vpc/PublicSubnet1"
                           }
                         ],
                         "vpcId": {
@@ -81,7 +81,7 @@
                   },
                   "Acl": {
                     "id": "Acl",
-                    "path": "aws-cdk-lambda-1/Vpc/PublicSubnet1/Acl",
+                    "path": "aws-cdk-efs/Vpc/PublicSubnet1/Acl",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
@@ -89,14 +89,14 @@
                   },
                   "RouteTable": {
                     "id": "RouteTable",
-                    "path": "aws-cdk-lambda-1/Vpc/PublicSubnet1/RouteTable",
+                    "path": "aws-cdk-efs/Vpc/PublicSubnet1/RouteTable",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "aws-cdk-lambda-1/Vpc/PublicSubnet1"
+                            "value": "aws-cdk-efs/Vpc/PublicSubnet1"
                           }
                         ],
                         "vpcId": {
@@ -111,7 +111,7 @@
                   },
                   "RouteTableAssociation": {
                     "id": "RouteTableAssociation",
-                    "path": "aws-cdk-lambda-1/Vpc/PublicSubnet1/RouteTableAssociation",
+                    "path": "aws-cdk-efs/Vpc/PublicSubnet1/RouteTableAssociation",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
                       "aws:cdk:cloudformation:props": {
@@ -130,7 +130,7 @@
                   },
                   "DefaultRoute": {
                     "id": "DefaultRoute",
-                    "path": "aws-cdk-lambda-1/Vpc/PublicSubnet1/DefaultRoute",
+                    "path": "aws-cdk-efs/Vpc/PublicSubnet1/DefaultRoute",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
@@ -150,7 +150,7 @@
                   },
                   "EIP": {
                     "id": "EIP",
-                    "path": "aws-cdk-lambda-1/Vpc/PublicSubnet1/EIP",
+                    "path": "aws-cdk-efs/Vpc/PublicSubnet1/EIP",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::EIP",
                       "aws:cdk:cloudformation:props": {
@@ -158,7 +158,7 @@
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "aws-cdk-lambda-1/Vpc/PublicSubnet1"
+                            "value": "aws-cdk-efs/Vpc/PublicSubnet1"
                           }
                         ]
                       }
@@ -170,7 +170,7 @@
                   },
                   "NATGateway": {
                     "id": "NATGateway",
-                    "path": "aws-cdk-lambda-1/Vpc/PublicSubnet1/NATGateway",
+                    "path": "aws-cdk-efs/Vpc/PublicSubnet1/NATGateway",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::NatGateway",
                       "aws:cdk:cloudformation:props": {
@@ -186,7 +186,7 @@
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "aws-cdk-lambda-1/Vpc/PublicSubnet1"
+                            "value": "aws-cdk-efs/Vpc/PublicSubnet1"
                           }
                         ]
                       }
@@ -204,11 +204,11 @@
               },
               "PublicSubnet2": {
                 "id": "PublicSubnet2",
-                "path": "aws-cdk-lambda-1/Vpc/PublicSubnet2",
+                "path": "aws-cdk-efs/Vpc/PublicSubnet2",
                 "children": {
                   "Subnet": {
                     "id": "Subnet",
-                    "path": "aws-cdk-lambda-1/Vpc/PublicSubnet2/Subnet",
+                    "path": "aws-cdk-efs/Vpc/PublicSubnet2/Subnet",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
@@ -233,7 +233,7 @@
                           },
                           {
                             "key": "Name",
-                            "value": "aws-cdk-lambda-1/Vpc/PublicSubnet2"
+                            "value": "aws-cdk-efs/Vpc/PublicSubnet2"
                           }
                         ],
                         "vpcId": {
@@ -248,7 +248,7 @@
                   },
                   "Acl": {
                     "id": "Acl",
-                    "path": "aws-cdk-lambda-1/Vpc/PublicSubnet2/Acl",
+                    "path": "aws-cdk-efs/Vpc/PublicSubnet2/Acl",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
@@ -256,14 +256,14 @@
                   },
                   "RouteTable": {
                     "id": "RouteTable",
-                    "path": "aws-cdk-lambda-1/Vpc/PublicSubnet2/RouteTable",
+                    "path": "aws-cdk-efs/Vpc/PublicSubnet2/RouteTable",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "aws-cdk-lambda-1/Vpc/PublicSubnet2"
+                            "value": "aws-cdk-efs/Vpc/PublicSubnet2"
                           }
                         ],
                         "vpcId": {
@@ -278,7 +278,7 @@
                   },
                   "RouteTableAssociation": {
                     "id": "RouteTableAssociation",
-                    "path": "aws-cdk-lambda-1/Vpc/PublicSubnet2/RouteTableAssociation",
+                    "path": "aws-cdk-efs/Vpc/PublicSubnet2/RouteTableAssociation",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
                       "aws:cdk:cloudformation:props": {
@@ -297,7 +297,7 @@
                   },
                   "DefaultRoute": {
                     "id": "DefaultRoute",
-                    "path": "aws-cdk-lambda-1/Vpc/PublicSubnet2/DefaultRoute",
+                    "path": "aws-cdk-efs/Vpc/PublicSubnet2/DefaultRoute",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
@@ -323,11 +323,11 @@
               },
               "PrivateSubnet1": {
                 "id": "PrivateSubnet1",
-                "path": "aws-cdk-lambda-1/Vpc/PrivateSubnet1",
+                "path": "aws-cdk-efs/Vpc/PrivateSubnet1",
                 "children": {
                   "Subnet": {
                     "id": "Subnet",
-                    "path": "aws-cdk-lambda-1/Vpc/PrivateSubnet1/Subnet",
+                    "path": "aws-cdk-efs/Vpc/PrivateSubnet1/Subnet",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
@@ -352,7 +352,7 @@
                           },
                           {
                             "key": "Name",
-                            "value": "aws-cdk-lambda-1/Vpc/PrivateSubnet1"
+                            "value": "aws-cdk-efs/Vpc/PrivateSubnet1"
                           }
                         ],
                         "vpcId": {
@@ -367,7 +367,7 @@
                   },
                   "Acl": {
                     "id": "Acl",
-                    "path": "aws-cdk-lambda-1/Vpc/PrivateSubnet1/Acl",
+                    "path": "aws-cdk-efs/Vpc/PrivateSubnet1/Acl",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
@@ -375,14 +375,14 @@
                   },
                   "RouteTable": {
                     "id": "RouteTable",
-                    "path": "aws-cdk-lambda-1/Vpc/PrivateSubnet1/RouteTable",
+                    "path": "aws-cdk-efs/Vpc/PrivateSubnet1/RouteTable",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "aws-cdk-lambda-1/Vpc/PrivateSubnet1"
+                            "value": "aws-cdk-efs/Vpc/PrivateSubnet1"
                           }
                         ],
                         "vpcId": {
@@ -397,7 +397,7 @@
                   },
                   "RouteTableAssociation": {
                     "id": "RouteTableAssociation",
-                    "path": "aws-cdk-lambda-1/Vpc/PrivateSubnet1/RouteTableAssociation",
+                    "path": "aws-cdk-efs/Vpc/PrivateSubnet1/RouteTableAssociation",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
                       "aws:cdk:cloudformation:props": {
@@ -416,7 +416,7 @@
                   },
                   "DefaultRoute": {
                     "id": "DefaultRoute",
-                    "path": "aws-cdk-lambda-1/Vpc/PrivateSubnet1/DefaultRoute",
+                    "path": "aws-cdk-efs/Vpc/PrivateSubnet1/DefaultRoute",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
@@ -442,11 +442,11 @@
               },
               "PrivateSubnet2": {
                 "id": "PrivateSubnet2",
-                "path": "aws-cdk-lambda-1/Vpc/PrivateSubnet2",
+                "path": "aws-cdk-efs/Vpc/PrivateSubnet2",
                 "children": {
                   "Subnet": {
                     "id": "Subnet",
-                    "path": "aws-cdk-lambda-1/Vpc/PrivateSubnet2/Subnet",
+                    "path": "aws-cdk-efs/Vpc/PrivateSubnet2/Subnet",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
@@ -471,7 +471,7 @@
                           },
                           {
                             "key": "Name",
-                            "value": "aws-cdk-lambda-1/Vpc/PrivateSubnet2"
+                            "value": "aws-cdk-efs/Vpc/PrivateSubnet2"
                           }
                         ],
                         "vpcId": {
@@ -486,7 +486,7 @@
                   },
                   "Acl": {
                     "id": "Acl",
-                    "path": "aws-cdk-lambda-1/Vpc/PrivateSubnet2/Acl",
+                    "path": "aws-cdk-efs/Vpc/PrivateSubnet2/Acl",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
@@ -494,14 +494,14 @@
                   },
                   "RouteTable": {
                     "id": "RouteTable",
-                    "path": "aws-cdk-lambda-1/Vpc/PrivateSubnet2/RouteTable",
+                    "path": "aws-cdk-efs/Vpc/PrivateSubnet2/RouteTable",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "aws-cdk-lambda-1/Vpc/PrivateSubnet2"
+                            "value": "aws-cdk-efs/Vpc/PrivateSubnet2"
                           }
                         ],
                         "vpcId": {
@@ -516,7 +516,7 @@
                   },
                   "RouteTableAssociation": {
                     "id": "RouteTableAssociation",
-                    "path": "aws-cdk-lambda-1/Vpc/PrivateSubnet2/RouteTableAssociation",
+                    "path": "aws-cdk-efs/Vpc/PrivateSubnet2/RouteTableAssociation",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
                       "aws:cdk:cloudformation:props": {
@@ -535,7 +535,7 @@
                   },
                   "DefaultRoute": {
                     "id": "DefaultRoute",
-                    "path": "aws-cdk-lambda-1/Vpc/PrivateSubnet2/DefaultRoute",
+                    "path": "aws-cdk-efs/Vpc/PrivateSubnet2/DefaultRoute",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
@@ -561,14 +561,14 @@
               },
               "IGW": {
                 "id": "IGW",
-                "path": "aws-cdk-lambda-1/Vpc/IGW",
+                "path": "aws-cdk-efs/Vpc/IGW",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EC2::InternetGateway",
                   "aws:cdk:cloudformation:props": {
                     "tags": [
                       {
                         "key": "Name",
-                        "value": "aws-cdk-lambda-1/Vpc"
+                        "value": "aws-cdk-efs/Vpc"
                       }
                     ]
                   }
@@ -580,7 +580,7 @@
               },
               "VPCGW": {
                 "id": "VPCGW",
-                "path": "aws-cdk-lambda-1/Vpc/VPCGW",
+                "path": "aws-cdk-efs/Vpc/VPCGW",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EC2::VPCGatewayAttachment",
                   "aws:cdk:cloudformation:props": {
@@ -596,6 +596,24 @@
                   "fqn": "aws-cdk-lib.aws_ec2.CfnVPCGatewayAttachment",
                   "version": "0.0.0"
                 }
+              },
+              "RestrictDefaultSecurityGroupCustomResource": {
+                "id": "RestrictDefaultSecurityGroupCustomResource",
+                "path": "aws-cdk-efs/Vpc/RestrictDefaultSecurityGroupCustomResource",
+                "children": {
+                  "Default": {
+                    "id": "Default",
+                    "path": "aws-cdk-efs/Vpc/RestrictDefaultSecurityGroupCustomResource/Default",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnResource",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CustomResource",
+                  "version": "0.0.0"
+                }
               }
             },
             "constructInfo": {
@@ -603,13 +621,47 @@
               "version": "0.0.0"
             }
           },
+          "Custom::VpcRestrictDefaultSGCustomResourceProvider": {
+            "id": "Custom::VpcRestrictDefaultSGCustomResourceProvider",
+            "path": "aws-cdk-efs/Custom::VpcRestrictDefaultSGCustomResourceProvider",
+            "children": {
+              "Staging": {
+                "id": "Staging",
+                "path": "aws-cdk-efs/Custom::VpcRestrictDefaultSGCustomResourceProvider/Staging",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.AssetStaging",
+                  "version": "0.0.0"
+                }
+              },
+              "Role": {
+                "id": "Role",
+                "path": "aws-cdk-efs/Custom::VpcRestrictDefaultSGCustomResourceProvider/Role",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnResource",
+                  "version": "0.0.0"
+                }
+              },
+              "Handler": {
+                "id": "Handler",
+                "path": "aws-cdk-efs/Custom::VpcRestrictDefaultSGCustomResourceProvider/Handler",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnResource",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CustomResourceProviderBase",
+              "version": "0.0.0"
+            }
+          },
           "Efs": {
             "id": "Efs",
-            "path": "aws-cdk-lambda-1/Efs",
+            "path": "aws-cdk-efs/Efs",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "aws-cdk-lambda-1/Efs/Resource",
+                "path": "aws-cdk-efs/Efs/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EFS::FileSystem",
                   "aws:cdk:cloudformation:props": {
@@ -637,7 +689,7 @@
                     "fileSystemTags": [
                       {
                         "key": "Name",
-                        "value": "aws-cdk-lambda-1/Efs"
+                        "value": "aws-cdk-efs/Efs"
                       }
                     ]
                   }
@@ -649,15 +701,15 @@
               },
               "EfsSecurityGroup": {
                 "id": "EfsSecurityGroup",
-                "path": "aws-cdk-lambda-1/Efs/EfsSecurityGroup",
+                "path": "aws-cdk-efs/Efs/EfsSecurityGroup",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "aws-cdk-lambda-1/Efs/EfsSecurityGroup/Resource",
+                    "path": "aws-cdk-efs/Efs/EfsSecurityGroup/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
                       "aws:cdk:cloudformation:props": {
-                        "groupDescription": "aws-cdk-lambda-1/Efs/EfsSecurityGroup",
+                        "groupDescription": "aws-cdk-efs/Efs/EfsSecurityGroup",
                         "securityGroupEgress": [
                           {
                             "cidrIp": "0.0.0.0/0",
@@ -668,7 +720,926 @@
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "aws-cdk-lambda-1/Efs"
+                            "value": "aws-cdk-efs/Efs"
+                          }
+                        ],
+                        "vpcId": {
+                          "Ref": "Vpc8378EB38"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnSecurityGroup",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_ec2.SecurityGroup",
+                  "version": "0.0.0"
+                }
+              },
+              "EfsMountTarget-PrivateSubnet1": {
+                "id": "EfsMountTarget-PrivateSubnet1",
+                "path": "aws-cdk-efs/Efs/EfsMountTarget-PrivateSubnet1",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::EFS::MountTarget",
+                  "aws:cdk:cloudformation:props": {
+                    "fileSystemId": {
+                      "Ref": "Efs9E8BF36B"
+                    },
+                    "securityGroups": [
+                      {
+                        "Fn::GetAtt": [
+                          "EfsEfsSecurityGroup6F40EA3B",
+                          "GroupId"
+                        ]
+                      }
+                    ],
+                    "subnetId": {
+                      "Ref": "VpcPrivateSubnet1Subnet536B997A"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_efs.CfnMountTarget",
+                  "version": "0.0.0"
+                }
+              },
+              "EfsMountTarget-PrivateSubnet2": {
+                "id": "EfsMountTarget-PrivateSubnet2",
+                "path": "aws-cdk-efs/Efs/EfsMountTarget-PrivateSubnet2",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::EFS::MountTarget",
+                  "aws:cdk:cloudformation:props": {
+                    "fileSystemId": {
+                      "Ref": "Efs9E8BF36B"
+                    },
+                    "securityGroups": [
+                      {
+                        "Fn::GetAtt": [
+                          "EfsEfsSecurityGroup6F40EA3B",
+                          "GroupId"
+                        ]
+                      }
+                    ],
+                    "subnetId": {
+                      "Ref": "VpcPrivateSubnet2Subnet3788AAA1"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_efs.CfnMountTarget",
+                  "version": "0.0.0"
+                }
+              },
+              "AccessPoint": {
+                "id": "AccessPoint",
+                "path": "aws-cdk-efs/Efs/AccessPoint",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-cdk-efs/Efs/AccessPoint/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EFS::AccessPoint",
+                      "aws:cdk:cloudformation:props": {
+                        "fileSystemId": {
+                          "Ref": "Efs9E8BF36B"
+                        },
+                        "posixUser": {
+                          "uid": "1001",
+                          "gid": "1001"
+                        },
+                        "rootDirectory": {
+                          "creationInfo": {
+                            "ownerGid": "1001",
+                            "ownerUid": "1001",
+                            "permissions": "750"
+                          },
+                          "path": "/export/lambda"
+                        },
+                        "accessPointTags": [
+                          {
+                            "key": "Name",
+                            "value": "aws-cdk-efs/Efs/AccessPoint"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_efs.CfnAccessPoint",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_efs.AccessPoint",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_efs.FileSystem",
+              "version": "0.0.0"
+            }
+          },
+          "Exports": {
+            "id": "Exports",
+            "path": "aws-cdk-efs/Exports",
+            "children": {
+              "Output{\"Ref\":\"EfsAccessPointE419FED9\"}": {
+                "id": "Output{\"Ref\":\"EfsAccessPointE419FED9\"}",
+                "path": "aws-cdk-efs/Exports/Output{\"Ref\":\"EfsAccessPointE419FED9\"}",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnOutput",
+                  "version": "0.0.0"
+                }
+              },
+              "Output{\"Ref\":\"Efs9E8BF36B\"}": {
+                "id": "Output{\"Ref\":\"Efs9E8BF36B\"}",
+                "path": "aws-cdk-efs/Exports/Output{\"Ref\":\"Efs9E8BF36B\"}",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnOutput",
+                  "version": "0.0.0"
+                }
+              },
+              "Output{\"Ref\":\"Vpc8378EB38\"}": {
+                "id": "Output{\"Ref\":\"Vpc8378EB38\"}",
+                "path": "aws-cdk-efs/Exports/Output{\"Ref\":\"Vpc8378EB38\"}",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnOutput",
+                  "version": "0.0.0"
+                }
+              },
+              "Output{\"Fn::GetAtt\":[\"EfsEfsSecurityGroup6F40EA3B\",\"GroupId\"]}": {
+                "id": "Output{\"Fn::GetAtt\":[\"EfsEfsSecurityGroup6F40EA3B\",\"GroupId\"]}",
+                "path": "aws-cdk-efs/Exports/Output{\"Fn::GetAtt\":[\"EfsEfsSecurityGroup6F40EA3B\",\"GroupId\"]}",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnOutput",
+                  "version": "0.0.0"
+                }
+              },
+              "Output{\"Ref\":\"VpcPrivateSubnet1Subnet536B997A\"}": {
+                "id": "Output{\"Ref\":\"VpcPrivateSubnet1Subnet536B997A\"}",
+                "path": "aws-cdk-efs/Exports/Output{\"Ref\":\"VpcPrivateSubnet1Subnet536B997A\"}",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnOutput",
+                  "version": "0.0.0"
+                }
+              },
+              "Output{\"Ref\":\"VpcPrivateSubnet2Subnet3788AAA1\"}": {
+                "id": "Output{\"Ref\":\"VpcPrivateSubnet2Subnet3788AAA1\"}",
+                "path": "aws-cdk-efs/Exports/Output{\"Ref\":\"VpcPrivateSubnet2Subnet3788AAA1\"}",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnOutput",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "aws-cdk-efs/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "aws-cdk-efs/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnRule",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "aws-cdk-lambda": {
+        "id": "aws-cdk-lambda",
+        "path": "aws-cdk-lambda",
+        "children": {
+          "Vpc": {
+            "id": "Vpc",
+            "path": "aws-cdk-lambda/Vpc",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-lambda/Vpc/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::EC2::VPC",
+                  "aws:cdk:cloudformation:props": {
+                    "cidrBlock": "10.0.0.0/16",
+                    "enableDnsHostnames": true,
+                    "enableDnsSupport": true,
+                    "instanceTenancy": "default",
+                    "tags": [
+                      {
+                        "key": "Name",
+                        "value": "aws-cdk-lambda/Vpc"
+                      }
+                    ]
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_ec2.CfnVPC",
+                  "version": "0.0.0"
+                }
+              },
+              "PublicSubnet1": {
+                "id": "PublicSubnet1",
+                "path": "aws-cdk-lambda/Vpc/PublicSubnet1",
+                "children": {
+                  "Subnet": {
+                    "id": "Subnet",
+                    "path": "aws-cdk-lambda/Vpc/PublicSubnet1/Subnet",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
+                      "aws:cdk:cloudformation:props": {
+                        "availabilityZone": {
+                          "Fn::Select": [
+                            0,
+                            {
+                              "Fn::GetAZs": ""
+                            }
+                          ]
+                        },
+                        "cidrBlock": "10.0.0.0/18",
+                        "mapPublicIpOnLaunch": true,
+                        "tags": [
+                          {
+                            "key": "aws-cdk:subnet-name",
+                            "value": "Public"
+                          },
+                          {
+                            "key": "aws-cdk:subnet-type",
+                            "value": "Public"
+                          },
+                          {
+                            "key": "Name",
+                            "value": "aws-cdk-lambda/Vpc/PublicSubnet1"
+                          }
+                        ],
+                        "vpcId": {
+                          "Ref": "Vpc8378EB38"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnSubnet",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Acl": {
+                    "id": "Acl",
+                    "path": "aws-cdk-lambda/Vpc/PublicSubnet1/Acl",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "RouteTable": {
+                    "id": "RouteTable",
+                    "path": "aws-cdk-lambda/Vpc/PublicSubnet1/RouteTable",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
+                      "aws:cdk:cloudformation:props": {
+                        "tags": [
+                          {
+                            "key": "Name",
+                            "value": "aws-cdk-lambda/Vpc/PublicSubnet1"
+                          }
+                        ],
+                        "vpcId": {
+                          "Ref": "Vpc8378EB38"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnRouteTable",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "RouteTableAssociation": {
+                    "id": "RouteTableAssociation",
+                    "path": "aws-cdk-lambda/Vpc/PublicSubnet1/RouteTableAssociation",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
+                      "aws:cdk:cloudformation:props": {
+                        "routeTableId": {
+                          "Ref": "VpcPublicSubnet1RouteTable6C95E38E"
+                        },
+                        "subnetId": {
+                          "Ref": "VpcPublicSubnet1Subnet5C2D37C4"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnSubnetRouteTableAssociation",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "DefaultRoute": {
+                    "id": "DefaultRoute",
+                    "path": "aws-cdk-lambda/Vpc/PublicSubnet1/DefaultRoute",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::Route",
+                      "aws:cdk:cloudformation:props": {
+                        "destinationCidrBlock": "0.0.0.0/0",
+                        "gatewayId": {
+                          "Ref": "VpcIGWD7BA715C"
+                        },
+                        "routeTableId": {
+                          "Ref": "VpcPublicSubnet1RouteTable6C95E38E"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnRoute",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "EIP": {
+                    "id": "EIP",
+                    "path": "aws-cdk-lambda/Vpc/PublicSubnet1/EIP",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::EIP",
+                      "aws:cdk:cloudformation:props": {
+                        "domain": "vpc",
+                        "tags": [
+                          {
+                            "key": "Name",
+                            "value": "aws-cdk-lambda/Vpc/PublicSubnet1"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnEIP",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "NATGateway": {
+                    "id": "NATGateway",
+                    "path": "aws-cdk-lambda/Vpc/PublicSubnet1/NATGateway",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::NatGateway",
+                      "aws:cdk:cloudformation:props": {
+                        "allocationId": {
+                          "Fn::GetAtt": [
+                            "VpcPublicSubnet1EIPD7E02669",
+                            "AllocationId"
+                          ]
+                        },
+                        "subnetId": {
+                          "Ref": "VpcPublicSubnet1Subnet5C2D37C4"
+                        },
+                        "tags": [
+                          {
+                            "key": "Name",
+                            "value": "aws-cdk-lambda/Vpc/PublicSubnet1"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnNatGateway",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_ec2.PublicSubnet",
+                  "version": "0.0.0"
+                }
+              },
+              "PublicSubnet2": {
+                "id": "PublicSubnet2",
+                "path": "aws-cdk-lambda/Vpc/PublicSubnet2",
+                "children": {
+                  "Subnet": {
+                    "id": "Subnet",
+                    "path": "aws-cdk-lambda/Vpc/PublicSubnet2/Subnet",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
+                      "aws:cdk:cloudformation:props": {
+                        "availabilityZone": {
+                          "Fn::Select": [
+                            1,
+                            {
+                              "Fn::GetAZs": ""
+                            }
+                          ]
+                        },
+                        "cidrBlock": "10.0.64.0/18",
+                        "mapPublicIpOnLaunch": true,
+                        "tags": [
+                          {
+                            "key": "aws-cdk:subnet-name",
+                            "value": "Public"
+                          },
+                          {
+                            "key": "aws-cdk:subnet-type",
+                            "value": "Public"
+                          },
+                          {
+                            "key": "Name",
+                            "value": "aws-cdk-lambda/Vpc/PublicSubnet2"
+                          }
+                        ],
+                        "vpcId": {
+                          "Ref": "Vpc8378EB38"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnSubnet",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Acl": {
+                    "id": "Acl",
+                    "path": "aws-cdk-lambda/Vpc/PublicSubnet2/Acl",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "RouteTable": {
+                    "id": "RouteTable",
+                    "path": "aws-cdk-lambda/Vpc/PublicSubnet2/RouteTable",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
+                      "aws:cdk:cloudformation:props": {
+                        "tags": [
+                          {
+                            "key": "Name",
+                            "value": "aws-cdk-lambda/Vpc/PublicSubnet2"
+                          }
+                        ],
+                        "vpcId": {
+                          "Ref": "Vpc8378EB38"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnRouteTable",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "RouteTableAssociation": {
+                    "id": "RouteTableAssociation",
+                    "path": "aws-cdk-lambda/Vpc/PublicSubnet2/RouteTableAssociation",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
+                      "aws:cdk:cloudformation:props": {
+                        "routeTableId": {
+                          "Ref": "VpcPublicSubnet2RouteTable94F7E489"
+                        },
+                        "subnetId": {
+                          "Ref": "VpcPublicSubnet2Subnet691E08A3"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnSubnetRouteTableAssociation",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "DefaultRoute": {
+                    "id": "DefaultRoute",
+                    "path": "aws-cdk-lambda/Vpc/PublicSubnet2/DefaultRoute",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::Route",
+                      "aws:cdk:cloudformation:props": {
+                        "destinationCidrBlock": "0.0.0.0/0",
+                        "gatewayId": {
+                          "Ref": "VpcIGWD7BA715C"
+                        },
+                        "routeTableId": {
+                          "Ref": "VpcPublicSubnet2RouteTable94F7E489"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnRoute",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_ec2.PublicSubnet",
+                  "version": "0.0.0"
+                }
+              },
+              "PrivateSubnet1": {
+                "id": "PrivateSubnet1",
+                "path": "aws-cdk-lambda/Vpc/PrivateSubnet1",
+                "children": {
+                  "Subnet": {
+                    "id": "Subnet",
+                    "path": "aws-cdk-lambda/Vpc/PrivateSubnet1/Subnet",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
+                      "aws:cdk:cloudformation:props": {
+                        "availabilityZone": {
+                          "Fn::Select": [
+                            0,
+                            {
+                              "Fn::GetAZs": ""
+                            }
+                          ]
+                        },
+                        "cidrBlock": "10.0.128.0/18",
+                        "mapPublicIpOnLaunch": false,
+                        "tags": [
+                          {
+                            "key": "aws-cdk:subnet-name",
+                            "value": "Private"
+                          },
+                          {
+                            "key": "aws-cdk:subnet-type",
+                            "value": "Private"
+                          },
+                          {
+                            "key": "Name",
+                            "value": "aws-cdk-lambda/Vpc/PrivateSubnet1"
+                          }
+                        ],
+                        "vpcId": {
+                          "Ref": "Vpc8378EB38"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnSubnet",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Acl": {
+                    "id": "Acl",
+                    "path": "aws-cdk-lambda/Vpc/PrivateSubnet1/Acl",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "RouteTable": {
+                    "id": "RouteTable",
+                    "path": "aws-cdk-lambda/Vpc/PrivateSubnet1/RouteTable",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
+                      "aws:cdk:cloudformation:props": {
+                        "tags": [
+                          {
+                            "key": "Name",
+                            "value": "aws-cdk-lambda/Vpc/PrivateSubnet1"
+                          }
+                        ],
+                        "vpcId": {
+                          "Ref": "Vpc8378EB38"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnRouteTable",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "RouteTableAssociation": {
+                    "id": "RouteTableAssociation",
+                    "path": "aws-cdk-lambda/Vpc/PrivateSubnet1/RouteTableAssociation",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
+                      "aws:cdk:cloudformation:props": {
+                        "routeTableId": {
+                          "Ref": "VpcPrivateSubnet1RouteTableB2C5B500"
+                        },
+                        "subnetId": {
+                          "Ref": "VpcPrivateSubnet1Subnet536B997A"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnSubnetRouteTableAssociation",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "DefaultRoute": {
+                    "id": "DefaultRoute",
+                    "path": "aws-cdk-lambda/Vpc/PrivateSubnet1/DefaultRoute",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::Route",
+                      "aws:cdk:cloudformation:props": {
+                        "destinationCidrBlock": "0.0.0.0/0",
+                        "natGatewayId": {
+                          "Ref": "VpcPublicSubnet1NATGateway4D7517AA"
+                        },
+                        "routeTableId": {
+                          "Ref": "VpcPrivateSubnet1RouteTableB2C5B500"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnRoute",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_ec2.PrivateSubnet",
+                  "version": "0.0.0"
+                }
+              },
+              "PrivateSubnet2": {
+                "id": "PrivateSubnet2",
+                "path": "aws-cdk-lambda/Vpc/PrivateSubnet2",
+                "children": {
+                  "Subnet": {
+                    "id": "Subnet",
+                    "path": "aws-cdk-lambda/Vpc/PrivateSubnet2/Subnet",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
+                      "aws:cdk:cloudformation:props": {
+                        "availabilityZone": {
+                          "Fn::Select": [
+                            1,
+                            {
+                              "Fn::GetAZs": ""
+                            }
+                          ]
+                        },
+                        "cidrBlock": "10.0.192.0/18",
+                        "mapPublicIpOnLaunch": false,
+                        "tags": [
+                          {
+                            "key": "aws-cdk:subnet-name",
+                            "value": "Private"
+                          },
+                          {
+                            "key": "aws-cdk:subnet-type",
+                            "value": "Private"
+                          },
+                          {
+                            "key": "Name",
+                            "value": "aws-cdk-lambda/Vpc/PrivateSubnet2"
+                          }
+                        ],
+                        "vpcId": {
+                          "Ref": "Vpc8378EB38"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnSubnet",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Acl": {
+                    "id": "Acl",
+                    "path": "aws-cdk-lambda/Vpc/PrivateSubnet2/Acl",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "RouteTable": {
+                    "id": "RouteTable",
+                    "path": "aws-cdk-lambda/Vpc/PrivateSubnet2/RouteTable",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
+                      "aws:cdk:cloudformation:props": {
+                        "tags": [
+                          {
+                            "key": "Name",
+                            "value": "aws-cdk-lambda/Vpc/PrivateSubnet2"
+                          }
+                        ],
+                        "vpcId": {
+                          "Ref": "Vpc8378EB38"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnRouteTable",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "RouteTableAssociation": {
+                    "id": "RouteTableAssociation",
+                    "path": "aws-cdk-lambda/Vpc/PrivateSubnet2/RouteTableAssociation",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
+                      "aws:cdk:cloudformation:props": {
+                        "routeTableId": {
+                          "Ref": "VpcPrivateSubnet2RouteTableA678073B"
+                        },
+                        "subnetId": {
+                          "Ref": "VpcPrivateSubnet2Subnet3788AAA1"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnSubnetRouteTableAssociation",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "DefaultRoute": {
+                    "id": "DefaultRoute",
+                    "path": "aws-cdk-lambda/Vpc/PrivateSubnet2/DefaultRoute",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::Route",
+                      "aws:cdk:cloudformation:props": {
+                        "destinationCidrBlock": "0.0.0.0/0",
+                        "natGatewayId": {
+                          "Ref": "VpcPublicSubnet1NATGateway4D7517AA"
+                        },
+                        "routeTableId": {
+                          "Ref": "VpcPrivateSubnet2RouteTableA678073B"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnRoute",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_ec2.PrivateSubnet",
+                  "version": "0.0.0"
+                }
+              },
+              "IGW": {
+                "id": "IGW",
+                "path": "aws-cdk-lambda/Vpc/IGW",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::EC2::InternetGateway",
+                  "aws:cdk:cloudformation:props": {
+                    "tags": [
+                      {
+                        "key": "Name",
+                        "value": "aws-cdk-lambda/Vpc"
+                      }
+                    ]
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_ec2.CfnInternetGateway",
+                  "version": "0.0.0"
+                }
+              },
+              "VPCGW": {
+                "id": "VPCGW",
+                "path": "aws-cdk-lambda/Vpc/VPCGW",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::EC2::VPCGatewayAttachment",
+                  "aws:cdk:cloudformation:props": {
+                    "internetGatewayId": {
+                      "Ref": "VpcIGWD7BA715C"
+                    },
+                    "vpcId": {
+                      "Ref": "Vpc8378EB38"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_ec2.CfnVPCGatewayAttachment",
+                  "version": "0.0.0"
+                }
+              },
+              "RestrictDefaultSecurityGroupCustomResource": {
+                "id": "RestrictDefaultSecurityGroupCustomResource",
+                "path": "aws-cdk-lambda/Vpc/RestrictDefaultSecurityGroupCustomResource",
+                "children": {
+                  "Default": {
+                    "id": "Default",
+                    "path": "aws-cdk-lambda/Vpc/RestrictDefaultSecurityGroupCustomResource/Default",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnResource",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CustomResource",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_ec2.Vpc",
+              "version": "0.0.0"
+            }
+          },
+          "Custom::VpcRestrictDefaultSGCustomResourceProvider": {
+            "id": "Custom::VpcRestrictDefaultSGCustomResourceProvider",
+            "path": "aws-cdk-lambda/Custom::VpcRestrictDefaultSGCustomResourceProvider",
+            "children": {
+              "Staging": {
+                "id": "Staging",
+                "path": "aws-cdk-lambda/Custom::VpcRestrictDefaultSGCustomResourceProvider/Staging",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.AssetStaging",
+                  "version": "0.0.0"
+                }
+              },
+              "Role": {
+                "id": "Role",
+                "path": "aws-cdk-lambda/Custom::VpcRestrictDefaultSGCustomResourceProvider/Role",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnResource",
+                  "version": "0.0.0"
+                }
+              },
+              "Handler": {
+                "id": "Handler",
+                "path": "aws-cdk-lambda/Custom::VpcRestrictDefaultSGCustomResourceProvider/Handler",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnResource",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CustomResourceProviderBase",
+              "version": "0.0.0"
+            }
+          },
+          "Efs": {
+            "id": "Efs",
+            "path": "aws-cdk-lambda/Efs",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-lambda/Efs/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::EFS::FileSystem",
+                  "aws:cdk:cloudformation:props": {
+                    "encrypted": true,
+                    "fileSystemPolicy": {
+                      "Statement": [
+                        {
+                          "Action": [
+                            "elasticfilesystem:ClientRootAccess",
+                            "elasticfilesystem:ClientWrite"
+                          ],
+                          "Condition": {
+                            "Bool": {
+                              "elasticfilesystem:AccessedViaMountTarget": "true"
+                            }
+                          },
+                          "Effect": "Allow",
+                          "Principal": {
+                            "AWS": "*"
+                          }
+                        }
+                      ],
+                      "Version": "2012-10-17"
+                    },
+                    "fileSystemTags": [
+                      {
+                        "key": "Name",
+                        "value": "aws-cdk-lambda/Efs"
+                      }
+                    ]
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_efs.CfnFileSystem",
+                  "version": "0.0.0"
+                }
+              },
+              "EfsSecurityGroup": {
+                "id": "EfsSecurityGroup",
+                "path": "aws-cdk-lambda/Efs/EfsSecurityGroup",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-cdk-lambda/Efs/EfsSecurityGroup/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
+                      "aws:cdk:cloudformation:props": {
+                        "groupDescription": "aws-cdk-lambda/Efs/EfsSecurityGroup",
+                        "securityGroupEgress": [
+                          {
+                            "cidrIp": "0.0.0.0/0",
+                            "description": "Allow all outbound traffic by default",
+                            "ipProtocol": "-1"
+                          }
+                        ],
+                        "tags": [
+                          {
+                            "key": "Name",
+                            "value": "aws-cdk-lambda/Efs"
                           }
                         ],
                         "vpcId": {
@@ -681,13 +1652,13 @@
                       "version": "0.0.0"
                     }
                   },
-                  "from awscdklambda1MyLambdaSecurityGroup86B085EE:2049": {
-                    "id": "from awscdklambda1MyLambdaSecurityGroup86B085EE:2049",
-                    "path": "aws-cdk-lambda-1/Efs/EfsSecurityGroup/from awscdklambda1MyLambdaSecurityGroup86B085EE:2049",
+                  "from awscdklambdaMyLambdaSecurityGroup2F544A54:2049": {
+                    "id": "from awscdklambdaMyLambdaSecurityGroup2F544A54:2049",
+                    "path": "aws-cdk-lambda/Efs/EfsSecurityGroup/from awscdklambdaMyLambdaSecurityGroup2F544A54:2049",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroupIngress",
                       "aws:cdk:cloudformation:props": {
-                        "description": "from awscdklambda1MyLambdaSecurityGroup86B085EE:2049",
+                        "description": "from awscdklambdaMyLambdaSecurityGroup2F544A54:2049",
                         "fromPort": 2049,
                         "groupId": {
                           "Fn::GetAtt": [
@@ -718,7 +1689,7 @@
               },
               "EfsMountTarget-PrivateSubnet1": {
                 "id": "EfsMountTarget-PrivateSubnet1",
-                "path": "aws-cdk-lambda-1/Efs/EfsMountTarget-PrivateSubnet1",
+                "path": "aws-cdk-lambda/Efs/EfsMountTarget-PrivateSubnet1",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EFS::MountTarget",
                   "aws:cdk:cloudformation:props": {
@@ -745,7 +1716,7 @@
               },
               "EfsMountTarget-PrivateSubnet2": {
                 "id": "EfsMountTarget-PrivateSubnet2",
-                "path": "aws-cdk-lambda-1/Efs/EfsMountTarget-PrivateSubnet2",
+                "path": "aws-cdk-lambda/Efs/EfsMountTarget-PrivateSubnet2",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EFS::MountTarget",
                   "aws:cdk:cloudformation:props": {
@@ -772,11 +1743,11 @@
               },
               "AccessPoint": {
                 "id": "AccessPoint",
-                "path": "aws-cdk-lambda-1/Efs/AccessPoint",
+                "path": "aws-cdk-lambda/Efs/AccessPoint",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "aws-cdk-lambda-1/Efs/AccessPoint/Resource",
+                    "path": "aws-cdk-lambda/Efs/AccessPoint/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EFS::AccessPoint",
                       "aws:cdk:cloudformation:props": {
@@ -798,7 +1769,7 @@
                         "accessPointTags": [
                           {
                             "key": "Name",
-                            "value": "aws-cdk-lambda-1/Efs/AccessPoint"
+                            "value": "aws-cdk-lambda/Efs/AccessPoint"
                           }
                         ]
                       }
@@ -822,15 +1793,15 @@
           },
           "MyLambda": {
             "id": "MyLambda",
-            "path": "aws-cdk-lambda-1/MyLambda",
+            "path": "aws-cdk-lambda/MyLambda",
             "children": {
               "ServiceRole": {
                 "id": "ServiceRole",
-                "path": "aws-cdk-lambda-1/MyLambda/ServiceRole",
+                "path": "aws-cdk-lambda/MyLambda/ServiceRole",
                 "children": {
                   "ImportServiceRole": {
                     "id": "ImportServiceRole",
-                    "path": "aws-cdk-lambda-1/MyLambda/ServiceRole/ImportServiceRole",
+                    "path": "aws-cdk-lambda/MyLambda/ServiceRole/ImportServiceRole",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
@@ -838,7 +1809,7 @@
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "aws-cdk-lambda-1/MyLambda/ServiceRole/Resource",
+                    "path": "aws-cdk-lambda/MyLambda/ServiceRole/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                       "aws:cdk:cloudformation:props": {
@@ -889,11 +1860,11 @@
                   },
                   "DefaultPolicy": {
                     "id": "DefaultPolicy",
-                    "path": "aws-cdk-lambda-1/MyLambda/ServiceRole/DefaultPolicy",
+                    "path": "aws-cdk-lambda/MyLambda/ServiceRole/DefaultPolicy",
                     "children": {
                       "Resource": {
                         "id": "Resource",
-                        "path": "aws-cdk-lambda-1/MyLambda/ServiceRole/DefaultPolicy/Resource",
+                        "path": "aws-cdk-lambda/MyLambda/ServiceRole/DefaultPolicy/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
                           "aws:cdk:cloudformation:props": {
@@ -988,15 +1959,15 @@
               },
               "SecurityGroup": {
                 "id": "SecurityGroup",
-                "path": "aws-cdk-lambda-1/MyLambda/SecurityGroup",
+                "path": "aws-cdk-lambda/MyLambda/SecurityGroup",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "aws-cdk-lambda-1/MyLambda/SecurityGroup/Resource",
+                    "path": "aws-cdk-lambda/MyLambda/SecurityGroup/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
                       "aws:cdk:cloudformation:props": {
-                        "groupDescription": "Automatic security group for Lambda Function awscdklambda1MyLambda82056696",
+                        "groupDescription": "Automatic security group for Lambda Function awscdklambdaMyLambda2F74A662",
                         "securityGroupEgress": [
                           {
                             "cidrIp": "0.0.0.0/0",
@@ -1022,12 +1993,12 @@
               },
               "Resource": {
                 "id": "Resource",
-                "path": "aws-cdk-lambda-1/MyLambda/Resource",
+                "path": "aws-cdk-lambda/MyLambda/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
                   "aws:cdk:cloudformation:props": {
                     "code": {
-                      "zipFile": "\nimport json\nimport os\nimport string\nimport random\nimport datetime\n\nMSG_FILE_PATH = '/mnt/msg/content'\n\ndef randomString(stringLength=10):\n  letters = string.ascii_lowercase\n  return ''.join(random.choice(letters) for i in range(stringLength))\n\ndef lambda_handler(event, context):\n  with open(MSG_FILE_PATH, 'a') as f:\n      f.write(f\"{datetime.datetime.utcnow():%Y-%m-%d-%H:%M:%S} \" + randomString(5) + ' ')\n\n  file = open(MSG_FILE_PATH, \"r\")\n  file_content = file.read()\n  file.close()\n\n  return {\n    'statusCode': 200,\n    'body': str(file_content)\n  }\n"
+                      "zipFile": "\n    import json\n    import os\n    import string\n    import random\n    import datetime\n\n    MSG_FILE_PATH = '/mnt/msg/content'\n\n    def randomString(stringLength=10):\n      letters = string.ascii_lowercase\n      return ''.join(random.choice(letters) for i in range(stringLength))\n\n    def lambda_handler(event, context):\n      with open(MSG_FILE_PATH, 'a') as f:\n          f.write(f\"{datetime.datetime.utcnow():%Y-%m-%d-%H:%M:%S} \" + randomString(5) + ' ')\n\n      file = open(MSG_FILE_PATH, \"r\")\n      file_content = file.read()\n      file.close()\n\n      return {\n        'statusCode': 200,\n        'body': str(file_content)\n      }\n    "
                     },
                     "fileSystemConfigs": [
                       {
@@ -1064,7 +2035,7 @@
                         "Arn"
                       ]
                     },
-                    "runtime": "python3.7",
+                    "runtime": "python3.12",
                     "vpcConfig": {
                       "subnetIds": [
                         {
@@ -1098,15 +2069,15 @@
           },
           "securityGroup": {
             "id": "securityGroup",
-            "path": "aws-cdk-lambda-1/securityGroup",
+            "path": "aws-cdk-lambda/securityGroup",
             "children": {
-              "from awscdklambda1MyLambda2SecurityGroup7492F70D:2049": {
-                "id": "from awscdklambda1MyLambda2SecurityGroup7492F70D:2049",
-                "path": "aws-cdk-lambda-1/securityGroup/from awscdklambda1MyLambda2SecurityGroup7492F70D:2049",
+              "from awscdklambdaMyLambda2SecurityGroup05BB088F:2049": {
+                "id": "from awscdklambdaMyLambda2SecurityGroup05BB088F:2049",
+                "path": "aws-cdk-lambda/securityGroup/from awscdklambdaMyLambda2SecurityGroup05BB088F:2049",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroupIngress",
                   "aws:cdk:cloudformation:props": {
-                    "description": "from awscdklambda1MyLambda2SecurityGroup7492F70D:2049",
+                    "description": "from awscdklambdaMyLambda2SecurityGroup05BB088F:2049",
                     "fromPort": 2049,
                     "groupId": {
                       "Fn::GetAtt": [
@@ -1137,7 +2108,7 @@
           },
           "fileSystemImported": {
             "id": "fileSystemImported",
-            "path": "aws-cdk-lambda-1/fileSystemImported",
+            "path": "aws-cdk-lambda/fileSystemImported",
             "constructInfo": {
               "fqn": "aws-cdk-lib.Resource",
               "version": "0.0.0"
@@ -1145,7 +2116,7 @@
           },
           "AccessPointImported": {
             "id": "AccessPointImported",
-            "path": "aws-cdk-lambda-1/AccessPointImported",
+            "path": "aws-cdk-lambda/AccessPointImported",
             "constructInfo": {
               "fqn": "aws-cdk-lib.Resource",
               "version": "0.0.0"
@@ -1153,15 +2124,15 @@
           },
           "MyLambda2": {
             "id": "MyLambda2",
-            "path": "aws-cdk-lambda-1/MyLambda2",
+            "path": "aws-cdk-lambda/MyLambda2",
             "children": {
               "ServiceRole": {
                 "id": "ServiceRole",
-                "path": "aws-cdk-lambda-1/MyLambda2/ServiceRole",
+                "path": "aws-cdk-lambda/MyLambda2/ServiceRole",
                 "children": {
                   "ImportServiceRole": {
                     "id": "ImportServiceRole",
-                    "path": "aws-cdk-lambda-1/MyLambda2/ServiceRole/ImportServiceRole",
+                    "path": "aws-cdk-lambda/MyLambda2/ServiceRole/ImportServiceRole",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
@@ -1169,7 +2140,7 @@
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "aws-cdk-lambda-1/MyLambda2/ServiceRole/Resource",
+                    "path": "aws-cdk-lambda/MyLambda2/ServiceRole/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                       "aws:cdk:cloudformation:props": {
@@ -1220,11 +2191,11 @@
                   },
                   "DefaultPolicy": {
                     "id": "DefaultPolicy",
-                    "path": "aws-cdk-lambda-1/MyLambda2/ServiceRole/DefaultPolicy",
+                    "path": "aws-cdk-lambda/MyLambda2/ServiceRole/DefaultPolicy",
                     "children": {
                       "Resource": {
                         "id": "Resource",
-                        "path": "aws-cdk-lambda-1/MyLambda2/ServiceRole/DefaultPolicy/Resource",
+                        "path": "aws-cdk-lambda/MyLambda2/ServiceRole/DefaultPolicy/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
                           "aws:cdk:cloudformation:props": {
@@ -1319,15 +2290,15 @@
               },
               "SecurityGroup": {
                 "id": "SecurityGroup",
-                "path": "aws-cdk-lambda-1/MyLambda2/SecurityGroup",
+                "path": "aws-cdk-lambda/MyLambda2/SecurityGroup",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "aws-cdk-lambda-1/MyLambda2/SecurityGroup/Resource",
+                    "path": "aws-cdk-lambda/MyLambda2/SecurityGroup/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
                       "aws:cdk:cloudformation:props": {
-                        "groupDescription": "Automatic security group for Lambda Function awscdklambda1MyLambda232FB7CD2",
+                        "groupDescription": "Automatic security group for Lambda Function awscdklambdaMyLambda262C3367E",
                         "securityGroupEgress": [
                           {
                             "cidrIp": "0.0.0.0/0",
@@ -1353,12 +2324,12 @@
               },
               "Resource": {
                 "id": "Resource",
-                "path": "aws-cdk-lambda-1/MyLambda2/Resource",
+                "path": "aws-cdk-lambda/MyLambda2/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
                   "aws:cdk:cloudformation:props": {
                     "code": {
-                      "zipFile": "\nimport json\nimport os\nimport string\nimport random\nimport datetime\n\nMSG_FILE_PATH = '/mnt/msg/content'\n\ndef randomString(stringLength=10):\n  letters = string.ascii_lowercase\n  return ''.join(random.choice(letters) for i in range(stringLength))\n\ndef lambda_handler(event, context):\n  with open(MSG_FILE_PATH, 'a') as f:\n      f.write(f\"{datetime.datetime.utcnow():%Y-%m-%d-%H:%M:%S} \" + randomString(5) + ' ')\n\n  file = open(MSG_FILE_PATH, \"r\")\n  file_content = file.read()\n  file.close()\n\n  return {\n    'statusCode': 200,\n    'body': str(file_content)\n  }\n"
+                      "zipFile": "\n    import json\n    import os\n    import string\n    import random\n    import datetime\n\n    MSG_FILE_PATH = '/mnt/msg/content'\n\n    def randomString(stringLength=10):\n      letters = string.ascii_lowercase\n      return ''.join(random.choice(letters) for i in range(stringLength))\n\n    def lambda_handler(event, context):\n      with open(MSG_FILE_PATH, 'a') as f:\n          f.write(f\"{datetime.datetime.utcnow():%Y-%m-%d-%H:%M:%S} \" + randomString(5) + ' ')\n\n      file = open(MSG_FILE_PATH, \"r\")\n      file_content = file.read()\n      file.close()\n\n      return {\n        'statusCode': 200,\n        'body': str(file_content)\n      }\n    "
                     },
                     "fileSystemConfigs": [
                       {
@@ -1395,7 +2366,7 @@
                         "Arn"
                       ]
                     },
-                    "runtime": "python3.7",
+                    "runtime": "python3.12",
                     "vpcConfig": {
                       "subnetIds": [
                         {
@@ -1427,9 +2398,311 @@
               "version": "0.0.0"
             }
           },
+          "MyLambda3": {
+            "id": "MyLambda3",
+            "path": "aws-cdk-lambda/MyLambda3",
+            "children": {
+              "ServiceRole": {
+                "id": "ServiceRole",
+                "path": "aws-cdk-lambda/MyLambda3/ServiceRole",
+                "children": {
+                  "ImportServiceRole": {
+                    "id": "ImportServiceRole",
+                    "path": "aws-cdk-lambda/MyLambda3/ServiceRole/ImportServiceRole",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-cdk-lambda/MyLambda3/ServiceRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "lambda.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "managedPolicyArns": [
+                          {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+                              ]
+                            ]
+                          },
+                          {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole"
+                              ]
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "DefaultPolicy": {
+                    "id": "DefaultPolicy",
+                    "path": "aws-cdk-lambda/MyLambda3/ServiceRole/DefaultPolicy",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "aws-cdk-lambda/MyLambda3/ServiceRole/DefaultPolicy/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": "elasticfilesystem:ClientMount",
+                                  "Condition": {
+                                    "StringEquals": {
+                                      "elasticfilesystem:AccessPointArn": {
+                                        "Fn::Join": [
+                                          "",
+                                          [
+                                            "arn:",
+                                            {
+                                              "Ref": "AWS::Partition"
+                                            },
+                                            ":elasticfilesystem:",
+                                            {
+                                              "Ref": "AWS::Region"
+                                            },
+                                            ":",
+                                            {
+                                              "Ref": "AWS::AccountId"
+                                            },
+                                            ":access-point/",
+                                            {
+                                              "Fn::ImportValue": "aws-cdk-efs:ExportsOutputRefEfsAccessPointE419FED9C622426D"
+                                            }
+                                          ]
+                                        ]
+                                      }
+                                    }
+                                  },
+                                  "Effect": "Allow",
+                                  "Resource": "*"
+                                },
+                                {
+                                  "Action": "elasticfilesystem:ClientWrite",
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::Join": [
+                                      "",
+                                      [
+                                        "arn:",
+                                        {
+                                          "Ref": "AWS::Partition"
+                                        },
+                                        ":elasticfilesystem:",
+                                        {
+                                          "Ref": "AWS::Region"
+                                        },
+                                        ":",
+                                        {
+                                          "Ref": "AWS::AccountId"
+                                        },
+                                        ":file-system/",
+                                        {
+                                          "Fn::ImportValue": "aws-cdk-efs:ExportsOutputRefEfs9E8BF36BE36F3E5D"
+                                        }
+                                      ]
+                                    ]
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "MyLambda3ServiceRoleDefaultPolicy9AA6172F",
+                            "roles": [
+                              {
+                                "Ref": "MyLambda3ServiceRole47AA90DA"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.Policy",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
+                  "version": "0.0.0"
+                }
+              },
+              "SecurityGroup": {
+                "id": "SecurityGroup",
+                "path": "aws-cdk-lambda/MyLambda3/SecurityGroup",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-cdk-lambda/MyLambda3/SecurityGroup/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
+                      "aws:cdk:cloudformation:props": {
+                        "groupDescription": "Automatic security group for Lambda Function awscdklambdaMyLambda353012849",
+                        "securityGroupEgress": [
+                          {
+                            "cidrIp": "0.0.0.0/0",
+                            "description": "Allow all outbound traffic by default",
+                            "ipProtocol": "-1"
+                          }
+                        ],
+                        "vpcId": {
+                          "Fn::ImportValue": "aws-cdk-efs:ExportsOutputRefVpc8378EB38272D6E3A"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnSecurityGroup",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "awscdkefsEfsEfsSecurityGroupF12E6299:2049 to": {
+                    "id": "awscdkefsEfsEfsSecurityGroupF12E6299:2049 to",
+                    "path": "aws-cdk-lambda/MyLambda3/SecurityGroup/awscdkefsEfsEfsSecurityGroupF12E6299:2049 to",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroupIngress",
+                      "aws:cdk:cloudformation:props": {
+                        "description": "from awscdklambdaMyLambda3SecurityGroup6DA44B91:2049",
+                        "fromPort": 2049,
+                        "groupId": {
+                          "Fn::ImportValue": "aws-cdk-efs:ExportsOutputFnGetAttEfsEfsSecurityGroup6F40EA3BGroupIdEC410A0E"
+                        },
+                        "ipProtocol": "tcp",
+                        "sourceSecurityGroupId": {
+                          "Fn::GetAtt": [
+                            "MyLambda3SecurityGroup5B53CDF4",
+                            "GroupId"
+                          ]
+                        },
+                        "toPort": 2049
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnSecurityGroupIngress",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_ec2.SecurityGroup",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-lambda/MyLambda3/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
+                  "aws:cdk:cloudformation:props": {
+                    "code": {
+                      "zipFile": "\n    import json\n    import os\n    import string\n    import random\n    import datetime\n\n    MSG_FILE_PATH = '/mnt/msg/content'\n\n    def randomString(stringLength=10):\n      letters = string.ascii_lowercase\n      return ''.join(random.choice(letters) for i in range(stringLength))\n\n    def lambda_handler(event, context):\n      with open(MSG_FILE_PATH, 'a') as f:\n          f.write(f\"{datetime.datetime.utcnow():%Y-%m-%d-%H:%M:%S} \" + randomString(5) + ' ')\n\n      file = open(MSG_FILE_PATH, \"r\")\n      file_content = file.read()\n      file.close()\n\n      return {\n        'statusCode': 200,\n        'body': str(file_content)\n      }\n    "
+                    },
+                    "fileSystemConfigs": [
+                      {
+                        "arn": {
+                          "Fn::Join": [
+                            "",
+                            [
+                              "arn:",
+                              {
+                                "Ref": "AWS::Partition"
+                              },
+                              ":elasticfilesystem:",
+                              {
+                                "Ref": "AWS::Region"
+                              },
+                              ":",
+                              {
+                                "Ref": "AWS::AccountId"
+                              },
+                              ":access-point/",
+                              {
+                                "Fn::ImportValue": "aws-cdk-efs:ExportsOutputRefEfsAccessPointE419FED9C622426D"
+                              }
+                            ]
+                          ]
+                        },
+                        "localMountPath": "/mnt/msg"
+                      }
+                    ],
+                    "handler": "index.lambda_handler",
+                    "role": {
+                      "Fn::GetAtt": [
+                        "MyLambda3ServiceRole47AA90DA",
+                        "Arn"
+                      ]
+                    },
+                    "runtime": "python3.12",
+                    "vpcConfig": {
+                      "subnetIds": [
+                        {
+                          "Fn::ImportValue": "aws-cdk-efs:ExportsOutputRefVpcPrivateSubnet1Subnet536B997AFD4CC940"
+                        },
+                        {
+                          "Fn::ImportValue": "aws-cdk-efs:ExportsOutputRefVpcPrivateSubnet2Subnet3788AAA1380949A3"
+                        }
+                      ],
+                      "securityGroupIds": [
+                        {
+                          "Fn::GetAtt": [
+                            "MyLambda3SecurityGroup5B53CDF4",
+                            "GroupId"
+                          ]
+                        }
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_lambda.Function",
+              "version": "0.0.0"
+            }
+          },
           "BootstrapVersion": {
             "id": "BootstrapVersion",
-            "path": "aws-cdk-lambda-1/BootstrapVersion",
+            "path": "aws-cdk-lambda/BootstrapVersion",
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnParameter",
               "version": "0.0.0"
@@ -1437,7 +2710,7 @@
           },
           "CheckBootstrapVersion": {
             "id": "CheckBootstrapVersion",
-            "path": "aws-cdk-lambda-1/CheckBootstrapVersion",
+            "path": "aws-cdk-lambda/CheckBootstrapVersion",
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnRule",
               "version": "0.0.0"
@@ -1449,29 +2722,29 @@
           "version": "0.0.0"
         }
       },
-      "aws-ecs-fargate-test": {
-        "id": "aws-ecs-fargate-test",
-        "path": "aws-ecs-fargate-test",
+      "aws-efs-lambda-test": {
+        "id": "aws-efs-lambda-test",
+        "path": "aws-efs-lambda-test",
         "children": {
           "DefaultTest": {
             "id": "DefaultTest",
-            "path": "aws-ecs-fargate-test/DefaultTest",
+            "path": "aws-efs-lambda-test/DefaultTest",
             "children": {
               "Default": {
                 "id": "Default",
-                "path": "aws-ecs-fargate-test/DefaultTest/Default",
+                "path": "aws-efs-lambda-test/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.69"
+                  "version": "10.3.0"
                 }
               },
               "DeployAssert": {
                 "id": "DeployAssert",
-                "path": "aws-ecs-fargate-test/DefaultTest/DeployAssert",
+                "path": "aws-efs-lambda-test/DefaultTest/DeployAssert",
                 "children": {
                   "BootstrapVersion": {
                     "id": "BootstrapVersion",
-                    "path": "aws-ecs-fargate-test/DefaultTest/DeployAssert/BootstrapVersion",
+                    "path": "aws-efs-lambda-test/DefaultTest/DeployAssert/BootstrapVersion",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.CfnParameter",
                       "version": "0.0.0"
@@ -1479,7 +2752,7 @@
                   },
                   "CheckBootstrapVersion": {
                     "id": "CheckBootstrapVersion",
-                    "path": "aws-ecs-fargate-test/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "path": "aws-efs-lambda-test/DefaultTest/DeployAssert/CheckBootstrapVersion",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.CfnRule",
                       "version": "0.0.0"
@@ -1508,7 +2781,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.2.69"
+          "version": "10.3.0"
         }
       }
     },

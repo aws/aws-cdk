@@ -1,0 +1,12 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "autoscaling-step-scaling-integ/DefaultTest": {
+      "stacks": [
+        "autoscaling-step-scaling"
+      ],
+      "assertionStack": "autoscaling-step-scaling-integ/DefaultTest/DeployAssert",
+      "assertionStackName": "autoscalingstepscalingintegDefaultTestDeployAssert7C69A041"
+    }
+  }
+}

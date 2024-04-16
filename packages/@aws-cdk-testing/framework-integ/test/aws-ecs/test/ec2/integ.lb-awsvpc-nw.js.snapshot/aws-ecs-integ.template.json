@@ -919,6 +919,18 @@
    "Properties": {
     "ContainerDefinitions": [
      {
+      "Environment": [
+       {
+        "Name": "SOME_VARIABLE",
+        "Value": "value"
+       },
+       {
+         "Name": "AWS_REGION",
+         "Value": {
+           "Ref": "AWS::Region"
+         }
+       }
+     ],
       "Essential": true,
       "Image": "amazon/amazon-ecs-sample",
       "Memory": 256,

@@ -1,6 +1,7 @@
 import { Match, Template } from '../../assertions';
 import * as ec2 from '../../aws-ec2';
 import { AccountPrincipal, Role } from '../../aws-iam';
+import { Key } from '../../aws-kms';
 import * as secretsmanager from '../../aws-secretsmanager';
 import * as cdk from '../../core';
 import * as cxapi from '../../cx-api';
@@ -22,6 +23,67 @@ describe('proxy', () => {
     const instance = new rds.DatabaseInstance(stack, 'Instance', {
       engine: rds.DatabaseInstanceEngine.mysql({
         version: rds.MysqlEngineVersion.VER_5_7,
+      }),
+      vpc,
+    });
+
+    // WHEN
+    new rds.DatabaseProxy(stack, 'Proxy', {
+      proxyTarget: rds.ProxyTarget.fromInstance(instance),
+      secrets: [instance.secret!],
+      vpc,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBProxy', {
+      Auth: [
+        {
+          AuthScheme: 'SECRETS',
+          IAMAuth: 'DISABLED',
+          SecretArn: {
+            Ref: 'InstanceSecretAttachment83BEE581',
+          },
+        },
+      ],
+      DBProxyName: 'Proxy',
+      EngineFamily: 'MYSQL',
+      RequireTLS: true,
+      RoleArn: {
+        'Fn::GetAtt': [
+          'ProxyIAMRole2FE8AB0F',
+          'Arn',
+        ],
+      },
+      VpcSubnetIds: [
+        {
+          Ref: 'VPCPrivateSubnet1Subnet8BCA10E0',
+        },
+        {
+          Ref: 'VPCPrivateSubnet2SubnetCFCDAA7A',
+        },
+      ],
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBProxyTargetGroup', {
+      DBProxyName: {
+        Ref: 'ProxyCB0DFB71',
+      },
+      ConnectionPoolConfigurationInfo: {},
+      DBInstanceIdentifiers: [
+        {
+          Ref: 'InstanceC1063A87',
+        },
+      ],
+      TargetGroupName: 'default',
+    });
+  });
+
+  test('create a DB proxy for a MariaDB instance', () => {
+    // GIVEN
+    const instance = new rds.DatabaseInstance(stack, 'Instance', {
+      engine: rds.DatabaseInstanceEngine.mariaDb({
+        version: rds.MariaDbEngineVersion.VER_10_6_16,
       }),
       vpc,
     });
@@ -191,8 +253,8 @@ describe('proxy', () => {
       instanceEndpointAddress: 'instance-address',
       port: 5432,
       securityGroups: [],
-      engine: rds.DatabaseInstanceEngine.mariaDb({
-        version: rds.MariaDbEngineVersion.VER_10_0_24,
+      engine: rds.DatabaseInstanceEngine.oracleEe({
+        version: rds.OracleEngineVersion.VER_21,
       }),
     });
 
@@ -202,7 +264,7 @@ describe('proxy', () => {
         vpc,
         secrets: [new secretsmanager.Secret(stack, 'Secret')],
       });
-    }).toThrow(/Engine 'mariadb-10\.0\.24' does not support proxies/);
+    }).toThrow(/RDS proxies require an engine family to be specified on the database cluster or instance. No family specified for engine 'oracle-ee-21'/);
   });
 
   test('correctly creates a proxy for an imported Cluster if its engine is known', () => {
@@ -369,6 +431,51 @@ describe('proxy', () => {
     expect(() => {
       proxy.grantConnect(role);
     }).toThrow(/When the Proxy contains multiple Secrets, you must pass a dbUser explicitly to grantConnect/);
+  });
+
+  test('new Proxy with kms encrypted Secrets has permissions to kms:Decrypt that secret using its key', () => {
+    // GIVEN
+    const cluster = new rds.DatabaseCluster(stack, 'Database', {
+      engine: rds.DatabaseClusterEngine.AURORA,
+      instanceProps: { vpc },
+    });
+
+    const kmsKey = new Key(stack, 'Key');
+
+    const kmsEncryptedSecret = new secretsmanager.Secret(stack, 'Secret', { encryptionKey: kmsKey });
+
+    // WHEN
+    new rds.DatabaseProxy(stack, 'Proxy', {
+      proxyTarget: rds.ProxyTarget.fromCluster(cluster),
+      vpc,
+      secrets: [kmsEncryptedSecret],
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [
+          {
+            Action: ['secretsmanager:GetSecretValue', 'secretsmanager:DescribeSecret'],
+            Effect: 'Allow',
+            Resource: {
+              Ref: 'SecretA720EF05',
+            },
+          },
+          {
+            Action: 'kms:Decrypt',
+            Effect: 'Allow',
+            Resource: {
+              'Fn::GetAtt': [
+                'Key961B73FD',
+                'Arn',
+              ],
+            },
+          },
+        ],
+      },
+      Roles: [{ Ref: 'ProxyIAMRole2FE8AB0F' }],
+    });
   });
 
   test('DBProxyTargetGroup should have dependency on the proxy targets', () => {

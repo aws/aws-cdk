@@ -1,7 +1,7 @@
 import * as path from 'path';
-import { Template } from '../../assertions';
+import { Template, Match } from '../../assertions';
 import { App, Stack } from '../../core';
-import { Function, FunctionCode, FunctionRuntime } from '../lib';
+import { Function, FunctionCode, FunctionRuntime, KeyValueStore } from '../lib';
 
 describe('CloudFront Function', () => {
 
@@ -186,6 +186,74 @@ describe('CloudFront Function', () => {
           },
         },
       },
+    });
+  });
+
+  describe('key value store association', () => {
+    test('minimal example', () => {
+      const stack = new Stack();
+      const keyValueStore = new KeyValueStore(stack, 'TestStore');
+
+      new Function(stack, 'TestFn', {
+        code: FunctionCode.fromInline('code'),
+        keyValueStore,
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Function', {
+        FunctionConfig: {
+          Runtime: 'cloudfront-js-2.0',
+          KeyValueStoreAssociations: [{
+            KeyValueStoreARN: stack.resolve(keyValueStore.keyValueStoreArn),
+          }],
+        },
+      });
+    });
+
+    test('rejects key value store with v1.0 runtime', () => {
+      const stack = new Stack();
+      const keyValueStore = new KeyValueStore(stack, 'TestStore');
+
+      expect(() => new Function(stack, 'TestFn', {
+        code: FunctionCode.fromInline('code'),
+        runtime: FunctionRuntime.JS_1_0,
+        keyValueStore,
+      })).toThrow(/Key Value Stores cannot be associated to functions using the .* runtime/);
+    });
+
+    test('works with js-2.0 runtime specified', () => {
+      const stack = new Stack();
+      const keyValueStore = new KeyValueStore(stack, 'TestStore');
+
+      new Function(stack, 'TestFn', {
+        code: FunctionCode.fromInline('code'),
+        runtime: FunctionRuntime.JS_2_0,
+        keyValueStore,
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Function', {
+        FunctionConfig: {
+          Runtime: 'cloudfront-js-2.0',
+          KeyValueStoreAssociations: [{
+            KeyValueStoreARN: stack.resolve(keyValueStore.keyValueStoreArn),
+          }],
+        },
+      });
+    });
+
+    test('no value is used in CloudFormation when unspecified in CDK', () => {
+      const stack = new Stack();
+
+      new Function(stack, 'TestFn', {
+        code: FunctionCode.fromInline('code'),
+        runtime: FunctionRuntime.JS_2_0,
+        keyValueStore: undefined,
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Function', {
+        FunctionConfig: {
+          KeyValueStoreAssociations: Match.absent(),
+        },
+      });
     });
   });
 });

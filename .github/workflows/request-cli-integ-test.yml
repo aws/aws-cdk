@@ -19,7 +19,7 @@ jobs:
           persist-credentials: false
       - name: Find changed cli files
         id: changed-cli-files
-        uses: tj-actions/changed-files@716b1e13042866565e00e85fd4ec490e186c4a2f
+        uses: tj-actions/changed-files@635f118699dd888d737c15018cd30aff2e0274f8
         with:
           base_sha: ${{ github.event.pull_request.base.sha }}
           files_yaml: |
@@ -27,6 +27,15 @@ jobs:
               - packages/aws-cdk/bin/**
               - packages/aws-cdk/lib/**
               - packages/aws-cdk/test/**
+              - packages/cdk-assets/bin/**
+              - packages/cdk-assets/lib/**
+              - packages/cdk-assets/test/**
+              - packages/aws-cdk-lib/cloud-assembly-schema/lib/**
+              - packages/aws-cdk-lib/cloud-assembly-schema/schema/**
+              - packages/aws-cdk-lib/cloud-assembly-schema/scripts/**
+              - packages/aws-cdk-lib/cloud-assembly-schema/test/**
+              - packages/@aws-cdk/cloudformation-diff/lib/**
+              - packages/@aws-cdk/cloudformation-diff/test/**
   submit-to-test-pipeline:
     environment: test-pipeline
     needs: cli-changes
@@ -38,7 +47,7 @@ jobs:
         with:
           # Needs to run with PROJEN_GITHUB_TOKEN because we need permissions to force push the branch
           token: ${{ secrets.PROJEN_GITHUB_TOKEN }}
-          ref: ${{ github.event.pull_request.head.ref }}
+          ref: ${{ github.event.pull_request.head.sha }}
           repository: ${{ github.event.pull_request.head.repo.full_name }}
       - name: Submit to test-pipeline
         run: |
@@ -46,7 +55,7 @@ jobs:
           git config --global user.email 'aws-cdk-automation@users.noreply.github.com'
           git push --force --atomic https://github.com/${{ github.repository }}.git FETCH_HEAD:test-main-pipeline
       - name: Explain next steps
-        uses: thollander/actions-comment-pull-request@1d3973dc4b8e1399c0620d3f2b1aa5e795465308
+        uses: thollander/actions-comment-pull-request@fabd468d3a1a0b97feee5f6b9e499eab0dd903f6
         with:
           message: |
             :arrow_right: **PR build request submitted to `test-main-pipeline`** :arrow_left:

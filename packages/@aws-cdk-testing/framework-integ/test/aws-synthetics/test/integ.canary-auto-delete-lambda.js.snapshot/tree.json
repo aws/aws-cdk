@@ -261,7 +261,7 @@
                       ]
                     },
                     "name": "next",
-                    "runtimeVersion": "syn-nodejs-puppeteer-4.0",
+                    "runtimeVersion": "syn-nodejs-puppeteer-7.0",
                     "schedule": {
                       "durationInSeconds": "0",
                       "expression": "rate(5 minutes)"
@@ -334,7 +334,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.CustomResourceProvider",
+              "fqn": "aws-cdk-lib.CustomResourceProviderBase",
               "version": "0.0.0"
             }
           },
@@ -591,7 +591,7 @@
                       ]
                     },
                     "name": "cdksyntheticscaeae9a3",
-                    "runtimeVersion": "syn-nodejs-puppeteer-4.0",
+                    "runtimeVersion": "syn-nodejs-puppeteer-7.0",
                     "schedule": {
                       "durationInSeconds": "0",
                       "expression": "rate(5 minutes)"
@@ -806,7 +806,7 @@
                       "s3Bucket": {
                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "s3Key": "b0de6372e1c756b7afa1a8a1d0a21ee4cd330150290abffc9bc163f285150514.zip"
+                      "s3Key": "746da84b10e215c552e68b6d2061024e4429f0386f43a35ef5e4d2940655692e.zip"
                     },
                     "handler": "index.handler",
                     "role": {
@@ -865,7 +865,7 @@
                 "path": "cdk-integ-synthetics-canary-auto-delete/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.70"
+                  "version": "10.3.0"
                 }
               },
               "DeployAssert": {
@@ -911,7 +911,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.2.70"
+          "version": "10.3.0"
         }
       }
     },

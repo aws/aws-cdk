@@ -3,7 +3,7 @@ import { Duration } from '../../../core';
 const DEFAULT_TIMEOUT = Duration.minutes(30);
 const DEFAULT_INTERVAL = Duration.seconds(5);
 
-export function calculateRetryPolicy(props: { totalTimeout?: Duration, queryInterval?: Duration } = { }) {
+export function calculateRetryPolicy(props: { totalTimeout?: Duration; queryInterval?: Duration } = { }) {
   const totalTimeout = props.totalTimeout || DEFAULT_TIMEOUT;
   const interval = props.queryInterval || DEFAULT_INTERVAL;
   const maxAttempts = totalTimeout.toSeconds() / interval.toSeconds();

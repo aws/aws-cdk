@@ -1,0 +1,12 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "integ-cluster-kerberos/DefaultTest": {
+      "stacks": [
+        "cluster-kerberos"
+      ],
+      "assertionStack": "integ-cluster-kerberos/DefaultTest/DeployAssert",
+      "assertionStackName": "integclusterkerberosDefaultTestDeployAssert6F647828"
+    }
+  }
+}

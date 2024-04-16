@@ -186,7 +186,7 @@
      ]
     },
     "Name": "next",
-    "RuntimeVersion": "syn-nodejs-puppeteer-4.0",
+    "RuntimeVersion": "syn-nodejs-puppeteer-7.0",
     "Schedule": {
      "DurationInSeconds": "0",
      "Expression": "rate(5 minutes)"
@@ -288,7 +288,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "086fe534b1e7545fbc662251685b8a7d91ab2061bbfe98d857b27478442487cb.zip"
+     "S3Key": "d57a897c2081bda5ce88819548c8b944dff49e721e1f7f7e9e3dd8323e6ccb0d.zip"
     },
     "Timeout": 900,
     "MemorySize": 128,
@@ -503,7 +503,7 @@
      ]
     },
     "Name": "cdksyntheticscaeae9a3",
-    "RuntimeVersion": "syn-nodejs-puppeteer-4.0",
+    "RuntimeVersion": "syn-nodejs-puppeteer-7.0",
     "Schedule": {
      "DurationInSeconds": "0",
      "Expression": "rate(5 minutes)"
@@ -554,7 +554,7 @@
        {
         "Ref": "CanaryRemoved24AD6309"
        },
-       "\"}}"
+       "\"},\"logApiResponseData\":true}"
       ]
      ]
     },
@@ -625,7 +625,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "b0de6372e1c756b7afa1a8a1d0a21ee4cd330150290abffc9bc163f285150514.zip"
+     "S3Key": "746da84b10e215c552e68b6d2061024e4429f0386f43a35ef5e4d2940655692e.zip"
     },
     "Handler": "index.handler",
     "Role": {

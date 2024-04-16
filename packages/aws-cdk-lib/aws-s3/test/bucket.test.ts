@@ -2858,6 +2858,7 @@ describe('bucket', () => {
         DestinationBucketName: {
           Ref: 'AccessLogs8B620ECA',
         },
+        TargetObjectKeyFormat: Match.absent(),
       },
     });
   });
@@ -2880,6 +2881,7 @@ describe('bucket', () => {
           Ref: 'AccessLogs8B620ECA',
         },
         LogFilePrefix: 'hello',
+        TargetObjectKeyFormat: Match.absent(),
       },
     });
   });
@@ -2896,6 +2898,76 @@ describe('bucket', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
       LoggingConfiguration: {
         LogFilePrefix: 'hello',
+        TargetObjectKeyFormat: Match.absent(),
+      },
+    });
+  });
+
+  test('Use simple prefix for log objects', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const accessLogBucket = new s3.Bucket(stack, 'AccessLogs');
+    new s3.Bucket(stack, 'MyBucket', {
+      serverAccessLogsBucket: accessLogBucket,
+      targetObjectKeyFormat: s3.TargetObjectKeyFormat.simplePrefix(),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
+      LoggingConfiguration: {
+        DestinationBucketName: {
+          Ref: 'AccessLogs8B620ECA',
+        },
+        TargetObjectKeyFormat: {
+          SimplePrefix: {},
+          PartitionedPrefix: Match.absent(),
+        },
+      },
+    });
+  });
+
+  test('Use partitioned prefix for log objects', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const accessLogBucket = new s3.Bucket(stack, 'AccessLogs');
+    new s3.Bucket(stack, 'MyBucket', {
+      serverAccessLogsBucket: accessLogBucket,
+      targetObjectKeyFormat: s3.TargetObjectKeyFormat.partitionedPrefix(s3.PartitionDateSource.EVENT_TIME),
+    });
+    new s3.Bucket(stack, 'MyBucket2', {
+      serverAccessLogsBucket: accessLogBucket,
+      targetObjectKeyFormat: s3.TargetObjectKeyFormat.partitionedPrefix(s3.PartitionDateSource.DELIVERY_TIME),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
+      LoggingConfiguration: {
+        DestinationBucketName: {
+          Ref: 'AccessLogs8B620ECA',
+        },
+        TargetObjectKeyFormat: {
+          SimplePrefix: Match.absent(),
+          PartitionedPrefix: {
+            PartitionDateSource: 'EventTime',
+          },
+        },
+      },
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
+      LoggingConfiguration: {
+        DestinationBucketName: {
+          Ref: 'AccessLogs8B620ECA',
+        },
+        TargetObjectKeyFormat: {
+          SimplePrefix: Match.absent(),
+          PartitionedPrefix: {
+            PartitionDateSource: 'DeliveryTime',
+          },
+        },
       },
     });
   });

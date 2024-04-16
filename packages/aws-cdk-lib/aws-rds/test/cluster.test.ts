@@ -1,6 +1,7 @@
 import { Annotations, Match, Template } from '../../assertions';
 import * as ec2 from '../../aws-ec2';
 import { ManagedPolicy, Role, ServicePrincipal } from '../../aws-iam';
+import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as logs from '../../aws-logs';
 import * as s3 from '../../aws-s3';
@@ -207,6 +208,81 @@ describe('cluster new api', () => {
           { Ref: 'VPCPublicSubnet3Subnet631C5E25' },
         ],
       });
+    });
+
+    test('preferredMaintenanceWindow provided in InstanceProps', () => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+
+      const PREFERRED_MAINTENANCE_WINDOW: string = 'Sun:12:00-Sun:13:00';
+
+      // WHEN
+      new DatabaseCluster(stack, 'Database', {
+        engine: DatabaseClusterEngine.AURORA,
+        instanceProps: {
+          vpc: vpc,
+          preferredMaintenanceWindow: PREFERRED_MAINTENANCE_WINDOW,
+        },
+      });
+
+      // THEN
+      const template = Template.fromStack(stack);
+      // maintenance window is set
+      template.hasResourceProperties('AWS::RDS::DBInstance', Match.objectLike({
+        PreferredMaintenanceWindow: PREFERRED_MAINTENANCE_WINDOW,
+      }));
+    });
+    test('preferredMaintenanceWindow provided in writer', () => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+
+      const PREFERRED_MAINTENANCE_WINDOW: string = 'Sun:12:00-Sun:13:00';
+
+      // WHEN
+      new DatabaseCluster(stack, 'Database', {
+        engine: DatabaseClusterEngine.AURORA,
+        vpc: vpc,
+        writer: ClusterInstance.provisioned('Instance1', {
+          preferredMaintenanceWindow: PREFERRED_MAINTENANCE_WINDOW,
+        }),
+      });
+
+      // THEN
+      const template = Template.fromStack(stack);
+      // maintenance window is set
+      template.hasResourceProperties('AWS::RDS::DBInstance', Match.objectLike({
+        PreferredMaintenanceWindow: PREFERRED_MAINTENANCE_WINDOW,
+      }));
+    });
+    test('preferredMaintenanceWindow provided in readers', () => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+
+      const PREFERRED_MAINTENANCE_WINDOW: string = 'Sun:12:00-Sun:13:00';
+
+      // WHEN
+      new DatabaseCluster(stack, 'Database', {
+        engine: DatabaseClusterEngine.AURORA,
+        vpc: vpc,
+        writer: ClusterInstance.provisioned('Instance1', {
+          // No preferredMaintenanceWindow set
+        }),
+        readers: [
+          ClusterInstance.provisioned('Instance2', {
+            preferredMaintenanceWindow: PREFERRED_MAINTENANCE_WINDOW,
+          }),
+        ],
+      });
+
+      // THEN
+      const template = Template.fromStack(stack);
+      // maintenance window is set
+      template.hasResourceProperties('AWS::RDS::DBInstance', Match.objectLike({
+        PreferredMaintenanceWindow: PREFERRED_MAINTENANCE_WINDOW,
+      }));
     });
   });
 
@@ -500,6 +576,103 @@ describe('cluster new api', () => {
       expect(stack.resolve(cluster.instanceIdentifiers[0])).toEqual({
         Ref: 'Databasewriter2462CC03',
       });
+    });
+  });
+
+  describe('instanceEndpoints', () => {
+    test('should contain writer and reader instance endpoints at DatabaseCluster', () => {
+      //GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+
+      //WHEN
+      const cluster = new DatabaseCluster(stack, 'Database', {
+        engine: DatabaseClusterEngine.AURORA,
+        vpc,
+        writer: ClusterInstance.serverlessV2('writer'),
+        readers: [ClusterInstance.serverlessV2('reader')],
+        iamAuthentication: true,
+      });
+
+      //THEN
+      expect(cluster.instanceEndpoints).toHaveLength(2);
+      expect(stack.resolve(cluster.instanceEndpoints)).toEqual([{
+        hostname: {
+          'Fn::GetAtt': ['Databasewriter2462CC03', 'Endpoint.Address'],
+        },
+        port: {
+          'Fn::GetAtt': ['DatabaseB269D8BB', 'Endpoint.Port'],
+        },
+        socketAddress: {
+          'Fn::Join': ['', [
+            { 'Fn::GetAtt': ['Databasewriter2462CC03', 'Endpoint.Address'] },
+            ':',
+            { 'Fn::GetAtt': ['DatabaseB269D8BB', 'Endpoint.Port'] },
+          ]],
+        },
+      }, {
+        hostname: {
+          'Fn::GetAtt': ['Databasereader13B43287', 'Endpoint.Address'],
+        },
+        port: {
+          'Fn::GetAtt': ['DatabaseB269D8BB', 'Endpoint.Port'],
+        },
+        socketAddress: {
+          'Fn::Join': ['', [
+            { 'Fn::GetAtt': ['Databasereader13B43287', 'Endpoint.Address'] },
+            ':',
+            { 'Fn::GetAtt': ['DatabaseB269D8BB', 'Endpoint.Port'] },
+          ]],
+        },
+      }]);
+    });
+
+    test('should contain writer and reader instance endpoints at DatabaseClusterFromSnapshot', () => {
+      //GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+
+      //WHEN
+      const cluster = new DatabaseClusterFromSnapshot(stack, 'Database', {
+        engine: DatabaseClusterEngine.AURORA,
+        vpc,
+        snapshotIdentifier: 'snapshot-identifier',
+        iamAuthentication: true,
+        writer: ClusterInstance.serverlessV2('writer'),
+        readers: [ClusterInstance.serverlessV2('reader')],
+      });
+
+      //THEN
+      expect(cluster.instanceEndpoints).toHaveLength(2);
+      expect(stack.resolve(cluster.instanceEndpoints)).toEqual([{
+        hostname: {
+          'Fn::GetAtt': ['Databasewriter2462CC03', 'Endpoint.Address'],
+        },
+        port: {
+          'Fn::GetAtt': ['DatabaseB269D8BB', 'Endpoint.Port'],
+        },
+        socketAddress: {
+          'Fn::Join': ['', [
+            { 'Fn::GetAtt': ['Databasewriter2462CC03', 'Endpoint.Address'] },
+            ':',
+            { 'Fn::GetAtt': ['DatabaseB269D8BB', 'Endpoint.Port'] },
+          ]],
+        },
+      }, {
+        hostname: {
+          'Fn::GetAtt': ['Databasereader13B43287', 'Endpoint.Address'],
+        },
+        port: {
+          'Fn::GetAtt': ['DatabaseB269D8BB', 'Endpoint.Port'],
+        },
+        socketAddress: {
+          'Fn::Join': ['', [
+            { 'Fn::GetAtt': ['Databasereader13B43287', 'Endpoint.Address'] },
+            ':',
+            { 'Fn::GetAtt': ['DatabaseB269D8BB', 'Endpoint.Port'] },
+          ]],
+        },
+      }]);
     });
   });
 
@@ -3080,7 +3253,7 @@ describe('cluster', () => {
     const vpc = new ec2.Vpc(stack, 'VPC');
 
     // WHEN
-    new DatabaseCluster(stack, 'Database', {
+    const cluster = new DatabaseCluster(stack, 'Database', {
       engine: DatabaseClusterEngine.AURORA,
       credentials: {
         username: 'admin',
@@ -3115,6 +3288,9 @@ describe('cluster', () => {
       LogGroupName: { 'Fn::Join': ['', ['/aws/rds/cluster/', { Ref: 'DatabaseB269D8BB' }, '/general']] },
       RetentionInDays: 90,
     });
+    expect(Object.keys(cluster.cloudwatchLogGroups).length).toEqual(2);
+    expect(cluster.cloudwatchLogGroups.error.logGroupName).toEqual(`/aws/rds/cluster/${cluster.clusterIdentifier}/error`);
+    expect(cluster.cloudwatchLogGroups.general.logGroupName).toEqual(`/aws/rds/cluster/${cluster.clusterIdentifier}/general`);
   });
 
   test('throws if given unsupported CloudWatch log exports', () => {
@@ -3969,6 +4145,215 @@ describe('cluster', () => {
           },
         }],
       },
+    });
+  });
+
+  test('setup kerberos authentication with domainRole', () => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    const role = new iam.Role(stack, 'Role', {
+      roleName: 'directoryServiceRoleName',
+      assumedBy: new iam.CompositePrincipal(
+        new iam.ServicePrincipal('rds.amazonaws.com'),
+        new iam.ServicePrincipal('directoryservice.rds.amazonaws.com'),
+      ),
+      managedPolicies: [
+        iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonRDSDirectoryServiceAccess'),
+      ],
+    });
+
+    // WHEN
+    new DatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.auroraPostgres({ version: AuroraPostgresEngineVersion.VER_14_3 }),
+      instanceProps: { vpc },
+      domain: 'domain.com',
+      domainRole: role,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBCluster', {
+      DBClusterParameterGroupName: 'default.aurora-postgresql14',
+      Domain: 'domain.com',
+      DomainIAMRoleName: { Ref: 'Role1ABCC5F0' },
+    });
+  });
+
+  test('setup kerberos authentication without domainRole', () => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new DatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.auroraPostgres({ version: AuroraPostgresEngineVersion.VER_14_3 }),
+      instanceProps: { vpc },
+      domain: 'domain.com',
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBCluster', {
+      DBClusterParameterGroupName: 'default.aurora-postgresql14',
+      Domain: 'domain.com',
+      DomainIAMRoleName: {
+        Ref: 'DatabaseRDSClusterDirectoryServiceRole6E1B0FFE',
+      },
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
+      AssumeRolePolicyDocument: {
+        Statement: [{
+          Action: 'sts:AssumeRole',
+          Effect: 'Allow',
+          Principal: {
+            Service: 'rds.amazonaws.com',
+          },
+        }, {
+          Action: 'sts:AssumeRole',
+          Effect: 'Allow',
+          Principal: {
+            Service: 'directoryservice.rds.amazonaws.com',
+          },
+        }],
+        Version: '2012-10-17',
+      },
+      ManagedPolicyArns: [
+        {
+          'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::aws:policy/service-role/AmazonRDSDirectoryServiceAccess']],
+        },
+      ],
+    });
+  });
+
+  test('clusterArn property', () => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = ec2.Vpc.fromLookup(stack, 'VPC', { isDefault: true });
+    const cluster = new DatabaseCluster(stack, 'Database', {
+      engine: DatabaseClusterEngine.auroraPostgres({ version: AuroraPostgresEngineVersion.VER_14_3 }),
+      instanceProps: { vpc },
+    });
+    const exportName = 'DbCluterArn';
+
+    // WHEN
+    new cdk.CfnOutput(stack, exportName, {
+      exportName,
+      value: cluster.clusterArn,
+    });
+
+    // THEN
+    expect(
+      stack.resolve(cluster.clusterArn),
+    ).toEqual({
+      'Fn::Join': [
+        '',
+        [
+          'arn:',
+          { Ref: 'AWS::Partition' },
+          ':rds:us-test-1:12345:cluster:',
+          { Ref: 'DatabaseB269D8BB' },
+        ],
+      ],
+    });
+  });
+
+  describe('data api', () => {
+    test('enable data api by `enableDataApi` props', () => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+
+      // WHEN
+      new DatabaseCluster(stack, 'Database', {
+        engine: DatabaseClusterEngine.auroraPostgres({ version: AuroraPostgresEngineVersion.VER_14_3 }),
+        enableDataApi: true,
+        vpc,
+        writer: ClusterInstance.serverlessV2('writer'),
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBCluster', {
+        EnableHttpEndpoint: true,
+      });
+    });
+
+    test('enable data api by calling `grantDataApiAccess()`', () => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+      const role = new iam.Role(stack, 'Role', {
+        assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+      });
+
+      // WHEN
+      const cluster = new DatabaseCluster(stack, 'Database', {
+        engine: DatabaseClusterEngine.auroraPostgres({ version: AuroraPostgresEngineVersion.VER_14_3 }),
+        vpc,
+        writer: ClusterInstance.serverlessV2('writer'),
+      });
+      cluster.grantDataApiAccess(role);
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBCluster', {
+        EnableHttpEndpoint: true,
+      });
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+        PolicyDocument: {
+          Statement: [
+            {
+              Action: [
+                'rds-data:BatchExecuteStatement',
+                'rds-data:BeginTransaction',
+                'rds-data:CommitTransaction',
+                'rds-data:ExecuteStatement',
+                'rds-data:RollbackTransaction',
+              ],
+              Effect: 'Allow',
+              Resource: {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    { Ref: 'AWS::Partition' },
+                    ':rds:us-test-1:12345:cluster:',
+                    { Ref: 'DatabaseB269D8BB' },
+                  ],
+                ],
+              },
+            },
+            {
+              Action: [
+                'secretsmanager:GetSecretValue',
+                'secretsmanager:DescribeSecret',
+              ],
+              Effect: 'Allow',
+              Resource: {
+                Ref: 'DatabaseSecretAttachmentE5D1B020',
+              },
+            },
+          ],
+        },
+      });
+    });
+
+    test('throw error for calling `grantDataApiAccess()` with `enableDataApi` props set to false', () => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+      const role = new iam.Role(stack, 'Role', {
+        assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+      });
+
+      // WHEN
+      const cluster = new DatabaseCluster(stack, 'Database', {
+        engine: DatabaseClusterEngine.auroraPostgres({ version: AuroraPostgresEngineVersion.VER_14_3 }),
+        enableDataApi: false,
+        vpc,
+        writer: ClusterInstance.serverlessV2('writer'),
+      });
+
+      // THEN
+      expect(() => cluster.grantDataApiAccess(role)).toThrow('Cannot grant Data API access when the Data API is disabled');
     });
   });
 });

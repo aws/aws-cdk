@@ -697,14 +697,14 @@ export interface CommonProjectProps {
    *
    * @default - no queue timeout is set
    */
-  readonly queuedTimeout?: Duration
+  readonly queuedTimeout?: Duration;
 
   /**
    * Maximum number of concurrent builds. Minimum value is 1 and maximum is account build limit.
    *
    * @default - no explicit limit is set
    */
-  readonly concurrentBuildLimit?: number
+  readonly concurrentBuildLimit?: number;
 
   /**
    * Add the permissions necessary for debugging builds with SSM Session Manager
@@ -1593,7 +1593,7 @@ export enum ImagePullPrincipalType {
    * SERVICE_ROLE specifies that AWS CodeBuild uses the project's role when pulling the image.
    * The role will be granted pull permissions on the ECR repository hosting the image.
    */
-  SERVICE_ROLE = 'SERVICE_ROLE'
+  SERVICE_ROLE = 'SERVICE_ROLE',
 }
 
 export interface BuildEnvironment {
@@ -1995,7 +1995,7 @@ export class WindowsBuildImage implements IBuildImage {
   /**
    * Corresponds to the standard CodeBuild image `aws/codebuild/windows-base:1.0`.
    *
-   * @deprecated `WindowsBuildImage.WIN_SERVER_CORE_2019_BASE_2_0` should be used instead.
+   * @deprecated `WindowsBuildImage.WIN_SERVER_CORE_2019_BASE_3_0` should be used instead.
    */
   public static readonly WIN_SERVER_CORE_2016_BASE: IBuildImage = new WindowsBuildImage({
     imageId: 'aws/codebuild/windows-base:1.0',
@@ -2006,7 +2006,7 @@ export class WindowsBuildImage implements IBuildImage {
    * The standard CodeBuild image `aws/codebuild/windows-base:2.0`, which is
    * based off Windows Server Core 2016.
    *
-   * @deprecated `WindowsBuildImage.WIN_SERVER_CORE_2019_BASE_2_0` should be used instead.
+   * @deprecated `WindowsBuildImage.WIN_SERVER_CORE_2019_BASE_3_0` should be used instead.
    */
   public static readonly WINDOWS_BASE_2_0: IBuildImage = new WindowsBuildImage({
     imageId: 'aws/codebuild/windows-base:2.0',
@@ -2029,6 +2029,16 @@ export class WindowsBuildImage implements IBuildImage {
    */
   public static readonly WIN_SERVER_CORE_2019_BASE_2_0: IBuildImage = new WindowsBuildImage({
     imageId: 'aws/codebuild/windows-base:2019-2.0',
+    imagePullPrincipalType: ImagePullPrincipalType.CODEBUILD,
+    imageType: WindowsImageType.SERVER_2019,
+  });
+
+  /**
+   * The standard CodeBuild image `aws/codebuild/windows-base:2019-3.0`, which is
+   * based off Windows Server Core 2019.
+   */
+  public static readonly WIN_SERVER_CORE_2019_BASE_3_0: IBuildImage = new WindowsBuildImage({
+    imageId: 'aws/codebuild/windows-base:2019-3.0',
     imagePullPrincipalType: ImagePullPrincipalType.CODEBUILD,
     imageType: WindowsImageType.SERVER_2019,
   });
@@ -2117,7 +2127,8 @@ export class WindowsBuildImage implements IBuildImage {
       errors.push('Windows images do not support Lambda compute types');
     }
 
-    if (buildEnvironment.computeType === ComputeType.SMALL || buildEnvironment.computeType === ComputeType.X2_LARGE) {
+    const unsupportedComputeTypes = [ComputeType.SMALL, ComputeType.X_LARGE, ComputeType.X2_LARGE];
+    if (buildEnvironment.computeType !== undefined && unsupportedComputeTypes.includes(buildEnvironment.computeType)) {
       errors.push(`Windows images do not support the '${buildEnvironment.computeType}' compute type`);
     }
     return errors;

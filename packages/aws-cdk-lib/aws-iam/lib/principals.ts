@@ -760,7 +760,7 @@ export class SamlConsolePrincipal extends SamlPrincipal {
     super(samlProvider, {
       ...conditions,
       StringEquals: {
-        'SAML:aud': cdk.Aws.PARTITION==='aws-cn'? 'https://signin.amazonaws.cn/saml': 'https://signin.aws.amazon.com/saml',
+        'SAML:aud': RegionInfo.get(samlProvider.stack.region).samlSignOnUrl ?? 'https://signin.aws.amazon.com/saml',
       },
     });
   }

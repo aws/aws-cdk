@@ -1,0 +1,1 @@
+path.join(__dirname, '..', '..', '..', '..', '..', 'cfn2ts', 'README.md') is not a valid path. It goes beyond the parent library's package.json file so the file it points to will not be available after the library is packaged.

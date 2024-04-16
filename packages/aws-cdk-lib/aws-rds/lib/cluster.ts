@@ -5,6 +5,7 @@ import { DatabaseClusterAttributes, IDatabaseCluster } from './cluster-ref';
 import { Endpoint } from './endpoint';
 import { NetworkType } from './instance';
 import { IParameterGroup, ParameterGroup } from './parameter-group';
+import { DATA_API_ACTIONS } from './perms';
 import { applyDefaultRotationOptions, defaultDeletionProtection, renderCredentials, setupS3ImportExport, helperRemovalPolicy, renderUnless, renderSnapshotCredentials } from './private/util';
 import { BackupProps, Credentials, InstanceProps, PerformanceInsightRetention, RotationSingleUserOptions, RotationMultiUserOptions, SnapshotCredentials } from './props';
 import { DatabaseProxy, DatabaseProxyOptions, ProxyTarget } from './proxy';
@@ -71,7 +72,7 @@ interface DatabaseClusterBaseProps {
    *
    * @default 2
    */
-  readonly serverlessV2MaxCapacity?: number,
+  readonly serverlessV2MaxCapacity?: number;
 
   /**
    * The minimum number of Aurora capacity units (ACUs) for a DB instance in an Aurora Serverless v2 cluster.
@@ -120,7 +121,7 @@ interface DatabaseClusterBaseProps {
    * @see https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/AuroraMySQL.Managing.Backtrack.html
    * @default 0 seconds (no backtrack)
    */
-  readonly backtrackWindow?: Duration
+  readonly backtrackWindow?: Duration;
 
   /**
    * Backup settings
@@ -329,7 +330,7 @@ interface DatabaseClusterBaseProps {
    *
    * @default - true if storageEncryptionKey is provided, false otherwise
    */
-  readonly storageEncrypted?: boolean
+  readonly storageEncrypted?: boolean;
 
   /**
    * The KMS key for storage encryption.
@@ -359,6 +360,31 @@ interface DatabaseClusterBaseProps {
    * @default - IPV4
    */
   readonly networkType?: NetworkType;
+
+  /**
+  * Directory ID for associating the DB cluster with a specific Active Directory.
+  *
+  * Necessary for enabling Kerberos authentication. If specified, the DB cluster joins the given Active Directory, enabling Kerberos authentication.
+  * If not specified, the DB cluster will not be associated with any Active Directory, and Kerberos authentication will not be enabled.
+  *
+  * @default - DB cluster is not associated with an Active Directory; Kerberos authentication is not enabled.
+  */
+  readonly domain?: string;
+
+  /**
+   * The IAM role to be used when making API calls to the Directory Service. The role needs the AWS-managed policy
+   * `AmazonRDSDirectoryServiceAccess` or equivalent.
+   *
+   * @default - If `DatabaseClusterBaseProps.domain` is specified, a role with the `AmazonRDSDirectoryServiceAccess` policy is automatically created.
+   */
+  readonly domainRole?: iam.IRole;
+
+  /**
+   * Whether to enable the Data API for the cluster.
+   *
+   * @default - false
+   */
+  readonly enableDataApi?: boolean;
 }
 
 /**
@@ -392,7 +418,7 @@ export enum InstanceUpdateBehaviour {
    * This results in at most one instance being unavailable during the update.
    * If your cluster consists of more than 1 instance, the downtime periods are limited to the time a primary switch needs.
    */
-  ROLLING = 'ROLLING'
+  ROLLING = 'ROLLING',
 }
 
 /**
@@ -440,6 +466,25 @@ export abstract class DatabaseClusterBase extends Resource implements IDatabaseC
   public abstract readonly connections: ec2.Connections;
 
   /**
+   * The secret attached to this cluster
+   */
+  public abstract readonly secret?: secretsmanager.ISecret
+
+  protected abstract enableDataApi?: boolean;
+
+  /**
+   * The ARN of the cluster
+   */
+  public get clusterArn(): string {
+    return Stack.of(this).formatArn({
+      service: 'rds',
+      resource: 'cluster',
+      arnFormat: ArnFormat.COLON_RESOURCE_NAME,
+      resourceName: this.clusterIdentifier,
+    });
+  }
+
+  /**
    * Add a new db proxy to this cluster.
    */
   public addProxy(id: string, options: DatabaseProxyOptions): DatabaseProxy {
@@ -471,6 +516,25 @@ export abstract class DatabaseClusterBase extends Resource implements IDatabaseC
       })],
     });
   }
+
+  /**
+   * Grant the given identity to access the Data API.
+   */
+  public grantDataApiAccess(grantee: iam.IGrantable): iam.Grant {
+    if (this.enableDataApi === false) {
+      throw new Error('Cannot grant Data API access when the Data API is disabled');
+    }
+
+    this.enableDataApi = true;
+    const ret = iam.Grant.addToPrincipal({
+      grantee,
+      actions: DATA_API_ACTIONS,
+      resourceArns: [this.clusterArn],
+      scope: this,
+    });
+    this.secret?.grantRead(grantee);
+    return ret;
+  }
 }
 
 /**
@@ -486,6 +550,9 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
   protected readonly newCfnProps: CfnDBClusterProps;
   protected readonly securityGroups: ec2.ISecurityGroup[];
   protected readonly subnetGroup: ISubnetGroup;
+
+  private readonly domainId?: string;
+  private readonly domainRole?: iam.IRole;
 
   /**
    * Secret in SecretsManager to store the database cluster user credentials.
@@ -503,6 +570,13 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
   public readonly vpcSubnets?: ec2.SubnetSelection;
 
   /**
+   * The log group is created when `cloudwatchLogsExports` is set.
+   *
+   * Each export value will create a separate log group.
+   */
+  public readonly cloudwatchLogGroups: {[engine: string]: logs.ILogGroup};
+
+  /**
    * Application for single user rotation of the master password to this cluster.
    */
   public readonly singleUserRotationApplication: secretsmanager.SecretRotationApplication;
@@ -516,6 +590,7 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
   protected readonly serverlessV2MaxCapacity: number;
 
   protected hasServerlessInstance?: boolean;
+  protected enableDataApi?: boolean;
 
   constructor(scope: Construct, id: string, props: DatabaseClusterBaseProps) {
     super(scope, id);
@@ -531,12 +606,16 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
     this.vpc = props.instanceProps?.vpc ?? props.vpc!;
     this.vpcSubnets = props.instanceProps?.vpcSubnets ?? props.vpcSubnets;
 
+    this.cloudwatchLogGroups = {};
+
     this.singleUserRotationApplication = props.engine.singleUserRotationApplication;
     this.multiUserRotationApplication = props.engine.multiUserRotationApplication;
 
     this.serverlessV2MaxCapacity = props.serverlessV2MaxCapacity ?? 2;
     this.serverlessV2MinCapacity = props.serverlessV2MinCapacity ?? 0.5;
     this.validateServerlessScalingConfig();
+
+    this.enableDataApi = props.enableDataApi;
 
     const { subnetIds } = this.vpc.selectSubnets(this.vpcSubnets);
 
@@ -600,6 +679,19 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
       ? props.clusterIdentifier?.toLowerCase()
       : props.clusterIdentifier;
 
+    if (props.domain) {
+      this.domainId = props.domain;
+      this.domainRole = props.domainRole ?? new iam.Role(this, 'RDSClusterDirectoryServiceRole', {
+        assumedBy: new iam.CompositePrincipal(
+          new iam.ServicePrincipal('rds.amazonaws.com'),
+          new iam.ServicePrincipal('directoryservice.rds.amazonaws.com'),
+        ),
+        managedPolicies: [
+          iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonRDSDirectoryServiceAccess'),
+        ],
+      });
+    }
+
     this.newCfnProps = {
       // Basic
       engine: props.engine.engineType,
@@ -612,6 +704,7 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
       associatedRoles: clusterAssociatedRoles.length > 0 ? clusterAssociatedRoles : undefined,
       deletionProtection: defaultDeletionProtection(props.deletionProtection, props.removalPolicy),
       enableIamDatabaseAuthentication: props.iamAuthentication,
+      enableHttpEndpoint: Lazy.any({ produce: () => this.enableDataApi }),
       networkType: props.networkType,
       serverlessV2ScalingConfiguration: Lazy.any({
         produce: () => {
@@ -637,6 +730,8 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
       storageEncrypted: props.storageEncryptionKey ? true : props.storageEncrypted,
       // Tags
       copyTagsToSnapshot: props.copyTagsToSnapshot ?? true,
+      domain: this.domainId,
+      domainIamRoleName: this.domainRole?.roleName,
     };
   }
 
@@ -669,6 +764,7 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
       promotionTier: 0, // override the promotion tier so that writers are always 0
     });
     instanceIdentifiers.push(writer.instanceIdentifier);
+    instanceEndpoints.push(new Endpoint(writer.dbInstanceEndpointAddress, this.clusterEndpoint.port));
 
     (props.readers ?? []).forEach(instance => {
       const clusterInstance = instance.bind(this, this, {
@@ -876,12 +972,15 @@ class ImportedDatabaseCluster extends DatabaseClusterBase implements IDatabaseCl
   public readonly clusterIdentifier: string;
   public readonly connections: ec2.Connections;
   public readonly engine?: IClusterEngine;
+  public readonly secret?: secretsmanager.ISecret;
 
   private readonly _clusterResourceIdentifier?: string;
   private readonly _clusterEndpoint?: Endpoint;
   private readonly _clusterReadEndpoint?: Endpoint;
   private readonly _instanceIdentifiers?: string[];
   private readonly _instanceEndpoints?: Endpoint[];
+
+  protected readonly enableDataApi = false;
 
   constructor(scope: Construct, id: string, attrs: DatabaseClusterAttributes) {
     super(scope, id);
@@ -895,6 +994,7 @@ class ImportedDatabaseCluster extends DatabaseClusterBase implements IDatabaseCl
       defaultPort,
     });
     this.engine = attrs.engine;
+    this.secret = attrs.secret;
 
     this._clusterEndpoint = (attrs.clusterEndpointAddress && attrs.port) ? new Endpoint(attrs.clusterEndpointAddress, attrs.port) : undefined;
     this._clusterReadEndpoint = (attrs.readerEndpointAddress && attrs.port) ? new Endpoint(attrs.readerEndpointAddress, attrs.port) : undefined;
@@ -1223,11 +1323,13 @@ function setLogRetention(cluster: DatabaseClusterNew, props: DatabaseClusterBase
 
     if (props.cloudwatchLogsRetention) {
       for (const log of props.cloudwatchLogsExports) {
+        const logGroupName = `/aws/rds/cluster/${cluster.clusterIdentifier}/${log}`;
         new logs.LogRetention(cluster, `LogRetention${log}`, {
-          logGroupName: `/aws/rds/cluster/${cluster.clusterIdentifier}/${log}`,
+          logGroupName,
           retention: props.cloudwatchLogsRetention,
           role: props.cloudwatchLogsRetentionRole,
         });
+        cluster.cloudwatchLogGroups[log] = logs.LogGroup.fromLogGroupName(cluster, `LogGroup${cluster.clusterIdentifier}${log}`, logGroupName);
       }
     }
   }
@@ -1324,6 +1426,7 @@ function legacyCreateInstances(cluster: DatabaseClusterNew, props: DatabaseClust
       autoMinorVersionUpgrade: instanceProps.autoMinorVersionUpgrade,
       allowMajorVersionUpgrade: instanceProps.allowMajorVersionUpgrade,
       deleteAutomatedBackups: instanceProps.deleteAutomatedBackups,
+      preferredMaintenanceWindow: instanceProps.preferredMaintenanceWindow,
     });
 
     // For instances that are part of a cluster:
