@@ -34,8 +34,9 @@ function installLatestSdk(packageName: string): void {
 }
 
 interface AwsSdk {
-  [key: string]: any
+  [key: string]: any;
 }
+
 async function loadAwsSdk(
   packageName: string,
   installLatestAwsSdk?: 'true' | 'false',
@@ -92,6 +93,9 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
         break;
     }
     const call: AwsSdkCall | undefined = event.ResourceProperties[event.RequestType];
+    // if there is a call there will always be logging configured -- otherwise, in the event of no call, logging
+    // wasn't configured so just default to existing behavior
+    const logApiResponseData = call?.logApiResponseData ?? true;
     if (call) {
       const apiCall = new ApiCall(call.service, call.action);
 
@@ -128,7 +132,9 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
           flattenResponse: true,
         });
 
-        console.log('API response', response);
+        if (logApiResponseData) {
+          console.log('API response', response);
+        }
 
         flatData.apiVersion = apiCall.client.config.apiVersion; // For test purposes: check if apiVersion was correctly passed.
         flatData.region = await apiCall.client.config.region().catch(() => undefined); // For test purposes: check if region was correctly passed.
@@ -159,9 +165,9 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
       }
     }
 
-    await respond(event, 'SUCCESS', 'OK', physicalResourceId, data);
+    await respond(event, 'SUCCESS', 'OK', physicalResourceId, data, logApiResponseData);
   } catch (e: any) {
     console.log(e);
-    await respond(event, 'FAILED', e.message || 'Internal Error', context.logStreamName, {});
+    await respond(event, 'FAILED', e.message || 'Internal Error', context.logStreamName, {}, true);
   }
 }
