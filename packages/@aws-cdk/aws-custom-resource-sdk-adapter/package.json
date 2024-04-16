@@ -1,6 +1,6 @@
 {
   "name": "@aws-cdk/aws-custom-resource-sdk-adapter",
-  "description": "Adapter to convert AWS SDK v2 to AWS CDK v3 calls",
+  "description": "Adapter to convert AWS SDK v2 to AWS CDK v3 calls for AwsCustomResource",
   "private": true,
   "version": "0.0.0",
   "main": "lib/index.js",
