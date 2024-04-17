@@ -27,7 +27,7 @@
   "devDependencies": {
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
-    "@aws-cdk/sdk-v2-to-v3-adapter": "0.0.0",
+    "@aws-cdk/aws-custom-resource-sdk-adapter": "0.0.0",
     "@aws-sdk/client-ecs": "3.451.0",
     "@aws-sdk/client-ssm": "3.453.0",
     "@aws-sdk/client-kinesis": "3.451.0",

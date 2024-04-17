@@ -2,7 +2,7 @@
 /* eslint-disable no-console */
 import { execSync } from 'child_process';
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { ApiCall } from '@aws-cdk/sdk-v2-to-v3-adapter';
+import { ApiCall } from '@aws-cdk/aws-custom-resource-sdk-adapter';
 // import the AWSLambda package explicitly,
 // which is globally available in the Lambda runtime,
 // as otherwise linking this repository with link-all.sh

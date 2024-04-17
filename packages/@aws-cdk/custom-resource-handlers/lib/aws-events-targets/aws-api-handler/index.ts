@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { ApiCall } from '@aws-cdk/sdk-v2-to-v3-adapter';
+import { ApiCall } from '@aws-cdk/aws-custom-resource-sdk-adapter';
 
 interface AwsApiInput {
   readonly service: string;
