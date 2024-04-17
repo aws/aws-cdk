@@ -1514,44 +1514,8 @@ var require_fromBase64 = __commonJS({
   }
 });
 
-// node_modules/@smithy/util-base64/dist-cjs/toBase64.js
-var require_toBase64 = __commonJS({
-  "node_modules/@smithy/util-base64/dist-cjs/toBase64.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.toBase64 = void 0;
-    var util_buffer_from_1 = require_dist_cjs9();
-    var toBase642 = (input) => (0, util_buffer_from_1.fromArrayBuffer)(input.buffer, input.byteOffset, input.byteLength).toString("base64");
-    exports2.toBase64 = toBase642;
-  }
-});
-
-// node_modules/@smithy/util-base64/dist-cjs/index.js
-var require_dist_cjs10 = __commonJS({
-  "node_modules/@smithy/util-base64/dist-cjs/index.js"(exports2, module2) {
-    var __defProp2 = Object.defineProperty;
-    var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
-    var __getOwnPropNames2 = Object.getOwnPropertyNames;
-    var __hasOwnProp2 = Object.prototype.hasOwnProperty;
-    var __copyProps2 = (to, from, except, desc) => {
-      if (from && typeof from === "object" || typeof from === "function") {
-        for (let key of __getOwnPropNames2(from))
-          if (!__hasOwnProp2.call(to, key) && key !== except)
-            __defProp2(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc2(from, key)) || desc.enumerable });
-      }
-      return to;
-    };
-    var __reExport = (target, mod, secondTarget) => (__copyProps2(target, mod, "default"), secondTarget && __copyProps2(secondTarget, mod, "default"));
-    var __toCommonJS2 = (mod) => __copyProps2(__defProp2({}, "__esModule", { value: true }), mod);
-    var src_exports = {};
-    module2.exports = __toCommonJS2(src_exports);
-    __reExport(src_exports, require_fromBase64(), module2.exports);
-    __reExport(src_exports, require_toBase64(), module2.exports);
-  }
-});
-
 // node_modules/@smithy/util-utf8/dist-cjs/index.js
-var require_dist_cjs11 = __commonJS({
+var require_dist_cjs10 = __commonJS({
   "node_modules/@smithy/util-utf8/dist-cjs/index.js"(exports2, module2) {
     var __defProp2 = Object.defineProperty;
     var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
@@ -1592,7 +1556,63 @@ var require_dist_cjs11 = __commonJS({
       }
       return new Uint8Array(data);
     }, "toUint8Array");
-    var toUtf8 = /* @__PURE__ */ __name((input) => (0, import_util_buffer_from.fromArrayBuffer)(input.buffer, input.byteOffset, input.byteLength).toString("utf8"), "toUtf8");
+    var toUtf8 = /* @__PURE__ */ __name((input) => {
+      if (typeof input === "string") {
+        return input;
+      }
+      if (typeof input !== "object" || typeof input.byteOffset !== "number" || typeof input.byteLength !== "number") {
+        throw new Error("@smithy/util-utf8: toUtf8 encoder function only accepts string | Uint8Array.");
+      }
+      return (0, import_util_buffer_from.fromArrayBuffer)(input.buffer, input.byteOffset, input.byteLength).toString("utf8");
+    }, "toUtf8");
+  }
+});
+
+// node_modules/@smithy/util-base64/dist-cjs/toBase64.js
+var require_toBase64 = __commonJS({
+  "node_modules/@smithy/util-base64/dist-cjs/toBase64.js"(exports2) {
+    "use strict";
+    Object.defineProperty(exports2, "__esModule", { value: true });
+    exports2.toBase64 = void 0;
+    var util_buffer_from_1 = require_dist_cjs9();
+    var util_utf8_1 = require_dist_cjs10();
+    var toBase642 = (_input) => {
+      let input;
+      if (typeof _input === "string") {
+        input = (0, util_utf8_1.fromUtf8)(_input);
+      } else {
+        input = _input;
+      }
+      if (typeof input !== "object" || typeof input.byteOffset !== "number" || typeof input.byteLength !== "number") {
+        throw new Error("@smithy/util-base64: toBase64 encoder function only accepts string | Uint8Array.");
+      }
+      return (0, util_buffer_from_1.fromArrayBuffer)(input.buffer, input.byteOffset, input.byteLength).toString("base64");
+    };
+    exports2.toBase64 = toBase642;
+  }
+});
+
+// node_modules/@smithy/util-base64/dist-cjs/index.js
+var require_dist_cjs11 = __commonJS({
+  "node_modules/@smithy/util-base64/dist-cjs/index.js"(exports2, module2) {
+    var __defProp2 = Object.defineProperty;
+    var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
+    var __getOwnPropNames2 = Object.getOwnPropertyNames;
+    var __hasOwnProp2 = Object.prototype.hasOwnProperty;
+    var __copyProps2 = (to, from, except, desc) => {
+      if (from && typeof from === "object" || typeof from === "function") {
+        for (let key of __getOwnPropNames2(from))
+          if (!__hasOwnProp2.call(to, key) && key !== except)
+            __defProp2(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc2(from, key)) || desc.enumerable });
+      }
+      return to;
+    };
+    var __reExport = (target, mod, secondTarget) => (__copyProps2(target, mod, "default"), secondTarget && __copyProps2(secondTarget, mod, "default"));
+    var __toCommonJS2 = (mod) => __copyProps2(__defProp2({}, "__esModule", { value: true }), mod);
+    var src_exports = {};
+    module2.exports = __toCommonJS2(src_exports);
+    __reExport(src_exports, require_fromBase64(), module2.exports);
+    __reExport(src_exports, require_toBase64(), module2.exports);
   }
 });
 
@@ -1841,16 +1861,28 @@ var require_dist_cjs14 = __commonJS({
     function writeBody(httpRequest, body) {
       if (body instanceof import_stream.Readable) {
         body.pipe(httpRequest);
-      } else if (body) {
-        httpRequest.end(Buffer.from(body));
-      } else {
-        httpRequest.end();
+        return;
       }
+      if (body) {
+        if (Buffer.isBuffer(body) || typeof body === "string") {
+          httpRequest.end(body);
+          return;
+        }
+        const uint8 = body;
+        if (typeof uint8 === "object" && uint8.buffer && typeof uint8.byteOffset === "number" && typeof uint8.byteLength === "number") {
+          httpRequest.end(Buffer.from(uint8.buffer, uint8.byteOffset, uint8.byteLength));
+          return;
+        }
+        httpRequest.end(Buffer.from(body));
+        return;
+      }
+      httpRequest.end();
     }
     __name(writeBody, "writeBody");
     var DEFAULT_REQUEST_TIMEOUT = 0;
     var _NodeHttpHandler = class _NodeHttpHandler2 {
       constructor(options) {
+        this.socketWarningTimestamp = 0;
         this.metadata = { handlerProtocol: "http/1.1" };
         this.configProvider = new Promise((resolve, reject) => {
           if (typeof options === "function") {
@@ -1872,6 +1904,39 @@ var require_dist_cjs14 = __commonJS({
         }
         return new _NodeHttpHandler2(instanceOrOptions);
       }
+      /**
+       * @internal
+       *
+       * @param agent - http(s) agent in use by the NodeHttpHandler instance.
+       * @returns timestamp of last emitted warning.
+       */
+      static checkSocketUsage(agent, socketWarningTimestamp) {
+        var _a, _b;
+        const { sockets, requests, maxSockets } = agent;
+        if (typeof maxSockets !== "number" || maxSockets === Infinity) {
+          return socketWarningTimestamp;
+        }
+        const interval = 15e3;
+        if (Date.now() - interval < socketWarningTimestamp) {
+          return socketWarningTimestamp;
+        }
+        if (sockets && requests) {
+          for (const origin in sockets) {
+            const socketsInUse = ((_a = sockets[origin]) == null ? void 0 : _a.length) ?? 0;
+            const requestsEnqueued = ((_b = requests[origin]) == null ? void 0 : _b.length) ?? 0;
+            if (socketsInUse >= maxSockets && requestsEnqueued >= 2 * maxSockets) {
+              console.warn(
+                "@smithy/node-http-handler:WARN",
+                `socket usage at capacity=${socketsInUse} and ${requestsEnqueued} additional requests are enqueued.`,
+                "See https://docs.aws.amazon.com/sdk-for-javascript/v3/developer-guide/node-configuring-maxsockets.html",
+                "or increase socketAcquisitionWarningTimeout=(millis) in the NodeHttpHandler config."
+              );
+              return Date.now();
+            }
+          }
+        }
+        return socketWarningTimestamp;
+      }
       resolveDefaultConfig(options) {
         const { requestTimeout, connectionTimeout, socketTimeout, httpAgent, httpsAgent } = options || {};
         const keepAlive = true;
@@ -1879,8 +1944,18 @@ var require_dist_cjs14 = __commonJS({
         return {
           connectionTimeout,
           requestTimeout: requestTimeout ?? socketTimeout,
-          httpAgent: httpAgent || new import_http.Agent({ keepAlive, maxSockets }),
-          httpsAgent: httpsAgent || new import_https.Agent({ keepAlive, maxSockets })
+          httpAgent: (() => {
+            if (httpAgent instanceof import_http.Agent || typeof (httpAgent == null ? void 0 : httpAgent.destroy) === "function") {
+              return httpAgent;
+            }
+            return new import_http.Agent({ keepAlive, maxSockets, ...httpAgent });
+          })(),
+          httpsAgent: (() => {
+            if (httpsAgent instanceof import_https.Agent || typeof (httpsAgent == null ? void 0 : httpsAgent.destroy) === "function") {
+              return httpsAgent;
+            }
+            return new import_https.Agent({ keepAlive, maxSockets, ...httpsAgent });
+          })()
         };
       }
       destroy() {
@@ -1892,10 +1967,12 @@ var require_dist_cjs14 = __commonJS({
         if (!this.config) {
           this.config = await this.configProvider;
         }
+        let socketCheckTimeoutId;
         return new Promise((_resolve, _reject) => {
           let writeRequestBodyPromise = void 0;
           const resolve = /* @__PURE__ */ __name(async (arg) => {
             await writeRequestBodyPromise;
+            clearTimeout(socketCheckTimeoutId);
             _resolve(arg);
           }, "resolve");
           const reject = /* @__PURE__ */ __name(async (arg) => {
@@ -1912,6 +1989,10 @@ var require_dist_cjs14 = __commonJS({
             return;
           }
           const isSSL = request.protocol === "https:";
+          const agent = isSSL ? this.config.httpsAgent : this.config.httpAgent;
+          socketCheckTimeoutId = setTimeout(() => {
+            this.socketWarningTimestamp = _NodeHttpHandler2.checkSocketUsage(agent, this.socketWarningTimestamp);
+          }, this.config.socketAcquisitionWarningTimeout ?? (this.config.requestTimeout ?? 2e3) + (this.config.connectionTimeout ?? 1e3));
           const queryString = (0, import_querystring_builder.buildQueryString)(request.query || {});
           let auth = void 0;
           if (request.username != null || request.password != null) {
@@ -1932,7 +2013,7 @@ var require_dist_cjs14 = __commonJS({
             method: request.method,
             path,
             port: request.port,
-            agent: isSSL ? this.config.httpsAgent : this.config.httpAgent,
+            agent,
             auth
           };
           const requestFunc = isSSL ? import_https.request : import_http.request;
@@ -2389,8 +2470,8 @@ var require_dist_cjs15 = __commonJS({
       Uint8ArrayBlobAdapter: () => Uint8ArrayBlobAdapter
     });
     module2.exports = __toCommonJS2(src_exports);
-    var import_util_base64 = require_dist_cjs10();
-    var import_util_utf8 = require_dist_cjs11();
+    var import_util_base64 = require_dist_cjs11();
+    var import_util_utf8 = require_dist_cjs10();
     function transformToString(payload, encoding = "utf-8") {
       if (encoding === "base64") {
         return (0, import_util_base64.toBase64)(payload);
@@ -2724,11 +2805,11 @@ var require_dist_cjs16 = __commonJS({
           /**
            * @public
            */
-          constructor(input) {
+          constructor(...[input]) {
             super();
-            this.input = input;
             this.serialize = closure._serializer;
             this.deserialize = closure._deserializer;
+            this.input = input ?? {};
             closure._init(this);
           }
           /**
@@ -5395,7 +5476,7 @@ var require_dist_cjs24 = __commonJS({
     module2.exports = __toCommonJS2(src_exports);
     var import_eventstream_codec = require_dist_cjs22();
     var import_util_middleware = require_dist_cjs23();
-    var import_util_utf83 = require_dist_cjs11();
+    var import_util_utf83 = require_dist_cjs10();
     var ALGORITHM_QUERY_PARAM = "X-Amz-Algorithm";
     var CREDENTIAL_QUERY_PARAM = "X-Amz-Credential";
     var AMZ_DATE_QUERY_PARAM = "X-Amz-Date";
@@ -5436,7 +5517,7 @@ var require_dist_cjs24 = __commonJS({
     var KEY_TYPE_IDENTIFIER = "aws4_request";
     var MAX_PRESIGNED_TTL = 60 * 60 * 24 * 7;
     var import_util_hex_encoding = require_dist_cjs21();
-    var import_util_utf8 = require_dist_cjs11();
+    var import_util_utf8 = require_dist_cjs10();
     var signingKeyCache = {};
     var cacheQueue = [];
     var createScope = /* @__PURE__ */ __name((shortDate, region, service) => `${shortDate}/${region}/${service}/${KEY_TYPE_IDENTIFIER}`, "createScope");
@@ -5505,7 +5586,7 @@ var require_dist_cjs24 = __commonJS({
       return keys.map((key) => serialized[key]).filter((serialized2) => serialized2).join("&");
     }, "getCanonicalQuery");
     var import_is_array_buffer = require_dist_cjs8();
-    var import_util_utf82 = require_dist_cjs11();
+    var import_util_utf82 = require_dist_cjs10();
     var getPayloadHash = /* @__PURE__ */ __name(async ({ headers, body }, hashConstructor) => {
       for (const headerName of Object.keys(headers)) {
         if (headerName.toLowerCase() === SHA256_HEADER) {
@@ -8181,7 +8262,7 @@ var require_dist_cjs33 = __commonJS({
         credentialsFile: parsedFiles[1]
       };
     }, "loadSharedConfigFiles");
-    var getSsoSessionData = /* @__PURE__ */ __name((data) => Object.entries(data).filter(([key]) => key.startsWith(import_types.IniSectionType.SSO_SESSION + CONFIG_PREFIX_SEPARATOR)).reduce((acc, [key, value]) => ({ ...acc, [key.split(CONFIG_PREFIX_SEPARATOR)[1]]: value }), {}), "getSsoSessionData");
+    var getSsoSessionData = /* @__PURE__ */ __name((data) => Object.entries(data).filter(([key]) => key.startsWith(import_types.IniSectionType.SSO_SESSION + CONFIG_PREFIX_SEPARATOR)).reduce((acc, [key, value]) => ({ ...acc, [key.substring(key.indexOf(CONFIG_PREFIX_SEPARATOR) + 1)]: value }), {}), "getSsoSessionData");
     var import_slurpFile2 = require_slurpFile();
     var swallowError2 = /* @__PURE__ */ __name(() => ({}), "swallowError");
     var loadSsoSessionData = /* @__PURE__ */ __name(async (init = {}) => (0, import_slurpFile2.slurpFile)(init.configFilepath ?? getConfigFilepath()).then(parseIni).then(getSsoSessionData).catch(swallowError2), "loadSsoSessionData");
@@ -8474,6 +8555,11 @@ var require_dist_cjs37 = __commonJS({
         if (!("$metadata" in error)) {
           const hint = `Deserialization error: to see the raw response, inspect the hidden field {error}.$response on this object.`;
           error.message += "\n  " + hint;
+          if (typeof error.$responseBodyText !== "undefined") {
+            if (error.$response) {
+              error.$response.body = error.$responseBodyText;
+            }
+          }
         }
         throw error;
       }
@@ -9099,6 +9185,7 @@ var require_dist_cjs39 = __commonJS({
     var __toCommonJS2 = (mod) => __copyProps2(__defProp2({}, "__esModule", { value: true }), mod);
     var src_exports = {};
     __export2(src_exports, {
+      isClockSkewCorrectedError: () => isClockSkewCorrectedError,
       isClockSkewError: () => isClockSkewError,
       isRetryableByTrait: () => isRetryableByTrait,
       isServerError: () => isServerError,
@@ -9136,13 +9223,17 @@ var require_dist_cjs39 = __commonJS({
     var NODEJS_TIMEOUT_ERROR_CODES = ["ECONNRESET", "ECONNREFUSED", "EPIPE", "ETIMEDOUT"];
     var isRetryableByTrait = /* @__PURE__ */ __name((error) => error.$retryable !== void 0, "isRetryableByTrait");
     var isClockSkewError = /* @__PURE__ */ __name((error) => CLOCK_SKEW_ERROR_CODES.includes(error.name), "isClockSkewError");
+    var isClockSkewCorrectedError = /* @__PURE__ */ __name((error) => {
+      var _a;
+      return (_a = error.$metadata) == null ? void 0 : _a.clockSkewCorrected;
+    }, "isClockSkewCorrectedError");
     var isThrottlingError = /* @__PURE__ */ __name((error) => {
       var _a, _b;
       return ((_a = error.$metadata) == null ? void 0 : _a.httpStatusCode) === 429 || THROTTLING_ERROR_CODES.includes(error.name) || ((_b = error.$retryable) == null ? void 0 : _b.throttling) == true;
     }, "isThrottlingError");
     var isTransientError = /* @__PURE__ */ __name((error) => {
       var _a;
-      return TRANSIENT_ERROR_CODES.includes(error.name) || NODEJS_TIMEOUT_ERROR_CODES.includes((error == null ? void 0 : error.code) || "") || TRANSIENT_ERROR_STATUS_CODES.includes(((_a = error.$metadata) == null ? void 0 : _a.httpStatusCode) || 0);
+      return isClockSkewCorrectedError(error) || TRANSIENT_ERROR_CODES.includes(error.name) || NODEJS_TIMEOUT_ERROR_CODES.includes((error == null ? void 0 : error.code) || "") || TRANSIENT_ERROR_STATUS_CODES.includes(((_a = error.$metadata) == null ? void 0 : _a.httpStatusCode) || 0);
     }, "isTransientError");
     var isServerError = /* @__PURE__ */ __name((error) => {
       var _a;
@@ -9810,6 +9901,7 @@ var require_dist_cjs41 = __commonJS({
     var isRetryStrategyV2 = /* @__PURE__ */ __name((retryStrategy) => typeof retryStrategy.acquireInitialRetryToken !== "undefined" && typeof retryStrategy.refreshRetryTokenForRetry !== "undefined" && typeof retryStrategy.recordSuccess !== "undefined", "isRetryStrategyV2");
     var getRetryErrorInfo = /* @__PURE__ */ __name((error) => {
       const errorInfo = {
+        error,
         errorType: getRetryErrorType(error)
       };
       const retryAfterHint = getRetryAfterHint(error.$response);
@@ -13308,6 +13400,7 @@ var require_dist_cjs44 = __commonJS({
       ENV_CMDS_AUTH_TOKEN: () => ENV_CMDS_AUTH_TOKEN,
       ENV_CMDS_FULL_URI: () => ENV_CMDS_FULL_URI,
       ENV_CMDS_RELATIVE_URI: () => ENV_CMDS_RELATIVE_URI,
+      Endpoint: () => Endpoint,
       fromContainerMetadata: () => fromContainerMetadata,
       fromInstanceMetadata: () => fromInstanceMetadata,
       getInstanceMetadataEndpoint: () => getInstanceMetadataEndpoint,
@@ -13457,6 +13550,11 @@ var require_dist_cjs44 = __commonJS({
     var InstanceMetadataV1FallbackError = _InstanceMetadataV1FallbackError;
     var import_node_config_provider = require_dist_cjs34();
     var import_url_parser = require_dist_cjs36();
+    var Endpoint = /* @__PURE__ */ ((Endpoint2) => {
+      Endpoint2["IPv4"] = "http://169.254.169.254";
+      Endpoint2["IPv6"] = "http://[fd00:ec2::254]";
+      return Endpoint2;
+    })(Endpoint || {});
     var ENV_ENDPOINT_NAME = "AWS_EC2_METADATA_SERVICE_ENDPOINT";
     var CONFIG_ENDPOINT_NAME = "ec2_metadata_service_endpoint";
     var ENDPOINT_CONFIG_OPTIONS = {
@@ -13497,7 +13595,8 @@ var require_dist_cjs44 = __commonJS({
       const refreshInterval = STATIC_STABILITY_REFRESH_INTERVAL_SECONDS + Math.floor(Math.random() * STATIC_STABILITY_REFRESH_INTERVAL_JITTER_WINDOW_SECONDS);
       const newExpiration = new Date(Date.now() + refreshInterval * 1e3);
       logger.warn(
-        "Attempting credential expiration extension due to a credential service availability issue. A refresh of these credentials will be attempted after ${new Date(newExpiration)}.\nFor more information, please visit: " + STATIC_STABILITY_DOC_URL
+        `Attempting credential expiration extension due to a credential service availability issue. A refresh of these credentials will be attempted after ${new Date(newExpiration)}.
+For more information, please visit: ` + STATIC_STABILITY_DOC_URL
       );
       const originalExpiration = credentials.originalExpiration ?? credentials.expiration;
       return {
@@ -14074,7 +14173,7 @@ var require_dist_cjs47 = __commonJS({
     });
     module2.exports = __toCommonJS2(src_exports);
     var import_util_buffer_from = require_dist_cjs9();
-    var import_util_utf8 = require_dist_cjs11();
+    var import_util_utf8 = require_dist_cjs10();
     var import_buffer = require("buffer");
     var import_crypto4 = require("crypto");
     var _Hash = class _Hash {
@@ -14143,7 +14242,7 @@ var require_dist_cjs48 = __commonJS({
         return 0;
       }
       if (typeof body === "string") {
-        return Buffer.from(body).length;
+        return Buffer.byteLength(body);
       } else if (typeof body.byteLength === "number") {
         return body.byteLength;
       } else if (typeof body.size === "number") {
@@ -14217,8 +14316,8 @@ var require_runtimeConfig_shared = __commonJS({
     exports2.getRuntimeConfig = void 0;
     var smithy_client_1 = require_dist_cjs16();
     var url_parser_1 = require_dist_cjs36();
-    var util_base64_1 = require_dist_cjs10();
-    var util_utf8_1 = require_dist_cjs11();
+    var util_base64_1 = require_dist_cjs11();
+    var util_utf8_1 = require_dist_cjs10();
     var endpointResolver_1 = require_endpointResolver();
     var getRuntimeConfig = (config) => ({
       apiVersion: "2019-06-10",
@@ -15521,8 +15620,8 @@ var require_client_sso_oidc_node = __commonJS({
     var util_retry_1 = require_dist_cjs40();
     var smithy_client_2 = require_dist_cjs16();
     var url_parser_1 = require_dist_cjs36();
-    var util_base64_1 = require_dist_cjs10();
-    var util_utf8_1 = require_dist_cjs11();
+    var util_base64_1 = require_dist_cjs11();
+    var util_utf8_1 = require_dist_cjs10();
     var util_endpoints_1 = require_dist_cjs27();
     var p = "required";
     var q = "fn";
@@ -17107,8 +17206,8 @@ var require_runtimeConfig_shared2 = __commonJS({
     exports2.getRuntimeConfig = void 0;
     var smithy_client_1 = require_dist_cjs16();
     var url_parser_1 = require_dist_cjs36();
-    var util_base64_1 = require_dist_cjs10();
-    var util_utf8_1 = require_dist_cjs11();
+    var util_base64_1 = require_dist_cjs11();
+    var util_utf8_1 = require_dist_cjs10();
     var endpointResolver_1 = require_endpointResolver2();
     var getRuntimeConfig = (config) => ({
       apiVersion: "2011-06-15",
@@ -18479,7 +18578,7 @@ var require_dist_cjs61 = __commonJS({
     });
     module2.exports = __toCommonJS2(src_exports);
     var import_fs = require("fs");
-    var import_util_utf8 = require_dist_cjs11();
+    var import_util_utf8 = require_dist_cjs10();
     var import_stream = require("stream");
     var _HashCalculator = class _HashCalculator extends import_stream.Writable {
       constructor(hash, options) {
@@ -18845,9 +18944,9 @@ var require_runtimeConfig_shared3 = __commonJS({
     var signature_v4_multi_region_1 = require_dist_cjs62();
     var smithy_client_1 = require_dist_cjs16();
     var url_parser_1 = require_dist_cjs36();
-    var util_base64_1 = require_dist_cjs10();
+    var util_base64_1 = require_dist_cjs11();
     var util_stream_1 = require_dist_cjs15();
-    var util_utf8_1 = require_dist_cjs11();
+    var util_utf8_1 = require_dist_cjs10();
     var endpointResolver_1 = require_endpointResolver3();
     var getRuntimeConfig = (config) => ({
       apiVersion: "2006-03-01",
@@ -31610,7 +31709,7 @@ var require_stringHasher = __commonJS({
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.stringHasher = void 0;
-    var util_utf8_1 = require_dist_cjs11();
+    var util_utf8_1 = require_dist_cjs10();
     var stringHasher = (checksumAlgorithmFn, body) => {
       const hash = new checksumAlgorithmFn();
       hash.update((0, util_utf8_1.toUint8Array)(body || ""));

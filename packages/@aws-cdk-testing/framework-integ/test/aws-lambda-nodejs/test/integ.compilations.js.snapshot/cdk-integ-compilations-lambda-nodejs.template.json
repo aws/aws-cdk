@@ -52,7 +52,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs18.x"
+    "Runtime": "nodejs20.x"
    },
    "DependsOn": [
     "tsdecoratorhandlerServiceRole61E9E52C"
@@ -110,7 +110,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs18.x"
+    "Runtime": "nodejs20.x"
    },
    "DependsOn": [
     "tsdecoratorhandlertsconfigServiceRoleC4AE481E"
