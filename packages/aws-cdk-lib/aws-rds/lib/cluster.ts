@@ -595,10 +595,8 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
   constructor(scope: Construct, id: string, props: DatabaseClusterBaseProps) {
     super(scope, id);
 
-    if ((props.vpc && props.instanceProps?.vpc)) {
+    if ((props.vpc && props.instanceProps?.vpc) || (!props.vpc && !props.instanceProps?.vpc)) {
       throw new Error('Provide either vpc or instanceProps.vpc, but not both');
-    } else if (!props.vpc && !props.instanceProps?.vpc) {
-      throw new Error('If instanceProps is not provided then `vpc` must be provided.');
     }
     if ((props.vpcSubnets && props.instanceProps?.vpcSubnets)) {
       throw new Error('Provide either vpcSubnets or instanceProps.vpcSubnets, but not both');
