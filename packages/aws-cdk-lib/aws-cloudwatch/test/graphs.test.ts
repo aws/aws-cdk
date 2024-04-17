@@ -1,5 +1,24 @@
 import { Duration, Stack } from '../../core';
-import { Alarm, AlarmWidget, Color, GraphWidget, GraphWidgetView, LegendPosition, LogQueryWidget, Metric, Shading, SingleValueWidget, LogQueryVisualizationType, CustomWidget, GaugeWidget, VerticalShading } from '../lib';
+import {
+  Alarm,
+  AlarmWidget,
+  Color,
+  CustomWidget,
+  GaugeWidget,
+  GraphWidget,
+  GraphWidgetView,
+  LegendPosition,
+  LogQueryVisualizationType,
+  LogQueryWidget,
+  Metric,
+  Shading,
+  SingleValueWidget,
+  TableLayout,
+  TableSummaryColumn,
+  TableThreshold,
+  TableWidget,
+  VerticalShading,
+} from '../lib';
 
 describe('Graphs', () => {
   test('add stacked property to graphs', () => {
@@ -1085,5 +1104,210 @@ describe('Graphs', () => {
         },
       },
     }]);
+  });
+
+  describe('TableWidget', () => {
+    let stack;
+    let metric;
+
+    beforeEach(() => {
+      stack = new Stack();
+      metric = new Metric({ namespace: 'CDK', metricName: 'Test' });
+    });
+
+    test('with optional fields unset', () => {
+      // GIVEN
+      const widget = new TableWidget({
+        metrics: [metric],
+      });
+
+      // THEN
+      expect(stack.resolve(widget.toJson())).toEqual([{
+        type: 'metric',
+        height: 6,
+        width: 6,
+        properties: {
+          view: 'table',
+          metrics: [
+            ['CDK', 'Test'],
+          ],
+          region: { Ref: 'AWS::Region' },
+          table: {
+            layout: 'horizontal',
+            showTimeSeriesData: true,
+            stickySummary: false,
+            summaryColumns: [],
+          },
+          yAxis: {},
+        },
+      }]);
+    });
+
+    test('add metrics lazily', () => {
+      // GIVEN
+      const widget = new TableWidget({});
+      widget.addMetric(metric);
+
+      // THEN
+      expect(stack.resolve(widget.toJson())).toEqual([{
+        type: 'metric',
+        height: 6,
+        width: 6,
+        properties: {
+          view: 'table',
+          metrics: [
+            ['CDK', 'Test'],
+          ],
+          region: { Ref: 'AWS::Region' },
+          table: {
+            layout: 'horizontal',
+            showTimeSeriesData: true,
+            stickySummary: false,
+            summaryColumns: [],
+          },
+          yAxis: {},
+        },
+      }]);
+    });
+
+    test('with most table fields set', () => {
+      // GIVEN
+      const widget = new TableWidget({
+        metrics: [metric],
+        layout: TableLayout.VERTICAL,
+        showUnitsInLabel: true,
+        liveData: true,
+        fullPrecision: true,
+        summary: {
+          columns: [TableSummaryColumn.AVERAGE],
+          hideNonSummaryColumns: true,
+          sticky: true,
+        },
+      });
+
+      // THEN
+      expect(stack.resolve(widget.toJson())).toEqual([{
+        type: 'metric',
+        height: 6,
+        width: 6,
+        properties: {
+          view: 'table',
+          metrics: [
+            ['CDK', 'Test'],
+          ],
+          region: { Ref: 'AWS::Region' },
+          liveData: true,
+          singleValueFullPrecision: true,
+          table: {
+            layout: 'vertical',
+            showTimeSeriesData: false,
+            stickySummary: true,
+            summaryColumns: ['AVG'],
+          },
+          yAxis: {
+            left: {
+              showUnits: true,
+            },
+          },
+        },
+      }]);
+    });
+
+    test('with thresholds', () => {
+      // GIVEN
+      const widget = new TableWidget({
+        metrics: [metric],
+        thresholds: [
+          TableThreshold.above(1000, Color.RED),
+          TableThreshold.between(500, 1000, Color.ORANGE),
+          TableThreshold.below(500, Color.GREEN),
+        ],
+      });
+
+      // THEN
+      expect(stack.resolve(widget.toJson())).toEqual([{
+        type: 'metric',
+        height: 6,
+        width: 6,
+        properties: {
+          view: 'table',
+          metrics: [
+            ['CDK', 'Test'],
+          ],
+          region: { Ref: 'AWS::Region' },
+          table: {
+            layout: 'horizontal',
+            showTimeSeriesData: true,
+            stickySummary: false,
+            summaryColumns: [],
+          },
+          yAxis: {},
+          annotations: {
+            horizontal: [
+              {
+                color: '#d62728',
+                fill: 'above',
+                value: 1000,
+              },
+              [
+                {
+                  color: '#ff7f0e',
+                  value: 500,
+                },
+                {
+                  value: 1000,
+                },
+              ],
+              {
+                color: '#2ca02c',
+                fill: 'below',
+                value: 500,
+              },
+            ],
+          },
+        },
+      }]);
+    });
+
+    test('with start and end set', () => {
+      // GIVEN
+      const widget = new TableWidget({
+        metrics: [metric],
+        start: '-P7D',
+        end: '2018-12-17T06:00:00.000Z',
+      });
+
+      // THEN
+      expect(stack.resolve(widget.toJson())).toEqual([{
+        type: 'metric',
+        height: 6,
+        width: 6,
+        properties: {
+          view: 'table',
+          metrics: [
+            ['CDK', 'Test'],
+          ],
+          region: { Ref: 'AWS::Region' },
+          table: {
+            layout: 'horizontal',
+            showTimeSeriesData: true,
+            stickySummary: false,
+            summaryColumns: [],
+          },
+          yAxis: {},
+          start: '-P7D',
+          end: '2018-12-17T06:00:00.000Z',
+        },
+      }]);
+    });
+
+    test('cannot specify an end without a start', () => {
+      expect(() => {
+        new TableWidget({
+          metrics: [metric],
+          end: '2018-12-17T06:00:00.000Z',
+        });
+      }).toThrow(/If you specify a value for end, you must also specify a value for start./);
+    });
   });
 });

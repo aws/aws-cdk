@@ -32,6 +32,7 @@ class SnsToLambda extends cdk.Stack {
         color: sns.SubscriptionFilter.stringFilter({
           allowlist: ['red'],
           matchPrefixes: ['bl', 'ye'],
+          matchSuffixes: ['ue', 'ow'],
         }),
         size: sns.SubscriptionFilter.stringFilter({
           denylist: ['small', 'medium'],
@@ -54,6 +55,7 @@ class SnsToLambda extends cdk.Stack {
           color: sns.FilterOrPolicy.filter(sns.SubscriptionFilter.stringFilter({
             allowlist: ['red'],
             matchPrefixes: ['bl', 'ye'],
+            matchSuffixes: ['ue', 'ow'],
           })),
         }),
       },

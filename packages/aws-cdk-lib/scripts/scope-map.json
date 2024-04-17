@@ -2,9 +2,6 @@
   "alexa-ask": [
     "Alexa::ASK"
   ],
-  "amzn-sdc": [
-    "AMZN::SDC"
-  ],
   "aws-accessanalyzer": [
     "AWS::AccessAnalyzer"
   ],
@@ -83,6 +80,12 @@
   "aws-batch": [
     "AWS::Batch"
   ],
+  "aws-bcmdataexports": [
+    "AWS::BCMDataExports"
+  ],
+  "aws-bedrock": [
+    "AWS::Bedrock"
+  ],
   "aws-billingconductor": [
     "AWS::BillingConductor"
   ],
@@ -103,6 +106,9 @@
   ],
   "aws-cleanrooms": [
     "AWS::CleanRooms"
+  ],
+  "aws-cleanroomsml": [
+    "AWS::CleanRoomsML"
   ],
   "aws-cloud9": [
     "AWS::Cloud9"
@@ -128,6 +134,9 @@
   "aws-codecommit": [
     "AWS::CodeCommit"
   ],
+  "aws-codeconnections": [
+    "AWS::CodeConnections"
+  ],
   "aws-codedeploy": [
     "AWS::CodeDeploy"
   ],
@@ -148,9 +157,6 @@
   ],
   "aws-codestarnotifications": [
     "AWS::CodeStarNotifications"
-  ],
-  "aws-codetest": [
-    "AWS::CodeTest"
   ],
   "aws-cognito": [
     "AWS::Cognito"
@@ -190,6 +196,9 @@
   ],
   "aws-dax": [
     "AWS::DAX"
+  ],
+  "aws-deadline": [
+    "AWS::Deadline"
   ],
   "aws-detective": [
     "AWS::Detective"
@@ -614,6 +623,9 @@
   ],
   "aws-securityhub": [
     "AWS::SecurityHub"
+  ],
+  "aws-securitylake": [
+    "AWS::SecurityLake"
   ],
   "aws-servicecatalog": [
     "AWS::ServiceCatalog"

@@ -1924,6 +1924,7 @@ test('with filter policy', () => {
       color: sns.SubscriptionFilter.stringFilter({
         allowlist: ['red'],
         matchPrefixes: ['bl', 'ye'],
+        matchSuffixes: ['ue', 'ow'],
       }),
       size: sns.SubscriptionFilter.stringFilter({
         denylist: ['small', 'medium'],
@@ -1943,6 +1944,12 @@ test('with filter policy', () => {
         },
         {
           'prefix': 'ye',
+        },
+        {
+          'suffix': 'ue',
+        },
+        {
+          'suffix': 'ow',
         },
       ],
       'size': [
@@ -1980,6 +1987,7 @@ test('with filter policy scope MessageBody', () => {
         background: sns.FilterOrPolicy.filter(sns.SubscriptionFilter.stringFilter({
           allowlist: ['red'],
           matchPrefixes: ['bl', 'ye'],
+          matchSuffixes: ['ue', 'ow'],
         })),
       }),
       size: sns.FilterOrPolicy.filter(sns.SubscriptionFilter.stringFilter({
@@ -1998,6 +2006,12 @@ test('with filter policy scope MessageBody', () => {
           },
           {
             'prefix': 'ye',
+          },
+          {
+            'suffix': 'ue',
+          },
+          {
+            'suffix': 'ow',
           },
         ],
       },

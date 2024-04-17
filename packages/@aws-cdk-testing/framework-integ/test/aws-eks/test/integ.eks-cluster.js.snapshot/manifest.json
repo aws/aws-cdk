@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-us-east-1",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-us-east-1",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/941462982545fa408401670219ce1553ef771a69f649d95ba7e0ada2852dd209.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/2671ff16600b72563eb47dce632897a8aa8c5afcdcf69e2a61527fbda3b05c21.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -697,7 +697,10 @@
         "/aws-cdk-eks-cluster/Cluster/Nodegroupextra-ng-spot/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterNodegroupextrangspotB327AE6B"
+            "data": "ClusterNodegroupextrangspotB327AE6B",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/aws-cdk-eks-cluster/Cluster/Nodegroupextra-ng-arm/NodeGroupRole/Resource": [

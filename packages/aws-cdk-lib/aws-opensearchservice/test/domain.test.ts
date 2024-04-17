@@ -295,7 +295,7 @@ each([testedOpenSearchVersions]).test('can set a self-referencing custom policy'
         {
           Ref: 'Domain66AC69E0',
         },
-        'AccessPolicy"}}',
+        'AccessPolicy"},"logApiResponseData":true}',
       ],
     ],
   };
@@ -408,6 +408,27 @@ each([testedOpenSearchVersions]).test('can specify multiAZWithStandbyEnabled in 
   });
 });
 
+each([testedOpenSearchVersions]).test('multiAZWithStandbyEnabled: true throws with t3 instance type (data node)', (engineVersion) => {
+  expect(() => new Domain(stack, 'Domain', {
+    version: engineVersion,
+    capacity: {
+      dataNodeInstanceType: 't3.medium.search',
+      multiAzWithStandbyEnabled: true,
+    },
+  })).toThrow(/T3 instance type does not support Multi-AZ with standby feature\./);
+});
+
+each([testedOpenSearchVersions]).test('multiAZWithStandbyEnabled: true throws with t3 instance type (master node)', (engineVersion) => {
+  expect(() => new Domain(stack, 'Domain', {
+    version: engineVersion,
+    capacity: {
+      masterNodeInstanceType: 't3.medium.search',
+      masterNodes: 1,
+      multiAzWithStandbyEnabled: true,
+    },
+  })).toThrow(/T3 instance type does not support Multi-AZ with standby feature\./);
+});
+
 each([testedOpenSearchVersions]).test('ENABLE_OPENSEARCH_MULTIAZ_WITH_STANDBY set multiAZWithStandbyEnabled value', (engineVersion) => {
   const stackWithFlag = new Stack(app, 'StackWithFlag', {
     env: { account: '1234', region: 'testregion' },
@@ -434,6 +455,7 @@ each([testedOpenSearchVersions]).describe('log groups', (engineVersion) => {
       },
     });
 
+    Template.fromStack(stack).resourceCountIs('Custom::CloudwatchLogResourcePolicy', 1);
     Template.fromStack(stack).hasResourceProperties('AWS::OpenSearchService::Domain', {
       LogPublishingOptions: {
         SEARCH_SLOW_LOGS: {
@@ -460,6 +482,7 @@ each([testedOpenSearchVersions]).describe('log groups', (engineVersion) => {
       },
     });
 
+    Template.fromStack(stack).resourceCountIs('Custom::CloudwatchLogResourcePolicy', 1);
     Template.fromStack(stack).hasResourceProperties('AWS::OpenSearchService::Domain', {
       LogPublishingOptions: {
         INDEX_SLOW_LOGS: {
@@ -486,6 +509,7 @@ each([testedOpenSearchVersions]).describe('log groups', (engineVersion) => {
       },
     });
 
+    Template.fromStack(stack).resourceCountIs('Custom::CloudwatchLogResourcePolicy', 1);
     Template.fromStack(stack).hasResourceProperties('AWS::OpenSearchService::Domain', {
       LogPublishingOptions: {
         ES_APPLICATION_LOGS: {
@@ -520,6 +544,7 @@ each([testedOpenSearchVersions]).describe('log groups', (engineVersion) => {
       enforceHttps: true,
     });
 
+    Template.fromStack(stack).resourceCountIs('Custom::CloudwatchLogResourcePolicy', 1);
     Template.fromStack(stack).hasResourceProperties('AWS::OpenSearchService::Domain', {
       LogPublishingOptions: {
         AUDIT_LOGS: {
@@ -555,6 +580,8 @@ each([testedOpenSearchVersions]).describe('log groups', (engineVersion) => {
         slowIndexLogEnabled: true,
       },
     });
+
+    Template.fromStack(stack).resourceCountIs('Custom::CloudwatchLogResourcePolicy', 2);
     Template.fromStack(stack).hasResourceProperties('AWS::OpenSearchService::Domain', {
       LogPublishingOptions: {
         ES_APPLICATION_LOGS: {
@@ -648,7 +675,7 @@ each([testedOpenSearchVersions]).describe('log groups', (engineVersion) => {
                 'Arn',
               ],
             },
-            '\\"}],\\"Version\\":\\"2012-10-17\\"}"},"physicalResourceId":{"id":"ESLogGroupPolicyc836fd92f07ec41eb70c2f6f08dc4b43cfb7c25391"}}',
+            '\\"}],\\"Version\\":\\"2012-10-17\\"}"},"physicalResourceId":{"id":"ESLogGroupPolicyc836fd92f07ec41eb70c2f6f08dc4b43cfb7c25391"},"logApiResponseData":true}',
           ],
         ],
       },
@@ -666,7 +693,7 @@ each([testedOpenSearchVersions]).describe('log groups', (engineVersion) => {
                 'Arn',
               ],
             },
-            '\\"}],\\"Version\\":\\"2012-10-17\\"}"},"physicalResourceId":{"id":"ESLogGroupPolicyc8f05f015be3baf6ec1ee06cd1ee5cc8706ebbe5b2"}}',
+            '\\"}],\\"Version\\":\\"2012-10-17\\"}"},"physicalResourceId":{"id":"ESLogGroupPolicyc8f05f015be3baf6ec1ee06cd1ee5cc8706ebbe5b2"},"logApiResponseData":true}',
           ],
         ],
       },
@@ -693,6 +720,7 @@ each([testedOpenSearchVersions]).describe('log groups', (engineVersion) => {
       },
     });
 
+    Template.fromStack(stack).resourceCountIs('Custom::CloudwatchLogResourcePolicy', 1);
     Template.fromStack(stack).hasResourceProperties('AWS::OpenSearchService::Domain', {
       LogPublishingOptions: {
         SEARCH_SLOW_LOGS: {
@@ -722,6 +750,7 @@ each([testedOpenSearchVersions]).describe('log groups', (engineVersion) => {
       },
     });
 
+    Template.fromStack(stack).resourceCountIs('Custom::CloudwatchLogResourcePolicy', 1);
     Template.fromStack(stack).hasResourceProperties('AWS::OpenSearchService::Domain', {
       LogPublishingOptions: {
         INDEX_SLOW_LOGS: {
@@ -751,6 +780,7 @@ each([testedOpenSearchVersions]).describe('log groups', (engineVersion) => {
       },
     });
 
+    Template.fromStack(stack).resourceCountIs('Custom::CloudwatchLogResourcePolicy', 1);
     Template.fromStack(stack).hasResourceProperties('AWS::OpenSearchService::Domain', {
       LogPublishingOptions: {
         ES_APPLICATION_LOGS: {
@@ -788,6 +818,7 @@ each([testedOpenSearchVersions]).describe('log groups', (engineVersion) => {
       },
     });
 
+    Template.fromStack(stack).resourceCountIs('Custom::CloudwatchLogResourcePolicy', 1);
     Template.fromStack(stack).hasResourceProperties('AWS::OpenSearchService::Domain', {
       LogPublishingOptions: {
         AUDIT_LOGS: {
@@ -806,6 +837,120 @@ each([testedOpenSearchVersions]).describe('log groups', (engineVersion) => {
     });
   });
 
+  test('can suppress creation of a CloudWatch Logs resource policy', () => {
+    new Domain(stack, 'Domain1', {
+      version: engineVersion,
+      logging: {
+        appLogEnabled: true,
+        appLogGroup: new logs.LogGroup(stack, 'AppLogs', {
+          retention: logs.RetentionDays.THREE_MONTHS,
+        }),
+      },
+      suppressLogsResourcePolicy: true,
+    });
+
+    Template.fromStack(stack).resourceCountIs('Custom::CloudwatchLogResourcePolicy', 0);
+    Template.fromStack(stack).hasResourceProperties('AWS::OpenSearchService::Domain', {
+      LogPublishingOptions: {
+        ES_APPLICATION_LOGS: {
+          CloudWatchLogsLogGroupArn: {
+            'Fn::GetAtt': [
+              'AppLogsC5DF83A6',
+              'Arn',
+            ],
+          },
+          Enabled: true,
+        },
+        AUDIT_LOGS: Match.absent(),
+        SEARCH_SLOW_LOGS: Match.absent(),
+        INDEX_SLOW_LOGS: Match.absent(),
+      },
+    });
+  });
+
+  test('can disable application logs', () => {
+    new Domain(stack, 'Domain1', {
+      version: engineVersion,
+      logging: {
+        appLogEnabled: false,
+      },
+    });
+
+    Template.fromStack(stack).resourceCountIs('Custom::CloudwatchLogResourcePolicy', 0);
+    Template.fromStack(stack).hasResourceProperties('AWS::OpenSearchService::Domain', {
+      LogPublishingOptions: {
+        ES_APPLICATION_LOGS: {
+          Enabled: false,
+        },
+        AUDIT_LOGS: Match.absent(),
+        SEARCH_SLOW_LOGS: Match.absent(),
+        INDEX_SLOW_LOGS: Match.absent(),
+      },
+    });
+  });
+
+  test('can disable audit logs', () => {
+    new Domain(stack, 'Domain1', {
+      version: engineVersion,
+      logging: {
+        auditLogEnabled: false,
+      },
+    });
+
+    Template.fromStack(stack).resourceCountIs('Custom::CloudwatchLogResourcePolicy', 0);
+    Template.fromStack(stack).hasResourceProperties('AWS::OpenSearchService::Domain', {
+      LogPublishingOptions: {
+        ES_APPLICATION_LOGS: Match.absent(),
+        AUDIT_LOGS: {
+          Enabled: false,
+        },
+        SEARCH_SLOW_LOGS: Match.absent(),
+        INDEX_SLOW_LOGS: Match.absent(),
+      },
+    });
+  });
+
+  test('can disable slow search logs', () => {
+    new Domain(stack, 'Domain1', {
+      version: engineVersion,
+      logging: {
+        slowSearchLogEnabled: false,
+      },
+    });
+
+    Template.fromStack(stack).resourceCountIs('Custom::CloudwatchLogResourcePolicy', 0);
+    Template.fromStack(stack).hasResourceProperties('AWS::OpenSearchService::Domain', {
+      LogPublishingOptions: {
+        ES_APPLICATION_LOGS: Match.absent(),
+        AUDIT_LOGS: Match.absent(),
+        SEARCH_SLOW_LOGS: {
+          Enabled: false,
+        },
+        INDEX_SLOW_LOGS: Match.absent(),
+      },
+    });
+  });
+
+  test('can disable slow index logs', () => {
+    new Domain(stack, 'Domain1', {
+      version: engineVersion,
+      logging: {
+        slowIndexLogEnabled: false,
+      },
+    });
+
+    Template.fromStack(stack).resourceCountIs('Custom::CloudwatchLogResourcePolicy', 0);
+    Template.fromStack(stack).hasResourceProperties('AWS::OpenSearchService::Domain', {
+      LogPublishingOptions: {
+        ES_APPLICATION_LOGS: Match.absent(),
+        AUDIT_LOGS: Match.absent(),
+        SEARCH_SLOW_LOGS: Match.absent(),
+        INDEX_SLOW_LOGS: {
+          Enabled: false,
+        },
+      },
+    });
+  });
 });
 
 each(testedOpenSearchVersions).describe('grants', (engineVersion) => {
@@ -1953,6 +2098,79 @@ each(testedOpenSearchVersions).describe('custom error responses', (engineVersion
         warmNodes: 1,
       },
     })).toThrow(/UltraWarm requires Elasticsearch version 6\.8 or later or OpenSearch version 1.0 or later/);
+  });
+
+  test('enabling cold storage without ultrawarm throws an error', () => {
+    expect(() => new Domain(stack, 'Domain', {
+      version: engineVersion,
+      coldStorageEnabled: true,
+    })).toThrow(/You must enable UltraWarm storage to enable cold storage./);
+  });
+
+  test('can enable cold storage', () => {
+    new Domain(stack, 'Domain', {
+      version: engineVersion,
+      capacity: {
+        masterNodes: 2,
+        warmNodes: 2,
+      },
+      coldStorageEnabled: true,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::OpenSearchService::Domain', {
+      ClusterConfig: {
+        DedicatedMasterEnabled: true,
+        WarmEnabled: true,
+        WarmCount: 2,
+        WarmType: 'ultrawarm1.medium.search',
+        ColdStorageOptions: {
+          Enabled: true,
+        },
+      },
+    });
+  });
+
+  test('can disable cold storage', () => {
+    new Domain(stack, 'Domain', {
+      version: engineVersion,
+      capacity: {
+        masterNodes: 2,
+        warmNodes: 2,
+      },
+      coldStorageEnabled: false,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::OpenSearchService::Domain', {
+      ClusterConfig: {
+        DedicatedMasterEnabled: true,
+        WarmEnabled: true,
+        WarmCount: 2,
+        WarmType: 'ultrawarm1.medium.search',
+        ColdStorageOptions: {
+          Enabled: false,
+        },
+      },
+    });
+  });
+
+  test('cold storage default is undefined', () => {
+    new Domain(stack, 'Domain', {
+      version: engineVersion,
+      capacity: {
+        masterNodes: 2,
+        warmNodes: 2,
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::OpenSearchService::Domain', {
+      ClusterConfig: {
+        DedicatedMasterEnabled: true,
+        WarmEnabled: true,
+        WarmCount: 2,
+        WarmType: 'ultrawarm1.medium.search',
+        ColdStorageOptions: Match.absent(),
+      },
+    });
   });
 
   test('error when t2 or t3 instance types are specified with UltramWarm enabled', () => {

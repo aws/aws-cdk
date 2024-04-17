@@ -31,14 +31,20 @@ class MockAction implements codepipeline.IAction {
   }
 }
 
-const app = new cdk.App();
+const app = new cdk.App({
+  postCliContext: {
+    '@aws-cdk/aws-codepipeline:defaultPipelineTypeToV2': false,
+  },
+});
 const stack = new cdk.Stack(app, 'pipeline-events');
 
 const repo = new codecommit.Repository(stack, 'Repo', {
   repositoryName: 'TestRepository',
 });
 
-const pipeline = new codepipeline.Pipeline(stack, 'pipelinePipeline22F2A91D');
+const pipeline = new codepipeline.Pipeline(stack, 'pipelinePipeline22F2A91D', {
+  crossAccountKeys: true,
+});
 
 const srcArtifact = new codepipeline.Artifact('Src');
 pipeline.addStage({

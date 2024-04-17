@@ -32,7 +32,7 @@
     "@aws-cdk/pkglint": "0.0.0",
     "@types/changelog-parser": "^2.8.4",
     "@types/fs-extra": "^9.0.13",
-    "@types/jest": "^29.5.11",
+    "@types/jest": "^29.5.12",
     "@types/yargs": "^15.0.19",
     "jest": "^29.7.0"
   },
@@ -48,7 +48,7 @@
     "detect-newline": "^3.1.0",
     "fs-extra": "^9.1.0",
     "git-raw-commits": "^2.0.11",
-    "semver": "^7.5.4",
+    "semver": "^7.6.0",
     "stringify-package": "^1.0.1"
   },
   "keywords": [

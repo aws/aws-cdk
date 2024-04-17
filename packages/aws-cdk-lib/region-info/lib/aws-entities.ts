@@ -120,7 +120,7 @@ export function regionsBefore(ruleOrRegion: string | symbol): string[] {
     .sort() as string[];
 }
 
-export interface Region { readonly partition: string, readonly domainSuffix: string }
+export interface Region { readonly partition: string; readonly domainSuffix: string }
 
 const PARTITION_MAP: {readonly [region: string]: Region } = {
   'default': { partition: 'aws', domainSuffix: 'amazonaws.com' },

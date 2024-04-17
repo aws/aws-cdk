@@ -21,7 +21,11 @@ import * as cpactions from 'aws-cdk-lib/aws-codepipeline-actions';
  * 5. Manually delete the 'aws-cdk-codepipeline-elastic-beanstalk-deploy' stack
  */
 
-const app = new App();
+const app = new App({
+  postCliContext: {
+    '@aws-cdk/aws-codepipeline:defaultPipelineTypeToV2': false,
+  },
+});
 
 const stack = new Stack(app, 'aws-cdk-codepipeline-elastic-beanstalk-deploy');
 
@@ -32,7 +36,7 @@ const bucket = new s3.Bucket(stack, 'PipelineBucket', {
 });
 
 const artifact = new deploy.BucketDeployment(stack, 'DeployApp', {
-  sources: [deploy.Source.asset(path.join(__dirname, 'assets/nodejs.zip'))],
+  sources: [deploy.Source.asset(path.join(__dirname, 'assets', 'nodejs.zip'))],
   destinationBucket: bucket,
   extract: false,
 });
@@ -79,7 +83,7 @@ const beanstalkEnv = new elasticbeanstalk.CfnEnvironment(stack, 'beanstlk-env', 
   applicationName: beanstalkApp.applicationName!,
   environmentName: 'codepipeline-test-env',
   // see https://docs.aws.amazon.com/elasticbeanstalk/latest/platforms/platforms-supported.html#platforms-supported.nodejs
-  solutionStackName: '64bit Amazon Linux 2023 v6.0.2 running Node.js 18',
+  solutionStackName: '64bit Amazon Linux 2023 v6.0.4 running Node.js 18',
   optionSettings: [
     {
       namespace: 'aws:autoscaling:launchconfiguration',

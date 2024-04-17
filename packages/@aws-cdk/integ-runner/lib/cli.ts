@@ -42,6 +42,7 @@ export function parseCliArgs(args: string[] = []) {
       default: ['javascript', 'typescript', 'python', 'go'],
       choices: ['javascript', 'typescript', 'python', 'go'],
       type: 'array',
+      nargs: 1,
       desc: 'Use these presets to run integration tests for the selected languages',
     })
     .option('app', { type: 'string', default: undefined, desc: 'The custom CLI command that will be used to run the test files. You can include {filePath} to specify where in the command the test file path should be inserted. Example: --app="python3.8 {filePath}".' })
@@ -106,7 +107,7 @@ export async function main(args: string[]) {
     return;
   }
 
-  const pool = workerpool.pool(path.join(__dirname, '../lib/workers/extract/index.js'), {
+  const pool = workerpool.pool(path.join(__dirname, '..', 'lib', 'workers', 'extract', 'index.js'), {
     maxWorkers: options.watch ? 1 : options.maxWorkers,
   });
 
@@ -202,15 +203,15 @@ export async function main(args: string[]) {
 }
 
 function validateWatchArgs(args: {
-  tests: IntegTest[],
-  testRegions?: string[],
-  profiles?: string[],
-  maxWorkers: number,
-  force: boolean,
-  dryRun: boolean,
-  disableUpdateWorkflow: boolean,
-  runUpdateOnFailed: boolean,
-  watch: boolean,
+  tests: IntegTest[];
+  testRegions?: string[];
+  profiles?: string[];
+  maxWorkers: number;
+  force: boolean;
+  dryRun: boolean;
+  disableUpdateWorkflow: boolean;
+  runUpdateOnFailed: boolean;
+  watch: boolean;
 }) {
   if (args.watch) {
     if (

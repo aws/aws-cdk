@@ -8,6 +8,9 @@ import { S3SourceAction, CodeBuildAction } from 'aws-cdk-lib/aws-codepipeline-ac
 
 const app = new App({
   treeMetadata: false,
+  postCliContext: {
+    '@aws-cdk/aws-codepipeline:defaultPipelineTypeToV2': false,
+  },
 });
 const stack1 = new Stack(app, 'integ-pipeline-producer-stack', {
   env: {
@@ -31,6 +34,7 @@ const bucket = new Bucket(stack1, 'ReplicationBucket', {
 
 const artifact = new Artifact();
 const pipeline = new Pipeline(stack2, 'Pipeline', {
+  crossAccountKeys: true,
   crossRegionReplicationBuckets: {
     'us-east-1': bucket,
   },

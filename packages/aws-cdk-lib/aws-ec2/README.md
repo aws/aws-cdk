@@ -189,17 +189,72 @@ are managed by AWS. If you would prefer to use your own managed NAT
 *instances* instead, specify a different value for the `natGatewayProvider`
 property, as follows:
 
-[using NAT instances](test/integ.nat-instances.lit.ts)
-
-The construct will automatically search for the most recent NAT gateway AMI.
+The construct will automatically selects the latest version of Amazon Linux 2023.
 If you prefer to use a custom AMI, use `machineImage:
 MachineImage.genericLinux({ ... })` and configure the right AMI ID for the
 regions you want to deploy to.
+
+> **Warning**
+> The NAT instances created using this method will be **unmonitored**.
+> They are not part of an Auto Scaling Group,
+> and if they become unavailable or are terminated for any reason,
+> will not be restarted or replaced.
 
 By default, the NAT instances will route all traffic. To control what traffic
 gets routed, pass a custom value for `defaultAllowedTraffic` and access the
 `NatInstanceProvider.connections` member after having passed the NAT provider to
 the VPC:
+
+```ts
+declare const instanceType: ec2.InstanceType;
+
+const provider = ec2.NatProvider.instanceV2({
+  instanceType,
+  defaultAllowedTraffic: ec2.NatTrafficDirection.OUTBOUND_ONLY,
+});
+new ec2.Vpc(this, 'TheVPC', {
+  natGatewayProvider: provider,
+});
+provider.connections.allowFrom(ec2.Peer.ipv4('1.2.3.4/8'), ec2.Port.HTTP);
+```
+
+You can also customize the characteristics of your NAT instances, including their security group,
+as well as their initialization scripts:
+
+```ts
+declare const bucket: s3.Bucket;
+
+const userData = ec2.UserData.forLinux();
+userData.addCommands(
+  ...ec2.NatInstanceProviderV2.DEFAULT_USER_DATA_COMMANDS,
+  'echo "hello world!" > hello.txt',
+  `aws s3 cp hello.txt s3://${bucket.bucketName}`,
+);
+
+const provider = ec2.NatProvider.instanceV2({
+  instanceType: new ec2.InstanceType('t3.small'),
+  creditSpecification: ec2.CpuCredits.UNLIMITED,
+  defaultAllowedTraffic: ec2.NatTrafficDirection.NONE,
+});
+
+const vpc = new ec2.Vpc(this, 'TheVPC', {
+  natGatewayProvider: provider,
+  natGateways: 2,
+});
+
+const securityGroup = new ec2.SecurityGroup(this, 'SecurityGroup', { vpc });
+    securityGroup.addEgressRule(ec2.Peer.anyIpv4(), ec2.Port.tcp(443));
+for (const gateway of provider.gatewayInstances) {
+  bucket.grantWrite(gateway);
+  gateway.addSecurityGroup(securityGroup);
+}
+```
+
+[using NAT instances](test/integ.nat-instances.lit.ts) [Deprecated]
+
+The V1 `NatProvider.instance` construct will use the AWS official NAT instance AMI, which has already
+reached EOL on Dec 31, 2023. For more information, see the following blog post: 
+[Amazon Linux AMI end of life](https://aws.amazon.com/blogs/aws/update-on-amazon-linux-ami-end-of-life/).
 
 ```ts
 declare const instanceType: ec2.InstanceType;
@@ -211,7 +266,7 @@ const provider = ec2.NatProvider.instance({
 new ec2.Vpc(this, 'TheVPC', {
   natGatewayProvider: provider,
 });
-provider.connections.allowFrom(ec2.Peer.ipv4('1.2.3.4/8'), ec2.Port.tcp(80));
+provider.connections.allowFrom(ec2.Peer.ipv4('1.2.3.4/8'), ec2.Port.HTTP);
 ```
 
 ### Ip Address Management
@@ -669,13 +724,13 @@ declare const appFleet: autoscaling.AutoScalingGroup;
 declare const dbFleet: autoscaling.AutoScalingGroup;
 
 // Allow connections from anywhere
-loadBalancer.connections.allowFromAnyIpv4(ec2.Port.tcp(443), 'Allow inbound HTTPS');
+loadBalancer.connections.allowFromAnyIpv4(ec2.Port.HTTPS, 'Allow inbound HTTPS');
 
 // The same, but an explicit IP address
-loadBalancer.connections.allowFrom(ec2.Peer.ipv4('1.2.3.4/32'), ec2.Port.tcp(443), 'Allow inbound HTTPS');
+loadBalancer.connections.allowFrom(ec2.Peer.ipv4('1.2.3.4/32'), ec2.Port.HTTPS, 'Allow inbound HTTPS');
 
 // Allow connection between AutoScalingGroups
-appFleet.connections.allowTo(dbFleet, ec2.Port.tcp(443), 'App can call database');
+appFleet.connections.allowTo(dbFleet, ec2.Port.HTTPS, 'App can call database');
 ```
 
 ### Connection Peers
@@ -692,7 +747,7 @@ peer = ec2.Peer.anyIpv4();
 peer = ec2.Peer.ipv6('::0/0');
 peer = ec2.Peer.anyIpv6();
 peer = ec2.Peer.prefixList('pl-12345');
-appFleet.connections.allowTo(peer, ec2.Port.tcp(443), 'Allow outbound HTTPS');
+appFleet.connections.allowTo(peer, ec2.Port.HTTPS, 'Allow outbound HTTPS');
 ```
 
 Any object that has a security group can itself be used as a connection peer:
@@ -703,9 +758,9 @@ declare const fleet2: autoscaling.AutoScalingGroup;
 declare const appFleet: autoscaling.AutoScalingGroup;
 
 // These automatically create appropriate ingress and egress rules in both security groups
-fleet1.connections.allowTo(fleet2, ec2.Port.tcp(80), 'Allow between fleets');
+fleet1.connections.allowTo(fleet2, ec2.Port.HTTP, 'Allow between fleets');
 
-appFleet.connections.allowFromAnyIpv4(ec2.Port.tcp(80), 'Allow from load balancer');
+appFleet.connections.allowFromAnyIpv4(ec2.Port.HTTP, 'Allow from load balancer');
 ```
 
 ### Port Ranges
@@ -715,6 +770,7 @@ the connection specifier:
 
 ```ts
 ec2.Port.tcp(80)
+ec2.Port.HTTPS
 ec2.Port.tcpRange(60000, 65535)
 ec2.Port.allTcp()
 ec2.Port.allIcmp()
@@ -768,7 +824,7 @@ const mySecurityGroupWithoutInlineRules = new ec2.SecurityGroup(this, 'SecurityG
   disableInlineRules: true
 });
 //This will add the rule as an external cloud formation construct
-mySecurityGroupWithoutInlineRules.addIngressRule(ec2.Peer.anyIpv4(), ec2.Port.tcp(22), 'allow ssh access from the world');
+mySecurityGroupWithoutInlineRules.addIngressRule(ec2.Peer.anyIpv4(), ec2.Port.SSH, 'allow ssh access from the world');
 ```
 
 ### Importing an existing security group
@@ -1032,6 +1088,17 @@ new ec2.VpcEndpointService(this, 'EndpointService', {
   acceptanceRequired: true,
   allowedPrincipals: [new iam.ArnPrincipal('arn:aws:iam::123456789012:root')],
   contributorInsights: true
+});
+```
+
+You can also include a service principal in the `allowedPrincipals` property by specifying it as a parameter to the  `ArnPrincipal` constructor.
+The resulting VPC endpoint will have an allowlisted principal of type `Service`, instead of `Arn` for that item in the list.
+```ts
+declare const networkLoadBalancer: elbv2.NetworkLoadBalancer;
+
+new ec2.VpcEndpointService(this, 'EndpointService', {
+  vpcEndpointServiceLoadBalancers: [networkLoadBalancer],
+  allowedPrincipals: [new iam.ArnPrincipal('ec2.amazonaws.com')],
 });
 ```
 
@@ -1429,7 +1496,7 @@ EBS volume for the bastion host can be encrypted like:
 const host = new ec2.BastionHostLinux(this, 'BastionHost', {
   vpc,
   blockDevices: [{
-    deviceName: 'EBSBastionHost',
+    deviceName: '/dev/sdh',
     volume: ec2.BlockDeviceVolume.ebs(10, {
       encrypted: true,
     }),
@@ -1756,6 +1823,36 @@ Note to set `mapPublicIpOnLaunch` to true in the `subnetConfiguration`.
 
 Additionally, IPv6 support varies by instance type. Most instance types have IPv6 support with exception of m1-m3, c1, g2, and t1.micro. A full list can be found here: https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-eni.html#AvailableIpPerENI.
 
+
+### Credit configuration modes for burstable instances
+
+You can set the [credit configuration mode](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/burstable-credits-baseline-concepts.html) for burstable instances (T2, T3, T3a and T4g instance types):
+
+```ts
+declare const vpc: ec2.Vpc;
+
+const instance = new ec2.Instance(this, 'Instance', {
+  instanceType: ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.MICRO),
+  machineImage: ec2.MachineImage.latestAmazonLinux2(),
+  vpc: vpc,
+  creditSpecification: ec2.CpuCredits.STANDARD,
+});
+```
+
+It is also possible to set the credit configuration mode for NAT instances.
+
+```ts
+const natInstanceProvider = ec2.NatProvider.instance({
+  instanceType: ec2.InstanceType.of(ec2.InstanceClass.T4G, ec2.InstanceSize.LARGE),
+  machineImage: new ec2.AmazonLinuxImage(),
+  creditSpecification: ec2.CpuCredits.UNLIMITED,
+});
+new ec2.Vpc(this, 'VPC', {
+  natGatewayProvider: natInstanceProvider,
+});
+```
+
+**Note**: `CpuCredits.UNLIMITED` mode is not supported for T3 instances that are launched on a Dedicated Host.
 
 ## VPC Flow Logs
 

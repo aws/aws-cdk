@@ -418,7 +418,7 @@ export enum TLSSecurityPolicy {
   /** Cipher suite TLS 1.0 */
   TLS_1_0 = 'Policy-Min-TLS-1-0-2019-07',
   /** Cipher suite TLS 1.2 */
-  TLS_1_2 = 'Policy-Min-TLS-1-2-2019-07'
+  TLS_1_2 = 'Policy-Min-TLS-1-2-2019-07',
 }
 
 /**

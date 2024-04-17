@@ -61,7 +61,7 @@ export interface AwsIntegrationProps {
   /**
    * Integration options, such as content handling, request/response mapping, etc.
    */
-  readonly options?: IntegrationOptions
+  readonly options?: IntegrationOptions;
 
   /**
    * The region of the integrated AWS service.

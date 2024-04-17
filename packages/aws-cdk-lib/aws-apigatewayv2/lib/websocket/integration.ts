@@ -3,7 +3,7 @@ import { IWebSocketApi } from './api';
 import { IWebSocketRoute } from './route';
 import { CfnIntegration } from '.././index';
 import { IRole } from '../../../aws-iam';
-import { Resource } from '../../../core';
+import { Duration, Resource } from '../../../core';
 import { IIntegration } from '../common';
 
 /**
@@ -33,6 +33,45 @@ export enum WebSocketIntegrationType {
 }
 
 /**
+ * Integration content handling
+ */
+export enum ContentHandling {
+  /**
+   * Converts a request payload from a base64-encoded string to a binary blob.
+   */
+  CONVERT_TO_BINARY = 'CONVERT_TO_BINARY',
+
+  /**
+   * Converts a request payload from a binary blob to a base64-encoded string.
+   */
+  CONVERT_TO_TEXT = 'CONVERT_TO_TEXT',
+}
+
+/**
+ * Integration Passthrough Behavior
+ */
+export enum PassthroughBehavior {
+  /**
+   * Passes the request body for unmapped content types through to the
+   * integration back end without transformation.
+   */
+  WHEN_NO_MATCH = 'WHEN_NO_MATCH',
+
+  /**
+   * Rejects unmapped content types with an HTTP 415 'Unsupported Media Type'
+   * response
+   */
+  NEVER = 'NEVER',
+
+  /**
+   * Allows pass-through when the integration has NO content types mapped to
+   * templates. However if there is at least one content type defined,
+   * unmapped content types will be rejected with the same 415 response.
+   */
+  WHEN_NO_TEMPLATES = 'WHEN_NO_TEMPLATES',
+}
+
+/**
  * The integration properties
  */
 export interface WebSocketIntegrationProps {
@@ -57,6 +96,14 @@ export interface WebSocketIntegrationProps {
    * @default - No HTTP method required.
    */
   readonly integrationMethod?: string;
+
+  /**
+   * Specifies how to handle response payload content type conversions.
+   *
+   * @default - The response payload will be passed through from the integration response to
+   * the route response or method response without modification.
+   */
+  readonly contentHandling?: ContentHandling;
 
   /**
    * Specifies the IAM role required for the integration.
@@ -92,6 +139,25 @@ export interface WebSocketIntegrationProps {
    * @default - No template selection expression required.
    */
   readonly templateSelectionExpression?: string;
+
+  /**
+   * The maximum amount of time an integration will run before it returns without a response.
+   * Must be between 50 milliseconds and 29 seconds.
+   *
+   * @default Duration.seconds(29)
+   */
+  readonly timeout?: Duration;
+
+  /**
+   * Specifies the pass-through behavior for incoming requests based on the
+   * Content-Type header in the request, and the available mapping templates
+   * specified as the requestTemplates property on the Integration resource.
+   * There are three valid values: WHEN_NO_MATCH, WHEN_NO_TEMPLATES, and
+   * NEVER.
+   *
+   * @default - No passthrough behavior required.
+   */
+  readonly passthroughBehavior?: PassthroughBehavior;
 }
 
 /**
@@ -109,10 +175,13 @@ export class WebSocketIntegration extends Resource implements IWebSocketIntegrat
       integrationType: props.integrationType,
       integrationUri: props.integrationUri,
       integrationMethod: props.integrationMethod,
+      contentHandlingStrategy: props.contentHandling,
       credentialsArn: props.credentialsRole?.roleArn,
       requestParameters: props.requestParameters,
       requestTemplates: props.requestTemplates,
+      passthroughBehavior: props.passthroughBehavior,
       templateSelectionExpression: props.templateSelectionExpression,
+      timeoutInMillis: props.timeout?.toMilliseconds(),
     });
     this.integrationId = integ.ref;
     this.webSocketApi = props.webSocketApi;
@@ -165,9 +234,12 @@ export abstract class WebSocketRouteIntegration {
         integrationType: config.type,
         integrationUri: config.uri,
         integrationMethod: config.method,
+        contentHandling: config.contentHandling,
         credentialsRole: config.credentialsRole,
         requestTemplates: config.requestTemplates,
         requestParameters: config.requestParameters,
+        timeout: config.timeout,
+        passthroughBehavior: config.passthroughBehavior,
         templateSelectionExpression: config.templateSelectionExpression,
       });
     }
@@ -203,6 +275,14 @@ export interface WebSocketRouteIntegrationConfig {
   readonly method?: string;
 
   /**
+   * Specifies how to handle response payload content type conversions.
+   *
+   * @default - The response payload will be passed through from the integration response to
+   * the route response or method response without modification.
+   */
+  readonly contentHandling?: ContentHandling;
+
+  /**
    * Credentials role
    *
    * @default - No role provided.
@@ -229,4 +309,19 @@ export interface WebSocketRouteIntegrationConfig {
    * @default - No template selection expression.
    */
   readonly templateSelectionExpression?: string;
+
+  /**
+   * The maximum amount of time an integration will run before it returns without a response.
+   * Must be between 50 milliseconds and 29 seconds.
+   *
+   * @default Duration.seconds(29)
+   */
+  readonly timeout?: Duration;
+
+  /**
+   * Integration passthrough behaviors.
+   *
+   * @default - No pass through bahavior.
+   */
+  readonly passthroughBehavior?: PassthroughBehavior;
 }

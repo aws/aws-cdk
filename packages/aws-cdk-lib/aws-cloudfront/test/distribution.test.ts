@@ -1,6 +1,7 @@
 import { defaultOrigin, defaultOriginGroup } from './test-origin';
 import { Match, Template } from '../../assertions';
 import * as acm from '../../aws-certificatemanager';
+import * as cloudwatch from '../../aws-cloudwatch';
 import * as iam from '../../aws-iam';
 import * as kinesis from '../../aws-kinesis';
 import * as lambda from '../../aws-lambda';
@@ -1240,4 +1241,96 @@ test('render distribution behavior with realtime log config - multiple behaviors
         }],
       },
     }));
+});
+
+test('with publish additional metrics', () => {
+  const origin = defaultOrigin();
+  new Distribution(stack, 'MyDist', {
+    defaultBehavior: { origin },
+    publishAdditionalMetrics: true,
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Distribution', {
+    DistributionConfig: {
+      DefaultCacheBehavior: {
+        CachePolicyId: '658327ea-f89d-4fab-a63d-7e88639e58f6',
+        Compress: true,
+        TargetOriginId: 'StackMyDistOrigin1D6D5E535',
+        ViewerProtocolPolicy: 'allow-all',
+      },
+      Enabled: true,
+      HttpVersion: 'http2',
+      IPV6Enabled: true,
+      Origins: [{
+        DomainName: 'www.example.com',
+        Id: 'StackMyDistOrigin1D6D5E535',
+        CustomOriginConfig: {
+          OriginProtocolPolicy: 'https-only',
+        },
+      }],
+    },
+  });
+  Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::MonitoringSubscription', {
+    DistributionId: {
+      Ref: 'MyDistDB88FD9A',
+    },
+    MonitoringSubscription: {
+      RealtimeMetricsSubscriptionConfig: {
+        RealtimeMetricsSubscriptionStatus: 'Enabled',
+      },
+    },
+  });
+});
+
+describe('Distribution metrics tests', () => {
+  const additionalMetrics = [
+    { name: 'OriginLatency', method: 'metricOriginLatency', statistic: 'Average', additionalMetricsRequired: true, errorMetricName: 'Origin latency' },
+    { name: 'CacheHitRate', method: 'metricCacheHitRate', statistic: 'Average', additionalMetricsRequired: true, errorMetricName: 'Cache hit rate' },
+    ...['401', '403', '404', '502', '503', '504'].map(errorCode => ({
+      name: `${errorCode}ErrorRate`,
+      method: `metric${errorCode}ErrorRate`,
+      statistic: 'Average',
+      additionalMetricsRequired: true,
+      errorMetricName: `${errorCode} error rate`,
+    })),
+  ];
+
+  const defaultMetrics = [
+    { name: 'Requests', method: 'metricRequests', statistic: 'Sum', additionalMetricsRequired: false, errorMetricName: '' },
+    { name: 'BytesDownloaded', method: 'metricBytesDownloaded', statistic: 'Sum', additionalMetricsRequired: false, errorMetricName: '' },
+    { name: 'BytesUploaded', method: 'metricBytesUploaded', statistic: 'Sum', additionalMetricsRequired: false, errorMetricName: '' },
+    { name: 'TotalErrorRate', method: 'metricTotalErrorRate', statistic: 'Average', additionalMetricsRequired: false, errorMetricName: '' },
+    { name: '4xxErrorRate', method: 'metric4xxErrorRate', statistic: 'Average', additionalMetricsRequired: false, errorMetricName: '' },
+    { name: '5xxErrorRate', method: 'metric5xxErrorRate', statistic: 'Average', additionalMetricsRequired: false, errorMetricName: '' },
+  ];
+
+  test.each(additionalMetrics.concat(defaultMetrics))('get %s metric', (metric) => {
+    const origin = defaultOrigin();
+    const dist = new Distribution(stack, 'MyDist', {
+      defaultBehavior: { origin },
+      publishAdditionalMetrics: metric.additionalMetricsRequired,
+    });
+
+    const metricObj = dist[metric.method]();
+
+    expect(metricObj).toEqual(new cloudwatch.Metric({
+      namespace: 'AWS/CloudFront',
+      metricName: metric.name,
+      dimensions: { DistributionId: dist.distributionId },
+      statistic: metric.statistic,
+      period: Duration.minutes(5),
+    }));
+  });
+
+  test.each(additionalMetrics)('throw error when trying to get %s metric without publishing additional metrics', (metric) => {
+    const origin = defaultOrigin();
+    const dist = new Distribution(stack, 'MyDist', {
+      defaultBehavior: { origin },
+      publishAdditionalMetrics: false,
+    });
+
+    expect(() => {
+      dist[metric.method]();
+    }).toThrow(new RegExp(`${metric.errorMetricName} metric is only available if 'publishAdditionalMetrics' is set 'true'`));
+  });
 });

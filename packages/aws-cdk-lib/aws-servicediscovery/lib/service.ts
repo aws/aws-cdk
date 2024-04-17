@@ -431,7 +431,7 @@ export enum DiscoveryType {
   /**
    * Instances are discoverable via DNS or API
    */
-  DNS_AND_API = 'DNS_AND_API'
+  DNS_AND_API = 'DNS_AND_API',
 }
 
 export enum DnsRecordType {

@@ -113,6 +113,7 @@ describe('Subscription', () => {
           allowlist: ['red', 'green'],
           denylist: ['white', 'orange'],
           matchPrefixes: ['bl', 'ye'],
+          matchSuffixes: ['ue', 'ow'],
         }),
         price: sns.SubscriptionFilter.numericFilter({
           allowlist: [100, 200],
@@ -137,6 +138,8 @@ describe('Subscription', () => {
           { 'anything-but': ['white', 'orange'] },
           { prefix: 'bl' },
           { prefix: 'ye' },
+          { suffix: 'ue' },
+          { suffix: 'ow' },
         ],
         price: [
           { numeric: ['=', 100] },

@@ -36,7 +36,7 @@ export enum TableEncryption {
    *
    * @see https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingClientSideEncryption.html
    */
-  CLIENT_SIDE_KMS = 'CSE-KMS'
+  CLIENT_SIDE_KMS = 'CSE-KMS',
 }
 
 export interface S3TableProps extends TableBaseProps {
