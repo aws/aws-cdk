@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 import { CustomResourceHandler } from './base';
 import { AwsApiCallRequest, AwsApiCallResult } from './types';
-import { ApiCall, flatten } from '@aws-cdk/sdk-v2-to-v3-adapter';
+import { ApiCall, flatten } from '@aws-cdk/aws-custom-resource-sdk-adapter';
 import { decodeParameters, deepParseJson } from './utils';
 
 export class AwsApiCallHandler extends CustomResourceHandler<AwsApiCallRequest, AwsApiCallResult | { [key: string]: unknown }> {
