@@ -1,0 +1,309 @@
+{
+ "Resources": {
+  "HttpApiCall5f7069701a458c2283dbb422b313fd3a": {
+   "Type": "Custom::DeployAssert@HttpCall",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "parameters": {
+     "url": {
+      "Fn::Join": [
+       "",
+       [
+        "https://",
+        {
+         "Fn::ImportValue": "InvokeFunctionAssertions:ExportsOutputRefHttpApiF5A9A8A7F70B5BDD"
+        },
+        ".execute-api.",
+        {
+         "Ref": "AWS::Region"
+        },
+        ".",
+        {
+         "Ref": "AWS::URLSuffix"
+        },
+        "/dev/get"
+       ]
+      ]
+     }
+    },
+    "expected": "{\"$ObjectLike\":{\"status\":200,\"ok\":true,\"body\":\"Hello!\"}}",
+    "salt": "1712425490127"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+     }
+    ]
+   }
+  },
+  "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Runtime": "nodejs18.x",
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "980ab41b674bbe2a714081b8b83c3b7bc45c4f8bb52a347bc93fc308857eadec.zip"
+    },
+    "Timeout": 120,
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73",
+      "Arn"
+     ]
+    }
+   }
+  },
+  "HttpApiCall1219698b15310d985020a947d89e593e": {
+   "Type": "Custom::DeployAssert@HttpCall",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "parameters": {
+     "url": {
+      "Fn::Join": [
+       "",
+       [
+        "https://",
+        {
+         "Fn::ImportValue": "InvokeFunctionAssertions:ExportsOutputRefHttpApiF5A9A8A7F70B5BDD"
+        },
+        ".execute-api.",
+        {
+         "Ref": "AWS::Region"
+        },
+        ".",
+        {
+         "Ref": "AWS::URLSuffix"
+        },
+        "/dev/post"
+       ]
+      ]
+     },
+     "fetchOptions": {
+      "method": "POST",
+      "body": "{\"key\":\"value\"}",
+      "headers": {
+       "Content-Type": "application/json"
+      }
+     }
+    },
+    "expected": "{\"$ObjectLike\":{\"status\":200,\"ok\":true,\"body\":\"Received body: {\\\"key\\\":\\\"value\\\"}\"}}",
+    "salt": "1712425490128"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "HttpApiCallf16d32bb38fdf952b8530f86260d5337": {
+   "Type": "Custom::DeployAssert@HttpCall",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "parameters": {
+     "url": {
+      "Fn::Join": [
+       "",
+       [
+        "https://",
+        {
+         "Fn::ImportValue": "InvokeFunctionAssertions:ExportsOutputRefHttpApiF5A9A8A7F70B5BDD"
+        },
+        ".execute-api.",
+        {
+         "Ref": "AWS::Region"
+        },
+        ".",
+        {
+         "Ref": "AWS::URLSuffix"
+        },
+        "/dev/status/403"
+       ]
+      ]
+     }
+    },
+    "expected": "{\"$ObjectLike\":{\"status\":403,\"ok\":false}}",
+    "salt": "1712425490128"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "HttpApiCallhttpbinorggetcd942067e1d112f86d205b2008dcab31": {
+   "Type": "Custom::DeployAssert@HttpCallhttpbinorgget",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "parameters": {
+     "url": "https://httpbin.org/get?key=value#hash"
+    },
+    "expected": "{\"$ObjectLike\":{\"status\":200,\"ok\":true,\"body\":{\"url\":\"https://httpbin.org/get?key=value\",\"args\":{\"key\":\"value\"}}}}",
+    "salt": "1712425490129"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "HttpApiCallhttpbinorgpost57c1eb9b16e045b0fe0eadcc8fcfe86f": {
+   "Type": "Custom::DeployAssert@HttpCallhttpbinorgpost",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "parameters": {
+     "url": "https://httpbin.org/post",
+     "fetchOptions": {
+      "method": "POST",
+      "body": "{\"key\":\"value\"}",
+      "headers": {
+       "Content-Type": "application/json"
+      }
+     }
+    },
+    "expected": "{\"$ObjectLike\":{\"status\":200,\"ok\":true,\"body\":{\"url\":\"https://httpbin.org/post\",\"json\":{\"key\":\"value\"}}}}",
+    "salt": "1712425490129"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "HttpApiCallhttpbinorgstatus403241ddf94e19f31ae5405653ddcc7ea8b": {
+   "Type": "Custom::DeployAssert@HttpCallhttpbinorgstatus403",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "parameters": {
+     "url": "https://httpbin.org/status/403"
+    },
+    "expected": "{\"$ObjectLike\":{\"status\":403,\"ok\":false}}",
+    "salt": "1712425490129"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  }
+ },
+ "Outputs": {
+  "AssertionResultsHttpApiCall5f7069701a458c2283dbb422b313fd3a": {
+   "Value": {
+    "Fn::GetAtt": [
+     "HttpApiCall5f7069701a458c2283dbb422b313fd3a",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsHttpApiCall1219698b15310d985020a947d89e593e": {
+   "Value": {
+    "Fn::GetAtt": [
+     "HttpApiCall1219698b15310d985020a947d89e593e",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsHttpApiCallf16d32bb38fdf952b8530f86260d5337": {
+   "Value": {
+    "Fn::GetAtt": [
+     "HttpApiCallf16d32bb38fdf952b8530f86260d5337",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsHttpApiCallhttpbinorggetcd942067e1d112f86d205b2008dcab31": {
+   "Value": {
+    "Fn::GetAtt": [
+     "HttpApiCallhttpbinorggetcd942067e1d112f86d205b2008dcab31",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsHttpApiCallhttpbinorgpost57c1eb9b16e045b0fe0eadcc8fcfe86f": {
+   "Value": {
+    "Fn::GetAtt": [
+     "HttpApiCallhttpbinorgpost57c1eb9b16e045b0fe0eadcc8fcfe86f",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsHttpApiCallhttpbinorgstatus403241ddf94e19f31ae5405653ddcc7ea8b": {
+   "Value": {
+    "Fn::GetAtt": [
+     "HttpApiCallhttpbinorgstatus403241ddf94e19f31ae5405653ddcc7ea8b",
+     "assertion"
+    ]
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

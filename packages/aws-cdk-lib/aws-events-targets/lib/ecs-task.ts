@@ -277,13 +277,19 @@ export class EcsTask implements events.IRuleTarget {
   }
 
   private createEventRolePolicyStatements(): iam.PolicyStatement[] {
-    const policyStatements = [new iam.PolicyStatement({
-      actions: ['ecs:RunTask'],
-      resources: [this.taskDefinition.taskDefinitionArn],
-      conditions: {
-        ArnEquals: { 'ecs:cluster': this.cluster.clusterArn },
-      },
-    })];
+    const policyStatements = [
+      new iam.PolicyStatement({
+        actions: ['ecs:RunTask'],
+        resources: [this.taskDefinition.taskDefinitionArn],
+        conditions: {
+          ArnEquals: { 'ecs:cluster': this.cluster.clusterArn },
+        },
+      }),
+      new iam.PolicyStatement({
+        actions: ['ecs:TagResource'],
+        resources: [`arn:${this.cluster.stack.partition}:ecs:${this.cluster.env.region}:*:task/${this.cluster.clusterName}/*`],
+      }),
+    ];
 
     // If it so happens that a Task Execution Role was created for the TaskDefinition,
     // then the EventBridge Role must have permissions to pass it (otherwise it doesn't).

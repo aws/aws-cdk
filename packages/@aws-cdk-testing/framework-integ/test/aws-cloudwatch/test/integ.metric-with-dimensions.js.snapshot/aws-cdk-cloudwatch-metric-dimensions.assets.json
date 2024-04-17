@@ -1,0 +1,19 @@
+{
+  "version": "36.0.0",
+  "files": {
+    "5b7b9376300e8d5da09834e7dfc97bf825e9354f770b53e1bc3e3d0a9de8f10c": {
+      "source": {
+        "path": "aws-cdk-cloudwatch-metric-dimensions.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "5b7b9376300e8d5da09834e7dfc97bf825e9354f770b53e1bc3e3d0a9de8f10c.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

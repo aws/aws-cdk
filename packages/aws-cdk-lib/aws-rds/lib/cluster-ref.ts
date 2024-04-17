@@ -68,6 +68,13 @@ export interface IDatabaseCluster extends IResource, ec2.IConnectable, secretsma
    *
    */
   grantConnect(grantee: iam.IGrantable, dbUser: string): iam.Grant;
+
+  /**
+   * Grant the given identity to access to the Data API.
+   *
+   * @param grantee The principal to grant access to
+   */
+  grantDataApiAccess(grantee: iam.IGrantable): iam.Grant;
 }
 
 /**
@@ -137,4 +144,11 @@ export interface DatabaseClusterAttributes {
    * @default - the imported Cluster's engine is unknown
    */
   readonly engine?: IClusterEngine;
+
+  /**
+   * The secret attached to the database cluster
+   *
+   * @default - the imported Cluster's secret is unknown
+   */
+  readonly secret?: secretsmanager.ISecret;
 }

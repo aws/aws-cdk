@@ -66,6 +66,9 @@ export class Runtime {
   /** Flink Version 1.15 */
   public static readonly FLINK_1_15 = Runtime.of('FLINK-1_15');
 
+  /** Flink Version 1.18 */
+  public static readonly FLINK_1_18 = Runtime.of('FLINK-1_18');
+
   /** Create a new Runtime with with an arbitrary Flink version string */
   public static of(value: string) {
     return new Runtime(value);
