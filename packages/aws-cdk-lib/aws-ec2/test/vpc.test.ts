@@ -37,6 +37,9 @@ import {
   CpuCredits,
   InstanceClass,
   InstanceSize,
+  KeyPair,
+  SecurityGroup,
+  UserData,
 } from '../lib';
 
 describe('vpc', () => {
@@ -1632,6 +1635,112 @@ describe('vpc', () => {
 
     });
 
+    test('Can customize NAT instances V2 properties', () => {
+      // GIVEN
+      const stack = getTestStack();
+
+      // WHEN
+      const keyPair = KeyPair.fromKeyPairName(stack, 'KeyPair', 'KeyPairName');
+      const userData = UserData.forLinux();
+      userData.addCommands('echo "hello world!"');
+
+      const natGatewayProvider = NatProvider.instanceV2({
+        instanceType: InstanceType.of(InstanceClass.T3, InstanceSize.SMALL),
+        machineImage: new GenericLinuxImage({
+          'us-east-1': 'ami-1',
+        }),
+
+        creditSpecification: CpuCredits.UNLIMITED,
+        defaultAllowedTraffic: NatTrafficDirection.OUTBOUND_ONLY,
+        keyPair,
+        userData,
+
+        // Unusuable in its current state
+        // The VPC is required to create the security group,
+        // but the NAT Provider is required to create the VPC
+        // See https://github.com/aws/aws-cdk/issues/27527
+        // securityGroup,
+      });
+      new Vpc(stack, 'TheVPC', { natGatewayProvider });
+
+      // THEN
+      expect(natGatewayProvider.gatewayInstances.length).toBe(3);
+      Template.fromStack(stack).resourceCountIs('AWS::EC2::Instance', 3);
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::Instance', {
+        ImageId: 'ami-1',
+        InstanceType: 't3.small',
+        SourceDestCheck: false,
+        CreditSpecification: { CPUCredits: 'unlimited' },
+        KeyName: 'KeyPairName',
+        UserData: { 'Fn::Base64': '#!/bin/bash\necho "hello world!"' },
+      });
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::Route', {
+        RouteTableId: { Ref: 'TheVPCPrivateSubnet1RouteTableF6513BC2' },
+        DestinationCidrBlock: '0.0.0.0/0',
+        InstanceId: { Ref: 'TheVPCPublicSubnet1NatInstanceCC514192' },
+      });
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroup', {
+        SecurityGroupEgress: [
+          {
+            CidrIp: '0.0.0.0/0',
+            Description: 'Allow all outbound traffic by default',
+            IpProtocol: '-1',
+          },
+        ],
+      });
+
+    });
+
+    test('throws if both defaultAllowedTraffic and allowAllTraffic are set', () => {
+      // GIVEN
+      const stack = getTestStack();
+
+      // THEN
+      expect(() => {
+        new Vpc(stack, 'TheVPC', {
+          natGatewayProvider: NatProvider.instanceV2({
+            instanceType: InstanceType.of(InstanceClass.T3, InstanceSize.SMALL),
+            defaultAllowedTraffic: NatTrafficDirection.OUTBOUND_ONLY,
+            allowAllTraffic: true,
+          }),
+          natGateways: 1,
+        });
+      }).toThrow("Can not specify both of 'defaultAllowedTraffic' and 'defaultAllowedTraffic'; prefer 'defaultAllowedTraffic'");
+    });
+
+    test('throws if both keyName and keyPair are set', () => {
+      // GIVEN
+      const stack = getTestStack();
+
+      // THEN
+      expect(() => {
+        new Vpc(stack, 'TheVPC', {
+          natGatewayProvider: NatProvider.instanceV2({
+            instanceType: InstanceType.of(InstanceClass.T3, InstanceSize.SMALL),
+            keyPair: KeyPair.fromKeyPairName(stack, 'KeyPair', 'KeyPairName'),
+            keyName: 'KeyPairName',
+          }),
+          natGateways: 1,
+        });
+      }).toThrow("Cannot specify both of 'keyName' and 'keyPair'; prefer 'keyPair'");
+    });
+
+    test('throws if creditSpecification is set with a non-burstable instance type', () => {
+      // GIVEN
+      const stack = getTestStack();
+
+      // THEN
+      expect(() => {
+        new Vpc(stack, 'TheVPC', {
+          natGatewayProvider: NatProvider.instanceV2({
+            instanceType: InstanceType.of(InstanceClass.C3, InstanceSize.SMALL),
+            creditSpecification: CpuCredits.UNLIMITED,
+          }),
+          natGateways: 1,
+        });
+      }).toThrow(/creditSpecification is supported only for .* instance type/);
+    });
+
     test('natGateways controls amount of NAT instances', () => {
       // GIVEN
       const stack = getTestStack();
@@ -1675,17 +1784,19 @@ describe('vpc', () => {
       const stack = getTestStack();
 
       // WHEN
-      new Vpc(stack, 'TheVPC', {
-        natGatewayProvider: NatProvider.instanceV2({
-          instanceType: new InstanceType('q86.mega'),
-          machineImage: new GenericLinuxImage({
-            'us-east-1': 'ami-1',
-          }),
+      const natGatewayProvider = NatProvider.instanceV2({
+        instanceType: new InstanceType('q86.mega'),
+        machineImage: new GenericLinuxImage({
+          'us-east-1': 'ami-1',
         }),
+      });
+      new Vpc(stack, 'TheVPC', {
+        natGatewayProvider,
         natGateways: 1,
       });
 
       // THEN
+      expect(natGatewayProvider.gatewayInstances.length).toBe(1);
       Template.fromStack(stack).resourceCountIs('AWS::EC2::Instance', 1);
     });
 

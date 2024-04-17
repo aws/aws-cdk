@@ -51,7 +51,7 @@ export interface TopicProps {
   /**
    * The list of delivery status logging configurations for the topic.
    *
-   * For more information, see https://docs.aws.amazon.com/sns/latest/dg/sns-topic-attributes.html.
+   * @see https://docs.aws.amazon.com/sns/latest/dg/sns-topic-attributes.html.
    *
    * @default None
    */
@@ -71,17 +71,36 @@ export interface TopicProps {
   /**
    * Adds a statement to enforce encryption of data in transit when publishing to the topic.
    *
-   * For more information, see https://docs.aws.amazon.com/sns/latest/dg/sns-security-best-practices.html#enforce-encryption-data-in-transit.
+   * @see https://docs.aws.amazon.com/sns/latest/dg/sns-security-best-practices.html#enforce-encryption-data-in-transit.
    *
    * @default false
    */
   readonly enforceSSL?: boolean;
+
+  /**
+   * The signature version corresponds to the hashing algorithm used while creating the signature of the notifications,
+   * subscription confirmations, or unsubscribe confirmation messages sent by Amazon SNS.
+   *
+   * @see https://docs.aws.amazon.com/sns/latest/dg/sns-verify-signature-of-message.html.
+   *
+   * @default 1
+   */
+  readonly signatureVersion?: string;
+
+  /**
+   * Tracing mode of an Amazon SNS topic.
+   *
+   * @see https://docs.aws.amazon.com/sns/latest/dg/sns-active-tracing.html
+   *
+   * @default TracingConfig.PASS_THROUGH
+   */
+  readonly tracingConfig?: TracingConfig;
 }
 
 /**
  * A logging configuration for delivery status of messages sent from SNS topic to subscribed endpoints.
  *
- * For more information, see https://docs.aws.amazon.com/sns/latest/dg/sns-topic-attributes.html.
+ * @see https://docs.aws.amazon.com/sns/latest/dg/sns-topic-attributes.html.
  */
 export interface LoggingConfig {
   /**
@@ -144,6 +163,39 @@ export enum LoggingProtocol {
 }
 
 /**
+ * The tracing mode of an Amazon SNS topic
+ */
+export enum TracingConfig {
+  /**
+   * The mode that topic passes trace headers received from the Amazon SNS publisher to its subscription.
+   */
+  PASS_THROUGH = 'PassThrough',
+
+  /**
+   * The mode that Amazon SNS vend X-Ray segment data to topic owner account if the sampled flag in the tracing header is true.
+   */
+  ACTIVE = 'Active',
+}
+
+/**
+ * Represents an SNS topic defined outside of this stack.
+ */
+export interface TopicAttributes {
+  /**
+   * The ARN of the SNS topic.
+   */
+  readonly topicArn: string;
+
+  /**
+   * Whether content-based deduplication is enabled.
+   * Only applicable for FIFO topics.
+   *
+   * @default false
+   */
+  readonly contentBasedDeduplication?: boolean;
+}
+
+/**
  * A new SNS topic
  */
 export class Topic extends TopicBase {
@@ -156,16 +208,34 @@ export class Topic extends TopicBase {
    * @param topicArn topic ARN (i.e. arn:aws:sns:us-east-2:444455556666:MyTopic)
    */
   public static fromTopicArn(scope: Construct, id: string, topicArn: string): ITopic {
+    return Topic.fromTopicAttributes(scope, id, { topicArn });
+  };
+
+  /**
+   * Import an existing SNS topic provided a topic attributes
+   *
+   * @param scope The parent creating construct
+   * @param id The construct's name
+   * @param attrs the attributes of the topic to import
+   */
+  public static fromTopicAttributes(scope: Construct, id: string, attrs: TopicAttributes): ITopic {
+    const topicName = Stack.of(scope).splitArn(attrs.topicArn, ArnFormat.NO_RESOURCE_NAME).resource;
+    const fifo = topicName.endsWith('.fifo');
+
+    if (attrs.contentBasedDeduplication && !fifo) {
+      throw new Error('Cannot import topic; contentBasedDeduplication is only available for FIFO SNS topics.');
+    }
+
     class Import extends TopicBase {
-      public readonly topicArn = topicArn;
-      public readonly topicName = Stack.of(scope).splitArn(topicArn, ArnFormat.NO_RESOURCE_NAME).resource;
-      public readonly fifo = this.topicName.endsWith('.fifo');
-      public readonly contentBasedDeduplication = false;
+      public readonly topicArn = attrs.topicArn;
+      public readonly topicName = topicName;
+      public readonly fifo = fifo;
+      public readonly contentBasedDeduplication = attrs.contentBasedDeduplication || false;
       protected autoCreatePolicy: boolean = false;
     }
 
     return new Import(scope, id, {
-      environmentFromArn: topicArn,
+      environmentFromArn: attrs.topicArn,
     });
   }
 
@@ -207,7 +277,7 @@ export class Topic extends TopicBase {
     if (props.fifo && props.topicName && !props.topicName.endsWith('.fifo')) {
       cfnTopicName = this.physicalName + '.fifo';
     } else if (props.fifo && !props.topicName) {
-      // Max lenght allowed by CloudFormation is 256, we subtract 5 to allow for ".fifo" suffix
+      // Max length allowed by CloudFormation is 256, we subtract 5 to allow for ".fifo" suffix
       const prefixName = Names.uniqueResourceName(this, {
         maxLength: 256 - 5,
         separator: '-',
@@ -215,6 +285,15 @@ export class Topic extends TopicBase {
       cfnTopicName = `${prefixName}.fifo`;
     } else {
       cfnTopicName = this.physicalName;
+    }
+
+    if (
+      props.signatureVersion &&
+      !Token.isUnresolved(props.signatureVersion) &&
+      props.signatureVersion !== '1' &&
+      props.signatureVersion !== '2'
+    ) {
+      throw new Error(`signatureVersion must be "1" or "2", received: "${props.signatureVersion}"`);
     }
 
     const resource = new CfnTopic(this, 'Resource', {
@@ -226,7 +305,9 @@ export class Topic extends TopicBase {
       kmsMasterKeyId: props.masterKey && props.masterKey.keyArn,
       contentBasedDeduplication: props.contentBasedDeduplication,
       fifoTopic: props.fifo,
+      signatureVersion: props.signatureVersion,
       deliveryStatusLogging: Lazy.any({ produce: () => this.renderLoggingConfigs() }, { omitEmptyArray: true }),
+      tracingConfig: props.tracingConfig,
     });
 
     this.topicArn = this.getResourceArnAttribute(resource.ref, {

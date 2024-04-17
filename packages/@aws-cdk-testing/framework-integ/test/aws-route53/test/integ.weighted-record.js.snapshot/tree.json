@@ -134,6 +134,40 @@
               "version": "0.0.0"
             }
           },
+          "WeightedRecord3": {
+            "id": "WeightedRecord3",
+            "path": "weighted-record/WeightedRecord3",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "weighted-record/WeightedRecord3/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Route53::RecordSet",
+                  "aws:cdk:cloudformation:props": {
+                    "hostedZoneId": {
+                      "Ref": "HostedZoneDB99F866"
+                    },
+                    "name": "www.cdk.dev.",
+                    "resourceRecords": [
+                      "4.5.6.7"
+                    ],
+                    "setIdentifier": "WEIGHT_0_ID_weightedrecordWeightedRecord37AA25819",
+                    "ttl": "10",
+                    "type": "A",
+                    "weight": 0
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_route53.CfnRecordSet",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_route53.ARecord",
+              "version": "0.0.0"
+            }
+          },
           "BootstrapVersion": {
             "id": "BootstrapVersion",
             "path": "weighted-record/BootstrapVersion",
