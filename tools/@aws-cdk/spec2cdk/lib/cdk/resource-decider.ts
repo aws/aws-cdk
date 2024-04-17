@@ -161,7 +161,7 @@ export class ResourceDecider {
             expr.object({ tagPropertyName: expr.lit(originalName) }),
           ),
         cfnValueToRender: {
-          [originalName]: $this.tags.renderTags($this[rawTagsPropName]),
+          [originalName]: $this.tags.renderTags(),
         },
       },
       {
