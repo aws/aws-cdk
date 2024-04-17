@@ -133,8 +133,12 @@ export class ResponseHeadersPolicy extends Resource implements IResponseHeadersP
           customHeaders: [],
         };
       }
-      // TODO: log a warning if custom headers already contains CSP-Report-Only header?
-      customHeadersBehavior.customHeaders.push(reportOnlyCSPHeader);
+
+      const existingReportOnlyCSPHeader = customHeadersBehavior.customHeaders.findIndex(ch => ch.header === 'Content-Security-Policy-Report-Only')
+      if (existingReportOnlyCSPHeader !== -1) {
+        customHeadersBehavior.customHeaders.splice(existingReportOnlyCSPHeader, 1);
+      }
+      customHeadersBehavior.customHeaders.push(reportOnlyCSPHeader)
     }
 
     const resource = new CfnResponseHeadersPolicy(this, 'Resource', {
@@ -179,7 +183,7 @@ export class ResponseHeadersPolicy extends Resource implements IResponseHeadersP
       strictTransportSecurity: behavior.strictTransportSecurity ? {
         ...behavior.strictTransportSecurity,
         accessControlMaxAgeSec: behavior.strictTransportSecurity.accessControlMaxAge.toSeconds(),
-      }: undefined,
+      } : undefined,
       xssProtection: behavior.xssProtection,
     };
   }

@@ -202,4 +202,35 @@ describe('ResponseHeadersPolicy', () => {
       },
     });
   });
+
+  test('securityHeadersBehavior.contentSecurityPolicy takes precedence with `reportOnly`', () => {
+    new ResponseHeadersPolicy(stack, 'ResponseHeadersPolicy', {
+      customHeadersBehavior: {
+        customHeaders: [
+          {
+            header: 'Content-Security-Policy-Report-Only',
+            value: 'default-src self;',
+            override: true,
+          }
+        ],
+      },
+      securityHeadersBehavior: {
+        contentSecurityPolicy: { contentSecurityPolicy: 'default-src https:;', reportOnly: true, override: true },
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::ResponseHeadersPolicy', {
+      ResponseHeadersPolicyConfig: {
+        CustomHeadersConfig: {
+          Items: [
+            {
+              Header: 'Content-Security-Policy-Report-Only',
+              Value: 'default-src https:;',
+              Override: true,
+            },
+          ],
+        },
+      },
+    });
+  });
 });
