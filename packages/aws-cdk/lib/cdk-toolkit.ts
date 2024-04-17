@@ -4,9 +4,7 @@ import * as cxapi from '@aws-cdk/cx-api';
 import * as chalk from 'chalk';
 import * as chokidar from 'chokidar';
 import * as fs from 'fs-extra';
-import { minimatch } from 'minimatch';
 import * as promptly from 'promptly';
-import * as semver from 'semver';
 import * as uuid from 'uuid';
 import { DeploymentMethod } from './api';
 import { SdkProvider } from './api/aws-auth';
@@ -31,7 +29,6 @@ import { validateSnsTopicArn } from './util/validate-notification-arn';
 import { Concurrency, WorkGraph } from './util/work-graph';
 import { WorkGraphBuilder } from './util/work-graph-builder';
 import { AssetBuildNode, AssetPublishNode, StackNode } from './util/work-graph-types';
-import { versionNumber } from './version';
 import { environmentsFromDescriptors, globEnvironmentsFromStacks, looksLikeGlob } from '../lib/api/cxapp/environments';
 
 export interface CdkToolkitProps {
@@ -142,10 +139,19 @@ export class CdkToolkit {
       let changeSet = undefined;
 
       if (options.changeSet) {
-        const stackExists = await this.props.deployments.stackExists({
-          stack: stacks.firstStack,
-          deployName: stacks.firstStack.stackName,
-        });
+        let stackExists = false;
+        try {
+          stackExists = await this.props.deployments.stackExists({
+            stack: stacks.firstStack,
+            deployName: stacks.firstStack.stackName,
+            tryLookupRole: true,
+          });
+        } catch (e: any) {
+          debug(e.message);
+          stream.write('Checking if the stack exists before creating the changeset has failed, will base the diff on template differences (run again with -v to see the reason)\n');
+          stackExists = false;
+        }
+
         if (stackExists) {
           changeSet = await createDiffChangeSet({
             stack: stacks.firstStack,
@@ -157,7 +163,7 @@ export class CdkToolkit {
             stream,
           });
         } else {
-          debug(`the stack '${stacks.firstStack.stackName}' has not been deployed to CloudFormation, skipping changeset creation.`);
+          debug(`the stack '${stacks.firstStack.stackName}' has not been deployed to CloudFormation or describeStacks call failed, skipping changeset creation.`);
         }
       }
 
@@ -186,11 +192,20 @@ export class CdkToolkit {
         let changeSet = undefined;
 
         if (options.changeSet) {
-          // only perform this check if we're going to make a changeset. This check requires permissions that --no-changeset users might not have.
-          const stackExists = await this.props.deployments.stackExists({
-            stack: stack,
-            deployName: stack.stackName,
-          });
+
+          let stackExists = false;
+          try {
+            stackExists = await this.props.deployments.stackExists({
+              stack,
+              deployName: stack.stackName,
+              tryLookupRole: true,
+            });
+          } catch (e: any) {
+            debug(e.message);
+            stream.write('Checking if the stack exists before creating the changeset has failed, will base the diff on template differences (run again with -v to see the reason)\n');
+            stackExists = false;
+          }
+
           if (stackExists) {
             changeSet = await createDiffChangeSet({
               stack,
@@ -203,7 +218,7 @@ export class CdkToolkit {
               stream,
             });
           } else {
-            debug(`the stack '${stack.stackName}' has not been deployed to CloudFormation, skipping changeset creation.`);
+            debug(`the stack '${stack.stackName}' has not been deployed to CloudFormation or describeStacks call failed, skipping changeset creation.`);
           }
         }
 
@@ -617,9 +632,6 @@ export class CdkToolkit {
     stacks = stacks.reversed();
 
     if (!options.force) {
-      if (stacks.stackArtifacts.length === 0) {
-        return;
-      }
       // eslint-disable-next-line max-len
       const confirmed = await promptly.confirm(`Are you sure you want to delete: ${chalk.blue(stacks.stackArtifacts.map(s => s.hierarchicalId).join(', '))} (y/n)?`);
       if (!confirmed) {
@@ -913,43 +925,9 @@ export class CdkToolkit {
       extend: exclusively ? ExtendedStackSelection.None : ExtendedStackSelection.Downstream,
       defaultBehavior: DefaultSelection.OnlySingle,
     });
-    const selectorWithoutPatterns: StackSelector = {
-      ...selector,
-      allTopLevel: true,
-      patterns: [],
-    };
-    const stacksWithoutPatterns = await assembly.selectStacks(selectorWithoutPatterns, {
-      extend: exclusively ? ExtendedStackSelection.None : ExtendedStackSelection.Downstream,
-      defaultBehavior: DefaultSelection.OnlySingle,
-    });
 
-    const patterns = selector.patterns.map(pattern => {
-      const notExist = !stacks.stackArtifacts.find(stack =>
-        minimatch(stack.hierarchicalId, pattern) || (stack.id === pattern && semver.major(versionNumber()) < 2),
-      );
+    // No validation
 
-      const closelyMatched = notExist ? stacksWithoutPatterns.stackArtifacts.map(stack => {
-        if (minimatch(stack.hierarchicalId.toLowerCase(), pattern.toLowerCase())) {
-          return stack.hierarchicalId;
-        }
-        if (stack.id.toLowerCase() === pattern.toLowerCase() && semver.major(versionNumber()) < 2) {
-          return stack.id;
-        }
-        return;
-      }).filter((stack): stack is string => stack !== undefined) : [];
-      return {
-        pattern,
-        notExist,
-        closelyMatched,
-      };
-    });
-
-    patterns.forEach(pattern => {
-      if (pattern.notExist) {
-        const closelyMatched = pattern.closelyMatched.length > 0 ? ` Do you mean ${pattern.closelyMatched.join(', ')}?` : '';
-        warning(`${pattern.pattern} does not exist.${closelyMatched}`);
-      }
-    });
     return stacks;
   }
 
