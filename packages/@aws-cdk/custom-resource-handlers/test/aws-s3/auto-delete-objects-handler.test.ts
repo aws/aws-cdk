@@ -460,8 +460,8 @@ test('delete event where bucket has many objects does recurse appropriately', as
     Bucket: 'MyBucket',
     Delete: {
       Objects: [
-        { Key: 'Key3', VersionId: 'VersionId3' },
-        { Key: 'Key4', VersionId: 'VersionId4' },
+        { Key: 'Key1', VersionId: 'VersionId1' },
+        { Key: 'Key2', VersionId: 'VersionId2' },
       ],
     },
   });

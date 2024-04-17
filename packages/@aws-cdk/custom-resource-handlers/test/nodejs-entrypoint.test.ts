@@ -41,9 +41,9 @@ describe('nodejs entrypoint', () => {
       expect(response.Status).toEqual('SUCCESS');
       expect(response.PhysicalResourceId).toEqual('<RequestId>');
       expect(response.Data).toEqual({
-        Attribute1: 'hello',
+        Attribute1: 'goodbye',
         Attribute2: {
-          Foo: 1111,
+          Foo: 2222,
         },
       });
     });

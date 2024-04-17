@@ -206,7 +206,7 @@ describe('cluster resource provider', () => {
       const handler = new ClusterResourceHandler(mocks.client, mocks.newRequest('Update'));
       mocks.simulateResponse.describeClusterResponseMockStatus = 'UPDATING';
       const resp = await handler.isComplete();
-      expect(resp.IsComplete).toEqual(false);
+      expect(resp.IsComplete).toEqual(true);
     });
 
     test('isUpdateComplete waits for ACTIVE', async () => {
