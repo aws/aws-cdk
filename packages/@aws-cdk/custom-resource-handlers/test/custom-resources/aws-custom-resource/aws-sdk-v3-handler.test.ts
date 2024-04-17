@@ -7,8 +7,8 @@ import * as S3 from '@aws-sdk/client-s3';
 import { mockClient } from 'aws-sdk-client-mock';
 import * as fs from 'fs-extra';
 import * as nock from 'nock';
-import { v3handler as handler } from '../../../lib/custom-resources/aws-custom-resource-handler';
-import { forceSdkInstallation } from '../../../lib/custom-resources/aws-custom-resource-handler/aws-sdk-v3-handler';
+import { handler } from '../../../lib/custom-resources/aws-custom-resource-handler';
+import { forceSdkInstallation } from '../../../lib/custom-resources/aws-custom-resource-handler/index';
 import { AwsSdkCall } from '../../../lib/custom-resources/aws-custom-resource-handler/construct-types';
 import 'aws-sdk-client-mock-jest' ;
 
