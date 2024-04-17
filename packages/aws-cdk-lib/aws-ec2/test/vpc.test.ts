@@ -1261,7 +1261,7 @@ describe('vpc', () => {
       expect(natGatewayProvider.configuredGateways.length).toBeGreaterThan(0);
     });
 
-    test('Default NAT gateway provider instantiated directly with new', () => {
+    test('Default NAT gateway provider can be instantiated directly with new', () => {
       const stack = new Stack();
       const natGatewayProvider = new NatGatewayProvider();
       new Vpc(stack, 'VpcNetwork', { natGatewayProvider });
@@ -1760,7 +1760,7 @@ describe('vpc', () => {
       Template.fromStack(stack).resourceCountIs('AWS::EC2::Instance', 1);
     });
 
-    test('Can instantiate NatGatewayProvider directly with new', () => {
+    test('Can instantiate NatInstanceProvider directly with new', () => {
       // GIVEN
       const stack = getTestStack();
 

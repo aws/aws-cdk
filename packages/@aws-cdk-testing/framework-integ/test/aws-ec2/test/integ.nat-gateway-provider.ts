@@ -6,7 +6,6 @@ class NatGatewayStack extends cdk.Stack {
   constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
-    /// !show
     // Explicitly declare the NAT provider, so we can later reference the created gateways
     const natGatewayProvider = new ec2.NatGatewayProvider();
 
@@ -21,9 +20,7 @@ class NatGatewayStack extends cdk.Stack {
       destinationCidrBlock: '1.2.3.4/32',
       natGatewayId: natGatewayProvider.configuredGateways.find(x => (x.az === vpc.publicSubnets[0].availabilityZone))!.gatewayId,
     });
-    /// !hide
 
-    Array.isArray(vpc);
     Array.isArray(natGatewayProvider.configuredGateways);
   }
 }
