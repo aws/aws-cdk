@@ -29562,10 +29562,10 @@ var require_lib4 = __commonJS({
   }
 });
 
-// ../sdk-v2-to-v3-adapter/lib/parameter-types.ts
+// ../aws-custom-resource-sdk-adapter/lib/parameter-types.ts
 var zlib, typeCoercionStateMachine;
 var init_parameter_types = __esm({
-  "../sdk-v2-to-v3-adapter/lib/parameter-types.ts"() {
+  "../aws-custom-resource-sdk-adapter/lib/parameter-types.ts"() {
     "use strict";
     zlib = __toESM(require("zlib"));
     typeCoercionStateMachine = () => {
@@ -29577,7 +29577,7 @@ var init_parameter_types = __esm({
   }
 });
 
-// ../sdk-v2-to-v3-adapter/lib/coerce-api-parameters.ts
+// ../aws-custom-resource-sdk-adapter/lib/coerce-api-parameters.ts
 var coerce_api_parameters_exports = {};
 __export(coerce_api_parameters_exports, {
   Coercer: () => Coercer,
@@ -29618,7 +29618,7 @@ function coerceValueToDate(x) {
 }
 var Coercer;
 var init_coerce_api_parameters = __esm({
-  "../sdk-v2-to-v3-adapter/lib/coerce-api-parameters.ts"() {
+  "../aws-custom-resource-sdk-adapter/lib/coerce-api-parameters.ts"() {
     "use strict";
     init_parameter_types();
     Coercer = class {
@@ -29672,7 +29672,7 @@ var init_coerce_api_parameters = __esm({
   }
 });
 
-// ../sdk-v2-to-v3-adapter/lib/find-client-constructor.ts
+// ../aws-custom-resource-sdk-adapter/lib/find-client-constructor.ts
 var find_client_constructor_exports = {};
 __export(find_client_constructor_exports, {
   findV3ClientConstructor: () => findV3ClientConstructor
@@ -29686,14 +29686,14 @@ function findV3ClientConstructor(pkg) {
   return ServiceClient;
 }
 var init_find_client_constructor = __esm({
-  "../sdk-v2-to-v3-adapter/lib/find-client-constructor.ts"() {
+  "../aws-custom-resource-sdk-adapter/lib/find-client-constructor.ts"() {
     "use strict";
   }
 });
 
-// ../sdk-v2-to-v3-adapter/lib/sdk-v2-to-v3.json
+// ../aws-custom-resource-sdk-adapter/lib/sdk-v2-to-v3.json
 var require_sdk_v2_to_v3 = __commonJS({
-  "../sdk-v2-to-v3-adapter/lib/sdk-v2-to-v3.json"(exports2, module2) {
+  "../aws-custom-resource-sdk-adapter/lib/sdk-v2-to-v3.json"(exports2, module2) {
     module2.exports = {
       acmpca: "acm-pca",
       apigateway: "api-gateway",
@@ -29842,9 +29842,9 @@ var require_sdk_v2_to_v3 = __commonJS({
   }
 });
 
-// ../sdk-v2-to-v3-adapter/lib/sdk-v3-metadata.json
+// ../aws-custom-resource-sdk-adapter/lib/sdk-v3-metadata.json
 var require_sdk_v3_metadata = __commonJS({
-  "../sdk-v2-to-v3-adapter/lib/sdk-v3-metadata.json"(exports2, module2) {
+  "../aws-custom-resource-sdk-adapter/lib/sdk-v3-metadata.json"(exports2, module2) {
     module2.exports = {
       accessanalyzer: {
         iamPrefix: "access-analyzer"
@@ -30989,7 +30989,7 @@ var require_sdk_v3_metadata = __commonJS({
   }
 });
 
-// ../sdk-v2-to-v3-adapter/lib/sdk-info.ts
+// ../aws-custom-resource-sdk-adapter/lib/sdk-info.ts
 var sdk_info_exports = {};
 __export(sdk_info_exports, {
   normalizeActionName: () => normalizeActionName,
@@ -31017,12 +31017,12 @@ function v3Metadata() {
   return require_sdk_v3_metadata();
 }
 var init_sdk_info = __esm({
-  "../sdk-v2-to-v3-adapter/lib/sdk-info.ts"() {
+  "../aws-custom-resource-sdk-adapter/lib/sdk-info.ts"() {
     "use strict";
   }
 });
 
-// ../sdk-v2-to-v3-adapter/lib/api-call.ts
+// ../aws-custom-resource-sdk-adapter/lib/api-call.ts
 var api_call_exports = {};
 __export(api_call_exports, {
   ApiCall: () => ApiCall,
@@ -31070,7 +31070,7 @@ async function coerceSdkv3Response(value) {
 }
 var ApiCall, decoder;
 var init_api_call = __esm({
-  "../sdk-v2-to-v3-adapter/lib/api-call.ts"() {
+  "../aws-custom-resource-sdk-adapter/lib/api-call.ts"() {
     "use strict";
     init_coerce_api_parameters();
     init_find_client_constructor();
@@ -31149,9 +31149,9 @@ var init_api_call = __esm({
   }
 });
 
-// ../sdk-v2-to-v3-adapter/lib/index.js
+// ../aws-custom-resource-sdk-adapter/lib/index.js
 var require_lib5 = __commonJS({
-  "../sdk-v2-to-v3-adapter/lib/index.js"(exports2) {
+  "../aws-custom-resource-sdk-adapter/lib/index.js"(exports2) {
     "use strict";
     var __createBinding2 = exports2 && exports2.__createBinding || (Object.create ? function(o, m, k, k2) {
       if (k2 === void 0)
@@ -31485,7 +31485,7 @@ var HttpHandler = class extends CustomResourceHandler {
 };
 
 // lib/assertions/providers/lambda-handler/sdk.ts
-var import_sdk_v2_to_v3_adapter = __toESM(require_lib5());
+var import_aws_custom_resource_sdk_adapter = __toESM(require_lib5());
 
 // lib/assertions/providers/lambda-handler/utils.ts
 function deepParseJson(x) {
@@ -31534,7 +31534,7 @@ function decodeValue(value) {
 // lib/assertions/providers/lambda-handler/sdk.ts
 var AwsApiCallHandler = class extends CustomResourceHandler {
   async processEvent(request2) {
-    const apiCall = new import_sdk_v2_to_v3_adapter.ApiCall(request2.service, request2.api);
+    const apiCall = new import_aws_custom_resource_sdk_adapter.ApiCall(request2.service, request2.api);
     const parameters = request2.parameters ? decodeParameters(request2.parameters) : {};
     console.log(`SDK request to ${apiCall.service}.${apiCall.action} with parameters ${JSON.stringify(parameters)}`);
     const response = await apiCall.invoke({ parameters });
@@ -31542,7 +31542,7 @@ var AwsApiCallHandler = class extends CustomResourceHandler {
     delete response.$metadata;
     let resp;
     if (request2.outputPaths || request2.flattenResponse === "true") {
-      const flattened = (0, import_sdk_v2_to_v3_adapter.flatten)(deepParseJson({ apiCallResponse: response }));
+      const flattened = (0, import_aws_custom_resource_sdk_adapter.flatten)(deepParseJson({ apiCallResponse: response }));
       resp = request2.outputPaths ? filterKeys(flattened, request2.outputPaths) : flattened;
     } else {
       resp = { apiCallResponse: response };
