@@ -134,11 +134,11 @@ export class ResponseHeadersPolicy extends Resource implements IResponseHeadersP
         };
       }
 
-      const existingReportOnlyCSPHeader = customHeadersBehavior.customHeaders.findIndex(ch => ch.header === 'Content-Security-Policy-Report-Only')
+      const existingReportOnlyCSPHeader = customHeadersBehavior.customHeaders.findIndex(ch => ch.header === 'Content-Security-Policy-Report-Only');
       if (existingReportOnlyCSPHeader !== -1) {
         customHeadersBehavior.customHeaders.splice(existingReportOnlyCSPHeader, 1);
       }
-      customHeadersBehavior.customHeaders.push(reportOnlyCSPHeader)
+      customHeadersBehavior.customHeaders.push(reportOnlyCSPHeader);
     }
 
     const resource = new CfnResponseHeadersPolicy(this, 'Resource', {

@@ -211,7 +211,7 @@ describe('ResponseHeadersPolicy', () => {
             header: 'Content-Security-Policy-Report-Only',
             value: 'default-src self;',
             override: true,
-          }
+          },
         ],
       },
       securityHeadersBehavior: {
