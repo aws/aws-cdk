@@ -207,6 +207,27 @@ export interface NatInstanceProps {
    * Security Group for NAT instances
    *
    * @default - A new security group will be created
+   * @deprecated - Cannot create a new security group before the VPC is created,
+   * and cannot create the VPC without the NAT provider.
+   * Set {@link defaultAllowedTraffic} to {@link NatTrafficDirection.NONE}
+   * and use {@link NatInstanceProviderV2.gatewayInstances} to retrieve
+   * the instances on the fly and add security groups
+   *
+   * @example
+   * const natGatewayProvider = ec2.NatProvider.instanceV2({
+   *   instanceType: new ec2.InstanceType('t3.small'),
+   *   defaultAllowedTraffic: ec2.NatTrafficDirection.NONE,
+   * });
+   * const vpc = new ec2.Vpc(this, 'Vpc', { natGatewayProvider });
+   *
+   * const securityGroup = new ec2.SecurityGroup(this, 'SecurityGroup', {
+   *   vpc,
+   *   allowAllOutbound: false,
+   * });
+   * securityGroup.addEgressRule(ec2.Peer.anyIpv4(), ec2.Port.tcp(443));
+   * for (const gatewayInstance of natGatewayProvider.gatewayInstances) {
+   *    gatewayInstance.addSecurityGroup(securityGroup);
+   * }
    */
   readonly securityGroup?: ISecurityGroup;
 
