@@ -1,0 +1,13 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "AwsCustomResourceSsmInteg/DefaultTest": {
+      "stacks": [
+        "CreateParameterStack",
+        "GetParameterStack"
+      ],
+      "assertionStack": "AwsCustomResourceSsmInteg/DefaultTest/DeployAssert",
+      "assertionStackName": "AwsCustomResourceSsmIntegDefaultTestDeployAssert6F540A8B"
+    }
+  }
+}
