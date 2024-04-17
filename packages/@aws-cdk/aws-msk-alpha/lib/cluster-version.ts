@@ -12,6 +12,15 @@ export class KafkaVersion {
   public static readonly V1_1_1 = KafkaVersion.of('1.1.1');
 
   /**
+   * **Deprecated by Amazon MSK. You can't create a Kafka cluster with a deprecated version.**
+   *
+   * Kafka version 2.1.0
+   *
+   * @deprecated use the latest runtime instead
+   */
+  public static readonly V2_1_0 = KafkaVersion.of('2.1.0');
+
+  /**
    * Kafka version 2.2.1
    */
   public static readonly V2_2_1 = KafkaVersion.of('2.2.1');
@@ -20,6 +29,15 @@ export class KafkaVersion {
    * Kafka version 2.3.1
    */
   public static readonly V2_3_1 = KafkaVersion.of('2.3.1');
+
+  /**
+   * **Deprecated by Amazon MSK. You can't create a Kafka cluster with a deprecated version.**
+   *
+   * Kafka version 2.4.1
+   *
+   * @deprecated use the latest runtime instead
+   */
+  public static readonly V2_4_1 = KafkaVersion.of('2.4.1');
 
   /**
    * Kafka version 2.4.1
@@ -112,12 +130,27 @@ export class KafkaVersion {
   public static readonly V3_5_1 = KafkaVersion.of('3.5.1');
 
   /**
+   * Kafka version 3.6.0
+   */
+  public static readonly V3_6_0 = KafkaVersion.of('3.6.0');
+
+  /**
    * Custom cluster version
    * @param version custom version number
    */
   public static of(version: string) {
     return new KafkaVersion(version);
   }
+
+  /**
+   * List of Kafka versions that support tiered storage
+   *
+   * @see https://docs.aws.amazon.com/msk/latest/developerguide/msk-tiered-storage.html#msk-tiered-storage-requirements
+   */
+  private static readonly TIERED_STORAGE_COMPATIBLE_VERSIONS = [
+    KafkaVersion.V2_8_2_TIERED,
+    KafkaVersion.V3_6_0,
+  ].map(({ version }) => version);
 
   /**
    *
@@ -129,6 +162,6 @@ export class KafkaVersion {
    * Checks if the cluster version supports tiered storage mode.
    */
   public isTieredStorageCompatible() {
-    return this.version.endsWith('.tiered');
+    return KafkaVersion.TIERED_STORAGE_COMPATIBLE_VERSIONS.includes(this.version);
   };
 }

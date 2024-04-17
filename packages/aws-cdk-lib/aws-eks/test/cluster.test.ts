@@ -350,20 +350,6 @@ describe('cluster', () => {
     expect(() => cluster.addCdk8sChart('chart', someConstruct)).toThrow(/Invalid cdk8s chart. Must contain a \'toJson\' method, but found undefined/);
   });
 
-  test('throws when a core construct is added as cdk8s chart', () => {
-    const { stack } = testFixture();
-
-    const cluster = new eks.Cluster(stack, 'Cluster', {
-      version: CLUSTER_VERSION,
-      prune: false,
-    });
-
-    // create a plain construct, not a cdk8s chart
-    const someConstruct = new Construct(stack, 'SomeConstruct');
-
-    expect(() => cluster.addCdk8sChart('chart', someConstruct)).toThrow(/Invalid cdk8s chart. Must contain a \'toJson\' method, but found undefined/);
-  });
-
   test('cdk8s chart can be added to cluster', () => {
     const { stack } = testFixture();
 
@@ -2199,6 +2185,42 @@ describe('cluster', () => {
       // WHEN
       cluster.addAutoScalingGroupCapacity('InferenceInstances', {
         instanceType: new ec2.InstanceType('inf2.xlarge'),
+        minCapacity: 1,
+      });
+      const fileContents = fs.readFileSync(path.join(__dirname, '..', 'lib', 'addons', 'neuron-device-plugin.yaml'), 'utf8');
+      const sanitized = YAML.parse(fileContents);
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties(eks.KubernetesManifest.RESOURCE_TYPE, {
+        Manifest: JSON.stringify([sanitized]),
+      });
+    });
+    test('trn1 instances are supported', () => {
+      // GIVEN
+      const { stack } = testFixtureNoVpc();
+      const cluster = new eks.Cluster(stack, 'Cluster', { defaultCapacity: 0, version: CLUSTER_VERSION, prune: false });
+
+      // WHEN
+      cluster.addAutoScalingGroupCapacity('TrainiumInstances', {
+        instanceType: new ec2.InstanceType('trn1.2xlarge'),
+        minCapacity: 1,
+      });
+      const fileContents = fs.readFileSync(path.join(__dirname, '..', 'lib', 'addons', 'neuron-device-plugin.yaml'), 'utf8');
+      const sanitized = YAML.parse(fileContents);
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties(eks.KubernetesManifest.RESOURCE_TYPE, {
+        Manifest: JSON.stringify([sanitized]),
+      });
+    });
+    test('trn1n instances are supported', () => {
+      // GIVEN
+      const { stack } = testFixtureNoVpc();
+      const cluster = new eks.Cluster(stack, 'Cluster', { defaultCapacity: 0, version: CLUSTER_VERSION, prune: false });
+
+      // WHEN
+      cluster.addAutoScalingGroupCapacity('TrainiumInstances', {
+        instanceType: new ec2.InstanceType('trn1n.2xlarge'),
         minCapacity: 1,
       });
       const fileContents = fs.readFileSync(path.join(__dirname, '..', 'lib', 'addons', 'neuron-device-plugin.yaml'), 'utf8');

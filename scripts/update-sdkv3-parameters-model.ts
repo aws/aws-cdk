@@ -28,6 +28,7 @@
  *
  *   'n' -> this field is a number type
  *   'b' -> this field is a blob type
+ *   'd' -> this field is a Date type
  *   <number> -> move to another state
  *
  * We save a gzipped representation of this state machine to save bytes (the full decoded
@@ -86,15 +87,15 @@ async function main(argv: string[]) {
   }
 
   const root = path.resolve(__dirname, '..');
-  await renderStateMachineToTypeScript(sortedStateMachine, path.join(root, 'packages/@aws-cdk/sdk-v2-to-v3-adapter/lib/parameter-types.ts'));
+  await renderStateMachineToTypeScript(sortedStateMachine, path.join(root, 'packages/@aws-cdk/aws-custom-resource-sdk-adapter/lib/parameter-types.ts'));
 
   await writeAllServiceToModelFile(allServices, [
     path.join(root, 'packages/aws-cdk-lib/custom-resources/lib/helpers-internal/sdk-v3-metadata.json'),
-    path.join(root, 'packages/@aws-cdk/sdk-v2-to-v3-adapter/lib/sdk-v3-metadata.json'),
+    path.join(root, 'packages/@aws-cdk/aws-custom-resource-sdk-adapter/lib/sdk-v3-metadata.json'),
   ]);
   await writeV2ToV3Mapping([
     path.join(root, 'packages/aws-cdk-lib/custom-resources/lib/helpers-internal/sdk-v2-to-v3.json'),
-    path.join(root, 'packages/@aws-cdk/sdk-v2-to-v3-adapter/lib/sdk-v2-to-v3.json'),
+    path.join(root, 'packages/@aws-cdk/aws-custom-resource-sdk-adapter/lib/sdk-v2-to-v3.json'),
   ]);
 }
 
@@ -163,6 +164,11 @@ async function doFile(v3Name: string, builder: StateMachineBuilder, serviceInfo:
       return;
     }
 
+    if (isDate(shape)) {
+      addCoercion(memberPath, 'd');
+      return;
+    }
+
     if (isShape('structure')(shape) || isShape('union')(shape)) {
       // const allKeys = Object.keys(shape.members ?? {}).sort();
       for (const [field, member] of Object.entries(shape.members ?? {}).sort(sortByKey)) {
@@ -218,7 +224,7 @@ async function renderStateMachineToTypeScript(sm: TypeCoercionStateMachine, file
     `// This file was generated from the aws-sdk-js-v3 at ${new Date()}`,
     '/* eslint-disable quote-props,comma-dangle,quotes */',
     'import * as zlib from \'zlib\';',
-    'export type TypeCoercionStateMachine = Array<Record<string, number | \'b\' | \'n\'>>',
+    'export type TypeCoercionStateMachine = Array<Record<string, number | \'b\' | \'n\' | \'d\'>>',
     'export let typeCoercionStateMachine = (): TypeCoercionStateMachine => {',
     `  const encoded = ${JSON.stringify(compressed.toString('base64'))};`,
     '  const decoded = JSON.parse(zlib.brotliDecompressSync(Buffer.from(encoded, \'base64\')).toString());',
@@ -271,7 +277,7 @@ interface PathElement {
 
 type TypeCoercionStateMachine = TypeCoercionState[];
 
-type TypeCoercionTarget = number | 'b' | 'n';
+type TypeCoercionTarget = number | 'b' | 'n' | 'd';
 type TypeCoercionState = Record<string, TypeCoercionTarget>;
 
 interface StateMachineBuilder {
@@ -330,6 +336,10 @@ function isNumber(shape: SmithyShape): boolean {
     isShape('bigInteger')(shape) ||
     isShape('bigDecimal')(shape) ||
     isShape('byte')(shape);
+}
+
+function isDate(shape: SmithyShape): boolean {
+  return isShape('timestamp')(shape);
 }
 
 function sortByKey<A>(e1: [string, A], e2: [string, A]) {

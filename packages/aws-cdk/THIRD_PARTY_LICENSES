@@ -1,6 +1,6 @@
 The aws-cdk package includes the following third-party software/licensing:
 
-** @jsii/check-node@1.94.0 - https://www.npmjs.com/package/@jsii/check-node/v/1.94.0 | Apache-2.0
+** @jsii/check-node@1.97.0 - https://www.npmjs.com/package/@jsii/check-node/v/1.97.0 | Apache-2.0
 jsii
 Copyright 2018 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 
@@ -33,7 +33,29 @@ SOFTWARE.
 
 ----------------
 
-** agent-base@7.1.0 - https://www.npmjs.com/package/agent-base/v/7.1.0 | MIT
+** agent-base@7.1.1 - https://www.npmjs.com/package/agent-base/v/7.1.1 | MIT
+(The MIT License)
+
+Copyright (c) 2013 Nathan Rajlich <nathan@tootallnate.net>
+
+Permission is hereby granted, free of charge, to any person obtaining
+a copy of this software and associated documentation files (the
+'Software'), to deal in the Software without restriction, including
+without limitation the rights to use, copy, modify, merge, publish,
+distribute, sublicense, and/or sell copies of the Software, and to
+permit persons to whom the Software is furnished to do so, subject to
+the following conditions:
+
+The above copyright notice and this permission notice shall be
+included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 ----------------
 
@@ -264,7 +286,7 @@ THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH RE
 
 ----------------
 
-** aws-sdk@2.1557.0 - https://www.npmjs.com/package/aws-sdk/v/2.1557.0 | Apache-2.0
+** aws-sdk@2.1596.0 - https://www.npmjs.com/package/aws-sdk/v/2.1596.0 | Apache-2.0
 AWS SDK for JavaScript
 Copyright 2012-2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 
@@ -278,7 +300,7 @@ Amazon Web Services, Inc. (http://aws.amazon.com/).
 
 ----------------
 
-** basic-ftp@5.0.4 - https://www.npmjs.com/package/basic-ftp/v/5.0.4 | MIT
+** basic-ftp@5.0.5 - https://www.npmjs.com/package/basic-ftp/v/5.0.5 | MIT
 Copyright (c) 2019 Patrick Juchli
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -301,10 +323,11 @@ SOFTWARE.
 
 ----------------
 
-** binary-extensions@2.2.0 - https://www.npmjs.com/package/binary-extensions/v/2.2.0 | MIT
+** binary-extensions@2.3.0 - https://www.npmjs.com/package/binary-extensions/v/2.3.0 | MIT
 MIT License
 
-Copyright (c) 2019 Sindre Sorhus <sindresorhus@gmail.com> (https://sindresorhus.com), Paul Miller (https://paulmillr.com)
+Copyright (c) Sindre Sorhus <sindresorhus@gmail.com> (https://sindresorhus.com)
+Copyright (c) Paul Miller (https://paulmillr.com)
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
@@ -461,7 +484,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 ----------------
 
-** cdk-from-cfn@0.130.0 - https://www.npmjs.com/package/cdk-from-cfn/v/0.130.0 | MIT OR Apache-2.0
+** cdk-from-cfn@0.156.0 - https://www.npmjs.com/package/cdk-from-cfn/v/0.156.0 | MIT OR Apache-2.0
 
 ----------------
 
@@ -1410,7 +1433,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 ----------------
 
-** http-proxy-agent@7.0.1 - https://www.npmjs.com/package/http-proxy-agent/v/7.0.1 | MIT
+** http-proxy-agent@7.0.2 - https://www.npmjs.com/package/http-proxy-agent/v/7.0.2 | MIT
 (The MIT License)
 
 Copyright (c) 2013 Nathan Rajlich <nathan@tootallnate.net>
@@ -1437,7 +1460,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 ----------------
 
-** https-proxy-agent@7.0.3 - https://www.npmjs.com/package/https-proxy-agent/v/7.0.3 | MIT
+** https-proxy-agent@7.0.4 - https://www.npmjs.com/package/https-proxy-agent/v/7.0.4 | MIT
 (The MIT License)
 
 Copyright (c) 2013 Nathan Rajlich <nathan@tootallnate.net>
@@ -2970,11 +2993,33 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 ----------------
 
-** socks-proxy-agent@8.0.2 - https://www.npmjs.com/package/socks-proxy-agent/v/8.0.2 | MIT
+** socks-proxy-agent@8.0.3 - https://www.npmjs.com/package/socks-proxy-agent/v/8.0.3 | MIT
+(The MIT License)
+
+Copyright (c) 2013 Nathan Rajlich <nathan@tootallnate.net>
+
+Permission is hereby granted, free of charge, to any person obtaining
+a copy of this software and associated documentation files (the
+'Software'), to deal in the Software without restriction, including
+without limitation the rights to use, copy, modify, merge, publish,
+distribute, sublicense, and/or sell copies of the Software, and to
+permit persons to whom the Software is furnished to do so, subject to
+the following conditions:
+
+The above copyright notice and this permission notice shall be
+included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 ----------------
 
-** socks@2.7.3 - https://www.npmjs.com/package/socks/v/2.7.3 | MIT
+** socks@2.8.3 - https://www.npmjs.com/package/socks/v/2.8.3 | MIT
 The MIT License (MIT)
 
 Copyright (c) 2013 Josh Glazebrook
@@ -3213,7 +3258,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 ----------------
 
-** table@6.8.1 - https://www.npmjs.com/package/table/v/6.8.1 | BSD-3-Clause
+** table@6.8.2 - https://www.npmjs.com/package/table/v/6.8.2 | BSD-3-Clause
 Copyright (c) 2018, Gajus Kuizinas (http://gajus.com/)
 All rights reserved.
 

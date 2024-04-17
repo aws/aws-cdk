@@ -233,6 +233,15 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
   readonly vpc?: ec2.IVpc;
 
   /**
+   * Allows outbound IPv6 traffic on VPC functions that are connected to dual-stack subnets.
+   *
+   * Only used if 'vpc' is supplied.
+   *
+   * @default false
+   */
+  readonly ipv6AllowedForDualStack?: boolean;
+
+  /**
    * Where to place the network interfaces within the VPC.
    *
    * This requires `vpc` to be specified in order for interfaces to actually be
@@ -662,7 +671,18 @@ export class Function extends FunctionBase {
    * in the same account and region as the stack you are importing it into.
    */
   public static fromFunctionArn(scope: Construct, id: string, functionArn: string): IFunction {
-    return Function.fromFunctionAttributes(scope, id, { functionArn });
+    /**
+     * If the functionArn has a trailing version or alias (more than 7 parts when split by ":",
+     * we trim off the trailing version/alias to retrieve the real functionArn.
+     * See lambda resource ARN format here: https://docs.aws.amazon.com/lambda/latest/dg/lambda-api-permissions-ref.html
+     */
+    const parts = functionArn.split(':');
+    if (parts.length > 7) {
+      const _functionArn = parts.slice(0, 7).join(':');
+      return Function.fromFunctionAttributes(scope, id, { functionArn: _functionArn });
+    } else {
+      return Function.fromFunctionAttributes(scope, id, { functionArn });
+    }
   }
 
   /**
@@ -1447,6 +1467,9 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
       if (props.vpcSubnets) {
         throw new Error('Cannot configure \'vpcSubnets\' without configuring a VPC');
       }
+      if (props.ipv6AllowedForDualStack) {
+        throw new Error('Cannot configure \'ipv6AllowedForDualStack\' without configuring a VPC');
+      }
       return undefined;
     }
 
@@ -1483,6 +1506,7 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
       }
     }
 
+    const ipv6AllowedForDualStack = props.ipv6AllowedForDualStack;
     const allowPublicSubnet = props.allowPublicSubnet ?? false;
     const selectedSubnets = props.vpc.selectSubnets(props.vpcSubnets);
     const publicSubnetIds = new Set(props.vpc.publicSubnets.map(s => s.subnetId));
@@ -1497,10 +1521,17 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
     // List can't be empty here, if we got this far you intended to put your Lambda
     // in subnets. We're going to guarantee that we get the nice error message by
     // making VpcNetwork do the selection again.
-
-    return {
-      subnetIds: selectedSubnets.subnetIds,
-      securityGroupIds: securityGroups.map(sg => sg.securityGroupId),
+    if (props.ipv6AllowedForDualStack !== undefined) {
+      return {
+        ipv6AllowedForDualStack: ipv6AllowedForDualStack,
+        subnetIds: selectedSubnets.subnetIds,
+        securityGroupIds: securityGroups.map(sg => sg.securityGroupId),
+      };
+    } else {
+      return {
+        subnetIds: selectedSubnets.subnetIds,
+        securityGroupIds: securityGroups.map(sg => sg.securityGroupId),
+      };
     };
   }
 

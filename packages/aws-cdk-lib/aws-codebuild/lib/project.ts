@@ -1790,12 +1790,9 @@ export class LinuxBuildImage implements IBuildImage {
 
   /** @deprecated Use LinuxArmBuildImage.AMAZON_LINUX_2_STANDARD_3_0 instead. */
   public static readonly AMAZON_LINUX_2_ARM = LinuxArmBuildImage.AMAZON_LINUX_2_STANDARD_1_0;
-  /**
-   * Image "aws/codebuild/amazonlinux2-aarch64-standard:2.0".
-   * @deprecated Use LinuxArmBuildImage.AMAZON_LINUX_2_STANDARD_3_0 instead.
-   * */
+  /** The `aws/codebuild/amazonlinux2-aarch64-standard:2.0` build image. */
   public static readonly AMAZON_LINUX_2_ARM_2 = LinuxArmBuildImage.AMAZON_LINUX_2_STANDARD_2_0;
-  /** @deprecated Use LinuxArmBuildImage.AMAZON_LINUX_2_STANDARD_3_0 instead. */
+  /** The `aws/codebuild/amazonlinux2-aarch64-standard:3.0` build image. */
   public static readonly AMAZON_LINUX_2_ARM_3 = LinuxArmBuildImage.AMAZON_LINUX_2_STANDARD_3_0;
 
   /** @deprecated Use `STANDARD_7_0` and specify runtime in buildspec runtime-versions section */
@@ -1995,7 +1992,7 @@ export class WindowsBuildImage implements IBuildImage {
   /**
    * Corresponds to the standard CodeBuild image `aws/codebuild/windows-base:1.0`.
    *
-   * @deprecated `WindowsBuildImage.WIN_SERVER_CORE_2019_BASE_2_0` should be used instead.
+   * @deprecated `WindowsBuildImage.WIN_SERVER_CORE_2019_BASE_3_0` should be used instead.
    */
   public static readonly WIN_SERVER_CORE_2016_BASE: IBuildImage = new WindowsBuildImage({
     imageId: 'aws/codebuild/windows-base:1.0',
@@ -2006,7 +2003,7 @@ export class WindowsBuildImage implements IBuildImage {
    * The standard CodeBuild image `aws/codebuild/windows-base:2.0`, which is
    * based off Windows Server Core 2016.
    *
-   * @deprecated `WindowsBuildImage.WIN_SERVER_CORE_2019_BASE_2_0` should be used instead.
+   * @deprecated `WindowsBuildImage.WIN_SERVER_CORE_2019_BASE_3_0` should be used instead.
    */
   public static readonly WINDOWS_BASE_2_0: IBuildImage = new WindowsBuildImage({
     imageId: 'aws/codebuild/windows-base:2.0',
@@ -2029,6 +2026,16 @@ export class WindowsBuildImage implements IBuildImage {
    */
   public static readonly WIN_SERVER_CORE_2019_BASE_2_0: IBuildImage = new WindowsBuildImage({
     imageId: 'aws/codebuild/windows-base:2019-2.0',
+    imagePullPrincipalType: ImagePullPrincipalType.CODEBUILD,
+    imageType: WindowsImageType.SERVER_2019,
+  });
+
+  /**
+   * The standard CodeBuild image `aws/codebuild/windows-base:2019-3.0`, which is
+   * based off Windows Server Core 2019.
+   */
+  public static readonly WIN_SERVER_CORE_2019_BASE_3_0: IBuildImage = new WindowsBuildImage({
+    imageId: 'aws/codebuild/windows-base:2019-3.0',
     imagePullPrincipalType: ImagePullPrincipalType.CODEBUILD,
     imageType: WindowsImageType.SERVER_2019,
   });

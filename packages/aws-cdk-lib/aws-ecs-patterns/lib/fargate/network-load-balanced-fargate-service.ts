@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { SubnetSelection } from '../../../aws-ec2';
+import { ISecurityGroup, SubnetSelection } from '../../../aws-ec2';
 import { FargateService, FargateTaskDefinition } from '../../../aws-ecs';
 import { FeatureFlags } from '../../../core';
 import * as cxapi from '../../../cx-api';
@@ -25,6 +25,12 @@ export interface NetworkLoadBalancedFargateServiceProps extends NetworkLoadBalan
    */
   readonly taskSubnets?: SubnetSelection;
 
+  /**
+   * The security groups to associate with the service. If you do not specify a security group, a new security group is created.
+   *
+   * @default - A new security group is created.
+   */
+  readonly securityGroups?: ISecurityGroup[];
 }
 
 /**
@@ -59,6 +65,7 @@ export class NetworkLoadBalancedFargateService extends NetworkLoadBalancedServic
       this.taskDefinition = new FargateTaskDefinition(this, 'TaskDef', {
         memoryLimitMiB: props.memoryLimitMiB,
         cpu: props.cpu,
+        ephemeralStorageGiB: props.ephemeralStorageGiB,
         executionRole: taskImageOptions.executionRole,
         taskRole: taskImageOptions.taskRole,
         family: taskImageOptions.family,
@@ -101,6 +108,7 @@ export class NetworkLoadBalancedFargateService extends NetworkLoadBalancedServic
       platformVersion: props.platformVersion,
       deploymentController: props.deploymentController,
       circuitBreaker: props.circuitBreaker,
+      securityGroups: props.securityGroups,
       vpcSubnets: props.taskSubnets,
       enableExecuteCommand: props.enableExecuteCommand,
       capacityProviderStrategies: props.capacityProviderStrategies,
