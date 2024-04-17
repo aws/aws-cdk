@@ -45,7 +45,7 @@ describe('runtime', () => {
     expect(runtime.bundlingDockerImage.image).toEqual('public.ecr.aws/sam/build-my-runtime-name');
   });
 
-  test('overridde to bundlingDockerImage points to the correct image', () => {
+  test('override to bundlingDockerImage points to the correct image', () => {
     // GIVEN
     const runtime = new lambda.Runtime('my-runtime-name', undefined, {
       bundlingDockerImage: 'my-docker-image',
