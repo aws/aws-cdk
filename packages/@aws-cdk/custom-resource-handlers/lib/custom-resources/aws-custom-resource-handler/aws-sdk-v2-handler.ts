@@ -11,7 +11,7 @@ import * as AWSLambda from 'aws-lambda';
 import { AwsSdkCall } from './construct-types';
 import { decodeCall, decodeSpecialValues, filterKeys, respond, startsWithOneOf } from './shared';
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { flatten } from '@aws-cdk/sdk-v2-to-v3-adapter';
+import { flatten } from '@aws-cdk/aws-custom-resource-sdk-adapter';
 
 let latestSdkInstalled = false;
 
