@@ -114,7 +114,7 @@
                         "Arn"
                       ]
                     },
-                    "runtime": "nodejs18.x"
+                    "runtime": "nodejs20.x"
                   }
                 },
                 "constructInfo": {
@@ -187,6 +187,7 @@
                         "Arn"
                       ]
                     },
+                    "authorizerResultTtlInSeconds": 300,
                     "authorizerUri": {
                       "Fn::Join": [
                         "",
@@ -447,7 +448,7 @@
                       "aws:cdk:cloudformation:type": "AWS::ApiGateway::Stage",
                       "aws:cdk:cloudformation:props": {
                         "deploymentId": {
-                          "Ref": "MyRestApiDeploymentB555B582694e8eb3fdb7b5f988ba347d35601979"
+                          "Ref": "MyRestApiDeploymentB555B58259401a546b13c99de2d05e5e255a9ede"
                         },
                         "restApiId": {
                           "Ref": "MyRestApi2D1F47A9"
@@ -579,7 +580,7 @@
                 "path": "iam-token-authorizer/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.70"
+                  "version": "10.3.0"
                 }
               },
               "DeployAssert": {
@@ -625,7 +626,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.2.70"
+          "version": "10.3.0"
         }
       }
     },

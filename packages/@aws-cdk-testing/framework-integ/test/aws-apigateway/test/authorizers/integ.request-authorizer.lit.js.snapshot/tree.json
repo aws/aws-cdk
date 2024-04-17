@@ -114,7 +114,7 @@
                         "Arn"
                       ]
                     },
-                    "runtime": "nodejs18.x"
+                    "runtime": "nodejs20.x"
                   }
                 },
                 "constructInfo": {
@@ -356,7 +356,7 @@
                       "aws:cdk:cloudformation:type": "AWS::ApiGateway::Stage",
                       "aws:cdk:cloudformation:props": {
                         "deploymentId": {
-                          "Ref": "MyRestApiDeploymentB555B582d83364d66d67f510f848797cd89349d5"
+                          "Ref": "MyRestApiDeploymentB555B58276a4103e7ef38befb395a9ace5fdce44"
                         },
                         "restApiId": {
                           "Ref": "MyRestApi2D1F47A9"
@@ -547,6 +547,7 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::ApiGateway::Authorizer",
                   "aws:cdk:cloudformation:props": {
+                    "authorizerResultTtlInSeconds": 300,
                     "authorizerUri": {
                       "Fn::Join": [
                         "",
@@ -625,6 +626,7 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::ApiGateway::Authorizer",
                   "aws:cdk:cloudformation:props": {
+                    "authorizerResultTtlInSeconds": 300,
                     "authorizerUri": {
                       "Fn::Join": [
                         "",
@@ -720,7 +722,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.2.70"
+          "version": "10.3.0"
         }
       }
     },

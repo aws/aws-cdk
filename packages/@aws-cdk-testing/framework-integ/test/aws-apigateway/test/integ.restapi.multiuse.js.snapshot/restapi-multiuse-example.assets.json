@@ -1,7 +1,7 @@
 {
-  "version": "34.0.0",
+  "version": "36.0.0",
   "files": {
-    "232c50aeb634e5af383010ff723883de7c92ba01487db63ae5bafde6c8f38a57": {
+    "391f23667fa0c7abe1ee0f2d4e6cfa312d8adb49f850ca08dc0057367ae1bdba": {
       "source": {
         "path": "restapi-multiuse-example.template.json",
         "packaging": "file"
@@ -9,7 +9,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "232c50aeb634e5af383010ff723883de7c92ba01487db63ae5bafde6c8f38a57.json",
+          "objectKey": "391f23667fa0c7abe1ee0f2d4e6cfa312d8adb49f850ca08dc0057367ae1bdba.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

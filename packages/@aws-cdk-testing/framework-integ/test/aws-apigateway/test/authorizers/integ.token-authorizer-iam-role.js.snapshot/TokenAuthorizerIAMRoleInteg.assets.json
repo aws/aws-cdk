@@ -1,5 +1,5 @@
 {
-  "version": "34.0.0",
+  "version": "36.0.0",
   "files": {
     "6ef24b26328dec9135be0bd32fff8f588f9a4564f32df911d1de82cfb78183f0": {
       "source": {
@@ -14,7 +14,7 @@
         }
       }
     },
-    "1700f94824f0c5de41fa729800151d6296945b6e5fa1536c384e04b7a1377f4c": {
+    "852b3fbe5e969526dd51872c95eab5f05f413b604476aee2a94fe78a538285d0": {
       "source": {
         "path": "TokenAuthorizerIAMRoleInteg.template.json",
         "packaging": "file"
@@ -22,7 +22,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "1700f94824f0c5de41fa729800151d6296945b6e5fa1536c384e04b7a1377f4c.json",
+          "objectKey": "852b3fbe5e969526dd51872c95eab5f05f413b604476aee2a94fe78a538285d0.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

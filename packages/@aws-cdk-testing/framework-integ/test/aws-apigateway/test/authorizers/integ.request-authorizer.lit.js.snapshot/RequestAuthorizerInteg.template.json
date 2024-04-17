@@ -47,7 +47,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs18.x"
+    "Runtime": "nodejs20.x"
    },
    "DependsOn": [
     "MyAuthorizerFunctionServiceRole8A34C19E"
