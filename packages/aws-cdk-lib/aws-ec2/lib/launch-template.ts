@@ -3,12 +3,17 @@ import { Connections, IConnectable } from './connections';
 import { CfnLaunchTemplate } from './ec2.generated';
 import { InstanceType } from './instance-types';
 import { IKeyPair } from './key-pair';
-import { IMachineImage, MachineImageConfig, OperatingSystemType } from './machine-image';
+import {
+  IMachineImage,
+  MachineImageConfig,
+  OperatingSystemType,
+} from './machine-image';
 import { IPlacementGroup } from './placement-group';
 import { launchTemplateBlockDeviceMappings } from './private/ebs-util';
 import { ISecurityGroup } from './security-group';
 import { UserData } from './user-data';
 import { BlockDevice } from './volume';
+import { ISubnet } from './vpc';
 import * as iam from '../../aws-iam';
 import {
   Annotations,
@@ -25,7 +30,10 @@ import {
   FeatureFlags,
   ValidationError,
 } from '../../core';
-import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import {
+  addConstructMetadata,
+  MethodMetadata,
+} from '../../core/lib/metadata-resource';
 import * as cxapi from '../../cx-api';
 
 /**
@@ -69,6 +77,243 @@ export enum InstanceInitiatedShutdownBehavior {
    * The instance will be terminated when it initiates a shutdown.
    */
   TERMINATE = 'terminate',
+}
+
+/**
+ * InterfaceType
+ */
+export enum InterfaceType {
+  /**
+   * efa
+   *
+   * @see https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/efa.html
+   */
+  EFA = 'efa',
+
+  /**
+   * interface
+   */
+  INTERFACE = 'interface',
+}
+
+/**
+ * A security group connection tracking specification that enables you to set the idle timeout for connection tracking on an Elastic network interface.
+ *
+ * @see https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/security-group-connection-tracking.html#connection-tracking-timeouts
+ */
+export interface ConnectionTrackingSpecification extends CfnLaunchTemplate.ConnectionTrackingSpecificationProperty {}
+
+/**
+ * ENA Express uses AWS Scalable Reliable Datagram (SRD) technology to increase the maximum bandwidth used per stream and minimize tail latency of network traffic between EC2 instances.
+ *
+ * With ENA Express, you can communicate between two EC2 instances in the same subnet within the same account, or in different accounts. Both sending and receiving instances must have ENA Express enabled.
+ *
+ * To improve the reliability of network packet delivery, ENA Express reorders network packets on the receiving end by default. However, some UDP-based applications are designed to handle network packets that are out of order to reduce the overhead for packet delivery at the network layer. When ENA Express is enabled, you can specify whether UDP network traffic uses it.
+ */
+export interface EnaSrdSpecification
+  extends CfnLaunchTemplate.EnaSrdSpecificationProperty { }
+
+/**
+ * Specifies an IPv4 prefix for a network interface.
+ */
+export interface Ipv4PrefixSpecification
+  extends CfnLaunchTemplate.Ipv4PrefixSpecificationProperty { }
+
+/**
+ * Specifies an IPv6 address in an Amazon EC2 launch template.
+ *
+ * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-networkinterface.html
+ */
+export interface Ipv6Add extends CfnLaunchTemplate.Ipv6AddProperty { }
+
+/**
+ * Specifies an IPv6 prefix for a network interface.
+ */
+export interface Ipv6PrefixSpecification
+  extends CfnLaunchTemplate.Ipv6PrefixSpecificationProperty { }
+
+/**
+ * Specifies a secondary private IPv4 address for a network interface.
+ */
+export interface PrivateIpAdd extends CfnLaunchTemplate.PrivateIpAddProperty { }
+
+/**
+ * Specifies the parameters for a Launch Template network interface definition.
+ */
+export interface NetworkInterface {
+  /**
+   * Associates a Carrier IP address with eth0 for a new network interface.
+   *
+   * Use this option when you launch an instance in a Wavelength Zone and want to associate a Carrier IP address with the network interface. For more information about Carrier IP addresses, see Carrier IP addresses in the AWS Wavelength Developer Guide.
+   *
+   * @default No carrier IP address is assigned
+   */
+  readonly associateCarrierIpAddress?: boolean;
+
+  /**
+   * Associates a public IPv4 address with eth0 for a new network interface. Note that when multiple network interface cards are defined, this value must be `false` on all of them.
+   *
+   * @default No public IPv4 address is assigned
+   */
+  readonly associatePublicIpAddress?: boolean;
+
+  /**
+   * A connection tracking specification for the network interface.
+   *
+   * @default Default connection tracking timeouts are used.
+   * @see https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/security-group-connection-tracking.html#connection-tracking-timeouts
+   */
+  readonly connectionTrackingSpecification?: ConnectionTrackingSpecification;
+
+  /**
+   * Indicates whether the network interface is deleted when the instance is terminated.
+   *
+   * @default The network interface is deleted when the instance is terminated.
+   */
+  readonly deleteOnTermination?: boolean;
+
+  /**
+   * A description for the network interface.
+   *
+   * @default An empty string.
+   */
+  readonly description?: string;
+
+  /**
+   * The device index for the network interface attachment.
+   *
+   * @default Index is `0`
+   */
+  readonly deviceIndex: number;
+
+  /**
+   * The ENA Express configuration for the network interface.
+   *
+   * @default EnaSrd is not enabled
+   */
+  readonly enaSrdSpecification?: EnaSrdSpecification;
+
+  /**
+   * One or more security groups to attach to the interface.
+   *
+   * @default No security groups are attached to the interface.
+   */
+  readonly groups?: ISecurityGroup[];
+
+  /**
+   * The type of network interface. To create an Elastic Fabric Adapter (EFA), specify `InterfaceType.efa`. For more information, see Elastic Fabric Adapter in the Amazon Elastic Compute Cloud User Guide.
+   *
+   * @default Interface type is `InterfaceType.INTERFACE`.
+   */
+  readonly interfaceType?: InterfaceType;
+
+  /**
+   * The number of IPv4 prefixes to be automatically assigned to the network interface. You cannot use this option if you use the Ipv4Prefix option.
+   *
+   * @default One prefix is assigned
+   */
+  readonly ipv4PrefixCount?: number;
+
+  /**
+   * One or more IPv4 prefixes to be assigned to the network interface. You cannot use this option if you use the Ipv4PrefixCount option.
+   *
+   * @default A single prefix is assigned via `ipv4PrefixCount`
+   */
+  readonly ipv4Prefixes?: Ipv4PrefixSpecification[];
+
+  /**
+   * The number of IPv6 addresses to assign to a network interface. Amazon EC2 automatically selects the IPv6 addresses from the subnet range. You can't use this option if specifying specific IPv6 addresses.
+   *
+   * @default No IPv6 addresses are assigned.
+   */
+  readonly ipv6AddressCount?: number;
+
+  /**
+   * One or more specific IPv6 addresses from the IPv6 CIDR block range of your subnet. You can't use this option if you're specifying a number of IPv6 addresses.
+   *
+   * @default No IPv6 addresses are assigned.
+   */
+  readonly ipv6Addresses?: Ipv6Add[];
+
+  /**
+   * The number of IPv6 prefixes to be automatically assigned to the network interface. You cannot use this option if you use the Ipv6Prefix option.
+   *
+   * @default No prefixes are assigned.
+   */
+  readonly ipv6PrefixCount?: number;
+
+  /**
+   * One or more IPv6 prefixes to be assigned to the network interface. You cannot use this option if you use the Ipv6PrefixCount option.
+   *
+   * @default No prefixes are assigned.
+   */
+  readonly ipv6Prefixes?: Ipv6PrefixSpecification[];
+
+  /**
+   * The index of the network card. Some instance types support multiple network cards. The primary network interface must be assigned to network card index 0. The default is network card index 0.
+   *
+   * @default First network interface card gets assigned index `0`.
+   */
+  readonly networkCardIndex?: number;
+
+  /**
+   * The primary IPv6 address of the network interface. When you enable an IPv6 GUA address to be a primary IPv6, the first IPv6 GUA will be made the primary IPv6 address until the instance is terminated or the network interface is detached. For more information about primary IPv6 addresses, see RunInstances.
+   *
+   * @default First IPv6 address is made primary.
+   */
+  readonly primaryIpv6?: boolean;
+
+  /**
+   * The primary private IPv4 address of the network interface.
+   *
+   * @default A random IP address is assigned from one of the subnets.
+   */
+  readonly privateIpAddress?: string;
+
+  /**
+   * One or more private IPv4 addresses.
+   *
+   * @default A random IP address is assigned from one of the subnets.
+   */
+  readonly privateIpAddresses?: PrivateIpAdd[];
+
+  /**
+   * The number of secondary private IPv4 addresses to assign to a network interface.
+   *
+   * @default No secondary addresses are assigned
+   */
+  readonly secondaryPrivateIpAddressCount?: number;
+
+  /**
+   * List of subnets to which to place the interface in
+   *
+   * @default No subnets are defined.
+   */
+  readonly subnet?: ISubnet;
+}
+
+function synthesizeNetworkInterfaces(
+  networkInterfaces: NetworkInterface[],
+): CfnLaunchTemplate.NetworkInterfaceProperty[] {
+  return networkInterfaces.map((networkInterface) => {
+    return {
+      ...networkInterface,
+      groups: Lazy.list({
+        produce: () => {
+          return networkInterface.groups
+            ? networkInterface.groups.map((sg) => sg.securityGroupId)
+            : undefined;
+        },
+      }),
+      subnetId: Lazy.string({
+        produce: () => {
+          return networkInterface.subnet
+            ? networkInterface.subnet.subnetId
+            : undefined;
+        },
+      }),
+    };
+  });
 }
 
 /**
@@ -450,6 +695,15 @@ export interface LaunchTemplateProps {
    * @default - no placement group will be used for this launch template.
    */
   readonly placementGroup?: IPlacementGroup;
+
+  /**
+   * Network interface definitions for the EC2 instances.
+   *
+   * Note: If defined, overrides settings `associatePublicIpAddress` and `securityGroup`.
+   *
+   * @default: A single network interface using `associatePublicIpAddress` and `securityGroup`is created
+   */
+  readonly networkInterfaces?: NetworkInterface[];
 }
 
 /**
@@ -505,19 +759,29 @@ export interface LaunchTemplateAttributes {
  *
  * @see https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-launch-templates.html
  */
-export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGrantable, IConnectable {
+export class LaunchTemplate
+  extends Resource
+  implements ILaunchTemplate, iam.IGrantable, IConnectable {
   /**
    * Import an existing LaunchTemplate.
    */
-  public static fromLaunchTemplateAttributes(scope: Construct, id: string, attrs: LaunchTemplateAttributes): ILaunchTemplate {
+  public static fromLaunchTemplateAttributes(
+    scope: Construct,
+    id: string,
+    attrs: LaunchTemplateAttributes,
+  ): ILaunchTemplate {
     const haveId = Boolean(attrs.launchTemplateId);
     const haveName = Boolean(attrs.launchTemplateName);
     if (haveId == haveName) {
-      throw new ValidationError('LaunchTemplate.fromLaunchTemplateAttributes() requires exactly one of launchTemplateId or launchTemplateName be provided.', scope);
+      throw new ValidationError(
+        'LaunchTemplate.fromLaunchTemplateAttributes() requires exactly one of launchTemplateId or launchTemplateName be provided.',
+        scope,
+      );
     }
 
     class Import extends Resource implements ILaunchTemplate {
-      public readonly versionNumber = attrs.versionNumber ?? LaunchTemplateSpecialVersions.DEFAULT_VERSION;
+      public readonly versionNumber =
+        attrs.versionNumber ?? LaunchTemplateSpecialVersions.DEFAULT_VERSION;
       public readonly launchTemplateId? = attrs.launchTemplateId;
       public readonly launchTemplateName? = attrs.launchTemplateName;
     }
@@ -611,24 +875,57 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
     addConstructMetadata(this, props);
 
     // Basic validation of the provided spot block duration
-    const spotDuration = props?.spotOptions?.blockDuration?.toHours({ integral: true });
+    const spotDuration = props?.spotOptions?.blockDuration?.toHours({
+      integral: true,
+    });
     if (spotDuration !== undefined && (spotDuration < 1 || spotDuration > 6)) {
       // See: https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/spot-requests.html#fixed-duration-spot-instances
-      Annotations.of(this).addError('Spot block duration must be exactly 1, 2, 3, 4, 5, or 6 hours.');
+      Annotations.of(this).addError(
+        'Spot block duration must be exactly 1, 2, 3, 4, 5, or 6 hours.',
+      );
     }
 
     // Basic validation of the provided httpPutResponseHopLimit
-    if (props.httpPutResponseHopLimit !== undefined && (props.httpPutResponseHopLimit < 1 || props.httpPutResponseHopLimit > 64)) {
+    if (
+      props.httpPutResponseHopLimit !== undefined &&
+      (props.httpPutResponseHopLimit < 1 || props.httpPutResponseHopLimit > 64)
+    ) {
       // See: https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-launchtemplate-launchtemplatedata-metadataoptions.html#cfn-ec2-launchtemplate-launchtemplatedata-metadataoptions-httpputresponsehoplimit
-      Annotations.of(this).addError('HttpPutResponseHopLimit must between 1 and 64');
+      Annotations.of(this).addError(
+        'HttpPutResponseHopLimit must between 1 and 64',
+      );
+    }
+
+    // Basic validation of the provided network interface cards
+    if (props.networkInterfaces && props.networkInterfaces.length > 1) {
+      if (
+        !props.networkInterfaces.every((nic) => !nic.associatePublicIpAddress)
+      ) {
+        Annotations.of(this).addError(
+          'associatePublicIpAddress must be `false` or `undefined` when defining multiple network interfaces',
+        );
+      }
+    }
+
+    // Basic validation of the provided network interface cards
+    if (props.networkInterfaces && props.networkInterfaces.length > 1) {
+      if (!props.networkInterfaces.every((nic) => !nic.associatePublicIpAddress)) {
+        Annotations.of(this).addError('associatePublicIpAddress must be `false` or `undefined` when defining multiple network interfaces');
+      }
     }
 
     if (props.instanceProfile && props.role) {
-      throw new ValidationError('You cannot provide both an instanceProfile and a role', this);
+      throw new ValidationError(
+        'You cannot provide both an instanceProfile and a role',
+        this,
+      );
     }
 
     if (props.keyName && props.keyPair) {
-      throw new ValidationError('Cannot specify both of \'keyName\' and \'keyPair\'; prefer \'keyPair\'', this);
+      throw new ValidationError(
+        "Cannot specify both of 'keyName' and 'keyPair'; prefer 'keyPair'",
+        this,
+      );
     }
 
     // use provided instance profile or create one if a role was provided
@@ -647,29 +944,47 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
     this._grantPrincipal = this.role;
 
     if (props.securityGroup) {
-      this._connections = new Connections({ securityGroups: [props.securityGroup] });
+      this._connections = new Connections({
+        securityGroups: [props.securityGroup],
+      });
     }
     const securityGroupsToken = Lazy.list({
       produce: () => {
         if (this._connections && this._connections.securityGroups.length > 0) {
-          return this._connections.securityGroups.map(sg => sg.securityGroupId);
+          return this._connections.securityGroups.map(
+            (sg) => sg.securityGroupId,
+          );
         }
         return undefined;
       },
     });
 
-    const imageConfig: MachineImageConfig | undefined = props.machineImage?.getImage(this);
+    const imageConfig: MachineImageConfig | undefined =
+      props.machineImage?.getImage(this);
     if (imageConfig) {
       this.osType = imageConfig.osType;
       this.imageId = imageConfig.imageId;
     }
 
-    if (this.osType && props.keyPair && !props.keyPair._isOsCompatible(this.osType)) {
-      throw new ValidationError(`${props.keyPair.type} keys are not compatible with the chosen AMI`, this);
+    if (
+      this.osType &&
+      props.keyPair &&
+      !props.keyPair._isOsCompatible(this.osType)
+    ) {
+      throw new ValidationError(
+        `${props.keyPair.type} keys are not compatible with the chosen AMI`,
+        this,
+      );
     }
 
-    if (FeatureFlags.of(this).isEnabled(cxapi.EC2_LAUNCH_TEMPLATE_DEFAULT_USER_DATA) ||
-      FeatureFlags.of(this).isEnabled(cxapi.AUTOSCALING_GENERATE_LAUNCH_TEMPLATE)) {
+    if (
+      FeatureFlags.of(this).isEnabled(
+        cxapi.EC2_LAUNCH_TEMPLATE_DEFAULT_USER_DATA,
+      ) ||
+      FeatureFlags.of(this).isEnabled(
+        cxapi.AUTOSCALING_GENERATE_LAUNCH_TEMPLATE,
+      )
+    ) {
       // priority: prop.userData -> userData from machineImage -> undefined
       this.userData = props.userData ?? imageConfig?.userData;
     } else {
@@ -693,7 +1008,8 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
       marketOptions = {
         marketType: 'spot',
         spotOptions: {
-          blockDurationMinutes: spotDuration !== undefined ? spotDuration * 60 : undefined,
+          blockDurationMinutes:
+            spotDuration !== undefined ? spotDuration * 60 : undefined,
           instanceInterruptionBehavior: props.spotOptions.interruptionBehavior,
           maxPrice: props.spotOptions.maxPrice?.toString(),
           spotInstanceType: props.spotOptions.requestType,
@@ -701,7 +1017,11 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
         },
       };
       // Remove SpotOptions if there are none.
-      if (Object.keys(marketOptions.spotOptions).filter(k => marketOptions.spotOptions[k]).length == 0) {
+      if (
+        Object.keys(marketOptions.spotOptions).filter(
+          (k) => marketOptions.spotOptions[k],
+        ).length == 0
+      ) {
         marketOptions.spotOptions = undefined;
       }
     }
@@ -712,12 +1032,14 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
       produce: () => {
         if (this.tags.hasTags()) {
           const renderedTags = this.tags.renderTags();
-          const lowerCaseRenderedTags = renderedTags.map( (tag: { [key: string]: string}) => {
-            return {
-              key: tag.Key,
-              value: tag.Value,
-            };
-          });
+          const lowerCaseRenderedTags = renderedTags.map(
+            (tag: { [key: string]: string }) => {
+              return {
+                key: tag.Key,
+                value: tag.Value,
+              };
+            },
+          );
           return [
             {
               resourceType: 'instance',
@@ -737,12 +1059,14 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
       produce: () => {
         if (this.tags.hasTags()) {
           const renderedTags = this.tags.renderTags();
-          const lowerCaseRenderedTags = renderedTags.map( (tag: { [key: string]: string}) => {
-            return {
-              key: tag.Key,
-              value: tag.Value,
-            };
-          });
+          const lowerCaseRenderedTags = renderedTags.map(
+            (tag: { [key: string]: string }) => {
+              return {
+                key: tag.Key,
+                value: tag.Value,
+              };
+            },
+          );
           return [
             {
               resourceType: 'launch-template',
@@ -754,9 +1078,44 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
       },
     });
 
-    const networkInterfaces = props.associatePublicIpAddress !== undefined
-      ? [{ deviceIndex: 0, associatePublicIpAddress: props.associatePublicIpAddress, groups: securityGroupsToken }]
-      : undefined;
+    let networkInterfaces: NetworkInterface[] | undefined;
+    if (props.networkInterfaces) {
+      networkInterfaces = props.networkInterfaces;
+    } else {
+      networkInterfaces =
+        props.associatePublicIpAddress !== undefined
+
+          ? [
+            {
+              deviceIndex: 0,
+              associatePublicIpAddress: props.associatePublicIpAddress,
+              groups: props.securityGroup ? [props.securityGroup] : undefined,
+            },
+          ]
+          : undefined;
+    }
+
+    if (
+      props.versionDescription &&
+      !Token.isUnresolved(props.versionDescription) &&
+      props.versionDescription.length > 255
+    ) {
+      throw new ValidationError(
+        `versionDescription must be less than or equal to 255 characters, got ${props.versionDescription.length}`,
+        this,
+      );
+    }
+
+    if (
+      props.versionDescription &&
+      !Token.isUnresolved(props.versionDescription) &&
+      props.versionDescription.length > 255
+    ) {
+      throw new ValidationError(
+        `versionDescription must be less than or equal to 255 characters, got ${props.versionDescription.length}`,
+        this,
+      );
+    }
 
     if (props.versionDescription && !Token.isUnresolved(props.versionDescription) && props.versionDescription.length > 255) {
       throw new ValidationError(`versionDescription must be less than or equal to 255 characters, got ${props.versionDescription.length}`, this);
@@ -766,35 +1125,56 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
       launchTemplateName: props?.launchTemplateName,
       versionDescription: props?.versionDescription,
       launchTemplateData: {
-        blockDeviceMappings: props?.blockDevices !== undefined ? launchTemplateBlockDeviceMappings(this, props.blockDevices) : undefined,
-        creditSpecification: props?.cpuCredits !== undefined ? {
-          cpuCredits: props.cpuCredits,
-        } : undefined,
+        blockDeviceMappings:
+          props?.blockDevices !== undefined
+            ? launchTemplateBlockDeviceMappings(this, props.blockDevices)
+            : undefined,
+        creditSpecification:
+          props?.cpuCredits !== undefined
+            ? {
+              cpuCredits: props.cpuCredits,
+            }
+            : undefined,
         disableApiTermination: props?.disableApiTermination,
         ebsOptimized: props?.ebsOptimized,
-        enclaveOptions: props?.nitroEnclaveEnabled !== undefined ? {
-          enabled: props.nitroEnclaveEnabled,
-        } : undefined,
-        hibernationOptions: props?.hibernationConfigured !== undefined ? {
-          configured: props.hibernationConfigured,
-        } : undefined,
-        iamInstanceProfile: iamProfileArn !== undefined ? { arn: iamProfileArn } : undefined,
+        enclaveOptions:
+          props?.nitroEnclaveEnabled !== undefined
+            ? {
+              enabled: props.nitroEnclaveEnabled,
+            }
+            : undefined,
+        hibernationOptions:
+          props?.hibernationConfigured !== undefined
+            ? {
+              configured: props.hibernationConfigured,
+            }
+            : undefined,
+        iamInstanceProfile:
+          iamProfileArn !== undefined ? { arn: iamProfileArn } : undefined,
         imageId: imageConfig?.imageId,
         instanceType: props?.instanceType?.toString(),
-        instanceInitiatedShutdownBehavior: props?.instanceInitiatedShutdownBehavior,
+        instanceInitiatedShutdownBehavior:
+          props?.instanceInitiatedShutdownBehavior,
         instanceMarketOptions: marketOptions,
         keyName: props.keyPair?.keyPairName ?? props?.keyName,
-        monitoring: props?.detailedMonitoring !== undefined ? {
-          enabled: props.detailedMonitoring,
-        } : undefined,
+        monitoring:
+          props?.detailedMonitoring !== undefined
+            ? {
+              enabled: props.detailedMonitoring,
+            }
+            : undefined,
         securityGroupIds: networkInterfaces ? undefined : securityGroupsToken,
         tagSpecifications: tagsToken,
         userData: userDataToken,
         metadataOptions: this.renderMetadataOptions(props),
-        networkInterfaces,
-        placement: props.placementGroup ? {
-          groupName: props.placementGroup.placementGroupName,
-        } : undefined,
+        networkInterfaces: networkInterfaces
+          ? synthesizeNetworkInterfaces(networkInterfaces)
+          : undefined,
+        placement: props.placementGroup
+          ? {
+            groupName: props.placementGroup.placementGroupName,
+          }
+          : undefined,
 
         // Fields not yet implemented:
         // ==========================
@@ -826,7 +1206,6 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
         // CDK only has placement groups, not placement.
         // Specifiying options other than placementGroup is not supported yet.
         // placement: undefined,
-
       },
       tagSpecifications: ltTagsToken,
     });
@@ -848,23 +1227,49 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
   private renderMetadataOptions(props: LaunchTemplateProps) {
     let requireMetadataOptions = false;
     // if requireImdsv2 is true, httpTokens must be required.
-    if (props.requireImdsv2 === true && props.httpTokens === LaunchTemplateHttpTokens.OPTIONAL) {
-      Annotations.of(this).addError('httpTokens must be required when requireImdsv2 is true');
+    if (
+      props.requireImdsv2 === true &&
+      props.httpTokens === LaunchTemplateHttpTokens.OPTIONAL
+    ) {
+      Annotations.of(this).addError(
+        'httpTokens must be required when requireImdsv2 is true',
+      );
     }
-    if (props.httpEndpoint !== undefined || props.httpProtocolIpv6 !== undefined || props.httpPutResponseHopLimit !== undefined ||
-      props.httpTokens !== undefined || props.instanceMetadataTags !== undefined || props.requireImdsv2 === true) {
+    if (
+      props.httpEndpoint !== undefined ||
+      props.httpProtocolIpv6 !== undefined ||
+      props.httpPutResponseHopLimit !== undefined ||
+      props.httpTokens !== undefined ||
+      props.instanceMetadataTags !== undefined ||
+      props.requireImdsv2 === true
+    ) {
       requireMetadataOptions = true;
     }
     if (requireMetadataOptions) {
       return {
-        httpEndpoint: props.httpEndpoint === true ? 'enabled' :
-          props.httpEndpoint === false ? 'disabled' : undefined,
-        httpProtocolIpv6: props.httpProtocolIpv6 === true ? 'enabled' :
-          props.httpProtocolIpv6 === false ? 'disabled' : undefined,
+        httpEndpoint:
+          props.httpEndpoint === true
+            ? 'enabled'
+            : props.httpEndpoint === false
+              ? 'disabled'
+              : undefined,
+        httpProtocolIpv6:
+          props.httpProtocolIpv6 === true
+            ? 'enabled'
+            : props.httpProtocolIpv6 === false
+              ? 'disabled'
+              : undefined,
         httpPutResponseHopLimit: props.httpPutResponseHopLimit,
-        httpTokens: props.requireImdsv2 === true ? LaunchTemplateHttpTokens.REQUIRED : props.httpTokens,
-        instanceMetadataTags: props.instanceMetadataTags === true ? 'enabled' :
-          props.instanceMetadataTags === false ? 'disabled' : undefined,
+        httpTokens:
+          props.requireImdsv2 === true
+            ? LaunchTemplateHttpTokens.REQUIRED
+            : props.httpTokens,
+        instanceMetadataTags:
+          props.instanceMetadataTags === true
+            ? 'enabled'
+            : props.instanceMetadataTags === false
+              ? 'disabled'
+              : undefined,
       };
     } else {
       return undefined;
@@ -879,7 +1284,11 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
   @MethodMetadata()
   public addSecurityGroup(securityGroup: ISecurityGroup): void {
     if (!this._connections) {
-      throw new ValidationError('LaunchTemplate can only be added a securityGroup if another securityGroup is initialized in the constructor.', this);
+      throw new ValidationError(
+
+        'LaunchTemplate can only be added a securityGroup if another securityGroup is initialized in the constructor.',
+        this,
+      );
     }
     this._connections.addSecurityGroup(securityGroup);
   }
@@ -891,7 +1300,11 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
    */
   public get connections(): Connections {
     if (!this._connections) {
-      throw new ValidationError('LaunchTemplate can only be used as IConnectable if a securityGroup is provided when constructing it.', this);
+      throw new ValidationError(
+
+        'LaunchTemplate can only be used as IConnectable if a securityGroup is provided when constructing it.',
+        this,
+      );
     }
     return this._connections;
   }
@@ -903,7 +1316,11 @@ export class LaunchTemplate extends Resource implements ILaunchTemplate, iam.IGr
    */
   public get grantPrincipal(): iam.IPrincipal {
     if (!this._grantPrincipal) {
-      throw new ValidationError('LaunchTemplate can only be used as IGrantable if a role is provided when constructing it.', this);
+      throw new ValidationError(
+
+        'LaunchTemplate can only be used as IGrantable if a role is provided when constructing it.',
+        this,
+      );
     }
     return this._grantPrincipal;
   }
