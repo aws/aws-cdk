@@ -607,6 +607,76 @@ new cr.AwsCustomResource(this, 'ListObjects', {
 Note that even if you restrict the output of your custom resource you can still use any
 path in `PhysicalResourceId.fromResponse()`.
 
+### Custom Resource Logging for SDK Calls
+
+By default, logging occurs during execution of the singleton Lambda used by a custom resource. The data being logged includes:
+* The event object that is received by the Lambda handler
+* The response received after making an API call
+* The response object that the Lambda handler will return
+* SDK versioning information
+* Caught and uncaught errors
+
+The `logging` property defined on the `AwsSdkCall` interface allows control over what data is being logged on a per SDK call basis. This is configurable via an instance of the `Logging` class. The `Logging` class exposes two options that can be used to configure logging:
+1. `Logging.all()` which enables logging of all data. This is the default `logging` configuration.
+2. `Logging.withDataHidden()` which prevents logging of all data associated with the API call response, including logging the raw API call response and the `Data` field on the Lambda handler response object. This configuration option is particularly useful for situations where the API call response may contain sensitive information.
+
+For further context about `Logging.withDataHidden()`, consider a user who might be making an API call that is returning sensitive information that they may want to keep hidden. To do this, they would configure `logging` with `Logging.withDataHidden()`:
+
+```ts
+const getParameter = new cr.AwsCustomResource(this, 'GetParameter', {
+  onUpdate: {
+    service: 'SSM',
+    action: 'GetParameter',
+    parameters: {
+      Name: 'my-parameter',
+      WithDecryption: true,
+    },
+    physicalResourceId: cr.PhysicalResourceId.of(Date.now().toString()),
+    logging: cr.Logging.withDataHidden(),
+  },
+  policy: cr.AwsCustomResourcePolicy.fromSdkCalls({
+    resources: cr.AwsCustomResourcePolicy.ANY_RESOURCE,
+  }),
+});
+```
+
+With this configuration option set, the raw API call response would not be logged and the `Data` field of the response object would be hidden:
+
+```
+{
+  "Status": "SUCCESS",
+  "Reason": "OK",
+  "PhysicalResourceId": "1234567890123",
+  "StackId": "arn:aws:cloudformation:us-west-2:123456789012:stack/Test/043tyub2-194e-4cy2-a969-9891ghj6cd0d",
+  "RequestId": "a16y677a-a8b6-41a6-bf7b-7644586861a5",
+  "LogicalResourceId": "Sercret",
+  "NoEcho": false,
+}
+```
+
+For comparison, configuring `logging` with `Logging.all()` would result in the raw API call response being logged, as well as the full response object:
+
+```
+{
+  "Status": "SUCCESS",
+  "Reason": "OK",
+  "PhysicalResourceId": "1234567890123",
+  "StackId": "arn:aws:cloudformation:us-west-2:123456789012:stack/Test/043tyub2-194e-4cy2-a969-9891ghj6cd0d",
+  "RequestId": "a16y677a-a8b6-41a6-bf7b-7644586861a5",
+  "LogicalResourceId": "Sercret",
+  "NoEcho": false,
+  "Data": {
+    "region": "us-west-2",
+    "Parameter.ARN": "arn:aws:ssm:us-west-2:123456789012:parameter/Test/Parameter",
+    "Parameter.DataType": "text",
+    "Parameter.Name": "/Test/Parameter",
+    "Parameter.Type": "SecureString",
+    "Parameter.Value": "ThisIsSecret!123",
+    "Parameter.Version": 1
+  }
+}
+```
+
 ### Custom Resource Examples
 
 #### Get the latest version of a secure SSM parameter
