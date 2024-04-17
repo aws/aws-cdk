@@ -44,7 +44,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs18.x"
+    "Runtime": "nodejs20.x"
    },
    "DependsOn": [
     "preTokenGenerationLambdaServiceRole0C3B4FA0"
