@@ -1,6 +1,6 @@
 {
-  "name": "@aws-cdk/sdk-v2-to-v3-adapter",
-  "description": "Adapter to convert AWS SDK v2 to AWS CDK v3 calls",
+  "name": "@aws-cdk/aws-custom-resource-sdk-adapter",
+  "description": "Adapter to convert AWS SDK v2 to AWS CDK v3 calls for AwsCustomResource",
   "private": true,
   "version": "0.0.0",
   "main": "lib/index.js",
@@ -36,7 +36,7 @@
   "repository": {
     "url": "https://github.com/aws/aws-cdk.git",
     "type": "git",
-    "directory": "packages/@aws-cdk/sdk-v2-to-v3-adapter"
+    "directory": "packages/@aws-cdk/aws-custom-resource-sdk-adapter"
   },
   "keywords": [
     "aws",
