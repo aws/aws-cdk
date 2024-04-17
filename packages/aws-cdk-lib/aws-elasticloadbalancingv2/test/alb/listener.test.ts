@@ -1701,48 +1701,18 @@ describe('tests', () => {
   describe('Rule suffix for logicalId', () => {
     const identifierToken = 'SuperMagicToken';
     interface TestCase {
-      readonly removeRuleSuffixFromLogicalId?: boolean;
+      readonly removeSuffix?: boolean;
       readonly expectedLogicalId: string;
     };
     const nonDefaultTestCases: TestCase[] = [
-      { removeRuleSuffixFromLogicalId: true, expectedLogicalId: identifierToken },
-      { removeRuleSuffixFromLogicalId: false, expectedLogicalId: identifierToken + 'Rule' },
+      { removeSuffix: true, expectedLogicalId: identifierToken },
+      { removeSuffix: false, expectedLogicalId: identifierToken + 'Rule' },
     ];
     test.each<TestCase>([
-      // Default is to not have the `Rule` suffix, per legacy behavior.
-      { removeRuleSuffixFromLogicalId: undefined, expectedLogicalId: identifierToken },
-      ...nonDefaultTestCases,
-    ])('addTargetGroups %s', ({ removeRuleSuffixFromLogicalId, expectedLogicalId }) => {
-      // GIVEN
-      const app = new cdk.App();
-      const stack = new cdk.Stack(app, 'TestStack', { env: { account: '123456789012', region: 'us-east-1' } });
-      const vpc = new ec2.Vpc(stack, 'Stack');
-      const targetGroup = new elbv2.ApplicationTargetGroup(stack, 'TargetGroup', { vpc, port: 80 });
-      const listener = elbv2.ApplicationListener.fromLookup(stack, 'a', {
-        loadBalancerTags: {
-          some: 'tag',
-        },
-      });
-
-      // WHEN
-      listener.addTargetGroups(identifierToken, {
-        conditions: [elbv2.ListenerCondition.pathPatterns(['/fake'])],
-        priority: 42,
-        targetGroups: [targetGroup],
-        removeRuleSuffixFromLogicalId,
-      });
-
-      // THEN
-      const applicationListenerRule = listener.node.children.find((v)=> v.hasOwnProperty('conditions'));
-      expect(applicationListenerRule).toBeDefined();
-      expect(applicationListenerRule!.node.id).toBe(expectedLogicalId);
-    });
-
-    test.each<TestCase>([
       // Default is consistent, which means it has the `Rule` suffix. This means no change from legacy behavior
-      { removeRuleSuffixFromLogicalId: undefined, expectedLogicalId: identifierToken + 'Rule' },
+      { removeSuffix: undefined, expectedLogicalId: identifierToken + 'Rule' },
       ...nonDefaultTestCases,
-    ])('addAction %s', ({ removeRuleSuffixFromLogicalId, expectedLogicalId }) => {
+    ])('addAction %s', ({ removeSuffix, expectedLogicalId }) => {
       // GIVEN
       const app = new cdk.App();
       const stack = new cdk.Stack(app, 'TestStack', { env: { account: '123456789012', region: 'us-east-1' } });
@@ -1759,7 +1729,7 @@ describe('tests', () => {
         action: elbv2.ListenerAction.weightedForward([{ targetGroup, weight: 1 }]),
         conditions: [elbv2.ListenerCondition.pathPatterns(['/fake'])],
         priority: 42,
-        removeRuleSuffixFromLogicalId,
+        removeSuffix,
       });
 
       // THEN
