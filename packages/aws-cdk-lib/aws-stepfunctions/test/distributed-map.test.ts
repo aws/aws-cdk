@@ -763,7 +763,7 @@ describe('Distributed Map State', () => {
       return map;
     });
 
-  test('does not fail in synthesis if label has 's', () => {
+  test('does not fail in synthesis if label has `s`', () => {
     const app = createAppWithMap((stack) => {
       const map = new stepfunctions.DistributedMap(stack, 'Map State', {
         label: 's',
