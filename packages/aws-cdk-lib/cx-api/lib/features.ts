@@ -1031,7 +1031,7 @@ export const FLAGS: Record<string, FlagInfo> = {
       When this feature flag is enabled and calling KMS key grant method, the created IAM policy will reduce the resource scope from
       '*' to this specific granting KMS key.
     `,
-    introducedIn: { v2: 'V2NEXT' },
+    introducedIn: { v2: '2.134.0' },
     recommendedValue: true,
   },
 };
