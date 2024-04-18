@@ -27,7 +27,7 @@
   "devDependencies": {
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
-    "@aws-cdk/sdk-v2-to-v3-adapter": "0.0.0",
+    "@aws-cdk/aws-custom-resource-sdk-adapter": "0.0.0",
     "@aws-sdk/client-ecs": "3.451.0",
     "@aws-sdk/client-ssm": "3.453.0",
     "@aws-sdk/client-kinesis": "3.451.0",
@@ -55,16 +55,16 @@
     "sinon": "^9.2.4",
     "nock": "^13.5.4",
     "fs-extra": "^11.2.0",
-    "esbuild": "^0.20.2"
+    "esbuild": "^0.20.2",
+    "aws-sdk": "^2.1600.0"
   },
   "dependencies": {
-    "@aws-cdk/asset-node-proxy-agent-v6": "^2.0.1",
+    "@aws-cdk/asset-node-proxy-agent-v6": "^2.0.3",
     "@aws-sdk/client-lambda": "3.421.0",
     "@aws-sdk/client-synthetics": "3.421.0",
     "@aws-sdk/client-ecr": "3.421.0",
     "@aws-sdk/client-s3": "3.421.0",
-    "@aws-sdk/client-cloudwatch": "3.421.0",
-    "aws-sdk": "^2.1583.0"
+    "@aws-sdk/client-cloudwatch": "3.421.0"
   },
   "repository": {
     "url": "https://github.com/aws/aws-cdk.git",
