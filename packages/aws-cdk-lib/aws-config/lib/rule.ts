@@ -430,9 +430,6 @@ export class CustomRule extends RuleNew {
       );
     }
 
-    // The lambda permission must be created before the rule
-    this.node.addDependency(props.lambdaFunction);
-
     const rule = new CfnConfigRule(this, 'Resource', {
       configRuleName: this.physicalName,
       description: props.description,
@@ -445,6 +442,9 @@ export class CustomRule extends RuleNew {
         sourceIdentifier: props.lambdaFunction.functionArn,
       },
     });
+
+    // The lambda permission must be created before the rule
+    rule.node.addDependency(props.lambdaFunction);
 
     this.configRuleName = rule.ref;
     this.configRuleArn = rule.attrArn;
