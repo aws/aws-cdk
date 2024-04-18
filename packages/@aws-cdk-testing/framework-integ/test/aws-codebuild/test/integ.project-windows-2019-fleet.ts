@@ -1,6 +1,7 @@
 import * as cdk from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as codebuild from 'aws-cdk-lib/aws-codebuild';
+
 /**
  * Deployment notice:
  *
@@ -14,13 +15,13 @@ import * as codebuild from 'aws-cdk-lib/aws-codebuild';
  */
 
 const app = new cdk.App();
-const stack = new cdk.Stack(app, 'aws-cdk-project-fleet');
+const stack = new cdk.Stack(app, 'aws-cdk-project-windows-2019-fleet');
 
 const fleet = new codebuild.Fleet(stack, 'MyFleet', {
   fleetName: 'MyFleet',
   baseCapacity: 1,
-  computeType: codebuild.FleetComputeType.SMALL,
-  environmentType: codebuild.EnvironmentType.LINUX_CONTAINER,
+  computeType: codebuild.FleetComputeType.MEDIUM,
+  environmentType: codebuild.EnvironmentType.WINDOWS_SERVER_2019_CONTAINER,
 });
 
 const project = new codebuild.Project(stack, 'MyProject', {
@@ -32,11 +33,11 @@ const project = new codebuild.Project(stack, 'MyProject', {
   }),
   environment: {
     fleet,
-    buildImage: codebuild.LinuxBuildImage.STANDARD_7_0,
+    buildImage: codebuild.WindowsBuildImage.WIN_SERVER_CORE_2019_BASE_3_0,
   },
 });
 
-const test = new integ.IntegTest(app, 'FleetIntegTest', {
+const test = new integ.IntegTest(app, 'Windows2019FleetIntegTest', {
   testCases: [stack],
 });
 
