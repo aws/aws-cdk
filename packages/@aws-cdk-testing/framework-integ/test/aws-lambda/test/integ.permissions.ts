@@ -17,9 +17,9 @@ fn.grantInvoke(new iam.AnyPrincipal().inOrganization('o-yyyyyyyyyy'));
 
 fn.grantInvoke(new iam.OrganizationPrincipal('o-xxxxxxxxxx'));
 
-fn.grantInvokeV2(new iam.AnyPrincipal().inOrganization('o-yyyyyyyyyy2'));
+fn.grantInvoke(new iam.AnyPrincipal().inOrganization('o-yyyyyyyyyy2'), { onlyGrantLatestVersion: true });
 
-fn.grantInvokeV2(new iam.OrganizationPrincipal('o-xxxxxxxxxx2'));
+fn.grantInvoke(new iam.OrganizationPrincipal('o-xxxxxxxxxx2'), { onlyGrantLatestVersion: true });
 
 const fnUrl = fn.addFunctionUrl();
 const role = new iam.Role(stack, 'MyRole', {

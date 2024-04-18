@@ -78,7 +78,7 @@
     "PrincipalOrgID": "o-xxxxxxxxxx"
    }
   },
-  "MyLambdaInvokeZoBUDhNic8W9iwOX3PUHW4PxLYxcNvgQd0I750ZVGfQ48B59B4A": {
+  "MyLambdaInvokeiasez2Hq1vE2Fl1I4Yaq8UbNdwu1QsvuMXzIoTAF759EB93": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",
@@ -92,7 +92,7 @@
     "PrincipalOrgID": "o-yyyyyyyyyy2"
    }
   },
-  "MyLambdaInvokefy1YgRC9j8kJQBgyNsNsleYXOlPp4RTnXEx2NNmcs4CE101ED": {
+  "MyLambdaInvokeeCd3Xf1YrYI9J9KZWaa7iTC3wv2MejAlHdcglgF5m4c0F884F73": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",
