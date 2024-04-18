@@ -153,12 +153,45 @@ export class Fleet extends Resource implements IFleet {
 /**
  * Fleet build machine compute type. Subset of Fleet compatible {@link ComputeType} values.
  *
+ * The allocated memory, vCPU count and disk space of the build machine for a
+ * given compute type are dependent on the environment type.
+ * Some compute types may also not be available for all environment types.
+ *
  * @see https://docs.aws.amazon.com/codebuild/latest/userguide/build-env-ref-compute-types.html#environment.types
  */
 export enum FleetComputeType {
+  /**
+   * Small compute type
+   *
+   * May not be available for all environment types, see
+   * {@link https://docs.aws.amazon.com/codebuild/latest/userguide/build-env-ref-compute-types.html#environment.types docs}
+   * for more information.
+   */
   SMALL = ComputeType.SMALL,
+  /**
+   * Medium compute type
+   *
+   * May not be available for all environment types, see
+   * {@link https://docs.aws.amazon.com/codebuild/latest/userguide/build-env-ref-compute-types.html#environment.types docs}
+   * for more information.
+   **/
   MEDIUM = ComputeType.MEDIUM,
+  /** Large compute type */
   LARGE = ComputeType.LARGE,
+  /**
+   * Extra Large compute type
+   *
+   * May not be available for all environment types, see
+   * {@link https://docs.aws.amazon.com/codebuild/latest/userguide/build-env-ref-compute-types.html#environment.types docs}
+   * for more information.
+   **/
   X_LARGE = ComputeType.X_LARGE,
+  /**
+   * Extra, Extra Large compute type
+   *
+   * May not be available for all environment types, see
+   * {@link https://docs.aws.amazon.com/codebuild/latest/userguide/build-env-ref-compute-types.html#environment.types docs}
+   * for more information.
+   **/
   X2_LARGE = ComputeType.X2_LARGE,
 }
