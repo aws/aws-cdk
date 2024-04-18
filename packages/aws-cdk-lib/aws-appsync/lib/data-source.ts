@@ -9,7 +9,7 @@ import { IEventBus } from '../../aws-events';
 import { Grant, IGrantable, IPrincipal, IRole, Role, ServicePrincipal } from '../../aws-iam';
 import { IFunction } from '../../aws-lambda';
 import { IDomain as IOpenSearchDomain } from '../../aws-opensearchservice';
-import { IServerlessCluster } from '../../aws-rds';
+import { IServerlessCluster, IDatabaseCluster } from '../../aws-rds';
 import { ISecret } from '../../aws-secretsmanager';
 import { IResolvable, Lazy, Stack, Token } from '../../core';
 
@@ -340,7 +340,7 @@ export class LambdaDataSource extends BackedDataSource {
 }
 
 /**
- * Properties for an AppSync RDS datasource
+ * Properties for an AppSync RDS datasource Aurora Serverless V1
  */
 export interface RdsDataSourceProps extends BackedDataSourceProps {
   /**
@@ -360,10 +360,31 @@ export interface RdsDataSourceProps extends BackedDataSourceProps {
 }
 
 /**
+ * Properties for an AppSync RDS datasource Aurora Serverless V2
+ */
+export interface RdsDataSourcePropsV2 extends BackedDataSourceProps {
+  /**
+   * The serverless cluster to call to interact with this data source
+   */
+  readonly serverlessCluster: IDatabaseCluster;
+  /**
+   * The secret containing the credentials for the database
+   */
+  readonly secretStore: ISecret;
+  /**
+   * The name of the database to use within the cluster
+   *
+   * @default - None
+   */
+  readonly databaseName?: string;
+}
+
+/**
  * An AppSync datasource backed by RDS
  */
 export class RdsDataSource extends BackedDataSource {
-  constructor(scope: Construct, id: string, props: RdsDataSourceProps) {
+  constructor(scope: Construct, id: string, props: RdsDataSourceProps)
+  constructor(scope: Construct, id: string, props: RdsDataSourcePropsV2) {
     super(scope, id, props, {
       type: 'RELATIONAL_DATABASE',
       relationalDatabaseConfig: {
@@ -383,6 +404,7 @@ export class RdsDataSource extends BackedDataSource {
         relationalDatabaseSourceType: 'RDS_HTTP_ENDPOINT',
       },
     });
+
     const clusterArn = Stack.of(this).formatArn({
       service: 'rds',
       resource: `cluster:${props.serverlessCluster.clusterIdentifier}`,
@@ -390,7 +412,6 @@ export class RdsDataSource extends BackedDataSource {
     props.secretStore.grantRead(this);
 
     // Change to grant with RDS grant becomes implemented
-
     props.serverlessCluster.grantDataApiAccess(this);
 
     Grant.addToPrincipal({

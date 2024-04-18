@@ -2,6 +2,31 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.138.0](https://github.com/aws/aws-cdk/compare/v2.137.0...v2.138.0) (2024-04-18)
+
+
+### Features
+
+* **AppSync:** addRdsDataSource support for DatabaseCluster ([#29544](https://github.com/aws/aws-cdk/issues/29544)) ([1894f2d](https://github.com/aws/aws-cdk/commit/1894f2db54eed7d65c9f54cb07cee6dd84200ad7)), closes [#29302](https://github.com/aws/aws-cdk/issues/29302)
+* **cognito:** support provider details for `UserPoolIdentityProviderSaml` ([#29588](https://github.com/aws/aws-cdk/issues/29588)) ([375f1a6](https://github.com/aws/aws-cdk/commit/375f1a6c0bd5952091b1bb4634faaabcb4ca126e)), closes [#29494](https://github.com/aws/aws-cdk/issues/29494) [#29598](https://github.com/aws/aws-cdk/issues/29598)
+* **custom-resources:** add logging property to `AwsSdkCall` and create `Logging` class ([#29648](https://github.com/aws/aws-cdk/issues/29648)) ([b049064](https://github.com/aws/aws-cdk/commit/b0490640a25eb1946aa9db748cf85867e841f243))
+* **ec2:** well-known port aliases ([#29793](https://github.com/aws/aws-cdk/issues/29793)) ([f10494c](https://github.com/aws/aws-cdk/commit/f10494cab79c033d7913a435b0e2db12fe59698d))
+* **elasticloadbalancingv2:** add removeSuffix param for ExternalApplicationListener.addAction() ([#29746](https://github.com/aws/aws-cdk/issues/29746)) ([f4af330](https://github.com/aws/aws-cdk/commit/f4af33018e374ea97346e8ec70776feb46f6ab7b)), closes [#29496](https://github.com/aws/aws-cdk/issues/29496)
+* **route53:** `DNSSEC` zone signing ([#28604](https://github.com/aws/aws-cdk/issues/28604)) ([213fffc](https://github.com/aws/aws-cdk/commit/213fffc84f2206f064ae5143b8dc6eff9d21b50d))
+* **sns:** add TracingConfig prop ([#29783](https://github.com/aws/aws-cdk/issues/29783)) ([f14b60f](https://github.com/aws/aws-cdk/commit/f14b60fc990cb98d1d2b0e48f9a89492bddf868c)), closes [#29714](https://github.com/aws/aws-cdk/issues/29714)
+* **stepfunctions-tasks:** add httpinvoke step functions task ([#28673](https://github.com/aws/aws-cdk/issues/28673)) ([178e481](https://github.com/aws/aws-cdk/commit/178e48189524c608decd631c5e76e95a34fe5122)), closes [#28278](https://github.com/aws/aws-cdk/issues/28278)
+* update L1 CloudFormation resource definitions ([#29798](https://github.com/aws/aws-cdk/issues/29798)) ([7103fed](https://github.com/aws/aws-cdk/commit/7103fed9bc03062e464d907818afcf32c27ba6b2)), closes [/docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-launchtemplate.html#aws-resource-ec2](https://github.com/aws//docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-launchtemplate.html/issues/aws-resource-ec2) [/docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-launchtemplate.html#aws-resource-ec2](https://github.com/aws//docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-launchtemplate.html/issues/aws-resource-ec2) [/docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-security-group.html#cfn-ec2](https://github.com/aws//docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-security-group.html/issues/cfn-ec2) [/docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-security-group.html#cfn-ec2](https://github.com/aws//docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-security-group.html/issues/cfn-ec2)
+
+
+### Bug Fixes
+
+* **ecs-patterns:** integ test failed with certificate error ([#29623](https://github.com/aws/aws-cdk/issues/29623)) ([5347369](https://github.com/aws/aws-cdk/commit/5347369fa11f4f11ab3893b9ac4c8467c5d514c3)), closes [/github.com/aws/aws-cdk/pull/29186#issuecomment-1959231406](https://github.com/aws//github.com/aws/aws-cdk/pull/29186/issues/issuecomment-1959231406) [/github.com/aws/aws-cdk/pull/29186#issuecomment-1959231406](https://github.com/aws//github.com/aws/aws-cdk/pull/29186/issues/issuecomment-1959231406)
+* **eks:** add support of Helm charts located in ECR of AWS CN region ([#29778](https://github.com/aws/aws-cdk/issues/29778)) ([0da25e5](https://github.com/aws/aws-cdk/commit/0da25e5da491b0778eed0444cbb05455bd562b42)), closes [#28460](https://github.com/aws/aws-cdk/issues/28460)
+* **globalaccelerator:** changing `installLatestAwsSdk` breaks Security Group reference ([#29620](https://github.com/aws/aws-cdk/issues/29620)) ([ece7eb6](https://github.com/aws/aws-cdk/commit/ece7eb671e588aff6e9d0f2ee4b53933cb9589a5)), closes [#23796](https://github.com/aws/aws-cdk/issues/23796) [/github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/aws-globalaccelerator/lib/_accelerator-security-group.ts#L32](https://github.com/aws//github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/aws-globalaccelerator/lib/_accelerator-security-group.ts/issues/L32)
+* **lambda:** version.fromVersionArn creates invalid Version object ([#29820](https://github.com/aws/aws-cdk/issues/29820)) ([8198884](https://github.com/aws/aws-cdk/commit/819888470248fed2ddbdac689f14254688eef88f))
+* **spec2cdk:** get tag gives null result in Java CDK ([#29870](https://github.com/aws/aws-cdk/issues/29870)) ([5a918d1](https://github.com/aws/aws-cdk/commit/5a918d12ec0455626b5630b35aa47e6d9da6df7c))
+* **stepfunctions:** the catch field in CustomState is not rendered ([#29654](https://github.com/aws/aws-cdk/issues/29654)) ([77e9fc6](https://github.com/aws/aws-cdk/commit/77e9fc6bd2066862312355801f7f04c5a5f02d6a))
+
 ## [2.137.0](https://github.com/aws/aws-cdk/compare/v2.136.1...v2.137.0) (2024-04-10)
 
 

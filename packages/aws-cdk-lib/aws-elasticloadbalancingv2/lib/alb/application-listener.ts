@@ -664,15 +664,21 @@ abstract class ExternalApplicationListener extends Resource implements IApplicat
    * It is not possible to add a default action to an imported IApplicationListener.
    * In order to add actions to an imported IApplicationListener a `priority`
    * must be provided.
+   *
+   * If you previously deployed a `ListenerRule` using the `addTargetGroups()` method
+   * and need to migrate to using the more feature rich `addAction()`
+   * method, then you will need to set the `removeRuleSuffixFromLogicalId: true`
+   * property here to avoid having CloudFormation attempt to replace your resource.
    */
   public addAction(id: string, props: AddApplicationActionProps): void {
     checkAddRuleProps(props);
 
     if (props.priority !== undefined) {
+      const ruleId = props.removeSuffix ? id : id + 'Rule';
       // New rule
       //
       // TargetGroup.registerListener is called inside ApplicationListenerRule.
-      new ApplicationListenerRule(this, id + 'Rule', {
+      new ApplicationListenerRule(this, ruleId, {
         listener: this,
         priority: props.priority,
         ...props,
@@ -807,6 +813,19 @@ export interface AddApplicationActionProps extends AddRuleProps {
    * Action to perform
    */
   readonly action: ListenerAction;
+  /**
+   * `ListenerRule`s have a `Rule` suffix on their logicalId by default. This allows you to remove that suffix.
+   *
+   * Legacy behavior of the `addTargetGroups()` convenience method did not include the `Rule` suffix on the logicalId of the generated `ListenerRule`.
+   * At some point, increasing complexity of requirements can require users to switch from the `addTargetGroups()` method
+   * to the `addAction()` method.
+   * When migrating `ListenerRule`s deployed by a legacy version of `addTargetGroups()`,
+   * you will need to enable this flag to avoid changing the logicalId of your resource.
+   * Otherwise Cfn will attempt to replace the `ListenerRule` and fail.
+   *
+   * @default - use standard logicalId with the `Rule` suffix
+   */
+  readonly removeSuffix?: boolean;
 }
 
 /**

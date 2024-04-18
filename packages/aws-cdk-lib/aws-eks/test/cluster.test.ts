@@ -350,20 +350,6 @@ describe('cluster', () => {
     expect(() => cluster.addCdk8sChart('chart', someConstruct)).toThrow(/Invalid cdk8s chart. Must contain a \'toJson\' method, but found undefined/);
   });
 
-  test('throws when a core construct is added as cdk8s chart', () => {
-    const { stack } = testFixture();
-
-    const cluster = new eks.Cluster(stack, 'Cluster', {
-      version: CLUSTER_VERSION,
-      prune: false,
-    });
-
-    // create a plain construct, not a cdk8s chart
-    const someConstruct = new Construct(stack, 'SomeConstruct');
-
-    expect(() => cluster.addCdk8sChart('chart', someConstruct)).toThrow(/Invalid cdk8s chart. Must contain a \'toJson\' method, but found undefined/);
-  });
-
   test('cdk8s chart can be added to cluster', () => {
     const { stack } = testFixture();
 

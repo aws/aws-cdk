@@ -86,6 +86,15 @@ export interface TopicProps {
    * @default 1
    */
   readonly signatureVersion?: string;
+
+  /**
+   * Tracing mode of an Amazon SNS topic.
+   *
+   * @see https://docs.aws.amazon.com/sns/latest/dg/sns-active-tracing.html
+   *
+   * @default TracingConfig.PASS_THROUGH
+   */
+  readonly tracingConfig?: TracingConfig;
 }
 
 /**
@@ -151,6 +160,21 @@ export enum LoggingProtocol {
    * Platform application endpoint
    */
   APPLICATION = 'application',
+}
+
+/**
+ * The tracing mode of an Amazon SNS topic
+ */
+export enum TracingConfig {
+  /**
+   * The mode that topic passes trace headers received from the Amazon SNS publisher to its subscription.
+   */
+  PASS_THROUGH = 'PassThrough',
+
+  /**
+   * The mode that Amazon SNS vend X-Ray segment data to topic owner account if the sampled flag in the tracing header is true.
+   */
+  ACTIVE = 'Active',
 }
 
 /**
@@ -283,6 +307,7 @@ export class Topic extends TopicBase {
       fifoTopic: props.fifo,
       signatureVersion: props.signatureVersion,
       deliveryStatusLogging: Lazy.any({ produce: () => this.renderLoggingConfigs() }, { omitEmptyArray: true }),
+      tracingConfig: props.tracingConfig,
     });
 
     this.topicArn = this.getResourceArnAttribute(resource.ref, {

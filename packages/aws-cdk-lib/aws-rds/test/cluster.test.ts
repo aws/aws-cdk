@@ -67,7 +67,7 @@ describe('cluster new api', () => {
           iamAuthentication: true,
         });
         // THEN
-      }).toThrow(/If instanceProps is not provided then `vpc` must be provided./);
+      }).toThrow(/Provide either vpc or instanceProps.vpc, but not both/);
     });
 
     test('when both vpc and instanceProps.vpc are provided', () => {
@@ -4302,16 +4302,6 @@ describe('cluster', () => {
           Statement: [
             {
               Action: [
-                'secretsmanager:GetSecretValue',
-                'secretsmanager:DescribeSecret',
-              ],
-              Effect: 'Allow',
-              Resource: {
-                Ref: 'DatabaseSecretAttachmentE5D1B020',
-              },
-            },
-            {
-              Action: [
                 'rds-data:BatchExecuteStatement',
                 'rds-data:BeginTransaction',
                 'rds-data:CommitTransaction',
@@ -4329,6 +4319,16 @@ describe('cluster', () => {
                     { Ref: 'DatabaseB269D8BB' },
                   ],
                 ],
+              },
+            },
+            {
+              Action: [
+                'secretsmanager:GetSecretValue',
+                'secretsmanager:DescribeSecret',
+              ],
+              Effect: 'Allow',
+              Resource: {
+                Ref: 'DatabaseSecretAttachmentE5D1B020',
               },
             },
           ],

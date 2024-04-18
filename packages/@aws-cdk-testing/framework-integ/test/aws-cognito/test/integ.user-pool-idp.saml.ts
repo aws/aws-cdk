@@ -1,19 +1,22 @@
 import { App, CfnOutput, RemovalPolicy, Stack } from 'aws-cdk-lib';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { Construct } from 'constructs';
-import { UserPool, UserPoolIdentityProviderSaml, UserPoolIdentityProviderSamlMetadata } from 'aws-cdk-lib/aws-cognito';
+import { UserPoolClientIdentityProvider, UserPool, UserPoolIdentityProviderSaml, UserPoolIdentityProviderSamlMetadata, SigningAlgorithm } from 'aws-cdk-lib/aws-cognito';
 
 class TestStack extends Stack {
   constructor(scope: Construct, id: string) {
     super(scope, id);
+    // For SP initiated SAML
     const userpool = new UserPool(this, 'pool', {
       removalPolicy: RemovalPolicy.DESTROY,
     });
 
-    new UserPoolIdentityProviderSaml(this, 'cdk', {
+    new UserPoolIdentityProviderSaml(this, 'samlProvider', {
       userPool: userpool,
-      name: 'cdk',
+      name: 'provider',
       metadata: UserPoolIdentityProviderSamlMetadata.url('https://fujifish.github.io/samling/public/metadata.xml'),
+      encryptedResponses: true,
+      requestSigningAlgorithm: SigningAlgorithm.RSA_SHA256,
     });
 
     const client = userpool.addClient('client');
@@ -22,6 +25,21 @@ class TestStack extends Stack {
       cognitoDomain: {
         domainPrefix: 'cdk-test-pool',
       },
+    });
+
+    // For IdP initiated SAML
+    const userpoolForIdpInitiatedSaml = new UserPool(this, 'poolForIdpInitiatedSaml', {
+      removalPolicy: RemovalPolicy.DESTROY,
+    });
+
+    const idpInitiatedProvider = new UserPoolIdentityProviderSaml(this, 'samlProviderIdpInitiated', {
+      userPool: userpoolForIdpInitiatedSaml,
+      name: 'IdPInitiatedProvider',
+      metadata: UserPoolIdentityProviderSamlMetadata.url('https://fujifish.github.io/samling/public/metadata.xml'),
+      idpInitiated: true,
+    });
+    userpoolForIdpInitiatedSaml.addClient('idpInitiatedClient', {
+      supportedIdentityProviders: [UserPoolClientIdentityProvider.custom(idpInitiatedProvider.providerName)],
     });
 
     new CfnOutput(this, 'SignInLink', {

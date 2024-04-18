@@ -765,3 +765,16 @@ const targetGroup = elbv2.ApplicationTargetGroup.fromTargetGroupAttributes(this,
 
 const targetGroupMetrics: elbv2.IApplicationTargetGroupMetrics = targetGroup.metrics; // throws an Error()
 ```
+
+## logicalIds on ExternalApplicationListener.addTargetGroups() and .addAction()
+
+By default, the `addTargetGroups()` method does not follow the standard behavior
+of adding a `Rule` suffix to the logicalId of the `ListenerRule` it creates.
+If you are deploying new `ListenerRule`s using `addTargetGroups()` the recommendation
+is to set the `removeRuleSuffixFromLogicalId: false` property.
+If you have `ListenerRule`s deployed using the legacy behavior of `addTargetGroups()`,
+which you need to switch over to being managed by the `addAction()` method,
+then you will need to enable the `removeRuleSuffixFromLogicalId: true` property in the `addAction()` method.
+
+`ListenerRule`s have a unique `priority` for a given `Listener`.
+Because the `priority` must be unique, CloudFormation will always fail when creating a new `ListenerRule` to replace the existing one, unless you change the `priority` as well as the logicalId.

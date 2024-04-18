@@ -55,3 +55,6 @@ read*lock
 # VSCode jest plugin
 .test-output
 
+# Nx cache
+.nx/
+
