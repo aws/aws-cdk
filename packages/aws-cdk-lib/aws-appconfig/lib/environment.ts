@@ -69,6 +69,9 @@ abstract class EnvironmentBase extends Resource implements IEnvironment, IExtens
       }),
     );
 
+    // This internal member is used to keep track of configuration deployments
+    // as they are requested. Each element in this queue will depend on its
+    // predecessor, ensuring that the deployments occur sequentially in Cfn.
     if (queueSize > 1) {
       this.deploymentQueue[queueSize - 1].addDependency(this.deploymentQueue[queueSize - 2]);
     }
@@ -183,7 +186,7 @@ export class Environment extends EnvironmentBase {
       public readonly applicationId = applicationId;
       public readonly environmentId = environmentId;
       public readonly environmentArn = environmentArn;
-      public readonly name? = undefined;
+      public readonly name?: string;
     }
 
     return new Import(scope, id, {
@@ -455,6 +458,7 @@ export interface IEnvironment extends IResource {
 
   /**
    * Creates a deployment for each of the supplied configurations to this environment.
+   * These configurations will be deployed in the same order as the input array.
    *
    * @param configurations The configurations that will be deployed to this environment.
    */

@@ -298,6 +298,7 @@ new appconfig.HostedConfiguration(this, 'MySecondHostedConfig', {
 If an application would benefit from a deployment order that differs from the 
 declared order, you can defer the decision by using `IEnvironment.addDeployment` 
 rather than the `deployTo` property. 
+In this example, `firstConfig` will be deployed before `secondConfig`. 
 
 ```ts
 const app = new appconfig.Application(this, 'MyApp');
@@ -322,6 +323,8 @@ env.addDeployment(secondConfig);
 Alternatively, you can defer multiple deployments in favor of 
 `IEnvironment.addDeployments`, which allows you to declare multiple 
 configurations in the order they will be deployed.
+In this example the deployment order will be 
+`firstConfig`, then `secondConfig`, and finally `thirdConfig`. 
 
 ```ts
 const app = new appconfig.Application(this, 'MyApp');
@@ -334,12 +337,17 @@ const secondConfig = new appconfig.HostedConfiguration(this, 'MySecondHostedConf
   content: appconfig.ConfigurationContent.fromInlineText('This is my second configuration content.'),
 });
 
+const thirdConfig = new appconfig.HostedConfiguration(this, 'MyThirdHostedConfig', {
+  application: app,
+  content: appconfig.ConfigurationContent.fromInlineText('This is my third configuration content.'),
+});
+
 const firstConfig = new appconfig.HostedConfiguration(this, 'MyFirstHostedConfig', {
   application: app,
   content: appconfig.ConfigurationContent.fromInlineText('This is my first configuration content.'),
 });
 
-env.addDeployments(firstConfig, secondConfig);
+env.addDeployments(firstConfig, secondConfig, thirdConfig);
 ```
 
 Any mix of `deployTo`, `addDeployment`, and `addDeployments` is permitted. 
