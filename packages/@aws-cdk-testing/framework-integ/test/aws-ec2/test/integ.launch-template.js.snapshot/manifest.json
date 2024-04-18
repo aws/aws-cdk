@@ -18,7 +18,11 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+<<<<<<< HEAD
         "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/49f55568b1de8f0ec44db71fc2e7c08688d282144bc748c1c765eef1e15c6587.json",
+=======
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/2a3ff681cd1c0fb4038917f3c3576010eb86c579c13d1a6e18984b5134c7ab54.json",
+>>>>>>> ed392c24e (Add test and test snapshot)
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -167,6 +171,7 @@
             "data": "SsmParameterValueawsserviceamiamazonlinuxlatestamzn2amihvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter"
           }
         ],
+<<<<<<< HEAD
         "/aws-cdk-ec2-lt-metadata-1/pg": [
           {
             "type": "aws:cdk:analytics:construct",
@@ -191,6 +196,18 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "LTWithPlacementGroup4B40027C"
+=======
+        "/aws-cdk-ec2-lt-metadata-1/LTWithNetworkInterfaces/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LTWithNetworkInterfacesC793C8F4"
+          }
+        ],
+        "/aws-cdk-ec2-lt-metadata-1/SsmParameterValue:--aws--service--ami-amazon-linux-latest--al2023-ami-kernel-6.1-x86_64:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SsmParameterValueawsserviceamiamazonlinuxlatestal2023amikernel61x8664C96584B6F00A464EAD1953AFF4B05118Parameter"
+>>>>>>> ed392c24e (Add test and test snapshot)
           }
         ],
         "/aws-cdk-ec2-lt-metadata-1/BootstrapVersion": [
