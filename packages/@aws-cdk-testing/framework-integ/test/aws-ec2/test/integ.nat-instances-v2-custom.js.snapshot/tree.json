@@ -497,6 +497,12 @@
                                   "MyVpcNatSecurityGroupAA76397E",
                                   "GroupId"
                                 ]
+                              },
+                              {
+                                "Fn::GetAtt": [
+                                  "SecurityGroupDD263621",
+                                  "GroupId"
+                                ]
                               }
                             ],
                             "sourceDestCheck": false,
@@ -824,6 +830,12 @@
                               {
                                 "Fn::GetAtt": [
                                   "MyVpcNatSecurityGroupAA76397E",
+                                  "GroupId"
+                                ]
+                              },
+                              {
+                                "Fn::GetAtt": [
+                                  "SecurityGroupDD263621",
                                   "GroupId"
                                 ]
                               }
@@ -1159,9 +1171,11 @@
                         "groupDescription": "Security Group for NAT instances",
                         "securityGroupEgress": [
                           {
-                            "cidrIp": "0.0.0.0/0",
-                            "description": "Allow all outbound traffic by default",
-                            "ipProtocol": "-1"
+                            "cidrIp": "255.255.255.255/32",
+                            "description": "Disallow all traffic",
+                            "ipProtocol": "icmp",
+                            "fromPort": 252,
+                            "toPort": 86
                           }
                         ],
                         "tags": [
@@ -1205,6 +1219,42 @@
             "path": "aws-cdk-vpc-nat-instance-v2-custom/SsmParameterValue:--aws--service--ami-amazon-linux-latest--al2023-ami-kernel-6.1-x86_64:C96584B6-F00A-464E-AD19-53AFF4B05118",
             "constructInfo": {
               "fqn": "aws-cdk-lib.Resource",
+              "version": "0.0.0"
+            }
+          },
+          "SecurityGroup": {
+            "id": "SecurityGroup",
+            "path": "aws-cdk-vpc-nat-instance-v2-custom/SecurityGroup",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-vpc-nat-instance-v2-custom/SecurityGroup/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
+                  "aws:cdk:cloudformation:props": {
+                    "groupDescription": "aws-cdk-vpc-nat-instance-v2-custom/SecurityGroup",
+                    "securityGroupEgress": [
+                      {
+                        "cidrIp": "0.0.0.0/0",
+                        "ipProtocol": "tcp",
+                        "fromPort": 443,
+                        "toPort": 443,
+                        "description": "Allow egress to S3"
+                      }
+                    ],
+                    "vpcId": {
+                      "Ref": "MyVpcF9F0CA6F"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_ec2.CfnSecurityGroup",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_ec2.SecurityGroup",
               "version": "0.0.0"
             }
           },

@@ -170,20 +170,20 @@
                     },
                     "engineVersion": "Elasticsearch_7.1",
                     "logPublishingOptions": {
-                      "ES_APPLICATION_LOGS": {
-                        "enabled": true,
-                        "cloudWatchLogsLogGroupArn": {
-                          "Fn::GetAtt": [
-                            "Domain1AppLogs6E8D1D67",
-                            "Arn"
-                          ]
-                        }
-                      },
                       "SEARCH_SLOW_LOGS": {
                         "enabled": true,
                         "cloudWatchLogsLogGroupArn": {
                           "Fn::GetAtt": [
                             "Domain1SlowSearchLogs8F3B0506",
+                            "Arn"
+                          ]
+                        }
+                      },
+                      "ES_APPLICATION_LOGS": {
+                        "enabled": true,
+                        "cloudWatchLogsLogGroupArn": {
+                          "Fn::GetAtt": [
+                            "Domain1AppLogs6E8D1D67",
                             "Arn"
                           ]
                         }
@@ -394,7 +394,7 @@
                       "s3Bucket": {
                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "s3Key": "482f9f5ffd706706c8ef3652699d6c945568786593d3571e4331ecb1f966c932.zip"
+                      "s3Key": "746da84b10e215c552e68b6d2061024e4429f0386f43a35ef5e4d2940655692e.zip"
                     },
                     "handler": "index.handler",
                     "role": {
@@ -580,20 +580,20 @@
                     },
                     "engineVersion": "Elasticsearch_7.1",
                     "logPublishingOptions": {
-                      "ES_APPLICATION_LOGS": {
-                        "enabled": true,
-                        "cloudWatchLogsLogGroupArn": {
-                          "Fn::GetAtt": [
-                            "Domain2AppLogs810876E2",
-                            "Arn"
-                          ]
-                        }
-                      },
                       "SEARCH_SLOW_LOGS": {
                         "enabled": true,
                         "cloudWatchLogsLogGroupArn": {
                           "Fn::GetAtt": [
                             "Domain2SlowSearchLogs0C75F64B",
+                            "Arn"
+                          ]
+                        }
+                      },
+                      "ES_APPLICATION_LOGS": {
+                        "enabled": true,
+                        "cloudWatchLogsLogGroupArn": {
+                          "Fn::GetAtt": [
+                            "Domain2AppLogs810876E2",
                             "Arn"
                           ]
                         }
