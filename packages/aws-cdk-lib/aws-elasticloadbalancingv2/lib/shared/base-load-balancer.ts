@@ -51,7 +51,7 @@ export interface BaseLoadBalancerProps {
   /**
    * Indicates whether cross-zone load balancing is enabled.
    *
-   * @default - false for Network Load Balancers and true for Application Load Balancers.
+   * @default - false for Network Load Balancers and true for Application Load Balancers (this cannot be changed).
    */
   readonly crossZoneEnabled?: boolean;
 
