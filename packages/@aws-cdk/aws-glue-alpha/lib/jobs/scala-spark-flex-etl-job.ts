@@ -15,8 +15,10 @@ import { Bucket } from 'aws-cdk-lib/aws-s3';
 import { CfnJob } from 'aws-cdk-lib/aws-glue';
 import { Job, JobProperties } from './job';
 import { Construct } from 'constructs';
-import { JobType, GlueVersion, JobLanguage, PythonVersion, WorkerType, ExecutionClass } from '../constants';
+import { JobType, GlueVersion, JobLanguage, WorkerType, ExecutionClass } from '../constants';
 import { SparkUIProps, SparkUILoggingLocation, validateSparkUiPrefix, cleanSparkUiPrefixForGrant } from './spark-ui-utils';
+import * as cdk from 'aws-cdk-lib/core';
+import { Code } from '../code';
 
 /**
  * Flex Jobs class
@@ -45,22 +47,52 @@ export interface ScalaSparkFlexEtlJobProps extends JobProperties {
   readonly sparkUI?: SparkUIProps;
 
   /**
-   * Extra Python Files S3 URL (optional)
-   * S3 URL where additional python dependencies are located
-   * @default - no extra files
+   * Specifies configuration properties of a notification (optional).
+   * After a job run starts, the number of minutes to wait before sending a job run delay notification.
+   * @default - undefined
    */
-  readonly extraPythonFiles?: string[];
+  readonly notifyDelayAfter?: cdk.Duration;
 
   /**
-   * Scala class to be passed as Default Argument to the ETL job
-   * @default - your scala class
+   * The fully qualified Scala class name that serves as the entry point for the job.
+   *
+   * @see `--class` in https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-glue-arguments.html
    */
-  readonly className?: string;
+  readonly className: string;
+
+  /**
+   * Additional Java .jar files that AWS Glue adds to the Java classpath before executing your script.
+   * Only individual files are supported, directories are not supported.
+   *
+   * @default [] - no extra jars are added to the classpath
+   *
+   * @see `--extra-jars` in https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-glue-arguments.html
+   */
+  readonly extraJars?: Code[];
+
+  /**
+     * Setting this value to true prioritizes the customer's extra JAR files in the classpath.
+     *
+     * @default false - priority is not given to user-provided jars
+     *
+     * @see `--user-jars-first` in https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-glue-arguments.html
+     */
+  readonly extraJarsFirst?: boolean;
+
+  /**
+   * Additional files, such as configuration files that AWS Glue copies to the working directory of your script before executing it.
+   * Only individual files are supported, directories are not supported.
+   *
+   * @default [] - no extra files are copied to the working directory
+   *
+   * @see `--extra-files` in https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-glue-arguments.html
+   */
+  readonly extraFiles?: Code[];
 
 }
 
 /**
- * A Python Spark ETL Glue Job
+ * A Scala Spark ETL Glue Job
  */
 export class ScalaSparkFlexEtlJob extends Job {
 
@@ -79,7 +111,7 @@ export class ScalaSparkFlexEtlJob extends Job {
   public readonly sparkUILoggingLocation?: SparkUILoggingLocation;
 
   /**
-   * PySparkFlexEtlJob constructor
+   * ScalaSparkFlexEtlJob constructor
    *
    * @param scope
    * @param id
@@ -121,10 +153,6 @@ export class ScalaSparkFlexEtlJob extends Job {
       ...this.checkNoReservedArgs(props.defaultArguments),
     };
 
-    /*if ((!props.workerType && props.numberOrWorkers !== undefined) || (props.workerType && props.numberOrWorkers === undefined)) {
-      throw new Error('Both workerType and numberOrWorkers must be set');
-    } */
-
     const jobResource = new CfnJob(this, 'Resource', {
       name: props.jobName,
       description: props.description,
@@ -132,14 +160,13 @@ export class ScalaSparkFlexEtlJob extends Job {
       command: {
         name: JobType.ETL,
         scriptLocation: this.codeS3ObjectUrl(props.script),
-        pythonVersion: PythonVersion.THREE,
       },
       glueVersion: props.glueVersion ? props.glueVersion : GlueVersion.V3_0,
       workerType: props.workerType ? props.workerType : WorkerType.G_2X,
       numberOfWorkers: props.numberOrWorkers ? props.numberOrWorkers : 10,
       maxRetries: props.maxRetries,
       executionProperty: props.maxConcurrentRuns ? { maxConcurrentRuns: props.maxConcurrentRuns } : undefined,
-      //notificationProperty: props.notifyDelayAfter ? { notifyDelayAfter: props.notifyDelayAfter.toMinutes() } : undefined,
+      notificationProperty: props.notifyDelayAfter ? { notifyDelayAfter: props.notifyDelayAfter.toMinutes() } : undefined,
       timeout: props.timeout?.toMinutes(),
       connections: props.connections ? { connections: props.connections.map((connection) => connection.connectionName) } : undefined,
       securityConfiguration: props.securityConfiguration?.securityConfigurationName,
@@ -164,24 +191,26 @@ export class ScalaSparkFlexEtlJob extends Job {
     args['--job-language'] = JobLanguage.SCALA;
     args['--class'] = props.className!;
 
-    // TODO: Confirm with Glue service team what the mapping is from extra-x to job language, if any
-    if (props.extraPythonFiles && props.extraPythonFiles.length > 0) {
-      //args['--extra-py-files'] = props.extraPythonFiles.map(code => this.codeS3ObjectUrl(code)).join(',');
+    if (props.extraJars && props.extraJars?.length > 0) {
+      args['--extra-jars'] = props.extraJars.map(code => this.codeS3ObjectUrl(code)).join(',');
     }
 
-    // if (props.extraJars && props.extraJars?.length > 0) {
-    //   args['--extra-jars'] = props.extraJars.map(code => this.codeS3ObjectUrl(code)).join(',');
-    // }
-    // if (props.extraFiles && props.extraFiles.length > 0) {
-    //   args['--extra-files'] = props.extraFiles.map(code => this.codeS3ObjectUrl(code)).join(',');
-    // }
-    // if (props.extraJarsFirst) {
-    //   args['--user-jars-first'] = 'true';
-    // }
-
+    if (props.extraFiles && props.extraFiles.length > 0) {
+      args['--extra-files'] = props.extraFiles.map(code => this.codeS3ObjectUrl(code)).join(',');
+    }
+    if (props.extraJarsFirst) {
+      args['--user-jars-first'] = 'true';
+    }
     return args;
+
   }
 
+  /**
+   * Set the arguments for sparkUI with best practices enabled by default
+   *
+   * @param sparkUiProps, role
+   * @returns An array of arguments for enabling sparkUI
+   */
   private setupSparkUI(role: iam.IRole, sparkUiProps: SparkUIProps) {
 
     validateSparkUiPrefix(sparkUiProps.prefix);

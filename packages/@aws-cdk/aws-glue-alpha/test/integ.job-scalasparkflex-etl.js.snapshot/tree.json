@@ -189,8 +189,7 @@
                             "/e305655b966b957f91fcec580e3f8703573eb6b69528c5d52190d72579c91602.jar"
                           ]
                         ]
-                      },
-                      "pythonVersion": "3"
+                      }
                     },
                     "defaultArguments": {
                       "--job-language": "scala",
@@ -243,8 +242,7 @@
                             "/e305655b966b957f91fcec580e3f8703573eb6b69528c5d52190d72579c91602.jar"
                           ]
                         ]
-                      },
-                      "pythonVersion": "3"
+                      }
                     },
                     "defaultArguments": {
                       "--job-language": "scala",

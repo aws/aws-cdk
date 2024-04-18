@@ -5,6 +5,8 @@ import { Job, JobProperties } from './job';
 import { Construct } from 'constructs';
 import { JobType, GlueVersion, JobLanguage, PythonVersion, WorkerType, ExecutionClass } from '../constants';
 import { SparkUIProps, SparkUILoggingLocation, validateSparkUiPrefix, cleanSparkUiPrefixForGrant } from './spark-ui-utils';
+import * as cdk from 'aws-cdk-lib/core';
+import { Code } from '../code';
 
 /**
  * Flex Jobs class
@@ -33,11 +35,29 @@ export interface PySparkFlexEtlJobProps extends JobProperties {
   readonly sparkUI?: SparkUIProps;
 
   /**
-   * Extra Python Files S3 URL (optional)
-   * S3 URL where additional python dependencies are located
-   * @default - no extra files
+   * Specifies configuration properties of a notification (optional).
+   * After a job run starts, the number of minutes to wait before sending a job run delay notification.
+   * @default - undefined
    */
-  readonly extraPythonFiles?: string[];
+  readonly notifyDelayAfter?: cdk.Duration;
+
+  /**
+   * Additional Python files that AWS Glue adds to the Python path before executing your script.
+   *
+   * @default - no extra python files specified.
+   *
+   * @see `--extra-py-files` in https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-glue-arguments.html
+   */
+  readonly extraPythonFiles?: Code[];
+
+  /**
+   * Additional files, such as configuration files that AWS Glue copies to the working directory of your script before executing it.
+   *
+   * @default - no extra files specified.
+   *
+   * @see `--extra-files` in https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-glue-arguments.html
+   */
+  readonly extraFiles?: Code[];
 
 }
 
@@ -99,10 +119,6 @@ export class PySparkFlexEtlJob extends Job {
       ...this.checkNoReservedArgs(props.defaultArguments),
     };
 
-    /*if ((!props.workerType && props.numberOrWorkers !== undefined) || (props.workerType && props.numberOrWorkers === undefined)) {
-      throw new Error('Both workerType and numberOrWorkers must be set');
-    } */
-
     const jobResource = new CfnJob(this, 'Resource', {
       name: props.jobName,
       description: props.description,
@@ -117,7 +133,7 @@ export class PySparkFlexEtlJob extends Job {
       numberOfWorkers: props.numberOrWorkers ? props.numberOrWorkers : 10,
       maxRetries: props.maxRetries,
       executionProperty: props.maxConcurrentRuns ? { maxConcurrentRuns: props.maxConcurrentRuns } : undefined,
-      //notificationProperty: props.notifyDelayAfter ? { notifyDelayAfter: props.notifyDelayAfter.toMinutes() } : undefined,
+      notificationProperty: props.notifyDelayAfter ? { notifyDelayAfter: props.notifyDelayAfter.toMinutes() } : undefined,
       timeout: props.timeout?.toMinutes(),
       connections: props.connections ? { connections: props.connections.map((connection) => connection.connectionName) } : undefined,
       securityConfiguration: props.securityConfiguration?.securityConfigurationName,
@@ -132,7 +148,7 @@ export class PySparkFlexEtlJob extends Job {
   }
 
   /**
-   * Set the executable arguments with best practices enabled by default
+   *Set the executable arguments with best practices enabled by default
    *
    * @param props
    * @returns An array of arguments for Glue to use on execution
@@ -141,23 +157,22 @@ export class PySparkFlexEtlJob extends Job {
     const args: { [key: string]: string } = {};
     args['--job-language'] = JobLanguage.PYTHON;
 
-    // TODO: Confirm with Glue service team what the mapping is from extra-x to job language, if any
     if (props.extraPythonFiles && props.extraPythonFiles.length > 0) {
-      //args['--extra-py-files'] = props.extraPythonFiles.map(code => this.codeS3ObjectUrl(code)).join(',');
+      args['--extra-py-files'] = props.extraPythonFiles.map(code => this.codeS3ObjectUrl(code)).join(',');
     }
-
-    // if (props.extraJars && props.extraJars?.length > 0) {
-    //   args['--extra-jars'] = props.extraJars.map(code => this.codeS3ObjectUrl(code)).join(',');
-    // }
-    // if (props.extraFiles && props.extraFiles.length > 0) {
-    //   args['--extra-files'] = props.extraFiles.map(code => this.codeS3ObjectUrl(code)).join(',');
-    // }
-    // if (props.extraJarsFirst) {
-    //   args['--user-jars-first'] = 'true';
-    // }
+    if (props.extraFiles && props.extraFiles.length > 0) {
+      args['--extra-files'] = props.extraFiles.map(code => this.codeS3ObjectUrl(code)).join(',');
+    }
 
     return args;
   }
+
+  /**
+   * Set the arguments for sparkUI with best practices enabled by default
+   *
+   * @param sparkUiProps, role
+   * @returns An array of arguments for enabling sparkUI
+   */
 
   private setupSparkUI(role: iam.IRole, sparkUiProps: SparkUIProps) {
 
