@@ -208,7 +208,7 @@ that accesses the function or layer).
 declare const fn: lambda.Function;
 const principal = new iam.ServicePrincipal('my-service');
 
-grantInvoke(principal, { onlyGrantLatestVersion : true });
+fn.grantInvoke(principal, { onlyGrantLatestVersion : true });
 ```
 
 For more information, see
