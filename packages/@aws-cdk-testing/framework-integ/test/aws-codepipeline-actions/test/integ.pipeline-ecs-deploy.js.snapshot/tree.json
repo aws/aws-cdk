@@ -1567,6 +1567,7 @@
                                             "ecs:DescribeTasks",
                                             "ecs:ListTasks",
                                             "ecs:RegisterTaskDefinition",
+                                            "ecs:TagResource",
                                             "ecs:UpdateService"
                                           ],
                                           "Effect": "Allow",

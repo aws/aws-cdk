@@ -5,6 +5,8 @@ import { CloudFormationInit } from './cfn-init';
 import { Connections, IConnectable } from './connections';
 import { CfnInstance } from './ec2.generated';
 import { InstanceType } from './instance-types';
+import { IKeyPair } from './key-pair';
+import { CpuCredits } from './launch-template';
 import { IMachineImage, OperatingSystemType } from './machine-image';
 import { instanceBlockDeviceMappings } from './private/ebs-util';
 import { ISecurityGroup, SecurityGroup } from './security-group';
@@ -76,8 +78,16 @@ export interface InstanceProps {
    * Name of SSH keypair to grant access to instance
    *
    * @default - No SSH access will be possible.
+   * @deprecated - Use `keyPair` instead - https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_ec2-readme.html#using-an-existing-ec2-key-pair
    */
   readonly keyName?: string;
+
+  /**
+   * The SSH keypair to grant access to the instance.
+   *
+   * @default - No SSH access will be possible.
+   */
+  readonly keyPair?: IKeyPair;
 
   /**
    * Where to place the instance within the VPC
@@ -100,6 +110,14 @@ export interface InstanceProps {
    * @default true
    */
   readonly allowAllOutbound?: boolean;
+
+  /**
+   * Whether the instance could initiate IPv6 connections to anywhere by default.
+   * This property is only used when you do not provide a security group.
+   *
+   * @default false
+   */
+  readonly allowAllIpv6Outbound?: boolean;
 
   /**
    * The length of time to wait for the resourceSignalCount
@@ -278,6 +296,14 @@ export interface InstanceProps {
    * @default - public IP address is automatically assigned based on default behavior
    */
   readonly associatePublicIpAddress?: boolean;
+
+  /**
+   * Specifying the CPU credit type for burstable EC2 instance types (T2, T3, T3a, etc).
+   * The unlimited CPU credit option is not supported for T3 instances with a dedicated host.
+   *
+   * @default - T2 instances are standard, while T3, T4g, and T3a instances are unlimited.
+   */
+  readonly creditSpecification?: CpuCredits;
 }
 
 /**
@@ -349,12 +375,22 @@ export class Instance extends Resource implements IInstance {
       throw new Error('Setting \'initOptions\' requires that \'init\' is also set');
     }
 
+    if (props.keyName && props.keyPair) {
+      throw new Error('Cannot specify both of \'keyName\' and \'keyPair\'; prefer \'keyPair\'');
+    }
+
+    // if credit specification is set, then the instance type must be burstable
+    if (props.creditSpecification && !props.instanceType.isBurstable()) {
+      throw new Error(`creditSpecification is supported only for T4g, T3a, T3, T2 instance type, got: ${props.instanceType.toString()}`);
+    }
+
     if (props.securityGroup) {
       this.securityGroup = props.securityGroup;
     } else {
       this.securityGroup = new SecurityGroup(this, 'InstanceSecurityGroup', {
         vpc: props.vpc,
         allowAllOutbound: props.allowAllOutbound !== false,
+        allowAllIpv6Outbound: props.allowAllIpv6Outbound,
       });
     }
     this.connections = new Connections({ securityGroups: [this.securityGroup] });
@@ -415,12 +451,16 @@ export class Instance extends Resource implements IInstance {
         privateIpAddress: props.privateIpAddress,
       }] : undefined;
 
+    if (props.keyPair && !props.keyPair._isOsCompatible(imageConfig.osType)) {
+      throw new Error(`${props.keyPair.type} keys are not compatible with the chosen AMI`);
+    }
+
     // if network interfaces array is configured then subnetId, securityGroupIds,
     // and privateIpAddress are configured on the network interface level and
-    // there is no need to configure them on the instance leveleiifcbevnlbrbnrnjglvtebkufvkdlvlliiidflbibtf
+    // there is no need to configure them on the instance level
     this.instance = new CfnInstance(this, 'Resource', {
       imageId: imageConfig.imageId,
-      keyName: props.keyName,
+      keyName: props.keyPair?.keyPairName ?? props?.keyName,
       instanceType: props.instanceType.toString(),
       subnetId: networkInterfaces ? undefined : subnet.subnetId,
       securityGroupIds: networkInterfaces ? undefined : securityGroupsToken,
@@ -433,6 +473,7 @@ export class Instance extends Resource implements IInstance {
       privateIpAddress: networkInterfaces ? undefined : props.privateIpAddress,
       propagateTagsToVolumeOnCreation: props.propagateTagsToVolumeOnCreation,
       monitoring: props.detailedMonitoring,
+      creditSpecification: props.creditSpecification ? { cpuCredits: props.creditSpecification } : undefined,
     });
     this.instance.node.addDependency(this.role);
 

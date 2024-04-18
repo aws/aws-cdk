@@ -4,7 +4,7 @@ import * as iam from '../../../aws-iam';
 import * as logs from '../../../aws-logs';
 import * as cdk from '../../../core';
 import { App, Stack } from '../../../core';
-import { AwsCustomResource, AwsCustomResourcePolicy, PhysicalResourceId, PhysicalResourceIdReference } from '../../lib';
+import { AwsCustomResource, AwsCustomResourcePolicy, Logging, PhysicalResourceId, PhysicalResourceIdReference } from '../../lib';
 
 /* eslint-disable quote-props */
 
@@ -46,6 +46,7 @@ test('aws sdk js custom resource with onCreate and onDelete', () => {
       'physicalResourceId': {
         'id': 'loggroup',
       },
+      'logApiResponseData': true,
     }),
     'Delete': JSON.stringify({
       'service': 'CloudWatchLogs',
@@ -53,6 +54,7 @@ test('aws sdk js custom resource with onCreate and onDelete', () => {
       'parameters': {
         'logGroupName': '/aws/lambda/loggroup',
       },
+      'logApiResponseData': true,
     }),
     'InstallLatestAwsSdk': true,
   });
@@ -109,6 +111,7 @@ test('onCreate defaults to onUpdate', () => {
       'physicalResourceId': {
         'responsePath': 'ETag',
       },
+      'logApiResponseData': true,
     }),
     'Update': JSON.stringify({
       'service': 's3',
@@ -121,6 +124,7 @@ test('onCreate defaults to onUpdate', () => {
       'physicalResourceId': {
         'responsePath': 'ETag',
       },
+      'logApiResponseData': true,
     }),
   });
 });
@@ -224,6 +228,7 @@ describe('physicalResourceId patterns', () => {
           WorkGroup: 'WorkGroupA',
           Name: 'Notebook1',
         },
+        logApiResponseData: true,
       }),
       Update: JSON.stringify({
         service: 'Athena',
@@ -235,6 +240,7 @@ describe('physicalResourceId patterns', () => {
           Name: 'Notebook1',
           NotebookId: 'PHYSICAL:RESOURCEID:',
         },
+        logApiResponseData: true,
       }),
     });
   });
@@ -279,6 +285,7 @@ describe('physicalResourceId patterns', () => {
           WorkGroup: 'WorkGroupA',
           Name: 'Notebook1',
         },
+        logApiResponseData: true,
       }),
       Update: JSON.stringify({
         service: 'Athena',
@@ -287,6 +294,7 @@ describe('physicalResourceId patterns', () => {
           Name: 'Notebook1',
           NotebookId: 'PHYSICAL:RESOURCEID:',
         },
+        logApiResponseData: true,
       }),
     });
   });
@@ -384,6 +392,7 @@ describe('physicalResourceId patterns', () => {
           WorkGroup: 'WorkGroupA',
           Name: 'Notebook1',
         },
+        logApiResponseData: true,
       }),
     });
   });
@@ -441,6 +450,7 @@ describe('physicalResourceId patterns', () => {
           Name: 'Notebook1',
           NotebookId: 'XXXX',
         },
+        logApiResponseData: true,
       }),
       Update: JSON.stringify({
         service: 'Athena',
@@ -452,6 +462,7 @@ describe('physicalResourceId patterns', () => {
           Name: 'Notebook1',
           NotebookId: 'XXXX',
         },
+        logApiResponseData: true,
       }),
     });
   });
@@ -514,6 +525,7 @@ test('booleans are encoded in the stringified parameters object', () => {
       'physicalResourceId': {
         'id': 'id',
       },
+      'logApiResponseData': true,
     }),
   });
 });
@@ -571,6 +583,7 @@ test('encodes physical resource id reference', () => {
       'physicalResourceId': {
         'id': 'id',
       },
+      'logApiResponseData': true,
     }),
   });
 });
@@ -830,7 +843,7 @@ test('getDataString', () => {
               'Data',
             ],
           },
-          '"},"physicalResourceId":{"id":"id"}}',
+          '"},"physicalResourceId":{"id":"id"},"logApiResponseData":true}',
         ],
       ],
     },
@@ -865,6 +878,31 @@ test('can specify log retention', () => {
         ],
       ],
     },
+    RetentionInDays: 7,
+  });
+});
+
+test('can specify log group', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+
+  // WHEN
+  new AwsCustomResource(stack, 'AwsSdk', {
+    onCreate: {
+      service: 'service',
+      action: 'action',
+      physicalResourceId: PhysicalResourceId.of('id'),
+    },
+    logGroup: new logs.LogGroup(stack, 'LogGroup', {
+      logGroupName: '/test/log/group/name',
+      retention: logs.RetentionDays.ONE_WEEK,
+    }),
+    policy: AwsCustomResourcePolicy.fromSdkCalls({ resources: AwsCustomResourcePolicy.ANY_RESOURCE }),
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Logs::LogGroup', {
+    LogGroupName: '/test/log/group/name',
     RetentionInDays: 7,
   });
 });
@@ -1000,7 +1038,7 @@ test('tokens can be used as dictionary keys', () => {
               'Foorz',
             ],
           },
-          '"}}}',
+          '"}},"logApiResponseData":true}',
         ],
       ],
     },
@@ -1277,5 +1315,117 @@ test('can specify removal policy', () => {
   // THEN
   Template.fromStack(stack).hasResource('Custom::AWS', {
     DeletionPolicy: 'Retain',
+  });
+});
+
+describe('logging configuration', () => {
+  test('all logging is set by default', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    new AwsCustomResource(stack, 'AwsSdk', {
+      resourceType: 'Custom::LogRetentionPolicy',
+      onCreate: {
+        service: 'CloudWatchLogs',
+        action: 'putRetentionPolicy',
+        parameters: {
+          logGroupName: '/aws/lambda/loggroup',
+          retentionInDays: 90,
+        },
+        physicalResourceId: PhysicalResourceId.of('loggroup'),
+      },
+      policy: AwsCustomResourcePolicy.fromSdkCalls({ resources: AwsCustomResourcePolicy.ANY_RESOURCE }),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('Custom::LogRetentionPolicy', {
+      Create: JSON.stringify({
+        service: 'CloudWatchLogs',
+        action: 'putRetentionPolicy',
+        parameters: {
+          logGroupName: '/aws/lambda/loggroup',
+          retentionInDays: 90,
+        },
+        physicalResourceId: {
+          id: 'loggroup',
+        },
+        logApiResponseData: true,
+      }),
+    });
+  });
+
+  test('with all logging set explicitly', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    new AwsCustomResource(stack, 'AwsSdk', {
+      resourceType: 'Custom::LogRetentionPolicy',
+      onCreate: {
+        service: 'CloudWatchLogs',
+        action: 'putRetentionPolicy',
+        parameters: {
+          logGroupName: '/aws/lambda/loggroup',
+          retentionInDays: 90,
+        },
+        physicalResourceId: PhysicalResourceId.of('loggroup'),
+        logging: Logging.all(),
+      },
+      policy: AwsCustomResourcePolicy.fromSdkCalls({ resources: AwsCustomResourcePolicy.ANY_RESOURCE }),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('Custom::LogRetentionPolicy', {
+      Create: JSON.stringify({
+        service: 'CloudWatchLogs',
+        action: 'putRetentionPolicy',
+        parameters: {
+          logGroupName: '/aws/lambda/loggroup',
+          retentionInDays: 90,
+        },
+        physicalResourceId: {
+          id: 'loggroup',
+        },
+        logApiResponseData: true,
+      }),
+    });
+  });
+
+  test('with hidden data logging', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    new AwsCustomResource(stack, 'AwsSdk', {
+      resourceType: 'Custom::LogRetentionPolicy',
+      onCreate: {
+        service: 'CloudWatchLogs',
+        action: 'putRetentionPolicy',
+        parameters: {
+          logGroupName: '/aws/lambda/loggroup',
+          retentionInDays: 90,
+        },
+        physicalResourceId: PhysicalResourceId.of('loggroup'),
+        logging: Logging.withDataHidden(),
+      },
+      policy: AwsCustomResourcePolicy.fromSdkCalls({ resources: AwsCustomResourcePolicy.ANY_RESOURCE }),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('Custom::LogRetentionPolicy', {
+      Create: JSON.stringify({
+        service: 'CloudWatchLogs',
+        action: 'putRetentionPolicy',
+        parameters: {
+          logGroupName: '/aws/lambda/loggroup',
+          retentionInDays: 90,
+        },
+        physicalResourceId: {
+          id: 'loggroup',
+        },
+        logApiResponseData: false,
+      }),
+    });
   });
 });

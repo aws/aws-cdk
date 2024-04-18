@@ -31,7 +31,7 @@ const httpApiWithDefaultAuthorizer = new HttpApi(stack, 'MyHttpApiWithDefaultAut
 const handler = new lambda.Function(stack, 'lambda', {
   runtime: lambda.Runtime.NODEJS_18_X,
   handler: 'index.handler',
-  code: lambda.AssetCode.fromAsset(path.join(__dirname, '../integ.user-pool.handler')),
+  code: lambda.AssetCode.fromAsset(path.join(__dirname, '..', 'integ.user-pool.handler')),
 });
 
 httpApi.addRoutes({

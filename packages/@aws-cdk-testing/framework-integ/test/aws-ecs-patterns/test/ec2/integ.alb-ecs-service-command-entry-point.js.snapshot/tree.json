@@ -695,50 +695,53 @@
               "version": "10.3.0"
             }
           },
-          "AutoScalingGroup": {
-            "id": "AutoScalingGroup",
-            "path": "aws-ecs-integ-alb-ec2-cmd-entrypoint/AutoScalingGroup",
+          "SecurityGroup": {
+            "id": "SecurityGroup",
+            "path": "aws-ecs-integ-alb-ec2-cmd-entrypoint/SecurityGroup",
             "children": {
-              "InstanceSecurityGroup": {
-                "id": "InstanceSecurityGroup",
-                "path": "aws-ecs-integ-alb-ec2-cmd-entrypoint/AutoScalingGroup/InstanceSecurityGroup",
-                "children": {
-                  "Resource": {
-                    "id": "Resource",
-                    "path": "aws-ecs-integ-alb-ec2-cmd-entrypoint/AutoScalingGroup/InstanceSecurityGroup/Resource",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
-                      "aws:cdk:cloudformation:props": {
-                        "groupDescription": "aws-ecs-integ-alb-ec2-cmd-entrypoint/AutoScalingGroup/InstanceSecurityGroup",
-                        "securityGroupEgress": [
-                          {
-                            "cidrIp": "0.0.0.0/0",
-                            "description": "Allow all outbound traffic by default",
-                            "ipProtocol": "-1"
-                          }
-                        ],
-                        "tags": [
-                          {
-                            "key": "Name",
-                            "value": "aws-ecs-integ-alb-ec2-cmd-entrypoint/AutoScalingGroup"
-                          }
-                        ],
-                        "vpcId": {
-                          "Ref": "Vpc8378EB38"
-                        }
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-ecs-integ-alb-ec2-cmd-entrypoint/SecurityGroup/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
+                  "aws:cdk:cloudformation:props": {
+                    "groupDescription": "aws-ecs-integ-alb-ec2-cmd-entrypoint/SecurityGroup",
+                    "securityGroupEgress": [
+                      {
+                        "cidrIp": "0.0.0.0/0",
+                        "description": "Allow all outbound traffic by default",
+                        "ipProtocol": "-1"
                       }
-                    },
-                    "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.3.0"
+                    ],
+                    "securityGroupIngress": [
+                      {
+                        "cidrIp": "0.0.0.0/0",
+                        "ipProtocol": "tcp",
+                        "fromPort": 32768,
+                        "toPort": 65535,
+                        "description": "from 0.0.0.0/0:32768-65535"
+                      }
+                    ],
+                    "vpcId": {
+                      "Ref": "Vpc8378EB38"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "fqn": "aws-cdk-lib.aws_ec2.CfnSecurityGroup",
+                  "version": "0.0.0"
                 }
-              },
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_ec2.SecurityGroup",
+              "version": "0.0.0"
+            }
+          },
+          "AutoScalingGroup": {
+            "id": "AutoScalingGroup",
+            "path": "aws-ecs-integ-alb-ec2-cmd-entrypoint/AutoScalingGroup",
+            "children": {
               "InstanceRole": {
                 "id": "InstanceRole",
                 "path": "aws-ecs-integ-alb-ec2-cmd-entrypoint/AutoScalingGroup/InstanceRole",
@@ -882,46 +885,105 @@
                   "version": "10.3.0"
                 }
               },
-              "LaunchConfig": {
-                "id": "LaunchConfig",
-                "path": "aws-ecs-integ-alb-ec2-cmd-entrypoint/AutoScalingGroup/LaunchConfig",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::AutoScaling::LaunchConfiguration",
-                  "aws:cdk:cloudformation:props": {
-                    "iamInstanceProfile": {
-                      "Ref": "AutoScalingGroupInstanceProfile342FAC7C"
-                    },
-                    "imageId": {
-                      "Ref": "SsmParameterValueawsserviceecsoptimizedamiamazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
-                    },
-                    "instanceType": "t2.micro",
-                    "securityGroups": [
-                      {
-                        "Fn::GetAtt": [
-                          "AutoScalingGroupInstanceSecurityGroup9D2E0C5E",
-                          "GroupId"
-                        ]
-                      }
-                    ],
-                    "userData": {
-                      "Fn::Base64": {
-                        "Fn::Join": [
-                          "",
-                          [
-                            "#!/bin/bash\necho ECS_CLUSTER=",
+              "ImportedInstanceProfile": {
+                "id": "ImportedInstanceProfile",
+                "path": "aws-ecs-integ-alb-ec2-cmd-entrypoint/AutoScalingGroup/ImportedInstanceProfile",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Resource",
+                  "version": "0.0.0"
+                }
+              },
+              "LaunchTemplate": {
+                "id": "LaunchTemplate",
+                "path": "aws-ecs-integ-alb-ec2-cmd-entrypoint/AutoScalingGroup/LaunchTemplate",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-ecs-integ-alb-ec2-cmd-entrypoint/AutoScalingGroup/LaunchTemplate/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::LaunchTemplate",
+                      "aws:cdk:cloudformation:props": {
+                        "launchTemplateData": {
+                          "iamInstanceProfile": {
+                            "arn": {
+                              "Fn::GetAtt": [
+                                "AutoScalingGroupInstanceProfile342FAC7C",
+                                "Arn"
+                              ]
+                            }
+                          },
+                          "imageId": {
+                            "Ref": "SsmParameterValueawsserviceecsoptimizedamiamazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
+                          },
+                          "instanceType": "t2.micro",
+                          "monitoring": {
+                            "enabled": false
+                          },
+                          "securityGroupIds": [
                             {
-                              "Ref": "Ec2ClusterEE43E89D"
+                              "Fn::GetAtt": [
+                                "SecurityGroupDD263621",
+                                "GroupId"
+                              ]
+                            }
+                          ],
+                          "tagSpecifications": [
+                            {
+                              "resourceType": "instance",
+                              "tags": [
+                                {
+                                  "key": "Name",
+                                  "value": "aws-ecs-integ-alb-ec2-cmd-entrypoint/AutoScalingGroup/LaunchTemplate"
+                                }
+                              ]
                             },
-                            " >> /etc/ecs/ecs.config\nsudo iptables --insert FORWARD 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP\nsudo service iptables save\necho ECS_AWSVPC_BLOCK_IMDS=true >> /etc/ecs/ecs.config"
-                          ]
+                            {
+                              "resourceType": "volume",
+                              "tags": [
+                                {
+                                  "key": "Name",
+                                  "value": "aws-ecs-integ-alb-ec2-cmd-entrypoint/AutoScalingGroup/LaunchTemplate"
+                                }
+                              ]
+                            }
+                          ],
+                          "userData": {
+                            "Fn::Base64": {
+                              "Fn::Join": [
+                                "",
+                                [
+                                  "#!/bin/bash\necho ECS_CLUSTER=",
+                                  {
+                                    "Ref": "Ec2ClusterEE43E89D"
+                                  },
+                                  " >> /etc/ecs/ecs.config\nsudo iptables --insert FORWARD 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP\nsudo service iptables save\necho ECS_AWSVPC_BLOCK_IMDS=true >> /etc/ecs/ecs.config"
+                                ]
+                              ]
+                            }
+                          }
+                        },
+                        "tagSpecifications": [
+                          {
+                            "resourceType": "launch-template",
+                            "tags": [
+                              {
+                                "key": "Name",
+                                "value": "aws-ecs-integ-alb-ec2-cmd-entrypoint/AutoScalingGroup/LaunchTemplate"
+                              }
+                            ]
+                          }
                         ]
                       }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnLaunchTemplate",
+                      "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "fqn": "aws-cdk-lib.aws_ec2.LaunchTemplate",
+                  "version": "0.0.0"
                 }
               },
               "ASG": {
@@ -930,8 +992,16 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::AutoScaling::AutoScalingGroup",
                   "aws:cdk:cloudformation:props": {
-                    "launchConfigurationName": {
-                      "Ref": "AutoScalingGroupLaunchConfigDEEB160C"
+                    "launchTemplate": {
+                      "launchTemplateId": {
+                        "Ref": "AutoScalingGroupLaunchTemplateCE2B3AFE"
+                      },
+                      "version": {
+                        "Fn::GetAtt": [
+                          "AutoScalingGroupLaunchTemplateCE2B3AFE",
+                          "LatestVersionNumber"
+                        ]
+                      }
                     },
                     "maxSize": "1",
                     "minSize": "1",
@@ -1039,6 +1109,12 @@
                           {
                             "Fn::GetAtt": [
                               "ALBECSServiceWithCommandEntryPointLBSecurityGroupBA7F6FB5",
+                              "GroupId"
+                            ]
+                          },
+                          {
+                            "Fn::GetAtt": [
+                              "SecurityGroupDD263621",
                               "GroupId"
                             ]
                           }
@@ -1253,18 +1329,15 @@
                         "containerDefinitions": [
                           {
                             "command": [
-                              "/usr/sbin/apache2",
-                              "-D",
-                              "FOREGROUND"
+                              "/bin/sh -c \"echo '<html><h1>Amazon ECS Sample App</h1></html>' >  /usr/local/apache2/htdocs/index.html && httpd-foreground\""
                             ],
                             "cpu": 256,
                             "entryPoint": [
-                              "/bin/bash",
-                              "-l",
+                              "sh",
                               "-c"
                             ],
                             "essential": true,
-                            "image": "amazon/amazon-ecs-sample",
+                            "image": "public.ecr.aws/docker/library/httpd:2.4",
                             "memory": 512,
                             "name": "web",
                             "portMappings": [

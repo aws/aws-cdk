@@ -152,6 +152,7 @@ export class LegacyStackSynthesizer extends StackSynthesizer implements IReusabl
         outputs: asset.dockerOutputs,
         cacheFrom: asset.dockerCacheFrom,
         cacheTo: asset.dockerCacheTo,
+        cacheDisabled: asset.dockerCacheDisabled,
       };
 
       this.boundStack.node.addMetadata(cxschema.ArtifactMetadataEntryType.ASSET, metadata);

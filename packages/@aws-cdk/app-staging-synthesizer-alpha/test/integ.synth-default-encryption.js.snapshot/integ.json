@@ -1,0 +1,13 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "integ-tests/DefaultTest": {
+      "stacks": [
+        "StagingStack-default-resourcesmax-ACCOUNT-REGION",
+        "synthesize-default-encryption"
+      ],
+      "assertionStack": "integ-tests/DefaultTest/DeployAssert",
+      "assertionStackName": "integtestsDefaultTestDeployAssert44C8D370"
+    }
+  }
+}

@@ -1170,7 +1170,11 @@
                               "port": 80,
                               "dnsName": "api"
                             }
-                          ]
+                          ],
+                          "timeout": {
+                            "idleTimeoutSeconds": 30,
+                            "perRequestTimeoutSeconds": 30
+                          }
                         }
                       ]
                     },

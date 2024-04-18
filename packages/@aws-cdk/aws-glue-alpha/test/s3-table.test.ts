@@ -1095,6 +1095,36 @@ describe('validate', () => {
   });
 });
 
+test('can specify table parameter', () => {
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app, 'Stack');
+  const database = new glue.Database(stack, 'Database');
+  const dataFormat = glue.DataFormat.JSON;
+  new glue.S3Table(stack, 'Table', {
+    database,
+    columns: [{
+      name: 'col',
+      type: glue.Schema.STRING,
+    }],
+    dataFormat,
+    parameters: {
+      key1: 'val1',
+      key2: 'val2',
+    },
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::Glue::Table', {
+    TableInput: {
+      Parameters: {
+        key1: 'val1',
+        key2: 'val2',
+        classification: 'json',
+        has_encrypted_data: true,
+      },
+    },
+  });
+});
+
 function createTable(props: Pick<glue.S3TableProps, Exclude<keyof glue.S3TableProps, 'database' | 'dataFormat'>>): void {
   const stack = new cdk.Stack();
   new glue.S3Table(stack, 'table', {

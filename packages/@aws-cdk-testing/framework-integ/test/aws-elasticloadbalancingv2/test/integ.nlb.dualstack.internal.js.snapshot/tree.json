@@ -1,0 +1,504 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "aws-cdk-nlb-dualstack-internal": {
+        "id": "aws-cdk-nlb-dualstack-internal",
+        "path": "aws-cdk-nlb-dualstack-internal",
+        "children": {
+          "VPC": {
+            "id": "VPC",
+            "path": "aws-cdk-nlb-dualstack-internal/VPC",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-nlb-dualstack-internal/VPC/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::EC2::VPC",
+                  "aws:cdk:cloudformation:props": {
+                    "cidrBlock": "10.0.0.0/16",
+                    "enableDnsHostnames": true,
+                    "enableDnsSupport": true,
+                    "instanceTenancy": "default",
+                    "tags": [
+                      {
+                        "key": "Name",
+                        "value": "aws-cdk-nlb-dualstack-internal/VPC"
+                      }
+                    ]
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_ec2.CfnVPC",
+                  "version": "0.0.0"
+                }
+              },
+              "IsolatedSubnet1": {
+                "id": "IsolatedSubnet1",
+                "path": "aws-cdk-nlb-dualstack-internal/VPC/IsolatedSubnet1",
+                "children": {
+                  "Subnet": {
+                    "id": "Subnet",
+                    "path": "aws-cdk-nlb-dualstack-internal/VPC/IsolatedSubnet1/Subnet",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
+                      "aws:cdk:cloudformation:props": {
+                        "assignIpv6AddressOnCreation": true,
+                        "availabilityZone": {
+                          "Fn::Select": [
+                            0,
+                            {
+                              "Fn::GetAZs": ""
+                            }
+                          ]
+                        },
+                        "cidrBlock": "10.0.0.0/17",
+                        "ipv6CidrBlock": {
+                          "Fn::Select": [
+                            0,
+                            {
+                              "Fn::Cidr": [
+                                {
+                                  "Fn::Select": [
+                                    0,
+                                    {
+                                      "Fn::GetAtt": [
+                                        "VPCB9E5F0B4",
+                                        "Ipv6CidrBlocks"
+                                      ]
+                                    }
+                                  ]
+                                },
+                                256,
+                                "64"
+                              ]
+                            }
+                          ]
+                        },
+                        "mapPublicIpOnLaunch": false,
+                        "tags": [
+                          {
+                            "key": "aws-cdk:subnet-name",
+                            "value": "Isolated"
+                          },
+                          {
+                            "key": "aws-cdk:subnet-type",
+                            "value": "Isolated"
+                          },
+                          {
+                            "key": "Name",
+                            "value": "aws-cdk-nlb-dualstack-internal/VPC/IsolatedSubnet1"
+                          }
+                        ],
+                        "vpcId": {
+                          "Ref": "VPCB9E5F0B4"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnSubnet",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Acl": {
+                    "id": "Acl",
+                    "path": "aws-cdk-nlb-dualstack-internal/VPC/IsolatedSubnet1/Acl",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "RouteTable": {
+                    "id": "RouteTable",
+                    "path": "aws-cdk-nlb-dualstack-internal/VPC/IsolatedSubnet1/RouteTable",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
+                      "aws:cdk:cloudformation:props": {
+                        "tags": [
+                          {
+                            "key": "Name",
+                            "value": "aws-cdk-nlb-dualstack-internal/VPC/IsolatedSubnet1"
+                          }
+                        ],
+                        "vpcId": {
+                          "Ref": "VPCB9E5F0B4"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnRouteTable",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "RouteTableAssociation": {
+                    "id": "RouteTableAssociation",
+                    "path": "aws-cdk-nlb-dualstack-internal/VPC/IsolatedSubnet1/RouteTableAssociation",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
+                      "aws:cdk:cloudformation:props": {
+                        "routeTableId": {
+                          "Ref": "VPCIsolatedSubnet1RouteTableEB156210"
+                        },
+                        "subnetId": {
+                          "Ref": "VPCIsolatedSubnet1SubnetEBD00FC6"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnSubnetRouteTableAssociation",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_ec2.PrivateSubnet",
+                  "version": "0.0.0"
+                }
+              },
+              "IsolatedSubnet2": {
+                "id": "IsolatedSubnet2",
+                "path": "aws-cdk-nlb-dualstack-internal/VPC/IsolatedSubnet2",
+                "children": {
+                  "Subnet": {
+                    "id": "Subnet",
+                    "path": "aws-cdk-nlb-dualstack-internal/VPC/IsolatedSubnet2/Subnet",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
+                      "aws:cdk:cloudformation:props": {
+                        "assignIpv6AddressOnCreation": true,
+                        "availabilityZone": {
+                          "Fn::Select": [
+                            1,
+                            {
+                              "Fn::GetAZs": ""
+                            }
+                          ]
+                        },
+                        "cidrBlock": "10.0.128.0/17",
+                        "ipv6CidrBlock": {
+                          "Fn::Select": [
+                            1,
+                            {
+                              "Fn::Cidr": [
+                                {
+                                  "Fn::Select": [
+                                    0,
+                                    {
+                                      "Fn::GetAtt": [
+                                        "VPCB9E5F0B4",
+                                        "Ipv6CidrBlocks"
+                                      ]
+                                    }
+                                  ]
+                                },
+                                256,
+                                "64"
+                              ]
+                            }
+                          ]
+                        },
+                        "mapPublicIpOnLaunch": false,
+                        "tags": [
+                          {
+                            "key": "aws-cdk:subnet-name",
+                            "value": "Isolated"
+                          },
+                          {
+                            "key": "aws-cdk:subnet-type",
+                            "value": "Isolated"
+                          },
+                          {
+                            "key": "Name",
+                            "value": "aws-cdk-nlb-dualstack-internal/VPC/IsolatedSubnet2"
+                          }
+                        ],
+                        "vpcId": {
+                          "Ref": "VPCB9E5F0B4"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnSubnet",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Acl": {
+                    "id": "Acl",
+                    "path": "aws-cdk-nlb-dualstack-internal/VPC/IsolatedSubnet2/Acl",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "RouteTable": {
+                    "id": "RouteTable",
+                    "path": "aws-cdk-nlb-dualstack-internal/VPC/IsolatedSubnet2/RouteTable",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
+                      "aws:cdk:cloudformation:props": {
+                        "tags": [
+                          {
+                            "key": "Name",
+                            "value": "aws-cdk-nlb-dualstack-internal/VPC/IsolatedSubnet2"
+                          }
+                        ],
+                        "vpcId": {
+                          "Ref": "VPCB9E5F0B4"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnRouteTable",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "RouteTableAssociation": {
+                    "id": "RouteTableAssociation",
+                    "path": "aws-cdk-nlb-dualstack-internal/VPC/IsolatedSubnet2/RouteTableAssociation",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
+                      "aws:cdk:cloudformation:props": {
+                        "routeTableId": {
+                          "Ref": "VPCIsolatedSubnet2RouteTable9B4F78DC"
+                        },
+                        "subnetId": {
+                          "Ref": "VPCIsolatedSubnet2Subnet4B1C8CAA"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_ec2.CfnSubnetRouteTableAssociation",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_ec2.PrivateSubnet",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_ec2.Vpc",
+              "version": "0.0.0"
+            }
+          },
+          "IPv6_Block": {
+            "id": "IPv6_Block",
+            "path": "aws-cdk-nlb-dualstack-internal/IPv6_Block",
+            "attributes": {
+              "aws:cdk:cloudformation:type": "AWS::EC2::VPCCidrBlock",
+              "aws:cdk:cloudformation:props": {
+                "amazonProvidedIpv6CidrBlock": true,
+                "vpcId": {
+                  "Ref": "VPCB9E5F0B4"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_ec2.CfnVPCCidrBlock",
+              "version": "0.0.0"
+            }
+          },
+          "LB": {
+            "id": "LB",
+            "path": "aws-cdk-nlb-dualstack-internal/LB",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-nlb-dualstack-internal/LB/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
+                  "aws:cdk:cloudformation:props": {
+                    "ipAddressType": "dualstack",
+                    "loadBalancerAttributes": [
+                      {
+                        "key": "deletion_protection.enabled",
+                        "value": "false"
+                      }
+                    ],
+                    "scheme": "internal",
+                    "subnets": [
+                      {
+                        "Ref": "VPCIsolatedSubnet1SubnetEBD00FC6"
+                      },
+                      {
+                        "Ref": "VPCIsolatedSubnet2Subnet4B1C8CAA"
+                      }
+                    ],
+                    "type": "network"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_elasticloadbalancingv2.CfnLoadBalancer",
+                  "version": "0.0.0"
+                }
+              },
+              "Listener": {
+                "id": "Listener",
+                "path": "aws-cdk-nlb-dualstack-internal/LB/Listener",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-cdk-nlb-dualstack-internal/LB/Listener/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::ElasticLoadBalancingV2::Listener",
+                      "aws:cdk:cloudformation:props": {
+                        "defaultActions": [
+                          {
+                            "type": "forward",
+                            "targetGroupArn": {
+                              "Ref": "tg2DCFFD86"
+                            }
+                          }
+                        ],
+                        "loadBalancerArn": {
+                          "Ref": "LB8A12904C"
+                        },
+                        "port": 3000,
+                        "protocol": "TCP"
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_elasticloadbalancingv2.CfnListener",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_elasticloadbalancingv2.NetworkListener",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_elasticloadbalancingv2.NetworkLoadBalancer",
+              "version": "0.0.0"
+            }
+          },
+          "tg": {
+            "id": "tg",
+            "path": "aws-cdk-nlb-dualstack-internal/tg",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-nlb-dualstack-internal/tg/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::ElasticLoadBalancingV2::TargetGroup",
+                  "aws:cdk:cloudformation:props": {
+                    "healthCheckIntervalSeconds": 250,
+                    "healthCheckProtocol": "TCP",
+                    "healthCheckTimeoutSeconds": 100,
+                    "healthyThresholdCount": 5,
+                    "port": 3000,
+                    "protocol": "TCP",
+                    "unhealthyThresholdCount": 2,
+                    "vpcId": {
+                      "Ref": "VPCB9E5F0B4"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_elasticloadbalancingv2.CfnTargetGroup",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_elasticloadbalancingv2.NetworkTargetGroup",
+              "version": "0.0.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "aws-cdk-nlb-dualstack-internal/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "aws-cdk-nlb-dualstack-internal/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnRule",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "NlbDualstackInternalInteg": {
+        "id": "NlbDualstackInternalInteg",
+        "path": "NlbDualstackInternalInteg",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "NlbDualstackInternalInteg/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "NlbDualstackInternalInteg/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.70"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "NlbDualstackInternalInteg/DefaultTest/DeployAssert",
+                "children": {
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "NlbDualstackInternalInteg/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "NlbDualstackInternalInteg/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnRule",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.2.70"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "aws-cdk-lib.App",
+      "version": "0.0.0"
+    }
+  }
+}

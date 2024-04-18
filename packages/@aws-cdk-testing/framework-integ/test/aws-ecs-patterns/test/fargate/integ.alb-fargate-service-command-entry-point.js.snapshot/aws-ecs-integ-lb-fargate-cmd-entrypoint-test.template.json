@@ -394,6 +394,45 @@
   "TestFargateCluster0BF869F3": {
    "Type": "AWS::ECS::Cluster"
   },
+  "SecurityGroupDD263621": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "aws-ecs-integ-lb-fargate-cmd-entrypoint-test/SecurityGroup",
+    "SecurityGroupIngress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "from 0.0.0.0/0:80",
+      "FromPort": 80,
+      "IpProtocol": "tcp",
+      "ToPort": 80
+     }
+    ],
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    }
+   }
+  },
+  "SecurityGrouptoawsecsinteglbfargatecmdentrypointtestALBFargateServiceWithCommandAndEntryPointServiceSecurityGroup6D1E5F1180E99BF818": {
+   "Type": "AWS::EC2::SecurityGroupEgress",
+   "Properties": {
+    "Description": "Load balancer to target",
+    "DestinationSecurityGroupId": {
+     "Fn::GetAtt": [
+      "ALBFargateServiceWithCommandAndEntryPointServiceSecurityGroupD154E880",
+      "GroupId"
+     ]
+    },
+    "FromPort": 80,
+    "GroupId": {
+     "Fn::GetAtt": [
+      "SecurityGroupDD263621",
+      "GroupId"
+     ]
+    },
+    "IpProtocol": "tcp",
+    "ToPort": 80
+   }
+  },
   "ALBFargateServiceWithCommandAndEntryPointLB353EA7CA": {
    "Type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
    "Properties": {
@@ -408,6 +447,12 @@
      {
       "Fn::GetAtt": [
        "ALBFargateServiceWithCommandAndEntryPointLBSecurityGroupD7099797",
+       "GroupId"
+      ]
+     },
+     {
+      "Fn::GetAtt": [
+       "SecurityGroupDD263621",
        "GroupId"
       ]
      }
@@ -526,15 +571,14 @@
     "ContainerDefinitions": [
      {
       "Command": [
-       "/usr/sbin/apache2",
-       "-D",
-       "FOREGROUND"
+       "/bin/sh -c \"echo '<html><h1>Amazon ECS Sample App</h1></html>' >  /usr/local/apache2/htdocs/index.html && httpd-foreground\""
       ],
       "EntryPoint": [
-       "/bin/bash"
+       "sh",
+       "-c"
       ],
       "Essential": true,
-      "Image": "amazon/amazon-ecs-sample",
+      "Image": "public.ecr.aws/docker/library/httpd:2.4",
       "LogConfiguration": {
        "LogDriver": "awslogs",
        "Options": {
@@ -715,6 +759,30 @@
     "SourceSecurityGroupId": {
      "Fn::GetAtt": [
       "ALBFargateServiceWithCommandAndEntryPointLBSecurityGroupD7099797",
+      "GroupId"
+     ]
+    },
+    "ToPort": 80
+   },
+   "DependsOn": [
+    "ALBFargateServiceWithCommandAndEntryPointTaskDefTaskRole65CE9392"
+   ]
+  },
+  "ALBFargateServiceWithCommandAndEntryPointServiceSecurityGroupfromawsecsinteglbfargatecmdentrypointtestSecurityGroupECF7922B806B1E1C2D": {
+   "Type": "AWS::EC2::SecurityGroupIngress",
+   "Properties": {
+    "Description": "Load balancer to target",
+    "FromPort": 80,
+    "GroupId": {
+     "Fn::GetAtt": [
+      "ALBFargateServiceWithCommandAndEntryPointServiceSecurityGroupD154E880",
+      "GroupId"
+     ]
+    },
+    "IpProtocol": "tcp",
+    "SourceSecurityGroupId": {
+     "Fn::GetAtt": [
+      "SecurityGroupDD263621",
       "GroupId"
      ]
     },

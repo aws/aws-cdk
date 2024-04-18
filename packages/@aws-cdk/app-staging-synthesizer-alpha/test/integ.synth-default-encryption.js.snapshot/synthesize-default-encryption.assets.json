@@ -1,0 +1,19 @@
+{
+  "version": "36.0.0",
+  "files": {
+    "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a": {
+      "source": {
+        "path": "synthesize-default-encryption.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-default-resourcesmax-staging-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "deploy-time/44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-default-resourcesmax-file-role-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

@@ -40,7 +40,7 @@ export interface PolicyViolationBeta1 {
    *
    * @default - no rule metadata
    */
-  readonly ruleMetadata?: { readonly [key: string]: string }
+  readonly ruleMetadata?: { readonly [key: string]: string };
 }
 
 /**
@@ -103,5 +103,5 @@ export interface PolicyValidationPluginReportBeta1 {
    *
    * @default - no metadata
    */
-  readonly metadata?: { readonly [key: string]: string }
+  readonly metadata?: { readonly [key: string]: string };
 }

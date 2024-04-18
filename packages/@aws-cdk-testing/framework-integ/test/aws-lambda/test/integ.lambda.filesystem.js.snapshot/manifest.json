@@ -1,27 +1,28 @@
 {
-  "version": "33.0.0",
+  "version": "36.0.0",
   "artifacts": {
-    "aws-cdk-lambda-1.assets": {
+    "aws-cdk-efs.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "aws-cdk-lambda-1.assets.json",
+        "file": "aws-cdk-efs.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "aws-cdk-lambda-1": {
+    "aws-cdk-efs": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "aws-cdk-lambda-1.template.json",
+        "templateFile": "aws-cdk-efs.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/8830304d814344ce37185ef76941c80ce57463240d07c38263041042bac7102f.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/2a4f44988572dc8aa10f9383b7651d3e0dc699d3cec241fac405658c55c5473e.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "aws-cdk-lambda-1.assets"
+          "aws-cdk-efs.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -30,253 +31,579 @@
         }
       },
       "dependencies": [
-        "aws-cdk-lambda-1.assets"
+        "aws-cdk-efs.assets"
       ],
       "metadata": {
-        "/aws-cdk-lambda-1/Vpc/Resource": [
+        "/aws-cdk-efs/Vpc/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "Vpc8378EB38"
           }
         ],
-        "/aws-cdk-lambda-1/Vpc/PublicSubnet1/Subnet": [
+        "/aws-cdk-efs/Vpc/PublicSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPublicSubnet1Subnet5C2D37C4"
           }
         ],
-        "/aws-cdk-lambda-1/Vpc/PublicSubnet1/RouteTable": [
+        "/aws-cdk-efs/Vpc/PublicSubnet1/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPublicSubnet1RouteTable6C95E38E"
           }
         ],
-        "/aws-cdk-lambda-1/Vpc/PublicSubnet1/RouteTableAssociation": [
+        "/aws-cdk-efs/Vpc/PublicSubnet1/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPublicSubnet1RouteTableAssociation97140677"
           }
         ],
-        "/aws-cdk-lambda-1/Vpc/PublicSubnet1/DefaultRoute": [
+        "/aws-cdk-efs/Vpc/PublicSubnet1/DefaultRoute": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPublicSubnet1DefaultRoute3DA9E72A"
           }
         ],
-        "/aws-cdk-lambda-1/Vpc/PublicSubnet1/EIP": [
+        "/aws-cdk-efs/Vpc/PublicSubnet1/EIP": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPublicSubnet1EIPD7E02669"
           }
         ],
-        "/aws-cdk-lambda-1/Vpc/PublicSubnet1/NATGateway": [
+        "/aws-cdk-efs/Vpc/PublicSubnet1/NATGateway": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPublicSubnet1NATGateway4D7517AA"
           }
         ],
-        "/aws-cdk-lambda-1/Vpc/PublicSubnet2/Subnet": [
+        "/aws-cdk-efs/Vpc/PublicSubnet2/Subnet": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPublicSubnet2Subnet691E08A3"
           }
         ],
-        "/aws-cdk-lambda-1/Vpc/PublicSubnet2/RouteTable": [
+        "/aws-cdk-efs/Vpc/PublicSubnet2/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPublicSubnet2RouteTable94F7E489"
           }
         ],
-        "/aws-cdk-lambda-1/Vpc/PublicSubnet2/RouteTableAssociation": [
+        "/aws-cdk-efs/Vpc/PublicSubnet2/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPublicSubnet2RouteTableAssociationDD5762D8"
           }
         ],
-        "/aws-cdk-lambda-1/Vpc/PublicSubnet2/DefaultRoute": [
+        "/aws-cdk-efs/Vpc/PublicSubnet2/DefaultRoute": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPublicSubnet2DefaultRoute97F91067"
           }
         ],
-        "/aws-cdk-lambda-1/Vpc/PrivateSubnet1/Subnet": [
+        "/aws-cdk-efs/Vpc/PrivateSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPrivateSubnet1Subnet536B997A"
           }
         ],
-        "/aws-cdk-lambda-1/Vpc/PrivateSubnet1/RouteTable": [
+        "/aws-cdk-efs/Vpc/PrivateSubnet1/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPrivateSubnet1RouteTableB2C5B500"
           }
         ],
-        "/aws-cdk-lambda-1/Vpc/PrivateSubnet1/RouteTableAssociation": [
+        "/aws-cdk-efs/Vpc/PrivateSubnet1/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPrivateSubnet1RouteTableAssociation70C59FA6"
           }
         ],
-        "/aws-cdk-lambda-1/Vpc/PrivateSubnet1/DefaultRoute": [
+        "/aws-cdk-efs/Vpc/PrivateSubnet1/DefaultRoute": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPrivateSubnet1DefaultRouteBE02A9ED"
           }
         ],
-        "/aws-cdk-lambda-1/Vpc/PrivateSubnet2/Subnet": [
+        "/aws-cdk-efs/Vpc/PrivateSubnet2/Subnet": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPrivateSubnet2Subnet3788AAA1"
           }
         ],
-        "/aws-cdk-lambda-1/Vpc/PrivateSubnet2/RouteTable": [
+        "/aws-cdk-efs/Vpc/PrivateSubnet2/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPrivateSubnet2RouteTableA678073B"
           }
         ],
-        "/aws-cdk-lambda-1/Vpc/PrivateSubnet2/RouteTableAssociation": [
+        "/aws-cdk-efs/Vpc/PrivateSubnet2/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPrivateSubnet2RouteTableAssociationA89CAD56"
           }
         ],
-        "/aws-cdk-lambda-1/Vpc/PrivateSubnet2/DefaultRoute": [
+        "/aws-cdk-efs/Vpc/PrivateSubnet2/DefaultRoute": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPrivateSubnet2DefaultRoute060D2087"
           }
         ],
-        "/aws-cdk-lambda-1/Vpc/IGW": [
+        "/aws-cdk-efs/Vpc/IGW": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcIGWD7BA715C"
           }
         ],
-        "/aws-cdk-lambda-1/Vpc/VPCGW": [
+        "/aws-cdk-efs/Vpc/VPCGW": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcVPCGWBF912B6E"
           }
         ],
-        "/aws-cdk-lambda-1/Efs/Resource": [
+        "/aws-cdk-efs/Vpc/RestrictDefaultSecurityGroupCustomResource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcRestrictDefaultSecurityGroupCustomResourceC73DA2BE"
+          }
+        ],
+        "/aws-cdk-efs/Custom::VpcRestrictDefaultSGCustomResourceProvider/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomVpcRestrictDefaultSGCustomResourceProviderRole26592FE0"
+          }
+        ],
+        "/aws-cdk-efs/Custom::VpcRestrictDefaultSGCustomResourceProvider/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomVpcRestrictDefaultSGCustomResourceProviderHandlerDC833E5E"
+          }
+        ],
+        "/aws-cdk-efs/Efs/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "Efs9E8BF36B"
           }
         ],
-        "/aws-cdk-lambda-1/Efs/EfsSecurityGroup/Resource": [
+        "/aws-cdk-efs/Efs/EfsSecurityGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "EfsEfsSecurityGroup6F40EA3B"
           }
         ],
-        "/aws-cdk-lambda-1/Efs/EfsSecurityGroup/from awscdklambda1MyLambdaSecurityGroup86B085EE:2049": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "EfsEfsSecurityGroupfromawscdklambda1MyLambdaSecurityGroup86B085EE20490D9864A8"
-          }
-        ],
-        "/aws-cdk-lambda-1/Efs/EfsMountTarget-PrivateSubnet1": [
+        "/aws-cdk-efs/Efs/EfsMountTarget-PrivateSubnet1": [
           {
             "type": "aws:cdk:logicalId",
             "data": "EfsEfsMountTargetPrivateSubnet19658885C"
           }
         ],
-        "/aws-cdk-lambda-1/Efs/EfsMountTarget-PrivateSubnet2": [
+        "/aws-cdk-efs/Efs/EfsMountTarget-PrivateSubnet2": [
           {
             "type": "aws:cdk:logicalId",
             "data": "EfsEfsMountTargetPrivateSubnet29C850A6F"
           }
         ],
-        "/aws-cdk-lambda-1/Efs/AccessPoint/Resource": [
+        "/aws-cdk-efs/Efs/AccessPoint/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "EfsAccessPointE419FED9"
           }
         ],
-        "/aws-cdk-lambda-1/MyLambda/ServiceRole/Resource": [
+        "/aws-cdk-efs/Exports/Output{\"Ref\":\"EfsAccessPointE419FED9\"}": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyLambdaServiceRole4539ECB6"
+            "data": "ExportsOutputRefEfsAccessPointE419FED9C622426D"
           }
         ],
-        "/aws-cdk-lambda-1/MyLambda/ServiceRole/DefaultPolicy/Resource": [
+        "/aws-cdk-efs/Exports/Output{\"Ref\":\"Efs9E8BF36B\"}": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyLambdaServiceRoleDefaultPolicy5BBC6F68"
+            "data": "ExportsOutputRefEfs9E8BF36BE36F3E5D"
           }
         ],
-        "/aws-cdk-lambda-1/MyLambda/SecurityGroup/Resource": [
+        "/aws-cdk-efs/Exports/Output{\"Ref\":\"Vpc8378EB38\"}": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyLambdaSecurityGroup1E71A818"
+            "data": "ExportsOutputRefVpc8378EB38272D6E3A"
           }
         ],
-        "/aws-cdk-lambda-1/MyLambda/Resource": [
+        "/aws-cdk-efs/Exports/Output{\"Fn::GetAtt\":[\"EfsEfsSecurityGroup6F40EA3B\",\"GroupId\"]}": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyLambdaCCE802FB"
+            "data": "ExportsOutputFnGetAttEfsEfsSecurityGroup6F40EA3BGroupIdEC410A0E"
           }
         ],
-        "/aws-cdk-lambda-1/securityGroup/from awscdklambda1MyLambda2SecurityGroup7492F70D:2049": [
+        "/aws-cdk-efs/Exports/Output{\"Ref\":\"VpcPrivateSubnet1Subnet536B997A\"}": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "securityGroupfromawscdklambda1MyLambda2SecurityGroup7492F70D20498301D9D2"
+            "data": "ExportsOutputRefVpcPrivateSubnet1Subnet536B997AFD4CC940"
           }
         ],
-        "/aws-cdk-lambda-1/MyLambda2/ServiceRole/Resource": [
+        "/aws-cdk-efs/Exports/Output{\"Ref\":\"VpcPrivateSubnet2Subnet3788AAA1\"}": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyLambda2ServiceRoleD09B370C"
+            "data": "ExportsOutputRefVpcPrivateSubnet2Subnet3788AAA1380949A3"
           }
         ],
-        "/aws-cdk-lambda-1/MyLambda2/ServiceRole/DefaultPolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyLambda2ServiceRoleDefaultPolicy2BECE79D"
-          }
-        ],
-        "/aws-cdk-lambda-1/MyLambda2/SecurityGroup/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyLambda2SecurityGroup3C507954"
-          }
-        ],
-        "/aws-cdk-lambda-1/MyLambda2/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyLambda2254B54D5"
-          }
-        ],
-        "/aws-cdk-lambda-1/BootstrapVersion": [
+        "/aws-cdk-efs/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/aws-cdk-lambda-1/CheckBootstrapVersion": [
+        "/aws-cdk-efs/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "aws-cdk-lambda-1"
+      "displayName": "aws-cdk-efs"
     },
-    "awsecsfargatetestDefaultTestDeployAssert78ECD46B.assets": {
+    "aws-cdk-lambda.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "awsecsfargatetestDefaultTestDeployAssert78ECD46B.assets.json",
+        "file": "aws-cdk-lambda.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "awsecsfargatetestDefaultTestDeployAssert78ECD46B": {
+    "aws-cdk-lambda": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "awsecsfargatetestDefaultTestDeployAssert78ECD46B.template.json",
+        "templateFile": "aws-cdk-lambda.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/2fb65324400ccb28da11459263e27e0b7ed3e027328edb79138d003b23291f34.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "aws-cdk-lambda.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "aws-cdk-efs",
+        "aws-cdk-lambda.assets"
+      ],
+      "metadata": {
+        "/aws-cdk-lambda/Vpc/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Vpc8378EB38"
+          }
+        ],
+        "/aws-cdk-lambda/Vpc/PublicSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet1Subnet5C2D37C4"
+          }
+        ],
+        "/aws-cdk-lambda/Vpc/PublicSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet1RouteTable6C95E38E"
+          }
+        ],
+        "/aws-cdk-lambda/Vpc/PublicSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet1RouteTableAssociation97140677"
+          }
+        ],
+        "/aws-cdk-lambda/Vpc/PublicSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet1DefaultRoute3DA9E72A"
+          }
+        ],
+        "/aws-cdk-lambda/Vpc/PublicSubnet1/EIP": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet1EIPD7E02669"
+          }
+        ],
+        "/aws-cdk-lambda/Vpc/PublicSubnet1/NATGateway": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet1NATGateway4D7517AA"
+          }
+        ],
+        "/aws-cdk-lambda/Vpc/PublicSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet2Subnet691E08A3"
+          }
+        ],
+        "/aws-cdk-lambda/Vpc/PublicSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet2RouteTable94F7E489"
+          }
+        ],
+        "/aws-cdk-lambda/Vpc/PublicSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet2RouteTableAssociationDD5762D8"
+          }
+        ],
+        "/aws-cdk-lambda/Vpc/PublicSubnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet2DefaultRoute97F91067"
+          }
+        ],
+        "/aws-cdk-lambda/Vpc/PrivateSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet1Subnet536B997A"
+          }
+        ],
+        "/aws-cdk-lambda/Vpc/PrivateSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet1RouteTableB2C5B500"
+          }
+        ],
+        "/aws-cdk-lambda/Vpc/PrivateSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet1RouteTableAssociation70C59FA6"
+          }
+        ],
+        "/aws-cdk-lambda/Vpc/PrivateSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet1DefaultRouteBE02A9ED"
+          }
+        ],
+        "/aws-cdk-lambda/Vpc/PrivateSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet2Subnet3788AAA1"
+          }
+        ],
+        "/aws-cdk-lambda/Vpc/PrivateSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet2RouteTableA678073B"
+          }
+        ],
+        "/aws-cdk-lambda/Vpc/PrivateSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet2RouteTableAssociationA89CAD56"
+          }
+        ],
+        "/aws-cdk-lambda/Vpc/PrivateSubnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet2DefaultRoute060D2087"
+          }
+        ],
+        "/aws-cdk-lambda/Vpc/IGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcIGWD7BA715C"
+          }
+        ],
+        "/aws-cdk-lambda/Vpc/VPCGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcVPCGWBF912B6E"
+          }
+        ],
+        "/aws-cdk-lambda/Vpc/RestrictDefaultSecurityGroupCustomResource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcRestrictDefaultSecurityGroupCustomResourceC73DA2BE"
+          }
+        ],
+        "/aws-cdk-lambda/Custom::VpcRestrictDefaultSGCustomResourceProvider/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomVpcRestrictDefaultSGCustomResourceProviderRole26592FE0"
+          }
+        ],
+        "/aws-cdk-lambda/Custom::VpcRestrictDefaultSGCustomResourceProvider/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomVpcRestrictDefaultSGCustomResourceProviderHandlerDC833E5E"
+          }
+        ],
+        "/aws-cdk-lambda/Efs/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Efs9E8BF36B"
+          }
+        ],
+        "/aws-cdk-lambda/Efs/EfsSecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EfsEfsSecurityGroup6F40EA3B"
+          }
+        ],
+        "/aws-cdk-lambda/Efs/EfsSecurityGroup/from awscdklambdaMyLambdaSecurityGroup2F544A54:2049": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EfsEfsSecurityGroupfromawscdklambdaMyLambdaSecurityGroup2F544A542049640F3CC6"
+          }
+        ],
+        "/aws-cdk-lambda/Efs/EfsMountTarget-PrivateSubnet1": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EfsEfsMountTargetPrivateSubnet19658885C"
+          }
+        ],
+        "/aws-cdk-lambda/Efs/EfsMountTarget-PrivateSubnet2": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EfsEfsMountTargetPrivateSubnet29C850A6F"
+          }
+        ],
+        "/aws-cdk-lambda/Efs/AccessPoint/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EfsAccessPointE419FED9"
+          }
+        ],
+        "/aws-cdk-lambda/MyLambda/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyLambdaServiceRole4539ECB6"
+          }
+        ],
+        "/aws-cdk-lambda/MyLambda/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyLambdaServiceRoleDefaultPolicy5BBC6F68"
+          }
+        ],
+        "/aws-cdk-lambda/MyLambda/SecurityGroup": [
+          {
+            "type": "aws:cdk:warning",
+            "data": "Ignoring Egress rule since 'allowAllOutbound' is set to true; To add customized rules, set allowAllOutbound=false on the SecurityGroup [ack: @aws-cdk/aws-ec2:ipv4IgnoreEgressRule]"
+          }
+        ],
+        "/aws-cdk-lambda/MyLambda/SecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyLambdaSecurityGroup1E71A818"
+          }
+        ],
+        "/aws-cdk-lambda/MyLambda/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyLambdaCCE802FB"
+          }
+        ],
+        "/aws-cdk-lambda/securityGroup/from awscdklambdaMyLambda2SecurityGroup05BB088F:2049": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "securityGroupfromawscdklambdaMyLambda2SecurityGroup05BB088F20491782848B"
+          }
+        ],
+        "/aws-cdk-lambda/MyLambda2/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyLambda2ServiceRoleD09B370C"
+          }
+        ],
+        "/aws-cdk-lambda/MyLambda2/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyLambda2ServiceRoleDefaultPolicy2BECE79D"
+          }
+        ],
+        "/aws-cdk-lambda/MyLambda2/SecurityGroup": [
+          {
+            "type": "aws:cdk:warning",
+            "data": "Ignoring Egress rule since 'allowAllOutbound' is set to true; To add customized rules, set allowAllOutbound=false on the SecurityGroup [ack: @aws-cdk/aws-ec2:ipv4IgnoreEgressRule]"
+          }
+        ],
+        "/aws-cdk-lambda/MyLambda2/SecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyLambda2SecurityGroup3C507954"
+          }
+        ],
+        "/aws-cdk-lambda/MyLambda2/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyLambda2254B54D5"
+          }
+        ],
+        "/aws-cdk-lambda/MyLambda3/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyLambda3ServiceRole47AA90DA"
+          }
+        ],
+        "/aws-cdk-lambda/MyLambda3/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyLambda3ServiceRoleDefaultPolicy9AA6172F"
+          }
+        ],
+        "/aws-cdk-lambda/MyLambda3/SecurityGroup": [
+          {
+            "type": "aws:cdk:warning",
+            "data": "Ignoring Egress rule since 'allowAllOutbound' is set to true; To add customized rules, set allowAllOutbound=false on the SecurityGroup [ack: @aws-cdk/aws-ec2:ipv4IgnoreEgressRule]"
+          }
+        ],
+        "/aws-cdk-lambda/MyLambda3/SecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyLambda3SecurityGroup5B53CDF4"
+          }
+        ],
+        "/aws-cdk-lambda/MyLambda3/SecurityGroup/awscdkefsEfsEfsSecurityGroupF12E6299:2049 to": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyLambda3SecurityGroupawscdkefsEfsEfsSecurityGroupF12E62992049toA30E993A"
+          }
+        ],
+        "/aws-cdk-lambda/MyLambda3/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyLambda3E5A551B4"
+          }
+        ],
+        "/aws-cdk-lambda/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/aws-cdk-lambda/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "aws-cdk-lambda"
+    },
+    "awsefslambdatestDefaultTestDeployAssert5DC2C506.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "awsefslambdatestDefaultTestDeployAssert5DC2C506.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "awsefslambdatestDefaultTestDeployAssert5DC2C506": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "awsefslambdatestDefaultTestDeployAssert5DC2C506.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
@@ -284,7 +611,7 @@
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "awsecsfargatetestDefaultTestDeployAssert78ECD46B.assets"
+          "awsefslambdatestDefaultTestDeployAssert5DC2C506.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -293,23 +620,23 @@
         }
       },
       "dependencies": [
-        "awsecsfargatetestDefaultTestDeployAssert78ECD46B.assets"
+        "awsefslambdatestDefaultTestDeployAssert5DC2C506.assets"
       ],
       "metadata": {
-        "/aws-ecs-fargate-test/DefaultTest/DeployAssert/BootstrapVersion": [
+        "/aws-efs-lambda-test/DefaultTest/DeployAssert/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/aws-ecs-fargate-test/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+        "/aws-efs-lambda-test/DefaultTest/DeployAssert/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "aws-ecs-fargate-test/DefaultTest/DeployAssert"
+      "displayName": "aws-efs-lambda-test/DefaultTest/DeployAssert"
     },
     "Tree": {
       "type": "cdk:tree",

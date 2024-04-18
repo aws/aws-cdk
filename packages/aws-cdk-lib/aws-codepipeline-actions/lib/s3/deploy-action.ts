@@ -25,16 +25,26 @@ export class CacheControl {
   public static noCache() { return new CacheControl('no-cache'); }
   /** The 'no-transform' cache control directive. */
   public static noTransform() { return new CacheControl('no-transform'); }
+  /** The 'no-store' cache control directive. */
+  public static noStore() { return new CacheControl('no-store'); }
+  /** The 'must-understand' cache control directive. */
+  public static mustUnderstand() { return new CacheControl('must-understand'); }
   /** The 'public' cache control directive. */
   public static setPublic() { return new CacheControl('public'); }
   /** The 'private' cache control directive. */
   public static setPrivate() { return new CacheControl('private'); }
+  /** The 'immutable' cache control directive. */
+  public static immutable() { return new CacheControl('immutable'); }
   /** The 'proxy-revalidate' cache control directive. */
   public static proxyRevalidate() { return new CacheControl('proxy-revalidate'); }
   /** The 'max-age' cache control directive. */
   public static maxAge(t: Duration) { return new CacheControl(`max-age=${t.toSeconds()}`); }
   /** The 's-max-age' cache control directive. */
   public static sMaxAge(t: Duration) { return new CacheControl(`s-maxage=${t.toSeconds()}`); }
+  /** The 'stale-while-revalidate' cache control directive. */
+  public static staleWhileRevalidate(t: Duration) { return new CacheControl(`stale-while-revalidate=${t.toSeconds()}`); }
+  /** The 'stale-if-error' cache control directive. */
+  public static staleIfError(t: Duration) { return new CacheControl(`stale-if-error=${t.toSeconds()}`); }
   /**
    * Allows you to create an arbitrary cache control directive,
    * in case our support is missing a method for a particular directive.

@@ -80,7 +80,7 @@
          "Arn"
         ]
        },
-       "\\\"}],\\\"Version\\\":\\\"2012-10-17\\\"}\"},\"physicalResourceId\":{\"id\":\"EventsLogGroupPolicyloggroupeventsTimerC63340B0\"}}"
+       "\\\"}],\\\"Version\\\":\\\"2012-10-17\\\"}\"},\"physicalResourceId\":{\"id\":\"EventsLogGroupPolicyloggroupeventsTimerC63340B0\"},\"logApiResponseData\":true}"
       ]
      ]
     },
@@ -95,11 +95,11 @@
          "Arn"
         ]
        },
-       "\\\"}],\\\"Version\\\":\\\"2012-10-17\\\"}\"},\"physicalResourceId\":{\"id\":\"EventsLogGroupPolicyloggroupeventsTimerC63340B0\"}}"
+       "\\\"}],\\\"Version\\\":\\\"2012-10-17\\\"}\"},\"physicalResourceId\":{\"id\":\"EventsLogGroupPolicyloggroupeventsTimerC63340B0\"},\"logApiResponseData\":true}"
       ]
      ]
     },
-    "Delete": "{\"service\":\"CloudWatchLogs\",\"action\":\"deleteResourcePolicy\",\"parameters\":{\"policyName\":\"loggroupeventsEventsLogGroupPolicyloggroupeventsTimerC63340B025F606BE\"},\"ignoreErrorCodesMatching\":\"ResourceNotFoundException\"}",
+    "Delete": "{\"service\":\"CloudWatchLogs\",\"action\":\"deleteResourcePolicy\",\"parameters\":{\"policyName\":\"loggroupeventsEventsLogGroupPolicyloggroupeventsTimerC63340B025F606BE\"},\"ignoreErrorCodesMatching\":\"ResourceNotFoundException\",\"logApiResponseData\":true}",
     "InstallLatestAwsSdk": "false"
    },
    "DependsOn": [
@@ -170,7 +170,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "b0de6372e1c756b7afa1a8a1d0a21ee4cd330150290abffc9bc163f285150514.zip"
+     "S3Key": "746da84b10e215c552e68b6d2061024e4429f0386f43a35ef5e4d2940655692e.zip"
     },
     "Handler": "index.handler",
     "Role": {
@@ -255,7 +255,7 @@
          "Arn"
         ]
        },
-       "\\\"}],\\\"Version\\\":\\\"2012-10-17\\\"}\"},\"physicalResourceId\":{\"id\":\"EventsLogGroupPolicyloggroupeventsCustomRule99E1EEF6\"}}"
+       "\\\"}],\\\"Version\\\":\\\"2012-10-17\\\"}\"},\"physicalResourceId\":{\"id\":\"EventsLogGroupPolicyloggroupeventsCustomRule99E1EEF6\"},\"logApiResponseData\":true}"
       ]
      ]
     },
@@ -270,11 +270,11 @@
          "Arn"
         ]
        },
-       "\\\"}],\\\"Version\\\":\\\"2012-10-17\\\"}\"},\"physicalResourceId\":{\"id\":\"EventsLogGroupPolicyloggroupeventsCustomRule99E1EEF6\"}}"
+       "\\\"}],\\\"Version\\\":\\\"2012-10-17\\\"}\"},\"physicalResourceId\":{\"id\":\"EventsLogGroupPolicyloggroupeventsCustomRule99E1EEF6\"},\"logApiResponseData\":true}"
       ]
      ]
     },
-    "Delete": "{\"service\":\"CloudWatchLogs\",\"action\":\"deleteResourcePolicy\",\"parameters\":{\"policyName\":\"loggroupeventsEventsLogGroupPolicyloggroupeventsCustomRule99E1EEF62FFABD78\"},\"ignoreErrorCodesMatching\":\"ResourceNotFoundException\"}",
+    "Delete": "{\"service\":\"CloudWatchLogs\",\"action\":\"deleteResourcePolicy\",\"parameters\":{\"policyName\":\"loggroupeventsEventsLogGroupPolicyloggroupeventsCustomRule99E1EEF62FFABD78\"},\"ignoreErrorCodesMatching\":\"ResourceNotFoundException\",\"logApiResponseData\":true}",
     "InstallLatestAwsSdk": "false"
    },
    "DependsOn": [
@@ -381,7 +381,7 @@
        {
         "Ref": "AWS::AccountId"
        },
-       ":log-group:MyLogGroupNameToBeImported:*\\\"}],\\\"Version\\\":\\\"2012-10-17\\\"}\"},\"physicalResourceId\":{\"id\":\"EventsLogGroupPolicyloggroupeventsTimer37DF74C17\"}}"
+       ":log-group:MyLogGroupNameToBeImported:*\\\"}],\\\"Version\\\":\\\"2012-10-17\\\"}\"},\"physicalResourceId\":{\"id\":\"EventsLogGroupPolicyloggroupeventsTimer37DF74C17\"},\"logApiResponseData\":true}"
       ]
      ]
     },
@@ -401,11 +401,11 @@
        {
         "Ref": "AWS::AccountId"
        },
-       ":log-group:MyLogGroupNameToBeImported:*\\\"}],\\\"Version\\\":\\\"2012-10-17\\\"}\"},\"physicalResourceId\":{\"id\":\"EventsLogGroupPolicyloggroupeventsTimer37DF74C17\"}}"
+       ":log-group:MyLogGroupNameToBeImported:*\\\"}],\\\"Version\\\":\\\"2012-10-17\\\"}\"},\"physicalResourceId\":{\"id\":\"EventsLogGroupPolicyloggroupeventsTimer37DF74C17\"},\"logApiResponseData\":true}"
       ]
      ]
     },
-    "Delete": "{\"service\":\"CloudWatchLogs\",\"action\":\"deleteResourcePolicy\",\"parameters\":{\"policyName\":\"loggroupeventsEventsLogGroupPolicyloggroupeventsTimer37DF74C17EF314A8E\"},\"ignoreErrorCodesMatching\":\"ResourceNotFoundException\"}",
+    "Delete": "{\"service\":\"CloudWatchLogs\",\"action\":\"deleteResourcePolicy\",\"parameters\":{\"policyName\":\"loggroupeventsEventsLogGroupPolicyloggroupeventsTimer37DF74C17EF314A8E\"},\"ignoreErrorCodesMatching\":\"ResourceNotFoundException\",\"logApiResponseData\":true}",
     "InstallLatestAwsSdk": "false"
    },
    "DependsOn": [

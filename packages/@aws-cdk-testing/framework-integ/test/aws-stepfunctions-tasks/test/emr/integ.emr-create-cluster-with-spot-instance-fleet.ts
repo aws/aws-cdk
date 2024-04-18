@@ -1,5 +1,5 @@
 import * as sfn from 'aws-cdk-lib/aws-stepfunctions';
-import { App, Stack } from 'aws-cdk-lib';
+import { App, Duration, Stack } from 'aws-cdk-lib';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { EmrCreateCluster } from 'aws-cdk-lib/aws-stepfunctions-tasks';
 
@@ -20,7 +20,7 @@ const step = new EmrCreateCluster(stack, 'EmrCreateCluster', {
         spotSpecification: {
           allocationStrategy: EmrCreateCluster.SpotAllocationStrategy.CAPACITY_OPTIMIZED,
           timeoutAction: EmrCreateCluster.SpotTimeoutAction.TERMINATE_CLUSTER,
-          timeoutDurationMinutes: 60,
+          timeout: Duration.minutes(60),
         },
       },
       name: 'Master',

@@ -22,7 +22,7 @@ import { NamespaceType } from '../../../aws-servicediscovery';
 import { Duration, Stack } from '../../../core';
 import { ApplicationMultipleTargetGroupsEc2Service, NetworkMultipleTargetGroupsEc2Service } from '../../lib';
 
-describe('When Application Load Balancer', () => {
+describe('ApplicationMultipleTargetGroupsEc2Service', () => {
   test('test ECS ALB construct with default settings', () => {
     // GIVEN
     const stack = new Stack();
@@ -274,6 +274,10 @@ describe('When Application Load Balancer', () => {
         CertificateArn: 'helloworld',
       }],
       SslPolicy: SslPolicy.TLS12_EXT,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+      Name: 'lb',
     });
   });
 
@@ -889,7 +893,7 @@ describe('When Application Load Balancer', () => {
   });
 });
 
-describe('When Network Load Balancer', () => {
+describe('NetworkMultipleTargetGroupsEc2Service', () => {
   test('test ECS NLB construct with default settings', () => {
     // GIVEN
     const stack = new Stack();

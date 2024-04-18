@@ -2,7 +2,7 @@ import { IConstruct } from 'constructs';
 import { captureStackTrace, DefaultTokenResolver, IPostProcessor, IResolvable, IResolveContext, Lazy, StringConcat, Token, Tokenization } from '../../../core';
 import { IPolicy } from '../policy';
 
-const MAX_POLICY_NAME_LEN = 128;
+export const MAX_POLICY_NAME_LEN = 128;
 
 export const LITERAL_STRING_KEY = 'LiteralString';
 

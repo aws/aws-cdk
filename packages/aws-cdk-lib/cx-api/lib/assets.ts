@@ -20,6 +20,7 @@ export const ASSET_RESOURCE_METADATA_IS_BUNDLED_KEY = 'aws:asset:is-bundled';
 export const ASSET_RESOURCE_METADATA_DOCKER_OUTPUTS_KEY = 'aws:asset:docker-outputs';
 export const ASSET_RESOURCE_METADATA_DOCKER_CACHE_FROM_KEY = 'aws:asset:docker-cache-from';
 export const ASSET_RESOURCE_METADATA_DOCKER_CACHE_TO_KEY = 'aws:asset:docker-cache-to';
+export const ASSET_RESOURCE_METADATA_DOCKER_CACHE_DISABLED_KEY = 'aws:asset:docker-cache-disabled';
 
 /**
  * Separator string that separates the prefix separator from the object key separator.

@@ -78,6 +78,21 @@ describe('IAM Role.fromRoleArn', () => {
           expect(stack2PolicyNameCapture.asString()).toMatch(/PolicyRoleStack2ImportedRole.*/);
         });
 
+        test('Policy name is truncated to a maximum length of 128 characters when the original name exceeds this limit', () => {
+          const appWithFeatureFlag = new App({ context: { [IAM_IMPORTED_ROLE_STACK_SAFE_DEFAULT_POLICY_NAME]: true } });
+          const roleStack1 = new Stack(appWithFeatureFlag, 'RoleStack1');
+
+          const tooLongString = 'x'.repeat(150);
+          const importedRoleInStack = Role.fromRoleArn(roleStack1, `ImportedRole${tooLongString}`,
+            `arn:aws:iam::${roleAccount}:role/${roleName}`);
+          importedRoleInStack.addToPrincipalPolicy(somePolicyStatement());
+
+          const stackPolicyNameCapture = new Capture();
+          Template.fromStack(roleStack1).hasResourceProperties('AWS::IAM::Policy', { PolicyName: stackPolicyNameCapture });
+
+          expect(stackPolicyNameCapture.asString()).toHaveLength(128);
+        });
+
         test('the same role imported in different stacks has the same default policy name without flag', () => {
           const appWithoutFeatureFlag = new App({ context: { [IAM_IMPORTED_ROLE_STACK_SAFE_DEFAULT_POLICY_NAME]: false } });
           const roleStack1 = new Stack(appWithoutFeatureFlag, 'RoleStack1');

@@ -673,6 +673,71 @@
               "version": "10.3.0"
             }
           },
+          "SecurityGroup": {
+            "id": "SecurityGroup",
+            "path": "aws-ecs-integ-lb-fargate-cmd-entrypoint-test/SecurityGroup",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-ecs-integ-lb-fargate-cmd-entrypoint-test/SecurityGroup/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
+                  "aws:cdk:cloudformation:props": {
+                    "groupDescription": "aws-ecs-integ-lb-fargate-cmd-entrypoint-test/SecurityGroup",
+                    "securityGroupIngress": [
+                      {
+                        "cidrIp": "0.0.0.0/0",
+                        "ipProtocol": "tcp",
+                        "fromPort": 80,
+                        "toPort": 80,
+                        "description": "from 0.0.0.0/0:80"
+                      }
+                    ],
+                    "vpcId": {
+                      "Ref": "Vpc8378EB38"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_ec2.CfnSecurityGroup",
+                  "version": "0.0.0"
+                }
+              },
+              "to awsecsinteglbfargatecmdentrypointtestALBFargateServiceWithCommandAndEntryPointServiceSecurityGroup6D1E5F11:80": {
+                "id": "to awsecsinteglbfargatecmdentrypointtestALBFargateServiceWithCommandAndEntryPointServiceSecurityGroup6D1E5F11:80",
+                "path": "aws-ecs-integ-lb-fargate-cmd-entrypoint-test/SecurityGroup/to awsecsinteglbfargatecmdentrypointtestALBFargateServiceWithCommandAndEntryPointServiceSecurityGroup6D1E5F11:80",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroupEgress",
+                  "aws:cdk:cloudformation:props": {
+                    "description": "Load balancer to target",
+                    "destinationSecurityGroupId": {
+                      "Fn::GetAtt": [
+                        "ALBFargateServiceWithCommandAndEntryPointServiceSecurityGroupD154E880",
+                        "GroupId"
+                      ]
+                    },
+                    "fromPort": 80,
+                    "groupId": {
+                      "Fn::GetAtt": [
+                        "SecurityGroupDD263621",
+                        "GroupId"
+                      ]
+                    },
+                    "ipProtocol": "tcp",
+                    "toPort": 80
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_ec2.CfnSecurityGroupEgress",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_ec2.SecurityGroup",
+              "version": "0.0.0"
+            }
+          },
           "ALBFargateServiceWithCommandAndEntryPoint": {
             "id": "ALBFargateServiceWithCommandAndEntryPoint",
             "path": "aws-ecs-integ-lb-fargate-cmd-entrypoint-test/ALBFargateServiceWithCommandAndEntryPoint",
@@ -698,6 +763,12 @@
                           {
                             "Fn::GetAtt": [
                               "ALBFargateServiceWithCommandAndEntryPointLBSecurityGroupD7099797",
+                              "GroupId"
+                            ]
+                          },
+                          {
+                            "Fn::GetAtt": [
+                              "SecurityGroupDD263621",
                               "GroupId"
                             ]
                           }
@@ -932,15 +1003,14 @@
                         "containerDefinitions": [
                           {
                             "command": [
-                              "/usr/sbin/apache2",
-                              "-D",
-                              "FOREGROUND"
+                              "/bin/sh -c \"echo '<html><h1>Amazon ECS Sample App</h1></html>' >  /usr/local/apache2/htdocs/index.html && httpd-foreground\""
                             ],
                             "entryPoint": [
-                              "/bin/bash"
+                              "sh",
+                              "-c"
                             ],
                             "essential": true,
-                            "image": "amazon/amazon-ecs-sample",
+                            "image": "public.ecr.aws/docker/library/httpd:2.4",
                             "name": "web",
                             "portMappings": [
                               {
@@ -1231,6 +1301,35 @@
                         "constructInfo": {
                           "fqn": "constructs.Construct",
                           "version": "10.3.0"
+                        }
+                      },
+                      "from awsecsinteglbfargatecmdentrypointtestSecurityGroupECF7922B:80": {
+                        "id": "from awsecsinteglbfargatecmdentrypointtestSecurityGroupECF7922B:80",
+                        "path": "aws-ecs-integ-lb-fargate-cmd-entrypoint-test/ALBFargateServiceWithCommandAndEntryPoint/Service/SecurityGroup/from awsecsinteglbfargatecmdentrypointtestSecurityGroupECF7922B:80",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroupIngress",
+                          "aws:cdk:cloudformation:props": {
+                            "description": "Load balancer to target",
+                            "fromPort": 80,
+                            "groupId": {
+                              "Fn::GetAtt": [
+                                "ALBFargateServiceWithCommandAndEntryPointServiceSecurityGroupD154E880",
+                                "GroupId"
+                              ]
+                            },
+                            "ipProtocol": "tcp",
+                            "sourceSecurityGroupId": {
+                              "Fn::GetAtt": [
+                                "SecurityGroupDD263621",
+                                "GroupId"
+                              ]
+                            },
+                            "toPort": 80
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_ec2.CfnSecurityGroupIngress",
+                          "version": "0.0.0"
                         }
                       }
                     },

@@ -4,11 +4,17 @@ import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as cdk from 'aws-cdk-lib';
 import * as cpactions from 'aws-cdk-lib/aws-codepipeline-actions';
 
-const app = new cdk.App();
+const app = new cdk.App({
+  postCliContext: {
+    '@aws-cdk/aws-codepipeline:defaultPipelineTypeToV2': false,
+  },
+});
 
 const stack = new cdk.Stack(app, 'aws-cdk-codepipeline-cloudformation');
 
-const pipeline = new codepipeline.Pipeline(stack, 'Pipeline');
+const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
+  crossAccountKeys: true,
+});
 
 const bucket = new s3.Bucket(stack, 'PipelineBucket', {
   versioned: true,

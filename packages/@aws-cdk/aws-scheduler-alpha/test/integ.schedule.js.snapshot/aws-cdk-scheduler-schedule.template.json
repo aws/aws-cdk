@@ -383,13 +383,13 @@
   "ScheduleWithTimeFrameC1C8BDCC": {
    "Type": "AWS::Scheduler::Schedule",
    "Properties": {
-    "EndDate": "2025-10-01T00:00:00.000Z",
+    "EndDate": "2026-10-01T00:00:00.000Z",
     "FlexibleTimeWindow": {
      "Mode": "OFF"
     },
     "ScheduleExpression": "rate(12 hours)",
     "ScheduleExpressionTimezone": "Etc/UTC",
-    "StartDate": "2024-04-15T06:30:00.000Z",
+    "StartDate": "2025-04-15T06:30:00.000Z",
     "State": "ENABLED",
     "Target": {
      "Arn": {

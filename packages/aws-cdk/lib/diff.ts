@@ -1,7 +1,17 @@
+import { format } from 'util';
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
-import * as cfnDiff from '@aws-cdk/cloudformation-diff';
+import {
+  type DescribeChangeSetOutput,
+  type FormatStream,
+  type TemplateDiff,
+  formatDifferences,
+  formatSecurityChanges,
+  fullDiff,
+  mangleLikeCloudFormation,
+} from '@aws-cdk/cloudformation-diff';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as chalk from 'chalk';
+import { NestedStackTemplates } from './api/nested-stack-helpers';
 import { print, warning } from './logging';
 
 /**
@@ -13,7 +23,7 @@ import { print, warning } from './logging';
  * @param context     lines of context to use in arbitrary JSON diff
  * @param quiet       silences \'There were no differences\' messages
  *
- * @returns the count of differences that were rendered.
+ * @returns the number of stacks in this stack tree that have differences, including the top-level root stack
  */
 export function printStackDiff(
   oldTemplate: any,
@@ -21,15 +31,18 @@ export function printStackDiff(
   strict: boolean,
   context: number,
   quiet: boolean,
-  stream?: cfnDiff.FormatStream): number {
+  changeSet?: DescribeChangeSetOutput,
+  isImport?: boolean,
+  stream: FormatStream = process.stderr,
+  nestedStackTemplates?: { [nestedStackLogicalId: string]: NestedStackTemplates }): number {
 
-  let diff = cfnDiff.diffTemplate(oldTemplate, newTemplate.template);
+  let diff = fullDiff(oldTemplate, newTemplate.template, changeSet, isImport);
 
   // detect and filter out mangled characters from the diff
   let filteredChangesCount = 0;
   if (diff.differenceCount && !strict) {
-    const mangledNewTemplate = JSON.parse(cfnDiff.mangleLikeCloudFormation(JSON.stringify(newTemplate.template)));
-    const mangledDiff = cfnDiff.diffTemplate(oldTemplate, mangledNewTemplate);
+    const mangledNewTemplate = JSON.parse(mangleLikeCloudFormation(JSON.stringify(newTemplate.template)));
+    const mangledDiff = fullDiff(oldTemplate, mangledNewTemplate, changeSet);
     filteredChangesCount = Math.max(0, diff.differenceCount - mangledDiff.differenceCount);
     if (filteredChangesCount > 0) {
       diff = mangledDiff;
@@ -46,8 +59,10 @@ export function printStackDiff(
     });
   }
 
+  let stackDiffCount = 0;
   if (!diff.isEmpty) {
-    cfnDiff.formatDifferences(stream || process.stderr, diff, {
+    stackDiffCount++;
+    formatDifferences(stream, diff, {
       ...logicalIdMapFromTemplate(oldTemplate),
       ...buildLogicalToPathMap(newTemplate),
     }, context);
@@ -58,7 +73,30 @@ export function printStackDiff(
     print(chalk.yellow(`Omitted ${filteredChangesCount} changes because they are likely mangled non-ASCII characters. Use --strict to print them.`));
   }
 
-  return diff.differenceCount;
+  for (const nestedStackLogicalId of Object.keys(nestedStackTemplates ?? {})) {
+    if (!nestedStackTemplates) {
+      break;
+    }
+    const nestedStack = nestedStackTemplates[nestedStackLogicalId];
+    if (!quiet) {
+      stream.write(format('Stack %s\n', chalk.bold(nestedStack.physicalName ?? nestedStackLogicalId)));
+    }
+
+    (newTemplate as any)._template = nestedStack.generatedTemplate;
+    stackDiffCount += printStackDiff(
+      nestedStack.deployedTemplate,
+      newTemplate,
+      strict,
+      context,
+      quiet,
+      undefined,
+      isImport,
+      stream,
+      nestedStack.nestedStackTemplates,
+    );
+  }
+
+  return stackDiffCount;
 }
 
 export enum RequireApproval {
@@ -66,7 +104,7 @@ export enum RequireApproval {
 
   AnyChange = 'any-change',
 
-  Broadening = 'broadening'
+  Broadening = 'broadening',
 }
 
 /**
@@ -74,15 +112,20 @@ export enum RequireApproval {
  *
  * Returns true if the changes are prompt-worthy, false otherwise.
  */
-export function printSecurityDiff(oldTemplate: any, newTemplate: cxapi.CloudFormationStackArtifact, requireApproval: RequireApproval): boolean {
-  const diff = cfnDiff.diffTemplate(oldTemplate, newTemplate.template);
+export function printSecurityDiff(
+  oldTemplate: any,
+  newTemplate: cxapi.CloudFormationStackArtifact,
+  requireApproval: RequireApproval,
+  changeSet?: DescribeChangeSetOutput,
+): boolean {
+  const diff = fullDiff(oldTemplate, newTemplate.template, changeSet);
 
   if (difRequiresApproval(diff, requireApproval)) {
     // eslint-disable-next-line max-len
     warning(`This deployment will make potentially sensitive changes according to your current security approval level (--require-approval ${requireApproval}).`);
     warning('Please confirm you intend to make the following modifications:\n');
 
-    cfnDiff.formatSecurityChanges(process.stdout, diff, buildLogicalToPathMap(newTemplate));
+    formatSecurityChanges(process.stdout, diff, buildLogicalToPathMap(newTemplate));
     return true;
   }
   return false;
@@ -94,7 +137,7 @@ export function printSecurityDiff(oldTemplate: any, newTemplate: cxapi.CloudForm
  * TODO: Filter the security impact determination based off of an enum that allows
  * us to pick minimum "severities" to alert on.
  */
-function difRequiresApproval(diff: cfnDiff.TemplateDiff, requireApproval: RequireApproval) {
+function difRequiresApproval(diff: TemplateDiff, requireApproval: RequireApproval) {
   switch (requireApproval) {
     case RequireApproval.Never: return false;
     case RequireApproval.AnyChange: return diff.permissionsAnyChanges;

@@ -758,7 +758,7 @@
      ]
     },
     "Config": {
-     "version": "1.22",
+     "version": "1.29",
      "roleArn": {
       "Fn::GetAtt": [
        "integrationtesteksclusterRole03F70AF0",
@@ -1052,7 +1052,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/d4ba2457356cf0ed1548fac5ab02d75047d54b3bf0003b675975cddfe75de3a0.json"
+       "/56d32a23a20460722b6c4ddfe19a3fca824e35b790713d105a0b63a3e0be4153.json"
       ]
      ]
     }
@@ -1099,7 +1099,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/145c3308d8105b2039aa5d38c331857b285099504affd984d8f255739d4db58f.json"
+       "/b3bdd9ffa84737119f0788af28e60331e7e8fd3c237d05e9ce650b4e57295a7f.json"
       ]
      ]
     }
@@ -1216,7 +1216,7 @@
          "Id"
         ]
        },
-       "\"},\"outputPaths\":[\"virtualCluster.containerProvider.info.eksInfo.namespace\",\"virtualCluster.containerProvider.id\"],\"physicalResourceId\":{\"id\":\"id\"}}"
+       "\"},\"outputPaths\":[\"virtualCluster.containerProvider.info.eksInfo.namespace\",\"virtualCluster.containerProvider.id\"],\"physicalResourceId\":{\"id\":\"id\"},\"logApiResponseData\":true}"
       ]
      ]
     },
@@ -1256,7 +1256,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "3fb6287214999ddeafa7cd0e3e58bc5144c8678bb720f3b5e45e8fd32f333eb3.zip"
+     "S3Key": "3322b7049fb0ed2b7cbb644a2ada8d1116ff80c32dca89e6ada846b5de26f961.zip"
     },
     "Description": "/opt/awscli/aws"
    }
@@ -1341,7 +1341,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "8e06cc8057c9c50dcd656ff09f233c37bb22f550f4bef763c9f9916df0e62484.zip"
+     "S3Key": "15197a5512179542fe2cff74af89bb047793c9c4e0b4395f114641a81cd52ae5.zip"
     },
     "Description": "AWS CDK resource provider framework - onEvent (aws-stepfunctions-tasks-emr-containers-start-job-run/Start a Job Run/CustomResourceProvider)",
     "Environment": {
@@ -1435,7 +1435,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "b0de6372e1c756b7afa1a8a1d0a21ee4cd330150290abffc9bc163f285150514.zip"
+     "S3Key": "6c34b6e864223e202d50bb862e2bf066393d4cdf36229f8e1646425a5224a10b.zip"
     },
     "Handler": "index.handler",
     "Role": {

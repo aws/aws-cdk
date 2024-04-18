@@ -690,7 +690,11 @@
          "Port": 80
         }
        ],
-       "PortName": "api"
+       "PortName": "api",
+       "Timeout": {
+        "IdleTimeoutSeconds": 30,
+        "PerRequestTimeoutSeconds": 30
+       }
       }
      ]
     },

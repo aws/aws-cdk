@@ -20,15 +20,19 @@ type GoodGoStack struct {
 	S3BucketSecureUrl interface{} // TODO: fix to appropriate type
 }
 
-func NewGoodGoStack(scope constructs.Construct, id string, props GoodGoStackProps) *GoodGoStack {
-	stack := cdk.NewStack(scope, &id, &props.StackProps)
+func NewGoodGoStack(scope constructs.Construct, id string, props *GoodGoStackProps) *GoodGoStack {
+	var sprops cdk.StackProps
+	if props != nil {
+		sprops = props.StackProps
+	}
+	stack := cdk.NewStack(scope, &id, &sprops)
 
 	s3Bucket := s3.NewCfnBucket(
 		stack,
 		jsii.String("S3Bucket"),
 		&s3.CfnBucketProps{
 			AccessControl: jsii.String("PublicRead"),
-			WebsiteConfiguration: &WebsiteConfiguration/* FIXME */{
+			WebsiteConfiguration: &WebsiteConfigurationProperty{
 				IndexDocument: jsii.String("index.html"),
 				ErrorDocument: jsii.String("error.html"),
 			},

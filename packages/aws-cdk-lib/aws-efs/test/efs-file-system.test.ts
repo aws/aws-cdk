@@ -4,7 +4,7 @@ import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import { App, RemovalPolicy, Size, Stack, Tags } from '../../core';
 import * as cxapi from '../../cx-api';
-import { FileSystem, LifecyclePolicy, PerformanceMode, ThroughputMode, OutOfInfrequentAccessPolicy } from '../lib';
+import { FileSystem, LifecyclePolicy, PerformanceMode, ThroughputMode, OutOfInfrequentAccessPolicy, ReplicationOverwriteProtection } from '../lib';
 
 let stack = new Stack();
 let vpc = new ec2.Vpc(stack, 'VPC');
@@ -108,12 +108,13 @@ test('file system is created correctly with a life cycle property', () => {
   });
 });
 
-test('file system is created correctly with a life cycle property and out of infrequent access property', () => {
+test('file system LifecyclePolicies is created correctly', () => {
   // WHEN
   new FileSystem(stack, 'EfsFileSystem', {
     vpc,
     lifecyclePolicy: LifecyclePolicy.AFTER_7_DAYS,
     outOfInfrequentAccessPolicy: OutOfInfrequentAccessPolicy.AFTER_1_ACCESS,
+    transitionToArchivePolicy: LifecyclePolicy.AFTER_14_DAYS,
   });
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::EFS::FileSystem', {
@@ -123,6 +124,25 @@ test('file system is created correctly with a life cycle property and out of inf
       },
       {
         TransitionToPrimaryStorageClass: 'AFTER_1_ACCESS',
+      },
+      {
+        TransitionToArchive: 'AFTER_14_DAYS',
+      },
+    ],
+  });
+});
+
+test('file system with transition to archive is created correctly', () => {
+  // WHEN
+  new FileSystem(stack, 'EfsFileSystem', {
+    vpc,
+    transitionToArchivePolicy: LifecyclePolicy.AFTER_1_DAY,
+  });
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::EFS::FileSystem', {
+    LifecyclePolicies: [
+      {
+        TransitionToArchive: 'AFTER_1_DAY',
       },
     ],
   });
@@ -872,6 +892,69 @@ test('anonymous access is prohibited by the @aws-cdk/aws-efs:denyAnonymousAccess
           },
         },
       ],
+    },
+  });
+});
+
+test('specify availabilityZoneName to create mount targets in a specific AZ', () => {
+  // WHEN
+  new FileSystem(stack, 'EfsFileSystem', {
+    vpc,
+    oneZone: true,
+  });
+
+  // THEN
+  const template = Template.fromStack(stack);
+  template.hasResourceProperties('AWS::EFS::FileSystem', {
+    AvailabilityZoneName: {
+      'Fn::Select': [
+        0,
+        {
+          'Fn::GetAZs': '',
+        },
+      ],
+    },
+  });
+
+  // make sure only one mount target is created.
+  template.resourceCountIs('AWS::EFS::MountTarget', 1);
+});
+
+test('one zone file system with MAX_IO performance mode is not supported', () => {
+  // THEN
+  expect(() => {
+    new FileSystem(stack, 'EfsFileSystem', {
+      vpc,
+      oneZone: true,
+      performanceMode: PerformanceMode.MAX_IO,
+    });
+  }).toThrow(/performanceMode MAX_IO is not supported for One Zone file systems./);
+});
+
+test('one zone file system with vpcSubnets is not supported', () => {
+  // THEN
+  expect(() => {
+    new FileSystem(stack, 'EfsFileSystem', {
+      vpc,
+      oneZone: true,
+      vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
+    });
+  }).toThrow(/vpcSubnets cannot be specified when oneZone is enabled./);
+});
+
+test.each([
+  ReplicationOverwriteProtection.ENABLED, ReplicationOverwriteProtection.DISABLED,
+])('create read-only file system for replication destination', ( replicationOverwriteProtection ) => {
+  // WHEN
+  new FileSystem(stack, 'EfsFileSystem', {
+    vpc,
+    replicationOverwriteProtection,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::EFS::FileSystem', {
+    FileSystemProtection: {
+      ReplicationOverwriteProtection: replicationOverwriteProtection,
     },
   });
 });

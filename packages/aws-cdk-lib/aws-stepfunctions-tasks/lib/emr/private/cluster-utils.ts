@@ -105,6 +105,10 @@ export function EbsConfigurationPropertyToJson(property: EmrCreateCluster.EbsCon
  * @param property
  */
 export function InstanceTypeConfigPropertyToJson(property: EmrCreateCluster.InstanceTypeConfigProperty) {
+  if (property.bidPrice && property.bidPriceAsPercentageOfOnDemandPrice) {
+    throw new Error('Cannot specify both bidPrice and bidPriceAsPercentageOfOnDemandPrice');
+  }
+
   return {
     BidPrice: cdk.stringToCloudFormation(property.bidPrice),
     BidPriceAsPercentageOfOnDemandPrice: cdk.numberToCloudFormation(property.bidPriceAsPercentageOfOnDemandPrice),
@@ -122,12 +126,44 @@ export function InstanceTypeConfigPropertyToJson(property: EmrCreateCluster.Inst
  */
 export function InstanceFleetProvisioningSpecificationsPropertyToJson(property: EmrCreateCluster.InstanceFleetProvisioningSpecificationsProperty) {
   return {
-    SpotSpecification: {
-      AllocationStrategy: cdk.stringToCloudFormation(property.spotSpecification.allocationStrategy),
-      BlockDurationMinutes: cdk.numberToCloudFormation(property.spotSpecification.blockDurationMinutes),
-      TimeoutAction: cdk.stringToCloudFormation(property.spotSpecification.timeoutAction?.valueOf()),
-      TimeoutDurationMinutes: cdk.numberToCloudFormation(property.spotSpecification.timeoutDurationMinutes),
-    },
+    OnDemandSpecification: OnDemandProvisioningSpecificationPropertyToJson(property.onDemandSpecification),
+    SpotSpecification: SpotProvisioningSpecificationPropertyToJson(property.spotSpecification),
+  };
+}
+
+/**
+ * Render the OnDemandProvisioningSpecificationProperty to JSON
+ */
+function OnDemandProvisioningSpecificationPropertyToJson(property?: EmrCreateCluster.OnDemandProvisioningSpecificationProperty) {
+  if (!property) {
+    return undefined;
+  }
+  return {
+    AllocationStrategy: cdk.stringToCloudFormation(property.allocationStrategy),
+  };
+}
+
+/**
+ * Render the SpotProvisioningSpecificationProperty to JSON
+ */
+function SpotProvisioningSpecificationPropertyToJson(property?: EmrCreateCluster.SpotProvisioningSpecificationProperty) {
+  if (!property) {
+    return undefined;
+  }
+
+  if ((property.timeout && property.timeoutDurationMinutes) || (!property.timeout && !property.timeoutDurationMinutes)) {
+    throw new Error('one of timeout and timeoutDurationMinutes must be specified');
+  }
+  const timeout = property.timeout?.toMinutes() ?? property.timeoutDurationMinutes;
+  if (timeout !== undefined && !cdk.Token.isUnresolved(timeout) && (timeout < 5 || timeout > 1440)) {
+    throw new Error(`timeout must be between 5 and 1440 minutes, got ${timeout} minutes.`);
+  }
+
+  return {
+    AllocationStrategy: cdk.stringToCloudFormation(property.allocationStrategy),
+    BlockDurationMinutes: cdk.numberToCloudFormation(property.blockDurationMinutes),
+    TimeoutAction: cdk.stringToCloudFormation(property.timeoutAction?.valueOf()),
+    TimeoutDurationMinutes: cdk.numberToCloudFormation(property.timeout?.toMinutes() || property.timeoutDurationMinutes),
   };
 }
 
@@ -137,6 +173,20 @@ export function InstanceFleetProvisioningSpecificationsPropertyToJson(property: 
  * @param property
  */
 export function InstanceFleetConfigPropertyToJson(property: EmrCreateCluster.InstanceFleetConfigProperty) {
+  if (!property.targetSpotCapacity && !property.targetOnDemandCapacity) {
+    throw new Error('At least one of targetSpotCapacity and targetOnDemandCapacity should be greater than 0');
+  }
+  if (property.instanceFleetType === EmrCreateCluster.InstanceRoleType.MASTER) {
+    if (property.targetSpotCapacity && property.targetOnDemandCapacity) {
+      throw new Error('For a master instance fleet, only one of targetSpotCapacity and targetOnDemandCapacity can be specified');
+    }
+    if (property.targetSpotCapacity && property.targetSpotCapacity !== 1) {
+      throw new Error(`For a master instance fleet, targetSpotCapacity cannot be a number other than 1, got ${property.targetSpotCapacity}`);
+    }
+    if (property.targetOnDemandCapacity && property.targetOnDemandCapacity !== 1) {
+      throw new Error(`For a master instance fleet, targetOnDemandCapacity cannot be a number other than 1, got ${property.targetOnDemandCapacity}`);
+    }
+  }
   return {
     InstanceFleetType: cdk.stringToCloudFormation(property.instanceFleetType?.valueOf()),
     InstanceTypeConfigs: cdk.listMapper(InstanceTypeConfigPropertyToJson)(property.instanceTypeConfigs),

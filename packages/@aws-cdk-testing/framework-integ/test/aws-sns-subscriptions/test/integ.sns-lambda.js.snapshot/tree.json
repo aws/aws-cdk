@@ -394,6 +394,12 @@
                             },
                             {
                               "prefix": "ye"
+                            },
+                            {
+                              "suffix": "ue"
+                            },
+                            {
+                              "suffix": "ow"
                             }
                           ],
                           "size": [
@@ -572,6 +578,12 @@
                               },
                               {
                                 "prefix": "ye"
+                              },
+                              {
+                                "suffix": "ue"
+                              },
+                              {
+                                "suffix": "ow"
                               }
                             ]
                           }
@@ -627,7 +639,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.2.70"
+          "version": "10.3.0"
         }
       }
     },

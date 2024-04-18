@@ -343,6 +343,30 @@ describe('log retention', () => {
   });
 });
 
+it('can specify log group', () => {
+  // GIVEN
+  const stack = new Stack();
+
+  // WHEN
+  new cr.Provider(stack, 'MyProvider', {
+    onEventHandler: new lambda.Function(stack, 'MyHandler', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.onEvent',
+      runtime: lambda.Runtime.NODEJS_LATEST,
+    }),
+    logGroup: new logs.LogGroup(stack, 'LogGroup', {
+      logGroupName: '/test/log/group/name',
+      retention: logs.RetentionDays.ONE_WEEK,
+    }),
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Logs::LogGroup', {
+    LogGroupName: '/test/log/group/name',
+    RetentionInDays: 7,
+  });
+});
+
 describe('role', () => {
   it('uses custom role when present', () => {
     // GIVEN

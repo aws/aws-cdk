@@ -1,5 +1,5 @@
 {
-  "version": "35.0.0",
+  "version": "36.0.0",
   "artifacts": {
     "aws-ecs-integ-alb-ec2-cmd-entrypoint.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/2b5477517bdda581a8710a2e90e15caace7bfc45047b6b47fd8e4ac07ec4d8b8.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/96f1b91e7a099b720d86b3b88d975d45b769d67efd878163f884b12c11d81887.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -184,10 +184,10 @@
             "data": "Ec2Cluster56240A3A"
           }
         ],
-        "/aws-ecs-integ-alb-ec2-cmd-entrypoint/AutoScalingGroup/InstanceSecurityGroup/Resource": [
+        "/aws-ecs-integ-alb-ec2-cmd-entrypoint/SecurityGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AutoScalingGroupInstanceSecurityGroup9D2E0C5E"
+            "data": "SecurityGroupDD263621"
           }
         ],
         "/aws-ecs-integ-alb-ec2-cmd-entrypoint/AutoScalingGroup/InstanceRole/Resource": [
@@ -208,10 +208,10 @@
             "data": "AutoScalingGroupInstanceProfile342FAC7C"
           }
         ],
-        "/aws-ecs-integ-alb-ec2-cmd-entrypoint/AutoScalingGroup/LaunchConfig": [
+        "/aws-ecs-integ-alb-ec2-cmd-entrypoint/AutoScalingGroup/LaunchTemplate/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AutoScalingGroupLaunchConfigDEEB160C"
+            "data": "AutoScalingGroupLaunchTemplateCE2B3AFE"
           }
         ],
         "/aws-ecs-integ-alb-ec2-cmd-entrypoint/AutoScalingGroup/ASG": [

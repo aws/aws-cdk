@@ -1,0 +1,303 @@
+{
+ "Resources": {
+  "VPCB9E5F0B4": {
+   "Type": "AWS::EC2::VPC",
+   "Properties": {
+    "CidrBlock": "10.0.0.0/16",
+    "EnableDnsHostnames": true,
+    "EnableDnsSupport": true,
+    "InstanceTenancy": "default",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-nlb-dualstack-internal/VPC"
+     }
+    ]
+   }
+  },
+  "VPCIsolatedSubnet1SubnetEBD00FC6": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AssignIpv6AddressOnCreation": true,
+    "AvailabilityZone": {
+     "Fn::Select": [
+      0,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "CidrBlock": "10.0.0.0/17",
+    "Ipv6CidrBlock": {
+     "Fn::Select": [
+      0,
+      {
+       "Fn::Cidr": [
+        {
+         "Fn::Select": [
+          0,
+          {
+           "Fn::GetAtt": [
+            "VPCB9E5F0B4",
+            "Ipv6CidrBlocks"
+           ]
+          }
+         ]
+        },
+        256,
+        "64"
+       ]
+      }
+     ]
+    },
+    "MapPublicIpOnLaunch": false,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "Isolated"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Isolated"
+     },
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-nlb-dualstack-internal/VPC/IsolatedSubnet1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    }
+   },
+   "DependsOn": [
+    "IPv6Block"
+   ]
+  },
+  "VPCIsolatedSubnet1RouteTableEB156210": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-nlb-dualstack-internal/VPC/IsolatedSubnet1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    }
+   },
+   "DependsOn": [
+    "IPv6Block"
+   ]
+  },
+  "VPCIsolatedSubnet1RouteTableAssociationA2D18F7C": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "VPCIsolatedSubnet1RouteTableEB156210"
+    },
+    "SubnetId": {
+     "Ref": "VPCIsolatedSubnet1SubnetEBD00FC6"
+    }
+   },
+   "DependsOn": [
+    "IPv6Block"
+   ]
+  },
+  "VPCIsolatedSubnet2Subnet4B1C8CAA": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AssignIpv6AddressOnCreation": true,
+    "AvailabilityZone": {
+     "Fn::Select": [
+      1,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "CidrBlock": "10.0.128.0/17",
+    "Ipv6CidrBlock": {
+     "Fn::Select": [
+      1,
+      {
+       "Fn::Cidr": [
+        {
+         "Fn::Select": [
+          0,
+          {
+           "Fn::GetAtt": [
+            "VPCB9E5F0B4",
+            "Ipv6CidrBlocks"
+           ]
+          }
+         ]
+        },
+        256,
+        "64"
+       ]
+      }
+     ]
+    },
+    "MapPublicIpOnLaunch": false,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "Isolated"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Isolated"
+     },
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-nlb-dualstack-internal/VPC/IsolatedSubnet2"
+     }
+    ],
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    }
+   },
+   "DependsOn": [
+    "IPv6Block"
+   ]
+  },
+  "VPCIsolatedSubnet2RouteTable9B4F78DC": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-nlb-dualstack-internal/VPC/IsolatedSubnet2"
+     }
+    ],
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    }
+   },
+   "DependsOn": [
+    "IPv6Block"
+   ]
+  },
+  "VPCIsolatedSubnet2RouteTableAssociation7BF8E0EB": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "VPCIsolatedSubnet2RouteTable9B4F78DC"
+    },
+    "SubnetId": {
+     "Ref": "VPCIsolatedSubnet2Subnet4B1C8CAA"
+    }
+   },
+   "DependsOn": [
+    "IPv6Block"
+   ]
+  },
+  "IPv6Block": {
+   "Type": "AWS::EC2::VPCCidrBlock",
+   "Properties": {
+    "AmazonProvidedIpv6CidrBlock": true,
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    }
+   }
+  },
+  "LB8A12904C": {
+   "Type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
+   "Properties": {
+    "IpAddressType": "dualstack",
+    "LoadBalancerAttributes": [
+     {
+      "Key": "deletion_protection.enabled",
+      "Value": "false"
+     }
+    ],
+    "Scheme": "internal",
+    "Subnets": [
+     {
+      "Ref": "VPCIsolatedSubnet1SubnetEBD00FC6"
+     },
+     {
+      "Ref": "VPCIsolatedSubnet2Subnet4B1C8CAA"
+     }
+    ],
+    "Type": "network"
+   }
+  },
+  "LBListener49E825B4": {
+   "Type": "AWS::ElasticLoadBalancingV2::Listener",
+   "Properties": {
+    "DefaultActions": [
+     {
+      "TargetGroupArn": {
+       "Ref": "tg2DCFFD86"
+      },
+      "Type": "forward"
+     }
+    ],
+    "LoadBalancerArn": {
+     "Ref": "LB8A12904C"
+    },
+    "Port": 3000,
+    "Protocol": "TCP"
+   }
+  },
+  "tg2DCFFD86": {
+   "Type": "AWS::ElasticLoadBalancingV2::TargetGroup",
+   "Properties": {
+    "HealthCheckIntervalSeconds": 250,
+    "HealthCheckProtocol": "TCP",
+    "HealthCheckTimeoutSeconds": 100,
+    "HealthyThresholdCount": 5,
+    "Port": 3000,
+    "Protocol": "TCP",
+    "UnhealthyThresholdCount": 2,
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    }
+   },
+   "DependsOn": [
+    "VPCIsolatedSubnet1RouteTableEB156210",
+    "VPCIsolatedSubnet1RouteTableAssociationA2D18F7C",
+    "VPCIsolatedSubnet1SubnetEBD00FC6",
+    "VPCIsolatedSubnet2RouteTable9B4F78DC",
+    "VPCIsolatedSubnet2RouteTableAssociation7BF8E0EB",
+    "VPCIsolatedSubnet2Subnet4B1C8CAA"
+   ]
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

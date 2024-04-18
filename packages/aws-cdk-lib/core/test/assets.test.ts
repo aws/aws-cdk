@@ -143,4 +143,29 @@ describe('assets', () => {
     expect(toCloudFormation(stack)).toEqual({ });
 
   });
+
+  test('cached disabled', () => {
+    // WHEN
+    stack.synthesizer.addDockerImageAsset({
+      sourceHash: 'source-hash',
+      directoryName: 'directory-name',
+      dockerCacheDisabled: true,
+    });
+
+    // THEN
+    const assetMetadata = stack.node.metadata.find(({ type }) => type === cxschema.ArtifactMetadataEntryType.ASSET);
+
+    expect(assetMetadata && assetMetadata.data).toBeDefined();
+
+    if (assetMetadata && assetMetadata.data) {
+      const data = assetMetadata.data as cxschema.ContainerImageAssetMetadataEntry;
+      expect(data.packaging).toEqual('container-image');
+      expect(data.path).toEqual('directory-name');
+      expect(data.sourceHash).toEqual('source-hash');
+      expect(data.imageTag).toEqual('source-hash');
+      expect(data.cacheDisabled).toEqual(true);
+    }
+
+    expect(toCloudFormation(stack)).toEqual({ });
+  });
 });

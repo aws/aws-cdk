@@ -77,7 +77,7 @@ export interface StageProps {
    *
    * @default - no validation plugins are used
    */
-  readonly policyValidationBeta1?: IPolicyValidationPluginBeta1[]
+  readonly policyValidationBeta1?: IPolicyValidationPluginBeta1[];
 }
 
 /**

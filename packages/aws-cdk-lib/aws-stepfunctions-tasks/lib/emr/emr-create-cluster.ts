@@ -483,9 +483,14 @@ export namespace EmrCreateCluster {
 
   /**
    * EBS Volume Types
+   * @see https://docs.aws.amazon.com/emr/latest/APIReference/API_VolumeSpecification.html#EMR-Type-VolumeSpecification-VolumeType
    *
    */
   export enum EbsBlockDeviceVolumeType {
+    /**
+     * gp3 Volume Type
+     */
+    GP3 = 'gp3',
     /**
      * gp2 Volume Type
      */
@@ -494,6 +499,14 @@ export namespace EmrCreateCluster {
      * io1 Volume Type
      */
     IO1 = 'io1',
+    /**
+     * st1 Volume Type
+     */
+    ST1 = 'st1',
+    /**
+     * sc1 Volume Type
+     */
+    SC1 = 'sc1',
     /**
      * Standard Volume Type
      */
@@ -582,12 +595,16 @@ export namespace EmrCreateCluster {
     /**
      * The bid price for each EC2 Spot instance type as defined by InstanceType. Expressed in USD.
      *
+     * Cannot specify both `bidPrice` and `bidPriceAsPercentageOfOnDemandPrice`.
+     *
      * @default - None
      */
     readonly bidPrice?: string;
 
     /**
      * The bid price, as a percentage of On-Demand price.
+     *
+     * Cannot specify both `bidPrice` and `bidPriceAsPercentageOfOnDemandPrice`.
      *
      * @default - None
      */
@@ -623,6 +640,36 @@ export namespace EmrCreateCluster {
   }
 
   /**
+   * On-Demand Allocation Strategies
+   *
+   * Specifies the strategy to use in launching On-Demand instance fleets. Currently, the only option is "lowest-price" (the default), which launches the lowest price first.
+   *
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-emr-instancefleetconfig-ondemandprovisioningspecification.html
+   *
+   */
+  export enum OnDemandAllocationStrategy {
+    /**
+     * Lowest-price, which launches instances from the lowest priced pool that has available capacity.
+     */
+    LOWEST_PRICE = 'lowest-price',
+  }
+
+  /**
+   * The launch specification for On-Demand Instances in the instance fleet, which determines the allocation strategy.
+   *
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-emr-instancefleetconfig-ondemandprovisioningspecification.html
+   *
+   */
+  export interface OnDemandProvisioningSpecificationProperty {
+    /**
+     * Specifies the strategy to use in launching On-Demand instance fleets.
+     *
+     * Currently, the only option is lowest-price (the default), which launches the lowest price first.
+     */
+    readonly allocationStrategy: OnDemandAllocationStrategy;
+  }
+
+  /**
    * Spot Timeout Actions
    *
    */
@@ -650,6 +697,20 @@ export namespace EmrCreateCluster {
      * Capacity-optimized, which launches instances from Spot Instance pools with optimal capacity for the number of instances that are launching.
      */
     CAPACITY_OPTIMIZED = 'capacity-optimized',
+    /**
+     * Price-capacity-optimized, which launches instances from Spot Instance pools with the highest capacity availability for the number of instances that are launching.
+     *
+     * Recommended.
+     */
+    PRICE_CAPACITY_OPTIMIZED = 'price-capacity-optimized',
+    /**
+     * Lowest-price, which launches instances from the lowest priced pool that has available capacity.
+     */
+    LOWEST_PRICE = 'lowest-price',
+    /**
+     * Diversified, which launches instances across all Spot capacity pools.
+     */
+    DIVERSIFIED = 'diversified',
   }
 
   /**
@@ -683,21 +744,55 @@ export namespace EmrCreateCluster {
 
     /**
      * The spot provisioning timeout period in minutes.
+     *
+     * The value must be between 5 and 1440 minutes.
+     *
+     * You must specify one of `timeout` and `timeoutDurationMinutes`.
+     *
+     * @default - The value in `timeout` is used
+     *
+     * @deprecated - Use `timeout`.
      */
-    readonly timeoutDurationMinutes: number;
+    readonly timeoutDurationMinutes?: number;
+
+    /**
+     * The spot provisioning timeout period in minutes.
+     *
+     * The value must be between 5 and 1440 minutes.
+     *
+     * You must specify one of `timeout` and `timeoutDurationMinutes`.
+     *
+     * @default - The value in `timeoutDurationMinutes` is used
+     */
+    readonly timeout?: cdk.Duration;
   }
 
   /**
-   * The launch specification for Spot instances in the fleet, which determines the defined duration and provisioning timeout behavior.
+   * The launch specification for On-Demand and Spot instances in the fleet, which determines the defined duration and provisioning timeout behavior, and allocation strategy.
+   *
+   * The instance fleet configuration is available only in Amazon EMR releases 4.8.0 and later, excluding 5.0.x versions.
+   * On-Demand and Spot instance allocation strategies are available in Amazon EMR releases 5.12.1 and later.
    *
    * @see https://docs.aws.amazon.com/emr/latest/APIReference/API_InstanceFleetProvisioningSpecifications.html
    *
    */
   export interface InstanceFleetProvisioningSpecificationsProperty {
     /**
-     * The launch specification for Spot instances in the fleet, which determines the defined duration and provisioning timeout behavior.
+     * The launch specification for On-Demand Instances in the instance fleet, which determines the allocation strategy.
+     *
+     * The instance fleet configuration is available only in Amazon EMR releases 4.8.0 and later, excluding 5.0.x versions.
+     * On-Demand Instances allocation strategy is available in Amazon EMR releases 5.12.1 and later.
+     *
+     * @default - no on-demand specification
      */
-    readonly spotSpecification: SpotProvisioningSpecificationProperty;
+    readonly onDemandSpecification?: OnDemandProvisioningSpecificationProperty;
+
+    /**
+     * The launch specification for Spot instances in the fleet, which determines the defined duration and provisioning timeout behavior.
+     *
+     * @default - no spot specification
+     */
+    readonly spotSpecification?: SpotProvisioningSpecificationProperty;
   }
 
   /**
@@ -736,6 +831,12 @@ export namespace EmrCreateCluster {
     /**
      * The target capacity of On-Demand units for the instance fleet, which determines how many On-Demand instances to provision.
      *
+     * If not specified or set to 0, only Spot Instances are provisioned for the instance fleet using `targetSpotCapacity`.
+     *
+     * At least one of `targetSpotCapacity` and `targetOnDemandCapacity` should be greater than 0.
+     * For a master instance fleet, only one of `targetSpotCapacity` and `targetOnDemandCapacity` can be specified, and its value
+     * must be 1.
+     *
      * @default No targetOnDemandCapacity
      */
     readonly targetOnDemandCapacity?: number;
@@ -743,7 +844,13 @@ export namespace EmrCreateCluster {
     /**
      * The target capacity of Spot units for the instance fleet, which determines how many Spot instances to provision
      *
-     * @default No targetSpotCapacity
+     * If not specified or set to 0, only On-Demand Instances are provisioned for the instance fleet using `targetOnDemandCapacity`.
+     *
+     * At least one of `targetSpotCapacity` and `targetOnDemandCapacity` should be greater than 0.
+     * For a master instance fleet, only one of `targetSpotCapacity` and `targetOnDemandCapacity` can be specified, and its value
+     * must be 1.
+     *
+    * @default No targetSpotCapacity
      */
     readonly targetSpotCapacity?: number;
   }

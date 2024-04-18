@@ -50,8 +50,7 @@ export interface ApplicationMultipleTargetGroupsServiceBaseProps {
   /**
    * The desired number of instantiations of the task definition to keep running on the service.
    *
-   * @default - If the feature flag, ECS_REMOVE_DEFAULT_DESIRED_COUNT is false, the default is 1;
-   * if true, the default is 1 for all new services and uses the existing services desired count
+   * @default - The default is 1 for all new services and uses the existing service's desired count
    * when updating an existing service.
    */
   readonly desiredCount?: number;
@@ -600,6 +599,7 @@ export abstract class ApplicationMultipleTargetGroupsServiceBase extends Constru
       vpc: this.cluster.vpc,
       internetFacing,
       idleTimeout: idleTimeout,
+      loadBalancerName: name,
     };
 
     return new ApplicationLoadBalancer(this, name, lbProps);

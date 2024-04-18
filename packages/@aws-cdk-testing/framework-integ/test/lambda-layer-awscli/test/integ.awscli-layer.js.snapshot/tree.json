@@ -48,7 +48,7 @@
                       "s3Bucket": {
                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "s3Key": "3fb6287214999ddeafa7cd0e3e58bc5144c8678bb720f3b5e45e8fd32f333eb3.zip"
+                      "s3Key": "3322b7049fb0ed2b7cbb644a2ada8d1116ff80c32dca89e6ada846b5de26f961.zip"
                     },
                     "description": "/opt/awscli/aws"
                   }
@@ -61,353 +61,6 @@
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.lambda_layer_awscli.AwsCliLayer",
-              "version": "0.0.0"
-            }
-          },
-          "Lambda$python3.7": {
-            "id": "Lambda$python3.7",
-            "path": "lambda-layer-awscli-integ-stack/Lambda$python3.7",
-            "children": {
-              "ServiceRole": {
-                "id": "ServiceRole",
-                "path": "lambda-layer-awscli-integ-stack/Lambda$python3.7/ServiceRole",
-                "children": {
-                  "ImportServiceRole": {
-                    "id": "ImportServiceRole",
-                    "path": "lambda-layer-awscli-integ-stack/Lambda$python3.7/ServiceRole/ImportServiceRole",
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.Resource",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "Resource": {
-                    "id": "Resource",
-                    "path": "lambda-layer-awscli-integ-stack/Lambda$python3.7/ServiceRole/Resource",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
-                      "aws:cdk:cloudformation:props": {
-                        "assumeRolePolicyDocument": {
-                          "Statement": [
-                            {
-                              "Action": "sts:AssumeRole",
-                              "Effect": "Allow",
-                              "Principal": {
-                                "Service": "lambda.amazonaws.com"
-                              }
-                            }
-                          ],
-                          "Version": "2012-10-17"
-                        },
-                        "managedPolicyArns": [
-                          {
-                            "Fn::Join": [
-                              "",
-                              [
-                                "arn:",
-                                {
-                                  "Ref": "AWS::Partition"
-                                },
-                                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
-                              ]
-                            ]
-                          }
-                        ]
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_iam.Role",
-                  "version": "0.0.0"
-                }
-              },
-              "Code": {
-                "id": "Code",
-                "path": "lambda-layer-awscli-integ-stack/Lambda$python3.7/Code",
-                "children": {
-                  "Stage": {
-                    "id": "Stage",
-                    "path": "lambda-layer-awscli-integ-stack/Lambda$python3.7/Code/Stage",
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.AssetStaging",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "AssetBucket": {
-                    "id": "AssetBucket",
-                    "path": "lambda-layer-awscli-integ-stack/Lambda$python3.7/Code/AssetBucket",
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_s3.BucketBase",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
-                  "version": "0.0.0"
-                }
-              },
-              "Resource": {
-                "id": "Resource",
-                "path": "lambda-layer-awscli-integ-stack/Lambda$python3.7/Resource",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
-                  "aws:cdk:cloudformation:props": {
-                    "code": {
-                      "s3Bucket": {
-                        "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
-                      },
-                      "s3Key": "5dff6208ccd5fb196bb0354fd6e47faa8431a789e6125d20386586fef761ed48.zip"
-                    },
-                    "handler": "index.handler",
-                    "layers": [
-                      {
-                        "Ref": "AwsCliLayerF44AAF94"
-                      }
-                    ],
-                    "memorySize": 512,
-                    "role": {
-                      "Fn::GetAtt": [
-                        "Lambdapython37ServiceRoleB5A704D4",
-                        "Arn"
-                      ]
-                    },
-                    "runtime": "python3.7",
-                    "timeout": 30
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
-                  "version": "0.0.0"
-                }
-              }
-            },
-            "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_lambda.Function",
-              "version": "0.0.0"
-            }
-          },
-          "Providerpython3.7": {
-            "id": "Providerpython3.7",
-            "path": "lambda-layer-awscli-integ-stack/Providerpython3.7",
-            "children": {
-              "framework-onEvent": {
-                "id": "framework-onEvent",
-                "path": "lambda-layer-awscli-integ-stack/Providerpython3.7/framework-onEvent",
-                "children": {
-                  "ServiceRole": {
-                    "id": "ServiceRole",
-                    "path": "lambda-layer-awscli-integ-stack/Providerpython3.7/framework-onEvent/ServiceRole",
-                    "children": {
-                      "ImportServiceRole": {
-                        "id": "ImportServiceRole",
-                        "path": "lambda-layer-awscli-integ-stack/Providerpython3.7/framework-onEvent/ServiceRole/ImportServiceRole",
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.Resource",
-                          "version": "0.0.0"
-                        }
-                      },
-                      "Resource": {
-                        "id": "Resource",
-                        "path": "lambda-layer-awscli-integ-stack/Providerpython3.7/framework-onEvent/ServiceRole/Resource",
-                        "attributes": {
-                          "aws:cdk:cloudformation:type": "AWS::IAM::Role",
-                          "aws:cdk:cloudformation:props": {
-                            "assumeRolePolicyDocument": {
-                              "Statement": [
-                                {
-                                  "Action": "sts:AssumeRole",
-                                  "Effect": "Allow",
-                                  "Principal": {
-                                    "Service": "lambda.amazonaws.com"
-                                  }
-                                }
-                              ],
-                              "Version": "2012-10-17"
-                            },
-                            "managedPolicyArns": [
-                              {
-                                "Fn::Join": [
-                                  "",
-                                  [
-                                    "arn:",
-                                    {
-                                      "Ref": "AWS::Partition"
-                                    },
-                                    ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
-                                  ]
-                                ]
-                              }
-                            ]
-                          }
-                        },
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_iam.CfnRole",
-                          "version": "0.0.0"
-                        }
-                      },
-                      "DefaultPolicy": {
-                        "id": "DefaultPolicy",
-                        "path": "lambda-layer-awscli-integ-stack/Providerpython3.7/framework-onEvent/ServiceRole/DefaultPolicy",
-                        "children": {
-                          "Resource": {
-                            "id": "Resource",
-                            "path": "lambda-layer-awscli-integ-stack/Providerpython3.7/framework-onEvent/ServiceRole/DefaultPolicy/Resource",
-                            "attributes": {
-                              "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
-                              "aws:cdk:cloudformation:props": {
-                                "policyDocument": {
-                                  "Statement": [
-                                    {
-                                      "Action": "lambda:InvokeFunction",
-                                      "Effect": "Allow",
-                                      "Resource": [
-                                        {
-                                          "Fn::GetAtt": [
-                                            "Lambdapython3780349E0A",
-                                            "Arn"
-                                          ]
-                                        },
-                                        {
-                                          "Fn::Join": [
-                                            "",
-                                            [
-                                              {
-                                                "Fn::GetAtt": [
-                                                  "Lambdapython3780349E0A",
-                                                  "Arn"
-                                                ]
-                                              },
-                                              ":*"
-                                            ]
-                                          ]
-                                        }
-                                      ]
-                                    }
-                                  ],
-                                  "Version": "2012-10-17"
-                                },
-                                "policyName": "Providerpython37frameworkonEventServiceRoleDefaultPolicyA9099DC2",
-                                "roles": [
-                                  {
-                                    "Ref": "Providerpython37frameworkonEventServiceRole9EA6B2B0"
-                                  }
-                                ]
-                              }
-                            },
-                            "constructInfo": {
-                              "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
-                              "version": "0.0.0"
-                            }
-                          }
-                        },
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_iam.Policy",
-                          "version": "0.0.0"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_iam.Role",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "Code": {
-                    "id": "Code",
-                    "path": "lambda-layer-awscli-integ-stack/Providerpython3.7/framework-onEvent/Code",
-                    "children": {
-                      "Stage": {
-                        "id": "Stage",
-                        "path": "lambda-layer-awscli-integ-stack/Providerpython3.7/framework-onEvent/Code/Stage",
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.AssetStaging",
-                          "version": "0.0.0"
-                        }
-                      },
-                      "AssetBucket": {
-                        "id": "AssetBucket",
-                        "path": "lambda-layer-awscli-integ-stack/Providerpython3.7/framework-onEvent/Code/AssetBucket",
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_s3.BucketBase",
-                          "version": "0.0.0"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "Resource": {
-                    "id": "Resource",
-                    "path": "lambda-layer-awscli-integ-stack/Providerpython3.7/framework-onEvent/Resource",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
-                      "aws:cdk:cloudformation:props": {
-                        "code": {
-                          "s3Bucket": {
-                            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
-                          },
-                          "s3Key": "8e06cc8057c9c50dcd656ff09f233c37bb22f550f4bef763c9f9916df0e62484.zip"
-                        },
-                        "description": "AWS CDK resource provider framework - onEvent (lambda-layer-awscli-integ-stack/Providerpython3.7)",
-                        "environment": {
-                          "variables": {
-                            "USER_ON_EVENT_FUNCTION_ARN": {
-                              "Fn::GetAtt": [
-                                "Lambdapython3780349E0A",
-                                "Arn"
-                              ]
-                            }
-                          }
-                        },
-                        "handler": "framework.onEvent",
-                        "role": {
-                          "Fn::GetAtt": [
-                            "Providerpython37frameworkonEventServiceRole9EA6B2B0",
-                            "Arn"
-                          ]
-                        },
-                        "runtime": "nodejs18.x",
-                        "timeout": 900
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_lambda.Function",
-                  "version": "0.0.0"
-                }
-              }
-            },
-            "constructInfo": {
-              "fqn": "aws-cdk-lib.custom_resources.Provider",
-              "version": "0.0.0"
-            }
-          },
-          "CustomResourcepython3.7": {
-            "id": "CustomResourcepython3.7",
-            "path": "lambda-layer-awscli-integ-stack/CustomResourcepython3.7",
-            "children": {
-              "Default": {
-                "id": "Default",
-                "path": "lambda-layer-awscli-integ-stack/CustomResourcepython3.7/Default",
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.CfnResource",
-                  "version": "0.0.0"
-                }
-              }
-            },
-            "constructInfo": {
-              "fqn": "aws-cdk-lib.CustomResource",
               "version": "0.0.0"
             }
           },
@@ -699,7 +352,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "8e06cc8057c9c50dcd656ff09f233c37bb22f550f4bef763c9f9916df0e62484.zip"
+                          "s3Key": "15197a5512179542fe2cff74af89bb047793c9c4e0b4395f114641a81cd52ae5.zip"
                         },
                         "description": "AWS CDK resource provider framework - onEvent (lambda-layer-awscli-integ-stack/Providerpython3.9)",
                         "environment": {
@@ -758,6 +411,353 @@
               "version": "0.0.0"
             }
           },
+          "Lambda$python3.10": {
+            "id": "Lambda$python3.10",
+            "path": "lambda-layer-awscli-integ-stack/Lambda$python3.10",
+            "children": {
+              "ServiceRole": {
+                "id": "ServiceRole",
+                "path": "lambda-layer-awscli-integ-stack/Lambda$python3.10/ServiceRole",
+                "children": {
+                  "ImportServiceRole": {
+                    "id": "ImportServiceRole",
+                    "path": "lambda-layer-awscli-integ-stack/Lambda$python3.10/ServiceRole/ImportServiceRole",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "lambda-layer-awscli-integ-stack/Lambda$python3.10/ServiceRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "lambda.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "managedPolicyArns": [
+                          {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+                              ]
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
+                  "version": "0.0.0"
+                }
+              },
+              "Code": {
+                "id": "Code",
+                "path": "lambda-layer-awscli-integ-stack/Lambda$python3.10/Code",
+                "children": {
+                  "Stage": {
+                    "id": "Stage",
+                    "path": "lambda-layer-awscli-integ-stack/Lambda$python3.10/Code/Stage",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.AssetStaging",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "AssetBucket": {
+                    "id": "AssetBucket",
+                    "path": "lambda-layer-awscli-integ-stack/Lambda$python3.10/Code/AssetBucket",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_s3.BucketBase",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "lambda-layer-awscli-integ-stack/Lambda$python3.10/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
+                  "aws:cdk:cloudformation:props": {
+                    "code": {
+                      "s3Bucket": {
+                        "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+                      },
+                      "s3Key": "5dff6208ccd5fb196bb0354fd6e47faa8431a789e6125d20386586fef761ed48.zip"
+                    },
+                    "handler": "index.handler",
+                    "layers": [
+                      {
+                        "Ref": "AwsCliLayerF44AAF94"
+                      }
+                    ],
+                    "memorySize": 512,
+                    "role": {
+                      "Fn::GetAtt": [
+                        "Lambdapython310ServiceRoleD185E0B6",
+                        "Arn"
+                      ]
+                    },
+                    "runtime": "python3.10",
+                    "timeout": 30
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_lambda.Function",
+              "version": "0.0.0"
+            }
+          },
+          "Providerpython3.10": {
+            "id": "Providerpython3.10",
+            "path": "lambda-layer-awscli-integ-stack/Providerpython3.10",
+            "children": {
+              "framework-onEvent": {
+                "id": "framework-onEvent",
+                "path": "lambda-layer-awscli-integ-stack/Providerpython3.10/framework-onEvent",
+                "children": {
+                  "ServiceRole": {
+                    "id": "ServiceRole",
+                    "path": "lambda-layer-awscli-integ-stack/Providerpython3.10/framework-onEvent/ServiceRole",
+                    "children": {
+                      "ImportServiceRole": {
+                        "id": "ImportServiceRole",
+                        "path": "lambda-layer-awscli-integ-stack/Providerpython3.10/framework-onEvent/ServiceRole/ImportServiceRole",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.Resource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "lambda-layer-awscli-integ-stack/Providerpython3.10/framework-onEvent/ServiceRole/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                          "aws:cdk:cloudformation:props": {
+                            "assumeRolePolicyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": "sts:AssumeRole",
+                                  "Effect": "Allow",
+                                  "Principal": {
+                                    "Service": "lambda.amazonaws.com"
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "managedPolicyArns": [
+                              {
+                                "Fn::Join": [
+                                  "",
+                                  [
+                                    "arn:",
+                                    {
+                                      "Ref": "AWS::Partition"
+                                    },
+                                    ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+                                  ]
+                                ]
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "DefaultPolicy": {
+                        "id": "DefaultPolicy",
+                        "path": "lambda-layer-awscli-integ-stack/Providerpython3.10/framework-onEvent/ServiceRole/DefaultPolicy",
+                        "children": {
+                          "Resource": {
+                            "id": "Resource",
+                            "path": "lambda-layer-awscli-integ-stack/Providerpython3.10/framework-onEvent/ServiceRole/DefaultPolicy/Resource",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                              "aws:cdk:cloudformation:props": {
+                                "policyDocument": {
+                                  "Statement": [
+                                    {
+                                      "Action": "lambda:InvokeFunction",
+                                      "Effect": "Allow",
+                                      "Resource": [
+                                        {
+                                          "Fn::GetAtt": [
+                                            "Lambdapython310815BD7E9",
+                                            "Arn"
+                                          ]
+                                        },
+                                        {
+                                          "Fn::Join": [
+                                            "",
+                                            [
+                                              {
+                                                "Fn::GetAtt": [
+                                                  "Lambdapython310815BD7E9",
+                                                  "Arn"
+                                                ]
+                                              },
+                                              ":*"
+                                            ]
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  ],
+                                  "Version": "2012-10-17"
+                                },
+                                "policyName": "Providerpython310frameworkonEventServiceRoleDefaultPolicyC0E8697B",
+                                "roles": [
+                                  {
+                                    "Ref": "Providerpython310frameworkonEventServiceRoleB6DF2879"
+                                  }
+                                ]
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.Policy",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.Role",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Code": {
+                    "id": "Code",
+                    "path": "lambda-layer-awscli-integ-stack/Providerpython3.10/framework-onEvent/Code",
+                    "children": {
+                      "Stage": {
+                        "id": "Stage",
+                        "path": "lambda-layer-awscli-integ-stack/Providerpython3.10/framework-onEvent/Code/Stage",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.AssetStaging",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "AssetBucket": {
+                        "id": "AssetBucket",
+                        "path": "lambda-layer-awscli-integ-stack/Providerpython3.10/framework-onEvent/Code/AssetBucket",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_s3.BucketBase",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "lambda-layer-awscli-integ-stack/Providerpython3.10/framework-onEvent/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
+                      "aws:cdk:cloudformation:props": {
+                        "code": {
+                          "s3Bucket": {
+                            "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+                          },
+                          "s3Key": "15197a5512179542fe2cff74af89bb047793c9c4e0b4395f114641a81cd52ae5.zip"
+                        },
+                        "description": "AWS CDK resource provider framework - onEvent (lambda-layer-awscli-integ-stack/Providerpython3.10)",
+                        "environment": {
+                          "variables": {
+                            "USER_ON_EVENT_FUNCTION_ARN": {
+                              "Fn::GetAtt": [
+                                "Lambdapython310815BD7E9",
+                                "Arn"
+                              ]
+                            }
+                          }
+                        },
+                        "handler": "framework.onEvent",
+                        "role": {
+                          "Fn::GetAtt": [
+                            "Providerpython310frameworkonEventServiceRoleB6DF2879",
+                            "Arn"
+                          ]
+                        },
+                        "runtime": "nodejs18.x",
+                        "timeout": 900
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_lambda.Function",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.custom_resources.Provider",
+              "version": "0.0.0"
+            }
+          },
+          "CustomResourcepython3.10": {
+            "id": "CustomResourcepython3.10",
+            "path": "lambda-layer-awscli-integ-stack/CustomResourcepython3.10",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "lambda-layer-awscli-integ-stack/CustomResourcepython3.10/Default",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnResource",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CustomResource",
+              "version": "0.0.0"
+            }
+          },
           "BootstrapVersion": {
             "id": "BootstrapVersion",
             "path": "lambda-layer-awscli-integ-stack/BootstrapVersion",
@@ -793,7 +793,7 @@
                 "path": "lambda-layer-awscli-integ-test/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.70"
+                  "version": "10.3.0"
                 }
               },
               "DeployAssert": {
@@ -839,7 +839,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.2.70"
+          "version": "10.3.0"
         }
       }
     },

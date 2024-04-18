@@ -16,6 +16,20 @@ describe('code', () => {
   });
 
   describe('lambda.Code.fromAsset', () => {
+    test('fails if path is empty', () => {
+      // GIVEN
+      const fileAsset = lambda.Code.fromAsset('');
+
+      // THEN
+      expect(() => defineFunction(fileAsset)).toThrow(/Asset path cannot be empty/);
+    });
+    test('fails if path does not exist', () => {
+      // GIVEN
+      const fileAsset = lambda.Code.fromAsset('/path/not/found/' + Math.random() * 999999);
+
+      // THEN
+      expect(() => defineFunction(fileAsset)).toThrow(/Cannot find asset/);
+    });
     test('fails if a non-zip asset is used', () => {
       // GIVEN
       const fileAsset = lambda.Code.fromAsset(path.join(__dirname, 'my-lambda-handler', 'index.py'));
@@ -379,6 +393,43 @@ describe('code', () => {
           [cxapi.ASSET_RESOURCE_METADATA_PATH_KEY]: 'asset.05ed717106fc60c50f9e1b4b59a33e1c218fbcb03d11f78f5bef460c40a90b74',
           [cxapi.ASSET_RESOURCE_METADATA_DOCKERFILE_PATH_KEY]: 'Dockerfile',
           [cxapi.ASSET_RESOURCE_METADATA_PROPERTY_KEY]: 'Code.ImageUri',
+        },
+      });
+    });
+
+    test('cache disabled', () => {
+      // given
+      const stack = new cdk.Stack();
+      stack.node.setContext(cxapi.ASSET_RESOURCE_METADATA_ENABLED_CONTEXT, true);
+
+      const dockerfilePath = 'Dockerfile';
+      const dockerBuildTarget = 'stage';
+      const dockerBuildArgs = { arg1: 'val1', arg2: 'val2' };
+      const dockerBuildSsh = 'default';
+
+      // when
+      new lambda.Function(stack, 'Fn', {
+        code: lambda.Code.fromAssetImage(path.join(__dirname, 'docker-lambda-handler'), {
+          file: dockerfilePath,
+          target: dockerBuildTarget,
+          buildArgs: dockerBuildArgs,
+          buildSsh: dockerBuildSsh,
+          cacheDisabled: true,
+        }),
+        handler: lambda.Handler.FROM_IMAGE,
+        runtime: lambda.Runtime.FROM_IMAGE,
+      });
+
+      // then
+      Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
+        Metadata: {
+          [cxapi.ASSET_RESOURCE_METADATA_PATH_KEY]: 'asset.da491b551a48a7aaf33f41a3bfe7eb269112a87ba24651a2ff8f2d526ca4466c',
+          [cxapi.ASSET_RESOURCE_METADATA_DOCKERFILE_PATH_KEY]: dockerfilePath,
+          [cxapi.ASSET_RESOURCE_METADATA_DOCKER_BUILD_ARGS_KEY]: dockerBuildArgs,
+          [cxapi.ASSET_RESOURCE_METADATA_DOCKER_BUILD_SSH_KEY]: dockerBuildSsh,
+          [cxapi.ASSET_RESOURCE_METADATA_DOCKER_BUILD_TARGET_KEY]: dockerBuildTarget,
+          [cxapi.ASSET_RESOURCE_METADATA_PROPERTY_KEY]: 'Code.ImageUri',
+          [cxapi.ASSET_RESOURCE_METADATA_DOCKER_CACHE_DISABLED_KEY]: true,
         },
       });
     });

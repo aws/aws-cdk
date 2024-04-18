@@ -338,7 +338,7 @@ export interface ExtensionOptions {
    *
    * @default - A name is generated.
    */
-  readonly name?: string;
+  readonly extensionName?: string;
 
   /**
    * A description of the extension
@@ -493,11 +493,11 @@ export class Extension extends Resource implements IExtension {
 
   constructor(scope: Construct, id: string, props: ExtensionProps) {
     super(scope, id, {
-      physicalName: props.name,
+      physicalName: props.extensionName,
     });
 
     this.actions = props.actions;
-    this.name = props.name || Names.uniqueResourceName(this, {
+    this.name = props.extensionName || Names.uniqueResourceName(this, {
       maxLength: 64,
       separator: '-',
     });
@@ -662,7 +662,7 @@ export class ExtensibleBase implements IExtensible {
   }
 
   private getExtensionForActionPoint(eventDestination: IEventDestination, actionPoint: ActionPoint, options?: ExtensionOptions) {
-    const name = options?.name || this.getExtensionDefaultName();
+    const name = options?.extensionName || this.getExtensionDefaultName();
     const versionNumber = options?.latestVersionNumber ? options?.latestVersionNumber + 1 : 1;
     const extension = new Extension(this.scope, `Extension${this.getExtensionHash(name, versionNumber)}`, {
       actions: [
@@ -673,7 +673,7 @@ export class ExtensibleBase implements IExtensible {
           ],
         }),
       ],
-      name,
+      extensionName: name,
       ...(options?.description ? { description: options.description } : {}),
       ...(options?.latestVersionNumber ? { latestVersionNumber: options.latestVersionNumber } : {}),
       ...(options?.parameters ? { parameters: options.parameters } : {}),

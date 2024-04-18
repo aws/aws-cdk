@@ -64,7 +64,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "f1cd1efb56dda0c089bb165da8d17672c95bee7815d051d25ee7d1934cc99640.zip"
+     "S3Key": "85f7bb0ac0b4da3571afd49c891d631f4f07c0ef710a02046d3a9abd8d9d4604.zip"
     },
     "Environment": {
      "Variables": {
@@ -144,7 +144,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "f1cd1efb56dda0c089bb165da8d17672c95bee7815d051d25ee7d1934cc99640.zip"
+     "S3Key": "85f7bb0ac0b4da3571afd49c891d631f4f07c0ef710a02046d3a9abd8d9d4604.zip"
     },
     "Environment": {
      "Variables": {
@@ -272,7 +272,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "8e06cc8057c9c50dcd656ff09f233c37bb22f550f4bef763c9f9916df0e62484.zip"
+     "S3Key": "15197a5512179542fe2cff74af89bb047793c9c4e0b4395f114641a81cd52ae5.zip"
     },
     "Description": "AWS CDK resource provider framework - onEvent (cdk-amplify-app-asset-deployment/com.amazonaws.cdk.custom-resources.amplify-asset-deployment-provider/amplify-asset-deployment-handler-provider)",
     "Environment": {
@@ -409,7 +409,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "8e06cc8057c9c50dcd656ff09f233c37bb22f550f4bef763c9f9916df0e62484.zip"
+     "S3Key": "15197a5512179542fe2cff74af89bb047793c9c4e0b4395f114641a81cd52ae5.zip"
     },
     "Description": "AWS CDK resource provider framework - isComplete (cdk-amplify-app-asset-deployment/com.amazonaws.cdk.custom-resources.amplify-asset-deployment-provider/amplify-asset-deployment-handler-provider)",
     "Environment": {
@@ -543,7 +543,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "8e06cc8057c9c50dcd656ff09f233c37bb22f550f4bef763c9f9916df0e62484.zip"
+     "S3Key": "15197a5512179542fe2cff74af89bb047793c9c4e0b4395f114641a81cd52ae5.zip"
     },
     "Description": "AWS CDK resource provider framework - onTimeout (cdk-amplify-app-asset-deployment/com.amazonaws.cdk.custom-resources.amplify-asset-deployment-provider/amplify-asset-deployment-handler-provider)",
     "Environment": {

@@ -51,6 +51,18 @@ describe('aws log driver', () => {
         }),
       ],
     });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: [{
+          Action: ['logs:CreateLogStream', 'logs:PutLogEvents'],
+          Effect: 'Allow',
+          Resource: {
+            'Fn::GetAtt': ['TaskDefinitionContainerLogGroup4D0A87C1', 'Arn'],
+          },
+        }],
+      },
+    });
   });
 
   test('create an aws log driver using awsLogs', () => {

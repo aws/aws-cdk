@@ -68,4 +68,13 @@ new firehose.DeliveryStream(stack, 'Delivery Stream', {
   })],
 });
 
+new firehose.DeliveryStream(stack, 'ZeroBufferingDeliveryStream', {
+  destinations: [new destinations.S3Bucket(bucket, {
+    compression: destinations.Compression.GZIP,
+    dataOutputPrefix: 'regularPrefix',
+    errorOutputPrefix: 'errorPrefix',
+    bufferingInterval: cdk.Duration.seconds(0),
+  })],
+});
+
 app.synth();

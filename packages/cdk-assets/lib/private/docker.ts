@@ -22,6 +22,7 @@ interface BuildOptions {
   readonly outputs?: string[];
   readonly cacheFrom?: DockerCacheOption[];
   readonly cacheTo?: DockerCacheOption;
+  readonly cacheDisabled?: boolean;
   readonly quiet?: boolean;
 }
 
@@ -42,7 +43,7 @@ export interface DockerDomainCredentials {
 
 enum InspectImageErrorCode {
   Docker = 1,
-  Podman = 125
+  Podman = 125,
 }
 
 export interface DockerCacheOption {
@@ -107,6 +108,7 @@ export class Docker {
       ...options.outputs ? options.outputs.map(output => [`--output=${output}`]) : [],
       ...options.cacheFrom ? [...options.cacheFrom.map(cacheFrom => ['--cache-from', this.cacheOptionToFlag(cacheFrom)]).flat()] : [],
       ...options.cacheTo ? ['--cache-to', this.cacheOptionToFlag(options.cacheTo)] : [],
+      ...options.cacheDisabled ? ['--no-cache'] : [],
       '.',
     ];
     await this.execute(buildCommand, {

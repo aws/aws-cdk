@@ -6,11 +6,17 @@ import * as cdk from 'aws-cdk-lib';
 import * as cpactions from 'aws-cdk-lib/aws-codepipeline-actions';
 import { STANDARD_NODEJS_RUNTIME } from '../../config';
 
-const app = new cdk.App();
+const app = new cdk.App({
+  postCliContext: {
+    '@aws-cdk/aws-codepipeline:defaultPipelineTypeToV2': false,
+  },
+});
 
 const stack = new cdk.Stack(app, 'aws-cdk-codepipeline-lambda');
 
-const pipeline = new codepipeline.Pipeline(stack, 'Pipeline');
+const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
+  crossAccountKeys: true,
+});
 
 const sourceStage = pipeline.addStage({ stageName: 'Source' });
 const bucket = new s3.Bucket(stack, 'PipelineBucket', {

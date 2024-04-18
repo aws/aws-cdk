@@ -4,6 +4,7 @@ import { ApiCallBase, IApiCall } from './api-call-base';
 import { ExpectedResult } from './common';
 import { AssertionsProvider, SDK_RESOURCE_TYPE_PREFIX } from './providers';
 import { WaiterStateMachine, WaiterStateMachineOptions } from './waiter-state-machine';
+import { RetentionDays } from 'aws-cdk-lib/aws-logs';
 
 /**
  * Options to perform an AWS JavaScript V2 API call
@@ -75,7 +76,9 @@ export class AwsApiCall extends ApiCallBase {
   constructor(scope: Construct, id: string, props: AwsApiCallProps) {
     super(scope, id);
 
-    this.provider = new AssertionsProvider(this, 'SdkProvider');
+    this.provider = new AssertionsProvider(this, 'SdkProvider', {
+      logRetention: props.parameters?.RetentionDays,
+    });
     this.provider.addPolicyStatementFromSdkCall(props.service, props.api);
     this.name = `${props.service}${props.api}`;
     this.api = props.api;
@@ -97,7 +100,10 @@ export class AwsApiCall extends ApiCallBase {
         outputPaths: Lazy.list({ produce: () => this.outputPaths }),
         salt: Date.now().toString(),
       },
-      resourceType: `${SDK_RESOURCE_TYPE_PREFIX}${this.name}`.substring(0, 60),
+      // Remove the slash from the resource type because when using the v3 package name as the service name,
+      // the `service` props includes the slash, but the resource type name cannot contain the slash
+      // See https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cloudformation-customresource.html#aws-resource-cloudformation-customresource--remarks
+      resourceType: `${SDK_RESOURCE_TYPE_PREFIX}${this.name}`.substring(0, 60).replace(/[\/]/g, ''),
     });
     // Needed so that all the policies set up by the provider should be available before the custom resource is provisioned.
     this.apiCallResource.node.addDependency(this.provider);
@@ -112,7 +118,10 @@ export class AwsApiCall extends ApiCallBase {
 
             new CfnOutput(node, 'AssertionResults', {
               value: result,
-            }).overrideLogicalId(`AssertionResults${id}`);
+              // Remove the at sign, slash, and hyphen because when using the v3 package name or client name as the service name,
+              // the `id` includes them, but they are not allowed in the `CfnOutput` logical id
+              // See https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/outputs-section-structure.html#outputs-section-syntax
+            }).overrideLogicalId(`AssertionResults${id}`.replace(/[\@\/\-]/g, ''));
           }
         }
       },
@@ -205,6 +214,13 @@ export interface LambdaInvokeFunctionProps {
   readonly logType?: LogType;
 
   /**
+   * How long, in days, the log contents will be retained.
+   *
+   * @default - no retention days specified
+   */
+  readonly logRetention?: RetentionDays;
+
+  /**
    * Payload to send as part of the invoke
    *
    * @default - no payload
@@ -214,7 +230,7 @@ export interface LambdaInvokeFunctionProps {
 
 /**
  * An AWS Lambda Invoke function API call.
- * Use this istead of the generic AwsApiCall in order to
+ * Use this instead of the generic AwsApiCall in order to
  * invoke a lambda function. This will automatically create
  * the correct permissions to invoke the function
  */
@@ -228,6 +244,7 @@ export class LambdaInvokeFunction extends AwsApiCall {
         InvocationType: props.invocationType,
         LogType: props.logType,
         Payload: props.payload,
+        RetentionDays: props.logRetention,
       },
     });
 
@@ -250,6 +267,20 @@ export class LambdaInvokeFunction extends AwsApiCall {
       arnFormat: ArnFormat.COLON_RESOURCE_NAME,
       resourceName: props.functionName,
     })]);
+
+    // If using `waitForAssertions`, do the same for `waiterProvider` as above.
+    // Aspects are used here because we do not know if the user is using `waitForAssertions` at this point.
+    Aspects.of(this).add({
+      visit(node: IConstruct) {
+        if (node instanceof AwsApiCall && node.waiterProvider) {
+          node.waiterProvider.addPolicyStatementFromSdkCall('Lambda', 'invokeFunction', [stack.formatArn({
+            service: 'lambda',
+            resource: 'function',
+            arnFormat: ArnFormat.COLON_RESOURCE_NAME,
+            resourceName: props.functionName,
+          })]);
+        }
+      },
+    });
   }
 }
-

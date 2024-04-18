@@ -716,6 +716,58 @@
     }
    }
   },
+  "AsgFromMipWithInstanceRequirementsASG8BFE597D": {
+   "Type": "AWS::AutoScaling::AutoScalingGroup",
+   "Properties": {
+    "DesiredCapacity": "5",
+    "MaxSize": "10",
+    "MinSize": "0",
+    "MixedInstancesPolicy": {
+     "LaunchTemplate": {
+      "LaunchTemplateSpecification": {
+       "LaunchTemplateId": {
+        "Ref": "MainLT4FC09097"
+       },
+       "Version": {
+        "Fn::GetAtt": [
+         "MainLT4FC09097",
+         "LatestVersionNumber"
+        ]
+       }
+      },
+      "Overrides": [
+       {
+        "InstanceRequirements": {
+         "CpuManufacturers": [
+          "intel"
+         ],
+         "MemoryMiB": {
+          "Min": 16384
+         },
+         "VCpuCount": {
+          "Max": 8,
+          "Min": 4
+         }
+        }
+       }
+      ]
+     }
+    },
+    "VPCZoneIdentifier": [
+     {
+      "Ref": "VPCPrivateSubnet1Subnet8BCA10E0"
+     },
+     {
+      "Ref": "VPCPrivateSubnet2SubnetCFCDAA7A"
+     }
+    ]
+   },
+   "UpdatePolicy": {
+    "AutoScalingScheduledAction": {
+     "IgnoreUnmodifiedGroupSizeProperties": true
+    }
+   }
+  },
   "AsgWithGp3BlockdeviceInstanceSecurityGroup54D76206": {
    "Type": "AWS::EC2::SecurityGroup",
    "Properties": {

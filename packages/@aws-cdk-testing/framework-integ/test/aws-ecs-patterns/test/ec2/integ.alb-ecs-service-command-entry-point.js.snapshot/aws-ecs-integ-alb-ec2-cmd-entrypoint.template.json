@@ -408,10 +408,10 @@
     "DefaultCapacityProviderStrategy": []
    }
   },
-  "AutoScalingGroupInstanceSecurityGroup9D2E0C5E": {
+  "SecurityGroupDD263621": {
    "Type": "AWS::EC2::SecurityGroup",
    "Properties": {
-    "GroupDescription": "aws-ecs-integ-alb-ec2-cmd-entrypoint/AutoScalingGroup/InstanceSecurityGroup",
+    "GroupDescription": "aws-ecs-integ-alb-ec2-cmd-entrypoint/SecurityGroup",
     "SecurityGroupEgress": [
      {
       "CidrIp": "0.0.0.0/0",
@@ -419,10 +419,13 @@
       "IpProtocol": "-1"
      }
     ],
-    "Tags": [
+    "SecurityGroupIngress": [
      {
-      "Key": "Name",
-      "Value": "aws-ecs-integ-alb-ec2-cmd-entrypoint/AutoScalingGroup"
+      "CidrIp": "0.0.0.0/0",
+      "Description": "from 0.0.0.0/0:32768-65535",
+      "FromPort": 32768,
+      "IpProtocol": "tcp",
+      "ToPort": 65535
      }
     ],
     "VpcId": {
@@ -521,38 +524,79 @@
     ]
    }
   },
-  "AutoScalingGroupLaunchConfigDEEB160C": {
-   "Type": "AWS::AutoScaling::LaunchConfiguration",
+  "AutoScalingGroupLaunchTemplateCE2B3AFE": {
+   "Type": "AWS::EC2::LaunchTemplate",
    "Properties": {
-    "IamInstanceProfile": {
-     "Ref": "AutoScalingGroupInstanceProfile342FAC7C"
-    },
-    "ImageId": {
-     "Ref": "SsmParameterValueawsserviceecsoptimizedamiamazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
-    },
-    "InstanceType": "t2.micro",
-    "SecurityGroups": [
-     {
-      "Fn::GetAtt": [
-       "AutoScalingGroupInstanceSecurityGroup9D2E0C5E",
-       "GroupId"
-      ]
-     }
-    ],
-    "UserData": {
-     "Fn::Base64": {
-      "Fn::Join": [
-       "",
-       [
-        "#!/bin/bash\necho ECS_CLUSTER=",
-        {
-         "Ref": "Ec2ClusterEE43E89D"
-        },
-        " >> /etc/ecs/ecs.config\nsudo iptables --insert FORWARD 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP\nsudo service iptables save\necho ECS_AWSVPC_BLOCK_IMDS=true >> /etc/ecs/ecs.config"
+    "LaunchTemplateData": {
+     "IamInstanceProfile": {
+      "Arn": {
+       "Fn::GetAtt": [
+        "AutoScalingGroupInstanceProfile342FAC7C",
+        "Arn"
        ]
+      }
+     },
+     "ImageId": {
+      "Ref": "SsmParameterValueawsserviceecsoptimizedamiamazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
+     },
+     "InstanceType": "t2.micro",
+     "Monitoring": {
+      "Enabled": false
+     },
+     "SecurityGroupIds": [
+      {
+       "Fn::GetAtt": [
+        "SecurityGroupDD263621",
+        "GroupId"
+       ]
+      }
+     ],
+     "TagSpecifications": [
+      {
+       "ResourceType": "instance",
+       "Tags": [
+        {
+         "Key": "Name",
+         "Value": "aws-ecs-integ-alb-ec2-cmd-entrypoint/AutoScalingGroup/LaunchTemplate"
+        }
+       ]
+      },
+      {
+       "ResourceType": "volume",
+       "Tags": [
+        {
+         "Key": "Name",
+         "Value": "aws-ecs-integ-alb-ec2-cmd-entrypoint/AutoScalingGroup/LaunchTemplate"
+        }
+       ]
+      }
+     ],
+     "UserData": {
+      "Fn::Base64": {
+       "Fn::Join": [
+        "",
+        [
+         "#!/bin/bash\necho ECS_CLUSTER=",
+         {
+          "Ref": "Ec2ClusterEE43E89D"
+         },
+         " >> /etc/ecs/ecs.config\nsudo iptables --insert FORWARD 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP\nsudo service iptables save\necho ECS_AWSVPC_BLOCK_IMDS=true >> /etc/ecs/ecs.config"
+        ]
+       ]
+      }
+     }
+    },
+    "TagSpecifications": [
+     {
+      "ResourceType": "launch-template",
+      "Tags": [
+       {
+        "Key": "Name",
+        "Value": "aws-ecs-integ-alb-ec2-cmd-entrypoint/AutoScalingGroup/LaunchTemplate"
+       }
       ]
      }
-    }
+    ]
    },
    "DependsOn": [
     "AutoScalingGroupInstanceRoleDefaultPolicy3DF09528",
@@ -562,8 +606,16 @@
   "AutoScalingGroupASG804C35BE": {
    "Type": "AWS::AutoScaling::AutoScalingGroup",
    "Properties": {
-    "LaunchConfigurationName": {
-     "Ref": "AutoScalingGroupLaunchConfigDEEB160C"
+    "LaunchTemplate": {
+     "LaunchTemplateId": {
+      "Ref": "AutoScalingGroupLaunchTemplateCE2B3AFE"
+     },
+     "Version": {
+      "Fn::GetAtt": [
+       "AutoScalingGroupLaunchTemplateCE2B3AFE",
+       "LatestVersionNumber"
+      ]
+     }
     },
     "MaxSize": "1",
     "MinSize": "1",
@@ -620,6 +672,12 @@
      {
       "Fn::GetAtt": [
        "ALBECSServiceWithCommandEntryPointLBSecurityGroupBA7F6FB5",
+       "GroupId"
+      ]
+     },
+     {
+      "Fn::GetAtt": [
+       "SecurityGroupDD263621",
        "GroupId"
       ]
      }
@@ -726,18 +784,15 @@
     "ContainerDefinitions": [
      {
       "Command": [
-       "/usr/sbin/apache2",
-       "-D",
-       "FOREGROUND"
+       "/bin/sh -c \"echo '<html><h1>Amazon ECS Sample App</h1></html>' >  /usr/local/apache2/htdocs/index.html && httpd-foreground\""
       ],
       "Cpu": 256,
       "EntryPoint": [
-       "/bin/bash",
-       "-l",
+       "sh",
        "-c"
       ],
       "Essential": true,
-      "Image": "amazon/amazon-ecs-sample",
+      "Image": "public.ecr.aws/docker/library/httpd:2.4",
       "LogConfiguration": {
        "LogDriver": "awslogs",
        "Options": {

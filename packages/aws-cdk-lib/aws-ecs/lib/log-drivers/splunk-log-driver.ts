@@ -11,7 +11,7 @@ import { ContainerDefinition, Secret } from '../container-definition';
 export enum SplunkLogFormat {
   INLINE = 'inline',
   JSON = 'json',
-  RAW = 'raw'
+  RAW = 'raw',
 }
 
 /**

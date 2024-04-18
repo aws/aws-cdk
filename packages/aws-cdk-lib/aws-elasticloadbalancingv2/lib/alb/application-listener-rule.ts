@@ -121,7 +121,7 @@ export enum ContentType {
   TEXT_CSS = 'text/css',
   TEXT_HTML = 'text/html',
   APPLICATION_JAVASCRIPT = 'application/javascript',
-  APPLICATION_JSON = 'application/json'
+  APPLICATION_JSON = 'application/json',
 }
 
 /**

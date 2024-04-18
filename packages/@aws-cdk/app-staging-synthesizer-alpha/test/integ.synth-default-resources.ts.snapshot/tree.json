@@ -13,7 +13,7 @@
             "path": "synthesize-default-resources/UsingAppStagingSynthesizer--synthesize-default-resources",
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.2.70"
+              "version": "10.3.0"
             }
           },
           "lambda-s3": {
@@ -1083,71 +1083,22 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::ECR::Repository",
                   "aws:cdk:cloudformation:props": {
+                    "emptyOnDelete": true,
                     "imageTagMutability": "IMMUTABLE",
                     "lifecyclePolicy": {
                       "lifecyclePolicyText": "{\"rules\":[{\"rulePriority\":1,\"description\":\"Garbage collect old image versions\",\"selection\":{\"tagStatus\":\"any\",\"countType\":\"imageCountMoreThan\",\"countNumber\":3},\"action\":{\"type\":\"expire\"}}]}"
                     },
-                    "repositoryName": "default-resourcesmax/ecr-asset/1",
-                    "tags": [
-                      {
-                        "key": "aws-cdk:auto-delete-images",
-                        "value": "true"
-                      }
-                    ]
+                    "repositoryName": "default-resourcesmax/ecr-asset/1"
                   }
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_ecr.CfnRepository",
                   "version": "0.0.0"
                 }
-              },
-              "AutoDeleteImagesCustomResource": {
-                "id": "AutoDeleteImagesCustomResource",
-                "path": "StagingStack-default-resourcesmax-ACCOUNT-REGION/default-resourcesmax--ecr-asset--1/AutoDeleteImagesCustomResource",
-                "children": {
-                  "Default": {
-                    "id": "Default",
-                    "path": "StagingStack-default-resourcesmax-ACCOUNT-REGION/default-resourcesmax--ecr-asset--1/AutoDeleteImagesCustomResource/Default",
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.CfnResource",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.CustomResource",
-                  "version": "0.0.0"
-                }
               }
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_ecr.Repository",
-              "version": "0.0.0"
-            }
-          },
-          "Custom::ECRAutoDeleteImagesCustomResourceProvider": {
-            "id": "Custom::ECRAutoDeleteImagesCustomResourceProvider",
-            "path": "StagingStack-default-resourcesmax-ACCOUNT-REGION/Custom::ECRAutoDeleteImagesCustomResourceProvider",
-            "children": {
-              "Role": {
-                "id": "Role",
-                "path": "StagingStack-default-resourcesmax-ACCOUNT-REGION/Custom::ECRAutoDeleteImagesCustomResourceProvider/Role",
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.CfnResource",
-                  "version": "0.0.0"
-                }
-              },
-              "Handler": {
-                "id": "Handler",
-                "path": "StagingStack-default-resourcesmax-ACCOUNT-REGION/Custom::ECRAutoDeleteImagesCustomResourceProvider/Handler",
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.CfnResource",
-                  "version": "0.0.0"
-                }
-              }
-            },
-            "constructInfo": {
-              "fqn": "aws-cdk-lib.CustomResourceProvider",
               "version": "0.0.0"
             }
           },
@@ -1161,39 +1112,16 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::ECR::Repository",
                   "aws:cdk:cloudformation:props": {
+                    "emptyOnDelete": true,
                     "imageTagMutability": "IMMUTABLE",
                     "lifecyclePolicy": {
                       "lifecyclePolicyText": "{\"rules\":[{\"rulePriority\":1,\"description\":\"Garbage collect old image versions\",\"selection\":{\"tagStatus\":\"any\",\"countType\":\"imageCountMoreThan\",\"countNumber\":3},\"action\":{\"type\":\"expire\"}}]}"
                     },
-                    "repositoryName": "default-resourcesmax/ecr-asset-2",
-                    "tags": [
-                      {
-                        "key": "aws-cdk:auto-delete-images",
-                        "value": "true"
-                      }
-                    ]
+                    "repositoryName": "default-resourcesmax/ecr-asset-2"
                   }
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_ecr.CfnRepository",
-                  "version": "0.0.0"
-                }
-              },
-              "AutoDeleteImagesCustomResource": {
-                "id": "AutoDeleteImagesCustomResource",
-                "path": "StagingStack-default-resourcesmax-ACCOUNT-REGION/default-resourcesmax--ecr-asset-2/AutoDeleteImagesCustomResource",
-                "children": {
-                  "Default": {
-                    "id": "Default",
-                    "path": "StagingStack-default-resourcesmax-ACCOUNT-REGION/default-resourcesmax--ecr-asset-2/AutoDeleteImagesCustomResource/Default",
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.CfnResource",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.CustomResource",
                   "version": "0.0.0"
                 }
               }
@@ -1222,7 +1150,7 @@
                 "path": "integ-tests/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.70"
+                  "version": "10.3.0"
                 }
               },
               "DeployAssert": {
@@ -1268,7 +1196,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.2.70"
+          "version": "10.3.0"
         }
       }
     },

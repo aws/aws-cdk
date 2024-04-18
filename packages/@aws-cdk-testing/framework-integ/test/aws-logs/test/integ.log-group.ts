@@ -1,7 +1,7 @@
 import { Bucket } from 'aws-cdk-lib/aws-s3';
 import { App, Stack, StackProps } from 'aws-cdk-lib';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
-import { LogGroup, DataProtectionPolicy, DataIdentifier } from 'aws-cdk-lib/aws-logs';
+import { LogGroup, DataProtectionPolicy, DataIdentifier, CustomDataIdentifier } from 'aws-cdk-lib/aws-logs';
 
 class LogGroupIntegStack extends Stack {
   constructor(scope: App, id: string, props?: StackProps) {
@@ -14,7 +14,7 @@ class LogGroupIntegStack extends Stack {
     const dataProtectionPolicy = new DataProtectionPolicy({
       name: 'policy-name',
       description: 'policy description',
-      identifiers: [DataIdentifier.DRIVERSLICENSE_US, new DataIdentifier('EmailAddress')],
+      identifiers: [DataIdentifier.DRIVERSLICENSE_US, new DataIdentifier('EmailAddress'), new CustomDataIdentifier('EmployeeId', 'EmployeeId-\\d{9}')],
       logGroupAuditDestination: audit,
       s3BucketAuditDestination: bucket,
     });

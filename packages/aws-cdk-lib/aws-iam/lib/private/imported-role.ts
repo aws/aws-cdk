@@ -1,4 +1,5 @@
 import { Construct } from 'constructs';
+import { MAX_POLICY_NAME_LEN } from './util';
 import { FeatureFlags, Names, Resource, Token, TokenComparison, Annotations } from '../../../core';
 import { IAM_IMPORTED_ROLE_STACK_SAFE_DEFAULT_POLICY_NAME } from '../../../cx-api';
 import { Grant } from '../grant';
@@ -45,9 +46,15 @@ export class ImportedRole extends Resource implements IRole, IComparablePrincipa
   public addToPrincipalPolicy(statement: PolicyStatement): AddToPrincipalPolicyResult {
     if (!this.defaultPolicy) {
       const useUniqueName = FeatureFlags.of(this).isEnabled(IAM_IMPORTED_ROLE_STACK_SAFE_DEFAULT_POLICY_NAME);
-      const defaultDefaultPolicyName = useUniqueName
-        ? `Policy${Names.uniqueId(this)}`
-        : 'Policy';
+      // To preserve existing policy names, use Names.uniqueResourceName() only when exceeding the limit of policy names
+      // See https://github.com/aws/aws-cdk/pull/27548 for more
+      const prefix = 'Policy';
+      let defaultDefaultPolicyName = useUniqueName
+        ? `${prefix}${Names.uniqueId(this)}`
+        : prefix;
+      if (defaultDefaultPolicyName.length > MAX_POLICY_NAME_LEN) {
+        defaultDefaultPolicyName = `${prefix}${Names.uniqueResourceName(this, { maxLength: MAX_POLICY_NAME_LEN - prefix.length })}`;
+      }
       const policyName = this.defaultPolicyName ?? defaultDefaultPolicyName;
       this.defaultPolicy = new Policy(this, policyName, useUniqueName ? { policyName } : undefined);
       this.attachInlinePolicy(this.defaultPolicy);

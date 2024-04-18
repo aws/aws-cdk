@@ -1,0 +1,12 @@
+{
+  "version": "35.0.0",
+  "testCases": {
+    "healthCheckQueueProcessingFargateServiceTest/DefaultTest": {
+      "stacks": [
+        "aws-ecs-patterns-queue-health-check"
+      ],
+      "assertionStack": "healthCheckQueueProcessingFargateServiceTest/DefaultTest/DeployAssert",
+      "assertionStackName": "healthCheckQueueProcessingFargateServiceTestDefaultTestDeployAssert29ADF26E"
+    }
+  }
+}

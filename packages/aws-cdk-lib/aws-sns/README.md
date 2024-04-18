@@ -19,6 +19,19 @@ const topic = new sns.Topic(this, 'Topic', {
 });
 ```
 
+Add an SNS Topic to your stack with a specified signature version, which corresponds 
+to the hashing algorithm used while creating the signature of the notifications, 
+subscription confirmations, or unsubscribe confirmation messages sent by Amazon SNS.
+
+The default signature version is `1` (`SHA1`).
+SNS also supports signature version `2` (`SHA256`).
+
+```ts
+const topic = new sns.Topic(this, 'Topic', {
+  signatureVersion: '2',
+});
+```
+
 Note that FIFO topics require a topic name to be provided. The required `.fifo` suffix will be automatically generated and added to the topic name if it is not explicitly provided.
 
 ## Subscriptions
@@ -70,6 +83,7 @@ myTopic.addSubscription(new subscriptions.LambdaSubscription(fn, {
     color: sns.SubscriptionFilter.stringFilter({
       allowlist: ['red', 'orange'],
       matchPrefixes: ['bl'],
+      matchSuffixes: ['ue'],
     }),
     size: sns.SubscriptionFilter.stringFilter({
       denylist: ['small', 'medium'],
@@ -204,5 +218,119 @@ const policyDocument = new iam.PolicyDocument({
 const topicPolicy = new sns.TopicPolicy(this, 'Policy', {
   topics: [topic],
   policyDocument,
+});
+```
+
+### Enforce encryption of data in transit when publishing to a topic
+
+You can enforce SSL when creating a topic policy by setting the `enforceSSL` flag:
+
+```ts
+const topic = new sns.Topic(this, 'Topic');
+const policyDocument = new iam.PolicyDocument({
+  assignSids: true,
+  statements: [
+    new iam.PolicyStatement({
+      actions: ["sns:Publish"],
+      principals: [new iam.ServicePrincipal('s3.amazonaws.com')],
+      resources: [topic.topicArn],
+    }),
+  ],
+});
+
+const topicPolicy = new sns.TopicPolicy(this, 'Policy', {
+  topics: [topic],
+  policyDocument,
+  enforceSSL: true,
+});
+```
+
+Similiarly you can enforce SSL by setting the `enforceSSL` flag on the topic:
+
+```ts
+const topic = new sns.Topic(this, 'TopicAddPolicy', {
+  enforceSSL: true,
+});
+
+topic.addToResourcePolicy(new iam.PolicyStatement({
+  principals: [new iam.ServicePrincipal('s3.amazonaws.com')],
+  actions: ['sns:Publish'],
+  resources: [topic.topicArn],
+}));
+```
+
+## Delivery status logging
+
+Amazon SNS provides support to log the delivery status of notification messages sent to topics with the following Amazon SNS endpoints:
+
+- HTTP
+- Amazon Kinesis Data Firehose
+- AWS Lambda
+- Platform application endpoint
+- Amazon Simple Queue Service
+
+Example with a delivery status logging configuration for SQS:
+
+```ts
+declare const role: iam.Role;
+const topic = new sns.Topic(this, 'MyTopic', {
+  loggingConfigs: [
+    {
+      protocol: sns.LoggingProtocol.SQS,
+      failureFeedbackRole: role,
+      successFeedbackRole: role,
+      successFeedbackSampleRate: 50,
+    },
+  ],
+});
+```
+
+A delivery status logging configuration can also be added to your topic by `addLoggingConfig` method:
+
+```ts
+declare const role: iam.Role;
+const topic = new sns.Topic(this, 'MyTopic');
+
+topic.addLoggingConfig({
+  protocol: sns.LoggingProtocol.SQS,
+  failureFeedbackRole: role,
+  successFeedbackRole: role,
+  successFeedbackSampleRate: 50,
+});
+```
+
+Note that valid values for `successFeedbackSampleRate` are integer between 0-100.
+
+## Archive Policy
+
+Message archiving provides the ability to archive a single copy of all messages published to your topic.
+You can store published messages within your topic by enabling the message archive policy on the topic, which enables message archiving for all subscriptions linked to that topic.
+Messages can be archived for a minimum of one day to a maximum of 365 days.
+
+Example with an archive policy:
+
+```ts
+const topic = new sns.Topic(this, 'MyTopic', {
+  fifo: true,
+  messageRetentionPeriodInDays: 7,
+});
+```
+
+**Note**: The `messageRetentionPeriodInDays` property is only available for FIFO topics.
+
+## TracingConfig
+
+Tracing mode of an Amazon SNS topic.
+
+If PassThrough, the topic passes trace headers received from the Amazon SNS publisher to its subscription.
+If set to Active, Amazon SNS will vend X-Ray segment data to topic owner account if the sampled flag in the tracing header is true.
+
+The default TracingConfig is `TracingConfig.PASS_THROUGH`.
+
+Example with a tracingConfig set to Active:
+
+```ts
+const topic = new sns.Topic(this, 'MyTopic', {
+  tracingConfig: sns.TracingConfig.ACTIVE,
 });
 ```
