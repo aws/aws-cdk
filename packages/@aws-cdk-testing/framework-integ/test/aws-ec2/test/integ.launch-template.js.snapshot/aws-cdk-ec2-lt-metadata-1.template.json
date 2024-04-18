@@ -265,12 +265,72 @@
      }
     ]
    }
+  },
+  "LTWithNetworkInterfacesC793C8F4": {
+   "Type": "AWS::EC2::LaunchTemplate",
+   "Properties": {
+    "LaunchTemplateData": {
+     "ImageId": {
+      "Ref": "SsmParameterValueawsserviceamiamazonlinuxlatestal2023amikernel61x8664C96584B6F00A464EAD1953AFF4B05118Parameter"
+     },
+     "NetworkInterfaces": [
+      {
+       "AssociatePublicIpAddress": false,
+       "DeleteOnTermination": true,
+       "DeviceIndex": 0
+      },
+      {
+       "AssociatePublicIpAddress": false,
+       "DeleteOnTermination": true,
+       "DeviceIndex": 1
+      }
+     ],
+     "TagSpecifications": [
+      {
+       "ResourceType": "instance",
+       "Tags": [
+        {
+         "Key": "Name",
+         "Value": "aws-cdk-ec2-lt-metadata-1/LTWithNetworkInterfaces"
+        }
+       ]
+      },
+      {
+       "ResourceType": "volume",
+       "Tags": [
+        {
+         "Key": "Name",
+         "Value": "aws-cdk-ec2-lt-metadata-1/LTWithNetworkInterfaces"
+        }
+       ]
+      }
+     ],
+     "UserData": {
+      "Fn::Base64": "#!/bin/bash"
+     }
+    },
+    "TagSpecifications": [
+     {
+      "ResourceType": "launch-template",
+      "Tags": [
+       {
+        "Key": "Name",
+        "Value": "aws-cdk-ec2-lt-metadata-1/LTWithNetworkInterfaces"
+       }
+      ]
+     }
+    ]
+   }
   }
  },
  "Parameters": {
   "SsmParameterValueawsserviceamiamazonlinuxlatestamzn2amihvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter": {
    "Type": "AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>",
    "Default": "/aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2"
+  },
+  "SsmParameterValueawsserviceamiamazonlinuxlatestal2023amikernel61x8664C96584B6F00A464EAD1953AFF4B05118Parameter": {
+   "Type": "AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>",
+   "Default": "/aws/service/ami-amazon-linux-latest/al2023-ami-kernel-6.1-x86_64"
   },
   "BootstrapVersion": {
    "Type": "AWS::SSM::Parameter::Value<String>",
