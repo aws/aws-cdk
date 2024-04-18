@@ -1295,7 +1295,7 @@ describe('function', () => {
       });
 
       // WHEN
-      fn.grantInvoke(role, { onlyGrantLatestVersion:true });
+      fn.grantInvoke(role, { onlyGrantLatestVersion: true });
 
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
