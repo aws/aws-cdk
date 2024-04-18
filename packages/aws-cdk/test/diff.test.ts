@@ -54,6 +54,8 @@ describe('fixed template', () => {
     fs.writeFileSync(templatePath, JSON.stringify(oldTemplate));
   });
 
+  afterEach(() => fs.rmSync(templatePath));
+
   test('fixed template with valid templates', async () => {
     // GIVEN
     const buffer = new StringWritable();
