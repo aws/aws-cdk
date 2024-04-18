@@ -1,5 +1,5 @@
 /* eslint-disable import/no-extraneous-dependencies */
-import * as aws from 'aws-sdk';
+import { CreateClusterRequest, LogType } from '@aws-sdk/client-eks';
 import { compareLoggingProps } from '../../lib/aws-eks/cluster-resource-handler/compareLogging';
 
 /**
@@ -30,8 +30,8 @@ enum ClusterLoggingTypes {
 
 describe('compareLoggingProps', () => {
 
-  type Props = Partial<aws.EKS.CreateClusterRequest>;
-  const oldEnabledTypes: aws.EKS.LogTypes = [ClusterLoggingTypes.API, ClusterLoggingTypes.AUDIT];
+  type Props = Partial<CreateClusterRequest>;
+  const oldEnabledTypes: LogType[] = [ClusterLoggingTypes.API, ClusterLoggingTypes.AUDIT];
 
   test('when newProps.logging.clusterLogging is undefined, should disable all types with enabled:true in oldProps', () => {
     const oldProps: Props = {
