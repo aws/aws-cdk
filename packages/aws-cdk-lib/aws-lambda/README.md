@@ -204,10 +204,9 @@ that accesses the function or layer).
 **Important**: By default `fn.grantInvoke()` grants permission to the principal to invoke any version of the function, including all past ones. If you only want the principal to invoke the latest version, use `grantInvoke(grantee, { onlyGrantLatestVersion:true })`.
 
 ```ts
-// Grant permissions to a service
 declare const fn: lambda.Function;
 const principal = new iam.ServicePrincipal('my-service');
-
+// Grant invoke only to latest version
 fn.grantInvoke(principal, { onlyGrantLatestVersion : true });
 ```
 
