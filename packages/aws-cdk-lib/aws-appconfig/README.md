@@ -252,8 +252,7 @@ new appconfig.HostedConfiguration(this, 'MyHostedConfiguration', {
 });
 ```
 
-The `deployTo` parameter is used to specify which environments to deploy the configuration to. If this parameter is not 
-specified, there will not be a deployment.
+The `deployTo` parameter is used to specify which environments to deploy the configuration to. 
 
 A hosted configuration with `deployTo`:
 
@@ -267,6 +266,95 @@ new appconfig.HostedConfiguration(this, 'MyHostedConfiguration', {
   deployTo: [env],
 });
 ```
+
+When more than one configuration is set to deploy to the same environment, the 
+deployments will occur one at a time. This is done to satisfy 
+[AppConfig's constraint](https://docs.aws.amazon.com/appconfig/latest/userguide/appconfig-deploying.html):
+> [!NOTE]  
+> You can only deploy one configuration at a time to an environment.   
+> However, you can deploy one configuration each to different environments at the same time.
+
+The deployment order matches the order in which the configurations are declared. 
+
+```ts
+const app = new appconfig.Application(this, 'MyApp');
+const env = new appconfig.Environment(this, 'MyEnv', {
+  application: app,
+});
+
+new appconfig.HostedConfiguration(this, 'MyFirstHostedConfig', {
+  application: app,
+  deployTo: [env],
+  content: appconfig.ConfigurationContent.fromInlineText('This is my first configuration content.'),
+});
+
+new appconfig.HostedConfiguration(this, 'MySecondHostedConfig', {
+  application: app,
+  deployTo: [env],
+  content: appconfig.ConfigurationContent.fromInlineText('This is my second configuration content.'),
+});
+```
+
+If an application would benefit from a deployment order that differs from the 
+declared order, you can defer the decision by using `IEnvironment.addDeployment` 
+rather than the `deployTo` property. 
+In this example, `firstConfig` will be deployed before `secondConfig`. 
+
+```ts
+const app = new appconfig.Application(this, 'MyApp');
+const env = new appconfig.Environment(this, 'MyEnv', {
+  application: app,
+});
+
+const secondConfig = new appconfig.HostedConfiguration(this, 'MySecondHostedConfig', {
+  application: app,
+  content: appconfig.ConfigurationContent.fromInlineText('This is my second configuration content.'),
+});
+
+const firstConfig = new appconfig.HostedConfiguration(this, 'MyFirstHostedConfig', {
+  application: app,
+  deployTo: [env],
+  content: appconfig.ConfigurationContent.fromInlineText('This is my first configuration content.'),
+});
+
+env.addDeployment(secondConfig);
+```
+
+Alternatively, you can defer multiple deployments in favor of 
+`IEnvironment.addDeployments`, which allows you to declare multiple 
+configurations in the order they will be deployed.
+In this example the deployment order will be 
+`firstConfig`, then `secondConfig`, and finally `thirdConfig`. 
+
+```ts
+const app = new appconfig.Application(this, 'MyApp');
+const env = new appconfig.Environment(this, 'MyEnv', {
+  application: app,
+});
+
+const secondConfig = new appconfig.HostedConfiguration(this, 'MySecondHostedConfig', {
+  application: app,
+  content: appconfig.ConfigurationContent.fromInlineText('This is my second configuration content.'),
+});
+
+const thirdConfig = new appconfig.HostedConfiguration(this, 'MyThirdHostedConfig', {
+  application: app,
+  content: appconfig.ConfigurationContent.fromInlineText('This is my third configuration content.'),
+});
+
+const firstConfig = new appconfig.HostedConfiguration(this, 'MyFirstHostedConfig', {
+  application: app,
+  content: appconfig.ConfigurationContent.fromInlineText('This is my first configuration content.'),
+});
+
+env.addDeployments(firstConfig, secondConfig, thirdConfig);
+```
+
+Any mix of `deployTo`, `addDeployment`, and `addDeployments` is permitted. 
+The declaration order will be respected regardless of the approach used. 
+
+> [!IMPORTANT]  
+> If none of these options are utilized, there will not be any deployments.
 
 ### SourcedConfiguration
 
