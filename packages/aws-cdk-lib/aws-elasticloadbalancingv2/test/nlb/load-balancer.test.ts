@@ -1052,7 +1052,7 @@ describe('tests', () => {
         ],
       });
     });
-  }); 
+  });
   describe('dualstack', () => {
     test('Can create internet-facing dualstack NetworkLoadBalancer', () => {
       // GIVEN
