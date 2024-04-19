@@ -150,7 +150,7 @@ context management commands](https://docs.aws.amazon.com/cdk/latest/guide/contex
 ```ts
 declare const vpc: ec2.Vpc;
 const autoScalingGroup = new autoscaling.AutoScalingGroup(this, 'ASG', {
-  machineImage: ecs.EcsOptimizedImage.amazonLinux2Kernel510({ cachedInContext: true }),
+  machineImage: ecs.EcsOptimizedImage.amazonLinux({ cachedInContext: true }),
   vpc,
   instanceType: new ec2.InstanceType('t2.micro'),
 });
