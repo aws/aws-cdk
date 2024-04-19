@@ -250,14 +250,6 @@ export abstract class BaseLoadBalancer extends Resource {
       this.setAttribute('load_balancing.cross_zone.enabled', baseProps.crossZoneEnabled === true ? 'true' : 'false');
     }
 
-    // if (baseProps.crossZoneEnabled === true) {
-    //   this.setAttribute('load_balancing.cross_zone.enabled', 'true');
-    // }
-
-    // if (baseProps.crossZoneEnabled === false) {
-    //   this.setAttribute('load_balancing.cross_zone.enabled', 'false');
-    // }
-
     if (baseProps.denyAllIgwTraffic !== undefined) {
       this.setAttribute('ipv6.deny_all_igw_traffic', baseProps.denyAllIgwTraffic.toString());
     }
