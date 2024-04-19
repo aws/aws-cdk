@@ -701,10 +701,7 @@
     "VpcId": {
      "Ref": "VPCB9E5F0B4"
     }
-   },
-   "DependsOn": [
-    "ALBServiceWithCustomStorageTaskDefTaskRoleDB8D0B36"
-   ]
+   }
   },
   "ALBServiceWithCustomStorageServiceSecurityGroupfromawsecspatternsalbwithcustomstorageALBServiceWithCustomStorageLBSecurityGroup415BB80D808B830EAA": {
    "Type": "AWS::EC2::SecurityGroupIngress",
@@ -725,10 +722,7 @@
      ]
     },
     "ToPort": 80
-   },
-   "DependsOn": [
-    "ALBServiceWithCustomStorageTaskDefTaskRoleDB8D0B36"
-   ]
+   }
   },
   "EcsDefaultClusterMnL3mNNYNVPC9C1EC7A3": {
    "Type": "AWS::ECS::Cluster"

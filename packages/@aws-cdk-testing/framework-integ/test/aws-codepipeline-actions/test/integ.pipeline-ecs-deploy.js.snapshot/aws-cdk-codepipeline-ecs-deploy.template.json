@@ -321,10 +321,7 @@
     "VpcId": {
      "Ref": "VPCB9E5F0B4"
     }
-   },
-   "DependsOn": [
-    "TaskDefTaskRole1EDB4A67"
-   ]
+   }
   },
   "MyBucketF68F3FF0": {
    "Type": "AWS::S3::Bucket",

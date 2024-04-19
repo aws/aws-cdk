@@ -698,10 +698,7 @@
     "VpcId": {
      "Ref": "VPCB9E5F0B4"
     }
-   },
-   "DependsOn": [
-    "HealthCheckALBServiceTaskDefTaskRole3E50CA02"
-   ]
+   }
   },
   "HealthCheckALBServiceSecurityGroupfromawsecspatternsalbhealthcheckHealthCheckALBServiceLBSecurityGroup32B42FFA80C80362D9": {
    "Type": "AWS::EC2::SecurityGroupIngress",
@@ -722,10 +719,7 @@
      ]
     },
     "ToPort": 80
-   },
-   "DependsOn": [
-    "HealthCheckALBServiceTaskDefTaskRole3E50CA02"
-   ]
+   }
   },
   "EcsDefaultClusterMnL3mNNYNVPC9C1EC7A3": {
    "Type": "AWS::ECS::Cluster"

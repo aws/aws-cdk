@@ -408,10 +408,7 @@
     "VpcId": {
      "Ref": "Vpc8378EB38"
     }
-   },
-   "DependsOn": [
-    "TaskDefTaskRole1EDB4A67"
-   ]
+   }
   }
  },
  "Parameters": {

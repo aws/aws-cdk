@@ -464,10 +464,7 @@
     "VpcId": {
      "Ref": "Vpc8378EB38"
     }
-   },
-   "DependsOn": [
-    "FargateTaskDefTaskRole0B257552"
-   ]
+   }
   }
  },
  "Parameters": {

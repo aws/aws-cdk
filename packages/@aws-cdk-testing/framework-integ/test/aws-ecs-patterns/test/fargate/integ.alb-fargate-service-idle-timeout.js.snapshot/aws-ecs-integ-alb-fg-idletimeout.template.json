@@ -696,10 +696,7 @@
     "VpcId": {
      "Ref": "Vpc8378EB38"
     }
-   },
-   "DependsOn": [
-    "myServiceTaskDefTaskRole1C1DE6CC"
-   ]
+   }
   },
   "myServiceSecurityGroupfromawsecsintegalbfgidletimeoutmyServiceLBSecurityGroup1B078E6280039B9A1C": {
    "Type": "AWS::EC2::SecurityGroupIngress",
@@ -720,10 +717,7 @@
      ]
     },
     "ToPort": 80
-   },
-   "DependsOn": [
-    "myServiceTaskDefTaskRole1C1DE6CC"
-   ]
+   }
   }
  },
  "Outputs": {

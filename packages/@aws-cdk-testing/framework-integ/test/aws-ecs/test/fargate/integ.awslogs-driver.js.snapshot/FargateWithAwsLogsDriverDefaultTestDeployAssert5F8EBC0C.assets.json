@@ -1,20 +1,20 @@
 {
   "version": "36.0.0",
   "files": {
-    "df6156f884f46480078633afbd0b768581022c5e444c5f72752980280ae15bd9": {
+    "5d1d4edf325214cb8fa33ca3d5969e29df888b1dd35dd573917f63833958a9a7": {
       "source": {
-        "path": "asset.df6156f884f46480078633afbd0b768581022c5e444c5f72752980280ae15bd9.bundle",
+        "path": "asset.5d1d4edf325214cb8fa33ca3d5969e29df888b1dd35dd573917f63833958a9a7.bundle",
         "packaging": "zip"
       },
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "df6156f884f46480078633afbd0b768581022c5e444c5f72752980280ae15bd9.zip",
+          "objectKey": "5d1d4edf325214cb8fa33ca3d5969e29df888b1dd35dd573917f63833958a9a7.zip",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
     },
-    "da06bf6fce985a0d6294ee04ff3d779dae26a32292f92401da58d56bb52983dc": {
+    "3fa28404fed2ae11147bd1bac54570caf6bf4a711544789d34679ea43b7b08e4": {
       "source": {
         "path": "FargateWithAwsLogsDriverDefaultTestDeployAssert5F8EBC0C.template.json",
         "packaging": "file"
@@ -22,7 +22,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "da06bf6fce985a0d6294ee04ff3d779dae26a32292f92401da58d56bb52983dc.json",
+          "objectKey": "3fa28404fed2ae11147bd1bac54570caf6bf4a711544789d34679ea43b7b08e4.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
