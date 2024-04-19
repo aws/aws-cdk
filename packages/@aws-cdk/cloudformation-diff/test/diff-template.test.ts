@@ -624,19 +624,6 @@ test('metadata changes are rendered in the diff', () => {
   expect(differences.resources.differenceCount).toBe(1);
 });
 
-test('diff complains if it receives an undefined template', async () => {
-  // GIVEN
-  const currentTemplate: any = undefined;
-
-  // WHEN
-  const newTemplate = {
-    Resources: {},
-  };
-
-  // THEN
-  expect(() => fullDiff(currentTemplate, newTemplate)).toThrow(/trying to diff a template that is not defined/);
-});
-
 describe('changeset', () => {
   test('changeset overrides spec replacements', () => {
     // GIVEN

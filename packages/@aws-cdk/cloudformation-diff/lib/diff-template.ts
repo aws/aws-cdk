@@ -50,11 +50,6 @@ export function fullDiff(
   changeSet?: DescribeChangeSetOutput,
   isImport?: boolean,
 ): types.TemplateDiff {
-
-  if (!currentTemplate || !newTemplate) {
-    throw new Error('trying to diff a template that is not defined');
-  }
-
   normalize(currentTemplate);
   normalize(newTemplate);
   const theDiff = diffTemplate(currentTemplate, newTemplate);
