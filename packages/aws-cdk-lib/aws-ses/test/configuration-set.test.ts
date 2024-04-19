@@ -40,3 +40,38 @@ test('configuration set with options', () => {
     },
   });
 });
+
+test('renders the correct ARN for owned ConfigurationSet', () => {
+  const configurationSet = new ConfigurationSet(stack, 'ConfigurationSet');
+  const arn = stack.resolve(configurationSet.configurationSetArn);
+  expect(arn).toEqual({
+    'Fn::Join': ['', [
+      'arn:',
+      { Ref: 'AWS::Partition' },
+      ':ses:',
+      { Ref: 'AWS::Region' },
+      ':',
+      { Ref: 'AWS::AccountId' },
+      ':configuration-set/',
+      {
+        Ref: 'ConfigurationSet3DD38186',
+      },
+    ]],
+  });
+});
+
+test('renders the correct ARN for unowned ConfigurationSet', () => {
+  const unownedConfigurationSet = ConfigurationSet.fromConfigurationSetName(stack, 'ConfigurationSet', 'my-imported-configuration-set');
+  const arn = stack.resolve(unownedConfigurationSet.configurationSetArn);
+  expect(arn).toEqual({
+    'Fn::Join': ['', [
+      'arn:',
+      { Ref: 'AWS::Partition' },
+      ':ses:',
+      { Ref: 'AWS::Region' },
+      ':',
+      { Ref: 'AWS::AccountId' },
+      ':configuration-set/my-imported-configuration-set',
+    ]],
+  });
+});

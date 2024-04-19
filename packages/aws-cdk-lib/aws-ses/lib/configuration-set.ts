@@ -15,6 +15,13 @@ export interface IConfigurationSet extends IResource {
    * @attribute
    */
   readonly configurationSetName: string;
+
+  /**
+   * The ARN of the configuration set
+   *
+   * @attribute
+   */
+  readonly configurationSetArn: string;
 }
 
 /**
@@ -111,15 +118,27 @@ export enum SuppressionReasons {
   COMPLAINTS_ONLY = 'COMPLAINTS_ONLY',
 }
 
+abstract class ConfigurationSetBase extends Resource implements IConfigurationSet {
+  public abstract configurationSetName: string;
+
+  public get configurationSetArn(): string {
+    return this.stack.formatArn({
+      service: 'ses',
+      resource: 'configuration-set',
+      resourceName: this.configurationSetName,
+    });
+  }
+}
+
 /**
  * A configuration set
  */
-export class ConfigurationSet extends Resource implements IConfigurationSet {
+export class ConfigurationSet extends ConfigurationSetBase {
   /**
    * Use an existing configuration set
    */
   public static fromConfigurationSetName(scope: Construct, id: string, configurationSetName: string): IConfigurationSet {
-    class Import extends Resource implements IConfigurationSet {
+    class Import extends ConfigurationSetBase {
       public readonly configurationSetName = configurationSetName;
     }
     return new Import(scope, id);
