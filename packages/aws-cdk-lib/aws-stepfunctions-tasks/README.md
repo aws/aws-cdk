@@ -606,6 +606,34 @@ const runTask = new tasks.EcsRunTask(this, 'RunFargate', {
 });
 ```
 
+#### ECS enable Exec
+
+By setting the property [`enableExecuteCommand`](https://docs.aws.amazon.com/AmazonECS/latest/APIReference/API_RunTask.html#ECS-RunTask-request-enableExecuteCommand) to `true`, you can enable the [ECS Exec feature](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-exec.html) for the task for either Fargate or EC2 launch types.
+
+```ts
+const vpc = ec2.Vpc.fromLookup(this, 'Vpc', {
+  isDefault: true,
+});
+const cluster = new ecs.Cluster(this, 'ECSCluster', { vpc });
+
+const taskDefinition = new ecs.TaskDefinition(this, 'TD', {
+  compatibility: ecs.Compatibility.EC2,
+});
+
+taskDefinition.addContainer('TheContainer', {
+  image: ecs.ContainerImage.fromRegistry('foo/bar'),
+  memoryLimitMiB: 256,
+});
+
+const runTask = new tasks.EcsRunTask(this, 'Run', {
+  integrationPattern: sfn.IntegrationPattern.RUN_JOB,
+  cluster,
+  taskDefinition,
+  launchTarget: new tasks.EcsEc2LaunchTarget(),
+  enableExecuteCommand: true,
+});
+```
+
 ## EMR
 
 Step Functions supports Amazon EMR through the service integration pattern.
@@ -1132,6 +1160,31 @@ You can call the [`StartJobRun`](https://docs.aws.amazon.com/databrew/latest/dg/
 ```ts
 new tasks.GlueDataBrewStartJobRun(this, 'Task', {
   name: 'databrew-job',
+});
+```
+
+## Invoke HTTP API
+
+Step Functions supports [calling third-party APIs](https://docs.aws.amazon.com/step-functions/latest/dg/connect-third-party-apis.html) with credentials managed by Amazon EventBridge [Connections](https://docs.aws.amazon.com/eventbridge/latest/APIReference/API_Connection.html).
+
+The following snippet creates a new API destination connection, and uses it to make a POST request to the specified URL. The endpoint response is available at the `$.ResponseBody` path.
+
+```ts
+import * as events from 'aws-cdk-lib/aws-events';
+
+const connection = new events.Connection(this, 'Connection', {
+  authorization: events.Authorization.basic('username', SecretValue.unsafePlainText('password')),
+});
+
+new tasks.HttpInvoke(this, 'Invoke HTTP API', {
+  apiRoot: 'https://api.example.com',
+  apiEndpoint: sfn.TaskInput.fromText('https://api.example.com/path/to/resource'),
+  body: sfn.TaskInput.fromObject({ foo: 'bar' }),
+  connection,
+  headers: sfn.TaskInput.fromObject({ 'Content-Type': 'application/json' }),
+  method: sfn.TaskInput.fromText('POST'),
+  queryStringParameters: sfn.TaskInput.fromObject({ id: '123' }),
+  urlEncodingFormat: tasks.URLEncodingFormat.BRACKETS,
 });
 ```
 
