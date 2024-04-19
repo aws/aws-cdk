@@ -18,10 +18,10 @@ new elbv2.ApplicationLoadBalancer(stack, 'ALB', {
 });
 
 new elbv2.NetworkLoadBalancer(stack, 'NLB', {
-    vpc,
-    crossZoneEnabled: false,
+  vpc,
+  crossZoneEnabled: false,
 });
 
 new IntegTest(app, 'integ-test', {
-    testCases: [stack],
+  testCases: [stack],
 });
