@@ -538,13 +538,13 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
    * Sets the application log level for the function.
    * @default "INFO"
    */
-  readonly applicationLogLevel?: string;
+  readonly applicationLogLevel?: ApplicationLogLevel;
 
   /**
    * Sets the system log level for the function.
    * @default "INFO"
    */
-  readonly systemLogLevel?: string;
+  readonly systemLogLevel?: SystemLogLevel;
 }
 
 export interface FunctionProps extends FunctionOptions {
