@@ -26,7 +26,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1706010370068"
+    "salt": "1711653475520"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -98,7 +98,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "4984c845346313a408899c8ff361d3b7b97953a9d4202e47694ef2a101f4b5c3.zip"
+     "S3Key": "310f432b946edeef3316f39f32b344b6bdc401a3b438433db42adadab1bf5e17.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
@@ -138,7 +138,7 @@
      "Body": "\"Some content\""
     },
     "flattenResponse": "false",
-    "salt": "1706010370068"
+    "salt": "1711653475522"
    },
    "DependsOn": [
     "AwsApiCallSQSpurgeQueue0080aee76c0c561f142ddb9a13ec7cc4"
@@ -178,7 +178,7 @@
     "outputPaths": [
      "Messages.0.Body.Records.0.s3.object.key"
     ],
-    "salt": "1706010370069"
+    "salt": "1711653475522"
    },
    "DependsOn": [
     "AwsApiCallS3putObjectfdcc2b330314993fae3423f6d19b433f"
