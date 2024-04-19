@@ -18,6 +18,7 @@ const bucketName = `eks-bucket-${stack.account}-${stack.region}`;
 
 const dockerImage = new ecrAssets.DockerImageAsset(stack, 'sdk-call-making-docker-image', {
   directory: path.join(__dirname, 'sdk-call-integ-test-docker-app/app'),
+  cacheDisabled: true,
 });
 
 // just need one nat gateway to simplify the test

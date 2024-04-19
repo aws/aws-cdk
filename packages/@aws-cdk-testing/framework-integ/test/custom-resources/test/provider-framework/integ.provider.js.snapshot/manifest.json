@@ -196,6 +196,12 @@
             "data": "comamazonawscdkcustomresourcess3assertproviderwaiterstatemachineRoleDefaultPolicy9882AB39"
           }
         ],
+        "/integ-provider-framework/com.amazonaws.cdk.custom-resources.s3assert-provider/s3assert-provider/waiter-state-machine/LogGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "comamazonawscdkcustomresourcess3assertproviderwaiterstatemachineLogGroup7F17330A"
+          }
+        ],
         "/integ-provider-framework/com.amazonaws.cdk.custom-resources.s3assert-provider/s3assert-provider/waiter-state-machine/Resource": [
           {
             "type": "aws:cdk:logicalId",
