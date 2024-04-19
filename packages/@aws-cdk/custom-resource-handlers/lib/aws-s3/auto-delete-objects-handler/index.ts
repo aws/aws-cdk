@@ -30,8 +30,9 @@ async function onUpdate(event: AWSLambda.CloudFormationCustomResourceEvent) {
   /* If the name of the bucket has changed, CloudFormation will try to delete the bucket
     and create a new one with the new name. Returning a PhysicalResourceId that differs
     from the event's PhysicalResourceId will trigger a `Delete` event for the custom
-    resource. The `Delete` event will trigger `onDelete` function which will
-    empty the content of the bucket and then proceed to delete the bucket. */
+    resource, note that this is default CFN behaviour. The `Delete` event will trigger 
+    `onDelete` function which will empty the content of the bucket and then proceed to 
+    delete the bucket. */
   return { PhysicalResourceId: newBucketName };
 }
 
