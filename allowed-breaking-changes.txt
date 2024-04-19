@@ -933,6 +933,3 @@ removed:aws-cdk-lib.aws_ec2.WindowsVersion.WINDOWS_SERVER_2022_TURKISH_FULL_BASE
 removed:aws-cdk-lib.aws_ec2.WindowsVersion.WINDOWS_SERVER_2022_TURKISH_FULL_BASE_2023_12_13
 removed:aws-cdk-lib.aws_ec2.WindowsVersion.WINDOWS_SERVER_2022_TURKISH_FULL_BASE_2024_01_16
 removed:aws-cdk-lib.aws_ec2.WindowsVersion.WINDOWS_SERVER_2022_TURKISH_FULL_BASE_2024_02_14
-
-# Amazon Linux 2 AMI parameter now supports specifying the kernel ID
-incompatible-argument:aws-cdk-lib.aws_ecs.EcsOptimizedImage.amazonLinux2
