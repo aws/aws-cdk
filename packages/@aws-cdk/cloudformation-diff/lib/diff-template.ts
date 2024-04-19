@@ -50,6 +50,7 @@ export function fullDiff(
   changeSet?: DescribeChangeSetOutput,
   isImport?: boolean,
 ): types.TemplateDiff {
+
   normalize(currentTemplate);
   normalize(newTemplate);
   const theDiff = diffTemplate(currentTemplate, newTemplate);
