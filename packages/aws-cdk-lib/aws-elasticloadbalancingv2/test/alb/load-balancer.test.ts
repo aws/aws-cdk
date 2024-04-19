@@ -805,7 +805,6 @@ describe('tests', () => {
   // test cases for crossZoneEnabled
   describe('crossZoneEnabled', () => {
     test('crossZoneEnabled can be true', () => {
-      // ALB should support either undefined or true
       // GIVEN
       const app = new cdk.App();
       const stack = new cdk.Stack(app, 'stack');
@@ -832,7 +831,6 @@ describe('tests', () => {
       });
     });
     test('crossZoneEnabled can be undefined', () => {
-      // ALB should support either undefined or true
       // GIVEN
       const app = new cdk.App();
       const stack = new cdk.Stack(app, 'stack');
@@ -854,7 +852,6 @@ describe('tests', () => {
       });
     });
     test('crossZoneEnabled cannot be false', () => {
-      // ALB should support either undefined or true
       // GIVEN
       const app = new cdk.App();
       const stack = new cdk.Stack(app, 'stack');
