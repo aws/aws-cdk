@@ -22,6 +22,7 @@ import { STANDARD_NODEJS_RUNTIME } from '../../config';
  *  - The email should be in the WorkMail user inbox
  *  - The email should be saved to the S3 bucket
  *  - The SQS queue should receive 6 receipt notifications
+ *  - A bounce notification should be sent back to the sender mailbox
  */
 
 const TEST_WORKMAIL_DOMAIN = 'cdk-test-123.awsapps.com';
