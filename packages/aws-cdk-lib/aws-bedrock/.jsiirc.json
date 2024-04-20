@@ -4,7 +4,7 @@
       "package": "software.amazon.awscdk.services.bedrock"
     },
     "dotnet": {
-      "namespace": "Amazon.CDK.AWS.Bedrock"
+      "package": "Amazon.CDK.AWS.Bedrock"
     },
     "python": {
       "module": "aws_cdk.aws_bedrock"
