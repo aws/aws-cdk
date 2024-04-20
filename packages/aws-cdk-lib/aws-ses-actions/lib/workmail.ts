@@ -8,7 +8,10 @@ export interface WorkMailProps {
   /**
    * The WorkMail organization ARN.
    *
-   * @example 'arn:aws:workmail:us-east-1:123456789012:organization/m-organizationid'
+   * Amazon WorkMail organization ARNs are in the form
+   * `arn:aws:workmail:region:account_ID:organization/organization_ID`
+   *
+   * @example 'arn:aws:workmail:us-east-1:123456789012:organization/m-68755160c4cb4e29a2b2f8fb58f359d7'
    */
   readonly organizationArn: string;
 
