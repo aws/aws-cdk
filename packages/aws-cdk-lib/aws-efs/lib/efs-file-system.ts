@@ -586,7 +586,7 @@ export class FileSystem extends FileSystemBase {
       performanceMode: props.performanceMode,
       throughputMode: props.throughputMode,
       provisionedThroughputInMibps: props.provisionedThroughputPerSecond?.toMebibytes(),
-      backupPolicy: props.enableAutomaticBackups ? { status: 'ENABLED' } : undefined,
+      backupPolicy: { status: props.enableAutomaticBackups ? 'ENABLED' : 'DISABLED' },
       fileSystemPolicy: Lazy.any({
         produce: () => {
           const denyAnonymousAccessFlag = FeatureFlags.of(this).isEnabled(cxapi.EFS_DENY_ANONYMOUS_ACCESS) ?? false;
