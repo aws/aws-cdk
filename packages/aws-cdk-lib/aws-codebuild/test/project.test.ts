@@ -890,6 +890,42 @@ describe('Environment', () => {
     });
   });
 
+  test('Can use Windows 2022 build image with a fleet', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const bucket = s3.Bucket.fromBucketName(stack, 'Bucket', 'my-bucket'); // (stack, 'Bucket');
+    const fleet = new codebuild.Fleet(stack, 'Fleet', {
+      fleetName: 'MyFleet',
+      baseCapacity: 1,
+      computeType: codebuild.FleetComputeType.MEDIUM,
+      environmentType: codebuild.EnvironmentType.WINDOWS_SERVER_2022_CONTAINER,
+    });
+
+    // WHEN
+    new codebuild.Project(stack, 'Project', {
+      source: codebuild.Source.s3({
+        bucket,
+        path: 'path',
+      }),
+      environment: {
+        fleet,
+        buildImage: codebuild.WindowsBuildImage.WIN_SERVER_CORE_2022_BASE_3_0,
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Project', {
+      Environment: Match.objectLike({
+        ComputeType: 'BUILD_GENERAL1_MEDIUM',
+        Image: 'aws/codebuild/windows-base:2022-1.0',
+        Type: 'WINDOWS_SERVER_2022_CONTAINER',
+        Fleet: {
+          FleetArn: { 'Fn::GetAtt': ['Fleet30813DF3', 'Arn'] },
+        },
+      }),
+    });
+  });
+
   test('throws when fleet environmentType does not match the buildImage', () => {
     // GIVEN
     const stack = new cdk.Stack();
@@ -914,6 +950,48 @@ describe('Environment', () => {
         },
       });
     }).toThrow('The environment type of the fleet (LINUX_CONTAINER) must match the environment type of the build image (WINDOWS_SERVER_2019_CONTAINER)');
+  });
+
+  test('throws when Windows 2022 build image is used without a fleet', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const bucket = s3.Bucket.fromBucketName(stack, 'Bucket', 'my-bucket'); // (stack, 'Bucket');
+
+    // THEN
+    expect(() => {
+      new codebuild.Project(stack, 'Project', {
+        source: codebuild.Source.s3({
+          bucket,
+          path: 'path',
+        }),
+        environment: {
+          buildImage: codebuild.WindowsBuildImage.WIN_SERVER_CORE_2022_BASE_3_0,
+        },
+      });
+    }).toThrow('Windows Server 2022 images must be used with a fleet');
+  });
+
+  test('throws when 2022 WindowsImageType is used without a fleet', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const bucket = s3.Bucket.fromBucketName(stack, 'Bucket', 'my-bucket'); // (stack, 'Bucket');
+
+    // THEN
+    expect(() => {
+      new codebuild.Project(stack, 'Project', {
+        source: codebuild.Source.s3({
+          bucket,
+          path: 'path',
+        }),
+        environment: {
+          buildImage: codebuild.WindowsBuildImage.fromDockerRegistry(
+            'aws/codebuild/future-windows-version:2099-9.0',
+            {},
+            codebuild.WindowsImageType.SERVER_2022,
+          ),
+        },
+      });
+    }).toThrow('Windows Server 2022 images must be used with a fleet');
   });
 });
 

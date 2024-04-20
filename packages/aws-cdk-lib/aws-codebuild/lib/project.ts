@@ -2010,7 +2010,7 @@ export enum WindowsImageType {
   /**
    * The WINDOWS_SERVER_2022_CONTAINER environment type
    *
-   * Notice: Cannot be used with on-demand compute, only with a fleet.
+   * Notice: Cannot be used with on-demand compute, only with a {@link BuildEnvironment.fleet}.
    *
    * @see https://github.com/aws/aws-cdk/issues/29617
    * @see https://docs.aws.amazon.com/codebuild/latest/userguide/fleets.html
@@ -2099,9 +2099,7 @@ export class WindowsBuildImage implements IBuildImage {
    * The standard CodeBuild image `aws/codebuild/windows-base:2022-1.0`, which is
    * based off Windows Server Core 2022.
    *
-   * @deprecated Windows Server 2022 images are not supported for on-demand compute.
-   * You can either use {@link WindowsBuildImage.WIN_SERVER_CORE_2019_BASE_3_0}
-   * or deploy a fleet using {@link CfnProject}
+   * Notice: Cannot be used with on-demand compute, only with a {@link BuildEnvironment.fleet}.
    *
    * @see https://github.com/aws/aws-cdk/issues/29617
    * @see https://docs.aws.amazon.com/codebuild/latest/userguide/fleets.html
@@ -2200,6 +2198,11 @@ export class WindowsBuildImage implements IBuildImage {
     if (buildEnvironment.computeType !== undefined && unsupportedComputeTypes.includes(buildEnvironment.computeType)) {
       errors.push(`Windows images do not support the '${buildEnvironment.computeType}' compute type`);
     }
+
+    if (!buildEnvironment.fleet && this.type === WindowsImageType.SERVER_2022) {
+      errors.push('Windows Server 2022 images must be used with a fleet');
+    }
+
     return errors;
   }
 
