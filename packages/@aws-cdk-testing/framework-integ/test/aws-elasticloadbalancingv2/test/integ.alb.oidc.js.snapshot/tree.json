@@ -721,11 +721,11 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::CertificateManager::Certificate",
                   "aws:cdk:cloudformation:props": {
-                    "domainName": "*.example.com",
+                    "domainName": "colifran.people.aws.dev",
                     "domainValidationOptions": [
                       {
-                        "domainName": "*.example.com",
-                        "hostedZoneId": "Z23ABC4XYZL05B"
+                        "domainName": "colifran.people.aws.dev",
+                        "hostedZoneId": "Z0179184ELB7YDZK7RWK"
                       }
                     ],
                     "tags": [
@@ -805,7 +805,7 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::Cognito::UserPoolDomain",
                       "aws:cdk:cloudformation:props": {
-                        "domain": "z23abc4xyzl05b",
+                        "domain": "z0179184elb7ydzk7rwk",
                         "userPoolId": {
                           "Ref": "UserPool6BA7E5F2"
                         }
@@ -844,7 +844,7 @@
                           "aws.cognito.signin.user.admin"
                         ],
                         "callbackUrLs": [
-                          "https://*.example.com/oauth2/idpresponse"
+                          "https://colifran.people.aws.dev/oauth2/idpresponse"
                         ],
                         "generateSecret": true,
                         "supportedIdentityProviders": [
@@ -1321,8 +1321,8 @@
                         ]
                       }
                     },
-                    "hostedZoneId": "Z23ABC4XYZL05B",
-                    "name": "example.com.",
+                    "hostedZoneId": "Z0179184ELB7YDZK7RWK",
+                    "name": "colifran.people.aws.dev.",
                     "type": "A"
                   }
                 },
@@ -1610,7 +1610,7 @@
                       "variables": {
                         "TEST_USERNAME": "test-user@example.com",
                         "TEST_PASSWORD": "TestUser@123",
-                        "TEST_URL": "https://*.example.com"
+                        "TEST_URL": "https://colifran.people.aws.dev"
                       }
                     },
                     "functionName": "cdk-integ-alb-oidc-signin-handler",
@@ -1644,6 +1644,14 @@
               "Output{\"Ref\":\"Signin352C80E6\"}": {
                 "id": "Output{\"Ref\":\"Signin352C80E6\"}",
                 "path": "IntegAlbOidc/Exports/Output{\"Ref\":\"Signin352C80E6\"}",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnOutput",
+                  "version": "0.0.0"
+                }
+              },
+              "Output{\"Ref\":\"UserPool6BA7E5F2\"}": {
+                "id": "Output{\"Ref\":\"UserPool6BA7E5F2\"}",
+                "path": "IntegAlbOidc/Exports/Output{\"Ref\":\"UserPool6BA7E5F2\"}",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.CfnOutput",
                   "version": "0.0.0"
@@ -1791,6 +1799,60 @@
                     "constructInfo": {
                       "fqn": "constructs.Construct",
                       "version": "10.3.0"
+                    }
+                  },
+                  "AwsApiCallCognitoIdentityServiceProvideradminGetUsercd0af199640a9a7c74928b3c52106837": {
+                    "id": "AwsApiCallCognitoIdentityServiceProvideradminGetUsercd0af199640a9a7c74928b3c52106837",
+                    "path": "IntegTestAlbOidc/DefaultTest/DeployAssert/AwsApiCallCognitoIdentityServiceProvideradminGetUsercd0af199640a9a7c74928b3c52106837",
+                    "children": {
+                      "SdkProvider": {
+                        "id": "SdkProvider",
+                        "path": "IntegTestAlbOidc/DefaultTest/DeployAssert/AwsApiCallCognitoIdentityServiceProvideradminGetUsercd0af199640a9a7c74928b3c52106837/SdkProvider",
+                        "children": {
+                          "AssertionsProvider": {
+                            "id": "AssertionsProvider",
+                            "path": "IntegTestAlbOidc/DefaultTest/DeployAssert/AwsApiCallCognitoIdentityServiceProvideradminGetUsercd0af199640a9a7c74928b3c52106837/SdkProvider/AssertionsProvider",
+                            "constructInfo": {
+                              "fqn": "constructs.Construct",
+                              "version": "10.3.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/integ-tests-alpha.AssertionsProvider",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Default": {
+                        "id": "Default",
+                        "path": "IntegTestAlbOidc/DefaultTest/DeployAssert/AwsApiCallCognitoIdentityServiceProvideradminGetUsercd0af199640a9a7c74928b3c52106837/Default",
+                        "children": {
+                          "Default": {
+                            "id": "Default",
+                            "path": "IntegTestAlbOidc/DefaultTest/DeployAssert/AwsApiCallCognitoIdentityServiceProvideradminGetUsercd0af199640a9a7c74928b3c52106837/Default/Default",
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.CfnResource",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CustomResource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "AssertionResults": {
+                        "id": "AssertionResults",
+                        "path": "IntegTestAlbOidc/DefaultTest/DeployAssert/AwsApiCallCognitoIdentityServiceProvideradminGetUsercd0af199640a9a7c74928b3c52106837/AssertionResults",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CfnOutput",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/integ-tests-alpha.AwsApiCall",
+                      "version": "0.0.0"
                     }
                   },
                   "BootstrapVersion": {

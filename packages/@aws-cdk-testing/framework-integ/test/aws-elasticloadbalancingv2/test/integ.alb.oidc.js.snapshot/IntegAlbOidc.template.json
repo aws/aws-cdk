@@ -510,11 +510,11 @@
   "Certificate4E7ABB08": {
    "Type": "AWS::CertificateManager::Certificate",
    "Properties": {
-    "DomainName": "*.example.com",
+    "DomainName": "colifran.people.aws.dev",
     "DomainValidationOptions": [
      {
-      "DomainName": "*.example.com",
-      "HostedZoneId": "Z23ABC4XYZL05B"
+      "DomainName": "colifran.people.aws.dev",
+      "HostedZoneId": "Z0179184ELB7YDZK7RWK"
      }
     ],
     "Tags": [
@@ -566,7 +566,7 @@
   "UserPoolDomainD0EA232A": {
    "Type": "AWS::Cognito::UserPoolDomain",
    "Properties": {
-    "Domain": "z23abc4xyzl05b",
+    "Domain": "z0179184elb7ydzk7rwk",
     "UserPoolId": {
      "Ref": "UserPool6BA7E5F2"
     }
@@ -587,7 +587,7 @@
      "aws.cognito.signin.user.admin"
     ],
     "CallbackURLs": [
-     "https://*.example.com/oauth2/idpresponse"
+     "https://colifran.people.aws.dev/oauth2/idpresponse"
     ],
     "GenerateSecret": true,
     "SupportedIdentityProviders": [
@@ -936,8 +936,8 @@
       ]
      }
     },
-    "HostedZoneId": "Z23ABC4XYZL05B",
-    "Name": "example.com.",
+    "HostedZoneId": "Z0179184ELB7YDZK7RWK",
+    "Name": "colifran.people.aws.dev.",
     "Type": "A"
    }
   },
@@ -962,7 +962,7 @@
       ]
      ]
     },
-    "InstallLatestAwsSdk": false
+    "InstallLatestAwsSdk": "false"
    },
    "DependsOn": [
     "UserCustomResourcePolicyC2EB5139"
@@ -1024,7 +1024,7 @@
       ]
      ]
     },
-    "InstallLatestAwsSdk": false
+    "InstallLatestAwsSdk": "false"
    },
    "DependsOn": [
     "UserCustomResourcePolicyC2EB5139",
@@ -1108,7 +1108,7 @@
      "Variables": {
       "TEST_USERNAME": "test-user@example.com",
       "TEST_PASSWORD": "TestUser@123",
-      "TEST_URL": "https://*.example.com"
+      "TEST_URL": "https://colifran.people.aws.dev"
      }
     },
     "FunctionName": "cdk-integ-alb-oidc-signin-handler",
@@ -1135,6 +1135,14 @@
    },
    "Export": {
     "Name": "IntegAlbOidc:ExportsOutputRefSignin352C80E64BA58F71"
+   }
+  },
+  "ExportsOutputRefUserPool6BA7E5F296FD7236": {
+   "Value": {
+    "Ref": "UserPool6BA7E5F2"
+   },
+   "Export": {
+    "Name": "IntegAlbOidc:ExportsOutputRefUserPool6BA7E5F296FD7236"
    }
   }
  },
