@@ -68,6 +68,7 @@ test('create event with physical resource id path', async () => {
           Bucket: 'my-bucket',
         },
         physicalResourceId: { responsePath: 'Contents.1.ETag' },
+        logApiResponseData: true,
       } satisfies AwsSdkCall),
     },
   };
@@ -107,6 +108,7 @@ test('update event with physical resource id', async () => {
           TopicArn: 'topicarn',
         },
         physicalResourceId: { id: 'topicarn' },
+        logApiResponseData: true,
       } satisfies AwsSdkCall),
     },
   };
@@ -139,6 +141,7 @@ test('delete event', async () => {
           Bucket: 'my-bucket',
         },
         physicalResourceId: { responsePath: 'Contents.1.ETag' },
+        logApiResponseData: true,
       } satisfies AwsSdkCall),
     },
   };
@@ -173,6 +176,7 @@ test('delete event with Delete call and no physical resource id in call', async 
         parameters: {
           Name: 'my-param',
         },
+        logApiResponseData: true,
       } satisfies AwsSdkCall),
     },
   };
@@ -207,6 +211,7 @@ test('create event with Delete call only', async () => {
         parameters: {
           Name: 'my-param',
         },
+        logApiResponseData: true,
       } satisfies AwsSdkCall),
     },
   };
@@ -243,6 +248,7 @@ test('catch errors', async () => {
         },
         physicalResourceId: { id: 'physicalResourceId' },
         ignoreErrorCodesMatching: 'NoSuchBucket',
+        logApiResponseData: true,
       } satisfies AwsSdkCall),
     },
   };
@@ -287,6 +293,7 @@ test('restrict output path', async () => {
         },
         physicalResourceId: { id: 'id' },
         outputPath: 'Contents.0',
+        logApiResponseData: true,
       } satisfies AwsSdkCall),
     },
   };
@@ -332,6 +339,7 @@ test('restrict output paths', async () => {
         },
         physicalResourceId: { id: 'id' },
         outputPaths: ['Contents.0.Key', 'Contents.1.Key'],
+        logApiResponseData: true,
       } satisfies AwsSdkCall),
     },
   };
@@ -370,6 +378,7 @@ test('can specify apiVersion and region', async () => {
         apiVersion: '2010-03-31',
         region: 'eu-west-1',
         physicalResourceId: { id: 'id' },
+        logApiResponseData: true,
       } satisfies AwsSdkCall),
     },
   };
@@ -413,6 +422,7 @@ test('installs the latest SDK', async () => {
           TopicArn: 'topic',
         },
         physicalResourceId: { id: 'id' },
+        logApiResponseData: true,
       } satisfies AwsSdkCall),
       InstallLatestAwsSdk: 'true',
     },
@@ -452,6 +462,7 @@ test('invalid service name throws explicit error', async () => {
           TopicArn: 'topic',
         },
         physicalResourceId: { id: 'id' },
+        logApiResponseData: true,
       } satisfies AwsSdkCall),
     },
   };

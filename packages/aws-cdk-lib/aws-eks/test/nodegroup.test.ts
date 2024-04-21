@@ -4,6 +4,7 @@ import { Template } from '../../assertions';
 import * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
 import * as cdk from '../../core';
+import * as cxapi from '../../cx-api';
 import * as eks from '../lib';
 import { NodegroupAmiType, TaintEffect } from '../lib';
 
@@ -1639,6 +1640,27 @@ describe('node group', () => {
         MaxUnavailablePercentage: 33,
       },
     });
+  });
+
+  test('EKS_NODEGROUP_NAME feature flag should return correct nodegroupName', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stackWithFlag = new cdk.Stack(app, 'StackWithFlag', {
+      env: { account: '1234', region: 'testregion' },
+    });
+
+    // WHEN
+    stackWithFlag.node.setContext(cxapi.EKS_NODEGROUP_NAME, true);
+    const cluster = new eks.Cluster(stackWithFlag, 'Cluster', {
+      defaultCapacity: 0,
+      version: CLUSTER_VERSION,
+    });
+    const ng = new eks.Nodegroup(stackWithFlag, 'Nodegroup', {
+      cluster,
+    });
+
+    // THEN
+    expect(ng.nodegroupName).not.toEqual((ng.node.defaultChild as eks.CfnNodegroup).ref);
   });
 
   test('throws when maxUnavailable and maxUnavailablePercentage are set', () => {

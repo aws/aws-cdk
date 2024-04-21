@@ -265,6 +265,7 @@ export interface DestroyStackOptions {
 export interface StackExistsOptions {
   stack: cxapi.CloudFormationStackArtifact;
   deployName?: string;
+  tryLookupRole?: boolean;
 }
 
 export interface DeploymentsProps {
@@ -430,7 +431,12 @@ export class Deployments {
   }
 
   public async stackExists(options: StackExistsOptions): Promise<boolean> {
-    const { stackSdk } = await this.prepareSdkFor(options.stack, undefined, Mode.ForReading);
+    let stackSdk;
+    if (options.tryLookupRole) {
+      stackSdk = (await this.prepareSdkWithLookupOrDeployRole(options.stack)).stackSdk;
+    } else {
+      stackSdk = (await this.prepareSdkFor(options.stack, undefined, Mode.ForReading)).stackSdk;
+    }
     const stack = await CloudFormationStack.lookup(stackSdk.cloudFormation(), options.deployName ?? options.stack.stackName);
     return stack.exists;
   }

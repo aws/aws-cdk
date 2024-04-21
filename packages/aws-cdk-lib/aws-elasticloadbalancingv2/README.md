@@ -228,7 +228,22 @@ const lb = new elbv2.ApplicationLoadBalancer(this, 'LB', {
   crossZoneEnabled: true,
 
   // Whether the load balancer blocks traffic through the Internet Gateway (IGW).
-  denyAllIgwTraffic: false
+  denyAllIgwTraffic: false,
+
+  // Whether to preserve host header in the request to the target
+  preserveHostHeader: true,
+
+  // Whether to add the TLS information header to the request
+  xAmznTlsVersionAndCipherSuiteHeaders: true,
+
+  // Whether the X-Forwarded-For header should preserve the source port
+  preserveXffClientPort: true,
+
+  // The processing mode for X-Forwarded-For headers
+  xffHeaderProcessingMode: elbv2.XffHeaderProcessingMode.APPEND,
+
+  // Whether to allow a load balancer to route requests to targets if it is unable to forward the request to AWS WAF.
+  wafFailOpen: true,
 });
 ```
 
@@ -750,3 +765,16 @@ const targetGroup = elbv2.ApplicationTargetGroup.fromTargetGroupAttributes(this,
 
 const targetGroupMetrics: elbv2.IApplicationTargetGroupMetrics = targetGroup.metrics; // throws an Error()
 ```
+
+## logicalIds on ExternalApplicationListener.addTargetGroups() and .addAction()
+
+By default, the `addTargetGroups()` method does not follow the standard behavior
+of adding a `Rule` suffix to the logicalId of the `ListenerRule` it creates.
+If you are deploying new `ListenerRule`s using `addTargetGroups()` the recommendation
+is to set the `removeRuleSuffixFromLogicalId: false` property.
+If you have `ListenerRule`s deployed using the legacy behavior of `addTargetGroups()`,
+which you need to switch over to being managed by the `addAction()` method,
+then you will need to enable the `removeRuleSuffixFromLogicalId: true` property in the `addAction()` method.
+
+`ListenerRule`s have a unique `priority` for a given `Listener`.
+Because the `priority` must be unique, CloudFormation will always fail when creating a new `ListenerRule` to replace the existing one, unless you change the `priority` as well as the logicalId.
