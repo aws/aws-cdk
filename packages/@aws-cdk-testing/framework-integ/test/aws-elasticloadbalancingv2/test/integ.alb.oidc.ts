@@ -204,7 +204,7 @@ const cognitoUser = test.assertions.awsApiCall('CognitoIdentityServiceProvider',
 cognitoUser.expect(integ.ExpectedResult.objectLike({
   UserStatus: 'CONFIRMED',
   Enabled: true,
-  UserAttributes: integ.ExpectedResult.arrayWith([
+  UserAttributes: [
     {
       Name: 'email',
       Value: cognitoUserProps.username,
@@ -213,6 +213,10 @@ cognitoUser.expect(integ.ExpectedResult.objectLike({
       Name: 'email_verified',
       Value: 'true',
     },
-  ]),
+    {
+      Name: 'sub',
+      Value: integ.Match.stringLikeRegexp('^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$'),
+    },
+  ],
 }));
 app.synth();

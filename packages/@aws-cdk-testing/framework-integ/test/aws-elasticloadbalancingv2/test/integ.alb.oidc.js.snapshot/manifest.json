@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/2fd4d31f6eb35f622028d7da354f9a88491906d059509cb9a8850effccaf4e3c.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/6e04f00c56257afca25017408a8f497320c77646337a2b520d4399a69ef686c4.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -193,7 +193,10 @@
         "/IntegAlbOidc/Certificate/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "Certificate4E7ABB08"
+            "data": "Certificate4E7ABB08",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/IntegAlbOidc/UserPool/Resource": [
@@ -205,7 +208,10 @@
         "/IntegAlbOidc/UserPool/Domain/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "UserPoolDomainD0EA232A"
+            "data": "UserPoolDomainD0EA232A",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/IntegAlbOidc/UserPool/UserPoolClient/Resource": [
@@ -259,13 +265,10 @@
         "/IntegAlbOidc/ARecord/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ARecordE7B57761"
-          }
-        ],
-        "/IntegAlbOidc/User/Resource": [
-          {
-            "type": "aws:cdk:warning",
-            "data": "installLatestAwsSdk was not specified, and defaults to true. You probably do not want this. Set the global context flag '@aws-cdk/customresources:installLatestAwsSdkDefault' to false to switch this behavior off project-wide, or set the property explicitly to true if you know you need to call APIs that are not in Lambda's built-in SDK version. [ack: @aws-cdk/custom-resources:installLatestAwsSdkNotSpecified]"
+            "data": "ARecordE7B57761",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/IntegAlbOidc/User/Resource/Resource/Default": [
@@ -278,12 +281,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "UserCustomResourcePolicyC2EB5139"
-          }
-        ],
-        "/IntegAlbOidc/User/SetUserPassword": [
-          {
-            "type": "aws:cdk:warning",
-            "data": "installLatestAwsSdk was not specified, and defaults to true. You probably do not want this. Set the global context flag '@aws-cdk/customresources:installLatestAwsSdkDefault' to false to switch this behavior off project-wide, or set the property explicitly to true if you know you need to call APIs that are not in Lambda's built-in SDK version. [ack: @aws-cdk/custom-resources:installLatestAwsSdkNotSpecified]"
           }
         ],
         "/IntegAlbOidc/User/SetUserPassword/Resource/Default": [
@@ -354,7 +351,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/d9881e076e0954af8f88d18bad7d16149c5e578afd37d3443a0b4e60e88e1c84.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/4a82dcb783499c782865068f8750e7bb6b18efe03b650a59223500c1c8b846b0.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [

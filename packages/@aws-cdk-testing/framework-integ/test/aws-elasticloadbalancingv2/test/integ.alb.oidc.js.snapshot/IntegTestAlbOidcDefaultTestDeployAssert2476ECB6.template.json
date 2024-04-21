@@ -27,7 +27,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1713648654303"
+    "salt": "1713668057316"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -159,7 +159,7 @@
     },
     "service": "CognitoIdentityServiceProvider",
     "api": "adminGetUser",
-    "expected": "{\"$ObjectLike\":{\"UserStatus\":\"CONFIRMED\",\"Enabled\":true}}",
+    "expected": "{\"$ObjectLike\":{\"UserStatus\":\"CONFIRMED\",\"Enabled\":true,\"UserAttributes\":[{\"Name\":\"email\",\"Value\":\"test-user@example.com\"},{\"Name\":\"email_verified\",\"Value\":\"true\"},{\"Name\":\"sub\",\"Value\":{\"$StringLike\":\"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$\"}}]}}",
     "parameters": {
      "UserPoolId": {
       "Fn::Join": [
@@ -176,7 +176,7 @@
      "Username": "\"test-user@example.com\""
     },
     "flattenResponse": "false",
-    "salt": "1713648654304"
+    "salt": "1713668057318"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
