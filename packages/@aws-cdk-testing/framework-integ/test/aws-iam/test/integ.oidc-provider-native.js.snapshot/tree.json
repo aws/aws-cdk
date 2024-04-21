@@ -4,17 +4,17 @@
     "id": "App",
     "path": "",
     "children": {
-      "OidcProviderIntegStack": {
-        "id": "OidcProviderIntegStack",
-        "path": "OidcProviderIntegStack",
+      "oidc-provider-native-integ-stack": {
+        "id": "oidc-provider-native-integ-stack",
+        "path": "oidc-provider-native-integ-stack",
         "children": {
           "Provider": {
             "id": "Provider",
-            "path": "OidcProviderIntegStack/Provider",
+            "path": "oidc-provider-native-integ-stack/Provider",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "OidcProviderIntegStack/Provider/Resource",
+                "path": "oidc-provider-native-integ-stack/Provider/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::IAM::OIDCProvider",
                   "aws:cdk:cloudformation:props": {
@@ -36,17 +36,17 @@
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_iam.OpenIdConnectProvider2",
+              "fqn": "aws-cdk-lib.aws_iam.OIDCProvider",
               "version": "0.0.0"
             }
           },
           "Minimal": {
             "id": "Minimal",
-            "path": "OidcProviderIntegStack/Minimal",
+            "path": "oidc-provider-native-integ-stack/Minimal",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "OidcProviderIntegStack/Minimal/Resource",
+                "path": "oidc-provider-native-integ-stack/Minimal/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::IAM::OIDCProvider",
                   "aws:cdk:cloudformation:props": {
@@ -63,13 +63,13 @@
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_iam.OpenIdConnectProvider2",
+              "fqn": "aws-cdk-lib.aws_iam.OIDCProvider",
               "version": "0.0.0"
             }
           },
           "Arn": {
             "id": "Arn",
-            "path": "OidcProviderIntegStack/Arn",
+            "path": "oidc-provider-native-integ-stack/Arn",
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnOutput",
               "version": "0.0.0"
@@ -77,7 +77,7 @@
           },
           "Issuer": {
             "id": "Issuer",
-            "path": "OidcProviderIntegStack/Issuer",
+            "path": "oidc-provider-native-integ-stack/Issuer",
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnOutput",
               "version": "0.0.0"
@@ -85,7 +85,7 @@
           },
           "MinimalArn": {
             "id": "MinimalArn",
-            "path": "OidcProviderIntegStack/MinimalArn",
+            "path": "oidc-provider-native-integ-stack/MinimalArn",
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnOutput",
               "version": "0.0.0"
@@ -93,7 +93,7 @@
           },
           "MinimalIssuer": {
             "id": "MinimalIssuer",
-            "path": "OidcProviderIntegStack/MinimalIssuer",
+            "path": "oidc-provider-native-integ-stack/MinimalIssuer",
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnOutput",
               "version": "0.0.0"
@@ -101,7 +101,7 @@
           },
           "BootstrapVersion": {
             "id": "BootstrapVersion",
-            "path": "OidcProviderIntegStack/BootstrapVersion",
+            "path": "oidc-provider-native-integ-stack/BootstrapVersion",
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnParameter",
               "version": "0.0.0"
@@ -109,7 +109,7 @@
           },
           "CheckBootstrapVersion": {
             "id": "CheckBootstrapVersion",
-            "path": "OidcProviderIntegStack/CheckBootstrapVersion",
+            "path": "oidc-provider-native-integ-stack/CheckBootstrapVersion",
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnRule",
               "version": "0.0.0"
@@ -121,17 +121,17 @@
           "version": "0.0.0"
         }
       },
-      "OidcProviderInteg": {
-        "id": "OidcProviderInteg",
-        "path": "OidcProviderInteg",
+      "oidc-provider-native-integ-test": {
+        "id": "oidc-provider-native-integ-test",
+        "path": "oidc-provider-native-integ-test",
         "children": {
           "DefaultTest": {
             "id": "DefaultTest",
-            "path": "OidcProviderInteg/DefaultTest",
+            "path": "oidc-provider-native-integ-test/DefaultTest",
             "children": {
               "Default": {
                 "id": "Default",
-                "path": "OidcProviderInteg/DefaultTest/Default",
+                "path": "oidc-provider-native-integ-test/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
                   "version": "10.3.0"
@@ -139,11 +139,11 @@
               },
               "DeployAssert": {
                 "id": "DeployAssert",
-                "path": "OidcProviderInteg/DefaultTest/DeployAssert",
+                "path": "oidc-provider-native-integ-test/DefaultTest/DeployAssert",
                 "children": {
                   "BootstrapVersion": {
                     "id": "BootstrapVersion",
-                    "path": "OidcProviderInteg/DefaultTest/DeployAssert/BootstrapVersion",
+                    "path": "oidc-provider-native-integ-test/DefaultTest/DeployAssert/BootstrapVersion",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.CfnParameter",
                       "version": "0.0.0"
@@ -151,7 +151,7 @@
                   },
                   "CheckBootstrapVersion": {
                     "id": "CheckBootstrapVersion",
-                    "path": "OidcProviderInteg/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "path": "oidc-provider-native-integ-test/DefaultTest/DeployAssert/CheckBootstrapVersion",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.CfnRule",
                       "version": "0.0.0"

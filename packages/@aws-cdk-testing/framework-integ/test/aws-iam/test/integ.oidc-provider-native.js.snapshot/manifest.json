@@ -1,19 +1,19 @@
 {
   "version": "36.0.0",
   "artifacts": {
-    "OidcProviderIntegStack.assets": {
+    "oidc-provider-native-integ-stack.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "OidcProviderIntegStack.assets.json",
+        "file": "oidc-provider-native-integ-stack.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "OidcProviderIntegStack": {
+    "oidc-provider-native-integ-stack": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "OidcProviderIntegStack.template.json",
+        "templateFile": "oidc-provider-native-integ-stack.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
@@ -22,7 +22,7 @@
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "OidcProviderIntegStack.assets"
+          "oidc-provider-native-integ-stack.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -31,73 +31,73 @@
         }
       },
       "dependencies": [
-        "OidcProviderIntegStack.assets"
+        "oidc-provider-native-integ-stack.assets"
       ],
       "metadata": {
-        "/OidcProviderIntegStack/Provider/Resource": [
+        "/oidc-provider-native-integ-stack/Provider/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "Provider2281708E"
           }
         ],
-        "/OidcProviderIntegStack/Minimal/Resource": [
+        "/oidc-provider-native-integ-stack/Minimal/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "Minimal107EFE55"
           }
         ],
-        "/OidcProviderIntegStack/Arn": [
+        "/oidc-provider-native-integ-stack/Arn": [
           {
             "type": "aws:cdk:logicalId",
             "data": "Arn"
           }
         ],
-        "/OidcProviderIntegStack/Issuer": [
+        "/oidc-provider-native-integ-stack/Issuer": [
           {
             "type": "aws:cdk:logicalId",
             "data": "Issuer"
           }
         ],
-        "/OidcProviderIntegStack/MinimalArn": [
+        "/oidc-provider-native-integ-stack/MinimalArn": [
           {
             "type": "aws:cdk:logicalId",
             "data": "MinimalArn"
           }
         ],
-        "/OidcProviderIntegStack/MinimalIssuer": [
+        "/oidc-provider-native-integ-stack/MinimalIssuer": [
           {
             "type": "aws:cdk:logicalId",
             "data": "MinimalIssuer"
           }
         ],
-        "/OidcProviderIntegStack/BootstrapVersion": [
+        "/oidc-provider-native-integ-stack/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/OidcProviderIntegStack/CheckBootstrapVersion": [
+        "/oidc-provider-native-integ-stack/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "OidcProviderIntegStack"
+      "displayName": "oidc-provider-native-integ-stack"
     },
-    "OidcProviderIntegDefaultTestDeployAssert2BBB51F2.assets": {
+    "oidcprovidernativeintegtestDefaultTestDeployAssert9F17FB34.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "OidcProviderIntegDefaultTestDeployAssert2BBB51F2.assets.json",
+        "file": "oidcprovidernativeintegtestDefaultTestDeployAssert9F17FB34.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "OidcProviderIntegDefaultTestDeployAssert2BBB51F2": {
+    "oidcprovidernativeintegtestDefaultTestDeployAssert9F17FB34": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "OidcProviderIntegDefaultTestDeployAssert2BBB51F2.template.json",
+        "templateFile": "oidcprovidernativeintegtestDefaultTestDeployAssert9F17FB34.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
@@ -106,7 +106,7 @@
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "OidcProviderIntegDefaultTestDeployAssert2BBB51F2.assets"
+          "oidcprovidernativeintegtestDefaultTestDeployAssert9F17FB34.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -115,23 +115,23 @@
         }
       },
       "dependencies": [
-        "OidcProviderIntegDefaultTestDeployAssert2BBB51F2.assets"
+        "oidcprovidernativeintegtestDefaultTestDeployAssert9F17FB34.assets"
       ],
       "metadata": {
-        "/OidcProviderInteg/DefaultTest/DeployAssert/BootstrapVersion": [
+        "/oidc-provider-native-integ-test/DefaultTest/DeployAssert/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/OidcProviderInteg/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+        "/oidc-provider-native-integ-test/DefaultTest/DeployAssert/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "OidcProviderInteg/DefaultTest/DeployAssert"
+      "displayName": "oidc-provider-native-integ-test/DefaultTest/DeployAssert"
     },
     "Tree": {
       "type": "cdk:tree",

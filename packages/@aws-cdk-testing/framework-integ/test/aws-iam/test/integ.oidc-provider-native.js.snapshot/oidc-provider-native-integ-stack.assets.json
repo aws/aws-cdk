@@ -3,7 +3,7 @@
   "files": {
     "e40bdaff510d57b730ef01d0b8b96de982cb3f99015cc6cdab2ba232174b610a": {
       "source": {
-        "path": "OidcProviderIntegStack.template.json",
+        "path": "oidc-provider-native-integ-stack.template.json",
         "packaging": "file"
       },
       "destinations": {
