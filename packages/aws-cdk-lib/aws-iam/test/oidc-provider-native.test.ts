@@ -5,36 +5,36 @@ import * as iam from '../lib';
 const arnOfProvider =
   'arn:aws:iam::1234567:oidc-provider/oidc.eks.us-east-1.amazonaws.com/id/someid';
 
-describe('OpenIdConnectProvider2 resource', () => {
-  test('"openIdConnectProviderArn" resolves to the ref', () => {
+describe('OIDCProvider resource', () => {
+  test('"OIDCProviderArn" resolves to the ref', () => {
     // GIVEN
     const stack = new Stack();
 
     // WHEN
-    const provider = new iam.OpenIdConnectProvider2(stack, 'MyProvider', {
+    const provider = new iam.OIDCProvider(stack, 'MyProvider', {
       url: 'https://openid-endpoint',
       thumbprints: ['thumbprint'],
     });
 
     // THEN
-    expect(stack.resolve(provider.openIdConnectProviderArn)).toStrictEqual({
+    expect(stack.resolve(provider.oidcProviderArn)).toStrictEqual({
       Ref: 'MyProvider730BA1C8',
     });
   });
 
-  test('static fromOpenIdConnectProviderArn can be used to import a provider', () => {
+  test('static fromOIDCProviderArn can be used to import a provider', () => {
     // GIVEN
     const stack = new Stack();
 
     // WHEN
-    const provider = iam.OpenIdConnectProvider2.fromOpenIdConnectProviderArn(
+    const provider = iam.OIDCProvider.fromOIDCProviderArn(
       stack,
       'MyProvider',
       arnOfProvider,
     );
 
     // THEN
-    expect(stack.resolve(provider.openIdConnectProviderArn)).toStrictEqual(
+    expect(stack.resolve(provider.oidcProviderArn)).toStrictEqual(
       arnOfProvider,
     );
   });
@@ -44,7 +44,7 @@ describe('OpenIdConnectProvider2 resource', () => {
     const stack = new Stack();
 
     // WHEN
-    new iam.OpenIdConnectProvider2(stack, 'MyProvider', {
+    new iam.OIDCProvider(stack, 'MyProvider', {
       url: 'https://my-url',
       clientIds: ['client1', 'client2'],
       thumbprints: ['thumb1'],
@@ -65,13 +65,13 @@ describe('OIDC issuer', () => {
     const stack = new Stack();
 
     // WHEN
-    const provider = new iam.OpenIdConnectProvider2(stack, 'MyProvider', {
+    const provider = new iam.OIDCProvider(stack, 'MyProvider', {
       url: 'https://my-issuer',
       thumbprints: ['thumb1'],
     });
 
     // THEN
-    expect(stack.resolve(provider.openIdConnectProviderIssuer)).toStrictEqual({
+    expect(stack.resolve(provider.oidcProviderIssuer)).toStrictEqual({
       'Fn::Select': [
         1,
         { 'Fn::Split': [':oidc-provider/', { Ref: 'MyProvider730BA1C8' }] },
@@ -84,14 +84,14 @@ describe('OIDC issuer', () => {
     const stack = new Stack();
 
     // WHEN
-    const provider = iam.OpenIdConnectProvider2.fromOpenIdConnectProviderArn(
+    const provider = iam.OIDCProvider.fromOIDCProviderArn(
       stack,
       'MyProvider',
       arnOfProvider,
     );
 
     // THEN
-    expect(stack.resolve(provider.openIdConnectProviderIssuer)).toStrictEqual(
+    expect(stack.resolve(provider.oidcProviderIssuer)).toStrictEqual(
       'oidc.eks.us-east-1.amazonaws.com/id/someid',
     );
   });
@@ -101,14 +101,14 @@ describe('OIDC issuer', () => {
     const stack = new Stack();
 
     // WHEN
-    const provider = iam.OpenIdConnectProvider2.fromOpenIdConnectProviderArn(
+    const provider = iam.OIDCProvider.fromOIDCProviderArn(
       stack,
       'MyProvider',
       Token.asString({ Ref: 'ARN' }),
     );
 
     // THEN
-    expect(stack.resolve(provider.openIdConnectProviderIssuer)).toStrictEqual({
+    expect(stack.resolve(provider.oidcProviderIssuer)).toStrictEqual({
       'Fn::Select': [1, { 'Fn::Split': [':oidc-provider/', { Ref: 'ARN' }] }],
     });
   });

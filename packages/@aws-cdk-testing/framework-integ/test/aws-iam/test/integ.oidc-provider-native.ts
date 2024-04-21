@@ -3,9 +3,9 @@ import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as iam from 'aws-cdk-lib/aws-iam';
 
 const app = new App();
-const stack = new Stack(app, 'OidcProviderIntegStack');
+const stack = new Stack(app, 'oidc-provider-native-integ-stack');
 
-const provider = new iam.OpenIdConnectProvider2(stack, 'Provider', {
+const provider = new iam.OIDCProvider(stack, 'Provider', {
   oidcProviderName: 'MyProvider',
   url: 'https://oidc.eks.us-east-1.amazonaws.com/id/test1',
   clientIds: ['foo', 'bar'],
@@ -15,28 +15,28 @@ const provider = new iam.OpenIdConnectProvider2(stack, 'Provider', {
   ],
 });
 
-const minimal = new iam.OpenIdConnectProvider2(stack, 'Minimal', {
+const minimal = new iam.OIDCProvider(stack, 'Minimal', {
   url: 'https://oidc.eks.us-east-1.amazonaws.com/id/test2',
   thumbprints: ['aa00aa1122aa00aa1122aa00aa1122aa00aa1122'],
 });
 
 new CfnOutput(stack, 'Arn', {
-  value: `${provider.openIdConnectProviderArn}`,
+  value: `${provider.oidcProviderArn}`,
 });
 
 new CfnOutput(stack, 'Issuer', {
-  value: `${provider.openIdConnectProviderIssuer}`,
+  value: `${provider.oidcProviderIssuer}`,
 });
 
 new CfnOutput(stack, 'MinimalArn', {
-  value: `${minimal.openIdConnectProviderArn}`,
+  value: `${minimal.oidcProviderArn}`,
 });
 
 new CfnOutput(stack, 'MinimalIssuer', {
-  value: `${minimal.openIdConnectProviderIssuer}`,
+  value: `${minimal.oidcProviderIssuer}`,
 });
 
-new IntegTest(app, 'OidcProviderInteg', {
+new IntegTest(app, 'oidc-provider-native-integ-test', {
   testCases: [stack],
   diffAssets: true,
 });
