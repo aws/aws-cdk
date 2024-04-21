@@ -26,6 +26,7 @@ import {
   KeyPair,
   KeyPairType,
   CpuCredits,
+  NamedInstanceType,
 } from '../lib';
 
 let stack: Stack;
@@ -109,8 +110,8 @@ describe('instance', () => {
 
   test('identical instance types with alias', () => {
     // GIVEN
-    const instanceType = InstanceType.R6ID_16XLARGE;
-    const instanceTypeAlias = InstanceType.MEMORY6_INTEL_NVME_DRIVE_16XLARGE;
+    const instanceType = NamedInstanceType.R6ID_16XLARGE;
+    const instanceTypeAlias = NamedInstanceType.MEMORY6_INTEL_NVME_DRIVE_16XLARGE;
 
     // THEN
     expect(instanceTypeAlias.toString()).toBe(instanceType.toString());
@@ -118,7 +119,7 @@ describe('instance', () => {
 
   test('instance type from static initializer', () => {
     // GIVEN
-    const instanceType = InstanceType.R6ID_16XLARGE;
+    const instanceType = NamedInstanceType.R6ID_16XLARGE;
 
     // THEN
     expect(instanceType.instanceProperties?.freeTierEligible).toBe(false);

@@ -1,11 +1,3 @@
-import type { InstanceTypeInfo } from '@aws-sdk/client-ec2';
-import * as instancePropertiesJsonData from '../data/instance-properties.json';
-import { BootMode, DiskType, FpgaDeviceInfo, GpuDeviceInfo, HypervisorType, InferenceAcceleratorDeviceInfo, InstanceArchitecture, InstanceDiskInfo, InstanceProperties, NetworkCardInfo, PlacementGroupStrategy, ProcessorFeature, RootDeviceType, UsageClass, VirtualizationType } from './instance-properties';
-import { Size } from '../../core';
-
-type InstancePropertiesData = Omit<InstanceTypeInfo, 'InstanceType'>;
-const instancePropertiesData: {[InstanceType: string]: InstancePropertiesData} = instancePropertiesJsonData;
-
 /**
  * What class and generation of instance to use
  *
@@ -1229,645 +1221,247 @@ export enum InstanceClass {
   DL2Q = 'dl2q',
 }
 
+// JSII does not allow enum types to have same value. So to support the enum, the enum with same value has to be mapped later.
 /**
- * What size of instance to use
- */
-export enum InstanceSize {
-  /**
-   * Instance size NANO (nano)
-   */
-  NANO = 'nano',
-
-  /**
-   * Instance size MICRO (micro)
-   */
-  MICRO = 'micro',
-
-  /**
-   * Instance size SMALL (small)
-   */
-  SMALL = 'small',
-
-  /**
-   * Instance size MEDIUM (medium)
-   */
-  MEDIUM = 'medium',
-
-  /**
-   * Instance size LARGE (large)
-   */
-  LARGE = 'large',
-
-  /**
-   * Instance size XLARGE (xlarge)
-   */
-  XLARGE = 'xlarge',
-
-  /**
-   * Instance size XLARGE2 (2xlarge)
-   */
-  XLARGE2 = '2xlarge',
-
-  /**
-   * Instance size XLARGE3 (3xlarge)
-   */
-  XLARGE3 = '3xlarge',
-
-  /**
-   * Instance size XLARGE4 (4xlarge)
-   */
-  XLARGE4 = '4xlarge',
-
-  /**
-   * Instance size XLARGE6 (6xlarge)
-   */
-  XLARGE6 = '6xlarge',
-
-  /**
-   * Instance size XLARGE8 (8xlarge)
-   */
-  XLARGE8 = '8xlarge',
-
-  /**
-   * Instance size XLARGE9 (9xlarge)
-   */
-  XLARGE9 = '9xlarge',
-
-  /**
-   * Instance size XLARGE10 (10xlarge)
-   */
-  XLARGE10 = '10xlarge',
-
-  /**
-   * Instance size XLARGE12 (12xlarge)
-   */
-  XLARGE12 = '12xlarge',
-
-  /**
-   * Instance size XLARGE16 (16xlarge)
-   */
-  XLARGE16 = '16xlarge',
-
-  /**
-   * Instance size XLARGE18 (18xlarge)
-   */
-  XLARGE18 = '18xlarge',
-
-  /**
-   * Instance size XLARGE24 (24xlarge)
-   */
-  XLARGE24 = '24xlarge',
-
-  /**
-   * Instance size XLARGE32 (32xlarge)
-   */
-  XLARGE32 = '32xlarge',
-
-  /**
-   * Instance size XLARGE48 (48xlarge)
-   */
-  XLARGE48 = '48xlarge',
-
-  /**
-   * Instance size XLARGE56 (56xlarge)
-   */
-  XLARGE56 = '56xlarge',
-
-  /**
-   * Instance size XLARGE96 (96xlarge)
-   */
-  XLARGE96 = '96xlarge',
-
-  /**
-   * Instance size XLARGE112 (112xlarge)
-   */
-  XLARGE112 = '112xlarge',
-
-  /**
-   * Instance size METAL (metal)
-   */
-  METAL = 'metal',
-
-  /**
-   * Instance size XLARGE16METAL (metal-16xl)
-   */
-  XLARGE16METAL = 'metal-16xl',
-
-  /**
-   * Instance size XLARGE24METAL (metal-24xl)
-   */
-  XLARGE24METAL = 'metal-24xl',
-
-  /**
-   * Instance size XLARGE32METAL (metal-32xl)
-   */
-  XLARGE32METAL = 'metal-32xl',
-
-  /**
-   * Instance size XLARGE48METAL (metal-48xl)
-   */
-  XLARGE48METAL = 'metal-48xl',
-}
-
-/**
- * Instance type for EC2 instances
+ * Instance class mapping
  *
- * This class takes a literal string, good if you already
- * know the identifier of the type you want.
+ * @internal
  */
-export class InstanceType {
-  /**
-   * **Instance type**: `r6id.16xlarge`:
-   *
-   * * **Instance class**: {@link InstanceClass.R6ID} Memory optimized instances with local NVME drive, 6th generation with Intel Xeon Scalable processors (3rd generation processors code named Ice Lake)
-   * * **Instance size**: {@link InstanceSize.XLARGE16}
-   *
-   * Alias: {@link InstanceType.MEMORY6_INTEL_NVME_DRIVE_16XLARGE}
-   */
-  public static readonly R6ID_16XLARGE = InstanceType.of(InstanceClass.R6ID, InstanceSize.XLARGE16);
-
-  /**
-   * **Instance type**: `r6id.16xlarge`:
-   *
-   * * **Instance class**: {@link InstanceClass.R6ID} Memory optimized instances with local NVME drive, 6th generation with Intel Xeon Scalable processors (3rd generation processors code named Ice Lake)
-   * * **Instance size**: {@link InstanceSize.XLARGE16}
-   *
-   * Alias of: {@link InstanceType.R6ID_16XLARGE}
-   */
-  public static readonly MEMORY6_INTEL_NVME_DRIVE_16XLARGE = InstanceType.of(InstanceClass.MEMORY6_INTEL_NVME_DRIVE, InstanceSize.XLARGE16);
-
-  /**
-   * Instance type for EC2 instances
-   *
-   * This class takes a combination of a class and size.
-   *
-   * Be aware that not all combinations of class and size are available, and not all
-   * classes are available in all regions.
-   */
-  public static of(instanceClass: InstanceClass, instanceSize: InstanceSize) {
-    // JSII does not allow enum types to have same value. So to support the enum, the enum with same value has to be mapped later.
-    const instanceClassMap: Record<InstanceClass, string> = {
-      [InstanceClass.STANDARD3]: 'm3',
-      [InstanceClass.M3]: 'm3',
-      [InstanceClass.STANDARD4]: 'm4',
-      [InstanceClass.M4]: 'm4',
-      [InstanceClass.STANDARD5]: 'm5',
-      [InstanceClass.M5]: 'm5',
-      [InstanceClass.STANDARD5_NVME_DRIVE]: 'm5d',
-      [InstanceClass.M5D]: 'm5d',
-      [InstanceClass.STANDARD5_AMD]: 'm5a',
-      [InstanceClass.M5A]: 'm5a',
-      [InstanceClass.STANDARD5_AMD_NVME_DRIVE]: 'm5ad',
-      [InstanceClass.M5AD]: 'm5ad',
-      [InstanceClass.STANDARD5_HIGH_PERFORMANCE]: 'm5n',
-      [InstanceClass.M5N]: 'm5n',
-      [InstanceClass.STANDARD5_NVME_DRIVE_HIGH_PERFORMANCE]: 'm5dn',
-      [InstanceClass.M5DN]: 'm5dn',
-      [InstanceClass.STANDARD5_HIGH_COMPUTE]: 'm5zn',
-      [InstanceClass.M5ZN]: 'm5zn',
-      [InstanceClass.MEMORY3]: 'r3',
-      [InstanceClass.R3]: 'r3',
-      [InstanceClass.MEMORY4]: 'r4',
-      [InstanceClass.R4]: 'r4',
-      [InstanceClass.MEMORY5]: 'r5',
-      [InstanceClass.R5]: 'r5',
-      [InstanceClass.MEMORY6_AMD]: 'r6a',
-      [InstanceClass.R6A]: 'r6a',
-      [InstanceClass.MEMORY6_INTEL]: 'r6i',
-      [InstanceClass.R6I]: 'r6i',
-      [InstanceClass.MEMORY6_INTEL_NVME_DRIVE]: 'r6id',
-      [InstanceClass.R6ID]: 'r6id',
-      [InstanceClass.MEMORY6_INTEL_HIGH_PERFORMANCE]: 'r6in',
-      [InstanceClass.R6IN]: 'r6in',
-      [InstanceClass.MEMORY6_INTEL_NVME_DRIVE_HIGH_PERFORMANCE]: 'r6idn',
-      [InstanceClass.R6IDN]: 'r6idn',
-      [InstanceClass.MEMORY5_HIGH_PERFORMANCE]: 'r5n',
-      [InstanceClass.R5N]: 'r5n',
-      [InstanceClass.MEMORY5_NVME_DRIVE]: 'r5d',
-      [InstanceClass.R5D]: 'r5d',
-      [InstanceClass.MEMORY5_NVME_DRIVE_HIGH_PERFORMANCE]: 'r5dn',
-      [InstanceClass.R5DN]: 'r5dn',
-      [InstanceClass.MEMORY5_AMD]: 'r5a',
-      [InstanceClass.R5A]: 'r5a',
-      [InstanceClass.MEMORY5_AMD_NVME_DRIVE]: 'r5ad',
-      [InstanceClass.R5AD]: 'r5ad',
-      [InstanceClass.HIGH_MEMORY_3TB_1]: 'u-3tb1',
-      [InstanceClass.U_3TB1]: 'u-3tb1',
-      [InstanceClass.HIGH_MEMORY_6TB_1]: 'u-6tb1',
-      [InstanceClass.U_6TB1]: 'u-6tb1',
-      [InstanceClass.HIGH_MEMORY_9TB_1]: 'u-9tb1',
-      [InstanceClass.U_9TB1]: 'u-9tb1',
-      [InstanceClass.HIGH_MEMORY_12TB_1]: 'u-12tb1',
-      [InstanceClass.U_12TB1]: 'u-12tb1',
-      [InstanceClass.HIGH_MEMORY_18TB_1]: 'u-18tb1',
-      [InstanceClass.U_18TB1]: 'u-18tb1',
-      [InstanceClass.HIGH_MEMORY_24TB_1]: 'u-24tb1',
-      [InstanceClass.U_24TB1]: 'u-24tb1',
-      [InstanceClass.MEMORY5_EBS_OPTIMIZED]: 'r5b',
-      [InstanceClass.R5B]: 'r5b',
-      [InstanceClass.MEMORY6_GRAVITON]: 'r6g',
-      [InstanceClass.R6G]: 'r6g',
-      [InstanceClass.MEMORY6_GRAVITON2_NVME_DRIVE]: 'r6gd',
-      [InstanceClass.R6GD]: 'r6gd',
-      [InstanceClass.MEMORY7_GRAVITON]: 'r7g',
-      [InstanceClass.R7G]: 'r7g',
-      [InstanceClass.MEMORY7_GRAVITON3_NVME_DRIVE]: 'r7gd',
-      [InstanceClass.R7GD]: 'r7gd',
-      [InstanceClass.MEMORY7_INTEL_BASE]: 'r7i',
-      [InstanceClass.R7I]: 'r7i',
-      [InstanceClass.MEMORY7_INTEL]: 'r7iz',
-      [InstanceClass.R7IZ]: 'r7iz',
-      [InstanceClass.MEMORY7_AMD]: 'r7a',
-      [InstanceClass.R7A]: 'r7a',
-      [InstanceClass.COMPUTE3]: 'c3',
-      [InstanceClass.C3]: 'c3',
-      [InstanceClass.COMPUTE4]: 'c4',
-      [InstanceClass.C4]: 'c4',
-      [InstanceClass.COMPUTE5]: 'c5',
-      [InstanceClass.C5]: 'c5',
-      [InstanceClass.COMPUTE5_NVME_DRIVE]: 'c5d',
-      [InstanceClass.C5D]: 'c5d',
-      [InstanceClass.COMPUTE5_AMD]: 'c5a',
-      [InstanceClass.C5A]: 'c5a',
-      [InstanceClass.COMPUTE5_AMD_NVME_DRIVE]: 'c5ad',
-      [InstanceClass.C5AD]: 'c5ad',
-      [InstanceClass.COMPUTE5_HIGH_PERFORMANCE]: 'c5n',
-      [InstanceClass.C5N]: 'c5n',
-      [InstanceClass.COMPUTE6_INTEL]: 'c6i',
-      [InstanceClass.C6I]: 'c6i',
-      [InstanceClass.COMPUTE6_INTEL_HIGH_PERFORMANCE]: 'c6in',
-      [InstanceClass.C6IN]: 'c6in',
-      [InstanceClass.COMPUTE6_INTEL_NVME_DRIVE]: 'c6id',
-      [InstanceClass.C6ID]: 'c6id',
-      [InstanceClass.COMPUTE6_AMD]: 'c6a',
-      [InstanceClass.C6A]: 'c6a',
-      [InstanceClass.COMPUTE6_GRAVITON2]: 'c6g',
-      [InstanceClass.C6G]: 'c6g',
-      [InstanceClass.COMPUTE6_GRAVITON2_NVME_DRIVE]: 'c6gd',
-      [InstanceClass.C6GD]: 'c6gd',
-      [InstanceClass.COMPUTE6_GRAVITON2_HIGH_NETWORK_BANDWIDTH]: 'c6gn',
-      [InstanceClass.C6GN]: 'c6gn',
-      [InstanceClass.COMPUTE7_GRAVITON3]: 'c7g',
-      [InstanceClass.C7G]: 'c7g',
-      [InstanceClass.COMPUTE7_GRAVITON3_NVME_DRIVE]: 'c7gd',
-      [InstanceClass.C7GD]: 'c7gd',
-      [InstanceClass.COMPUTE7_GRAVITON3_HIGH_NETWORK_BANDWIDTH]: 'c7gn',
-      [InstanceClass.C7GN]: 'c7gn',
-      [InstanceClass.COMPUTE7_INTEL]: 'c7i',
-      [InstanceClass.C7I]: 'c7i',
-      [InstanceClass.COMPUTE7_AMD]: 'c7a',
-      [InstanceClass.C7A]: 'c7a',
-      [InstanceClass.STORAGE2]: 'd2',
-      [InstanceClass.D2]: 'd2',
-      [InstanceClass.STORAGE3]: 'd3',
-      [InstanceClass.D3]: 'd3',
-      [InstanceClass.STORAGE3_ENHANCED_NETWORK]: 'd3en',
-      [InstanceClass.D3EN]: 'd3en',
-      [InstanceClass.TRAINING_ACCELERATOR1]: 'trn1',
-      [InstanceClass.TRN1]: 'trn1',
-      [InstanceClass.TRAINING_ACCELERATOR1_ENHANCED_NETWORK]: 'trn1n',
-      [InstanceClass.TRN1N]: 'trn1n',
-      [InstanceClass.STORAGE_COMPUTE_1]: 'h1',
-      [InstanceClass.H1]: 'h1',
-      [InstanceClass.IO3]: 'i3',
-      [InstanceClass.I3]: 'i3',
-      [InstanceClass.IO3_DENSE_NVME_DRIVE]: 'i3en',
-      [InstanceClass.I3EN]: 'i3en',
-      [InstanceClass.STORAGE4_GRAVITON]: 'i4g',
-      [InstanceClass.I4G]: 'i4g',
-      [InstanceClass.STORAGE4_GRAVITON_NETWORK_OPTIMIZED]: 'im4gn',
-      [InstanceClass.IM4GN]: 'im4gn',
-      [InstanceClass.STORAGE4_GRAVITON_NETWORK_STORAGE_OPTIMIZED]: 'is4gen',
-      [InstanceClass.IS4GEN]: 'is4gen',
-      [InstanceClass.BURSTABLE2]: 't2',
-      [InstanceClass.T2]: 't2',
-      [InstanceClass.BURSTABLE3]: 't3',
-      [InstanceClass.T3]: 't3',
-      [InstanceClass.BURSTABLE3_AMD]: 't3a',
-      [InstanceClass.T3A]: 't3a',
-      [InstanceClass.BURSTABLE4_GRAVITON]: 't4g',
-      [InstanceClass.T4G]: 't4g',
-      [InstanceClass.MEMORY_INTENSIVE_1]: 'x1',
-      [InstanceClass.X1]: 'x1',
-      [InstanceClass.MEMORY_INTENSIVE_1_EXTENDED]: 'x1e',
-      [InstanceClass.X1E]: 'x1e',
-      [InstanceClass.MEMORY_INTENSIVE_2_GRAVITON2]: 'x2g',
-      [InstanceClass.X2G]: 'x2g',
-      [InstanceClass.MEMORY_INTENSIVE_2_GRAVITON2_NVME_DRIVE]: 'x2gd',
-      [InstanceClass.X2GD]: 'x2gd',
-      [InstanceClass.FPGA1]: 'f1',
-      [InstanceClass.F1]: 'f1',
-      [InstanceClass.GRAPHICS3_SMALL]: 'g3s',
-      [InstanceClass.G3S]: 'g3s',
-      [InstanceClass.GRAPHICS3]: 'g3',
-      [InstanceClass.G3]: 'g3',
-      [InstanceClass.GRAPHICS4_NVME_DRIVE_HIGH_PERFORMANCE]: 'g4dn',
-      [InstanceClass.G4DN]: 'g4dn',
-      [InstanceClass.GRAPHICS4_AMD_NVME_DRIVE]: 'g4ad',
-      [InstanceClass.G4AD]: 'g4ad',
-      [InstanceClass.GRAPHICS5]: 'g5',
-      [InstanceClass.G5]: 'g5',
-      [InstanceClass.GRAPHICS5_GRAVITON2]: 'g5g',
-      [InstanceClass.G5G]: 'g5g',
-      [InstanceClass.PARALLEL2]: 'p2',
-      [InstanceClass.P2]: 'p2',
-      [InstanceClass.PARALLEL3]: 'p3',
-      [InstanceClass.P3]: 'p3',
-      [InstanceClass.PARALLEL3_NVME_DRIVE_HIGH_PERFORMANCE]: 'p3dn',
-      [InstanceClass.P3DN]: 'p3dn',
-      [InstanceClass.PARALLEL4_NVME_DRIVE_EXTENDED]: 'p4de',
-      [InstanceClass.P4DE]: 'p4de',
-      [InstanceClass.PARALLEL4]: 'p4d',
-      [InstanceClass.P4D]: 'p4d',
-      [InstanceClass.PARALLEL5]: 'p5',
-      [InstanceClass.P5]: 'p5',
-      [InstanceClass.ARM1]: 'a1',
-      [InstanceClass.A1]: 'a1',
-      [InstanceClass.STANDARD6_GRAVITON]: 'm6g',
-      [InstanceClass.M6G]: 'm6g',
-      [InstanceClass.STANDARD6_INTEL]: 'm6i',
-      [InstanceClass.M6I]: 'm6i',
-      [InstanceClass.STANDARD6_INTEL_NVME_DRIVE]: 'm6id',
-      [InstanceClass.M6ID]: 'm6id',
-      [InstanceClass.STANDARD6_INTEL_HIGH_PERFORMANCE]: 'm6in',
-      [InstanceClass.M6IN]: 'm6in',
-      [InstanceClass.STANDARD6_INTEL_NVME_DRIVE_HIGH_PERFORMANCE]: 'm6idn',
-      [InstanceClass.M6IDN]: 'm6idn',
-      [InstanceClass.STANDARD6_AMD]: 'm6a',
-      [InstanceClass.M6A]: 'm6a',
-      [InstanceClass.STANDARD6_GRAVITON2_NVME_DRIVE]: 'm6gd',
-      [InstanceClass.M6GD]: 'm6gd',
-      [InstanceClass.STANDARD7_GRAVITON]: 'm7g',
-      [InstanceClass.M7G]: 'm7g',
-      [InstanceClass.STANDARD7_GRAVITON3_NVME_DRIVE]: 'm7gd',
-      [InstanceClass.M7GD]: 'm7gd',
-      [InstanceClass.STANDARD7_INTEL]: 'm7i',
-      [InstanceClass.M7I]: 'm7i',
-      [InstanceClass.STANDARD7_INTEL_FLEX]: 'm7i-flex',
-      [InstanceClass.M7I_FLEX]: 'm7i-flex',
-      [InstanceClass.STANDARD7_AMD]: 'm7a',
-      [InstanceClass.M7A]: 'm7a',
-      [InstanceClass.HIGH_COMPUTE_MEMORY1]: 'z1d',
-      [InstanceClass.Z1D]: 'z1d',
-      [InstanceClass.INFERENCE1]: 'inf1',
-      [InstanceClass.INF1]: 'inf1',
-      [InstanceClass.INFERENCE2]: 'inf2',
-      [InstanceClass.INF2]: 'inf2',
-      [InstanceClass.MACINTOSH1_INTEL]: 'mac1',
-      [InstanceClass.MAC1]: 'mac1',
-      [InstanceClass.MACINTOSH2_M1]: 'mac2',
-      [InstanceClass.MAC2]: 'mac2',
-      [InstanceClass.MACINTOSH2_M2]: 'mac2-m2',
-      [InstanceClass.MAC2_M2]: 'mac2-m2',
-      [InstanceClass.MACINTOSH2_M2_PRO]: 'mac2-m2pro',
-      [InstanceClass.MAC2_M2PRO]: 'mac2-m2pro',
-      [InstanceClass.VIDEO_TRANSCODING1]: 'vt1',
-      [InstanceClass.VT1]: 'vt1',
-      [InstanceClass.HIGH_PERFORMANCE_COMPUTING6_AMD]: 'hpc6a',
-      [InstanceClass.HPC6A]: 'hpc6a',
-      [InstanceClass.HIGH_PERFORMANCE_COMPUTING6_INTEL_NVME_DRIVE]: 'hpc6id',
-      [InstanceClass.HPC6ID]: 'hpc6id',
-      [InstanceClass.HIGH_PERFORMANCE_COMPUTING7_AMD]: 'hpc7a',
-      [InstanceClass.HPC7A]: 'hpc7a',
-      [InstanceClass.HIGH_PERFORMANCE_COMPUTING7_GRAVITON]: 'hpc7g',
-      [InstanceClass.HPC7G]: 'hpc7g',
-      [InstanceClass.I4I]: 'i4i',
-      [InstanceClass.IO4_INTEL]: 'i4i',
-      [InstanceClass.X2IEDN]: 'x2iedn',
-      [InstanceClass.MEMORY_INTENSIVE_2_XT_INTEL]: 'x2iedn',
-      [InstanceClass.X2IDN]: 'x2idn',
-      [InstanceClass.MEMORY_INTENSIVE_2_INTEL]: 'x2idn',
-      [InstanceClass.X2IEZN]: 'x2iezn',
-      [InstanceClass.MEMORY_INTENSIVE_2_XTZ_INTEL]: 'x2iezn',
-      [InstanceClass.DEEP_LEARNING1]: 'dl1',
-      [InstanceClass.DL1]: 'dl1',
-      [InstanceClass.DEEP_LEARNING2_QUALCOMM]: 'dl2q',
-      [InstanceClass.DL2Q]: 'dl2q',
-    };
-    return new InstanceType(`${instanceClassMap[instanceClass] ?? instanceClass}.${instanceSize}`);
-  }
-
-  private static mapSupportedValue(value = '', opts = { supported: ['supported'] }): boolean | undefined {
-    if (opts.supported.includes(value)) return true;
-    if (value === 'unsupported') return false;
-
-    // Return undefined if the value is either undefined or unknown
-    return undefined;
-  }
-
-  private static mapInstanceProperties(instanceTypeIdentifier: string): InstanceProperties | undefined {
-    const data = instancePropertiesData[instanceTypeIdentifier];
-    if (!data) return;
-
-    return {
-      autoRecoverySupported: data.AutoRecoverySupported,
-      bareMetal: data.BareMetal,
-      burstablePerformanceSupported: data.BurstablePerformanceSupported,
-      currentGeneration: data.CurrentGeneration,
-      dedicatedHostsSupported: data.DedicatedHostsSupported,
-      freeTierEligible: data.FreeTierEligible,
-      hibernationSupported: data.HibernationSupported,
-      hypervisor: data.Hypervisor as HypervisorType | undefined,
-      instanceStorageSupported: data.InstanceStorageSupported,
-      memorySize: data.MemoryInfo?.SizeInMiB ? Size.mebibytes(data.MemoryInfo.SizeInMiB) : undefined,
-      nitroEnclavesSupported: InstanceType.mapSupportedValue(data.NitroEnclavesSupport),
-      nitroTpmSupported: InstanceType.mapSupportedValue(data.NitroTpmSupport),
-      supportedBootModes: data.SupportedBootModes as BootMode[] | undefined,
-      supportedNitroTpmVersions: data.NitroTpmInfo?.SupportedVersions,
-      supportedPlacementGroupStrategies: data.PlacementGroupInfo?.SupportedStrategies as PlacementGroupStrategy[],
-      supportedRootDeviceTypes: data.SupportedRootDeviceTypes as RootDeviceType[] | undefined,
-      supportedUsageClasses: data.SupportedUsageClasses as UsageClass[] | undefined,
-      supportedVirtualizationTypes: data.SupportedVirtualizationTypes as VirtualizationType[] | undefined,
-      ebsInfo: {
-        ebsOptimizedInfo: {
-          baselineBandwidthInMbps: data.EbsInfo?.EbsOptimizedInfo?.BaselineBandwidthInMbps,
-          baselineIops: data.EbsInfo?.EbsOptimizedInfo?.BaselineIops,
-          baselineThroughputInMBps: data.EbsInfo?.EbsOptimizedInfo?.BaselineThroughputInMBps,
-          maximumBandwidthInMbps: data.EbsInfo?.EbsOptimizedInfo?.MaximumBandwidthInMbps,
-          maximumIops: data.EbsInfo?.EbsOptimizedInfo?.MaximumIops,
-          maximumThroughputInMBps: data.EbsInfo?.EbsOptimizedInfo?.MaximumThroughputInMBps,
-        },
-        ebsOptimizedSupported: InstanceType.mapSupportedValue(data.EbsInfo?.EbsOptimizedSupport, { supported: ['supported', 'default'] }),
-        ebsOptimizedSupportedByDefault: data.EbsInfo?.EbsOptimizedSupport === 'default',
-        encryptionSupported: InstanceType.mapSupportedValue(data.EbsInfo?.EncryptionSupport),
-        nvmeSupported: InstanceType.mapSupportedValue(data.EbsInfo?.NvmeSupport, { supported: ['supported', 'required'] }),
-        nvmeRequired: data.EbsInfo?.NvmeSupport === 'required',
-      },
-      fpgaInfo: {
-        fpgas: data.FpgaInfo?.Fpgas?.map<FpgaDeviceInfo>((fpga) => ({
-          name: fpga.Name,
-          count: fpga.Count,
-          manufacturer: fpga.Manufacturer,
-          memorySize: fpga.MemoryInfo?.SizeInMiB ? Size.mebibytes(fpga.MemoryInfo.SizeInMiB) : undefined,
-        })),
-        totalFpgaMemory: data.FpgaInfo?.TotalFpgaMemoryInMiB ? Size.mebibytes(data.FpgaInfo?.TotalFpgaMemoryInMiB) : undefined,
-      },
-      gpuInfo: {
-        gpus: data.GpuInfo?.Gpus?.map<GpuDeviceInfo>((gpu) => ({
-          name: gpu.Name,
-          manufacturer: gpu.Manufacturer,
-          count: gpu.Count,
-          memorySize: gpu.MemoryInfo?.SizeInMiB ? Size.mebibytes(gpu.MemoryInfo.SizeInMiB) : undefined,
-        })),
-        totalGpuMemory: data.GpuInfo?.TotalGpuMemoryInMiB ? Size.mebibytes(data.GpuInfo?.TotalGpuMemoryInMiB) : undefined,
-      },
-      inferenceAcceleratorInfo: {
-        accelerators: data.InferenceAcceleratorInfo?.Accelerators?.map<InferenceAcceleratorDeviceInfo>((accelerator) => ({
-          name: accelerator.Name,
-          manufacturer: accelerator.Manufacturer,
-          count: accelerator.Count,
-          memoryInfo: accelerator.MemoryInfo?.SizeInMiB ?
-            Size.mebibytes(accelerator.MemoryInfo.SizeInMiB)
-            : undefined,
-        })),
-        totalInferenceMemory: data.InferenceAcceleratorInfo?.TotalInferenceMemoryInMiB ?
-          Size.mebibytes(data.InferenceAcceleratorInfo?.TotalInferenceMemoryInMiB)
-          : undefined,
-      },
-      instanceStorageInfo: {
-        disks: data.InstanceStorageInfo?.Disks?.map<InstanceDiskInfo>((disk) => ({
-          count: disk.Count,
-          size: disk.SizeInGB ? Size.gibibytes(disk.SizeInGB) : undefined,
-          type: disk.Type as DiskType,
-        })),
-        totalStorage: data.InstanceStorageInfo?.TotalSizeInGB ?
-          Size.gibibytes(data.InstanceStorageInfo.TotalSizeInGB) :
-          undefined,
-      },
-      // TODO waiting for @aws-sdk/client-ec2 dependency upgrade
-      /* mediaAcceleratorInfo: {
-        accelerators: data.MediaAcceleratorInfo?.Accelerators?.map<MediaAcceleratorDeviceInfo>((accelerator) => ({
-          name: accelerator.Name,
-          manufacturer: accelerator.Manufacturer,
-          count: accelerator.Count,
-        })),
-        totalMediaMemory: data.MediaAcceleratorInfo?.TotalMediaMemoryInMiB ?
-          Size.mebibytes(data.MediaAcceleratorInfo?.TotalMediaMemoryInMiB)
-          : undefined,
-      }, */
-      networkInfo: {
-        defaultNetworkCardIndex: data.NetworkInfo?.DefaultNetworkCardIndex,
-        maximumEfaInterfaces: data.NetworkInfo?.EfaInfo?.MaximumEfaInterfaces,
-        efaSupported: data.NetworkInfo?.EfaSupported,
-        enaSupported: InstanceType.mapSupportedValue(data.NetworkInfo?.EnaSupport),
-        // This mapping is not a mistake, 'required' is being interpreted as supported by default.
-        // CloudFormation's 'required' does not accurately reflect the actual behavior, since
-        // the instance type can be successfully launched without the requirements of ENA
-        enaSupportedByDefault: data.NetworkInfo?.EnaSupport === 'required',
-        enaSrdSupported: data.NetworkInfo?.EnaSrdSupported,
-        encryptionInTransitSupported: data.NetworkInfo?.EncryptionInTransitSupported,
-        ipv4AddressesPerInterface: data.NetworkInfo?.Ipv4AddressesPerInterface,
-        ipv6AddressesPerInterface: data.NetworkInfo?.Ipv6AddressesPerInterface,
-        ipv6Supported: data.NetworkInfo?.Ipv6Supported,
-        maximumNetworkCards: data.NetworkInfo?.MaximumNetworkCards,
-        maximumNetworkInterfaces: data.NetworkInfo?.MaximumNetworkInterfaces,
-        networkPerformance: data.NetworkInfo?.NetworkPerformance,
-        networkCards: data.NetworkInfo?.NetworkCards?.map<NetworkCardInfo>((card) => ({
-          maximumNetworkInterfaces: card.MaximumNetworkInterfaces,
-          networkCardIndex: card.NetworkCardIndex,
-          networkPerformance: card.NetworkPerformance,
-          baselineBandwidthInGbps: card.BaselineBandwidthInGbps,
-          peakBandwidthInGbps: card.PeakBandwidthInGbps,
-        })),
-      },
-      // TODO waiting for @aws-sdk/client-ec2 dependency upgrade
-      /* neuronInfo: {
-        neurons: data.NeuronInfo?.Neurons?.map<NeuronDeviceInfo>((neuron) => ({
-          name: neuron.Name,
-          count: neuron.CoreInfo?.Count,
-          version: neuron.CoreInfo?.Version,
-          manufacturer: neuron.Manufacturer,
-          memorySize: neuron.MemoryInfo?.SizeInMiB ?
-            Size.mebibytes(neuron.MemoryInfo?.SizeInMiB)
-            : undefined,
-        })),
-        totalNeuronMemory: data.NeuronInfo?.TotalNeuronMemoryInMiB ?
-          Size.mebibytes(data.NeuronInfo?.TotalNeuronMemoryInMiB)
-          : undefined,
-      }, */
-      processorInfo: {
-        // TODO waiting for @aws-sdk/client-ec2 dependency upgrade
-        // manufacturer: data.ProcessorInfo?.manufacturer,
-        supportedArchitectures: data.ProcessorInfo?.SupportedArchitectures as InstanceArchitecture[] | undefined,
-        supportedFeatures: data.ProcessorInfo?.SupportedFeatures as ProcessorFeature[] | undefined,
-        sustainedClockSpeedInGhz: data.ProcessorInfo?.SustainedClockSpeedInGhz,
-      },
-      vCpuInfo: {
-        defaultCores: data.VCpuInfo?.DefaultCores,
-        defaultThreadsPerCore: data.VCpuInfo?.DefaultThreadsPerCore,
-        defaultVCpus: data.VCpuInfo?.DefaultVCpus,
-        validCores: data.VCpuInfo?.ValidCores,
-        validThreadsPerCore: data.VCpuInfo?.ValidThreadsPerCore,
-      },
-    };
-  };
-
-  constructor(
-    /**
-     * The instance type, as returned by the EC2 API
-     *
-     * @example "t3.small"
-     */
-    private readonly instanceTypeIdentifier: string,
-
-    /**
-     * Instance properties for the instance type, obtained from cached SDK data
-     *
-     * @default - Cached SDK data properties for the corresponding instance type
-     */
-    public readonly instanceProperties = InstanceType.mapInstanceProperties(instanceTypeIdentifier)) {
-  }
-
-  /**
-   * Return the instance type as a dotted string
-   */
-  public toString(): string {
-    return this.instanceTypeIdentifier;
-  }
-
-  /**
-   * The instance's CPU architecture
-   *
-   * @deprecated - use {@link instanceProperties}
-   */
-  public get architecture(): InstanceArchitecture {
-    // TODO use data first
-    // capture the family, generation, capabilities, and size portions of the instance type id
-    const instanceTypeComponents = this.instanceTypeIdentifier.match(/^([a-z]+)(\d{1,2})([a-z\-]*)\.([a-z0-9\-]+)$/);
-    if (instanceTypeComponents == null) {
-      throw new Error('Malformed instance type identifier');
-    }
-
-    const family = instanceTypeComponents[1];
-    const capabilities = instanceTypeComponents[3];
-
-    // Instance family `a` are first-gen Graviton instances
-    // Capability `g` indicates the instance is Graviton2 powered
-    if (family === 'a' || capabilities.includes('g')) {
-      return InstanceArchitecture.ARM_64;
-    }
-
-    return InstanceArchitecture.X86_64;
-  }
-
-  public sameInstanceClassAs(other: InstanceType): boolean {
-    const instanceClass: RegExp = /^([a-z]+\d{1,2}[a-z\-]*)\.([a-z0-9\-]+)$/;
-    const instanceClassId = this.instanceTypeIdentifier.match(instanceClass);
-    const otherInstanceClassId = other.instanceTypeIdentifier.match(instanceClass);
-    if (instanceClassId == null || otherInstanceClassId == null) {
-      throw new Error('Malformed instance type identifier');
-    }
-    return instanceClassId[1] === otherInstanceClassId[1];
-  }
-
-  /**
-   * Return whether this instance type is a burstable instance type
-   *
-   * @deprecated - use {@link instanceProperties}
-   */
-  public isBurstable(): boolean {
-    // TODO use data first
-    return this.instanceTypeIdentifier.startsWith('t3') || this.instanceTypeIdentifier.startsWith('t4g') || this.instanceTypeIdentifier.startsWith('t2');
-  }
-
-}
+export const _instanceClassMap: Record<InstanceClass, string> = {
+  [InstanceClass.STANDARD3]: 'm3',
+  [InstanceClass.M3]: 'm3',
+  [InstanceClass.STANDARD4]: 'm4',
+  [InstanceClass.M4]: 'm4',
+  [InstanceClass.STANDARD5]: 'm5',
+  [InstanceClass.M5]: 'm5',
+  [InstanceClass.STANDARD5_NVME_DRIVE]: 'm5d',
+  [InstanceClass.M5D]: 'm5d',
+  [InstanceClass.STANDARD5_AMD]: 'm5a',
+  [InstanceClass.M5A]: 'm5a',
+  [InstanceClass.STANDARD5_AMD_NVME_DRIVE]: 'm5ad',
+  [InstanceClass.M5AD]: 'm5ad',
+  [InstanceClass.STANDARD5_HIGH_PERFORMANCE]: 'm5n',
+  [InstanceClass.M5N]: 'm5n',
+  [InstanceClass.STANDARD5_NVME_DRIVE_HIGH_PERFORMANCE]: 'm5dn',
+  [InstanceClass.M5DN]: 'm5dn',
+  [InstanceClass.STANDARD5_HIGH_COMPUTE]: 'm5zn',
+  [InstanceClass.M5ZN]: 'm5zn',
+  [InstanceClass.MEMORY3]: 'r3',
+  [InstanceClass.R3]: 'r3',
+  [InstanceClass.MEMORY4]: 'r4',
+  [InstanceClass.R4]: 'r4',
+  [InstanceClass.MEMORY5]: 'r5',
+  [InstanceClass.R5]: 'r5',
+  [InstanceClass.MEMORY6_AMD]: 'r6a',
+  [InstanceClass.R6A]: 'r6a',
+  [InstanceClass.MEMORY6_INTEL]: 'r6i',
+  [InstanceClass.R6I]: 'r6i',
+  [InstanceClass.MEMORY6_INTEL_NVME_DRIVE]: 'r6id',
+  [InstanceClass.R6ID]: 'r6id',
+  [InstanceClass.MEMORY6_INTEL_HIGH_PERFORMANCE]: 'r6in',
+  [InstanceClass.R6IN]: 'r6in',
+  [InstanceClass.MEMORY6_INTEL_NVME_DRIVE_HIGH_PERFORMANCE]: 'r6idn',
+  [InstanceClass.R6IDN]: 'r6idn',
+  [InstanceClass.MEMORY5_HIGH_PERFORMANCE]: 'r5n',
+  [InstanceClass.R5N]: 'r5n',
+  [InstanceClass.MEMORY5_NVME_DRIVE]: 'r5d',
+  [InstanceClass.R5D]: 'r5d',
+  [InstanceClass.MEMORY5_NVME_DRIVE_HIGH_PERFORMANCE]: 'r5dn',
+  [InstanceClass.R5DN]: 'r5dn',
+  [InstanceClass.MEMORY5_AMD]: 'r5a',
+  [InstanceClass.R5A]: 'r5a',
+  [InstanceClass.MEMORY5_AMD_NVME_DRIVE]: 'r5ad',
+  [InstanceClass.R5AD]: 'r5ad',
+  [InstanceClass.HIGH_MEMORY_3TB_1]: 'u-3tb1',
+  [InstanceClass.U_3TB1]: 'u-3tb1',
+  [InstanceClass.HIGH_MEMORY_6TB_1]: 'u-6tb1',
+  [InstanceClass.U_6TB1]: 'u-6tb1',
+  [InstanceClass.HIGH_MEMORY_9TB_1]: 'u-9tb1',
+  [InstanceClass.U_9TB1]: 'u-9tb1',
+  [InstanceClass.HIGH_MEMORY_12TB_1]: 'u-12tb1',
+  [InstanceClass.U_12TB1]: 'u-12tb1',
+  [InstanceClass.HIGH_MEMORY_18TB_1]: 'u-18tb1',
+  [InstanceClass.U_18TB1]: 'u-18tb1',
+  [InstanceClass.HIGH_MEMORY_24TB_1]: 'u-24tb1',
+  [InstanceClass.U_24TB1]: 'u-24tb1',
+  [InstanceClass.MEMORY5_EBS_OPTIMIZED]: 'r5b',
+  [InstanceClass.R5B]: 'r5b',
+  [InstanceClass.MEMORY6_GRAVITON]: 'r6g',
+  [InstanceClass.R6G]: 'r6g',
+  [InstanceClass.MEMORY6_GRAVITON2_NVME_DRIVE]: 'r6gd',
+  [InstanceClass.R6GD]: 'r6gd',
+  [InstanceClass.MEMORY7_GRAVITON]: 'r7g',
+  [InstanceClass.R7G]: 'r7g',
+  [InstanceClass.MEMORY7_GRAVITON3_NVME_DRIVE]: 'r7gd',
+  [InstanceClass.R7GD]: 'r7gd',
+  [InstanceClass.MEMORY7_INTEL_BASE]: 'r7i',
+  [InstanceClass.R7I]: 'r7i',
+  [InstanceClass.MEMORY7_INTEL]: 'r7iz',
+  [InstanceClass.R7IZ]: 'r7iz',
+  [InstanceClass.MEMORY7_AMD]: 'r7a',
+  [InstanceClass.R7A]: 'r7a',
+  [InstanceClass.COMPUTE3]: 'c3',
+  [InstanceClass.C3]: 'c3',
+  [InstanceClass.COMPUTE4]: 'c4',
+  [InstanceClass.C4]: 'c4',
+  [InstanceClass.COMPUTE5]: 'c5',
+  [InstanceClass.C5]: 'c5',
+  [InstanceClass.COMPUTE5_NVME_DRIVE]: 'c5d',
+  [InstanceClass.C5D]: 'c5d',
+  [InstanceClass.COMPUTE5_AMD]: 'c5a',
+  [InstanceClass.C5A]: 'c5a',
+  [InstanceClass.COMPUTE5_AMD_NVME_DRIVE]: 'c5ad',
+  [InstanceClass.C5AD]: 'c5ad',
+  [InstanceClass.COMPUTE5_HIGH_PERFORMANCE]: 'c5n',
+  [InstanceClass.C5N]: 'c5n',
+  [InstanceClass.COMPUTE6_INTEL]: 'c6i',
+  [InstanceClass.C6I]: 'c6i',
+  [InstanceClass.COMPUTE6_INTEL_HIGH_PERFORMANCE]: 'c6in',
+  [InstanceClass.C6IN]: 'c6in',
+  [InstanceClass.COMPUTE6_INTEL_NVME_DRIVE]: 'c6id',
+  [InstanceClass.C6ID]: 'c6id',
+  [InstanceClass.COMPUTE6_AMD]: 'c6a',
+  [InstanceClass.C6A]: 'c6a',
+  [InstanceClass.COMPUTE6_GRAVITON2]: 'c6g',
+  [InstanceClass.C6G]: 'c6g',
+  [InstanceClass.COMPUTE6_GRAVITON2_NVME_DRIVE]: 'c6gd',
+  [InstanceClass.C6GD]: 'c6gd',
+  [InstanceClass.COMPUTE6_GRAVITON2_HIGH_NETWORK_BANDWIDTH]: 'c6gn',
+  [InstanceClass.C6GN]: 'c6gn',
+  [InstanceClass.COMPUTE7_GRAVITON3]: 'c7g',
+  [InstanceClass.C7G]: 'c7g',
+  [InstanceClass.COMPUTE7_GRAVITON3_NVME_DRIVE]: 'c7gd',
+  [InstanceClass.C7GD]: 'c7gd',
+  [InstanceClass.COMPUTE7_GRAVITON3_HIGH_NETWORK_BANDWIDTH]: 'c7gn',
+  [InstanceClass.C7GN]: 'c7gn',
+  [InstanceClass.COMPUTE7_INTEL]: 'c7i',
+  [InstanceClass.C7I]: 'c7i',
+  [InstanceClass.COMPUTE7_AMD]: 'c7a',
+  [InstanceClass.C7A]: 'c7a',
+  [InstanceClass.STORAGE2]: 'd2',
+  [InstanceClass.D2]: 'd2',
+  [InstanceClass.STORAGE3]: 'd3',
+  [InstanceClass.D3]: 'd3',
+  [InstanceClass.STORAGE3_ENHANCED_NETWORK]: 'd3en',
+  [InstanceClass.D3EN]: 'd3en',
+  [InstanceClass.TRAINING_ACCELERATOR1]: 'trn1',
+  [InstanceClass.TRN1]: 'trn1',
+  [InstanceClass.TRAINING_ACCELERATOR1_ENHANCED_NETWORK]: 'trn1n',
+  [InstanceClass.TRN1N]: 'trn1n',
+  [InstanceClass.STORAGE_COMPUTE_1]: 'h1',
+  [InstanceClass.H1]: 'h1',
+  [InstanceClass.IO3]: 'i3',
+  [InstanceClass.I3]: 'i3',
+  [InstanceClass.IO3_DENSE_NVME_DRIVE]: 'i3en',
+  [InstanceClass.I3EN]: 'i3en',
+  [InstanceClass.STORAGE4_GRAVITON]: 'i4g',
+  [InstanceClass.I4G]: 'i4g',
+  [InstanceClass.STORAGE4_GRAVITON_NETWORK_OPTIMIZED]: 'im4gn',
+  [InstanceClass.IM4GN]: 'im4gn',
+  [InstanceClass.STORAGE4_GRAVITON_NETWORK_STORAGE_OPTIMIZED]: 'is4gen',
+  [InstanceClass.IS4GEN]: 'is4gen',
+  [InstanceClass.BURSTABLE2]: 't2',
+  [InstanceClass.T2]: 't2',
+  [InstanceClass.BURSTABLE3]: 't3',
+  [InstanceClass.T3]: 't3',
+  [InstanceClass.BURSTABLE3_AMD]: 't3a',
+  [InstanceClass.T3A]: 't3a',
+  [InstanceClass.BURSTABLE4_GRAVITON]: 't4g',
+  [InstanceClass.T4G]: 't4g',
+  [InstanceClass.MEMORY_INTENSIVE_1]: 'x1',
+  [InstanceClass.X1]: 'x1',
+  [InstanceClass.MEMORY_INTENSIVE_1_EXTENDED]: 'x1e',
+  [InstanceClass.X1E]: 'x1e',
+  [InstanceClass.MEMORY_INTENSIVE_2_GRAVITON2]: 'x2g',
+  [InstanceClass.X2G]: 'x2g',
+  [InstanceClass.MEMORY_INTENSIVE_2_GRAVITON2_NVME_DRIVE]: 'x2gd',
+  [InstanceClass.X2GD]: 'x2gd',
+  [InstanceClass.FPGA1]: 'f1',
+  [InstanceClass.F1]: 'f1',
+  [InstanceClass.GRAPHICS3_SMALL]: 'g3s',
+  [InstanceClass.G3S]: 'g3s',
+  [InstanceClass.GRAPHICS3]: 'g3',
+  [InstanceClass.G3]: 'g3',
+  [InstanceClass.GRAPHICS4_NVME_DRIVE_HIGH_PERFORMANCE]: 'g4dn',
+  [InstanceClass.G4DN]: 'g4dn',
+  [InstanceClass.GRAPHICS4_AMD_NVME_DRIVE]: 'g4ad',
+  [InstanceClass.G4AD]: 'g4ad',
+  [InstanceClass.GRAPHICS5]: 'g5',
+  [InstanceClass.G5]: 'g5',
+  [InstanceClass.GRAPHICS5_GRAVITON2]: 'g5g',
+  [InstanceClass.G5G]: 'g5g',
+  [InstanceClass.PARALLEL2]: 'p2',
+  [InstanceClass.P2]: 'p2',
+  [InstanceClass.PARALLEL3]: 'p3',
+  [InstanceClass.P3]: 'p3',
+  [InstanceClass.PARALLEL3_NVME_DRIVE_HIGH_PERFORMANCE]: 'p3dn',
+  [InstanceClass.P3DN]: 'p3dn',
+  [InstanceClass.PARALLEL4_NVME_DRIVE_EXTENDED]: 'p4de',
+  [InstanceClass.P4DE]: 'p4de',
+  [InstanceClass.PARALLEL4]: 'p4d',
+  [InstanceClass.P4D]: 'p4d',
+  [InstanceClass.PARALLEL5]: 'p5',
+  [InstanceClass.P5]: 'p5',
+  [InstanceClass.ARM1]: 'a1',
+  [InstanceClass.A1]: 'a1',
+  [InstanceClass.STANDARD6_GRAVITON]: 'm6g',
+  [InstanceClass.M6G]: 'm6g',
+  [InstanceClass.STANDARD6_INTEL]: 'm6i',
+  [InstanceClass.M6I]: 'm6i',
+  [InstanceClass.STANDARD6_INTEL_NVME_DRIVE]: 'm6id',
+  [InstanceClass.M6ID]: 'm6id',
+  [InstanceClass.STANDARD6_INTEL_HIGH_PERFORMANCE]: 'm6in',
+  [InstanceClass.M6IN]: 'm6in',
+  [InstanceClass.STANDARD6_INTEL_NVME_DRIVE_HIGH_PERFORMANCE]: 'm6idn',
+  [InstanceClass.M6IDN]: 'm6idn',
+  [InstanceClass.STANDARD6_AMD]: 'm6a',
+  [InstanceClass.M6A]: 'm6a',
+  [InstanceClass.STANDARD6_GRAVITON2_NVME_DRIVE]: 'm6gd',
+  [InstanceClass.M6GD]: 'm6gd',
+  [InstanceClass.STANDARD7_GRAVITON]: 'm7g',
+  [InstanceClass.M7G]: 'm7g',
+  [InstanceClass.STANDARD7_GRAVITON3_NVME_DRIVE]: 'm7gd',
+  [InstanceClass.M7GD]: 'm7gd',
+  [InstanceClass.STANDARD7_INTEL]: 'm7i',
+  [InstanceClass.M7I]: 'm7i',
+  [InstanceClass.STANDARD7_INTEL_FLEX]: 'm7i-flex',
+  [InstanceClass.M7I_FLEX]: 'm7i-flex',
+  [InstanceClass.STANDARD7_AMD]: 'm7a',
+  [InstanceClass.M7A]: 'm7a',
+  [InstanceClass.HIGH_COMPUTE_MEMORY1]: 'z1d',
+  [InstanceClass.Z1D]: 'z1d',
+  [InstanceClass.INFERENCE1]: 'inf1',
+  [InstanceClass.INF1]: 'inf1',
+  [InstanceClass.INFERENCE2]: 'inf2',
+  [InstanceClass.INF2]: 'inf2',
+  [InstanceClass.MACINTOSH1_INTEL]: 'mac1',
+  [InstanceClass.MAC1]: 'mac1',
+  [InstanceClass.MACINTOSH2_M1]: 'mac2',
+  [InstanceClass.MAC2]: 'mac2',
+  [InstanceClass.MACINTOSH2_M2]: 'mac2-m2',
+  [InstanceClass.MAC2_M2]: 'mac2-m2',
+  [InstanceClass.MACINTOSH2_M2_PRO]: 'mac2-m2pro',
+  [InstanceClass.MAC2_M2PRO]: 'mac2-m2pro',
+  [InstanceClass.VIDEO_TRANSCODING1]: 'vt1',
+  [InstanceClass.VT1]: 'vt1',
+  [InstanceClass.HIGH_PERFORMANCE_COMPUTING6_AMD]: 'hpc6a',
+  [InstanceClass.HPC6A]: 'hpc6a',
+  [InstanceClass.HIGH_PERFORMANCE_COMPUTING6_INTEL_NVME_DRIVE]: 'hpc6id',
+  [InstanceClass.HPC6ID]: 'hpc6id',
+  [InstanceClass.HIGH_PERFORMANCE_COMPUTING7_AMD]: 'hpc7a',
+  [InstanceClass.HPC7A]: 'hpc7a',
+  [InstanceClass.HIGH_PERFORMANCE_COMPUTING7_GRAVITON]: 'hpc7g',
+  [InstanceClass.HPC7G]: 'hpc7g',
+  [InstanceClass.I4I]: 'i4i',
+  [InstanceClass.IO4_INTEL]: 'i4i',
+  [InstanceClass.X2IEDN]: 'x2iedn',
+  [InstanceClass.MEMORY_INTENSIVE_2_XT_INTEL]: 'x2iedn',
+  [InstanceClass.X2IDN]: 'x2idn',
+  [InstanceClass.MEMORY_INTENSIVE_2_INTEL]: 'x2idn',
+  [InstanceClass.X2IEZN]: 'x2iezn',
+  [InstanceClass.MEMORY_INTENSIVE_2_XTZ_INTEL]: 'x2iezn',
+  [InstanceClass.DEEP_LEARNING1]: 'dl1',
+  [InstanceClass.DL1]: 'dl1',
+  [InstanceClass.DEEP_LEARNING2_QUALCOMM]: 'dl2q',
+  [InstanceClass.DL2Q]: 'dl2q',
+};

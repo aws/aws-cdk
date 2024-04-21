@@ -1,4 +1,5 @@
-import { Size } from '../../core';
+import { Size } from '../../../core';
+import { PlacementGroupStrategy } from '../placement-group';
 
 /**
  * Instance type properties
@@ -968,21 +969,7 @@ export enum DiskType {
   /** Hard disk drive (HDD) */
   HDD = 'hdd',
   /** Solid state drive (SSD) */
-  ssd = 'ssd',
-}
-
-/**
- * Instance placement group strategies
- *
- * @see https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/placement-groups.html
- */
-export enum PlacementGroupStrategy {
-  /** Cluster */
-  CLUSTER = 'cluster',
-  /** Partition */
-  PARTITION = 'partition',
-  /** Spread */
-  SPREAD = 'spread',
+  SSD = 'ssd',
 }
 
 /**

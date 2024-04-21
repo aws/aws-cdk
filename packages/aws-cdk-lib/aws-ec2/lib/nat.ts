@@ -1,6 +1,6 @@
 import { Connections, IConnectable } from './connections';
 import { Instance } from './instance';
-import { InstanceType } from './instance-types';
+import { InstanceType } from './instance-type';
 import { IKeyPair } from './key-pair';
 import { CpuCredits } from './launch-template';
 import { AmazonLinuxGeneration, AmazonLinuxImage, IMachineImage, LookupMachineImage } from './machine-image';

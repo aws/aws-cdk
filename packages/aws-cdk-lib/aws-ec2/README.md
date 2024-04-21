@@ -1236,7 +1236,7 @@ new ec2.Instance(this, 'Instance5', {
 ```ts
 declare const vpc: ec2.Vpc;
 
-const instanceType = ec2.InstanceType.BURSTABLE2_MICRO;
+const instanceType = ec2.NamedInstanceType.BURSTABLE2_MICRO;
 
 assert(instanceType.instanceProperties?.freeTierEligible);
 

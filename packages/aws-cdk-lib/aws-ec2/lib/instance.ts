@@ -4,7 +4,7 @@ import { InstanceRequireImdsv2Aspect } from './aspects';
 import { CloudFormationInit } from './cfn-init';
 import { Connections, IConnectable } from './connections';
 import { CfnInstance } from './ec2.generated';
-import { InstanceType } from './instance-types';
+import { InstanceType } from './instance-type';
 import { IKeyPair } from './key-pair';
 import { CpuCredits } from './launch-template';
 import { IMachineImage, OperatingSystemType } from './machine-image';
