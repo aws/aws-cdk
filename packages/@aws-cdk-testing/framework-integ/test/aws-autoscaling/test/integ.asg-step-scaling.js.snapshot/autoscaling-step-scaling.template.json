@@ -592,6 +592,12 @@
     "Namespace": "AWS/EC2",
     "Period": 300,
     "Statistic": "Average",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "autoscaling-step-scaling/ASG"
+     }
+    ],
     "Threshold": 10
    }
   },
@@ -641,6 +647,12 @@
     "Namespace": "AWS/EC2",
     "Period": 300,
     "Statistic": "Average",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "autoscaling-step-scaling/ASG"
+     }
+    ],
     "Threshold": 50
    }
   },
@@ -685,6 +697,12 @@
     "Namespace": "AWS/EC2",
     "Period": 300,
     "Statistic": "Average",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "autoscaling-step-scaling/ASG"
+     }
+    ],
     "Threshold": 100
    }
   },
@@ -734,6 +752,12 @@
     "Namespace": "AWS/EC2",
     "Period": 300,
     "Statistic": "Average",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "autoscaling-step-scaling/ASG"
+     }
+    ],
     "Threshold": 300
    }
   }
