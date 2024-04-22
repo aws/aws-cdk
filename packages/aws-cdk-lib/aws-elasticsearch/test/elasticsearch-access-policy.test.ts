@@ -42,6 +42,7 @@ test('minimal example renders correctly', () => {
       },
       outputPaths: ['DomainConfig.ElasticsearchClusterConfig.AccessPolicies'],
       physicalResourceId: { id: 'TestDomainAccessPolicy' },
+      logApiResponseData: true,
     }),
     Update: JSON.stringify({
       action: 'updateElasticsearchDomainConfig',
@@ -52,6 +53,7 @@ test('minimal example renders correctly', () => {
       },
       outputPaths: ['DomainConfig.ElasticsearchClusterConfig.AccessPolicies'],
       physicalResourceId: { id: 'TestDomainAccessPolicy' },
+      logApiResponseData: true,
     }),
   });
 });
@@ -94,6 +96,7 @@ test('support access policy added inline and later', () => {
       },
       outputPaths: ['DomainConfig.ElasticsearchClusterConfig.AccessPolicies'],
       physicalResourceId: { id: 'TestDomainAccessPolicy' },
+      logApiResponseData: true,
     }),
     Update: JSON.stringify({
       action: 'updateElasticsearchDomainConfig',
@@ -104,6 +107,7 @@ test('support access policy added inline and later', () => {
       },
       outputPaths: ['DomainConfig.ElasticsearchClusterConfig.AccessPolicies'],
       physicalResourceId: { id: 'TestDomainAccessPolicy' },
+      logApiResponseData: true,
     }),
   });
 });

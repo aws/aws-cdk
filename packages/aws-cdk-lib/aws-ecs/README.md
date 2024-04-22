@@ -618,6 +618,24 @@ taskDefinition.addContainer('container', {
 });
 ```
 
+## Docker labels
+
+You can add labels to the container with the `dockerLabels` property or with the `addDockerLabel` method:
+
+```ts
+declare const taskDefinition: ecs.TaskDefinition;
+
+const container = taskDefinition.addContainer('cont', {
+  image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+  memoryLimitMiB: 1024,
+  dockerLabels: {
+    foo: 'bar',
+  },
+});
+
+container.addDockerLabel('label', 'value');
+```
+
 ### Using Windows containers on Fargate
 
 AWS Fargate supports Amazon ECS Windows containers. For more details, please see this [blog post](https://aws.amazon.com/tw/blogs/containers/running-windows-containers-with-amazon-ecs-on-aws-fargate/)
