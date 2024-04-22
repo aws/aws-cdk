@@ -360,11 +360,9 @@ export interface FileSystemAttributes {
 /**
  * Properties for the ReplicationConfiguration.
  */
-export interface ReplicationConfigurationProps {
+interface ReplicationConfigurationProps {
   /**
    * The existing destination file system for the replication.
-   *
-   * You cannot configure `kmsKey`, `region` and `availabilityZone` when `destinationFileSystem` is set.
    *
    * @default - create a new file system for the replication
    */
@@ -394,16 +392,71 @@ export interface ReplicationConfigurationProps {
 }
 
 /**
+ * Properties for configuring ReplicationConfiguration to replicate
+ * to a new One Zone file system.
+ */
+export interface OneZoneFileSystemProps {
+  /**
+   * AWS KMS key used to protect the encrypted file system.
+   *
+   * @default - use service-managed KMS key for Amazon EFS
+   */
+  readonly kmsKey?: kms.IKey;
+
+  /**
+   * The AWS Region in which the destination file system is located.
+   */
+  readonly region: string;
+
+  /**
+   * The availability zone name of the destination file system.
+   * One zone file system is used as the destination file system when this property is set.
+   */
+  readonly availabilityZone: string;
+}
+
+/**
+ * Properties for configuring ReplicationConfiguration to replicate
+ * to a new Regional file system.
+ */
+export interface RegionalFileSystemProps {
+  /**
+   * AWS KMS key used to protect the encrypted file system.
+   *
+   * @default - use service-managed KMS key for Amazon EFS
+   */
+  readonly kmsKey?: kms.IKey;
+
+  /**
+   * The AWS Region in which the destination file system is located.
+   *
+   * @default - the region of the stack
+   */
+  readonly region?: string;
+}
+
+/**
+ * Properties for configuring ReplicationConfiguration to replicate
+ * to an existing file system.
+ */
+export interface ExistingFileSystemProps {
+  /**
+   * The existing destination file system for the replication.
+   */
+  readonly destinationFileSystem?: IFileSystem;
+}
+
+/**
  * EFS Replication Configuration
  */
-export class ReplicationConfiguration {
+export abstract class ReplicationConfiguration {
   /**
    * Specify the existing destination file system for the replication.
    *
    * @param destinationFileSystem The existing destination file system for the replication
    */
   public static existingFileSystem(destinationFileSystem: IFileSystem): ReplicationConfiguration {
-    return new ReplicationConfiguration({ destinationFileSystem });
+    return new ExistingFileSystem({ destinationFileSystem });
   }
 
   /**
@@ -413,18 +466,18 @@ export class ReplicationConfiguration {
    * @param kmsKey  AWS KMS key used to protect the encrypted file system. Default is service-managed KMS key for Amazon EFS.
    */
   public static regionalFileSystem(region?: string, kmsKey?: kms.IKey): ReplicationConfiguration {
-    return new ReplicationConfiguration({ region, kmsKey });
+    return new RegionalFileSystem({ region, kmsKey });
   }
 
   /**
    * Create a new one zone destination file system for the replication.
    *
-   * @param region The AWS Region in which the destination file system is located.
-   * @param availabilityZone The availability zone name of the destination file system. You have to specify the `region` property for the region that the specified availability zone belongs to.
+   * @param region The AWS Region in which the specified availability zone belongs to.
+   * @param availabilityZone The availability zone name of the destination file system.
    * @param kmsKey AWS KMS key used to protect the encrypted file system. Default is service-managed KMS key for Amazon EFS.
    */
   public static oneZoneFileSystem(region: string, availabilityZone: string, kmsKey?: kms.IKey): ReplicationConfiguration {
-    return new ReplicationConfiguration({ region, availabilityZone, kmsKey });
+    return new OneZoneFileSystem({ region, availabilityZone, kmsKey });
   }
 
   /**
@@ -449,26 +502,40 @@ export class ReplicationConfiguration {
   public readonly availabilityZone?: string;
 
   constructor(options: ReplicationConfigurationProps) {
-    if (options.availabilityZone && !Token.isUnresolved(options.availabilityZone) && !options.region) {
-      throw new Error('\'replicationConfiguration.availabilityZone\' cannot be specified without \'replicationConfiguration.region\'');
-    }
-
-    if (!options.destinationFileSystem && !options.region) {
-      throw new Error('\'replicationConfiguration.region\' or \'replicationConfiguration.destinationFileSystem\' is required');
-    }
-
-    if (options.destinationFileSystem && (options.region || options.availabilityZone || options.kmsKey)) {
-      throw new Error('Cannot configure \'replicationConfiguration.region\', \'replicationConfiguration.availabilityZone\' or \'replicationConfiguration.kmsKey\' when \'replicationConfiguration.destinationFileSystem\' is set');
-    }
-
-    if (options.region && !Token.isUnresolved(options.region) && !/^[a-z]{2}-((iso[a-z]{0,1}-)|(gov-)){0,1}[a-z]+-{0,1}[0-9]{0,1}$/.test(options.region)) {
-      throw new Error('\'replicationConfiguration.region\' is invalid.');
-    }
-
     this.destinationFileSystem = options.destinationFileSystem;
     this.kmsKey = options.kmsKey;
     this.region = options.region;
     this.availabilityZone = options.availabilityZone;
+  }
+}
+
+/**
+ * Represents an existing file system used as the destination file system
+ * for ReplicationConfiguration.
+ */
+class ExistingFileSystem extends ReplicationConfiguration {
+  constructor(props: ExistingFileSystemProps) {
+    super(props);
+  }
+}
+
+/**
+ * Represents a new Regional file system used as the
+ * destination file system for ReplicationConfiguration.
+ */
+class RegionalFileSystem extends ReplicationConfiguration {
+  constructor(props: RegionalFileSystemProps) {
+    super(props);
+  }
+}
+
+/**
+ * Represents a new One Zone file system used as the
+ * destination file system for ReplicationConfiguration.
+ */
+class OneZoneFileSystem extends ReplicationConfiguration {
+  constructor(props: OneZoneFileSystemProps) {
+    super(props);
   }
 }
 
