@@ -435,6 +435,13 @@ export interface KeyProps {
   readonly enableKeyRotation?: boolean;
 
   /**
+   * The period between each automatic rotation.
+   *
+   * @default - 365 days.
+   */
+  readonly rotationPeriod?: Duration;
+
+  /**
    * Indicates whether the key is available for use.
    *
    * @default - Key is enabled.
@@ -722,6 +729,15 @@ export class Key extends KeyBase {
       throw new Error('key rotation cannot be enabled on asymmetric keys');
     }
 
+    if (props.rotationPeriod) {
+      if (!props.enableKeyRotation) {
+        throw new Error('\'rotationPeriod\' cannot be specified when \'enableKeyRotation\' is disabled');
+      }
+      if (props.rotationPeriod.toDays() < 90 || props.rotationPeriod.toDays() > 2560) {
+        throw new Error(`'rotationPeriod' value must between 90 and 2650 days. Received: ${props.rotationPeriod.toDays()}`);
+      }
+    }
+
     const defaultKeyPoliciesFeatureEnabled = FeatureFlags.of(this).isEnabled(cxapi.KMS_DEFAULT_KEY_POLICIES);
 
     this.policy = props.policy ?? new iam.PolicyDocument();
@@ -755,6 +771,7 @@ export class Key extends KeyBase {
     const resource = new CfnKey(this, 'Resource', {
       description: props.description,
       enableKeyRotation: props.enableKeyRotation,
+      rotationPeriodInDays: props.rotationPeriod?.toDays(),
       enabled: props.enabled,
       keySpec: props.keySpec,
       keyUsage: props.keyUsage,
