@@ -4,7 +4,7 @@ import { CfnFileSystem, CfnMountTarget } from './efs.generated';
 import * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
-import { ArnFormat, FeatureFlags, Lazy, RemovalPolicy, Resource, Size, Stack, Tags, Token } from '../../core';
+import { ArnFormat, FeatureFlags, Lazy, RemovalPolicy, Resource, Size, Stack, Tags } from '../../core';
 import * as cxapi from '../../cx-api';
 
 /**
@@ -360,7 +360,7 @@ export interface FileSystemAttributes {
 /**
  * Properties for the ReplicationConfiguration.
  */
-interface ReplicationConfigurationProps {
+export interface ReplicationConfigurationProps {
   /**
    * The existing destination file system for the replication.
    *
