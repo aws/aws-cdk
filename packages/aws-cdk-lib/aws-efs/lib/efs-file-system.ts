@@ -443,7 +443,7 @@ export interface ExistingFileSystemProps {
   /**
    * The existing destination file system for the replication.
    */
-  readonly destinationFileSystem?: IFileSystem;
+  readonly destinationFileSystem: IFileSystem;
 }
 
 /**
