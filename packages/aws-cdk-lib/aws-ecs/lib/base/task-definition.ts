@@ -193,7 +193,9 @@ export interface TaskDefinitionProps extends CommonTaskDefinitionProps {
   /**
    * The process namespace to use for the containers in the task.
    *
-   * Not supported in Fargate and Windows containers.
+   * Only supported for tasks that are hosted on AWS Fargate if the tasks
+   * are using platform version 1.4.0 or later (Linux).
+   * Not supported in Windows containers.
    *
    * @default - PidMode used by the task is not specified
    */
@@ -219,8 +221,8 @@ export interface TaskDefinitionProps extends CommonTaskDefinitionProps {
 
   /**
    * The operating system that your task definitions are running on.
-   * A runtimePlatform is supported only for tasks using the Fargate launch type.
    *
+   * A runtimePlatform is supported only for tasks using the Fargate launch type.
    *
    * @default - Undefined.
    */
@@ -373,6 +375,15 @@ export class TaskDefinition extends TaskDefinitionBase {
   public readonly ephemeralStorageGiB?: number;
 
   /**
+   * The process namespace to use for the containers in the task.
+   *
+   * Only supported for tasks that are hosted on AWS Fargate if the tasks
+   * are using platform version 1.4.0 or later (Linux).
+   * Not supported in Windows containers.
+   */
+  public readonly pidMode?: PidMode;
+
+  /**
    * The container definitions.
    */
   protected readonly containers = new Array<ContainerDefinition>();
@@ -453,9 +464,10 @@ export class TaskDefinition extends TaskDefinitionBase {
     }
 
     this.ephemeralStorageGiB = props.ephemeralStorageGiB;
+    this.pidMode = props.pidMode;
 
     // validate the cpu and memory size for the Windows operation system family.
-    if (props.runtimePlatform?.operatingSystemFamily?._operatingSystemFamily.includes('WINDOWS')) {
+    if (props.runtimePlatform?.operatingSystemFamily?.isWindows()) {
       // We know that props.cpu and props.memoryMiB are defined because an error would have been thrown previously if they were not.
       // But, typescript is not able to figure this out, so using the `!` operator here to let the type-checker know they are defined.
       this.checkFargateWindowsBasedTasksSize(props.cpu!, props.memoryMiB!, props.runtimePlatform!);
@@ -485,7 +497,7 @@ export class TaskDefinition extends TaskDefinitionBase {
       cpu: props.cpu,
       memory: props.memoryMiB,
       ipcMode: props.ipcMode,
-      pidMode: props.pidMode,
+      pidMode: this.pidMode,
       inferenceAccelerators: Lazy.any({
         produce: () =>
           !isFargateCompatible(this.compatibility) ? this.renderInferenceAccelerators() : undefined,
