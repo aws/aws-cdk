@@ -1,6 +1,7 @@
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Annotations, Match, Template } from '../../../assertions';
 import * as appscaling from '../../../aws-applicationautoscaling';
+import * as batch from '../../../aws-batch';
 import * as cloudwatch from '../../../aws-cloudwatch';
 import * as ec2 from '../../../aws-ec2';
 import * as elbv2 from '../../../aws-elasticloadbalancingv2';
@@ -683,6 +684,92 @@ describe('fargate service', () => {
       expect(() => {
         Template.fromStack(stack);
       }).toThrow(/one essential container/);
+    });
+
+    test('errors when platform version does not support containers which references secret JSON field', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef', {
+        runtimePlatform: {
+          operatingSystemFamily: ecs.OperatingSystemFamily.LINUX,
+          cpuArchitecture: ecs.CpuArchitecture.ARM64,
+        },
+        memoryLimitMiB: 512,
+        cpu: 256,
+      });
+
+      // Errors on validation, not on construction.
+      new ecs.FargateService(stack, 'FargateService', {
+        cluster,
+        taskDefinition,
+        platformVersion: ecs.FargatePlatformVersion.VERSION1_2,
+      });
+
+      taskDefinition.addContainer('main', {
+        image: ecs.ContainerImage.fromRegistry('somecontainer'),
+        secrets: {
+          envName: batch.Secret.fromSecretsManager(new secretsmanager.Secret(stack, 'testSecret'), 'secretField'),
+        },
+      });
+
+      // THEN
+      expect(() => {
+        Template.fromStack(stack);
+      }).toThrow(/This feature requires platform version/);
+    });
+
+    test('errors when platform version does not support ephemeralStorageGiB', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef', {
+        runtimePlatform: {
+          operatingSystemFamily: ecs.OperatingSystemFamily.LINUX,
+          cpuArchitecture: ecs.CpuArchitecture.ARM64,
+        },
+        memoryLimitMiB: 512,
+        cpu: 256,
+        ephemeralStorageGiB: 100,
+      });
+
+      // WHEN
+      // THEN
+      expect(() => {
+        new ecs.FargateService(stack, 'FargateService', {
+          cluster,
+          taskDefinition,
+          platformVersion: ecs.FargatePlatformVersion.VERSION1_2,
+        });
+      }).toThrow(/The ephemeralStorageGiB feature requires platform version/);
+    });
+
+    test('errors when platform version does not support pidMode', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef', {
+        runtimePlatform: {
+          operatingSystemFamily: ecs.OperatingSystemFamily.LINUX,
+          cpuArchitecture: ecs.CpuArchitecture.ARM64,
+        },
+        memoryLimitMiB: 512,
+        cpu: 256,
+        pidMode: ecs.PidMode.HOST,
+      });
+
+      // WHEN
+      // THEN
+      expect(() => {
+        new ecs.FargateService(stack, 'FargateService', {
+          cluster,
+          taskDefinition,
+          platformVersion: ecs.FargatePlatformVersion.VERSION1_2,
+        });
+      }).toThrow(/The pidMode feature requires platform version/);
     });
 
     test('allows adding the default container after creating the service', () => {
