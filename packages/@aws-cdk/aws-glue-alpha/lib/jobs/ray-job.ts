@@ -60,9 +60,15 @@ export class RayJob extends Job {
     };
     this.grantPrincipal = this.role;
 
+    // Enable CloudWatch metrics and continuous logging by default as a best practice
+    const continuousLoggingArgs = props.continuousLogging?.enabled ? this.setupContinuousLogging(this.role, props.continuousLogging) : {};
+    const profilingMetricsArgs = { '--enable-metrics': '' };
+
     // Combine command line arguments into a single line item
     const defaultArguments = {
       ...this.checkNoReservedArgs(props.defaultArguments),
+      ...continuousLoggingArgs,
+      ...profilingMetricsArgs,
     };
 
     if (props.workerType && props.workerType !== WorkerType.Z_2X) {
@@ -84,10 +90,9 @@ export class RayJob extends Job {
       },
       glueVersion: props.glueVersion ? props.glueVersion : GlueVersion.V4_0,
       workerType: props.workerType ? props.workerType : WorkerType.Z_2X,
-      numberOfWorkers: props.numberOrWorkers,
+      numberOfWorkers: props.numberOrWorkers ? props.numberOrWorkers: 3,
       maxRetries: props.maxRetries,
       executionProperty: props.maxConcurrentRuns ? { maxConcurrentRuns: props.maxConcurrentRuns } : undefined,
-      //notificationProperty: props.notifyDelayAfter ? { notifyDelayAfter: props.notifyDelayAfter.toMinutes() } : undefined,
       timeout: props.timeout?.toMinutes(),
       connections: props.connections ? { connections: props.connections.map((connection) => connection.connectionName) } : undefined,
       securityConfiguration: props.securityConfiguration?.securityConfigurationName,
