@@ -2,6 +2,73 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.138.0](https://github.com/aws/aws-cdk/compare/v2.137.0...v2.138.0) (2024-04-18)
+
+
+### Features
+
+* **AppSync:** addRdsDataSource support for DatabaseCluster ([#29544](https://github.com/aws/aws-cdk/issues/29544)) ([1894f2d](https://github.com/aws/aws-cdk/commit/1894f2db54eed7d65c9f54cb07cee6dd84200ad7)), closes [#29302](https://github.com/aws/aws-cdk/issues/29302)
+* **cognito:** support provider details for `UserPoolIdentityProviderSaml` ([#29588](https://github.com/aws/aws-cdk/issues/29588)) ([375f1a6](https://github.com/aws/aws-cdk/commit/375f1a6c0bd5952091b1bb4634faaabcb4ca126e)), closes [#29494](https://github.com/aws/aws-cdk/issues/29494) [#29598](https://github.com/aws/aws-cdk/issues/29598)
+* **custom-resources:** add logging property to `AwsSdkCall` and create `Logging` class ([#29648](https://github.com/aws/aws-cdk/issues/29648)) ([b049064](https://github.com/aws/aws-cdk/commit/b0490640a25eb1946aa9db748cf85867e841f243))
+* **ec2:** well-known port aliases ([#29793](https://github.com/aws/aws-cdk/issues/29793)) ([f10494c](https://github.com/aws/aws-cdk/commit/f10494cab79c033d7913a435b0e2db12fe59698d))
+* **elasticloadbalancingv2:** add removeSuffix param for ExternalApplicationListener.addAction() ([#29746](https://github.com/aws/aws-cdk/issues/29746)) ([f4af330](https://github.com/aws/aws-cdk/commit/f4af33018e374ea97346e8ec70776feb46f6ab7b)), closes [#29496](https://github.com/aws/aws-cdk/issues/29496)
+* **route53:** `DNSSEC` zone signing ([#28604](https://github.com/aws/aws-cdk/issues/28604)) ([213fffc](https://github.com/aws/aws-cdk/commit/213fffc84f2206f064ae5143b8dc6eff9d21b50d))
+* **sns:** add TracingConfig prop ([#29783](https://github.com/aws/aws-cdk/issues/29783)) ([f14b60f](https://github.com/aws/aws-cdk/commit/f14b60fc990cb98d1d2b0e48f9a89492bddf868c)), closes [#29714](https://github.com/aws/aws-cdk/issues/29714)
+* **stepfunctions-tasks:** add httpinvoke step functions task ([#28673](https://github.com/aws/aws-cdk/issues/28673)) ([178e481](https://github.com/aws/aws-cdk/commit/178e48189524c608decd631c5e76e95a34fe5122)), closes [#28278](https://github.com/aws/aws-cdk/issues/28278)
+* update L1 CloudFormation resource definitions ([#29798](https://github.com/aws/aws-cdk/issues/29798)) ([7103fed](https://github.com/aws/aws-cdk/commit/7103fed9bc03062e464d907818afcf32c27ba6b2)), closes [/docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-launchtemplate.html#aws-resource-ec2](https://github.com/aws//docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-launchtemplate.html/issues/aws-resource-ec2) [/docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-launchtemplate.html#aws-resource-ec2](https://github.com/aws//docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-launchtemplate.html/issues/aws-resource-ec2) [/docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-security-group.html#cfn-ec2](https://github.com/aws//docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-security-group.html/issues/cfn-ec2) [/docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-security-group.html#cfn-ec2](https://github.com/aws//docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-security-group.html/issues/cfn-ec2)
+
+
+### Bug Fixes
+
+* **ecs-patterns:** integ test failed with certificate error ([#29623](https://github.com/aws/aws-cdk/issues/29623)) ([5347369](https://github.com/aws/aws-cdk/commit/5347369fa11f4f11ab3893b9ac4c8467c5d514c3)), closes [/github.com/aws/aws-cdk/pull/29186#issuecomment-1959231406](https://github.com/aws//github.com/aws/aws-cdk/pull/29186/issues/issuecomment-1959231406) [/github.com/aws/aws-cdk/pull/29186#issuecomment-1959231406](https://github.com/aws//github.com/aws/aws-cdk/pull/29186/issues/issuecomment-1959231406)
+* **eks:** add support of Helm charts located in ECR of AWS CN region ([#29778](https://github.com/aws/aws-cdk/issues/29778)) ([0da25e5](https://github.com/aws/aws-cdk/commit/0da25e5da491b0778eed0444cbb05455bd562b42)), closes [#28460](https://github.com/aws/aws-cdk/issues/28460)
+* **globalaccelerator:** changing `installLatestAwsSdk` breaks Security Group reference ([#29620](https://github.com/aws/aws-cdk/issues/29620)) ([ece7eb6](https://github.com/aws/aws-cdk/commit/ece7eb671e588aff6e9d0f2ee4b53933cb9589a5)), closes [#23796](https://github.com/aws/aws-cdk/issues/23796) [/github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/aws-globalaccelerator/lib/_accelerator-security-group.ts#L32](https://github.com/aws//github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/aws-globalaccelerator/lib/_accelerator-security-group.ts/issues/L32)
+* **lambda:** version.fromVersionArn creates invalid Version object ([#29820](https://github.com/aws/aws-cdk/issues/29820)) ([8198884](https://github.com/aws/aws-cdk/commit/819888470248fed2ddbdac689f14254688eef88f))
+* **spec2cdk:** get tag gives null result in Java CDK ([#29870](https://github.com/aws/aws-cdk/issues/29870)) ([5a918d1](https://github.com/aws/aws-cdk/commit/5a918d12ec0455626b5630b35aa47e6d9da6df7c))
+* **stepfunctions:** the catch field in CustomState is not rendered ([#29654](https://github.com/aws/aws-cdk/issues/29654)) ([77e9fc6](https://github.com/aws/aws-cdk/commit/77e9fc6bd2066862312355801f7f04c5a5f02d6a))
+
+## [2.137.0](https://github.com/aws/aws-cdk/compare/v2.136.1...v2.137.0) (2024-04-10)
+
+
+### Features
+
+* **assertions:** add stack tagging assertions ([#29247](https://github.com/aws/aws-cdk/issues/29247)) ([72f189d](https://github.com/aws/aws-cdk/commit/72f189d3287313a03b1a73a03cb098340f7b2530)), closes [#27620](https://github.com/aws/aws-cdk/issues/27620)
+* **cloudfront:** adding support for inline KeyValueStore sources ([#29419](https://github.com/aws/aws-cdk/issues/29419)) ([5675010](https://github.com/aws/aws-cdk/commit/56750107ab1946d3ff0842b3615c5f37c4bc719f)), closes [#29204](https://github.com/aws/aws-cdk/issues/29204)
+* **ec2:** `NatInstanceProviderV2` improvements ([#29729](https://github.com/aws/aws-cdk/issues/29729)) ([4eb02a4](https://github.com/aws/aws-cdk/commit/4eb02a4692f87cd9c2cea9aec6d67a25d23ba9f7)), closes [#29720](https://github.com/aws/aws-cdk/issues/29720)
+* **elasticloadbalancingv2:** application load balancer attributes ([#29586](https://github.com/aws/aws-cdk/issues/29586)) ([067c4a5](https://github.com/aws/aws-cdk/commit/067c4a5740dfdcc6c383b85bbbe65798e02b2431)), closes [#29585](https://github.com/aws/aws-cdk/issues/29585)
+
+
+### Bug Fixes
+
+* **appsync:** source api association does not depend on schema ([#29455](https://github.com/aws/aws-cdk/issues/29455)) ([92a160b](https://github.com/aws/aws-cdk/commit/92a160bb0a2c6ca528fc3f4e3ca036d0c70e6ca5)), closes [#29044](https://github.com/aws/aws-cdk/issues/29044)
+* **s3-deployment:** `BucketDeployment` fails when bootstrap stack's `StagingBucket` is encrypted with customer managed KMS key ([#29540](https://github.com/aws/aws-cdk/issues/29540)) ([0b429fb](https://github.com/aws/aws-cdk/commit/0b429fb80e7820afb606d5424476444940166ade)), closes [#25100](https://github.com/aws/aws-cdk/issues/25100) [#25100](https://github.com/aws/aws-cdk/issues/25100) [#25100](https://github.com/aws/aws-cdk/issues/25100)
+* **sns:** contentBasedDeduplication is always false for imported topic ([#29542](https://github.com/aws/aws-cdk/issues/29542)) ([4a9e683](https://github.com/aws/aws-cdk/commit/4a9e68311018a42bc5961646dda4be6861f916a5)), closes [#29532](https://github.com/aws/aws-cdk/issues/29532)
+
+
+## [2.136.1](https://github.com/aws/aws-cdk/compare/v2.136.0...v2.136.1) (2024-04-09)
+
+
+### Reverts
+
+* chore(ec2): update WindowsVersions enum ([#29737](https://github.com/aws/aws-cdk/issues/29737)) ([0e9d5ca](https://github.com/aws/aws-cdk/commit/0e9d5ca2f0b21652b1dc0ce2464fc7a54076250f)), closes [#29736](https://github.com/aws/aws-cdk/issues/29736)
+
+## [2.136.0](https://github.com/aws/aws-cdk/compare/v2.135.0...v2.136.0) (2024-04-06)
+
+
+### Features
+
+* **rds:** specify PreferredMaintenanceWindow in reader or writer props ([#29686](https://github.com/aws/aws-cdk/issues/29686)) ([615ee2d](https://github.com/aws/aws-cdk/commit/615ee2de1cbf42770cd9d2d171196513f6602eb1)), closes [#29687](https://github.com/aws/aws-cdk/issues/29687)
+* **stepfunction:** add enableExecuteCommand to sfn ECSRunTask ([#29638](https://github.com/aws/aws-cdk/issues/29638)) ([d5b8594](https://github.com/aws/aws-cdk/commit/d5b8594f133b532f5fd8f39ad3df23dffbe6ba85)), closes [#29637](https://github.com/aws/aws-cdk/issues/29637)
+
+
+### Bug Fixes
+
+* **cli:** diff with changeset fails if deploy role cannot be assumed ([#29718](https://github.com/aws/aws-cdk/issues/29718)) ([21dba21](https://github.com/aws/aws-cdk/commit/21dba2194819ccb244fcdbc5007c055f3930b4e1)), closes [#29650](https://github.com/aws/aws-cdk/issues/29650)
+* **cloudwatch-actions:** `LambdaAction` fails if added to multiple action types ([#29515](https://github.com/aws/aws-cdk/issues/29515)) ([a12887b](https://github.com/aws/aws-cdk/commit/a12887b593ef6796f63bf754a3d381676d2e5155)), closes [#29514](https://github.com/aws/aws-cdk/issues/29514)
+* **iam:** grantAssumeRole silently fails with service and account principals ([#29452](https://github.com/aws/aws-cdk/issues/29452)) ([36fd79d](https://github.com/aws/aws-cdk/commit/36fd79d8714bd29527bb1184ec10cd504b83510d)), closes [#24507](https://github.com/aws/aws-cdk/issues/24507)
+* **pipelines:** codeStar connection accepts nested repository ([#29631](https://github.com/aws/aws-cdk/issues/29631)) ([10357c0](https://github.com/aws/aws-cdk/commit/10357c0ab6be105e0d988b9045bcfe99faf69cbd)), closes [#27504](https://github.com/aws/aws-cdk/issues/27504)
+* **s3-assets:** throw if path property is empty ([#29425](https://github.com/aws/aws-cdk/issues/29425)) ([2814011](https://github.com/aws/aws-cdk/commit/2814011fdbafad87af9f7a1cad143a19eae30a05)), closes [#29410](https://github.com/aws/aws-cdk/issues/29410)
+
 ## [2.135.0](https://github.com/aws/aws-cdk/compare/v2.134.0...v2.135.0) (2024-04-01)
 
 
