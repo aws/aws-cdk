@@ -22,12 +22,12 @@ describe('OIDCProvider resource', () => {
     });
   });
 
-  test('static fromOIDCProviderArn can be used to import a provider', () => {
+  test('static fromProviderArn can be used to import a provider', () => {
     // GIVEN
     const stack = new Stack();
 
     // WHEN
-    const provider = iam.OIDCProvider.fromOIDCProviderArn(
+    const provider = iam.OIDCProvider.fromProviderArn(
       stack,
       'MyProvider',
       arnOfProvider,
@@ -84,7 +84,7 @@ describe('OIDC issuer', () => {
     const stack = new Stack();
 
     // WHEN
-    const provider = iam.OIDCProvider.fromOIDCProviderArn(
+    const provider = iam.OIDCProvider.fromProviderArn(
       stack,
       'MyProvider',
       arnOfProvider,
@@ -101,7 +101,7 @@ describe('OIDC issuer', () => {
     const stack = new Stack();
 
     // WHEN
-    const provider = iam.OIDCProvider.fromOIDCProviderArn(
+    const provider = iam.OIDCProvider.fromProviderArn(
       stack,
       'MyProvider',
       Token.asString({ Ref: 'ARN' }),

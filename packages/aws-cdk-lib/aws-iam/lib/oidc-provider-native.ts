@@ -9,11 +9,15 @@ import { Arn, IResource, Resource, Token } from '../../core';
 export interface IOIDCProvider extends IResource {
   /**
    * The Amazon Resource Name (ARN) of the IAM OpenID Connect provider.
+   *
+   * @attribute
    */
   readonly oidcProviderArn: string;
 
   /**
    * The issuer for OIDC Provider
+   *
+   * @attribute
    */
   readonly oidcProviderIssuer: string;
 }
@@ -104,7 +108,7 @@ export class OIDCProvider extends Resource implements IOIDCProvider {
    * @param id ID of the construct
    * @param oidcProviderArn the ARN to import
    */
-  public static fromOIDCProviderArn(
+  public static fromProviderArn(
     scope: Construct,
     id: string,
     oidcProviderArn: string,
@@ -124,13 +128,22 @@ export class OIDCProvider extends Resource implements IOIDCProvider {
 
   /**
    * The Amazon Resource Name (ARN) of the IAM OpenID Connect provider.
+   *
+   * @attribute
    */
   public readonly oidcProviderArn: string;
 
+  /**
+   * The issuer for OIDC Provider
+   *
+   * @attribute
+   */
   public readonly oidcProviderIssuer: string;
 
   /**
    * The thumbprints configured for this provider.
+   *
+   * @attribute
    */
   public readonly oidcProviderThumbprints: string;
 
