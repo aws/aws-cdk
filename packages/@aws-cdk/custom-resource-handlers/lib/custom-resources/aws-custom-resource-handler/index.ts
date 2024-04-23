@@ -18,9 +18,12 @@ type Event = AWSLambda.CloudFormationCustomResourceEvent;
  */
 export const PHYSICAL_RESOURCE_ID_REFERENCE = 'PHYSICAL:RESOURCEID:';
 
-let installedSdk: { [service: string]: boolean } = {};
+interface AwsSdk {
+  [key: string]: any;
+}
 
-export function forceSdkInstallation() {
+let installedSdk: { [service: string]: boolean } = {};
+export function forceSdkInstallation(): void {
   installedSdk = {};
 }
 
@@ -39,14 +42,10 @@ function installLatestSdk(packageName: string): void {
   };
 }
 
-interface AwsSdk {
-  [key: string]: any;
-}
-
 async function loadAwsSdk(
   packageName: string,
   installLatestAwsSdk?: 'true' | 'false',
-) {
+): Promise<AwsSdk> {
   let awsSdk: AwsSdk;
   try {
     if (!installedSdk[packageName] && installLatestAwsSdk === 'true') {
@@ -79,7 +78,7 @@ async function loadAwsSdk(
 /**
  * Decodes encoded special values (physicalResourceId)
  */
-function decodeSpecialValues(object: object, physicalResourceId: string) {
+function decodeSpecialValues(object: object, physicalResourceId: string): any {
   return recurse(object);
 
   function recurse(x: any): any {
@@ -102,7 +101,7 @@ function decodeSpecialValues(object: object, physicalResourceId: string) {
 /**
  * Filters the keys of an object.
  */
-function filterKeys(object: object, pred: (key: string) => boolean) {
+function filterKeys(object: object, pred: (key: string) => boolean): {} {
   return Object.entries(object)
     .reduce(
       (acc, [k, v]) => pred(k)
@@ -112,7 +111,13 @@ function filterKeys(object: object, pred: (key: string) => boolean) {
     );
 }
 
-function respond(event: Event, responseStatus: string, reason: string, physicalResourceId: string, data: any, logApiResponseData: boolean) {
+function respond(
+  event: Event,
+  responseStatus: string,
+  reason: string,
+  physicalResourceId: string,
+  data: any, logApiResponseData: boolean,
+): Promise<void> {
   const responseObject = {
     Status: responseStatus,
     Reason: reason,
@@ -157,7 +162,7 @@ function respond(event: Event, responseStatus: string, reason: string, physicalR
   });
 }
 
-function decodeCall(call: string | undefined) {
+function decodeCall(call: string | undefined): any {
   if (!call) { return undefined; }
   return JSON.parse(call);
 }
@@ -174,7 +179,7 @@ function startsWithOneOf(searchStrings: string[]): (string: string) => boolean {
 }
 
 /* eslint-disable @typescript-eslint/no-require-imports, import/no-extraneous-dependencies */
-export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent, context: AWSLambda.Context) {
+export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent, context: AWSLambda.Context): Promise<void> {
   try {
     event.ResourceProperties.Create = decodeCall(event.ResourceProperties.Create);
     event.ResourceProperties.Update = decodeCall(event.ResourceProperties.Update);
@@ -202,7 +207,7 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
     if (call) {
       const apiCall = new ApiCall(call.service, call.action);
 
-      let awsSdk: AwsSdk | Promise<AwsSdk> = loadAwsSdk(apiCall.v3PackageName, event.ResourceProperties.InstallLatestAwsSdk);
+      let awsSdk = await loadAwsSdk(apiCall.v3PackageName, event.ResourceProperties.InstallLatestAwsSdk);
 
       console.log(JSON.stringify({ ...event, ResponseURL: '...' }));
 
@@ -222,14 +227,12 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
         });
       }
 
-      awsSdk = await awsSdk;
-
       const flatData: { [key: string]: string } = {};
       try {
         const response = await apiCall.invoke({
           sdkPackage: awsSdk,
           apiVersion: call.apiVersion,
-          credentials: credentials,
+          credentials,
           region: call.region,
           parameters: decodeSpecialValues(call.parameters, physicalResourceId),
           flattenResponse: true,
