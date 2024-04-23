@@ -21,7 +21,7 @@ def handler(event: dict, context):
       config = handle_managed(event["RequestType"], notification_configuration)
     else:
       config = handle_unmanaged(props["BucketName"], stack_id, event["RequestType"], notification_configuration, old)
-    s3.put_bucket_notification_configuration(Bucket=props["BucketName"], NotificationConfiguration=config)
+    put_bucket_notification_configuration(Bucket=props["BucketName"], NotificationConfiguration=config)
   except Exception as e:
     logging.exception("Failed to put bucket notification configuration")
     response_status = "FAILED"
@@ -41,7 +41,7 @@ def handle_unmanaged(bucket, stack_id, request_type, notification_configuration,
 
   # find external notifications
   external_notifications = {}
-  existing_notifications = s3.get_bucket_notification_configuration(Bucket=bucket)
+  existing_notifications = get_bucket_notification_configuration(Bucket=bucket)
   for t in CONFIGURATION_TYPES:
     if request_type == 'Update':
         ids = [with_id(n) for n in old.get(t, [])]
@@ -78,6 +78,12 @@ def handle_unmanaged(bucket, stack_id, request_type, notification_configuration,
     notifications[EVENTBRIDGE_CONFIGURATION] = external_notifications[EVENTBRIDGE_CONFIGURATION]
 
   return notifications
+
+def get_bucket_notification_configuration(bucket):
+  return s3.get_bucket_notification_configuration(Bucket=bucket)
+
+def put_bucket_notification_configuration(bucket, notification_configuration):
+  s3.put_bucket_notification_configuration(Bucket=bucket, NotificationConfiguration=notification_configuration)
 
 def submit_response(event: dict, context, response_status: str, error_message: str):
   response_body = json.dumps(

@@ -95,8 +95,8 @@ class ManagedBucketTest(unittest.TestCase):
         index.handler(event, {})
 
         put.assert_called_once_with(
-            event["ResourceProperties"]["BucketName"],
-            event["ResourceProperties"]["NotificationConfiguration"],
+            Bucket=event["ResourceProperties"]["BucketName"],
+            NotificationConfiguration=event["ResourceProperties"]["NotificationConfiguration"],
         )
 
     @patch("index.put_bucket_notification_configuration")
@@ -108,8 +108,8 @@ class ManagedBucketTest(unittest.TestCase):
         index.handler(event, {})
 
         put.assert_called_once_with(
-            event["ResourceProperties"]["BucketName"],
-            event["ResourceProperties"]["NotificationConfiguration"],
+            Bucket=event["ResourceProperties"]["BucketName"],
+            NotificationConfiguration=event["ResourceProperties"]["NotificationConfiguration"],
         )
 
     @patch("index.put_bucket_notification_configuration")
@@ -120,7 +120,7 @@ class ManagedBucketTest(unittest.TestCase):
 
         index.handler(event, {})
 
-        put.assert_called_once_with(event["ResourceProperties"]["BucketName"], {})
+        put.assert_called_once_with(Bucket=event["ResourceProperties"]["BucketName"], NotificationConfiguration={})
 
 
 class UnmanagedCleanBucketTest(unittest.TestCase):
@@ -136,8 +136,8 @@ class UnmanagedCleanBucketTest(unittest.TestCase):
         index.handler(event, {})
 
         put.assert_called_once_with(
-            event["ResourceProperties"]["BucketName"],
-            event["ResourceProperties"]["NotificationConfiguration"],
+            Bucket=event["ResourceProperties"]["BucketName"],
+            NotificationConfiguration=event["ResourceProperties"]["NotificationConfiguration"],
         )
 
     @patch("index.put_bucket_notification_configuration")
@@ -152,8 +152,8 @@ class UnmanagedCleanBucketTest(unittest.TestCase):
         index.handler(event, {})
 
         put.assert_called_once_with(
-            event["ResourceProperties"]["BucketName"],
-            event["ResourceProperties"]["NotificationConfiguration"],
+            Bucket=event["ResourceProperties"]["BucketName"],
+            NotificationConfiguration=event["ResourceProperties"]["NotificationConfiguration"],
         )
 
     @patch("index.put_bucket_notification_configuration")
@@ -170,8 +170,11 @@ class UnmanagedCleanBucketTest(unittest.TestCase):
         index.handler(event, {})
 
         put.assert_called_once_with(
-            event["ResourceProperties"]["BucketName"],
-            event["ResourceProperties"]["NotificationConfiguration"],
+            Bucket=event["ResourceProperties"]["BucketName"],
+            NotificationConfiguration=merge_notification_configurations(
+                current_notifications,
+                event["ResourceProperties"]["NotificationConfiguration"]
+            ),
         )
 
     @patch("index.put_bucket_notification_configuration")
@@ -188,8 +191,11 @@ class UnmanagedCleanBucketTest(unittest.TestCase):
         index.handler(event, {})
 
         put.assert_called_once_with(
-            event["ResourceProperties"]["BucketName"],
-            event["ResourceProperties"]["NotificationConfiguration"],
+            Bucket=event["ResourceProperties"]["BucketName"],
+            NotificationConfiguration=merge_notification_configurations(
+                current_notifications,
+                event["ResourceProperties"]["NotificationConfiguration"]
+            ),
         )
 
 
@@ -207,9 +213,9 @@ class UnmanagedCleanBucketTest(unittest.TestCase):
         index.handler(event, {})
 
         put.assert_called_once_with(
-            event["ResourceProperties"]["BucketName"],
-            merge_notification_configurations(
-                make_eventbridge_configuration(),
+            Bucket=event["ResourceProperties"]["BucketName"],
+            NotificationConfiguration=merge_notification_configurations(
+                current_notifications,
                 event["ResourceProperties"]["NotificationConfiguration"],
             ),
         )
@@ -228,8 +234,8 @@ class UnmanagedCleanBucketTest(unittest.TestCase):
         index.handler(event, {})
 
         put.assert_called_once_with(
-            event["ResourceProperties"]["BucketName"],
-            make_empty_notification_configuration(),
+            Bucket=event["ResourceProperties"]["BucketName"],
+            NotificationConfiguration=make_empty_notification_configuration(),
         )
 
     @patch("index.put_bucket_notification_configuration")
@@ -246,8 +252,8 @@ class UnmanagedCleanBucketTest(unittest.TestCase):
         index.handler(event, {})
 
         put.assert_called_once_with(
-            event["ResourceProperties"]["BucketName"],
-            make_empty_notification_configuration_with_eventbridge(),
+            Bucket=event["ResourceProperties"]["BucketName"],
+            NotificationConfiguration=make_empty_notification_configuration_with_eventbridge(),
         )
 
 
@@ -266,8 +272,8 @@ class UnmanagedDirtyBucketTest(unittest.TestCase):
         index.handler(event, {})
 
         put.assert_called_once_with(
-            event["ResourceProperties"]["BucketName"],
-            merge_notification_configurations(
+            Bucket=event["ResourceProperties"]["BucketName"],
+            NotificationConfiguration=merge_notification_configurations(
                 current_notifications,
                 event["ResourceProperties"]["NotificationConfiguration"],
             ),
@@ -287,8 +293,8 @@ class UnmanagedDirtyBucketTest(unittest.TestCase):
         index.handler(event, {})
 
         put.assert_called_once_with(
-            event["ResourceProperties"]["BucketName"],
-            merge_notification_configurations(
+            Bucket=event["ResourceProperties"]["BucketName"],
+            NotificationConfiguration=merge_notification_configurations(
                 current_notifications,
                 event["ResourceProperties"]["NotificationConfiguration"],
             ),
@@ -308,8 +314,8 @@ class UnmanagedDirtyBucketTest(unittest.TestCase):
         index.handler(event, {})
 
         put.assert_called_once_with(
-            event["ResourceProperties"]["BucketName"],
-            merge_notification_configurations(
+            Bucket=event["ResourceProperties"]["BucketName"],
+            NotificationConfiguration=merge_notification_configurations(
                 current_notifications,
                 event["ResourceProperties"]["NotificationConfiguration"],
             ),
@@ -329,8 +335,8 @@ class UnmanagedDirtyBucketTest(unittest.TestCase):
         index.handler(event, {})
 
         put.assert_called_once_with(
-            event["ResourceProperties"]["BucketName"],
-            merge_notification_configurations(
+            Bucket=event["ResourceProperties"]["BucketName"],
+            NotificationConfiguration=merge_notification_configurations(
                 current_notifications,
                 event["ResourceProperties"]["NotificationConfiguration"],
             ),
@@ -350,8 +356,8 @@ class UnmanagedDirtyBucketTest(unittest.TestCase):
         index.handler(event, {})
 
         put.assert_called_once_with(
-            event["ResourceProperties"]["BucketName"],
-            merge_notification_configurations(
+            Bucket=event["ResourceProperties"]["BucketName"],
+            NotificationConfiguration=merge_notification_configurations(
                 current_notifications,
                 event["ResourceProperties"]["NotificationConfiguration"],
             ),
@@ -371,8 +377,8 @@ class UnmanagedDirtyBucketTest(unittest.TestCase):
         index.handler(event, {})
 
         put.assert_called_once_with(
-            event["ResourceProperties"]["BucketName"],
-            merge_notification_configurations(
+            Bucket=event["ResourceProperties"]["BucketName"],
+            NotificationConfiguration=merge_notification_configurations(
                 current_notifications,
                 event["ResourceProperties"]["NotificationConfiguration"],
             ),
@@ -392,8 +398,8 @@ class UnmanagedDirtyBucketTest(unittest.TestCase):
         index.handler(event, {})
 
         put.assert_called_once_with(
-            event["ResourceProperties"]["BucketName"],
-            current_notifications,
+            Bucket=event["ResourceProperties"]["BucketName"],
+            NotificationConfiguration=current_notifications,
         )
 
     @patch("index.put_bucket_notification_configuration")
@@ -410,8 +416,8 @@ class UnmanagedDirtyBucketTest(unittest.TestCase):
         index.handler(event, {})
 
         put.assert_called_once_with(
-            event["ResourceProperties"]["BucketName"],
-            current_notifications,
+            Bucket=event["ResourceProperties"]["BucketName"],
+            NotificationConfiguration=current_notifications,
         )
 
 
