@@ -216,4 +216,5 @@ const invoke = test.assertions.invokeFunction({
 invoke.expect(integ.ExpectedResult.objectLike({
   Payload: '"Authenticated"',
 }));
+
 app.synth();
