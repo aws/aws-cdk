@@ -76,6 +76,17 @@ describe('EventBridge Data Source Configuration', () => {
     });
   });
 
+  test('A custom metrics config is used when provided', () => {
+    // WHEN
+    api.addEventBridgeDataSource('id', eventBus, { metricsConfig: appsync.MetricsConfig.ENABLED });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::DataSource', {
+      Type: 'AMAZON_EVENTBRIDGE',
+      MetricsConfig: 'ENABLED',
+    });
+  });
+
   test('A custom description is used when provided', () => {
     // WHEN
     api.addEventBridgeDataSource('ds', eventBus, { name: 'custom', description: 'custom description' });

@@ -230,6 +230,19 @@ describe('Rds Data Source configuration', () => {
     });
   });
 
+  test('appsync configures metrics config correctly', () => {
+    // WHEN
+    api.addRdsDataSource('ds', serverlessCluster, secret, undefined, {
+      metricsConfig: appsync.MetricsConfig.ENABLED,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::DataSource', {
+      Type: 'RELATIONAL_DATABASE',
+      MetricsConfig: 'ENABLED',
+    });
+  });
+
   test('appsync errors when creating multiple rds data sources with no configuration', () => {
     // WHEN
     const when = () => {
@@ -464,6 +477,19 @@ describe('Rds Data Source Serverless V2 configuration', () => {
       Type: 'RELATIONAL_DATABASE',
       Name: 'custom',
       Description: 'custom description',
+    });
+  });
+
+  test('appsync configures metrics config correctly serverlessV2', () => {
+    // WHEN
+    api.addRdsDataSourceV2('dsV2', serverlessClusterV2, secret, undefined, {
+      metricsConfig: appsync.MetricsConfig.ENABLED,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::DataSource', {
+      Type: 'RELATIONAL_DATABASE',
+      MetricsConfig: 'ENABLED',
     });
   });
 

@@ -58,6 +58,19 @@ describe('Http Data Source configuration', () => {
     });
   });
 
+  test('appsync configures name correctly', () => {
+    // WHEN
+    api.addHttpDataSource('ds', endpoint, {
+      metricsConfig: appsync.MetricsConfig.ENABLED,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::DataSource', {
+      Type: 'HTTP',
+      MetricsConfig: 'ENABLED',
+    });
+  });
+
   test('appsync configures name, authorizationConfig correctly', () => {
     // WHEN
     api.addHttpDataSource('ds', endpoint, {

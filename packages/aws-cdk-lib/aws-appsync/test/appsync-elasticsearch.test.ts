@@ -109,6 +109,19 @@ describeDeprecated('Appsync Elasticsearch integration', () => {
       });
     });
 
+    test('appsync configures metrics config correctly', () => {
+      // WHEN
+      api.addElasticsearchDataSource('ds', domain, {
+        metricsConfig: appsync.MetricsConfig.ENABLED,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::AppSync::DataSource', {
+        Type: 'AMAZON_ELASTICSEARCH',
+        MetricsConfig: 'ENABLED',
+      });
+    });
+
     test('appsync errors when creating multiple elasticsearch data sources with no configuration', () => {
       // WHEN
       const when = () => {

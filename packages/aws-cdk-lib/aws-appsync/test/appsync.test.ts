@@ -371,3 +371,26 @@ test('when resolver limit is out of range, it throws an error', () => {
   expect(() => buildWithLimit('resolver-limit-high', 10001)).toThrow(errorString);
 
 });
+
+test('when metrics config is set, they should be used on API', () => {
+  // WHEN
+  new appsync.GraphqlApi(stack, 'metrics-config', {
+    authorizationConfig: {},
+    name: 'metrics-config',
+    schema: appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.test.graphql')),
+    enhancedMonitoringConfig: {
+      dataSourceLevelMetricsBehavior: appsync.DataSourceLevelMetricsBehavior.FULL_REQUEST_DATA_SOURCE_METRICS,
+      operationLevelMetricsConfig: appsync.OperationLevelMetricsConfig.ENABLED,
+      resolverLevelMetricsBehavior: appsync.ResolverLevelMetricsBehavior.FULL_REQUEST_RESOLVER_METRICS,
+    },
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::AppSync::GraphQLApi', {
+    EnhancedMetricsConfig: {
+      DataSourceLevelMetricsBehavior: 'FULL_REQUEST_DATA_SOURCE_METRICS',
+      OperationLevelMetricsConfig: 'ENABLED',
+      ResolverLevelMetricsBehavior: 'FULL_REQUEST_RESOLVER_METRICS',
+    },
+  });
+});

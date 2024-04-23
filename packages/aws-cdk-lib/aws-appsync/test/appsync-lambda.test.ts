@@ -65,6 +65,19 @@ describe('Lambda Data Source configuration', () => {
     });
   });
 
+  test('appsync configures metrics config correctly', () => {
+    // WHEN
+    api.addLambdaDataSource('ds', func, {
+      metricsConfig: appsync.MetricsConfig.ENABLED,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::DataSource', {
+      Type: 'AWS_LAMBDA',
+      MetricsConfig: 'ENABLED',
+    });
+  });
+
   test('appsync sanitized datasource name from unsupported characters', () => {
     const badCharacters = [...'!@#$%^&*()+-=[]{}\\|;:\'",<>?/'];
 

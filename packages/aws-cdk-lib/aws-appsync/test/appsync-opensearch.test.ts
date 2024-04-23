@@ -106,6 +106,19 @@ describe('OpenSearch Data Source Configuration', () => {
     });
   });
 
+  test('appsync configures metrics config correctly', () => {
+    // WHEN
+    api.addOpenSearchDataSource('ds', domain, {
+      metricsConfig: appsync.MetricsConfig.ENABLED,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::DataSource', {
+      Type: 'AMAZON_OPENSEARCH_SERVICE',
+      MetricsConfig: 'ENABLED',
+    });
+  });
+
   test('appsync errors when creating multiple openSearch data sources with no configuration', () => {
     // WHEN
     const when = () => {

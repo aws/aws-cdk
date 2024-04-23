@@ -71,6 +71,19 @@ describe('DynamoDb Data Source configuration', () => {
     });
   });
 
+  test('appsync configures metrics config correctly', () => {
+    // WHEN
+    api.addDynamoDbDataSource('ds', table, {
+      metricsConfig: appsync.MetricsConfig.ENABLED,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::DataSource', {
+      Type: 'AMAZON_DYNAMODB',
+      MetricsConfig: 'ENABLED',
+    });
+  });
+
   test('appsync errors when creating multiple dynamo db data sources with no configuration', () => {
     // THEN
     expect(() => {

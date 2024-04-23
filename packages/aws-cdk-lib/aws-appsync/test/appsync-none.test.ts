@@ -83,6 +83,19 @@ describe('None Data Source configuration', () => {
     });
   });
 
+  test('appsync configures metrics config correctly', () => {
+    // WHEN
+    api.addNoneDataSource('ds', {
+      metricsConfig: appsync.MetricsConfig.ENABLED,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::AppSync::DataSource', {
+      Type: 'NONE',
+      MetricsConfig: 'ENABLED',
+    });
+  });
+
   test('appsync errors when creating multiple none data sources with no configuration', () => {
     // THEN
     expect(() => {
