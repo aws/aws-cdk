@@ -25,6 +25,7 @@ user.addManagedPolicy(policy3);
 
 const role = new Role(stack, 'Role', { assumedBy: new AccountRootPrincipal() });
 role.grantAssumeRole(policy.grantPrincipal);
+
 Grant.addToPrincipal({ actions: ['iam:*'], resourceArns: [role.roleArn], grantee: policy2 });
 
 policy.attachToRole(role);

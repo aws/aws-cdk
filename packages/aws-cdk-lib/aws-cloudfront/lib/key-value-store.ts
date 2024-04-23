@@ -1,8 +1,11 @@
+import * as fs from 'fs';
+import { join } from 'path';
+
 import { Construct } from 'constructs';
 import { CfnKeyValueStore } from './cloudfront.generated';
 import * as s3 from '../../aws-s3';
 import * as s3_assets from '../../aws-s3-assets';
-import { Resource, IResource, Lazy, Names, Stack, Arn, ArnFormat } from '../../core';
+import { Resource, IResource, Lazy, Names, Stack, Arn, ArnFormat, FileSystem } from '../../core';
 
 /**
  * The data to be imported to the key value store.
@@ -26,6 +29,15 @@ export abstract class ImportSource {
    */
   public static fromAsset(path: string, options?: s3_assets.AssetOptions): ImportSource {
     return new AssetImportSource(path, options);
+  }
+
+  /**
+   * An import source that uses an inline string.
+   *
+   * @param data the contents of the KeyValueStore
+   */
+  public static fromInline(data: string): ImportSource {
+    return new InlineImportSource(data);
   }
 
   /**
@@ -91,6 +103,49 @@ export class AssetImportSource extends ImportSource {
       throw new Error(
         `Asset is already associated with another stack '${Stack.of(this.asset).stackName}. ` +
           'Create a new ImportSource instance for every stack.',
+      );
+    }
+
+    return {
+      sourceType: 'S3',
+      sourceArn: this.asset.bucket.arnForObjects(this.asset.s3ObjectKey),
+    };
+  }
+}
+
+/**
+ * An import source from an inline string.
+ */
+export class InlineImportSource extends ImportSource {
+  private asset?: s3_assets.Asset;
+
+  /**
+   * @param data the contents of the KeyValueStore
+   */
+  constructor(public readonly data: string) {
+    super();
+  }
+
+  /**
+   * @internal
+   */
+  public _bind(scope: Construct): CfnKeyValueStore.ImportSourceProperty {
+
+    if (!this.asset) {
+      // CfnKeyValueStore does not support native in-line, so we need to use a
+      // temporary file to be uploaded with the S3 assets
+      const workdir = FileSystem.mkdtemp('key-value-store');
+      const outputPath = join(workdir, 'data.json');
+      fs.writeFileSync(outputPath, this.data);
+
+      this.asset = new s3_assets.Asset(scope, 'ImportSource', {
+        path: outputPath,
+        deployTime: true,
+      });
+    } else if (Stack.of(this.asset) !== Stack.of(scope)) {
+      throw new Error(
+        `Asset is already associated with another stack '${Stack.of(this.asset).stackName}. ` +
+        'Create a new ImportSource instance for every stack.',
       );
     }
 

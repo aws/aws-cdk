@@ -53,7 +53,7 @@ test('create domain name resource', () => {
             {
               Ref: 'VPCES3AE7D565',
             },
-            '","PrivateDnsName":"my-stuff.aws-cdk.dev"},"physicalResourceId":{"id":"VPCES"}}',
+            '","PrivateDnsName":"my-stuff.aws-cdk.dev"},"physicalResourceId":{"id":"VPCES"},"logApiResponseData":true}',
           ],
         ],
       },
@@ -65,7 +65,7 @@ test('create domain name resource', () => {
             {
               Ref: 'VPCES3AE7D565',
             },
-            '","PrivateDnsName":"my-stuff.aws-cdk.dev"},"physicalResourceId":{"id":"VPCES"}}',
+            '","PrivateDnsName":"my-stuff.aws-cdk.dev"},"physicalResourceId":{"id":"VPCES"},"logApiResponseData":true}',
           ],
         ],
       },
@@ -77,7 +77,7 @@ test('create domain name resource', () => {
             {
               Ref: 'VPCES3AE7D565',
             },
-            '","RemovePrivateDnsName":true}}',
+            '","RemovePrivateDnsName":true},"logApiResponseData":true}',
           ],
         ],
       },
@@ -99,7 +99,7 @@ test('create domain name resource', () => {
             {
               Ref: 'VPCES3AE7D565',
             },
-            '"]},"physicalResourceId":{"id":"fcd2563479244a851a9a59af60831b01"}}',
+            '"]},"physicalResourceId":{"id":"fcd2563479244a851a9a59af60831b01"},"logApiResponseData":true}',
           ],
         ],
       },
@@ -111,7 +111,7 @@ test('create domain name resource', () => {
             {
               Ref: 'VPCES3AE7D565',
             },
-            '"]},"physicalResourceId":{"id":"fcd2563479244a851a9a59af60831b01"}}',
+            '"]},"physicalResourceId":{"id":"fcd2563479244a851a9a59af60831b01"},"logApiResponseData":true}',
           ],
         ],
       },
@@ -198,7 +198,7 @@ test('create domain name resource', () => {
                 ],
               ],
             },
-            '"}}',
+            '"},"logApiResponseData":true}',
           ],
         ],
       },
@@ -230,7 +230,7 @@ test('create domain name resource', () => {
                 ],
               ],
             },
-            '"}}',
+            '"},"logApiResponseData":true}',
           ],
         ],
       },
