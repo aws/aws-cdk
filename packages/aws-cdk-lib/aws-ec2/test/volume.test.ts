@@ -2,7 +2,7 @@ import { Match, Template } from '../../assertions';
 import { AccountRootPrincipal, Role } from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as cdk from '../../core';
-import { cx_api as cxapi } from '../../cx-api';
+import * as cxapi from '../../cx-api';
 import {
   AmazonLinuxGeneration,
   EbsDeviceVolumeType,
@@ -30,7 +30,7 @@ describe('volume', () => {
       AvailabilityZone: 'us-east-1a',
       MultiAttachEnabled: false,
       Size: 8,
-      VolumeType: 'gp3',
+      VolumeType: 'gp2',
       Tags: [
         {
           Key: 'Name',
@@ -80,7 +80,7 @@ describe('volume', () => {
       AvailabilityZone: 'us-east-1a',
       MultiAttachEnabled: false,
       Size: 8,
-      VolumeType: 'gp3',
+      VolumeType: 'gp2',
       Tags: [{
         Key: 'TagKey',
         Value: 'TagValue',

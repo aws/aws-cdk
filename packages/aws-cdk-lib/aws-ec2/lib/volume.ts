@@ -624,8 +624,8 @@ export class Volume extends VolumeBase {
       snapshotId: props.snapshotId,
       throughput: props.throughput,
       volumeType: props.volumeType ??
-        FeatureFlags.of(this).isEnabled(cxapi.EBS_DEFAULT_GP3) ?
-        EbsDeviceVolumeType.GENERAL_PURPOSE_SSD_GP3 : EbsDeviceVolumeType.GENERAL_PURPOSE_SSD,
+        (FeatureFlags.of(this).isEnabled(cxapi.EBS_DEFAULT_GP3) ?
+          EbsDeviceVolumeType.GENERAL_PURPOSE_SSD_GP3 : EbsDeviceVolumeType.GENERAL_PURPOSE_SSD),
     });
     resource.applyRemovalPolicy(props.removalPolicy);
 
