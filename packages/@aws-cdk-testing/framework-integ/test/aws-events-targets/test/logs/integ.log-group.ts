@@ -85,7 +85,7 @@ putEvent.next(logEvents);
 logEvents.assertAtPath('events.0.message', ExpectedResult.stringLikeRegexp(expectedValue));
 
 const resourcePolicies = integ.assertions.awsApiCall('CloudWatchLogs', 'describeResourcePolicies');
-// asserting that LogGroupPolicy for elastic search correctly adds resource policy name and document
+// asserting that LogGroupPolicy for events targets correctly adds resource policy name and document
 resourcePolicies.expect(ExpectedResult.objectLike({
   resourcePolicies: Match.arrayWith([
     Match.objectLike({
