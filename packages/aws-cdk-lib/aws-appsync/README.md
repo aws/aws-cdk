@@ -563,6 +563,50 @@ new appsync.GraphqlApi(this, 'api', {
 });
 ```
 
+## Enhanced Monitoring
+
+AppSync by default enables certain monitoring with AWS CloudWatch. However, you can add enhanced monitoring to get more details about incoming requests on more granular level.
+The configuration allows you to specify, whether you wish to collect metrics on data source, operation or resolver level. 
+
+```ts
+new appsync.GraphqlApi(this, 'api', {
+  authorizationConfig: {},
+  name: 'myApi',
+  definition: appsync.Definition.fromFile(path.join(__dirname, 'myApi.graphql')),
+  enhancedMonitoringConfig: {
+    dataSourceLevelMetricsBehavior: DataSourceLevelMetricsBehavior.FULL_REQUEST_DATA_SOURCE_METRICS,
+    operationLevelMetricsConfig: OperationLevelMetricsConfig.ENABLED,
+    resolverLevelMetricsBehavior: ResolverLevelMetricsBehavior.FULL_REQUEST_RESOLVER_METRICS
+  },
+});
+```
+
+If you wish to enable enhanced monitoring only for subset of data sources or resolvers you are use following configuration:
+
+```ts
+const api = new appsync.GraphqlApi(this, 'api', {
+  authorizationConfig: {},
+  name: 'myApi',
+  definition: appsync.Definition.fromFile(path.join(__dirname, 'myApi.graphql')),
+  enhancedMonitoringConfig: {
+    dataSourceLevelMetricsBehavior: DataSourceLevelMetricsBehavior.PER_DATA_SOURCE_METRICS,
+    operationLevelMetricsConfig: OperationLevelMetricsConfig.ENABLED,
+    resolverLevelMetricsBehavior: ResolverLevelMetricsBehavior.PER_RESOLVER_METRICS
+  },
+});
+
+const noneDS = api.addNoneDataSource('none', {
+  metricsConfig: MetricsConfig.ENABLED,
+});
+
+noneDS.createResolver('noneResolver', {
+  typeName: 'Mutation',
+  fieldName: 'addDemoMetricsConfig',
+  metricsConfig: MetricsConfig.ENABLED
+});
+
+```
+
 ## Schema
 
 You can define a schema using from a local file using `Definition.fromFile`
