@@ -3,8 +3,7 @@ import { CfnVolume } from './ec2.generated';
 import { IInstance } from './instance';
 import { AccountRootPrincipal, Grant, IGrantable } from '../../aws-iam';
 import { IKey, ViaServicePrincipal } from '../../aws-kms';
-import { IResource, Resource, Size, SizeRoundingBehavior, Stack, Token, Tags, Names, RemovalPolicy } from '../../core';
-import { FeatureFlags } from '../../core';
+import { IResource, Resource, Size, SizeRoundingBehavior, Stack, Token, Tags, Names, RemovalPolicy, FeatureFlags } from '../../core';
 import { md5hash } from '../../core/lib/helpers-internal';
 import * as cxapi from '../../cx-api';
 
