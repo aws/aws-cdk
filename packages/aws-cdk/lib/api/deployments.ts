@@ -562,10 +562,12 @@ export class Deployments {
       debug(e);
       // only print out the warnings if the lookupRole exists AND there is a required
       // bootstrap version, otherwise the warnings will print `undefined`
-      if (stack.lookupRole && stack.lookupRole.requiresBootstrapStackVersion) {
+      if (stack.lookupRole) {
         warning(warningMessage);
 
-        if (stackBootstrapVersion && stack.lookupRole.requiresBootstrapStackVersion > stackBootstrapVersion) {
+        if (stack.lookupRole.requiresBootstrapStackVersion &&
+          stackBootstrapVersion &&
+          stack.lookupRole.requiresBootstrapStackVersion > stackBootstrapVersion) {
           warning(upgradeMessage);
         }
       }
