@@ -534,15 +534,17 @@ export class Deployments {
     const warningMessage = `Could not assume ${arns.lookupRoleArn}, proceeding anyway.`;
     const upgradeMessage = `(To get rid of this warning, please upgrade to bootstrap version >= ${stack.lookupRole?.requiresBootstrapStackVersion})`;
 
-    const stackSdk = await this.cachedSdkForEnvironment(resolvedEnvironment, Mode.ForReading, {
-      assumeRoleArn: arns.lookupRoleArn,
-      assumeRoleExternalId: stack.lookupRole?.assumeRoleExternalId,
-    });
-
-    const envResources = this.environmentResources.for(resolvedEnvironment, stackSdk.sdk);
-    const stackBootstrapVersion = await envResources.getBootstrapVersion();
+    let stackBootstrapVersion;
 
     try {
+      const stackSdk = await this.cachedSdkForEnvironment(resolvedEnvironment, Mode.ForReading, {
+        assumeRoleArn: arns.lookupRoleArn,
+        assumeRoleExternalId: stack.lookupRole?.assumeRoleExternalId,
+      });
+
+      const envResources = this.environmentResources.for(resolvedEnvironment, stackSdk.sdk);
+      stackBootstrapVersion = await envResources.getBootstrapVersion();
+
       // if we succeed in assuming the lookup role, make sure we have the correct bootstrap stack version
       if (stackSdk.didAssumeRole && stack.lookupRole?.bootstrapStackVersionSsmParameter && stack.lookupRole.requiresBootstrapStackVersion) {
         const version = await envResources.versionFromSsmParameter(stack.lookupRole.bootstrapStackVersionSsmParameter);
@@ -560,11 +562,12 @@ export class Deployments {
       debug(e);
       // only print out the warnings if the lookupRole exists AND there is a required
       // bootstrap version, otherwise the warnings will print `undefined`
-      if (stack.lookupRole &&
-        stack.lookupRole.requiresBootstrapStackVersion &&
-        stack.lookupRole.requiresBootstrapStackVersion > stackBootstrapVersion) {
+      if (stack.lookupRole && stack.lookupRole.requiresBootstrapStackVersion) {
         warning(warningMessage);
-        warning(upgradeMessage);
+
+        if (stackBootstrapVersion && stack.lookupRole.requiresBootstrapStackVersion > stackBootstrapVersion) {
+          warning(upgradeMessage);
+        }
       }
       throw (e);
     }
