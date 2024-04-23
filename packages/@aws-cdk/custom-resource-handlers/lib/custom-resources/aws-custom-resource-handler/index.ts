@@ -124,7 +124,6 @@ function respond(event: Event, responseStatus: string, reason: string, physicalR
     Data: data,
   };
 
-  /* eslint-disable no-console */
   if (logApiResponseData) {
     console.log('Responding', JSON.stringify(responseObject));
   } else {
