@@ -58,7 +58,7 @@ describe('Http Data Source configuration', () => {
     });
   });
 
-  test('appsync configures name correctly', () => {
+  test('appsync configures metrics config correctly', () => {
     // WHEN
     api.addHttpDataSource('ds', endpoint, {
       metricsConfig: appsync.MetricsConfig.ENABLED,
