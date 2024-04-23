@@ -26,7 +26,7 @@ test('can construct a default fleet', () => {
   expect(fleet.environmentType).toEqual(codebuild.EnvironmentType.LINUX_CONTAINER);
 });
 
-test('can construct a fleet with optional properties', () => {
+test('can construct a fleet with a specified name', () => {
   // GIVEN
   const stack = new cdk.Stack();
 
