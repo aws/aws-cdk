@@ -171,6 +171,11 @@ export class EnvironmentResources {
 
     return { repositoryUri };
   }
+
+  public async getBootstrapVersion() {
+    const bootstrapStack = await this.lookupToolkit();
+    return bootstrapStack.version;
+  }
 }
 
 export class NoBootstrapStackEnvironmentResources extends EnvironmentResources {
