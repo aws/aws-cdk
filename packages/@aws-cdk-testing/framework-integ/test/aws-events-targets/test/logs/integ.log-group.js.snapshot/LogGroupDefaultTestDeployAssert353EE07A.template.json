@@ -1,6 +1,6 @@
 {
  "Resources": {
-  "AwsApiCallEventBridgeputEvents98b389953490289a8d9308dfd4f25ba5": {
+  "AwsApiCallEventBridgeputEvents491d3c41b7d274b2b26e0818cead6935": {
    "Type": "Custom::DeployAssert@SdkCallEventBridgeputEvents",
    "Properties": {
     "ServiceToken": {
@@ -12,10 +12,10 @@
     "service": "EventBridge",
     "api": "putEvents",
     "parameters": {
-     "Entries": "[{\"Detail\":\"{\\\"date\\\":\\\"abc1713844014038\\\"}\",\"DetailType\":\"cdk-integ-custom-rule\",\"Source\":\"cdk-integ\"}]"
+     "Entries": "[{\"Detail\":\"{\\\"date\\\":\\\"abc1713893576449\\\"}\",\"DetailType\":\"cdk-integ-custom-rule\",\"Source\":\"cdk-integ\"}]"
     },
     "flattenResponse": "false",
-    "salt": "1713844014047"
+    "salt": "1713893576460"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -108,7 +108,7 @@
     }
    }
   },
-  "AwsApiCallCloudWatchLogsfilterLogEvents5f0b7ac7df7a7e713d71f5b959f8765b": {
+  "AwsApiCallCloudWatchLogsfilterLogEvents502d3307ab2120ba266bfc467733050a": {
    "Type": "Custom::DeployAssert@SdkCallCloudWatchLogsfilterLogEvents",
    "Properties": {
     "ServiceToken": {
@@ -119,7 +119,7 @@
     },
     "service": "CloudWatchLogs",
     "api": "filterLogEvents",
-    "expected": "{\"$StringLike\":\"abc1713844014038\"}",
+    "expected": "{\"$StringLike\":\"abc1713893576449\"}",
     "actualPath": "events.0.message",
     "parameters": {
      "logGroupName": {
@@ -134,17 +134,17 @@
        ]
       ]
      },
-     "startTime": "1713844014038",
+     "startTime": "1713893576449",
      "limit": "1"
     },
     "flattenResponse": "true",
     "outputPaths": [
      "events.0.message"
     ],
-    "salt": "1713844014048"
+    "salt": "1713893576461"
    },
    "DependsOn": [
-    "AwsApiCallEventBridgeputEvents98b389953490289a8d9308dfd4f25ba5"
+    "AwsApiCallEventBridgeputEvents491d3c41b7d274b2b26e0818cead6935"
    ],
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -160,19 +160,19 @@
     },
     "service": "CloudWatchLogs",
     "api": "describeResourcePolicies",
-    "expected": "{\"$ObjectLike\":{\"resourcePolicies\":{\"$ArrayWith\":[{\"$ObjectLike\":{\"policyName\":\"loggroupeventsEventsLogGroupPolicyloggroupeventsCustomRule99E1EEF62FFABD78\",\"policyDocument\":{\"$SerializedJson\":{\"$ObjectLike\":{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"events.amazonaws.com\"},\"Action\":[\"logs:PutLogEvents\",\"logs:CreateLogStream\"],\"Resource\":{\"$StringLike\":\"arn:aws:logs:.*:.*:log-group:log-group-events-loggroup.*\"}}]}}}}},{\"$ObjectLike\":{\"policyName\":\"loggroupeventsEventsLogGroupPolicyloggroupeventsTimer37DF74C17EF314A8E\",\"policyDocument\":{\"$SerializedJson\":{\"$ObjectLike\":{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"events.amazonaws.com\"},\"Action\":[\"logs:PutLogEvents\",\"logs:CreateLogStream\"],\"Resource\":{\"$StringLike\":\"arn:aws:logs:.*:.*:log-group:MyLogGroupNameToBeImported:*\"}}]}}}}},{\"$ObjectLike\":{\"policyName\":\"loggroupeventsEventsLogGroupPolicyloggroupeventsTimerC63340B025F606BE\",\"policyDocument\":{\"$SerializedJson\":{\"$ObjectLike\":{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"events.amazonaws.com\"},\"Action\":[\"logs:PutLogEvents\",\"logs:CreateLogStream\"],\"Resource\":{\"$StringLike\":\"arn:aws:logs:.*:.*:log-group:log-group-events-loggroup.*\"}}]}}}}}]}}}",
+    "expected": "{\"$ObjectLike\":{\"resourcePolicies\":{\"$ArrayWith\":[{\"$ObjectLike\":{\"policyName\":\"loggroupeventsEventsLogGroupPolicyloggroupeventsCustomRule99E1EEF62FFABD78\",\"policyDocument\":{\"$SerializedJson\":{\"$ObjectLike\":{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"events.amazonaws.com\"},\"Action\":[\"logs:PutLogEvents\",\"logs:CreateLogStream\"],\"Resource\":{\"$StringLike\":\"^arn:aws:logs:.*:.*:log-group:log-group-events-loggroup.*$\"}}]}}}}},{\"$ObjectLike\":{\"policyName\":\"loggroupeventsEventsLogGroupPolicyloggroupeventsTimer37DF74C17EF314A8E\",\"policyDocument\":{\"$SerializedJson\":{\"$ObjectLike\":{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"events.amazonaws.com\"},\"Action\":[\"logs:PutLogEvents\",\"logs:CreateLogStream\"],\"Resource\":{\"$StringLike\":\"^arn:aws:logs:.*:.*:log-group:MyLogGroupNameToBeImported:[*]$\"}}]}}}}},{\"$ObjectLike\":{\"policyName\":\"loggroupeventsEventsLogGroupPolicyloggroupeventsTimerC63340B025F606BE\",\"policyDocument\":{\"$SerializedJson\":{\"$ObjectLike\":{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"events.amazonaws.com\"},\"Action\":[\"logs:PutLogEvents\",\"logs:CreateLogStream\"],\"Resource\":{\"$StringLike\":\"^arn:aws:logs:.*:.*:log-group:log-group-events-loggroup.*$\"}}]}}}}}]}}}",
     "flattenResponse": "false",
-    "salt": "1713844014049"
+    "salt": "1713893576462"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   }
  },
  "Outputs": {
-  "AssertionResultsAwsApiCallCloudWatchLogsfilterLogEvents5f0b7ac7df7a7e713d71f5b959f8765b": {
+  "AssertionResultsAwsApiCallCloudWatchLogsfilterLogEvents502d3307ab2120ba266bfc467733050a": {
    "Value": {
     "Fn::GetAtt": [
-     "AwsApiCallCloudWatchLogsfilterLogEvents5f0b7ac7df7a7e713d71f5b959f8765b",
+     "AwsApiCallCloudWatchLogsfilterLogEvents502d3307ab2120ba266bfc467733050a",
      "assertion"
     ]
    }

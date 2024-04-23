@@ -68,8 +68,8 @@ resourcePolicies.expect(ExpectedResult.objectLike({
             'logs:CreateLogStream',
           ],
           Resource: [
-            Match.stringLikeRegexp('arn:aws:logs:.*:.*:log-group:cdk-integ-elasticsearch-custom-kms-key-DomainSlowSearchLogs.*'),
-            Match.stringLikeRegexp('arn:aws:logs:.*:.*:log-group:cdk-integ-elasticsearch-custom-kms-key-DomainAppLogs.*'),
+            Match.stringLikeRegexp('^arn:aws:logs:.*:.*:log-group:cdk-integ-elasticsearch-custom-kms-key-DomainSlowSearchLogs.*$'),
+            Match.stringLikeRegexp('^arn:aws:logs:.*:.*:log-group:cdk-integ-elasticsearch-custom-kms-key-DomainAppLogs.*$'),
           ],
         }],
       })),
