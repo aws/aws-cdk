@@ -47,8 +47,16 @@ function metricGraphJson(metric: IMetric, yAxis?: string, id?: string) {
       }
 
       // Metric attributes that are rendered to graph options
-      if (stat.account) { options.accountId = accountIfDifferentFromStack(stat.account); }
-      if (stat.region) { options.region = regionIfDifferentFromStack(stat.region); }
+      if (stat.accountOverride) {
+        options.accountId = stat.accountOverride;
+      } else if (stat.account) {
+        options.accountId = accountIfDifferentFromStack(stat.account);
+      }
+      if (stat.regionOverride) {
+        options.region = stat.regionOverride;
+      } else if (stat.region) {
+        options.region = regionIfDifferentFromStack(stat.region);
+      }
       if (stat.period && stat.period.toSeconds() !== 300) { options.period = stat.period.toSeconds(); }
       if (stat.statistic && stat.statistic !== 'Average') { options.stat = stat.statistic; }
     },

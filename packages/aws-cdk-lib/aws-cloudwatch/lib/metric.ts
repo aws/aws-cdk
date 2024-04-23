@@ -105,16 +105,26 @@ export interface CommonMetricOptions {
   /**
    * Account which this metric comes from.
    *
-   * @default - Deployment account.
+   * @default - The account of the attached stack.
    */
   readonly account?: string;
 
   /**
    * Region which this metric comes from.
    *
-   * @default - Deployment region.
+   * @default - The region of the attached stack.
    */
   readonly region?: string;
+
+  /**
+   * Account of the stack this metric is attached to.
+   */
+  readonly stackAccount?: string;
+
+  /**
+   * Region of the stack this metric is attached to.
+   */
+  readonly stackRegion?: string;
 }
 
 /**
@@ -277,11 +287,17 @@ export class Metric implements IMetric {
   /** Unit of the metric. */
   public readonly unit?: Unit;
 
-  /** Account which this metric comes from */
-  public readonly account?: string;
+  /** Account of the stack this metric is attached to. */
+  private readonly stackAccount?: string;
 
-  /** Region which this metric comes from. */
-  public readonly region?: string;
+  /** Region of the stack this metric is attached to. */
+  private readonly stackRegion?: string;
+
+  /** Account set directly on the metric, taking precedence over the stack account. */
+  private readonly accountOverride?: string;
+
+  /** Region set directly on the metric, taking precedence over the stack region. */
+  private readonly regionOverride?: string;
 
   /**
    * Warnings attached to this metric.
@@ -323,8 +339,10 @@ export class Metric implements IMetric {
     this.label = props.label;
     this.color = props.color;
     this.unit = props.unit;
-    this.account = props.account;
-    this.region = props.region;
+    this.stackAccount = props.stackAccount;
+    this.stackRegion = props.stackRegion;
+    this.accountOverride = props.account;
+    this.regionOverride = props.region;
   }
 
   /**
@@ -340,8 +358,10 @@ export class Metric implements IMetric {
       && (props.color === undefined || props.color === this.color)
       && (props.statistic === undefined || props.statistic === this.statistic)
       && (props.unit === undefined || props.unit === this.unit)
-      && (props.account === undefined || props.account === this.account)
-      && (props.region === undefined || props.region === this.region)
+      && (props.account === undefined || props.account === this.accountOverride)
+      && (props.region === undefined || props.region === this.regionOverride)
+      && (props.stackAccount === undefined || props.stackAccount === this.stackAccount)
+      && (props.stackRegion === undefined || props.stackRegion === this.stackRegion)
       // For these we're not going to do deep equality, misses some opportunity for optimization
       // but that's okay.
       && (props.dimensions === undefined)
@@ -359,8 +379,10 @@ export class Metric implements IMetric {
       unit: ifUndefined(props.unit, this.unit),
       label: ifUndefined(props.label, this.label),
       color: ifUndefined(props.color, this.color),
-      account: ifUndefined(props.account, this.account),
-      region: ifUndefined(props.region, this.region),
+      account: ifUndefined(props.account, this.accountOverride),
+      region: ifUndefined(props.region, this.regionOverride),
+      stackAccount: ifUndefined(props.stackAccount, this.stackAccount),
+      stackRegion: ifUndefined(props.stackRegion, this.stackRegion),
     });
   }
 
@@ -380,9 +402,17 @@ export class Metric implements IMetric {
     const stack = cdk.Stack.of(scope);
 
     return this.with({
-      region: cdk.Token.isUnresolved(stack.region) ? undefined : stack.region,
-      account: cdk.Token.isUnresolved(stack.account) ? undefined : stack.account,
+      stackAccount: cdk.Token.isUnresolved(stack.account) ? undefined : stack.account,
+      stackRegion: cdk.Token.isUnresolved(stack.region) ? undefined : stack.region,
     });
+  }
+
+  public get account(): string | undefined {
+    return this.accountOverride || this.stackAccount;
+  }
+
+  public get region(): string | undefined {
+    return this.regionOverride || this.stackRegion;
   }
 
   public toMetricConfig(): MetricConfig {
@@ -397,6 +427,8 @@ export class Metric implements IMetric {
         unitFilter: this.unit,
         account: this.account,
         region: this.region,
+        accountOverride: this.accountOverride,
+        regionOverride: this.regionOverride,
       },
       renderingProperties: {
         color: this.color,
