@@ -259,9 +259,9 @@ const crossAccountRole = new iam.Role(this, 'CrossAccountRole', {
           resources: ['*'],
         }),
         new iam.PolicyStatement({
-          sid: 'GetHostedZoneAndChangeResourceRecordSet',
+          sid: 'GetHostedZoneAndChangeResourceRecordSets',
           effect: iam.Effect.ALLOW,
-          actions: ['route53:GetHostedZone', 'route53:ChangeResourceRecordSet'],
+          actions: ['route53:GetHostedZone', 'route53:ChangeResourceRecordSets'],
           // This example assumes the RecordSet subdomain.somexample.com
           // is contained in the HostedZone
           resources: ['arn:aws:route53:::hostedzone/HZID00000000000000000'],
@@ -305,6 +305,35 @@ new route53.CrossAccountZoneDelegationRecord(this, 'delegate', {
 });
 ```
 
+Delegating the hosted zone requires assuming a role in the parent hosted zone's account.
+In order for the assumed credentials to be valid, the resource must assume the role using
+an STS endpoint in a region where both the subdomain's account and the parent's account
+are opted-in. By default, this region is determined automatically, but if you need to
+change the region used for the AssumeRole call, specify `assumeRoleRegion`:
+
+```ts
+const subZone = new route53.PublicHostedZone(this, 'SubZone', {
+  zoneName: 'sub.someexample.com',
+});
+
+// import the delegation role by constructing the roleArn
+const delegationRoleArn = Stack.of(this).formatArn({
+  region: '', // IAM is global in each partition
+  service: 'iam',
+  account: 'parent-account-id',
+  resource: 'role',
+  resourceName: 'MyDelegationRole',
+});
+const delegationRole = iam.Role.fromRoleArn(this, 'DelegationRole', delegationRoleArn);
+
+new route53.CrossAccountZoneDelegationRecord(this, 'delegate', {
+  delegatedZone: subZone,
+  parentHostedZoneName: 'someexample.com', // or you can use parentHostedZoneId
+  delegationRole,
+  assumeRoleRegion: "us-east-1",
+});
+```
+
 ### Add Trailing Dot to Domain Names
 
 In order to continue managing existing domain names with trailing dots using CDK, you can set `addTrailingDot: false` to prevent the Construct from adding a dot at the end of the domain name.
@@ -315,6 +344,45 @@ new route53.PublicHostedZone(this, 'HostedZone', {
   addTrailingDot: false,
 });
 ```
+
+## Enabling DNSSEC
+
+DNSSEC can be enabled for Hosted Zones. For detailed information, see
+[Configuring DNSSEC signing in Amazon Route 53](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/dns-configuring-dnssec.html).
+
+Enabling DNSSEC requires an asymmetric KMS Customer-Managed Key using the `ECC_NIST_P256` key spec.
+Additionally, that KMS key must be in `us-east-1`.
+
+```ts
+const kmsKey = new kms.Key(this, 'KmsCMK', {
+  keySpec: kms.KeySpec.ECC_NIST_P256,
+  keyUsage: kms.KeyUsage.SIGN_VERIFY,
+});
+const hostedZone = new route53.HostedZone(this, 'HostedZone', {
+  zoneName: 'example.com',
+});
+// Enable DNSSEC signing for the zone
+hostedZone.enableDnssec({ kmsKey });
+```
+
+The necessary permissions for Route 53 to use the key will automatically be added when using
+this configuration. If it is necessary to create a key signing key manually, that can be done
+using the `KeySigningKey` construct:
+
+```ts
+declare const hostedZone: route53.HostedZone;
+declare const kmsKey: kms.Key;
+new route53.KeySigningKey(this, 'KeySigningKey', {
+  hostedZone,
+  kmsKey,
+  keySigningKeyName: 'ksk',
+  status: route53.KeySigningKeyStatus.ACTIVE,
+});
+```
+
+When directly constructing the `KeySigningKey` resource, enabling DNSSEC signing for the hosted
+zone will be need to be done explicitly (either using the `CfnDNSSEC` construct or via another
+means).
 
 ## Imports
 
