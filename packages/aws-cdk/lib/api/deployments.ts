@@ -532,9 +532,6 @@ export class Deployments {
 
     // try to assume the lookup role
     const warningMessage = `Could not assume ${arns.lookupRoleArn}, proceeding anyway.`;
-    const upgradeMessage = `(To get rid of this warning, please upgrade to bootstrap version >= ${stack.lookupRole?.requiresBootstrapStackVersion})`;
-
-    let stackBootstrapVersion;
 
     try {
       const stackSdk = await this.cachedSdkForEnvironment(resolvedEnvironment, Mode.ForReading, {
@@ -543,33 +540,23 @@ export class Deployments {
       });
 
       const envResources = this.environmentResources.for(resolvedEnvironment, stackSdk.sdk);
-      stackBootstrapVersion = await envResources.getBootstrapVersion();
 
       // if we succeed in assuming the lookup role, make sure we have the correct bootstrap stack version
       if (stackSdk.didAssumeRole && stack.lookupRole?.bootstrapStackVersionSsmParameter && stack.lookupRole.requiresBootstrapStackVersion) {
         const version = await envResources.versionFromSsmParameter(stack.lookupRole.bootstrapStackVersionSsmParameter);
         if (version < stack.lookupRole.requiresBootstrapStackVersion) {
-          throw new Error(`Bootstrap stack version '${stack.lookupRole.requiresBootstrapStackVersion}' is required, found version '${version}'.`);
+          throw new Error(`Bootstrap stack version '${stack.lookupRole.requiresBootstrapStackVersion}' is required, found version '${version}'. To get rid of this error, please upgrade to bootstrap version >= ${stack.lookupRole.requiresBootstrapStackVersion}`);
         }
-        // we may not have assumed the lookup role because one was not provided
-        // if that is the case then don't print the upgrade warning
-      } else if (!stackSdk.didAssumeRole && stack.lookupRole?.requiresBootstrapStackVersion &&
-        stack.lookupRole?.requiresBootstrapStackVersion > stackBootstrapVersion) {
-        warning(upgradeMessage);
+      } else if (!stackSdk.didAssumeRole) {
+        const lookUpRoleExists = stack.lookupRole ? true : false;
+        warning(`Lookup role ${ lookUpRoleExists ? 'exists but' : 'does not exist, hence'} could not be assumed. Proceeding with default credentials.`);
       }
       return { ...stackSdk, resolvedEnvironment, envResources };
     } catch (e: any) {
       debug(e);
-      // only print out the warnings if the lookupRole exists AND there is a required
-      // bootstrap version, otherwise the warnings will print `undefined`
+      // only print out the warnings if the lookupRole exists
       if (stack.lookupRole) {
         warning(warningMessage);
-
-        if (stack.lookupRole.requiresBootstrapStackVersion &&
-          stackBootstrapVersion &&
-          stack.lookupRole.requiresBootstrapStackVersion > stackBootstrapVersion) {
-          warning(upgradeMessage);
-        }
       }
       throw (e);
     }
