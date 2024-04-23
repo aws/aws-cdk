@@ -11,9 +11,9 @@
     },
     "service": "CloudWatchLogs",
     "api": "describeResourcePolicies",
-    "expected": "{\"$ObjectLike\":{\"resourcePolicies\":{\"$ArrayWith\":[{\"$ObjectLike\":{\"policyName\":\"ESLogPolicyc82ca7bfe2f2589b859ebab89e88da2efd284adfad\",\"policyDocument\":{\"$SerializedJson\":{\"$ObjectLike\":{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"es.amazonaws.com\"},\"Action\":[\"logs:PutLogEvents\",\"logs:CreateLogStream\"],\"Resource\":[{\"$StringLike\":\"arn:aws:logs:.*:.*:log-group:cdk-integ-elasticsearch-custom-kms-key-DomainSlowSearchLogs.*\"},{\"$StringLike\":\"arn:aws:logs:.*:.*:log-group:cdk-integ-elasticsearch-custom-kms-key-DomainAppLogs.*\"}]}]}}}}}]}}}",
+    "expected": "{\"$ObjectLike\":{\"resourcePolicies\":{\"$ArrayWith\":[{\"$ObjectLike\":{\"policyName\":\"ESLogPolicyc82ca7bfe2f2589b859ebab89e88da2efd284adfad\",\"policyDocument\":{\"$SerializedJson\":{\"$ObjectLike\":{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"es.amazonaws.com\"},\"Action\":[\"logs:PutLogEvents\",\"logs:CreateLogStream\"],\"Resource\":[{\"$StringLike\":\"^arn:aws:logs:.*:.*:log-group:cdk-integ-elasticsearch-custom-kms-key-DomainSlowSearchLogs.*$\"},{\"$StringLike\":\"^arn:aws:logs:.*:.*:log-group:cdk-integ-elasticsearch-custom-kms-key-DomainAppLogs.*$\"}]}]}}}}}]}}}",
     "flattenResponse": "false",
-    "salt": "1713838180391"
+    "salt": "1713896229102"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
