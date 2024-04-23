@@ -1270,10 +1270,9 @@ When this feature flag is enabled and calling KMS key grant method, the created 
 
 ### @aws-cdk/aws-eks:nodegroupNameAttribute
 
-*When enabled, nodegroupName attribute of the provisioned EKS NodeGroup will not have the cluster name prefix.* (fix)
+*When enabled, nodegroupName attribute of the managed EKS nodegroup will not have the cluster name prefix.* (fix)
 
-When this feature flag is enabled, the nodegroupName attribute will be exactly the name of the nodegroup without
-any prefix.
+When this feature flag is enabled, the nodegroupName attribute will be exactly the name of the nodegroup without any prefix.
 
 
 | Since | Default | Recommended |
