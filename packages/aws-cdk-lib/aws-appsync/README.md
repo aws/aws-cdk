@@ -574,9 +574,9 @@ new appsync.GraphqlApi(this, 'api', {
   name: 'myApi',
   definition: appsync.Definition.fromFile(path.join(__dirname, 'myApi.graphql')),
   enhancedMonitoringConfig: {
-    dataSourceLevelMetricsBehavior: DataSourceLevelMetricsBehavior.FULL_REQUEST_DATA_SOURCE_METRICS,
-    operationLevelMetricsConfig: OperationLevelMetricsConfig.ENABLED,
-    resolverLevelMetricsBehavior: ResolverLevelMetricsBehavior.FULL_REQUEST_RESOLVER_METRICS
+    dataSourceLevelMetricsBehavior: appsync.DataSourceLevelMetricsBehavior.FULL_REQUEST_DATA_SOURCE_METRICS,
+    operationLevelMetricsConfig: appsync.OperationLevelMetricsConfig.ENABLED,
+    resolverLevelMetricsBehavior: appsync.ResolverLevelMetricsBehavior.FULL_REQUEST_RESOLVER_METRICS
   },
 });
 ```
@@ -589,20 +589,20 @@ const api = new appsync.GraphqlApi(this, 'api', {
   name: 'myApi',
   definition: appsync.Definition.fromFile(path.join(__dirname, 'myApi.graphql')),
   enhancedMonitoringConfig: {
-    dataSourceLevelMetricsBehavior: DataSourceLevelMetricsBehavior.PER_DATA_SOURCE_METRICS,
-    operationLevelMetricsConfig: OperationLevelMetricsConfig.ENABLED,
-    resolverLevelMetricsBehavior: ResolverLevelMetricsBehavior.PER_RESOLVER_METRICS
+    dataSourceLevelMetricsBehavior: appsync.DataSourceLevelMetricsBehavior.PER_DATA_SOURCE_METRICS,
+    operationLevelMetricsConfig: appsync.OperationLevelMetricsConfig.ENABLED,
+    resolverLevelMetricsBehavior: appsync.ResolverLevelMetricsBehavior.PER_RESOLVER_METRICS
   },
 });
 
 const noneDS = api.addNoneDataSource('none', {
-  metricsConfig: MetricsConfig.ENABLED,
+  metricsConfig: appsync.MetricsConfig.ENABLED,
 });
 
 noneDS.createResolver('noneResolver', {
   typeName: 'Mutation',
   fieldName: 'addDemoMetricsConfig',
-  metricsConfig: MetricsConfig.ENABLED
+  metricsConfig: appsync.MetricsConfig.ENABLED
 });
 
 ```
