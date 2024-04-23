@@ -261,6 +261,70 @@ export interface LogConfig {
 }
 
 /**
+ * Defines the way data source enhanced metrics will behave.
+ * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-appsync-graphqlapi-enhancedmetricsconfig.html#aws-properties-appsync-graphqlapi-enhancedmetricsconfig-properties
+ */
+export enum DataSourceLevelMetricsBehavior {
+  /**
+   * Records and emits metric data for all data sources in the request.
+   */
+  FULL_REQUEST_DATA_SOURCE_METRICS = 'FULL_REQUEST_DATA_SOURCE_METRICS',
+  /**
+   * Records and emits metric data for data sources that have the `metricsConfig` value set to `MetricsConfig.ENABLED`.
+   */
+  PER_DATA_SOURCE_METRICS = 'PER_DATA_SOURCE_METRICS',
+}
+
+/**
+ * Defines the way data source enhanced metrics will behave.
+ * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-appsync-graphqlapi-enhancedmetricsconfig.html#aws-properties-appsync-graphqlapi-enhancedmetricsconfig-properties
+ */
+export enum ResolverLevelMetricsBehavior {
+  /**
+   * Records and emits metric data for all resolvers in the request.
+   */
+  FULL_REQUEST_RESOLVER_METRICS = 'FULL_REQUEST_RESOLVER_METRICS',
+  /**
+   * Records and emits metric data for resolvers that have the `metricsConfig` value set to `MetricsConfig.ENABLED`.
+   */
+  PER_RESOLVER_METRICS = 'PER_RESOLVER_METRICS',
+}
+
+/**
+ * Defines, whether Operation Level Metrics are enabled
+ * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-appsync-graphqlapi-enhancedmetricsconfig.html#aws-properties-appsync-graphqlapi-enhancedmetricsconfig-properties
+ */
+export enum OperationLevelMetricsConfig {
+  /**
+   * Disabled Operation Level Metrics
+   */
+  DISABLED = 'DISABLED',
+  /**
+   * Enable Operation Level Metrics
+   */
+  ENABLED = 'ENABLED',
+}
+
+/**
+ * Enhanced Monitoring configuration for AppSync
+ * @see https://docs.aws.amazon.com/appsync/latest/devguide/monitoring.html#cw-metrics
+ */
+export interface EnhancedMonitoringConfig {
+  /**
+   * Controls how data source metrics will be emitted to CloudWatch.
+   */
+  readonly dataSourceLevelMetricsBehavior: DataSourceLevelMetricsBehavior;
+  /**
+   * Controls how operation metrics will be emitted to CloudWatch.
+   */
+  readonly operationLevelMetricsConfig: OperationLevelMetricsConfig;
+  /**
+   * Controls how resolver metrics will be emitted to CloudWatch.
+   */
+  readonly resolverLevelMetricsBehavior: ResolverLevelMetricsBehavior;
+}
+
+/**
  * Visibility type for a GraphQL API
  */
 export enum Visibility {
@@ -472,6 +536,13 @@ export interface GraphqlApiProps {
    * @default - No environment variables.
    */
   readonly environmentVariables?: { [key: string]: string };
+
+  /**
+   * Enhanced Monitoring Configuration for this AppSync API
+   *
+   * @default - None
+   */
+  readonly enhancedMonitoringConfig?: EnhancedMonitoringConfig;
 }
 
 /**
@@ -646,6 +717,7 @@ export class GraphqlApi extends GraphqlApiBase {
       queryDepthLimit: props.queryDepthLimit,
       resolverCountLimit: props.resolverCountLimit,
       environmentVariables: Lazy.any({ produce: () => this.renderEnvironmentVariables() }),
+      enhancedMetricsConfig: props.enhancedMonitoringConfig,
     });
 
     this.apiId = this.api.attrApiId;

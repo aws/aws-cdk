@@ -1,7 +1,7 @@
 import { Construct } from 'constructs';
 import { BaseAppsyncFunctionProps, AppsyncFunction } from './appsync-function';
 import { CfnDataSource } from './appsync.generated';
-import { IGraphqlApi } from './graphqlapi-base';
+import { IGraphqlApi, MetricsConfig } from './graphqlapi-base';
 import { BaseResolverProps, Resolver } from './resolver';
 import { ITable } from '../../aws-dynamodb';
 import { IDomain as IElasticsearchDomain } from '../../aws-elasticsearch';
@@ -33,6 +33,12 @@ export interface BaseDataSourceProps {
    * @default - None
    */
   readonly description?: string;
+  /**
+   * metrics config
+   *
+   * @default - No config
+   */
+  readonly metricsConfig?: MetricsConfig;
 }
 
 /**
@@ -131,6 +137,7 @@ export abstract class BaseDataSource extends Construct {
       apiId: props.api.apiId,
       name: supportedName,
       description: props.description,
+      metricsConfig: props.metricsConfig,
       serviceRoleArn: this.serviceRole?.roleArn,
       ...extended,
     });

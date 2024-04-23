@@ -21,6 +21,21 @@ import { ISecret } from '../../aws-secretsmanager';
 import { ArnFormat, CfnResource, IResource, Resource, Stack } from '../../core';
 
 /**
+ * Defines, whether certain entity should use Enhanced Metrics
+ * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-appsync-graphqlapi-enhancedmetricsconfig.html#aws-properties-appsync-graphqlapi-enhancedmetricsconfig-properties
+ */
+export enum MetricsConfig {
+  /**
+   * Disable Enhanced Metrics for Data Source or Resolver
+   */
+  DISABLED = 'DISABLED',
+  /**
+   * Enable Enhanced Metrics for Data Source or Resolver
+   */
+  ENABLED = 'ENABLED',
+}
+
+/**
  * Optional configuration for data sources
  */
 export interface DataSourceOptions {
@@ -37,6 +52,14 @@ export interface DataSourceOptions {
    * @default - No description
    */
   readonly description?: string;
+
+  /**
+   * Metrics config, which defines whether this data source will use Enhanced Metrics or not.
+   * Value will be ignored, if `dataSourceLevelMetricsBehavior` on AppSync construct is set to `FULL_REQUEST_DATA_SOURCE_METRICS`.
+   *
+   * @default - none
+   */
+  readonly metricsConfig?: MetricsConfig;
 }
 
 /**
@@ -307,6 +330,7 @@ export abstract class GraphqlApiBase extends Resource implements IGraphqlApi {
       api: this,
       name: options?.name,
       description: options?.description,
+      metricsConfig: options?.metricsConfig,
     });
   }
 
@@ -323,6 +347,7 @@ export abstract class GraphqlApiBase extends Resource implements IGraphqlApi {
       table,
       name: options?.name,
       description: options?.description,
+      metricsConfig: options?.metricsConfig,
     });
   }
 
@@ -340,6 +365,7 @@ export abstract class GraphqlApiBase extends Resource implements IGraphqlApi {
       name: options?.name,
       description: options?.description,
       authorizationConfig: options?.authorizationConfig,
+      metricsConfig: options?.metricsConfig,
     });
   }
 
@@ -356,6 +382,7 @@ export abstract class GraphqlApiBase extends Resource implements IGraphqlApi {
       lambdaFunction,
       name: options?.name,
       description: options?.description,
+      metricsConfig: options?.metricsConfig,
     });
   }
 
@@ -378,6 +405,7 @@ export abstract class GraphqlApiBase extends Resource implements IGraphqlApi {
       api: this,
       name: options?.name,
       description: options?.description,
+      metricsConfig: options?.metricsConfig,
       serverlessCluster,
       secretStore,
       databaseName,
@@ -403,6 +431,7 @@ export abstract class GraphqlApiBase extends Resource implements IGraphqlApi {
       api: this,
       name: options?.name,
       description: options?.description,
+      metricsConfig: options?.metricsConfig,
       serverlessCluster,
       secretStore,
       databaseName,
@@ -422,6 +451,7 @@ export abstract class GraphqlApiBase extends Resource implements IGraphqlApi {
       api: this,
       name: options?.name,
       description: options?.description,
+      metricsConfig: options?.metricsConfig,
       domain,
     });
   }
@@ -438,6 +468,7 @@ export abstract class GraphqlApiBase extends Resource implements IGraphqlApi {
       eventBus,
       name: options?.name,
       description: options?.description,
+      metricsConfig: options?.metricsConfig,
     });
   }
 
@@ -453,6 +484,7 @@ export abstract class GraphqlApiBase extends Resource implements IGraphqlApi {
       api: this,
       name: options?.name,
       description: options?.description,
+      metricsConfig: options?.metricsConfig,
       domain,
     });
   }

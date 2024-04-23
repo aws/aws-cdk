@@ -5,7 +5,7 @@ import { CachingConfig } from './caching-config';
 import { BASE_CACHING_KEYS } from './caching-key';
 import { Code } from './code';
 import { BaseDataSource } from './data-source';
-import { IGraphqlApi } from './graphqlapi-base';
+import { IGraphqlApi, MetricsConfig } from './graphqlapi-base';
 import { MappingTemplate } from './mapping-template';
 import { FunctionRuntime } from './runtime';
 import { Token } from '../../core';
@@ -66,6 +66,12 @@ export interface BaseResolverProps {
    * @default - no code is used
    */
   readonly code?: Code;
+  /**
+   * Metrics Config
+   *
+   * @default - none
+   */
+  readonly metricsConfig?: MetricsConfig;
 }
 
 /**
@@ -147,6 +153,7 @@ export class Resolver extends Construct {
       responseMappingTemplate: props.responseMappingTemplate ? props.responseMappingTemplate.renderTemplate() : undefined,
       cachingConfig: this.createCachingConfig(props.cachingConfig),
       maxBatchSize: props.maxBatchSize,
+      metricsConfig: props.metricsConfig,
     });
     props.api.addSchemaDependency(this.resolver);
     if (props.dataSource) {
