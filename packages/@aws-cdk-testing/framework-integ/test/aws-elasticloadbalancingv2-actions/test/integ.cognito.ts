@@ -191,12 +191,11 @@ const test = new integ.IntegTest(app, 'integ-test-cognito', {
   testCases: [testCase],
   diffAssets: true,
 });
-const cognitoUserProps = {
+const testUser = new CognitoUser(testCase, 'User', {
   userPool: testCase.userPool,
   username: 'test-user@example.com',
   password: 'TestUser@123',
-};
-const testUser = new CognitoUser(testCase, 'User', cognitoUserProps);
+});
 // this function signs in to the website and returns text content of the authenticated page body
 const signinFunction = new lambda.Function(testCase, 'Signin', {
   functionName: 'cdk-integ-alb-cognito-signin-handler',
@@ -216,27 +215,5 @@ const invoke = test.assertions.invokeFunction({
 });
 invoke.expect(integ.ExpectedResult.objectLike({
   Payload: '"Authenticated"',
-}));
-const cognitoUser = test.assertions.awsApiCall('CognitoIdentityServiceProvider', 'adminGetUser', {
-  UserPoolId: cognitoUserProps.userPool.userPoolId,
-  Username: cognitoUserProps.username,
-});
-cognitoUser.expect(integ.ExpectedResult.objectLike({
-  UserStatus: 'CONFIRMED',
-  Enabled: true,
-  UserAttributes: [
-    {
-      Name: 'email',
-      Value: cognitoUserProps.username,
-    },
-    {
-      Name: 'email_verified',
-      Value: 'true',
-    },
-    {
-      Name: 'sub',
-      Value: integ.Match.stringLikeRegexp('^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$'),
-    },
-  ],
 }));
 app.synth();

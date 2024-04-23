@@ -51,7 +51,7 @@ const integTest = new IntegTest(app, 'ElasticsearchCustomKmsInteg', {
   diffAssets: true,
 });
 const resourcePolicies = integTest.assertions.awsApiCall('CloudWatchLogs', 'describeResourcePolicies');
-// asserting that AwsCustomResource used for CloudWatchLogs putResourcePolicy correctly adds resource policy name and document
+// asserting that LogGroupPolicy for elastic search correctly adds resource policy name and document
 resourcePolicies.expect(ExpectedResult.objectLike({
   resourcePolicies: Match.arrayWith([
     Match.objectLike({
