@@ -15,6 +15,7 @@ In addition, the library also supports defining Kubernetes resource manifests wi
       - [Node Groups with IPv6 Support](#node-groups-with-ipv6-support)
       - [Spot Instances Support](#spot-instances-support)
       - [Launch Template Support](#launch-template-support)
+    - [Update clusters](#update-clusters)
     - [Fargate profiles](#fargate-profiles)
     - [Self-managed nodes](#self-managed-nodes)
       - [Spot Instances](#spot-instances)
@@ -186,7 +187,6 @@ cluster.addNodegroupCapacity('custom-node-group', {
   instanceTypes: [new ec2.InstanceType('m5.large')],
   minSize: 4,
   diskSize: 100,
-  amiType: eks.NodegroupAmiType.AL2_X86_64_GPU,
 });
 ```
 
@@ -203,6 +203,24 @@ cluster.addNodegroupCapacity('custom-node-group', {
       value: 'bar',
     },
   ],
+});
+```
+
+To define the type of the AMI for the node group, you may explicitly define `amiType` according to your requirements, supported amiType could be found [HERE](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_eks.NodegroupAmiType.html).
+
+```ts
+declare const cluster: eks.Cluster;
+
+// X86_64 based AMI managed node group
+cluster.addNodegroupCapacity('custom-node-group', {
+  instanceTypes: [new ec2.InstanceType('m5.large')], // NOTE: if amiType is x86_64-based image, the instance types here must be x86_64-based.
+  amiType: eks.NodegroupAmiType.AL2023_X86_64_STANDARD,
+});
+
+// ARM_64 based AMI managed node group
+cluster.addNodegroupCapacity('custom-node-group', {
+  instanceTypes: [new ec2.InstanceType('m6g.medium')], // NOTE: if amiType is ARM-based image, the instance types here must be ARM-based.
+  amiType: eks.NodegroupAmiType.AL2023_ARM_64_STANDARD,
 });
 ```
 
@@ -227,8 +245,8 @@ cluster.addNodegroupCapacity('custom-node-group', {
 });
 ```
 
-> **NOTE:** If you add instances with the inferentia (`inf1` or `inf2`) class the
-> [neuron plugin](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/containers/dlc-then-eks-devflow.html)
+> **NOTE:** If you add instances with the inferentia class (`inf1` or `inf2`) or trainium class (`trn1` or `trn1n`) 
+> the [neuron plugin](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/containers/dlc-then-eks-devflow.html)
 > will be automatically installed in the kubernetes cluster.
 
 #### Node Groups with IPv6 Support
@@ -365,6 +383,29 @@ You may specify one `instanceType` in the launch template or multiple `instanceT
 
 Graviton 2 instance types are supported including `c6g`, `m6g`, `r6g` and `t4g`.
 Graviton 3 instance types are supported including `c7g`.
+
+### Update clusters
+
+When you rename the cluster name and redeploy the stack, the cluster replacement will be triggered and
+the existing one will be deleted after the new one is provisioned. As the cluster resource ARN has been changed, 
+the cluster resource handler would not be able to delete the old one as the resource ARN in the IAM policy
+has been changed. As a workaround, you need to add a temporary policy to the cluster admin role for 
+successful replacement. Consider this example if you are renaming the cluster from `foo` to `bar`:
+
+```ts
+const cluster = new eks.Cluster(this, 'cluster-to-rename', {
+  clusterName: 'foo', // rename this to 'bar'
+  version: eks.KubernetesVersion.V1_29,
+});
+
+// allow the cluster admin role to delete the cluster 'foo'
+cluster.adminRole.addToPolicy(new iam.PolicyStatement({
+  actions: ['eks:DeleteCluster'],
+  resources: [ 
+    Stack.of(this).formatArn({ service: 'eks', resource: 'cluster', resourceName: 'foo' }),
+]
+}))
+```
 
 ### Fargate profiles
 

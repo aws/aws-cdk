@@ -844,6 +844,139 @@ integTest('cdk ls', withDefaultFixture(async (fixture) => {
   }
 }));
 
+/**
+ * Type to store stack dependencies recursively
+ */
+type DependencyDetails = {
+  id: string;
+  dependencies: DependencyDetails[];
+};
+
+type StackDetails = {
+  id: string;
+  dependencies: DependencyDetails[];
+};
+
+integTest('cdk ls --show-dependencies --json', withDefaultFixture(async (fixture) => {
+  const listing = await fixture.cdk(['ls --show-dependencies --json'], { captureStderr: false });
+
+  const expectedStacks = [
+    {
+      id: 'test-1',
+      dependencies: [],
+    },
+    {
+      id: 'order-providing',
+      dependencies: [],
+    },
+    {
+      id: 'order-consuming',
+      dependencies: [
+        {
+          id: 'order-providing',
+          dependencies: [],
+        },
+      ],
+    },
+    {
+      id: 'with-nested-stack',
+      dependencies: [],
+    },
+    {
+      id: 'list-stacks',
+      dependencies: [
+        {
+          id: 'list-stacks/DependentStack',
+          dependencies: [
+            {
+              id: 'list-stacks/DependentStack/InnerDependentStack',
+              dependencies: [],
+            },
+          ],
+        },
+      ],
+    },
+    {
+      id: 'list-multiple-dependent-stacks',
+      dependencies: [
+        {
+          id: 'list-multiple-dependent-stacks/DependentStack1',
+          dependencies: [],
+        },
+        {
+          id: 'list-multiple-dependent-stacks/DependentStack2',
+          dependencies: [],
+        },
+      ],
+    },
+  ];
+
+  function validateStackDependencies(stack: StackDetails) {
+    expect(listing).toContain(stack.id);
+
+    function validateDependencies(dependencies: DependencyDetails[]) {
+      for (const dependency of dependencies) {
+        expect(listing).toContain(dependency.id);
+        if (dependency.dependencies.length > 0) {
+          validateDependencies(dependency.dependencies);
+        }
+      }
+    }
+
+    if (stack.dependencies.length > 0) {
+      validateDependencies(stack.dependencies);
+    }
+  }
+
+  for (const stack of expectedStacks) {
+    validateStackDependencies(stack);
+  }
+}));
+
+integTest('cdk ls --show-dependencies --json --long', withDefaultFixture(async (fixture) => {
+  const listing = await fixture.cdk(['ls --show-dependencies --json --long'], { captureStderr: false });
+
+  const expectedStacks = [
+    {
+      id: 'order-providing',
+      name: 'order-providing',
+      enviroment: {
+        account: 'unknown-account',
+        region: 'unknown-region',
+        name: 'aws://unknown-account/unknown-region',
+      },
+      dependencies: [],
+    },
+    {
+      id: 'order-consuming',
+      name: 'order-consuming',
+      enviroment: {
+        account: 'unknown-account',
+        region: 'unknown-region',
+        name: 'aws://unknown-account/unknown-region',
+      },
+      dependencies: [
+        {
+          id: 'order-providing',
+          dependencies: [],
+        },
+      ],
+    },
+  ];
+
+  for (const stack of expectedStacks) {
+    expect(listing).toContain(fixture.fullStackName(stack.id));
+    expect(listing).toContain(fixture.fullStackName(stack.name));
+    expect(listing).toContain(stack.enviroment.account);
+    expect(listing).toContain(stack.enviroment.name);
+    expect(listing).toContain(stack.enviroment.region);
+    for (const dependency of stack.dependencies) {
+      expect(listing).toContain(fixture.fullStackName(dependency.id));
+    }
+  }
+
+}));
+
 integTest('synthing a stage with errors leads to failure', withDefaultFixture(async (fixture) => {
   const output = await fixture.cdk(['synth'], {
     allowErrExit: true,
@@ -1436,6 +1569,83 @@ integTest('hotswap deployment supports Fn::ImportValue intrinsic', withDefaultFi
     await fixture.cdkDestroy('lambda-hotswap');
     await fixture.cdkDestroy('export-value-stack');
   }
+}));
+
+integTest('hotswap deployment supports ecs service', withDefaultFixture(async (fixture) => {
+  // GIVEN
+  const stackArn = await fixture.cdkDeploy('ecs-hotswap', {
+    captureStderr: false,
+  });
+
+  // WHEN
+  const deployOutput = await fixture.cdkDeploy('ecs-hotswap', {
+    options: ['--hotswap'],
+    captureStderr: true,
+    onlyStderr: true,
+    modEnv: {
+      DYNAMIC_ECS_PROPERTY_VALUE: 'new value',
+    },
+  });
+
+  const response = await fixture.aws.cloudFormation('describeStacks', {
+    StackName: stackArn,
+  });
+  const serviceName = response.Stacks?.[0].Outputs?.find(output => output.OutputKey == 'ServiceName')?.OutputValue;
+
+  // THEN
+
+  // The deployment should not trigger a full deployment, thus the stack's status must remains
+  // "CREATE_COMPLETE"
+  expect(response.Stacks?.[0].StackStatus).toEqual('CREATE_COMPLETE');
+  expect(deployOutput).toContain(`ECS Service '${serviceName}' hotswapped!`);
+}));
+
+integTest('hotswap deployment for ecs service waits for deployment to complete', withDefaultFixture(async (fixture) => {
+  // GIVEN
+  const stackArn = await fixture.cdkDeploy('ecs-hotswap', {
+    captureStderr: false,
+  });
+
+  // WHEN
+  await fixture.cdkDeploy('ecs-hotswap', {
+    options: ['--hotswap'],
+    modEnv: {
+      DYNAMIC_ECS_PROPERTY_VALUE: 'new value',
+    },
+  });
+
+  const describeStacksResponse = await fixture.aws.cloudFormation('describeStacks', {
+    StackName: stackArn,
+  });
+  const clusterName = describeStacksResponse.Stacks?.[0].Outputs?.find(output => output.OutputKey == 'ClusterName')?.OutputValue!;
+  const serviceName = describeStacksResponse.Stacks?.[0].Outputs?.find(output => output.OutputKey == 'ServiceName')?.OutputValue!;
+
+  // THEN
+
+  const describeServicesResponse = await fixture.aws.ecs('describeServices', {
+    cluster: clusterName,
+    services: [serviceName],
+  });
+  expect(describeServicesResponse.services?.[0].deployments).toHaveLength(1); // only one deployment present
+
+}));
+
+integTest('hotswap deployment for ecs service detects failed deployment and errors', withDefaultFixture(async (fixture) => {
+  // GIVEN
+  await fixture.cdkDeploy('ecs-hotswap');
+
+  // WHEN
+  const deployOutput = await fixture.cdkDeploy('ecs-hotswap', {
+    options: ['--hotswap'],
+    modEnv: {
+      USE_INVALID_ECS_HOTSWAP_IMAGE: 'true',
+    },
+    allowErrExit: true,
+  });
+
+  // THEN
+  expect(deployOutput).toContain(`❌  ${fixture.stackNamePrefix}-ecs-hotswap failed: ResourceNotReady: Resource is not in the state deploymentCompleted`);
+  expect(deployOutput).not.toContain('hotswapped!');
 }));
 
 async function listChildren(parent: string, pred: (x: string) => Promise<boolean>) {

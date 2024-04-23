@@ -536,6 +536,7 @@
      "Ref": "DatabaseSubnets56F17B9A"
     },
     "Engine": "aurora-mysql",
+    "PreferredMaintenanceWindow": "Sat:22:15-Sat:22:45",
     "PubliclyAccessible": true
    },
    "DependsOn": [
@@ -569,6 +570,7 @@
      "Ref": "DatabaseSubnets56F17B9A"
     },
     "Engine": "aurora-mysql",
+    "PreferredMaintenanceWindow": "Sat:22:15-Sat:22:45",
     "PubliclyAccessible": true
    },
    "DependsOn": [
@@ -602,6 +604,7 @@
      "Ref": "DatabaseSubnets56F17B9A"
     },
     "Engine": "aurora-mysql",
+    "PreferredMaintenanceWindow": "Sat:22:15-Sat:22:45",
     "PubliclyAccessible": true
    },
    "DependsOn": [

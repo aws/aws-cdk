@@ -163,6 +163,7 @@ describe('Pipeline Actions', () => {
           {
             Action: [
               'cloudformation:DescribeChangeSet',
+              'cloudformation:DescribeStackEvents',
               'cloudformation:DescribeStacks',
               'cloudformation:ExecuteChangeSet',
             ],
