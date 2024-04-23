@@ -2,6 +2,7 @@ import { Match, Template } from '../../assertions';
 import { AccountRootPrincipal, Role } from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as cdk from '../../core';
+import { cx_api as cxapi } from '../../cx-api';
 import {
   AmazonLinuxGeneration,
   EbsDeviceVolumeType,
@@ -29,7 +30,7 @@ describe('volume', () => {
       AvailabilityZone: 'us-east-1a',
       MultiAttachEnabled: false,
       Size: 8,
-      VolumeType: 'gp2',
+      VolumeType: 'gp3',
       Tags: [
         {
           Key: 'Name',
@@ -79,7 +80,7 @@ describe('volume', () => {
       AvailabilityZone: 'us-east-1a',
       MultiAttachEnabled: false,
       Size: 8,
-      VolumeType: 'gp2',
+      VolumeType: 'gp3',
       Tags: [{
         Key: 'TagKey',
         Value: 'TagValue',
@@ -454,6 +455,23 @@ describe('volume', () => {
           ],
         }],
       },
+    });
+  });
+
+  test('EBS_DEFAULT_GP3 feature flag', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    stack.node.setContext(cxapi.EBS_DEFAULT_GP3, true);
+    new Volume(stack, 'Volume', {
+      availabilityZone: 'us-east-1a',
+      size: cdk.Size.gibibytes(500),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::Volume', {
+      VolumeType: 'gp3',
     });
   });
 
