@@ -1,6 +1,6 @@
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as cdk from 'aws-cdk-lib';
-import { IntegTest } from '@aws-cdk/integ-tests-alpha';
+import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { AwsCustomResource, AwsCustomResourcePolicy, PhysicalResourceId } from 'aws-cdk-lib/custom-resources';
 
 /*
@@ -30,9 +30,18 @@ new AwsCustomResource(stack, 'DescribeVpcAttribute', {
   vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS },
 });
 
-new IntegTest(app, 'CustomResourceVpc', {
+const integTest = new IntegTest(app, 'CustomResourceVpc', {
   testCases: [stack],
   diffAssets: true,
 });
 
-app.synth();
+// Assertion for the custom resource
+integTest.assertions.awsApiCall('EC2', 'describeVpcAttribute', {
+  VpcId: vpc.vpcId,
+  Attribute: 'enableDnsHostnames',
+}).expect(ExpectedResult.objectLike({
+  VpcId: vpc.vpcId,
+  EnableDnsHostnames: {
+    Value: true, // Assuming you expect it to be true
+  },
+}));
