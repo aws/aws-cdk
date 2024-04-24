@@ -27,11 +27,6 @@ All notable changes to this project will be documented in this file. See [standa
 * **s3-notifications:** cdk destroy deletes external/existing s3 notification events ([#29939](https://github.com/aws/aws-cdk/issues/29939)) ([7360a88](https://github.com/aws/aws-cdk/commit/7360a885e6282ad28b4ae72f9ae92a6bcda88b15))
 * **ses-actions:** permissions too wide for S3 action ([#29833](https://github.com/aws/aws-cdk/issues/29833)) ([2da544f](https://github.com/aws/aws-cdk/commit/2da544feeeda68a379f0f79f18e138b9640c1691)), closes [#29811](https://github.com/aws/aws-cdk/issues/29811) [#29823](https://github.com/aws/aws-cdk/issues/29823) [/docs.aws.amazon.com/ses/latest/dg/receiving-email-permissions.html#receiving-email-permissions-s3](https://github.com/aws//docs.aws.amazon.com/ses/latest/dg/receiving-email-permissions.html/issues/receiving-email-permissions-s3)
 
-
-### Reverts
-
-* "chore(eks): update ALB controller versions" ([#29941](https://github.com/aws/aws-cdk/issues/29941)) ([209ffd9](https://github.com/aws/aws-cdk/commit/209ffd96ea555906ee02c611832d980f39b04325)), closes [aws/aws-cdk#29470](https://github.com/aws/aws-cdk/issues/29470)
-
 ## [2.138.0](https://github.com/aws/aws-cdk/compare/v2.137.0...v2.138.0) (2024-04-18)
 
 
