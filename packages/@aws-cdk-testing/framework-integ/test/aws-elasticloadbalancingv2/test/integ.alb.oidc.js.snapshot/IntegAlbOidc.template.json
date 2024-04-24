@@ -1136,6 +1136,14 @@
    "Export": {
     "Name": "IntegAlbOidc:ExportsOutputRefSignin352C80E64BA58F71"
    }
+  },
+  "ExportsOutputRefUserPool6BA7E5F296FD7236": {
+   "Value": {
+    "Ref": "UserPool6BA7E5F2"
+   },
+   "Export": {
+    "Name": "IntegAlbOidc:ExportsOutputRefUserPool6BA7E5F296FD7236"
+   }
   }
  },
  "Parameters": {
