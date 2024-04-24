@@ -45,7 +45,7 @@ test('imports an api destination from its arn', () => {
 
   // WHEN
   const apiDestinationArn = 'arn:aws:events:us-east-1:123456789012:api-destination/DestinationName';
-  const destination = events.ApiDestination.fromApiDestinationArn(
+  const destination = events.ApiDestination.fromApiDestinationAttributes(
     stack,
     'ApiDestination',
     { apiDestinationArn, connection },
@@ -69,7 +69,7 @@ test('throws if imported api destination ARN is invalid', () => {
   // THEN
   const apiDestinationArn = 'arn:aws:events:us-east-1:123456789012:api-destination';
   expect(() => {
-    events.ApiDestination.fromApiDestinationArn(
+    events.ApiDestination.fromApiDestinationAttributes(
       stack,
       'ApiDestination',
       { apiDestinationArn, connection },

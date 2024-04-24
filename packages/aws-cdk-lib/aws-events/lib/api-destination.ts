@@ -69,11 +69,11 @@ export interface ApiDestinationAttributes {
   /**
    * The ARN of the Api Destination
    */
-  apiDestinationArn: string;
+  readonly apiDestinationArn: string;
   /**
    * The Connection to associate with the Api Destination
    */
-  connection: IConnection;
+  readonly connection: IConnection;
 }
 
 /**
@@ -87,22 +87,25 @@ export class ApiDestination extends Resource implements IApiDestination {
    *
    * @param scope The scope creating construct (usually `this`).
    * @param id The construct's id.
-   * @param attributes The impported Api Destination attributes.
+   * @param attrs The Api Destination import attributes.
    */
-  public static fromApiDestinationArn(
+  public static fromApiDestinationAttributes(
     scope: Construct,
     id: string,
-    { apiDestinationArn, connection }: ApiDestinationAttributes,
-  ): IApiDestination {
-    const apiDestinationName = Stack.of(scope).splitArn(apiDestinationArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName;
+    attrs: ApiDestinationAttributes,
+  ): ApiDestination {
+    const apiDestinationName = Stack.of(scope).splitArn(
+      attrs.apiDestinationArn, ArnFormat.SLASH_RESOURCE_NAME,
+    ).resourceName;
+
     if (!apiDestinationName) {
-      throw new Error(`Could not extract Api Destionation name from ARN: '${apiDestinationArn}'`);
+      throw new Error(`Could not extract Api Destionation name from ARN: '${attrs.apiDestinationArn}'`);
     }
 
-    class Import extends Resource implements IApiDestination {
-      public readonly apiDestinationArn = apiDestinationArn;
+    class Import extends Resource implements ApiDestination {
+      public readonly apiDestinationArn = attrs.apiDestinationArn;
       public readonly apiDestinationName = apiDestinationName!;
-      public readonly connection = connection;
+      public readonly connection = attrs.connection;
     }
 
     return new Import(scope, id);

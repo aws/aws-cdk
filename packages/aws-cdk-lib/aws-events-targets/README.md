@@ -355,7 +355,7 @@ const connection = events.Connection.fromEventBusArn(
 );
 
 const apiDestinationArn = 'arn:aws:events:us-east-1:123456789012:api-destination/DestinationName';
-const destination = events.ApiDestination.fromApiDestinationArn(
+const destination = events.ApiDestination.fromApiDestinationAttributes(
   this,
   'Destination',
   { apiDestinationArn, connection },
