@@ -1,6 +1,6 @@
 import { Construct } from 'constructs';
 import { CfnApiKey, CfnGraphQLApi, CfnGraphQLSchema, CfnDomainName, CfnDomainNameApiAssociation, CfnSourceApiAssociation } from './appsync.generated';
-import { IGraphqlApi, GraphqlApiBase } from './graphqlapi-base';
+import { IGraphqlApi, GraphqlApiBase, Visibility, AuthorizationType } from './graphqlapi-base';
 import { ISchema, SchemaFile } from './schema';
 import { MergeType, addSourceApiAutoMergePermission, addSourceGraphQLPermission } from './source-api-association';
 import { ICertificate } from '../../aws-certificatemanager';
@@ -10,32 +10,6 @@ import { IFunction } from '../../aws-lambda';
 import { ILogGroup, LogGroup, LogRetention, RetentionDays } from '../../aws-logs';
 import { CfnResource, Duration, Expiration, FeatureFlags, IResolvable, Lazy, Stack, Token } from '../../core';
 import * as cxapi from '../../cx-api';
-
-/**
- * enum with all possible values for AppSync authorization type
- */
-export enum AuthorizationType {
-  /**
-   * API Key authorization type
-   */
-  API_KEY = 'API_KEY',
-  /**
-   * AWS IAM authorization type. Can be used with Cognito Identity Pool federated credentials
-   */
-  IAM = 'AWS_IAM',
-  /**
-   * Cognito User Pool authorization type
-   */
-  USER_POOL = 'AMAZON_COGNITO_USER_POOLS',
-  /**
-   * OpenID Connect authorization type
-   */
-  OIDC = 'OPENID_CONNECT',
-  /**
-   * Lambda authorization type
-   */
-  LAMBDA = 'AWS_LAMBDA',
-}
 
 /**
  * Interface to specify default or additional authorization(s)
@@ -258,21 +232,6 @@ export interface LogConfig {
   * @default RetentionDays.INFINITE
   */
   readonly retention?: RetentionDays;
-}
-
-/**
- * Visibility type for a GraphQL API
- */
-export enum Visibility {
-
-  /**
-   * Public, open to the internet
-   */
-  GLOBAL = 'GLOBAL',
-  /**
-   * Only accessible through a VPC
-   */
-  PRIVATE = 'PRIVATE',
 }
 
 /**
@@ -503,6 +462,13 @@ export interface GraphqlApiAttributes {
    * @default - GLOBAL
    */
   readonly visibility?: Visibility;
+
+  /**
+   * The GraphQl API visibility
+   *
+   * @default - none, required to construct event rules from imported APIs
+   */
+  readonly modes?: AuthorizationType[];
 }
 
 /**
@@ -546,6 +512,7 @@ export class GraphqlApi extends GraphqlApiBase {
       // this value is only needed to construct event rules.
       public readonly graphQLEndpointArn = attrs.graphQLEndpointArn ?? '';
       public readonly visibility = attrs.visibility ?? Visibility.GLOBAL;
+      public readonly modes = attrs.modes ?? []
 
       constructor(s: Construct, i: string) {
         super(s, i);
@@ -660,6 +627,8 @@ export class GraphqlApi extends GraphqlApiBase {
     }
     this.node.addValidation({ validate: () => this.validateEnvironmentVariables() });
 
+    this.visibility = props.visibility ?? Visibility.GLOBAL;
+
     this.api = new CfnGraphQLApi(this, 'Resource', {
       name: props.name,
       authenticationType: defaultMode.authorizationType,
@@ -683,7 +652,6 @@ export class GraphqlApi extends GraphqlApiBase {
     this.graphqlUrl = this.api.attrGraphQlUrl;
     this.name = this.api.name;
     this.graphQLEndpointArn = this.api.attrGraphQlEndpointArn;
-    this.visibility = props.visibility ?? Visibility.GLOBAL;
 
     if (this.definition.schema) {
       this.schemaResource = new CfnGraphQLSchema(this, 'Schema', this.definition.schema.bind(this));

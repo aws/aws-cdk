@@ -34,7 +34,7 @@ export interface AppSyncGraphQLAPIProps extends TargetBaseProps {
  */
 export class AppSync implements events.IRuleTarget {
 
-  constructor(private readonly appsyncApi: appsync.GraphqlApi, private readonly props: AppSyncGraphQLAPIProps) {
+  constructor(private readonly appsyncApi: appsync.IGraphqlApi, private readonly props: AppSyncGraphQLAPIProps) {
   }
 
   /**
@@ -54,6 +54,11 @@ export class AppSync implements events.IRuleTarget {
     // make sure this is a 'public' (i.e.: 'GLOBAL') API
     if (this.appsyncApi.visibility !== appsync.Visibility.GLOBAL) {
       throw new Error('Your API visibility must be "GLOBAL"');
+    }
+
+    // make sure the EndpointArn is not blank
+    if (this.appsyncApi.graphQLEndpointArn === '') {
+      throw new Error('You must have a valid `graphQLEndpointArn` set');
     }
 
     const role = this.props.eventRole || singletonEventRole(this.appsyncApi);

@@ -34,6 +34,27 @@ describe('AppSync GraphQL API target', () => {
     }).toThrow('You must have AWS_IAM authorization mode enabled on your API to configure an AppSync target');
   });
 
+  test('fails when graphQLEndpointArn is not configured', () => {
+    const noEndpointArnAPI = appsync.GraphqlApi.fromGraphqlApiAttributes(stack, 'ImportedAPI', {
+      graphqlApiId: 'MyApiId',
+      graphqlApiArn: 'MyApiArn',
+    });
+
+    const graphQLOperation = 'mutation Publish($message: String!){ publish(message: $message) { event } }';
+    const rule = new events.Rule(stack, 'Rule', {
+      schedule: events.Schedule.rate(cdk.Duration.minutes(1)),
+    });
+
+    expect(() => {
+      rule.addTarget(new targets.AppSync(noEndpointArnAPI, {
+        graphQLOperation,
+        variables: events.RuleTargetInput.fromObject({
+          message: events.EventField.fromPath('$.detail'),
+        }),
+      }));
+    }).toThrow('You must have AWS_IAM authorization mode enabled on your API to configure an AppSync target');
+  });
+
   test('allows secondary auth with AWS_IAM configured', () => {
     const sec_api = new appsync.GraphqlApi(stack, 'sec_api', {
       name: 'no_iam_api',

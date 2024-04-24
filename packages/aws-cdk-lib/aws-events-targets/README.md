@@ -366,6 +366,28 @@ rule.addTarget(new targets.AppSync(api, {
 }));
 ```
 
+You can pass an existing role with the proper permissions to be used for the target when the rule is triggered. The code snippet below uses an existing role and grants permissions to use the publish Mutation on the GraphQL API.
+
+```ts
+import * as iam from 'aws-cdk-lib/aws-iam';
+import * as appsync from 'aws-cdk-lib/aws-appsync';
+declare const api: appsync.GraphqlApi;
+
+const rule = new events.Rule(this, 'Rule', { schedule: events.Schedule.rate(cdk.Duration.minutes(1)), });
+const role = new iam.Role(this, 'Role', { assumedBy: new iam.ServicePrincipal('events.amazonaws.com') });
+
+// allow EventBridge to use the `publish` mutation
+api.grantMutation(role, 'publish');
+
+rule.addTarget(new targets.AppSync(api, {
+  graphQLOperation: 'mutation Publish($message: String!){ publish(message: $message) { message } }',
+  variables: events.RuleTargetInput.fromObject({
+    message: 'hello world',
+  }),
+  role: role
+}));
+```
+
 ## Put an event on an EventBridge bus
 
 Use the `EventBus` target to route event to a different EventBus.
