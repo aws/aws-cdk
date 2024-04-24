@@ -520,6 +520,18 @@ test('key with some options', () => {
   });
 });
 
+test('set rotationPeriod without enabling enableKeyRotation', () => {
+  const stack = new cdk.Stack();
+  new kms.Key(stack, 'MyKey', {
+    rotationPeriod: cdk.Duration.days(180),
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
+    EnableKeyRotation: true,
+    RotationPeriodInDays: 180,
+  });
+});
+
 test('setting pendingWindow value to not in allowed range will throw', () => {
   const stack = new cdk.Stack();
   expect(() => new kms.Key(stack, 'MyKey', { enableKeyRotation: true, pendingWindow: cdk.Duration.days(6) }))
