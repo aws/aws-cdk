@@ -142,6 +142,28 @@ describe('logging Config', () => {
     });
   });
 
+  test('Logging Config with LogLevel set with enum keys', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'stack');
+    new lambda.Function(stack, 'Lambda', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_18_X,
+      logFormat: lambda.LogFormat.JSON,
+      systemLogLevelV2: lambda.SystemLogLevel.INFO,
+      applicationLogLevelV2: lambda.ApplicationLogLevel.INFO,
+    });
+    // WHEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+      LoggingConfig: {
+        LogFormat: 'JSON',
+        SystemLogLevel: 'INFO',
+        ApplicationLogLevel: 'INFO',
+      },
+    });
+  });
+
   test('Get function custom logGroup', () => {
     // GIVEN
     const app = new cdk.App();
@@ -257,4 +279,34 @@ test('Throws when loggingFormat and logFormat are both specified', () => {
       logFormat: lambda.LogFormat.TEXT,
     });
   }).toThrow(/Only define LogFormat or LoggingFormat, not both./);
+});
+
+test('Throws when applicationLogLevel and applicationLogLevelV2 are both specified', () => {
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app, 'stack');
+  expect(() => {
+    new lambda.Function(stack, 'Lambda', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_18_X,
+      loggingFormat: lambda.LoggingFormat.JSON,
+      applicationLogLevel: lambda.ApplicationLogLevel.INFO,
+      applicationLogLevelV2: lambda.ApplicationLogLevel.WARN,
+    });
+  }).toThrow(/Only define applicationLogLevel or applicationLogLevelV2, not both./);
+});
+
+test('Throws when systemLogLevel and systemLogLevelV2 are both specified', () => {
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app, 'stack');
+  expect(() => {
+    new lambda.Function(stack, 'Lambda', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_18_X,
+      loggingFormat: lambda.LoggingFormat.JSON,
+      systemLogLevel: lambda.SystemLogLevel.INFO,
+      systemLogLevelV2: lambda.SystemLogLevel.WARN,
+    });
+  }).toThrow(/Only define systemLogLevel or systemLogLevelV2, not both./);
 });
