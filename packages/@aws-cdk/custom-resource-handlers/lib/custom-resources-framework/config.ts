@@ -280,6 +280,12 @@ export const config: HandlerFrameworkConfig = {
     ],
   },
   'aws-stepfunctions-tasks': {
+    'cross-region-aws-sdk-provider': [
+      {
+        type: ComponentType.SINGLETON_FUNCTION,
+        sourceCode: path.resolve(__dirname, '..', 'aws-stepfunctions-tasks', 'cross-region-aws-sdk-handler', 'index.ts'),
+      },
+    ],
     'eval-nodejs-provider': [
       {
         type: ComponentType.SINGLETON_FUNCTION,
