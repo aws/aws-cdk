@@ -26,6 +26,9 @@ function installLatestSdk(packageName: string): void {
   };
 }
 
+/**
+ * Loads the SDK package that will be used to make the specified API call.
+ */
 export async function loadAwsSdk(
   packageName: string,
   installLatestAwsSdk?: 'true' | 'false',
