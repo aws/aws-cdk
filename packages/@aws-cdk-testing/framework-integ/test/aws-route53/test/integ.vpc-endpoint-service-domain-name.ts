@@ -56,7 +56,7 @@ const endpointServices = integTest.assertions.awsApiCall('EC2', 'describeVpcEndp
 endpointServices.expect(ExpectedResult.objectLike({
   ServiceDetails: Match.arrayWith([
     Match.objectLike({
-      PrivateDnsName: endpointDomain,
+      PrivateDnsName: endpointDomain.domainName,
     }),
   ]),
 }));
