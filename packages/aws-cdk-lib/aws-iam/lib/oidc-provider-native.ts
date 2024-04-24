@@ -108,7 +108,7 @@ export class OIDCProvider extends Resource implements IOIDCProvider {
    * @param id ID of the construct
    * @param oidcProviderArn the ARN to import
    */
-  public static fromProviderArn(
+  public static fromOidcProviderArn(
     scope: Construct,
     id: string,
     oidcProviderArn: string,
