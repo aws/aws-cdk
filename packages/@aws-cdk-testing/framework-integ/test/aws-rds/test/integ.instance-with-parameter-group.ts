@@ -14,6 +14,7 @@ const parameterGroup = new rds.ParameterGroup(stack, 'ParameterGroup', {
   engine: rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_15_2 }),
   description: 'desc',
   removalPolicy: cdk.RemovalPolicy.DESTROY,
+  name: 'name',
 });
 
 new rds.DatabaseInstance(stack, 'Instance', {
