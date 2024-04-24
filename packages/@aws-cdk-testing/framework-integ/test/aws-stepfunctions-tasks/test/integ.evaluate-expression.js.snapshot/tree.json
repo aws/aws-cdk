@@ -12,6 +12,14 @@
             "id": "Sum",
             "path": "cdk-sfn-evaluate-expression-integ/Sum",
             "children": {
+              "IsUsEast1": {
+                "id": "IsUsEast1",
+                "path": "cdk-sfn-evaluate-expression-integ/Sum/IsUsEast1",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnCondition",
+                  "version": "0.0.0"
+                }
+              },
               "EvalFunction": {
                 "id": "EvalFunction",
                 "path": "cdk-sfn-evaluate-expression-integ/Sum/EvalFunction",
@@ -132,7 +140,13 @@
                         "Arn"
                       ]
                     },
-                    "runtime": "nodejs18.x"
+                    "runtime": {
+                      "Fn::If": [
+                        "SumIsUsEast109416ED5",
+                        "nodejs18.x",
+                        "nodejs20.x"
+                      ]
+                    }
                   }
                 },
                 "constructInfo": {
@@ -150,6 +164,14 @@
             "id": "Multiply",
             "path": "cdk-sfn-evaluate-expression-integ/Multiply",
             "children": {
+              "IsUsEast1": {
+                "id": "IsUsEast1",
+                "path": "cdk-sfn-evaluate-expression-integ/Multiply/IsUsEast1",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnCondition",
+                  "version": "0.0.0"
+                }
+              },
               "EvalFunction": {
                 "id": "EvalFunction",
                 "path": "cdk-sfn-evaluate-expression-integ/Multiply/EvalFunction",
@@ -270,7 +292,13 @@
                         "Arn"
                       ]
                     },
-                    "runtime": "nodejs18.x"
+                    "runtime": {
+                      "Fn::If": [
+                        "MultiplyIsUsEast1EB67E2A9",
+                        "nodejs18.x",
+                        "nodejs20.x"
+                      ]
+                    }
                   }
                 },
                 "constructInfo": {
@@ -288,6 +316,14 @@
             "id": "Now",
             "path": "cdk-sfn-evaluate-expression-integ/Now",
             "children": {
+              "IsUsEast1": {
+                "id": "IsUsEast1",
+                "path": "cdk-sfn-evaluate-expression-integ/Now/IsUsEast1",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnCondition",
+                  "version": "0.0.0"
+                }
+              },
               "EvalFunction": {
                 "id": "EvalFunction",
                 "path": "cdk-sfn-evaluate-expression-integ/Now/EvalFunction",
@@ -534,7 +570,7 @@
                 "path": "EvaluateExpressionInteg/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.70"
+                  "version": "10.3.0"
                 }
               },
               "DeployAssert": {
@@ -580,7 +616,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.2.70"
+          "version": "10.3.0"
         }
       }
     },

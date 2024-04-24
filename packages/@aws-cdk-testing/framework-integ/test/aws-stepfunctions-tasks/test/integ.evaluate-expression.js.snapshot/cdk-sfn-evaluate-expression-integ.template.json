@@ -1,4 +1,30 @@
 {
+ "Conditions": {
+  "SumIsUsEast109416ED5": {
+   "Fn::Equals": [
+    {
+     "Ref": "AWS::Region"
+    },
+    "us-east-1"
+   ]
+  },
+  "MultiplyIsUsEast1EB67E2A9": {
+   "Fn::Equals": [
+    {
+     "Ref": "AWS::Region"
+    },
+    "us-east-1"
+   ]
+  },
+  "NowIsUsEast1F61F620B": {
+   "Fn::Equals": [
+    {
+     "Ref": "AWS::Region"
+    },
+    "us-east-1"
+   ]
+  }
+ },
  "Resources": {
   "Eval41256dc5445742738ed917bc818694e5ServiceRoleA1AB6027": {
    "Type": "AWS::IAM::Role",
@@ -47,7 +73,13 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs18.x"
+    "Runtime": {
+     "Fn::If": [
+      "SumIsUsEast109416ED5",
+      "nodejs18.x",
+      "nodejs20.x"
+     ]
+    }
    },
    "DependsOn": [
     "Eval41256dc5445742738ed917bc818694e5ServiceRoleA1AB6027"
@@ -100,7 +132,13 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs18.x"
+    "Runtime": {
+     "Fn::If": [
+      "MultiplyIsUsEast1EB67E2A9",
+      "nodejs18.x",
+      "nodejs20.x"
+     ]
+    }
    },
    "DependsOn": [
     "Eval078d40d3fb4e4d5394a79c46fc11fe02ServiceRoleDD279E15"

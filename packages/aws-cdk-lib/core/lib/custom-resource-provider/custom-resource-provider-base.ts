@@ -194,6 +194,26 @@ export abstract class CustomResourceProviderBase extends Construct {
     return policies;
   }
 
+  /**
+   * docstring
+   */
+  // private customResourceProviderBaseRuntimeToString(x: string) : string {
+  //   switch (x) {
+  //     case CustomResourceProviderBaseRuntime.NODEJS_12:
+  //       return 'zz';
+  //     case CustomResourceProviderBaseRuntime.NODEJS_12_X:
+  //       return 'nodejs12.x';
+  //     case CustomResourceProviderBaseRuntime.NODEJS_14_X:
+  //       return 'nodejs14.x';
+  //     case CustomResourceProviderBaseRuntime.NODEJS_16_X:
+  //       return 'nodejs16.x';
+  //     case CustomResourceProviderBaseRuntime.NODEJS_18_X:
+  //       return Runtime.getCondRuntime(this).toString();
+  //     default:
+  //       return 'not supported';
+  //   }
+  // }
+
   private renderEnvironmentVariables(env?: { [key: string]: string }) {
     if (!env || Object.keys(env).length === 0) {
       return undefined;
@@ -279,3 +299,39 @@ export type Code = {
   S3Bucket: string;
   S3Key: string;
 };
+
+// /**
+//  * runtime
+//  */
+
+// export enum CustomResourceProviderBaseRuntime {
+
+//   /**
+//    * Node.js 12.x
+//    * @deprecated Use latest version
+//    */
+//   NODEJS_12_X = 'nodejs12.x',
+
+//   /**
+//    * Node.js 12.x
+//    * @deprecated Use latest version
+//    */
+//   NODEJS_12 = 'deprecated_nodejs12.x',
+
+//   /**
+//    * Node.js 14.x
+//    * @deprecated Use latest version
+//    */
+//   NODEJS_14_X = 'nodejs14.x',
+
+//   /**
+//    * Node.js 16.x
+//    */
+//   NODEJS_16_X = 'nodejs16.x',
+
+//   /**
+//    * Node.js 18.x
+//    */
+//   NODEJS_18_X = 'nodejs18.x',
+// }
+

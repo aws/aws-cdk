@@ -14,7 +14,7 @@ export function buildComponentName(fqn: string, type: ComponentType, entrypoint:
 export function toLambdaRuntime(runtime: Runtime) {
   switch (runtime) {
     case Runtime.NODEJS_18_X: {
-      return 'lambda.Runtime.NODEJS_18_X';
+      return 'lambda.Runtime.getCondRuntime(scope)';
     }
     case Runtime.PYTHON_3_9: {
       return 'lambda.Runtime.PYTHON_3_9';

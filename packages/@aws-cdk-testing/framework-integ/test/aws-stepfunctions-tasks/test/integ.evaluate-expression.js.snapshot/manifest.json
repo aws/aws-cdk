@@ -1,5 +1,5 @@
 {
-  "version": "34.0.0",
+  "version": "36.0.0",
   "artifacts": {
     "cdk-sfn-evaluate-expression-integ.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/3defd0dcacbdfd76991b677ef909cf98e4904ceef0cdb515bcfcd240bab96d3d.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/fe2650f2d104bf722a089c8baad00e10f70400fab5576efe574a7e651ab31c58.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -34,6 +34,12 @@
         "cdk-sfn-evaluate-expression-integ.assets"
       ],
       "metadata": {
+        "/cdk-sfn-evaluate-expression-integ/Sum/IsUsEast1": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SumIsUsEast109416ED5"
+          }
+        ],
         "/cdk-sfn-evaluate-expression-integ/Eval41256dc5445742738ed917bc818694e5/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -46,6 +52,12 @@
             "data": "Eval41256dc5445742738ed917bc818694e54EB1134F"
           }
         ],
+        "/cdk-sfn-evaluate-expression-integ/Multiply/IsUsEast1": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MultiplyIsUsEast1EB67E2A9"
+          }
+        ],
         "/cdk-sfn-evaluate-expression-integ/Eval078d40d3fb4e4d5394a79c46fc11fe02/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -56,6 +68,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "Eval078d40d3fb4e4d5394a79c46fc11fe029D0ED2B4"
+          }
+        ],
+        "/cdk-sfn-evaluate-expression-integ/Now/IsUsEast1": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "NowIsUsEast1F61F620B"
           }
         ],
         "/cdk-sfn-evaluate-expression-integ/StateMachine/Role/Resource": [
