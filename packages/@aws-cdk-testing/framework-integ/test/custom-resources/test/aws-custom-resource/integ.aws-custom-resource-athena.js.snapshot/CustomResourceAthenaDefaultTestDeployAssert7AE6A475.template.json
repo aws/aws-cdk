@@ -11,9 +11,9 @@
     },
     "service": "Athena",
     "api": "listWorkGroups",
-    "expected": "{\"$ObjectLike\":{\"WorkGroups\":[{\"Name\":\"TestWG\"},{\"Name\":\"primary\"}]}}",
+    "expected": "{\"$ObjectLike\":{\"WorkGroups\":{\"$ArrayWith\":[{\"$ObjectLike\":{\"Name\":\"TestWG\"}}]}}}",
     "flattenResponse": "false",
-    "salt": "1713972860440"
+    "salt": "1714000350486"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -52,6 +52,15 @@
          "Resource": [
           "*"
          ]
+        },
+        {
+         "Action": [
+          "athena:ListNotebookMetadata"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
         }
        ]
       }
@@ -78,6 +87,27 @@
      ]
     }
    }
+  },
+  "AwsApiCallAthenalistNotebookMetadata94a6d026c2bb58dcf8ba13c27770a453": {
+   "Type": "Custom::DeployAssert@SdkCallAthenalistNotebookMetadata",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "Athena",
+    "api": "listNotebookMetadata",
+    "expected": "{\"$ObjectLike\":{\"NotebookMetadataList\":{\"$ArrayWith\":[{\"$ObjectLike\":{\"Name\":\"MyNotebook1\"}}]}}}",
+    "parameters": {
+     "WorkGroup": "\"TestWG\""
+    },
+    "flattenResponse": "false",
+    "salt": "1714000350487"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   }
  },
  "Outputs": {
@@ -85,6 +115,14 @@
    "Value": {
     "Fn::GetAtt": [
      "AwsApiCallAthenalistWorkGroups",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallAthenalistNotebookMetadata94a6d026c2bb58dcf8ba13c27770a453": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallAthenalistNotebookMetadata94a6d026c2bb58dcf8ba13c27770a453",
      "assertion"
     ]
    }

@@ -57,7 +57,7 @@ const app = new App();
 const integTest = new IntegTest(app, 'cdk-integ-synthetics-canary-auto-delete', {
   testCases: [new TestStack(app, 'cdk-synthetics-canary-auto-delete')],
   diffAssets: true,
-  stackUpdateWorkflow: false,
+  stackUpdateWorkflow: false, // will error because this stack has a cr that deletes its own resources
 });
 
 // Assertion for Canary creation

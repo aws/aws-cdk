@@ -102,7 +102,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/00567a0f0a674e9c9e732f42c33bb14f5b1ca9d050620ffe21399a91f4a7080f.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/ba1282c8484e9af379aab42d2fc3ed71c9d42bb65533b22a815ccbb6d5f90332.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -140,6 +140,18 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+          }
+        ],
+        "/CustomResourceAthena/DefaultTest/DeployAssert/AwsApiCallAthenalistNotebookMetadata94a6d026c2bb58dcf8ba13c27770a453/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallAthenalistNotebookMetadata94a6d026c2bb58dcf8ba13c27770a453"
+          }
+        ],
+        "/CustomResourceAthena/DefaultTest/DeployAssert/AwsApiCallAthenalistNotebookMetadata94a6d026c2bb58dcf8ba13c27770a453/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsAwsApiCallAthenalistNotebookMetadata94a6d026c2bb58dcf8ba13c27770a453"
           }
         ],
         "/CustomResourceAthena/DefaultTest/DeployAssert/BootstrapVersion": [
