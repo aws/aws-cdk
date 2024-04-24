@@ -324,6 +324,13 @@ export interface FileSystemProps {
    * @default ReplicationOverwriteProtection.ENABLED
    */
   readonly replicationOverwriteProtection?: ReplicationOverwriteProtection;
+
+  /**
+   * Replication configuration for the file system.
+   *
+   * @default - no replication
+   */
+  readonly replicationConfiguration?: ReplicationConfiguration;
 }
 
 /**
@@ -348,6 +355,188 @@ export interface FileSystemAttributes {
    * @default - determined based on fileSystemId
    */
   readonly fileSystemArn?: string;
+}
+
+/**
+ * Properties for the ReplicationConfiguration.
+ */
+export interface ReplicationConfigurationProps {
+  /**
+   * The existing destination file system for the replication.
+   *
+   * @default - None
+   */
+  readonly destinationFileSystem?: IFileSystem;
+
+  /**
+   * AWS KMS key used to protect the encrypted file system.
+   *
+   * @default - use service-managed KMS key for Amazon EFS
+   */
+  readonly kmsKey?: kms.IKey;
+
+  /**
+   * The AWS Region in which the destination file system is located.
+   *
+   * @default - the region of the stack
+   */
+  readonly region?: string;
+
+  /**
+   * The availability zone name of the destination file system.
+   * One zone file system is used as the destination file system when this property is set.
+   *
+   * @default - no availability zone is set
+   */
+  readonly availabilityZone?: string;
+}
+
+/**
+ * Properties for configuring ReplicationConfiguration to replicate
+ * to a new One Zone file system.
+ */
+export interface OneZoneFileSystemProps {
+  /**
+   * AWS KMS key used to protect the encrypted file system.
+   *
+   * @default - use service-managed KMS key for Amazon EFS
+   */
+  readonly kmsKey?: kms.IKey;
+
+  /**
+   * The AWS Region in which the destination file system is located.
+   */
+  readonly region: string;
+
+  /**
+   * The availability zone name of the destination file system.
+   * One zone file system is used as the destination file system when this property is set.
+   */
+  readonly availabilityZone: string;
+}
+
+/**
+ * Properties for configuring ReplicationConfiguration to replicate
+ * to a new Regional file system.
+ */
+export interface RegionalFileSystemProps {
+  /**
+   * AWS KMS key used to protect the encrypted file system.
+   *
+   * @default - use service-managed KMS key for Amazon EFS
+   */
+  readonly kmsKey?: kms.IKey;
+
+  /**
+   * The AWS Region in which the destination file system is located.
+   *
+   * @default - the region of the stack
+   */
+  readonly region?: string;
+}
+
+/**
+ * Properties for configuring ReplicationConfiguration to replicate
+ * to an existing file system.
+ */
+export interface ExistingFileSystemProps {
+  /**
+   * The existing destination file system for the replication.
+   */
+  readonly destinationFileSystem: IFileSystem;
+}
+
+/**
+ * EFS Replication Configuration
+ */
+export abstract class ReplicationConfiguration {
+  /**
+   * Specify the existing destination file system for the replication.
+   *
+   * @param destinationFileSystem The existing destination file system for the replication
+   */
+  public static existingFileSystem(destinationFileSystem: IFileSystem): ReplicationConfiguration {
+    return new ExistingFileSystem({ destinationFileSystem });
+  }
+
+  /**
+   * Create a new regional destination file system for the replication.
+   *
+   * @param region The AWS Region in which the destination file system is located. Default is the region of the stack.
+   * @param kmsKey  AWS KMS key used to protect the encrypted file system. Default is service-managed KMS key for Amazon EFS.
+   */
+  public static regionalFileSystem(region?: string, kmsKey?: kms.IKey): ReplicationConfiguration {
+    return new RegionalFileSystem({ region, kmsKey });
+  }
+
+  /**
+   * Create a new one zone destination file system for the replication.
+   *
+   * @param region The AWS Region in which the specified availability zone belongs to.
+   * @param availabilityZone The availability zone name of the destination file system.
+   * @param kmsKey AWS KMS key used to protect the encrypted file system. Default is service-managed KMS key for Amazon EFS.
+   */
+  public static oneZoneFileSystem(region: string, availabilityZone: string, kmsKey?: kms.IKey): ReplicationConfiguration {
+    return new OneZoneFileSystem({ region, availabilityZone, kmsKey });
+  }
+
+  /**
+   * The existing destination file system for the replication.
+   */
+  public readonly destinationFileSystem?: IFileSystem;
+
+  /**
+   * AWS KMS key used to protect the encrypted file system.
+   */
+  public readonly kmsKey?: kms.IKey;
+
+  /**
+   * The AWS Region in which the destination file system is located.
+   */
+  public readonly region?: string;
+
+  /**
+   * The availability zone name of the destination file system.
+   * One zone file system is used as the destination file system when this property is set.
+   */
+  public readonly availabilityZone?: string;
+
+  constructor(options: ReplicationConfigurationProps) {
+    this.destinationFileSystem = options.destinationFileSystem;
+    this.kmsKey = options.kmsKey;
+    this.region = options.region;
+    this.availabilityZone = options.availabilityZone;
+  }
+}
+
+/**
+ * Represents an existing file system used as the destination file system
+ * for ReplicationConfiguration.
+ */
+class ExistingFileSystem extends ReplicationConfiguration {
+  constructor(props: ExistingFileSystemProps) {
+    super(props);
+  }
+}
+
+/**
+ * Represents a new Regional file system used as the
+ * destination file system for ReplicationConfiguration.
+ */
+class RegionalFileSystem extends ReplicationConfiguration {
+  constructor(props: RegionalFileSystemProps) {
+    super(props);
+  }
+}
+
+/**
+ * Represents a new One Zone file system used as the
+ * destination file system for ReplicationConfiguration.
+ */
+class OneZoneFileSystem extends ReplicationConfiguration {
+  constructor(props: OneZoneFileSystemProps) {
+    super(props);
+  }
 }
 
 enum ClientAction {
@@ -553,6 +742,11 @@ export class FileSystem extends FileSystemBase {
     if (props.throughputMode === ThroughputMode.ELASTIC && props.performanceMode === PerformanceMode.MAX_IO) {
       throw new Error('ThroughputMode ELASTIC is not supported for file systems with performanceMode MAX_IO');
     }
+
+    if (props.replicationConfiguration && props.replicationOverwriteProtection === ReplicationOverwriteProtection.DISABLED) {
+      throw new Error('Cannot configure \'replicationConfiguration\' when \'replicationOverwriteProtection\' is set to \'DISABLED\'');
+    }
+
     // we explictly use 'undefined' to represent 'false' to maintain backwards compatibility since
     // its considered an actual change in CloudFormations eyes, even though they have the same meaning.
     const encrypted = props.encrypted ?? (FeatureFlags.of(this).isEnabled(
@@ -577,6 +771,19 @@ export class FileSystem extends FileSystemBase {
 
     const fileSystemProtection = props.replicationOverwriteProtection !== undefined ? {
       replicationOverwriteProtection: props.replicationOverwriteProtection,
+    } : undefined;
+
+    const replicationConfiguration = props.replicationConfiguration ? {
+      destinations: [
+        {
+          fileSystemId: props.replicationConfiguration.destinationFileSystem?.fileSystemId,
+          kmsKeyId: props.replicationConfiguration.kmsKey?.keyArn,
+          region: props.replicationConfiguration.destinationFileSystem ?
+            props.replicationConfiguration.destinationFileSystem.env.region :
+            (props.replicationConfiguration.region ?? Stack.of(this).region),
+          availabilityZoneName: props.replicationConfiguration.availabilityZone,
+        },
+      ],
     } : undefined;
 
     this._resource = new CfnFileSystem(this, 'Resource', {
@@ -611,6 +818,7 @@ export class FileSystem extends FileSystemBase {
       }),
       fileSystemProtection,
       availabilityZoneName: props.oneZone ? oneZoneAzName : undefined,
+      replicationConfiguration,
     });
     this._resource.applyRemovalPolicy(props.removalPolicy);
 
