@@ -730,7 +730,7 @@ export class Key extends KeyBase {
     }
 
     if (props.rotationPeriod) {
-      if (!props.enableKeyRotation) {
+      if (props.enableKeyRotation === false) {
         throw new Error('\'rotationPeriod\' cannot be specified when \'enableKeyRotation\' is disabled');
       }
       if (props.rotationPeriod.toDays() < 90 || props.rotationPeriod.toDays() > 2560) {
