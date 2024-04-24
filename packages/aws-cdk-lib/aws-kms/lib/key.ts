@@ -437,7 +437,7 @@ export interface KeyProps {
   /**
    * The period between each automatic rotation.
    *
-   * @default - 365 days.
+   * @default - set by CFN to 365 days.
    */
   readonly rotationPeriod?: Duration;
 
