@@ -28,7 +28,7 @@ import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as s3 from '../../aws-s3';
 import * as secretsmanager from '../../aws-secretsmanager';
-import { ArnFormat, Aws, Duration, IResolvable, IResource, Lazy, Names, PhysicalName, Reference, Resource, SecretValue, Stack, Token, TokenComparison, Tokenization } from '../../core';
+import { ArnFormat, Aws, Duration, IResource, Lazy, Names, PhysicalName, Reference, Resource, SecretValue, Stack, Token, TokenComparison, Tokenization } from '../../core';
 
 const VPC_POLICY_SYM = Symbol.for('@aws-cdk/aws-codebuild.roleVpcPolicy');
 
@@ -1413,7 +1413,7 @@ export class Project extends ProjectBase {
       : this._secondaryArtifacts;
   }
 
-  private configureFleet({ fleet }: BuildEnvironment): IResolvable | undefined {
+  private configureFleet({ fleet }: BuildEnvironment): { fleetArn: string } | undefined {
     if (!fleet) {
       return undefined;
     }
@@ -1423,7 +1423,7 @@ export class Project extends ProjectBase {
       throw new Error(`The environment type of the fleet (${fleet.environmentType}) must match the environment type of the build image (${this.buildImage.type})`);
     }
 
-    return Lazy.any({ produce: () => ({ fleetArn: fleet.fleetArn }) });
+    return { fleetArn: fleet.fleetArn };
   }
 
   /**
