@@ -6,7 +6,7 @@ import * as iam from '../../aws-iam';
 /**
  * Customize the AppSync GraphQL API target
  */
-export interface AppSyncGraphQLAPIProps extends TargetBaseProps {
+export interface AppSyncGraphQLApiProps extends TargetBaseProps {
   /**
    * The GraphQL operation; that is, the query, mutation, or subscription
    * to be parsed and executed by the GraphQL service.
@@ -34,7 +34,7 @@ export interface AppSyncGraphQLAPIProps extends TargetBaseProps {
  */
 export class AppSync implements events.IRuleTarget {
 
-  constructor(private readonly appsyncApi: appsync.IGraphqlApi, private readonly props: AppSyncGraphQLAPIProps) {
+  constructor(private readonly appsyncApi: appsync.IGraphqlApi, private readonly props: AppSyncGraphQLApiProps) {
   }
 
   /**

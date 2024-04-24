@@ -355,7 +355,7 @@ import * as appsync from 'aws-cdk-lib/aws-appsync';
 declare const api: appsync.GraphqlApi;
 
 const rule = new events.Rule(this, 'Rule', {
-  schedule: events.Schedule.rate(cdk.Duration.minutes(1)),
+  schedule: events.Schedule.rate(cdk.Duration.hours(1)),
 });
 
 rule.addTarget(new targets.AppSync(api, {
