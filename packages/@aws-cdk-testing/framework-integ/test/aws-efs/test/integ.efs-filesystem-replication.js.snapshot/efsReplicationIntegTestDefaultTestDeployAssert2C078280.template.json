@@ -1,14 +1,4 @@
 {
- "Resources": {
-  "bucket43879C71": {
-   "Type": "AWS::S3::Bucket",
-   "Properties": {
-    "BucketName": "cdk-test-bucket-event-source"
-   },
-   "UpdateReplacePolicy": "Retain",
-   "DeletionPolicy": "Retain"
-  }
- },
  "Parameters": {
   "BootstrapVersion": {
    "Type": "AWS::SSM::Parameter::Value<String>",
