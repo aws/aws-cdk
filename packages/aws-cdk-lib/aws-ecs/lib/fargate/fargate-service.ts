@@ -128,6 +128,23 @@ export class FargateService extends BaseService implements IFargateService {
       throw new Error('Only one of SecurityGroup or SecurityGroups can be populated.');
     }
 
+    // Platform versions not supporting referencesSecretJsonField, ephemeralStorageGiB, or pidMode on a task definition
+    const unsupportedPlatformVersions = [
+      FargatePlatformVersion.VERSION1_0,
+      FargatePlatformVersion.VERSION1_1,
+      FargatePlatformVersion.VERSION1_2,
+      FargatePlatformVersion.VERSION1_3,
+    ];
+    const isUnsupportedPlatformVersion = props.platformVersion && unsupportedPlatformVersions.includes(props.platformVersion);
+
+    if (props.taskDefinition.ephemeralStorageGiB && isUnsupportedPlatformVersion) {
+      throw new Error(`The ephemeralStorageGiB feature requires platform version ${FargatePlatformVersion.VERSION1_4} or later, got ${props.platformVersion}.`);
+    }
+
+    if (props.taskDefinition.pidMode && isUnsupportedPlatformVersion) {
+      throw new Error(`The pidMode feature requires platform version ${FargatePlatformVersion.VERSION1_4} or later, got ${props.platformVersion}.`);
+    }
+
     super(scope, id, {
       ...props,
       desiredCount: props.desiredCount,
@@ -153,9 +170,7 @@ export class FargateService extends BaseService implements IFargateService {
     }
 
     this.node.addValidation({
-      validate: () => this.taskDefinition.referencesSecretJsonField
-      && props.platformVersion
-      && SECRET_JSON_FIELD_UNSUPPORTED_PLATFORM_VERSIONS.includes(props.platformVersion)
+      validate: () => this.taskDefinition.referencesSecretJsonField && isUnsupportedPlatformVersion
         ? [`The task definition of this service uses at least one container that references a secret JSON field. This feature requires platform version ${FargatePlatformVersion.VERSION1_4} or later.`]
         : [],
     });
@@ -214,10 +229,3 @@ export enum FargatePlatformVersion {
    */
   VERSION1_0 = '1.0.0',
 }
-
-const SECRET_JSON_FIELD_UNSUPPORTED_PLATFORM_VERSIONS = [
-  FargatePlatformVersion.VERSION1_0,
-  FargatePlatformVersion.VERSION1_1,
-  FargatePlatformVersion.VERSION1_2,
-  FargatePlatformVersion.VERSION1_3,
-];
