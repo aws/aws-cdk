@@ -219,7 +219,7 @@
        {
         "Ref": "EmrCreateClusterServiceRole5251910D"
        },
-       "\",\"ReleaseLabel\":\"emr-5.36.1\",\"Tags\":[{\"Key\":\"Key\",\"Value\":\"Value\"},{\"Key\":\"for-use-with-amazon-emr-managed-policies\",\"Value\":\"true\"}],\"VisibleToAllUsers\":true}}}}"
+       "\",\"AutoTerminationPolicy\":{\"IdleTimeout\":120},\"ReleaseLabel\":\"emr-6.14.0\",\"Tags\":[{\"Key\":\"Key\",\"Value\":\"Value\"},{\"Key\":\"for-use-with-amazon-emr-managed-policies\",\"Value\":\"true\"}],\"VisibleToAllUsers\":true}}}}"
       ]
      ]
     },

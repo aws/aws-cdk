@@ -2,13 +2,14 @@ import * as sfn from 'aws-cdk-lib/aws-stepfunctions';
 import { App, Stack } from 'aws-cdk-lib';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { EmrCreateCluster } from 'aws-cdk-lib/aws-stepfunctions-tasks';
+import * as cdk from 'aws-cdk-lib/core';
 
 const app = new App();
 
 const stack = new Stack(app, 'aws-cdk-emr-create-cluster-with-on-demand-instance-fleet');
 
 const step = new EmrCreateCluster(stack, 'EmrCreateCluster', {
-  releaseLabel: 'emr-5.36.1',
+  releaseLabel: 'emr-6.14.0',
   instances: {
     instanceFleets: [{
       instanceFleetType: EmrCreateCluster.InstanceRoleType.MASTER,
@@ -27,6 +28,9 @@ const step = new EmrCreateCluster(stack, 'EmrCreateCluster', {
   },
   name: 'Cluster',
   integrationPattern: sfn.IntegrationPattern.RUN_JOB,
+  autoTerminationPolicy: {
+    idleTimeout: cdk.Duration.seconds(120),
+  },
   tags: {
     Key: 'Value',
   },
