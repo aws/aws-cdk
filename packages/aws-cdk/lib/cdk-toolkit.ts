@@ -136,41 +136,10 @@ export class CdkToolkit {
         throw new Error(`There is no file at ${options.templatePath}`);
       }
 
-      let changeSet = undefined;
-
-      if (options.changeSet) {
-        let stackExists = false;
-        try {
-          stackExists = await this.props.deployments.stackExists({
-            stack: stacks.firstStack,
-            deployName: stacks.firstStack.stackName,
-            tryLookupRole: true,
-          });
-        } catch (e: any) {
-          debug(e.message);
-          stream.write('Checking if the stack exists before creating the changeset has failed, will base the diff on template differences (run again with -v to see the reason)\n');
-          stackExists = false;
-        }
-
-        if (stackExists) {
-          changeSet = await createDiffChangeSet({
-            stack: stacks.firstStack,
-            uuid: uuid.v4(),
-            deployments: this.props.deployments,
-            willExecute: false,
-            sdkProvider: this.props.sdkProvider,
-            parameters: Object.assign({}, parameterMap['*'], parameterMap[stacks.firstStack.stackName]),
-            stream,
-          });
-        } else {
-          debug(`the stack '${stacks.firstStack.stackName}' has not been deployed to CloudFormation or describeStacks call failed, skipping changeset creation.`);
-        }
-      }
-
       const template = deserializeStructure(await fs.readFile(options.templatePath, { encoding: 'UTF-8' }));
       diffs = options.securityOnly
-        ? numberFromBool(printSecurityDiff(template, stacks.firstStack, RequireApproval.Broadening, changeSet))
-        : printStackDiff(template, stacks.firstStack.template, strict, contextLines, quiet, changeSet, false, stream);
+        ? numberFromBool(printSecurityDiff(template, stacks.firstStack, RequireApproval.Broadening, undefined))
+        : printStackDiff(template, stacks.firstStack, strict, contextLines, quiet, undefined, false, stream);
     } else {
       // Compare N stacks against deployed templates
       for (const stack of stacks.stackArtifacts) {
