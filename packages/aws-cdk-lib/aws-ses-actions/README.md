@@ -11,6 +11,7 @@ Currently supported are:
 * [Lambda](https://docs.aws.amazon.com/ses/latest/DeveloperGuide/receiving-email-action-lambda.html)
 * [S3](https://docs.aws.amazon.com/ses/latest/DeveloperGuide/receiving-email-action-s3.html)
 * [SNS](https://docs.aws.amazon.com/ses/latest/DeveloperGuide/receiving-email-action-sns.html)
+* [WorkMail](https://docs.aws.amazon.com/ses/latest/DeveloperGuide/receiving-email-action-workmail.html)
 * [Stop](https://docs.aws.amazon.com/ses/latest/DeveloperGuide/receiving-email-action-stop.html)
 
 See the README of `aws-cdk-lib/aws-ses` for more information.
