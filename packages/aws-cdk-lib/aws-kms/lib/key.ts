@@ -435,6 +435,13 @@ export interface KeyProps {
   readonly enableKeyRotation?: boolean;
 
   /**
+   * The period between each automatic rotation.
+   *
+   * @default - set by CFN to 365 days.
+   */
+  readonly rotationPeriod?: Duration;
+
+  /**
    * Indicates whether the key is available for use.
    *
    * @default - Key is enabled.
@@ -674,6 +681,7 @@ export class Key extends KeyBase {
   public readonly keyId: string;
   protected readonly policy?: iam.PolicyDocument;
   protected readonly trustAccountIdentities: boolean;
+  private readonly enableKeyRotation?: boolean;
 
   constructor(scope: Construct, id: string, props: KeyProps = {}) {
     super(scope, id);
@@ -722,6 +730,21 @@ export class Key extends KeyBase {
       throw new Error('key rotation cannot be enabled on asymmetric keys');
     }
 
+    this.enableKeyRotation = props.enableKeyRotation;
+
+    if (props.rotationPeriod) {
+      if (props.enableKeyRotation === false) {
+        throw new Error('\'rotationPeriod\' cannot be specified when \'enableKeyRotation\' is disabled');
+      }
+      if (props.rotationPeriod.toDays() < 90 || props.rotationPeriod.toDays() > 2560) {
+        throw new Error(`'rotationPeriod' value must between 90 and 2650 days. Received: ${props.rotationPeriod.toDays()}`);
+      }
+      // If rotationPeriod is specified, enableKeyRotation is set to true by default
+      if (props.enableKeyRotation === undefined) {
+        this.enableKeyRotation = true;
+      }
+    }
+
     const defaultKeyPoliciesFeatureEnabled = FeatureFlags.of(this).isEnabled(cxapi.KMS_DEFAULT_KEY_POLICIES);
 
     this.policy = props.policy ?? new iam.PolicyDocument();
@@ -754,7 +777,8 @@ export class Key extends KeyBase {
 
     const resource = new CfnKey(this, 'Resource', {
       description: props.description,
-      enableKeyRotation: props.enableKeyRotation,
+      enableKeyRotation: this.enableKeyRotation,
+      rotationPeriodInDays: props.rotationPeriod?.toDays(),
       enabled: props.enabled,
       keySpec: props.keySpec,
       keyUsage: props.keyUsage,
