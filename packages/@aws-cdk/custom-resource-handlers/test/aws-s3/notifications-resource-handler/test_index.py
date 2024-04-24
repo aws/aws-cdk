@@ -86,337 +86,326 @@ def merge_notification_configurations(conf1: Dict, conf2: Dict):
 
 
 class ManagedBucketTest(unittest.TestCase):
-    @patch("index.put_bucket_notification_configuration")
+    @patch('index.s3')
     @patch("index.submit_response")
-    def test_create(self, _, put: MagicMock):
-
+    def test_create(self, _, mock_s3: MagicMock):
+        
         event = make_event("Create", True)
 
         index.handler(event, {})
 
-        put.assert_called_once_with(
-            event["ResourceProperties"]["BucketName"],
-            event["ResourceProperties"]["NotificationConfiguration"],
+        mock_s3.put_bucket_notification_configuration.assert_called_once_with(
+            Bucket=event["ResourceProperties"]["BucketName"],
+            NotificationConfiguration=event["ResourceProperties"]["NotificationConfiguration"],
         )
 
-    @patch("index.put_bucket_notification_configuration")
+    @patch('index.s3')
     @patch("index.submit_response")
-    def test_update(self, _, put):
-
+    def test_update(self, _, mock_s3: MagicMock):
+        
         event = make_event("Update", True)
 
         index.handler(event, {})
 
-        put.assert_called_once_with(
-            event["ResourceProperties"]["BucketName"],
-            event["ResourceProperties"]["NotificationConfiguration"],
+        mock_s3.put_bucket_notification_configuration.assert_called_once_with(
+            Bucket=event["ResourceProperties"]["BucketName"],
+            NotificationConfiguration=event["ResourceProperties"]["NotificationConfiguration"],
         )
 
-    @patch("index.put_bucket_notification_configuration")
+    @patch('index.s3')
     @patch("index.submit_response")
-    def test_delete(self, _, put: MagicMock):
-
+    def test_delete(self, _, mock_s3: MagicMock):
+        
         event = make_event("Delete", True)
 
         index.handler(event, {})
 
-        put.assert_called_once_with(event["ResourceProperties"]["BucketName"], {})
+        mock_s3.put_bucket_notification_configuration.assert_called_once_with(Bucket=event["ResourceProperties"]["BucketName"], NotificationConfiguration={})
 
 
 class UnmanagedCleanBucketTest(unittest.TestCase):
-    @patch("index.put_bucket_notification_configuration")
-    @patch("index.get_bucket_notification_configuration")
+    @patch('index.s3')
     @patch("index.submit_response")
-    def test_create(self, _, get: MagicMock, put: MagicMock):
-
-        get.return_value = {}
+    def test_create(self, _, mock_s3: MagicMock):
+        
+        mock_s3.get_bucket_notification_configuration.return_value = {}
 
         event = make_event("Create", False)
 
         index.handler(event, {})
 
-        put.assert_called_once_with(
-            event["ResourceProperties"]["BucketName"],
-            event["ResourceProperties"]["NotificationConfiguration"],
+        mock_s3.put_bucket_notification_configuration.assert_called_once_with(
+            Bucket=event["ResourceProperties"]["BucketName"],
+            NotificationConfiguration=event["ResourceProperties"]["NotificationConfiguration"],
         )
 
-    @patch("index.put_bucket_notification_configuration")
-    @patch("index.get_bucket_notification_configuration")
+    @patch('index.s3')
     @patch("index.submit_response")
-    def test_create_with_eventbridge(self, _, get: MagicMock, put: MagicMock):
-
-        get.return_value = {}
+    def test_create_with_eventbridge(self, _, mock_s3: MagicMock):
+        
+        mock_s3.get_bucket_notification_configuration.return_value = {}
 
         event = make_event_with_eventbridge("Create", False)
 
         index.handler(event, {})
 
-        put.assert_called_once_with(
-            event["ResourceProperties"]["BucketName"],
-            event["ResourceProperties"]["NotificationConfiguration"],
+        mock_s3.put_bucket_notification_configuration.assert_called_once_with(
+            Bucket=event["ResourceProperties"]["BucketName"],
+            NotificationConfiguration=event["ResourceProperties"]["NotificationConfiguration"],
         )
 
-    @patch("index.put_bucket_notification_configuration")
-    @patch("index.get_bucket_notification_configuration")
+    @patch('index.s3')
     @patch("index.submit_response")
-    def test_update(self, _, get: MagicMock, put: MagicMock):
-
+    def test_update(self, _, mock_s3: MagicMock):
+        
         event = make_event("Update", False)
 
         # simulate a previous create operation
         current_notifications = make_notification_configuration(f"{event['StackId']}-")
-        get.return_value = current_notifications
+        mock_s3.get_bucket_notification_configuration.return_value = current_notifications
 
         index.handler(event, {})
 
-        put.assert_called_once_with(
-            event["ResourceProperties"]["BucketName"],
-            event["ResourceProperties"]["NotificationConfiguration"],
+        mock_s3.put_bucket_notification_configuration.assert_called_once_with(
+            Bucket=event["ResourceProperties"]["BucketName"],
+            NotificationConfiguration=merge_notification_configurations(
+                current_notifications,
+                event["ResourceProperties"]["NotificationConfiguration"]
+            ),
         )
 
-    @patch("index.put_bucket_notification_configuration")
-    @patch("index.get_bucket_notification_configuration")
+    @patch('index.s3')
     @patch("index.submit_response")
-    def test_update_with_eventbridge(self, _, get: MagicMock, put: MagicMock):
-
+    def test_update_with_eventbridge(self, _, mock_s3: MagicMock):
+        
         event = make_event_with_eventbridge("Update", False)
 
         # simulate a previous create operation
         current_notifications = make_notification_configuration(f"{event['StackId']}-")
-        get.return_value = current_notifications
+        mock_s3.get_bucket_notification_configuration.return_value = current_notifications
 
         index.handler(event, {})
 
-        put.assert_called_once_with(
-            event["ResourceProperties"]["BucketName"],
-            event["ResourceProperties"]["NotificationConfiguration"],
+        mock_s3.put_bucket_notification_configuration.assert_called_once_with(
+            Bucket=event["ResourceProperties"]["BucketName"],
+            NotificationConfiguration=merge_notification_configurations(
+                current_notifications,
+                event["ResourceProperties"]["NotificationConfiguration"]
+            ),
         )
 
 
-    @patch("index.put_bucket_notification_configuration")
-    @patch("index.get_bucket_notification_configuration")
+    @patch('index.s3')
     @patch("index.submit_response")
-    def test_update_with_existing_eventbridge(self, _, get: MagicMock, put: MagicMock):
-
+    def test_update_with_existing_eventbridge(self, _, mock_s3: MagicMock):
+        
         event = make_event("Update", False)
 
         # simulate a previous create operation
         current_notifications = make_notification_configuration_with_eventbridge(f"{event['StackId']}-")
-        get.return_value = current_notifications
+        mock_s3.get_bucket_notification_configuration.return_value = current_notifications
 
         index.handler(event, {})
 
-        put.assert_called_once_with(
-            event["ResourceProperties"]["BucketName"],
-            merge_notification_configurations(
-                make_eventbridge_configuration(),
+        mock_s3.put_bucket_notification_configuration.assert_called_once_with(
+            Bucket=event["ResourceProperties"]["BucketName"],
+            NotificationConfiguration=merge_notification_configurations(
+                current_notifications,
                 event["ResourceProperties"]["NotificationConfiguration"],
             ),
         )
 
-    @patch("index.put_bucket_notification_configuration")
-    @patch("index.get_bucket_notification_configuration")
+    @patch('index.s3')
     @patch("index.submit_response")
-    def test_delete(self, _, get: MagicMock, put: MagicMock):
-
+    def test_delete(self, _, mock_s3: MagicMock):
+        
         event = make_event("Delete", False)
 
         # simulate a previous create operation
         current_notifications = make_notification_configuration(f"{event['StackId']}-")
-        get.return_value = current_notifications
+        mock_s3.get_bucket_notification_configuration.return_value = current_notifications
 
         index.handler(event, {})
 
-        put.assert_called_once_with(
-            event["ResourceProperties"]["BucketName"],
-            make_empty_notification_configuration(),
+        mock_s3.put_bucket_notification_configuration.assert_called_once_with(
+            Bucket=event["ResourceProperties"]["BucketName"],
+            NotificationConfiguration=make_empty_notification_configuration(),
         )
 
-    @patch("index.put_bucket_notification_configuration")
-    @patch("index.get_bucket_notification_configuration")
+    @patch('index.s3')
     @patch("index.submit_response")
-    def test_delete_with_eventbridge_should_not_remove_eventbridge(self, _, get: MagicMock, put: MagicMock):
-
+    def test_delete_with_eventbridge_should_not_remove_eventbridge(self, _, mock_s3: MagicMock):
+        
         event = make_event_with_eventbridge("Delete", False)
 
         # simulate a previous create operation
         current_notifications = make_notification_configuration_with_eventbridge(f"{event['StackId']}-")
-        get.return_value = current_notifications
+        mock_s3.get_bucket_notification_configuration.return_value = current_notifications
 
         index.handler(event, {})
 
-        put.assert_called_once_with(
-            event["ResourceProperties"]["BucketName"],
-            make_empty_notification_configuration_with_eventbridge(),
+        mock_s3.put_bucket_notification_configuration.assert_called_once_with(
+            Bucket=event["ResourceProperties"]["BucketName"],
+            NotificationConfiguration=make_empty_notification_configuration_with_eventbridge(),
         )
 
 
 class UnmanagedDirtyBucketTest(unittest.TestCase):
-    @patch("index.put_bucket_notification_configuration")
-    @patch("index.get_bucket_notification_configuration")
+    @patch('index.s3')
     @patch("index.submit_response")
-    def test_create(self, _, get: MagicMock, put: MagicMock):
-
+    def test_create(self, _, mock_s3: MagicMock):
+        
         event = make_event("Create", False)
 
         # simulate external notifications
         current_notifications = make_notification_configuration()
-        get.return_value = current_notifications
+        mock_s3.get_bucket_notification_configuration.return_value = current_notifications
 
         index.handler(event, {})
 
-        put.assert_called_once_with(
-            event["ResourceProperties"]["BucketName"],
-            merge_notification_configurations(
+        mock_s3.put_bucket_notification_configuration.assert_called_once_with(
+            Bucket=event["ResourceProperties"]["BucketName"],
+            NotificationConfiguration=merge_notification_configurations(
                 current_notifications,
                 event["ResourceProperties"]["NotificationConfiguration"],
             ),
         )
 
-    @patch("index.put_bucket_notification_configuration")
-    @patch("index.get_bucket_notification_configuration")
+    @patch('index.s3')
     @patch("index.submit_response")
-    def test_create_with_eventbridge(self, _, get: MagicMock, put: MagicMock):
-
+    def test_create_with_eventbridge(self, _, mock_s3: MagicMock):
+        
         event = make_event_with_eventbridge("Create", False)
 
         # simulate external notifications
         current_notifications = make_notification_configuration()
-        get.return_value = current_notifications
+        mock_s3.get_bucket_notification_configuration.return_value = current_notifications
 
         index.handler(event, {})
 
-        put.assert_called_once_with(
-            event["ResourceProperties"]["BucketName"],
-            merge_notification_configurations(
+        mock_s3.put_bucket_notification_configuration.assert_called_once_with(
+            Bucket=event["ResourceProperties"]["BucketName"],
+            NotificationConfiguration=merge_notification_configurations(
                 current_notifications,
                 event["ResourceProperties"]["NotificationConfiguration"],
             ),
         )
 
-    @patch("index.put_bucket_notification_configuration")
-    @patch("index.get_bucket_notification_configuration")
+    @patch('index.s3')
     @patch("index.submit_response")
-    def test_create_with_existing_eventbridge(self, _, get: MagicMock, put: MagicMock):
+    def test_create_with_existing_eventbridge(self, _, mock_s3: MagicMock):
 
         event = make_event("Create", False)
 
         # simulate external notifications
         current_notifications = make_notification_configuration_with_eventbridge()
-        get.return_value = current_notifications
+        mock_s3.get_bucket_notification_configuration.return_value = current_notifications
 
         index.handler(event, {})
 
-        put.assert_called_once_with(
-            event["ResourceProperties"]["BucketName"],
-            merge_notification_configurations(
+        mock_s3.put_bucket_notification_configuration.assert_called_once_with(
+            Bucket=event["ResourceProperties"]["BucketName"],
+            NotificationConfiguration=merge_notification_configurations(
                 current_notifications,
                 event["ResourceProperties"]["NotificationConfiguration"],
             ),
         )
 
-    @patch("index.put_bucket_notification_configuration")
-    @patch("index.get_bucket_notification_configuration")
+    @patch('index.s3')
     @patch("index.submit_response")
-    def test_update(self, _, get: MagicMock, put: MagicMock):
-
+    def test_update(self, _, mock_s3: MagicMock):
+        
         event = make_event("Update", False)
 
         # simulate external notifications
         current_notifications = make_notification_configuration()
-        get.return_value = current_notifications
+        mock_s3.get_bucket_notification_configuration.return_value = current_notifications
 
         index.handler(event, {})
 
-        put.assert_called_once_with(
-            event["ResourceProperties"]["BucketName"],
-            merge_notification_configurations(
+        mock_s3.put_bucket_notification_configuration.assert_called_once_with(
+            Bucket=event["ResourceProperties"]["BucketName"],
+            NotificationConfiguration=merge_notification_configurations(
                 current_notifications,
                 event["ResourceProperties"]["NotificationConfiguration"],
             ),
         )
 
-    @patch("index.put_bucket_notification_configuration")
-    @patch("index.get_bucket_notification_configuration")
+    @patch('index.s3')
     @patch("index.submit_response")
-    def test_update_with_eventbridge(self, _, get: MagicMock, put: MagicMock):
-
+    def test_update_with_eventbridge(self, _, mock_s3: MagicMock):
+        
         event = make_event_with_eventbridge("Update", False)
 
         # simulate external notifications
         current_notifications = make_notification_configuration()
-        get.return_value = current_notifications
+        mock_s3.get_bucket_notification_configuration.return_value = current_notifications
 
         index.handler(event, {})
 
-        put.assert_called_once_with(
-            event["ResourceProperties"]["BucketName"],
-            merge_notification_configurations(
+        mock_s3.put_bucket_notification_configuration.assert_called_once_with(
+            Bucket=event["ResourceProperties"]["BucketName"],
+            NotificationConfiguration=merge_notification_configurations(
                 current_notifications,
                 event["ResourceProperties"]["NotificationConfiguration"],
             ),
         )
 
-    @patch("index.put_bucket_notification_configuration")
-    @patch("index.get_bucket_notification_configuration")
+    @patch('index.s3')
     @patch("index.submit_response")
-    def test_update_without_eventbridge_should_not_remove_existing_eventbridge(self, _, get: MagicMock, put: MagicMock):
-
+    def test_update_without_eventbridge_should_not_remove_existing_eventbridge(self, _, mock_s3: MagicMock):
         event = make_event("Update", False)
 
         # simulate external notifications
         current_notifications = make_notification_configuration_with_eventbridge()
-        get.return_value = current_notifications
+        mock_s3.get_bucket_notification_configuration.return_value = current_notifications
 
         index.handler(event, {})
-
-        put.assert_called_once_with(
-            event["ResourceProperties"]["BucketName"],
-            merge_notification_configurations(
+        mock_s3.put_bucket_notification_configuration.assert_called_once_with(
+            Bucket=event["ResourceProperties"]["BucketName"],
+            NotificationConfiguration=merge_notification_configurations(
                 current_notifications,
                 event["ResourceProperties"]["NotificationConfiguration"],
             ),
         )
 
-    @patch("index.put_bucket_notification_configuration")
-    @patch("index.get_bucket_notification_configuration")
+    @patch('index.s3')
     @patch("index.submit_response")
-    def test_delete(self, _, get: MagicMock, put: MagicMock):
-
+    def test_delete(self, _, mock_s3: MagicMock):
+        
         event = make_event("Delete", False)
 
         # simulate external notifications
         current_notifications = make_notification_configuration()
-        get.return_value = current_notifications
+        mock_s3.get_bucket_notification_configuration.return_value = current_notifications
 
         index.handler(event, {})
 
-        put.assert_called_once_with(
-            event["ResourceProperties"]["BucketName"],
-            current_notifications,
+        mock_s3.put_bucket_notification_configuration.assert_called_once_with(
+            Bucket=event["ResourceProperties"]["BucketName"],
+            NotificationConfiguration=current_notifications,
         )
 
-    @patch("index.put_bucket_notification_configuration")
-    @patch("index.get_bucket_notification_configuration")
+    @patch('index.s3')
     @patch("index.submit_response")
-    def test_delete_with_eventbridge_should_not_remove_eventbridge(self, _, get: MagicMock, put: MagicMock):
-
+    def test_delete_with_eventbridge_should_not_remove_eventbridge(self, _, mock_s3: MagicMock):
+        
         event = make_event_with_eventbridge("Delete", False)
 
         # simulate external notifications
         current_notifications = make_notification_configuration_with_eventbridge()
-        get.return_value = current_notifications
+        mock_s3.get_bucket_notification_configuration.return_value = current_notifications
 
         index.handler(event, {})
 
-        put.assert_called_once_with(
-            event["ResourceProperties"]["BucketName"],
-            current_notifications,
+        mock_s3.put_bucket_notification_configuration.assert_called_once_with(
+            Bucket=event["ResourceProperties"]["BucketName"],
+            NotificationConfiguration=current_notifications,
         )
 
 
 class CfnResponsesTest(unittest.TestCase):
-    @patch("index.put_bucket_notification_configuration")
+    @patch("index.s3")
     @patch("index.handle_managed")
     @patch("index.submit_response")
     def test_success(self, submit: MagicMock, *_):
