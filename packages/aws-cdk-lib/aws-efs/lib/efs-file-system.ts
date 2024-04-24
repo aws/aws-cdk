@@ -386,7 +386,7 @@ export interface ReplicationConfigurationProps {
    * The availability zone name of the destination file system.
    * One zone file system is used as the destination file system when this property is set.
    *
-   * @default - create regional file system when `destinationFileSystem` is not set
+   * @default - no availability zone is set
    */
   readonly availabilityZone?: string;
 }
