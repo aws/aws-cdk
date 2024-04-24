@@ -918,6 +918,14 @@
    "Export": {
     "Name": "integ-cognito:ExportsOutputRefSignin352C80E64BA58F71"
    }
+  },
+  "ExportsOutputRefUserPool6BA7E5F296FD7236": {
+   "Value": {
+    "Ref": "UserPool6BA7E5F2"
+   },
+   "Export": {
+    "Name": "integ-cognito:ExportsOutputRefUserPool6BA7E5F296FD7236"
+   }
   }
  },
  "Parameters": {

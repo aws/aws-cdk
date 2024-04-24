@@ -48,6 +48,10 @@ def handle_unmanaged(bucket, stack_id, request_type, notification_configuration,
         old_incoming_ids = [n['Id'] for n in ids]
         # if the notification was created by us, we know what id to expect so we can filter by it.
         external_notifications[t] = [n for n in existing_notifications.get(t, []) if not n['Id'] in old_incoming_ids]
+    elif request_type == 'Delete':
+        # For 'Delete' request, old parameter is an empty dict so we cannot use this to determine which are external
+        # notifications. Fall back to rely on the stack naming logic.
+        external_notifications[t] = [n for n in existing_notifications.get(t, []) if not n['Id'].startswith(f"{stack_id}-")]
     elif request_type == 'Create':
         # if this is a create event then all existing notifications are external
         external_notifications[t] = [n for n in existing_notifications.get(t, [])]
