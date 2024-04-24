@@ -68,8 +68,8 @@ export interface EmrCreateClusterProps extends sfn.TaskStateBaseProps {
    * @default - A role will be created.
    */
   readonly autoScalingRole?: iam.IRole;
-  
-    /**
+
+  /**
    * An auto-termination policy for an Amazon EMR cluster.
    *
    * @default - None
@@ -235,10 +235,10 @@ export class EmrCreateCluster extends sfn.TaskStateBase {
         }
       }
     }
-    
+
     if (this.props.autoTerminationPolicy !== undefined && !cdk.Token.isUnresolved(this.props.autoTerminationPolicy.idleTimeout)) {
       if (this.props.autoTerminationPolicy.idleTimeout.toSeconds() < 60 || this.props.autoTerminationPolicy.idleTimeout.toSeconds() > 604800) {
-        throw new Error(`Idle Timeout must be between 60 and 604800 seconds but got ${this.props.autoTerminationPolicy.idleTimeout.toSeconds()}.`)
+        throw new Error(`Idle Timeout must be between 60 and 604800 seconds but got ${this.props.autoTerminationPolicy.idleTimeout.toSeconds()}.`);
       }
     }
   }
@@ -1669,7 +1669,7 @@ export namespace EmrCreateCluster {
      */
     readonly realm: string;
   }
-  
+
   /**
    * An auto-termination policy for an Amazon EMR cluster. An auto-termination policy defines the amount of idle time in seconds
    * after which a cluster automatically terminates.
@@ -1679,7 +1679,7 @@ export namespace EmrCreateCluster {
    */
   export interface AutoTerminationPolicyProperty {
     /**
-     * Specifies the amount of idle time in seconds after which the cluster automatically terminates. You can specify a minimum 
+     * Specifies the amount of idle time in seconds after which the cluster automatically terminates. You can specify a minimum
      * of 60 seconds and a maximum of 604800 seconds (seven days).
      *
      * @default None
