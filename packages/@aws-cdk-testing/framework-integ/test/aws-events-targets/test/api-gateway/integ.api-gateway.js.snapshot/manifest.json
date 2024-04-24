@@ -1,28 +1,28 @@
 {
   "version": "36.0.0",
   "artifacts": {
-    "cdk-integ-opensearch-custom-kms-key.assets": {
+    "aws-events-targets-api-gateway-integ.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "cdk-integ-opensearch-custom-kms-key.assets.json",
+        "file": "aws-events-targets-api-gateway-integ.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "cdk-integ-opensearch-custom-kms-key": {
+    "aws-events-targets-api-gateway-integ": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "cdk-integ-opensearch-custom-kms-key.template.json",
+        "templateFile": "aws-events-targets-api-gateway-integ.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/540bc42ab8fcafc9f99eefdd5c3c4c286a7a741909b7772a44ec2f489fb7a0a5.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/eb6e93c17ce84da302f80abe024243e559721864a62a25a653dfbe134c6e1686.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "cdk-integ-opensearch-custom-kms-key.assets"
+          "aws-events-targets-api-gateway-integ.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -31,94 +31,94 @@
         }
       },
       "dependencies": [
-        "cdk-integ-opensearch-custom-kms-key.assets"
+        "aws-events-targets-api-gateway-integ.assets"
       ],
       "metadata": {
-        "/cdk-integ-opensearch-custom-kms-key/Key/Resource": [
+        "/aws-events-targets-api-gateway-integ/MySpecRestApi/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "Key961B73FD"
+            "data": "MySpecRestApiFB7DB2AB"
           }
         ],
-        "/cdk-integ-opensearch-custom-kms-key/Domain/Resource": [
+        "/aws-events-targets-api-gateway-integ/MySpecRestApi/Deployment/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "Domain66AC69E0"
+            "data": "MySpecRestApiDeployment5D02B5D9a8c154dd64ed0abf0243000795ad6206"
           }
         ],
-        "/cdk-integ-opensearch-custom-kms-key/Domain/AccessPolicy/Resource/Default": [
+        "/aws-events-targets-api-gateway-integ/MySpecRestApi/DeploymentStage.prod/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DomainAccessPolicyEE735B04"
+            "data": "MySpecRestApiDeploymentStageprod8522A503"
           }
         ],
-        "/cdk-integ-opensearch-custom-kms-key/Domain/AccessPolicy/CustomResourcePolicy/Resource": [
+        "/aws-events-targets-api-gateway-integ/MySpecRestApi/Endpoint": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DomainAccessPolicyCustomResourcePolicyE61F1845"
+            "data": "MySpecRestApiEndpoint564A2275"
           }
         ],
-        "/cdk-integ-opensearch-custom-kms-key/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole/Resource": [
+        "/aws-events-targets-api-gateway-integ/MySpecRestApi/EventsRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
+            "data": "MySpecRestApiEventsRole25C1D10F"
           }
         ],
-        "/cdk-integ-opensearch-custom-kms-key/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole/DefaultPolicy/Resource": [
+        "/aws-events-targets-api-gateway-integ/MySpecRestApi/EventsRole/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleDefaultPolicyD28E1A5E"
+            "data": "MySpecRestApiEventsRoleDefaultPolicy6616420B"
           }
         ],
-        "/cdk-integ-opensearch-custom-kms-key/AWS679f53fac002430cb0da5b7982bd2287/Resource": [
+        "/aws-events-targets-api-gateway-integ/Rule/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AWS679f53fac002430cb0da5b7982bd22872D164C4C"
+            "data": "Rule4C995B7F"
           }
         ],
-        "/cdk-integ-opensearch-custom-kms-key/Exports/Output{\"Ref\":\"Domain66AC69E0\"}": [
+        "/aws-events-targets-api-gateway-integ/Exports/Output{\"Ref\":\"Rule4C995B7F\"}": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ExportsOutputRefDomain66AC69E084F15077"
+            "data": "ExportsOutputRefRule4C995B7FC04CD733"
           }
         ],
-        "/cdk-integ-opensearch-custom-kms-key/BootstrapVersion": [
+        "/aws-events-targets-api-gateway-integ/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/cdk-integ-opensearch-custom-kms-key/CheckBootstrapVersion": [
+        "/aws-events-targets-api-gateway-integ/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "cdk-integ-opensearch-custom-kms-key"
+      "displayName": "aws-events-targets-api-gateway-integ"
     },
-    "OpenSearchCustomKmsIntegDefaultTestDeployAssertA1F4FD6B.assets": {
+    "ApiGatewayTargetDefaultTestDeployAssert33F7AF34.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "OpenSearchCustomKmsIntegDefaultTestDeployAssertA1F4FD6B.assets.json",
+        "file": "ApiGatewayTargetDefaultTestDeployAssert33F7AF34.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "OpenSearchCustomKmsIntegDefaultTestDeployAssertA1F4FD6B": {
+    "ApiGatewayTargetDefaultTestDeployAssert33F7AF34": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "OpenSearchCustomKmsIntegDefaultTestDeployAssertA1F4FD6B.template.json",
+        "templateFile": "ApiGatewayTargetDefaultTestDeployAssert33F7AF34.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/308c03b5d5d7678a6c0f875d5b1d29556ad46d08eca9d70641c0c71bc11ef8c2.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/5115baeccbd781da4e2dcde7c52ced2e6a354abe88161247f753819d6c8aefe2.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "OpenSearchCustomKmsIntegDefaultTestDeployAssertA1F4FD6B.assets"
+          "ApiGatewayTargetDefaultTestDeployAssert33F7AF34.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -127,48 +127,48 @@
         }
       },
       "dependencies": [
-        "cdk-integ-opensearch-custom-kms-key",
-        "OpenSearchCustomKmsIntegDefaultTestDeployAssertA1F4FD6B.assets"
+        "aws-events-targets-api-gateway-integ",
+        "ApiGatewayTargetDefaultTestDeployAssert33F7AF34.assets"
       ],
       "metadata": {
-        "/OpenSearchCustomKmsInteg/DefaultTest/DeployAssert/AwsApiCallOpenSearchdescribeDomainConfig5d84003b047ced8f2e9074504e9d0799/Default/Default": [
+        "/ApiGatewayTarget/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-eventbridgeListTargetsByRuleecb9be56e222a60a5e5c4b7af30a595b/Default/Default": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AwsApiCallOpenSearchdescribeDomainConfig5d84003b047ced8f2e9074504e9d0799"
+            "data": "AwsApiCallawssdkclienteventbridgeListTargetsByRuleecb9be56e222a60a5e5c4b7af30a595b"
           }
         ],
-        "/OpenSearchCustomKmsInteg/DefaultTest/DeployAssert/AwsApiCallOpenSearchdescribeDomainConfig5d84003b047ced8f2e9074504e9d0799/AssertionResults": [
+        "/ApiGatewayTarget/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-eventbridgeListTargetsByRuleecb9be56e222a60a5e5c4b7af30a595b/AssertionResults": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "AssertionResultsAwsApiCallOpenSearchdescribeDomainConfig5d84003b047ced8f2e9074504e9d0799"
+            "data": "AssertionResultsAwsApiCallawssdkclienteventbridgeListTargetsByRuleecb9be56e222a60a5e5c4b7af30a595b"
           }
         ],
-        "/OpenSearchCustomKmsInteg/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+        "/ApiGatewayTarget/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
           {
             "type": "aws:cdk:logicalId",
             "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
           }
         ],
-        "/OpenSearchCustomKmsInteg/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+        "/ApiGatewayTarget/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
           {
             "type": "aws:cdk:logicalId",
             "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
           }
         ],
-        "/OpenSearchCustomKmsInteg/DefaultTest/DeployAssert/BootstrapVersion": [
+        "/ApiGatewayTarget/DefaultTest/DeployAssert/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/OpenSearchCustomKmsInteg/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+        "/ApiGatewayTarget/DefaultTest/DeployAssert/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "OpenSearchCustomKmsInteg/DefaultTest/DeployAssert"
+      "displayName": "ApiGatewayTarget/DefaultTest/DeployAssert"
     },
     "Tree": {
       "type": "cdk:tree",

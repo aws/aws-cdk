@@ -1,7 +1,7 @@
 {
  "Resources": {
-  "AwsApiCallCloudWatchLogsdescribeResourcePolicies": {
-   "Type": "Custom::DeployAssert@SdkCallCloudWatchLogsdescribeResourcePo",
+  "AwsApiCallawssdkclienteventbridgeListTargetsByRuleecb9be56e222a60a5e5c4b7af30a595b": {
+   "Type": "Custom::DeployAssert@SdkCall@aws-sdkclient-eventbridgeListT",
    "Properties": {
     "ServiceToken": {
      "Fn::GetAtt": [
@@ -9,11 +9,27 @@
       "Arn"
      ]
     },
-    "service": "CloudWatchLogs",
-    "api": "describeResourcePolicies",
-    "expected": "{\"$ObjectLike\":{\"resourcePolicies\":{\"$ArrayWith\":[{\"$ObjectLike\":{\"policyName\":\"ESLogPolicyc82ca7bfe2f2589b859ebab89e88da2efd284adfad\",\"policyDocument\":{\"$SerializedJson\":{\"$ObjectLike\":{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"es.amazonaws.com\"},\"Action\":[\"logs:PutLogEvents\",\"logs:CreateLogStream\"],\"Resource\":[{\"$StringLike\":\"^arn:aws:logs:.*:.*:log-group:cdk-integ-elasticsearch-custom-kms-key-DomainSlowSearchLogs.*$\"},{\"$StringLike\":\"^arn:aws:logs:.*:.*:log-group:cdk-integ-elasticsearch-custom-kms-key-DomainAppLogs.*$\"}]}]}}}}}]}}}",
+    "service": "@aws-sdk/client-eventbridge",
+    "api": "ListTargetsByRule",
+    "expected": "{\"$ObjectLike\":{\"Targets\":[{\"HttpParameters\":{}}]}}",
+    "parameters": {
+     "Rule": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "aws-events-targets-api-gateway-integ:ExportsOutputRefRule4C995B7FC04CD733"
+        },
+        "\""
+       ]
+      ]
+     },
+     "EventBusName": "\"default\"",
+     "Limit": "1"
+    },
     "flattenResponse": "false",
-    "salt": "1713896229102"
+    "salt": "1709878508330"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -46,7 +62,7 @@
        "Statement": [
         {
          "Action": [
-          "logs:DescribeResourcePolicies"
+          "events:ListTargetsByRule"
          ],
          "Effect": "Allow",
          "Resource": [
@@ -67,7 +83,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "cfdb46b4f2c6702b4a1cc8e23ca426e8de43d13567e73a8453d01c1176393814.zip"
+     "S3Key": "45f61bab328e8191a44031ca867c949870035c7adaf4c2418c1a451b2d0c1589.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
@@ -81,10 +97,10 @@
   }
  },
  "Outputs": {
-  "AssertionResultsAwsApiCallCloudWatchLogsdescribeResourcePolicies": {
+  "AssertionResultsAwsApiCallawssdkclienteventbridgeListTargetsByRuleecb9be56e222a60a5e5c4b7af30a595b": {
    "Value": {
     "Fn::GetAtt": [
-     "AwsApiCallCloudWatchLogsdescribeResourcePolicies",
+     "AwsApiCallawssdkclienteventbridgeListTargetsByRuleecb9be56e222a60a5e5c4b7af30a595b",
      "assertion"
     ]
    }
