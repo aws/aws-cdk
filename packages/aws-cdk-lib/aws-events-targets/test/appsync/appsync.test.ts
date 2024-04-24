@@ -7,6 +7,8 @@ import * as sqs from '../../../aws-sqs';
 import * as cdk from '../../../core';
 import * as targets from '../../lib';
 
+const graphQLOperation = 'mutation Publish($message: String!){ publish(message: $message) { event } }';
+
 describe('AppSync GraphQL API target', () => {
   let stack: cdk.Stack;
   beforeEach(() => {
@@ -19,7 +21,6 @@ describe('AppSync GraphQL API target', () => {
       definition: appsync.Definition.fromFile(path.join(__dirname, 'appsync.test.graphql')),
     });
 
-    const graphQLOperation = 'mutation Publish($message: String!){ publish(message: $message) { event } }';
     const rule = new events.Rule(stack, 'Rule', {
       schedule: events.Schedule.rate(cdk.Duration.minutes(1)),
     });
@@ -40,7 +41,6 @@ describe('AppSync GraphQL API target', () => {
       graphqlApiArn: 'MyApiArn',
     });
 
-    const graphQLOperation = 'mutation Publish($message: String!){ publish(message: $message) { event } }';
     const rule = new events.Rule(stack, 'Rule', {
       schedule: events.Schedule.rate(cdk.Duration.minutes(1)),
     });
@@ -55,6 +55,49 @@ describe('AppSync GraphQL API target', () => {
     }).toThrow('You must have AWS_IAM authorization mode enabled on your API to configure an AppSync target');
   });
 
+  test('Accepts API create with fromGraphqlApiAttributes', () => {
+    const api = appsync.GraphqlApi.fromGraphqlApiAttributes(stack, 'ImportedAPI', {
+      graphqlApiId: 'MyApiId',
+      graphqlApiArn: 'MyApiArn',
+      graphQLEndpointArn: 'arn:aws:appsync:us-east-2:000000000000:endpoints/graphql-api/00000000000000000000000000',
+      visibility: appsync.Visibility.GLOBAL,
+      modes: [appsync.AuthorizationType.IAM],
+    });
+
+    const rule = new events.Rule(stack, 'Rule', {
+      schedule: events.Schedule.rate(cdk.Duration.minutes(1)),
+    });
+
+    // WHEN
+    rule.addTarget(new targets.AppSync(api, {
+      graphQLOperation,
+      variables: events.RuleTargetInput.fromObject({
+        message: events.EventField.fromPath('$.detail'),
+      }),
+    }));
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
+      Targets: [
+        {
+          Arn: api.graphQLEndpointArn,
+          AppSyncParameters: { GraphQLOperation: graphQLOperation },
+          Id: 'Target0',
+          InputTransformer: {
+            InputPathsMap: { detail: '$.detail' },
+            InputTemplate: '{"message":<detail>}',
+          },
+          RoleArn: {
+            'Fn::GetAtt': [
+              'ImportedAPIEventsRole9CE171B7',
+              'Arn',
+            ],
+          },
+        },
+      ],
+    });
+  });
+
   test('allows secondary auth with AWS_IAM configured', () => {
     const sec_api = new appsync.GraphqlApi(stack, 'sec_api', {
       name: 'no_iam_api',
@@ -62,7 +105,6 @@ describe('AppSync GraphQL API target', () => {
       authorizationConfig: { additionalAuthorizationModes: [{ authorizationType: appsync.AuthorizationType.IAM }] },
     });
 
-    const graphQLOperation = 'mutation Publish($message: String!){ publish(message: $message) { event } }';
     const rule = new events.Rule(stack, 'Rule', {
       schedule: events.Schedule.rate(cdk.Duration.minutes(1)),
     });
@@ -85,7 +127,6 @@ describe('AppSync GraphQL API target', () => {
       authorizationConfig: { additionalAuthorizationModes: [{ authorizationType: appsync.AuthorizationType.IAM }] },
     });
 
-    const graphQLOperation = 'mutation Publish($message: String!){ publish(message: $message) { event } }';
     const rule = new events.Rule(stack, 'Rule', {
       schedule: events.Schedule.rate(cdk.Duration.minutes(1)),
     });
@@ -116,7 +157,6 @@ describe('AppSync API with AWS_IAM auth', () => {
 
   test('use AppSync GraphQL API as an event rule target', () => {
 
-    const graphQLOperation = 'mutation Publish($message: String!){ publish(message: $message) { event } }';
     const rule = new events.Rule(stack, 'Rule', {
       schedule: events.Schedule.rate(cdk.Duration.minutes(1)),
     });
@@ -153,7 +193,6 @@ describe('AppSync API with AWS_IAM auth', () => {
 
   test('use a Dead Letter Queue', () => {
 
-    const graphQLOperation = 'mutation Publish($message: String!){ publish(message: $message) { event } }';
     const rule = new events.Rule(stack, 'Rule', {
       schedule: events.Schedule.rate(cdk.Duration.minutes(1)),
     });
@@ -188,7 +227,6 @@ describe('AppSync API with AWS_IAM auth', () => {
 
   test('when no mutation fields provided, grant access to Mutations only', () => {
 
-    const graphQLOperation = 'mutation Publish($message: String!){ publish(message: $message) { event } }';
     const rule = new events.Rule(stack, 'Rule', {
       schedule: events.Schedule.rate(cdk.Duration.minutes(1)),
     });
@@ -267,7 +305,6 @@ describe('AppSync API with AWS_IAM auth', () => {
 
   test('a role is provided', () => {
 
-    const graphQLOperation = 'mutation Publish($message: String!){ publish(message: $message) { event } }';
     const rule = new events.Rule(stack, 'Rule', {
       schedule: events.Schedule.rate(cdk.Duration.minutes(1)),
     });
@@ -309,7 +346,6 @@ describe('AppSync API with AWS_IAM auth', () => {
 
   test('a role is not provided', () => {
 
-    const graphQLOperation = 'mutation Publish($message: String!){ publish(message: $message) { event } }';
     const rule = new events.Rule(stack, 'Rule', {
       schedule: events.Schedule.rate(cdk.Duration.minutes(1)),
     });
