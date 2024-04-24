@@ -364,7 +364,7 @@ export interface ReplicationConfigurationProps {
   /**
    * The existing destination file system for the replication.
    *
-   * @default - create a new file system for the replication
+   * @default - None
    */
   readonly destinationFileSystem?: IFileSystem;
 
