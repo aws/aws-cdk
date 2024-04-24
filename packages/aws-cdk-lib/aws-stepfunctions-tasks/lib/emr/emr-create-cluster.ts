@@ -1,6 +1,7 @@
 import { Construct } from 'constructs';
 import {
   ApplicationConfigPropertyToJson,
+  AutoTerminationPolicyPropertyToJson,
   BootstrapActionConfigToJson,
   ConfigurationPropertyToJson,
   InstancesConfigPropertyToJson,
@@ -67,6 +68,13 @@ export interface EmrCreateClusterProps extends sfn.TaskStateBaseProps {
    * @default - A role will be created.
    */
   readonly autoScalingRole?: iam.IRole;
+  
+    /**
+   * An auto-termination policy for an Amazon EMR cluster.
+   *
+   * @default - None
+   */
+  readonly autoTerminationPolicy?: EmrCreateCluster.AutoTerminationPolicyProperty;
 
   /**
    * A list of bootstrap actions to run before Hadoop starts on the cluster nodes.
@@ -227,6 +235,12 @@ export class EmrCreateCluster extends sfn.TaskStateBase {
         }
       }
     }
+    
+    if (this.props.autoTerminationPolicy !== undefined && !cdk.Token.isUnresolved(this.props.autoTerminationPolicy.idleTimeout)) {
+      if (this.props.autoTerminationPolicy.idleTimeout.toSeconds() < 60 || this.props.autoTerminationPolicy.idleTimeout.toSeconds() > 604800) {
+        throw new Error(`Idle Timeout must be between 60 and 604800 seconds but got ${this.props.autoTerminationPolicy.idleTimeout.toSeconds()}.`)
+      }
+    }
   }
 
   /**
@@ -279,6 +293,7 @@ export class EmrCreateCluster extends sfn.TaskStateBase {
         AdditionalInfo: cdk.stringToCloudFormation(this.props.additionalInfo),
         Applications: cdk.listMapper(ApplicationConfigPropertyToJson)(this.props.applications),
         AutoScalingRole: cdk.stringToCloudFormation(this._autoScalingRole?.roleName),
+        AutoTerminationPolicy: this.props.autoTerminationPolicy ? AutoTerminationPolicyPropertyToJson(this.props.autoTerminationPolicy) : undefined,
         BootstrapActions: cdk.listMapper(BootstrapActionConfigToJson)(this.props.bootstrapActions),
         Configurations: cdk.listMapper(ConfigurationPropertyToJson)(this.props.configurations),
         CustomAmiId: cdk.stringToCloudFormation(this.props.customAmiId),
@@ -1653,5 +1668,22 @@ export namespace EmrCreateCluster {
      * The name of the Kerberos realm to which all nodes in a cluster belong. For example, EC2.INTERNAL.
      */
     readonly realm: string;
+  }
+  
+  /**
+   * An auto-termination policy for an Amazon EMR cluster. An auto-termination policy defines the amount of idle time in seconds
+   * after which a cluster automatically terminates.
+   *
+   * @see hhttps://docs.aws.amazon.com/emr/latest/APIReference/API_AutoTerminationPolicy.html
+   *
+   */
+  export interface AutoTerminationPolicyProperty {
+    /**
+     * Specifies the amount of idle time in seconds after which the cluster automatically terminates. You can specify a minimum 
+     * of 60 seconds and a maximum of 604800 seconds (seven days).
+     *
+     * @default None
+     */
+    readonly idleTimeout: cdk.Duration;
   }
 }

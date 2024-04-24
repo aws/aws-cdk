@@ -1733,3 +1733,55 @@ test('Task throws if WAIT_FOR_TASK_TOKEN is supplied as service integration patt
     });
   }).toThrow(/Unsupported service integration pattern. Supported Patterns: REQUEST_RESPONSE,RUN_JOB. Received: WAIT_FOR_TASK_TOKEN/);
 });
+
+test('Create Cluster with AutoTerminationPolicy', () => {
+  // WHEN
+  const task = new EmrCreateCluster(stack, 'Task', {
+    instances: {},
+    clusterRole,
+    name: 'Cluster',
+    serviceRole,
+    autoScalingRole,
+    autoTerminationPolicy: {
+      idleTimeout: cdk.Duration.seconds(120),
+    },
+    integrationPattern: sfn.IntegrationPattern.REQUEST_RESPONSE,
+  });
+
+  // THEN
+  expect(stack.resolve(task.toStateJson())).toEqual({
+    Type: 'Task',
+    Resource: {
+      'Fn::Join': [
+        '',
+        [
+          'arn:',
+          {
+            Ref: 'AWS::Partition',
+          },
+          ':states:::elasticmapreduce:createCluster',
+        ],
+      ],
+    },
+    End: true,
+    Parameters: {
+      Name: 'Cluster',
+      Instances: {
+        KeepJobFlowAliveWhenNoSteps: true,
+      },
+      VisibleToAllUsers: true,
+      JobFlowRole: {
+        Ref: 'ClusterRoleD9CA7471',
+      },
+      ServiceRole: {
+        Ref: 'ServiceRole4288B192',
+      },
+      AutoScalingRole: {
+        Ref: 'AutoScalingRole015ADA0A',
+      },
+      AutoTerminationPolicy: {
+        IdleTimeout: 120,
+      },
+    },
+  });
+});
