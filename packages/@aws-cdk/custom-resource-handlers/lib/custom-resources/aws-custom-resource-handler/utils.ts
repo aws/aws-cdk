@@ -96,7 +96,7 @@ export function respond(
 }
 
 /**
- * Gets credentials used to make invoke an AWS SDK call.
+ * Gets credentials used to make an AWS SDK call.
  */
 export async function getCredentials(call: AwsSdkCall, physicalResourceId: string): Promise<AwsCredentialIdentityProvider | undefined> {
   let credentials;
