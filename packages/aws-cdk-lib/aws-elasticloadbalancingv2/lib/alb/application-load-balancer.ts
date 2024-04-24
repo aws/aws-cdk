@@ -216,6 +216,10 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
       }
       this.setAttribute('client_keep_alive.seconds', clientKeepAliveInSeconds.toString());
     }
+
+    if (props.crossZoneEnabled === false) {
+      throw new Error('crossZoneEnabled cannot be false with Application Load Balancers.');
+    }
   }
 
   /**

@@ -178,9 +178,6 @@ test('add s3 action', () => {
         Ref: 'RuleSetE30C6C48',
       },
     },
-    DependsOn: [
-      'BucketPolicyE9A3008A',
-    ],
   });
 
   Template.fromStack(stack).hasResourceProperties('AWS::S3::BucketPolicy', {
@@ -193,8 +190,25 @@ test('add s3 action', () => {
           Action: 's3:PutObject',
           Condition: {
             StringEquals: {
-              'aws:Referer': {
+              'aws:SourceAccount': {
                 Ref: 'AWS::AccountId',
+              },
+              'aws:SourceArn': {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    { Ref: 'AWS::Partition' },
+                    ':ses:',
+                    { Ref: 'AWS::Region' },
+                    ':',
+                    { Ref: 'AWS::AccountId' },
+                    ':receipt-rule-set/',
+                    { Ref: 'RuleSetE30C6C48' },
+                    ':receipt-rule/',
+                    { Ref: 'RuleSetRule0B1D6BCA' },
+                  ],
+                ],
               },
             },
           },
@@ -284,6 +298,29 @@ test('add stop action', () => {
         {
           StopAction: {
             Scope: 'RuleSet',
+            TopicArn: {
+              Ref: 'TopicBFC7AF6E',
+            },
+          },
+        },
+      ],
+      Enabled: true,
+    },
+  });
+});
+
+test('add workmail action', () => {
+  rule.addAction(new actions.WorkMail({
+    organizationArn: 'arn:aws:workmail:us-east-1:123456789012:organization/m-organizationid',
+    topic,
+  }));
+
+  Template.fromStack(stack).hasResourceProperties('AWS::SES::ReceiptRule', {
+    Rule: {
+      Actions: [
+        {
+          WorkmailAction: {
+            OrganizationArn: 'arn:aws:workmail:us-east-1:123456789012:organization/m-organizationid',
             TopicArn: {
               Ref: 'TopicBFC7AF6E',
             },

@@ -3,6 +3,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as yaml from 'yaml';
 import { integTest, randomString, withoutBootstrap } from '../../lib';
+import eventually from '../../lib/eventually';
 
 jest.setTimeout(2 * 60 * 60_000); // Includes the time to acquire locks, worst-case single-threaded runtime
 
@@ -283,17 +284,25 @@ integTest('can remove customPermissionsBoundary', withoutBootstrap(async (fixtur
       }),
     });
     policyArn = policy.Policy?.Arn;
-    await fixture.cdkBootstrapModern({
-      // toolkitStackName doesn't matter for this particular invocation
-      toolkitStackName: bootstrapStackName,
-      customPermissionsBoundary: policyName,
-    });
 
-    const response = await fixture.aws.cloudFormation('describeStacks', { StackName: bootstrapStackName });
-    expect(
-      response.Stacks?.[0].Parameters?.some(
-        param => (param.ParameterKey === 'InputPermissionsBoundary' && param.ParameterValue === policyName),
-      )).toEqual(true);
+    // Policy creation and consistency across regions is "almost immediate"
+    // See: https://docs.aws.amazon.com/IAM/latest/UserGuide/troubleshoot_general.html#troubleshoot_general_eventual-consistency
+    // We will put this in an `eventually` block to retry stack creation with a reasonable timeout
+    const createStackWithPermissionBoundary = async (): Promise<void> => {
+      await fixture.cdkBootstrapModern({
+        // toolkitStackName doesn't matter for this particular invocation
+        toolkitStackName: bootstrapStackName,
+        customPermissionsBoundary: policyName,
+      });
+
+      const response = await fixture.aws.cloudFormation('describeStacks', { StackName: bootstrapStackName });
+      expect(
+        response.Stacks?.[0].Parameters?.some(
+          param => (param.ParameterKey === 'InputPermissionsBoundary' && param.ParameterValue === policyName),
+        )).toEqual(true);
+    };
+
+    await eventually(createStackWithPermissionBoundary, { maxAttempts: 3 });
 
     await fixture.cdkBootstrapModern({
       // toolkitStackName doesn't matter for this particular invocation
