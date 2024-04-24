@@ -2,6 +2,36 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.139.0](https://github.com/aws/aws-cdk/compare/v2.138.0...v2.139.0) (2024-04-24)
+
+
+### Features
+
+* **appconfig:** constrain environments to a single deployment at a time ([#29500](https://github.com/aws/aws-cdk/issues/29500)) ([3dd834d](https://github.com/aws/aws-cdk/commit/3dd834d66a9345eaab372a9dd59e673e52c86d7e)), closes [#29345](https://github.com/aws/aws-cdk/issues/29345)
+* **ecs:** support `pidMode` for `FargateTaskDefinition` ([#29670](https://github.com/aws/aws-cdk/issues/29670)) ([ed75b16](https://github.com/aws/aws-cdk/commit/ed75b160f86b266a256ed7dd347dc54a34b937d0)), closes [#29619](https://github.com/aws/aws-cdk/issues/29619)
+* **ecs:** support adding docker labels after container construction ([#29734](https://github.com/aws/aws-cdk/issues/29734)) ([8e215b3](https://github.com/aws/aws-cdk/commit/8e215b3c740efa260e18dab9cd30c487c822f3ef)), closes [#29728](https://github.com/aws/aws-cdk/issues/29728)
+* **efs:** replicating file systems ([#29347](https://github.com/aws/aws-cdk/issues/29347)) ([a15dc93](https://github.com/aws/aws-cdk/commit/a15dc939c8d3ba3ac0f20b4a78ec7d403cde56bd)), closes [#21455](https://github.com/aws/aws-cdk/issues/21455)
+* **ses-actions:** `WorkMail` rule action ([#29854](https://github.com/aws/aws-cdk/issues/29854)) ([6fdc458](https://github.com/aws/aws-cdk/commit/6fdc4582f659549021a64a4d676fce12fc241715))
+* update L1 CloudFormation resource definitions ([#29924](https://github.com/aws/aws-cdk/issues/29924)) ([27b7a45](https://github.com/aws/aws-cdk/commit/27b7a4529bc23b068d338b937e08c92ab4a0f962))
+
+
+### Bug Fixes
+
+* **CLI:** `diff --template` crashes ([#29896](https://github.com/aws/aws-cdk/issues/29896)) ([466f170](https://github.com/aws/aws-cdk/commit/466f170af409d0c9c44f0f03a6eb5a72553db29b)), closes [#29890](https://github.com/aws/aws-cdk/issues/29890)
+* **CLI:** bootstrap shows no hotswap changes when there are no changes ([#29877](https://github.com/aws/aws-cdk/issues/29877)) ([2126ee5](https://github.com/aws/aws-cdk/commit/2126ee5b1eac4bce2d085b1a9bd27a65eb33b137)), closes [#25736](https://github.com/aws/aws-cdk/issues/25736)
+* **custom-resource-handler:** auto-delete-[objects|images] breaks on cloudformation rollback ([#29581](https://github.com/aws/aws-cdk/issues/29581)) ([69ea52f](https://github.com/aws/aws-cdk/commit/69ea52f6e2b82dfe65c33d119f7ab998f367c6bf))
+* **custom-resources:** cannot set logging for state machine generated in CompleteHandler ([#28706](https://github.com/aws/aws-cdk/issues/28706)) ([99041b2](https://github.com/aws/aws-cdk/commit/99041b29fa00cad6c7dbdc19685866add3e1243e)), closes [#27283](https://github.com/aws/aws-cdk/issues/27283) [#28577](https://github.com/aws/aws-cdk/issues/28577) [#28744](https://github.com/aws/aws-cdk/issues/28744) [#27310](https://github.com/aws/aws-cdk/issues/27310) [#28699](https://github.com/aws/aws-cdk/issues/28699) [#28587](https://github.com/aws/aws-cdk/issues/28587)
+* **eks:** incorrect nodegroupName(under feature flag) ([#29794](https://github.com/aws/aws-cdk/issues/29794)) ([8bb8c55](https://github.com/aws/aws-cdk/commit/8bb8c5579108e8b80e465049c2a28c5c10c70b09))
+* **elasticloadbalancingv2:** crossZoneEnabled does not support false for ALB ([#29907](https://github.com/aws/aws-cdk/issues/29907)) ([f6c902e](https://github.com/aws/aws-cdk/commit/f6c902e701b3a8283a5d9a9fb136e3321d7bf61e))
+* **events-targets:** `ApiGateway` events target should accept IRestApi ([#29397](https://github.com/aws/aws-cdk/issues/29397)) ([8e1fefd](https://github.com/aws/aws-cdk/commit/8e1fefd81c6531063eba94f352a2b6d12c87810b)), closes [#16423](https://github.com/aws/aws-cdk/issues/16423) [/github.com/aws/aws-cdk/pull/16542#discussion_r713676896](https://github.com/aws//github.com/aws/aws-cdk/pull/16542/issues/discussion_r713676896) [/github.com/aws/aws-cdk/pull/16542#issuecomment-925051255](https://github.com/aws//github.com/aws/aws-cdk/pull/16542/issues/issuecomment-925051255)
+* **s3-notifications:** cdk destroy deletes external/existing s3 notification events ([#29939](https://github.com/aws/aws-cdk/issues/29939)) ([7360a88](https://github.com/aws/aws-cdk/commit/7360a885e6282ad28b4ae72f9ae92a6bcda88b15))
+* **ses-actions:** permissions too wide for S3 action ([#29833](https://github.com/aws/aws-cdk/issues/29833)) ([2da544f](https://github.com/aws/aws-cdk/commit/2da544feeeda68a379f0f79f18e138b9640c1691)), closes [#29811](https://github.com/aws/aws-cdk/issues/29811) [#29823](https://github.com/aws/aws-cdk/issues/29823) [/docs.aws.amazon.com/ses/latest/dg/receiving-email-permissions.html#receiving-email-permissions-s3](https://github.com/aws//docs.aws.amazon.com/ses/latest/dg/receiving-email-permissions.html/issues/receiving-email-permissions-s3)
+
+
+### Reverts
+
+* "chore(eks): update ALB controller versions" ([#29941](https://github.com/aws/aws-cdk/issues/29941)) ([209ffd9](https://github.com/aws/aws-cdk/commit/209ffd96ea555906ee02c611832d980f39b04325)), closes [aws/aws-cdk#29470](https://github.com/aws/aws-cdk/issues/29470)
+
 ## [2.138.0](https://github.com/aws/aws-cdk/compare/v2.137.0...v2.138.0) (2024-04-18)
 
 
