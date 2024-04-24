@@ -9,7 +9,7 @@ import { ApiCall } from '@aws-cdk/aws-custom-resource-sdk-adapter';
 import type * as AWSLambda from 'aws-lambda';
 import type { AwsSdkCall } from './construct-types';
 import { loadAwsSdk } from './load-sdk';
-import { decodeCall, decodeSpecialValues, filterKeys, startsWithOneOf, respond, getCredentials } from './utils';
+import { decodeCall, decodeSpecialValues, respond, getCredentials, formatData } from './utils';
 
 /* eslint-disable @typescript-eslint/no-require-imports, import/no-extraneous-dependencies */
 export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent, context: AWSLambda.Context): Promise<void> {
@@ -65,18 +65,7 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
         flatData.region = await apiCall.client.config.region().catch(() => undefined); // For test purposes: check if region was correctly passed.
         Object.assign(flatData, response);
 
-        let outputPaths: string[] | undefined;
-        if (call.outputPath) {
-          outputPaths = [call.outputPath];
-        } else if (call.outputPaths) {
-          outputPaths = call.outputPaths;
-        }
-
-        if (outputPaths) {
-          data = filterKeys(flatData, startsWithOneOf(outputPaths));
-        } else {
-          data = flatData;
-        }
+        data = formatData(call, flatData);
       } catch (e: any) {
         // empirecal evidence show e.name is not always set
         const exceptionName = e.name ?? e.constructor.name;

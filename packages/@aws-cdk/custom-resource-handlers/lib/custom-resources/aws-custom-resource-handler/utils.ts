@@ -34,35 +34,11 @@ export function decodeSpecialValues(object: object, physicalResourceId: string):
 }
 
 /**
- * Filters the keys of an object.
- */
-export function filterKeys(object: object, pred: (key: string) => boolean): {} {
-  return Object.entries(object)
-    .reduce(
-      (acc, [k, v]) => pred(k)
-        ? { ...acc, [k]: v }
-        : acc,
-      {},
-    );
-}
-
-/**
  * Parses a stringified JSON API call.
  */
 export function decodeCall(call: string | undefined): any {
   if (!call) { return undefined; }
   return JSON.parse(call);
-}
-
-export function startsWithOneOf(searchStrings: string[]): (string: string) => boolean {
-  return function(string: string): boolean {
-    for (const searchString of searchStrings) {
-      if (string.startsWith(searchString)) {
-        return true;
-      }
-    }
-    return false;
-  };
 }
 
 /**
@@ -139,4 +115,50 @@ export async function getCredentials(call: AwsSdkCall, physicalResourceId: strin
     });
   }
   return credentials;
+}
+
+/**
+ * Formats API response data based on outputPath or outputPaths configured in the SDK call.
+ */
+export function formatData(call: AwsSdkCall, flatData: { [key: string]: string }): { [key: string]: string } {
+  let outputPaths: string[] | undefined;
+  if (call.outputPath) {
+    outputPaths = [call.outputPath];
+  } else if (call.outputPaths) {
+    outputPaths = call.outputPaths;
+  }
+
+  if (outputPaths) {
+    return filterKeys(flatData, startsWithOneOf(outputPaths));
+  }
+
+  return flatData;
+}
+
+/**
+ * Returns a predicate function that returns true if a target string starts with any of the specified
+ * search strings.
+ */
+function startsWithOneOf(searchStrings: string[]): (string: string) => boolean {
+  return function(string: string): boolean {
+    for (const searchString of searchStrings) {
+      if (string.startsWith(searchString)) {
+        return true;
+      }
+    }
+    return false;
+  };
+}
+
+/**
+ * Filters the keys of an object.
+ */
+function filterKeys(object: object, pred: (key: string) => boolean): {} {
+  return Object.entries(object)
+    .reduce(
+      (acc, [k, v]) => pred(k)
+        ? { ...acc, [k]: v }
+        : acc,
+      {},
+    );
 }
