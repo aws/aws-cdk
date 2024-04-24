@@ -7,6 +7,7 @@ import * as cdk from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import { AwsCustomResource, AwsCustomResourcePolicy, PhysicalResourceId } from 'aws-cdk-lib/custom-resources';
 import { Construct } from 'constructs';
+import { ExpectedResult } from '@aws-cdk/integ-tests-alpha';
 
 interface AwsCdkSdkJsStackProps {
   readonly runtime?: lambda.Runtime;
@@ -113,7 +114,7 @@ class AwsCdkSdkJsStack extends cdk.Stack {
 
 const app = new cdk.App();
 
-new integ.IntegTest(app, 'AwsCustomResourceTest', {
+const integTest = new integ.IntegTest(app, 'AwsCustomResourceTest', {
   testCases: [
     new AwsCdkSdkJsStack(app, 'aws-cdk-sdk-js'),
     new AwsCdkSdkJsStack(app, 'aws-cdk-sdk-js-v3', {
@@ -123,4 +124,10 @@ new integ.IntegTest(app, 'AwsCustomResourceTest', {
   diffAssets: true,
 });
 
-app.synth();
+// Assertions for SNS List Topics
+integTest.assertions.awsApiCall('SNS', 'listTopics', {}).expect(ExpectedResult.objectLike({
+  Topics: [
+    { TopicArn: integ.Match.stringLikeRegexp('arn:aws:sns:(us-east-1|us-east-2|us-west-1):[0-9]{12}:.*') },
+    { TopicArn: integ.Match.stringLikeRegexp('arn:aws:sns:(us-east-1|us-east-2|us-west-1):[0-9]{12}:.*') },
+  ],
+}));
