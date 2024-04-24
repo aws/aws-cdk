@@ -1,5 +1,5 @@
 import { App, Stack, StackProps } from 'aws-cdk-lib/core';
-import { IntegTest } from '@aws-cdk/integ-tests-alpha';
+import { IntegTest, ExpectedResult } from '@aws-cdk/integ-tests-alpha';
 import { Construct } from 'constructs';
 import * as synthetics from 'aws-cdk-lib/aws-synthetics';
 import { AwsCustomResource, AwsCustomResourcePolicy, PhysicalResourceId } from 'aws-cdk-lib/custom-resources';
@@ -15,7 +15,7 @@ class TestStack extends Stack {
         handler: 'index.handler',
         code: synthetics.Code.fromInline(`
           exports.handler = async () => {
-            console.log(\'hello world\');
+            console.log('hello world');
           };`),
       }),
       cleanup: synthetics.Cleanup.LAMBDA,
@@ -27,7 +27,7 @@ class TestStack extends Stack {
         handler: 'index.handler',
         code: synthetics.Code.fromInline(`
           exports.handler = async () => {
-            console.log(\'hello world\');
+            console.log('hello world');
           };`),
       }),
       cleanup: synthetics.Cleanup.LAMBDA,
@@ -54,8 +54,21 @@ class TestStack extends Stack {
 
 const app = new App();
 
-new IntegTest(app, 'cdk-integ-synthetics-canary-auto-delete', {
+const integTest = new IntegTest(app, 'cdk-integ-synthetics-canary-auto-delete', {
   testCases: [new TestStack(app, 'cdk-synthetics-canary-auto-delete')],
   diffAssets: true,
-  stackUpdateWorkflow: false, // will error because this stack has a cr that deletes its own resources
+  stackUpdateWorkflow: false,
 });
+
+// Assertion for Canary creation
+const canaryAssertion = integTest.assertions.awsApiCall('Synthetics', 'describeCanaries', {
+  MaxResults: 10, // Adjust this if needed
+});
+
+canaryAssertion.expect(ExpectedResult.objectLike({
+  Canaries: [
+    // As part of this assertion we have check that only one canary exists 'next'
+    // since 'CanaryRemoved' is cleaned up as part of 'DeleteCanary' custom resource.
+    { Name: 'next' },
+  ],
+}));

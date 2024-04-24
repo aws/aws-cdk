@@ -168,7 +168,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f0b76b219ea917c3199ca3bc9c8310a1eebaf2d9a8321394e75c32714b244127.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -184,6 +184,30 @@
         "cdkintegsyntheticscanaryautodeleteDefaultTestDeployAssert94B79CED.assets"
       ],
       "metadata": {
+        "/cdk-integ-synthetics-canary-auto-delete/DefaultTest/DeployAssert/AwsApiCallSyntheticsdescribeCanariesca8aa460fc8430013a0ada16f5085efc/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallSyntheticsdescribeCanariesca8aa460fc8430013a0ada16f5085efc"
+          }
+        ],
+        "/cdk-integ-synthetics-canary-auto-delete/DefaultTest/DeployAssert/AwsApiCallSyntheticsdescribeCanariesca8aa460fc8430013a0ada16f5085efc/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsAwsApiCallSyntheticsdescribeCanariesca8aa460fc8430013a0ada16f5085efc"
+          }
+        ],
+        "/cdk-integ-synthetics-canary-auto-delete/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+          }
+        ],
+        "/cdk-integ-synthetics-canary-auto-delete/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+          }
+        ],
         "/cdk-integ-synthetics-canary-auto-delete/DefaultTest/DeployAssert/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
