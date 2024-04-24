@@ -1,7 +1,7 @@
 import { Construct } from 'constructs';
 import { HttpMethod, IConnection } from './connection';
 import { CfnApiDestination } from './events.generated';
-import { IResource, Resource } from '../../core';
+import { ArnFormat, IResource, Resource, Stack } from '../../core';
 
 /**
  * The event API Destination properties
@@ -63,11 +63,50 @@ export interface IApiDestination extends IResource {
 }
 
 /**
+ * The properties to import an existing Api Destination
+ */
+export interface ApiDestinationAttributes {
+  /**
+   * The ARN of the Api Destination
+   */
+  apiDestinationArn: string;
+  /**
+   * The Connection to associate with the Api Destination
+   */
+  connection: IConnection;
+}
+
+/**
  * Define an EventBridge Api Destination
  *
  * @resource AWS::Events::ApiDestination
  */
 export class ApiDestination extends Resource implements IApiDestination {
+  /**
+   * Create an Api Destination construct from an existing Api Destination ARN.
+   *
+   * @param scope The scope creating construct (usually `this`).
+   * @param id The construct's id.
+   * @param attributes The impported Api Destination attributes.
+   */
+  public static fromApiDestinationArn(
+    scope: Construct,
+    id: string,
+    { apiDestinationArn, connection }: ApiDestinationAttributes,
+  ): IApiDestination {
+    const apiDestinationName = Stack.of(scope).splitArn(apiDestinationArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName;
+    if (!apiDestinationName) {
+      throw new Error(`Could not extract Api Destionation name from ARN: '${apiDestinationArn}'`);
+    }
+
+    class Import extends Resource implements IApiDestination {
+      public readonly apiDestinationArn = apiDestinationArn;
+      public readonly apiDestinationName = apiDestinationName!;
+      public readonly connection = connection;
+    }
+
+    return new Import(scope, id);
+  }
   /**
    * The Connection to associate with Api Destination
    */
