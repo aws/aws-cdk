@@ -253,7 +253,7 @@ export abstract class HandlerFrameworkClass extends ClassType {
         });
         getOrCreateProviderMethod.addBody(
           stmt.constVar(expr.ident('id'), expr.directCode('`${uniqueid}CustomResourceProvider`')),
-          stmt.constVar(expr.ident('stack'), expr.directCode('Stack.of(scope)')),
+          stmt.constVar(expr.ident('stack'), expr.directCode('core.Stack.of(scope)')),
           stmt.constVar(expr.ident('existing'), expr.directCode(`stack.node.tryFindChild(id) as ${this.type}`)),
           stmt.ret(expr.directCode(`existing ?? new ${this.name}(stack, id, props)`)),
         );
@@ -300,11 +300,12 @@ export abstract class HandlerFrameworkClass extends ClassType {
         return;
       }
       case CORE_MODULE.fqn: {
-        CORE_MODULE.importSelective(scope, [
-          'Stack',
-          'CustomResourceProviderBase',
-          'CustomResourceProviderOptions',
-        ]);
+        // CORE_MODULE.importSelective(scope, [
+        //   'Stack',
+        //   'CustomResourceProviderBase',
+        //   'CustomResourceProviderOptions',
+        // ]);
+        CORE_MODULE.import(scope, 'core');
         return;
       }
       case CORE_INTERNAL_CR_PROVIDER.fqn: {
@@ -367,15 +368,15 @@ export abstract class HandlerFrameworkClass extends ClassType {
       name: 'builtInCustomResourceNodeRuntime',
       visibility: MemberVisibility.Private,
       static: true,
-      returnType: LAMBDA_MODULE.Function,
+      returnType: LAMBDA_MODULE.Runtime,
     });
     builtInCustomResourceNodeRuntime.addParameter({
       name: 'scope',
       type: CONSTRUCTS_MODULE.Construct,
     });
     builtInCustomResourceNodeRuntime.addBody(
-      stmt.constVar(expr.ident('runtimeName'), expr.directCode('Stack.of(scope).regionalFact(FactName.DEFAULT_CR_NODE_VERSION, "nodejs18.x")')),
-      stmt.ret(expr.directCode('runtimeName ? new lambda.Runtime(runtimeName, lambda.RuntimeFamily.NODEJS, { supportsInlineCode: true }) : lambda.Runtime.NODEJS_18_X')),
+      stmt.constVar(expr.ident('runtimeName'), expr.directCode('core.Stack.of(scope).regionalFact(FactName.DEFAULT_CR_NODE_VERSION, "nodejs20.x")')),
+      stmt.ret(expr.directCode('runtimeName ? new lambda.Runtime(runtimeName, lambda.RuntimeFamily.NODEJS, { supportsInlineCode: true }) : lambda.Runtime.NODEJS_20_X')),
     );
   }
 }
