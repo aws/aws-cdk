@@ -28,6 +28,14 @@
                 "id": "DropSpam",
                 "path": "aws-cdk-ses-receipt/RuleSet/DropSpam",
                 "children": {
+                  "IsUsEast1": {
+                    "id": "IsUsEast1",
+                    "path": "aws-cdk-ses-receipt/RuleSet/DropSpam/IsUsEast1",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnCondition",
+                      "version": "0.0.0"
+                    }
+                  },
                   "Function": {
                     "id": "Function",
                     "path": "aws-cdk-ses-receipt/RuleSet/DropSpam/Function",
@@ -267,7 +275,13 @@
                         "Arn"
                       ]
                     },
-                    "runtime": "nodejs18.x"
+                    "runtime": {
+                      "Fn::If": [
+                        "RuleSetDropSpamIsUsEast1EEFD6BD1",
+                        "nodejs18.x",
+                        "nodejs20.x"
+                      ]
+                    }
                   }
                 },
                 "constructInfo": {
@@ -408,7 +422,7 @@
                 "path": "cdk-ses-receipt-integ/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.70"
+                  "version": "10.3.0"
                 }
               },
               "DeployAssert": {
@@ -454,7 +468,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.2.70"
+          "version": "10.3.0"
         }
       }
     },

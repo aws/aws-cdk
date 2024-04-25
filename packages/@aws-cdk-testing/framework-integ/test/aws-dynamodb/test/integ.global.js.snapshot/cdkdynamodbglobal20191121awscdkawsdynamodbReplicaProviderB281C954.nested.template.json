@@ -1,4 +1,22 @@
 {
+ "Conditions": {
+  "IsUsEast1445a51eb67324112904b91264c501465": {
+   "Fn::Equals": [
+    {
+     "Ref": "AWS::Region"
+    },
+    "us-east-1"
+   ]
+  },
+  "IsUsEast1bed598eff9ba42d4829edb62750209cc": {
+   "Fn::Equals": [
+    {
+     "Ref": "AWS::Region"
+    },
+    "us-east-1"
+   ]
+  }
+ },
  "Resources": {
   "OnEventHandlerServiceRole15A26729": {
    "Type": "AWS::IAM::Role",
@@ -131,7 +149,13 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs18.x",
+    "Runtime": {
+     "Fn::If": [
+      "IsUsEast1445a51eb67324112904b91264c501465",
+      "nodejs18.x",
+      "nodejs20.x"
+     ]
+    },
     "Timeout": 300
    },
    "DependsOn": [
@@ -186,7 +210,13 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs18.x",
+    "Runtime": {
+     "Fn::If": [
+      "IsUsEast1bed598eff9ba42d4829edb62750209cc",
+      "nodejs18.x",
+      "nodejs20.x"
+     ]
+    },
     "Timeout": 30
    },
    "DependsOn": [

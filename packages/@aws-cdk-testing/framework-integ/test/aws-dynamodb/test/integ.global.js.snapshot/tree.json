@@ -327,6 +327,14 @@
             "id": "@aws-cdk--aws-dynamodb.ReplicaProvider",
             "path": "cdk-dynamodb-global-20191121/@aws-cdk--aws-dynamodb.ReplicaProvider",
             "children": {
+              "IsUsEast1445a51eb-6732-4112-904b-91264c501465": {
+                "id": "IsUsEast1445a51eb-6732-4112-904b-91264c501465",
+                "path": "cdk-dynamodb-global-20191121/@aws-cdk--aws-dynamodb.ReplicaProvider/IsUsEast1445a51eb-6732-4112-904b-91264c501465",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnCondition",
+                  "version": "0.0.0"
+                }
+              },
               "OnEventHandler": {
                 "id": "OnEventHandler",
                 "path": "cdk-dynamodb-global-20191121/@aws-cdk--aws-dynamodb.ReplicaProvider/OnEventHandler",
@@ -535,7 +543,13 @@
                             "Arn"
                           ]
                         },
-                        "runtime": "nodejs18.x",
+                        "runtime": {
+                          "Fn::If": [
+                            "IsUsEast1445a51eb67324112904b91264c501465",
+                            "nodejs18.x",
+                            "nodejs20.x"
+                          ]
+                        },
                         "timeout": 300
                       }
                     },
@@ -547,6 +561,14 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_lambda.Function",
+                  "version": "0.0.0"
+                }
+              },
+              "IsUsEast1bed598ef-f9ba-42d4-829e-db62750209cc": {
+                "id": "IsUsEast1bed598ef-f9ba-42d4-829e-db62750209cc",
+                "path": "cdk-dynamodb-global-20191121/@aws-cdk--aws-dynamodb.ReplicaProvider/IsUsEast1bed598ef-f9ba-42d4-829e-db62750209cc",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnCondition",
                   "version": "0.0.0"
                 }
               },
@@ -656,7 +678,13 @@
                             "Arn"
                           ]
                         },
-                        "runtime": "nodejs18.x",
+                        "runtime": {
+                          "Fn::If": [
+                            "IsUsEast1bed598eff9ba42d4829edb62750209cc",
+                            "nodejs18.x",
+                            "nodejs20.x"
+                          ]
+                        },
                         "timeout": 30
                       }
                     },
@@ -1652,7 +1680,7 @@
                           {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-eu-west-1"
                           },
-                          "/8b3c6feb070f454632cee6e863c7ec94af3254d0071ad904533703d3b66a63b8.json"
+                          "/5dbcf8832d988b005df82f10ecda68f04ee81693ad7598a16d97abf3137f01fa.json"
                         ]
                       ]
                     }

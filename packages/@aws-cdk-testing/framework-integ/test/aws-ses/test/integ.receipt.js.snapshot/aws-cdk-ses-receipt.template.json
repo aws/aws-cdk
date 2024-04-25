@@ -109,7 +109,13 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs18.x"
+    "Runtime": {
+     "Fn::If": [
+      "RuleSetDropSpamIsUsEast1EEFD6BD1",
+      "nodejs18.x",
+      "nodejs20.x"
+     ]
+    }
    },
    "DependsOn": [
     "SingletonLambda224e77f9a32e4b4dac32983477abba16ServiceRole3037F5B4"
@@ -152,6 +158,16 @@
      }
     }
    }
+  }
+ },
+ "Conditions": {
+  "RuleSetDropSpamIsUsEast1EEFD6BD1": {
+   "Fn::Equals": [
+    {
+     "Ref": "AWS::Region"
+    },
+    "us-east-1"
+   ]
   }
  },
  "Parameters": {

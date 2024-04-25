@@ -30,8 +30,8 @@ import * as logs from '../../aws-logs';
 import * as sns from '../../aws-sns';
 import * as sqs from '../../aws-sqs';
 import { Annotations, ArnFormat, CfnResource, Duration, FeatureFlags, Fn, IAspect, Lazy, Names, Size, Stack, Token } from '../../core';
+import * as core from '../../core';
 import { LAMBDA_RECOGNIZE_LAYER_VERSION } from '../../cx-api';
-
 /**
  * X-Ray Tracing Modes (https://docs.aws.amazon.com/lambda/latest/dg/API_TracingConfig.html)
  */
@@ -647,6 +647,22 @@ export class Function extends FunctionBase {
    */
   public static classifyVersionProperty(propertyName: string, locked: boolean) {
     this._VER_PROPS[propertyName] = locked;
+  }
+
+  /**
+   * The name of this runtime, as expected by the Lambda resource.
+   */
+  public static getConditionalRuntime(scope: Construct) {
+
+    const regionalcondition = new core.CfnCondition ( scope, 'IsUsEast1', {
+      expression: Fn.conditionEquals(core.Aws.REGION, 'us-east-1'),
+    });
+
+    const cond = Fn.conditionIf(regionalcondition.logicalId, 'nodejs18.x', 'nodejs20.x');
+    const ConditonalRuntime = new Runtime(cond.toString(),
+      RuntimeFamily.NODEJS, { supportsInlineCode: true });
+
+    return ConditonalRuntime;
   }
 
   /**

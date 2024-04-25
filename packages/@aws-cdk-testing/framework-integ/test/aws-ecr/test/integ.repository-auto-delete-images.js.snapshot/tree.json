@@ -76,6 +76,14 @@
                   "version": "0.0.0"
                 }
               },
+              "IsUsEast1": {
+                "id": "IsUsEast1",
+                "path": "aws-ecr-integ-stack/Custom::ECRAutoDeleteImagesCustomResourceProvider/IsUsEast1",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnCondition",
+                  "version": "0.0.0"
+                }
+              },
               "Handler": {
                 "id": "Handler",
                 "path": "aws-ecr-integ-stack/Custom::ECRAutoDeleteImagesCustomResourceProvider/Handler",

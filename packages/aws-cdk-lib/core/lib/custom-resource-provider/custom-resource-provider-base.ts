@@ -2,9 +2,11 @@ import * as path from 'path';
 import { Construct } from 'constructs';
 import * as fs from 'fs-extra';
 import { CustomResourceProviderOptions, INLINE_CUSTOM_RESOURCE_CONTEXT } from './shared';
+import * as core from '../../../core';
 import * as cxapi from '../../../cx-api';
 import { AssetStaging } from '../asset-staging';
 import { FileAssetPackaging } from '../assets';
+import { Fn } from '../cfn-fn';
 import { CfnResource } from '../cfn-resource';
 import { Duration } from '../duration';
 import { FileSystem } from '../fs';
@@ -137,7 +139,7 @@ export abstract class CustomResourceProviderBase extends Construct {
         MemorySize: memory.toMebibytes(),
         Handler: codeHandler,
         Role: this.roleArn,
-        Runtime: props.runtimeName,
+        Runtime: this.customResourceProviderBaseRuntimeToString(props.runtimeName),
         Environment: this.renderEnvironmentVariables(props.environment),
         Description: props.description ?? undefined,
       },
@@ -197,22 +199,34 @@ export abstract class CustomResourceProviderBase extends Construct {
   /**
    * docstring
    */
-  // private customResourceProviderBaseRuntimeToString(x: string) : string {
-  //   switch (x) {
-  //     case CustomResourceProviderBaseRuntime.NODEJS_12:
-  //       return 'zz';
-  //     case CustomResourceProviderBaseRuntime.NODEJS_12_X:
-  //       return 'nodejs12.x';
-  //     case CustomResourceProviderBaseRuntime.NODEJS_14_X:
-  //       return 'nodejs14.x';
-  //     case CustomResourceProviderBaseRuntime.NODEJS_16_X:
-  //       return 'nodejs16.x';
-  //     case CustomResourceProviderBaseRuntime.NODEJS_18_X:
-  //       return Runtime.getCondRuntime(this).toString();
-  //     default:
-  //       return 'not supported';
-  //   }
-  // }
+  private customResourceProviderBaseRuntimeToString(x: string) {
+    switch (x) {
+      case CustomResourceProviderBaseRuntime.NODEJS_12:
+        return 'nodejs12.x';
+      case CustomResourceProviderBaseRuntime.NODEJS_14_X:
+        return 'nodejs14.x';
+      case CustomResourceProviderBaseRuntime.NODEJS_16_X:
+        return 'nodejs16.x';
+      case CustomResourceProviderBaseRuntime.NODEJS_18_X:
+        return 'nodejs18.x';
+      case CustomResourceProviderBaseRuntime.NODEJS_18_X:
+        return CustomResourceProviderBase.getConditionalRuntime(this);
+    }
+    return 'undefined';
+  }
+
+  // eslint-disable-next-line @typescript-eslint/member-ordering
+  private static getConditionalRuntime(scope: Construct) {
+
+    const regionalcondition = new core.CfnCondition ( scope, 'IsUsEast1', {
+      expression: Fn.conditionEquals(core.Aws.REGION, 'us-east-1'),
+    });
+
+    const cond = Fn.conditionIf(regionalcondition.logicalId, 'nodejs18.x', 'nodejs20.x');
+    const ConditionalRuntime = cond.toString();
+
+    return ConditionalRuntime;
+  }
 
   private renderEnvironmentVariables(env?: { [key: string]: string }) {
     if (!env || Object.keys(env).length === 0) {
@@ -300,38 +314,32 @@ export type Code = {
   S3Key: string;
 };
 
-// /**
-//  * runtime
-//  */
+/**
+ * runtime
+ */
 
-// export enum CustomResourceProviderBaseRuntime {
+export enum CustomResourceProviderBaseRuntime {
 
-//   /**
-//    * Node.js 12.x
-//    * @deprecated Use latest version
-//    */
-//   NODEJS_12_X = 'nodejs12.x',
+  /**
+   * Node.js 12.x
+   * @deprecated Use latest version
+   */
+  NODEJS_12 = 'deprecated_nodejs12.x',
 
-//   /**
-//    * Node.js 12.x
-//    * @deprecated Use latest version
-//    */
-//   NODEJS_12 = 'deprecated_nodejs12.x',
+  /**
+   * Node.js 14.x
+   * @deprecated Use latest version
+   */
+  NODEJS_14_X = 'node14.x',
 
-//   /**
-//    * Node.js 14.x
-//    * @deprecated Use latest version
-//    */
-//   NODEJS_14_X = 'nodejs14.x',
+  /**
+   * Node.js 16.x
+   */
+  NODEJS_16_X = 'node16.x',
 
-//   /**
-//    * Node.js 16.x
-//    */
-//   NODEJS_16_X = 'nodejs16.x',
-
-//   /**
-//    * Node.js 18.x
-//    */
-//   NODEJS_18_X = 'nodejs18.x',
-// }
+  /**
+   * Node.js 18.x
+   */
+  NODEJS_18_X = 'node18.x',
+}
 

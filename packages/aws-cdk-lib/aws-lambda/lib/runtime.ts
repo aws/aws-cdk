@@ -1,3 +1,4 @@
+import { randomUUID } from 'crypto';
 import { Construct } from 'constructs';
 import { BundlingDockerImage, DockerImage, Fn } from '../../core';
 import * as core from '../../core';
@@ -309,9 +310,10 @@ export class Runtime {
   /**
    * The name of this runtime, as expected by the Lambda resource.
    */
-  public static getCondRuntime(scope: Construct) {
+  public static getConditionalRuntime(scope: Construct) {
 
-    const regionalcondition = new core.CfnCondition ( scope, 'IsUsEast1', {
+    const conditionName = 'IsUsEast1'+randomUUID(); //to prevent conflict in case of two handlers
+    const regionalcondition = new core.CfnCondition ( scope, conditionName, {
       expression: Fn.conditionEquals(core.Aws.REGION, 'us-east-1'),
     });
 
@@ -325,18 +327,18 @@ export class Runtime {
   /**
    * The name of this runtime, as expected by the Lambda resource.
    */
-  public static getCondRuntimeCR(scope: Construct) {
+  // public static getCondRuntimeCR(scope: Construct) {
 
-    const regionalcondition = new core.CfnCondition ( scope, 'IsUsEast1', {
-      expression: Fn.conditionEquals(core.Aws.REGION, 'us-east-1'),
-    });
+  //   const regionalcondition = new core.CfnCondition ( scope, 'IsUsEast1', {
+  //     expression: Fn.conditionEquals(core.Aws.REGION, 'us-east-1'),
+  //   });
 
-    const cond = Fn.conditionIf(regionalcondition.logicalId, 'nodejs18.x', 'nodejs20.x');
-    const CondRuntime = new Runtime(cond.toString(),
-      RuntimeFamily.NODEJS, { supportsInlineCode: true });
+  //   const cond = Fn.conditionIf(regionalcondition.logicalId, 'nodejs18.x', 'nodejs20.x');
+  //   const CondRuntime = new Runtime(cond.toString(),
+  //     RuntimeFamily.NODEJS, { supportsInlineCode: true });
 
-    return CondRuntime.name;
-  }
+  //   return CondRuntime.name;
+  // }
   /**
    * The name of this runtime, as expected by the Lambda resource.
    */
