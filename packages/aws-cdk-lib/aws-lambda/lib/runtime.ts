@@ -327,21 +327,6 @@ export class Runtime {
   /**
    * The name of this runtime, as expected by the Lambda resource.
    */
-  // public static getCondRuntimeCR(scope: Construct) {
-
-  //   const regionalcondition = new core.CfnCondition ( scope, 'IsUsEast1', {
-  //     expression: Fn.conditionEquals(core.Aws.REGION, 'us-east-1'),
-  //   });
-
-  //   const cond = Fn.conditionIf(regionalcondition.logicalId, 'nodejs18.x', 'nodejs20.x');
-  //   const CondRuntime = new Runtime(cond.toString(),
-  //     RuntimeFamily.NODEJS, { supportsInlineCode: true });
-
-  //   return CondRuntime.name;
-  // }
-  /**
-   * The name of this runtime, as expected by the Lambda resource.
-   */
   public readonly name: string;
 
   /**
