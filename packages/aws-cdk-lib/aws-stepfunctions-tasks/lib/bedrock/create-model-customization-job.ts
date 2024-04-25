@@ -238,11 +238,13 @@ export class BedrockCreateModelCustomizationJob extends sfn.TaskStateBase {
     this.taskPolicies = this.renderPolicyStatements();
 
     if (this.props.customModelKmsKey) {
-      this.props.customModelKmsKey.addToResourcePolicy(new iam.PolicyStatement({
-        actions: ['kms:Decrypt', 'kms:GenerateDataKey', 'kms:DescribeKey', 'kms:CreateGrant'],
-        resources: ['*'],
-        principals: [new iam.ArnPrincipal(this._role.roleArn)],
-      }));
+      this.props.customModelKmsKey.grant(
+        this._role,
+        'kms:Decrypt',
+        'kms:GenerateDataKey',
+        'kms:DescribeKey',
+        'kms:CreateGrant',
+      );
     }
   }
 
@@ -292,6 +294,11 @@ export class BedrockCreateModelCustomizationJob extends sfn.TaskStateBase {
     return role;
   }
 
+  /**
+   * model customization role needs to have VPC permissions
+   *
+   * @see https://docs.aws.amazon.com/bedrock/latest/userguide/vpc-model-customization.html#vpc-data-access-role
+   */
   private createVpcConfigPolicyStatement(): iam.PolicyStatement[] {
     const vpcConfig = this.props.vpcConfig;
     if (!vpcConfig) {
