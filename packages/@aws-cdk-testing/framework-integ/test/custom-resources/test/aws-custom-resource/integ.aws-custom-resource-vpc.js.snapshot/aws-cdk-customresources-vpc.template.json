@@ -432,7 +432,7 @@
       ]
      ]
     },
-    "InstallLatestAwsSdk": "false"
+    "InstallLatestAwsSdk": false
    },
    "DependsOn": [
     "DescribeVpcAttributeCustomResourcePolicyAF7C66C1"
