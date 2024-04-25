@@ -1,3 +1,4 @@
+import { error } from 'console';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as cdk_assets from 'cdk-assets';
 import { AssetManifest, IManifestEntry } from 'cdk-assets';
@@ -534,6 +535,7 @@ export class Deployments {
     const warningMessage = `Could not assume ${arns.lookupRoleArn}, proceeding anyway.`;
 
     try {
+      // Trying to assume lookup role and cache the sdk for the environment
       const stackSdk = await this.cachedSdkForEnvironment(resolvedEnvironment, Mode.ForReading, {
         assumeRoleArn: arns.lookupRoleArn,
         assumeRoleExternalId: stack.lookupRole?.assumeRoleExternalId,
@@ -554,10 +556,17 @@ export class Deployments {
       return { ...stackSdk, resolvedEnvironment, envResources };
     } catch (e: any) {
       debug(e);
+
       // only print out the warnings if the lookupRole exists
       if (stack.lookupRole) {
         warning(warningMessage);
       }
+
+      // This error should be shown even if debug mode is off
+      if (e instanceof Error && e.message.includes('Bootstrap stack version')) {
+        error(e.message);
+      }
+
       throw (e);
     }
   }

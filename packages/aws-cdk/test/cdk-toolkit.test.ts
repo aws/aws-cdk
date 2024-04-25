@@ -241,6 +241,7 @@ describe('readCurrentTemplate', () => {
     // THEN
     expect(flatten(stderrMock.mock.calls)).toEqual(expect.arrayContaining([
       expect.stringMatching(/Could not assume bloop-lookup:here:123456789012/),
+      expect.stringContaining("Bootstrap stack version '5' is required, found version '1'. To get rid of this error, please upgrade to bootstrap version >= 5"),
     ]));
     expect(requestedParameterName!).toEqual('/bootstrap/parameter');
     expect(mockForEnvironment.mock.calls.length).toEqual(3);
