@@ -477,6 +477,7 @@ export class AwsCustomResource extends Construct implements iam.IGrantable {
     const provider = new AwsCustomResourceSingletonFunction(this, 'Provider', {
       uuid: AwsCustomResource.PROVIDER_FUNCTION_UUID,
       lambdaPurpose: 'AWS',
+      memorySize: 2048,
       timeout: props.timeout || cdk.Duration.minutes(2),
       role: props.role,
       // props.logRetention is deprecated, make sure we only set it if it is actually provided

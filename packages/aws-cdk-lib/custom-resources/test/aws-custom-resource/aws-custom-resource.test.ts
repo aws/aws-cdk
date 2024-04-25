@@ -608,6 +608,26 @@ test('timeout defaults to 2 minutes', () => {
   });
 });
 
+test('memorySize defaults to 2048 M', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+
+  // WHEN
+  new AwsCustomResource(stack, 'AwsSdk', {
+    onCreate: {
+      service: 'service',
+      action: 'action',
+      physicalResourceId: PhysicalResourceId.of('id'),
+    },
+    policy: AwsCustomResourcePolicy.fromSdkCalls({ resources: AwsCustomResourcePolicy.ANY_RESOURCE }),
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+    MemorySize: 2048,
+  });
+});
+
 test('can specify timeout', () => {
   // GIVEN
   const stack = new cdk.Stack();
