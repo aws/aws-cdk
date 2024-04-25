@@ -578,16 +578,6 @@
    ]
   }
  },
- "Outputs": {
-  "ExportsOutputRefVpc8378EB38272D6E3A": {
-   "Value": {
-    "Ref": "Vpc8378EB38"
-   },
-   "Export": {
-    "Name": "aws-cdk-customresources-vpc:ExportsOutputRefVpc8378EB38272D6E3A"
-   }
-  }
- },
  "Parameters": {
   "BootstrapVersion": {
    "Type": "AWS::SSM::Parameter::Value<String>",
