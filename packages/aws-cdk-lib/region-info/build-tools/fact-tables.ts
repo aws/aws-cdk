@@ -91,7 +91,7 @@ export const PARTITION_MAP: { [region: string]: Region } = {
 };
 
 export const CR_DEFAULT_RUNTIME_MAP: Record<Partition, string> = {
-  [Partition.Default]: 'nodejs18.x',
+  [Partition.Default]: 'nodejs20.x',
   [Partition.Cn]: 'nodejs18.x',
   [Partition.UsGov]: 'nodejs18.x',
   [Partition.UsIso]: 'nodejs18.x',

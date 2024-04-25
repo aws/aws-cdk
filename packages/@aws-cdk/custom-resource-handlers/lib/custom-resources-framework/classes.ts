@@ -253,7 +253,7 @@ export abstract class HandlerFrameworkClass extends ClassType {
         });
         getOrCreateProviderMethod.addBody(
           stmt.constVar(expr.ident('id'), expr.directCode('`${uniqueid}CustomResourceProvider`')),
-          stmt.constVar(expr.ident('stack'), expr.directCode('core.Stack.of(scope)')),
+          stmt.constVar(expr.ident('stack'), scope.coreInternal ? expr.directCode('Stack.of(scope)') : expr.directCode('core.Stack.of(scope)')),
           stmt.constVar(expr.ident('existing'), expr.directCode(`stack.node.tryFindChild(id) as ${this.type}`)),
           stmt.ret(expr.directCode(`existing ?? new ${this.name}(stack, id, props)`)),
         );
@@ -300,12 +300,11 @@ export abstract class HandlerFrameworkClass extends ClassType {
         return;
       }
       case CORE_MODULE.fqn: {
-        // CORE_MODULE.importSelective(scope, [
-        //   'Stack',
-        //   'CustomResourceProviderBase',
-        //   'CustomResourceProviderOptions',
-        // ]);
-        CORE_MODULE.import(scope, 'core');
+        scope.coreInternal ? CORE_MODULE.importSelective(scope, [
+          'Stack',
+          'CustomResourceProviderBase',
+          'CustomResourceProviderOptions',
+        ]) : CORE_MODULE.import(scope, 'core');
         return;
       }
       case CORE_INTERNAL_CR_PROVIDER.fqn: {

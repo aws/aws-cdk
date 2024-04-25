@@ -1709,3 +1709,39 @@ test('DeployTimeSubstitutedFile allows custom role to be supplied', () => {
     },
   });
 });
+
+test('region aware: gov cloud', () => {
+  // GIVEN
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app, 'RegionAware', { env: { region: 'us-gov-east-1' } });
+  const bucket = new s3.Bucket(stack, 'Dest');
+
+  // WHEN
+  new s3deploy.BucketDeployment(stack, 'Deployment', {
+    sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
+    destinationBucket: bucket,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+    Runtime: 'nodejs18.x',
+  });
+});
+
+test('region aware: commercial region', () => {
+  // GIVEN
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app, 'RegionAware', { env: { region: 'us-east-1' } });
+  const bucket = new s3.Bucket(stack, 'Dest');
+
+  // WHEN
+  new s3deploy.BucketDeployment(stack, 'Deployment', {
+    sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
+    destinationBucket: bucket,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+    Runtime: 'nodejs20.x',
+  });
+});
