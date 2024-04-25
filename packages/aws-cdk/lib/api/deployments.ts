@@ -1,4 +1,3 @@
-import { error } from 'console';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as cdk_assets from 'cdk-assets';
 import { AssetManifest, IManifestEntry } from 'cdk-assets';
@@ -14,7 +13,7 @@ import { StackActivityProgress } from './util/cloudformation/stack-activity-moni
 import { replaceEnvPlaceholders } from './util/placeholders';
 import { makeBodyParameterAndUpload } from './util/template-body-parameter';
 import { Tag } from '../cdk-toolkit';
-import { debug, warning } from '../logging';
+import { debug, warning, error } from '../logging';
 import { buildAssets, publishAssets, BuildAssetsOptions, PublishAssetsOptions, PublishingAws, EVENT_TO_LOGGER } from '../util/asset-publishing';
 
 /**
