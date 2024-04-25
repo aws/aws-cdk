@@ -15,7 +15,7 @@ class TestStack extends Stack {
         handler: 'index.handler',
         code: synthetics.Code.fromInline(`
           exports.handler = async () => {
-            console.log('hello world');
+            console.log(\'hello world\');
           };`),
       }),
       cleanup: synthetics.Cleanup.LAMBDA,
@@ -27,7 +27,7 @@ class TestStack extends Stack {
         handler: 'index.handler',
         code: synthetics.Code.fromInline(`
           exports.handler = async () => {
-            console.log('hello world');
+            console.log(\'hello world\');
           };`),
       }),
       cleanup: synthetics.Cleanup.LAMBDA,
