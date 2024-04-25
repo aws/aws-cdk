@@ -13,6 +13,7 @@ import {
   PARAMS_AND_SECRETS_LAMBDA_LAYER_ARNS,
   APPCONFIG_LAMBDA_LAYER_ARNS,
   PARTITION_SAML_SIGN_ON_URL,
+  CR_DEFAULT_RUNTIME_MAP,
 } from './fact-tables';
 import { AWS_CDK_METADATA } from './metadata';
 import {
@@ -84,6 +85,8 @@ export async function main(): Promise<void> {
     registerFact(region, 'DLC_REPOSITORY_ACCOUNT', DLC_REPOSITORY_ACCOUNTS[region]);
 
     registerFact(region, 'APPMESH_ECR_ACCOUNT', APPMESH_ECR_ACCOUNTS[region]);
+
+    registerFact(region, 'DEFAULT_CR_NODE_VERSION', CR_DEFAULT_RUNTIME_MAP[partition]);
 
     registerFact(region, 'SAML_SIGN_ON_URL', PARTITION_SAML_SIGN_ON_URL[partition]);
 

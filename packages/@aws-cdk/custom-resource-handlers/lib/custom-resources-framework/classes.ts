@@ -23,8 +23,8 @@ import {
   CORE_INTERNAL_STACK,
   CORE_INTERNAL_CR_PROVIDER,
   PATH_MODULE,
+  REGION_INFO,
 } from './modules';
-import { toLambdaRuntime } from './utils/framework-utils';
 
 /**
  * Initialization properties for a class constructor.
@@ -86,7 +86,7 @@ export abstract class HandlerFrameworkClass extends ClassType {
    */
   public static buildFunction(scope: HandlerFrameworkModule, props: HandlerFrameworkClassProps): HandlerFrameworkClass {
     return new (class Function extends HandlerFrameworkClass {
-      protected readonly externalModules = [PATH_MODULE, CONSTRUCTS_MODULE, LAMBDA_MODULE];
+      protected readonly externalModules = [PATH_MODULE, CONSTRUCTS_MODULE, LAMBDA_MODULE, REGION_INFO, CORE_MODULE];
 
       public constructor() {
         super(scope, {
@@ -97,11 +97,13 @@ export abstract class HandlerFrameworkClass extends ClassType {
 
         this.importExternalModulesInto(scope);
 
+        this.buildCustomResourceRuntimeDeterminer();
+
         const superProps = new ObjectLiteral([
           new Splat(expr.ident('props')),
           ['code', expr.directCode(`lambda.Code.fromAsset(path.join(__dirname, '${props.codeDirectory}'))`)],
           ['handler', expr.lit(props.handler)],
-          ['runtime', expr.directCode(toLambdaRuntime(props.runtime))],
+          ['runtime', expr.directCode(`${this.name}.builtInCustomResourceNodeRuntime(scope)`)],
         ]);
         this.buildConstructor({
           constructorPropsType: LAMBDA_MODULE.FunctionOptions,
@@ -118,7 +120,7 @@ export abstract class HandlerFrameworkClass extends ClassType {
    */
   public static buildSingletonFunction(scope: HandlerFrameworkModule, props: HandlerFrameworkClassProps): HandlerFrameworkClass {
     return new (class SingletonFunction extends HandlerFrameworkClass {
-      protected readonly externalModules = [PATH_MODULE, CONSTRUCTS_MODULE, LAMBDA_MODULE];
+      protected readonly externalModules = [PATH_MODULE, CONSTRUCTS_MODULE, LAMBDA_MODULE, REGION_INFO, CORE_MODULE];
 
       public constructor() {
         super(scope, {
@@ -128,6 +130,8 @@ export abstract class HandlerFrameworkClass extends ClassType {
         });
 
         this.importExternalModulesInto(scope);
+
+        this.buildCustomResourceRuntimeDeterminer();
 
         const uuid: PropertySpec = {
           name: 'uuid',
@@ -163,7 +167,7 @@ export abstract class HandlerFrameworkClass extends ClassType {
           new Splat(expr.ident('props')),
           ['code', expr.directCode(`lambda.Code.fromAsset(path.join(__dirname, '${props.codeDirectory}'))`)],
           ['handler', expr.lit(props.handler)],
-          ['runtime', expr.directCode(toLambdaRuntime(props.runtime))],
+          ['runtime', expr.directCode(`${this.name}.builtInCustomResourceNodeRuntime(scope)`)],
         ]);
         this.buildConstructor({
           constructorPropsType: _interface.type,
@@ -318,6 +322,10 @@ export abstract class HandlerFrameworkClass extends ClassType {
         LAMBDA_MODULE.import(scope, 'lambda');
         return;
       }
+      case REGION_INFO.fqn: {
+        REGION_INFO.importSelective(scope, ['FactName']);
+        return;
+      }
     }
   }
 
@@ -352,5 +360,22 @@ export abstract class HandlerFrameworkClass extends ClassType {
 
     const superInitializerArgs: Expression[] = [scope, id, props.superProps];
     init.addBody(new SuperInitializer(...superInitializerArgs));
+  }
+
+  private buildCustomResourceRuntimeDeterminer() {
+    const builtInCustomResourceNodeRuntime = this.addMethod({
+      name: 'builtInCustomResourceNodeRuntime',
+      visibility: MemberVisibility.Private,
+      static: true,
+      returnType: LAMBDA_MODULE.Function,
+    });
+    builtInCustomResourceNodeRuntime.addParameter({
+      name: 'scope',
+      type: CONSTRUCTS_MODULE.Construct,
+    });
+    builtInCustomResourceNodeRuntime.addBody(
+      stmt.constVar(expr.ident('runtimeName'), expr.directCode('Stack.of(scope).regionalFact(FactName.DEFAULT_CR_NODE_VERSION, "nodejs18.x")')),
+      stmt.ret(expr.directCode('runtimeName ? new lambda.Runtime(runtimeName, lambda.RuntimeFamily.NODEJS, { supportsInlineCode: true }) : lambda.Runtime.NODEJS_18_X')),
+    );
   }
 }

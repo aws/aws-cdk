@@ -90,6 +90,14 @@ export const PARTITION_MAP: { [region: string]: Region } = {
   'us-isob-': { partition: Partition.UsIsoB, domainSuffix: 'sc2s.sgov.gov' },
 };
 
+export const CR_DEFAULT_RUNTIME_MAP: Record<Partition, string> = {
+  [Partition.Default]: 'nodejs18.x',
+  [Partition.Cn]: 'nodejs18.x',
+  [Partition.UsGov]: 'nodejs18.x',
+  [Partition.UsIso]: 'nodejs18.x',
+  [Partition.UsIsoB]: 'nodejs18.x',
+};
+
 // https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-access-logs.html#access-logging-bucket-permissions
 // https://docs.aws.amazon.com/elasticloadbalancing/latest/classic/enable-access-logs.html#attach-bucket-policy
 // Any not listed regions use the service principal "logdelivery.elasticloadbalancing.amazonaws.com"
