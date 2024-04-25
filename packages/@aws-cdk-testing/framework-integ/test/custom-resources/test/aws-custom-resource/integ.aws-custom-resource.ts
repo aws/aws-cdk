@@ -14,9 +14,12 @@ interface AwsCdkSdkJsStackProps {
 }
 
 class AwsCdkSdkJsStack extends cdk.Stack {
+  public readonly topicArn: string;
+
   constructor(scope: Construct, id: string, props?: AwsCdkSdkJsStackProps) {
     super(scope, id);
     const topic = new sns.Topic(this, 'Topic');
+    this.topicArn = topic.topicArn;
 
     const snsPublish = new AwsCustomResource(this, 'Publish', {
       resourceType: 'Custom::SNSPublisher',
@@ -25,7 +28,7 @@ class AwsCdkSdkJsStack extends cdk.Stack {
         action: 'publish',
         parameters: {
           Message: 'hello',
-          TopicArn: topic.topicArn,
+          TopicArn: this.topicArn,
         },
         physicalResourceId: PhysicalResourceId.of(topic.topicArn),
       },
@@ -113,21 +116,16 @@ class AwsCdkSdkJsStack extends cdk.Stack {
 }
 
 const app = new cdk.App();
-
+const testStack = new AwsCdkSdkJsStack(app, 'aws-cdk-sdk-js-v3', {
+  runtime: lambda.Runtime.NODEJS_18_X,
+});
 const integTest = new integ.IntegTest(app, 'AwsCustomResourceTest', {
-  testCases: [
-    new AwsCdkSdkJsStack(app, 'aws-cdk-sdk-js'),
-    new AwsCdkSdkJsStack(app, 'aws-cdk-sdk-js-v3', {
-      runtime: lambda.Runtime.NODEJS_18_X,
-    }),
-  ],
+  testCases: [testStack],
   diffAssets: true,
 });
 
-// Assertions for SNS List Topics
-integTest.assertions.awsApiCall('SNS', 'listTopics', {}).expect(ExpectedResult.objectLike({
-  Topics: [
-    { TopicArn: integ.Match.stringLikeRegexp('arn:aws:sns:(us-east-1|us-east-2|us-west-1):[0-9]{12}:.*') },
-    { TopicArn: integ.Match.stringLikeRegexp('arn:aws:sns:(us-east-1|us-east-2|us-west-1):[0-9]{12}:.*') },
-  ],
+integTest.assertions.awsApiCall('SNS', 'listTopics').expect(ExpectedResult.objectLike({
+  Topics: integ.Match.arrayWith([
+    { TopicArn: testStack.topicArn },
+  ]),
 }));
