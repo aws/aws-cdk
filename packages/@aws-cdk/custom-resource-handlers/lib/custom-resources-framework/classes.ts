@@ -24,6 +24,7 @@ import {
   CORE_INTERNAL_CR_PROVIDER,
   PATH_MODULE,
   REGION_INFO,
+  CORE_INTERNAL_REGION_INFO,
 } from './modules';
 
 /**
@@ -183,7 +184,7 @@ export abstract class HandlerFrameworkClass extends ClassType {
    */
   public static buildCustomResourceProvider(scope: HandlerFrameworkModule, props: HandlerFrameworkClassProps): HandlerFrameworkClass {
     return new (class CustomResourceProvider extends HandlerFrameworkClass {
-      protected readonly externalModules: ExternalModule[] = [PATH_MODULE, CONSTRUCTS_MODULE, REGION_INFO];
+      protected readonly externalModules: ExternalModule[] = [PATH_MODULE, CONSTRUCTS_MODULE];
 
       public constructor() {
         super(scope, {
@@ -195,13 +196,13 @@ export abstract class HandlerFrameworkClass extends ClassType {
         });
 
         if (scope.coreInternal) {
-          this.externalModules.push(...[CORE_INTERNAL_STACK, CORE_INTERNAL_CR_PROVIDER]);
+          this.externalModules.push(...[CORE_INTERNAL_STACK, CORE_INTERNAL_CR_PROVIDER, CORE_INTERNAL_REGION_INFO]);
         } else {
-          this.externalModules.push(CORE_MODULE);
+          this.externalModules.push(...[CORE_MODULE, REGION_INFO]);
         }
         this.importExternalModulesInto(scope);
 
-        this.buildCustomResourceProviderRuntimeDeterminer();
+        this.buildCustomResourceProviderRuntimeDeterminer(scope);
 
         const getOrCreateMethod = this.addMethod({
           name: 'getOrCreate',
@@ -263,7 +264,7 @@ export abstract class HandlerFrameworkClass extends ClassType {
         const superProps = new ObjectLiteral([
           new Splat(expr.ident('props')),
           ['codeDirectory', expr.directCode(`path.join(__dirname, '${props.codeDirectory}')`)],
-          ['runtimeName', expr.lit(`${this.name}.builtInCustomResourceProviderNodeRuntime(scope)`)],
+          ['runtimeName', expr.directCode(`${this.name}.builtInCustomResourceProviderNodeRuntime(scope)`)],
         ]);
         this.buildConstructor({
           constructorPropsType: scope.coreInternal
@@ -328,6 +329,10 @@ export abstract class HandlerFrameworkClass extends ClassType {
         REGION_INFO.importSelective(scope, ['FactName']);
         return;
       }
+      case CORE_INTERNAL_REGION_INFO.fqn: {
+        CORE_INTERNAL_REGION_INFO.importSelective(scope, ['FactName']);
+        return;
+      }
     }
   }
 
@@ -381,7 +386,7 @@ export abstract class HandlerFrameworkClass extends ClassType {
     );
   }
 
-  private buildCustomResourceProviderRuntimeDeterminer() {
+  private buildCustomResourceProviderRuntimeDeterminer(scope: HandlerFrameworkModule) {
     const runtimeDeterminer = this.addMethod({
       name: 'builtInCustomResourceProviderNodeRuntime',
       visibility: MemberVisibility.Private,
@@ -393,7 +398,7 @@ export abstract class HandlerFrameworkClass extends ClassType {
       type: CONSTRUCTS_MODULE.Construct,
     });
     runtimeDeterminer.addBody(
-      stmt.constVar(expr.ident('runtimeName'), expr.directCode('core.Stack.of(scope).regionalFact(FactName.DEFAULT_CR_NODE_VERSION, "nodejs18.x")')),
+      stmt.constVar(expr.ident('runtimeName'), expr.directCode(`${scope.coreInternal ? '' : 'core.'}Stack.of(scope).regionalFact(FactName.DEFAULT_CR_NODE_VERSION, "nodejs18.x")`)),
       stmt.ret(expr.directCode('runtimeName ?? "nodejs18.x"')),
     );
   }

@@ -1745,3 +1745,20 @@ test('region aware: commercial region', () => {
     Runtime: 'nodejs20.x',
   });
 });
+
+test('region aware: region agnostic', () => {
+  // GIVEN
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app, 'RegionAware');
+  const bucket = new s3.Bucket(stack, 'Dest');
+
+  // WHEN
+  new s3deploy.BucketDeployment(stack, 'Deployment', {
+    sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
+    destinationBucket: bucket,
+  });
+
+  // THEN
+  /* eslint-disable no-console */
+  console.log(JSON.stringify(Template.fromStack(stack), null, 4));
+});

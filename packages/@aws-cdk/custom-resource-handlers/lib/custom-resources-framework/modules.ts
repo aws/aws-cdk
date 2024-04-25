@@ -61,6 +61,14 @@ class RegionInfo extends ExternalModule {
   }
 }
 
+class CoreInternalRegionInfo extends ExternalModule {
+  public readonly FactName = Type.fromName(this, 'FactName');
+
+  public constructor() {
+    super('../../../../region-info');
+  }
+}
+
 export const PATH_MODULE = new PathModule();
 export const CONSTRUCTS_MODULE = new ConstructsModule();
 export const CORE_MODULE = new CoreModule();
@@ -68,3 +76,4 @@ export const CORE_INTERNAL_STACK = new CoreInternalStack();
 export const CORE_INTERNAL_CR_PROVIDER = new CoreInternalCustomResourceProvider();
 export const LAMBDA_MODULE = new LambdaModule();
 export const REGION_INFO = new RegionInfo();
+export const CORE_INTERNAL_REGION_INFO = new CoreInternalRegionInfo();
