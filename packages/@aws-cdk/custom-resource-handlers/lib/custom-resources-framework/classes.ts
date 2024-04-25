@@ -183,7 +183,7 @@ export abstract class HandlerFrameworkClass extends ClassType {
    */
   public static buildCustomResourceProvider(scope: HandlerFrameworkModule, props: HandlerFrameworkClassProps): HandlerFrameworkClass {
     return new (class CustomResourceProvider extends HandlerFrameworkClass {
-      protected readonly externalModules: ExternalModule[] = [PATH_MODULE, CONSTRUCTS_MODULE];
+      protected readonly externalModules: ExternalModule[] = [PATH_MODULE, CONSTRUCTS_MODULE, REGION_INFO];
 
       public constructor() {
         super(scope, {
@@ -200,6 +200,8 @@ export abstract class HandlerFrameworkClass extends ClassType {
           this.externalModules.push(CORE_MODULE);
         }
         this.importExternalModulesInto(scope);
+
+        this.buildCustomResourceProviderRuntimeDeterminer();
 
         const getOrCreateMethod = this.addMethod({
           name: 'getOrCreate',
@@ -261,7 +263,7 @@ export abstract class HandlerFrameworkClass extends ClassType {
         const superProps = new ObjectLiteral([
           new Splat(expr.ident('props')),
           ['codeDirectory', expr.directCode(`path.join(__dirname, '${props.codeDirectory}')`)],
-          ['runtimeName', expr.lit(props.runtime)],
+          ['runtimeName', expr.lit(`${this.name}.builtInCustomResourceProviderNodeRuntime(scope)`)],
         ]);
         this.buildConstructor({
           constructorPropsType: scope.coreInternal
@@ -363,19 +365,36 @@ export abstract class HandlerFrameworkClass extends ClassType {
   }
 
   private buildCustomResourceRuntimeDeterminer() {
-    const builtInCustomResourceNodeRuntime = this.addMethod({
+    const runtimeDeterminer = this.addMethod({
       name: 'builtInCustomResourceNodeRuntime',
       visibility: MemberVisibility.Private,
       static: true,
       returnType: LAMBDA_MODULE.Runtime,
     });
-    builtInCustomResourceNodeRuntime.addParameter({
+    runtimeDeterminer.addParameter({
       name: 'scope',
       type: CONSTRUCTS_MODULE.Construct,
     });
-    builtInCustomResourceNodeRuntime.addBody(
-      stmt.constVar(expr.ident('runtimeName'), expr.directCode('core.Stack.of(scope).regionalFact(FactName.DEFAULT_CR_NODE_VERSION, "nodejs20.x")')),
-      stmt.ret(expr.directCode('runtimeName ? new lambda.Runtime(runtimeName, lambda.RuntimeFamily.NODEJS, { supportsInlineCode: true }) : lambda.Runtime.NODEJS_20_X')),
+    runtimeDeterminer.addBody(
+      stmt.constVar(expr.ident('runtimeName'), expr.directCode('core.Stack.of(scope).regionalFact(FactName.DEFAULT_CR_NODE_VERSION, "nodejs18.x")')),
+      stmt.ret(expr.directCode('runtimeName ? new lambda.Runtime(runtimeName, lambda.RuntimeFamily.NODEJS, { supportsInlineCode: true }) : lambda.Runtime.NODEJS_18_X')),
+    );
+  }
+
+  private buildCustomResourceProviderRuntimeDeterminer() {
+    const runtimeDeterminer = this.addMethod({
+      name: 'builtInCustomResourceProviderNodeRuntime',
+      visibility: MemberVisibility.Private,
+      static: true,
+      returnType: Type.STRING,
+    });
+    runtimeDeterminer.addParameter({
+      name: 'scope',
+      type: CONSTRUCTS_MODULE.Construct,
+    });
+    runtimeDeterminer.addBody(
+      stmt.constVar(expr.ident('runtimeName'), expr.directCode('core.Stack.of(scope).regionalFact(FactName.DEFAULT_CR_NODE_VERSION, "nodejs18.x")')),
+      stmt.ret(expr.directCode('runtimeName ?? "nodejs18.x"')),
     );
   }
 }
