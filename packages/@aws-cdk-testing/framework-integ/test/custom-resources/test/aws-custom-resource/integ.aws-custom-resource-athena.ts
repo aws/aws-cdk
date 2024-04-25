@@ -1,7 +1,7 @@
 import { ManagedPolicy, PolicyDocument, PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { Bucket } from 'aws-cdk-lib/aws-s3';
 import * as cdk from 'aws-cdk-lib';
-import { IntegTest } from '@aws-cdk/integ-tests-alpha';
+import { ExpectedResult, IntegTest, Match } from '@aws-cdk/integ-tests-alpha';
 import { AwsCustomResource, PhysicalResourceId, PhysicalResourceIdReference } from 'aws-cdk-lib/custom-resources';
 
 /*
@@ -134,9 +134,29 @@ const notebook = new AwsCustomResource(stack, 'AthenaNotebook', {
 });
 notebook.node.addDependency(workgroup);
 
-new IntegTest(app, 'CustomResourceAthena', {
+const integTest = new IntegTest(app, 'CustomResourceAthena', {
   testCases: [stack],
   diffAssets: true,
 });
 
-app.synth();
+// Assertion to check if TestWG workgroup is present in the list of workgroups
+integTest.assertions.awsApiCall('Athena', 'listWorkGroups')
+  .expect(ExpectedResult.objectLike({
+    WorkGroups: Match.arrayWith([
+      Match.objectLike({
+        Name: workgroupName,
+      }),
+    ]),
+  }));
+
+// Assertion for Athena listNotebookMetadata
+integTest.assertions.awsApiCall('Athena', 'listNotebookMetadata', {
+  WorkGroup: workgroupName,
+})
+  .expect(ExpectedResult.objectLike({
+    NotebookMetadataList: Match.arrayWith([
+      Match.objectLike({
+        Name: notebookName,
+      }),
+    ]),
+  }));
