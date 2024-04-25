@@ -34,3 +34,5 @@ new IntegTest(app, 'CustomResourceVpc', {
   testCases: [stack],
   diffAssets: true,
 });
+
+app.synth();
