@@ -5,6 +5,7 @@ import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as fs from 'fs-extra';
 import * as semver from 'semver';
+import { renderCommandLine } from '../../helper';
 import { debug, warning } from '../../logging';
 import { Configuration, PROJECT_CONFIG, USER_DEFAULTS } from '../../settings';
 import { loadTree, some } from '../../tree';
@@ -82,7 +83,7 @@ export async function execProgram(aws: SdkProvider, config: Configuration): Prom
     env[cxapi.CONTEXT_OVERFLOW_LOCATION_ENV] = contextOverflowLocation;
   }
 
-  await exec(commandLine.join(' '));
+  await exec(commandLine);
 
   const assembly = createAssembly(outdir);
 
@@ -90,8 +91,12 @@ export async function execProgram(aws: SdkProvider, config: Configuration): Prom
 
   return { assembly, lock: await writerLock.convertToReaderLock() };
 
-  async function exec(commandAndArgs: string) {
+  async function exec(commandAndArgs: string[]) {
     return new Promise<void>((ok, fail) => {
+      // const command = commandAndArgs[0];
+      // const commandArgs = commandAndArgs.slice(1);
+
+      const command = renderCommandLine(commandAndArgs);
       // We use a slightly lower-level interface to:
       //
       // - Pass arguments in an array instead of a string, to get around a
@@ -102,7 +107,9 @@ export async function execProgram(aws: SdkProvider, config: Configuration): Prom
       //   anyway, and if the subprocess is printing to it for debugging purposes the
       //   user gets to see it sooner. Plus, capturing doesn't interact nicely with some
       //   processes like Maven.
-      const proc = childProcess.spawn(commandAndArgs, {
+
+      //  renderArguments(commandArgs),
+      const proc = childProcess.spawn(command, {
         stdio: ['ignore', 'inherit', 'inherit'],
         detached: false,
         shell: true,
