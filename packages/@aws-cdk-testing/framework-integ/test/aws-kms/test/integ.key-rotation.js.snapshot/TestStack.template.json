@@ -1,9 +1,38 @@
 {
  "Resources": {
-  "bucket43879C71": {
-   "Type": "AWS::S3::Bucket",
+  "keyFEDD6EC0": {
+   "Type": "AWS::KMS::Key",
    "Properties": {
-    "BucketName": "cdk-test-bucket-event-source"
+    "EnableKeyRotation": true,
+    "KeyPolicy": {
+     "Statement": [
+      {
+       "Action": "kms:*",
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":iam::",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":root"
+          ]
+         ]
+        }
+       },
+       "Resource": "*"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "RotationPeriodInDays": 180
    },
    "UpdateReplacePolicy": "Retain",
    "DeletionPolicy": "Retain"
