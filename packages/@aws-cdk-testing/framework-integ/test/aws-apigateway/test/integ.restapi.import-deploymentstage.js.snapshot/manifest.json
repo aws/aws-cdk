@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c3065e2b174aec5c2983ead9d08adf6eeae1a88b04f53c1f2a44224959876568.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/3bd472ac3fdbd7c291e3c4ef13df0429da6c1e0717dde5b304790b77637a72c3.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -49,7 +49,7 @@
         "/integtest-restapi-import-deployment-stage/MyManualDeployment/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyManualDeployment92F2175C35a2644115e0765ad867f11b599a51c1"
+            "data": "MyManualDeployment92F2175C6f3141cef1e8fea8ab3b3b8bc90df36d"
           }
         ],
         "/integtest-restapi-import-deployment-stage/BootstrapVersion": [
@@ -62,6 +62,15 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
+          }
+        ],
+        "MyManualDeployment92F2175C35a2644115e0765ad867f11b599a51c1": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyManualDeployment92F2175C35a2644115e0765ad867f11b599a51c1",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },
