@@ -4,20 +4,67 @@
     "id": "App",
     "path": "",
     "children": {
-      "integtest-restapi-import-deployment-stage": {
-        "id": "integtest-restapi-import-deployment-stage",
-        "path": "integtest-restapi-import-deployment-stage",
+      "integtest-specrestapi-import-deployment-stage": {
+        "id": "integtest-specrestapi-import-deployment-stage",
+        "path": "integtest-specrestapi-import-deployment-stage",
         "children": {
           "my-api": {
             "id": "my-api",
-            "path": "integtest-restapi-import-deployment-stage/my-api",
+            "path": "integtest-specrestapi-import-deployment-stage/my-api",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "integtest-restapi-import-deployment-stage/my-api/Resource",
+                "path": "integtest-specrestapi-import-deployment-stage/my-api/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::ApiGateway::RestApi",
                   "aws:cdk:cloudformation:props": {
+                    "body": {
+                      "openapi": "3.0.2",
+                      "info": {
+                        "version": "1.0.0",
+                        "title": "Test API for CDK"
+                      },
+                      "paths": {
+                        "/pets": {
+                          "get": {
+                            "summary": "Test Method",
+                            "operationId": "testMethod",
+                            "responses": {
+                              "200": {
+                                "description": "A paged array of pets",
+                                "content": {
+                                  "application/json": {
+                                    "schema": {
+                                      "$ref": "#/components/schemas/Empty"
+                                    }
+                                  }
+                                }
+                              }
+                            },
+                            "x-amazon-apigateway-integration": {
+                              "responses": {
+                                "default": {
+                                  "statusCode": "200"
+                                }
+                              },
+                              "requestTemplates": {
+                                "application/json": "{\"statusCode\": 200}"
+                              },
+                              "passthroughBehavior": "when_no_match",
+                              "type": "mock"
+                            }
+                          }
+                        }
+                      },
+                      "components": {
+                        "schemas": {
+                          "Empty": {
+                            "title": "Empty Schema",
+                            "type": "object"
+                          }
+                        }
+                      }
+                    },
                     "name": "my-api"
                   }
                 },
@@ -28,46 +75,7 @@
               },
               "Default": {
                 "id": "Default",
-                "path": "integtest-restapi-import-deployment-stage/my-api/Default",
-                "children": {
-                  "GET": {
-                    "id": "GET",
-                    "path": "integtest-restapi-import-deployment-stage/my-api/Default/GET",
-                    "children": {
-                      "Resource": {
-                        "id": "Resource",
-                        "path": "integtest-restapi-import-deployment-stage/my-api/Default/GET/Resource",
-                        "attributes": {
-                          "aws:cdk:cloudformation:type": "AWS::ApiGateway::Method",
-                          "aws:cdk:cloudformation:props": {
-                            "authorizationType": "NONE",
-                            "httpMethod": "GET",
-                            "integration": {
-                              "type": "MOCK"
-                            },
-                            "resourceId": {
-                              "Fn::GetAtt": [
-                                "myapi4C7BF186",
-                                "RootResourceId"
-                              ]
-                            },
-                            "restApiId": {
-                              "Ref": "myapi4C7BF186"
-                            }
-                          }
-                        },
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_apigateway.CfnMethod",
-                          "version": "0.0.0"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_apigateway.Method",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
+                "path": "integtest-specrestapi-import-deployment-stage/my-api/Default",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_apigateway.ResourceBase",
                   "version": "0.0.0"
@@ -75,17 +83,17 @@
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_apigateway.RestApi",
+              "fqn": "aws-cdk-lib.aws_apigateway.SpecRestApi",
               "version": "0.0.0"
             }
           },
           "MyManualDeployment": {
             "id": "MyManualDeployment",
-            "path": "integtest-restapi-import-deployment-stage/MyManualDeployment",
+            "path": "integtest-specrestapi-import-deployment-stage/MyManualDeployment",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "integtest-restapi-import-deployment-stage/MyManualDeployment/Resource",
+                "path": "integtest-specrestapi-import-deployment-stage/MyManualDeployment/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::ApiGateway::Deployment",
                   "aws:cdk:cloudformation:props": {
@@ -108,7 +116,7 @@
           },
           "BootstrapVersion": {
             "id": "BootstrapVersion",
-            "path": "integtest-restapi-import-deployment-stage/BootstrapVersion",
+            "path": "integtest-specrestapi-import-deployment-stage/BootstrapVersion",
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnParameter",
               "version": "0.0.0"
@@ -116,7 +124,7 @@
           },
           "CheckBootstrapVersion": {
             "id": "CheckBootstrapVersion",
-            "path": "integtest-restapi-import-deployment-stage/CheckBootstrapVersion",
+            "path": "integtest-specrestapi-import-deployment-stage/CheckBootstrapVersion",
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnRule",
               "version": "0.0.0"
@@ -128,17 +136,17 @@
           "version": "0.0.0"
         }
       },
-      "restapi-import-deployment-stage": {
-        "id": "restapi-import-deployment-stage",
-        "path": "restapi-import-deployment-stage",
+      "specrestapi-import-deployment-stage": {
+        "id": "specrestapi-import-deployment-stage",
+        "path": "specrestapi-import-deployment-stage",
         "children": {
           "DefaultTest": {
             "id": "DefaultTest",
-            "path": "restapi-import-deployment-stage/DefaultTest",
+            "path": "specrestapi-import-deployment-stage/DefaultTest",
             "children": {
               "Default": {
                 "id": "Default",
-                "path": "restapi-import-deployment-stage/DefaultTest/Default",
+                "path": "specrestapi-import-deployment-stage/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
                   "version": "10.3.0"
@@ -146,11 +154,11 @@
               },
               "DeployAssert": {
                 "id": "DeployAssert",
-                "path": "restapi-import-deployment-stage/DefaultTest/DeployAssert",
+                "path": "specrestapi-import-deployment-stage/DefaultTest/DeployAssert",
                 "children": {
                   "BootstrapVersion": {
                     "id": "BootstrapVersion",
-                    "path": "restapi-import-deployment-stage/DefaultTest/DeployAssert/BootstrapVersion",
+                    "path": "specrestapi-import-deployment-stage/DefaultTest/DeployAssert/BootstrapVersion",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.CfnParameter",
                       "version": "0.0.0"
@@ -158,7 +166,7 @@
                   },
                   "CheckBootstrapVersion": {
                     "id": "CheckBootstrapVersion",
-                    "path": "restapi-import-deployment-stage/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "path": "specrestapi-import-deployment-stage/DefaultTest/DeployAssert/CheckBootstrapVersion",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.CfnRule",
                       "version": "0.0.0"

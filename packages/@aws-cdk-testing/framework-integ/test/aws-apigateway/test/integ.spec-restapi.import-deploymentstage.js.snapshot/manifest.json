@@ -1,28 +1,28 @@
 {
   "version": "36.0.0",
   "artifacts": {
-    "integtest-restapi-import-deployment-stage.assets": {
+    "integtest-specrestapi-import-deployment-stage.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "integtest-restapi-import-deployment-stage.assets.json",
+        "file": "integtest-specrestapi-import-deployment-stage.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "integtest-restapi-import-deployment-stage": {
+    "integtest-specrestapi-import-deployment-stage": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "integtest-restapi-import-deployment-stage.template.json",
+        "templateFile": "integtest-specrestapi-import-deployment-stage.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/3bd472ac3fdbd7c291e3c4ef13df0429da6c1e0717dde5b304790b77637a72c3.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/963d95f2b946c101b476b2c2b3faa935244354f27c8cef2c0d0a8215cc5f816b.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "integtest-restapi-import-deployment-stage.assets"
+          "integtest-specrestapi-import-deployment-stage.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -31,64 +31,49 @@
         }
       },
       "dependencies": [
-        "integtest-restapi-import-deployment-stage.assets"
+        "integtest-specrestapi-import-deployment-stage.assets"
       ],
       "metadata": {
-        "/integtest-restapi-import-deployment-stage/my-api/Resource": [
+        "/integtest-specrestapi-import-deployment-stage/my-api/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "myapi4C7BF186"
           }
         ],
-        "/integtest-restapi-import-deployment-stage/my-api/Default/GET/Resource": [
+        "/integtest-specrestapi-import-deployment-stage/MyManualDeployment/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "myapiGETF990CE3C"
+            "data": "MyManualDeployment92F2175C1dcdcb8f1c24d86b6090e78df1fafcd3"
           }
         ],
-        "/integtest-restapi-import-deployment-stage/MyManualDeployment/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyManualDeployment92F2175C6f3141cef1e8fea8ab3b3b8bc90df36d"
-          }
-        ],
-        "/integtest-restapi-import-deployment-stage/BootstrapVersion": [
+        "/integtest-specrestapi-import-deployment-stage/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/integtest-restapi-import-deployment-stage/CheckBootstrapVersion": [
+        "/integtest-specrestapi-import-deployment-stage/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
-        ],
-        "MyManualDeployment92F2175C35a2644115e0765ad867f11b599a51c1": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyManualDeployment92F2175C35a2644115e0765ad867f11b599a51c1",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
         ]
       },
-      "displayName": "integtest-restapi-import-deployment-stage"
+      "displayName": "integtest-specrestapi-import-deployment-stage"
     },
-    "restapiimportdeploymentstageDefaultTestDeployAssertC7BBBF60.assets": {
+    "specrestapiimportdeploymentstageDefaultTestDeployAssert410B3AFA.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "restapiimportdeploymentstageDefaultTestDeployAssertC7BBBF60.assets.json",
+        "file": "specrestapiimportdeploymentstageDefaultTestDeployAssert410B3AFA.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "restapiimportdeploymentstageDefaultTestDeployAssertC7BBBF60": {
+    "specrestapiimportdeploymentstageDefaultTestDeployAssert410B3AFA": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "restapiimportdeploymentstageDefaultTestDeployAssertC7BBBF60.template.json",
+        "templateFile": "specrestapiimportdeploymentstageDefaultTestDeployAssert410B3AFA.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
@@ -97,7 +82,7 @@
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "restapiimportdeploymentstageDefaultTestDeployAssertC7BBBF60.assets"
+          "specrestapiimportdeploymentstageDefaultTestDeployAssert410B3AFA.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -106,23 +91,23 @@
         }
       },
       "dependencies": [
-        "restapiimportdeploymentstageDefaultTestDeployAssertC7BBBF60.assets"
+        "specrestapiimportdeploymentstageDefaultTestDeployAssert410B3AFA.assets"
       ],
       "metadata": {
-        "/restapi-import-deployment-stage/DefaultTest/DeployAssert/BootstrapVersion": [
+        "/specrestapi-import-deployment-stage/DefaultTest/DeployAssert/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/restapi-import-deployment-stage/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+        "/specrestapi-import-deployment-stage/DefaultTest/DeployAssert/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "restapi-import-deployment-stage/DefaultTest/DeployAssert"
+      "displayName": "specrestapi-import-deployment-stage/DefaultTest/DeployAssert"
     },
     "Tree": {
       "type": "cdk:tree",

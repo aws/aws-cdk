@@ -1002,11 +1002,13 @@ const api = new apigateway.RestApi(this, 'books', {
 ```
 ### Deploying to an existing stage
 
-If you want to use an existing stage for a deployment, first set `{ deploy: false }` so that `RestApi` does not automatically create new `Deployment` and `Stage` resources.  Then you can manually define a `apigateway.Deployment` resource and specify the stage name for your existing stage using the `stageName` property.
+#### Using RestApi
 
-Note that as long as the deployment's logical ID doesn't change, it will represent the snapshot in time when the resource was created. If you update the `stageName` property, you should be triggering a new deployment (i.e. with an updated logical ID). To ensure your deployment reflects changes to the `RestApi` model, see [Controlled triggering of deployments](#controlled-triggering-of-deployments).
+If you want to use an existing stage to deploy your `RestApi`, first set `{ deploy: false }` so the construct doesn't automatically create new `Deployment` and `Stage` resources.  Then you can manually define a `apigateway.Deployment` resource and specify the stage name for your existing stage using the `stageName` property.
+
+Note that as long as the deployment's logical ID doesn't change, it will represent the snapshot in time when the resource was created. To ensure your deployment reflects changes to the `RestApi` model, see [Controlled triggering of deployments](#controlled-triggering-of-deployments).
 ```ts
-const restApi = new apigateway.RestApi(this, 'my-api', {
+const restApi = new apigateway.RestApi(this, 'my-rest-api', {
   deploy: false,
 });
 
@@ -1017,9 +1019,33 @@ const deployment = new apigateway.Deployment(this, 'my-deployment', {
   retainDeployments: true, // keep old deployments
 });
 ```
+#### Using SpecRestApi
+If you want to use an existing stage to deploy your `SpecRestApi`, first set `{ deploy: false }` so the construct doesn't automatically create new `Deployment` and `Stage` resources. Then you can manually define a `apigateway.Deployment` resource and specify the stage name for your existing stage using the `stageName` property.
 
-If the `stageName` property is set but a stage with the corresponding name does not exist, a new stage 
-resource will be created with the provided stage name.
+To automatically create a new deployment that reflects the latest API changes, you can use the `addToLogicalId()` method and pass in your OpenAPI definition.
+
+```ts
+const myApiDefinition = apigateway.ApiDefinition.fromAsset('path-to-file.json');
+const specRestApi = new apigateway.SpecRestApi(this, 'my-specrest-api', {
+  deploy: false,
+  apiDefinition: myApiDefinition
+});
+
+// Use `stageName` to deploy to an existing stage
+const deployment = new apigateway.Deployment(this, 'my-deployment', {
+  api: specRestApi,
+  stageName: 'dev',
+  retainDeployments: true, // keep old deployments
+});
+
+// Trigger a new deployment on OpenAPI definition updates
+deployment.addToLogicalId(myApiDefinition);
+
+```
+
+> Note: If the `stageName` property is set but a stage with the corresponding name does not exist, a new stage resource will be created with the provided stage name.
+
+> Note: If you update the `stageName` property, you should be triggering a new deployment (i.e. with an updated logical ID and API changes). Otherwise, an error will occur during deployment.
 
 ### Controlled triggering of deployments
 
