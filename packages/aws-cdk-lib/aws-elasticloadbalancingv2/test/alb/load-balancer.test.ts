@@ -100,10 +100,6 @@ describe('tests', () => {
           Value: 'true',
         },
         {
-          Key: 'ipv6.deny_all_igw_traffic',
-          Value: 'true',
-        },
-        {
           Key: 'routing.http2.enabled',
           Value: 'false',
         },
@@ -169,6 +165,21 @@ describe('tests', () => {
         clientKeepAlive: cdk.Duration.millis(100),
       });
     }).toThrow('\'clientKeepAlive\' must be between 60 and 604800 seconds. Got: 100 milliseconds');
+  });
+
+  test('throw error for denyAllIgwTraffic set to false for Ipv4 adressing.', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Stack');
+
+    // THEN
+    expect(() => {
+      new elbv2.ApplicationLoadBalancer(stack, 'LB', {
+        vpc,
+        denyAllIgwTraffic: false,
+        ipAddressType: elbv2.IpAddressType.IPV4,
+      });
+    }).toThrow('\'denyAllIgwTraffic\' cannot be false on load balancers with IPv4 addressing.');
   });
 
   describe('Desync mitigation mode', () => {

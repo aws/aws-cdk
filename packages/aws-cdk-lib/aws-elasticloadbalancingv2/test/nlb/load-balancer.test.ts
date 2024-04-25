@@ -92,10 +92,6 @@ describe('tests', () => {
           Value: 'true',
         },
         {
-          Key: 'ipv6.deny_all_igw_traffic',
-          Value: 'true',
-        },
-        {
           Key: 'dns_record.client_routing_policy',
           Value: 'partial_availability_zone_affinity',
         },
@@ -486,6 +482,21 @@ describe('tests', () => {
     expect(() => {
       app.synth();
     }).toThrow('Load balancer name: "my load balancer" must contain only alphanumeric characters or hyphens.');
+  });
+
+  test('loadBalancerName unallowed: denyAllIgwTraffic set to false for Ipv4 adressing', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Stack');
+
+    // THEN
+    expect(() => {
+      new elbv2.NetworkLoadBalancer(stack, 'NLB', {
+        vpc,
+        denyAllIgwTraffic: false,
+        ipAddressType: elbv2.IpAddressType.IPV4,
+      });
+    }).toThrow('\'denyAllIgwTraffic\' cannot be false on load balancers with IPv4 addressing.');
   });
 
   test('imported network load balancer with no vpc specified throws error when calling addTargets', () => {
