@@ -550,7 +550,7 @@ export class Deployments {
         }
       } else if (!stackSdk.didAssumeRole) {
         const lookUpRoleExists = stack.lookupRole ? true : false;
-        warning(`Lookup role ${ lookUpRoleExists ? 'exists but' : 'does not exist, hence'} could not be assumed. Proceeding with default credentials.`);
+        warning(`Lookup role ${ lookUpRoleExists ? 'exists but' : 'does not exist, hence'} was not be assumed. Proceeding with default credentials.`);
       }
       return { ...stackSdk, resolvedEnvironment, envResources };
     } catch (e: any) {
