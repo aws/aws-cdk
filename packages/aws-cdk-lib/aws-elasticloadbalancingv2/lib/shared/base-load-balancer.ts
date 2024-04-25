@@ -1,4 +1,5 @@
 import { Construct } from 'constructs';
+import { IpAddressType } from './enums';
 import { Attributes, ifUndefined, mapTagMapToCxschema, renderAttributes } from './util';
 import * as ec2 from '../../../aws-ec2';
 import * as iam from '../../../aws-iam';
@@ -250,7 +251,9 @@ export abstract class BaseLoadBalancer extends Resource {
       this.setAttribute('load_balancing.cross_zone.enabled', baseProps.crossZoneEnabled === true ? 'true' : 'false');
     }
 
-    if (baseProps.denyAllIgwTraffic !== undefined) {
+    if (additionalProps.ipAddressType === IpAddressType.IPV4 && baseProps.denyAllIgwTraffic === false) {
+      throw new Error('\'denyAllIgwTraffic\' cannot be false on load balancers with IPv4 addressing.');
+    } else if (additionalProps.ipAddressType === IpAddressType.DUAL_STACK && baseProps.denyAllIgwTraffic !== undefined) {
       this.setAttribute('ipv6.deny_all_igw_traffic', baseProps.denyAllIgwTraffic.toString());
     }
 
