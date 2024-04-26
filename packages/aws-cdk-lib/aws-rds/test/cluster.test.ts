@@ -67,7 +67,7 @@ describe('cluster new api', () => {
           iamAuthentication: true,
         });
         // THEN
-      }).toThrow(/If instanceProps is not provided then `vpc` must be provided./);
+      }).toThrow(/Provide either vpc or instanceProps.vpc, but not both/);
     });
 
     test('when both vpc and instanceProps.vpc are provided', () => {
@@ -224,6 +224,57 @@ describe('cluster new api', () => {
           vpc: vpc,
           preferredMaintenanceWindow: PREFERRED_MAINTENANCE_WINDOW,
         },
+      });
+
+      // THEN
+      const template = Template.fromStack(stack);
+      // maintenance window is set
+      template.hasResourceProperties('AWS::RDS::DBInstance', Match.objectLike({
+        PreferredMaintenanceWindow: PREFERRED_MAINTENANCE_WINDOW,
+      }));
+    });
+    test('preferredMaintenanceWindow provided in writer', () => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+
+      const PREFERRED_MAINTENANCE_WINDOW: string = 'Sun:12:00-Sun:13:00';
+
+      // WHEN
+      new DatabaseCluster(stack, 'Database', {
+        engine: DatabaseClusterEngine.AURORA,
+        vpc: vpc,
+        writer: ClusterInstance.provisioned('Instance1', {
+          preferredMaintenanceWindow: PREFERRED_MAINTENANCE_WINDOW,
+        }),
+      });
+
+      // THEN
+      const template = Template.fromStack(stack);
+      // maintenance window is set
+      template.hasResourceProperties('AWS::RDS::DBInstance', Match.objectLike({
+        PreferredMaintenanceWindow: PREFERRED_MAINTENANCE_WINDOW,
+      }));
+    });
+    test('preferredMaintenanceWindow provided in readers', () => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+
+      const PREFERRED_MAINTENANCE_WINDOW: string = 'Sun:12:00-Sun:13:00';
+
+      // WHEN
+      new DatabaseCluster(stack, 'Database', {
+        engine: DatabaseClusterEngine.AURORA,
+        vpc: vpc,
+        writer: ClusterInstance.provisioned('Instance1', {
+          // No preferredMaintenanceWindow set
+        }),
+        readers: [
+          ClusterInstance.provisioned('Instance2', {
+            preferredMaintenanceWindow: PREFERRED_MAINTENANCE_WINDOW,
+          }),
+        ],
       });
 
       // THEN
@@ -4251,16 +4302,6 @@ describe('cluster', () => {
           Statement: [
             {
               Action: [
-                'secretsmanager:GetSecretValue',
-                'secretsmanager:DescribeSecret',
-              ],
-              Effect: 'Allow',
-              Resource: {
-                Ref: 'DatabaseSecretAttachmentE5D1B020',
-              },
-            },
-            {
-              Action: [
                 'rds-data:BatchExecuteStatement',
                 'rds-data:BeginTransaction',
                 'rds-data:CommitTransaction',
@@ -4278,6 +4319,16 @@ describe('cluster', () => {
                     { Ref: 'DatabaseB269D8BB' },
                   ],
                 ],
+              },
+            },
+            {
+              Action: [
+                'secretsmanager:GetSecretValue',
+                'secretsmanager:DescribeSecret',
+              ],
+              Effect: 'Allow',
+              Resource: {
+                Ref: 'DatabaseSecretAttachmentE5D1B020',
               },
             },
           ],

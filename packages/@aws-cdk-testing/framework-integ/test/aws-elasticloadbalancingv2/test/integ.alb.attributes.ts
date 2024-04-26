@@ -19,6 +19,12 @@ new elbv2.ApplicationLoadBalancer(stack, 'LB', {
   idleTimeout: cdk.Duration.seconds(1000),
   dropInvalidHeaderFields: true,
   desyncMitigationMode: elbv2.DesyncMitigationMode.DEFENSIVE,
+  clientKeepAlive: cdk.Duration.seconds(1000),
+  preserveHostHeader: true,
+  xAmznTlsVersionAndCipherSuiteHeaders: true,
+  preserveXffClientPort: true,
+  xffHeaderProcessingMode: elbv2.XffHeaderProcessingMode.PRESERVE,
+  wafFailOpen: true,
 });
 
 new elbv2.ApplicationLoadBalancer(stack, 'DesyncMitigationModeMonitor', {

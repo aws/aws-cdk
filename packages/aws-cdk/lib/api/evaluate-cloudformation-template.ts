@@ -314,6 +314,10 @@ export class EvaluateCloudFormationTemplate {
     return cfnExpression;
   }
 
+  public getResourceProperty(logicalId: string, propertyName: string): any {
+    return this.template.Resources?.[logicalId]?.Properties?.[propertyName];
+  }
+
   private references(logicalId: string, templateElement: any): boolean {
     if (typeof templateElement === 'string') {
       return logicalId === templateElement;

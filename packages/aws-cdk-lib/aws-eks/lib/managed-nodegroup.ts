@@ -3,7 +3,8 @@ import { Cluster, ICluster, IpFamily } from './cluster';
 import { CfnNodegroup } from './eks.generated';
 import { InstanceType, ISecurityGroup, SubnetSelection, InstanceArchitecture, InstanceClass, InstanceSize } from '../../aws-ec2';
 import { IRole, ManagedPolicy, PolicyStatement, Role, ServicePrincipal } from '../../aws-iam';
-import { IResource, Resource, Annotations, withResolved } from '../../core';
+import { IResource, Resource, Annotations, withResolved, FeatureFlags } from '../../core';
+import * as cxapi from '../../cx-api';
 
 /**
  * NodeGroup interface
@@ -537,7 +538,12 @@ export class Nodegroup extends Resource implements INodegroup {
       resource: 'nodegroup',
       resourceName: this.physicalName,
     });
-    this.nodegroupName = this.getResourceNameAttribute(resource.ref);
+
+    if (FeatureFlags.of(this).isEnabled(cxapi.EKS_NODEGROUP_NAME)) {
+      this.nodegroupName = this.getResourceNameAttribute(resource.attrNodegroupName);
+    } else {
+      this.nodegroupName = this.getResourceNameAttribute(resource.ref);
+    }
   }
 
   private validateUpdateConfig(maxUnavailable?: number, maxUnavailablePercentage?: number) {
@@ -563,15 +569,31 @@ export class Nodegroup extends Resource implements INodegroup {
  * AMI types of different architectures. Make sure AL2 is always the first element, which will be the default
  * AmiType if amiType and launchTemplateSpec are both undefined.
  */
-const arm64AmiTypes: NodegroupAmiType[] = [NodegroupAmiType.AL2_ARM_64, NodegroupAmiType.BOTTLEROCKET_ARM_64];
-const x8664AmiTypes: NodegroupAmiType[] = [NodegroupAmiType.AL2_X86_64, NodegroupAmiType.BOTTLEROCKET_X86_64,
-  NodegroupAmiType.WINDOWS_CORE_2019_X86_64, NodegroupAmiType.WINDOWS_CORE_2022_X86_64,
-  NodegroupAmiType.WINDOWS_FULL_2019_X86_64, NodegroupAmiType.WINDOWS_FULL_2022_X86_64];
-const windowsAmiTypes: NodegroupAmiType[] = [NodegroupAmiType.WINDOWS_CORE_2019_X86_64,
-  NodegroupAmiType.WINDOWS_CORE_2022_X86_64, NodegroupAmiType.WINDOWS_FULL_2019_X86_64,
-  NodegroupAmiType.WINDOWS_FULL_2022_X86_64];
-const gpuAmiTypes: NodegroupAmiType[] = [NodegroupAmiType.AL2_X86_64_GPU,
-  NodegroupAmiType.BOTTLEROCKET_X86_64_NVIDIA, NodegroupAmiType.BOTTLEROCKET_ARM_64_NVIDIA];
+const arm64AmiTypes: NodegroupAmiType[] = [
+  NodegroupAmiType.AL2_ARM_64,
+  NodegroupAmiType.AL2023_ARM_64_STANDARD,
+  NodegroupAmiType.BOTTLEROCKET_ARM_64,
+];
+const x8664AmiTypes: NodegroupAmiType[] = [
+  NodegroupAmiType.AL2_X86_64,
+  NodegroupAmiType.AL2023_X86_64_STANDARD,
+  NodegroupAmiType.BOTTLEROCKET_X86_64,
+  NodegroupAmiType.WINDOWS_CORE_2019_X86_64,
+  NodegroupAmiType.WINDOWS_CORE_2022_X86_64,
+  NodegroupAmiType.WINDOWS_FULL_2019_X86_64,
+  NodegroupAmiType.WINDOWS_FULL_2022_X86_64,
+];
+const windowsAmiTypes: NodegroupAmiType[] = [
+  NodegroupAmiType.WINDOWS_CORE_2019_X86_64,
+  NodegroupAmiType.WINDOWS_CORE_2022_X86_64,
+  NodegroupAmiType.WINDOWS_FULL_2019_X86_64,
+  NodegroupAmiType.WINDOWS_FULL_2022_X86_64,
+];
+const gpuAmiTypes: NodegroupAmiType[] = [
+  NodegroupAmiType.AL2_X86_64_GPU,
+  NodegroupAmiType.BOTTLEROCKET_X86_64_NVIDIA,
+  NodegroupAmiType.BOTTLEROCKET_ARM_64_NVIDIA,
+];
 
 /**
  * This function check if the instanceType is GPU instance.

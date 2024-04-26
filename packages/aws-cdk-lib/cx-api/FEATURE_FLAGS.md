@@ -66,6 +66,8 @@ Flags come in three types:
 | [@aws-cdk/aws-cloudwatch-actions:changeLambdaPermissionLogicalIdForLambdaAction](#aws-cdkaws-cloudwatch-actionschangelambdapermissionlogicalidforlambdaaction) | When enabled, the logical ID of a Lambda permission for a Lambda action includes an alarm ID. | 2.124.0 | (fix) |
 | [@aws-cdk/aws-codepipeline:crossAccountKeysDefaultValueToFalse](#aws-cdkaws-codepipelinecrossaccountkeysdefaultvaluetofalse) | Enables Pipeline to set the default value for crossAccountKeys to false. | 2.127.0 | (default) |
 | [@aws-cdk/aws-codepipeline:defaultPipelineTypeToV2](#aws-cdkaws-codepipelinedefaultpipelinetypetov2) | Enables Pipeline to set the default pipeline type to V2. | 2.133.0 | (default) |
+| [@aws-cdk/aws-kms:reduceCrossAccountRegionPolicyScope](#aws-cdkaws-kmsreducecrossaccountregionpolicyscope) | When enabled, IAM Policy created from KMS key grant will reduce the resource scope to this key only. | 2.134.0 | (fix) |
+| [@aws-cdk/aws-eks:nodegroupNameAttribute](#aws-cdkaws-eksnodegroupnameattribute) | When enabled, nodegroupName attribute of the provisioned EKS NodeGroup will not have the cluster name prefix. | 2.139.0 | (fix) |
 
 <!-- END table -->
 
@@ -123,7 +125,8 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/aws-cloudwatch-actions:changeLambdaPermissionLogicalIdForLambdaAction": true,
     "@aws-cdk/aws-codepipeline:crossAccountKeysDefaultValueToFalse": true,
     "@aws-cdk/aws-codepipeline:defaultPipelineTypeToV2": true,
-    "@aws-cdk/aws-kms:reduceCrossAccountRegionPolicyScope": true
+    "@aws-cdk/aws-kms:reduceCrossAccountRegionPolicyScope": true,
+    "@aws-cdk/aws-eks:nodegroupNameAttribute": true
   }
 }
 ```
@@ -1261,7 +1264,21 @@ When this feature flag is enabled and calling KMS key grant method, the created 
 | Since | Default | Recommended |
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
-| V2NEXT | `false` | `true` |
+| 2.134.0 | `false` | `true` |
+
+
+### @aws-cdk/aws-eks:nodegroupNameAttribute
+
+*When enabled, nodegroupName attribute of the provisioned EKS NodeGroup will not have the cluster name prefix.* (fix)
+
+When this feature flag is enabled, the nodegroupName attribute will be exactly the name of the nodegroup without
+any prefix.
+
+
+| Since | Default | Recommended |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| 2.139.0 | `false` | `true` |
 
 
 <!-- END details -->
