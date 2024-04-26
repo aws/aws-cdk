@@ -114,7 +114,7 @@ const targetRecord = 'existing.record.cdk.local';
 const record = route53.ARecord.fromARecordAttributes(this, 'A', {
   zone: myZone,
   recordName: 'test',
-  target: targetRecord,
+  targetDNS: targetRecord,
 });
 ```
 
