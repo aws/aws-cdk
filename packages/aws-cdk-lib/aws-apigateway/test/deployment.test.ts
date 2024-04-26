@@ -126,6 +126,21 @@ describe('deployment', () => {
     });
   });
 
+  test('"stage" can be set on the deployment', () => {
+    // GIVEN
+    const stack = new Stack();
+    const api = new apigateway.RestApi(stack, 'api', { deploy: false, cloudWatchRole: false });
+    api.root.addMethod('GET');
+
+    // WHEN
+    new apigateway.Deployment(stack, 'deployment', { api, stageName: 'dev' });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Deployment', {
+      StageName: 'dev',
+    });
+  });
+
   describe('logical ID of the deployment resource is salted', () => {
     test('before salting', () => {
       // GIVEN
