@@ -473,7 +473,7 @@ export class ARecord extends RecordSet {
    * @returns AWS::Route53::RecordSet of type A with target alias set to existing A record
    */
   public static fromARecordAttributes(scope: Construct, id: string, attrs: ARecordAttrs): ARecord {
-    const aliasTarget = RecordTarget.fromAlias(new ImportARecordAsTarget(attrs));
+    const aliasTarget = RecordTarget.fromAlias(new ARecordAsAliasTarget(attrs));
     return new ARecord(scope, id, {
       ...attrs,
       target: aliasTarget,
@@ -490,10 +490,10 @@ export class ARecord extends RecordSet {
 }
 
 /**
- * Use to import given A record DNS name created outside CDK and return it as AliasRecordTarget
+ * Converts the type of a given ARecord DNS name, created outside CDK, to an AliasRecordTarget
  */
-class ImportARecordAsTarget implements IAliasRecordTarget {
-  constructor(private readonly ArecordAttrs: ARecordAttrs) {
+class ARecordAsAliasTarget implements IAliasRecordTarget {
+  constructor(private readonly aRrecordAttrs: ARecordAttrs) {
   }
 
   public bind(_record: IRecordSet, _zone?: IHostedZone | undefined): AliasRecordTargetConfig {
@@ -501,8 +501,8 @@ class ImportARecordAsTarget implements IAliasRecordTarget {
       throw new Error('Cannot bind to record without a zone');
     }
     return {
-      dnsName: this.ArecordAttrs.target,
-      hostedZoneId: this.ArecordAttrs.zone.hostedZoneId,
+      dnsName: this.aRrecordAttrs.targetDNS,
+      hostedZoneId: this.aRrecordAttrs.zone.hostedZoneId,
     };
   }
 }
