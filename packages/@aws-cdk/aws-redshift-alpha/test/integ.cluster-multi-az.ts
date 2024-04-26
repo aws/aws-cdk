@@ -8,7 +8,7 @@ const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-redshift-cluster-database', {
   // Specify account and region to create 3 AZs
   env: {
-    account: process.env.CDK_DEFAULT_ACCOUNT,
+    account: '123456789012',
     region: 'us-east-1',
   },
 });
