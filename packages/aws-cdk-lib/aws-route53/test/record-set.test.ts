@@ -199,7 +199,7 @@ describe('record set', () => {
     // WHEN
     route53.ARecord.fromARecordAttributes(zone, 'Alias', {
       zone,
-      target: 'foo1.example.com',
+      targetDNS: 'foo1.example.com',
       recordName: '_foo',
     });
 
