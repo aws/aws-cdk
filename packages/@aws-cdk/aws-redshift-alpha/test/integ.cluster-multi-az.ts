@@ -34,6 +34,7 @@ new redshift.Cluster(stack, 'Cluster', {
     masterUsername: 'admin',
   },
   nodeType: redshift.NodeType.RA3_XLPLUS,
+  
   multiAz: true,
 });
 

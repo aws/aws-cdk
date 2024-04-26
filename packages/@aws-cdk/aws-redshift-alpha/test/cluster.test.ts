@@ -655,6 +655,7 @@ describe('multi AZ cluster', () => {
     new Cluster(stack, 'Redshift', {
       masterUser: {
         masterUsername: 'admin',
+        masterPassword: cdk.SecretValue.unsafePlainText('tooshort'),
       },
       vpc,
       nodeType: NodeType.RA3_XLPLUS,
