@@ -24,7 +24,7 @@ const target = new ARecord(stack, 'AManual', {
 const Arecord = ARecord.fromARecordAttributes(stack, 'A', {
   zone: privateZone,
   recordName: 'r53-integ-test',
-  target: 'existing.test.record.cdk.local',
+  targetDNS: 'existing.test.record.cdk.local',
 });
 
 Arecord.node.addDependency(target);
