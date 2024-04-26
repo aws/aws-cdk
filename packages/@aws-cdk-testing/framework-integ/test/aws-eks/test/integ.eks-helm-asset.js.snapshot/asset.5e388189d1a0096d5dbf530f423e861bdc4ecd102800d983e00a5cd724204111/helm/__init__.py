@@ -46,6 +46,7 @@ def helm_handler(event, context):
     chart_asset_url  = props.get('ChartAssetURL', None)
     version          = props.get('Version', None)
     wait             = props.get('Wait', False)
+    atomic           = props.get('Atomic', False)
     timeout          = props.get('Timeout', None)
     namespace        = props.get('Namespace', None)
     create_namespace = props.get('CreateNamespace', None)
@@ -93,7 +94,7 @@ def helm_handler(event, context):
         helm('upgrade', release, chart, repository, values_file, namespace, version, wait, timeout, create_namespace)
     elif request_type == "Delete":
         try:
-            helm('uninstall', release, namespace=namespace, timeout=timeout)
+            helm('uninstall', release, namespace=namespace, wait=wait, timeout=timeout)
         except Exception as e:
             logger.info("delete error: %s" % e)
 
@@ -157,7 +158,7 @@ def get_chart_from_oci(tmpdir, repository = None, version = None):
     raise Exception(f'Operation failed after {maxAttempts} attempts: {output}')
 
 
-def helm(verb, release, chart = None, repo = None, file = None, namespace = None, version = None, wait = False, timeout = None, create_namespace = None, skip_crds = False):
+def helm(verb, release, chart = None, repo = None, file = None, namespace = None, version = None, wait = False, timeout = None, create_namespace = None, skip_crds = False, atomic = False):
     import subprocess
 
     cmnd = ['helm', verb, release]
@@ -181,6 +182,8 @@ def helm(verb, release, chart = None, repo = None, file = None, namespace = None
         cmnd.append('--skip-crds')
     if not timeout is None:
         cmnd.extend(['--timeout', timeout])
+    if atomic:
+        cmnd.append('--atomic')    
     cmnd.extend(['--kubeconfig', kubeconfig])
 
     maxAttempts = 3
