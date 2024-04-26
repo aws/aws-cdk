@@ -9,7 +9,7 @@ import * as fs from 'fs-extra';
 import * as nock from 'nock';
 import { handler } from '../../../lib/custom-resources/aws-custom-resource-handler';
 import { AwsSdkCall } from '../../../lib/custom-resources/aws-custom-resource-handler/construct-types';
-import { forceSdkInstallation } from '../../../lib/custom-resources/aws-custom-resource-handler/sdk-loader';
+import { forceSdkInstallation } from '../../../lib/custom-resources/aws-custom-resource-handler/load-sdk';
 import 'aws-sdk-client-mock-jest' ;
 
 // This test performs an 'npm install' which may take longer than the default
