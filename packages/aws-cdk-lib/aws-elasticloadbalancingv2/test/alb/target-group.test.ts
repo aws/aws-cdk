@@ -268,6 +268,68 @@ describe('tests', () => {
     });
   });
 
+  test('Enable anomaly mitigation', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'Stack');
+    const vpc = new ec2.Vpc(stack, 'VPC', {});
+
+    // WHEN
+    new elbv2.ApplicationTargetGroup(stack, 'TargetGroup', {
+      loadBalancingAlgorithmAnomalyDetection: true,
+      vpc,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::TargetGroup', {
+      TargetGroupAttributes: [
+        {
+          Key: 'stickiness.enabled',
+          Value: 'false',
+        },
+        {
+          Key: 'load_balancing.algorithm.anomaly_mitigation',
+          Value: 'on',
+        },
+      ],
+    });
+  });
+
+  test('Throw when trying to enable anomaly mitigation with an unsupported load balancing algorithm', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'Stack');
+    const vpc = new ec2.Vpc(stack, 'VPC', {});
+
+    [elbv2.TargetGroupLoadBalancingAlgorithmType.LEAST_OUTSTANDING_REQUESTS, elbv2.TargetGroupLoadBalancingAlgorithmType.ROUND_ROBIN].forEach((loadBalancingAlgorithmType) => {
+      // THEN
+      expect(() => {
+        new elbv2.ApplicationTargetGroup(stack, 'TargetGroup', {
+          loadBalancingAlgorithmAnomalyDetection: true,
+          loadBalancingAlgorithmType,
+          vpc,
+        });
+      }).toThrow(/Anomaly mitigation is only supported for the weighted_random load balancing algorithm./);
+    });
+  });
+
+  test('Throw when trying to enable anomaly mitigation with a slow start period', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'Stack');
+    const vpc = new ec2.Vpc(stack, 'VPC', {});
+
+    // THEN
+    expect(() => {
+      new elbv2.ApplicationTargetGroup(stack, 'TargetGroup', {
+        loadBalancingAlgorithmAnomalyDetection: true,
+        loadBalancingAlgorithmType: elbv2.TargetGroupLoadBalancingAlgorithmType.WEIGHTED_RANDOM,
+        slowStart: cdk.Duration.seconds(90),
+        vpc,
+      });
+    }).toThrow(/Anomaly mitigation is not compatible with slow start./);
+  });
+
   test('Can set a protocol version', () => {
     // GIVEN
     const app = new cdk.App();

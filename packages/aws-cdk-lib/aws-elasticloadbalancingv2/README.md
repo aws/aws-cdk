@@ -438,6 +438,30 @@ const tg = new elbv2.ApplicationTargetGroup(this, 'TG', {
 
 For more information see: https://docs.aws.amazon.com/elasticloadbalancing/latest/application/sticky-sessions.html#application-based-stickiness
 
+### Anomaly mitigation for your Application Load Balancer
+
+By default, requests are routed using the Round Robin algorithm.
+An alternative is Automatic Target Weights (ATW) which also allows for enabling anomaly mitigation.
+When anomalous targets are identified, ATW can automatically attempt to stabilize them by reducing the amount of traffic they're routed, known as anomaly mitigation. 
+ATW continuously optimizes traffic distribution to maximize per-target success rates while minimizing target group failure rates.
+
+```ts
+declare const vpc: ec2.Vpc;
+
+// Target group with slow start mode enabled
+const tg = new elbv2.ApplicationTargetGroup(this, 'TG', {
+  targetType: elbv2.TargetType.INSTANCE,
+  loadBalancingAlgorithmAnomalyDetection: true,
+  loadBalancingAlgorithmType: elbv2.TargetGroupLoadBalancingAlgorithmType.WEIGHTED_RANDOM,
+  port: 80,
+  vpc,
+});
+```
+
+For more information see: 
+ * https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-target-groups.html#automatic-target-weights
+ * https://aws.amazon.com/blogs/networking-and-content-delivery/improving-availability-with-application-load-balancer-automatic-target-weights/
+
 ### Setting the target group protocol version
 
 By default, Application Load Balancers send requests to targets using HTTP/1.1. You can use the [protocol version](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-target-groups.html#target-group-protocol-version) to send requests to targets using HTTP/2 or gRPC.

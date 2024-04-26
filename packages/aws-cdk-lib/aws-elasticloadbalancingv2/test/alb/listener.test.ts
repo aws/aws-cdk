@@ -665,9 +665,9 @@ describe('tests', () => {
             ['',
               [{ 'Fn::Select': [1, { 'Fn::Split': ['/', loadBalancerArn] }] },
                 '/',
-                { 'Fn::Select': [2, { 'Fn::Split': ['/', loadBalancerArn] }] },
+              { 'Fn::Select': [2, { 'Fn::Split': ['/', loadBalancerArn] }] },
                 '/',
-                { 'Fn::Select': [3, { 'Fn::Split': ['/', loadBalancerArn] }] }]],
+              { 'Fn::Select': [3, { 'Fn::Split': ['/', loadBalancerArn] }] }]],
         },
       });
     }
@@ -1086,6 +1086,74 @@ describe('tests', () => {
         },
       ],
     });
+  });
+
+  test('Enable anomaly mitigation', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const lb = new elbv2.ApplicationLoadBalancer(stack, 'LB', { vpc });
+    const listener = lb.addListener('Listener', { port: 80 });
+
+    // WHEN
+    listener.addTargets('Group', {
+      port: 80,
+      targets: [new FakeSelfRegisteringTarget(stack, 'Target', vpc)],
+      loadBalancingAlgorithmAnomalyDetection: true,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::TargetGroup', {
+      TargetGroupAttributes: [
+        {
+          Key: 'stickiness.enabled',
+          Value: 'false',
+        },
+        {
+          Key: 'load_balancing.algorithm.anomaly_detection',
+          Value: 'on',
+        },
+      ],
+    });
+  });
+
+  test('Throw when trying to enable anomaly mitigation with an unsupported load balancing algorithm', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const lb = new elbv2.ApplicationLoadBalancer(stack, 'LB', { vpc });
+    const listener = lb.addListener('Listener', { port: 80 });
+
+    [elbv2.TargetGroupLoadBalancingAlgorithmType.LEAST_OUTSTANDING_REQUESTS, elbv2.TargetGroupLoadBalancingAlgorithmType.ROUND_ROBIN].forEach((loadBalancingAlgorithmType) => {
+      // THEN
+      expect(() => {
+        listener.addTargets('Group', {
+          port: 80,
+          targets: [new FakeSelfRegisteringTarget(stack, 'Target', vpc)],
+          loadBalancingAlgorithmType,
+          loadBalancingAlgorithmAnomalyDetection: true,
+        });
+      }).toThrow(/Anomaly mitigation is only supported for the weighted_random load balancing algorithm./);
+    });
+  });
+
+  test('Throw when trying to enable anomaly mitigation with a slow start period', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const lb = new elbv2.ApplicationLoadBalancer(stack, 'LB', { vpc });
+    const listener = lb.addListener('Listener', { port: 80 });
+
+    // THEN
+    expect(() => {
+      listener.addTargets('Group', {
+        port: 80,
+        targets: [new FakeSelfRegisteringTarget(stack, 'Target', vpc)],
+        loadBalancingAlgorithmAnomalyDetection: true,
+        loadBalancingAlgorithmType: elbv2.TargetGroupLoadBalancingAlgorithmType.WEIGHTED_RANDOM,
+        slowStart: cdk.Duration.seconds(90),
+      });
+    }).toThrow(/Anomaly mitigation is not compatible with slow start./);
   });
 
   describeDeprecated('Throws with bad fixed responses', () => {
@@ -1762,7 +1830,7 @@ describe('tests', () => {
       });
 
       // THEN
-      const applicationListenerRule = listener.node.children.find((v)=> v.hasOwnProperty('conditions'));
+      const applicationListenerRule = listener.node.children.find((v) => v.hasOwnProperty('conditions'));
       expect(applicationListenerRule).toBeDefined();
       expect(applicationListenerRule!.node.id).toBe(expectedLogicalId);
     });

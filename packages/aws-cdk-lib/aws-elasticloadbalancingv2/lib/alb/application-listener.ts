@@ -932,6 +932,13 @@ export interface AddApplicationTargetsProps extends AddRuleProps {
    */
   readonly loadBalancingAlgorithmType?: TargetGroupLoadBalancingAlgorithmType;
 
+  /**
+   * Indicates whether anomaly mitigation is enabled.
+   *
+   * @default false
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticloadbalancingv2-targetgroup-targetgroupattribute.html
+   */
+  readonly loadBalancingAlgorithmAnomalyDetection?: boolean;
 }
 
 /**

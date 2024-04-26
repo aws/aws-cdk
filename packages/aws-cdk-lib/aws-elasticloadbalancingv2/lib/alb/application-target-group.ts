@@ -86,6 +86,14 @@ export interface ApplicationTargetGroupProps extends BaseTargetGroupProps {
   readonly loadBalancingAlgorithmType?: TargetGroupLoadBalancingAlgorithmType;
 
   /**
+   * Indicates whether anomaly mitigation is enabled.
+   *
+   * @default false
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticloadbalancingv2-targetgroup-targetgroupattribute.html
+   */
+  readonly loadBalancingAlgorithmAnomalyDetection?: boolean;
+
+  /**
    * The targets to add to this target group.
    *
    * Can be `Instance`, `IPAddress`, or any self-registering load balancing
@@ -346,6 +354,19 @@ export class ApplicationTargetGroup extends TargetGroupBase implements IApplicat
       if (props.loadBalancingAlgorithmType) {
         this.setAttribute('load_balancing.algorithm.type', props.loadBalancingAlgorithmType);
       }
+
+      if (props.loadBalancingAlgorithmAnomalyDetection) {
+        if (props.loadBalancingAlgorithmType != TargetGroupLoadBalancingAlgorithmType.WEIGHTED_RANDOM) {
+          throw new Error('Anomaly mitigation is only supported for the weighted_random load balancing algorithm.');
+        }
+
+        if (!!props.slowStart) {
+          throw new Error('Anomaly mitigation is not compatible with slow start.');
+        }
+
+        this.setAttribute('load_balancing.algorithm.anomaly_mitigation', 'on');
+      }
+      
       this.addTarget(...(props.targets || []));
     }
   }
