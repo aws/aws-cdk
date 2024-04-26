@@ -370,6 +370,12 @@
             "data": "ParameterValueNoPolicy"
           }
         ],
+        "/aws-cdk-sdk-js-v3/Exports/Output{\"Ref\":\"TopicBFC7AF6E\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefTopicBFC7AF6ECB4A357A"
+          }
+        ],
         "/aws-cdk-sdk-js-v3/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
@@ -402,7 +408,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f717f9f2f227dedc508a2e364b13134c8d1ccc65af90070ff73d957b297dc7a5.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -415,9 +421,34 @@
         }
       },
       "dependencies": [
+        "aws-cdk-sdk-js-v3",
         "AwsCustomResourceTestDefaultTestDeployAssert289A7DC5.assets"
       ],
       "metadata": {
+        "/AwsCustomResourceTest/DefaultTest/DeployAssert/AwsApiCallSNSlistTopics/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallSNSlistTopics"
+          }
+        ],
+        "/AwsCustomResourceTest/DefaultTest/DeployAssert/AwsApiCallSNSlistTopics/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsAwsApiCallSNSlistTopics"
+          }
+        ],
+        "/AwsCustomResourceTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+          }
+        ],
+        "/AwsCustomResourceTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+          }
+        ],
         "/AwsCustomResourceTest/DefaultTest/DeployAssert/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",

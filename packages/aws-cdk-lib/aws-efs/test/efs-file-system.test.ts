@@ -5,6 +5,7 @@ import * as kms from '../../aws-kms';
 import { App, RemovalPolicy, Size, Stack, Tags } from '../../core';
 import * as cxapi from '../../cx-api';
 import { FileSystem, LifecyclePolicy, PerformanceMode, ThroughputMode, OutOfInfrequentAccessPolicy, ReplicationOverwriteProtection } from '../lib';
+import { ReplicationConfiguration } from '../lib/efs-file-system';
 
 let stack = new Stack();
 let vpc = new ec2.Vpc(stack, 'VPC');
@@ -956,5 +957,92 @@ test.each([
     FileSystemProtection: {
       ReplicationOverwriteProtection: replicationOverwriteProtection,
     },
+  });
+});
+
+describe('replication configuration', () => {
+  test('regional file system', () => {
+    // WHEN
+    new FileSystem(stack, 'EfsFileSystem', {
+      vpc,
+      replicationConfiguration: ReplicationConfiguration.regionalFileSystem('ap-northeast-1'),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::EFS::FileSystem', {
+      ReplicationConfiguration: {
+        Destinations: [
+          {
+            Region: 'ap-northeast-1',
+          },
+        ],
+      },
+    });
+  });
+
+  test('specify destination file system', () => {
+    // WHEN
+    const destination = new FileSystem(stack, 'DestinationFileSystem', {
+      vpc,
+      replicationOverwriteProtection: ReplicationOverwriteProtection.DISABLED,
+    });
+    new FileSystem(stack, 'EfsFileSystem', {
+      vpc,
+      replicationConfiguration: ReplicationConfiguration.existingFileSystem(destination),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::EFS::FileSystem', {
+      ReplicationConfiguration: {
+        Destinations: [
+          {
+            FileSystemId: {
+              Ref: 'DestinationFileSystem12545967',
+            },
+          },
+        ],
+      },
+    });
+  });
+
+  test('one zone file system', () => {
+    // WHEN
+    new FileSystem(stack, 'EfsFileSystem', {
+      vpc,
+      replicationConfiguration: ReplicationConfiguration.oneZoneFileSystem(
+        'us-east-1',
+        'us-east-1a',
+        new kms.Key(stack, 'customKey'),
+      ),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::EFS::FileSystem', {
+      ReplicationConfiguration: {
+        Destinations: [
+          {
+            Region: 'us-east-1',
+            AvailabilityZoneName: 'us-east-1a',
+            KmsKeyId: {
+              'Fn::GetAtt': [
+                'customKeyFEB2B57F',
+                'Arn',
+              ],
+            },
+          },
+        ],
+      },
+    });
+  });
+
+  test('throw error for read-only file system', () => {
+    // THEN
+    expect(() => {
+      new FileSystem(stack, 'EfsFileSystem', {
+        vpc,
+        replicationConfiguration: ReplicationConfiguration.regionalFileSystem('ap-northeast-1'),
+        replicationOverwriteProtection: ReplicationOverwriteProtection.DISABLED,
+      });
+    }).toThrow('Cannot configure \'replicationConfiguration\' when \'replicationOverwriteProtection\' is set to \'DISABLED\'');
   });
 });
