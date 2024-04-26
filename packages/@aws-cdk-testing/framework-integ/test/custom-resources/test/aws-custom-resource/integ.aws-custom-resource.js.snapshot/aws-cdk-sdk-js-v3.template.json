@@ -390,6 +390,14 @@
      "Parameter.Value"
     ]
    }
+  },
+  "ExportsOutputRefTopicBFC7AF6ECB4A357A": {
+   "Value": {
+    "Ref": "TopicBFC7AF6E"
+   },
+   "Export": {
+    "Name": "aws-cdk-sdk-js-v3:ExportsOutputRefTopicBFC7AF6ECB4A357A"
+   }
   }
  },
  "Parameters": {
