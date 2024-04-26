@@ -3,8 +3,11 @@ import { ApplicationListener, BaseApplicationListenerProps } from './application
 import { ListenerAction } from './application-listener-action';
 import * as cloudwatch from '../../../aws-cloudwatch';
 import * as ec2 from '../../../aws-ec2';
+import { PolicyStatement } from '../../../aws-iam/lib/policy-statement';
+import { ServicePrincipal } from '../../../aws-iam/lib/principals';
+import * as s3 from '../../../aws-s3';
 import * as cxschema from '../../../cloud-assembly-schema';
-import { Duration, Lazy, Names, Resource } from '../../../core';
+import { CfnResource, Duration, Lazy, Names, Resource, Stack } from '../../../core';
 import * as cxapi from '../../../cx-api';
 import { ApplicationELBMetrics } from '../elasticloadbalancingv2-canned-metrics.generated';
 import { BaseLoadBalancer, BaseLoadBalancerLookupOptions, BaseLoadBalancerProps, ILoadBalancerV2 } from '../shared/base-load-balancer';
@@ -13,6 +16,8 @@ import { parseLoadBalancerFullName } from '../shared/util';
 
 /**
  * Properties for defining an Application Load Balancer
+ *
+ * @see https://docs.aws.amazon.com/elasticloadbalancing/latest/application/application-load-balancers.html#load-balancer-attributes
  */
 export interface ApplicationLoadBalancerProps extends BaseLoadBalancerProps {
   /**
@@ -58,6 +63,81 @@ export interface ApplicationLoadBalancerProps extends BaseLoadBalancerProps {
    * @default DesyncMitigationMode.DEFENSIVE
    */
   readonly desyncMitigationMode?: DesyncMitigationMode;
+
+  /**
+   * The client keep alive duration. The valid range is 60 to 604800 seconds (1 minute to 7 days).
+   *
+   * @default - Duration.seconds(3600)
+   */
+  readonly clientKeepAlive?: Duration;
+
+  /**
+   * Indicates whether the Application Load Balancer should preserve the host header in the HTTP request
+   * and send it to the target without any change.
+   *
+   * @default false
+   */
+  readonly preserveHostHeader?: boolean;
+
+  /**
+   * Indicates whether the two headers (x-amzn-tls-version and x-amzn-tls-cipher-suite),
+   * which contain information about the negotiated TLS version and cipher suite,
+   * are added to the client request before sending it to the target.
+   *
+   * The x-amzn-tls-version header has information about the TLS protocol version negotiated with the client,
+   * and the x-amzn-tls-cipher-suite header has information about the cipher suite negotiated with the client.
+   *
+   * Both headers are in OpenSSL format.
+   *
+   * @default false
+   */
+  readonly xAmznTlsVersionAndCipherSuiteHeaders?: boolean;
+
+  /**
+   * Indicates whether the X-Forwarded-For header should preserve the source port
+   * that the client used to connect to the load balancer.
+   *
+   * @default false
+   */
+  readonly preserveXffClientPort?: boolean;
+
+  /**
+   * Enables you to modify, preserve, or remove the X-Forwarded-For header in the HTTP request
+   * before the Application Load Balancer sends the request to the target.
+   *
+   * @default XffHeaderProcessingMode.APPEND
+   */
+  readonly xffHeaderProcessingMode?: XffHeaderProcessingMode;
+
+  /**
+   * Indicates whether to allow a WAF-enabled load balancer to route requests to targets
+   * if it is unable to forward the request to AWS WAF.
+   *
+   * @default false
+   */
+  readonly wafFailOpen?: boolean;
+}
+
+/**
+ * Processing mode of the X-Forwarded-For header in the HTTP request
+ * before the Application Load Balancer sends the request to the target.
+ */
+export enum XffHeaderProcessingMode {
+  /**
+   * Application Load Balancer adds the client IP address (of the last hop) to the X-Forwarded-For header
+   * in the HTTP request before it sends it to targets.
+   */
+  APPEND = 'append',
+  /**
+   * Application Load Balancer preserves the X-Forwarded-For header in the HTTP request,
+   * and sends it to targets without any change.
+   */
+  PRESERVE = 'preserve',
+  /**
+   * Application Load Balancer removes the X-Forwarded-For header
+   * in the HTTP request before it sends it to targets.
+   */
+  REMOVE = 'remove',
 }
 
 /**
@@ -119,6 +199,27 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
     if (props.idleTimeout !== undefined) { this.setAttribute('idle_timeout.timeout_seconds', props.idleTimeout.toSeconds().toString()); }
     if (props.dropInvalidHeaderFields) {this.setAttribute('routing.http.drop_invalid_header_fields.enabled', 'true'); }
     if (props.desyncMitigationMode !== undefined) {this.setAttribute('routing.http.desync_mitigation_mode', props.desyncMitigationMode); }
+    if (props.preserveHostHeader) { this.setAttribute('routing.http.preserve_host_header.enabled', 'true'); }
+    if (props.xAmznTlsVersionAndCipherSuiteHeaders) { this.setAttribute('routing.http.x_amzn_tls_version_and_cipher_suite.enabled', 'true'); }
+    if (props.preserveXffClientPort) { this.setAttribute('routing.http.xff_client_port.enabled', 'true'); }
+    if (props.xffHeaderProcessingMode !== undefined) { this.setAttribute('routing.http.xff_header_processing.mode', props.xffHeaderProcessingMode); }
+    if (props.wafFailOpen) { this.setAttribute('waf.fail_open.enabled', 'true'); }
+    if (props.clientKeepAlive !== undefined) {
+      const clientKeepAliveInMillis = props.clientKeepAlive.toMilliseconds();
+      if (clientKeepAliveInMillis < 1000) {
+        throw new Error(`\'clientKeepAlive\' must be between 60 and 604800 seconds. Got: ${clientKeepAliveInMillis} milliseconds`);
+      }
+
+      const clientKeepAliveInSeconds = props.clientKeepAlive.toSeconds();
+      if (clientKeepAliveInSeconds < 60 || clientKeepAliveInSeconds > 604800) {
+        throw new Error(`\'clientKeepAlive\' must be between 60 and 604800 seconds. Got: ${clientKeepAliveInSeconds} seconds`);
+      }
+      this.setAttribute('client_keep_alive.seconds', clientKeepAliveInSeconds.toString());
+    }
+
+    if (props.crossZoneEnabled === false) {
+      throw new Error('crossZoneEnabled cannot be false with Application Load Balancers.');
+    }
   }
 
   /**
@@ -149,6 +250,66 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
         permanent: true,
       }),
     });
+  }
+
+  /**
+   * Enable access logging for this load balancer.
+   *
+   * A region must be specified on the stack containing the load balancer; you cannot enable logging on
+   * environment-agnostic stacks. See https://docs.aws.amazon.com/cdk/latest/guide/environments.html
+   */
+  public logAccessLogs(bucket: s3.IBucket, prefix?: string) {
+
+    /**
+    * KMS key encryption is not supported on Access Log bucket for ALB, the bucket must use Amazon S3-managed keys (SSE-S3).
+    * See https://docs.aws.amazon.com/elasticloadbalancing/latest/application/enable-access-logging.html#bucket-permissions-troubleshooting
+    */
+
+    if (bucket.encryptionKey) {
+      throw new Error('Encryption key detected. Bucket encryption using KMS keys is unsupported');
+    }
+
+    prefix = prefix || '';
+    this.setAttribute('access_logs.s3.enabled', 'true');
+    this.setAttribute('access_logs.s3.bucket', bucket.bucketName.toString());
+    this.setAttribute('access_logs.s3.prefix', prefix);
+
+    const logsDeliveryServicePrincipal = new ServicePrincipal('delivery.logs.amazonaws.com');
+    bucket.addToResourcePolicy(new PolicyStatement({
+      actions: ['s3:PutObject'],
+      principals: [this.resourcePolicyPrincipal()],
+      resources: [
+        bucket.arnForObjects(`${prefix ? prefix + '/' : ''}AWSLogs/${Stack.of(this).account}/*`),
+      ],
+    }));
+    bucket.addToResourcePolicy(
+      new PolicyStatement({
+        actions: ['s3:PutObject'],
+        principals: [logsDeliveryServicePrincipal],
+        resources: [
+          bucket.arnForObjects(`${prefix ? prefix + '/' : ''}AWSLogs/${this.env.account}/*`),
+        ],
+        conditions: {
+          StringEquals: { 's3:x-amz-acl': 'bucket-owner-full-control' },
+        },
+      }),
+    );
+    bucket.addToResourcePolicy(
+      new PolicyStatement({
+        actions: ['s3:GetBucketAcl'],
+        principals: [logsDeliveryServicePrincipal],
+        resources: [bucket.bucketArn],
+      }),
+    );
+
+    // make sure the bucket's policy is created before the ALB (see https://github.com/aws/aws-cdk/issues/1633)
+    // at the L1 level to avoid creating a circular dependency (see https://github.com/aws/aws-cdk/issues/27528
+    // and https://github.com/aws/aws-cdk/issues/27928)
+    const lb = this.node.defaultChild;
+    const bucketPolicy = bucket.policy?.node.defaultChild;
+    if (lb && bucketPolicy && CfnResource.isCfnResource(lb) && CfnResource.isCfnResource(bucketPolicy)) {
+      lb.addDependency(bucketPolicy);
+    }
   }
 
   /**

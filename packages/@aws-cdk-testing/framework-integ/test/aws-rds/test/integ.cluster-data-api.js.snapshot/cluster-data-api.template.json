@@ -545,16 +545,6 @@
      "Statement": [
       {
        "Action": [
-        "secretsmanager:DescribeSecret",
-        "secretsmanager:GetSecretValue"
-       ],
-       "Effect": "Allow",
-       "Resource": {
-        "Ref": "DatabaseSecretAttachmentE5D1B020"
-       }
-      },
-      {
-       "Action": [
         "rds-data:BatchExecuteStatement",
         "rds-data:BeginTransaction",
         "rds-data:CommitTransaction",
@@ -584,6 +574,16 @@
           }
          ]
         ]
+       }
+      },
+      {
+       "Action": [
+        "secretsmanager:DescribeSecret",
+        "secretsmanager:GetSecretValue"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Ref": "DatabaseSecretAttachmentE5D1B020"
        }
       }
      ],
