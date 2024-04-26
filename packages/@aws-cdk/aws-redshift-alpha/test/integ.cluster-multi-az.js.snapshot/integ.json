@@ -1,0 +1,12 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "aws-cdk-redshift-multi-az/DefaultTest": {
+      "stacks": [
+        "aws-cdk-redshift-cluster-database"
+      ],
+      "assertionStack": "aws-cdk-redshift-multi-az/DefaultTest/DeployAssert",
+      "assertionStackName": "awscdkredshiftmultiazDefaultTestDeployAssert27E37E1B"
+    }
+  }
+}

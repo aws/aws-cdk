@@ -565,6 +565,17 @@ export class Cluster extends ClusterBase {
       );
     }
 
+    const nodeType = props.nodeType || NodeType.DC2_LARGE;
+
+    if (props.multiAz) {
+      if (!nodeType.startsWith('ra3')) {
+        throw new Error('Multi-AZ cluster is only supported for RA3 node types.');
+      }
+      if (clusterType === ClusterType.SINGLE_NODE) {
+        throw new Error('Multi-AZ cluster is not supported for single-node clusters.');
+      }
+    }
+
     this.cluster = new CfnCluster(this, 'Resource', {
       // Basic
       allowVersionUpgrade: true,
@@ -581,7 +592,7 @@ export class Cluster extends ClusterBase {
         ?? props.masterUser.masterPassword?.unsafeUnwrap()
         ?? 'default',
       preferredMaintenanceWindow: props.preferredMaintenanceWindow,
-      nodeType: props.nodeType || NodeType.DC2_LARGE,
+      nodeType,
       numberOfNodes: nodeCount,
       loggingProperties,
       iamRoles: Lazy.list({ produce: () => this.roles.map(role => role.roleArn) }, { omitEmpty: true }),
