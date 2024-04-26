@@ -246,6 +246,7 @@
     "docs-public-apis:aws-cdk-lib.aws_codebuild.Cache.none",
     "docs-public-apis:aws-cdk-lib.aws_codebuild.LinuxArmBuildImage.fromDockerRegistry",
     "docs-public-apis:aws-cdk-lib.aws_codebuild.LinuxBuildImage.*",
+    "docs-public-apis:aws-cdk-lib.aws_codebuild.LinuxLambdaBuildImage.fromEcrRepository",
     "docs-public-apis:aws-cdk-lib.aws_codebuild.Project.fromProjectArn",
     "docs-public-apis:aws-cdk-lib.aws_codebuild.Project.metric",
     "docs-public-apis:aws-cdk-lib.aws_codebuild.Source.badgeSupported",

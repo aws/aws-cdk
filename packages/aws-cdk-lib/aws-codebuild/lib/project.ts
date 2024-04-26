@@ -1711,9 +1711,8 @@ export interface IBindableBuildImage extends IBuildImage {
 }
 
 /**
- * The options when creating a CodeBuild Docker build image
- * using `LinuxBuildImage.fromDockerRegistry`
- * or `WindowsBuildImage.fromDockerRegistry`.
+ * The options when creating a CodeBuild Docker build image using
+ * a BuildImage instance method's `.fromDockerRegistry`
  */
 export interface DockerImageOptions {
   /**
@@ -1721,7 +1720,7 @@ export interface DockerImageOptions {
    * used for accessing the repository holding the image,
    * if the repository is private.
    *
-   * @default no credentials will be used (we assume the repository is public)
+   * @default - no credentials will be used (we assume the repository is public)
    */
   readonly secretsManagerCredentials?: secretsmanager.ISecret;
 }

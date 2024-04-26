@@ -1,7 +1,8 @@
 import { BuildSpec } from './build-spec';
 import { ComputeType } from './compute-type';
 import { runScriptLinuxBuildSpec } from './private/run-script-linux-build-spec';
-import { BuildEnvironment, IBuildImage, isLambdaComputeType } from './project';
+import { BuildEnvironment, IBuildImage, ImagePullPrincipalType, isLambdaComputeType } from './project';
+import * as ecr from '../../aws-ecr';
 
 /**
  * Construction properties of `LinuxLambdaBuildImage`.
@@ -9,6 +10,8 @@ import { BuildEnvironment, IBuildImage, isLambdaComputeType } from './project';
  */
 interface LinuxLambdaBuildImageProps {
   readonly imageId: string;
+  readonly imagePullPrincipalType?: ImagePullPrincipalType;
+  readonly repository?: ecr.IRepository;
 }
 
 /**
@@ -39,6 +42,25 @@ export class LinuxLambdaBuildImage implements IBuildImage {
   public static readonly AMAZON_LINUX_2_GO_1_21 = LinuxLambdaBuildImage.fromCodeBuildImageId('aws/codebuild/amazonlinux-x86_64-lambda-standard:go1.21');
   /** The `aws/codebuild/amazonlinux-x86_64-lambda-standard:dotnet6` build image. */
   public static readonly AMAZON_LINUX_2_DOTNET_6 = LinuxLambdaBuildImage.fromCodeBuildImageId('aws/codebuild/amazonlinux-x86_64-lambda-standard:dotnet6');
+
+  /**
+   * @returns A x86-64 Linux build image from an ECR repository.
+   *
+   * NOTE: if the repository is external (i.e. imported), then we won't be able to add
+   * a resource policy statement for it so CodeBuild can pull the image.
+   *
+   * @see https://docs.aws.amazon.com/codebuild/latest/userguide/sample-ecr.html
+   *
+   * @param repository The ECR repository
+   * @param tagOrDigest Image tag or digest (default "latest", digests must start with `sha256:`)
+   */
+  public static fromEcrRepository(repository: ecr.IRepository, tagOrDigest: string = 'latest'): IBuildImage {
+    return new LinuxLambdaBuildImage({
+      imageId: repository.repositoryUriForTagOrDigest(tagOrDigest),
+      imagePullPrincipalType: ImagePullPrincipalType.SERVICE_ROLE,
+      repository,
+    });
+  }
 
   /**
    * Uses a Docker image provided by CodeBuild.

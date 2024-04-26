@@ -332,7 +332,6 @@ or one of the corresponding methods on `LinuxArmBuildImage`:
 * `LinuxArmBuildImage.fromDockerRegistry(image[, { secretsManagerCredentials }])`
 * `LinuxArmBuildImage.fromEcrRepository(repo[, tag])`
 
-**Note:** You cannot specify custom images on `LinuxLambdaBuildImage` or `LinuxArmLambdaBuildImage` images.
 
 Note that the `WindowsBuildImage` version of the static methods accepts an optional parameter of type `WindowsImageType`,
 which can be either `WindowsImageType.STANDARD`, the default, or `WindowsImageType.SERVER_2019`:
@@ -364,6 +363,12 @@ The following example shows how to define an image from an ECR repository:
 The following example shows how to define an image from a private docker registry:
 
 [Docker Registry example](./test/integ.docker-registry.lit.ts)
+
+You can also specify custom ECR images for `LinuxLambdaBuildImage` and `LinuxArmLambdaBuildImage`:
+
+* `LinuxLambdaBuildImage.fromEcrRepository(repo[, tag])`
+* `LinuxArmLambdaBuildImage.fromEcrRepository(repo[, tag])`
+
 
 ### GPU images
 

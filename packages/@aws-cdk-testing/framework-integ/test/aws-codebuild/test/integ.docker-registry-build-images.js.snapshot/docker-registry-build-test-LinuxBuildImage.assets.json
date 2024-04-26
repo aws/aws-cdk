@@ -1,0 +1,19 @@
+{
+  "version": "36.0.0",
+  "files": {
+    "7d38ada7ae33e60d4ac2fe6f35ab91c41ec7357dd8744d3e26bda97850606620": {
+      "source": {
+        "path": "docker-registry-build-test-LinuxBuildImage.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "7d38ada7ae33e60d4ac2fe6f35ab91c41ec7357dd8744d3e26bda97850606620.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

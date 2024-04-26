@@ -1,0 +1,14 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "DockerRegistryBuildImagesIntegTest/DefaultTest": {
+      "stacks": [
+        "docker-registry-build-test-LinuxBuildImage",
+        "docker-registry-build-test-LinuxArmBuildImage",
+        "docker-registry-build-test-WindowsBuildImage"
+      ],
+      "assertionStack": "DockerRegistryBuildImagesIntegTest/DefaultTest/DeployAssert",
+      "assertionStackName": "DockerRegistryBuildImagesIntegTestDefaultTestDeployAssertD98E6533"
+    }
+  }
+}
