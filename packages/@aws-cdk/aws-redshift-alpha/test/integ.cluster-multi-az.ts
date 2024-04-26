@@ -29,11 +29,13 @@ const vpc = new ec2.Vpc(stack, 'Vpc', {
 });
 
 new redshift.Cluster(stack, 'Cluster', {
-  vpc: vpc,
+  vpc,
   masterUser: {
     masterUsername: 'admin',
   },
   nodeType: redshift.NodeType.RA3_XLPLUS,
+  clusterType: redshift.ClusterType.MULTI_NODE,
+  numberOfNodes: 2,
   multiAz: true,
 });
 

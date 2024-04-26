@@ -556,6 +556,23 @@ const cluster = new Cluster(this, 'Redshift', {
 cluster.addIamRole(role);
 ```
 
+## [Multi-AZ](https://docs.aws.amazon.com/redshift/latest/mgmt/managing-cluster-multi-az.html)
+
+Amazon Redshift supports multiple Availability Zones (Multi-AZ) deployments for provisioned RA3 clusters. By using Multi-AZ deployments, your Amazon Redshift data warehouse can continue operating in failure scenarios when an unexpected event happens in an Availability Zone.
+
+```ts
+new redshift.Cluster(stack, 'Cluster', {
+  masterUser: {
+    masterUsername: 'admin',
+  },
+  vpc, // 3 AZs are required for Multi-AZ
+  nodeType: redshift.NodeType.RA3_XLPLUS, // must be RA3 node type
+  clusterType: redshift.ClusterType.MULTI_NODE, // must be MULTI_NODE
+  numberOfNodes: 2, // must be 2 or more
+  multiAz: true,
+});
+```
+
 ## Resizing
 
 As your data warehousing needs change, it's possible to resize your Redshift cluster. If the cluster was deployed via CDK, 
