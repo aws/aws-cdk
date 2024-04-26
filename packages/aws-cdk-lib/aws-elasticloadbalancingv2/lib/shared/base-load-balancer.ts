@@ -251,10 +251,12 @@ export abstract class BaseLoadBalancer extends Resource {
       this.setAttribute('load_balancing.cross_zone.enabled', baseProps.crossZoneEnabled === true ? 'true' : 'false');
     }
 
-    if (additionalProps.ipAddressType === IpAddressType.IPV4 && baseProps.denyAllIgwTraffic === false) {
-      throw new Error('\'denyAllIgwTraffic\' cannot be false on load balancers with IPv4 addressing.');
-    } else if (additionalProps.ipAddressType === IpAddressType.DUAL_STACK && baseProps.denyAllIgwTraffic !== undefined) {
-      this.setAttribute('ipv6.deny_all_igw_traffic', baseProps.denyAllIgwTraffic.toString());
+    if (baseProps.denyAllIgwTraffic !== undefined) {
+      if (additionalProps.ipAddressType === IpAddressType.DUAL_STACK) {
+        this.setAttribute('ipv6.deny_all_igw_traffic', baseProps.denyAllIgwTraffic.toString());
+      } else {
+        throw new Error(`'denyAllIgwTraffic' may only be set on load balancers with ${IpAddressType.DUAL_STACK} addressing.`);
+      }
     }
 
     this.loadBalancerCanonicalHostedZoneId = resource.attrCanonicalHostedZoneId;
