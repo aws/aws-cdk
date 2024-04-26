@@ -1059,6 +1059,35 @@ describe('tests', () => {
     });
   });
 
+  test('weighted_random load balancer algorithm type', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const lb = new elbv2.ApplicationLoadBalancer(stack, 'LB', { vpc });
+    const listener = lb.addListener('Listener', { port: 80 });
+
+    // WHEN
+    listener.addTargets('Group', {
+      port: 80,
+      targets: [new FakeSelfRegisteringTarget(stack, 'Target', vpc)],
+      loadBalancingAlgorithmType: elbv2.TargetGroupLoadBalancingAlgorithmType.WEIGHTED_RANDOM,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::TargetGroup', {
+      TargetGroupAttributes: [
+        {
+          Key: 'stickiness.enabled',
+          Value: 'false',
+        },
+        {
+          Key: 'load_balancing.algorithm.type',
+          Value: 'weighted_random',
+        },
+      ],
+    });
+  });
+
   describeDeprecated('Throws with bad fixed responses', () => {
 
     test('status code', () => {

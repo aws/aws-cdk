@@ -241,6 +241,33 @@ describe('tests', () => {
     });
   });
 
+  test('weighted_random load balancer algorithm type', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'Stack');
+    const vpc = new ec2.Vpc(stack, 'VPC', {});
+
+    // WHEN
+    new elbv2.ApplicationTargetGroup(stack, 'TargetGroup', {
+      loadBalancingAlgorithmType: elbv2.TargetGroupLoadBalancingAlgorithmType.WEIGHTED_RANDOM,
+      vpc,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::TargetGroup', {
+      TargetGroupAttributes: [
+        {
+          Key: 'stickiness.enabled',
+          Value: 'false',
+        },
+        {
+          Key: 'load_balancing.algorithm.type',
+          Value: 'weighted_random',
+        },
+      ],
+    });
+  });
+
   test('Can set a protocol version', () => {
     // GIVEN
     const app = new cdk.App();
