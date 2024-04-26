@@ -453,7 +453,7 @@ export interface ARecordAttrs extends RecordSetOptions{
   /**
    * Existing A record DNS name to set RecordTarget
    */
-  readonly target: string;
+  readonly targetDNS: string;
 }
 
 /**
