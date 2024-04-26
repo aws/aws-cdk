@@ -7,6 +7,7 @@ import {
   Compatibility,
   ITaskDefinition,
   NetworkMode,
+  PidMode,
   TaskDefinition,
 } from '../base/task-definition';
 import { RuntimePlatform } from '../runtime-platform';
@@ -77,6 +78,17 @@ export interface FargateTaskDefinitionProps extends CommonTaskDefinitionProps {
    * @default - Undefined.
    */
   readonly runtimePlatform?: RuntimePlatform;
+
+  /**
+   * The process namespace to use for the containers in the task.
+   *
+   * Only supported for tasks that are hosted on AWS Fargate if the tasks
+   * are using platform version 1.4.0 or later (Linux).
+   * Not supported in Windows containers.
+   *
+   * @default - PidMode used by the task is not specified
+   */
+  readonly pidMode?: PidMode;
 }
 
 /**
@@ -147,11 +159,21 @@ export class FargateTaskDefinition extends TaskDefinition implements IFargateTas
       memoryMiB: props.memoryLimitMiB !== undefined ? Tokenization.stringifyNumber(props.memoryLimitMiB) : '512',
       compatibility: Compatibility.FARGATE,
       networkMode: NetworkMode.AWS_VPC,
+      pidMode: props.pidMode,
     });
 
     // eslint-disable-next-line max-len
     if (props.ephemeralStorageGiB && !Token.isUnresolved(props.ephemeralStorageGiB) && (props.ephemeralStorageGiB < 21 || props.ephemeralStorageGiB > 200)) {
       throw new Error('Ephemeral storage size must be between 21GiB and 200GiB');
+    }
+
+    if (props.pidMode) {
+      if (props.runtimePlatform?.operatingSystemFamily?.isWindows()) {
+        throw new Error('\'pidMode\' is not supported for Windows containers.');
+      }
+      if (!Token.isUnresolved(props.pidMode) && props.pidMode !== PidMode.HOST) {
+        throw new Error(`\'pidMode\' can only be set to \'${PidMode.HOST}\' for Fargate containers, got: \'${props.pidMode}\'.`);
+      }
     }
 
     this.ephemeralStorageGiB = props.ephemeralStorageGiB;
