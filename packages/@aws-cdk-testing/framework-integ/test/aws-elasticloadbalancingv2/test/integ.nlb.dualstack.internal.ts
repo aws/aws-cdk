@@ -32,6 +32,7 @@ const subnetIpv6CidrBlocks = cdk.Fn.cidr(vpcIpv6CidrBlock, 256, '64');
 const lb = new elbv2.NetworkLoadBalancer(stack, 'LB', {
   vpc,
   ipAddressType: elbv2.IpAddressType.DUAL_STACK,
+  denyAllIgwTraffic: true,
 });
 
 const group = new elbv2.NetworkTargetGroup(stack, 'tg', {
