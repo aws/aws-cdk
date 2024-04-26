@@ -671,6 +671,10 @@
                         "value": "true"
                       },
                       {
+                        "key": "ipv6.deny_all_igw_traffic",
+                        "value": "true"
+                      },
+                      {
                         "key": "dns_record.client_routing_policy",
                         "value": "partial_availability_zone_affinity"
                       }
