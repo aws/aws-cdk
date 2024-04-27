@@ -2,10 +2,10 @@ import * as fs from 'fs';
 import { join, resolve } from 'path';
 import { Template } from '../../assertions';
 import { Role, ServicePrincipal } from '../../aws-iam';
+import * as kms from '../../aws-kms';
 import { Asset } from '../../aws-s3-assets';
 import { App, Stack } from '../../core';
 import { Code, Repository, RepositoryProps } from '../lib';
-import * as kms from 'aws-cdk-lib/aws-kms';
 
 describe('codecommit', () => {
   describe('CodeCommit Repositories', () => {

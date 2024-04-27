@@ -499,7 +499,9 @@ export interface RepositoryProps {
   readonly code?: Code;
 
   /**
-   * The AWS Key Management Service encryption key used to encrypt and decrypt the repository.
+   * The customer managed key used to encrypt and decrypt the data in repository.
+   *
+   * @default - Use an AWS managed key
    */
   readonly kmsKey?: kms.IKey;
 }
