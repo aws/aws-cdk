@@ -1,28 +1,28 @@
 {
   "version": "36.0.0",
   "artifacts": {
-    "AwsCustomResourceInvokePayloadStack.assets": {
+    "aws-cdk-sdk-dynamodb.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "AwsCustomResourceInvokePayloadStack.assets.json",
+        "file": "aws-cdk-sdk-dynamodb.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "AwsCustomResourceInvokePayloadStack": {
+    "aws-cdk-sdk-dynamodb": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "AwsCustomResourceInvokePayloadStack.template.json",
+        "templateFile": "aws-cdk-sdk-dynamodb.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/cc74a13e3b62432119b62f08906eb8b9dfbdd5524e4aa11755c32b182a8e55ba.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/8d01dc595fb8fe2a91d3b5ba24cb3812acfc6b131ac1e9963f8456326aea77a0.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "AwsCustomResourceInvokePayloadStack.assets"
+          "aws-cdk-sdk-dynamodb.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -31,91 +31,67 @@
         }
       },
       "dependencies": [
-        "AwsCustomResourceInvokePayloadStack.assets"
+        "aws-cdk-sdk-dynamodb.assets"
       ],
       "metadata": {
-        "/AwsCustomResourceInvokePayloadStack/Function/ServiceRole/Resource": [
+        "/aws-cdk-sdk-dynamodb/myTable/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "FunctionServiceRole675BB04A"
+            "data": "myTableA48C5C70"
           }
         ],
-        "/AwsCustomResourceInvokePayloadStack/Function/Resource": [
+        "/aws-cdk-sdk-dynamodb/myCR/Resource/Default": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "Function76856677"
+            "data": "myCRE89CE839"
           }
         ],
-        "/AwsCustomResourceInvokePayloadStack/ListLambdaFunctions": [
-          {
-            "type": "aws:cdk:warning",
-            "data": "installLatestAwsSdk was not specified, and defaults to true. You probably do not want this. Set the global context flag '@aws-cdk/customresources:installLatestAwsSdkDefault' to false to switch this behavior off project-wide, or set the property explicitly to true if you know you need to call APIs that are not in Lambda's built-in SDK version. [ack: @aws-cdk/custom-resources:installLatestAwsSdkNotSpecified]"
-          }
-        ],
-        "/AwsCustomResourceInvokePayloadStack/ListLambdaFunctions/Resource/Default": [
+        "/aws-cdk-sdk-dynamodb/myCR/CustomResourcePolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ListLambdaFunctionsF9FB8E2B"
+            "data": "myCRCustomResourcePolicy05AD5A90"
           }
         ],
-        "/AwsCustomResourceInvokePayloadStack/ListLambdaFunctions/CustomResourcePolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ListLambdaFunctionsCustomResourcePolicyCFFF021A"
-          }
-        ],
-        "/AwsCustomResourceInvokePayloadStack/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole/Resource": [
+        "/aws-cdk-sdk-dynamodb/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
           }
         ],
-        "/AwsCustomResourceInvokePayloadStack/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole/DefaultPolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleDefaultPolicyD28E1A5E"
-          }
-        ],
-        "/AwsCustomResourceInvokePayloadStack/AWS679f53fac002430cb0da5b7982bd2287/Resource": [
+        "/aws-cdk-sdk-dynamodb/AWS679f53fac002430cb0da5b7982bd2287/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "AWS679f53fac002430cb0da5b7982bd22872D164C4C"
           }
         ],
-        "/AwsCustomResourceInvokePayloadStack/FunctionPayload": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "FunctionPayload"
-          }
-        ],
-        "/AwsCustomResourceInvokePayloadStack/BootstrapVersion": [
+        "/aws-cdk-sdk-dynamodb/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/AwsCustomResourceInvokePayloadStack/CheckBootstrapVersion": [
+        "/aws-cdk-sdk-dynamodb/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "AwsCustomResourceInvokePayloadStack"
+      "displayName": "aws-cdk-sdk-dynamodb"
     },
-    "AwsCustomResourceInvokePayloadIntegDefaultTestDeployAssertB4B64337.assets": {
+    "AwsCustomResourceDynamoDBTestDefaultTestDeployAssertB351282D.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "AwsCustomResourceInvokePayloadIntegDefaultTestDeployAssertB4B64337.assets.json",
+        "file": "AwsCustomResourceDynamoDBTestDefaultTestDeployAssertB351282D.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "AwsCustomResourceInvokePayloadIntegDefaultTestDeployAssertB4B64337": {
+    "AwsCustomResourceDynamoDBTestDefaultTestDeployAssertB351282D": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "AwsCustomResourceInvokePayloadIntegDefaultTestDeployAssertB4B64337.template.json",
+        "templateFile": "AwsCustomResourceDynamoDBTestDefaultTestDeployAssertB351282D.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
@@ -124,7 +100,7 @@
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "AwsCustomResourceInvokePayloadIntegDefaultTestDeployAssertB4B64337.assets"
+          "AwsCustomResourceDynamoDBTestDefaultTestDeployAssertB351282D.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -133,23 +109,23 @@
         }
       },
       "dependencies": [
-        "AwsCustomResourceInvokePayloadIntegDefaultTestDeployAssertB4B64337.assets"
+        "AwsCustomResourceDynamoDBTestDefaultTestDeployAssertB351282D.assets"
       ],
       "metadata": {
-        "/AwsCustomResourceInvokePayloadInteg/DefaultTest/DeployAssert/BootstrapVersion": [
+        "/AwsCustomResourceDynamoDBTest/DefaultTest/DeployAssert/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/AwsCustomResourceInvokePayloadInteg/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+        "/AwsCustomResourceDynamoDBTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "AwsCustomResourceInvokePayloadInteg/DefaultTest/DeployAssert"
+      "displayName": "AwsCustomResourceDynamoDBTest/DefaultTest/DeployAssert"
     },
     "Tree": {
       "type": "cdk:tree",
