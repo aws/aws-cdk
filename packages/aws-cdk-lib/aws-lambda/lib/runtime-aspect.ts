@@ -1,8 +1,8 @@
 import { IConstruct } from 'constructs';
-import { Function } from './function';
 import { CfnFunction } from './lambda.generated';
 import { Runtime } from './runtime';
 import { CfnResource, IAspect } from '../../core';
+import { IFunction } from './function-base';
 
 /**
  * Options used to configure a RuntimeAspect.
@@ -13,7 +13,7 @@ export interface RuntimeAspectOptions {
    *
    * @default - the RuntimeAspect will include all Lambda functions with a node runtime.
    */
-  readonly functionsToIgnore?: Function[];
+  readonly functionsToIgnore?: IFunction[];
 }
 
 /**
@@ -50,7 +50,7 @@ abstract class RuntimeAspectBase implements IAspect {
     }
   }
 
-  private generateFunctionPathsToIgnore(functionsToIgnore: Function[]) {
+  private generateFunctionPathsToIgnore(functionsToIgnore: IFunction[]) {
     const functionPathsToIgnore = [];
     for (const functionToIgnore of functionsToIgnore) {
       functionPathsToIgnore.push(`${functionToIgnore.node.path}/Resource`);
