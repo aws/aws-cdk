@@ -40,7 +40,6 @@ abstract class RuntimeAspectBase implements IAspect {
       if (this.isRuntimeFamily(runtime)) {
         node.addPropertyOverride('Runtime', this.runtimeName);
       }
-      return;
     }
   }
 
