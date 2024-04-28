@@ -51,7 +51,7 @@ export class NodeRuntimeAspect implements IAspect {
     }
 
     // override runtimes for Function and SingletonFunction
-    if (node instanceof CfnFunction && this.isRuntimeFamily(node.runtime)) {
+    if (node instanceof CfnFunction && this.isNodeRuntimeFamily(node.runtime)) {
       node.runtime = this.runtimeName;
       return;
     }
@@ -59,7 +59,7 @@ export class NodeRuntimeAspect implements IAspect {
     // override runtimes for CfnResource of type AWS::Lambda::Function
     if (CfnResource.isCfnResource(node) && node.cfnResourceType === 'AWS::Lambda::Function') {
       const runtime = node.getResourceProperty('Runtime') as string;
-      if (this.isRuntimeFamily(runtime)) {
+      if (this.isNodeRuntimeFamily(runtime)) {
         node.addPropertyOverride('Runtime', this.runtimeName);
       }
       return;
@@ -74,7 +74,7 @@ export class NodeRuntimeAspect implements IAspect {
     return functionPathsToIgnore;
   }
 
-  private isRuntimeFamily(runtime?: string) {
+  private isNodeRuntimeFamily(runtime?: string) {
     // this shouldn't happen, but in case it does throw an error
     if (runtime === undefined) {
       throw new Error('No runtime was configured for the visited node');
