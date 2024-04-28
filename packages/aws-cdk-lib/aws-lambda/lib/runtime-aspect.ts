@@ -3,8 +3,6 @@ import { IFunction } from './function-base';
 import { Runtime } from './runtime';
 import { CfnResource, IAspect } from '../../core';
 
-/* eslint-disable no-console */
-
 /**
  * Options used to configure a RuntimeAspect.
  */
@@ -57,11 +55,11 @@ abstract class RuntimeAspectBase implements IAspect {
     if (runtime === undefined) {
       throw new Error('No runtime was configured for the visited node');
     }
-    return runtime?.includes(this.runtimeFamily);
+    return runtime.includes(this.runtimeFamily);
   }
 
   private getRuntimeProperty(node: CfnResource) {
-    return node.getResourceProperty('runtime') || node.getResourceProperty('Runtime');
+    return (node.getResourceProperty('runtime') || node.getResourceProperty('Runtime')) as string;
   }
 }
 
