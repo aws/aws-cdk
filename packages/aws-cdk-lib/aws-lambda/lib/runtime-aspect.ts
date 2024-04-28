@@ -20,10 +20,9 @@ export interface RuntimeAspectOptions {
  * Base class for RuntimeAspects.
  */
 abstract class RuntimeAspectBase implements IAspect {
-
+  protected abstract readonly runtimeFamily: string;
   private readonly runtimeName: string;
   private readonly functionPathsToIgnore: string[];
-  protected abstract readonly runtimeFamily: string;
 
   protected constructor(runtimeName: string, options: RuntimeAspectOptions = {}) {
     this.runtimeName = runtimeName;
