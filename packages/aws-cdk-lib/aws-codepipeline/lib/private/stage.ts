@@ -7,7 +7,7 @@ import { Token } from '../../../core';
 import { IAction, IPipeline, IStage } from '../action';
 import { Artifact } from '../artifact';
 import { CfnPipeline } from '../codepipeline.generated';
-import { Pipeline, StageProps } from '../pipeline';
+import { FailureConditions, Pipeline, StageProps } from '../pipeline';
 
 /**
  * A Stage in a Pipeline.
@@ -27,6 +27,7 @@ export class Stage implements IStage {
   private readonly scope: Construct;
   private readonly _pipeline: Pipeline;
   private readonly _actions = new Array<FullActionDescriptor>();
+  private readonly _onFailure?: FailureConditions;
 
   /**
    * Create a new Stage.
@@ -39,6 +40,7 @@ export class Stage implements IStage {
     this.transitionDisabledReason = props.transitionDisabledReason ?? 'Transition disabled';
     this._pipeline = pipeline;
     this.scope = new Construct(pipeline, this.stageName);
+    this._onFailure = props.onFailure;
 
     for (const action of props.actions || []) {
       this.addAction(action);
@@ -81,6 +83,9 @@ export class Stage implements IStage {
     return {
       name: this.stageName,
       actions: this._actions.map(action => this.renderAction(action)),
+      onFailure: this._onFailure ? {
+        result: this._onFailure?.result,
+      } : undefined,
     };
   }
 

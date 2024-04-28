@@ -61,6 +61,27 @@ export interface StagePlacement {
 }
 
 /**
+ * Failure conditions for Stage props.
+ */
+export enum FailureConditionsResult {
+  /**
+   * ROLLBACK
+   */
+  ROLLBACK = 'ROLLBACK',
+}
+
+/**
+ * Failure conditions for Stage props.
+ */
+export interface FailureConditions {
+  /**
+   * The specified result for when the failure conditions are met,
+   * such as rolling back the stage.
+   */
+  readonly result?: FailureConditionsResult;
+}
+
+/**
  * Construction properties of a Pipeline Stage.
  */
 export interface StageProps {
@@ -89,6 +110,16 @@ export interface StageProps {
    * @default 'Transition disabled'
    */
   readonly transitionDisabledReason?: string;
+
+  /**
+   * The method to use when a stage has not completed successfully.
+   *
+   * For example, configuring this field for rollback will roll back a failed
+   * stage automatically to the last successful pipeline execution in the stage.
+   *
+   * @default - No failure conditions.
+   */
+  readonly onFailure?: FailureConditions;
 }
 
 export interface StageOptions extends StageProps {
