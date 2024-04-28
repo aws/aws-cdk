@@ -1,6 +1,5 @@
 import { IConstruct } from 'constructs';
 import { IFunction } from './function-base';
-// import { CfnFunction } from './lambda.generated';
 import { Runtime } from './runtime';
 import { CfnResource, IAspect } from '../../core';
 
