@@ -11,13 +11,13 @@ export interface RuntimeAspectOptions {
   /**
    * Lambda functions that should be excluded by the RuntimeAspect
    *
-   * @default - the RuntimeAspect will include all Lambda functions in the same runtime family.
+   * @default - the RuntimeAspect will include all Lambda functions with a node runtime.
    */
   readonly functionsToIgnore?: Function[];
 }
 
 /**
- * A class used to walk the construct tree and update all runtimes.
+ * A class used to walk the construct tree and update all Lambda node runtimes.
  */
 export class NodeRuntimeAspect implements IAspect {
   /**
@@ -28,7 +28,7 @@ export class NodeRuntimeAspect implements IAspect {
   }
 
   /**
-   * Use any runtime name to update all runtimes with the specified runtime family.
+   * Use any node runtime version.
    */
   public static of(runtimeName: string, options: RuntimeAspectOptions = {}) {
     if (!runtimeName.includes('nodejs')) {
