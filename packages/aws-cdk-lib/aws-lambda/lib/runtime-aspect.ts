@@ -3,6 +3,8 @@ import { IFunction } from './function-base';
 import { Runtime } from './runtime';
 import { CfnResource, IAspect } from '../../core';
 
+/* eslint-disable no-console */
+
 /**
  * Options used to configure a RuntimeAspect.
  */
@@ -35,7 +37,7 @@ abstract class RuntimeAspectBase implements IAspect {
 
     // override runtimes for CfnResource of type AWS::Lambda::Function
     if (CfnResource.isCfnResource(node) && node.cfnResourceType === 'AWS::Lambda::Function') {
-      const runtime = node.getResourceProperty('runtime') as string;
+      const runtime = this.getRuntimeProperty(node);
       if (this.isRuntimeFamily(runtime)) {
         node.addPropertyOverride('Runtime', this.runtimeName);
       }
@@ -55,7 +57,11 @@ abstract class RuntimeAspectBase implements IAspect {
     if (runtime === undefined) {
       throw new Error('No runtime was configured for the visited node');
     }
-    return runtime.includes(this.runtimeFamily);
+    return runtime?.includes(this.runtimeFamily);
+  }
+
+  private getRuntimeProperty(node: CfnResource) {
+    return node.getResourceProperty('runtime') || node.getResourceProperty('Runtime');
   }
 }
 
@@ -64,14 +70,14 @@ abstract class RuntimeAspectBase implements IAspect {
  */
 export class NodeRuntimeAspect extends RuntimeAspectBase {
   /**
-   * Walks the construct tree and updates all node runtimes with 'nodejs20.x'.
+   * Updates all Lambda node runtimes with 'nodejs20.x'.
    */
   public static nodeJs20(options: RuntimeAspectOptions = {}) {
     return NodeRuntimeAspect.of(Runtime.NODEJS_20_X.toString(), options);
   }
 
   /**
-   * Use any node runtime version.
+   * Updates all Lambda node runtimes with any specified node runtime.
    */
   public static of(runtimeName: string, options: RuntimeAspectOptions = {}) {
     return new NodeRuntimeAspect(runtimeName, options);
