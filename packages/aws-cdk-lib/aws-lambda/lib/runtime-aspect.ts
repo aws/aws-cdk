@@ -58,7 +58,7 @@ export class NodeRuntimeAspect implements IAspect {
 
     // override runtimes for CfnResource of type AWS::Lambda::Function
     if (CfnResource.isCfnResource(node) && node.cfnResourceType === 'AWS::Lambda::Function') {
-      const runtime = node.getResourceProperty('Runtime');
+      const runtime = node.getResourceProperty('Runtime') as string;
       if (this.isRuntimeFamily(runtime)) {
         node.addPropertyOverride('Runtime', this.runtimeName);
       }
