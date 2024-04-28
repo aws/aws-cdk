@@ -17,30 +17,15 @@ export interface RuntimeAspectOptions {
 }
 
 /**
- * A class used to walk the construct tree and update all Lambda node runtimes.
+ * Base class for RuntimeAspects.
  */
-export class NodeRuntimeAspect implements IAspect {
-  /**
-   * Walks the construct tree and updates all node runtimes with 'nodejs20.x'.
-   */
-  public static nodeJs20(options: RuntimeAspectOptions = {}) {
-    return NodeRuntimeAspect.of(Runtime.NODEJS_20_X.toString(), options);
-  }
-
-  /**
-   * Use any node runtime version.
-   */
-  public static of(runtimeName: string, options: RuntimeAspectOptions = {}) {
-    if (!runtimeName.includes('nodejs')) {
-      throw new Error('You must only use node runtimes');
-    }
-    return new NodeRuntimeAspect(runtimeName, options);
-  }
+abstract class RuntimeAspectBase implements IAspect {
 
   private readonly runtimeName: string;
   private readonly functionPathsToIgnore: string[];
+  protected abstract readonly runtimeFamily: string;
 
-  private constructor(runtimeName: string, options: RuntimeAspectOptions = {}) {
+  protected constructor(runtimeName: string, options: RuntimeAspectOptions = {}) {
     this.runtimeName = runtimeName;
     this.functionPathsToIgnore = this.generateFunctionPathsToIgnore(options.functionsToIgnore ?? []);
   }
@@ -51,7 +36,7 @@ export class NodeRuntimeAspect implements IAspect {
     }
 
     // override runtimes for Function and SingletonFunction
-    if (node instanceof CfnFunction && this.isNodeRuntimeFamily(node.runtime)) {
+    if (node instanceof CfnFunction && this.isRuntimeFamily(node.runtime)) {
       node.runtime = this.runtimeName;
       return;
     }
@@ -59,7 +44,7 @@ export class NodeRuntimeAspect implements IAspect {
     // override runtimes for CfnResource of type AWS::Lambda::Function
     if (CfnResource.isCfnResource(node) && node.cfnResourceType === 'AWS::Lambda::Function') {
       const runtime = node.getResourceProperty('Runtime') as string;
-      if (this.isNodeRuntimeFamily(runtime)) {
+      if (this.isRuntimeFamily(runtime)) {
         node.addPropertyOverride('Runtime', this.runtimeName);
       }
       return;
@@ -74,11 +59,36 @@ export class NodeRuntimeAspect implements IAspect {
     return functionPathsToIgnore;
   }
 
-  private isNodeRuntimeFamily(runtime?: string) {
+  private isRuntimeFamily(runtime?: string) {
     // this shouldn't happen, but in case it does throw an error
     if (runtime === undefined) {
       throw new Error('No runtime was configured for the visited node');
     }
-    return runtime.includes('nodejs');
+    return runtime.includes(this.runtimeFamily);
+  }
+}
+
+/**
+ * A class used to walk the construct tree and update all Lambda node runtimes.
+ */
+export class NodeRuntimeAspect extends RuntimeAspectBase {
+  /**
+   * Walks the construct tree and updates all node runtimes with 'nodejs20.x'.
+   */
+  public static nodeJs20(options: RuntimeAspectOptions = {}) {
+    return NodeRuntimeAspect.of(Runtime.NODEJS_20_X.toString(), options);
+  }
+
+  /**
+   * Use any node runtime version.
+   */
+  public static of(runtimeName: string, options: RuntimeAspectOptions = {}) {
+    return new NodeRuntimeAspect(runtimeName, options);
+  }
+
+  protected readonly runtimeFamily = 'nodejs';
+
+  private constructor(runtimeName: string, options: RuntimeAspectOptions = {}) {
+    super(runtimeName, options);
   }
 }
