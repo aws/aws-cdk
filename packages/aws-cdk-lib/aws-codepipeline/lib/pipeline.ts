@@ -61,7 +61,7 @@ export interface StagePlacement {
 }
 
 /**
- * Failure conditions for Stage props.
+ * Result type for failure conditions.
  */
 export enum FailureConditionsResult {
   /**
