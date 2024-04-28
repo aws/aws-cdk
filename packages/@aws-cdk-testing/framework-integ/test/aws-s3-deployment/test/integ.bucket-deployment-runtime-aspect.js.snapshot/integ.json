@@ -1,0 +1,12 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "aws-cdk-bucket-deployment-runtime-aspect/DefaultTest": {
+      "stacks": [
+        "TestStack"
+      ],
+      "assertionStack": "aws-cdk-bucket-deployment-runtime-aspect/DefaultTest/DeployAssert",
+      "assertionStackName": "awscdkbucketdeploymentruntimeaspectDefaultTestDeployAssertA56D0FAD"
+    }
+  }
+}

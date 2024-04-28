@@ -1,14 +1,13 @@
-
 import * as path from 'path';
 import { App, Aspects, RemovalPolicy, Stack, StackProps } from 'aws-cdk-lib';
 import { BucketDeployment, Source } from 'aws-cdk-lib/aws-s3-deployment';
 import { Construct } from 'constructs';
 import { Bucket } from 'aws-cdk-lib/aws-s3';
-import { Function, InlineCode, NodeRuntimeAspect, Runtime } from 'aws-cdk-lib/aws-lambda';
+import { IFunction, Function, InlineCode, NodeRuntimeAspect, Runtime } from 'aws-cdk-lib/aws-lambda';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
 class TestStack extends Stack {
-  public readonly functionToIgnore: Function;
+  public readonly functionToIgnore: IFunction;
 
   public constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
