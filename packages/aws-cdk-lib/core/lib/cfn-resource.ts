@@ -375,6 +375,9 @@ export class CfnResource extends CfnRefElement {
     return this.cfnOptions.metadata?.[key];
   }
 
+  /**
+   * Retrieve the value of a specific property for this resource.
+   */
   public getResourceProperty(key: string): any {
     return this._cfnProperties[key];
   }
