@@ -308,3 +308,26 @@ test('add stop action', () => {
     },
   });
 });
+
+test('add workmail action', () => {
+  rule.addAction(new actions.WorkMail({
+    organizationArn: 'arn:aws:workmail:us-east-1:123456789012:organization/m-organizationid',
+    topic,
+  }));
+
+  Template.fromStack(stack).hasResourceProperties('AWS::SES::ReceiptRule', {
+    Rule: {
+      Actions: [
+        {
+          WorkmailAction: {
+            OrganizationArn: 'arn:aws:workmail:us-east-1:123456789012:organization/m-organizationid',
+            TopicArn: {
+              Ref: 'TopicBFC7AF6E',
+            },
+          },
+        },
+      ],
+      Enabled: true,
+    },
+  });
+});
