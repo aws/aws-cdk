@@ -1,8 +1,8 @@
 import { IConstruct } from 'constructs';
-import { CfnFunction } from './lambda.generated';
+import { IFunction } from './function-base';
+// import { CfnFunction } from './lambda.generated';
 import { Runtime } from './runtime';
 import { CfnResource, IAspect } from '../../core';
-import { IFunction } from './function-base';
 
 /**
  * Options used to configure a RuntimeAspect.
@@ -34,15 +34,9 @@ abstract class RuntimeAspectBase implements IAspect {
       return;
     }
 
-    // override runtimes for Function and SingletonFunction
-    if (node instanceof CfnFunction && this.isRuntimeFamily(node.runtime)) {
-      node.runtime = this.runtimeName;
-      return;
-    }
-
     // override runtimes for CfnResource of type AWS::Lambda::Function
     if (CfnResource.isCfnResource(node) && node.cfnResourceType === 'AWS::Lambda::Function') {
-      const runtime = node.getResourceProperty('Runtime') as string;
+      const runtime = node.getResourceProperty('runtime') as string;
       if (this.isRuntimeFamily(runtime)) {
         node.addPropertyOverride('Runtime', this.runtimeName);
       }
@@ -89,5 +83,8 @@ export class NodeRuntimeAspect extends RuntimeAspectBase {
 
   private constructor(runtimeName: string, options: RuntimeAspectOptions = {}) {
     super(runtimeName, options);
+    if (!runtimeName.includes(this.runtimeFamily)) {
+      throw new Error('NodeRuntimeAspect is only configurable with node runtimes');
+    }
   }
 }
