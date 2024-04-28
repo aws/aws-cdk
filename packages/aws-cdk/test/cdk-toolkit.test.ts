@@ -241,7 +241,7 @@ describe('readCurrentTemplate', () => {
     // THEN
     expect(flatten(stderrMock.mock.calls)).toEqual(expect.arrayContaining([
       expect.stringMatching(/Could not assume bloop-lookup:here:123456789012/),
-      expect.stringMatching(/please upgrade to bootstrap version >= 5/),
+      expect.stringContaining("Bootstrap stack version '5' is required, found version '1'. To get rid of this error, please upgrade to bootstrap version >= 5"),
     ]));
     expect(requestedParameterName!).toEqual('/bootstrap/parameter');
     expect(mockForEnvironment.mock.calls.length).toEqual(3);
@@ -276,7 +276,6 @@ describe('readCurrentTemplate', () => {
     // THEN
     expect(flatten(stderrMock.mock.calls)).toEqual(expect.arrayContaining([
       expect.stringMatching(/Could not assume bloop-lookup:here:123456789012/),
-      expect.stringMatching(/please upgrade to bootstrap version >= 5/),
     ]));
     expect(mockForEnvironment.mock.calls.length).toEqual(3);
     expect(mockForEnvironment.mock.calls[0][2]).toEqual({
@@ -315,7 +314,6 @@ describe('readCurrentTemplate', () => {
     expect(mockCloudExecutable.sdkProvider.sdk.ssm).not.toHaveBeenCalled();
     expect(flatten(stderrMock.mock.calls)).toEqual(expect.arrayContaining([
       expect.stringMatching(/Could not assume bloop-lookup:here:123456789012/),
-      expect.stringMatching(/please upgrade to bootstrap version >= 5/),
     ]));
     expect(mockForEnvironment.mock.calls.length).toEqual(3);
     expect(mockForEnvironment.mock.calls[0][2]).toEqual({
@@ -350,7 +348,7 @@ describe('readCurrentTemplate', () => {
 
     // THEN
     expect(flatten(stderrMock.mock.calls)).toEqual(expect.arrayContaining([
-      expect.stringMatching(/please upgrade to bootstrap version >= 5/),
+      expect.stringMatching(/Lookup role exists but was not assumed. Proceeding with default credentials./),
     ]));
     expect(mockCloudExecutable.sdkProvider.sdk.ssm).not.toHaveBeenCalled();
     expect(mockForEnvironment.mock.calls.length).toEqual(3);

@@ -60,6 +60,7 @@ describe('fargate task definition', () => {
           cpuArchitecture: ecs.CpuArchitecture.X86_64,
           operatingSystemFamily: ecs.OperatingSystemFamily.LINUX,
         },
+        pidMode: ecs.PidMode.HOST,
       });
 
       taskDefinition.addVolume({
@@ -84,6 +85,7 @@ describe('fargate task definition', () => {
         Family: 'myApp',
         Memory: '1024',
         NetworkMode: 'awsvpc',
+        PidMode: 'host',
         RequiresCompatibilities: [
           ecs.LaunchType.FARGATE,
         ],
@@ -160,6 +162,38 @@ describe('fargate task definition', () => {
       }).toThrow(/Ephemeral storage size must be between 21GiB and 200GiB/);
 
       // THEN
+    });
+
+    test('throws when pidMode is specified on Windows', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+
+      // WHEN
+      // THEN
+      expect(() => {
+        new ecs.FargateTaskDefinition(stack, 'FargateTaskDef', {
+          pidMode: ecs.PidMode.HOST,
+          runtimePlatform: {
+            operatingSystemFamily: ecs.OperatingSystemFamily.WINDOWS_SERVER_2019_CORE,
+            cpuArchitecture: ecs.CpuArchitecture.X86_64,
+          },
+          cpu: 1024,
+          memoryLimitMiB: 2048,
+        });
+      }).toThrow(/'pidMode' is not supported for Windows containers./);
+    });
+
+    test('throws when pidMode is not host', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+
+      // WHEN
+      // THEN
+      expect(() => {
+        new ecs.FargateTaskDefinition(stack, 'FargateTaskDef', {
+          pidMode: ecs.PidMode.TASK,
+        });
+      }).toThrow(/'pidMode' can only be set to 'host' for Fargate containers, got: 'task'./);
     });
   });
   describe('When configuredAtLaunch in the Volume', ()=> {
