@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/b9e6b0e1691bf573d37fac294f1baf574defa79e3f0f47a978dc526d434e78bf.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/678aa57142bb2d1b9f21a19b925fe4771f812edc4b7b4925184b2914f1e1e193.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -78,7 +78,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/7d38ada7ae33e60d4ac2fe6f35ab91c41ec7357dd8744d3e26bda97850606620.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c11dbf046e95cf30100256d59b94361c2260a430886eb01f5ae8d19e4344c3f0.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -113,6 +113,12 @@
             "data": "MyProject39F7B0AE"
           }
         ],
+        "/docker-registry-build-test-LinuxBuildImage/Exports/Output{\"Ref\":\"MyProject39F7B0AE\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefMyProject39F7B0AE1CE3CA42"
+          }
+        ],
         "/docker-registry-build-test-LinuxBuildImage/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
@@ -145,7 +151,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/5c172586b74efece2fa476cf6962f66fcd115bfc3a7a5bef34100f53446a94e4.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c16256298910747aa86f029cd7600c9863111e395de18ed5fdd5fd62e70f380d.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -180,6 +186,12 @@
             "data": "MyProject39F7B0AE"
           }
         ],
+        "/docker-registry-build-test-LinuxArmBuildImage/Exports/Output{\"Ref\":\"MyProject39F7B0AE\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefMyProject39F7B0AE1CE3CA42"
+          }
+        ],
         "/docker-registry-build-test-LinuxArmBuildImage/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
@@ -212,7 +224,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/0fb2a73861b1219067592f84e6fbe10e5ed0912504d9097833ee21049f5a34d0.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c18be2729abb9cb7119fa4e118af5cca22a6aa4a7974925424b45dfedeea839c.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -247,6 +259,12 @@
             "data": "MyProject39F7B0AE"
           }
         ],
+        "/docker-registry-build-test-WindowsBuildImage/Exports/Output{\"Ref\":\"MyProject39F7B0AE\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefMyProject39F7B0AE1CE3CA42"
+          }
+        ],
         "/docker-registry-build-test-WindowsBuildImage/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
@@ -279,7 +297,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/61d4f2a1182046c9aba14c934e3620c4fb03d21ab347539185e9af53b16e83e3.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -292,9 +310,174 @@
         }
       },
       "dependencies": [
+        "docker-registry-build-test-LinuxBuildImage",
+        "docker-registry-build-test-LinuxArmBuildImage",
+        "docker-registry-build-test-WindowsBuildImage",
         "DockerRegistryBuildImagesIntegTestDefaultTestDeployAssertD98E6533.assets"
       ],
       "metadata": {
+        "/DockerRegistryBuildImagesIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildstartBuildfc0255f6d5bad26a40ca46ab53b0ce62/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallCodeBuildstartBuildfc0255f6d5bad26a40ca46ab53b0ce62"
+          }
+        ],
+        "/DockerRegistryBuildImagesIntegTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+          }
+        ],
+        "/DockerRegistryBuildImagesIntegTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+          }
+        ],
+        "/DockerRegistryBuildImagesIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetBuildsceed028a83078cf7ae679e1d52a3961c/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallCodeBuildbatchGetBuildsceed028a83078cf7ae679e1d52a3961c"
+          }
+        ],
+        "/DockerRegistryBuildImagesIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetBuildsceed028a83078cf7ae679e1d52a3961c/WaitFor/IsCompleteProvider/Invoke": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallCodeBuildbatchGetBuildsceed028a83078cf7ae679e1d52a3961cWaitForIsCompleteProviderInvokeA895084C"
+          }
+        ],
+        "/DockerRegistryBuildImagesIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetBuildsceed028a83078cf7ae679e1d52a3961c/WaitFor/TimeoutProvider/Invoke": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallCodeBuildbatchGetBuildsceed028a83078cf7ae679e1d52a3961cWaitForTimeoutProviderInvokeC4B68BD5"
+          }
+        ],
+        "/DockerRegistryBuildImagesIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetBuildsceed028a83078cf7ae679e1d52a3961c/WaitFor/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallCodeBuildbatchGetBuildsceed028a83078cf7ae679e1d52a3961cWaitForRole755D6EC3"
+          }
+        ],
+        "/DockerRegistryBuildImagesIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetBuildsceed028a83078cf7ae679e1d52a3961c/WaitFor/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallCodeBuildbatchGetBuildsceed028a83078cf7ae679e1d52a3961cWaitForEABFE599"
+          }
+        ],
+        "/DockerRegistryBuildImagesIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetBuildsceed028a83078cf7ae679e1d52a3961c/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsAwsApiCallCodeBuildbatchGetBuildsceed028a83078cf7ae679e1d52a3961c"
+          }
+        ],
+        "/DockerRegistryBuildImagesIntegTest/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction76b3e830a873425f8453eddd85c86925Role918961BB"
+          }
+        ],
+        "/DockerRegistryBuildImagesIntegTest/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction76b3e830a873425f8453eddd85c86925Handler81461ECE"
+          }
+        ],
+        "/DockerRegistryBuildImagesIntegTest/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aRoleB84BD8CE"
+          }
+        ],
+        "/DockerRegistryBuildImagesIntegTest/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aHandlerADF3E6EA"
+          }
+        ],
+        "/DockerRegistryBuildImagesIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildstartBuildfc0255f6d5bad26a40ca46ab53b0ce621/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallCodeBuildstartBuildfc0255f6d5bad26a40ca46ab53b0ce621"
+          }
+        ],
+        "/DockerRegistryBuildImagesIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetBuilds4ba02d836f529a42ef68c18913d48918/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallCodeBuildbatchGetBuilds4ba02d836f529a42ef68c18913d48918"
+          }
+        ],
+        "/DockerRegistryBuildImagesIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetBuilds4ba02d836f529a42ef68c18913d48918/WaitFor/IsCompleteProvider/Invoke": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallCodeBuildbatchGetBuilds4ba02d836f529a42ef68c18913d48918WaitForIsCompleteProviderInvoke6C3DE1A5"
+          }
+        ],
+        "/DockerRegistryBuildImagesIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetBuilds4ba02d836f529a42ef68c18913d48918/WaitFor/TimeoutProvider/Invoke": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallCodeBuildbatchGetBuilds4ba02d836f529a42ef68c18913d48918WaitForTimeoutProviderInvoke718DCE61"
+          }
+        ],
+        "/DockerRegistryBuildImagesIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetBuilds4ba02d836f529a42ef68c18913d48918/WaitFor/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallCodeBuildbatchGetBuilds4ba02d836f529a42ef68c18913d48918WaitForRoleB53B4DFE"
+          }
+        ],
+        "/DockerRegistryBuildImagesIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetBuilds4ba02d836f529a42ef68c18913d48918/WaitFor/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallCodeBuildbatchGetBuilds4ba02d836f529a42ef68c18913d48918WaitFor8B81FFE4"
+          }
+        ],
+        "/DockerRegistryBuildImagesIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetBuilds4ba02d836f529a42ef68c18913d48918/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsAwsApiCallCodeBuildbatchGetBuilds4ba02d836f529a42ef68c18913d48918"
+          }
+        ],
+        "/DockerRegistryBuildImagesIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildstartBuildfc0255f6d5bad26a40ca46ab53b0ce622/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallCodeBuildstartBuildfc0255f6d5bad26a40ca46ab53b0ce622"
+          }
+        ],
+        "/DockerRegistryBuildImagesIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetBuilds9fbffdb242789b1a3304bdf040ffbfa2/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallCodeBuildbatchGetBuilds9fbffdb242789b1a3304bdf040ffbfa2"
+          }
+        ],
+        "/DockerRegistryBuildImagesIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetBuilds9fbffdb242789b1a3304bdf040ffbfa2/WaitFor/IsCompleteProvider/Invoke": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallCodeBuildbatchGetBuilds9fbffdb242789b1a3304bdf040ffbfa2WaitForIsCompleteProviderInvoke5AC52518"
+          }
+        ],
+        "/DockerRegistryBuildImagesIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetBuilds9fbffdb242789b1a3304bdf040ffbfa2/WaitFor/TimeoutProvider/Invoke": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallCodeBuildbatchGetBuilds9fbffdb242789b1a3304bdf040ffbfa2WaitForTimeoutProviderInvokeFFD86FC3"
+          }
+        ],
+        "/DockerRegistryBuildImagesIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetBuilds9fbffdb242789b1a3304bdf040ffbfa2/WaitFor/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallCodeBuildbatchGetBuilds9fbffdb242789b1a3304bdf040ffbfa2WaitForRoleB9B5D002"
+          }
+        ],
+        "/DockerRegistryBuildImagesIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetBuilds9fbffdb242789b1a3304bdf040ffbfa2/WaitFor/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallCodeBuildbatchGetBuilds9fbffdb242789b1a3304bdf040ffbfa2WaitFor3CCE3E89"
+          }
+        ],
+        "/DockerRegistryBuildImagesIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetBuilds9fbffdb242789b1a3304bdf040ffbfa2/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsAwsApiCallCodeBuildbatchGetBuilds9fbffdb242789b1a3304bdf040ffbfa2"
+          }
+        ],
         "/DockerRegistryBuildImagesIntegTest/DefaultTest/DeployAssert/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",

@@ -7,6 +7,39 @@ import { Construct } from 'constructs';
 
 const app = new cdk.App();
 
+/*
+ * Deployment nstructions:
+ * 1. (Register and) log in to your Docker Hub account,
+ *  and generate a "Public Repo Read-only" Personal Access Token
+ *  - https://hub.docker.com/settings/security?generateToken=true
+ * 2. Update the `DOCKER_HUB_CREDENTIQLS` with your Docker Hub username and token
+ *  - DO NOT USE YOUR ACCOUNT PASSWORD, USE THE GENERATED TOKEN
+ * 3. Run the integration test
+ * 4. After the test is complete, invalidate the Personal Access Token you've just created
+ *  - https://hub.docker.com/settings/security?generateToken=true
+ */
+
+// https://hub.docker.com/settings/security?generateToken=true
+// Personal "Public Repo Read-only" token from Docker Hub.
+// The token was invalidated after snapshot creation
+const DOCKER_HUB_CREDENTIALS = JSON.stringify({
+  username: 'nmussy',
+
+  // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  // DO NOT USE YOUR ACCOUNT PASSWORD, USE A GENERATED PERSONAL ACCESS TOKEN
+  // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  password: // PASSWORD SHOULD NOT BE YOUR ACTUAL PASSWORD
+    'dckr_pat_I4j7TDEb_X92cW0MGB3FVZ_AlYc',
+  // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  // DO NOT USE YOUR ACCOUNT PASSWORD, USE A GENERATED PERSONAL ACCESS TOKEN
+  // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+});
+
+assert(
+  JSON.parse(DOCKER_HUB_CREDENTIALS).password.startsWith('dckr_pat_'),
+  'Read the instructions, do not use your account password',
+);
+
 const BuildImageTestCases = {
   LinuxBuildImage: {
     computeType: codebuild.ComputeType.SMALL,
@@ -18,7 +51,9 @@ const BuildImageTestCases = {
   LinuxArmBuildImage: {
     computeType: codebuild.ComputeType.SMALL,
     generateBuildImage: (secretsManagerCredentials: secretsmanager.ISecret) =>
-      codebuild.LinuxArmBuildImage.fromDockerRegistry('alpine', {
+      // For some reason, the aarch64 version alpine fails the DOWNLOAD_SOURCE phase?
+      // > Runtime error (*fs.PathError: fork/exec /bin/bash: no such file or directory)
+      codebuild.LinuxArmBuildImage.fromDockerRegistry('ubuntu', {
         secretsManagerCredentials,
       }),
   },
@@ -29,6 +64,9 @@ const BuildImageTestCases = {
     computeType: codebuild.ComputeType.MEDIUM,
     generateBuildImage: (secretsManagerCredentials: secretsmanager.ISecret) =>
       codebuild.WindowsBuildImage.fromDockerRegistry(
+        // 'mcr.microsoft.com/windows/servercore/iis:windowsservercore-ltsc2019',
+        // https://docs.aws.amazon.com/codebuild/latest/userguide/sample-windows.html
+        // 'mcr.microsoft.com/dotnet/framework/sdk:4.8',
         'mcr.microsoft.com/windows/servercore:ltsc2019',
         { secretsManagerCredentials },
         codebuild.WindowsImageType.SERVER_2019,
@@ -47,7 +85,7 @@ interface DockerRegistryBuildImageTestStackProps extends cdk.StackProps {
 
 const secretStack = new cdk.Stack(app, 'SecretStack');
 const { secretFullArn } = new secretsmanager.Secret(secretStack, 'MySecret', {
-  secretStringValue: cdk.SecretValue.unsafePlainText('my-secret-auth'),
+  secretStringValue: cdk.SecretValue.unsafePlainText(DOCKER_HUB_CREDENTIALS),
 });
 assert(secretFullArn, 'secretFullArn is required');
 
@@ -104,10 +142,9 @@ const test = new integ.IntegTest(
   { testCases },
 );
 
-// FIXME remove slice
-for (const { project } of testCases.slice(0, 1)) {
+for (const { project: { projectName } } of testCases) {
   const startBuild = test.assertions.awsApiCall('CodeBuild', 'startBuild', {
-    projectName: project.projectName,
+    projectName,
   });
 
   // Describe the build and wait for the status to be successful

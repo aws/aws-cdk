@@ -146,7 +146,7 @@
     "EncryptionKey": "alias/aws/s3",
     "Environment": {
      "ComputeType": "BUILD_GENERAL1_MEDIUM",
-     "Image": "my-registry/my-repo",
+     "Image": "mcr.microsoft.com/windows/servercore:ltsc2019",
      "ImagePullCredentialsType": "SERVICE_ROLE",
      "PrivilegedMode": false,
      "RegistryCredential": {
@@ -167,6 +167,16 @@
      "BuildSpec": "{\n  \"version\": \"0.2\",\n  \"phases\": {\n    \"build\": {\n      \"commands\": [\n        \"echo \\\"Nothing to do!\\\"\"\n      ]\n    }\n  }\n}",
      "Type": "NO_SOURCE"
     }
+   }
+  }
+ },
+ "Outputs": {
+  "ExportsOutputRefMyProject39F7B0AE1CE3CA42": {
+   "Value": {
+    "Ref": "MyProject39F7B0AE"
+   },
+   "Export": {
+    "Name": "docker-registry-build-test-WindowsBuildImage:ExportsOutputRefMyProject39F7B0AE1CE3CA42"
    }
   }
  },

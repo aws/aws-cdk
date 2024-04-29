@@ -18,7 +18,7 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::SecretsManager::Secret",
                   "aws:cdk:cloudformation:props": {
-                    "secretString": "my-secret-auth"
+                    "secretString": "{\"username\":\"nmussy\",\"password\":\"dckr_pat_I4j7TDEb_X92cW0MGB3FVZ_AlYc\"}"
                   }
                 },
                 "constructInfo": {
@@ -281,7 +281,7 @@
                     "encryptionKey": "alias/aws/s3",
                     "environment": {
                       "type": "LINUX_CONTAINER",
-                      "image": "my-registry/my-repo",
+                      "image": "alpine",
                       "imagePullCredentialsType": "SERVICE_ROLE",
                       "registryCredential": {
                         "credentialProvider": "SECRETS_MANAGER",
@@ -313,6 +313,24 @@
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_codebuild.Project",
               "version": "0.0.0"
+            }
+          },
+          "Exports": {
+            "id": "Exports",
+            "path": "docker-registry-build-test-LinuxBuildImage/Exports",
+            "children": {
+              "Output{\"Ref\":\"MyProject39F7B0AE\"}": {
+                "id": "Output{\"Ref\":\"MyProject39F7B0AE\"}",
+                "path": "docker-registry-build-test-LinuxBuildImage/Exports/Output{\"Ref\":\"MyProject39F7B0AE\"}",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnOutput",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
             }
           },
           "BootstrapVersion": {
@@ -546,7 +564,7 @@
                     "encryptionKey": "alias/aws/s3",
                     "environment": {
                       "type": "ARM_CONTAINER",
-                      "image": "my-registry/my-repo",
+                      "image": "ubuntu",
                       "imagePullCredentialsType": "SERVICE_ROLE",
                       "registryCredential": {
                         "credentialProvider": "SECRETS_MANAGER",
@@ -578,6 +596,24 @@
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_codebuild.Project",
               "version": "0.0.0"
+            }
+          },
+          "Exports": {
+            "id": "Exports",
+            "path": "docker-registry-build-test-LinuxArmBuildImage/Exports",
+            "children": {
+              "Output{\"Ref\":\"MyProject39F7B0AE\"}": {
+                "id": "Output{\"Ref\":\"MyProject39F7B0AE\"}",
+                "path": "docker-registry-build-test-LinuxArmBuildImage/Exports/Output{\"Ref\":\"MyProject39F7B0AE\"}",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnOutput",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
             }
           },
           "BootstrapVersion": {
@@ -811,7 +847,7 @@
                     "encryptionKey": "alias/aws/s3",
                     "environment": {
                       "type": "WINDOWS_SERVER_2019_CONTAINER",
-                      "image": "my-registry/my-repo",
+                      "image": "mcr.microsoft.com/windows/servercore:ltsc2019",
                       "imagePullCredentialsType": "SERVICE_ROLE",
                       "registryCredential": {
                         "credentialProvider": "SECRETS_MANAGER",
@@ -843,6 +879,24 @@
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_codebuild.Project",
               "version": "0.0.0"
+            }
+          },
+          "Exports": {
+            "id": "Exports",
+            "path": "docker-registry-build-test-WindowsBuildImage/Exports",
+            "children": {
+              "Output{\"Ref\":\"MyProject39F7B0AE\"}": {
+                "id": "Output{\"Ref\":\"MyProject39F7B0AE\"}",
+                "path": "docker-registry-build-test-WindowsBuildImage/Exports/Output{\"Ref\":\"MyProject39F7B0AE\"}",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnOutput",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
             }
           },
           "BootstrapVersion": {
@@ -887,6 +941,642 @@
                 "id": "DeployAssert",
                 "path": "DockerRegistryBuildImagesIntegTest/DefaultTest/DeployAssert",
                 "children": {
+                  "AwsApiCallCodeBuildstartBuildfc0255f6d5bad26a40ca46ab53b0ce62": {
+                    "id": "AwsApiCallCodeBuildstartBuildfc0255f6d5bad26a40ca46ab53b0ce62",
+                    "path": "DockerRegistryBuildImagesIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildstartBuildfc0255f6d5bad26a40ca46ab53b0ce62",
+                    "children": {
+                      "SdkProvider": {
+                        "id": "SdkProvider",
+                        "path": "DockerRegistryBuildImagesIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildstartBuildfc0255f6d5bad26a40ca46ab53b0ce62/SdkProvider",
+                        "children": {
+                          "AssertionsProvider": {
+                            "id": "AssertionsProvider",
+                            "path": "DockerRegistryBuildImagesIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildstartBuildfc0255f6d5bad26a40ca46ab53b0ce62/SdkProvider/AssertionsProvider",
+                            "constructInfo": {
+                              "fqn": "constructs.Construct",
+                              "version": "10.3.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/integ-tests-alpha.AssertionsProvider",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Default": {
+                        "id": "Default",
+                        "path": "DockerRegistryBuildImagesIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildstartBuildfc0255f6d5bad26a40ca46ab53b0ce62/Default",
+                        "children": {
+                          "Default": {
+                            "id": "Default",
+                            "path": "DockerRegistryBuildImagesIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildstartBuildfc0255f6d5bad26a40ca46ab53b0ce62/Default/Default",
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.CfnResource",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CustomResource",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/integ-tests-alpha.AwsApiCall",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "SingletonFunction1488541a7b23466481b69b4408076b81": {
+                    "id": "SingletonFunction1488541a7b23466481b69b4408076b81",
+                    "path": "DockerRegistryBuildImagesIntegTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81",
+                    "children": {
+                      "Staging": {
+                        "id": "Staging",
+                        "path": "DockerRegistryBuildImagesIntegTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Staging",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.AssetStaging",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Role": {
+                        "id": "Role",
+                        "path": "DockerRegistryBuildImagesIntegTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CfnResource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Handler": {
+                        "id": "Handler",
+                        "path": "DockerRegistryBuildImagesIntegTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CfnResource",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
+                    }
+                  },
+                  "AwsApiCallCodeBuildbatchGetBuildsceed028a83078cf7ae679e1d52a3961c": {
+                    "id": "AwsApiCallCodeBuildbatchGetBuildsceed028a83078cf7ae679e1d52a3961c",
+                    "path": "DockerRegistryBuildImagesIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetBuildsceed028a83078cf7ae679e1d52a3961c",
+                    "children": {
+                      "SdkProvider": {
+                        "id": "SdkProvider",
+                        "path": "DockerRegistryBuildImagesIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetBuildsceed028a83078cf7ae679e1d52a3961c/SdkProvider",
+                        "children": {
+                          "AssertionsProvider": {
+                            "id": "AssertionsProvider",
+                            "path": "DockerRegistryBuildImagesIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetBuildsceed028a83078cf7ae679e1d52a3961c/SdkProvider/AssertionsProvider",
+                            "constructInfo": {
+                              "fqn": "constructs.Construct",
+                              "version": "10.3.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/integ-tests-alpha.AssertionsProvider",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Default": {
+                        "id": "Default",
+                        "path": "DockerRegistryBuildImagesIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetBuildsceed028a83078cf7ae679e1d52a3961c/Default",
+                        "children": {
+                          "Default": {
+                            "id": "Default",
+                            "path": "DockerRegistryBuildImagesIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetBuildsceed028a83078cf7ae679e1d52a3961c/Default/Default",
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.CfnResource",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CustomResource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "WaitFor": {
+                        "id": "WaitFor",
+                        "path": "DockerRegistryBuildImagesIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetBuildsceed028a83078cf7ae679e1d52a3961c/WaitFor",
+                        "children": {
+                          "IsCompleteProvider": {
+                            "id": "IsCompleteProvider",
+                            "path": "DockerRegistryBuildImagesIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetBuildsceed028a83078cf7ae679e1d52a3961c/WaitFor/IsCompleteProvider",
+                            "children": {
+                              "AssertionsProvider": {
+                                "id": "AssertionsProvider",
+                                "path": "DockerRegistryBuildImagesIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetBuildsceed028a83078cf7ae679e1d52a3961c/WaitFor/IsCompleteProvider/AssertionsProvider",
+                                "constructInfo": {
+                                  "fqn": "constructs.Construct",
+                                  "version": "10.3.0"
+                                }
+                              },
+                              "Invoke": {
+                                "id": "Invoke",
+                                "path": "DockerRegistryBuildImagesIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetBuildsceed028a83078cf7ae679e1d52a3961c/WaitFor/IsCompleteProvider/Invoke",
+                                "constructInfo": {
+                                  "fqn": "aws-cdk-lib.CfnResource",
+                                  "version": "0.0.0"
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/integ-tests-alpha.AssertionsProvider",
+                              "version": "0.0.0"
+                            }
+                          },
+                          "TimeoutProvider": {
+                            "id": "TimeoutProvider",
+                            "path": "DockerRegistryBuildImagesIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetBuildsceed028a83078cf7ae679e1d52a3961c/WaitFor/TimeoutProvider",
+                            "children": {
+                              "AssertionsProvider": {
+                                "id": "AssertionsProvider",
+                                "path": "DockerRegistryBuildImagesIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetBuildsceed028a83078cf7ae679e1d52a3961c/WaitFor/TimeoutProvider/AssertionsProvider",
+                                "constructInfo": {
+                                  "fqn": "constructs.Construct",
+                                  "version": "10.3.0"
+                                }
+                              },
+                              "Invoke": {
+                                "id": "Invoke",
+                                "path": "DockerRegistryBuildImagesIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetBuildsceed028a83078cf7ae679e1d52a3961c/WaitFor/TimeoutProvider/Invoke",
+                                "constructInfo": {
+                                  "fqn": "aws-cdk-lib.CfnResource",
+                                  "version": "0.0.0"
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/integ-tests-alpha.AssertionsProvider",
+                              "version": "0.0.0"
+                            }
+                          },
+                          "Role": {
+                            "id": "Role",
+                            "path": "DockerRegistryBuildImagesIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetBuildsceed028a83078cf7ae679e1d52a3961c/WaitFor/Role",
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.CfnResource",
+                              "version": "0.0.0"
+                            }
+                          },
+                          "Resource": {
+                            "id": "Resource",
+                            "path": "DockerRegistryBuildImagesIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetBuildsceed028a83078cf7ae679e1d52a3961c/WaitFor/Resource",
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.CfnResource",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/integ-tests-alpha.WaiterStateMachine",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "AssertionResults": {
+                        "id": "AssertionResults",
+                        "path": "DockerRegistryBuildImagesIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetBuildsceed028a83078cf7ae679e1d52a3961c/AssertionResults",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CfnOutput",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/integ-tests-alpha.AwsApiCall",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "SingletonFunction76b3e830a873425f8453eddd85c86925": {
+                    "id": "SingletonFunction76b3e830a873425f8453eddd85c86925",
+                    "path": "DockerRegistryBuildImagesIntegTest/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925",
+                    "children": {
+                      "Staging": {
+                        "id": "Staging",
+                        "path": "DockerRegistryBuildImagesIntegTest/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Staging",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.AssetStaging",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Role": {
+                        "id": "Role",
+                        "path": "DockerRegistryBuildImagesIntegTest/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Role",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CfnResource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Handler": {
+                        "id": "Handler",
+                        "path": "DockerRegistryBuildImagesIntegTest/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Handler",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CfnResource",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
+                    }
+                  },
+                  "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a": {
+                    "id": "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a",
+                    "path": "DockerRegistryBuildImagesIntegTest/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a",
+                    "children": {
+                      "Staging": {
+                        "id": "Staging",
+                        "path": "DockerRegistryBuildImagesIntegTest/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Staging",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.AssetStaging",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Role": {
+                        "id": "Role",
+                        "path": "DockerRegistryBuildImagesIntegTest/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Role",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CfnResource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Handler": {
+                        "id": "Handler",
+                        "path": "DockerRegistryBuildImagesIntegTest/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Handler",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CfnResource",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
+                    }
+                  },
+                  "AwsApiCallCodeBuildstartBuildfc0255f6d5bad26a40ca46ab53b0ce621": {
+                    "id": "AwsApiCallCodeBuildstartBuildfc0255f6d5bad26a40ca46ab53b0ce621",
+                    "path": "DockerRegistryBuildImagesIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildstartBuildfc0255f6d5bad26a40ca46ab53b0ce621",
+                    "children": {
+                      "SdkProvider": {
+                        "id": "SdkProvider",
+                        "path": "DockerRegistryBuildImagesIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildstartBuildfc0255f6d5bad26a40ca46ab53b0ce621/SdkProvider",
+                        "children": {
+                          "AssertionsProvider": {
+                            "id": "AssertionsProvider",
+                            "path": "DockerRegistryBuildImagesIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildstartBuildfc0255f6d5bad26a40ca46ab53b0ce621/SdkProvider/AssertionsProvider",
+                            "constructInfo": {
+                              "fqn": "constructs.Construct",
+                              "version": "10.3.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/integ-tests-alpha.AssertionsProvider",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Default": {
+                        "id": "Default",
+                        "path": "DockerRegistryBuildImagesIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildstartBuildfc0255f6d5bad26a40ca46ab53b0ce621/Default",
+                        "children": {
+                          "Default": {
+                            "id": "Default",
+                            "path": "DockerRegistryBuildImagesIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildstartBuildfc0255f6d5bad26a40ca46ab53b0ce621/Default/Default",
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.CfnResource",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CustomResource",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/integ-tests-alpha.AwsApiCall",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "AwsApiCallCodeBuildbatchGetBuilds4ba02d836f529a42ef68c18913d48918": {
+                    "id": "AwsApiCallCodeBuildbatchGetBuilds4ba02d836f529a42ef68c18913d48918",
+                    "path": "DockerRegistryBuildImagesIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetBuilds4ba02d836f529a42ef68c18913d48918",
+                    "children": {
+                      "SdkProvider": {
+                        "id": "SdkProvider",
+                        "path": "DockerRegistryBuildImagesIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetBuilds4ba02d836f529a42ef68c18913d48918/SdkProvider",
+                        "children": {
+                          "AssertionsProvider": {
+                            "id": "AssertionsProvider",
+                            "path": "DockerRegistryBuildImagesIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetBuilds4ba02d836f529a42ef68c18913d48918/SdkProvider/AssertionsProvider",
+                            "constructInfo": {
+                              "fqn": "constructs.Construct",
+                              "version": "10.3.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/integ-tests-alpha.AssertionsProvider",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Default": {
+                        "id": "Default",
+                        "path": "DockerRegistryBuildImagesIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetBuilds4ba02d836f529a42ef68c18913d48918/Default",
+                        "children": {
+                          "Default": {
+                            "id": "Default",
+                            "path": "DockerRegistryBuildImagesIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetBuilds4ba02d836f529a42ef68c18913d48918/Default/Default",
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.CfnResource",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CustomResource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "WaitFor": {
+                        "id": "WaitFor",
+                        "path": "DockerRegistryBuildImagesIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetBuilds4ba02d836f529a42ef68c18913d48918/WaitFor",
+                        "children": {
+                          "IsCompleteProvider": {
+                            "id": "IsCompleteProvider",
+                            "path": "DockerRegistryBuildImagesIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetBuilds4ba02d836f529a42ef68c18913d48918/WaitFor/IsCompleteProvider",
+                            "children": {
+                              "AssertionsProvider": {
+                                "id": "AssertionsProvider",
+                                "path": "DockerRegistryBuildImagesIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetBuilds4ba02d836f529a42ef68c18913d48918/WaitFor/IsCompleteProvider/AssertionsProvider",
+                                "constructInfo": {
+                                  "fqn": "constructs.Construct",
+                                  "version": "10.3.0"
+                                }
+                              },
+                              "Invoke": {
+                                "id": "Invoke",
+                                "path": "DockerRegistryBuildImagesIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetBuilds4ba02d836f529a42ef68c18913d48918/WaitFor/IsCompleteProvider/Invoke",
+                                "constructInfo": {
+                                  "fqn": "aws-cdk-lib.CfnResource",
+                                  "version": "0.0.0"
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/integ-tests-alpha.AssertionsProvider",
+                              "version": "0.0.0"
+                            }
+                          },
+                          "TimeoutProvider": {
+                            "id": "TimeoutProvider",
+                            "path": "DockerRegistryBuildImagesIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetBuilds4ba02d836f529a42ef68c18913d48918/WaitFor/TimeoutProvider",
+                            "children": {
+                              "AssertionsProvider": {
+                                "id": "AssertionsProvider",
+                                "path": "DockerRegistryBuildImagesIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetBuilds4ba02d836f529a42ef68c18913d48918/WaitFor/TimeoutProvider/AssertionsProvider",
+                                "constructInfo": {
+                                  "fqn": "constructs.Construct",
+                                  "version": "10.3.0"
+                                }
+                              },
+                              "Invoke": {
+                                "id": "Invoke",
+                                "path": "DockerRegistryBuildImagesIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetBuilds4ba02d836f529a42ef68c18913d48918/WaitFor/TimeoutProvider/Invoke",
+                                "constructInfo": {
+                                  "fqn": "aws-cdk-lib.CfnResource",
+                                  "version": "0.0.0"
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/integ-tests-alpha.AssertionsProvider",
+                              "version": "0.0.0"
+                            }
+                          },
+                          "Role": {
+                            "id": "Role",
+                            "path": "DockerRegistryBuildImagesIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetBuilds4ba02d836f529a42ef68c18913d48918/WaitFor/Role",
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.CfnResource",
+                              "version": "0.0.0"
+                            }
+                          },
+                          "Resource": {
+                            "id": "Resource",
+                            "path": "DockerRegistryBuildImagesIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetBuilds4ba02d836f529a42ef68c18913d48918/WaitFor/Resource",
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.CfnResource",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/integ-tests-alpha.WaiterStateMachine",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "AssertionResults": {
+                        "id": "AssertionResults",
+                        "path": "DockerRegistryBuildImagesIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetBuilds4ba02d836f529a42ef68c18913d48918/AssertionResults",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CfnOutput",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/integ-tests-alpha.AwsApiCall",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "AwsApiCallCodeBuildstartBuildfc0255f6d5bad26a40ca46ab53b0ce622": {
+                    "id": "AwsApiCallCodeBuildstartBuildfc0255f6d5bad26a40ca46ab53b0ce622",
+                    "path": "DockerRegistryBuildImagesIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildstartBuildfc0255f6d5bad26a40ca46ab53b0ce622",
+                    "children": {
+                      "SdkProvider": {
+                        "id": "SdkProvider",
+                        "path": "DockerRegistryBuildImagesIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildstartBuildfc0255f6d5bad26a40ca46ab53b0ce622/SdkProvider",
+                        "children": {
+                          "AssertionsProvider": {
+                            "id": "AssertionsProvider",
+                            "path": "DockerRegistryBuildImagesIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildstartBuildfc0255f6d5bad26a40ca46ab53b0ce622/SdkProvider/AssertionsProvider",
+                            "constructInfo": {
+                              "fqn": "constructs.Construct",
+                              "version": "10.3.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/integ-tests-alpha.AssertionsProvider",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Default": {
+                        "id": "Default",
+                        "path": "DockerRegistryBuildImagesIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildstartBuildfc0255f6d5bad26a40ca46ab53b0ce622/Default",
+                        "children": {
+                          "Default": {
+                            "id": "Default",
+                            "path": "DockerRegistryBuildImagesIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildstartBuildfc0255f6d5bad26a40ca46ab53b0ce622/Default/Default",
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.CfnResource",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CustomResource",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/integ-tests-alpha.AwsApiCall",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "AwsApiCallCodeBuildbatchGetBuilds9fbffdb242789b1a3304bdf040ffbfa2": {
+                    "id": "AwsApiCallCodeBuildbatchGetBuilds9fbffdb242789b1a3304bdf040ffbfa2",
+                    "path": "DockerRegistryBuildImagesIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetBuilds9fbffdb242789b1a3304bdf040ffbfa2",
+                    "children": {
+                      "SdkProvider": {
+                        "id": "SdkProvider",
+                        "path": "DockerRegistryBuildImagesIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetBuilds9fbffdb242789b1a3304bdf040ffbfa2/SdkProvider",
+                        "children": {
+                          "AssertionsProvider": {
+                            "id": "AssertionsProvider",
+                            "path": "DockerRegistryBuildImagesIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetBuilds9fbffdb242789b1a3304bdf040ffbfa2/SdkProvider/AssertionsProvider",
+                            "constructInfo": {
+                              "fqn": "constructs.Construct",
+                              "version": "10.3.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/integ-tests-alpha.AssertionsProvider",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Default": {
+                        "id": "Default",
+                        "path": "DockerRegistryBuildImagesIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetBuilds9fbffdb242789b1a3304bdf040ffbfa2/Default",
+                        "children": {
+                          "Default": {
+                            "id": "Default",
+                            "path": "DockerRegistryBuildImagesIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetBuilds9fbffdb242789b1a3304bdf040ffbfa2/Default/Default",
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.CfnResource",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CustomResource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "WaitFor": {
+                        "id": "WaitFor",
+                        "path": "DockerRegistryBuildImagesIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetBuilds9fbffdb242789b1a3304bdf040ffbfa2/WaitFor",
+                        "children": {
+                          "IsCompleteProvider": {
+                            "id": "IsCompleteProvider",
+                            "path": "DockerRegistryBuildImagesIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetBuilds9fbffdb242789b1a3304bdf040ffbfa2/WaitFor/IsCompleteProvider",
+                            "children": {
+                              "AssertionsProvider": {
+                                "id": "AssertionsProvider",
+                                "path": "DockerRegistryBuildImagesIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetBuilds9fbffdb242789b1a3304bdf040ffbfa2/WaitFor/IsCompleteProvider/AssertionsProvider",
+                                "constructInfo": {
+                                  "fqn": "constructs.Construct",
+                                  "version": "10.3.0"
+                                }
+                              },
+                              "Invoke": {
+                                "id": "Invoke",
+                                "path": "DockerRegistryBuildImagesIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetBuilds9fbffdb242789b1a3304bdf040ffbfa2/WaitFor/IsCompleteProvider/Invoke",
+                                "constructInfo": {
+                                  "fqn": "aws-cdk-lib.CfnResource",
+                                  "version": "0.0.0"
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/integ-tests-alpha.AssertionsProvider",
+                              "version": "0.0.0"
+                            }
+                          },
+                          "TimeoutProvider": {
+                            "id": "TimeoutProvider",
+                            "path": "DockerRegistryBuildImagesIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetBuilds9fbffdb242789b1a3304bdf040ffbfa2/WaitFor/TimeoutProvider",
+                            "children": {
+                              "AssertionsProvider": {
+                                "id": "AssertionsProvider",
+                                "path": "DockerRegistryBuildImagesIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetBuilds9fbffdb242789b1a3304bdf040ffbfa2/WaitFor/TimeoutProvider/AssertionsProvider",
+                                "constructInfo": {
+                                  "fqn": "constructs.Construct",
+                                  "version": "10.3.0"
+                                }
+                              },
+                              "Invoke": {
+                                "id": "Invoke",
+                                "path": "DockerRegistryBuildImagesIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetBuilds9fbffdb242789b1a3304bdf040ffbfa2/WaitFor/TimeoutProvider/Invoke",
+                                "constructInfo": {
+                                  "fqn": "aws-cdk-lib.CfnResource",
+                                  "version": "0.0.0"
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/integ-tests-alpha.AssertionsProvider",
+                              "version": "0.0.0"
+                            }
+                          },
+                          "Role": {
+                            "id": "Role",
+                            "path": "DockerRegistryBuildImagesIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetBuilds9fbffdb242789b1a3304bdf040ffbfa2/WaitFor/Role",
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.CfnResource",
+                              "version": "0.0.0"
+                            }
+                          },
+                          "Resource": {
+                            "id": "Resource",
+                            "path": "DockerRegistryBuildImagesIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetBuilds9fbffdb242789b1a3304bdf040ffbfa2/WaitFor/Resource",
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.CfnResource",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/integ-tests-alpha.WaiterStateMachine",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "AssertionResults": {
+                        "id": "AssertionResults",
+                        "path": "DockerRegistryBuildImagesIntegTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetBuilds9fbffdb242789b1a3304bdf040ffbfa2/AssertionResults",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CfnOutput",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/integ-tests-alpha.AwsApiCall",
+                      "version": "0.0.0"
+                    }
+                  },
                   "BootstrapVersion": {
                     "id": "BootstrapVersion",
                     "path": "DockerRegistryBuildImagesIntegTest/DefaultTest/DeployAssert/BootstrapVersion",
