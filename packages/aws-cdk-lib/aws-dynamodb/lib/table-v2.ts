@@ -831,7 +831,7 @@ export class TableV2 extends TableBaseV2 {
   private validateGlobalSecondaryIndex(props: GlobalSecondaryIndexPropsV2) {
     this.validateIndexName(props.indexName);
 
-    if (this.globalSecondaryIndexes.size === MAX_GSI_COUNT) {
+    if (this.globalSecondaryIndexes.size >= MAX_GSI_COUNT) {
       throw new Error(`You may not provide more than ${MAX_GSI_COUNT} global secondary indexes`);
     }
 
