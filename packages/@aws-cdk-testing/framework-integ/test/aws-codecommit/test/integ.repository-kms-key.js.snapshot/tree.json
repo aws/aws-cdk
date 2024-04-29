@@ -4,17 +4,17 @@
     "id": "App",
     "path": "",
     "children": {
-      "repositoryKmsKey": {
-        "id": "repositoryKmsKey",
-        "path": "repositoryKmsKey",
+      "RepositoryKmsKey": {
+        "id": "RepositoryKmsKey",
+        "path": "RepositoryKmsKey",
         "children": {
           "MyKey": {
             "id": "MyKey",
-            "path": "repositoryKmsKey/MyKey",
+            "path": "RepositoryKmsKey/MyKey",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "repositoryKmsKey/MyKey/Resource",
+                "path": "RepositoryKmsKey/MyKey/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::KMS::Key",
                   "aws:cdk:cloudformation:props": {
@@ -61,11 +61,11 @@
           },
           "MyCodecommitRepository": {
             "id": "MyCodecommitRepository",
-            "path": "repositoryKmsKey/MyCodecommitRepository",
+            "path": "RepositoryKmsKey/MyCodecommitRepository",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "repositoryKmsKey/MyCodecommitRepository/Resource",
+                "path": "RepositoryKmsKey/MyCodecommitRepository/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::CodeCommit::Repository",
                   "aws:cdk:cloudformation:props": {
@@ -91,7 +91,7 @@
           },
           "BootstrapVersion": {
             "id": "BootstrapVersion",
-            "path": "repositoryKmsKey/BootstrapVersion",
+            "path": "RepositoryKmsKey/BootstrapVersion",
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnParameter",
               "version": "0.0.0"
@@ -99,7 +99,7 @@
           },
           "CheckBootstrapVersion": {
             "id": "CheckBootstrapVersion",
-            "path": "repositoryKmsKey/CheckBootstrapVersion",
+            "path": "RepositoryKmsKey/CheckBootstrapVersion",
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnRule",
               "version": "0.0.0"
@@ -111,17 +111,17 @@
           "version": "0.0.0"
         }
       },
-      "repositoryKmsKeyTest": {
-        "id": "repositoryKmsKeyTest",
-        "path": "repositoryKmsKeyTest",
+      "RepositoryKmsKeyTest": {
+        "id": "RepositoryKmsKeyTest",
+        "path": "RepositoryKmsKeyTest",
         "children": {
           "DefaultTest": {
             "id": "DefaultTest",
-            "path": "repositoryKmsKeyTest/DefaultTest",
+            "path": "RepositoryKmsKeyTest/DefaultTest",
             "children": {
               "Default": {
                 "id": "Default",
-                "path": "repositoryKmsKeyTest/DefaultTest/Default",
+                "path": "RepositoryKmsKeyTest/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
                   "version": "10.3.0"
@@ -129,11 +129,11 @@
               },
               "DeployAssert": {
                 "id": "DeployAssert",
-                "path": "repositoryKmsKeyTest/DefaultTest/DeployAssert",
+                "path": "RepositoryKmsKeyTest/DefaultTest/DeployAssert",
                 "children": {
                   "BootstrapVersion": {
                     "id": "BootstrapVersion",
-                    "path": "repositoryKmsKeyTest/DefaultTest/DeployAssert/BootstrapVersion",
+                    "path": "RepositoryKmsKeyTest/DefaultTest/DeployAssert/BootstrapVersion",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.CfnParameter",
                       "version": "0.0.0"
@@ -141,7 +141,7 @@
                   },
                   "CheckBootstrapVersion": {
                     "id": "CheckBootstrapVersion",
-                    "path": "repositoryKmsKeyTest/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "path": "RepositoryKmsKeyTest/DefaultTest/DeployAssert/CheckBootstrapVersion",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.CfnRule",
                       "version": "0.0.0"

@@ -1,12 +1,12 @@
 {
   "version": "36.0.0",
   "testCases": {
-    "repositoryKmsKeyTest/DefaultTest": {
+    "RepositoryKmsKeyTest/DefaultTest": {
       "stacks": [
-        "repositoryKmsKey"
+        "RepositoryKmsKey"
       ],
-      "assertionStack": "repositoryKmsKeyTest/DefaultTest/DeployAssert",
-      "assertionStackName": "repositoryKmsKeyTestDefaultTestDeployAssert26C34A5E"
+      "assertionStack": "RepositoryKmsKeyTest/DefaultTest/DeployAssert",
+      "assertionStackName": "RepositoryKmsKeyTestDefaultTestDeployAssertC5D9D647"
     }
   }
 }
