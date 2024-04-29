@@ -53,7 +53,7 @@ export abstract class CustomResourceProviderBase extends Construct {
    */
   public get runtime(): string {
     if (!this._runtime) {
-      throw new Error('This custom resource uses inlineCode: true and does not have a codeHash');
+      throw new Error('Runtime not provided');
     }
     return this._runtime;
   }
