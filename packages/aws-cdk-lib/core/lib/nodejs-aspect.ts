@@ -1,3 +1,4 @@
+/* eslint-disable brace-style */
 import { Construct, IConstruct } from 'constructs';
 import { IAspect, Aspects } from './aspect';
 import * as cdk from '../../../aws-cdk-lib';
@@ -27,12 +28,12 @@ abstract class RuntimeAspectsBase implements IAspect {
     }
 
     //To handle providers
-    if (construct instanceof Provider) {
+    else if (construct instanceof Provider) {
       this.handleProvider(construct);
     }
 
     //To handle single Function case
-    if (construct instanceof ReceiptRuleSet) {
+    else if (construct instanceof ReceiptRuleSet) {
       this.handleReceiptRuleSet(construct);
     }
   }
