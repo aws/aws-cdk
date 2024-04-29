@@ -1,3 +1,11 @@
+import { CloudFormationClient, DeleteStackCommand, DescribeStacksCommand, UpdateTerminationProtectionCommand } from '@aws-sdk/client-cloudformation';
+import { ECRClient } from '@aws-sdk/client-ecr';
+import { ECSClient } from '@aws-sdk/client-ecs';
+import { IAMClient } from '@aws-sdk/client-iam';
+import { LambdaClient } from '@aws-sdk/client-lambda';
+import { S3Client } from '@aws-sdk/client-s3';
+import { SNSClient } from '@aws-sdk/client-sns';
+import { STSClient, GetCallerIdentityCommand } from '@aws-sdk/client-sts';
 import * as AWS from 'aws-sdk';
 
 // eslint-disable-next-line @typescript-eslint/no-require-imports
@@ -13,38 +21,47 @@ export class AwsClients {
     return new AwsClients(region, output);
   }
 
+  // TODO Can this be type safe instead on any with sdk v3
   private readonly config: any;
 
-  public readonly cloudFormation: AwsCaller<AWS.CloudFormation>;
-  public readonly s3: AwsCaller<AWS.S3>;
-  public readonly ecr: AwsCaller<AWS.ECR>;
-  public readonly ecs: AwsCaller<AWS.ECS>;
-  public readonly sns: AwsCaller<AWS.SNS>;
-  public readonly iam: AwsCaller<AWS.IAM>;
-  public readonly lambda: AwsCaller<AWS.Lambda>;
-  public readonly sts: AwsCaller<AWS.STS>;
+  // TODO Reduce these commands to particular operations since it decreases bundle size
+  public readonly cloudFormation: CloudFormationClient;
+  public readonly s3: S3Client;
+  public readonly ecr: ECRClient;
+  public readonly ecs: ECSClient;
+  public readonly sns: SNSClient;
+  public readonly iam: IAMClient;
+  public readonly lambda: LambdaClient;
+  public readonly sts: STSClient;
 
   constructor(public readonly region: string, private readonly output: NodeJS.WritableStream) {
     this.config = {
+      // TODO
       credentials: chainableCredentials(this.region),
       region: this.region,
-      maxRetries: 8,
-      retryDelayOptions: { base: 500 },
-      stsRegionalEndpoints: 'regional',
+      maxAttempts: 9, // maxAttempts = 1 + maxRetries
     };
-    this.cloudFormation = makeAwsCaller(AWS.CloudFormation, this.config);
-    this.s3 = makeAwsCaller(AWS.S3, this.config);
-    this.ecr = makeAwsCaller(AWS.ECR, this.config);
-    this.ecs = makeAwsCaller(AWS.ECS, this.config);
-    this.sns = makeAwsCaller(AWS.SNS, this.config);
-    this.iam = makeAwsCaller(AWS.IAM, this.config);
-    this.lambda = makeAwsCaller(AWS.Lambda, this.config);
-    this.sts = makeAwsCaller(AWS.STS, this.config);
+
+    this.cloudFormation = new CloudFormationClient(this.config);
+    this.s3 = new S3Client(this.config);
+    this.ecr = new ECRClient(this.config);
+    this.ecs = new ECSClient(this.config);
+    this.sns = new SNSClient(this.config);
+    this.iam = new IAMClient(this.config);
+    this.lambda = new LambdaClient(this.config);
+    this.sts = new STSClient(this.config);
   }
 
   public async account(): Promise<string> {
     // Reduce # of retries, we use this as a circuit breaker for detecting no-config
-    return (await new AWS.STS({ ...this.config, maxRetries: 1 }).getCallerIdentity().promise()).Account!;
+    const client = new STSClient({
+      ...this.config,
+      maxAttempts: 2,
+    });
+    const command = new GetCallerIdentityCommand({});
+
+    // TODO return (await new AWS.STS({ ...this.config, maxRetries: 1 }).getCallerIdentity().promise()).Account!;
+    return (await client.send(command)).Account!;
   }
 
   public async deleteStacks(...stackNames: string[]) {
@@ -53,14 +70,15 @@ export class AwsClients {
     // We purposely do all stacks serially, because they've been ordered
     // to do the bootstrap stack last.
     for (const stackName of stackNames) {
-      await this.cloudFormation('updateTerminationProtection', {
+      await this.cloudFormation.send(new UpdateTerminationProtectionCommand({
         EnableTerminationProtection: false,
         StackName: stackName,
-      });
-      await this.cloudFormation('deleteStack', {
+      }));
+      await this.cloudFormation.send(new DeleteStackCommand({
         StackName: stackName,
-      });
+      }));
 
+      // TODO confirm at end that all is good
       await retry(this.output, `Deleting ${stackName}`, retry.forSeconds(600), async () => {
         const status = await this.stackStatus(stackName);
         if (status !== undefined && status.endsWith('_FAILED')) {
@@ -75,8 +93,10 @@ export class AwsClients {
 
   public async stackStatus(stackName: string): Promise<string | undefined> {
     try {
-      return (await this.cloudFormation('describeStacks', { StackName: stackName })).Stacks?.[0].StackStatus;
-    } catch (e: any) {
+      return (await this.cloudFormation.send(new DescribeStacksCommand({
+        StackName: stackName,
+      }))).Stacks?.[0].StackStatus;
+    } catch (e: any) { // TODO confirm these errors make sense in sdk v3
       if (isStackMissingError(e)) { return undefined; }
       throw e;
     }
@@ -144,8 +164,6 @@ async function awsCall<
   }
 }
 
-type AwsCaller<A> = <B extends keyof ServiceCalls<A>>(call: B, request: First<ServiceCalls<A>[B]>) => Promise<Second<ServiceCalls<A>[B]>>;
-
 /**
  * Factory function to invoke 'awsCall' for specific services.
  *
@@ -189,6 +207,7 @@ type AwsCallIO<T> =
 type First<T> = T extends [any, any] ? T[0] : never;
 type Second<T> = T extends [any, any] ? T[1] : never;
 
+// TODO do these align with new errors in sdk v3?
 export function isStackMissingError(e: Error) {
   return e.message.indexOf('does not exist') > -1;
 }
@@ -257,6 +276,8 @@ function chainableCredentials(region: string): AWS.Credentials | undefined {
     // heuristics and expire after an hour.
 
     // can't use '~' since the SDK doesn't seem to expand it...?
+
+    // TODO: https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/Package/-aws-sdk-credential-providers/#fromini
     const configPath = `${process.env.HOME}/.aws/config`;
     const ini = new AWS.IniLoader().loadFrom({
       filename: configPath,
@@ -280,6 +301,8 @@ function chainableCredentials(region: string): AWS.Credentials | undefined {
       throw new Error(`external_id does not exist in profile ${externalId}`);
     }
 
+    // TODO: https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/migrating/notable-changes/
+
     return new AWS.ChainableTemporaryCredentials({
       params: {
         RoleArn: arn,
@@ -289,6 +312,7 @@ function chainableCredentials(region: string): AWS.Credentials | undefined {
       stsConfig: {
         region,
       },
+      // TODO: https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/migrating/notable-changes/
       masterCredentials: new AWS.ECSCredentials(),
     });
   }
