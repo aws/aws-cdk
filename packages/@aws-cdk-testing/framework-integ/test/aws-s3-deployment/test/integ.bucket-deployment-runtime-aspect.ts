@@ -3,7 +3,7 @@ import { App, Aspects, RemovalPolicy, Stack, StackProps } from 'aws-cdk-lib';
 import { BucketDeployment, Source } from 'aws-cdk-lib/aws-s3-deployment';
 import { Construct } from 'constructs';
 import { Bucket } from 'aws-cdk-lib/aws-s3';
-import { IFunction, Function, InlineCode, NodeRuntimeAspect, Runtime } from 'aws-cdk-lib/aws-lambda';
+import { IFunction, Function, InlineCode, RuntimeAspect, Runtime } from 'aws-cdk-lib/aws-lambda';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
 class TestStack extends Stack {
@@ -36,7 +36,7 @@ class TestStack extends Stack {
 
 const app = new App();
 const testStack = new TestStack(app, 'TestStack');
-Aspects.of(testStack).add(NodeRuntimeAspect.nodeJs20({
+Aspects.of(testStack).add(RuntimeAspect.nodeJs20({
   functionsToIgnore: [testStack.functionToIgnore],
 }));
 
