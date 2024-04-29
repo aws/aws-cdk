@@ -56,12 +56,12 @@
   resolved "https://registry.npmjs.org/@aws-cdk/asset-node-proxy-agent-v6/-/asset-node-proxy-agent-v6-2.0.3.tgz#9b5d213b5ce5ad4461f6a4720195ff8de72e6523"
   integrity sha512-twhuEG+JPOYCYPx/xy5uH2+VUsIEhPTzDY0F1KuB+ocjWWB/KEDiOVL19nHvbPCB6fhWnkykXEMJ4HHcKvjtvg==
 
-"@aws-cdk/aws-service-spec@^0.0.64":
-  version "0.0.64"
-  resolved "https://registry.npmjs.org/@aws-cdk/aws-service-spec/-/aws-service-spec-0.0.64.tgz#40a0eedd08b7c67d65c011ae343788528068d793"
-  integrity sha512-HkDYdnuegCfA4cBNjNExgrpNzbkHjbdb5nhq4Aw2NasAgECcGh0OsEoCgINqh6X4FHdCscJlwHm2cUbfHBx04Q==
+"@aws-cdk/aws-service-spec@^0.0.65":
+  version "0.0.65"
+  resolved "https://registry.npmjs.org/@aws-cdk/aws-service-spec/-/aws-service-spec-0.0.65.tgz#26b23804afa4ca9e0dea951af135b50b33fae227"
+  integrity sha512-pgYguYQk7e9PJy5+csb/mSCozBqKYXE4yiksnNMXopcTEYA9LB+jrD0wk/jMNfrsGLIeBrYEDFjVmxyvSK1j4Q==
   dependencies:
-    "@aws-cdk/service-spec-types" "^0.0.64"
+    "@aws-cdk/service-spec-types" "^0.0.65"
     "@cdklabs/tskb" "^0.0.3"
 
 "@aws-cdk/lambda-layer-kubectl-v24@^2.0.242":
@@ -94,6 +94,13 @@
   version "0.0.64"
   resolved "https://registry.npmjs.org/@aws-cdk/service-spec-types/-/service-spec-types-0.0.64.tgz#c8be9e9099b8c3eb538b4ca3656777edb50b0128"
   integrity sha512-YHu/KekOAmptELaruTfggwLHIxWKP/I+JY+z/YNG5Vww/hiqLAUnHKa2AesmxEv9q8fiKb1UGtdLd5aO+iXOCw==
+  dependencies:
+    "@cdklabs/tskb" "^0.0.3"
+
+"@aws-cdk/service-spec-types@^0.0.65":
+  version "0.0.65"
+  resolved "https://registry.npmjs.org/@aws-cdk/service-spec-types/-/service-spec-types-0.0.65.tgz#da9096b5b9646bd23e040f88d2c7f55c4dd1d529"
+  integrity sha512-Zqym20NXZPWROBeIUzS400COrutTGvvaJ3e6yEYZ6KB8qUFbf1BGWqHGGqB4+OP0ZY4sHXYerU9RkZa6OQolgQ==
   dependencies:
     "@cdklabs/tskb" "^0.0.3"
 
@@ -6882,16 +6889,13 @@ cdk-from-cfn@^0.157.0:
   resolved "https://registry.npmjs.org/cdk-from-cfn/-/cdk-from-cfn-0.157.0.tgz#4ff0dcd8f31c52561127c462358d72090ad9178a"
   integrity sha512-CQdB41IdhEG6lQx+KDnmttwWntendz0IVJwU8BFBNhT+Ci9hTR9pxxtqzV32Hl4d3uH0XeH/b/V2xcD/sMBP2A==
 
-cdk-generate-synthetic-examples@^0.1.309:
-  version "0.1.309"
-  resolved "https://registry.npmjs.org/cdk-generate-synthetic-examples/-/cdk-generate-synthetic-examples-0.1.309.tgz#16b3520f43b7853ccb96eddad5efda7e87a405dd"
-  integrity sha512-QoBhKAvIBCbH9+Z8zRLleR4+m/8+mwTYju1nZ5jZ8AOaNxO1XHNXDtU7GnNGce8oGwqo+hyoFVpEKSDdd5AqJg==
+cdk-generate-synthetic-examples@^0.2.0:
+  version "0.2.0"
+  resolved "https://registry.npmjs.org/cdk-generate-synthetic-examples/-/cdk-generate-synthetic-examples-0.2.0.tgz#019d4a2a9fa0fdab0b8d48b0426c0fa0ea8b5183"
+  integrity sha512-FaVV/TkTwIz9PUkG1+aT1DB13877jreoGbaud1W9bYY4F6u52DT7LqjLkvgETP8OKYTKqqUP+OikxmLt/OQ3aw==
   dependencies:
     "@jsii/spec" "^1.97.0"
-    fs-extra "^10.1.0"
-    jsii "^1.97.0"
     jsii-reflect "^1.97.0"
-    jsii-rosetta "^1.97.0"
     yargs "^17.7.2"
 
 cdk8s-plus-27@2.7.88:
@@ -10895,10 +10899,10 @@ jsii-rosetta@^1.97.0:
     workerpool "^6.5.1"
     yargs "^16.2.0"
 
-jsii-rosetta@~5.4.2:
-  version "5.4.2"
-  resolved "https://registry.npmjs.org/jsii-rosetta/-/jsii-rosetta-5.4.2.tgz#ba51a331f4a5c42892d3b6d5766f7e4b83afd282"
-  integrity sha512-Bo+8lLuRQ0YiXiNImJ6XLrmAY/GzildnYd1B5MLlc+IpjbgFbynhFIyGjYAVf4+/VLFJRoOCJtZ40sM+ua8Ecw==
+jsii-rosetta@~5.4.6:
+  version "5.4.6"
+  resolved "https://registry.npmjs.org/jsii-rosetta/-/jsii-rosetta-5.4.6.tgz#ada3dd6218acb0e5960dbfc15e8b1f67e045ede8"
+  integrity sha512-RyTtc3hJmmrpbiWCLVvgHfy0Is4PWIYDy+Al6/d1xwZDq64DHJU6yU+H99SgL7LRLLwDyCod2QqRmZ1VIywwcQ==
   dependencies:
     "@jsii/check-node" "1.97.0"
     "@jsii/spec" "^1.97.0"
@@ -10914,7 +10918,7 @@ jsii-rosetta@~5.4.2:
     workerpool "^6.5.1"
     yargs "^17.7.2"
 
-jsii@1.97.0, jsii@^1.97.0:
+jsii@1.97.0:
   version "1.97.0"
   resolved "https://registry.npmjs.org/jsii/-/jsii-1.97.0.tgz#5ceee9f1b4715b82e37ec5a24b509336d8ebef83"
   integrity sha512-C3GA2Q50DkHnFozg7HKel7ZaBMCUKb/dzgH2ykfrbuJ/C/KebkPkqY/XRf95zGB42mzagPfawSLDFQiGGueQ9w==
@@ -10933,10 +10937,10 @@ jsii@1.97.0, jsii@^1.97.0:
     typescript "~3.9.10"
     yargs "^16.2.0"
 
-jsii@~5.4.0, jsii@~5.4.3:
-  version "5.4.3"
-  resolved "https://registry.npmjs.org/jsii/-/jsii-5.4.3.tgz#dedac3cc9f1d209193f1388dcf9e55c142ff4a8d"
-  integrity sha512-+alxW2wfBQBCjesy2kvMl6yML8m7hD/buIkVVQNSGt0R0ObhsLvlanS2lRWpNkdfVtDnNk/ke5UFmMSfJ/vy0Q==
+jsii@~5.4.0, jsii@~5.4.6:
+  version "5.4.6"
+  resolved "https://registry.npmjs.org/jsii/-/jsii-5.4.6.tgz#5389695696d7d8fc8e34942c6efef97ef0236fe0"
+  integrity sha512-Ohqz39ecBfmL/Pd5nnkERnikyOoZmNdqoSqedl+yXATM+js7XLlUGgQ+BdBXaO0rzQU2AEQ40C0COtF0jFXw4A==
   dependencies:
     "@jsii/check-node" "1.97.0"
     "@jsii/spec" "^1.97.0"
@@ -15452,7 +15456,7 @@ typescript-json-schema@^0.63.0:
     typescript "~5.1.0"
     yargs "^17.1.1"
 
-"typescript@>=3 < 6", typescript@~5.4:
+"typescript@>=3 < 6", typescript@~5.4, typescript@~5.4.5:
   version "5.4.5"
   resolved "https://registry.npmjs.org/typescript/-/typescript-5.4.5.tgz#42ccef2c571fdbd0f6718b1d1f5e6e5ef006f611"
   integrity sha512-vcI4UpRgg81oIRUFwR0WSIHKt11nJ7SAVlYNIu+QpqeyXP+gpQJy/Z4+F0aGxSE4MqwjyXvW/TzgkLAx2AGHwQ==
@@ -15462,17 +15466,12 @@ typescript@^3.9.10, typescript@^3.9.5, typescript@^3.9.7, typescript@~3.9.10:
   resolved "https://registry.npmjs.org/typescript/-/typescript-3.9.10.tgz#70f3910ac7a51ed6bef79da7800690b19bf778b8"
   integrity sha512-w6fIxVE/H1PkLKcCPsFqKE7Kv7QUwhU8qQY2MueZXWx5cPZdwFupLgKK3vntcK98BtNHZtAF4LA/yl2a7k8R6Q==
 
-typescript@^4.5.5:
-  version "4.9.5"
-  resolved "https://registry.npmjs.org/typescript/-/typescript-4.9.5.tgz#095979f9bcc0d09da324d58d03ce8f8374cbe65a"
-  integrity sha512-1FXk9E2Hm+QzZQ7z+McJiHL4NW1F2EzMu9Nq9i3zAaGqibafqYwCVU6WyWAuyQRRzOlxou8xZSyXLEN8oKj24g==
-
 typescript@next:
   version "5.5.0-dev.20240417"
   resolved "https://registry.npmjs.org/typescript/-/typescript-5.5.0-dev.20240417.tgz#2558a2442be5b8541ce8168c53fb5ef4ee3c4995"
   integrity sha512-BjMYWxzDLRaNlnnMC/NHf0uUIZEnw5VLe7q0h7hEi5Q4H1XoIDdjBjk6stBS2nj6R/HrsdEqhWdPz6+DLx+sRw==
 
-typescript@~5.1.0, typescript@~5.1.6:
+typescript@~5.1.0:
   version "5.1.6"
   resolved "https://registry.npmjs.org/typescript/-/typescript-5.1.6.tgz#02f8ac202b6dad2c0dd5e0913745b47a37998274"
   integrity sha512-zaWCozRZ6DLEWAWFrVDz1H6FVXzUSfTy5FUMWsQlU8Ym5JP9eO4xkTIROFCQvhQf61z6O/G6ugw3SgAnvvm+HA==
