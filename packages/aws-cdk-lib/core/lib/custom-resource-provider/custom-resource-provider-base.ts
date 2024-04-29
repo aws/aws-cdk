@@ -60,7 +60,7 @@ export abstract class CustomResourceProviderBase extends Construct {
   private _codeHash?: string;
   private policyStatements?: any[];
   private role?: CfnResource;
-  public _runtime?: string;
+  private _runtime?: string;
   /**
    * The ARN of the provider's AWS Lambda function which should be used as the `serviceToken` when defining a custom
    * resource.
