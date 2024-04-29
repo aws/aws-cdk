@@ -21,5 +21,5 @@ class NodejsAspectTest extends cdk.Stack {
 }
 const app = new cdk.App();
 const stack = new NodejsAspectTest(app, 'NodejsStack', { terminationProtection: false });
-customAspect.Runtime.of(stack).add('nodejs20.x');
+customAspect.Runtime.of(stack).add('nodejs18.x');
 new IntegTest(app, 'stack', { testCases: [stack] });
