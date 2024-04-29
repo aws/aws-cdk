@@ -10,7 +10,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-redshift-cluster-database/Vpc"
+      "Value": "MultiAzRedshift/Vpc"
      }
     ]
    },
@@ -34,7 +34,7 @@
      },
      {
       "Key": "Name",
-      "Value": "aws-cdk-redshift-cluster-database/Vpc/PublicSubnet1"
+      "Value": "MultiAzRedshift/Vpc/PublicSubnet1"
      }
     ],
     "VpcId": {
@@ -50,7 +50,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-redshift-cluster-database/Vpc/PublicSubnet1"
+      "Value": "MultiAzRedshift/Vpc/PublicSubnet1"
      }
     ],
     "VpcId": {
@@ -97,7 +97,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-redshift-cluster-database/Vpc/PublicSubnet1"
+      "Value": "MultiAzRedshift/Vpc/PublicSubnet1"
      }
     ]
    },
@@ -119,7 +119,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-redshift-cluster-database/Vpc/PublicSubnet1"
+      "Value": "MultiAzRedshift/Vpc/PublicSubnet1"
      }
     ]
    },
@@ -147,7 +147,7 @@
      },
      {
       "Key": "Name",
-      "Value": "aws-cdk-redshift-cluster-database/Vpc/PublicSubnet2"
+      "Value": "MultiAzRedshift/Vpc/PublicSubnet2"
      }
     ],
     "VpcId": {
@@ -163,7 +163,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-redshift-cluster-database/Vpc/PublicSubnet2"
+      "Value": "MultiAzRedshift/Vpc/PublicSubnet2"
      }
     ],
     "VpcId": {
@@ -210,7 +210,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-redshift-cluster-database/Vpc/PublicSubnet2"
+      "Value": "MultiAzRedshift/Vpc/PublicSubnet2"
      }
     ]
    },
@@ -232,7 +232,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-redshift-cluster-database/Vpc/PublicSubnet2"
+      "Value": "MultiAzRedshift/Vpc/PublicSubnet2"
      }
     ]
    },
@@ -260,7 +260,7 @@
      },
      {
       "Key": "Name",
-      "Value": "aws-cdk-redshift-cluster-database/Vpc/PublicSubnet3"
+      "Value": "MultiAzRedshift/Vpc/PublicSubnet3"
      }
     ],
     "VpcId": {
@@ -276,7 +276,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-redshift-cluster-database/Vpc/PublicSubnet3"
+      "Value": "MultiAzRedshift/Vpc/PublicSubnet3"
      }
     ],
     "VpcId": {
@@ -323,7 +323,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-redshift-cluster-database/Vpc/PublicSubnet3"
+      "Value": "MultiAzRedshift/Vpc/PublicSubnet3"
      }
     ]
    },
@@ -345,7 +345,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-redshift-cluster-database/Vpc/PublicSubnet3"
+      "Value": "MultiAzRedshift/Vpc/PublicSubnet3"
      }
     ]
    },
@@ -373,7 +373,7 @@
      },
      {
       "Key": "Name",
-      "Value": "aws-cdk-redshift-cluster-database/Vpc/PrivateSubnet1"
+      "Value": "MultiAzRedshift/Vpc/PrivateSubnet1"
      }
     ],
     "VpcId": {
@@ -389,7 +389,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-redshift-cluster-database/Vpc/PrivateSubnet1"
+      "Value": "MultiAzRedshift/Vpc/PrivateSubnet1"
      }
     ],
     "VpcId": {
@@ -443,7 +443,7 @@
      },
      {
       "Key": "Name",
-      "Value": "aws-cdk-redshift-cluster-database/Vpc/PrivateSubnet2"
+      "Value": "MultiAzRedshift/Vpc/PrivateSubnet2"
      }
     ],
     "VpcId": {
@@ -459,7 +459,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-redshift-cluster-database/Vpc/PrivateSubnet2"
+      "Value": "MultiAzRedshift/Vpc/PrivateSubnet2"
      }
     ],
     "VpcId": {
@@ -513,7 +513,7 @@
      },
      {
       "Key": "Name",
-      "Value": "aws-cdk-redshift-cluster-database/Vpc/PrivateSubnet3"
+      "Value": "MultiAzRedshift/Vpc/PrivateSubnet3"
      }
     ],
     "VpcId": {
@@ -529,7 +529,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-redshift-cluster-database/Vpc/PrivateSubnet3"
+      "Value": "MultiAzRedshift/Vpc/PrivateSubnet3"
      }
     ],
     "VpcId": {
@@ -572,7 +572,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-cdk-redshift-cluster-database/Vpc"
+      "Value": "MultiAzRedshift/Vpc"
      }
     ]
    },

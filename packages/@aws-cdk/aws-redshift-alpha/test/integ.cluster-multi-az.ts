@@ -9,7 +9,7 @@ const app = new cdk.App({
     'availability-zones:account=123456789012:region=us-east-1': ['us-east-1a', 'us-east-1b', 'us-east-1c'],
   },
 });
-const stack = new cdk.Stack(app, 'aws-cdk-redshift-cluster-database', {
+const stack = new cdk.Stack(app, 'MultiAzRedshift', {
   env: {
     account: '123456789012',
     region: 'us-east-1',
@@ -42,6 +42,6 @@ new redshift.Cluster(stack, 'Cluster', {
   multiAz: true,
 });
 
-new integ.IntegTest(app, 'aws-cdk-redshift-multi-az', {
+new integ.IntegTest(app, 'MultiAzRedshiftTest', {
   testCases: [stack],
 });

@@ -4,17 +4,17 @@
     "id": "App",
     "path": "",
     "children": {
-      "aws-cdk-redshift-cluster-database": {
-        "id": "aws-cdk-redshift-cluster-database",
-        "path": "aws-cdk-redshift-cluster-database",
+      "MultiAzRedshift": {
+        "id": "MultiAzRedshift",
+        "path": "MultiAzRedshift",
         "children": {
           "Vpc": {
             "id": "Vpc",
-            "path": "aws-cdk-redshift-cluster-database/Vpc",
+            "path": "MultiAzRedshift/Vpc",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "aws-cdk-redshift-cluster-database/Vpc/Resource",
+                "path": "MultiAzRedshift/Vpc/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EC2::VPC",
                   "aws:cdk:cloudformation:props": {
@@ -25,7 +25,7 @@
                     "tags": [
                       {
                         "key": "Name",
-                        "value": "aws-cdk-redshift-cluster-database/Vpc"
+                        "value": "MultiAzRedshift/Vpc"
                       }
                     ]
                   }
@@ -37,11 +37,11 @@
               },
               "PublicSubnet1": {
                 "id": "PublicSubnet1",
-                "path": "aws-cdk-redshift-cluster-database/Vpc/PublicSubnet1",
+                "path": "MultiAzRedshift/Vpc/PublicSubnet1",
                 "children": {
                   "Subnet": {
                     "id": "Subnet",
-                    "path": "aws-cdk-redshift-cluster-database/Vpc/PublicSubnet1/Subnet",
+                    "path": "MultiAzRedshift/Vpc/PublicSubnet1/Subnet",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
@@ -59,7 +59,7 @@
                           },
                           {
                             "key": "Name",
-                            "value": "aws-cdk-redshift-cluster-database/Vpc/PublicSubnet1"
+                            "value": "MultiAzRedshift/Vpc/PublicSubnet1"
                           }
                         ],
                         "vpcId": {
@@ -74,7 +74,7 @@
                   },
                   "Acl": {
                     "id": "Acl",
-                    "path": "aws-cdk-redshift-cluster-database/Vpc/PublicSubnet1/Acl",
+                    "path": "MultiAzRedshift/Vpc/PublicSubnet1/Acl",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
@@ -82,14 +82,14 @@
                   },
                   "RouteTable": {
                     "id": "RouteTable",
-                    "path": "aws-cdk-redshift-cluster-database/Vpc/PublicSubnet1/RouteTable",
+                    "path": "MultiAzRedshift/Vpc/PublicSubnet1/RouteTable",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "aws-cdk-redshift-cluster-database/Vpc/PublicSubnet1"
+                            "value": "MultiAzRedshift/Vpc/PublicSubnet1"
                           }
                         ],
                         "vpcId": {
@@ -104,7 +104,7 @@
                   },
                   "RouteTableAssociation": {
                     "id": "RouteTableAssociation",
-                    "path": "aws-cdk-redshift-cluster-database/Vpc/PublicSubnet1/RouteTableAssociation",
+                    "path": "MultiAzRedshift/Vpc/PublicSubnet1/RouteTableAssociation",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
                       "aws:cdk:cloudformation:props": {
@@ -123,7 +123,7 @@
                   },
                   "DefaultRoute": {
                     "id": "DefaultRoute",
-                    "path": "aws-cdk-redshift-cluster-database/Vpc/PublicSubnet1/DefaultRoute",
+                    "path": "MultiAzRedshift/Vpc/PublicSubnet1/DefaultRoute",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
@@ -143,7 +143,7 @@
                   },
                   "EIP": {
                     "id": "EIP",
-                    "path": "aws-cdk-redshift-cluster-database/Vpc/PublicSubnet1/EIP",
+                    "path": "MultiAzRedshift/Vpc/PublicSubnet1/EIP",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::EIP",
                       "aws:cdk:cloudformation:props": {
@@ -151,7 +151,7 @@
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "aws-cdk-redshift-cluster-database/Vpc/PublicSubnet1"
+                            "value": "MultiAzRedshift/Vpc/PublicSubnet1"
                           }
                         ]
                       }
@@ -163,7 +163,7 @@
                   },
                   "NATGateway": {
                     "id": "NATGateway",
-                    "path": "aws-cdk-redshift-cluster-database/Vpc/PublicSubnet1/NATGateway",
+                    "path": "MultiAzRedshift/Vpc/PublicSubnet1/NATGateway",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::NatGateway",
                       "aws:cdk:cloudformation:props": {
@@ -179,7 +179,7 @@
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "aws-cdk-redshift-cluster-database/Vpc/PublicSubnet1"
+                            "value": "MultiAzRedshift/Vpc/PublicSubnet1"
                           }
                         ]
                       }
@@ -197,11 +197,11 @@
               },
               "PublicSubnet2": {
                 "id": "PublicSubnet2",
-                "path": "aws-cdk-redshift-cluster-database/Vpc/PublicSubnet2",
+                "path": "MultiAzRedshift/Vpc/PublicSubnet2",
                 "children": {
                   "Subnet": {
                     "id": "Subnet",
-                    "path": "aws-cdk-redshift-cluster-database/Vpc/PublicSubnet2/Subnet",
+                    "path": "MultiAzRedshift/Vpc/PublicSubnet2/Subnet",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
@@ -219,7 +219,7 @@
                           },
                           {
                             "key": "Name",
-                            "value": "aws-cdk-redshift-cluster-database/Vpc/PublicSubnet2"
+                            "value": "MultiAzRedshift/Vpc/PublicSubnet2"
                           }
                         ],
                         "vpcId": {
@@ -234,7 +234,7 @@
                   },
                   "Acl": {
                     "id": "Acl",
-                    "path": "aws-cdk-redshift-cluster-database/Vpc/PublicSubnet2/Acl",
+                    "path": "MultiAzRedshift/Vpc/PublicSubnet2/Acl",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
@@ -242,14 +242,14 @@
                   },
                   "RouteTable": {
                     "id": "RouteTable",
-                    "path": "aws-cdk-redshift-cluster-database/Vpc/PublicSubnet2/RouteTable",
+                    "path": "MultiAzRedshift/Vpc/PublicSubnet2/RouteTable",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "aws-cdk-redshift-cluster-database/Vpc/PublicSubnet2"
+                            "value": "MultiAzRedshift/Vpc/PublicSubnet2"
                           }
                         ],
                         "vpcId": {
@@ -264,7 +264,7 @@
                   },
                   "RouteTableAssociation": {
                     "id": "RouteTableAssociation",
-                    "path": "aws-cdk-redshift-cluster-database/Vpc/PublicSubnet2/RouteTableAssociation",
+                    "path": "MultiAzRedshift/Vpc/PublicSubnet2/RouteTableAssociation",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
                       "aws:cdk:cloudformation:props": {
@@ -283,7 +283,7 @@
                   },
                   "DefaultRoute": {
                     "id": "DefaultRoute",
-                    "path": "aws-cdk-redshift-cluster-database/Vpc/PublicSubnet2/DefaultRoute",
+                    "path": "MultiAzRedshift/Vpc/PublicSubnet2/DefaultRoute",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
@@ -303,7 +303,7 @@
                   },
                   "EIP": {
                     "id": "EIP",
-                    "path": "aws-cdk-redshift-cluster-database/Vpc/PublicSubnet2/EIP",
+                    "path": "MultiAzRedshift/Vpc/PublicSubnet2/EIP",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::EIP",
                       "aws:cdk:cloudformation:props": {
@@ -311,7 +311,7 @@
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "aws-cdk-redshift-cluster-database/Vpc/PublicSubnet2"
+                            "value": "MultiAzRedshift/Vpc/PublicSubnet2"
                           }
                         ]
                       }
@@ -323,7 +323,7 @@
                   },
                   "NATGateway": {
                     "id": "NATGateway",
-                    "path": "aws-cdk-redshift-cluster-database/Vpc/PublicSubnet2/NATGateway",
+                    "path": "MultiAzRedshift/Vpc/PublicSubnet2/NATGateway",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::NatGateway",
                       "aws:cdk:cloudformation:props": {
@@ -339,7 +339,7 @@
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "aws-cdk-redshift-cluster-database/Vpc/PublicSubnet2"
+                            "value": "MultiAzRedshift/Vpc/PublicSubnet2"
                           }
                         ]
                       }
@@ -357,11 +357,11 @@
               },
               "PublicSubnet3": {
                 "id": "PublicSubnet3",
-                "path": "aws-cdk-redshift-cluster-database/Vpc/PublicSubnet3",
+                "path": "MultiAzRedshift/Vpc/PublicSubnet3",
                 "children": {
                   "Subnet": {
                     "id": "Subnet",
-                    "path": "aws-cdk-redshift-cluster-database/Vpc/PublicSubnet3/Subnet",
+                    "path": "MultiAzRedshift/Vpc/PublicSubnet3/Subnet",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
@@ -379,7 +379,7 @@
                           },
                           {
                             "key": "Name",
-                            "value": "aws-cdk-redshift-cluster-database/Vpc/PublicSubnet3"
+                            "value": "MultiAzRedshift/Vpc/PublicSubnet3"
                           }
                         ],
                         "vpcId": {
@@ -394,7 +394,7 @@
                   },
                   "Acl": {
                     "id": "Acl",
-                    "path": "aws-cdk-redshift-cluster-database/Vpc/PublicSubnet3/Acl",
+                    "path": "MultiAzRedshift/Vpc/PublicSubnet3/Acl",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
@@ -402,14 +402,14 @@
                   },
                   "RouteTable": {
                     "id": "RouteTable",
-                    "path": "aws-cdk-redshift-cluster-database/Vpc/PublicSubnet3/RouteTable",
+                    "path": "MultiAzRedshift/Vpc/PublicSubnet3/RouteTable",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "aws-cdk-redshift-cluster-database/Vpc/PublicSubnet3"
+                            "value": "MultiAzRedshift/Vpc/PublicSubnet3"
                           }
                         ],
                         "vpcId": {
@@ -424,7 +424,7 @@
                   },
                   "RouteTableAssociation": {
                     "id": "RouteTableAssociation",
-                    "path": "aws-cdk-redshift-cluster-database/Vpc/PublicSubnet3/RouteTableAssociation",
+                    "path": "MultiAzRedshift/Vpc/PublicSubnet3/RouteTableAssociation",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
                       "aws:cdk:cloudformation:props": {
@@ -443,7 +443,7 @@
                   },
                   "DefaultRoute": {
                     "id": "DefaultRoute",
-                    "path": "aws-cdk-redshift-cluster-database/Vpc/PublicSubnet3/DefaultRoute",
+                    "path": "MultiAzRedshift/Vpc/PublicSubnet3/DefaultRoute",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
@@ -463,7 +463,7 @@
                   },
                   "EIP": {
                     "id": "EIP",
-                    "path": "aws-cdk-redshift-cluster-database/Vpc/PublicSubnet3/EIP",
+                    "path": "MultiAzRedshift/Vpc/PublicSubnet3/EIP",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::EIP",
                       "aws:cdk:cloudformation:props": {
@@ -471,7 +471,7 @@
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "aws-cdk-redshift-cluster-database/Vpc/PublicSubnet3"
+                            "value": "MultiAzRedshift/Vpc/PublicSubnet3"
                           }
                         ]
                       }
@@ -483,7 +483,7 @@
                   },
                   "NATGateway": {
                     "id": "NATGateway",
-                    "path": "aws-cdk-redshift-cluster-database/Vpc/PublicSubnet3/NATGateway",
+                    "path": "MultiAzRedshift/Vpc/PublicSubnet3/NATGateway",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::NatGateway",
                       "aws:cdk:cloudformation:props": {
@@ -499,7 +499,7 @@
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "aws-cdk-redshift-cluster-database/Vpc/PublicSubnet3"
+                            "value": "MultiAzRedshift/Vpc/PublicSubnet3"
                           }
                         ]
                       }
@@ -517,11 +517,11 @@
               },
               "PrivateSubnet1": {
                 "id": "PrivateSubnet1",
-                "path": "aws-cdk-redshift-cluster-database/Vpc/PrivateSubnet1",
+                "path": "MultiAzRedshift/Vpc/PrivateSubnet1",
                 "children": {
                   "Subnet": {
                     "id": "Subnet",
-                    "path": "aws-cdk-redshift-cluster-database/Vpc/PrivateSubnet1/Subnet",
+                    "path": "MultiAzRedshift/Vpc/PrivateSubnet1/Subnet",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
@@ -539,7 +539,7 @@
                           },
                           {
                             "key": "Name",
-                            "value": "aws-cdk-redshift-cluster-database/Vpc/PrivateSubnet1"
+                            "value": "MultiAzRedshift/Vpc/PrivateSubnet1"
                           }
                         ],
                         "vpcId": {
@@ -554,7 +554,7 @@
                   },
                   "Acl": {
                     "id": "Acl",
-                    "path": "aws-cdk-redshift-cluster-database/Vpc/PrivateSubnet1/Acl",
+                    "path": "MultiAzRedshift/Vpc/PrivateSubnet1/Acl",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
@@ -562,14 +562,14 @@
                   },
                   "RouteTable": {
                     "id": "RouteTable",
-                    "path": "aws-cdk-redshift-cluster-database/Vpc/PrivateSubnet1/RouteTable",
+                    "path": "MultiAzRedshift/Vpc/PrivateSubnet1/RouteTable",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "aws-cdk-redshift-cluster-database/Vpc/PrivateSubnet1"
+                            "value": "MultiAzRedshift/Vpc/PrivateSubnet1"
                           }
                         ],
                         "vpcId": {
@@ -584,7 +584,7 @@
                   },
                   "RouteTableAssociation": {
                     "id": "RouteTableAssociation",
-                    "path": "aws-cdk-redshift-cluster-database/Vpc/PrivateSubnet1/RouteTableAssociation",
+                    "path": "MultiAzRedshift/Vpc/PrivateSubnet1/RouteTableAssociation",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
                       "aws:cdk:cloudformation:props": {
@@ -603,7 +603,7 @@
                   },
                   "DefaultRoute": {
                     "id": "DefaultRoute",
-                    "path": "aws-cdk-redshift-cluster-database/Vpc/PrivateSubnet1/DefaultRoute",
+                    "path": "MultiAzRedshift/Vpc/PrivateSubnet1/DefaultRoute",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
@@ -629,11 +629,11 @@
               },
               "PrivateSubnet2": {
                 "id": "PrivateSubnet2",
-                "path": "aws-cdk-redshift-cluster-database/Vpc/PrivateSubnet2",
+                "path": "MultiAzRedshift/Vpc/PrivateSubnet2",
                 "children": {
                   "Subnet": {
                     "id": "Subnet",
-                    "path": "aws-cdk-redshift-cluster-database/Vpc/PrivateSubnet2/Subnet",
+                    "path": "MultiAzRedshift/Vpc/PrivateSubnet2/Subnet",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
@@ -651,7 +651,7 @@
                           },
                           {
                             "key": "Name",
-                            "value": "aws-cdk-redshift-cluster-database/Vpc/PrivateSubnet2"
+                            "value": "MultiAzRedshift/Vpc/PrivateSubnet2"
                           }
                         ],
                         "vpcId": {
@@ -666,7 +666,7 @@
                   },
                   "Acl": {
                     "id": "Acl",
-                    "path": "aws-cdk-redshift-cluster-database/Vpc/PrivateSubnet2/Acl",
+                    "path": "MultiAzRedshift/Vpc/PrivateSubnet2/Acl",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
@@ -674,14 +674,14 @@
                   },
                   "RouteTable": {
                     "id": "RouteTable",
-                    "path": "aws-cdk-redshift-cluster-database/Vpc/PrivateSubnet2/RouteTable",
+                    "path": "MultiAzRedshift/Vpc/PrivateSubnet2/RouteTable",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "aws-cdk-redshift-cluster-database/Vpc/PrivateSubnet2"
+                            "value": "MultiAzRedshift/Vpc/PrivateSubnet2"
                           }
                         ],
                         "vpcId": {
@@ -696,7 +696,7 @@
                   },
                   "RouteTableAssociation": {
                     "id": "RouteTableAssociation",
-                    "path": "aws-cdk-redshift-cluster-database/Vpc/PrivateSubnet2/RouteTableAssociation",
+                    "path": "MultiAzRedshift/Vpc/PrivateSubnet2/RouteTableAssociation",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
                       "aws:cdk:cloudformation:props": {
@@ -715,7 +715,7 @@
                   },
                   "DefaultRoute": {
                     "id": "DefaultRoute",
-                    "path": "aws-cdk-redshift-cluster-database/Vpc/PrivateSubnet2/DefaultRoute",
+                    "path": "MultiAzRedshift/Vpc/PrivateSubnet2/DefaultRoute",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
@@ -741,11 +741,11 @@
               },
               "PrivateSubnet3": {
                 "id": "PrivateSubnet3",
-                "path": "aws-cdk-redshift-cluster-database/Vpc/PrivateSubnet3",
+                "path": "MultiAzRedshift/Vpc/PrivateSubnet3",
                 "children": {
                   "Subnet": {
                     "id": "Subnet",
-                    "path": "aws-cdk-redshift-cluster-database/Vpc/PrivateSubnet3/Subnet",
+                    "path": "MultiAzRedshift/Vpc/PrivateSubnet3/Subnet",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
@@ -763,7 +763,7 @@
                           },
                           {
                             "key": "Name",
-                            "value": "aws-cdk-redshift-cluster-database/Vpc/PrivateSubnet3"
+                            "value": "MultiAzRedshift/Vpc/PrivateSubnet3"
                           }
                         ],
                         "vpcId": {
@@ -778,7 +778,7 @@
                   },
                   "Acl": {
                     "id": "Acl",
-                    "path": "aws-cdk-redshift-cluster-database/Vpc/PrivateSubnet3/Acl",
+                    "path": "MultiAzRedshift/Vpc/PrivateSubnet3/Acl",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
@@ -786,14 +786,14 @@
                   },
                   "RouteTable": {
                     "id": "RouteTable",
-                    "path": "aws-cdk-redshift-cluster-database/Vpc/PrivateSubnet3/RouteTable",
+                    "path": "MultiAzRedshift/Vpc/PrivateSubnet3/RouteTable",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "aws-cdk-redshift-cluster-database/Vpc/PrivateSubnet3"
+                            "value": "MultiAzRedshift/Vpc/PrivateSubnet3"
                           }
                         ],
                         "vpcId": {
@@ -808,7 +808,7 @@
                   },
                   "RouteTableAssociation": {
                     "id": "RouteTableAssociation",
-                    "path": "aws-cdk-redshift-cluster-database/Vpc/PrivateSubnet3/RouteTableAssociation",
+                    "path": "MultiAzRedshift/Vpc/PrivateSubnet3/RouteTableAssociation",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
                       "aws:cdk:cloudformation:props": {
@@ -827,7 +827,7 @@
                   },
                   "DefaultRoute": {
                     "id": "DefaultRoute",
-                    "path": "aws-cdk-redshift-cluster-database/Vpc/PrivateSubnet3/DefaultRoute",
+                    "path": "MultiAzRedshift/Vpc/PrivateSubnet3/DefaultRoute",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
@@ -853,14 +853,14 @@
               },
               "IGW": {
                 "id": "IGW",
-                "path": "aws-cdk-redshift-cluster-database/Vpc/IGW",
+                "path": "MultiAzRedshift/Vpc/IGW",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EC2::InternetGateway",
                   "aws:cdk:cloudformation:props": {
                     "tags": [
                       {
                         "key": "Name",
-                        "value": "aws-cdk-redshift-cluster-database/Vpc"
+                        "value": "MultiAzRedshift/Vpc"
                       }
                     ]
                   }
@@ -872,7 +872,7 @@
               },
               "VPCGW": {
                 "id": "VPCGW",
-                "path": "aws-cdk-redshift-cluster-database/Vpc/VPCGW",
+                "path": "MultiAzRedshift/Vpc/VPCGW",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EC2::VPCGatewayAttachment",
                   "aws:cdk:cloudformation:props": {
@@ -897,15 +897,15 @@
           },
           "Cluster": {
             "id": "Cluster",
-            "path": "aws-cdk-redshift-cluster-database/Cluster",
+            "path": "MultiAzRedshift/Cluster",
             "children": {
               "Subnets": {
                 "id": "Subnets",
-                "path": "aws-cdk-redshift-cluster-database/Cluster/Subnets",
+                "path": "MultiAzRedshift/Cluster/Subnets",
                 "children": {
                   "Default": {
                     "id": "Default",
-                    "path": "aws-cdk-redshift-cluster-database/Cluster/Subnets/Default",
+                    "path": "MultiAzRedshift/Cluster/Subnets/Default",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::Redshift::ClusterSubnetGroup",
                       "aws:cdk:cloudformation:props": {
@@ -936,11 +936,11 @@
               },
               "SecurityGroup": {
                 "id": "SecurityGroup",
-                "path": "aws-cdk-redshift-cluster-database/Cluster/SecurityGroup",
+                "path": "MultiAzRedshift/Cluster/SecurityGroup",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "aws-cdk-redshift-cluster-database/Cluster/SecurityGroup/Resource",
+                    "path": "MultiAzRedshift/Cluster/SecurityGroup/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
                       "aws:cdk:cloudformation:props": {
@@ -970,11 +970,11 @@
               },
               "Secret": {
                 "id": "Secret",
-                "path": "aws-cdk-redshift-cluster-database/Cluster/Secret",
+                "path": "MultiAzRedshift/Cluster/Secret",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "aws-cdk-redshift-cluster-database/Cluster/Secret/Resource",
+                    "path": "MultiAzRedshift/Cluster/Secret/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::SecretsManager::Secret",
                       "aws:cdk:cloudformation:props": {
@@ -993,11 +993,11 @@
                   },
                   "Attachment": {
                     "id": "Attachment",
-                    "path": "aws-cdk-redshift-cluster-database/Cluster/Secret/Attachment",
+                    "path": "MultiAzRedshift/Cluster/Secret/Attachment",
                     "children": {
                       "Resource": {
                         "id": "Resource",
-                        "path": "aws-cdk-redshift-cluster-database/Cluster/Secret/Attachment/Resource",
+                        "path": "MultiAzRedshift/Cluster/Secret/Attachment/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::SecretsManager::SecretTargetAttachment",
                           "aws:cdk:cloudformation:props": {
@@ -1029,7 +1029,7 @@
               },
               "Resource": {
                 "id": "Resource",
-                "path": "aws-cdk-redshift-cluster-database/Cluster/Resource",
+                "path": "MultiAzRedshift/Cluster/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::Redshift::Cluster",
                   "aws:cdk:cloudformation:props": {
@@ -1092,7 +1092,7 @@
           },
           "BootstrapVersion": {
             "id": "BootstrapVersion",
-            "path": "aws-cdk-redshift-cluster-database/BootstrapVersion",
+            "path": "MultiAzRedshift/BootstrapVersion",
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnParameter",
               "version": "0.0.0"
@@ -1100,7 +1100,7 @@
           },
           "CheckBootstrapVersion": {
             "id": "CheckBootstrapVersion",
-            "path": "aws-cdk-redshift-cluster-database/CheckBootstrapVersion",
+            "path": "MultiAzRedshift/CheckBootstrapVersion",
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnRule",
               "version": "0.0.0"
@@ -1112,17 +1112,17 @@
           "version": "0.0.0"
         }
       },
-      "aws-cdk-redshift-multi-az": {
-        "id": "aws-cdk-redshift-multi-az",
-        "path": "aws-cdk-redshift-multi-az",
+      "MultiAzRedshiftTest": {
+        "id": "MultiAzRedshiftTest",
+        "path": "MultiAzRedshiftTest",
         "children": {
           "DefaultTest": {
             "id": "DefaultTest",
-            "path": "aws-cdk-redshift-multi-az/DefaultTest",
+            "path": "MultiAzRedshiftTest/DefaultTest",
             "children": {
               "Default": {
                 "id": "Default",
-                "path": "aws-cdk-redshift-multi-az/DefaultTest/Default",
+                "path": "MultiAzRedshiftTest/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
                   "version": "10.3.0"
@@ -1130,11 +1130,11 @@
               },
               "DeployAssert": {
                 "id": "DeployAssert",
-                "path": "aws-cdk-redshift-multi-az/DefaultTest/DeployAssert",
+                "path": "MultiAzRedshiftTest/DefaultTest/DeployAssert",
                 "children": {
                   "BootstrapVersion": {
                     "id": "BootstrapVersion",
-                    "path": "aws-cdk-redshift-multi-az/DefaultTest/DeployAssert/BootstrapVersion",
+                    "path": "MultiAzRedshiftTest/DefaultTest/DeployAssert/BootstrapVersion",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.CfnParameter",
                       "version": "0.0.0"
@@ -1142,7 +1142,7 @@
                   },
                   "CheckBootstrapVersion": {
                     "id": "CheckBootstrapVersion",
-                    "path": "aws-cdk-redshift-multi-az/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "path": "MultiAzRedshiftTest/DefaultTest/DeployAssert/CheckBootstrapVersion",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.CfnRule",
                       "version": "0.0.0"
