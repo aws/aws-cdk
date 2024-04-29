@@ -6,7 +6,7 @@ import * as kms from 'aws-cdk-lib/aws-kms';
 
 const app = new cdk.App();
 
-const stack = new cdk.Stack(app, 'repositoryKmsKey');
+const stack = new cdk.Stack(app, 'RepositoryKmsKey');
 
 const kmsKey = new kms.Key(stack, 'MyKey');
 new codecommit.Repository(stack, 'MyCodecommitRepository', {
@@ -14,6 +14,6 @@ new codecommit.Repository(stack, 'MyCodecommitRepository', {
   kmsKey,
 });
 
-new integ.IntegTest(app, 'repositoryKmsKeyTest', {
+new integ.IntegTest(app, 'RepositoryKmsKeyTest', {
   testCases: [stack],
 });
