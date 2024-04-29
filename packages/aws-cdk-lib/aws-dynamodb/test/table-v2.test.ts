@@ -2551,6 +2551,27 @@ describe('secondary indexes', () => {
     }).toThrow('You may not provide more than 20 global secondary indexes');
   });
 
+   test('should not throw if global secondary index count is 20', () => {
+    // GIVEN
+    const stack = new Stack(undefined, 'Stack');
+
+    const globalSecondaryIndexes: GlobalSecondaryIndexPropsV2[] = [];
+    for (let count = 0; count < 20; count++) {
+      globalSecondaryIndexes.push({
+        indexName: `gsi${count}`,
+        partitionKey: { name: 'gsi-pk', type: AttributeType.NUMBER },
+      });
+    }
+
+    // WHEN / THEN
+    expect(() => {
+      new TableV2(stack, 'Table', {
+        partitionKey: { name: 'pk', type: AttributeType.STRING },
+        globalSecondaryIndexes,
+      });
+    }).not.toThrow('You may not provide more than 20 global secondary indexes');
+  });
+
   test('throws if local secondary index count is greater than 5', () => {
     // GIVEN
     const stack = new Stack(undefined, 'Stack');
