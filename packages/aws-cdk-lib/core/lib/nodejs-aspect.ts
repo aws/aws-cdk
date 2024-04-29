@@ -51,24 +51,24 @@ abstract class RuntimeAspectsBase implements IAspect {
   private handleProvider(provider: Provider): void {
     const functionNodes = provider.node.children.filter((child) => child instanceof lambda.Function);
     for ( var node of functionNodes) {
-      const targetNode = node.node.children.find((child) => child instanceof cdk.CfnResource && child.cfnResourceType === 'AWS::Lambda::Function') as lambda.CfnFunction;
-      if (targetNode.runtime && this.isValidRuntime(targetNode.runtime)) {
-        targetNode.runtime = lambda.Runtime.NODEJS_20_X.toString();
+      const targetNode = node.node.children.find((child) => child instanceof cdk.CfnResource && child.cfnResourceType === 'AWS::Lambda::Function') as cdk.CfnResource;
+      if (this.isValidRuntime(this.getRuntimeProperty(targetNode))) {
+        targetNode.addPropertyOverride('Runtime', 'nodejs20.x');
       }
 
       // onEvent Handlers
       const onEventHandler = provider.onEventHandler as lambda.Function;
-      const onEventHandlerRuntime = onEventHandler.node.children.find((child) => child instanceof cdk.CfnResource && child.cfnResourceType === 'AWS::Lambda::Function') as lambda.CfnFunction;
-      if (targetNode.runtime && this.isValidRuntime(targetNode.runtime)) {
-        onEventHandlerRuntime.runtime = lambda.Runtime.NODEJS_20_X.toString();
+      const onEventHandlerRuntime = onEventHandler.node.children.find((child) => child instanceof cdk.CfnResource && child.cfnResourceType === 'AWS::Lambda::Function') as cdk.CfnResource;
+      if (this.isValidRuntime(this.getRuntimeProperty(targetNode))) {
+        onEventHandlerRuntime.addPropertyOverride('Runtime', 'nodejs20.x');
       }
 
       //isComplete Handlers
       // Handlers
       const isCompleteHandler = provider.isCompleteHandler as lambda.Function;
-      const isCompleteHandlerRuntime = isCompleteHandler.node.children.find((child) => child instanceof cdk.CfnResource && child.cfnResourceType === 'AWS::Lambda::Function') as lambda.CfnFunction;
-      if (targetNode.runtime && this.isValidRuntime(targetNode.runtime)) {
-        isCompleteHandlerRuntime.runtime = lambda.Runtime.NODEJS_20_X.toString();
+      const isCompleteHandlerRuntime = isCompleteHandler.node.children.find((child) => child instanceof cdk.CfnResource && child.cfnResourceType === 'AWS::Lambda::Function') as lcdk.CfnResource;
+      if (this.isValidRuntime(this.getRuntimeProperty(targetNode))) {
+        isCompleteHandlerRuntime.addPropertyOverride('Runtime', 'nodejs20.x');
       }
     }
   }
@@ -87,6 +87,10 @@ abstract class RuntimeAspectsBase implements IAspect {
  */
   private isValidRuntime(runtime: string) : boolean {
     return runtime === this.targetRuntime;
+  }
+
+  private getRuntimeProperty(node: cdk.CfnResource) {
+    return (node.getResourceProperty('runtime') || node.getResourceProperty('Runtime')) as string;
   }
 }
 //}
