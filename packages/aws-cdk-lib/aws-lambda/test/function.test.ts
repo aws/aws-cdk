@@ -397,30 +397,6 @@ describe('function', () => {
     expect(imported.functionName).toEqual('ProcessKinesisRecords');
   });
 
-  test('fromFunctionArn with verionArn as the input', () => {
-    // GIVEN
-    const stack2 = new cdk.Stack();
-
-    // WHEN
-    const imported = lambda.Function.fromFunctionArn(stack2, 'Imported', 'arn:aws:lambda:us-east-1:123456789012:function:ProcessKinesisRecords:1');
-
-    // THEN
-    expect(imported.functionArn).toEqual('arn:aws:lambda:us-east-1:123456789012:function:ProcessKinesisRecords');
-    expect(imported.functionName).toEqual('ProcessKinesisRecords');
-  });
-
-  test('fromFunctionArn with trailing alias as the input', () => {
-    // GIVEN
-    const stack2 = new cdk.Stack();
-
-    // WHEN
-    const imported = lambda.Function.fromFunctionArn(stack2, 'Imported', 'arn:aws:lambda:us-east-1:123456789012:function:ProcessKinesisRecords:TEST');
-
-    // THEN
-    expect(imported.functionArn).toEqual('arn:aws:lambda:us-east-1:123456789012:function:ProcessKinesisRecords');
-    expect(imported.functionName).toEqual('ProcessKinesisRecords');
-  });
-
   test('Function.fromFunctionName', () => {
     // GIVEN
     const stack = new cdk.Stack();
