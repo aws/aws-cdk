@@ -27,9 +27,6 @@ export abstract class RuntimeAspect implements IAspect {
       protected readonly runtimeFamily = 'nodejs';
       public constructor() {
         super(Runtime.NODEJS_20_X.toString(), options);
-        if (!this.runtimeName.includes(this.runtimeFamily)) {
-          throw new Error('NodeRuntimeAspect is only configurable with node runtimes');
-        }
       }
     })();
   }
