@@ -3,7 +3,7 @@
   "files": {
     "768c42cfd03f86c9416c69488b08f5ab428f042e921c8019c371f9a3353af94f": {
       "source": {
-        "path": "RepositoryKmsKey.template.json",
+        "path": "RepositoryEncryption.template.json",
         "packaging": "file"
       },
       "destinations": {

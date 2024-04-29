@@ -1,19 +1,19 @@
 {
   "version": "36.0.0",
   "artifacts": {
-    "RepositoryKmsKey.assets": {
+    "RepositoryEncryption.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "RepositoryKmsKey.assets.json",
+        "file": "RepositoryEncryption.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "RepositoryKmsKey": {
+    "RepositoryEncryption": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "RepositoryKmsKey.template.json",
+        "templateFile": "RepositoryEncryption.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
@@ -22,7 +22,7 @@
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "RepositoryKmsKey.assets"
+          "RepositoryEncryption.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -31,49 +31,49 @@
         }
       },
       "dependencies": [
-        "RepositoryKmsKey.assets"
+        "RepositoryEncryption.assets"
       ],
       "metadata": {
-        "/RepositoryKmsKey/MyKey/Resource": [
+        "/RepositoryEncryption/MyKey/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "MyKey6AB29FA6"
           }
         ],
-        "/RepositoryKmsKey/MyCodecommitRepository/Resource": [
+        "/RepositoryEncryption/MyCodecommitRepository/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "MyCodecommitRepository26DB372B"
           }
         ],
-        "/RepositoryKmsKey/BootstrapVersion": [
+        "/RepositoryEncryption/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/RepositoryKmsKey/CheckBootstrapVersion": [
+        "/RepositoryEncryption/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "RepositoryKmsKey"
+      "displayName": "RepositoryEncryption"
     },
-    "RepositoryKmsKeyTestDefaultTestDeployAssertC5D9D647.assets": {
+    "RepositoryEncryptionTestDefaultTestDeployAssert819A2226.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "RepositoryKmsKeyTestDefaultTestDeployAssertC5D9D647.assets.json",
+        "file": "RepositoryEncryptionTestDefaultTestDeployAssert819A2226.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "RepositoryKmsKeyTestDefaultTestDeployAssertC5D9D647": {
+    "RepositoryEncryptionTestDefaultTestDeployAssert819A2226": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "RepositoryKmsKeyTestDefaultTestDeployAssertC5D9D647.template.json",
+        "templateFile": "RepositoryEncryptionTestDefaultTestDeployAssert819A2226.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
@@ -82,7 +82,7 @@
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "RepositoryKmsKeyTestDefaultTestDeployAssertC5D9D647.assets"
+          "RepositoryEncryptionTestDefaultTestDeployAssert819A2226.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -91,23 +91,23 @@
         }
       },
       "dependencies": [
-        "RepositoryKmsKeyTestDefaultTestDeployAssertC5D9D647.assets"
+        "RepositoryEncryptionTestDefaultTestDeployAssert819A2226.assets"
       ],
       "metadata": {
-        "/RepositoryKmsKeyTest/DefaultTest/DeployAssert/BootstrapVersion": [
+        "/RepositoryEncryptionTest/DefaultTest/DeployAssert/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/RepositoryKmsKeyTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+        "/RepositoryEncryptionTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "RepositoryKmsKeyTest/DefaultTest/DeployAssert"
+      "displayName": "RepositoryEncryptionTest/DefaultTest/DeployAssert"
     },
     "Tree": {
       "type": "cdk:tree",
