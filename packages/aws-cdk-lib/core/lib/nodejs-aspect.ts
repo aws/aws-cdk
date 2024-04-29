@@ -66,7 +66,7 @@ abstract class RuntimeAspectsBase implements IAspect {
       //isComplete Handlers
       // Handlers
       const isCompleteHandler = provider.isCompleteHandler as lambda.Function;
-      const isCompleteHandlerRuntime = isCompleteHandler.node.children.find((child) => child instanceof cdk.CfnResource && child.cfnResourceType === 'AWS::Lambda::Function') as lcdk.CfnResource;
+      const isCompleteHandlerRuntime = isCompleteHandler.node.children.find((child) => child instanceof cdk.CfnResource && child.cfnResourceType === 'AWS::Lambda::Function') as cdk.CfnResource;
       if (this.isValidRuntime(this.getRuntimeProperty(targetNode))) {
         isCompleteHandlerRuntime.addPropertyOverride('Runtime', 'nodejs20.x');
       }
