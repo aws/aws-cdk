@@ -27,7 +27,7 @@ declare const repo: codecommit.Repository;
 repo.notify('arn:aws:sns:*:123456789012:my_topic');
 ```
 
-## Use customer managed key
+## Use a customer managed key
 
 CodeCommit repositories are automatically encrypted with an AWS managed key. You can also [use a customer managed key](https://docs.aws.amazon.com/codecommit/latest/userguide/encryption.html) for encryption by specifying the `kmsKey` property.
 
