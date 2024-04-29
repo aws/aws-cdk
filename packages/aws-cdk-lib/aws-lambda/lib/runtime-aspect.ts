@@ -16,9 +16,24 @@ export interface RuntimeAspectOptions {
 }
 
 /**
- * Base class for RuntimeAspects.
+ * A class used to create a RuntimeAspect.
  */
-abstract class RuntimeAspectBase implements IAspect {
+export abstract class RuntimeAspect implements IAspect {
+  /**
+   * Updates all Lambda node runtimes with 'nodejs20.x'.
+   */
+  public static nodeJs20(options: RuntimeAspectOptions = {}): RuntimeAspect {
+    return new (class extends RuntimeAspect {
+      protected readonly runtimeFamily = 'nodejs';
+      public constructor() {
+        super(Runtime.NODEJS_20_X.toString(), options);
+        if (!this.runtimeName.includes(this.runtimeFamily)) {
+          throw new Error('NodeRuntimeAspect is only configurable with node runtimes');
+        }
+      }
+    })();
+  }
+
   protected abstract readonly runtimeFamily: string;
   private readonly runtimeName: string;
   private readonly functionPathsToIgnore: string[];
@@ -60,33 +75,5 @@ abstract class RuntimeAspectBase implements IAspect {
 
   private getRuntimeProperty(node: CfnResource) {
     return (node.getResourceProperty('runtime') || node.getResourceProperty('Runtime')) as string;
-  }
-}
-
-/**
- * A class used to walk the construct tree and update all Lambda node runtimes.
- */
-export class NodeRuntimeAspect extends RuntimeAspectBase {
-  /**
-   * Updates all Lambda node runtimes with 'nodejs20.x'.
-   */
-  public static nodeJs20(options: RuntimeAspectOptions = {}) {
-    return NodeRuntimeAspect.of(Runtime.NODEJS_20_X.toString(), options);
-  }
-
-  /**
-   * Updates all Lambda node runtimes with any specified node runtime.
-   */
-  public static of(runtimeName: string, options: RuntimeAspectOptions = {}) {
-    return new NodeRuntimeAspect(runtimeName, options);
-  }
-
-  protected readonly runtimeFamily = 'nodejs';
-
-  private constructor(runtimeName: string, options: RuntimeAspectOptions = {}) {
-    super(runtimeName, options);
-    if (!runtimeName.includes(this.runtimeFamily)) {
-      throw new Error('NodeRuntimeAspect is only configurable with node runtimes');
-    }
   }
 }
