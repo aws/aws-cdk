@@ -27,6 +27,20 @@ declare const repo: codecommit.Repository;
 repo.notify('arn:aws:sns:*:123456789012:my_topic');
 ```
 
+## Add initial commit
+
+It is possible to initialize the Repository via the `Code` class.
+It provides methods for loading code from a directory, `.zip` file and from a pre-created CDK Asset.
+
+Example:
+
+```ts
+const repo = new codecommit.Repository(this, 'Repository', {
+  repositoryName: 'MyRepositoryName',
+  code: codecommit.Code.fromDirectory(path.join(__dirname, 'directory/'), 'develop'), // optional property, branch parameter can be omitted
+});
+```
+
 ## Use a customer managed key
 
 CodeCommit repositories are automatically encrypted with an AWS managed key. To use
@@ -43,20 +57,6 @@ declare const kmsKey: kms.IKey;
 const repo = new codecommit.Repository(this, 'Repository', {
   repositoryName: 'MyRepositoryName',
   kmsKey,
-});
-```
-
-## Add initial commit
-
-It is possible to initialize the Repository via the `Code` class.
-It provides methods for loading code from a directory, `.zip` file and from a pre-created CDK Asset.
-
-Example:
-
-```ts
-const repo = new codecommit.Repository(this, 'Repository', {
-  repositoryName: 'MyRepositoryName',
-  code: codecommit.Code.fromDirectory(path.join(__dirname, 'directory/'), 'develop'), // optional property, branch parameter can be omitted
 });
 ```
 
