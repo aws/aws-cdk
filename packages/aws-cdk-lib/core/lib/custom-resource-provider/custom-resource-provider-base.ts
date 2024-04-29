@@ -72,7 +72,7 @@ export abstract class CustomResourceProviderBase extends Construct {
    */
   public readonly roleArn: string;
 
-  public constructor(scope: Construct, id: string, props: CustomResourceProviderBaseProps) {
+  protected constructor(scope: Construct, id: string, props: CustomResourceProviderBaseProps) {
     super(scope, id);
 
     const stack = Stack.of(scope);
