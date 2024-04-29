@@ -29,7 +29,11 @@ repo.notify('arn:aws:sns:*:123456789012:my_topic');
 
 ## Use a customer managed key
 
-CodeCommit repositories are automatically encrypted with an AWS managed key. You can also [use a customer managed key](https://docs.aws.amazon.com/codecommit/latest/userguide/encryption.html) for encryption by specifying the `kmsKey` property.
+CodeCommit repositories are automatically encrypted with an AWS managed key. To use
+a customer managed key, specify the `kmsKey` property.
+
+For more information, see
+[AWS Key Management Service and encryption for AWS CodeCommit repositories](https://docs.aws.amazon.com/cdk/latest/guide/reference.html#versioning).
 
 ```ts
 import * as kms from 'aws-cdk-lib/aws-kms';
