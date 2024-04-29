@@ -1045,7 +1045,7 @@ export const FLAGS: Record<string, FlagInfo> = {
       When this feature flag is enabled, the nodegroupName attribute will be exactly the name of the nodegroup without
       any prefix.
     `,
-    introducedIn: { v2: 'V2NEXT' },
+    introducedIn: { v2: '2.139.0' },
     recommendedValue: true,
   },
 

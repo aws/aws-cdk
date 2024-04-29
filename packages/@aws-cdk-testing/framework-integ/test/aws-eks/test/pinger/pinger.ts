@@ -3,6 +3,7 @@ import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { CustomResource, Token, Duration } from 'aws-cdk-lib';
 import * as cr from 'aws-cdk-lib/custom-resources';
 import { Construct } from 'constructs';
+import * as path from 'path';
 
 export interface PingerProps {
   readonly url: string;
@@ -18,7 +19,7 @@ export class Pinger extends Construct {
     super(scope, id);
 
     const func = new lambda.Function(this, 'Function', {
-      code: lambda.Code.fromAsset(`${__dirname}/function`),
+      code: lambda.Code.fromAsset(path.join(__dirname, 'function')),
       handler: 'index.handler',
       runtime: lambda.Runtime.PYTHON_3_9,
       vpc: props.vpc,
