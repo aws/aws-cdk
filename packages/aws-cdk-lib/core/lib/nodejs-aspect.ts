@@ -14,10 +14,10 @@ abstract class RuntimeAspectsBase implements IAspect {
   /**
    * The string key for the runtime
    */
-  public readonly runtime: string;
+  public readonly targetRuntime: string;
 
   constructor(runtime: string) {
-    this.runtime = runtime;
+    this.targetRuntime = runtime;
   }
 
   public visit(construct: IConstruct): void {
@@ -86,9 +86,7 @@ abstract class RuntimeAspectsBase implements IAspect {
  *
  */
   private isValidRuntime(runtime: string) : boolean {
-    if (runtime === this.runtime) {
-      return true;
-    } else {return false;}
+    return runtime === this.targetRuntime;
   }
 }
 //}
