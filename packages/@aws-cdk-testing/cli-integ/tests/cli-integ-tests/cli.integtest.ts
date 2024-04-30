@@ -868,11 +868,11 @@ integTest('cdk diff --security-only successfully outputs sso-access-control info
   `┌───┬────────────────────────────────┬────────────────────────┬─────────────────────────────────┐
    │   │ Resource                       │ InstanceArn            │ AccessControlAttributes         │
    ├───┼────────────────────────────────┼────────────────────────┼─────────────────────────────────┤
-   │ + │ \${instanceAccessControlConfig} │ arn:aws:test:testvalue │ Key: first, Values: [a]          │
+   │ + │\${instanceAccessControlConfig} │ arn:aws:test:testvalue │ Key: first, Values: [a]          │
    │   │                                │                        │ Key: second, Values: [b]        │
    │   │                                │                        │ Key: third, Values: [c]         │
    │   │                                │                        │ Key: fourth, Values: [d]        │
-   │   │                                │                        │ Key: fifth, Values: [e]          │
+   │   │                                │                        │ Key: fifth, Values: [e]         │
    │   │                                │                        │ Key: sixth, Values: [f]         │
    └───┴────────────────────────────────┴────────────────────────┴─────────────────────────────────┘
 `;
