@@ -86,6 +86,7 @@ export class SsoAssignment implements ISsoAssignment.Props {
 export interface ISsoInstanceACAConfigProps {
   ssoInstanceArn: string;
 }
+
 export namespace ISsoInstanceACAConfig {
   export type AccessControlAttribute = {
     Key: string | undefined;
