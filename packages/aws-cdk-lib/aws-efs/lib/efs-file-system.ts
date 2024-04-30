@@ -721,19 +721,21 @@ export class FileSystem extends FileSystemBase {
 
   private readonly _mountTargetsAvailable = new DependencyGroup();
 
+  private readonly props: FileSystemProps;
+
   /**
    * Constructor for creating a new EFS FileSystem.
    */
   constructor(scope: Construct, id: string, props: FileSystemProps) {
     super(scope, id);
 
+    this.props = props;
+
     if (props.performanceMode === PerformanceMode.MAX_IO && props.oneZone) {
       throw new Error('performanceMode MAX_IO is not supported for One Zone file systems.');
     }
 
-    if (props.oneZone && props.vpcSubnets) {
-      throw new Error('vpcSubnets cannot be specified when oneZone is enabled.');
-    }
+    if (props.oneZone) { this.oneZoneValidation(); }
 
     if (props.throughputMode === ThroughputMode.PROVISIONED && props.provisionedThroughputPerSecond === undefined) {
       throw new Error('Property provisionedThroughputPerSecond is required when throughputMode is PROVISIONED');
@@ -767,7 +769,10 @@ export class FileSystem extends FileSystemBase {
       lifecyclePolicies.push({ transitionToArchive: props.transitionToArchivePolicy });
     }
 
-    const oneZoneAzName = props.vpc.availabilityZones[0];
+    // if props.vpcSubnets.availabilityZones is defined, select the first one as the zone otherwise
+    // the first AZ of the VPC.
+    const oneZoneAzName = props.vpcSubnets?.availabilityZones ?
+      props.vpcSubnets.availabilityZones[0] : props.vpc.availabilityZones[0];
 
     const fileSystemProtection = props.replicationOverwriteProtection !== undefined ? {
       replicationOverwriteProtection: props.replicationOverwriteProtection,
@@ -878,6 +883,17 @@ export class FileSystem extends FileSystemBase {
       });
     }
     this.mountTargetsAvailable = this._mountTargetsAvailable;
+  }
+
+  private oneZoneValidation() {
+    // validate when props.oneZone is enabled
+    if (this.props.vpcSubnets && !this.props.vpcSubnets.availabilityZones) {
+      throw new Error('When oneZone is enabled and vpcSubnets defined, vpcSubnets.availabilityZones can not be undefined.');
+    }
+    if (this.props.vpcSubnets && this.props.vpcSubnets.availabilityZones &&
+      this.props.vpcSubnets.availabilityZones?.length !== 1) {
+      throw new Error('When oneZone is enabled, vpcSubnets.availabilityZones should exactly have one zone.');
+    }
   }
 
   /**

@@ -69,12 +69,24 @@ new efs.FileSystem(this, 'OneZoneFileSystem', {
 ⚠️ One Zone file systems are not compatible with the MAX_IO performance mode.
 
 ⚠️ When `oneZone` is enabled, the file system is automatically placed in the first availability zone of the VPC.
-It is not currently possible to specify a different availability zone.
+To specify a different availability zone, specify
+`vpcSubnets.availabilityZones` as below:
+
+```ts
+new efs.FileSystem(this, 'OneZoneFileSystem', {
+  vpc,
+  oneZone: true,
+  vpcSubnets: {
+    availabilityZones: ['us-east-1b'],
+  },
+})
+```
 
 ⚠️ When `oneZone` is enabled, mount targets will be created only in the specified availability zone.
 This is to prevent deployment failures due to cross-AZ configurations.
 
-⚠️ When `oneZone` is enabled, `vpcSubnets` cannot be specified.
+⚠️ When `oneZone` is enabled, `vpcSubnets` can be specified with
+`availabilityZones` that contains exactly one single zone.
 
 ### Replicating file systems
 

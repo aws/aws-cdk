@@ -932,7 +932,7 @@ test('one zone file system with MAX_IO performance mode is not supported', () =>
   }).toThrow(/performanceMode MAX_IO is not supported for One Zone file systems./);
 });
 
-test('one zone file system with vpcSubnets is not supported', () => {
+test('one zone file system with vpcSubnets but availabilityZones undefined is not supported', () => {
   // THEN
   expect(() => {
     new FileSystem(stack, 'EfsFileSystem', {
@@ -940,7 +940,44 @@ test('one zone file system with vpcSubnets is not supported', () => {
       oneZone: true,
       vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
     });
-  }).toThrow(/vpcSubnets cannot be specified when oneZone is enabled./);
+  }).toThrow(/When oneZone is enabled and vpcSubnets defined, vpcSubnets.availabilityZones can not be undefined./);
+});
+
+test('one zone file system with vpcSubnets.availabilityZones having 1 AZ.', () => {
+  // THEN
+  new FileSystem(stack, 'EfsFileSystem', {
+    vpc,
+    oneZone: true,
+    vpcSubnets: { availabilityZones: ['mock-az1'] },
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::EFS::FileSystem', {
+    AvailabilityZoneName: 'mock-az1',
+  });
+
+});
+
+test('one zone file system with vpcSubnets.availabilityZones having more than 1 AZ.', () => {
+  // THEN
+  expect(() => {
+    new FileSystem(stack, 'EfsFileSystem', {
+      vpc,
+      oneZone: true,
+      vpcSubnets: { availabilityZones: ['mock-az1', 'mock-az2'] },
+    });
+  }).toThrow(/When oneZone is enabled, vpcSubnets.availabilityZones should exactly have one zone./);
+});
+
+test('one zone file system with vpcSubnets.availabilityZones empty.', () => {
+  // THEN
+  expect(() => {
+    new FileSystem(stack, 'EfsFileSystem', {
+      vpc,
+      oneZone: true,
+      vpcSubnets: { availabilityZones: [] },
+    });
+  }).toThrow(/When oneZone is enabled, vpcSubnets.availabilityZones should exactly have one zone./);
 });
 
 test.each([
