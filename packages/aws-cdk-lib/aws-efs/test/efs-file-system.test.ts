@@ -956,6 +956,18 @@ test('one zone file system with vpcSubnets but availabilityZones not in the vpc'
   }).toThrow(/vpcSubnets.availabilityZones specified is not in vpc.availabilityZones./);
 });
 
+test('one zone file system with vpcSubnets but vpc.availabilityZones are dummy or unresolved tokens', () => {
+  // THEN
+  // this should not throw because vpc.availabilityZones are unresolved or dummy values
+  expect(() => {
+    new FileSystem(stack, 'EfsFileSystem', {
+      vpc,
+      oneZone: true,
+      vpcSubnets: { availabilityZones: ['not-exist-zone'] },
+    });
+  }).not.toThrow();
+});
+
 test('one zone file system with vpcSubnets.availabilityZones having 1 AZ.', () => {
   // THEN
   new FileSystem(stack, 'EfsFileSystem', {
