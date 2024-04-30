@@ -67,7 +67,8 @@ Flags come in three types:
 | [@aws-cdk/aws-codepipeline:crossAccountKeysDefaultValueToFalse](#aws-cdkaws-codepipelinecrossaccountkeysdefaultvaluetofalse) | Enables Pipeline to set the default value for crossAccountKeys to false. | 2.127.0 | (default) |
 | [@aws-cdk/aws-codepipeline:defaultPipelineTypeToV2](#aws-cdkaws-codepipelinedefaultpipelinetypetov2) | Enables Pipeline to set the default pipeline type to V2. | 2.133.0 | (default) |
 | [@aws-cdk/aws-kms:reduceCrossAccountRegionPolicyScope](#aws-cdkaws-kmsreducecrossaccountregionpolicyscope) | When enabled, IAM Policy created from KMS key grant will reduce the resource scope to this key only. | 2.134.0 | (fix) |
-| [@aws-cdk/aws-eks:nodegroupNameAttribute](#aws-cdkaws-eksnodegroupnameattribute) | When enabled, nodegroupName attribute of the provisioned EKS NodeGroup will not have the cluster name prefix. | V2NEXT | (fix) |
+| [@aws-cdk/aws-eks:nodegroupNameAttribute](#aws-cdkaws-eksnodegroupnameattribute) | When enabled, nodegroupName attribute of the managed EKS NodeGroup will not have the cluster name prefix. | 2.138.0 | (fix) |
+| [@aws-cdk/aws-ec2:ebsDefaultGp3Volume](#aws-cdkaws-ec2ebsdefaultgp3volume) | When enabled, the default volume type of the EBS volume will be GP3 | 2.139.0 | (default) |
 
 <!-- END table -->
 
@@ -126,7 +127,8 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/aws-codepipeline:crossAccountKeysDefaultValueToFalse": true,
     "@aws-cdk/aws-codepipeline:defaultPipelineTypeToV2": true,
     "@aws-cdk/aws-kms:reduceCrossAccountRegionPolicyScope": true,
-    "@aws-cdk/aws-eks:nodegroupNameAttribute": true
+    "@aws-cdk/aws-eks:nodegroupNameAttribute": true,
+    "@aws-cdk/aws-ec2:ebsDefaultGp3Volume": true
   }
 }
 ```
@@ -1278,7 +1280,20 @@ any prefix.
 | Since | Default | Recommended |
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
-| V2NEXT | `false` | `true` |
+| 2.139.0 | `false` | `true` |
 
+### @aws-cdk/aws-ec2:ebsDefaultGp3Volume
+
+*When enabled, the default volume type of the EBS volume will be GP3* (default)
+
+When this featuer flag is enabled, the default volume type of the EBS volume will be `EbsDeviceVolumeType.GENERAL_PURPOSE_SSD_GP3`.
+
+
+| Since | Default | Recommended |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| 2.139.0 | `false` | `true` |
+
+**Compatibility with old behavior:** Pass `volumeType: EbsDeviceVolumeType.GENERAL_PURPOSE_SSD` to `Volume` construct to restore the previous behavior.
 
 <!-- END details -->
