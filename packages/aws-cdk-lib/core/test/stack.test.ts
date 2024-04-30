@@ -14,6 +14,7 @@ import {
   PERMISSIONS_BOUNDARY_CONTEXT_KEY,
   Aspects,
   Stage,
+  Token,
 } from '../lib';
 import { Intrinsic } from '../lib/private/intrinsic';
 import { resolveReferences } from '../lib/private/refs';
@@ -2073,6 +2074,101 @@ describe('stack', () => {
 
     expect(asm.getStackArtifact(stack1.artifactId).tags).toEqual(expected);
     expect(asm.getStackArtifact(stack2.artifactId).tags).toEqual(expected);
+  });
+
+  test('stack cannot inhereit tags with keys that include tokens from the parent app', () => {
+    // GIVEN
+    const app = new App({ stackTraces: false });
+    const stack = new Stack(app, 'stack1');
+
+    // WHEN
+    Tags.of(app).add(Aws.ACCOUNT_ID, 'bar');
+
+    // THEN
+    expect(Token.isUnresolved(Aws.ACCOUNT_ID));
+    expect(() => app.synth()).toThrow(/Stack tags cannot include unresolved tokens/);
+  });
+
+  test('stack cannot inhereit tags with values that include tokens from the parent app', () => {
+    // GIVEN
+    const app = new App({ stackTraces: false });
+    const stack = new Stack(app, 'stack1');
+
+    // WHEN
+    Tags.of(app).add('bar', Aws.ACCOUNT_ID);
+
+    // THEN
+    expect(Token.isUnresolved(Aws.ACCOUNT_ID));
+    expect(() => app.synth()).toThrow(/Stack tags cannot include unresolved tokens/);
+  });
+
+  test('stack tags set with tag manager cannot include tokens', () => {
+    // GIVEN
+    const app = new App({ stackTraces: false });
+    const stack = new Stack(app, 'stack1');
+
+    // THEN
+    expect(Token.isUnresolved(Aws.ACCOUNT_ID));
+    expect(() => stack.tags.setTag('foo', Aws.ACCOUNT_ID)).toThrow(/Stack tags cannot include unresolved tokens/);
+    expect(() => stack.tags.setTag(Aws.ACCOUNT_ID, 'bar')).toThrow(/Stack tags cannot include unresolved tokens/);
+  });
+
+  test('stack tag keys set with aspects cannot include tokens', () => {
+    // GIVEN
+    const app = new App({ stackTraces: false });
+    const stack = new Stack(app, 'stack1');
+
+    // WHEN
+    Tags.of(stack).add(Aws.ACCOUNT_ID, 'bar');
+
+    // THEN
+    expect(() => app.synth()).toThrow(/Stack tags cannot include unresolved tokens/);
+  });
+
+  test('stack tag values set with aspects cannot include tokens', () => {
+    // GIVEN
+    const app = new App({ stackTraces: false });
+    const stack = new Stack(app, 'stack1');
+
+    // WHEN
+    Tags.of(stack).add('foo', Aws.ACCOUNT_ID);
+
+    // THEN
+    expect(() => app.synth()).toThrow(/Stack tags cannot include unresolved tokens/);
+  });
+
+  test('stack inhereit tags that do not include tokens from the parent app', () => {
+    // GIVEN
+    const app = new App({ stackTraces: false });
+    const stack = new Stack(app, 'stack');
+
+    // WHEN
+    Tags.of(app).add('foo', 'bar');
+
+    // THEN
+    expect(Token.isUnresolved(Aws.ACCOUNT_ID));
+    expect(() => app.synth()).not.toThrow();
+  });
+
+  test('stack tags can be set with tag manager if they do not include tokens', () => {
+    // GIVEN
+    const app = new App({ stackTraces: false });
+    const stack = new Stack(app, 'stack');
+
+    // THEN
+    expect(() => stack.tags.setTag('foo', 'bar')).not.toThrow();
+  });
+
+  test('stack tags can be set with aspects if they do not include tokens', () => {
+    // GIVEN
+    const app = new App({ stackTraces: false });
+    const stack = new Stack(app, 'stack1');
+
+    // WHEN
+    Tags.of(stack).add('foo', 'bar');
+
+    // THEN
+    expect(() => app.synth()).not.toThrow();
   });
 
   test('Termination Protection is reflected in Cloud Assembly artifact', () => {
