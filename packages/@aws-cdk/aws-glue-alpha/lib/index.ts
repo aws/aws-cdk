@@ -24,3 +24,5 @@ export * from './jobs/spark-ui-utils';
 //export * from './jobs/streaming-job';
 export * from './table-base';
 export * from './table-deprecated';
+export * from './triggers/workflow';
+export * from './triggers/trigger-options';
