@@ -53,6 +53,8 @@
     "axios": "^1.6.8",
     "fs-extra": "^9.1.0",
     "glob": "^7.2.3",
+    "ini": "^4.1.2",
+    "@types/ini": "^4.1.0",
     "jest": "^29.7.0",
     "jest-junit": "^14.0.1",
     "make-runnable": "^1.4.1",

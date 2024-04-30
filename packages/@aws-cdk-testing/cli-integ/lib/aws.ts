@@ -1,15 +1,14 @@
-import { CloudFormationClient, DeleteStackCommand, DescribeStacksCommand, UpdateTerminationProtectionCommand } from '@aws-sdk/client-cloudformation';
-import { ECRClient } from '@aws-sdk/client-ecr';
+import { readFileSync } from 'fs';
+import { CloudFormationClient, DeleteStackCommand, DescribeStacksCommand, Stack as CFNStack, UpdateTerminationProtectionCommand } from '@aws-sdk/client-cloudformation';
+import { DeleteRepositoryCommand, ECRClient } from '@aws-sdk/client-ecr';
 import { ECSClient } from '@aws-sdk/client-ecs';
 import { IAMClient } from '@aws-sdk/client-iam';
 import { LambdaClient } from '@aws-sdk/client-lambda';
-import { S3Client } from '@aws-sdk/client-s3';
+import { S3Client, DeleteObjectsCommand, ListObjectVersionsCommand, ObjectIdentifier, DeleteBucketCommand } from '@aws-sdk/client-s3';
 import { SNSClient } from '@aws-sdk/client-sns';
 import { STSClient, GetCallerIdentityCommand } from '@aws-sdk/client-sts';
-import * as AWS from 'aws-sdk';
-
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-require('aws-sdk/lib/maintenance_mode_message').suppress = true;
+import { fromContainerMetadata, fromTemporaryCredentials } from '@aws-sdk/credential-providers';
+import { parse } from 'ini';
 
 export class AwsClients {
   public static async default(output: NodeJS.WritableStream) {
@@ -103,7 +102,10 @@ export class AwsClients {
   }
 
   public async emptyBucket(bucketName: string) {
-    const objects = await this.s3('listObjectVersions', { Bucket: bucketName });
+    const objects = await this.s3.send(new ListObjectVersionsCommand({
+      Bucket: bucketName,
+    }));;
+
     const deletes = [...objects.Versions || [], ...objects.DeleteMarkers || []]
       .reduce((acc, obj) => {
         if (typeof obj.VersionId !== 'undefined' && typeof obj.Key !== 'undefined') {
@@ -112,106 +114,49 @@ export class AwsClients {
           acc.push({ Key: obj.Key });
         }
         return acc;
-      }, [] as AWS.S3.ObjectIdentifierList);
+      }, [] as ObjectIdentifier[]);
+
     if (deletes.length === 0) {
       return Promise.resolve();
     }
-    return this.s3('deleteObjects', {
+
+    return this.s3.send(new DeleteObjectsCommand({
       Bucket: bucketName,
       Delete: {
         Objects: deletes,
         Quiet: false,
       },
-    });
+    }));
   }
 
   public async deleteImageRepository(repositoryName: string) {
-    await this.ecr('deleteRepository', { repositoryName, force: true });
+    await this.ecr.send(new DeleteRepositoryCommand({
+      repositoryName: repositoryName,
+      force: true,
+    }));
   }
 
   public async deleteBucket(bucketName: string) {
     try {
       await this.emptyBucket(bucketName);
-      await this.s3('deleteBucket', {
+
+      await this.s3.send(new DeleteBucketCommand({
         Bucket: bucketName,
-      });
+      }));
     } catch (e: any) {
+      // TODO make sure this error makes sense with sdk v3
       if (isBucketMissingError(e)) { return; }
       throw e;
     }
   }
 }
 
-/**
- * Perform an AWS call from nothing
- *
- * Create the correct client, do the call and resole the promise().
- */
-async function awsCall<
-  Svc extends AWS.Service,
-  Calls extends ServiceCalls<Svc>,
-  Call extends keyof Calls,
-// eslint-disable-next-line @typescript-eslint/no-shadow
->(ctor: new (config: any) => Svc, config: any, call: Call, request: First<Calls[Call]>): Promise<Second<Calls[Call]>> {
-  const cfn = new ctor(config);
-  const response = ((cfn as any)[call] as any)(request);
-  try {
-    return response.promise();
-  } catch (e: any) {
-    const newErr = new Error(`${String(call)}(${JSON.stringify(request)}): ${e.message}`);
-    (newErr as any).code = e.code;
-    throw newErr;
-  }
-}
-
-/**
- * Factory function to invoke 'awsCall' for specific services.
- *
- * Not strictly necessary but calling this replaces a whole bunch of annoying generics you otherwise have to type:
- *
- * ```ts
- * export function cloudFormation<
- *   C extends keyof ServiceCalls<AWS.CloudFormation>,
- * >(call: C, request: First<ServiceCalls<AWS.CloudFormation>[C]>): Promise<Second<ServiceCalls<AWS.CloudFormation>[C]>> {
- *   return awsCall(AWS.CloudFormation, call, request);
- * }
- * ```
- */
-// eslint-disable-next-line @typescript-eslint/no-shadow
-function makeAwsCaller<A extends AWS.Service>(ctor: new (config: any) => A, config: any): AwsCaller<A> {
-  return <B extends keyof ServiceCalls<A>>(call: B, request: First<ServiceCalls<A>[B]>): Promise<Second<ServiceCalls<A>[B]>> => {
-    return awsCall(ctor, config, call, request);
-  };
-}
-
-type ServiceCalls<T> = NoNayNever<SimplifiedService<T>>;
-// Map ever member in the type to the important AWS call overload, or to 'never'
-type SimplifiedService<T> = {[k in keyof T]: AwsCallIO<T[k]>};
-// Remove all 'never' types from an object type
-type NoNayNever<T> = Pick<T, {[k in keyof T]: T[k] extends never ? never : k }[keyof T]>;
-
-// Because of the overloads an AWS handler type looks like this:
-//
-//   {
-//      (params: INPUTSTRUCT, callback?: ((err: AWSError, data: {}) => void) | undefined): Request<OUTPUT, ...>;
-//      (callback?: ((err: AWS.AWSError, data: {}) => void) | undefined): AWS.Request<...>;
-//   }
-//
-// Get the first overload and extract the input and output struct types
-type AwsCallIO<T> =
-  T extends {
-    (args: infer INPUT, callback?: ((err: AWS.AWSError, data: any) => void) | undefined): AWS.Request<infer OUTPUT, AWS.AWSError>;
-    (callback?: ((err: AWS.AWSError, data: {}) => void) | undefined): AWS.Request<any, any>;
-  } ? [INPUT, OUTPUT] : never;
-
-type First<T> = T extends [any, any] ? T[0] : never;
-type Second<T> = T extends [any, any] ? T[1] : never;
-
 // TODO do these align with new errors in sdk v3?
 export function isStackMissingError(e: Error) {
   return e.message.indexOf('does not exist') > -1;
 }
 
+// TODO do these align with new errors in sdk v3?
 export function isBucketMissingError(e: Error) {
   return e.message.indexOf('does not exist') > -1;
 }
@@ -258,7 +203,7 @@ retry.abort = (e: Error): Error => {
   return e;
 };
 
-export function outputFromStack(key: string, stack: AWS.CloudFormation.Stack): string | undefined {
+export function outputFromStack(key: string, stack: CFNStack): string | undefined {
   return (stack.Outputs ?? []).find(o => o.OutputKey === key)?.OutputValue;
 }
 
@@ -266,23 +211,19 @@ export async function sleep(ms: number) {
   return new Promise(ok => setTimeout(ok, ms));
 }
 
-function chainableCredentials(region: string): AWS.Credentials | undefined {
+function chainableCredentials(region: string) {
 
   const profileName = process.env.AWS_PROFILE;
-  if (process.env.CODEBUILD_BUILD_ARN && profileName) {
 
+  if (process.env.CODEBUILD_BUILD_ARN && profileName) {
     // in codebuild we must assume the role that the cdk uses
     // otherwise credentials will just be picked up by the normal sdk
     // heuristics and expire after an hour.
 
     // can't use '~' since the SDK doesn't seem to expand it...?
-
-    // TODO: https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/Package/-aws-sdk-credential-providers/#fromini
     const configPath = `${process.env.HOME}/.aws/config`;
-    const ini = new AWS.IniLoader().loadFrom({
-      filename: configPath,
-      isConfig: true,
-    });
+
+    const ini = parse(readFileSync(configPath, 'utf-8'));
 
     const profile = ini[profileName];
 
@@ -301,21 +242,20 @@ function chainableCredentials(region: string): AWS.Credentials | undefined {
       throw new Error(`external_id does not exist in profile ${externalId}`);
     }
 
-    // TODO: https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/migrating/notable-changes/
-
-    return new AWS.ChainableTemporaryCredentials({
+    return fromTemporaryCredentials({
       params: {
         RoleArn: arn,
         ExternalId: externalId,
         RoleSessionName: 'integ-tests',
       },
-      stsConfig: {
-        region,
+      clientConfig: {
+        region: region,
       },
-      // TODO: https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/migrating/notable-changes/
-      masterCredentials: new AWS.ECSCredentials(),
+      masterCredentials: fromContainerMetadata(),
     });
   }
 
   return undefined;
 }
+
+// TODO confirm return types of functions and add them if not explicitly mentioned

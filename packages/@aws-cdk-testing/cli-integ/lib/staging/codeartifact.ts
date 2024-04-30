@@ -1,4 +1,19 @@
-import * as AWS from 'aws-sdk';
+import {
+  AssociateExternalConnectionCommand,
+  CodeartifactClient,
+  CreateDomainCommand,
+  CreateRepositoryCommand,
+  DeleteRepositoryCommand,
+  DescribeDomainCommand,
+  DescribeRepositoryCommand,
+  GetAuthorizationTokenCommand,
+  GetRepositoryEndpointCommand,
+  ListPackagesCommand,
+  ListPackagesRequest,
+  ListRepositoriesCommand,
+  ListTagsForResourceCommand,
+  PutPackageOriginConfigurationCommand,
+} from '@aws-sdk/client-codeartifact';
 import { sleep } from '../aws';
 
 const COLLECT_BY_TAG = 'collect-by';
@@ -33,22 +48,28 @@ export class TestRepository {
       return;
     }
 
-    const codeArtifact = new AWS.CodeArtifact();
+    const codeArtifact = new CodeartifactClient();
 
     let nextToken: string | undefined;
     do {
-      const page = await codeArtifact.listRepositories({ nextToken }).promise();
+
+      // await codeArtifact.listRepositories({ nextToken }).promise();
+      const page = await codeArtifact.send(new ListRepositoriesCommand({
+        nextToken: nextToken,
+      }));
 
       for (const repo of page.repositories ?? []) {
-        const tags = await codeArtifact.listTagsForResource({ resourceArn: repo.arn! }).promise();
+        const tags = await codeArtifact.send(new ListTagsForResourceCommand({
+          resourceArn: repo.arn!,
+        }));
         const collectable = tags?.tags?.find(t => t.key === COLLECT_BY_TAG && Number(t.value) < Date.now());
         if (collectable) {
           // eslint-disable-next-line no-console
           console.log('Deleting', repo.name);
-          await codeArtifact.deleteRepository({
+          await codeArtifact.send(new DeleteRepositoryCommand({
             domain: repo.domainName!,
             repository: repo.name!,
-          }).promise();
+          }));
         }
       }
 
@@ -62,7 +83,7 @@ export class TestRepository {
   public readonly mavenUpstream = 'maven-upstream';
   public readonly domain = TestRepository.DEFAULT_DOMAIN;
 
-  private readonly codeArtifact = new AWS.CodeArtifact();
+  private readonly codeArtifact = new CodeartifactClient();
 
   private _loginInformation: LoginInformation | undefined;
 
@@ -93,22 +114,36 @@ export class TestRepository {
     }
 
     this._loginInformation = {
-      authToken: (await this.codeArtifact.getAuthorizationToken({ domain: this.domain, durationSeconds: 12 * 3600 }).promise()).authorizationToken!,
+      authToken: (await this.codeArtifact.send(new GetAuthorizationTokenCommand({
+        domain: this.domain, durationSeconds: 12 * 3600,
+      }))).authorizationToken!,
       repositoryName: this.repositoryName,
-      npmEndpoint: (await this.codeArtifact.getRepositoryEndpoint({ domain: this.domain, repository: this.repositoryName, format: 'npm' }).promise()).repositoryEndpoint!,
-      mavenEndpoint: (await this.codeArtifact.getRepositoryEndpoint({ domain: this.domain, repository: this.repositoryName, format: 'maven' }).promise()).repositoryEndpoint!,
-      nugetEndpoint: (await this.codeArtifact.getRepositoryEndpoint({ domain: this.domain, repository: this.repositoryName, format: 'nuget' }).promise()).repositoryEndpoint!,
-      pypiEndpoint: (await this.codeArtifact.getRepositoryEndpoint({ domain: this.domain, repository: this.repositoryName, format: 'pypi' }).promise()).repositoryEndpoint!,
+
+      npmEndpoint: (await this.codeArtifact.send(new GetRepositoryEndpointCommand({
+        domain: this.domain, repository: this.repositoryName, format: 'npm',
+      }))).repositoryEndpoint!,
+
+      mavenEndpoint: (await this.codeArtifact.send(new GetRepositoryEndpointCommand({
+        domain: this.domain, repository: this.repositoryName, format: 'maven',
+      }))).repositoryEndpoint!,
+
+      nugetEndpoint: (await this.codeArtifact.send(new GetRepositoryEndpointCommand({
+        domain: this.domain, repository: this.repositoryName, format: 'nuget',
+      }))).repositoryEndpoint!,
+
+      pypiEndpoint: (await this.codeArtifact.send(new GetRepositoryEndpointCommand({
+        domain: this.domain, repository: this.repositoryName, format: 'pypi',
+      }))).repositoryEndpoint!,
     };
     return this._loginInformation;
   }
 
   public async delete() {
     try {
-      await this.codeArtifact.deleteRepository({
+      await this.codeArtifact.send(new DeleteRepositoryCommand({
         domain: this.domain,
         repository: this.repositoryName,
-      }).promise();
+      }));
 
       // eslint-disable-next-line no-console
       console.log('Deleted', this.repositoryName);
@@ -127,7 +162,7 @@ export class TestRepository {
    */
   public async markAllUpstreamAllow() {
     for await (const pkg of this.listPackages({ upstream: 'BLOCK' })) {
-      await retryThrottled(() => this.codeArtifact.putPackageOriginConfiguration({
+      await retryThrottled(() => this.codeArtifact.send(new PutPackageOriginConfigurationCommand({
         domain: this.domain,
         repository: this.repositoryName,
 
@@ -138,16 +173,16 @@ export class TestRepository {
           publish: 'ALLOW',
           upstream: 'ALLOW',
         },
-      }).promise());
+      })));
     }
   }
 
   private async ensureDomain() {
     if (await this.domainExists()) { return; }
-    await this.codeArtifact.createDomain({
+    await this.codeArtifact.send(new CreateDomainCommand({
       domain: this.domain,
       tags: [{ key: 'testing', value: 'true' }],
-    }).promise();
+    }));
   }
 
   private async ensureUpstreams() {
@@ -177,27 +212,27 @@ export class TestRepository {
   }) {
     if (await this.repositoryExists(name)) { return; }
 
-    await this.codeArtifact.createRepository({
+    await this.codeArtifact.send(new CreateRepositoryCommand({
       domain: this.domain,
       repository: name,
       description: options?.description,
       upstreams: options?.upstreams?.map(repositoryName => ({ repositoryName })),
       tags: options?.tags ? Object.entries(options.tags).map(([key, value]) => ({ key, value })) : undefined,
-    }).promise();
+    }));
 
     if (options?.external) {
       const externalConnection = options.external;
-      await retry(() => this.codeArtifact.associateExternalConnection({
+      await retry(() => this.codeArtifact.send(new AssociateExternalConnectionCommand({
         domain: this.domain,
         repository: name,
         externalConnection,
-      }).promise());
+      })));
     }
   }
 
   private async domainExists() {
     try {
-      await this.codeArtifact.describeDomain({ domain: this.domain }).promise();
+      await this.codeArtifact.send(new DescribeDomainCommand({ domain: this.domain }));
       return true;
     } catch (e: any) {
       if (e.code !== 'ResourceNotFoundException') { throw e; }
@@ -207,7 +242,7 @@ export class TestRepository {
 
   private async repositoryExists(name: string) {
     try {
-      await this.codeArtifact.describeRepository({ domain: this.domain, repository: name }).promise();
+      await this.codeArtifact.send(new DescribeRepositoryCommand({ domain: this.domain, repository: name }));
       return true;
     } catch (e: any) {
       if (e.code !== 'ResourceNotFoundException') { throw e; }
@@ -215,12 +250,12 @@ export class TestRepository {
     }
   }
 
-  private async* listPackages(filter: Pick<AWS.CodeArtifact.ListPackagesRequest, 'upstream'|'publish'|'format'> = {}) {
-    let response = await retryThrottled(() => this.codeArtifact.listPackages({
+  private async* listPackages(filter: Pick<ListPackagesRequest, 'upstream'|'publish'|'format'> = {}) {
+    let response = await retryThrottled(() => this.codeArtifact.send(new ListPackagesCommand({
       domain: this.domain,
       repository: this.repositoryName,
       ...filter,
-    }).promise());
+    })));
 
     while (true) {
       for (const p of response.packages ?? []) {
@@ -231,12 +266,12 @@ export class TestRepository {
         break;
       }
 
-      response = await retryThrottled(() => this.codeArtifact.listPackages({
+      response = await retryThrottled(() => this.codeArtifact.send(new ListPackagesCommand({
         domain: this.domain,
         repository: this.repositoryName,
         ...filter,
         nextToken: response.nextToken,
-      }).promise());
+      })));
     }
   }
 }
