@@ -810,6 +810,20 @@ export interface ClusterProps extends ClusterOptions {
   readonly kubectlLambdaRole?: iam.IRole;
 
   /**
+   * The desired authentication mode for the cluster.
+   * @default AuthenticationMode.CONFIG_MAP;
+   */
+  readonly authenticationMode?: AuthenticationMode;
+
+  /**
+   * Whether or not the cluster creator IAM principal was set as a cluster admin access entry
+   * during cluster creation time.
+   *
+   * @default true
+   */
+  readonly bootstrapClusterCreatorAdminPermissions?: boolean;
+
+  /**
    * The tags assigned to the EKS cluster
    *
    * @default - none
@@ -994,6 +1008,15 @@ export enum IpFamily {
    * Use IPv6 for pods and services in your cluster.
    */
   IP_V6 = 'ipv6',
+}
+
+/**
+ * Authentication mode of the clsuter.
+ */
+export enum AuthenticationMode {
+  CONFIG_MAP = 'CONFIG_MAP',
+  API_AND_CONFIG_MAP = 'API_AND_CONFIG_MAP',
+  API = 'API',
 }
 
 abstract class ClusterBase extends Resource implements ICluster {
@@ -1580,6 +1603,10 @@ export class Cluster extends ClusterBase {
       environment: props.clusterHandlerEnvironment,
       roleArn: this.role.roleArn,
       version: props.version.version,
+      accessconfig: {
+        authenticationMode: props.authenticationMode,
+        bootstrapClusterCreatorAdminPermissions: props.bootstrapClusterCreatorAdminPermissions,
+      },
       resourcesVpcConfig: {
         securityGroupIds: [securityGroup.securityGroupId],
         subnetIds,
