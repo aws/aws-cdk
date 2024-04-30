@@ -48,7 +48,7 @@ yarn build # Build the @aws-cdk-testing/cli-integ package
 
 ### Running tests with debugger
 
-```
+```json
 {
   "version": "0.2.0",
   "configurations": [
