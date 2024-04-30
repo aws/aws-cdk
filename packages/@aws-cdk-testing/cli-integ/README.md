@@ -48,8 +48,6 @@ yarn build # Build the @aws-cdk-testing/cli-integ package
 
 ### Running tests with debugger
 
-1. Assuming you checked out the `aws-cdk` repository in your `~` directory, use the following `launch.json`.
-
 ```
 {
   "version": "0.2.0",
@@ -69,8 +67,8 @@ yarn build # Build the @aws-cdk-testing/cli-integ package
 }
 ```
 
+1. Assuming you checked out the `aws-cdk` repository in your `~` directory, use the above `launch.json`.
 2. In the `"args"` value after `"-t"`, place the name of the test that you'd like to run.
-
 3. Press the VS code green arrow to launch the debugger.
 
 ### Running a test suite
