@@ -29,7 +29,7 @@
     "jsii-pacmak": "1.97.0",
     "jsii-reflect": "1.97.0",
     "lerna": "^8.1.2",
-    "nx": "^18.3.1",
+    "nx": "^18.3.3",
     "patch-package": "^6.5.1",
     "semver": "^7.6.0",
     "standard-version": "^9.5.0",
