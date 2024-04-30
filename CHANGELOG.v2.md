@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.139.1](https://github.com/aws/aws-cdk/compare/v2.139.0...v2.139.1) (2024-04-29)
+
+
+### Reverts
+
+* fix(lambda): version.fromVersionArn creates invalid Version object ([#30003](https://github.com/aws/aws-cdk/issues/30003)) ([ced7a46](https://github.com/aws/aws-cdk/commit/ced7a46b45aeee335264d91cf8287da4837dbab8))
+
 ## [2.139.0](https://github.com/aws/aws-cdk/compare/v2.138.0...v2.139.0) (2024-04-24)
 
 
