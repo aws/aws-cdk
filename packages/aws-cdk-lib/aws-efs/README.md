@@ -72,6 +72,8 @@ new efs.FileSystem(this, 'OneZoneFileSystem', {
 To specify a different availability zone:
 
 ```ts
+declare const vpc: ec2.Vpc;
+
 new efs.FileSystem(this, 'OneZoneFileSystem', {
   vpc,
   oneZone: true,
