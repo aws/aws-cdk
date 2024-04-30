@@ -15,7 +15,7 @@ const stack = new Stack(app, 'RequestAuthorizerInteg');
 const authorizerFn = new lambda.Function(stack, 'MyAuthorizerFunction', {
   runtime: STANDARD_NODEJS_RUNTIME,
   handler: 'index.handler',
-  code: lambda.AssetCode.fromAsset(path.join(__dirname, 'integ.request-authorizer.handler')),
+  code: lambda.AssetCode.fromAsset(path.join(__dirname, 'integ.request-authorizer.handler'), { exclude: ['*.ts'] }),
 });
 
 const restapi = new RestApi(stack, 'MyRestApi', { cloudWatchRole: true });

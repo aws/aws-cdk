@@ -1,0 +1,12 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "kms-key-rotation/DefaultTest": {
+      "stacks": [
+        "TestStack"
+      ],
+      "assertionStack": "kms-key-rotation/DefaultTest/DeployAssert",
+      "assertionStackName": "kmskeyrotationDefaultTestDeployAssert801AD589"
+    }
+  }
+}

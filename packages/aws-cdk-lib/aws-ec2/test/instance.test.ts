@@ -889,3 +889,19 @@ test('associate public IP address with instance and no public subnet', () => {
     });
   }).toThrow("To set 'associatePublicIpAddress: true' you must select Public subnets (vpcSubnets: { subnetType: SubnetType.PUBLIC })");
 });
+
+test('specify ebs optimized instance', () => {
+  // WHEN
+  new Instance(stack, 'Instance', {
+    vpc,
+    machineImage: new AmazonLinuxImage(),
+    instanceType: new InstanceType('t3.large'),
+    ebsOptimized: true,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::EC2::Instance', {
+    InstanceType: 't3.large',
+    EbsOptimized: true,
+  });
+});

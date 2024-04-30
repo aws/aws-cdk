@@ -180,7 +180,7 @@ const testUser = new CognitoUser(testCase, 'User', cognitoUserProps);
 // this function signs in to the website and returns text content of the authenticated page body
 const signinFunction = new lambda.Function(testCase, 'Signin', {
   functionName: 'cdk-integ-alb-oidc-signin-handler',
-  code: lambda.Code.fromAsset('alb-oidc-signin-handler'),
+  code: lambda.Code.fromAsset('alb-oidc-signin-handler', { exclude: ['*.ts'] }),
   handler: 'index.handler',
   runtime: lambda.Runtime.NODEJS_18_X,
   environment: {

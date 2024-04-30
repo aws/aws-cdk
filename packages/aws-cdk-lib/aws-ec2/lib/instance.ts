@@ -304,6 +304,17 @@ export interface InstanceProps {
    * @default - T2 instances are standard, while T3, T4g, and T3a instances are unlimited.
    */
   readonly creditSpecification?: CpuCredits;
+
+  /**
+   * Indicates whether the instance is optimized for Amazon EBS I/O.
+   *
+   * This optimization provides dedicated throughput to Amazon EBS and an optimized configuration stack to provide optimal Amazon EBS I/O performance.
+   * This optimization isn't available with all instance types.
+   * Additional usage charges apply when using an EBS-optimized instance.
+   *
+   * @default false
+   */
+  readonly ebsOptimized?: boolean;
 }
 
 /**
@@ -474,6 +485,7 @@ export class Instance extends Resource implements IInstance {
       propagateTagsToVolumeOnCreation: props.propagateTagsToVolumeOnCreation,
       monitoring: props.detailedMonitoring,
       creditSpecification: props.creditSpecification ? { cpuCredits: props.creditSpecification } : undefined,
+      ebsOptimized: props.ebsOptimized,
     });
     this.instance.node.addDependency(this.role);
 
