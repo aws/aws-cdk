@@ -48,7 +48,7 @@ yarn build # Build the @aws-cdk-testing/cli-integ package
 
 ### Running tests with debugger
 
-1. Assuming you checked out the `aws-cdk` repository at in your `~` directory, use the following launch.json
+1. Assuming you checked out the `aws-cdk` repository at in your `~` directory, use the following `launch.json`.
 
 ```
 {
