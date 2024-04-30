@@ -2,7 +2,7 @@ import { Template, Match } from '../../assertions';
 import * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
-import { App, RemovalPolicy, Size, Stack, Tags } from '../../core';
+import { App, CfnOutput, RemovalPolicy, Size, Stack, Tags } from '../../core';
 import * as cxapi from '../../cx-api';
 import { FileSystem, LifecyclePolicy, PerformanceMode, ThroughputMode, OutOfInfrequentAccessPolicy, ReplicationOverwriteProtection } from '../lib';
 import { ReplicationConfiguration } from '../lib/efs-file-system';
@@ -943,17 +943,29 @@ test('one zone file system with vpcSubnets but availabilityZones undefined is no
   }).toThrow(/When oneZone is enabled and vpcSubnets defined, vpcSubnets.availabilityZones can not be undefined./);
 });
 
+test('one zone file system with vpcSubnets but availabilityZones not in the vpc', () => {
+  // THEN
+  expect(() => {
+    // vpc with defined AZs
+    const vpc2 = new ec2.Vpc(stack, 'Vpc2', { availabilityZones: ['zonea', 'zoneb', 'zonec'] });
+    new FileSystem(stack, 'EfsFileSystem', {
+      vpc: vpc2,
+      oneZone: true,
+      vpcSubnets: { availabilityZones: ['not-exist-zone'] },
+    });
+  }).toThrow(/vpcSubnets.availabilityZones specified is not in vpc.availabilityZones./);
+});
+
 test('one zone file system with vpcSubnets.availabilityZones having 1 AZ.', () => {
   // THEN
   new FileSystem(stack, 'EfsFileSystem', {
     vpc,
     oneZone: true,
-    vpcSubnets: { availabilityZones: ['mock-az1'] },
+    vpcSubnets: { availabilityZones: ['us-east-1a'] },
   });
-
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::EFS::FileSystem', {
-    AvailabilityZoneName: 'mock-az1',
+    AvailabilityZoneName: 'us-east-1a',
   });
 
 });

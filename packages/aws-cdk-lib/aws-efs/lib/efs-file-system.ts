@@ -4,7 +4,7 @@ import { CfnFileSystem, CfnMountTarget } from './efs.generated';
 import * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
-import { ArnFormat, FeatureFlags, Lazy, RemovalPolicy, Resource, Size, Stack, Tags } from '../../core';
+import { ArnFormat, FeatureFlags, Lazy, RemovalPolicy, Resource, Size, Stack, Tags, Token } from '../../core';
 import * as cxapi from '../../cx-api';
 
 /**
@@ -890,9 +890,21 @@ export class FileSystem extends FileSystemBase {
     if (this.props.vpcSubnets && !this.props.vpcSubnets.availabilityZones) {
       throw new Error('When oneZone is enabled and vpcSubnets defined, vpcSubnets.availabilityZones can not be undefined.');
     }
-    if (this.props.vpcSubnets && this.props.vpcSubnets.availabilityZones &&
-      this.props.vpcSubnets.availabilityZones?.length !== 1) {
-      throw new Error('When oneZone is enabled, vpcSubnets.availabilityZones should exactly have one zone.');
+    // when vpcSubnets.availabilityZones is defined
+    if (this.props.vpcSubnets && this.props.vpcSubnets.availabilityZones) {
+      // it has to be only one az
+      if (this.props.vpcSubnets.availabilityZones?.length !== 1) {
+        throw new Error('When oneZone is enabled, vpcSubnets.availabilityZones should exactly have one zone.');
+      }
+      // it has to be in availabilityZones
+      // but we only check this when vpc.availabilityZones are valid(not dummy values nore unresolved tokens)
+      const isNotUnresolvedToken = (x: string) => !Token.isUnresolved(x);
+      const isNotDummy = (x: string) => !x.startsWith('dummy');
+      if (this.props.vpc.availabilityZones.every(isNotUnresolvedToken) &&
+      this.props.vpc.availabilityZones.every(isNotDummy) &&
+      !this.props.vpc.availabilityZones.includes(this.props.vpcSubnets.availabilityZones[0])) {
+        throw new Error('vpcSubnets.availabilityZones specified is not in vpc.availabilityZones.');
+      }
     }
   }
 
