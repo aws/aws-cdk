@@ -69,8 +69,7 @@ new efs.FileSystem(this, 'OneZoneFileSystem', {
 ⚠️ One Zone file systems are not compatible with the MAX_IO performance mode.
 
 ⚠️ When `oneZone` is enabled, the file system is automatically placed in the first availability zone of the VPC.
-To specify a different availability zone, specify
-`vpcSubnets.availabilityZones` as below:
+To specify a different availability zone:
 
 ```ts
 new efs.FileSystem(this, 'OneZoneFileSystem', {
