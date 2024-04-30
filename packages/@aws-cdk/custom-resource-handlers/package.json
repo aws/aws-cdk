@@ -56,7 +56,7 @@
     "nock": "^13.5.4",
     "fs-extra": "^11.2.0",
     "esbuild": "^0.20.2",
-    "aws-sdk": "^2.1600.0"
+    "aws-sdk": "^2.1605.0"
   },
   "dependencies": {
     "@aws-cdk/asset-node-proxy-agent-v6": "^2.0.3",
