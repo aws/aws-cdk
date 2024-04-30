@@ -129,6 +129,8 @@ export class TemplateDiff implements ITemplateDiff {
       }
 
       if (!resourceChange.resourceType) {
+        // We use resourceChange.resourceType to loadResourceModel so that we can inspect the
+        // properties of a resource even after the resource is removed from the template.
         continue;
       }
 
