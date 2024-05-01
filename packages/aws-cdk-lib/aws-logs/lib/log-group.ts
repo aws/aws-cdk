@@ -505,8 +505,6 @@ export class LogGroup extends LogGroupBase {
     let logGroupClass = props.logGroupClass;
     const stack = Stack.of(scope);
     const logGroupClassUnsupportedRegions = [
-      'cn-north-1', // BJS
-      'cn-northwest-1', // ZHY
       'us-iso-west-1', // APA
       'us-iso-east-1', // DCA
       'us-isob-east-1', // LCK
