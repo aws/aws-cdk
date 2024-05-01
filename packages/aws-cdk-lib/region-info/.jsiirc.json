@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "java": {
+      "package": "software.amazon.awscdk.regioninfo"
+    },
+    "dotnet": {
+      "namespace": "Amazon.CDK.RegionInfo"
+    },
+    "python": {
+      "module": "aws_cdk.region_info"
+    }
+  }
+}

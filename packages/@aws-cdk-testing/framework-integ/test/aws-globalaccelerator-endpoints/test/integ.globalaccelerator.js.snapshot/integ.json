@@ -1,0 +1,13 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "GlobalAcceleratorInteg/DefaultTest": {
+      "stacks": [
+        "integ-globalaccelerator"
+      ],
+      "diffAssets": true,
+      "assertionStack": "GlobalAcceleratorInteg/DefaultTest/DeployAssert",
+      "assertionStackName": "GlobalAcceleratorIntegDefaultTestDeployAssert748E6B41"
+    }
+  }
+}

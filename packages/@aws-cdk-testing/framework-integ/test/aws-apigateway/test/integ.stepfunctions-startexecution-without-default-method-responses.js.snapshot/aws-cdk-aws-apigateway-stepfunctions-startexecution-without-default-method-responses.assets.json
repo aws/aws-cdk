@@ -1,0 +1,19 @@
+{
+  "version": "34.0.0",
+  "files": {
+    "8ceb2b359a62fcef8c8d84d394c6af31f4115ac277951fc24570ed06e2099b1d": {
+      "source": {
+        "path": "aws-cdk-aws-apigateway-stepfunctions-startexecution-without-default-method-responses.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "8ceb2b359a62fcef8c8d84d394c6af31f4115ac277951fc24570ed06e2099b1d.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

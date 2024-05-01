@@ -1,0 +1,12 @@
+{
+  "version": "35.0.0",
+  "testCases": {
+    "cdk-integ-lifecycle/DefaultTest": {
+      "stacks": [
+        "aws-cdk-s3"
+      ],
+      "assertionStack": "cdk-integ-lifecycle/DefaultTest/DeployAssert",
+      "assertionStackName": "cdkinteglifecycleDefaultTestDeployAssert83FA03B1"
+    }
+  }
+}

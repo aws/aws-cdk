@@ -1,0 +1,226 @@
+{
+  "version": "30.1.0",
+  "artifacts": {
+    "CodeBuildAssetBuildSpecStack.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "CodeBuildAssetBuildSpecStack.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "CodeBuildAssetBuildSpecStack": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "CodeBuildAssetBuildSpecStack.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/3843454984973fab240386685a4ee6813ab6e383ffb32068183fda7b8badb46e.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "CodeBuildAssetBuildSpecStack.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "CodeBuildAssetBuildSpecStack.assets"
+      ],
+      "metadata": {
+        "/CodeBuildAssetBuildSpecStack/MyProject/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyProjectRole9BBE5233"
+          }
+        ],
+        "/CodeBuildAssetBuildSpecStack/MyProject/Role/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyProjectRoleDefaultPolicyB19B7C29"
+          }
+        ],
+        "/CodeBuildAssetBuildSpecStack/MyProject/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyProject39F7B0AE"
+          }
+        ],
+        "/CodeBuildAssetBuildSpecStack/Exports/Output{\"Ref\":\"MyProject39F7B0AE\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefMyProject39F7B0AE1CE3CA42"
+          }
+        ],
+        "/CodeBuildAssetBuildSpecStack/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/CodeBuildAssetBuildSpecStack/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "CodeBuildAssetBuildSpecStack"
+    },
+    "AssetBuildSpecTestDefaultTestDeployAssertC826AACC.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "AssetBuildSpecTestDefaultTestDeployAssertC826AACC.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "AssetBuildSpecTestDefaultTestDeployAssertC826AACC": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "AssetBuildSpecTestDefaultTestDeployAssertC826AACC.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c6d793ffaa5add8fe777815df3019dfa5848c214e42229f568e035859171a1b8.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "AssetBuildSpecTestDefaultTestDeployAssertC826AACC.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "CodeBuildAssetBuildSpecStack",
+        "AssetBuildSpecTestDefaultTestDeployAssertC826AACC.assets"
+      ],
+      "metadata": {
+        "/AssetBuildSpecTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetProjects/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallCodeBuildbatchGetProjects"
+          }
+        ],
+        "/AssetBuildSpecTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetProjects/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsAwsApiCallCodeBuildbatchGetProjects"
+          }
+        ],
+        "/AssetBuildSpecTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+          }
+        ],
+        "/AssetBuildSpecTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+          }
+        ],
+        "/AssetBuildSpecTest/DefaultTest/DeployAssert/AwsApiCallS3getObject/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallS3getObject"
+          }
+        ],
+        "/AssetBuildSpecTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildstartBuild/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallCodeBuildstartBuild"
+          }
+        ],
+        "/AssetBuildSpecTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetBuilds/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallCodeBuildbatchGetBuilds"
+          }
+        ],
+        "/AssetBuildSpecTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetBuilds/WaitFor/IsCompleteProvider/Invoke": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallCodeBuildbatchGetBuildsWaitForIsCompleteProviderInvokeB7D5E279"
+          }
+        ],
+        "/AssetBuildSpecTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetBuilds/WaitFor/TimeoutProvider/Invoke": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallCodeBuildbatchGetBuildsWaitForTimeoutProviderInvokeFAAC8293"
+          }
+        ],
+        "/AssetBuildSpecTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetBuilds/WaitFor/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallCodeBuildbatchGetBuildsWaitForRole390D0005"
+          }
+        ],
+        "/AssetBuildSpecTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetBuilds/WaitFor/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallCodeBuildbatchGetBuildsWaitFor678D530F"
+          }
+        ],
+        "/AssetBuildSpecTest/DefaultTest/DeployAssert/AwsApiCallCodeBuildbatchGetBuilds/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsAwsApiCallCodeBuildbatchGetBuilds"
+          }
+        ],
+        "/AssetBuildSpecTest/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction76b3e830a873425f8453eddd85c86925Role918961BB"
+          }
+        ],
+        "/AssetBuildSpecTest/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction76b3e830a873425f8453eddd85c86925Handler81461ECE"
+          }
+        ],
+        "/AssetBuildSpecTest/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aRoleB84BD8CE"
+          }
+        ],
+        "/AssetBuildSpecTest/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aHandlerADF3E6EA"
+          }
+        ],
+        "/AssetBuildSpecTest/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/AssetBuildSpecTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "AssetBuildSpecTest/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}

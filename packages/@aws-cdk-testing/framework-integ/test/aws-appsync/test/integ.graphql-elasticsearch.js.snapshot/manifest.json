@@ -1,0 +1,121 @@
+{
+  "version": "22.0.0",
+  "artifacts": {
+    "appsync-elasticsearch.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "appsync-elasticsearch.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "appsync-elasticsearch": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "appsync-elasticsearch.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/fcad6b907b2ee72d05b9e3af0a8d220115fb800f1839d979919a8e80e5c933e5.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "appsync-elasticsearch.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "appsync-elasticsearch.assets"
+      ],
+      "metadata": {
+        "/appsync-elasticsearch/User/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "User00B015A1"
+          }
+        ],
+        "/appsync-elasticsearch/Domain/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Domain66AC69E0"
+          }
+        ],
+        "/appsync-elasticsearch/api/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "apiC8550315"
+          }
+        ],
+        "/appsync-elasticsearch/api/Schema": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "apiSchema0EA92056"
+          }
+        ],
+        "/appsync-elasticsearch/api/DefaultApiKey": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "apiDefaultApiKey6AB8D7C4"
+          }
+        ],
+        "/appsync-elasticsearch/api/ds/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "apidsServiceRoleBDB08107"
+          }
+        ],
+        "/appsync-elasticsearch/api/ds/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "apidsServiceRoleDefaultPolicy5634EFD0"
+          }
+        ],
+        "/appsync-elasticsearch/api/ds/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "apids4328272F"
+          }
+        ],
+        "/appsync-elasticsearch/api/QueryGetTests/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "apiQueryGetTests5F79F353"
+          }
+        ],
+        "/appsync-elasticsearch/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/appsync-elasticsearch/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ],
+        "apidsQuerygetTestsResolver5C6FBB59": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "apidsQuerygetTestsResolver5C6FBB59",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ]
+      },
+      "displayName": "appsync-elasticsearch"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}

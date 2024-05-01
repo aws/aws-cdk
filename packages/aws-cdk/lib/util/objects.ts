@@ -115,6 +115,10 @@ export function deepSet(x: any, path: string[], value: any) {
 export function deepMerge(...objects: Array<Obj<any> | undefined>) {
   function mergeOne(target: Obj<any>, source: Obj<any>) {
     for (const key of Object.keys(source)) {
+      if (key === '__proto__' || key === 'constructor') {
+        continue;
+      }
+
       const value = source[key];
 
       if (isObject(value)) {
@@ -133,4 +137,40 @@ export function deepMerge(...objects: Array<Obj<any> | undefined>) {
 
   others.forEach(other => mergeOne(into, other));
   return into;
+}
+
+/**
+ * Splits the given object into two, such that:
+ *
+ * 1. The size of the first object (after stringified in UTF-8) is less than or equal to the provided size limit.
+ * 2. Merging the two objects results in the original one.
+ */
+export function splitBySize(data: any, maxSizeBytes: number): [any, any] {
+  if (maxSizeBytes < 2) {
+    // It's impossible to fit anything in the first object
+    return [undefined, data];
+  }
+  const entries = Object.entries(data);
+  return recurse(0, 0);
+
+  function recurse(index: number, runningTotalSize: number): [any, any] {
+    if (index >= entries.length) {
+      // Everything fits in the first object
+      return [data, undefined];
+    }
+
+    const size = runningTotalSize + entrySize(entries[index]);
+    return (size > maxSizeBytes) ? cutAt(index) : recurse(index + 1, size);
+  }
+
+  function entrySize(entry: [string, unknown]) {
+    return Buffer.byteLength(JSON.stringify(Object.fromEntries([entry])));
+  }
+
+  function cutAt(index: number): [any, any] {
+    return [
+      Object.fromEntries(entries.slice(0, index)),
+      Object.fromEntries(entries.slice(index)),
+    ];
+  }
 }

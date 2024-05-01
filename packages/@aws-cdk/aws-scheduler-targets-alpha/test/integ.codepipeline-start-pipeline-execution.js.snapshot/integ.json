@@ -1,0 +1,13 @@
+{
+  "version": "34.0.0",
+  "testCases": {
+    "integrationtest-codepipeline-start-pipeline-execution/DefaultTest": {
+      "stacks": [
+        "aws-cdk-scheduler-targets-codepipeline-start-pipeline-execution"
+      ],
+      "stackUpdateWorkflow": false,
+      "assertionStack": "integrationtest-codepipeline-start-pipeline-execution/DefaultTest/DeployAssert",
+      "assertionStackName": "integrationtestcodepipelinestartpipelineexecutionDefaultTestDeployAssert922B4892"
+    }
+  }
+}

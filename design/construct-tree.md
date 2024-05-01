@@ -76,7 +76,7 @@ This is a Lambda function that has it’s handler code written as an asset:
 
 ```typescript
  new lambda.Function(this, 'HelloWorldHandler', {
-            runtime: lambda.Runtime.NODE_JS_8_10,
+            runtime: lambda.Runtime.NODEJS_LATEST,
             code: lambda.Code.directory('lambda'),
             handler: 'hello.handler'
  });
@@ -119,19 +119,19 @@ The construct tree will be a list of paths that are indexed into a map of constr
 
 ### Construct properties
 
-|Property       |Type             |Required     |Source                     | Description  |
-|---            |---              |---          |---                        | ---          |
-|path           |string           |Required     |`construct.node.path`      | Full, absolute path of the construct within the tree |
-|children       |Array            |Not Required |`construct.node.children`  | All direct children of this construct. Array of the absolute paths of the constructs. Will be used to walk entire list of constructs |
-|attributes     |Array            |Not Required |`construct.node.attributes`  | Attributes describing all constructs/resources/properties that are encapsulated by the construct  |
+| Property   | Type   | Required     | Source                      | Description                                                                                                                          |
+| ---------- | ------ | ------------ | --------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| path       | string | Required     | `construct.node.path`       | Full, absolute path of the construct within the tree                                                                                 |
+| children   | Array  | Not Required | `construct.node.children`   | All direct children of this construct. Array of the absolute paths of the constructs. Will be used to walk entire list of constructs |
+| attributes | Array  | Not Required | `construct.node.attributes` | Attributes describing all constructs/resources/properties that are encapsulated by the construct                                     |
 
 ### Metadata Properties
 
 The following metadata properties will be included by the construct that produces the `tree.json` output.
 
-|Property       |Type             |Required     | Description    |
-|---            |---              |---          | ---            |
-|attributes     |Array            |Not Required | constructs can fill in arbitrary metadata such as configuration, type, properties, etc |
+| Property   | Type  | Required     | Description                                                                            |
+| ---------- | ----- | ------------ | -------------------------------------------------------------------------------------- |
+| attributes | Array | Not Required | constructs can fill in arbitrary metadata such as configuration, type, properties, etc |
 
 Attributes are an extensible list and their keys should be namespaced by convention to avoid conflicts.
 

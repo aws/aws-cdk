@@ -1,0 +1,11 @@
+{
+  "version": "21.0.0",
+  "testCases": {
+    "TestWithNestedStack/DefaultTest": {
+      "stacks": ["test-stack"],
+      "diffAssets": true,
+      "assertionStack": "TestWithNestedStack/DefaultTest/DeployAssert",
+      "assertionStackName": "TestWithNestedStackDefaultTestDeployAssert9F80D3B6"
+    }
+  }
+}

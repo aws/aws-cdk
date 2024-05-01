@@ -1,0 +1,19 @@
+{
+  "version": "32.0.0",
+  "files": {
+    "d4dda261a18b29095c14be79773ff2c9cee39ed1fa347c6b46432c448eb55bfe": {
+      "source": {
+        "path": "aws-cdk-cloudwatch-singlevaluewidget-period-integ.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "d4dda261a18b29095c14be79773ff2c9cee39ed1fa347c6b46432c448eb55bfe.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

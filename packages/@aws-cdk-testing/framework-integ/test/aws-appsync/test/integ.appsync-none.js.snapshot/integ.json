@@ -1,0 +1,12 @@
+{
+  "version": "21.0.0",
+  "testCases": {
+    "api/DefaultTest": {
+      "stacks": [
+        "stack"
+      ],
+      "assertionStack": "api/DefaultTest/DeployAssert",
+      "assertionStackName": "apiDefaultTestDeployAssert018781F2"
+    }
+  }
+}

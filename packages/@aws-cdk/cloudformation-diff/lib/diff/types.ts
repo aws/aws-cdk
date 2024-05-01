@@ -1,10 +1,19 @@
 import { AssertionError } from 'assert';
-import * as cfnspec from '@aws-cdk/cfnspec';
+import { PropertyScrutinyType, ResourceScrutinyType, Resource as ResourceModel } from '@aws-cdk/service-spec-types';
+import { deepEqual, loadResourceModel } from './util';
 import { IamChanges } from '../iam/iam-changes';
 import { SecurityGroupChanges } from '../network/security-group-changes';
-import { deepEqual } from './util';
 
 export type PropertyMap = {[key: string]: any };
+
+export type ResourceReplacements = { [logicalId: string]: ResourceReplacement };
+
+export interface ResourceReplacement {
+  resourceReplaced: boolean;
+  propertiesReplaced: { [propertyName: string]: ChangeSetReplacement };
+}
+
+export type ChangeSetReplacement = 'Always' | 'Never' | 'Conditionally';
 
 /** Semantic differences between two CloudFormation templates. */
 export class TemplateDiff implements ITemplateDiff {
@@ -55,10 +64,10 @@ export class TemplateDiff implements ITemplateDiff {
     });
 
     this.securityGroupChanges = new SecurityGroupChanges({
-      egressRulePropertyChanges: this.scrutinizablePropertyChanges([cfnspec.schema.PropertyScrutinyType.EgressRules]),
-      ingressRulePropertyChanges: this.scrutinizablePropertyChanges([cfnspec.schema.PropertyScrutinyType.IngressRules]),
-      egressRuleResourceChanges: this.scrutinizableResourceChanges([cfnspec.schema.ResourceScrutinyType.EgressRuleResource]),
-      ingressRuleResourceChanges: this.scrutinizableResourceChanges([cfnspec.schema.ResourceScrutinyType.IngressRuleResource]),
+      egressRulePropertyChanges: this.scrutinizablePropertyChanges([PropertyScrutinyType.EgressRules]),
+      ingressRulePropertyChanges: this.scrutinizablePropertyChanges([PropertyScrutinyType.IngressRules]),
+      egressRuleResourceChanges: this.scrutinizableResourceChanges([ResourceScrutinyType.EgressRuleResource]),
+      ingressRuleResourceChanges: this.scrutinizableResourceChanges([ResourceScrutinyType.IngressRuleResource]),
     });
   }
 
@@ -110,7 +119,7 @@ export class TemplateDiff implements ITemplateDiff {
    * We don't just look at property updates; we also look at resource additions and deletions (in which
    * case there is no further detail on property values), and resource type changes.
    */
-  private scrutinizablePropertyChanges(scrutinyTypes: cfnspec.schema.PropertyScrutinyType[]): PropertyChange[] {
+  private scrutinizablePropertyChanges(scrutinyTypes: PropertyScrutinyType[]): PropertyChange[] {
     const ret = new Array<PropertyChange>();
 
     for (const [resourceLogicalId, resourceChange] of Object.entries(this.resources.changes)) {
@@ -119,16 +128,23 @@ export class TemplateDiff implements ITemplateDiff {
         continue;
       }
 
-      const props = cfnspec.scrutinizablePropertyNames(resourceChange.newResourceType!, scrutinyTypes);
-      for (const propertyName of props) {
-        ret.push({
-          resourceLogicalId,
-          propertyName,
-          resourceType: resourceChange.resourceType,
-          scrutinyType: cfnspec.propertySpecification(resourceChange.resourceType, propertyName).ScrutinyType!,
-          oldValue: resourceChange.oldProperties && resourceChange.oldProperties[propertyName],
-          newValue: resourceChange.newProperties && resourceChange.newProperties[propertyName],
-        });
+      if (!resourceChange.newResourceType) {
+        continue;
+      }
+
+      const newTypeProps = loadResourceModel(resourceChange.newResourceType)?.properties || {};
+      for (const [propertyName, prop] of Object.entries(newTypeProps)) {
+        const propScrutinyType = prop.scrutinizable || PropertyScrutinyType.None;
+        if (scrutinyTypes.includes(propScrutinyType)) {
+          ret.push({
+            resourceLogicalId,
+            propertyName,
+            resourceType: resourceChange.resourceType,
+            scrutinyType: propScrutinyType,
+            oldValue: resourceChange.oldProperties?.[propertyName],
+            newValue: resourceChange.newProperties?.[propertyName],
+          });
+        }
       }
     }
 
@@ -141,10 +157,8 @@ export class TemplateDiff implements ITemplateDiff {
    * We don't just look at resource updates; we also look at resource additions and deletions (in which
    * case there is no further detail on property values), and resource type changes.
    */
-  private scrutinizableResourceChanges(scrutinyTypes: cfnspec.schema.ResourceScrutinyType[]): ResourceChange[] {
+  private scrutinizableResourceChanges(scrutinyTypes: ResourceScrutinyType[]): ResourceChange[] {
     const ret = new Array<ResourceChange>();
-
-    const scrutinizableTypes = new Set(cfnspec.scrutinizableResourceTypes(scrutinyTypes));
 
     for (const [resourceLogicalId, resourceChange] of Object.entries(this.resources.changes)) {
       if (!resourceChange) { continue; }
@@ -158,34 +172,46 @@ export class TemplateDiff implements ITemplateDiff {
       // changes to the Type of resources can happen when migrating from CFN templates that use Transforms
       if (resourceChange.resourceTypeChanged) {
         // Treat as DELETE+ADD
-        if (scrutinizableTypes.has(resourceChange.oldResourceType!)) {
-          ret.push({
-            ...commonProps,
-            newProperties: undefined,
-            resourceType: resourceChange.oldResourceType!,
-            scrutinyType: cfnspec.resourceSpecification(resourceChange.oldResourceType!).ScrutinyType!,
-          });
+        if (resourceChange.oldResourceType) {
+          const oldResourceModel = loadResourceModel(resourceChange.oldResourceType);
+          if (oldResourceModel && this.resourceIsScrutinizable(oldResourceModel, scrutinyTypes)) {
+            ret.push({
+              ...commonProps,
+              newProperties: undefined,
+              resourceType: resourceChange.oldResourceType!,
+              scrutinyType: oldResourceModel.scrutinizable!,
+            });
+          }
         }
-        if (scrutinizableTypes.has(resourceChange.newResourceType!)) {
-          ret.push({
-            ...commonProps,
-            oldProperties: undefined,
-            resourceType: resourceChange.newResourceType!,
-            scrutinyType: cfnspec.resourceSpecification(resourceChange.newResourceType!).ScrutinyType!,
-          });
+
+        if (resourceChange.newResourceType) {
+          const newResourceModel = loadResourceModel(resourceChange.newResourceType);
+          if (newResourceModel && this.resourceIsScrutinizable(newResourceModel, scrutinyTypes)) {
+            ret.push({
+              ...commonProps,
+              oldProperties: undefined,
+              resourceType: resourceChange.newResourceType!,
+              scrutinyType: newResourceModel.scrutinizable!,
+            });
+          }
         }
       } else {
-        if (scrutinizableTypes.has(resourceChange.resourceType)) {
+        const resourceModel = loadResourceModel(resourceChange.resourceType);
+        if (resourceModel && this.resourceIsScrutinizable(resourceModel, scrutinyTypes)) {
           ret.push({
             ...commonProps,
             resourceType: resourceChange.resourceType,
-            scrutinyType: cfnspec.resourceSpecification(resourceChange.resourceType).ScrutinyType!,
+            scrutinyType: resourceModel.scrutinizable!,
           });
         }
       }
     }
 
     return ret;
+  }
+
+  private resourceIsScrutinizable(res: ResourceModel, scrutinyTypes: Array<ResourceScrutinyType>): boolean {
+    return scrutinyTypes.includes(res.scrutinizable || ResourceScrutinyType.None);
   }
 }
 
@@ -211,7 +237,7 @@ export interface PropertyChange {
   /**
    * Scrutiny type for this property change
    */
-  scrutinyType: cfnspec.schema.PropertyScrutinyType;
+  scrutinyType: PropertyScrutinyType;
 
   /**
    * Name of the property that is changing
@@ -243,7 +269,7 @@ export interface ResourceChange {
   /**
    * Scrutiny type for this resource change
    */
-  scrutinyType: cfnspec.schema.ResourceScrutinyType;
+  scrutinyType: ResourceScrutinyType;
 
   /**
    * The type of the resource
@@ -279,7 +305,7 @@ export class Difference<ValueType> implements IDifference<ValueType> {
    *
    * isDifferent => (isUpdate | isRemoved | isUpdate)
    */
-  public readonly isDifferent: boolean;
+  public isDifferent: boolean;
 
   /**
    * @param oldValue the old value, cannot be equal (to the sense of +deepEqual+) to +newValue+.
@@ -310,7 +336,7 @@ export class Difference<ValueType> implements IDifference<ValueType> {
 }
 
 export class PropertyDifference<ValueType> extends Difference<ValueType> {
-  public readonly changeImpact?: ResourceImpact;
+  public changeImpact?: ResourceImpact;
 
   constructor(oldValue: ValueType | undefined, newValue: ValueType | undefined, args: { changeImpact?: ResourceImpact }) {
     super(oldValue, newValue);
@@ -333,6 +359,10 @@ export class DifferenceCollection<V, T extends IDifference<V>> {
     const ret = this.diffs[logicalId];
     if (!ret) { throw new Error(`No object with logical ID '${logicalId}'`); }
     return ret;
+  }
+
+  public remove(logicalId: string): void {
+    delete this.diffs[logicalId];
   }
 
   public get logicalIds(): string[] {
@@ -368,10 +398,10 @@ export class DifferenceCollection<V, T extends IDifference<V>> {
    * @param cb
    */
   public forEachDifference(cb: (logicalId: string, change: T) => any): void {
-    const removed = new Array<{ logicalId: string, change: T }>();
-    const added = new Array<{ logicalId: string, change: T }>();
-    const updated = new Array<{ logicalId: string, change: T }>();
-    const others = new Array<{ logicalId: string, change: T }>();
+    const removed = new Array<{ logicalId: string; change: T }>();
+    const added = new Array<{ logicalId: string; change: T }>();
+    const updated = new Array<{ logicalId: string; change: T }>();
+    const others = new Array<{ logicalId: string; change: T }>();
 
     for (const logicalId of this.logicalIds) {
       const change: T = this.changes[logicalId]!;
@@ -450,6 +480,8 @@ export enum ResourceImpact {
   WILL_DESTROY = 'WILL_DESTROY',
   /** The existing physical resource will be removed from CloudFormation supervision */
   WILL_ORPHAN = 'WILL_ORPHAN',
+  /** The existing physical resource will be added to CloudFormation supervision */
+  WILL_IMPORT = 'WILL_IMPORT',
   /** There is no change in this resource */
   NO_CHANGE = 'NO_CHANGE',
 }
@@ -465,6 +497,7 @@ function worstImpact(one: ResourceImpact, two?: ResourceImpact): ResourceImpact 
   if (!two) { return one; }
   const badness = {
     [ResourceImpact.NO_CHANGE]: 0,
+    [ResourceImpact.WILL_IMPORT]: 0,
     [ResourceImpact.WILL_UPDATE]: 1,
     [ResourceImpact.WILL_CREATE]: 2,
     [ResourceImpact.WILL_ORPHAN]: 3,
@@ -498,6 +531,11 @@ export class ResourceDifference implements IDifference<Resource> {
    */
   public readonly isRemoval: boolean;
 
+  /**
+   * Whether this resource was imported
+   */
+  public isImport?: boolean;
+
   /** Property-level changes on the resource */
   private readonly propertyDiffs: { [key: string]: PropertyDifference<any> };
 
@@ -505,15 +543,15 @@ export class ResourceDifference implements IDifference<Resource> {
   private readonly otherDiffs: { [key: string]: Difference<any> };
 
   /** The resource type (or old and new type if it has changed) */
-  private readonly resourceTypes: { readonly oldType?: string, readonly newType?: string };
+  private readonly resourceTypes: { readonly oldType?: string; readonly newType?: string };
 
   constructor(
     public readonly oldValue: Resource | undefined,
     public readonly newValue: Resource | undefined,
     args: {
-      resourceType: { oldType?: string, newType?: string },
-      propertyDiffs: { [key: string]: PropertyDifference<any> },
-      otherDiffs: { [key: string]: Difference<any> }
+      resourceType: { oldType?: string; newType?: string };
+      propertyDiffs: { [key: string]: PropertyDifference<any> };
+      otherDiffs: { [key: string]: Difference<any> };
     },
   ) {
     this.resourceTypes = args.resourceType;
@@ -522,6 +560,7 @@ export class ResourceDifference implements IDifference<Resource> {
 
     this.isAddition = oldValue === undefined;
     this.isRemoval = newValue === undefined;
+    this.isImport = undefined;
   }
 
   public get oldProperties(): PropertyMap | undefined {
@@ -604,7 +643,22 @@ export class ResourceDifference implements IDifference<Resource> {
     this.propertyDiffs[propertyName] = change;
   }
 
+  /**
+   * Replace a OtherChange in this object
+   *
+   * This affects the property diff as it is summarized to users, but it DOES
+   * NOT affect either the "oldValue" or "newValue" values; those still contain
+   * the actual template values as provided by the user (they might still be
+   * used for downstream processing).
+   */
+  public setOtherChange(otherName: string, change: PropertyDifference<any>) {
+    this.otherDiffs[otherName] = change;
+  }
+
   public get changeImpact(): ResourceImpact {
+    if (this.isImport) {
+      return ResourceImpact.WILL_IMPORT;
+    }
     // Check the Type first
     if (this.resourceTypes.oldType !== this.resourceTypes.newType) {
       if (this.resourceTypes.oldType === undefined) { return ResourceImpact.WILL_CREATE; }

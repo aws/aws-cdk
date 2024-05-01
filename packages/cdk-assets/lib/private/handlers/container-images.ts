@@ -1,56 +1,108 @@
 import * as path from 'path';
 import { DockerImageDestination } from '@aws-cdk/cloud-assembly-schema';
+import type * as AWS from 'aws-sdk';
 import { DockerImageManifestEntry } from '../../asset-manifest';
 import { EventType } from '../../progress';
-import { IAssetHandler, IHandlerHost } from '../asset-handler';
+import { IAssetHandler, IHandlerHost, IHandlerOptions } from '../asset-handler';
 import { Docker } from '../docker';
 import { replaceAwsPlaceholders } from '../placeholders';
 import { shell } from '../shell';
 
+interface ContainerImageAssetHandlerInit {
+  readonly ecr: AWS.ECR;
+  readonly repoUri: string;
+  readonly imageUri: string;
+  readonly destinationAlreadyExists: boolean;
+}
+
 export class ContainerImageAssetHandler implements IAssetHandler {
+  private init?: ContainerImageAssetHandlerInit;
+
   constructor(
     private readonly workDir: string,
     private readonly asset: DockerImageManifestEntry,
-    private readonly host: IHandlerHost) {
+    private readonly host: IHandlerHost,
+    private readonly options: IHandlerOptions) {
+  }
+
+  public async build(): Promise<void> {
+    const initOnce = await this.initOnce();
+
+    if (initOnce.destinationAlreadyExists) { return; }
+    if (this.host.aborted) { return; }
+
+    const dockerForBuilding = await this.host.dockerFactory.forBuild({
+      repoUri: initOnce.repoUri,
+      logger: (m: string) => this.host.emitMessage(EventType.DEBUG, m),
+      ecr: initOnce.ecr,
+    });
+
+    const builder = new ContainerImageBuilder(dockerForBuilding, this.workDir, this.asset, this.host, {
+      quiet: this.options.quiet,
+    });
+    const localTagName = await builder.build();
+
+    if (localTagName === undefined || this.host.aborted) { return; }
+    if (this.host.aborted) { return; }
+
+    await dockerForBuilding.tag(localTagName, initOnce.imageUri);
+  }
+
+  public async isPublished(): Promise<boolean> {
+    try {
+      const initOnce = await this.initOnce({ quiet: true });
+      return initOnce.destinationAlreadyExists;
+    } catch (e: any) {
+      this.host.emitMessage(EventType.DEBUG, `${e.message}`);
+    }
+    return false;
   }
 
   public async publish(): Promise<void> {
-    const destination = await replaceAwsPlaceholders(this.asset.destination, this.host.aws);
-    const ecr = await this.host.aws.ecrClient(destination);
-    const account = async () => (await this.host.aws.discoverCurrentAccount())?.accountId;
-    const repoUri = await repositoryUri(ecr, destination.repositoryName);
+    const initOnce = await this.initOnce();
 
+    if (initOnce.destinationAlreadyExists) { return; }
+    if (this.host.aborted) { return; }
+
+    const dockerForPushing = await this.host.dockerFactory.forEcrPush({
+      repoUri: initOnce.repoUri,
+      logger: (m: string) => this.host.emitMessage(EventType.DEBUG, m),
+      ecr: initOnce.ecr,
+    });
+
+    if (this.host.aborted) { return; }
+
+    this.host.emitMessage(EventType.UPLOAD, `Push ${initOnce.imageUri}`);
+    await dockerForPushing.push({ tag: initOnce.imageUri, quiet: this.options.quiet });
+  }
+
+  private async initOnce(options: { quiet?: boolean } = {}): Promise<ContainerImageAssetHandlerInit> {
+    if (this.init) {
+      return this.init;
+    }
+
+    const destination = await replaceAwsPlaceholders(this.asset.destination, this.host.aws);
+    const ecr = await this.host.aws.ecrClient({
+      ...destination,
+      quiet: options.quiet,
+    });
+    const account = async () => (await this.host.aws.discoverCurrentAccount())?.accountId;
+
+    const repoUri = await repositoryUri(ecr, destination.repositoryName);
     if (!repoUri) {
       throw new Error(`No ECR repository named '${destination.repositoryName}' in account ${await account()}. Is this account bootstrapped?`);
     }
 
     const imageUri = `${repoUri}:${destination.imageTag}`;
 
-    if (await this.destinationAlreadyExists(ecr, destination, imageUri)) { return; }
-    if (this.host.aborted) { return; }
-
-    const containerImageDockerOptions = {
-      repoUri,
-      logger: (m: string) => this.host.emitMessage(EventType.DEBUG, m),
+    this.init = {
+      imageUri,
       ecr,
+      repoUri,
+      destinationAlreadyExists: await this.destinationAlreadyExists(ecr, destination, imageUri),
     };
 
-    const dockerForBuilding = await this.host.dockerFactory.forBuild(containerImageDockerOptions);
-
-    const builder = new ContainerImageBuilder(dockerForBuilding, this.workDir, this.asset, this.host);
-    const localTagName = await builder.build();
-
-    if (localTagName === undefined || this.host.aborted) {
-      return;
-    }
-
-    this.host.emitMessage(EventType.UPLOAD, `Push ${imageUri}`);
-    if (this.host.aborted) { return; }
-
-    await dockerForBuilding.tag(localTagName, imageUri);
-
-    const dockerForPushing = await this.host.dockerFactory.forEcrPush(containerImageDockerOptions);
-    await dockerForPushing.push(imageUri);
+    return this.init;
   }
 
   /**
@@ -71,12 +123,17 @@ export class ContainerImageAssetHandler implements IAssetHandler {
   }
 }
 
+interface ContainerImageBuilderOptions {
+  readonly quiet?: boolean;
+}
+
 class ContainerImageBuilder {
   constructor(
     private readonly docker: Docker,
     private readonly workDir: string,
     private readonly asset: DockerImageManifestEntry,
-    private readonly host: IHandlerHost) {
+    private readonly host: IHandlerHost,
+    private readonly options: ContainerImageBuilderOptions) {
   }
 
   async build(): Promise<string | undefined> {
@@ -131,10 +188,17 @@ class ContainerImageBuilder {
       directory: fullPath,
       tag: localTagName,
       buildArgs: source.dockerBuildArgs,
+      buildSecrets: source.dockerBuildSecrets,
+      buildSsh: source.dockerBuildSsh,
       target: source.dockerBuildTarget,
       file: source.dockerFile,
       networkMode: source.networkMode,
       platform: source.platform,
+      outputs: source.dockerOutputs,
+      cacheFrom: source.cacheFrom,
+      cacheTo: source.cacheTo,
+      cacheDisabled: source.cacheDisabled,
+      quiet: this.options.quiet,
     });
   }
 
@@ -152,7 +216,7 @@ async function imageExists(ecr: AWS.ECR, repositoryName: string, imageTag: strin
   try {
     await ecr.describeImages({ repositoryName, imageIds: [{ imageTag }] }).promise();
     return true;
-  } catch (e) {
+  } catch (e: any) {
     if (e.code !== 'ImageNotFoundException') { throw e; }
     return false;
   }
@@ -167,7 +231,7 @@ async function repositoryUri(ecr: AWS.ECR, repositoryName: string): Promise<stri
   try {
     const response = await ecr.describeRepositories({ repositoryNames: [repositoryName] }).promise();
     return (response.repositories || [])[0]?.repositoryUri;
-  } catch (e) {
+  } catch (e: any) {
     if (e.code !== 'RepositoryNotFoundException') { throw e; }
     return undefined;
   }

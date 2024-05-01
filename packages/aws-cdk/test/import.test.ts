@@ -1,3 +1,4 @@
+/* eslint-disable import/order */
 jest.mock('promptly', () => {
   return {
     ...jest.requireActual('promptly'),
@@ -7,48 +8,70 @@ jest.mock('promptly', () => {
 });
 
 import * as promptly from 'promptly';
-import { CloudFormationDeployments } from '../lib/api/cloudformation-deployments';
-import { ResourceImporter, ImportMap } from '../lib/import';
 import { testStack } from './util';
 import { MockSdkProvider } from './util/mock-sdk';
+import { Deployments } from '../lib/api/deployments';
+import { ResourceImporter, ImportMap } from '../lib/import';
 
 const promptlyConfirm = promptly.confirm as jest.Mock;
 const promptlyPrompt = promptly.prompt as jest.Mock;
 
 let createChangeSetInput: AWS.CloudFormation.CreateChangeSetInput | undefined;
 
-const STACK_WITH_QUEUE = testStack({
-  stackName: 'StackWithQueue',
-  template: {
-    Resources: {
-      MyQueue: {
-        Type: 'AWS::SQS::Queue',
-        Properties: {},
-      },
-    },
-  },
-});
-
-const STACK_WITH_NAMED_QUEUE = testStack({
-  stackName: 'StackWithQueue',
-  template: {
-    Resources: {
-      MyQueue: {
-        Type: 'AWS::SQS::Queue',
-        Properties: {
-          QueueName: 'TheQueueName',
+function stackWithQueue(props: Record<string, unknown>) {
+  return testStack({
+    stackName: 'StackWithQueue',
+    template: {
+      Resources: {
+        MyQueue: {
+          Type: 'AWS::SQS::Queue',
+          Properties: props,
         },
       },
     },
-  },
+  });
+}
+
+const STACK_WITH_QUEUE = stackWithQueue({});
+
+const STACK_WITH_NAMED_QUEUE = stackWithQueue({
+  QueueName: 'TheQueueName',
 });
 
+function stackWithGlobalTable(props: Record<string, unknown>) {
+  return testStack({
+    stackName: 'StackWithTable',
+    template: {
+      Resources: {
+        MyTable: {
+          Type: 'AWS::DynamoDB::GlobalTable',
+          Properties: props,
+        },
+      },
+    },
+  });
+}
+
+function stackWithKeySigningKey(props: Record<string, unknown>) {
+  return testStack({
+    stackName: 'StackWithKSK',
+    template: {
+      Resources: {
+        MyKSK: {
+          Type: 'AWS::Route53::KeySigningKey',
+          Properties: props,
+        },
+      },
+    },
+  });
+}
+
 let sdkProvider: MockSdkProvider;
-let deployments: CloudFormationDeployments;
+let deployments: Deployments;
 beforeEach(() => {
   jest.resetAllMocks();
   sdkProvider = new MockSdkProvider({ realSdk: false });
-  deployments = new CloudFormationDeployments({ sdkProvider });
+  deployments = new Deployments({ sdkProvider });
   createChangeSetInput = undefined;
 });
 
@@ -141,9 +164,7 @@ test('asks human to confirm automic import if identifier is in template', async 
   };
 
   // WHEN
-  await importer.importResources(importMap, {
-    stack: STACK_WITH_QUEUE,
-  });
+  await importer.importResourcesFromMap(importMap, {});
 
   expect(createChangeSetInput?.ResourcesToImport).toEqual([
     {
@@ -153,6 +174,166 @@ test('asks human to confirm automic import if identifier is in template', async 
     },
   ]);
 });
+
+test('importing resources from migrate strips cdk metadata and outputs', async () => {
+  // GIVEN
+
+  const MyQueue = {
+    Type: 'AWS::SQS::Queue',
+    Properties: {},
+  };
+  const stack = {
+    stackName: 'StackWithQueue',
+    template: {
+      Resources: {
+        MyQueue,
+        CDKMetadata: {
+          Type: 'AWS::CDK::Metadata',
+          Properties: {
+            Analytics: 'exists',
+          },
+        },
+      },
+      Outputs: {
+        Output: {
+          Description: 'There is an output',
+          Value: 'OutputValue',
+        },
+      },
+    },
+  };
+
+  givenCurrentStack(stack.stackName, stack);
+  const importer = new ResourceImporter(testStack(stack), deployments);
+  const migrateMap = [{
+    LogicalResourceId: 'MyQueue',
+    ResourceIdentifier: { QueueName: 'TheQueueName' },
+    ResourceType: 'AWS::SQS::Queue',
+  }];
+
+  // WHEN
+  await importer.importResourcesFromMigrate(migrateMap, STACK_WITH_QUEUE.template);
+
+  // THEN
+  expect(createChangeSetInput?.ResourcesToImport).toEqual(migrateMap);
+  expect(createChangeSetInput?.TemplateBody).toEqual('Resources:\n  MyQueue:\n    Type: AWS::SQS::Queue\n    Properties: {}\n');
+});
+
+test('only use one identifier if multiple are in template', async () => {
+  // GIVEN
+  const stack = stackWithGlobalTable({
+    TableName: 'TheTableName',
+    TableArn: 'ThisFieldDoesntExistInReality',
+    TableStreamArn: 'NorDoesThisOne',
+  });
+
+  // WHEN
+  promptlyConfirm.mockResolvedValue(true); // Confirm yes/no
+  await importTemplateFromClean(stack);
+
+  // THEN
+  expect(createChangeSetInput?.ResourcesToImport).toEqual([
+    {
+      LogicalResourceId: 'MyTable',
+      ResourceIdentifier: { TableName: 'TheTableName' },
+      ResourceType: 'AWS::DynamoDB::GlobalTable',
+    },
+  ]);
+});
+
+test('only ask user for one identifier if multiple possible ones are possible', async () => {
+  // GIVEN -- no identifiers in template, so ask user
+  const stack = stackWithGlobalTable({});
+
+  // WHEN
+  promptlyPrompt.mockResolvedValue('Banana');
+  const importable = await importTemplateFromClean(stack);
+
+  // THEN -- only asked once
+  expect(promptlyPrompt).toHaveBeenCalledTimes(1);
+  expect(importable.resourceMap).toEqual({
+    MyTable: { TableName: 'Banana' },
+  });
+});
+
+test('ask identifier if the value in the template is a CFN intrinsic', async () => {
+  // GIVEN -- identifier in template is a CFN intrinsic so it doesn't count
+  const stack = stackWithQueue({
+    QueueName: { Ref: 'SomeParam' },
+  });
+
+  // WHEN
+  promptlyPrompt.mockResolvedValue('Banana');
+  const importable = await importTemplateFromClean(stack);
+
+  // THEN
+  expect(importable.resourceMap).toEqual({
+    MyQueue: { QueueName: 'Banana' },
+  });
+});
+
+test('take compound identifiers from the template if found', async () => {
+  // GIVEN
+  const stack = stackWithKeySigningKey({
+    HostedZoneId: 'z-123',
+    Name: 'KeyName',
+  });
+
+  // WHEN
+  promptlyConfirm.mockResolvedValue(true);
+  await importTemplateFromClean(stack);
+
+  // THEN
+  expect(createChangeSetInput?.ResourcesToImport).toEqual([
+    {
+      LogicalResourceId: 'MyKSK',
+      ResourceIdentifier: { HostedZoneId: 'z-123', Name: 'KeyName' },
+      ResourceType: 'AWS::Route53::KeySigningKey',
+    },
+  ]);
+});
+
+test('ask user for compound identifiers if not found', async () => {
+  // GIVEN
+  const stack = stackWithKeySigningKey({});
+
+  // WHEN
+  promptlyPrompt.mockReturnValue('Banana');
+  await importTemplateFromClean(stack);
+
+  // THEN
+  expect(createChangeSetInput?.ResourcesToImport).toEqual([
+    {
+      LogicalResourceId: 'MyKSK',
+      ResourceIdentifier: { HostedZoneId: 'Banana', Name: 'Banana' },
+      ResourceType: 'AWS::Route53::KeySigningKey',
+    },
+  ]);
+});
+
+test('do not ask for second part of compound identifier if the user skips the first', async () => {
+  // GIVEN
+  const stack = stackWithKeySigningKey({});
+
+  // WHEN
+  promptlyPrompt.mockReturnValue('');
+  const importMap = await importTemplateFromClean(stack);
+
+  // THEN
+  expect(importMap.resourceMap).toEqual({});
+});
+
+/**
+ * Do a full import cycle with the given stack template
+ */
+async function importTemplateFromClean(stack: ReturnType<typeof testStack>) {
+  givenCurrentStack(stack.stackName, { Resources: {} });
+  const importer = new ResourceImporter(stack, deployments);
+  const { additions } = await importer.discoverImportableResources();
+  const importable = await importer.askForResourceIdentifiers(additions);
+  await importer.importResourcesFromMap(importable, {});
+  return importable;
+}
 
 function givenCurrentStack(stackName: string, template: any) {
   sdkProvider.stubCloudFormation({
@@ -180,6 +361,14 @@ function givenCurrentStack(stackName: string, template: any) {
           {
             ResourceType: 'AWS::SQS::Queue',
             ResourceIdentifiers: ['QueueName'],
+          },
+          {
+            ResourceType: 'AWS::DynamoDB::GlobalTable',
+            ResourceIdentifiers: ['TableName', 'TableArn', 'TableStreamArn'],
+          },
+          {
+            ResourceType: 'AWS::Route53::KeySigningKey',
+            ResourceIdentifiers: ['HostedZoneId,Name'],
           },
         ],
       };

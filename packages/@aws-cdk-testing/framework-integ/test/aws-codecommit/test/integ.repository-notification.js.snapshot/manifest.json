@@ -1,0 +1,88 @@
+{
+  "version": "20.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "aws-cdk-codecommit.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "aws-cdk-codecommit.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "aws-cdk-codecommit": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-cdk-codecommit.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c11d2ebc6dfc30e327f9f519b9d586b126a9b367963d3a0ae1010a086f2b6fa8.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "aws-cdk-codecommit.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "aws-cdk-codecommit.assets"
+      ],
+      "metadata": {
+        "/aws-cdk-codecommit/MyCodecommitRepository/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyCodecommitRepository26DB372B"
+          }
+        ],
+        "/aws-cdk-codecommit/MyCodecommitRepository/NotifyOnPullRequestCreated/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyCodecommitRepositoryNotifyOnPullRequestCreated4CAB0621"
+          }
+        ],
+        "/aws-cdk-codecommit/MyCodecommitRepository/NotifyOnPullRequestMerged/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyCodecommitRepositoryNotifyOnPullRequestMerged80574FED"
+          }
+        ],
+        "/aws-cdk-codecommit/MyTopic/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyTopic86869434"
+          }
+        ],
+        "/aws-cdk-codecommit/MyTopic/Policy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyTopicPolicy12A5EC17"
+          }
+        ],
+        "/aws-cdk-codecommit/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/aws-cdk-codecommit/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "aws-cdk-codecommit"
+    }
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "version": "33.0.0",
+  "testCases": {
+    "InstanceCACertificateTest/DefaultTest": {
+      "stacks": [
+        "cdk-integ-rds-instance-ca-certificate"
+      ],
+      "assertionStack": "InstanceCACertificateTest/DefaultTest/DeployAssert",
+      "assertionStackName": "InstanceCACertificateTestDefaultTestDeployAssert948327B8"
+    }
+  }
+}

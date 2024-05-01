@@ -4,7 +4,7 @@ import { spawnSync } from 'child_process';
 /**
  * Our own execute function which doesn't use shells and strings.
  */
-export function exec(commandLine: string[], options: { cwd?: string, verbose?: boolean, env?: any } = { }): any {
+export function exec(commandLine: string[], options: { cwd?: string; verbose?: boolean; env?: any } = { }): any {
   const proc = spawnSync(commandLine[0], commandLine.slice(1), {
     stdio: ['ignore', 'pipe', options.verbose ? 'inherit' : 'pipe'], // inherit STDERR in verbose mode
     env: {
@@ -41,6 +41,13 @@ export function chain(commands: string[]): string {
   return commands.filter(c => !!c).join(' && ');
 }
 
+/**
+ * Split command to chunks by space
+ */
+export function chunks(command: string): string[] {
+  const result = command.match(/(?:[^\s"]+|"[^"]*")+/g);
+  return result ?? [];
+}
 
 /**
  * A class holding a set of items which are being crossed off in time
@@ -67,6 +74,7 @@ export class WorkList<A> {
 
   public done() {
     this.remaining.clear();
+    this.stopTimer();
   }
 
   private stopTimer() {

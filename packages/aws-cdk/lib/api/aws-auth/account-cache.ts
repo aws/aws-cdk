@@ -77,7 +77,7 @@ export class AccountAccessKeyCache {
   private async loadMap(): Promise<{ [accessKeyId: string]: Account }> {
     try {
       return await fs.readJson(this.cacheFile);
-    } catch (e) {
+    } catch (e: any) {
       // File doesn't exist or is not readable. This is a cache,
       // pretend we successfully loaded an empty map.
       if (e.code === 'ENOENT' || e.code === 'EACCES') { return {}; }
@@ -92,7 +92,7 @@ export class AccountAccessKeyCache {
     try {
       await fs.ensureFile(this.cacheFile);
       await fs.writeJson(this.cacheFile, map, { spaces: 2 });
-    } catch (e) {
+    } catch (e: any) {
       // File doesn't exist or file/dir isn't writable. This is a cache,
       // if we can't write it then too bad.
       if (e.code === 'ENOENT' || e.code === 'EACCES' || e.code === 'EROFS') { return; }

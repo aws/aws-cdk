@@ -1,8 +1,14 @@
+// Temporarily pull this in to avoid creating conflicts with the sdks in this package
+import { DescribeChangeSetOutput } from '@aws-cdk/cloudformation-diff';
 import { SSMPARAM_NO_INVALIDATE } from '@aws-cdk/cx-api';
+import * as cxapi from '@aws-cdk/cx-api';
 import { CloudFormation } from 'aws-sdk';
+import { StackStatus } from './cloudformation/stack-status';
+import { makeBodyParameterAndUpload, TemplateBodyParameter } from './template-body-parameter';
 import { debug } from '../../logging';
 import { deserializeStructure } from '../../serialize';
-import { StackStatus } from './cloudformation/stack-status';
+import { SdkProvider } from '../aws-auth';
+import { Deployments } from '../deployments';
 
 export type Template = {
   Parameters?: Record<string, TemplateParameter>;
@@ -33,7 +39,7 @@ export class CloudFormationStack {
     try {
       const response = await cfn.describeStacks({ StackName: stackName }).promise();
       return new CloudFormationStack(cfn, stackName, response.Stacks && response.Stacks[0], retrieveProcessedTemplate);
-    } catch (e) {
+    } catch (e: any) {
       if (e.code === 'ValidationError' && e.message === `Stack with id ${stackName} does not exist`) {
         return new CloudFormationStack(cfn, stackName, undefined);
       }
@@ -156,7 +162,7 @@ export class CloudFormationStack {
     if (!this.exists) { return {}; }
     const ret: Record<string, string> = {};
     for (const param of this.stack!.Parameters ?? []) {
-      ret[param.ParameterKey!] = param.ParameterValue!;
+      ret[param.ParameterKey!] = param.ResolvedValue ?? param.ParameterValue!;
     }
     return ret;
   }
@@ -280,6 +286,123 @@ export async function waitForChangeSet(
   return ret;
 }
 
+export type PrepareChangeSetOptions = {
+  stack: cxapi.CloudFormationStackArtifact;
+  deployments: Deployments;
+  uuid: string;
+  willExecute: boolean;
+  sdkProvider: SdkProvider;
+  stream: NodeJS.WritableStream;
+  parameters: { [name: string]: string | undefined };
+  resourcesToImport?: ResourcesToImport;
+}
+
+export type CreateChangeSetOptions = {
+  cfn: CloudFormation;
+  changeSetName: string;
+  willExecute: boolean;
+  exists: boolean;
+  uuid: string;
+  stack: cxapi.CloudFormationStackArtifact;
+  bodyParameter: TemplateBodyParameter;
+  parameters: { [name: string]: string | undefined };
+  resourcesToImport?: ResourcesToImport;
+  role?: string;
+}
+
+/**
+ * Create a changeset for a diff operation
+ */
+export async function createDiffChangeSet(options: PrepareChangeSetOptions): Promise<DescribeChangeSetOutput | undefined> {
+  // `options.stack` has been modified to include any nested stack templates directly inline with its own template, under a special `NestedTemplate` property.
+  // Thus the parent template's Resources section contains the nested template's CDK metadata check, which uses Fn::Equals.
+  // This causes CreateChangeSet to fail with `Template Error: Fn::Equals cannot be partially collapsed`.
+  for (const resource of Object.values((options.stack.template.Resources ?? {}))) {
+    if ((resource as any).Type === 'AWS::CloudFormation::Stack') {
+      // eslint-disable-next-line no-console
+      debug('This stack contains one or more nested stacks, falling back to template-only diff...');
+
+      return undefined;
+    }
+  }
+
+  return uploadBodyParameterAndCreateChangeSet(options);
+}
+
+async function uploadBodyParameterAndCreateChangeSet(options: PrepareChangeSetOptions): Promise<DescribeChangeSetOutput | undefined> {
+  try {
+    const preparedSdk = (await options.deployments.prepareSdkWithDeployRole(options.stack));
+    const bodyParameter = await makeBodyParameterAndUpload(
+      options.stack,
+      preparedSdk.resolvedEnvironment,
+      preparedSdk.envResources,
+      options.sdkProvider,
+      preparedSdk.stackSdk,
+    );
+    const cfn = preparedSdk.stackSdk.cloudFormation();
+    const exists = (await CloudFormationStack.lookup(cfn, options.stack.stackName, false)).exists;
+
+    const executionRoleArn = preparedSdk.cloudFormationRoleArn;
+    options.stream.write('Hold on while we create a read-only change set to get a diff with accurate replacement information (use --no-change-set to use a less accurate but faster template-only diff)\n');
+
+    return await createChangeSet({
+      cfn,
+      changeSetName: 'cdk-diff-change-set',
+      stack: options.stack,
+      exists,
+      uuid: options.uuid,
+      willExecute: options.willExecute,
+      bodyParameter,
+      parameters: options.parameters,
+      resourcesToImport: options.resourcesToImport,
+      role: executionRoleArn,
+    });
+  } catch (e: any) {
+    debug(e.message);
+    options.stream.write('Could not create a change set, will base the diff on template differences (run again with -v to see the reason)\n');
+
+    return undefined;
+  }
+}
+
+async function createChangeSet(options: CreateChangeSetOptions): Promise<DescribeChangeSetOutput> {
+  await cleanupOldChangeset(options.changeSetName, options.stack.stackName, options.cfn);
+
+  debug(`Attempting to create ChangeSet with name ${options.changeSetName} for stack ${options.stack.stackName}`);
+
+  const templateParams = TemplateParameters.fromTemplate(options.stack.template);
+  const stackParams = templateParams.supplyAll(options.parameters);
+
+  const changeSet = await options.cfn.createChangeSet({
+    StackName: options.stack.stackName,
+    ChangeSetName: options.changeSetName,
+    ChangeSetType: options.resourcesToImport ? 'IMPORT' : options.exists ? 'UPDATE' : 'CREATE',
+    Description: `CDK Changeset for diff ${options.uuid}`,
+    ClientToken: `diff${options.uuid}`,
+    TemplateURL: options.bodyParameter.TemplateURL,
+    TemplateBody: options.bodyParameter.TemplateBody,
+    Parameters: stackParams.apiParameters,
+    ResourcesToImport: options.resourcesToImport,
+    RoleARN: options.role,
+    Capabilities: ['CAPABILITY_IAM', 'CAPABILITY_NAMED_IAM', 'CAPABILITY_AUTO_EXPAND'],
+  }).promise();
+
+  debug('Initiated creation of changeset: %s; waiting for it to finish creating...', changeSet.Id);
+  // Fetching all pages if we'll execute, so we can have the correct change count when monitoring.
+  const createdChangeSet = await waitForChangeSet(options.cfn, options.stack.stackName, options.changeSetName, { fetchAll: options.willExecute });
+  await cleanupOldChangeset(options.changeSetName, options.stack.stackName, options.cfn);
+
+  // TODO: Update this once we remove sdkv2 from the rest of this package
+  return createdChangeSet as DescribeChangeSetOutput;
+}
+
+export async function cleanupOldChangeset(changeSetName: string, stackName: string, cfn: CloudFormation) {
+  // Delete any existing change sets generated by CDK since change set names must be unique.
+  // The delete request is successful as long as the stack exists (even if the change set does not exist).
+  debug(`Removing existing change set with name ${changeSetName} if it exists`);
+  await cfn.deleteChangeSet({ StackName: stackName, ChangeSetName: changeSetName }).promise();
+}
+
 /**
  * Return true if the given change set has no changes
  *
@@ -371,6 +494,14 @@ export async function stabilizeStack(cfn: CloudFormation, stackName: string) {
     if (status.isInProgress) {
       debug('Stack %s has an ongoing operation in progress and is not stable (%s)', stackName, status);
       return undefined;
+    } else if (status.isReviewInProgress) {
+      // This may happen if a stack creation operation is interrupted before the ChangeSet execution starts. Recovering
+      // from this would requiring manual intervention (deleting or executing the pending ChangeSet), and failing to do
+      // so will result in an endless wait here (the ChangeSet wont delete or execute itself). Instead of blocking
+      // "forever" we proceed as if the stack was existing and stable. If there is a concurrent operation that just
+      // hasn't finished proceeding just yet, either this operation or the concurrent one may fail due to the other one
+      // having made progress. Which is fine. I guess.
+      debug('Stack %s is in REVIEW_IN_PROGRESS state. Considering this is a stable status (%s)', stackName, status);
     }
 
     return stack;

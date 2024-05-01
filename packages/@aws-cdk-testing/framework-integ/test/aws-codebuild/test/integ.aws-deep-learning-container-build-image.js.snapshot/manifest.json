@@ -1,0 +1,82 @@
+{
+  "version": "20.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "aws-deep-learning-container-build-image.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "aws-deep-learning-container-build-image.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "aws-deep-learning-container-build-image": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-deep-learning-container-build-image.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/2d55991f8610bd09d69c691b23e8748b59d28510e4ad2e8aabf6aeb6eddd48fe.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "aws-deep-learning-container-build-image.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "aws-deep-learning-container-build-image.assets"
+      ],
+      "metadata": {
+        "/aws-deep-learning-container-build-image/Project/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ProjectRole4CCB274E"
+          }
+        ],
+        "/aws-deep-learning-container-build-image/Project/Role/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ProjectRoleDefaultPolicy7F29461B"
+          }
+        ],
+        "/aws-deep-learning-container-build-image/Project/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ProjectC78D97AD"
+          }
+        ],
+        "/aws-deep-learning-container-build-image/DlcRepositoryAccountMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DlcRepositoryAccountMap"
+          }
+        ],
+        "/aws-deep-learning-container-build-image/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/aws-deep-learning-container-build-image/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "aws-deep-learning-container-build-image"
+    }
+  }
+}

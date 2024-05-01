@@ -1,12 +1,12 @@
+/* eslint-disable import/order */
 import * as os from 'os';
 import * as fs_path from 'path';
 import * as fs from 'fs-extra';
-import { mocked } from 'ts-jest/utils';
 import { Configuration, PROJECT_CONFIG, PROJECT_CONTEXT } from '../lib/settings';
 
 // mock fs deeply
 jest.mock('fs-extra');
-const mockedFs = mocked(fs, true);
+const mockedFs = jest.mocked(fs, { shallow: true });
 
 const USER_CONFIG = fs_path.join(os.homedir(), '.cdk.json');
 
@@ -89,4 +89,26 @@ test('throws an error if the `build` key is specified in the user config', async
 
   // THEN
   await expect(new Configuration().load()).rejects.toEqual(new Error('The `build` key cannot be specified in the user config (~/.cdk.json), specify it in the project config (cdk.json) instead'));
+});
+
+test('Can specify the `quiet` key in the user config', async () => {
+  // GIVEN
+  const GIVEN_CONFIG: Map<string, any> = new Map([
+    [USER_CONFIG, {
+      quiet: true,
+    }],
+  ]);
+
+  // WHEN
+  mockedFs.pathExists.mockImplementation(path => {
+    return GIVEN_CONFIG.has(path);
+  });
+  mockedFs.readJSON.mockImplementation(path => {
+    return GIVEN_CONFIG.get(path);
+  });
+
+  // THEN
+  const config = await new Configuration().load();
+
+  expect(config.settings.get(['quiet'])).toBe(true);
 });

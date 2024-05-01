@@ -3,17 +3,12 @@
 
 ---
 
-![cdk-constructs: Experimental](https://img.shields.io/badge/cdk--constructs-experimental-important.svg?style=for-the-badge)
-
-> The APIs of higher level constructs in this module are experimental and under active development.
-> They are subject to non-backward compatible changes or removal in any future version. These are
-> not subject to the [Semantic Versioning](https://semver.org/) model and breaking changes will be
-> announced in the release notes. This means that while you may use them, you may need to update
-> your source code when upgrading to a newer version of this package.
+![cdk-constructs: Stable](https://img.shields.io/badge/cdk--constructs-stable-success.svg?style=for-the-badge)
 
 ---
 
 <!--END STABILITY BANNER-->
+
 
 A tool for publishing CDK assets to AWS environments.
 
@@ -186,3 +181,10 @@ If the credentials file is present, `docker` will be configured to use the
 `docker-credential-cdk-assets` credential helper for each of the domains listed
 in the file. This helper will assume the role provided (if present), and then fetch
 the login credentials from either SecretsManager or ECR.
+
+## Using Drop-in Docker Replacements
+
+By default, the AWS CDK will build and publish Docker image assets using the
+`docker` command. However, by specifying the `CDK_DOCKER` environment variable,
+you can override the command that will be used to build and publish your
+assets.

@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "dotnet": {
+      "namespace": "Amazon.CDK.AWS.FIS"
+    },
+    "java": {
+      "package": "software.amazon.awscdk.services.fis"
+    },
+    "python": {
+      "module": "aws_cdk.aws_fis"
+    }
+  }
+}

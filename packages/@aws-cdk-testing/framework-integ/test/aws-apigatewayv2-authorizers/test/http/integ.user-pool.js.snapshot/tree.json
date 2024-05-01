@@ -1,0 +1,807 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "AuthorizerInteg": {
+        "id": "AuthorizerInteg",
+        "path": "AuthorizerInteg",
+        "children": {
+          "userpool": {
+            "id": "userpool",
+            "path": "AuthorizerInteg/userpool",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "AuthorizerInteg/userpool/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Cognito::UserPool",
+                  "aws:cdk:cloudformation:props": {
+                    "accountRecoverySetting": {
+                      "recoveryMechanisms": [
+                        {
+                          "name": "verified_phone_number",
+                          "priority": 1
+                        },
+                        {
+                          "name": "verified_email",
+                          "priority": 2
+                        }
+                      ]
+                    },
+                    "adminCreateUserConfig": {
+                      "allowAdminCreateUserOnly": true
+                    },
+                    "emailVerificationMessage": "The verification code to your new account is {####}",
+                    "emailVerificationSubject": "Verify your new account",
+                    "smsVerificationMessage": "The verification code to your new account is {####}",
+                    "verificationMessageTemplate": {
+                      "defaultEmailOption": "CONFIRM_WITH_CODE",
+                      "emailMessage": "The verification code to your new account is {####}",
+                      "emailSubject": "Verify your new account",
+                      "smsMessage": "The verification code to your new account is {####}"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_cognito.CfnUserPool",
+                  "version": "0.0.0"
+                }
+              },
+              "UserPoolAuthorizerClient": {
+                "id": "UserPoolAuthorizerClient",
+                "path": "AuthorizerInteg/userpool/UserPoolAuthorizerClient",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "AuthorizerInteg/userpool/UserPoolAuthorizerClient/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::Cognito::UserPoolClient",
+                      "aws:cdk:cloudformation:props": {
+                        "allowedOAuthFlows": [
+                          "implicit",
+                          "code"
+                        ],
+                        "allowedOAuthFlowsUserPoolClient": true,
+                        "allowedOAuthScopes": [
+                          "profile",
+                          "phone",
+                          "email",
+                          "openid",
+                          "aws.cognito.signin.user.admin"
+                        ],
+                        "callbackUrLs": [
+                          "https://example.com"
+                        ],
+                        "supportedIdentityProviders": [
+                          "COGNITO"
+                        ],
+                        "userPoolId": {
+                          "Ref": "userpool0AC4AA96"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_cognito.CfnUserPoolClient",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_cognito.UserPoolClient",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_cognito.UserPool",
+              "version": "0.0.0"
+            }
+          },
+          "userpoolForDefaultAuthorizer": {
+            "id": "userpoolForDefaultAuthorizer",
+            "path": "AuthorizerInteg/userpoolForDefaultAuthorizer",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "AuthorizerInteg/userpoolForDefaultAuthorizer/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Cognito::UserPool",
+                  "aws:cdk:cloudformation:props": {
+                    "accountRecoverySetting": {
+                      "recoveryMechanisms": [
+                        {
+                          "name": "verified_phone_number",
+                          "priority": 1
+                        },
+                        {
+                          "name": "verified_email",
+                          "priority": 2
+                        }
+                      ]
+                    },
+                    "adminCreateUserConfig": {
+                      "allowAdminCreateUserOnly": true
+                    },
+                    "emailVerificationMessage": "The verification code to your new account is {####}",
+                    "emailVerificationSubject": "Verify your new account",
+                    "smsVerificationMessage": "The verification code to your new account is {####}",
+                    "verificationMessageTemplate": {
+                      "defaultEmailOption": "CONFIRM_WITH_CODE",
+                      "emailMessage": "The verification code to your new account is {####}",
+                      "emailSubject": "Verify your new account",
+                      "smsMessage": "The verification code to your new account is {####}"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_cognito.CfnUserPool",
+                  "version": "0.0.0"
+                }
+              },
+              "UserPoolAuthorizerClient": {
+                "id": "UserPoolAuthorizerClient",
+                "path": "AuthorizerInteg/userpoolForDefaultAuthorizer/UserPoolAuthorizerClient",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "AuthorizerInteg/userpoolForDefaultAuthorizer/UserPoolAuthorizerClient/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::Cognito::UserPoolClient",
+                      "aws:cdk:cloudformation:props": {
+                        "allowedOAuthFlows": [
+                          "implicit",
+                          "code"
+                        ],
+                        "allowedOAuthFlowsUserPoolClient": true,
+                        "allowedOAuthScopes": [
+                          "profile",
+                          "phone",
+                          "email",
+                          "openid",
+                          "aws.cognito.signin.user.admin"
+                        ],
+                        "callbackUrLs": [
+                          "https://example.com"
+                        ],
+                        "supportedIdentityProviders": [
+                          "COGNITO"
+                        ],
+                        "userPoolId": {
+                          "Ref": "userpoolForDefaultAuthorizerDFBE8E74"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_cognito.CfnUserPoolClient",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_cognito.UserPoolClient",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_cognito.UserPool",
+              "version": "0.0.0"
+            }
+          },
+          "MyHttpApi": {
+            "id": "MyHttpApi",
+            "path": "AuthorizerInteg/MyHttpApi",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "AuthorizerInteg/MyHttpApi/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::ApiGatewayV2::Api",
+                  "aws:cdk:cloudformation:props": {
+                    "name": "MyHttpApi",
+                    "protocolType": "HTTP"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_apigatewayv2.CfnApi",
+                  "version": "0.0.0"
+                }
+              },
+              "DefaultStage": {
+                "id": "DefaultStage",
+                "path": "AuthorizerInteg/MyHttpApi/DefaultStage",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "AuthorizerInteg/MyHttpApi/DefaultStage/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::ApiGatewayV2::Stage",
+                      "aws:cdk:cloudformation:props": {
+                        "apiId": {
+                          "Ref": "MyHttpApi8AEAAC21"
+                        },
+                        "autoDeploy": true,
+                        "stageName": "$default"
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_apigatewayv2.CfnStage",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-apigatewayv2-alpha.HttpStage",
+                  "version": "0.0.0"
+                }
+              },
+              "GET--": {
+                "id": "GET--",
+                "path": "AuthorizerInteg/MyHttpApi/GET--",
+                "children": {
+                  "RootIntegratin": {
+                    "id": "RootIntegratin",
+                    "path": "AuthorizerInteg/MyHttpApi/GET--/RootIntegratin",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "AuthorizerInteg/MyHttpApi/GET--/RootIntegratin/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::ApiGatewayV2::Integration",
+                          "aws:cdk:cloudformation:props": {
+                            "apiId": {
+                              "Ref": "MyHttpApi8AEAAC21"
+                            },
+                            "integrationType": "AWS_PROXY",
+                            "integrationUri": {
+                              "Fn::GetAtt": [
+                                "lambda8B5974B5",
+                                "Arn"
+                              ]
+                            },
+                            "payloadFormatVersion": "2.0"
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_apigatewayv2.CfnIntegration",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-apigatewayv2-alpha.HttpIntegration",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "RootIntegratin-Permission": {
+                    "id": "RootIntegratin-Permission",
+                    "path": "AuthorizerInteg/MyHttpApi/GET--/RootIntegratin-Permission",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
+                      "aws:cdk:cloudformation:props": {
+                        "action": "lambda:InvokeFunction",
+                        "functionName": {
+                          "Fn::GetAtt": [
+                            "lambda8B5974B5",
+                            "Arn"
+                          ]
+                        },
+                        "principal": "apigateway.amazonaws.com",
+                        "sourceArn": {
+                          "Fn::Join": [
+                            "",
+                            [
+                              "arn:",
+                              {
+                                "Ref": "AWS::Partition"
+                              },
+                              ":execute-api:",
+                              {
+                                "Ref": "AWS::Region"
+                              },
+                              ":",
+                              {
+                                "Ref": "AWS::AccountId"
+                              },
+                              ":",
+                              {
+                                "Ref": "MyHttpApi8AEAAC21"
+                              },
+                              "/*/*/"
+                            ]
+                          ]
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_lambda.CfnPermission",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "AuthorizerInteg/MyHttpApi/GET--/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::ApiGatewayV2::Route",
+                      "aws:cdk:cloudformation:props": {
+                        "apiId": {
+                          "Ref": "MyHttpApi8AEAAC21"
+                        },
+                        "authorizationType": "JWT",
+                        "authorizerId": {
+                          "Ref": "MyHttpApiUserPoolAuthorizer8754262B"
+                        },
+                        "routeKey": "GET /",
+                        "target": {
+                          "Fn::Join": [
+                            "",
+                            [
+                              "integrations/",
+                              {
+                                "Ref": "MyHttpApiGETRootIntegratin93150A89"
+                              }
+                            ]
+                          ]
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_apigatewayv2.CfnRoute",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-apigatewayv2-alpha.HttpRoute",
+                  "version": "0.0.0"
+                }
+              },
+              "UserPoolAuthorizer": {
+                "id": "UserPoolAuthorizer",
+                "path": "AuthorizerInteg/MyHttpApi/UserPoolAuthorizer",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "AuthorizerInteg/MyHttpApi/UserPoolAuthorizer/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::ApiGatewayV2::Authorizer",
+                      "aws:cdk:cloudformation:props": {
+                        "apiId": {
+                          "Ref": "MyHttpApi8AEAAC21"
+                        },
+                        "authorizerType": "JWT",
+                        "identitySource": [
+                          "$request.header.Authorization"
+                        ],
+                        "jwtConfiguration": {
+                          "audience": [
+                            {
+                              "Ref": "userpoolUserPoolAuthorizerClient6A7486E8"
+                            }
+                          ],
+                          "issuer": {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "https://cognito-idp.",
+                                {
+                                  "Ref": "AWS::Region"
+                                },
+                                ".amazonaws.com/",
+                                {
+                                  "Ref": "userpool0AC4AA96"
+                                }
+                              ]
+                            ]
+                          }
+                        },
+                        "name": "UserPoolAuthorizer"
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_apigatewayv2.CfnAuthorizer",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-apigatewayv2-alpha.HttpAuthorizer",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-apigatewayv2-alpha.HttpApi",
+              "version": "0.0.0"
+            }
+          },
+          "MyHttpApiWithDefaultAuthorizer": {
+            "id": "MyHttpApiWithDefaultAuthorizer",
+            "path": "AuthorizerInteg/MyHttpApiWithDefaultAuthorizer",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "AuthorizerInteg/MyHttpApiWithDefaultAuthorizer/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::ApiGatewayV2::Api",
+                  "aws:cdk:cloudformation:props": {
+                    "name": "MyHttpApiWithDefaultAuthorizer",
+                    "protocolType": "HTTP"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_apigatewayv2.CfnApi",
+                  "version": "0.0.0"
+                }
+              },
+              "DefaultStage": {
+                "id": "DefaultStage",
+                "path": "AuthorizerInteg/MyHttpApiWithDefaultAuthorizer/DefaultStage",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "AuthorizerInteg/MyHttpApiWithDefaultAuthorizer/DefaultStage/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::ApiGatewayV2::Stage",
+                      "aws:cdk:cloudformation:props": {
+                        "apiId": {
+                          "Ref": "MyHttpApiWithDefaultAuthorizerE08800A1"
+                        },
+                        "autoDeploy": true,
+                        "stageName": "$default"
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_apigatewayv2.CfnStage",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-apigatewayv2-alpha.HttpStage",
+                  "version": "0.0.0"
+                }
+              },
+              "UserPoolDefaultAuthorizer": {
+                "id": "UserPoolDefaultAuthorizer",
+                "path": "AuthorizerInteg/MyHttpApiWithDefaultAuthorizer/UserPoolDefaultAuthorizer",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "AuthorizerInteg/MyHttpApiWithDefaultAuthorizer/UserPoolDefaultAuthorizer/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::ApiGatewayV2::Authorizer",
+                      "aws:cdk:cloudformation:props": {
+                        "apiId": {
+                          "Ref": "MyHttpApiWithDefaultAuthorizerE08800A1"
+                        },
+                        "authorizerType": "JWT",
+                        "identitySource": [
+                          "$request.header.Authorization"
+                        ],
+                        "jwtConfiguration": {
+                          "audience": [
+                            {
+                              "Ref": "userpoolForDefaultAuthorizerUserPoolAuthorizerClient3AA110E7"
+                            }
+                          ],
+                          "issuer": {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "https://cognito-idp.",
+                                {
+                                  "Ref": "AWS::Region"
+                                },
+                                ".amazonaws.com/",
+                                {
+                                  "Ref": "userpoolForDefaultAuthorizerDFBE8E74"
+                                }
+                              ]
+                            ]
+                          }
+                        },
+                        "name": "UserPoolDefaultAuthorizer"
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_apigatewayv2.CfnAuthorizer",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-apigatewayv2-alpha.HttpAuthorizer",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-apigatewayv2-alpha.HttpApi",
+              "version": "0.0.0"
+            }
+          },
+          "lambda": {
+            "id": "lambda",
+            "path": "AuthorizerInteg/lambda",
+            "children": {
+              "ServiceRole": {
+                "id": "ServiceRole",
+                "path": "AuthorizerInteg/lambda/ServiceRole",
+                "children": {
+                  "ImportServiceRole": {
+                    "id": "ImportServiceRole",
+                    "path": "AuthorizerInteg/lambda/ServiceRole/ImportServiceRole",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "AuthorizerInteg/lambda/ServiceRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "lambda.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "managedPolicyArns": [
+                          {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+                              ]
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
+                  "version": "0.0.0"
+                }
+              },
+              "Code": {
+                "id": "Code",
+                "path": "AuthorizerInteg/lambda/Code",
+                "children": {
+                  "Stage": {
+                    "id": "Stage",
+                    "path": "AuthorizerInteg/lambda/Code/Stage",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.AssetStaging",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "AssetBucket": {
+                    "id": "AssetBucket",
+                    "path": "AuthorizerInteg/lambda/Code/AssetBucket",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_s3.BucketBase",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "AuthorizerInteg/lambda/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
+                  "aws:cdk:cloudformation:props": {
+                    "code": {
+                      "s3Bucket": {
+                        "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+                      },
+                      "s3Key": "867837e91f97aaf9c29d20a4fea18e3f520bb65d84e9bb59ec84058226225ffc.zip"
+                    },
+                    "handler": "index.handler",
+                    "role": {
+                      "Fn::GetAtt": [
+                        "lambdaServiceRole494E4CA6",
+                        "Arn"
+                      ]
+                    },
+                    "runtime": "nodejs18.x"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_lambda.Function",
+              "version": "0.0.0"
+            }
+          },
+          "Route": {
+            "id": "Route",
+            "path": "AuthorizerInteg/Route",
+            "children": {
+              "RootIntegration": {
+                "id": "RootIntegration",
+                "path": "AuthorizerInteg/Route/RootIntegration",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "AuthorizerInteg/Route/RootIntegration/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::ApiGatewayV2::Integration",
+                      "aws:cdk:cloudformation:props": {
+                        "apiId": {
+                          "Ref": "MyHttpApiWithDefaultAuthorizerE08800A1"
+                        },
+                        "integrationType": "AWS_PROXY",
+                        "integrationUri": {
+                          "Fn::GetAtt": [
+                            "lambda8B5974B5",
+                            "Arn"
+                          ]
+                        },
+                        "payloadFormatVersion": "2.0"
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_apigatewayv2.CfnIntegration",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-apigatewayv2-alpha.HttpIntegration",
+                  "version": "0.0.0"
+                }
+              },
+              "RootIntegration-Permission": {
+                "id": "RootIntegration-Permission",
+                "path": "AuthorizerInteg/Route/RootIntegration-Permission",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
+                  "aws:cdk:cloudformation:props": {
+                    "action": "lambda:InvokeFunction",
+                    "functionName": {
+                      "Fn::GetAtt": [
+                        "lambda8B5974B5",
+                        "Arn"
+                      ]
+                    },
+                    "principal": "apigateway.amazonaws.com",
+                    "sourceArn": {
+                      "Fn::Join": [
+                        "",
+                        [
+                          "arn:",
+                          {
+                            "Ref": "AWS::Partition"
+                          },
+                          ":execute-api:",
+                          {
+                            "Ref": "AWS::Region"
+                          },
+                          ":",
+                          {
+                            "Ref": "AWS::AccountId"
+                          },
+                          ":",
+                          {
+                            "Ref": "MyHttpApiWithDefaultAuthorizerE08800A1"
+                          },
+                          "/*/*/v1/mything/{proxy+}"
+                        ]
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_lambda.CfnPermission",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "AuthorizerInteg/Route/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::ApiGatewayV2::Route",
+                  "aws:cdk:cloudformation:props": {
+                    "apiId": {
+                      "Ref": "MyHttpApiWithDefaultAuthorizerE08800A1"
+                    },
+                    "authorizationScopes": [
+                      "scope1",
+                      "scope2"
+                    ],
+                    "authorizationType": "JWT",
+                    "authorizerId": {
+                      "Ref": "MyHttpApiWithDefaultAuthorizerUserPoolDefaultAuthorizerF10D4FFF"
+                    },
+                    "routeKey": "ANY /v1/mything/{proxy+}",
+                    "target": {
+                      "Fn::Join": [
+                        "",
+                        [
+                          "integrations/",
+                          {
+                            "Ref": "RouteRootIntegration1CF58575"
+                          }
+                        ]
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_apigatewayv2.CfnRoute",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-apigatewayv2-alpha.HttpRoute",
+              "version": "0.0.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "AuthorizerInteg/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "AuthorizerInteg/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnRule",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.2.70"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "aws-cdk-lib.App",
+      "version": "0.0.0"
+    }
+  }
+}

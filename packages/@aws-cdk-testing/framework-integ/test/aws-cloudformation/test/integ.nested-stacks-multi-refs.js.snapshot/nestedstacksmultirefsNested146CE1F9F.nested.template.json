@@ -1,0 +1,41 @@
+{
+ "Resources": {
+  "Nested2NestedStackNested2NestedStackResource877A1112": {
+   "Type": "AWS::CloudFormation::Stack",
+   "Properties": {
+    "TemplateURL": {
+     "Fn::Join": [
+      "",
+      [
+       "https://s3.",
+       {
+        "Ref": "AWS::Region"
+       },
+       ".",
+       {
+        "Ref": "AWS::URLSuffix"
+       },
+       "/",
+       {
+        "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+       },
+       "/3f13e5b641dc5e587f9205c95cfe6c5adb4f17c3635d8e199f8fc2aade38a2ff.json"
+      ]
+     ]
+    },
+    "Parameters": {
+     "referencetonestedstacksmultirefsLevel19FB2466DTopicName": {
+      "Ref": "referencetonestedstacksmultirefsLevel19FB2466DTopicName"
+     }
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  }
+ },
+ "Parameters": {
+  "referencetonestedstacksmultirefsLevel19FB2466DTopicName": {
+   "Type": "String"
+  }
+ }
+}

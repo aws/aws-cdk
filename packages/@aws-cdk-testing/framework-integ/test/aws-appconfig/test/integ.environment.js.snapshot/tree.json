@@ -1,0 +1,504 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "aws-appconfig-environment": {
+        "id": "aws-appconfig-environment",
+        "path": "aws-appconfig-environment",
+        "children": {
+          "MyApplicationForEnv": {
+            "id": "MyApplicationForEnv",
+            "path": "aws-appconfig-environment/MyApplicationForEnv",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-appconfig-environment/MyApplicationForEnv/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::AppConfig::Application",
+                  "aws:cdk:cloudformation:props": {
+                    "name": "AppForEnvTest"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_appconfig.CfnApplication",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-appconfig-alpha.Application",
+              "version": "0.0.0"
+            }
+          },
+          "StartDeploymentCallCountAlarm": {
+            "id": "StartDeploymentCallCountAlarm",
+            "path": "aws-appconfig-environment/StartDeploymentCallCountAlarm",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-appconfig-environment/StartDeploymentCallCountAlarm/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::CloudWatch::Alarm",
+                  "aws:cdk:cloudformation:props": {
+                    "actionsEnabled": false,
+                    "alarmName": "AppConfigStartDeploymentCallCountAlarm",
+                    "comparisonOperator": "GreaterThanOrEqualToThreshold",
+                    "dimensions": [
+                      {
+                        "name": "Resource",
+                        "value": "StartDeployment"
+                      },
+                      {
+                        "name": "Service",
+                        "value": "AWS AppConfig"
+                      },
+                      {
+                        "name": "Type",
+                        "value": "API"
+                      }
+                    ],
+                    "evaluationPeriods": 3,
+                    "metricName": "CallCount",
+                    "namespace": "AWS/AppConfig",
+                    "period": 300,
+                    "statistic": "Sum",
+                    "threshold": 300,
+                    "treatMissingData": "notBreaching"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_cloudwatch.CfnAlarm",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_cloudwatch.Alarm",
+              "version": "0.0.0"
+            }
+          },
+          "MyRole": {
+            "id": "MyRole",
+            "path": "aws-appconfig-environment/MyRole",
+            "children": {
+              "ImportMyRole": {
+                "id": "ImportMyRole",
+                "path": "aws-appconfig-environment/MyRole/ImportMyRole",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Resource",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-appconfig-environment/MyRole/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                  "aws:cdk:cloudformation:props": {
+                    "assumeRolePolicyDocument": {
+                      "Statement": [
+                        {
+                          "Action": "sts:AssumeRole",
+                          "Effect": "Allow",
+                          "Principal": {
+                            "Service": "appconfig.amazonaws.com"
+                          }
+                        }
+                      ],
+                      "Version": "2012-10-17"
+                    },
+                    "policies": [
+                      {
+                        "policyName": "AllowAppConfigMonitorAlarmPolicy",
+                        "policyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "cloudwatch:DescribeAlarms",
+                              "Effect": "Allow",
+                              "Resource": "*"
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        }
+                      }
+                    ]
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_iam.Role",
+              "version": "0.0.0"
+            }
+          },
+          "MyCompositeAlarm": {
+            "id": "MyCompositeAlarm",
+            "path": "aws-appconfig-environment/MyCompositeAlarm",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-appconfig-environment/MyCompositeAlarm/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::CloudWatch::CompositeAlarm",
+                  "aws:cdk:cloudformation:props": {
+                    "alarmName": "awsappconfigenvironmentMyCompositeAlarm730A7A48",
+                    "alarmRule": {
+                      "Fn::Join": [
+                        "",
+                        [
+                          "ALARM(\"",
+                          {
+                            "Fn::GetAtt": [
+                              "StartDeploymentCallCountAlarm6846E07B",
+                              "Arn"
+                            ]
+                          },
+                          "\")"
+                        ]
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_cloudwatch.CfnCompositeAlarm",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_cloudwatch.CompositeAlarm",
+              "version": "0.0.0"
+            }
+          },
+          "MyEnvironment": {
+            "id": "MyEnvironment",
+            "path": "aws-appconfig-environment/MyEnvironment",
+            "children": {
+              "Role1963C": {
+                "id": "Role1963C",
+                "path": "aws-appconfig-environment/MyEnvironment/Role1963C",
+                "children": {
+                  "ImportRole1963C": {
+                    "id": "ImportRole1963C",
+                    "path": "aws-appconfig-environment/MyEnvironment/Role1963C/ImportRole1963C",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-appconfig-environment/MyEnvironment/Role1963C/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "appconfig.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "policies": [
+                          {
+                            "policyName": "AllowAppConfigMonitorAlarmPolicy",
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": "cloudwatch:DescribeAlarms",
+                                  "Effect": "Allow",
+                                  "Resource": "*"
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-appconfig-environment/MyEnvironment/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::AppConfig::Environment",
+                  "aws:cdk:cloudformation:props": {
+                    "applicationId": {
+                      "Ref": "MyApplicationForEnv1F597ED9"
+                    },
+                    "description": "This is the environment for integ testing",
+                    "monitors": [
+                      {
+                        "alarmArn": {
+                          "Fn::GetAtt": [
+                            "StartDeploymentCallCountAlarm6846E07B",
+                            "Arn"
+                          ]
+                        },
+                        "alarmRoleArn": {
+                          "Fn::GetAtt": [
+                            "MyEnvironmentRole1963C404EAE3E",
+                            "Arn"
+                          ]
+                        }
+                      },
+                      {
+                        "alarmArn": {
+                          "Fn::GetAtt": [
+                            "StartDeploymentCallCountAlarm6846E07B",
+                            "Arn"
+                          ]
+                        },
+                        "alarmRoleArn": {
+                          "Fn::GetAtt": [
+                            "MyRoleF48FFE04",
+                            "Arn"
+                          ]
+                        }
+                      },
+                      {
+                        "alarmArn": {
+                          "Fn::GetAtt": [
+                            "MyCompositeAlarm0F045229",
+                            "Arn"
+                          ]
+                        },
+                        "alarmRoleArn": {
+                          "Fn::GetAtt": [
+                            "MyEnvironmentRole1963C404EAE3E",
+                            "Arn"
+                          ]
+                        }
+                      }
+                    ],
+                    "name": "awsappconfigenvironment-MyEnvironment-C8813182"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_appconfig.CfnEnvironment",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-appconfig-alpha.Environment",
+              "version": "0.0.0"
+            }
+          },
+          "MyDeploymentStrategy": {
+            "id": "MyDeploymentStrategy",
+            "path": "aws-appconfig-environment/MyDeploymentStrategy",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-appconfig-environment/MyDeploymentStrategy/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::AppConfig::DeploymentStrategy",
+                  "aws:cdk:cloudformation:props": {
+                    "deploymentDurationInMinutes": 1,
+                    "growthFactor": 50,
+                    "growthType": "LINEAR",
+                    "name": "awsappconfigenvironment-MyDeploymentStrategy-28486041",
+                    "replicateTo": "NONE"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_appconfig.CfnDeploymentStrategy",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-appconfig-alpha.DeploymentStrategy",
+              "version": "0.0.0"
+            }
+          },
+          "MyConfig": {
+            "id": "MyConfig",
+            "path": "aws-appconfig-environment/MyConfig",
+            "children": {
+              "ConfigurationProfile": {
+                "id": "ConfigurationProfile",
+                "path": "aws-appconfig-environment/MyConfig/ConfigurationProfile",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::AppConfig::ConfigurationProfile",
+                  "aws:cdk:cloudformation:props": {
+                    "applicationId": {
+                      "Ref": "MyApplicationForEnv1F597ED9"
+                    },
+                    "locationUri": "hosted",
+                    "name": "awsappconfigenvironment-MyConfig-24828868"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_appconfig.CfnConfigurationProfile",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-appconfig-environment/MyConfig/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::AppConfig::HostedConfigurationVersion",
+                  "aws:cdk:cloudformation:props": {
+                    "applicationId": {
+                      "Ref": "MyApplicationForEnv1F597ED9"
+                    },
+                    "configurationProfileId": {
+                      "Ref": "MyConfigConfigurationProfileCF3951C3"
+                    },
+                    "content": "config content",
+                    "contentType": "application/octet-stream"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_appconfig.CfnHostedConfigurationVersion",
+                  "version": "0.0.0"
+                }
+              },
+              "Deployment1963C": {
+                "id": "Deployment1963C",
+                "path": "aws-appconfig-environment/MyConfig/Deployment1963C",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::AppConfig::Deployment",
+                  "aws:cdk:cloudformation:props": {
+                    "applicationId": {
+                      "Ref": "MyApplicationForEnv1F597ED9"
+                    },
+                    "configurationProfileId": {
+                      "Ref": "MyConfigConfigurationProfileCF3951C3"
+                    },
+                    "configurationVersion": {
+                      "Ref": "MyConfigFA92D419"
+                    },
+                    "deploymentStrategyId": {
+                      "Ref": "MyDeploymentStrategy60D31FB0"
+                    },
+                    "environmentId": {
+                      "Ref": "MyEnvironment465E4DEA"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_appconfig.CfnDeployment",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-appconfig-alpha.HostedConfiguration",
+              "version": "0.0.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "aws-appconfig-environment/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "aws-appconfig-environment/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnRule",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "appconfig-environment": {
+        "id": "appconfig-environment",
+        "path": "appconfig-environment",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "appconfig-environment/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "appconfig-environment/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "appconfig-environment/DefaultTest/DeployAssert",
+                "children": {
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "appconfig-environment/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "appconfig-environment/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnRule",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.3.0"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "aws-cdk-lib.App",
+      "version": "0.0.0"
+    }
+  }
+}

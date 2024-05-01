@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "dotnet": {
+      "namespace": "Amazon.CDK.AWS.Pinpoint"
+    },
+    "java": {
+      "package": "software.amazon.awscdk.services.pinpoint"
+    },
+    "python": {
+      "module": "aws_cdk.aws_pinpoint"
+    }
+  }
+}

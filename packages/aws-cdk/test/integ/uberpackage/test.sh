@@ -1,14 +1,6 @@
 #!/bin/bash
+set -eu
+# This is a backwards compatibility script. All logic has moved to '@aws-cdk-testing/cli-integ'
+# and should be called from there directly.
 
-set -euo pipefail
-
-scriptdir=$(cd $(dirname $0) && pwd)
-
-echo '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'
-echo 'UberCDK Integration Tests'
-echo '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'
-
-cd $scriptdir
-
-source ../common/jest-test.bash
-invokeJest "$@"
+exec ${INTEG_TOOLS}/bin/run-suite --use-cli-release=$VERSION uberpackage

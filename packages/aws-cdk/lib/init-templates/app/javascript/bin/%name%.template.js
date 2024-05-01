@@ -4,7 +4,7 @@ const cdk = require('aws-cdk-lib');
 const { %name.PascalCased%Stack } = require('../lib/%name%-stack');
 
 const app = new cdk.App();
-new %name.PascalCased%Stack(app, '%name.PascalCased%Stack', {
+new %name.PascalCased%Stack(app, '%stackname%', {
   /* If you don't specify 'env', this stack will be environment-agnostic.
    * Account/Region-dependent features and context lookups will not work,
    * but a single synthesized template can be deployed anywhere. */

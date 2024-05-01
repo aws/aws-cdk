@@ -1,0 +1,239 @@
+{
+  "version": "35.0.0",
+  "artifacts": {
+    "aws-cdk-scheduler-targets-kinesis-stream-put-record.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "aws-cdk-scheduler-targets-kinesis-stream-put-record.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "aws-cdk-scheduler-targets-kinesis-stream-put-record": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-cdk-scheduler-targets-kinesis-stream-put-record.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/1067cc9381af30e209805b51183aab9943a72a57ca3a6257a11e86be57220ed2.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "aws-cdk-scheduler-targets-kinesis-stream-put-record.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "aws-cdk-scheduler-targets-kinesis-stream-put-record.assets"
+      ],
+      "metadata": {
+        "/aws-cdk-scheduler-targets-kinesis-stream-put-record/MyStream/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyStream5C050E93"
+          }
+        ],
+        "/aws-cdk-scheduler-targets-kinesis-stream-put-record/AwsCdkKinesisEncryptedStreamsUnsupportedRegions": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsCdkKinesisEncryptedStreamsUnsupportedRegions"
+          }
+        ],
+        "/aws-cdk-scheduler-targets-kinesis-stream-put-record/Schedule/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Schedule83A77FD1"
+          }
+        ],
+        "/aws-cdk-scheduler-targets-kinesis-stream-put-record/SchedulerRoleForTarget-1441a7/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SchedulerRoleForTarget1441a743A31888"
+          }
+        ],
+        "/aws-cdk-scheduler-targets-kinesis-stream-put-record/SchedulerRoleForTarget-1441a7/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SchedulerRoleForTarget1441a7DefaultPolicy885B6BFD"
+          }
+        ],
+        "/aws-cdk-scheduler-targets-kinesis-stream-put-record/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/aws-cdk-scheduler-targets-kinesis-stream-put-record/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "aws-cdk-scheduler-targets-kinesis-stream-put-record"
+    },
+    "integrationtestkinesisstreamputrecordDefaultTestDeployAssert6B5E163F.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "integrationtestkinesisstreamputrecordDefaultTestDeployAssert6B5E163F.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "integrationtestkinesisstreamputrecordDefaultTestDeployAssert6B5E163F": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "integrationtestkinesisstreamputrecordDefaultTestDeployAssert6B5E163F.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/99a158c5654f23d11070ff893f51fd134e1febfb0f004bdee87e57705c4372a2.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "integrationtestkinesisstreamputrecordDefaultTestDeployAssert6B5E163F.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "integrationtestkinesisstreamputrecordDefaultTestDeployAssert6B5E163F.assets"
+      ],
+      "metadata": {
+        "/integrationtest-kinesis-stream-put-record/DefaultTest/DeployAssert/AwsApiCallkinesisgetShardIteratorb8cc29ffcee227e6030ddeb192db0aca/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallkinesisgetShardIteratorb8cc29ffcee227e6030ddeb192db0aca"
+          }
+        ],
+        "/integrationtest-kinesis-stream-put-record/DefaultTest/DeployAssert/AwsApiCallkinesisgetShardIteratorb8cc29ffcee227e6030ddeb192db0aca/WaitFor/IsCompleteProvider/Invoke": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallkinesisgetShardIteratorb8cc29ffcee227e6030ddeb192db0acaWaitForIsCompleteProviderInvoke0477C2C2"
+          }
+        ],
+        "/integrationtest-kinesis-stream-put-record/DefaultTest/DeployAssert/AwsApiCallkinesisgetShardIteratorb8cc29ffcee227e6030ddeb192db0aca/WaitFor/TimeoutProvider/Invoke": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallkinesisgetShardIteratorb8cc29ffcee227e6030ddeb192db0acaWaitForTimeoutProviderInvokeE90CDA34"
+          }
+        ],
+        "/integrationtest-kinesis-stream-put-record/DefaultTest/DeployAssert/AwsApiCallkinesisgetShardIteratorb8cc29ffcee227e6030ddeb192db0aca/WaitFor/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallkinesisgetShardIteratorb8cc29ffcee227e6030ddeb192db0acaWaitForRoleA043802D"
+          }
+        ],
+        "/integrationtest-kinesis-stream-put-record/DefaultTest/DeployAssert/AwsApiCallkinesisgetShardIteratorb8cc29ffcee227e6030ddeb192db0aca/WaitFor/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallkinesisgetShardIteratorb8cc29ffcee227e6030ddeb192db0acaWaitFor911013FF"
+          }
+        ],
+        "/integrationtest-kinesis-stream-put-record/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+          }
+        ],
+        "/integrationtest-kinesis-stream-put-record/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+          }
+        ],
+        "/integrationtest-kinesis-stream-put-record/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction76b3e830a873425f8453eddd85c86925Role918961BB"
+          }
+        ],
+        "/integrationtest-kinesis-stream-put-record/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction76b3e830a873425f8453eddd85c86925Handler81461ECE"
+          }
+        ],
+        "/integrationtest-kinesis-stream-put-record/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aRoleB84BD8CE"
+          }
+        ],
+        "/integrationtest-kinesis-stream-put-record/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aHandlerADF3E6EA"
+          }
+        ],
+        "/integrationtest-kinesis-stream-put-record/DefaultTest/DeployAssert/AwsApiCallkinesisgetRecords2910f3f065e791697b341bd0c5fbb7e4/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallkinesisgetRecords2910f3f065e791697b341bd0c5fbb7e4"
+          }
+        ],
+        "/integrationtest-kinesis-stream-put-record/DefaultTest/DeployAssert/AwsApiCallkinesisgetRecords2910f3f065e791697b341bd0c5fbb7e4/WaitFor/IsCompleteProvider/Invoke": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallkinesisgetRecords2910f3f065e791697b341bd0c5fbb7e4WaitForIsCompleteProviderInvokeAD623A86"
+          }
+        ],
+        "/integrationtest-kinesis-stream-put-record/DefaultTest/DeployAssert/AwsApiCallkinesisgetRecords2910f3f065e791697b341bd0c5fbb7e4/WaitFor/TimeoutProvider/Invoke": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallkinesisgetRecords2910f3f065e791697b341bd0c5fbb7e4WaitForTimeoutProviderInvokeC1142182"
+          }
+        ],
+        "/integrationtest-kinesis-stream-put-record/DefaultTest/DeployAssert/AwsApiCallkinesisgetRecords2910f3f065e791697b341bd0c5fbb7e4/WaitFor/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallkinesisgetRecords2910f3f065e791697b341bd0c5fbb7e4WaitForRoleCEAE6F0D"
+          }
+        ],
+        "/integrationtest-kinesis-stream-put-record/DefaultTest/DeployAssert/AwsApiCallkinesisgetRecords2910f3f065e791697b341bd0c5fbb7e4/WaitFor/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallkinesisgetRecords2910f3f065e791697b341bd0c5fbb7e4WaitForC16BCF93"
+          }
+        ],
+        "/integrationtest-kinesis-stream-put-record/DefaultTest/DeployAssert/AwsApiCallkinesisgetRecords2910f3f065e791697b341bd0c5fbb7e4/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsAwsApiCallkinesisgetRecords2910f3f065e791697b341bd0c5fbb7e4"
+          }
+        ],
+        "/integrationtest-kinesis-stream-put-record/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/integrationtest-kinesis-stream-put-record/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "integrationtest-kinesis-stream-put-record/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "version": "29.0.0",
+  "testCases": {
+    "lambda-runtime-management/DefaultTest": {
+      "stacks": [
+        "aws-cdk-lambda-runtime-management"
+      ],
+      "assertionStack": "lambda-runtime-management/DefaultTest/DeployAssert",
+      "assertionStackName": "lambdaruntimemanagementDefaultTestDeployAssertDE680AF3"
+    }
+  }
+}

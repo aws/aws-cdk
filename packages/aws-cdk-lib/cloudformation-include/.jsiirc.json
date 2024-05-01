@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "java": {
+      "package": "software.amazon.awscdk.cloudformation.include"
+    },
+    "dotnet": {
+      "namespace": "Amazon.CDK.CloudFormation.Include"
+    },
+    "python": {
+      "module": "aws_cdk.cloudformation_include"
+    }
+  }
+}

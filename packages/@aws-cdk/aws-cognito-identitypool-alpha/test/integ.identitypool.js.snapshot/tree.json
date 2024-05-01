@@ -1,0 +1,638 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.85"
+        }
+      },
+      "integ-identitypool": {
+        "id": "integ-identitypool",
+        "path": "integ-identitypool",
+        "children": {
+          "Pool": {
+            "id": "Pool",
+            "path": "integ-identitypool/Pool",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "integ-identitypool/Pool/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Cognito::UserPool",
+                  "aws:cdk:cloudformation:props": {
+                    "accountRecoverySetting": {
+                      "recoveryMechanisms": [
+                        {
+                          "name": "verified_phone_number",
+                          "priority": 1
+                        },
+                        {
+                          "name": "verified_email",
+                          "priority": 2
+                        }
+                      ]
+                    },
+                    "adminCreateUserConfig": {
+                      "allowAdminCreateUserOnly": true
+                    },
+                    "emailVerificationMessage": "The verification code to your new account is {####}",
+                    "emailVerificationSubject": "Verify your new account",
+                    "smsVerificationMessage": "The verification code to your new account is {####}",
+                    "verificationMessageTemplate": {
+                      "defaultEmailOption": "CONFIRM_WITH_CODE",
+                      "emailMessage": "The verification code to your new account is {####}",
+                      "emailSubject": "Verify your new account",
+                      "smsMessage": "The verification code to your new account is {####}"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-cognito.CfnUserPool",
+                  "version": "0.0.0"
+                }
+              },
+              "testClient": {
+                "id": "testClient",
+                "path": "integ-identitypool/Pool/testClient",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "integ-identitypool/Pool/testClient/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::Cognito::UserPoolClient",
+                      "aws:cdk:cloudformation:props": {
+                        "userPoolId": {
+                          "Ref": "PoolD3F588B8"
+                        },
+                        "allowedOAuthFlows": [
+                          "implicit",
+                          "code"
+                        ],
+                        "allowedOAuthFlowsUserPoolClient": true,
+                        "allowedOAuthScopes": [
+                          "profile",
+                          "phone",
+                          "email",
+                          "openid",
+                          "aws.cognito.signin.user.admin"
+                        ],
+                        "callbackUrLs": [
+                          "https://example.com"
+                        ],
+                        "supportedIdentityProviders": [
+                          {
+                            "Ref": "PoolProviderGoogle76A1E8D0"
+                          },
+                          "COGNITO"
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-cognito.CfnUserPoolClient",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-cognito.UserPoolClient",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-cognito.UserPool",
+              "version": "0.0.0"
+            }
+          },
+          "PoolProviderGoogle": {
+            "id": "PoolProviderGoogle",
+            "path": "integ-identitypool/PoolProviderGoogle",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "integ-identitypool/PoolProviderGoogle/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Cognito::UserPoolIdentityProvider",
+                  "aws:cdk:cloudformation:props": {
+                    "providerName": "Google",
+                    "providerType": "Google",
+                    "userPoolId": {
+                      "Ref": "PoolD3F588B8"
+                    },
+                    "attributeMapping": {
+                      "given_name": "given_name",
+                      "family_name": "family_name",
+                      "email": "email",
+                      "gender": "gender",
+                      "names": "names"
+                    },
+                    "providerDetails": {
+                      "client_id": "google-client-id",
+                      "client_secret": "google-client-secret",
+                      "authorize_scopes": "profile"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-cognito.CfnUserPoolIdentityProvider",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-cognito.UserPoolIdentityProviderGoogle",
+              "version": "0.0.0"
+            }
+          },
+          "OtherPool": {
+            "id": "OtherPool",
+            "path": "integ-identitypool/OtherPool",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "integ-identitypool/OtherPool/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Cognito::UserPool",
+                  "aws:cdk:cloudformation:props": {
+                    "accountRecoverySetting": {
+                      "recoveryMechanisms": [
+                        {
+                          "name": "verified_phone_number",
+                          "priority": 1
+                        },
+                        {
+                          "name": "verified_email",
+                          "priority": 2
+                        }
+                      ]
+                    },
+                    "adminCreateUserConfig": {
+                      "allowAdminCreateUserOnly": true
+                    },
+                    "emailVerificationMessage": "The verification code to your new account is {####}",
+                    "emailVerificationSubject": "Verify your new account",
+                    "smsVerificationMessage": "The verification code to your new account is {####}",
+                    "verificationMessageTemplate": {
+                      "defaultEmailOption": "CONFIRM_WITH_CODE",
+                      "emailMessage": "The verification code to your new account is {####}",
+                      "emailSubject": "Verify your new account",
+                      "smsMessage": "The verification code to your new account is {####}"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-cognito.CfnUserPool",
+                  "version": "0.0.0"
+                }
+              },
+              "UserPoolAuthenticationProviderClient": {
+                "id": "UserPoolAuthenticationProviderClient",
+                "path": "integ-identitypool/OtherPool/UserPoolAuthenticationProviderClient",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "integ-identitypool/OtherPool/UserPoolAuthenticationProviderClient/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::Cognito::UserPoolClient",
+                      "aws:cdk:cloudformation:props": {
+                        "userPoolId": {
+                          "Ref": "OtherPool7DA7F2F7"
+                        },
+                        "allowedOAuthFlows": [
+                          "implicit",
+                          "code"
+                        ],
+                        "allowedOAuthFlowsUserPoolClient": true,
+                        "allowedOAuthScopes": [
+                          "profile",
+                          "phone",
+                          "email",
+                          "openid",
+                          "aws.cognito.signin.user.admin"
+                        ],
+                        "callbackUrLs": [
+                          "https://example.com"
+                        ],
+                        "supportedIdentityProviders": [
+                          {
+                            "Ref": "OtherPoolProviderAmazon4EB0592F"
+                          },
+                          "COGNITO"
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-cognito.CfnUserPoolClient",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-cognito.UserPoolClient",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-cognito.UserPool",
+              "version": "0.0.0"
+            }
+          },
+          "OtherPoolProviderAmazon": {
+            "id": "OtherPoolProviderAmazon",
+            "path": "integ-identitypool/OtherPoolProviderAmazon",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "integ-identitypool/OtherPoolProviderAmazon/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Cognito::UserPoolIdentityProvider",
+                  "aws:cdk:cloudformation:props": {
+                    "providerName": "LoginWithAmazon",
+                    "providerType": "LoginWithAmazon",
+                    "userPoolId": {
+                      "Ref": "OtherPool7DA7F2F7"
+                    },
+                    "attributeMapping": {
+                      "given_name": "name",
+                      "email": "email",
+                      "userId": "user_id"
+                    },
+                    "providerDetails": {
+                      "client_id": "amzn-client-id",
+                      "client_secret": "amzn-client-secret",
+                      "authorize_scopes": "profile"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-cognito.CfnUserPoolIdentityProvider",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-cognito.UserPoolIdentityProviderAmazon",
+              "version": "0.0.0"
+            }
+          },
+          "identitypool": {
+            "id": "identitypool",
+            "path": "integ-identitypool/identitypool",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "integ-identitypool/identitypool/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Cognito::IdentityPool",
+                  "aws:cdk:cloudformation:props": {
+                    "allowUnauthenticatedIdentities": false,
+                    "allowClassicFlow": true,
+                    "cognitoIdentityProviders": [
+                      {
+                        "clientId": {
+                          "Ref": "PooltestClientFE8D4935"
+                        },
+                        "providerName": {
+                          "Fn::Join": [
+                            "",
+                            [
+                              "cognito-idp.",
+                              {
+                                "Ref": "AWS::Region"
+                              },
+                              ".",
+                              {
+                                "Ref": "AWS::URLSuffix"
+                              },
+                              "/",
+                              {
+                                "Ref": "PoolD3F588B8"
+                              }
+                            ]
+                          ]
+                        },
+                        "serverSideTokenCheck": true
+                      },
+                      {
+                        "clientId": {
+                          "Ref": "OtherPoolUserPoolAuthenticationProviderClient08F670F8"
+                        },
+                        "providerName": {
+                          "Fn::Join": [
+                            "",
+                            [
+                              "cognito-idp.",
+                              {
+                                "Ref": "AWS::Region"
+                              },
+                              ".",
+                              {
+                                "Ref": "AWS::URLSuffix"
+                              },
+                              "/",
+                              {
+                                "Ref": "OtherPool7DA7F2F7"
+                              }
+                            ]
+                          ]
+                        },
+                        "serverSideTokenCheck": true
+                      }
+                    ],
+                    "identityPoolName": "my-id-pool",
+                    "supportedLoginProviders": {
+                      "www.amazon.com": "amzn1.application.12312k3j234j13rjiwuenf",
+                      "accounts.google.com": "12345678012.apps.googleusercontent.com"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-cognito.CfnIdentityPool",
+                  "version": "0.0.0"
+                }
+              },
+              "AuthenticatedRole": {
+                "id": "AuthenticatedRole",
+                "path": "integ-identitypool/identitypool/AuthenticatedRole",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "integ-identitypool/identitypool/AuthenticatedRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRoleWithWebIdentity",
+                              "Condition": {
+                                "StringEquals": {
+                                  "cognito-identity.amazonaws.com:aud": {
+                                    "Ref": "identitypoolE2A6D099"
+                                  }
+                                },
+                                "ForAnyValue:StringLike": {
+                                  "cognito-identity.amazonaws.com:amr": "authenticated"
+                                }
+                              },
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Federated": "cognito-identity.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "description": {
+                          "Fn::Join": [
+                            "",
+                            [
+                              "Default Authenticated Role for Identity Pool ",
+                              {
+                                "Fn::GetAtt": [
+                                  "identitypoolE2A6D099",
+                                  "Name"
+                                ]
+                              }
+                            ]
+                          ]
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "DefaultPolicy": {
+                    "id": "DefaultPolicy",
+                    "path": "integ-identitypool/identitypool/AuthenticatedRole/DefaultPolicy",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "integ-identitypool/identitypool/AuthenticatedRole/DefaultPolicy/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": "dynamodb:*",
+                                  "Effect": "Allow",
+                                  "Resource": "*"
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "identitypoolAuthenticatedRoleDefaultPolicyCB4D2992",
+                            "roles": [
+                              {
+                                "Ref": "identitypoolAuthenticatedRoleB074B49D"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-iam.CfnPolicy",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.Policy",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.Role",
+                  "version": "0.0.0"
+                }
+              },
+              "UnauthenticatedRole": {
+                "id": "UnauthenticatedRole",
+                "path": "integ-identitypool/identitypool/UnauthenticatedRole",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "integ-identitypool/identitypool/UnauthenticatedRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRoleWithWebIdentity",
+                              "Condition": {
+                                "StringEquals": {
+                                  "cognito-identity.amazonaws.com:aud": {
+                                    "Ref": "identitypoolE2A6D099"
+                                  }
+                                },
+                                "ForAnyValue:StringLike": {
+                                  "cognito-identity.amazonaws.com:amr": "unauthenticated"
+                                }
+                              },
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Federated": "cognito-identity.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "description": {
+                          "Fn::Join": [
+                            "",
+                            [
+                              "Default Unauthenticated Role for Identity Pool ",
+                              {
+                                "Fn::GetAtt": [
+                                  "identitypoolE2A6D099",
+                                  "Name"
+                                ]
+                              }
+                            ]
+                          ]
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "DefaultPolicy": {
+                    "id": "DefaultPolicy",
+                    "path": "integ-identitypool/identitypool/UnauthenticatedRole/DefaultPolicy",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "integ-identitypool/identitypool/UnauthenticatedRole/DefaultPolicy/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": "dynamodb:Get*",
+                                  "Effect": "Allow",
+                                  "Resource": "*"
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "identitypoolUnauthenticatedRoleDefaultPolicyBFACCE98",
+                            "roles": [
+                              {
+                                "Ref": "identitypoolUnauthenticatedRoleE61CAC70"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-iam.CfnPolicy",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-iam.Policy",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-iam.Role",
+                  "version": "0.0.0"
+                }
+              },
+              "DefaultRoleAttachment": {
+                "id": "DefaultRoleAttachment",
+                "path": "integ-identitypool/identitypool/DefaultRoleAttachment",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "integ-identitypool/identitypool/DefaultRoleAttachment/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::Cognito::IdentityPoolRoleAttachment",
+                      "aws:cdk:cloudformation:props": {
+                        "identityPoolId": {
+                          "Ref": "identitypoolE2A6D099"
+                        },
+                        "roleMappings": {
+                          "theKey": {
+                            "ambiguousRoleResolution": "Deny",
+                            "type": "Token",
+                            "identityProvider": {
+                              "Fn::Join": [
+                                "",
+                                [
+                                  {
+                                    "Fn::GetAtt": [
+                                      "PoolD3F588B8",
+                                      "ProviderName"
+                                    ]
+                                  },
+                                  ":",
+                                  {
+                                    "Ref": "PooltestClientFE8D4935"
+                                  }
+                                ]
+                              ]
+                            }
+                          }
+                        },
+                        "roles": {
+                          "authenticated": {
+                            "Fn::GetAtt": [
+                              "identitypoolAuthenticatedRoleB074B49D",
+                              "Arn"
+                            ]
+                          },
+                          "unauthenticated": {
+                            "Fn::GetAtt": [
+                              "identitypoolUnauthenticatedRoleE61CAC70",
+                              "Arn"
+                            ]
+                          }
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-cognito.CfnIdentityPoolRoleAttachment",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-cognito-identitypool.IdentityPoolRoleAttachment",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-cognito-identitypool.IdentityPool",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.85"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "constructs.Construct",
+      "version": "10.1.85"
+    }
+  }
+}

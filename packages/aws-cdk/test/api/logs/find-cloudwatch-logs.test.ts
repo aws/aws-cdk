@@ -1,3 +1,4 @@
+/* eslint-disable import/order */
 import * as cxapi from '@aws-cdk/cx-api';
 import { CloudFormation } from 'aws-sdk';
 import { findCloudWatchLogGroups } from '../../../lib/api/logs/find-cloudwatch-logs';
@@ -36,6 +37,66 @@ test('add log groups from lambda function', async () => {
 
   // THEN
   expect(result.logGroupNames).toEqual(['/aws/lambda/my-function']);
+});
+
+test('add log groups from lambda function when using custom LoggingConfig', async () => {
+  // GIVEN
+  const cdkStackArtifact = cdkStackArtifactOf({
+    template: {
+      Resources: {
+        Func: {
+          Type: 'AWS::Lambda::Function',
+          Properties: {
+            FunctionName: 'my-function',
+            LoggingConfig: {
+              LogGroup: '/this/custom/my-custom-log-group',
+            },
+          },
+        },
+      },
+    },
+  });
+  pushStackResourceSummaries(stackSummaryOf('Func', 'AWS::Lambda::Function', 'my-function'));
+
+  // WHEN
+  const result = await findCloudWatchLogGroups(logsMockSdkProvider.mockSdkProvider, cdkStackArtifact);
+
+  // THEN
+  expect(result.logGroupNames).toEqual(['/this/custom/my-custom-log-group']);
+});
+
+test('add log groups from lambda function when using custom LoggingConfig using Ref', async () => {
+  // GIVEN
+  const cdkStackArtifact = cdkStackArtifactOf({
+    template: {
+      Resources: {
+        MyCustomLogGroupLogicalId: {
+          Type: 'AWS::Logs::LogGroup',
+          Properties: {
+            LogGroupName: '/this/custom/my-custom-log-group',
+          },
+        },
+        Func: {
+          Type: 'AWS::Lambda::Function',
+          Properties: {
+            FunctionName: 'my-function',
+            LoggingConfig: {
+              LogGroup: {
+                Ref: 'MyCustomLogGroupLogicalId',
+              },
+            },
+          },
+        },
+      },
+    },
+  });
+  pushStackResourceSummaries(stackSummaryOf('Func', 'AWS::Lambda::Function', 'my-function'));
+
+  // WHEN
+  const result = await findCloudWatchLogGroups(logsMockSdkProvider.mockSdkProvider, cdkStackArtifact);
+
+  // THEN
+  expect(result.logGroupNames).toEqual(['/this/custom/my-custom-log-group']);
 });
 
 test('add log groups from lambda function without physical name', async () => {

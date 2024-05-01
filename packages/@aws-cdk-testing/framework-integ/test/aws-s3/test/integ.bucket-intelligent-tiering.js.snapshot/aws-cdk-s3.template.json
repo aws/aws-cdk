@@ -1,0 +1,68 @@
+{
+ "Resources": {
+  "MyBucketF68F3FF0": {
+   "Type": "AWS::S3::Bucket",
+   "Properties": {
+    "IntelligentTieringConfigurations": [
+     {
+      "Id": "foo",
+      "Prefix": "bar",
+      "Status": "Enabled",
+      "TagFilters": [
+       {
+        "Key": "test",
+        "Value": "bazz"
+       }
+      ],
+      "Tierings": [
+       {
+        "AccessTier": "ARCHIVE_ACCESS",
+        "Days": 90
+       },
+       {
+        "AccessTier": "DEEP_ARCHIVE_ACCESS",
+        "Days": 180
+       }
+      ]
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

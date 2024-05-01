@@ -1,0 +1,373 @@
+{
+ "Resources": {
+  "TableCD117FA1": {
+   "Type": "AWS::DynamoDB::Table",
+   "Properties": {
+    "KeySchema": [
+     {
+      "AttributeName": "hashKey",
+      "KeyType": "HASH"
+     }
+    ],
+    "AttributeDefinitions": [
+     {
+      "AttributeName": "hashKey",
+      "AttributeType": "S"
+     }
+    ],
+    "BillingMode": "PAY_PER_REQUEST"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "TableWithGlobalAndLocalSecondaryIndexBC540710": {
+   "Type": "AWS::DynamoDB::Table",
+   "Properties": {
+    "KeySchema": [
+     {
+      "AttributeName": "hashKey",
+      "KeyType": "HASH"
+     },
+     {
+      "AttributeName": "sortKey",
+      "KeyType": "RANGE"
+     }
+    ],
+    "AttributeDefinitions": [
+     {
+      "AttributeName": "hashKey",
+      "AttributeType": "S"
+     },
+     {
+      "AttributeName": "sortKey",
+      "AttributeType": "N"
+     },
+     {
+      "AttributeName": "gsiHashKey",
+      "AttributeType": "S"
+     },
+     {
+      "AttributeName": "gsiSortKey",
+      "AttributeType": "N"
+     },
+     {
+      "AttributeName": "lsiSortKey",
+      "AttributeType": "N"
+     }
+    ],
+    "BillingMode": "PAY_PER_REQUEST",
+    "GlobalSecondaryIndexes": [
+     {
+      "IndexName": "GSI-PartitionKeyOnly",
+      "KeySchema": [
+       {
+        "AttributeName": "gsiHashKey",
+        "KeyType": "HASH"
+       }
+      ],
+      "Projection": {
+       "ProjectionType": "ALL"
+      }
+     },
+     {
+      "IndexName": "GSI-PartitionAndSortKeyWithReadAndWriteCapacity",
+      "KeySchema": [
+       {
+        "AttributeName": "gsiHashKey",
+        "KeyType": "HASH"
+       },
+       {
+        "AttributeName": "gsiSortKey",
+        "KeyType": "RANGE"
+       }
+      ],
+      "Projection": {
+       "ProjectionType": "ALL"
+      }
+     },
+     {
+      "IndexName": "GSI-ProjectionTypeKeysOnly",
+      "KeySchema": [
+       {
+        "AttributeName": "gsiHashKey",
+        "KeyType": "HASH"
+       },
+       {
+        "AttributeName": "gsiSortKey",
+        "KeyType": "RANGE"
+       }
+      ],
+      "Projection": {
+       "ProjectionType": "KEYS_ONLY"
+      }
+     },
+     {
+      "IndexName": "GSI-ProjectionTypeInclude",
+      "KeySchema": [
+       {
+        "AttributeName": "gsiHashKey",
+        "KeyType": "HASH"
+       },
+       {
+        "AttributeName": "gsiSortKey",
+        "KeyType": "RANGE"
+       }
+      ],
+      "Projection": {
+       "NonKeyAttributes": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E",
+        "F",
+        "G",
+        "H",
+        "I",
+        "J"
+       ],
+       "ProjectionType": "INCLUDE"
+      }
+     },
+     {
+      "IndexName": "GSI-InverseTableKeySchema",
+      "KeySchema": [
+       {
+        "AttributeName": "sortKey",
+        "KeyType": "HASH"
+       },
+       {
+        "AttributeName": "hashKey",
+        "KeyType": "RANGE"
+       }
+      ],
+      "Projection": {
+       "ProjectionType": "ALL"
+      }
+     }
+    ],
+    "LocalSecondaryIndexes": [
+     {
+      "IndexName": "LSI-PartitionAndTableSortKey",
+      "KeySchema": [
+       {
+        "AttributeName": "hashKey",
+        "KeyType": "HASH"
+       },
+       {
+        "AttributeName": "lsiSortKey",
+        "KeyType": "RANGE"
+       }
+      ],
+      "Projection": {
+       "ProjectionType": "ALL"
+      }
+     },
+     {
+      "IndexName": "LSI-PartitionAndSortKey",
+      "KeySchema": [
+       {
+        "AttributeName": "hashKey",
+        "KeyType": "HASH"
+       },
+       {
+        "AttributeName": "sortKey",
+        "KeyType": "RANGE"
+       }
+      ],
+      "Projection": {
+       "ProjectionType": "ALL"
+      }
+     },
+     {
+      "IndexName": "LSI-ProjectionTypeKeysOnly",
+      "KeySchema": [
+       {
+        "AttributeName": "hashKey",
+        "KeyType": "HASH"
+       },
+       {
+        "AttributeName": "lsiSortKey",
+        "KeyType": "RANGE"
+       }
+      ],
+      "Projection": {
+       "ProjectionType": "KEYS_ONLY"
+      }
+     },
+     {
+      "IndexName": "LSI-ProjectionTypeInclude",
+      "KeySchema": [
+       {
+        "AttributeName": "hashKey",
+        "KeyType": "HASH"
+       },
+       {
+        "AttributeName": "lsiSortKey",
+        "KeyType": "RANGE"
+       }
+      ],
+      "Projection": {
+       "NonKeyAttributes": [
+        "K",
+        "L",
+        "M",
+        "N",
+        "O",
+        "P",
+        "Q",
+        "R",
+        "S",
+        "T"
+       ],
+       "ProjectionType": "INCLUDE"
+      }
+     }
+    ],
+    "PointInTimeRecoverySpecification": {
+     "PointInTimeRecoveryEnabled": true
+    },
+    "SSESpecification": {
+     "SSEEnabled": true
+    },
+    "StreamSpecification": {
+     "StreamViewType": "KEYS_ONLY"
+    },
+    "Tags": [
+     {
+      "Key": "Environment",
+      "Value": "Production"
+     }
+    ],
+    "TimeToLiveSpecification": {
+     "AttributeName": "timeToLive",
+     "Enabled": true
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "TableWithGlobalSecondaryIndexCC8E841E": {
+   "Type": "AWS::DynamoDB::Table",
+   "Properties": {
+    "KeySchema": [
+     {
+      "AttributeName": "hashKey",
+      "KeyType": "HASH"
+     }
+    ],
+    "AttributeDefinitions": [
+     {
+      "AttributeName": "hashKey",
+      "AttributeType": "S"
+     },
+     {
+      "AttributeName": "gsiHashKey",
+      "AttributeType": "S"
+     }
+    ],
+    "BillingMode": "PAY_PER_REQUEST",
+    "GlobalSecondaryIndexes": [
+     {
+      "IndexName": "GSI-PartitionKeyOnly",
+      "KeySchema": [
+       {
+        "AttributeName": "gsiHashKey",
+        "KeyType": "HASH"
+       }
+      ],
+      "Projection": {
+       "ProjectionType": "ALL"
+      }
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "TableWithLocalSecondaryIndex4DA3D08F": {
+   "Type": "AWS::DynamoDB::Table",
+   "Properties": {
+    "KeySchema": [
+     {
+      "AttributeName": "hashKey",
+      "KeyType": "HASH"
+     },
+     {
+      "AttributeName": "sortKey",
+      "KeyType": "RANGE"
+     }
+    ],
+    "AttributeDefinitions": [
+     {
+      "AttributeName": "hashKey",
+      "AttributeType": "S"
+     },
+     {
+      "AttributeName": "sortKey",
+      "AttributeType": "N"
+     },
+     {
+      "AttributeName": "lsiSortKey",
+      "AttributeType": "N"
+     }
+    ],
+    "BillingMode": "PAY_PER_REQUEST",
+    "LocalSecondaryIndexes": [
+     {
+      "IndexName": "LSI-PartitionAndSortKey",
+      "KeySchema": [
+       {
+        "AttributeName": "hashKey",
+        "KeyType": "HASH"
+       },
+       {
+        "AttributeName": "lsiSortKey",
+        "KeyType": "RANGE"
+       }
+      ],
+      "Projection": {
+       "ProjectionType": "ALL"
+      }
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

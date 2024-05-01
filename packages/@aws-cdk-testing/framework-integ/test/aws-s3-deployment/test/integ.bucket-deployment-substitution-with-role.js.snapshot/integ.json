@@ -1,0 +1,12 @@
+{
+  "version": "33.0.0",
+  "testCases": {
+    "test-s3-deploy-substitution-with-role/DefaultTest": {
+      "stacks": [
+        "cdk-s3-deploy-substitution-with-role"
+      ],
+      "assertionStack": "test-s3-deploy-substitution-with-role/DefaultTest/DeployAssert",
+      "assertionStackName": "tests3deploysubstitutionwithroleDefaultTestDeployAssertC49A4480"
+    }
+  }
+}

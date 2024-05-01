@@ -1,3 +1,4 @@
+/* eslint-disable import/order */
 import * as aws from 'aws-sdk';
 import * as AWS from 'aws-sdk-mock';
 import { AmiContextProviderPlugin } from '../../lib/context-providers/ami';

@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "dotnet": {
+      "namespace": "Amazon.CDK.AWS.ControlTower"
+    },
+    "java": {
+      "package": "software.amazon.awscdk.services.controltower"
+    },
+    "python": {
+      "module": "aws_cdk.aws_controltower"
+    }
+  }
+}

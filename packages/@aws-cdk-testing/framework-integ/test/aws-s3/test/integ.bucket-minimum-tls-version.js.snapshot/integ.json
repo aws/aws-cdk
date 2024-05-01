@@ -1,0 +1,12 @@
+{
+  "version": "33.0.0",
+  "testCases": {
+    "aws-cdk-s3-minimum-tls-version-integration/DefaultTest": {
+      "stacks": [
+        "aws-cdk-s3-minimum-tls-version"
+      ],
+      "assertionStack": "aws-cdk-s3-minimum-tls-version-integration/DefaultTest/DeployAssert",
+      "assertionStackName": "awscdks3minimumtlsversionintegrationDefaultTestDeployAssert7BC7B4EF"
+    }
+  }
+}

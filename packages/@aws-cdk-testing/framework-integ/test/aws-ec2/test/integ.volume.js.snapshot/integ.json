@@ -1,0 +1,12 @@
+{
+  "version": "30.0.0",
+  "testCases": {
+    "VolumeTest/DefaultTest": {
+      "stacks": [
+        "aws-cdk-ec2-volume-1"
+      ],
+      "assertionStack": "VolumeTest/DefaultTest/DeployAssert",
+      "assertionStackName": "VolumeTestDefaultTestDeployAssert896AAE82"
+    }
+  }
+}

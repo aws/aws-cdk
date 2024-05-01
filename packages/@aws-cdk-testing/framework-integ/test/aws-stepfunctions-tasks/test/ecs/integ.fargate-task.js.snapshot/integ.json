@@ -1,0 +1,12 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "SfnTasksEcsFargateTaskTest/DefaultTest": {
+      "stacks": [
+        "aws-sfn-tasks-ecs-fargate-task"
+      ],
+      "assertionStack": "SfnTasksEcsFargateTaskTest/DefaultTest/DeployAssert",
+      "assertionStackName": "SfnTasksEcsFargateTaskTestDefaultTestDeployAssert83C8E074"
+    }
+  }
+}

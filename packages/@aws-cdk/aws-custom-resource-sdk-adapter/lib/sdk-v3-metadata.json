@@ -1,0 +1,1141 @@
+{
+  "accessanalyzer": {
+    "iamPrefix": "access-analyzer"
+  },
+  "account": {
+    "iamPrefix": "account"
+  },
+  "acm-pca": {
+    "iamPrefix": "acm-pca"
+  },
+  "acm": {
+    "iamPrefix": "acm"
+  },
+  "alexa-for-business": {
+    "iamPrefix": "a4b"
+  },
+  "amp": {
+    "iamPrefix": "aps"
+  },
+  "amplify": {
+    "iamPrefix": "amplify"
+  },
+  "amplifybackend": {
+    "iamPrefix": "amplifybackend"
+  },
+  "amplifyuibuilder": {
+    "iamPrefix": "amplifyuibuilder"
+  },
+  "api-gateway": {
+    "iamPrefix": "apigateway"
+  },
+  "apigatewaymanagementapi": {
+    "iamPrefix": "execute-api"
+  },
+  "apigatewayv2": {
+    "iamPrefix": "apigateway"
+  },
+  "app-mesh": {
+    "iamPrefix": "appmesh"
+  },
+  "appconfig": {
+    "iamPrefix": "appconfig"
+  },
+  "appconfigdata": {
+    "iamPrefix": "appconfig"
+  },
+  "appfabric": {
+    "iamPrefix": "appfabric"
+  },
+  "appflow": {
+    "iamPrefix": "appflow"
+  },
+  "appintegrations": {
+    "iamPrefix": "app-integrations"
+  },
+  "application-auto-scaling": {
+    "iamPrefix": "application-autoscaling"
+  },
+  "application-discovery-service": {
+    "iamPrefix": "discovery"
+  },
+  "application-insights": {
+    "iamPrefix": "applicationinsights"
+  },
+  "applicationcostprofiler": {
+    "iamPrefix": "application-cost-profiler"
+  },
+  "apprunner": {
+    "iamPrefix": "apprunner"
+  },
+  "appstream": {
+    "iamPrefix": "appstream"
+  },
+  "appsync": {
+    "iamPrefix": "appsync"
+  },
+  "arc-zonal-shift": {
+    "iamPrefix": "arc-zonal-shift"
+  },
+  "athena": {
+    "iamPrefix": "athena"
+  },
+  "auditmanager": {
+    "iamPrefix": "auditmanager"
+  },
+  "auto-scaling-plans": {
+    "iamPrefix": "autoscaling-plans"
+  },
+  "auto-scaling": {
+    "iamPrefix": "autoscaling"
+  },
+  "b2bi": {
+    "iamPrefix": "b2bi"
+  },
+  "backup-gateway": {
+    "iamPrefix": "backup-gateway"
+  },
+  "backup": {
+    "iamPrefix": "backup"
+  },
+  "backupstorage": {
+    "iamPrefix": "backup-storage"
+  },
+  "batch": {
+    "iamPrefix": "batch"
+  },
+  "bcm-data-exports": {
+    "iamPrefix": "bcm-data-exports"
+  },
+  "bedrock-agent-runtime": {
+    "iamPrefix": "bedrock"
+  },
+  "bedrock-agent": {
+    "iamPrefix": "bedrock"
+  },
+  "bedrock-runtime": {
+    "iamPrefix": "bedrock"
+  },
+  "bedrock": {
+    "iamPrefix": "bedrock"
+  },
+  "billingconductor": {
+    "iamPrefix": "billingconductor"
+  },
+  "braket": {
+    "iamPrefix": "braket"
+  },
+  "budgets": {
+    "iamPrefix": "budgets"
+  },
+  "chime-sdk-identity": {
+    "iamPrefix": "chime"
+  },
+  "chime-sdk-media-pipelines": {
+    "iamPrefix": "chime"
+  },
+  "chime-sdk-meetings": {
+    "iamPrefix": "chime"
+  },
+  "chime-sdk-messaging": {
+    "iamPrefix": "chime"
+  },
+  "chime-sdk-voice": {
+    "iamPrefix": "chime"
+  },
+  "chime": {
+    "iamPrefix": "chime"
+  },
+  "cleanrooms": {
+    "iamPrefix": "cleanrooms"
+  },
+  "cleanroomsml": {
+    "iamPrefix": "cleanrooms-ml"
+  },
+  "cloud9": {
+    "iamPrefix": "cloud9"
+  },
+  "cloudcontrol": {
+    "iamPrefix": "cloudcontrolapi"
+  },
+  "clouddirectory": {
+    "iamPrefix": "clouddirectory"
+  },
+  "cloudformation": {
+    "iamPrefix": "cloudformation"
+  },
+  "cloudfront-keyvaluestore": {
+    "iamPrefix": "cloudfront-keyvaluestore"
+  },
+  "cloudfront": {
+    "iamPrefix": "cloudfront"
+  },
+  "cloudhsm-v2": {
+    "iamPrefix": "cloudhsm"
+  },
+  "cloudhsm": {
+    "iamPrefix": "cloudhsm"
+  },
+  "cloudsearch-domain": {
+    "iamPrefix": "cloudsearch"
+  },
+  "cloudsearch": {
+    "iamPrefix": "cloudsearch"
+  },
+  "cloudtrail-data": {
+    "iamPrefix": "cloudtrail-data"
+  },
+  "cloudtrail": {
+    "iamPrefix": "cloudtrail"
+  },
+  "cloudwatch-events": {
+    "iamPrefix": "events"
+  },
+  "cloudwatch-logs": {
+    "iamPrefix": "logs"
+  },
+  "cloudwatch": {
+    "iamPrefix": "monitoring"
+  },
+  "codeartifact": {
+    "iamPrefix": "codeartifact"
+  },
+  "codebuild": {
+    "iamPrefix": "codebuild"
+  },
+  "codecatalyst": {},
+  "codecommit": {
+    "iamPrefix": "codecommit"
+  },
+  "codedeploy": {
+    "iamPrefix": "codedeploy"
+  },
+  "codeguru-reviewer": {
+    "iamPrefix": "codeguru-reviewer"
+  },
+  "codeguru-security": {
+    "iamPrefix": "codeguru-security"
+  },
+  "codeguruprofiler": {
+    "iamPrefix": "codeguru-profiler"
+  },
+  "codepipeline": {
+    "iamPrefix": "codepipeline"
+  },
+  "codestar-connections": {
+    "iamPrefix": "codestar-connections"
+  },
+  "codestar-notifications": {
+    "iamPrefix": "codestar-notifications"
+  },
+  "codestar": {
+    "iamPrefix": "codestar"
+  },
+  "cognito-identity-provider": {
+    "iamPrefix": "cognito-idp"
+  },
+  "cognito-identity": {
+    "iamPrefix": "cognito-identity"
+  },
+  "cognito-sync": {
+    "iamPrefix": "cognito-sync"
+  },
+  "comprehend": {
+    "iamPrefix": "comprehend"
+  },
+  "comprehendmedical": {
+    "iamPrefix": "comprehendmedical"
+  },
+  "compute-optimizer": {
+    "iamPrefix": "compute-optimizer"
+  },
+  "config-service": {
+    "iamPrefix": "config"
+  },
+  "connect-contact-lens": {
+    "iamPrefix": "connect"
+  },
+  "connect": {
+    "iamPrefix": "connect"
+  },
+  "connectcampaigns": {
+    "iamPrefix": "connect-campaigns"
+  },
+  "connectcases": {
+    "iamPrefix": "cases"
+  },
+  "connectparticipant": {
+    "iamPrefix": "execute-api"
+  },
+  "controltower": {
+    "iamPrefix": "controltower"
+  },
+  "cost-and-usage-report-service": {
+    "iamPrefix": "cur"
+  },
+  "cost-explorer": {
+    "iamPrefix": "ce"
+  },
+  "cost-optimization-hub": {
+    "iamPrefix": "cost-optimization-hub"
+  },
+  "customer-profiles": {
+    "iamPrefix": "profile"
+  },
+  "data-pipeline": {
+    "iamPrefix": "datapipeline"
+  },
+  "database-migration-service": {
+    "iamPrefix": "dms"
+  },
+  "databrew": {
+    "iamPrefix": "databrew"
+  },
+  "dataexchange": {
+    "iamPrefix": "dataexchange"
+  },
+  "datasync": {
+    "iamPrefix": "datasync"
+  },
+  "datazone": {
+    "iamPrefix": "datazone"
+  },
+  "dax": {
+    "iamPrefix": "dax"
+  },
+  "detective": {
+    "iamPrefix": "detective"
+  },
+  "device-farm": {
+    "iamPrefix": "devicefarm"
+  },
+  "devops-guru": {
+    "iamPrefix": "devops-guru"
+  },
+  "direct-connect": {
+    "iamPrefix": "directconnect"
+  },
+  "directory-service": {
+    "iamPrefix": "ds"
+  },
+  "dlm": {
+    "iamPrefix": "dlm"
+  },
+  "docdb-elastic": {
+    "iamPrefix": "docdb-elastic"
+  },
+  "docdb": {
+    "iamPrefix": "rds"
+  },
+  "drs": {
+    "iamPrefix": "drs"
+  },
+  "dynamodb-streams": {
+    "iamPrefix": "dynamodb"
+  },
+  "dynamodb": {
+    "iamPrefix": "dynamodb"
+  },
+  "ebs": {
+    "iamPrefix": "ebs"
+  },
+  "ec2-instance-connect": {
+    "iamPrefix": "ec2-instance-connect"
+  },
+  "ec2": {
+    "iamPrefix": "ec2"
+  },
+  "ecr-public": {
+    "iamPrefix": "ecr-public"
+  },
+  "ecr": {
+    "iamPrefix": "ecr"
+  },
+  "ecs": {
+    "iamPrefix": "ecs",
+    "commands": [
+      "ExecuteCommand"
+    ]
+  },
+  "efs": {
+    "iamPrefix": "elasticfilesystem"
+  },
+  "eks-auth": {
+    "iamPrefix": "eks-auth"
+  },
+  "eks": {
+    "iamPrefix": "eks"
+  },
+  "elastic-beanstalk": {
+    "iamPrefix": "elasticbeanstalk"
+  },
+  "elastic-inference": {
+    "iamPrefix": "elastic-inference"
+  },
+  "elastic-load-balancing-v2": {
+    "iamPrefix": "elasticloadbalancing"
+  },
+  "elastic-load-balancing": {
+    "iamPrefix": "elasticloadbalancing"
+  },
+  "elastic-transcoder": {
+    "iamPrefix": "elastictranscoder"
+  },
+  "elasticache": {
+    "iamPrefix": "elasticache"
+  },
+  "elasticsearch-service": {
+    "iamPrefix": "es"
+  },
+  "emr-containers": {
+    "iamPrefix": "emr-containers"
+  },
+  "emr-serverless": {
+    "iamPrefix": "emr-serverless"
+  },
+  "emr": {
+    "iamPrefix": "elasticmapreduce"
+  },
+  "entityresolution": {
+    "iamPrefix": "entityresolution"
+  },
+  "eventbridge": {
+    "iamPrefix": "events"
+  },
+  "evidently": {
+    "iamPrefix": "evidently"
+  },
+  "finspace-data": {
+    "iamPrefix": "finspace-api"
+  },
+  "finspace": {
+    "iamPrefix": "finspace"
+  },
+  "firehose": {
+    "iamPrefix": "firehose"
+  },
+  "fis": {
+    "iamPrefix": "fis"
+  },
+  "fms": {
+    "iamPrefix": "fms"
+  },
+  "forecast": {
+    "iamPrefix": "forecast"
+  },
+  "forecastquery": {
+    "iamPrefix": "forecast"
+  },
+  "frauddetector": {
+    "iamPrefix": "frauddetector"
+  },
+  "freetier": {
+    "iamPrefix": "freetier"
+  },
+  "fsx": {
+    "iamPrefix": "fsx"
+  },
+  "gamelift": {
+    "iamPrefix": "gamelift"
+  },
+  "glacier": {
+    "iamPrefix": "glacier"
+  },
+  "global-accelerator": {
+    "iamPrefix": "globalaccelerator"
+  },
+  "glue": {
+    "iamPrefix": "glue"
+  },
+  "grafana": {
+    "iamPrefix": "grafana"
+  },
+  "greengrass": {
+    "iamPrefix": "greengrass"
+  },
+  "greengrassv2": {
+    "iamPrefix": "greengrass"
+  },
+  "groundstation": {
+    "iamPrefix": "groundstation"
+  },
+  "guardduty": {
+    "iamPrefix": "guardduty"
+  },
+  "health": {
+    "iamPrefix": "health"
+  },
+  "healthlake": {
+    "iamPrefix": "healthlake"
+  },
+  "honeycode": {
+    "iamPrefix": "honeycode"
+  },
+  "iam": {
+    "iamPrefix": "iam"
+  },
+  "identitystore": {
+    "iamPrefix": "identitystore"
+  },
+  "imagebuilder": {
+    "iamPrefix": "imagebuilder"
+  },
+  "inspector-scan": {
+    "iamPrefix": "inspector-scan"
+  },
+  "inspector": {
+    "iamPrefix": "inspector"
+  },
+  "inspector2": {
+    "iamPrefix": "inspector2"
+  },
+  "internetmonitor": {
+    "iamPrefix": "internetmonitor"
+  },
+  "iot-1click-devices-service": {
+    "iamPrefix": "iot1click"
+  },
+  "iot-1click-projects": {
+    "iamPrefix": "iot1click"
+  },
+  "iot-data-plane": {
+    "iamPrefix": "iotdata"
+  },
+  "iot-events-data": {
+    "iamPrefix": "ioteventsdata"
+  },
+  "iot-events": {
+    "iamPrefix": "iotevents"
+  },
+  "iot-jobs-data-plane": {
+    "iamPrefix": "iot-jobs-data"
+  },
+  "iot-roborunner": {
+    "iamPrefix": "iotroborunner"
+  },
+  "iot-wireless": {
+    "iamPrefix": "iotwireless"
+  },
+  "iot": {
+    "iamPrefix": "iot"
+  },
+  "iotanalytics": {
+    "iamPrefix": "iotanalytics"
+  },
+  "iotdeviceadvisor": {
+    "iamPrefix": "iotdeviceadvisor"
+  },
+  "iotfleethub": {
+    "iamPrefix": "iotfleethub"
+  },
+  "iotfleetwise": {
+    "iamPrefix": "iotfleetwise"
+  },
+  "iotsecuretunneling": {
+    "iamPrefix": "IoTSecuredTunneling"
+  },
+  "iotsitewise": {
+    "iamPrefix": "iotsitewise"
+  },
+  "iotthingsgraph": {
+    "iamPrefix": "iotthingsgraph"
+  },
+  "iottwinmaker": {
+    "iamPrefix": "iottwinmaker"
+  },
+  "ivs-realtime": {
+    "iamPrefix": "ivs"
+  },
+  "ivs": {
+    "iamPrefix": "ivs"
+  },
+  "ivschat": {
+    "iamPrefix": "ivschat"
+  },
+  "kafka": {
+    "iamPrefix": "kafka"
+  },
+  "kafkaconnect": {
+    "iamPrefix": "kafkaconnect"
+  },
+  "kendra-ranking": {
+    "iamPrefix": "kendra-ranking"
+  },
+  "kendra": {
+    "iamPrefix": "kendra"
+  },
+  "keyspaces": {
+    "iamPrefix": "cassandra"
+  },
+  "kinesis-analytics-v2": {
+    "iamPrefix": "kinesisanalytics"
+  },
+  "kinesis-analytics": {
+    "iamPrefix": "kinesisanalytics"
+  },
+  "kinesis-video-archived-media": {
+    "iamPrefix": "kinesisvideo"
+  },
+  "kinesis-video-media": {
+    "iamPrefix": "kinesisvideo"
+  },
+  "kinesis-video-signaling": {
+    "iamPrefix": "kinesisvideo"
+  },
+  "kinesis-video-webrtc-storage": {
+    "iamPrefix": "kinesisvideo"
+  },
+  "kinesis-video": {
+    "iamPrefix": "kinesisvideo"
+  },
+  "kinesis": {
+    "iamPrefix": "kinesis"
+  },
+  "kms": {
+    "iamPrefix": "kms"
+  },
+  "lakeformation": {
+    "iamPrefix": "lakeformation"
+  },
+  "lambda": {
+    "iamPrefix": "lambda"
+  },
+  "launch-wizard": {
+    "iamPrefix": "launchwizard"
+  },
+  "lex-model-building-service": {
+    "iamPrefix": "lex"
+  },
+  "lex-models-v2": {
+    "iamPrefix": "lex"
+  },
+  "lex-runtime-service": {
+    "iamPrefix": "lex"
+  },
+  "lex-runtime-v2": {
+    "iamPrefix": "lex"
+  },
+  "license-manager-linux-subscriptions": {
+    "iamPrefix": "license-manager-linux-subscriptions"
+  },
+  "license-manager-user-subscriptions": {
+    "iamPrefix": "license-manager-user-subscriptions"
+  },
+  "license-manager": {
+    "iamPrefix": "license-manager"
+  },
+  "lightsail": {
+    "iamPrefix": "lightsail"
+  },
+  "location": {
+    "iamPrefix": "geo"
+  },
+  "lookoutequipment": {
+    "iamPrefix": "lookoutequipment"
+  },
+  "lookoutmetrics": {
+    "iamPrefix": "lookoutmetrics"
+  },
+  "lookoutvision": {
+    "iamPrefix": "lookoutvision"
+  },
+  "m2": {
+    "iamPrefix": "m2"
+  },
+  "machine-learning": {
+    "iamPrefix": "machinelearning"
+  },
+  "macie2": {
+    "iamPrefix": "macie2"
+  },
+  "managedblockchain-query": {
+    "iamPrefix": "managedblockchain-query"
+  },
+  "managedblockchain": {
+    "iamPrefix": "managedblockchain"
+  },
+  "marketplace-agreement": {
+    "iamPrefix": "aws-marketplace"
+  },
+  "marketplace-catalog": {
+    "iamPrefix": "aws-marketplace"
+  },
+  "marketplace-commerce-analytics": {
+    "iamPrefix": "marketplacecommerceanalytics"
+  },
+  "marketplace-deployment": {
+    "iamPrefix": "aws-marketplace"
+  },
+  "marketplace-entitlement-service": {
+    "iamPrefix": "aws-marketplace"
+  },
+  "marketplace-metering": {
+    "iamPrefix": "aws-marketplace"
+  },
+  "mediaconnect": {
+    "iamPrefix": "mediaconnect"
+  },
+  "mediaconvert": {
+    "iamPrefix": "mediaconvert"
+  },
+  "medialive": {
+    "iamPrefix": "medialive"
+  },
+  "mediapackage-vod": {
+    "iamPrefix": "mediapackage-vod"
+  },
+  "mediapackage": {
+    "iamPrefix": "mediapackage"
+  },
+  "mediapackagev2": {
+    "iamPrefix": "mediapackagev2"
+  },
+  "mediastore-data": {
+    "iamPrefix": "mediastore"
+  },
+  "mediastore": {
+    "iamPrefix": "mediastore"
+  },
+  "mediatailor": {
+    "iamPrefix": "mediatailor"
+  },
+  "medical-imaging": {
+    "iamPrefix": "medical-imaging"
+  },
+  "memorydb": {
+    "iamPrefix": "memorydb"
+  },
+  "mgn": {
+    "iamPrefix": "mgn"
+  },
+  "migration-hub-refactor-spaces": {
+    "iamPrefix": "refactor-spaces"
+  },
+  "migration-hub": {
+    "iamPrefix": "mgh"
+  },
+  "migrationhub-config": {
+    "iamPrefix": "mgh"
+  },
+  "migrationhuborchestrator": {
+    "iamPrefix": "migrationhub-orchestrator"
+  },
+  "migrationhubstrategy": {
+    "iamPrefix": "migrationhub-strategy"
+  },
+  "mobile": {
+    "iamPrefix": "AWSMobileHubService"
+  },
+  "mq": {
+    "iamPrefix": "mq"
+  },
+  "mturk": {
+    "iamPrefix": "mturk-requester"
+  },
+  "mwaa": {
+    "iamPrefix": "airflow"
+  },
+  "neptune-graph": {
+    "iamPrefix": "neptune-graph"
+  },
+  "neptune": {
+    "iamPrefix": "rds"
+  },
+  "neptunedata": {
+    "iamPrefix": "neptune-db"
+  },
+  "network-firewall": {
+    "iamPrefix": "network-firewall"
+  },
+  "networkmanager": {
+    "iamPrefix": "networkmanager"
+  },
+  "networkmonitor": {
+    "iamPrefix": "networkmonitor"
+  },
+  "nimble": {
+    "iamPrefix": "nimble"
+  },
+  "oam": {
+    "iamPrefix": "oam"
+  },
+  "omics": {
+    "iamPrefix": "omics"
+  },
+  "opensearch": {
+    "iamPrefix": "es"
+  },
+  "opensearchserverless": {
+    "iamPrefix": "aoss"
+  },
+  "opsworks": {
+    "iamPrefix": "opsworks"
+  },
+  "opsworkscm": {
+    "iamPrefix": "opsworks-cm"
+  },
+  "organizations": {
+    "iamPrefix": "organizations"
+  },
+  "osis": {
+    "iamPrefix": "osis"
+  },
+  "outposts": {
+    "iamPrefix": "outposts"
+  },
+  "panorama": {
+    "iamPrefix": "panorama"
+  },
+  "payment-cryptography-data": {
+    "iamPrefix": "payment-cryptography"
+  },
+  "payment-cryptography": {
+    "iamPrefix": "payment-cryptography"
+  },
+  "pca-connector-ad": {
+    "iamPrefix": "pca-connector-ad"
+  },
+  "personalize-events": {
+    "iamPrefix": "personalize"
+  },
+  "personalize-runtime": {
+    "iamPrefix": "personalize"
+  },
+  "personalize": {
+    "iamPrefix": "personalize"
+  },
+  "pi": {
+    "iamPrefix": "pi"
+  },
+  "pinpoint-email": {
+    "iamPrefix": "ses"
+  },
+  "pinpoint-sms-voice-v2": {
+    "iamPrefix": "sms-voice"
+  },
+  "pinpoint-sms-voice": {
+    "iamPrefix": "sms-voice"
+  },
+  "pinpoint": {
+    "iamPrefix": "mobiletargeting"
+  },
+  "pipes": {
+    "iamPrefix": "pipes"
+  },
+  "polly": {
+    "iamPrefix": "polly"
+  },
+  "pricing": {
+    "iamPrefix": "pricing"
+  },
+  "privatenetworks": {
+    "iamPrefix": "private-networks"
+  },
+  "proton": {
+    "iamPrefix": "proton"
+  },
+  "qbusiness": {
+    "iamPrefix": "qbusiness"
+  },
+  "qconnect": {
+    "iamPrefix": "wisdom"
+  },
+  "qldb-session": {
+    "iamPrefix": "qldb",
+    "commands": [
+      "SendCommand"
+    ]
+  },
+  "qldb": {
+    "iamPrefix": "qldb"
+  },
+  "quicksight": {
+    "iamPrefix": "quicksight"
+  },
+  "ram": {
+    "iamPrefix": "ram"
+  },
+  "rbin": {
+    "iamPrefix": "rbin"
+  },
+  "rds-data": {
+    "iamPrefix": "rds-data"
+  },
+  "rds": {
+    "iamPrefix": "rds"
+  },
+  "redshift-data": {
+    "iamPrefix": "redshift-data"
+  },
+  "redshift-serverless": {
+    "iamPrefix": "redshift-serverless"
+  },
+  "redshift": {
+    "iamPrefix": "redshift"
+  },
+  "rekognition": {
+    "iamPrefix": "rekognition"
+  },
+  "rekognitionstreaming": {
+    "iamPrefix": "rekognition"
+  },
+  "repostspace": {
+    "iamPrefix": "repostspace"
+  },
+  "resiliencehub": {
+    "iamPrefix": "resiliencehub"
+  },
+  "resource-explorer-2": {
+    "iamPrefix": "resource-explorer-2"
+  },
+  "resource-groups-tagging-api": {
+    "iamPrefix": "tagging"
+  },
+  "resource-groups": {
+    "iamPrefix": "resource-groups"
+  },
+  "robomaker": {
+    "iamPrefix": "robomaker"
+  },
+  "rolesanywhere": {
+    "iamPrefix": "rolesanywhere"
+  },
+  "route-53-domains": {
+    "iamPrefix": "route53domains"
+  },
+  "route-53": {
+    "iamPrefix": "route53"
+  },
+  "route53-recovery-cluster": {
+    "iamPrefix": "route53-recovery-cluster"
+  },
+  "route53-recovery-control-config": {
+    "iamPrefix": "route53-recovery-control-config"
+  },
+  "route53-recovery-readiness": {
+    "iamPrefix": "route53-recovery-readiness"
+  },
+  "route53resolver": {
+    "iamPrefix": "route53resolver"
+  },
+  "rum": {
+    "iamPrefix": "rum"
+  },
+  "s3-control": {
+    "iamPrefix": "s3"
+  },
+  "s3": {
+    "iamPrefix": "s3"
+  },
+  "s3outposts": {
+    "iamPrefix": "s3-outposts"
+  },
+  "sagemaker-a2i-runtime": {
+    "iamPrefix": "sagemaker"
+  },
+  "sagemaker-edge": {
+    "iamPrefix": "sagemaker"
+  },
+  "sagemaker-featurestore-runtime": {
+    "iamPrefix": "sagemaker"
+  },
+  "sagemaker-geospatial": {
+    "iamPrefix": "sagemaker-geospatial"
+  },
+  "sagemaker-metrics": {
+    "iamPrefix": "sagemaker"
+  },
+  "sagemaker-runtime": {
+    "iamPrefix": "sagemaker"
+  },
+  "sagemaker": {
+    "iamPrefix": "sagemaker"
+  },
+  "savingsplans": {
+    "iamPrefix": "savingsplans"
+  },
+  "scheduler": {
+    "iamPrefix": "scheduler"
+  },
+  "schemas": {
+    "iamPrefix": "schemas"
+  },
+  "secrets-manager": {
+    "iamPrefix": "secretsmanager"
+  },
+  "securityhub": {
+    "iamPrefix": "securityhub"
+  },
+  "securitylake": {
+    "iamPrefix": "securitylake"
+  },
+  "serverlessapplicationrepository": {
+    "iamPrefix": "serverlessrepo"
+  },
+  "service-catalog-appregistry": {
+    "iamPrefix": "servicecatalog"
+  },
+  "service-catalog": {
+    "iamPrefix": "servicecatalog"
+  },
+  "service-quotas": {
+    "iamPrefix": "servicequotas"
+  },
+  "servicediscovery": {
+    "iamPrefix": "servicediscovery"
+  },
+  "ses": {
+    "iamPrefix": "ses"
+  },
+  "sesv2": {
+    "iamPrefix": "ses"
+  },
+  "sfn": {
+    "iamPrefix": "states"
+  },
+  "shield": {
+    "iamPrefix": "shield"
+  },
+  "signer": {
+    "iamPrefix": "signer"
+  },
+  "simspaceweaver": {
+    "iamPrefix": "simspaceweaver"
+  },
+  "sms": {
+    "iamPrefix": "sms"
+  },
+  "snow-device-management": {
+    "iamPrefix": "snow-device-management"
+  },
+  "snowball": {
+    "iamPrefix": "snowball"
+  },
+  "sns": {
+    "iamPrefix": "sns"
+  },
+  "sqs": {
+    "iamPrefix": "sqs"
+  },
+  "ssm-contacts": {
+    "iamPrefix": "ssm-contacts"
+  },
+  "ssm-incidents": {
+    "iamPrefix": "ssm-incidents"
+  },
+  "ssm-sap": {
+    "iamPrefix": "ssm-sap"
+  },
+  "ssm": {
+    "iamPrefix": "ssm",
+    "commands": [
+      "CancelCommand",
+      "SendCommand"
+    ]
+  },
+  "sso-admin": {
+    "iamPrefix": "sso"
+  },
+  "sso-oidc": {
+    "iamPrefix": "sso-oauth"
+  },
+  "sso": {
+    "iamPrefix": "awsssoportal"
+  },
+  "storage-gateway": {
+    "iamPrefix": "storagegateway"
+  },
+  "sts": {
+    "iamPrefix": "sts"
+  },
+  "supplychain": {
+    "iamPrefix": "scn"
+  },
+  "support-app": {
+    "iamPrefix": "supportapp"
+  },
+  "support": {
+    "iamPrefix": "support"
+  },
+  "swf": {
+    "iamPrefix": "swf"
+  },
+  "synthetics": {
+    "iamPrefix": "synthetics"
+  },
+  "textract": {
+    "iamPrefix": "textract"
+  },
+  "timestream-query": {
+    "iamPrefix": "timestream"
+  },
+  "timestream-write": {
+    "iamPrefix": "timestream"
+  },
+  "tnb": {
+    "iamPrefix": "tnb"
+  },
+  "transcribe-streaming": {
+    "iamPrefix": "transcribe"
+  },
+  "transcribe": {
+    "iamPrefix": "transcribe"
+  },
+  "transfer": {
+    "iamPrefix": "transfer"
+  },
+  "translate": {
+    "iamPrefix": "translate"
+  },
+  "trustedadvisor": {
+    "iamPrefix": "trustedadvisor"
+  },
+  "verifiedpermissions": {
+    "iamPrefix": "verifiedpermissions"
+  },
+  "voice-id": {
+    "iamPrefix": "voiceid"
+  },
+  "vpc-lattice": {
+    "iamPrefix": "vpc-lattice"
+  },
+  "waf-regional": {
+    "iamPrefix": "waf-regional"
+  },
+  "waf": {
+    "iamPrefix": "waf"
+  },
+  "wafv2": {
+    "iamPrefix": "wafv2"
+  },
+  "wellarchitected": {
+    "iamPrefix": "wellarchitected"
+  },
+  "wisdom": {
+    "iamPrefix": "wisdom"
+  },
+  "workdocs": {
+    "iamPrefix": "workdocs"
+  },
+  "worklink": {
+    "iamPrefix": "worklink"
+  },
+  "workmail": {
+    "iamPrefix": "workmail"
+  },
+  "workmailmessageflow": {
+    "iamPrefix": "workmailmessageflow"
+  },
+  "workspaces-thin-client": {
+    "iamPrefix": "thinclient"
+  },
+  "workspaces-web": {
+    "iamPrefix": "workspaces-web"
+  },
+  "workspaces": {
+    "iamPrefix": "workspaces"
+  },
+  "xray": {
+    "iamPrefix": "xray"
+  }
+}

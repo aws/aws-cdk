@@ -1,0 +1,12 @@
+{
+  "version": "21.0.0",
+  "testCases": {
+    "instance-test/DefaultTest": {
+      "stacks": [
+        "integ-ec2-instance"
+      ],
+      "assertionStack": "instance-test/DefaultTest/DeployAssert",
+      "assertionStackName": "instancetestDefaultTestDeployAssert5516EAF1"
+    }
+  }
+}

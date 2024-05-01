@@ -1,0 +1,19 @@
+{
+  "version": "20.0.0",
+  "files": {
+    "bddd09eefc93276a23553c746883c9ad9d7bc1c0890f59c5ecc803f03c8dfec3": {
+      "source": {
+        "path": "redshift-loggingbucket-integ.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "bddd09eefc93276a23553c746883c9ad9d7bc1c0890f59c5ecc803f03c8dfec3.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

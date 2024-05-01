@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "dotnet": {
+      "namespace": "Amazon.CDK.AWS.Organizations"
+    },
+    "java": {
+      "package": "software.amazon.awscdk.services.organizations"
+    },
+    "python": {
+      "module": "aws_cdk.aws_organizations"
+    }
+  }
+}

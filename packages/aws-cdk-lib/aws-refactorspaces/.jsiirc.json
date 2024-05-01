@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "dotnet": {
+      "namespace": "Amazon.CDK.AWS.RefactorSpaces"
+    },
+    "java": {
+      "package": "software.amazon.awscdk.services.refactorspaces"
+    },
+    "python": {
+      "module": "aws_cdk.aws_refactorspaces"
+    }
+  }
+}

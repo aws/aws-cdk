@@ -7,7 +7,7 @@ export async function pathExists(pathName: string) {
   try {
     await pfs.stat(pathName);
     return true;
-  } catch (e) {
+  } catch (e: any) {
     if (e.code !== 'ENOENT') { throw e; }
     return false;
   }

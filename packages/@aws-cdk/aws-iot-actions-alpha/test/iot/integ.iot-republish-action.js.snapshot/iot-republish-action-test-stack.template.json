@@ -1,0 +1,99 @@
+{
+ "Resources": {
+  "TopicRule40A4EA44": {
+   "Type": "AWS::IoT::TopicRule",
+   "Properties": {
+    "TopicRulePayload": {
+     "Actions": [
+      {
+       "Republish": {
+        "Qos": 1,
+        "RoleArn": {
+         "Fn::GetAtt": [
+          "TopicRuleTopicRuleActionRole246C4F77",
+          "Arn"
+         ]
+        },
+        "Topic": "${topic()}/republish"
+       }
+      }
+     ],
+     "AwsIotSqlVersion": "2016-03-23",
+     "Sql": "SELECT * FROM 'device/+/data'"
+    }
+   }
+  },
+  "TopicRuleTopicRuleActionRole246C4F77": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "iot.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "TopicRuleTopicRuleActionRoleDefaultPolicy99ADD687": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "iot:Publish",
+       "Effect": "Allow",
+       "Resource": "*"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "TopicRuleTopicRuleActionRoleDefaultPolicy99ADD687",
+    "Roles": [
+     {
+      "Ref": "TopicRuleTopicRuleActionRole246C4F77"
+     }
+    ]
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

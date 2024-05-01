@@ -1,0 +1,13 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "CustomResourceVpc/DefaultTest": {
+      "stacks": [
+        "aws-cdk-customresources-vpc"
+      ],
+      "diffAssets": true,
+      "assertionStack": "CustomResourceVpc/DefaultTest/DeployAssert",
+      "assertionStackName": "CustomResourceVpcDefaultTestDeployAssert5F9D2F88"
+    }
+  }
+}

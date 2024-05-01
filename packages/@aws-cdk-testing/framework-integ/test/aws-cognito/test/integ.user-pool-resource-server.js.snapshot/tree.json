@@ -1,0 +1,177 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.85"
+        }
+      },
+      "integ-user-pool-resource-server": {
+        "id": "integ-user-pool-resource-server",
+        "path": "integ-user-pool-resource-server",
+        "children": {
+          "myuserpool": {
+            "id": "myuserpool",
+            "path": "integ-user-pool-resource-server/myuserpool",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "integ-user-pool-resource-server/myuserpool/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Cognito::UserPool",
+                  "aws:cdk:cloudformation:props": {
+                    "accountRecoverySetting": {
+                      "recoveryMechanisms": [
+                        {
+                          "name": "verified_phone_number",
+                          "priority": 1
+                        },
+                        {
+                          "name": "verified_email",
+                          "priority": 2
+                        }
+                      ]
+                    },
+                    "adminCreateUserConfig": {
+                      "allowAdminCreateUserOnly": true
+                    },
+                    "emailVerificationMessage": "The verification code to your new account is {####}",
+                    "emailVerificationSubject": "Verify your new account",
+                    "smsVerificationMessage": "The verification code to your new account is {####}",
+                    "userPoolName": "MyUserPool",
+                    "verificationMessageTemplate": {
+                      "defaultEmailOption": "CONFIRM_WITH_CODE",
+                      "emailMessage": "The verification code to your new account is {####}",
+                      "emailSubject": "Verify your new account",
+                      "smsMessage": "The verification code to your new account is {####}"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-cognito.CfnUserPool",
+                  "version": "0.0.0"
+                }
+              },
+              "myserver": {
+                "id": "myserver",
+                "path": "integ-user-pool-resource-server/myuserpool/myserver",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "integ-user-pool-resource-server/myuserpool/myserver/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::Cognito::UserPoolResourceServer",
+                      "aws:cdk:cloudformation:props": {
+                        "identifier": "users",
+                        "name": "users",
+                        "userPoolId": {
+                          "Ref": "myuserpool01998219"
+                        },
+                        "scopes": [
+                          {
+                            "scopeName": "read",
+                            "scopeDescription": "read only"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-cognito.CfnUserPoolResourceServer",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-cognito.UserPoolResourceServer",
+                  "version": "0.0.0"
+                }
+              },
+              "client": {
+                "id": "client",
+                "path": "integ-user-pool-resource-server/myuserpool/client",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "integ-user-pool-resource-server/myuserpool/client/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::Cognito::UserPoolClient",
+                      "aws:cdk:cloudformation:props": {
+                        "userPoolId": {
+                          "Ref": "myuserpool01998219"
+                        },
+                        "allowedOAuthFlows": [
+                          "client_credentials"
+                        ],
+                        "allowedOAuthFlowsUserPoolClient": true,
+                        "allowedOAuthScopes": [
+                          {
+                            "Fn::Join": [
+                              "",
+                              [
+                                {
+                                  "Ref": "myuserpoolmyserver50C4D8E9"
+                                },
+                                "/read"
+                              ]
+                            ]
+                          }
+                        ],
+                        "clientName": "users-app",
+                        "generateSecret": true,
+                        "supportedIdentityProviders": [
+                          "COGNITO"
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-cognito.CfnUserPoolClient",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-cognito.UserPoolClient",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-cognito.UserPool",
+              "version": "0.0.0"
+            }
+          },
+          "pool-id": {
+            "id": "pool-id",
+            "path": "integ-user-pool-resource-server/pool-id",
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.1.85"
+            }
+          },
+          "client-id": {
+            "id": "client-id",
+            "path": "integ-user-pool-resource-server/client-id",
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.1.85"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.85"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "constructs.Construct",
+      "version": "10.1.85"
+    }
+  }
+}

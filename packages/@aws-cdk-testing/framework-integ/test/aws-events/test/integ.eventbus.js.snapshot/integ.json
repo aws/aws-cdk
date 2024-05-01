@@ -1,0 +1,12 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "IntegTest-EventBusStack/DefaultTest": {
+      "stacks": [
+        "Stack"
+      ],
+      "assertionStack": "IntegTest-EventBusStack/DefaultTest/DeployAssert",
+      "assertionStackName": "IntegTestEventBusStackDefaultTestDeployAssertE6DF8EA9"
+    }
+  }
+}

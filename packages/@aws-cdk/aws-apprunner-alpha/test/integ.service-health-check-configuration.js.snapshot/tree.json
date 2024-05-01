@@ -1,0 +1,198 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "integ-apprunner": {
+        "id": "integ-apprunner",
+        "path": "integ-apprunner",
+        "children": {
+          "Service": {
+            "id": "Service",
+            "path": "integ-apprunner/Service",
+            "children": {
+              "InstanceRole": {
+                "id": "InstanceRole",
+                "path": "integ-apprunner/Service/InstanceRole",
+                "children": {
+                  "ImportInstanceRole": {
+                    "id": "ImportInstanceRole",
+                    "path": "integ-apprunner/Service/InstanceRole/ImportInstanceRole",
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.2.70"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "integ-apprunner/Service/InstanceRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "tasks.apprunner.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.2.70"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.70"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "integ-apprunner/Service/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::AppRunner::Service",
+                  "aws:cdk:cloudformation:props": {
+                    "healthCheckConfiguration": {
+                      "healthyThreshold": 5,
+                      "interval": 10,
+                      "path": "/",
+                      "protocol": "HTTP",
+                      "timeout": 10,
+                      "unhealthyThreshold": 10
+                    },
+                    "instanceConfiguration": {
+                      "instanceRoleArn": {
+                        "Fn::GetAtt": [
+                          "ServiceInstanceRoleDFA90CEC",
+                          "Arn"
+                        ]
+                      }
+                    },
+                    "networkConfiguration": {
+                      "egressConfiguration": {
+                        "egressType": "DEFAULT"
+                      }
+                    },
+                    "sourceConfiguration": {
+                      "authenticationConfiguration": {},
+                      "imageRepository": {
+                        "imageConfiguration": {
+                          "port": "8000"
+                        },
+                        "imageIdentifier": "public.ecr.aws/aws-containers/hello-app-runner:latest",
+                        "imageRepositoryType": "ECR_PUBLIC"
+                      }
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.70"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.2.70"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "integ-apprunner/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.2.70"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "integ-apprunner/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.2.70"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.2.70"
+        }
+      },
+      "cdk-integ-dashboard-and-widget-with-start-and-end": {
+        "id": "cdk-integ-dashboard-and-widget-with-start-and-end",
+        "path": "cdk-integ-dashboard-and-widget-with-start-and-end",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "cdk-integ-dashboard-and-widget-with-start-and-end/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "cdk-integ-dashboard-and-widget-with-start-and-end/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.70"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "cdk-integ-dashboard-and-widget-with-start-and-end/DefaultTest/DeployAssert",
+                "children": {
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "cdk-integ-dashboard-and-widget-with-start-and-end/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.2.70"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "cdk-integ-dashboard-and-widget-with-start-and-end/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.2.70"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.70"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.2.70"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "constructs.Construct",
+      "version": "10.2.70"
+    }
+  }
+}

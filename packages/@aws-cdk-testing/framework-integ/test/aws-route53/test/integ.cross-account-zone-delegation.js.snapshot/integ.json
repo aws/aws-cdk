@@ -1,0 +1,15 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "Route53CrossAccountInteg/DefaultTest": {
+      "stacks": [
+        "child-stack",
+        "child-opt-in-stack",
+        "child-opt-in-stack-with-assume-role-region"
+      ],
+      "diffAssets": true,
+      "assertionStack": "Route53CrossAccountInteg/DefaultTest/DeployAssert",
+      "assertionStackName": "Route53CrossAccountIntegDefaultTestDeployAssertF1D808C9"
+    }
+  }
+}

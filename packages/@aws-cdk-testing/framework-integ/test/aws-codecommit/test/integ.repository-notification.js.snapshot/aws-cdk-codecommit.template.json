@@ -1,0 +1,121 @@
+{
+ "Resources": {
+  "MyCodecommitRepository26DB372B": {
+   "Type": "AWS::CodeCommit::Repository",
+   "Properties": {
+    "RepositoryName": "my-test-repository"
+   }
+  },
+  "MyCodecommitRepositoryNotifyOnPullRequestCreated4CAB0621": {
+   "Type": "AWS::CodeStarNotifications::NotificationRule",
+   "Properties": {
+    "DetailType": "FULL",
+    "EventTypeIds": [
+     "codecommit-repository-pull-request-created"
+    ],
+    "Name": "decommitMyCodecommitRepositoryNotifyOnPullRequestCreated65969BCB",
+    "Resource": {
+     "Fn::GetAtt": [
+      "MyCodecommitRepository26DB372B",
+      "Arn"
+     ]
+    },
+    "Targets": [
+     {
+      "TargetAddress": {
+       "Ref": "MyTopic86869434"
+      },
+      "TargetType": "SNS"
+     }
+    ]
+   }
+  },
+  "MyCodecommitRepositoryNotifyOnPullRequestMerged80574FED": {
+   "Type": "AWS::CodeStarNotifications::NotificationRule",
+   "Properties": {
+    "DetailType": "FULL",
+    "EventTypeIds": [
+     "codecommit-repository-pull-request-merged"
+    ],
+    "Name": "odecommitMyCodecommitRepositoryNotifyOnPullRequestMergedF426197C",
+    "Resource": {
+     "Fn::GetAtt": [
+      "MyCodecommitRepository26DB372B",
+      "Arn"
+     ]
+    },
+    "Targets": [
+     {
+      "TargetAddress": {
+       "Ref": "MyTopic86869434"
+      },
+      "TargetType": "SNS"
+     }
+    ]
+   }
+  },
+  "MyTopic86869434": {
+   "Type": "AWS::SNS::Topic"
+  },
+  "MyTopicPolicy12A5EC17": {
+   "Type": "AWS::SNS::TopicPolicy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sns:Publish",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "codestar-notifications.amazonaws.com"
+       },
+       "Resource": {
+        "Ref": "MyTopic86869434"
+       },
+       "Sid": "0"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Topics": [
+     {
+      "Ref": "MyTopic86869434"
+     }
+    ]
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

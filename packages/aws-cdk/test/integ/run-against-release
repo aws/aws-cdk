@@ -1,37 +1,18 @@
 #!/bin/bash
-# Run a given test against the publicly released packages
-#
-# - Install the latest CLI somewhere and put it on the PATH.
-# - Run the script
 set -eu
-scriptdir=$(cd $(dirname $0) && pwd)
-CLI_INSTALLER="${CLI_INSTALLER:=npm}"
+# This is a backwards compatibility script. All logic has moved to '@aws-cdk-testing/cli-integ'
+# and should be called from there directly in the future.
 
-if [ ${CLI_INSTALLER} = "npm" ]; then
-  install_command="install"
-elif [ ${CLI_INSTALLER} = "yarn" ]; then
-  install_command="add"
-else
-  echo "CLI_INSTALLER can only be set to either npm or yarn (got ${CLI_INSTALLER})"
-  exit 1
-fi
+# The package MUST be 'npm install'ed from the package repository (`npm install --production`
+# will not work because that will resolve devDependencies even though it will not install them),
+# but it may not live in a 'node_modules' directory because Jest 27 does not support that. Do contortions.
+export INTEG_TOOLS=cli_integ
+rm -rf $INTEG_TOOLS && mkdir $INTEG_TOOLS
+npm install --prefix $INTEG_TOOLS --no-save @aws-cdk-testing/cli-integ@${RELEASE_TAG:-latest}
+mv $($INTEG_TOOLS/node_modules/.bin/test-root)/* $INTEG_TOOLS
 
-# NPM Workspace. Will have CDK CLI installed into it.
-npmws=/tmp/cdk-runrelease
-rm -rf $npmws
-mkdir -p $npmws
+# Find the latest CLI version in this tag
+npm view aws-cdk@${RELEASE_TAG:-latest} --json > release.json
+export VERSION=$(node -pe "require('./release.json').version")
 
-# Install the CLI and put it on the PATH
-(cd $npmws && ${CLI_INSTALLER} ${install_command} aws-cdk@${RELEASE_TAG:-latest})
-
-# FRAMEWORK_VERSION is the version that will be 'npm install'ed by the tests
-if [[ "${FRAMEWORK_VERSION:-}" = "" ]]; then
-  cli_version=$(cd $npmws && node -p "require('aws-cdk/package.json').version")
-  export FRAMEWORK_VERSION=${cli_version}
-fi
-
-export PATH=$npmws/node_modules/.bin:$PATH
-export TEST_RUNNER=release
-
-# Run the inner script
 exec "$@"

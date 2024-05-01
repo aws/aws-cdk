@@ -1,0 +1,19 @@
+{
+  "version": "32.0.0",
+  "files": {
+    "172ad225ebadc8dc372534ae917ac11f3878521f5660d84861b5c45a924e7e11": {
+      "source": {
+        "path": "codebuild-project-amazonlinux-2-5.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "172ad225ebadc8dc372534ae917ac11f3878521f5660d84861b5c45a924e7e11.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

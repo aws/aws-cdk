@@ -1,3 +1,4 @@
+/* eslint-disable import/order */
 import { EventEmitter } from 'events';
 
 export type Output = ReadonlyArray<string>;

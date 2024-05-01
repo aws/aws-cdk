@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "dotnet": {
+      "namespace": "Amazon.CDK.AWS.RAM"
+    },
+    "java": {
+      "package": "software.amazon.awscdk.services.ram"
+    },
+    "python": {
+      "module": "aws_cdk.aws_ram"
+    }
+  }
+}

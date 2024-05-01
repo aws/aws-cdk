@@ -1,0 +1,64 @@
+{
+ "Resources": {
+  "Bucket83908E77": {
+   "Type": "AWS::S3::Bucket",
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  }
+ },
+ "Outputs": {
+  "ExportsOutputRefBucket83908E7781C90AC0": {
+   "Value": {
+    "Ref": "Bucket83908E77"
+   },
+   "Export": {
+    "Name": "BucketStack:ExportsOutputRefBucket83908E7781C90AC0"
+   }
+  },
+  "ExportsOutputFnGetAttBucket83908E77Arn063C8555": {
+   "Value": {
+    "Fn::GetAtt": [
+     "Bucket83908E77",
+     "Arn"
+    ]
+   },
+   "Export": {
+    "Name": "BucketStack:ExportsOutputFnGetAttBucket83908E77Arn063C8555"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

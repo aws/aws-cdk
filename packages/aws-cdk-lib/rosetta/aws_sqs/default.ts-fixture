@@ -1,0 +1,13 @@
+// Fixture with packages imported, but nothing else
+import { Construct } from 'constructs';
+import { Stack } from 'aws-cdk-lib';
+import sqs = require('aws-cdk-lib/aws-sqs');
+import kms = require('aws-cdk-lib/aws-kms');
+
+class Fixture extends Stack {
+  constructor(scope: Construct, id: string) {
+    super(scope, id);
+
+    /// here
+  }
+}

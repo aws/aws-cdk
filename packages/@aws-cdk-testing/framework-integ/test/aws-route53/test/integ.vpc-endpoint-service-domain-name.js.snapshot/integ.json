@@ -1,0 +1,13 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "AwsCdkVpcEndpointDnsIntegTest/DefaultTest": {
+      "stacks": [
+        "aws-cdk-vpc-endpoint-dns-integ"
+      ],
+      "diffAssets": true,
+      "assertionStack": "AwsCdkVpcEndpointDnsIntegTest/DefaultTest/DeployAssert",
+      "assertionStackName": "AwsCdkVpcEndpointDnsIntegTestDefaultTestDeployAssertFB27EF1F"
+    }
+  }
+}

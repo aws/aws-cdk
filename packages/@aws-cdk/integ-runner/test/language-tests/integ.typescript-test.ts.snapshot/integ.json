@@ -1,0 +1,12 @@
+{
+  "version": "22.0.0",
+  "testCases": {
+    "TypeScript/DefaultTest": {
+      "stacks": [
+        "TypeScriptStack"
+      ],
+      "assertionStack": "TypeScriptAssertions",
+      "assertionStackName": "TypeScriptAssertions"
+    }
+  }
+}

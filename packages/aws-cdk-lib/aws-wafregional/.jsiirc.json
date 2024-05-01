@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "java": {
+      "package": "software.amazon.awscdk.services.waf.regional"
+    },
+    "dotnet": {
+      "namespace": "Amazon.CDK.AWS.WAFRegional"
+    },
+    "python": {
+      "module": "aws_cdk.aws_wafregional"
+    }
+  }
+}

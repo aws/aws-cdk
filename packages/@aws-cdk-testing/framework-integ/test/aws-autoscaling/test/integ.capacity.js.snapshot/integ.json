@@ -1,0 +1,12 @@
+{
+  "version": "32.0.0",
+  "testCases": {
+    "AutoScalingGroupCapacity/DefaultTest": {
+      "stacks": [
+        "aws-cdk-autoscaling-integ"
+      ],
+      "assertionStack": "AutoScalingGroupCapacity/DefaultTest/DeployAssert",
+      "assertionStackName": "AutoScalingGroupCapacityDefaultTestDeployAssert4677C00C"
+    }
+  }
+}

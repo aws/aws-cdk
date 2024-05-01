@@ -1,4 +1,6 @@
+/* eslint-disable import/order */
 import { Command, Context, Settings } from '../lib/settings';
+import { Tag } from '../lib/cdk-toolkit';
 
 test('can delete values from Context object', () => {
   // GIVEN
@@ -80,24 +82,24 @@ test('can parse string context from command line arguments with equals sign in v
   expect(settings2.get(['context']).foo).toEqual( 'bar=');
 });
 
-test('can parse context from command line arguments and convert value to correct type', () => {
+test('can parse tag values from command line arguments', () => {
   // GIVEN
-  const settings1 = Settings.fromCommandLineArguments({ context: ['foo=false'], _: [Command.DEPLOY] });
-  const settings2 = Settings.fromCommandLineArguments({ context: ['foo=0'], _: [Command.DEPLOY] });
-  const settings3 = Settings.fromCommandLineArguments({ context: ['foo=true'], _: [Command.DEPLOY] });
-  const settings4 = Settings.fromCommandLineArguments({ context: ['foo={"a": "b", "c": true, "d": ["a", "b"]}'], _: [Command.DEPLOY] });
-  const settings5 = Settings.fromCommandLineArguments({ context: ['foo=34'], _: [Command.DEPLOY] });
-  const settings6 = Settings.fromCommandLineArguments({ context: ['foo=34 35'], _: [Command.DEPLOY] });
-  const settings7 = Settings.fromCommandLineArguments({ context: ['foo=0x22'], _: [Command.DEPLOY] });
+  const settings1 = Settings.fromCommandLineArguments({ tags: ['foo=bar'], _: [Command.DEPLOY] });
+  const settings2 = Settings.fromCommandLineArguments({ tags: ['foo='], _: [Command.DEPLOY] });
 
   // THEN
-  expect(settings1.get(['context']).foo).toEqual(false);
-  expect(settings2.get(['context']).foo).toEqual(0);
-  expect(settings3.get(['context']).foo).toEqual(true);
-  expect(settings4.get(['context']).foo).toEqual({ a: 'b', c: true, d: ['a', 'b'] });
-  expect(settings5.get(['context']).foo).toEqual(34);
-  expect(settings6.get(['context']).foo).toEqual('34 35');
-  expect(settings7.get(['context']).foo).toEqual('0x22');
+  expect(settings1.get(['tags']).find((tag: Tag) => tag.Key === 'foo').Value).toEqual('bar');
+  expect(settings2.get(['tags']).find((tag: Tag) => tag.Key === 'foo').Value).toEqual('');
+});
+
+test('can parse tag values from command line arguments with equals sign in value', () => {
+  // GIVEN
+  const settings1 = Settings.fromCommandLineArguments({ tags: ['foo==bar='], _: [Command.DEPLOY] });
+  const settings2 = Settings.fromCommandLineArguments({ tags: ['foo=bar='], _: [Command.DEPLOY] });
+
+  // THEN
+  expect(settings1.get(['tags']).find((tag: Tag) => tag.Key === 'foo').Value).toEqual('=bar=');
+  expect(settings2.get(['tags']).find((tag: Tag) => tag.Key === 'foo').Value).toEqual('bar=');
 });
 
 test('bundling stacks defaults to an empty list', () => {
@@ -110,24 +112,24 @@ test('bundling stacks defaults to an empty list', () => {
   expect(settings.get(['bundlingStacks'])).toEqual([]);
 });
 
-test('bundling stacks defaults to * for deploy', () => {
+test('bundling stacks defaults to ** for deploy', () => {
   // GIVEN
   const settings = Settings.fromCommandLineArguments({
     _: [Command.DEPLOY],
   });
 
   // THEN
-  expect(settings.get(['bundlingStacks'])).toEqual(['*']);
+  expect(settings.get(['bundlingStacks'])).toEqual(['**']);
 });
 
-test('bundling stacks defaults to * for watch', () => {
+test('bundling stacks defaults to ** for watch', () => {
   // GIVEN
   const settings = Settings.fromCommandLineArguments({
     _: [Command.WATCH],
   });
 
   // THEN
-  expect(settings.get(['bundlingStacks'])).toEqual(['*']);
+  expect(settings.get(['bundlingStacks'])).toEqual(['**']);
 });
 
 test('bundling stacks with deploy exclusively', () => {

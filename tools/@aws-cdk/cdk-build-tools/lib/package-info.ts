@@ -69,7 +69,7 @@ export async function listFiles(dirName: string, predicate: (x: File) => boolean
     }
 
     return ret;
-  } catch (e) {
+  } catch (e: any) {
     if (e.code === 'ENOENT') { return []; }
     throw e;
   }
@@ -100,7 +100,12 @@ export interface CompilerOverrides {
 export function packageCompiler(compilers: CompilerOverrides, options?: CDKBuildOptions): string[] {
   if (isJsii()) {
     const args = ['--silence-warnings=reserved-word', '--add-deprecation-warnings'];
+    if (options?.compressAssembly) {
+      args.push('--compress-assembly');
+    }
     if (options?.stripDeprecated) {
+      // This package is not published to npm so the linter rule is invalid
+      // eslint-disable-next-line @aws-cdk/no-invalid-path
       args.push(`--strip-deprecated ${path.join(__dirname, '..', '..', '..', '..', 'deprecated_apis.txt')}`);
     }
     return [compilers.jsii || require.resolve('jsii/bin/jsii'), ...args];
@@ -115,7 +120,6 @@ export function packageCompiler(compilers: CompilerOverrides, options?: CDKBuild
 export function genScript(): string | undefined {
   return currentPackageJson().scripts?.gen;
 }
-
 
 export interface CDKBuildOptions {
   /**
@@ -139,14 +143,14 @@ export interface CDKBuildOptions {
   };
 
   /**
-   * An optional command (formatted as a list of strings) to run before building
+   * Optional commands (formatted as a list of strings, which will be joined together with the && operator) to run before building
    *
    * (Typically a code generator)
    */
   pre?: string[];
 
   /**
-   * An optional command (formatted as a list of strings) to run after building
+   * Optional commands (formatted as a list of strings, which will be joined together with the && operator) to run after building
    *
    * (Schema generator for example)
    */
@@ -174,6 +178,11 @@ export interface CDKBuildOptions {
    * @see https://aws.github.io/jsii/user-guides/lib-author/toolchain/jsii/#-strip-deprecated
    */
   stripDeprecated?: boolean;
+
+  /**
+   * Whether the jsii assembly should be compressed into a .jsii.gz file or left uncompressed as a .jsii file.
+   */
+  compressAssembly?: boolean;
 }
 
 export interface CDKPackageOptions {
@@ -182,8 +191,13 @@ export interface CDKPackageOptions {
    */
   shrinkWrap?: boolean;
 
+  /**
+   * Optional commands (formatted as a list of strings, which will be joined together with the && operator) to run before packaging
+   */
+  pre?: string[];
+
   /*
-   * An optional command (formatted as a list of strings) to run after packaging
+   * Optional commands (formatted as a list of strings, which will be joined together with the && operator) to run after packaging
   */
   post?: string[];
 

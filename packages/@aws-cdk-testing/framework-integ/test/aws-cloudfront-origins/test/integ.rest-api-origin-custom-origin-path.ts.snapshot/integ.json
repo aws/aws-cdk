@@ -1,0 +1,12 @@
+{
+  "version": "30.0.0",
+  "testCases": {
+    "rest-api-origin-custom-origin-path/DefaultTest": {
+      "stacks": [
+        "integ-cloudfront-rest-api-origin-custom-origin-path"
+      ],
+      "assertionStack": "rest-api-origin-custom-origin-path/DefaultTest/DeployAssert",
+      "assertionStackName": "restapiorigincustomoriginpathDefaultTestDeployAssertCD227A2A"
+    }
+  }
+}

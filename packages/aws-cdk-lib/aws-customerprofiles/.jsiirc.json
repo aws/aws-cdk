@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "dotnet": {
+      "namespace": "Amazon.CDK.AWS.CustomerProfiles"
+    },
+    "java": {
+      "package": "software.amazon.awscdk.services.customerprofiles"
+    },
+    "python": {
+      "module": "aws_cdk.aws_customerprofiles"
+    }
+  }
+}

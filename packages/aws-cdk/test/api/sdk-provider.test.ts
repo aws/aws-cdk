@@ -1,15 +1,16 @@
+/* eslint-disable import/order */
 import * as os from 'os';
+import { bockfs } from '@aws-cdk/cdk-build-tools';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as AWS from 'aws-sdk';
 import type { ConfigurationOptions } from 'aws-sdk/lib/config-base';
 import * as promptly from 'promptly';
 import * as uuid from 'uuid';
-import { ISDK, Mode, SDK, SdkProvider } from '../../lib/api/aws-auth';
+import { FakeSts, RegisterRoleOptions, RegisterUserOptions } from './fake-sts';
+import { ISDK, Mode, SDK, SdkProvider, defaultCliUserAgent } from '../../lib/api/aws-auth';
 import { PluginHost } from '../../lib/api/plugin';
 import * as logging from '../../lib/logging';
-import * as bockfs from '../bockfs';
 import { withMocked } from '../util';
-import { FakeSts, RegisterRoleOptions, RegisterUserOptions } from './fake-sts';
 
 jest.mock('promptly', () => ({
   prompt: jest.fn().mockResolvedValue('1234'),
@@ -402,6 +403,22 @@ describe('with intercepted network calls', () => {
       // THEN
       expect((await sdk.currentAccount()).accountId).toEqual(uniq('88888'));
     });
+
+    test('if AssumeRole fails because of ExpiredToken, then fail completely', async () => {
+      // GIVEN
+      prepareCreds({
+        fakeSts,
+        config: {
+          default: { aws_access_key_id: 'foo', $account: '88888' },
+        },
+      });
+      const provider = await providerFromProfile(undefined);
+
+      // WHEN - assumeRole fails with a specific error
+      await expect(async () => {
+        await provider.forEnvironment(env(uniq('88888')), Mode.ForReading, { assumeRoleArn: '<FAIL:ExpiredToken>' });
+      }).rejects.toThrow(/ExpiredToken/);
+    });
   });
 
   describe('Plugins', () => {
@@ -545,6 +562,18 @@ describe('with intercepted network calls', () => {
     // THEN
     await expect(provider.defaultAccount()).resolves.toBe(undefined);
   });
+
+  test('defaultAccount returns undefined, event if STS call fails with ExpiredToken', async () => {
+    // GIVEN
+    process.env.AWS_ACCESS_KEY_ID = `${uid}'<FAIL:ExpiredToken>'`;
+    process.env.AWS_SECRET_ACCESS_KEY = 'sekrit';
+
+    // WHEN
+    const provider = await providerFromProfile(undefined);
+
+    // THEN
+    await expect(provider.defaultAccount()).resolves.toBe(undefined);
+  });
 });
 
 test('even when using a profile to assume another profile, STS calls goes through the proxy', async () => {
@@ -577,7 +606,7 @@ test('even when using a profile to assume another profile, STS calls goes throug
         throw error;
       }
     }
-    return FakeAgent;
+    return { ProxyAgent: FakeAgent };
   });
 
   // WHEN
@@ -593,6 +622,10 @@ test('even when using a profile to assume another profile, STS calls goes throug
 
   // THEN -- the fake proxy agent got called, we don't care about the result
   expect(called).toEqual(true);
+});
+
+test('default useragent is reasonable', () => {
+  expect(defaultCliUserAgent()).toContain('aws-cdk/');
 });
 
 /**

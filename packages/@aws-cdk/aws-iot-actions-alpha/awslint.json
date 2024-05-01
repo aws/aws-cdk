@@ -1,0 +1,9 @@
+{
+  "exclude": [
+    "docs-public-apis:@aws-cdk/aws-iot-actions-alpha.HttpActionHeader",
+    "docs-public-apis:@aws-cdk/aws-iot-actions-alpha.HttpActionSigV4Auth",
+    "props-default-doc:@aws-cdk/aws-iot-actions-alpha.HttpsActionProps.auth",
+    "props-default-doc:@aws-cdk/aws-iot-actions-alpha.HttpsActionProps.confirmationUrl",
+    "props-default-doc:@aws-cdk/aws-iot-actions-alpha.HttpsActionProps.headers"
+  ]
+}

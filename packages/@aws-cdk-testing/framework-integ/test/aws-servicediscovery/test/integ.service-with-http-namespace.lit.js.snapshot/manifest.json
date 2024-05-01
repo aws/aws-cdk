@@ -1,0 +1,88 @@
+{
+  "version": "20.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "aws-servicediscovery-integ.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "aws-servicediscovery-integ.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "aws-servicediscovery-integ": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-servicediscovery-integ.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/ea42ace1ba66461746ff5ebdce1e1c0fa37f12e32c367e3819aafaa44afe738e.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "aws-servicediscovery-integ.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "aws-servicediscovery-integ.assets"
+      ],
+      "metadata": {
+        "/aws-servicediscovery-integ/MyNamespace/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyNamespaceD0BB8558"
+          }
+        ],
+        "/aws-servicediscovery-integ/MyNamespace/NonIpService/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyNamespaceNonIpService3B425009"
+          }
+        ],
+        "/aws-servicediscovery-integ/MyNamespace/NonIpService/NonIpInstance/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyNamespaceNonIpServiceNonIpInstanceFF8FB3DE"
+          }
+        ],
+        "/aws-servicediscovery-integ/MyNamespace/IpService/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyNamespaceIpService220F547F"
+          }
+        ],
+        "/aws-servicediscovery-integ/MyNamespace/IpService/IpInstance/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyNamespaceIpServiceIpInstance8CD1B210"
+          }
+        ],
+        "/aws-servicediscovery-integ/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/aws-servicediscovery-integ/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "aws-servicediscovery-integ"
+    }
+  }
+}

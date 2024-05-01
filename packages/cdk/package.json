@@ -38,8 +38,10 @@
     "build+extract": "npm run build"
   },
   "engines": {
-    "node": ">= 8.10.0"
+    "node": ">= 14.15.0"
   },
+  "stability": "stable",
+  "maturity": "stable",
   "publishConfig": {
     "tag": "latest"
   }

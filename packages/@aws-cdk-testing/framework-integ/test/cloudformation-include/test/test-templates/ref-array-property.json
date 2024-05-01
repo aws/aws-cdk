@@ -1,0 +1,29 @@
+{
+  "Parameters": {
+    "Methods": {
+      "Description": "The description of the parameter",
+      "Type": "CommaDelimitedList",
+      "Default": "GET,PUT"
+    }
+  },
+  "Resources": {
+    "Bucket": {
+      "Type": "AWS::S3::Bucket",
+      "Properties": {
+        "CorsConfiguration": {
+          "CorsRules": [
+            {
+              "AllowedMethods": {
+                "Ref": "Methods"
+              },
+              "AllowedOrigins": [
+                "/path/*"
+              ],
+              "MaxAge": 20
+            }
+          ]
+        }
+      }
+    }
+  }
+}

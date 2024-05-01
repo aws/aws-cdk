@@ -25,5 +25,4 @@ jest.config.js
 **/cdk.out
 junit.xml
 !*.lit.ts
-**/*.integ.snapshot
-**/*.integ.snapshot
+**/*.snapshot

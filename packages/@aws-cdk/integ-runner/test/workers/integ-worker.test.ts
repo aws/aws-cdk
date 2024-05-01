@@ -1,4 +1,5 @@
 import * as child_process from 'child_process';
+import * as builtinFs from 'fs';
 import * as path from 'path';
 import * as fs from 'fs-extra';
 import * as workerpool from 'workerpool';
@@ -8,15 +9,18 @@ let stderrMock: jest.SpyInstance;
 let pool: workerpool.WorkerPool;
 let spawnSyncMock: jest.SpyInstance;
 beforeAll(() => {
-  pool = workerpool.pool(path.join(__dirname, './mock-extract_worker.js'));
+  pool = workerpool.pool(path.join(__dirname, 'mock-extract_worker.js'));
 });
 beforeEach(() => {
   jest.spyOn(fs, 'moveSync').mockImplementation(() => { return true; });
   jest.spyOn(fs, 'emptyDirSync').mockImplementation(() => { return true; });
-  jest.spyOn(fs, 'unlinkSync').mockImplementation(() => { return true; });
   jest.spyOn(fs, 'removeSync').mockImplementation(() => { return true; });
-  jest.spyOn(fs, 'rmdirSync').mockImplementation(() => { return true; });
-  jest.spyOn(fs, 'writeFileSync').mockImplementation(() => { return true; });
+
+  // fs-extra delegates to the built-in one, this also catches calls done directly
+  jest.spyOn(builtinFs, 'rmdirSync').mockImplementation(() => { return true; });
+  jest.spyOn(builtinFs, 'writeFileSync').mockImplementation(() => { return true; });
+  jest.spyOn(builtinFs, 'unlinkSync').mockImplementation(() => { return true; });
+
   spawnSyncMock = jest.spyOn(child_process, 'spawnSync')
     .mockReturnValueOnce({
       status: 0,
@@ -142,7 +146,7 @@ describe('test runner', () => {
       ]),
       expect.arrayContaining([
         expect.stringMatching(/git/),
-        ['checkout', 'abc', '--', 'test-with-snapshot.integ.snapshot'],
+        ['checkout', 'abc', '--', 'xxxxx.test-with-snapshot.js.snapshot'],
         expect.objectContaining({
           cwd: 'test/test-data',
         }),

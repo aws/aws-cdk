@@ -1,0 +1,19 @@
+{
+  "version": "32.0.0",
+  "files": {
+    "b6f85acdb6fe284b01a4751f3c590a55e03668bb3d353a044b6d5c5e9e1ab9a6": {
+      "source": {
+        "path": "test-codebuild-arm-docker-registry.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "b6f85acdb6fe284b01a4751f3c590a55e03668bb3d353a044b6d5c5e9e1ab9a6.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

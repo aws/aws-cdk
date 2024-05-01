@@ -1,0 +1,13 @@
+{
+  "version": "35.0.0",
+  "testCases": {
+    "linux-lambda-codebuild/DefaultTest": {
+      "stacks": [
+        "codebuild-project-linux-lambda"
+      ],
+      "stackUpdateWorkflow": true,
+      "assertionStack": "linux-lambda-codebuild/DefaultTest/DeployAssert",
+      "assertionStackName": "linuxlambdacodebuildDefaultTestDeployAssertD60C42C8"
+    }
+  }
+}

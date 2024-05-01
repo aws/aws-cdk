@@ -1,0 +1,461 @@
+{
+  "version": "34.0.0",
+  "artifacts": {
+    "KafkaVersionTestStack.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "KafkaVersionTestStack.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "KafkaVersionTestStack": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "KafkaVersionTestStack.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21b2750390c5971d680e34d8783407284f8fc1a0105ca13e019646cae15319d4.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "KafkaVersionTestStack.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "KafkaVersionTestStack.assets"
+      ],
+      "metadata": {
+        "/KafkaVersionTestStack/Vpc/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Vpc8378EB38"
+          }
+        ],
+        "/KafkaVersionTestStack/Vpc/PublicSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet1Subnet5C2D37C4"
+          }
+        ],
+        "/KafkaVersionTestStack/Vpc/PublicSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet1RouteTable6C95E38E"
+          }
+        ],
+        "/KafkaVersionTestStack/Vpc/PublicSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet1RouteTableAssociation97140677"
+          }
+        ],
+        "/KafkaVersionTestStack/Vpc/PublicSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet1DefaultRoute3DA9E72A"
+          }
+        ],
+        "/KafkaVersionTestStack/Vpc/PublicSubnet1/EIP": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet1EIPD7E02669"
+          }
+        ],
+        "/KafkaVersionTestStack/Vpc/PublicSubnet1/NATGateway": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet1NATGateway4D7517AA"
+          }
+        ],
+        "/KafkaVersionTestStack/Vpc/PublicSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet2Subnet691E08A3"
+          }
+        ],
+        "/KafkaVersionTestStack/Vpc/PublicSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet2RouteTable94F7E489"
+          }
+        ],
+        "/KafkaVersionTestStack/Vpc/PublicSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet2RouteTableAssociationDD5762D8"
+          }
+        ],
+        "/KafkaVersionTestStack/Vpc/PublicSubnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet2DefaultRoute97F91067"
+          }
+        ],
+        "/KafkaVersionTestStack/Vpc/PublicSubnet2/EIP": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet2EIP3C605A87"
+          }
+        ],
+        "/KafkaVersionTestStack/Vpc/PublicSubnet2/NATGateway": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet2NATGateway9182C01D"
+          }
+        ],
+        "/KafkaVersionTestStack/Vpc/PrivateSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet1Subnet536B997A"
+          }
+        ],
+        "/KafkaVersionTestStack/Vpc/PrivateSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet1RouteTableB2C5B500"
+          }
+        ],
+        "/KafkaVersionTestStack/Vpc/PrivateSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet1RouteTableAssociation70C59FA6"
+          }
+        ],
+        "/KafkaVersionTestStack/Vpc/PrivateSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet1DefaultRouteBE02A9ED"
+          }
+        ],
+        "/KafkaVersionTestStack/Vpc/PrivateSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet2Subnet3788AAA1"
+          }
+        ],
+        "/KafkaVersionTestStack/Vpc/PrivateSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet2RouteTableA678073B"
+          }
+        ],
+        "/KafkaVersionTestStack/Vpc/PrivateSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet2RouteTableAssociationA89CAD56"
+          }
+        ],
+        "/KafkaVersionTestStack/Vpc/PrivateSubnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet2DefaultRoute060D2087"
+          }
+        ],
+        "/KafkaVersionTestStack/Vpc/IGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcIGWD7BA715C"
+          }
+        ],
+        "/KafkaVersionTestStack/Vpc/VPCGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcVPCGWBF912B6E"
+          }
+        ],
+        "/KafkaVersionTestStack/ClusterVersion2-2-1/SecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterVersion221SecurityGroup7D79A634"
+          }
+        ],
+        "/KafkaVersionTestStack/ClusterVersion2-2-1/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterVersion2216E958BDB"
+          }
+        ],
+        "/KafkaVersionTestStack/ClusterVersion2-3-1/SecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterVersion231SecurityGroup9CC906F6"
+          }
+        ],
+        "/KafkaVersionTestStack/ClusterVersion2-3-1/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterVersion231ECA150B0"
+          }
+        ],
+        "/KafkaVersionTestStack/ClusterVersion2-4-1-1/SecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterVersion2411SecurityGroup1C6605A8"
+          }
+        ],
+        "/KafkaVersionTestStack/ClusterVersion2-4-1-1/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterVersion2411B601F534"
+          }
+        ],
+        "/KafkaVersionTestStack/ClusterVersion2-5-1/SecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterVersion251SecurityGroup54D25418"
+          }
+        ],
+        "/KafkaVersionTestStack/ClusterVersion2-5-1/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterVersion251B0616FDE"
+          }
+        ],
+        "/KafkaVersionTestStack/ClusterVersion2-6-0/SecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterVersion260SecurityGroup7EE4C4B9"
+          }
+        ],
+        "/KafkaVersionTestStack/ClusterVersion2-6-0/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterVersion260FB26AA6A"
+          }
+        ],
+        "/KafkaVersionTestStack/ClusterVersion2-6-1/SecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterVersion261SecurityGroupA9CF6B0F"
+          }
+        ],
+        "/KafkaVersionTestStack/ClusterVersion2-6-1/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterVersion261D43B824F"
+          }
+        ],
+        "/KafkaVersionTestStack/ClusterVersion2-6-2/SecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterVersion262SecurityGroup1F74C57D"
+          }
+        ],
+        "/KafkaVersionTestStack/ClusterVersion2-6-2/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterVersion2622894BF48"
+          }
+        ],
+        "/KafkaVersionTestStack/ClusterVersion2-6-3/SecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterVersion263SecurityGroupE3FAA85B"
+          }
+        ],
+        "/KafkaVersionTestStack/ClusterVersion2-6-3/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterVersion263DC77D2ED"
+          }
+        ],
+        "/KafkaVersionTestStack/ClusterVersion2-7-0/SecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterVersion270SecurityGroupC310BF35"
+          }
+        ],
+        "/KafkaVersionTestStack/ClusterVersion2-7-0/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterVersion27010CB5FBF"
+          }
+        ],
+        "/KafkaVersionTestStack/ClusterVersion2-7-1/SecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterVersion271SecurityGroup1487C17C"
+          }
+        ],
+        "/KafkaVersionTestStack/ClusterVersion2-7-1/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterVersion271AA1304B7"
+          }
+        ],
+        "/KafkaVersionTestStack/ClusterVersion2-7-2/SecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterVersion272SecurityGroupB8AE57F0"
+          }
+        ],
+        "/KafkaVersionTestStack/ClusterVersion2-7-2/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterVersion272BEE37AA9"
+          }
+        ],
+        "/KafkaVersionTestStack/ClusterVersion2-8-0/SecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterVersion280SecurityGroup7A071E33"
+          }
+        ],
+        "/KafkaVersionTestStack/ClusterVersion2-8-0/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterVersion280A292F8BA"
+          }
+        ],
+        "/KafkaVersionTestStack/ClusterVersion2-8-1/SecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterVersion281SecurityGroup58456B77"
+          }
+        ],
+        "/KafkaVersionTestStack/ClusterVersion2-8-1/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterVersion281E912F3B9"
+          }
+        ],
+        "/KafkaVersionTestStack/ClusterVersion3-1-1/SecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterVersion311SecurityGroupFFD16098"
+          }
+        ],
+        "/KafkaVersionTestStack/ClusterVersion3-1-1/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterVersion311273A2535"
+          }
+        ],
+        "/KafkaVersionTestStack/ClusterVersion3-2-0/SecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterVersion320SecurityGroupF51F054B"
+          }
+        ],
+        "/KafkaVersionTestStack/ClusterVersion3-2-0/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterVersion3202AA95F49"
+          }
+        ],
+        "/KafkaVersionTestStack/ClusterVersion3-3-1/SecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterVersion331SecurityGroupE349B3D7"
+          }
+        ],
+        "/KafkaVersionTestStack/ClusterVersion3-3-1/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterVersion331008AC95F"
+          }
+        ],
+        "/KafkaVersionTestStack/ClusterVersion3-3-2/SecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterVersion332SecurityGroup75E967C6"
+          }
+        ],
+        "/KafkaVersionTestStack/ClusterVersion3-3-2/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterVersion332A4AB4092"
+          }
+        ],
+        "/KafkaVersionTestStack/ClusterVersion3-4-0/SecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterVersion340SecurityGroupBCDEC51B"
+          }
+        ],
+        "/KafkaVersionTestStack/ClusterVersion3-4-0/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClusterVersion340D193688A"
+          }
+        ],
+        "/KafkaVersionTestStack/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/KafkaVersionTestStack/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "KafkaVersionTestStack"
+    },
+    "KafkaVersionIntegTestDefaultTestDeployAssertD6628743.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "KafkaVersionIntegTestDefaultTestDeployAssertD6628743.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "KafkaVersionIntegTestDefaultTestDeployAssertD6628743": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "KafkaVersionIntegTestDefaultTestDeployAssertD6628743.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "KafkaVersionIntegTestDefaultTestDeployAssertD6628743.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "KafkaVersionIntegTestDefaultTestDeployAssertD6628743.assets"
+      ],
+      "metadata": {
+        "/KafkaVersionIntegTest/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/KafkaVersionIntegTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "KafkaVersionIntegTest/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}

@@ -3,7 +3,6 @@ import * as path from 'path';
 import * as yargs from 'yargs';
 import { findPackageJsons, ValidationRule } from '../lib';
 
-/* eslint-disable @typescript-eslint/no-shadow */
 const argv = yargs
   .env('PKGLINT_')
   .usage('$0 [directory]')

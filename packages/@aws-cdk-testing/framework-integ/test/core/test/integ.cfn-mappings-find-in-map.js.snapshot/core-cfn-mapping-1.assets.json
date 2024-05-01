@@ -1,0 +1,19 @@
+{
+  "version": "32.0.0",
+  "files": {
+    "175902e9c94a814a5739a092426ef29b46a5098db6118c5c464b507fa4e867e5": {
+      "source": {
+        "path": "core-cfn-mapping-1.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "175902e9c94a814a5739a092426ef29b46a5098db6118c5c464b507fa4e867e5.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

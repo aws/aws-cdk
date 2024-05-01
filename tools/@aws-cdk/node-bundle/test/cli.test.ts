@@ -1,7 +1,7 @@
 import * as path from 'path';
 import * as fs from 'fs-extra';
-import { shell } from '../src/api/_shell';
 import { Package } from './_package';
+import { shell } from '../src/api/_shell';
 
 test('validate', () => {
 
@@ -90,7 +90,7 @@ test('validate and fix', () => {
   try {
     run('pack');
     throw new Error('Expected packing to fail before fixing');
-  } catch (e) {
+  } catch {
     // this should fix the fact we don't generate
     // the project with the correct attributions
     run('validate --fix');

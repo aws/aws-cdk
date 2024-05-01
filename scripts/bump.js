@@ -24,6 +24,7 @@ async function main() {
     bumpFiles: [ { filename: ver.versionFile, type: 'json' } ],
     infile: ver.changelogFile,
     prerelease: ver.prerelease,
+    repoRoot,
     scripts: {
       postchangelog: `node ${path.join(__dirname, 'changelog-experimental-fix.js')} ${changelogPath}`
     }
@@ -91,11 +92,11 @@ async function main() {
     console.error("🎉 Calling our 'cdk-release' package to make the bump");
     console.error("ℹ️ Set the LEGACY_BUMP env variable to use the old 'standard-version' bump instead");
     const cdkRelease = require('@aws-cdk/cdk-release');
-    cdkRelease.createRelease(opts);
+    await cdkRelease.createRelease(opts);
   }
 }
 
 main().catch(err => {
   console.error(err.stack);
-  process.exit(1);
+  process.exitCode = 1;
 });

@@ -4,15 +4,17 @@ import { debug, trace } from './_env';
 import { AccountAccessKeyCache } from './account-cache';
 import { cached } from './cached';
 import { Account } from './sdk-provider';
+import { traceMethods } from '../../util/tracing';
 
 // We need to map regions to domain suffixes, and the SDK already has a function to do this.
 // It's not part of the public API, but it's also unlikely to go away.
 //
-// Reuse that function, and add a safety check so we don't accidentally break if they ever
+// Reuse that function, and add a safety check, so we don't accidentally break if they ever
 // refactor that away.
 
 /* eslint-disable @typescript-eslint/no-require-imports */
 const regionUtil = require('aws-sdk/lib/region_config');
+require('aws-sdk/lib/maintenance_mode_message').suppress = true;
 /* eslint-enable @typescript-eslint/no-require-imports */
 
 if (!regionUtil.getEndpointSuffix) {
@@ -52,6 +54,7 @@ export interface ISDK {
   lambda(): AWS.Lambda;
   cloudFormation(): AWS.CloudFormation;
   ec2(): AWS.EC2;
+  iam(): AWS.IAM;
   ssm(): AWS.SSM;
   s3(): AWS.S3;
   route53(): AWS.Route53;
@@ -61,7 +64,7 @@ export interface ISDK {
   secretsManager(): AWS.SecretsManager;
   kms(): AWS.KMS;
   stepFunctions(): AWS.StepFunctions;
-  codeBuild(): AWS.CodeBuild
+  codeBuild(): AWS.CodeBuild;
   cloudWatchLogs(): AWS.CloudWatchLogs;
   appsync(): AWS.AppSync;
 }
@@ -81,6 +84,7 @@ export interface SdkOptions {
 /**
  * Base functionality of SDK without credential fetching
  */
+@traceMethods
 export class SDK implements ISDK {
   private static readonly accountCache = new AccountAccessKeyCache();
 
@@ -100,6 +104,20 @@ export class SDK implements ISDK {
    * So we're allowing way more retries, but waiting a bit more.
    */
   private readonly cloudFormationRetryOptions = { maxRetries: 10, retryDelayOptions: { base: 1_000 } };
+
+  /**
+   * STS is used to check credential validity, don't do too many retries.
+   */
+  private readonly stsRetryOptions = { maxRetries: 3, retryDelayOptions: { base: 100 } };
+
+  /**
+   * Whether we have proof that the credentials have not expired
+   *
+   * We need to do some manual plumbing around this because the JS SDKv2 treats `ExpiredToken`
+   * as retriable and we have hefty retries on CFN calls making the CLI hang for a good 15 minutes
+   * if the credentials have expired.
+   */
+  private _credentialsValidated = false;
 
   constructor(
     private readonly _credentials: AWS.Credentials,
@@ -145,6 +163,10 @@ export class SDK implements ISDK {
 
   public ec2(): AWS.EC2 {
     return this.wrapServiceErrorHandling(new AWS.EC2(this.config));
+  }
+
+  public iam(): AWS.IAM {
+    return this.wrapServiceErrorHandling(new AWS.IAM(this.config));
   }
 
   public ssm(): AWS.SSM {
@@ -202,13 +224,16 @@ export class SDK implements ISDK {
     return cached(this, CURRENT_ACCOUNT_KEY, () => SDK.accountCache.fetch(this._credentials.accessKeyId, async () => {
       // if we don't have one, resolve from STS and store in cache.
       debug('Looking up default account ID from STS');
-      const result = await new AWS.STS(this.config).getCallerIdentity().promise();
+      const result = await new AWS.STS({ ...this.config, ...this.stsRetryOptions }).getCallerIdentity().promise();
       const accountId = result.Account;
       const partition = result.Arn!.split(':')[1];
       if (!accountId) {
         throw new Error('STS didn\'t return an account ID');
       }
       debug('Default account ID:', accountId);
+
+      // Save another STS call later if this one already succeeded
+      this._credentialsValidated = true;
       return { accountId, partition };
     }));
   }
@@ -233,7 +258,13 @@ export class SDK implements ISDK {
   public async forceCredentialRetrieval() {
     try {
       await this._credentials.getPromise();
-    } catch (e) {
+    } catch (e: any) {
+      if (isUnrecoverableAwsError(e)) {
+        throw e;
+      }
+
+      // Only reason this would fail is if it was an AssumRole. Otherwise,
+      // reading from an INI file or reading env variables is unlikely to fail.
       debug(`Assuming role failed: ${e.message}`);
       throw new Error([
         'Could not assume role in target account',
@@ -245,6 +276,18 @@ export class SDK implements ISDK {
         'with the right \'--trust\', using the latest version of the CDK CLI.',
       ].join(' '));
     }
+  }
+
+  /**
+   * Make sure the the current credentials are not expired
+   */
+  public async validateCredentials() {
+    if (this._credentialsValidated) {
+      return;
+    }
+
+    await new AWS.STS({ ...this.config, ...this.stsRetryOptions }).getCallerIdentity().promise();
+    this._credentialsValidated = true;
   }
 
   public getEndpointSuffix(region: string): string {
@@ -371,4 +414,11 @@ function allChainedExceptionMessages(e: Error | undefined) {
     e = (e as any).originalError;
   }
   return ret.join(': ');
+}
+
+/**
+ * Return whether an error should not be recovered from
+ */
+export function isUnrecoverableAwsError(e: Error) {
+  return (e as any).code === 'ExpiredToken';
 }

@@ -6,7 +6,11 @@ import { availableInitTemplates, cliInit } from '../lib/init';
 
 describe('constructs version', () => {
   cliTest('create a TypeScript library project', async (workDir) => {
-    await cliInit('lib', 'typescript', false, undefined /* canUseNetwork */, workDir);
+    await cliInit({
+      type: 'lib',
+      language: 'typescript',
+      workDir,
+    });
 
     // Check that package.json and lib/ got created in the current directory
     expect(await fs.pathExists(path.join(workDir, 'package.json'))).toBeTruthy();
@@ -14,7 +18,11 @@ describe('constructs version', () => {
   });
 
   cliTest('create a TypeScript app project', async (workDir) => {
-    await cliInit('app', 'typescript', false, undefined /* canUseNetwork */, workDir);
+    await cliInit({
+      type: 'app',
+      language: 'typescript',
+      workDir,
+    });
 
     // Check that package.json and bin/ got created in the current directory
     expect(await fs.pathExists(path.join(workDir, 'package.json'))).toBeTruthy();
@@ -22,7 +30,11 @@ describe('constructs version', () => {
   });
 
   cliTest('create a JavaScript app project', async (workDir) => {
-    await cliInit('app', 'javascript', false, undefined /* canUseNetwork */, workDir);
+    await cliInit({
+      type: 'app',
+      language: 'javascript',
+      workDir,
+    });
 
     // Check that package.json and bin/ got created in the current directory
     expect(await fs.pathExists(path.join(workDir, 'package.json'))).toBeTruthy();
@@ -31,7 +43,13 @@ describe('constructs version', () => {
   });
 
   cliTest('create a Java app project', async (workDir) => {
-    await cliInit('app', 'java', false, true, workDir);
+    await cliInit({
+      type: 'app',
+      language: 'java',
+      canUseNetwork: false,
+      generateOnly: true,
+      workDir,
+    });
 
     expect(await fs.pathExists(path.join(workDir, 'pom.xml'))).toBeTruthy();
 
@@ -47,7 +65,13 @@ describe('constructs version', () => {
   });
 
   cliTest('create a .NET app project in csharp', async (workDir) => {
-    await cliInit('app', 'csharp', false, true, workDir);
+    await cliInit({
+      type: 'app',
+      language: 'csharp',
+      canUseNetwork: false,
+      generateOnly: true,
+      workDir,
+    });
 
     const csprojFile = (await recursiveListFiles(workDir)).filter(f => f.endsWith('.csproj'))[0];
     const slnFile = (await recursiveListFiles(workDir)).filter(f => f.endsWith('.sln'))[0];
@@ -58,11 +82,18 @@ describe('constructs version', () => {
     const sln = (await fs.readFile(slnFile, 'utf8')).split(/\r?\n/);
 
     expect(csproj).toContainEqual(expect.stringMatching(/\<PackageReference Include="Constructs" Version="\[10\..*,11\..*\)"/));
+    expect(csproj).toContainEqual(expect.stringMatching(/\<TargetFramework>net6.0<\/TargetFramework>/));
     expect(sln).toContainEqual(expect.stringMatching(/\"AwsCdkTest[a-zA-Z0-9]{6}\\AwsCdkTest[a-zA-Z0-9]{6}.csproj\"/));
   });
 
   cliTest('create a .NET app project in fsharp', async (workDir) => {
-    await cliInit('app', 'fsharp', false, true, workDir);
+    await cliInit({
+      type: 'app',
+      language: 'fsharp',
+      canUseNetwork: false,
+      generateOnly: true,
+      workDir,
+    });
 
     const fsprojFile = (await recursiveListFiles(workDir)).filter(f => f.endsWith('.fsproj'))[0];
     const slnFile = (await recursiveListFiles(workDir)).filter(f => f.endsWith('.sln'))[0];
@@ -73,11 +104,54 @@ describe('constructs version', () => {
     const sln = (await fs.readFile(slnFile, 'utf8')).split(/\r?\n/);
 
     expect(fsproj).toContainEqual(expect.stringMatching(/\<PackageReference Include="Constructs" Version="\[10\..*,11\..*\)"/));
+    expect(fsproj).toContainEqual(expect.stringMatching(/\<TargetFramework>net6.0<\/TargetFramework>/));
     expect(sln).toContainEqual(expect.stringMatching(/\"AwsCdkTest[a-zA-Z0-9]{6}\\AwsCdkTest[a-zA-Z0-9]{6}.fsproj\"/));
   });
 
+  cliTestWithDirSpaces('csharp app with spaces', async (workDir) => {
+    await cliInit({
+      type: 'app',
+      language: 'csharp',
+      canUseNetwork: false,
+      generateOnly: true,
+      workDir,
+    });
+
+    const csprojFile = (await recursiveListFiles(workDir)).filter(f => f.endsWith('.csproj'))[0];
+    expect(csprojFile).toBeDefined();
+
+    const csproj = (await fs.readFile(csprojFile, 'utf8')).split(/\r?\n/);
+
+    expect(csproj).toContainEqual(expect.stringMatching(/\<PackageReference Include="Constructs" Version="\[10\..*,11\..*\)"/));
+    expect(csproj).toContainEqual(expect.stringMatching(/\<TargetFramework>net6.0<\/TargetFramework>/));
+  });
+
+  cliTestWithDirSpaces('fsharp app with spaces', async (workDir) => {
+    await cliInit({
+      type: 'app',
+      language: 'fsharp',
+      canUseNetwork: false,
+      generateOnly: true,
+      workDir,
+    });
+
+    const fsprojFile = (await recursiveListFiles(workDir)).filter(f => f.endsWith('.fsproj'))[0];
+    expect(fsprojFile).toBeDefined();
+
+    const fsproj = (await fs.readFile(fsprojFile, 'utf8')).split(/\r?\n/);
+
+    expect(fsproj).toContainEqual(expect.stringMatching(/\<PackageReference Include="Constructs" Version="\[10\..*,11\..*\)"/));
+    expect(fsproj).toContainEqual(expect.stringMatching(/\<TargetFramework>net6.0<\/TargetFramework>/));
+  });
+
   cliTest('create a Python app project', async (workDir) => {
-    await cliInit('app', 'python', false, true, workDir);
+    await cliInit({
+      type: 'app',
+      language: 'python',
+      canUseNetwork: false,
+      generateOnly: true,
+      workDir,
+    });
 
     expect(await fs.pathExists(path.join(workDir, 'requirements.txt'))).toBeTruthy();
     const setupPy = (await fs.readFile(path.join(workDir, 'requirements.txt'), 'utf8')).split(/\r?\n/);
@@ -93,7 +167,13 @@ describe('constructs version', () => {
   });
 
   cliTest('--generate-only should skip git init', async (workDir) => {
-    await cliInit('app', 'javascript', false, true, workDir);
+    await cliInit({
+      type: 'app',
+      language: 'javascript',
+      canUseNetwork: false,
+      generateOnly: true,
+      workDir,
+    });
 
     // Check that package.json and bin/ got created in the current directory
     expect(await fs.pathExists(path.join(workDir, 'package.json'))).toBeTruthy();
@@ -104,7 +184,12 @@ describe('constructs version', () => {
   cliTest('git directory does not throw off the initer!', async (workDir) => {
     fs.mkdirSync(path.join(workDir, '.git'));
 
-    await cliInit('app', 'typescript', false, undefined /* canUseNetwork */, workDir);
+    await cliInit({
+      type: 'app',
+      language: 'typescript',
+      canUseNetwork: false,
+      workDir,
+    });
 
     // Check that package.json and bin/ got created in the current directory
     expect(await fs.pathExists(path.join(workDir, 'package.json'))).toBeTruthy();
@@ -116,10 +201,13 @@ describe('constructs version', () => {
     for (const templ of await availableInitTemplates()) {
       for (const lang of templ.languages) {
         await withTempDir(async tmpDir => {
-          await cliInit(templ.name, lang,
-            /* canUseNetwork */ false,
-            /* generateOnly */ true,
-            tmpDir);
+          await cliInit({
+            type: templ.name,
+            language: lang,
+            canUseNetwork: false,
+            generateOnly: true,
+            workDir: tmpDir,
+          });
 
           // ok if template doesn't have a cdk.json file (e.g. the "lib" template)
           if (!await fs.pathExists(path.join(tmpDir, 'cdk.json'))) {
@@ -129,14 +217,13 @@ describe('constructs version', () => {
           const config = await fs.readJson(path.join(tmpDir, 'cdk.json'));
           const context = config.context || {};
           for (const [key, actual] of Object.entries(context)) {
-            expect(key in cxapi.FUTURE_FLAGS || key in cxapi.NEW_PROJECT_DEFAULT_CONTEXT).toBeTruthy();
-
-            expect(cxapi.FUTURE_FLAGS[key] ?? cxapi.NEW_PROJECT_DEFAULT_CONTEXT[key]).toEqual(actual);
+            expect(key in cxapi.NEW_PROJECT_CONTEXT).toBeTruthy();
+            expect(cxapi.NEW_PROJECT_CONTEXT[key]).toEqual(actual);
           }
 
           // assert that expired future flags are not part of the cdk.json
           Object.keys(context).forEach(k => {
-            expect(cxapi.FUTURE_FLAGS_EXPIRED.includes(k)).toEqual(false);
+            expect(cxapi.CURRENT_VERSION_EXPIRED_FLAGS.includes(k)).toEqual(false);
           });
         });
       }
@@ -147,7 +234,6 @@ describe('constructs version', () => {
 });
 
 test('when no version number is present (e.g., local development), the v2 templates are chosen by default', async () => {
-
   expect((await availableInitTemplates()).length).toBeGreaterThan(0);
 });
 
@@ -157,6 +243,19 @@ function cliTest(name: string, handler: (dir: string) => void | Promise<any>): v
 
 async function withTempDir(cb: (dir: string) => void | Promise<any>) {
   const tmpDir = await fs.mkdtemp(path.join(os.tmpdir(), 'aws-cdk-test'));
+  try {
+    await cb(tmpDir);
+  } finally {
+    await fs.remove(tmpDir);
+  }
+}
+
+function cliTestWithDirSpaces(name: string, handler: (dir: string) => void | Promise<any>): void {
+  test(name, () => withTempDirWithSpaces(handler));
+}
+
+async function withTempDirWithSpaces(cb: (dir: string) => void | Promise<any>) {
+  const tmpDir = await fs.mkdtemp(path.join(os.tmpdir(), 'aws-cdk-test with-space'));
   try {
     await cb(tmpDir);
   } finally {

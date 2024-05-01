@@ -16,7 +16,7 @@ afterEach(() => {
   jest.restoreAllMocks();
 });
 
-const directory = path.join(__dirname, '../test-data');
+const directory = path.join(__dirname, '..', 'test-data');
 describe('Snapshot tests', () => {
   test('no snapshot', () => {
     // WHEN
@@ -48,7 +48,7 @@ describe('Snapshot tests', () => {
     // WHEN
     jest.spyOn(child_process, 'spawnSync').mockRejectedValue;
     const test = {
-      fileName: path.join(directory, 'xxxxx.test-with-snapshot-assets.js'),
+      fileName: path.join(directory, 'xxxxx.test-with-snapshot-assets-diff.js'),
       discoveryRoot: directory,
       destructiveChanges: [],
     };

@@ -1,20 +1,32 @@
+/* eslint-disable import/order */
+
 const mockDeployStack = jest.fn();
 
 jest.mock('../../lib/api/deploy-stack', () => ({
   deployStack: mockDeployStack,
 }));
 
+import { IAM } from 'aws-sdk';
 import { Bootstrapper, DeployStackOptions, ToolkitInfo } from '../../lib/api';
 import { mockBootstrapStack, MockSdk, MockSdkProvider } from '../util/mock-sdk';
 
 let bootstrapper: Bootstrapper;
+let mockGetPolicyIamCode: (params: IAM.Types.GetPolicyRequest) => IAM.Types.GetPolicyResponse;
+let mockCreatePolicyIamCode: (params: IAM.Types.CreatePolicyRequest) => IAM.Types.CreatePolicyResponse;
+let stderrMock: jest.SpyInstance;
+
 beforeEach(() => {
   bootstrapper = new Bootstrapper({ source: 'default' });
+  stderrMock = jest.spyOn(process.stderr, 'write').mockImplementation(() => { return true; });
+});
+
+afterEach(() => {
+  stderrMock.mockRestore();
 });
 
 function mockTheToolkitInfo(stackProps: Partial<AWS.CloudFormation.Stack>) {
   const sdk = new MockSdk();
-  (ToolkitInfo as any).lookup = jest.fn().mockResolvedValue(ToolkitInfo.fromStack(mockBootstrapStack(sdk, stackProps), sdk));
+  (ToolkitInfo as any).lookup = jest.fn().mockResolvedValue(ToolkitInfo.fromStack(mockBootstrapStack(sdk, stackProps)));
 }
 
 describe('Bootstrapping v2', () => {
@@ -28,7 +40,19 @@ describe('Bootstrapping v2', () => {
   beforeEach(() => {
     sdk = new MockSdkProvider({ realSdk: false });
     // By default, we'll return a non-found toolkit info
-    (ToolkitInfo as any).lookup = jest.fn().mockResolvedValue(ToolkitInfo.bootstraplessDeploymentsOnly(sdk.sdk));
+    (ToolkitInfo as any).lookup = jest.fn().mockResolvedValue(ToolkitInfo.bootstrapStackNotFoundInfo('BootstrapStack'));
+    const value = {
+      Policy: {
+        PolicyName: 'my-policy',
+        Arn: 'arn:aws:iam::0123456789012:policy/my-policy',
+      },
+    };
+    mockGetPolicyIamCode = jest.fn().mockReturnValue(value);
+    mockCreatePolicyIamCode = jest.fn().mockReturnValue(value);
+    sdk.stubIam({
+      createPolicy: mockCreatePolicyIamCode,
+      getPolicy: mockGetPolicyIamCode,
+    });
   });
 
   afterEach(() => {
@@ -80,6 +104,129 @@ describe('Bootstrapping v2', () => {
         PublicAccessBlockConfiguration: 'false',
       }),
     }));
+  });
+
+  test('passes true to PermissionsBoundary', async () => {
+    await bootstrapper.bootstrapEnvironment(env, sdk, {
+      parameters: {
+        examplePermissionsBoundary: true,
+      },
+    });
+
+    expect(mockDeployStack).toHaveBeenCalledWith(expect.objectContaining({
+      parameters: expect.objectContaining({
+        InputPermissionsBoundary: 'cdk-hnb659fds-permissions-boundary',
+      }),
+    }));
+  });
+
+  test('passes value to PermissionsBoundary', async () => {
+    mockTheToolkitInfo({
+      Parameters: [
+        {
+          ParameterKey: 'InputPermissionsBoundary',
+          ParameterValue: 'existing-pb',
+        },
+      ],
+    });
+    await bootstrapper.bootstrapEnvironment(env, sdk, {
+      parameters: {
+        customPermissionsBoundary: 'permissions-boundary-name',
+      },
+    });
+
+    expect(mockDeployStack).toHaveBeenCalledWith(expect.objectContaining({
+      parameters: expect.objectContaining({
+        InputPermissionsBoundary: 'permissions-boundary-name',
+      }),
+    }));
+    expect(stderrMock.mock.calls).toEqual(expect.arrayContaining([
+      expect.arrayContaining([
+        expect.stringMatching(/Changing permissions boundary from existing-pb to permissions-boundary-name/),
+      ]),
+    ]));
+  });
+
+  test('permission boundary switch message does not appear', async () => {
+    mockTheToolkitInfo({
+      Parameters: [
+        {
+          ParameterKey: 'InputPermissionsBoundary',
+          ParameterValue: '',
+        },
+      ],
+    });
+    await bootstrapper.bootstrapEnvironment(env, sdk);
+
+    expect(stderrMock.mock.calls).toEqual(expect.arrayContaining([
+      expect.not.arrayContaining([
+        expect.stringMatching(/Changing permissions boundary/),
+      ]),
+    ]));
+  });
+
+  test('adding new permissions boundary', async () => {
+    mockTheToolkitInfo({
+      Parameters: [
+        {
+          ParameterKey: 'InputPermissionsBoundary',
+          ParameterValue: '',
+        },
+      ],
+    });
+    await bootstrapper.bootstrapEnvironment(env, sdk, {
+      parameters: {
+        customPermissionsBoundary: 'permissions-boundary-name',
+      },
+    });
+
+    expect(stderrMock.mock.calls).toEqual(expect.arrayContaining([
+      expect.arrayContaining([
+        expect.stringMatching(/Adding new permissions boundary permissions-boundary-name/),
+      ]),
+    ]));
+  });
+
+  test('removing existing permissions boundary', async () => {
+    mockTheToolkitInfo({
+      Parameters: [
+        {
+          ParameterKey: 'InputPermissionsBoundary',
+          ParameterValue: 'permissions-boundary-name',
+        },
+      ],
+    });
+    await bootstrapper.bootstrapEnvironment(env, sdk, {
+      parameters: {},
+    });
+
+    expect(stderrMock.mock.calls).toEqual(expect.arrayContaining([
+      expect.arrayContaining([
+        expect.stringMatching(/Removing existing permissions boundary permissions-boundary-name/),
+      ]),
+    ]));
+  });
+
+  test('adding permission boundary with path in policy name', async () => {
+    mockTheToolkitInfo({
+      Parameters: [
+        {
+          ParameterKey: 'InputPermissionsBoundary',
+          ParameterValue: '',
+        },
+      ],
+    });
+    await bootstrapper.bootstrapEnvironment(env, sdk, {
+      parameters: {
+        customPermissionsBoundary: 'permissions-boundary-name/with/path',
+      },
+    });
+
+    expect(stderrMock.mock.calls).toEqual(expect.arrayContaining([
+      expect.arrayContaining([
+        expect.stringMatching(/Adding new permissions boundary permissions-boundary-name\/with\/path/),
+      ]),
+    ]));
   });
 
   test('passing trusted accounts without CFN managed policies results in an error', async () => {
@@ -172,6 +319,21 @@ describe('Bootstrapping v2', () => {
       parameters: {
         cloudFormationExecutionPolicies: ['arn:policy'],
       },
+    })).resolves.toEqual(expect.objectContaining({ noOp: true }));
+  });
+
+  test('Do not allow overwriting bootstrap stack from a different vendor', async () => {
+    // GIVEN
+    mockTheToolkitInfo({
+      Parameters: [
+        {
+          ParameterKey: 'BootstrapVariant',
+          ParameterValue: 'JoeSchmoe',
+        },
+      ],
+    });
+
+    await expect(bootstrapper.bootstrapEnvironment(env, sdk, {
     })).resolves.toEqual(expect.objectContaining({ noOp: true }));
   });
 

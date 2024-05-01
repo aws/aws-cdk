@@ -1,0 +1,13 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "OpenSearchInteg/DefaultTest": {
+      "stacks": [
+        "cdk-integ-opensearch"
+      ],
+      "diffAssets": true,
+      "assertionStack": "OpenSearchInteg/DefaultTest/DeployAssert",
+      "assertionStackName": "OpenSearchIntegDefaultTestDeployAssertFAE78D8A"
+    }
+  }
+}

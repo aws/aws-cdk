@@ -41,7 +41,7 @@ export class AwsCliCompatible {
     // we use that to the exclusion of everything else (note: this does not apply
     // to AWS_PROFILE, environment credentials still take precedence over AWS_PROFILE)
     if (options.profile) {
-      return new AWS.CredentialProviderChain(iniFileCredentialFactories(options.profile));
+      return new AWS.CredentialProviderChain(iniFileCredentialFactories(options.profile, options.httpOptions));
     }
 
     const implicitProfile = process.env.AWS_PROFILE || process.env.AWS_DEFAULT_PROFILE || 'default';
@@ -49,7 +49,7 @@ export class AwsCliCompatible {
     const sources = [
       () => new AWS.EnvironmentCredentials('AWS'),
       () => new AWS.EnvironmentCredentials('AMAZON'),
-      ...iniFileCredentialFactories(implicitProfile),
+      ...iniFileCredentialFactories(implicitProfile, options.httpOptions),
     ];
 
     if (options.containerCreds ?? hasEcsCredentials()) {
@@ -75,10 +75,13 @@ export class AwsCliCompatible {
       });
     }
 
-    function iniFileCredentialFactories(theProfile: string) {
+    function iniFileCredentialFactories(theProfile: string, theHttpOptions?: AWS.HTTPOptions) {
       return [
         () => profileCredentials(theProfile),
-        () => new AWS.SsoCredentials({ profile: theProfile }),
+        () => new AWS.SsoCredentials({
+          profile: theProfile,
+          httpOptions: theHttpOptions,
+        }),
         () => new AWS.ProcessCredentials({ profile: theProfile }),
       ];
     }
@@ -183,7 +186,7 @@ async function isEc2Instance() {
         //  EC2AE145-D1DC-13B2-94ED-01234ABCDEF
         const lines = result.stdout.toString().split('\n');
         instance = lines.some(x => matchesRegex(/^ec2/i, x));
-      } catch (e) {
+      } catch (e: any) {
         // Modern machines may not have wmic.exe installed. No reason to fail, just assume it's not an EC2 instance.
         debug(`Checking using WMIC failed, assuming NOT an EC2 instance: ${e.message} (pass --ec2creds to force)`);
         instance = false;
@@ -211,7 +214,6 @@ async function isEc2Instance() {
   }
   return isEc2InstanceCache;
 }
-
 
 let isEc2InstanceCache: boolean | undefined = undefined;
 
@@ -244,7 +246,7 @@ async function getImdsV2Token(metadataService: AWS.MetadataService): Promise<str
  */
 async function getRegionFromImds(metadataService: AWS.MetadataService, token: string | undefined): Promise<string> {
   debug('Retrieving the AWS region from the IMDS.');
-  let options: { method?: string | undefined; headers?: { [key: string]: string; } | undefined; } = {};
+  let options: { method?: string | undefined; headers?: { [key: string]: string } | undefined } = {};
   if (token) {
     options = { headers: { 'x-aws-ec2-metadata-token': token } };
   }
@@ -308,7 +310,7 @@ function readIfPossible(filename: string): string | undefined {
   try {
     if (!fs.pathExistsSync(filename)) { return undefined; }
     return fs.readFileSync(filename, { encoding: 'utf-8' });
-  } catch (e) {
+  } catch (e: any) {
     debug(e);
     return undefined;
   }
@@ -340,9 +342,8 @@ async function tokenCodeFn(serialArn: string, cb: (err?: Error, token?: string) 
     });
     debug('Successfully got MFA token from user');
     cb(undefined, token);
-  } catch (err) {
+  } catch (err: any) {
     debug('Failed to get MFA token', err);
     cb(err);
   }
 }
-

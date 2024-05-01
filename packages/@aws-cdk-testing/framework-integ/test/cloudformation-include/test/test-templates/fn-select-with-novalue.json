@@ -1,0 +1,23 @@
+{
+  "Parameters": {
+    "DoIt": {
+      "Type": "String"
+    }
+  },
+  "Conditions": {
+    "MyCondition": {
+      "Fn::Equals": [{ "Ref": "DoIt" }, "Yes"]
+    }
+  },
+  "Resources": {
+    "Bucket": {
+      "Type": "AWS::S3::Bucket",
+      "Properties": {
+        "BucketName": { "Fn::Select": [0, [
+          { "Fn::If": ["MyCondition", "doing-it", { "Ref": "AWS::NoValue" }] },
+          "not-doingit"
+        ]]}
+      }
+    }
+  }
+}

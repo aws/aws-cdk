@@ -1,0 +1,129 @@
+{
+ "Outputs": {
+  "Output": {
+   "Value": {
+    "Fn::Join": [
+     ",",
+     {
+      "Fn::Split": [
+       ",",
+       {
+        "Fn::ImportValue": "base:ExportsOutputFnGetAttListParam66ABDC3FValue8C623E22"
+       }
+      ]
+     }
+    ]
+   }
+  },
+  "ExportsOutputRefversionvaluetestB139B4AA": {
+   "Value": {
+    "Ref": "versionvaluetest"
+   },
+   "Export": {
+    "Name": "list-param:ExportsOutputRefversionvaluetestB139B4AA"
+   }
+  },
+  "ExportsOutputRefvaluetest4DD5FF9D": {
+   "Value": {
+    "Ref": "valuetest"
+   },
+   "Export": {
+    "Name": "list-param:ExportsOutputRefvaluetest4DD5FF9D"
+   }
+  },
+  "ExportsOutputRefattrstestCCA64863": {
+   "Value": {
+    "Ref": "attrstest"
+   },
+   "Export": {
+    "Name": "list-param:ExportsOutputRefattrstestCCA64863"
+   }
+  }
+ },
+ "Parameters": {
+  "FromAttrsParameter": {
+   "Type": "AWS::SSM::Parameter::Value<List<String>>",
+   "Default": "integ-list-param"
+  },
+  "SsmParameterValueinteglistparamC96584B6F00A464EAD1953AFF4B05118Parameter": {
+   "Type": "AWS::SSM::Parameter::Value<List<String>>",
+   "Default": "integ-list-param"
+  },
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Resources": {
+  "attrstest": {
+   "Type": "AWS::SSM::Parameter",
+   "Properties": {
+    "Type": "StringList",
+    "Value": {
+     "Fn::Join": [
+      ",",
+      {
+       "Ref": "FromAttrsParameter"
+      }
+     ]
+    }
+   }
+  },
+  "valuetest": {
+   "Type": "AWS::SSM::Parameter",
+   "Properties": {
+    "Type": "StringList",
+    "Value": {
+     "Fn::Join": [
+      ",",
+      {
+       "Ref": "SsmParameterValueinteglistparamC96584B6F00A464EAD1953AFF4B05118Parameter"
+      }
+     ]
+    }
+   }
+  },
+  "versionvaluetest": {
+   "Type": "AWS::SSM::Parameter",
+   "Properties": {
+    "Type": "StringList",
+    "Value": {
+     "Fn::Join": [
+      ",",
+      {
+       "Ref": "SsmParameterValueinteglistparamC96584B6F00A464EAD1953AFF4B05118Parameter"
+      }
+     ]
+    }
+   }
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

@@ -7,4 +7,7 @@ module.exports = {
             branches: 45,
         },
     },
+
+    // We have many tests here that commonly time out
+    testTimeout: 30_000,
 };

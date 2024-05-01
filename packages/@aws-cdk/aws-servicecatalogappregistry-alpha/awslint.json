@@ -1,0 +1,5 @@
+{
+  "exclude": [
+    "construct-ctor:@aws-cdk/aws-servicecatalogappregistry-alpha.ApplicationAssociator.<initializer>.params[0]"
+  ]
+}

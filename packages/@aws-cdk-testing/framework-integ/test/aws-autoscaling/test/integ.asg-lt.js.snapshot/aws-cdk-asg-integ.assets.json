@@ -1,0 +1,19 @@
+{
+  "version": "35.0.0",
+  "files": {
+    "cc56cf10db6f9a8d08a1dd3ac11545a658835fe20afe0105866946e153d2d173": {
+      "source": {
+        "path": "aws-cdk-asg-integ.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "cc56cf10db6f9a8d08a1dd3ac11545a658835fe20afe0105866946e153d2d173.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

@@ -1,0 +1,19 @@
+{
+  "version": "34.0.0",
+  "files": {
+    "087176c81f7e6638d7037e15168e603138ce4e0ab52a8c8234e1b2d98fda93a1": {
+      "source": {
+        "path": "aws-cdk-ec2-vpn-two-tunnels.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "087176c81f7e6638d7037e15168e603138ce4e0ab52a8c8234e1b2d98fda93a1.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

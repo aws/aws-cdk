@@ -5,38 +5,35 @@ import { ISDK } from './aws-auth';
 import { LazyListStackResources, ListStackResources } from './evaluate-cloudformation-template';
 import { CloudFormationStack, Template } from './util/cloudformation';
 
-export interface TemplateWithNestedStackNames {
+export interface NestedStackTemplates {
+  readonly physicalName: string | undefined;
   readonly deployedTemplate: Template;
-  readonly nestedStackNames: { [nestedStackLogicalId: string]: NestedStackNames };
+  readonly generatedTemplate: Template;
+  readonly nestedStackTemplates: { [nestedStackLogicalId: string]: NestedStackTemplates};
 }
 
-export interface NestedStackNames {
-  readonly nestedStackPhysicalName: string | undefined;
-  readonly nestedChildStackNames: { [logicalId: string]: NestedStackNames };
+export interface RootTemplateWithNestedStacks {
+  readonly deployedRootTemplate: Template;
+  readonly nestedStacks: { [nestedStackLogicalId: string]: NestedStackTemplates };
 }
 
 /**
- * Reads the currently deployed template from CloudFormation and adds a
- * property, `NestedTemplate`, to any nested stacks that appear in either
- * the deployed template or the newly synthesized template. `NestedTemplate`
- * is populated with contents of the nested template by mutating the
- * `template` property of `rootStackArtifact`. This is done for all
- * nested stack resources to arbitrary depths.
+ * Reads the currently deployed template and all of its nested stack templates from CloudFormation.
  */
 export async function loadCurrentTemplateWithNestedStacks(
   rootStackArtifact: cxapi.CloudFormationStackArtifact, sdk: ISDK,
   retrieveProcessedTemplate: boolean = false,
-): Promise<TemplateWithNestedStackNames> {
-  const deployedTemplate = await loadCurrentTemplate(rootStackArtifact, sdk, retrieveProcessedTemplate);
-  const nestedStackNames = await addNestedTemplatesToGeneratedAndDeployedStacks(rootStackArtifact, sdk, {
+): Promise<RootTemplateWithNestedStacks> {
+  const deployedRootTemplate = await loadCurrentTemplate(rootStackArtifact, sdk, retrieveProcessedTemplate);
+  const nestedStacks = await loadNestedStacks(rootStackArtifact, sdk, {
     generatedTemplate: rootStackArtifact.template,
-    deployedTemplate: deployedTemplate,
+    deployedTemplate: deployedRootTemplate,
     deployedStackName: rootStackArtifact.stackName,
   });
 
   return {
-    deployedTemplate,
-    nestedStackNames,
+    deployedRootTemplate,
+    nestedStacks,
   };
 }
 
@@ -58,13 +55,13 @@ async function loadCurrentStackTemplate(
   return stack.template();
 }
 
-async function addNestedTemplatesToGeneratedAndDeployedStacks(
+async function loadNestedStacks(
   rootStackArtifact: cxapi.CloudFormationStackArtifact,
   sdk: ISDK,
   parentTemplates: StackTemplates,
-): Promise<{ [nestedStackLogicalId: string]: NestedStackNames }> {
+): Promise<{ [nestedStackLogicalId: string]: NestedStackTemplates }> {
   const listStackResources = parentTemplates.deployedStackName ? new LazyListStackResources(sdk, parentTemplates.deployedStackName) : undefined;
-  const nestedStackNames: { [nestedStackLogicalId: string]: NestedStackNames } = {};
+  const nestedStacks: { [nestedStackLogicalId: string]: NestedStackTemplates } = {};
   for (const [nestedStackLogicalId, generatedNestedStackResource] of Object.entries(parentTemplates.generatedTemplate.Resources ?? {})) {
     if (!isCdkManagedNestedStack(generatedNestedStackResource)) {
       continue;
@@ -73,19 +70,11 @@ async function addNestedTemplatesToGeneratedAndDeployedStacks(
     const assetPath = generatedNestedStackResource.Metadata['aws:asset:path'];
     const nestedStackTemplates = await getNestedStackTemplates(rootStackArtifact, assetPath, nestedStackLogicalId, listStackResources, sdk);
 
-    generatedNestedStackResource.Properties.NestedTemplate = nestedStackTemplates.generatedTemplate;
-
-    const deployedParentTemplate = parentTemplates.deployedTemplate;
-    deployedParentTemplate.Resources = deployedParentTemplate.Resources ?? {};
-    const deployedNestedStackResource = deployedParentTemplate.Resources[nestedStackLogicalId] ?? {};
-    deployedParentTemplate.Resources[nestedStackLogicalId] = deployedNestedStackResource;
-    deployedNestedStackResource.Type = deployedNestedStackResource.Type ?? 'AWS::CloudFormation::Stack';
-    deployedNestedStackResource.Properties = deployedNestedStackResource.Properties ?? {};
-    deployedNestedStackResource.Properties.NestedTemplate = nestedStackTemplates.deployedTemplate;
-
-    nestedStackNames[nestedStackLogicalId] = {
-      nestedStackPhysicalName: nestedStackTemplates.deployedStackName,
-      nestedChildStackNames: await addNestedTemplatesToGeneratedAndDeployedStacks(
+    nestedStacks[nestedStackLogicalId] = {
+      deployedTemplate: nestedStackTemplates.deployedTemplate,
+      generatedTemplate: nestedStackTemplates.generatedTemplate,
+      physicalName: nestedStackTemplates.deployedStackName,
+      nestedStackTemplates: await loadNestedStacks(
         rootStackArtifact,
         sdk,
         nestedStackTemplates,
@@ -93,7 +82,7 @@ async function addNestedTemplatesToGeneratedAndDeployedStacks(
     };
   }
 
-  return nestedStackNames;
+  return nestedStacks;
 }
 
 async function getNestedStackTemplates(
@@ -123,7 +112,7 @@ async function getNestedStackArn(
   try {
     const stackResources = await listStackResources?.listStackResources();
     return stackResources?.find(sr => sr.LogicalResourceId === nestedStackLogicalId)?.PhysicalResourceId;
-  } catch (e) {
+  } catch (e: any) {
     if (e.message.startsWith('Stack with id ') && e.message.endsWith(' does not exist')) {
       return;
     }

@@ -1,0 +1,12 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "vpc-dual-stack-ec2-test/DefaultTest": {
+      "stacks": [
+        "vpc-dual-stack-ec2"
+      ],
+      "assertionStack": "vpc-dual-stack-ec2-test/DefaultTest/DeployAssert",
+      "assertionStackName": "vpcdualstackec2testDefaultTestDeployAssertB4C8CEE8"
+    }
+  }
+}

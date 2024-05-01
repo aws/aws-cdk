@@ -1,0 +1,20 @@
+{
+  "version": "35.0.0",
+  "files": {
+    "961bf23685226f4365a5bc6a5080c66fc32182e12ccbeb08630ad6ee97fe08cd": {
+      "source": {
+        "path": "CrossRegionRefProducerInteg.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-us-east-1": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1",
+          "objectKey": "961bf23685226f4365a5bc6a5080c66fc32182e12ccbeb08630ad6ee97fe08cd.json",
+          "region": "us-east-1",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-us-east-1"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

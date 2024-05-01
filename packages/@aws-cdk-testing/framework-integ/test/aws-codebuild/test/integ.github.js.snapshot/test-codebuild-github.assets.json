@@ -1,0 +1,19 @@
+{
+  "version": "20.0.0",
+  "files": {
+    "0a731854b21a7a622156af0187024a16e34a36ff721800300cf384b3f580f23e": {
+      "source": {
+        "path": "test-codebuild-github.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "0a731854b21a7a622156af0187024a16e34a36ff721800300cf384b3f580f23e.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

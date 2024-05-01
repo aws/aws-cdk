@@ -18,6 +18,7 @@ export interface ClientOptions {
   region?: string;
   assumeRoleArn?: string;
   assumeRoleExternalId?: string;
+  quiet?: boolean;
 }
 
 /**
@@ -53,6 +54,9 @@ export class DefaultAwsClient implements IAws {
     if (profile) {
       process.env.AWS_PROFILE = profile;
     }
+    // Stop SDKv2 from displaying a warning for now. We are aware and will migrate at some point,
+    // our customer don't need to be bothered with this.
+    process.env.AWS_SDK_JS_SUPPRESS_MAINTENANCE_MODE_MESSAGE = '1';
 
     // We need to set the environment before we load this library for the first time.
     // eslint-disable-next-line @typescript-eslint/no-require-imports
@@ -84,7 +88,7 @@ export class DefaultAwsClient implements IAws {
       const sts = new this.AWS.STS();
       const response = await sts.getCallerIdentity().promise();
       if (!response.Account || !response.Arn) {
-        throw new Error(`Unrecognized reponse from STS: '${JSON.stringify(response)}'`);
+        throw new Error(`Unrecognized response from STS: '${JSON.stringify(response)}'`);
       }
       this.account = {
         accountId: response.Account!,
@@ -99,7 +103,7 @@ export class DefaultAwsClient implements IAws {
     const sts = new this.AWS.STS(await this.awsOptions(options));
     const response = await sts.getCallerIdentity().promise();
     if (!response.Account || !response.Arn) {
-      throw new Error(`Unrecognized reponse from STS: '${JSON.stringify(response)}'`);
+      throw new Error(`Unrecognized response from STS: '${JSON.stringify(response)}'`);
     }
     return {
       accountId: response.Account!,
@@ -152,7 +156,7 @@ export class DefaultAwsClient implements IAws {
 function safeUsername() {
   try {
     return os.userInfo().username.replace(/[^\w+=,.@-]/g, '@');
-  } catch (e) {
+  } catch {
     return 'noname';
   }
 }

@@ -1,0 +1,19 @@
+{
+  "version": "22.0.0",
+  "files": {
+    "1e43b2272a716f06e79a67fe7810bd64d2c4f198ec606c15bac1ce856e05dbbc": {
+      "source": {
+        "path": "integ-cloudtrail-data-events.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "1e43b2272a716f06e79a67fe7810bd64d2c4f198ec606c15bac1ce856e05dbbc.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

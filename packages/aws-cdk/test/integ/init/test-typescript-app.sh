@@ -1,7 +1,6 @@
 #!/bin/bash
-# Naming shim for backwards compatibility with legacy
-# tests and canaries.
 set -eu
-scriptdir=$(cd $(dirname $0) && pwd)
-# Run both app templates
-exec $scriptdir/test-typescript.sh app sample-app
+# This is a backwards compatibility script. All logic has moved to '@aws-cdk-testing/cli-integ'
+# and should be called from there directly.
+
+exec ${INTEG_TOOLS}/bin/run-suite --use-cli-release=$VERSION init-typescript-app

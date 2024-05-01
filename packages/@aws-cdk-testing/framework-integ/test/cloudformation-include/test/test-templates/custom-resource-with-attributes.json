@@ -1,0 +1,46 @@
+{
+  "Conditions": {
+    "AlwaysFalseCond": {
+      "Fn::Equals": [
+        {
+          "Ref": "AWS::Region"
+        },
+        "completely-made-up-region"
+      ]
+    }
+  },
+  "Resources": {
+    "CustomBucket": {
+      "Type": "AWS::MyService::Custom",
+      "Condition": "AlwaysFalseCond",
+      "Version": "1.0",
+      "Metadata": {
+        "Object1": "Value1",
+        "Object2": "Value2"
+      },
+      "CreationPolicy": {
+        "AutoScalingCreationPolicy": {
+          "MinSuccessfulInstancesPercent" : 90
+        }
+      },
+      "DeletionPolicy": "Retain",
+      "DependsOn": [ "CustomResource" ]
+    },
+    "CustomResource": {
+      "Type": "AWS::CloudFormation::CustomResource",
+      "Description": "some random custom resource",
+      "Properties": {
+        "ServiceToken": "CustomValue",
+        "CustomFuncProp": {
+          "Ref": "AWS::NoValue"
+        }
+      },
+      "UpdatePolicy": {
+        "AutoScalingReplacingUpdate": {
+          "WillReplace" : "false"
+        }
+      },
+      "UpdateReplacePolicy": "Retain"
+    }
+  }
+}

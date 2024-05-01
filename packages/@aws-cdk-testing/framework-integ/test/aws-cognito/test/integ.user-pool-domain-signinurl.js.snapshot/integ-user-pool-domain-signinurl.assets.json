@@ -1,0 +1,19 @@
+{
+  "version": "20.0.0",
+  "files": {
+    "8c5f55a122d393bfe29842d5e0cc71716292b3588baf98b021de75e561c87f55": {
+      "source": {
+        "path": "integ-user-pool-domain-signinurl.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "8c5f55a122d393bfe29842d5e0cc71716292b3588baf98b021de75e561c87f55.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

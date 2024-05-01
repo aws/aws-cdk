@@ -1,0 +1,13 @@
+{
+  "version": "v1.0.0",
+  "testCases": {
+    "xxxxx.test-with-snapshot-assets": {
+      "stacks": ["test-stack"],
+      "stackUpdateWorkflow": false,
+      "diffAssets": false,
+      "allowDestroy": [
+        "AWS::IAM::Role"
+      ]
+    }
+  }
+}

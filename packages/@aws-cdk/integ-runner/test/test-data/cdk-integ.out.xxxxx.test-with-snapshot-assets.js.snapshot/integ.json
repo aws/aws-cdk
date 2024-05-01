@@ -1,0 +1,19 @@
+{
+  "version": "v1.0.0",
+  "testCases": {
+    "xxxxx.test-with-snapshot-assets": {
+      "stacks": ["test-stack"],
+      "stackUpdateWorkflow": false,
+      "diffAssets": false,
+      "hooks": {
+        "preDeploy": ["echo \"preDeploy hook\"", "ls", "echo -n \"No new line\""],
+        "postDeploy": ["echo \"postDeploy hook\""],
+        "preDestroy": ["echo \"preDestroy hook\""],
+        "postDestroy": ["echo \"postDestroy hook\""]
+      },
+      "allowDestroy": [
+        "AWS::IAM::Role"
+      ]
+    }
+  }
+}

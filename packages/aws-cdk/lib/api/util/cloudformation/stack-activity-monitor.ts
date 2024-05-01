@@ -221,14 +221,15 @@ export class StackActivityMonitor {
    * see a next page and the last event in the page is new to us (and within the time window).
    * haven't seen the final event
    */
-  private async readNewEvents(): Promise<void> {
+  private async readNewEvents(stackName?: string): Promise<void> {
+    const stackToPollForEvents = stackName ?? this.stackName;
     const events: StackActivity[] = [];
-
+    const CFN_SUCCESS_STATUS = ['UPDATE_COMPLETE', 'CREATE_COMPLETE', 'DELETE_COMPLETE', 'DELETE_SKIPPED'];
     try {
       let nextToken: string | undefined;
       let finished = false;
       while (!finished) {
-        const response = await this.cfn.describeStackEvents({ StackName: this.stackName, NextToken: nextToken }).promise();
+        const response = await this.cfn.describeStackEvents({ StackName: stackToPollForEvents, NextToken: nextToken }).promise();
         const eventPage = response?.StackEvents ?? [];
 
         for (const event of eventPage) {
@@ -249,6 +250,13 @@ export class StackActivityMonitor {
             event: event,
             metadata: this.findMetadataFor(event.LogicalResourceId),
           });
+
+          if (event.ResourceType === 'AWS::CloudFormation::Stack' && !CFN_SUCCESS_STATUS.includes(event.ResourceStatus ?? '')) {
+            // If the event is not for `this` stack and has a physical resource Id, recursively call for events in the nested stack
+            if (event.PhysicalResourceId && event.PhysicalResourceId !== stackToPollForEvents) {
+              await this.readNewEvents(event.PhysicalResourceId);
+            }
+          }
         }
 
         // We're also done if there's nothing left to read
@@ -257,8 +265,8 @@ export class StackActivityMonitor {
           finished = true;
         }
       }
-    } catch (e) {
-      if (e.code === 'ValidationError' && e.message === `Stack [${this.stackName}] does not exist`) {
+    } catch (e: any) {
+      if (e.code === 'ValidationError' && e.message === `Stack [${stackToPollForEvents}] does not exist`) {
         return;
       }
       throw e;
@@ -340,7 +348,7 @@ interface PrinterProps {
   /**
    * Total resources to deploy
    */
-  readonly resourcesTotal?: number
+  readonly resourcesTotal?: number;
 
   /**
    * The with of the "resource type" column.
@@ -398,6 +406,8 @@ abstract class ActivityPrinterBase implements IActivityPrinter {
 
   protected readonly failures = new Array<StackActivity>();
 
+  protected hookFailureMap = new Map<string, Map<string, string>>();
+
   protected readonly stream: NodeJS.WriteStream;
 
   constructor(protected readonly props: PrinterProps) {
@@ -411,8 +421,25 @@ abstract class ActivityPrinterBase implements IActivityPrinter {
     this.stream = props.stream;
   }
 
+  public failureReason(activity: StackActivity) {
+    const resourceStatusReason = activity.event.ResourceStatusReason ?? '';
+    const logicalResourceId = activity.event.LogicalResourceId ?? '';
+    const hookFailureReasonMap = this.hookFailureMap.get(logicalResourceId);
+
+    if (hookFailureReasonMap !== undefined) {
+      for (const hookType of hookFailureReasonMap.keys()) {
+        if (resourceStatusReason.includes(hookType)) {
+          return resourceStatusReason + ' : ' + hookFailureReasonMap.get(hookType);
+        }
+      }
+    }
+    return resourceStatusReason;
+  }
+
   public addActivity(activity: StackActivity) {
     const status = activity.event.ResourceStatus;
+    const hookStatus = activity.event.HookStatus;
+    const hookType = activity.event.HookType;
     if (!status || !activity.event.LogicalResourceId) { return; }
 
     if (status === 'ROLLBACK_IN_PROGRESS' || status === 'UPDATE_ROLLBACK_IN_PROGRESS') {
@@ -454,6 +481,16 @@ abstract class ActivityPrinterBase implements IActivityPrinter {
         }
       }
       this.resourcesPrevCompleteState[activity.event.LogicalResourceId] = status;
+    }
+
+    if (hookStatus !== undefined && hookStatus.endsWith('_COMPLETE_FAILED') && activity.event.LogicalResourceId !== undefined && hookType !== undefined) {
+
+      if (this.hookFailureMap.has(activity.event.LogicalResourceId)) {
+        this.hookFailureMap.get(activity.event.LogicalResourceId)?.set(hookType, activity.event.HookStatusReason ?? '');
+      } else {
+        this.hookFailureMap.set(activity.event.LogicalResourceId, new Map<string, string>());
+        this.hookFailureMap.get(activity.event.LogicalResourceId)?.set(hookType, activity.event.HookStatusReason ?? '');
+      }
     }
   }
 
@@ -529,8 +566,15 @@ export class HistoryActivityPrinter extends ActivityPrinterBase {
 
     let stackTrace = '';
     const md = activity.metadata;
-    if (md && e.ResourceStatus && e.ResourceStatus.indexOf('FAILED') !== -1) {
-      stackTrace = md.entry.trace ? `\n\t${md.entry.trace.join('\n\t\\_ ')}` : '';
+
+    if (e.ResourceStatus && e.ResourceStatus.indexOf('FAILED') !== -1) {
+      if (progress == undefined || progress) {
+        e.ResourceStatusReason = e.ResourceStatusReason ? this.failureReason(activity) : '';
+      }
+      if (md) {
+        stackTrace = md.entry.trace ? `\n\t${md.entry.trace.join('\n\t\\_ ')}` : '';
+
+      }
       reasonColor = chalk.red;
     }
 
@@ -703,7 +747,7 @@ export class CurrentActivityPrinter extends ActivityPrinterBase {
 
   private failureReasonOnNextLine(activity: StackActivity) {
     return hasErrorMessage(activity.event.ResourceStatus ?? '')
-      ? `\n${' '.repeat(TIMESTAMP_WIDTH + STATUS_WIDTH + 6)}${chalk.red(activity.event.ResourceStatusReason ?? '')}`
+      ? `\n${' '.repeat(TIMESTAMP_WIDTH + STATUS_WIDTH + 6)}${chalk.red(this.failureReason(activity) ?? '')}`
       : '';
   }
 }

@@ -1,0 +1,61 @@
+{
+ "Resources": {
+  "AwesomePublicKeyED3E7F55": {
+   "Type": "AWS::CloudFront::PublicKey",
+   "Properties": {
+    "PublicKeyConfig": {
+     "CallerReference": "c88e460888c5762c9c47ac0cdc669370d787fb2d9f",
+     "EncodedKey": "-----BEGIN PUBLIC KEY-----\n      MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAudf8/iNkQgdvjEdm6xYS\n      JAyxd/kGTbJfQNg9YhInb7TSm0dGu0yx8yZ3fnpmxuRPqJIlaVr+fT4YRl71gEYa\n      dlhHmnVegyPNjP9dNqZ7zwNqMEPOPnS/NOHbJj1KYKpn1f8pPNycQ5MQCntKGnSj\n      6fc+nbcC0joDvGz80xuy1W4hLV9oC9c3GT26xfZb2jy9MVtA3cppNuTwqrFi3t6e\n      0iGpraxZlT5wewjZLpQkngqYr6s3aucPAZVsGTEYPo4nD5mswmtZOm+tgcOrivtD\n      /3sD/qZLQ6c5siqyS8aTraD6y+VXugujfarTU65IeZ6QAUbLMsWuZOIi5Jn8zAwx\n      NQIDAQAB\n      -----END PUBLIC KEY-----\n      ",
+     "Name": "awscdkcloudfrontcustomAwesomePublicKey0E83393B"
+    }
+   }
+  },
+  "AwesomeKeyGroup3EF8348B": {
+   "Type": "AWS::CloudFront::KeyGroup",
+   "Properties": {
+    "KeyGroupConfig": {
+     "Items": [
+      {
+       "Ref": "AwesomePublicKeyED3E7F55"
+      }
+     ],
+     "Name": "awscdkcloudfrontcustomAwesomeKeyGroup73FD4DCA"
+    }
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

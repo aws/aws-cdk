@@ -1,6 +1,6 @@
-import * as cfnspec from '@aws-cdk/cfnspec';
+import { Resource } from '@aws-cdk/service-spec-types';
 import * as types from './types';
-import { deepEqual, diffKeyedEntities } from './util';
+import { deepEqual, diffKeyedEntities, loadResourceModel } from './util';
 
 export function diffAttribute(oldValue: any, newValue: any): types.Difference<string> {
   return new types.Difference<string>(_asString(oldValue), _asString(newValue));
@@ -36,8 +36,7 @@ export function diffResource(oldValue?: types.Resource, newValue?: types.Resourc
 
   if (resourceType.oldType !== undefined && resourceType.oldType === resourceType.newType) {
     // Only makes sense to inspect deeper if the types stayed the same
-    const typeSpec = cfnspec.filteredSpecification(resourceType.oldType);
-    const impl = typeSpec.ResourceTypes[resourceType.oldType];
+    const impl = loadResourceModel(resourceType.oldType);
     propertyDiffs = diffKeyedEntities(oldValue!.Properties,
       newValue!.Properties,
       (oldVal, newVal, key) => _diffProperty(oldVal, newVal, key, impl));
@@ -50,16 +49,16 @@ export function diffResource(oldValue?: types.Resource, newValue?: types.Resourc
     resourceType, propertyDiffs, otherDiffs,
   });
 
-  function _diffProperty(oldV: any, newV: any, key: string, resourceSpec?: cfnspec.schema.ResourceType) {
+  function _diffProperty(oldV: any, newV: any, key: string, resourceSpec?: Resource) {
     let changeImpact = types.ResourceImpact.NO_CHANGE;
 
-    const spec = resourceSpec && resourceSpec.Properties && resourceSpec.Properties[key];
+    const spec = resourceSpec?.properties?.[key];
     if (spec && !deepEqual(oldV, newV)) {
-      switch (spec.UpdateType) {
-        case cfnspec.schema.UpdateType.Immutable:
+      switch (spec.causesReplacement) {
+        case 'yes':
           changeImpact = types.ResourceImpact.WILL_REPLACE;
           break;
-        case cfnspec.schema.UpdateType.Conditional:
+        case 'maybe':
           changeImpact = types.ResourceImpact.MAY_REPLACE;
           break;
         default:

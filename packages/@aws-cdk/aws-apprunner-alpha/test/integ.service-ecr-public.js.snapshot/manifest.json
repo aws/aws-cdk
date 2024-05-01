@@ -1,0 +1,97 @@
+{
+  "version": "32.0.0",
+  "artifacts": {
+    "integ-apprunner-ecr-public.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "integ-apprunner-ecr-public.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "integ-apprunner-ecr-public": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "integ-apprunner-ecr-public.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/2181f59f2645e4bd58941c645d6d82a03c41c276ad3e6fd67609d6a733a7248e.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "integ-apprunner-ecr-public.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "integ-apprunner-ecr-public.assets"
+      ],
+      "metadata": {
+        "/integ-apprunner-ecr-public/Service1/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Service1EDCC8134",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
+          }
+        ],
+        "/integ-apprunner-ecr-public/URL1": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "URL1"
+          }
+        ],
+        "/integ-apprunner-ecr-public/ServiceName": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ServiceName"
+          }
+        ],
+        "/integ-apprunner-ecr-public/ServiceId": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ServiceId"
+          }
+        ],
+        "/integ-apprunner-ecr-public/ServiceStatus": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ServiceStatus"
+          }
+        ],
+        "/integ-apprunner-ecr-public/ServiceArn": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ServiceArn"
+          }
+        ],
+        "/integ-apprunner-ecr-public/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/integ-apprunner-ecr-public/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "integ-apprunner-ecr-public"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}

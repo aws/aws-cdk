@@ -10,11 +10,8 @@ export function breakingModules(title: string, body: string): string[] {
     throw new Error('Multiple "BREAKING CHANGE" clause is disallowed.');
   }
   const lines = breakingNotes[0].text.split(/[\n\r]+/).map(l => l.trim());
-  const breakingModules: string[] = []
-  if (!parsed.scope) {
-    throw new Error('Commits with breaking change must specify a "scope" in the title. See https://www.conventionalcommits.org');
-  }
-  breakingModules.push(parsed.scope);
+  const breakingModules: string[] = [];
+  parsed.scope ? breakingModules.push(parsed.scope) : {};
   const re = /^\* \*\*([\w]+)\*\*/;
   for (const line of lines) {
     const match = re.exec(line);

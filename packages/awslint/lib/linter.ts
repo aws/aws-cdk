@@ -1,19 +1,20 @@
 import * as util from 'util';
 import { PrimitiveType } from '@jsii/spec';
 import * as reflect from 'jsii-reflect';
+import { RuleFilterSet } from './rule-specs';
 
 export interface LinterOptions {
   /**
    * List of rules to include.
    * @default all rules
    */
-  include?: string[];
+  includeRules?: RuleFilterSet;
 
   /**
    * List of rules to exclude (takes precedence on "include")
    * @default none
    */
-  exclude?: string[];
+  excludeRules?: RuleFilterSet;
 }
 
 export abstract class LinterBase {
@@ -222,47 +223,20 @@ export class Evaluation<T> {
    * Evaluates whether the rule should be evaluated based on the filters applied.
    */
   private shouldEvaluate(code: string, scope: string) {
-    if (!this.options.include || this.options.include.length === 0) {
+    if (!this.options.includeRules || this.options.includeRules.isEmpty()) {
       return true;
     }
 
-    for (const include of this.options.include) {
-      // match include
-      if (matchRule(include)) {
-        for (const exclude of this.options.exclude || []) {
-          // match exclude
-          if (matchRule(exclude)) {
-            return false;
-          }
-        }
-        return true;
+    if (this.options.includeRules.matches(code, scope)) {
+      if (this.options.excludeRules?.matches(code, scope)) {
+        return false;
       }
+      return true;
     }
 
     return false;
-
-    function matchRule(filter: string) {
-      if (filter.indexOf(':') === -1) {
-        filter += ':*'; // add "*" scope filter if there isn't one
-      }
-
-      // filter format is "code:scope" and both support "*" suffix to indicate startsWith
-      const [codeFilter, scopeFilter] = filter.split(':');
-      return matchPattern(code, codeFilter) && matchPattern(scope, scopeFilter);
-    }
-
-    function matchPattern(s: string, pattern: string) {
-      if (pattern.endsWith('*')) {
-        const prefix = pattern.slice(0, -1);
-        return s.startsWith(prefix);
-      } else {
-        return s === pattern;
-      }
-    }
   }
-
 }
-
 export interface Rule {
   code: string,
   message: string;

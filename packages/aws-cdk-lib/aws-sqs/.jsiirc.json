@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "java": {
+      "package": "software.amazon.awscdk.services.sqs"
+    },
+    "dotnet": {
+      "namespace": "Amazon.CDK.AWS.SQS"
+    },
+    "python": {
+      "module": "aws_cdk.aws_sqs"
+    }
+  }
+}

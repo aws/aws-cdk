@@ -1,0 +1,19 @@
+{
+  "version": "20.0.0",
+  "files": {
+    "e15a743e01fe1f4e99edb6548250c632753063bd02e5346daf1e2d5aa031c20d": {
+      "source": {
+        "path": "cloudfront-load-balancer-origin.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "e15a743e01fe1f4e99edb6548250c632753063bd02e5346daf1e2d5aa031c20d.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

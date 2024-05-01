@@ -1,0 +1,19 @@
+{
+  "version": "32.0.0",
+  "files": {
+    "2d99c86b451354d15c576c59505ff89003cb23ed1c48a33b0b57bf3eee545c16": {
+      "source": {
+        "path": "aws-cdk-neptune-serverless-integ.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "2d99c86b451354d15c576c59505ff89003cb23ed1c48a33b0b57bf3eee545c16.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

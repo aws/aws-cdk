@@ -1,0 +1,7 @@
+{
+  "exclude": [
+    "props-physical-name:@aws-cdk/aws-cloud9-alpha.Ec2EnvironmentProps",
+    "docs-public-apis:@aws-cdk/aws-cloud9-alpha.CloneRepository.pathComponent",
+    "docs-public-apis:@aws-cdk/aws-cloud9-alpha.CloneRepository.repositoryUrl"
+  ]
+}

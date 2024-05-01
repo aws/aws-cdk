@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "dotnet": {
+      "namespace": "Amazon.CDK.AWS.Forecast"
+    },
+    "java": {
+      "package": "software.amazon.awscdk.services.forecast"
+    },
+    "python": {
+      "module": "aws_cdk.aws_forecast"
+    }
+  }
+}

@@ -1,0 +1,94 @@
+{
+  "version": "20.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "integ-user-pool-signup-link.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "integ-user-pool-signup-link.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "integ-user-pool-signup-link": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "integ-user-pool-signup-link.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f7a2afc4f3b50f3ae7f67e83d50e44fe1bf1c1d3878f5e0e0c4a4b0504e96ab2.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "integ-user-pool-signup-link.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "integ-user-pool-signup-link.assets"
+      ],
+      "metadata": {
+        "/integ-user-pool-signup-link/myuserpool/smsRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myuserpoolsmsRole0E16FDD9"
+          }
+        ],
+        "/integ-user-pool-signup-link/myuserpool/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myuserpool01998219"
+          }
+        ],
+        "/integ-user-pool-signup-link/myuserpool/myuserpooldomain/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myuserpoolmyuserpooldomainEE1E11AF"
+          }
+        ],
+        "/integ-user-pool-signup-link/myuserpoolclient/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "myuserpoolclient8A58A3E4"
+          }
+        ],
+        "/integ-user-pool-signup-link/user-pool-id": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "userpoolid"
+          }
+        ],
+        "/integ-user-pool-signup-link/client-id": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "clientid"
+          }
+        ],
+        "/integ-user-pool-signup-link/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/integ-user-pool-signup-link/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "integ-user-pool-signup-link"
+    }
+  }
+}

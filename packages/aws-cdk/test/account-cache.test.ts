@@ -1,7 +1,8 @@
+/* eslint-disable import/order */
 import * as path from 'path';
 import * as fs from 'fs-extra';
-import { AccountAccessKeyCache } from '../lib/api/aws-auth/account-cache';
 import { withMocked } from './util';
+import { AccountAccessKeyCache } from '../lib/api/aws-auth/account-cache';
 
 async function makeCache() {
   const dir = await fs.mkdtemp('/tmp/account-cache-test');

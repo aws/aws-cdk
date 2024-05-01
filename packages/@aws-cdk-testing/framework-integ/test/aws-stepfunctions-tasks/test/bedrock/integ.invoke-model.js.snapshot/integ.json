@@ -1,0 +1,12 @@
+{
+  "version": "35.0.0",
+  "testCases": {
+    "InvokeModel/DefaultTest": {
+      "stacks": [
+        "aws-stepfunctions-tasks-bedrock-invoke-model-integ"
+      ],
+      "assertionStack": "InvokeModel/DefaultTest/DeployAssert",
+      "assertionStackName": "InvokeModelDefaultTestDeployAssert9C0D2DFC"
+    }
+  }
+}

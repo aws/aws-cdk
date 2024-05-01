@@ -1,0 +1,12 @@
+{
+  "version": "22.0.0",
+  "testCases": {
+    "Build/DefaultTest": {
+      "stacks": [
+        "aws-gamelift-build"
+      ],
+      "assertionStack": "Build/DefaultTest/DeployAssert",
+      "assertionStackName": "BuildDefaultTestDeployAssert0688841C"
+    }
+  }
+}

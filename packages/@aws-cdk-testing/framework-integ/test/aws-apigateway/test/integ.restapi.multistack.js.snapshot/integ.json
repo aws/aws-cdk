@@ -1,0 +1,11 @@
+{
+  "version": "20.0.0",
+  "testCases": {
+    "restapi-multistack/DefaultTest": {
+      "stacks": [
+        "SecondStack"
+      ],
+      "assertionStack": "restapi-multistack/DefaultTest/DeployAssert"
+    }
+  }
+}

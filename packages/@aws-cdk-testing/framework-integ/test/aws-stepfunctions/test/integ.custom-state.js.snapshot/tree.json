@@ -1,0 +1,160 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "aws-stepfunctions-custom-state-integ": {
+        "id": "aws-stepfunctions-custom-state-integ",
+        "path": "aws-stepfunctions-custom-state-integ",
+        "children": {
+          "final step": {
+            "id": "final step",
+            "path": "aws-stepfunctions-custom-state-integ/final step",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_stepfunctions.Pass",
+              "version": "0.0.0"
+            }
+          },
+          "failed": {
+            "id": "failed",
+            "path": "aws-stepfunctions-custom-state-integ/failed",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_stepfunctions.Fail",
+              "version": "0.0.0"
+            }
+          },
+          "my custom task": {
+            "id": "my custom task",
+            "path": "aws-stepfunctions-custom-state-integ/my custom task",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_stepfunctions.CustomState",
+              "version": "0.0.0"
+            }
+          },
+          "my custom task with inline Retriers": {
+            "id": "my custom task with inline Retriers",
+            "path": "aws-stepfunctions-custom-state-integ/my custom task with inline Retriers",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_stepfunctions.CustomState",
+              "version": "0.0.0"
+            }
+          },
+          "StateMachine": {
+            "id": "StateMachine",
+            "path": "aws-stepfunctions-custom-state-integ/StateMachine",
+            "children": {
+              "Role": {
+                "id": "Role",
+                "path": "aws-stepfunctions-custom-state-integ/StateMachine/Role",
+                "children": {
+                  "ImportRole": {
+                    "id": "ImportRole",
+                    "path": "aws-stepfunctions-custom-state-integ/StateMachine/Role/ImportRole",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-stepfunctions-custom-state-integ/StateMachine/Role/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "states.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-stepfunctions-custom-state-integ/StateMachine/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::StepFunctions::StateMachine",
+                  "aws:cdk:cloudformation:props": {
+                    "definitionString": "{\"StartAt\":\"my custom task\",\"States\":{\"my custom task\":{\"Next\":\"my custom task with inline Retriers\",\"Type\":\"Task\",\"Resource\":\"arn:aws:states:::dynamodb:putItem\",\"Parameters\":{\"TableName\":\"my-cool-table\",\"Item\":{\"id\":{\"S\":\"my-entry\"}}},\"ResultPath\":null,\"Retry\":[{\"ErrorEquals\":[\"States.Timeout\"],\"IntervalSeconds\":10,\"MaxAttempts\":5},{\"ErrorEquals\":[\"States.Permissions\"],\"IntervalSeconds\":20,\"MaxAttempts\":2}],\"Catch\":[{\"ErrorEquals\":[\"States.ALL\"],\"Next\":\"failed\"}]},\"my custom task with inline Retriers\":{\"Next\":\"final step\",\"Type\":\"Task\",\"Resource\":\"arn:aws:states:::dynamodb:putItem\",\"Parameters\":{\"TableName\":\"my-cool-table\",\"Item\":{\"id\":{\"S\":\"my-entry\"}}},\"ResultPath\":null,\"Retry\":[{\"ErrorEquals\":[\"States.Permissions\"],\"IntervalSeconds\":20,\"MaxAttempts\":2}]},\"final step\":{\"Type\":\"Pass\",\"End\":true},\"failed\":{\"Type\":\"Fail\",\"Error\":\"DidNotWork\",\"Cause\":\"We got stuck\"}},\"TimeoutSeconds\":30}",
+                    "roleArn": {
+                      "Fn::GetAtt": [
+                        "StateMachineRoleB840431D",
+                        "Arn"
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_stepfunctions.CfnStateMachine",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_stepfunctions.StateMachine",
+              "version": "0.0.0"
+            }
+          },
+          "StateMachineARN": {
+            "id": "StateMachineARN",
+            "path": "aws-stepfunctions-custom-state-integ/StateMachineARN",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnOutput",
+              "version": "0.0.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "aws-stepfunctions-custom-state-integ/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "aws-stepfunctions-custom-state-integ/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnRule",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.3.0"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "aws-cdk-lib.App",
+      "version": "0.0.0"
+    }
+  }
+}

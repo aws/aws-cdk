@@ -1,3 +1,6 @@
+import { loadAwsServiceSpecSync } from '@aws-cdk/aws-service-spec';
+import { Resource, SpecDatabase } from '@aws-cdk/service-spec-types';
+
 /**
  * Compares two objects for equality, deeply. The function handles arguments that are
  * +null+, +undefined+, arrays and objects. For objects, the function will not take the
@@ -113,6 +116,12 @@ export function diffKeyedEntities<T>(
   for (const logicalId of unionOf(Object.keys(oldValue || {}), Object.keys(newValue || {}))) {
     const oldElement = oldValue && oldValue[logicalId];
     const newElement = newValue && newValue[logicalId];
+
+    if (oldElement === undefined && newElement === undefined) {
+      // Shouldn't happen in reality, but may happen in tests. Skip.
+      continue;
+    }
+
     result[logicalId] = elementDiff(oldElement, newElement, logicalId);
   }
   return result;
@@ -135,6 +144,18 @@ export function unionOf(lv: string[] | Set<string>, rv: string[] | Set<string>):
 }
 
 /**
+ * GetStackTemplate flattens any codepoint greater than "\u7f" to "?". This is
+ * true even for codepoints in the supplemental planes which are represented
+ * in JS as surrogate pairs, all the way up to "\u{10ffff}".
+ *
+ * This function implements the same mangling in order to provide diagnostic
+ * information in `cdk diff`.
+ */
+export function mangleLikeCloudFormation(payload: string) {
+  return payload.replace(/[\u{80}-\u{10ffff}]/gu, '?');
+}
+
+/**
  * A parseFloat implementation that does the right thing for
  * strings like '0.0.0'
  * (for which JavaScript's parseFloat() returns 0).
@@ -144,4 +165,24 @@ export function unionOf(lv: string[] | Set<string>, rv: string[] | Set<string>):
  */
 function safeParseFloat(str: string): number {
   return Number(str);
+}
+
+/**
+ * Lazily load the service spec database and cache the loaded db
+*/
+let DATABASE: SpecDatabase | undefined;
+function database(): SpecDatabase {
+  if (!DATABASE) {
+    DATABASE = loadAwsServiceSpecSync();
+  }
+  return DATABASE;
+}
+
+/**
+ * Load a Resource model from the Service Spec Database
+ *
+ * The database is loaded lazily and cached across multiple calls to `loadResourceModel`.
+ */
+export function loadResourceModel(type: string): Resource | undefined {
+  return database().lookup('resource', 'cloudFormationType', 'equals', type)[0];
 }

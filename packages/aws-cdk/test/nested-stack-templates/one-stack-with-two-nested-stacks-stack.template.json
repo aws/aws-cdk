@@ -1,0 +1,39 @@
+{
+  "Resources": {
+    "NestedLambdaStack": {
+      "Type": "AWS::CloudFormation::Stack",
+      "Properties": {
+        "TemplateURL": "https://www.amazon.com",
+        "Parameters": {
+          "referenceToS3BucketParam": {
+            "Ref": "S3BucketParam"
+          },
+          "referenceToS3StackKeyOutput": {
+            "Fn::GetAtt": [
+              "NestedSiblingStack",
+              "Outputs.NestedOutput"
+            ]
+          }
+        }
+      },
+      "Metadata": {
+        "aws:asset:path": "one-lambda-stack-with-dependency-on-sibling-stack-output.nested.template.json"
+      }
+    },
+    "NestedSiblingStack": {
+      "Type": "AWS::CloudFormation::Stack",
+      "Properties": {
+        "TemplateURL": "https://www.amazon.com"
+      },
+      "Metadata": {
+        "aws:asset:path": "one-output-stack.nested.template.json"
+      }
+    }
+  },
+  "Parameters": {
+    "S3BucketParam": {
+      "Type": "String",
+      "Description": "S3 bucket for asset"
+    }
+  }
+}

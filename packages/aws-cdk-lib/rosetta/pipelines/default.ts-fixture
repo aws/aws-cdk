@@ -1,0 +1,32 @@
+// Fixture with packages imported, but nothing else
+import { Construct } from 'constructs';
+import { CfnOutput, Duration, Stage, Stack, StackProps, StageProps } from 'aws-cdk-lib';
+import cdk = require('aws-cdk-lib');
+import codepipeline = require('aws-cdk-lib/aws-codepipeline');
+import cpactions = require('aws-cdk-lib/aws-codepipeline-actions');
+import codebuild = require('aws-cdk-lib/aws-codebuild');
+import codecommit = require('aws-cdk-lib/aws-codecommit');
+import dynamodb = require('aws-cdk-lib/aws-dynamodb');
+import ecr = require('aws-cdk-lib/aws-ecr');
+import ec2 = require('aws-cdk-lib/aws-ec2');
+import iam = require('aws-cdk-lib/aws-iam');
+import lambda = require('aws-cdk-lib/aws-lambda');
+import pipelines = require('aws-cdk-lib/pipelines');
+import secretsmanager = require('aws-cdk-lib/aws-secretsmanager');
+import sns = require('aws-cdk-lib/aws-sns');
+import subscriptions = require('aws-cdk-lib/aws-sns-subscriptions');
+import s3 = require('aws-cdk-lib/aws-s3');
+import kms = require('aws-cdk-lib/aws-kms');
+
+class MyApplicationStage extends Stage {
+  constructor(scope: Construct, id: string, props?: StageProps) {
+    super(scope, id, props);
+  }
+}
+
+class Fixture extends Stack {
+  constructor(scope: Construct, id: string) {
+    super(scope, id);
+    /// here
+  }
+}

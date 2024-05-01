@@ -1,0 +1,462 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.85"
+        }
+      },
+      "aws-cdk-dynamodb": {
+        "id": "aws-cdk-dynamodb",
+        "path": "aws-cdk-dynamodb",
+        "children": {
+          "Table": {
+            "id": "Table",
+            "path": "aws-cdk-dynamodb/Table",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-dynamodb/Table/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::DynamoDB::Table",
+                  "aws:cdk:cloudformation:props": {
+                    "keySchema": [
+                      {
+                        "attributeName": "hashKey",
+                        "keyType": "HASH"
+                      }
+                    ],
+                    "attributeDefinitions": [
+                      {
+                        "attributeName": "hashKey",
+                        "attributeType": "S"
+                      }
+                    ],
+                    "billingMode": "PAY_PER_REQUEST"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-dynamodb.CfnTable",
+                  "version": "0.0.0"
+                }
+              },
+              "ScalingRole": {
+                "id": "ScalingRole",
+                "path": "aws-cdk-dynamodb/Table/ScalingRole",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.85"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-dynamodb.Table",
+              "version": "0.0.0"
+            }
+          },
+          "TableWithGlobalAndLocalSecondaryIndex": {
+            "id": "TableWithGlobalAndLocalSecondaryIndex",
+            "path": "aws-cdk-dynamodb/TableWithGlobalAndLocalSecondaryIndex",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-dynamodb/TableWithGlobalAndLocalSecondaryIndex/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::DynamoDB::Table",
+                  "aws:cdk:cloudformation:props": {
+                    "keySchema": [
+                      {
+                        "attributeName": "hashKey",
+                        "keyType": "HASH"
+                      },
+                      {
+                        "attributeName": "sortKey",
+                        "keyType": "RANGE"
+                      }
+                    ],
+                    "attributeDefinitions": [
+                      {
+                        "attributeName": "hashKey",
+                        "attributeType": "S"
+                      },
+                      {
+                        "attributeName": "sortKey",
+                        "attributeType": "N"
+                      },
+                      {
+                        "attributeName": "gsiHashKey",
+                        "attributeType": "S"
+                      },
+                      {
+                        "attributeName": "gsiSortKey",
+                        "attributeType": "N"
+                      },
+                      {
+                        "attributeName": "lsiSortKey",
+                        "attributeType": "N"
+                      }
+                    ],
+                    "billingMode": "PAY_PER_REQUEST",
+                    "globalSecondaryIndexes": [
+                      {
+                        "indexName": "GSI-PartitionKeyOnly",
+                        "keySchema": [
+                          {
+                            "attributeName": "gsiHashKey",
+                            "keyType": "HASH"
+                          }
+                        ],
+                        "projection": {
+                          "projectionType": "ALL"
+                        }
+                      },
+                      {
+                        "indexName": "GSI-PartitionAndSortKeyWithReadAndWriteCapacity",
+                        "keySchema": [
+                          {
+                            "attributeName": "gsiHashKey",
+                            "keyType": "HASH"
+                          },
+                          {
+                            "attributeName": "gsiSortKey",
+                            "keyType": "RANGE"
+                          }
+                        ],
+                        "projection": {
+                          "projectionType": "ALL"
+                        }
+                      },
+                      {
+                        "indexName": "GSI-ProjectionTypeKeysOnly",
+                        "keySchema": [
+                          {
+                            "attributeName": "gsiHashKey",
+                            "keyType": "HASH"
+                          },
+                          {
+                            "attributeName": "gsiSortKey",
+                            "keyType": "RANGE"
+                          }
+                        ],
+                        "projection": {
+                          "projectionType": "KEYS_ONLY"
+                        }
+                      },
+                      {
+                        "indexName": "GSI-ProjectionTypeInclude",
+                        "keySchema": [
+                          {
+                            "attributeName": "gsiHashKey",
+                            "keyType": "HASH"
+                          },
+                          {
+                            "attributeName": "gsiSortKey",
+                            "keyType": "RANGE"
+                          }
+                        ],
+                        "projection": {
+                          "projectionType": "INCLUDE",
+                          "nonKeyAttributes": [
+                            "A",
+                            "B",
+                            "C",
+                            "D",
+                            "E",
+                            "F",
+                            "G",
+                            "H",
+                            "I",
+                            "J"
+                          ]
+                        }
+                      },
+                      {
+                        "indexName": "GSI-InverseTableKeySchema",
+                        "keySchema": [
+                          {
+                            "attributeName": "sortKey",
+                            "keyType": "HASH"
+                          },
+                          {
+                            "attributeName": "hashKey",
+                            "keyType": "RANGE"
+                          }
+                        ],
+                        "projection": {
+                          "projectionType": "ALL"
+                        }
+                      }
+                    ],
+                    "localSecondaryIndexes": [
+                      {
+                        "indexName": "LSI-PartitionAndTableSortKey",
+                        "keySchema": [
+                          {
+                            "attributeName": "hashKey",
+                            "keyType": "HASH"
+                          },
+                          {
+                            "attributeName": "lsiSortKey",
+                            "keyType": "RANGE"
+                          }
+                        ],
+                        "projection": {
+                          "projectionType": "ALL"
+                        }
+                      },
+                      {
+                        "indexName": "LSI-PartitionAndSortKey",
+                        "keySchema": [
+                          {
+                            "attributeName": "hashKey",
+                            "keyType": "HASH"
+                          },
+                          {
+                            "attributeName": "sortKey",
+                            "keyType": "RANGE"
+                          }
+                        ],
+                        "projection": {
+                          "projectionType": "ALL"
+                        }
+                      },
+                      {
+                        "indexName": "LSI-ProjectionTypeKeysOnly",
+                        "keySchema": [
+                          {
+                            "attributeName": "hashKey",
+                            "keyType": "HASH"
+                          },
+                          {
+                            "attributeName": "lsiSortKey",
+                            "keyType": "RANGE"
+                          }
+                        ],
+                        "projection": {
+                          "projectionType": "KEYS_ONLY"
+                        }
+                      },
+                      {
+                        "indexName": "LSI-ProjectionTypeInclude",
+                        "keySchema": [
+                          {
+                            "attributeName": "hashKey",
+                            "keyType": "HASH"
+                          },
+                          {
+                            "attributeName": "lsiSortKey",
+                            "keyType": "RANGE"
+                          }
+                        ],
+                        "projection": {
+                          "projectionType": "INCLUDE",
+                          "nonKeyAttributes": [
+                            "K",
+                            "L",
+                            "M",
+                            "N",
+                            "O",
+                            "P",
+                            "Q",
+                            "R",
+                            "S",
+                            "T"
+                          ]
+                        }
+                      }
+                    ],
+                    "pointInTimeRecoverySpecification": {
+                      "pointInTimeRecoveryEnabled": true
+                    },
+                    "sseSpecification": {
+                      "sseEnabled": true
+                    },
+                    "streamSpecification": {
+                      "streamViewType": "KEYS_ONLY"
+                    },
+                    "tags": [
+                      {
+                        "key": "Environment",
+                        "value": "Production"
+                      }
+                    ],
+                    "timeToLiveSpecification": {
+                      "attributeName": "timeToLive",
+                      "enabled": true
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-dynamodb.CfnTable",
+                  "version": "0.0.0"
+                }
+              },
+              "ScalingRole": {
+                "id": "ScalingRole",
+                "path": "aws-cdk-dynamodb/TableWithGlobalAndLocalSecondaryIndex/ScalingRole",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.85"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-dynamodb.Table",
+              "version": "0.0.0"
+            }
+          },
+          "TableWithGlobalSecondaryIndex": {
+            "id": "TableWithGlobalSecondaryIndex",
+            "path": "aws-cdk-dynamodb/TableWithGlobalSecondaryIndex",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-dynamodb/TableWithGlobalSecondaryIndex/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::DynamoDB::Table",
+                  "aws:cdk:cloudformation:props": {
+                    "keySchema": [
+                      {
+                        "attributeName": "hashKey",
+                        "keyType": "HASH"
+                      }
+                    ],
+                    "attributeDefinitions": [
+                      {
+                        "attributeName": "hashKey",
+                        "attributeType": "S"
+                      },
+                      {
+                        "attributeName": "gsiHashKey",
+                        "attributeType": "S"
+                      }
+                    ],
+                    "billingMode": "PAY_PER_REQUEST",
+                    "globalSecondaryIndexes": [
+                      {
+                        "indexName": "GSI-PartitionKeyOnly",
+                        "keySchema": [
+                          {
+                            "attributeName": "gsiHashKey",
+                            "keyType": "HASH"
+                          }
+                        ],
+                        "projection": {
+                          "projectionType": "ALL"
+                        }
+                      }
+                    ]
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-dynamodb.CfnTable",
+                  "version": "0.0.0"
+                }
+              },
+              "ScalingRole": {
+                "id": "ScalingRole",
+                "path": "aws-cdk-dynamodb/TableWithGlobalSecondaryIndex/ScalingRole",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.85"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-dynamodb.Table",
+              "version": "0.0.0"
+            }
+          },
+          "TableWithLocalSecondaryIndex": {
+            "id": "TableWithLocalSecondaryIndex",
+            "path": "aws-cdk-dynamodb/TableWithLocalSecondaryIndex",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-dynamodb/TableWithLocalSecondaryIndex/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::DynamoDB::Table",
+                  "aws:cdk:cloudformation:props": {
+                    "keySchema": [
+                      {
+                        "attributeName": "hashKey",
+                        "keyType": "HASH"
+                      },
+                      {
+                        "attributeName": "sortKey",
+                        "keyType": "RANGE"
+                      }
+                    ],
+                    "attributeDefinitions": [
+                      {
+                        "attributeName": "hashKey",
+                        "attributeType": "S"
+                      },
+                      {
+                        "attributeName": "sortKey",
+                        "attributeType": "N"
+                      },
+                      {
+                        "attributeName": "lsiSortKey",
+                        "attributeType": "N"
+                      }
+                    ],
+                    "billingMode": "PAY_PER_REQUEST",
+                    "localSecondaryIndexes": [
+                      {
+                        "indexName": "LSI-PartitionAndSortKey",
+                        "keySchema": [
+                          {
+                            "attributeName": "hashKey",
+                            "keyType": "HASH"
+                          },
+                          {
+                            "attributeName": "lsiSortKey",
+                            "keyType": "RANGE"
+                          }
+                        ],
+                        "projection": {
+                          "projectionType": "ALL"
+                        }
+                      }
+                    ]
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-dynamodb.CfnTable",
+                  "version": "0.0.0"
+                }
+              },
+              "ScalingRole": {
+                "id": "ScalingRole",
+                "path": "aws-cdk-dynamodb/TableWithLocalSecondaryIndex/ScalingRole",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.85"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-dynamodb.Table",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.85"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "constructs.Construct",
+      "version": "10.1.85"
+    }
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "version": "20.0.0",
+  "files": {
+    "beaf26c63be2bdafbf708bdce2a5af13187058a3a32e6a0ceff537615cadf2ba": {
+      "source": {
+        "path": "test-apigateway-usageplan-multikey.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "beaf26c63be2bdafbf708bdce2a5af13187058a3a32e6a0ceff537615cadf2ba.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

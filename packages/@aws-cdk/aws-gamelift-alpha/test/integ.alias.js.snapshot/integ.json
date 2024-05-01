@@ -1,0 +1,12 @@
+{
+  "version": "21.0.0",
+  "testCases": {
+    "Alias/DefaultTest": {
+      "stacks": [
+        "aws-gamelift-alias"
+      ],
+      "assertionStack": "Alias/DefaultTest/DeployAssert",
+      "assertionStackName": "AliasDefaultTestDeployAssert722FACAF"
+    }
+  }
+}

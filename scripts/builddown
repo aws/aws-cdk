@@ -2,6 +2,8 @@
 set -euo pipefail
 scriptdir=$(cd $(dirname $0) && pwd)
 
+export NODE_OPTIONS="--max-old-space-size=6144 ${NODE_OPTIONS:-}"
+
 echo "************************************************************"
 echo " builddown usage:"
 echo " - execute 'builddown --resume' to resume after failure"

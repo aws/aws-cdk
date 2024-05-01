@@ -1,5 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
+import { Bundle } from '@aws-cdk/node-bundle';
 import * as caseUtils from 'case';
 import * as glob from 'glob';
 import * as semver from 'semver';
@@ -15,8 +16,8 @@ import {
   monoRepoRoot,
 } from './util';
 
-const PKGLINT_VERSION = require('../package.json').version; // eslint-disable-line @typescript-eslint/no-require-imports
 const AWS_SERVICE_NAMES = require('./aws-service-official-names.json'); // eslint-disable-line @typescript-eslint/no-require-imports
+const PKGLINT_VERSION = require('../package.json').version; // eslint-disable-line @typescript-eslint/no-require-imports
 
 /**
  * Verify that the package name matches the directory name
@@ -56,7 +57,6 @@ export class PublishConfigTagIsRequired extends ValidationRule {
 
   // The list of packages that are publicly published in both v1 and v2.
   private readonly SHARED_PACKAGES = [
-    '@aws-cdk/assert',
     '@aws-cdk/cloud-assembly-schema',
     '@aws-cdk/cloudformation-diff',
     '@aws-cdk/cx-api',
@@ -187,7 +187,7 @@ export class ThirdPartyAttributions extends ValidationRule {
 
   public validate(pkg: PackageJson): void {
 
-    const alwaysCheck = ['monocdk', 'aws-cdk-lib'];
+    const alwaysCheck = ['aws-cdk-lib'];
     if (pkg.json.private && !alwaysCheck.includes(pkg.json.name)) {
       return;
     }
@@ -220,6 +220,35 @@ export class ThirdPartyAttributions extends ValidationRule {
   }
 }
 
+export class NodeBundleValidation extends ValidationRule {
+  public readonly name = '@aws-cdk/node-bundle';
+
+  public validate(pkg: PackageJson): void {
+    const bundleConfig = pkg.json['cdk-package']?.bundle;
+    if (bundleConfig == null) {
+      return;
+    }
+
+    const bundle = new Bundle({
+      ...bundleConfig,
+      packageDir: pkg.packageRoot,
+    });
+
+    const result = bundle.validate({ fix: false });
+    if (result.success) {
+      return;
+    }
+
+    for (const violation of result.violations) {
+      pkg.report({
+        fix: violation.fix,
+        message: violation.message,
+        ruleName: `${this.name} => ${violation.type}`,
+      });
+    }
+  }
+}
+
 /**
  * Author must be AWS (as an Organization)
  */
@@ -246,7 +275,8 @@ export class ReadmeFile extends ValidationRule {
     if (!scopes) {
       return;
     }
-    if (pkg.packageName === '@aws-cdk/core') {
+    // elasticsearch is renamed to opensearch service, so its readme does not follow these rules
+    if (pkg.packageName === '@aws-cdk/core' || pkg.packageName === '@aws-cdk/aws-elasticsearch') {
       return;
     }
     const scope: string = typeof scopes === 'string' ? scopes : scopes[0];
@@ -634,15 +664,15 @@ export class JSIIProjectReferences extends ValidationRule {
       this.name,
       pkg,
       'jsii.projectReferences',
-      pkg.json.name !== 'monocdk' && pkg.json.name !== 'aws-cdk-lib',
+      pkg.json.name !== 'aws-cdk-lib',
     );
   }
 }
 
-export class NoPeerDependenciesMonocdk extends ValidationRule {
-  public readonly name = 'monocdk/no-peer';
+export class NoPeerDependenciesAwsCdkLib extends ValidationRule {
+  public readonly name = 'aws-cdk-lib/no-peer';
   private readonly allowedPeer = ['constructs'];
-  private readonly modules = ['monocdk', 'aws-cdk-lib'];
+  private readonly modules = ['aws-cdk-lib'];
 
   public validate(pkg: PackageJson): void {
     if (!this.modules.includes(pkg.packageName)) {
@@ -841,24 +871,6 @@ export class NoJsiiDep extends ValidationRule {
   }
 }
 
-/**
- * Verifies that the expected versions of node will be supported.
- */
-export class NodeCompatibility extends ValidationRule {
-  public readonly name = 'dependencies/node-version';
-
-  public validate(pkg: PackageJson): void {
-    const atTypesNode = pkg.getDevDependency('@types/node');
-    if (atTypesNode && !atTypesNode.startsWith('^10.')) {
-      pkg.report({
-        ruleName: this.name,
-        message: `packages must support node version 10 and up, but ${atTypesNode} is declared`,
-        fix: () => pkg.addDevDependency('@types/node', '^10.17.5'),
-      });
-    }
-  }
-}
-
 function isCdkModuleName(name: string) {
   return !!name.match(/^@aws-cdk\//);
 }
@@ -898,6 +910,7 @@ function cdkModuleName(name: string) {
     javaPackage: `software.amazon.awscdk${isLegacyCdkPkg ? '' : `.${suffix.replace(/aws-/, 'services-').replace(/-/g, '.')}`}`,
     mavenArtifactId,
     dotnetNamespace: `Amazon.CDK${isCdkPkg ? '' : `.${dotnetSuffix}`}`,
+    dotnetPackageId: `Amazon.CDK${isCdkPkg ? '' : `.${dotnetSuffix}`}`,
     python: {
       distName: `aws-cdk.${pythonName}`,
       module: `aws_cdk.${pythonName.replace(/-/g, '_')}`,
@@ -913,10 +926,6 @@ export class JSIIDotNetNamespaceIsRequired extends ValidationRule {
 
   public validate(pkg: PackageJson): void {
     if (!isJSII(pkg)) { return; }
-
-    // skip the legacy @aws-cdk/cdk because we actually did not rename
-    // the .NET module, so we are not publishing the deprecated one
-    if (pkg.packageName === '@aws-cdk/cdk') { return; }
 
     const dotnet = deepGet(pkg.json, ['jsii', 'targets', 'dotnet', 'namespace']) as string | undefined;
     const moduleName = cdkModuleName(pkg.json.name);
@@ -937,7 +946,34 @@ export class JSIIDotNetNamespaceIsRequired extends ValidationRule {
 }
 
 /**
- * JSII .NET namespace is required and must look sane
+ * JSII .NET packageId is required and must look sane
+ */
+export class JSIIDotNetPackageIdIsRequired extends ValidationRule {
+  public readonly name = 'jsii/dotnet';
+
+  public validate(pkg: PackageJson): void {
+    if (!isJSII(pkg)) { return; }
+
+    const dotnet = deepGet(pkg.json, ['jsii', 'targets', 'dotnet', 'namespace']) as string | undefined;
+    const moduleName = cdkModuleName(pkg.json.name);
+    expectJSON(this.name, pkg, 'jsii.targets.dotnet.packageId', moduleName.dotnetPackageId, /\./g, /*case insensitive*/ true);
+
+    if (dotnet) {
+      const actualPrefix = dotnet.split('.').slice(0, 2).join('.');
+      const expectedPrefix = moduleName.dotnetPackageId.split('.').slice(0, 2).join('.');
+      if (actualPrefix !== expectedPrefix) {
+        pkg.report({
+          ruleName: this.name,
+          message: `.NET packageId must share the first two segments of the default namespace, '${expectedPrefix}' vs '${actualPrefix}'`,
+          fix: () => deepSet(pkg.json, ['jsii', 'targets', 'dotnet', 'packageId'], moduleName.dotnetPackageId),
+        });
+      }
+    }
+  }
+}
+
+/**
+ * JSII .NET icon url is required and must look sane
  */
 export class JSIIDotNetIconUrlIsRequired extends ValidationRule {
   public readonly name = 'jsii/dotnet/icon-url';
@@ -1007,16 +1043,16 @@ export class RegularDependenciesMustSatisfyPeerDependencies extends ValidationRu
   public readonly name = 'dependencies/peer-dependencies-satisfied';
 
   public validate(pkg: PackageJson): void {
-    for (const [depName, peerVersion] of Object.entries(pkg.peerDependencies)) {
-      const depVersion = pkg.dependencies[depName];
-      if (depVersion === undefined) { continue; }
+    for (const [depName, peerRange] of Object.entries(pkg.peerDependencies)) {
+      const depRange = pkg.dependencies[depName];
+      if (depRange === undefined) { continue; }
 
       // Make sure that depVersion satisfies peerVersion.
-      if (!semver.intersects(depVersion, peerVersion)) {
+      if (!semver.intersects(depRange, peerRange, { includePrerelease: true })) {
         pkg.report({
           ruleName: this.name,
-          message: `dependency ${depName}: concrete version ${depVersion} does not match peer version '${peerVersion}'`,
-          fix: () => pkg.addPeerDependency(depName, depVersion),
+          message: `dependency ${depName}: concrete version ${depRange} does not match peer version '${peerRange}'`,
+          fix: () => pkg.addPeerDependency(depName, depRange),
         });
       }
     }
@@ -1038,13 +1074,20 @@ export class MustDependonCdkByPointVersions extends ValidationRule {
     // using scripts/align-version.sh
     const expectedVersion = require(path.join(monoRepoRoot(), 'package.json')).version; // eslint-disable-line @typescript-eslint/no-require-imports
     const ignore = [
+      '@aws-cdk/aws-service-spec',
+      '@aws-cdk/service-spec-importers',
+      '@aws-cdk/service-spec-types',
       '@aws-cdk/cloudformation-diff',
-      '@aws-cdk/cfnspec',
       '@aws-cdk/cx-api',
       '@aws-cdk/cloud-assembly-schema',
       '@aws-cdk/region-info',
       // Private packages
       ...fs.readdirSync(path.join(monoRepoRoot(), 'tools', '@aws-cdk')).map((name) => `@aws-cdk/${name}`),
+      // Packages in the @aws-cdk namespace that are vended outside of the monorepo
+      '@aws-cdk/asset-kubectl-v20',
+      '@aws-cdk/asset-node-proxy-agent-v6',
+      '@aws-cdk/asset-awscli-v1',
+      '@aws-cdk/cdk-cli-wrapper',
     ];
 
     for (const [depName, depVersion] of Object.entries(pkg.dependencies)) {
@@ -1188,7 +1231,7 @@ export class MustHaveIntegCommand extends ValidationRule {
   public validate(pkg: PackageJson): void {
     if (!hasIntegTests(pkg)) { return; }
 
-    expectJSON(this.name, pkg, 'scripts.integ', 'integ-runner');
+    expectJSON(this.name, pkg, 'scripts.integ', /integ-runner/, undefined, false, true);
 
     // We can't ACTUALLY require cdk-build-tools/package.json here,
     // because WE don't depend on cdk-build-tools and we don't know if
@@ -1255,6 +1298,24 @@ export class NoStarDeps extends ValidationRule {
             message: `star dependency not allowed for ${d}`,
           });
         }
+      });
+    }
+  }
+}
+
+export class NoMixedDeps extends ValidationRule {
+  public readonly name = 'dependencies/no-mixed-deps';
+
+  public validate(pkg: PackageJson) {
+    const deps = Object.keys(pkg.json.dependencies ?? {});
+    const devDeps = Object.keys(pkg.json.devDependencies ?? {});
+
+    const shared = deps.filter((dep) => devDeps.includes(dep));
+    for (const dep of shared) {
+      pkg.report({
+        ruleName: this.name,
+        message: `dependency may not be both in dependencies and devDependencies: ${dep}`,
+        fix: () => pkg.removeDevDependency(dep),
       });
     }
   }
@@ -1350,18 +1411,6 @@ export class AwsLint extends ValidationRule {
     }
 
     expectJSON(this.name, pkg, 'scripts.awslint', 'cdk-awslint');
-  }
-}
-
-export class Cfn2Ts extends ValidationRule {
-  public readonly name = 'cfn2ts';
-
-  public validate(pkg: PackageJson) {
-    if (!isJSII(pkg) || !isAWS(pkg)) {
-      return expectJSON(this.name, pkg, 'scripts.cfn2ts', undefined);
-    }
-
-    expectJSON(this.name, pkg, 'scripts.cfn2ts', 'cfn2ts');
   }
 }
 
@@ -1493,23 +1542,23 @@ export class ConstructsDependency extends ValidationRule {
 }
 
 /**
- * Packages must depend on 'assert-internal', not on '@aws-cdk/assert'
+ * Peer dependencies should be a range, not a point version, to maximize compatibility
  */
-export class AssertDependency extends ValidationRule {
-  public readonly name = 'assert/assert-dependency';
+export class PeerDependencyRange extends ValidationRule {
+  public readonly name = 'peerdependency/range';
 
   public validate(pkg: PackageJson) {
-    const devDeps = pkg.json.devDependencies ?? {};
-
-    if ('@aws-cdk/assert' in devDeps) {
-      pkg.report({
-        ruleName: this.name,
-        message: 'Package should depend on \'@aws-cdk/assert-internal\', not on \'@aws-cdk/assert\'',
-        fix: () => {
-          pkg.json.devDependencies['@aws-cdk/assert-internal'] = pkg.json.devDependencies['@aws-cdk/assert'];
-          delete pkg.json.devDependencies['@aws-cdk/assert'];
-        },
-      });
+    const packages = ['aws-cdk-lib'];
+    for (const [name, version] of Object.entries(pkg.peerDependencies)) {
+      if (packages.includes(name) && version.match(/^[0-9]/)) {
+        pkg.report({
+          ruleName: this.name,
+          message: `peerDependency on" ${name}" should be a range, not a point version: "${version}"`,
+          fix: () => {
+            pkg.addPeerDependency(name, '^' + version);
+          },
+        });
+      }
     }
   }
 }
@@ -1619,7 +1668,6 @@ export class JestSetup extends ValidationRule {
       });
     }
 
-
   }
 }
 
@@ -1629,8 +1677,6 @@ export class UbergenPackageVisibility extends ValidationRule {
   // The ONLY (non-alpha) packages that should be published for v2.
   // These include dependencies of the CDK CLI (aws-cdk).
   private readonly v2PublicPackages = [
-    '@aws-cdk/assert',
-    '@aws-cdk/cfnspec',
     '@aws-cdk/cloud-assembly-schema',
     '@aws-cdk/cloudformation-diff',
     '@aws-cdk/cx-api',
@@ -1640,6 +1686,8 @@ export class UbergenPackageVisibility extends ValidationRule {
     'awslint',
     'cdk',
     'cdk-assets',
+    '@aws-cdk/integ-runner',
+    '@aws-cdk-testing/cli-integ',
   ];
 
   public validate(pkg: PackageJson): void {
@@ -1685,7 +1733,7 @@ export class NoExperimentalDependents extends ValidationRule {
     ['@aws-cdk/aws-apigatewayv2-authorizers', ['@aws-cdk/aws-apigatewayv2']],
     ['@aws-cdk/aws-events-targets', ['@aws-cdk/aws-kinesisfirehose']],
     ['@aws-cdk/aws-kinesisfirehose-destinations', ['@aws-cdk/aws-kinesisfirehose']],
-    ['@aws-cdk/aws-iot-actions', ['@aws-cdk/aws-iot', '@aws-cdk/aws-kinesisfirehose']],
+    ['@aws-cdk/aws-iot-actions', ['@aws-cdk/aws-iot', '@aws-cdk/aws-kinesisfirehose', '@aws-cdk/aws-iotevents']],
     ['@aws-cdk/aws-iotevents-actions', ['@aws-cdk/aws-iotevents']],
   ]);
 
@@ -1722,46 +1770,6 @@ export class NoExperimentalDependents extends ValidationRule {
     });
   }
 
-}
-
-/*
- * Enforces that the aws-cdk-lib README contains all of the core documentation from the @aws-cdk/core README
- * so users of CDKv2 see all of the core documentation when viewing the aws-cdk-lib docs.
- */
-export class AwsCdkLibReadmeMatchesCore extends ValidationRule {
-  public readonly name = 'package-info/README.md/aws-cdk-lib-and-core';
-  private readonly CORE_DOC_SECTION_REGEX = /<\!--BEGIN CORE DOCUMENTATION-->[\s\S]+<\!--END CORE DOCUMENTATION-->/m;
-
-  public validate(pkg: PackageJson): void {
-    if (pkg.json.name !== 'aws-cdk-lib') { return; }
-
-    const coreReadmeFile = path.join(monoRepoRoot(), 'packages', '@aws-cdk', 'core', 'README.md');
-    const readmeFile = path.join(pkg.packageRoot, 'README.md');
-
-    const awsCoreMatch = fs.readFileSync(coreReadmeFile, { encoding: 'utf8' }).match(this.CORE_DOC_SECTION_REGEX);
-    const awsCdkLibReadme = fs.readFileSync(readmeFile, { encoding: 'utf8' });
-    const awsCdkLibMatch = awsCdkLibReadme.match(this.CORE_DOC_SECTION_REGEX);
-
-    const missingSectionMsg = '@aws-cdk/core and aws-cdk-lib READMEs must include section markers (<!--BEGIN/END CORE DOCUMENTATION-->) to define what content should be shared between them';
-    if (!awsCoreMatch) {
-      pkg.report({
-        ruleName: this.name,
-        message: missingSectionMsg,
-      });
-    } else if (!awsCdkLibMatch) {
-      pkg.report({
-        ruleName: this.name,
-        message: missingSectionMsg,
-        fix: () => fs.writeFileSync(readmeFile, [awsCdkLibReadme, awsCoreMatch[0]].join('\n')),
-      });
-    } else if (awsCoreMatch[0] !== awsCdkLibMatch[0]) {
-      pkg.report({
-        ruleName: this.name,
-        message: 'aws-cdk-lib README does not include a core documentation section that matches @aws-cdk/core',
-        fix: () => fs.writeFileSync(readmeFile, awsCdkLibMatch.input!.replace(this.CORE_DOC_SECTION_REGEX, awsCoreMatch[0])),
-      });
-    }
-  }
 }
 
 /**
@@ -1878,7 +1886,7 @@ function isIncludedInMonolith(pkg: PackageJson): boolean {
 }
 
 function beginEndRegex(label: string) {
-  return new RegExp(`(<\!--BEGIN ${label}-->)([\s\S]+)(<\!--END ${label}-->)`, 'm');
+  return new RegExp(`(<\!--BEGIN ${label}-->)([\\s\\S]+)(<\!--END ${label}-->)`, 'm');
 }
 
 function readIfExists(filename: string): string | undefined {

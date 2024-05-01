@@ -1,0 +1,19 @@
+{
+  "version": "32.0.0",
+  "files": {
+    "722892555255764f20f275e929016594c8562b137bbdfb5df2a004c9565301df": {
+      "source": {
+        "path": "cdk-integ-opensearch-multiaz-with-standby.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "722892555255764f20f275e929016594c8562b137bbdfb5df2a004c9565301df.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

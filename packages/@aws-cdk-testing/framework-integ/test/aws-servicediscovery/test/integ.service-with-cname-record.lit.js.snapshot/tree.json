@@ -1,0 +1,133 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.85"
+        }
+      },
+      "aws-servicediscovery-integ": {
+        "id": "aws-servicediscovery-integ",
+        "path": "aws-servicediscovery-integ",
+        "children": {
+          "Namespace": {
+            "id": "Namespace",
+            "path": "aws-servicediscovery-integ/Namespace",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-servicediscovery-integ/Namespace/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::ServiceDiscovery::PublicDnsNamespace",
+                  "aws:cdk:cloudformation:props": {
+                    "name": "foobar.com"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-servicediscovery.CfnPublicDnsNamespace",
+                  "version": "0.0.0"
+                }
+              },
+              "Service": {
+                "id": "Service",
+                "path": "aws-servicediscovery-integ/Namespace/Service",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-servicediscovery-integ/Namespace/Service/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::ServiceDiscovery::Service",
+                      "aws:cdk:cloudformation:props": {
+                        "dnsConfig": {
+                          "dnsRecords": [
+                            {
+                              "type": "CNAME",
+                              "ttl": 30
+                            }
+                          ],
+                          "namespaceId": {
+                            "Fn::GetAtt": [
+                              "Namespace9B63B8C8",
+                              "Id"
+                            ]
+                          },
+                          "routingPolicy": "WEIGHTED"
+                        },
+                        "name": "foo",
+                        "namespaceId": {
+                          "Fn::GetAtt": [
+                            "Namespace9B63B8C8",
+                            "Id"
+                          ]
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-servicediscovery.CfnService",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "CnameInstance": {
+                    "id": "CnameInstance",
+                    "path": "aws-servicediscovery-integ/Namespace/Service/CnameInstance",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "aws-servicediscovery-integ/Namespace/Service/CnameInstance/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::ServiceDiscovery::Instance",
+                          "aws:cdk:cloudformation:props": {
+                            "instanceAttributes": {
+                              "AWS_INSTANCE_CNAME": "service.pizza"
+                            },
+                            "serviceId": {
+                              "Fn::GetAtt": [
+                                "NamespaceServiceCABDF534",
+                                "Id"
+                              ]
+                            },
+                            "instanceId": "awsservicediscoveryintegNamespaceServiceCnameInstance0F7DE989"
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/aws-servicediscovery.CfnInstance",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/aws-servicediscovery.CnameInstance",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-servicediscovery.Service",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-servicediscovery.PublicDnsNamespace",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.85"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "constructs.Construct",
+      "version": "10.1.85"
+    }
+  }
+}

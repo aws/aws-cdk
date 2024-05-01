@@ -1,0 +1,12 @@
+{
+  "version": "34.0.0",
+  "testCases": {
+    "lambda-go-runtime/DefaultTest": {
+      "stacks": [
+        "cdk-integ-lambda-golang-provided-al2023"
+      ],
+      "assertionStack": "lambda-go-runtime/DefaultTest/DeployAssert",
+      "assertionStackName": "lambdagoruntimeDefaultTestDeployAssert366012A1"
+    }
+  }
+}

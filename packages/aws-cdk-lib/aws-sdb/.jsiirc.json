@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "java": {
+      "package": "software.amazon.awscdk.services.sdb"
+    },
+    "dotnet": {
+      "namespace": "Amazon.CDK.AWS.SDB"
+    },
+    "python": {
+      "module": "aws_cdk.aws_sdb"
+    }
+  }
+}

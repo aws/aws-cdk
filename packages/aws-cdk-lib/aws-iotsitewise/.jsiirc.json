@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "dotnet": {
+      "namespace": "Amazon.CDK.AWS.IoTSiteWise"
+    },
+    "java": {
+      "package": "software.amazon.awscdk.services.iotsitewise"
+    },
+    "python": {
+      "module": "aws_cdk.aws_iotsitewise"
+    }
+  }
+}

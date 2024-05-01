@@ -1,0 +1,12 @@
+{
+  "version": "22.0.0",
+  "testCases": {
+    "loggroup-grantreads/DefaultTest": {
+      "stacks": [
+        "aws-cdk-loggroup-grantreads-integ"
+      ],
+      "assertionStack": "loggroup-grantreads/DefaultTest/DeployAssert",
+      "assertionStackName": "loggroupgrantreadsDefaultTestDeployAssert7C1C7FAA"
+    }
+  }
+}

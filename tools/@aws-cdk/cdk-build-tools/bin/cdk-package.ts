@@ -22,15 +22,37 @@ async function main() {
       default: require.resolve('jsii-pacmak/bin/jsii-pacmak'),
       defaultDescription: 'jsii-pacmak provided by node dependencies',
     })
+    .option('pre-only', { type: 'boolean', default: false, desc: 'run pre package steps only' })
+    .option('post-only', { type: 'boolean', default: false, desc: 'run post package steps only' })
     .argv;
 
+  if (args['pre-only'] && args['post-only']) {
+    throw new Error('You can set a maxiumum of one of --pre-only and --post-only flags to true. Pick one.');
+  }
+
   const options = cdkPackageOptions();
+
+  if (args['post-only']) {
+    if (options.post) {
+      const commands = options.post.join(' && ');
+      await shell([commands], { timers });
+    }
+    return;
+  }
 
   const outdir = 'dist';
 
   // if this is a private module, don't package
   if (isPrivate()) {
     process.stdout.write('No packaging for private modules.\n');
+    return;
+  }
+
+  if (options.pre ) {
+    const commands = options.pre.join(' && ');
+    await shell([commands], { timers });
+  }
+  if (args['pre-only']) {
     return;
   }
 
@@ -65,10 +87,10 @@ async function main() {
   }
 
   if (options.post) {
-    await shell(options.post, { timers });
+    const commands = options.post.join(' && ');
+    await shell([commands], { timers });
   }
 }
-
 
 main().then(() => {
   buildTimer.end();

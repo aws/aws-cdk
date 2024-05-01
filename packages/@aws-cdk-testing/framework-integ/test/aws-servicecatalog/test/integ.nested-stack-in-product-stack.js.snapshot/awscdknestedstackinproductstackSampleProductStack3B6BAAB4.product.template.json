@@ -1,0 +1,27 @@
+{
+  "Resources": {
+    "SampleNestedStackNestedStackSampleNestedStackNestedStackResource97FFAE0A": {
+      "Type": "AWS::CloudFormation::Stack",
+      "Properties": {
+        "TemplateURL": {
+          "Fn::Join": [
+            "",
+            [
+              "https://s3.",
+              {
+                "Ref": "AWS::Region"
+              },
+              ".",
+              {
+                "Ref": "AWS::URLSuffix"
+              },
+              "/asset-bucket-12345678-test-region/75d608df75f61dac3fdadd6450401e430ffcdcc3face2dbe3c656ebf102bb8c1.json"
+            ]
+          ]
+        }
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    }
+  }
+}

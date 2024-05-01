@@ -1,0 +1,14 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "integ.bucket-notifications": {
+      "stacks": [
+        "cdk-integ-lambda-bucket-notifications"
+      ],
+      "diffAssets": false,
+      "stackUpdateWorkflow": true
+    }
+  },
+  "synthContext": {},
+  "enableLookups": false
+}

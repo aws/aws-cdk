@@ -1,0 +1,12 @@
+{
+  "version": "31.0.0",
+  "testCases": {
+    "KinesisInteg/DefaultTest": {
+      "stacks": [
+        "kinesis-logsubscription-integ"
+      ],
+      "assertionStack": "KinesisInteg/DefaultTest/DeployAssert",
+      "assertionStackName": "KinesisIntegDefaultTestDeployAssertE6E3ADDB"
+    }
+  }
+}

@@ -1,0 +1,32 @@
+# Don't include original .ts files when doing `npm pack`
+*.ts
+!*.d.ts
+coverage
+.nyc_output
+*.tgz
+
+dist
+.LAST_PACKAGE
+.LAST_BUILD
+*.snk
+
+!test/integ/run-wrappers/dist
+
+*.tsbuildinfo
+
+jest.config.js
+tsconfig.json
+.eslintrc.js
+
+!test/integ/cli/jest.config.js
+!test/integ/uberpackage/jest.config.js
+!resources/
+!resources/**/*
+
+.DS_Store
+
+junit.xml
+
+# exclude cdk artifacts
+**/cdk.out
+test/

@@ -1,7 +1,7 @@
 import * as reflect from 'jsii-reflect';
-import { Linter } from '../linter';
 import { ConstructReflection } from './construct';
 import { CoreTypes } from './core-types';
+import { Linter } from '../linter';
 
 const EXCLUDE_ANNOTATION_REF_VIA_INTERFACE = '[disable-awslint:ref-via-interface]';
 
@@ -126,7 +126,7 @@ apiLinter.add({
           return;
         }
 
-        if (type.type.fqn === e.ctx.core.constructClass.fqn) {
+        if (type.type.fqn === e.ctx.core.baseConstructClassFqn) {
           return;
         }
 

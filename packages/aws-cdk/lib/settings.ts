@@ -74,6 +74,7 @@ export class Configuration {
 
   public readonly defaultConfig = new Settings({
     versionReporting: true,
+    assetMetadata: true,
     pathMetadata: true,
     output: 'cdk.out',
   });
@@ -256,8 +257,8 @@ export class Settings {
     // If we deploy, diff, synth or watch a list of stacks exclusively we skip
     // bundling for all other stacks.
       bundlingStacks = argv.exclusively
-        ? argv.STACKS ?? ['*']
-        : ['*'];
+        ? argv.STACKS ?? ['**']
+        : ['**'];
     } else { // Skip bundling for all stacks
       bundlingStacks = [];
     }
@@ -289,6 +290,9 @@ export class Settings {
       lookups: argv.lookups,
       rollback: argv.rollback,
       notices: argv.notices,
+      assetParallelism: argv['asset-parallelism'],
+      assetPrebuild: argv['asset-prebuild'],
+      ignoreNoStacks: argv['ignore-no-stacks'],
     });
   }
 
@@ -298,35 +302,6 @@ export class Settings {
       ret = ret.merge(setting);
     }
     return ret;
-  }
-
-  /**
-   * Context can be passed as CLI arguments in the format
-   * --context foo=bar
-   *
-   * The context value can be of any type, but when it is parsed
-   * it is always a string. Here we attempt to determine the actual
-   * type of the value.
-   */
-  private static parseContextValue(contextValue: string): any {
-    // If the value is a JSON object, then we try and parse it and return
-    // the object.
-    try {
-      return JSON.parse(contextValue);
-    } catch {}
-    const num = parseFloat(contextValue);
-    // parseFloat tries to convert any string to a number, but
-    // if the string begins with a number it will convert that and
-    // ignore the rest so only return a number if the number and the
-    // string are the same
-    if (!isNaN(num) && num.toString() === contextValue) {
-      return num;
-    }
-    // The string value 'false' is truthy so explicitely check for 'false'
-    if (contextValue === 'false') {
-      return false;
-    }
-    return contextValue;
   }
 
   private static parseStringContextListToObject(argv: Arguments): any {
@@ -339,14 +314,13 @@ export class Settings {
         if (parts[0].match(/^aws:.+/)) {
           throw new Error(`User-provided context cannot use keys prefixed with 'aws:', but ${parts[0]} was provided.`);
         }
-        context[parts[0]] = this.parseContextValue(parts[1]);
+        context[parts[0]] = parts[1];
       } else {
         warning('Context argument is not an assignment (key=value): %s', assignment);
       }
     }
     return context;
   }
-
 
   /**
    * Parse tags out of arguments
@@ -363,7 +337,7 @@ export class Settings {
     const tags: Tag[] = [];
 
     for (const assignment of nonEmptyTags) {
-      const parts = assignment.split('=', 2);
+      const parts = assignment.split(/=(.*)/, 2);
       if (parts.length === 2) {
         debug('CLI argument tags: %s=%s', parts[0], parts[1]);
         tags.push({

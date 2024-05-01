@@ -3,7 +3,8 @@ import * as https from 'https';
 import * as path from 'path';
 import * as fs from 'fs-extra';
 import * as semver from 'semver';
-import { debug, print, trace } from './logging';
+import { debug, print } from './logging';
+import { some, ConstructTreeNode, loadTreeFromDir } from './tree';
 import { flatMap } from './util';
 import { cdkCacheDir } from './util/directories';
 import { versionNumber } from './version';
@@ -62,24 +63,24 @@ function dataSourceReference(ignoreCache: boolean): NoticeDataSource {
 
 function finalMessage(individualMessages: string[], exampleNumber: number): string {
   return [
-    '\nNOTICES',
+    '\nNOTICES         (What\'s this? https://github.com/aws/aws-cdk/wiki/CLI-Notices)',
     ...individualMessages,
     `If you don’t want to see a notice anymore, use "cdk acknowledge <id>". For example, "cdk acknowledge ${exampleNumber}".`,
   ].join('\n\n');
 }
 
 export interface FilterNoticeOptions {
-  outdir?: string,
-  cliVersion?: string,
-  frameworkVersion?: string,
-  acknowledgedIssueNumbers?: Set<number>,
+  outdir?: string;
+  cliVersion?: string;
+  frameworkVersion?: string;
+  acknowledgedIssueNumbers?: Set<number>;
 }
 
 export function filterNotices(data: Notice[], options: FilterNoticeOptions): Notice[] {
   const filter = new NoticeFilter({
     cliVersion: options.cliVersion ?? versionNumber(),
     acknowledgedIssueNumbers: options.acknowledgedIssueNumbers ?? new Set(),
-    tree: loadTree(options.outdir ?? 'cdk.out').tree,
+    tree: loadTreeFromDir(options.outdir ?? 'cdk.out'),
   });
   return data.filter(notice => filter.apply(notice));
 }
@@ -102,7 +103,7 @@ export interface Notice {
 }
 
 export interface NoticeDataSource {
-  fetch(): Promise<Notice[]>,
+  fetch(): Promise<Notice[]>;
 }
 
 export class WebsiteNoticeDataSource implements NoticeDataSource {
@@ -136,7 +137,7 @@ export class WebsiteNoticeDataSource implements NoticeDataSource {
                   }
                   debug('Notices refreshed');
                   resolve(data ?? []);
-                } catch (e) {
+                } catch (e: any) {
                   reject(new Error(`Failed to parse notices: ${e.message}`));
                 }
               });
@@ -148,7 +149,7 @@ export class WebsiteNoticeDataSource implements NoticeDataSource {
             }
           });
         req.on('error', reject);
-      } catch (e) {
+      } catch (e: any) {
         reject(new Error(`HTTPS 'get' call threw an error: ${e.message}`));
       }
     });
@@ -156,8 +157,8 @@ export class WebsiteNoticeDataSource implements NoticeDataSource {
 }
 
 interface CachedNotices {
-  expiration: number,
-  notices: Notice[],
+  expiration: number;
+  notices: Notice[];
 }
 
 const TIME_TO_LIVE_SUCCESS = 60 * 60 * 1000; // 1 hour
@@ -226,9 +227,9 @@ export class CachedDataSource implements NoticeDataSource {
 }
 
 export interface NoticeFilterProps {
-  cliVersion: string,
-  acknowledgedIssueNumbers: Set<number>,
-  tree: ConstructTreeNode,
+  cliVersion: string;
+  acknowledgedIssueNumbers: Set<number>;
+  tree: ConstructTreeNode;
 }
 
 export class NoticeFilter {
@@ -334,53 +335,5 @@ function match(query: Component[], tree: ConstructTreeNode): boolean {
 
   function compareVersions(pattern: string, target: string | undefined): boolean {
     return semver.satisfies(target ?? '', pattern);
-  }
-}
-
-function loadTree(outdir: string) {
-  try {
-    return fs.readJSONSync(path.join(outdir, 'tree.json'));
-  } catch (e) {
-    trace(`Failed to get tree.json file: ${e}. Proceeding with empty tree.`);
-    return {};
-  }
-}
-
-/**
- * Source information on a construct (class fqn and version)
- */
-interface ConstructInfo {
-  readonly fqn: string;
-  readonly version: string;
-}
-
-/**
- * A node in the construct tree.
- * @internal
- */
-interface ConstructTreeNode {
-  readonly id: string;
-  readonly path: string;
-  readonly children?: { [key: string]: ConstructTreeNode };
-  readonly attributes?: { [key: string]: any };
-
-  /**
-   * Information on the construct class that led to this node, if available
-   */
-  readonly constructInfo?: ConstructInfo;
-}
-
-function some(node: ConstructTreeNode, predicate: (n: ConstructTreeNode) => boolean): boolean {
-  return node != null && (predicate(node) || findInChildren());
-
-  function findInChildren(): boolean {
-    if (node.children == null) { return false; }
-
-    for (const name in node.children) {
-      if (some(node.children[name], predicate)) {
-        return true;
-      }
-    }
-    return false;
   }
 }

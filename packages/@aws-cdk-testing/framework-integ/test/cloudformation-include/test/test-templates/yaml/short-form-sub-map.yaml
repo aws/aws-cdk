@@ -1,0 +1,15 @@
+Resources:
+  Bucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName:
+        !Sub
+        - "${Region}-foo-${!Immediate}-foo-${AnotherBucket}-${AnotherBucket.DomainName}-${Name}"
+        - Name:
+            Ref: AnotherBucket
+          Region:
+            Fn::Base64: AWS::Region
+  AnotherBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: another-bucket

@@ -1,0 +1,7 @@
+{
+  "exclude": [
+    "props-physical-name:@aws-cdk/aws-ivs-alpha.StreamKeyProps",
+    "from-method:@aws-cdk/aws-ivs-alpha.PlaybackKeyPair",
+    "from-method:@aws-cdk/aws-ivs-alpha.StreamKey"
+  ]
+}

@@ -1,14 +1,10 @@
 import * as cxapi from '@aws-cdk/cx-api';
 import * as chalk from 'chalk';
+import { minimatch } from 'minimatch';
 import * as semver from 'semver';
 import { error, print, warning } from '../../logging';
 import { flatten } from '../../util';
 import { versionNumber } from '../../version';
-
-// namespace object imports won't work in the bundle for function exports
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-const minimatch = require('minimatch');
-
 
 export enum DefaultSelection {
   /**
@@ -42,9 +38,16 @@ export interface SelectStacksOptions {
   extend?: ExtendedStackSelection;
 
   /**
-   * The behavior if if no selectors are privided.
+   * The behavior if if no selectors are provided.
    */
   defaultBehavior: DefaultSelection;
+
+  /**
+   * Whether to deploy if the app contains no stacks.
+   *
+   * @default false
+   */
+  ignoreNoStacks?: boolean;
 }
 
 /**
@@ -64,7 +67,7 @@ export enum ExtendedStackSelection {
   /**
    * Include stacks that depend on this stack
    */
-  Downstream
+  Downstream,
 }
 
 /**
@@ -75,12 +78,12 @@ export interface StackSelector {
    * Whether all stacks at the top level assembly should
    * be selected and nothing else
    */
-  allTopLevel?: boolean,
+  allTopLevel?: boolean;
 
   /**
    * A list of patterns to match the stack hierarchical ids
    */
-  patterns: string[],
+  patterns: string[];
 }
 
 /**
@@ -104,6 +107,9 @@ export class CloudAssembly {
     const patterns = sanitizePatterns(selector.patterns);
 
     if (stacks.length === 0) {
+      if (options.ignoreNoStacks) {
+        return new StackCollection(this, []);
+      }
       throw new Error('This app contains no stacks');
     }
 

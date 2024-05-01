@@ -1,0 +1,88 @@
+{
+  "version": "20.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "aws-cdk-codebuild-logging.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "aws-cdk-codebuild-logging.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "aws-cdk-codebuild-logging": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-cdk-codebuild-logging.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/5dc8d7b786ff58f30215f2c4e3fe2bc5f505fb46bf5076ecf1ab6db8e325ddc0.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "aws-cdk-codebuild-logging.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "aws-cdk-codebuild-logging.assets"
+      ],
+      "metadata": {
+        "/aws-cdk-codebuild-logging/LogingGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LogingGroupE599B53B"
+          }
+        ],
+        "/aws-cdk-codebuild-logging/LoggingBucket/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LoggingBucket1E5A6F3B"
+          }
+        ],
+        "/aws-cdk-codebuild-logging/Project/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ProjectRole4CCB274E"
+          }
+        ],
+        "/aws-cdk-codebuild-logging/Project/Role/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ProjectRoleDefaultPolicy7F29461B"
+          }
+        ],
+        "/aws-cdk-codebuild-logging/Project/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ProjectC78D97AD"
+          }
+        ],
+        "/aws-cdk-codebuild-logging/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/aws-cdk-codebuild-logging/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "aws-cdk-codebuild-logging"
+    }
+  }
+}

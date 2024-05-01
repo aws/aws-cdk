@@ -1,0 +1,159 @@
+{
+  "version": "32.0.0",
+  "artifacts": {
+    "core-cfn-mapping-1.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "core-cfn-mapping-1.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "core-cfn-mapping-1": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "core-cfn-mapping-1.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/175902e9c94a814a5739a092426ef29b46a5098db6118c5c464b507fa4e867e5.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "core-cfn-mapping-1.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "core-cfn-mapping-1.assets"
+      ],
+      "metadata": {
+        "/core-cfn-mapping-1/Regular mapping": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Regularmapping"
+          }
+        ],
+        "/core-cfn-mapping-1/Lazy mapping": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Lazymapping"
+          }
+        ],
+        "/core-cfn-mapping-1/Output0": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Output0"
+          }
+        ],
+        "/core-cfn-mapping-1/Output1": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Output1"
+          }
+        ],
+        "/core-cfn-mapping-1/Output2": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Output2"
+          }
+        ],
+        "/core-cfn-mapping-1/Output3": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Output3"
+          }
+        ],
+        "/core-cfn-mapping-1/Output4": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Output4"
+          }
+        ],
+        "/core-cfn-mapping-1/Output5": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Output5"
+          }
+        ],
+        "/core-cfn-mapping-1/CfnMappingFindInMapBucket/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CfnMappingFindInMapBucket6F72FEE7"
+          }
+        ],
+        "/core-cfn-mapping-1/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/core-cfn-mapping-1/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "core-cfn-mapping-1"
+    },
+    "CfnMappingFindInMapTestDefaultTestDeployAssertEA32B10D.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "CfnMappingFindInMapTestDefaultTestDeployAssertEA32B10D.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "CfnMappingFindInMapTestDefaultTestDeployAssertEA32B10D": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "CfnMappingFindInMapTestDefaultTestDeployAssertEA32B10D.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "CfnMappingFindInMapTestDefaultTestDeployAssertEA32B10D.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "CfnMappingFindInMapTestDefaultTestDeployAssertEA32B10D.assets"
+      ],
+      "metadata": {
+        "/CfnMappingFindInMapTest/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/CfnMappingFindInMapTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "CfnMappingFindInMapTest/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "integ.cluster": {
+      "stacks": [
+        "aws-cdk-rds-integ-with-feature-flag"
+      ],
+      "diffAssets": false,
+      "stackUpdateWorkflow": true
+    }
+  },
+  "synthContext": {},
+  "enableLookups": false
+}

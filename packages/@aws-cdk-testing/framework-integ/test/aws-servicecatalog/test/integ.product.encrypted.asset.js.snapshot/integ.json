@@ -1,0 +1,13 @@
+{
+  "enableLookups": true,
+  "version": "34.0.0",
+  "testCases": {
+    "integ-product-encrypted-asset/DefaultTest": {
+      "stacks": [
+        "integ-servicecatalog-product-encrypted-asset"
+      ],
+      "assertionStack": "integ-product-encrypted-asset/DefaultTest/DeployAssert",
+      "assertionStackName": "integproductencryptedassetDefaultTestDeployAssertCD64745E"
+    }
+  }
+}

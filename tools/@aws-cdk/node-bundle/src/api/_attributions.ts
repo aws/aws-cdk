@@ -5,7 +5,6 @@ import { shell } from './_shell';
 import type { Package } from './bundle';
 import { Violation, ViolationType, ViolationsReport } from './violation';
 
-
 const ATTRIBUTION_SEPARATOR = '\n----------------\n';
 
 /**

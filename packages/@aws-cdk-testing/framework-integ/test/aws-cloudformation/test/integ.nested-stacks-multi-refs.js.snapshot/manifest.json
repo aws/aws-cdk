@@ -1,0 +1,124 @@
+{
+  "version": "20.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "nested-stacks-multi-refs.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "nested-stacks-multi-refs.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "nested-stacks-multi-refs": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "nested-stacks-multi-refs.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/5226a2ceb49789473e556c40e4679adfa59293495e2266e8a053a3efc78cb9a5.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "nested-stacks-multi-refs.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "nested-stacks-multi-refs.assets"
+      ],
+      "metadata": {
+        "/nested-stacks-multi-refs/Level1/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Level1ABBD39B3"
+          }
+        ],
+        "/nested-stacks-multi-refs/Nested1/Nested2/Nested3/Level3ReferencesLevel1/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Level3ReferencesLevel13289AD09"
+          }
+        ],
+        "/nested-stacks-multi-refs/Nested1/Nested2/Nested3/Level3ReferencesLevel2/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Level3ReferencesLevel2717B87DB"
+          }
+        ],
+        "/nested-stacks-multi-refs/Nested1/Nested2/Nested3/reference-to-nestedstacksmultirefsLevel19FB2466DTopicName": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "referencetonestedstacksmultirefsLevel19FB2466DTopicName"
+          }
+        ],
+        "/nested-stacks-multi-refs/Nested1/Nested2/Nested3/reference-to-nestedstacksmultirefsNested1Nested2Level2ReferencesLevel1B9551936TopicName": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "referencetonestedstacksmultirefsNested1Nested2Level2ReferencesLevel1B9551936TopicName"
+          }
+        ],
+        "/nested-stacks-multi-refs/Nested1/Nested2/Nested3.NestedStack/Nested3.NestedStackResource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Nested3NestedStackNested3NestedStackResource4CFC9F55"
+          }
+        ],
+        "/nested-stacks-multi-refs/Nested1/Nested2/Level2ReferencesLevel1/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Level2ReferencesLevel124228B1A"
+          }
+        ],
+        "/nested-stacks-multi-refs/Nested1/Nested2/reference-to-nestedstacksmultirefsLevel19FB2466DTopicName": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "referencetonestedstacksmultirefsLevel19FB2466DTopicName"
+          }
+        ],
+        "/nested-stacks-multi-refs/Nested1/Nested2.NestedStack/Nested2.NestedStackResource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Nested2NestedStackNested2NestedStackResource877A1112"
+          }
+        ],
+        "/nested-stacks-multi-refs/Nested1/reference-to-nestedstacksmultirefsLevel19FB2466DTopicName": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "referencetonestedstacksmultirefsLevel19FB2466DTopicName"
+          }
+        ],
+        "/nested-stacks-multi-refs/Nested1.NestedStack/Nested1.NestedStackResource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Nested1NestedStackNested1NestedStackResourceCD0AD36B"
+          }
+        ],
+        "/nested-stacks-multi-refs/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/nested-stacks-multi-refs/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "nested-stacks-multi-refs"
+    }
+  }
+}

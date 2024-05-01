@@ -1,5 +1,6 @@
 import * as fc from 'fast-check';
 import { parseLambdaPermission, renderCondition, Statement } from '../../lib/iam/statement';
+import { arbitraryStatement, twoArbitraryStatements } from '../test-arbitraries';
 
 test('can parse all positive fields', () => {
   const statement = new Statement({
@@ -137,78 +138,4 @@ test('equality is symmetric', () => {
       return b.equal(a);
     },
   ));
-});
-
-// We should be testing transitivity as well but it's too much code to generate
-// arbitraries that satisfy the precondition enough times to be useful.
-
-const arbitraryResource = fc.oneof(fc.constantFrom('*', 'arn:resource'));
-const arbitraryAction = fc.constantFrom('*', 's3:*', 's3:GetObject', 's3:PutObject');
-const arbitraryPrincipal = fc.oneof<any>(
-  fc.constant(undefined),
-  fc.constant('*'),
-  fc.record({ AWS: fc.oneof(fc.string(), fc.constant('*')) }),
-  fc.record({ Service: fc.string() }),
-  fc.record({ Federated: fc.string() }),
-);
-const arbitraryCondition = fc.oneof(
-  fc.constant(undefined),
-  fc.constant({ StringEquals: { Key: 'Value' } }),
-  fc.constant({ StringEquals: { Key: 'Value' }, NumberEquals: { Key: 5 } }),
-);
-
-const arbitraryStatement = fc.record({
-  Sid: fc.oneof(fc.string(), fc.constant(undefined)),
-  Effect: fc.constantFrom('Allow', 'Deny'),
-  Resource: fc.array(arbitraryResource, 0, 2),
-  NotResource: fc.boolean(),
-  Action: fc.array(arbitraryAction, 1, 2),
-  NotAction: fc.boolean(),
-  Principal: fc.array(arbitraryPrincipal, 0, 2),
-  NotPrincipal: fc.boolean(),
-  Condition: arbitraryCondition,
-}).map(record => {
-  // This map() that shuffles keys is the easiest way to create variation between Action/NotAction etc.
-  makeNot(record, 'Resource', 'NotResource');
-  makeNot(record, 'Action', 'NotAction');
-  makeNot(record, 'Principal', 'NotPrincipal');
-  return record;
-});
-
-function makeNot(obj: any, key: string, notKey: string) {
-  if (obj[notKey]) {
-    obj[notKey] = obj[key];
-    delete obj[key];
-  } else {
-    delete obj[notKey];
-  }
-}
-
-/**
- * Two statements where one is a modification of the other
- *
- * This is to generate two statements that have a higher chance of being similar
- * than generating two arbitrary statements independently.
- */
-const twoArbitraryStatements = fc.record({
-  statement1: arbitraryStatement,
-  statement2: arbitraryStatement,
-  copySid: fc.boolean(),
-  copyEffect: fc.boolean(),
-  copyResource: fc.boolean(),
-  copyAction: fc.boolean(),
-  copyPrincipal: fc.boolean(),
-  copyCondition: fc.boolean(),
-}).map(op => {
-  const original = op.statement1;
-  const modified = Object.create(original, {});
-
-  if (op.copySid) { modified.Sid = op.statement2.Sid; }
-  if (op.copyEffect) { modified.Effect = op.statement2.Effect; }
-  if (op.copyResource) { modified.Resource = op.statement2.Resource; modified.NotResource = op.statement2.NotResource; }
-  if (op.copyAction) { modified.Action = op.statement2.Action; modified.NotAction = op.statement2.NotAction; }
-  if (op.copyPrincipal) { modified.Principal = op.statement2.Principal; modified.NotPrincipal = op.statement2.NotPrincipal; }
-  if (op.copyCondition) { modified.Condition = op.statement2.Condition; }
-
-  return { statement1: original, statement2: modified };
 });

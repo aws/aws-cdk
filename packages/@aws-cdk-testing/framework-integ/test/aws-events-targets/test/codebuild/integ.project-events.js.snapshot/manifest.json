@@ -1,0 +1,154 @@
+{
+  "version": "20.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "aws-cdk-codebuild-events.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "aws-cdk-codebuild-events.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "aws-cdk-codebuild-events": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-cdk-codebuild-events.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/acdc46f47d06fcc155aa90092e3e76a9e04c991bc06bef441379391c7bc5aeb0.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "aws-cdk-codebuild-events.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "aws-cdk-codebuild-events.assets"
+      ],
+      "metadata": {
+        "/aws-cdk-codebuild-events/MyRepo/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyRepoF4F48043"
+          }
+        ],
+        "/aws-cdk-codebuild-events/MyRepo/OnCommit/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyRepoOnCommit0E80B304"
+          }
+        ],
+        "/aws-cdk-codebuild-events/MyProject/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyProjectRole9BBE5233"
+          }
+        ],
+        "/aws-cdk-codebuild-events/MyProject/Role/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyProjectRoleDefaultPolicyB19B7C29"
+          }
+        ],
+        "/aws-cdk-codebuild-events/MyProject/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyProject39F7B0AE"
+          }
+        ],
+        "/aws-cdk-codebuild-events/MyProject/StateChange/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyProjectStateChange2DAB75B7"
+          }
+        ],
+        "/aws-cdk-codebuild-events/MyProject/PhaseChange/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyProjectPhaseChangeCE6728A3"
+          }
+        ],
+        "/aws-cdk-codebuild-events/MyProject/EventsRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyProjectEventsRole5B7D93F5"
+          }
+        ],
+        "/aws-cdk-codebuild-events/MyProject/EventsRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyProjectEventsRoleDefaultPolicy397DCBF8"
+          }
+        ],
+        "/aws-cdk-codebuild-events/MyQueue/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyQueueE6CA6235"
+          }
+        ],
+        "/aws-cdk-codebuild-events/MyQueue/Policy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyQueuePolicy6BBEDDAC"
+          }
+        ],
+        "/aws-cdk-codebuild-events/MyQueue/awscdkcodebuildeventsMyTopic550011DC/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyQueueawscdkcodebuildeventsMyTopic550011DCF72DE3ED"
+          }
+        ],
+        "/aws-cdk-codebuild-events/DeadLetterQueue/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DeadLetterQueue9F481546"
+          }
+        ],
+        "/aws-cdk-codebuild-events/DeadLetterQueue/Policy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DeadLetterQueuePolicyB1FB890C"
+          }
+        ],
+        "/aws-cdk-codebuild-events/MyTopic/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyTopic86869434"
+          }
+        ],
+        "/aws-cdk-codebuild-events/MyTopic/Policy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyTopicPolicy12A5EC17"
+          }
+        ],
+        "/aws-cdk-codebuild-events/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/aws-cdk-codebuild-events/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "aws-cdk-codebuild-events"
+    }
+  }
+}

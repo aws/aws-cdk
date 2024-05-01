@@ -1,0 +1,13 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "AwsCustomResourceTest/DefaultTest": {
+      "stacks": [
+        "aws-cdk-sdk-js-v3"
+      ],
+      "diffAssets": true,
+      "assertionStack": "AwsCustomResourceTest/DefaultTest/DeployAssert",
+      "assertionStackName": "AwsCustomResourceTestDefaultTestDeployAssert289A7DC5"
+    }
+  }
+}

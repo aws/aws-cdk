@@ -1,0 +1,15 @@
+{
+  "version": "21.0.0",
+  "testCases": {
+    "SnsFifoNoNameTest/DefaultTest": {
+      "stacks": [
+        "aws-cdk-sns-fifo-1"
+      ],
+      "regions": [
+        "eu-west-1"
+      ],
+      "assertionStack": "SnsFifoNoNameTest/DefaultTest/DeployAssert",
+      "assertionStackName": "SnsFifoNoNameTestDefaultTestDeployAssert931FC5EA"
+    }
+  }
+}

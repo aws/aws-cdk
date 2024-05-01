@@ -28,8 +28,8 @@ async function main() {
         // eslint-disable-next-line no-console
         console.error(`Import of '${name}' should have produced an error, but didn't.`);
         process.exitCode = 1;
-      } catch (e) {
-        if ((e as any).code !== code) {
+      } catch (e: any) {
+        if (e.code !== code) {
           // eslint-disable-next-line no-console
           console.error(`Import of '${name}' should have produced error ${code}, but got ${(e as any).code}.`);
           process.exitCode = 1;
@@ -39,7 +39,6 @@ async function main() {
   });
 }
 
-
 export async function withTemporaryDirectory<T>(callback: (dir: string) => Promise<T>): Promise<T> {
   const tmpdir = await fs.mkdtemp(path.join(os.tmpdir(), path.basename(__filename)));
   try {
@@ -48,7 +47,6 @@ export async function withTemporaryDirectory<T>(callback: (dir: string) => Promi
     await fs.remove(tmpdir);
   }
 }
-
 
 main().catch((e) => {
   // eslint-disable-next-line no-console

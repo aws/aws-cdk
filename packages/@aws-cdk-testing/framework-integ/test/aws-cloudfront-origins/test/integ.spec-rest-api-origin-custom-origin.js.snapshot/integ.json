@@ -1,0 +1,12 @@
+{
+  "version": "34.0.0",
+  "testCases": {
+    "rest-api-origin-custom-origin-path/DefaultTest": {
+      "stacks": [
+        "integ-spec-rest-api-origin-custom-origin"
+      ],
+      "assertionStack": "rest-api-origin-custom-origin-path/DefaultTest/DeployAssert",
+      "assertionStackName": "restapiorigincustomoriginpathDefaultTestDeployAssertCD227A2A"
+    }
+  }
+}

@@ -10,7 +10,7 @@
   },
   "scripts": {
     "build": "cdk-build",
-    "integ": "integ-runner",
+    "integ": "integ-runner --language javascript",
     "lint": "cdk-lint",
     "package": "cdk-package",
     "awslint": "cdk-awslint",
@@ -30,24 +30,23 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
-    "@types/archiver": "^5.3.1",
+    "@types/archiver": "^5.3.4",
     "@types/glob": "^7.2.0",
-    "@types/jest": "^27.5.2",
+    "@types/jest": "^29.5.12",
     "@types/mime": "^2.0.3",
-    "@types/mock-fs": "^4.13.1",
-    "@types/node": "^10.17.60",
-    "@types/yargs": "^15.0.14",
+    "@types/mock-fs": "^4.13.4",
+    "@types/yargs": "^15.0.19",
     "@aws-cdk/cdk-build-tools": "0.0.0",
-    "jest": "^27.5.1",
-    "jszip": "^3.10.0",
+    "jest": "^29.7.0",
+    "jszip": "^3.10.1",
     "mock-fs": "^4.14.0",
     "@aws-cdk/pkglint": "0.0.0"
   },
   "dependencies": {
     "@aws-cdk/cloud-assembly-schema": "0.0.0",
     "@aws-cdk/cx-api": "0.0.0",
-    "archiver": "^5.3.1",
-    "aws-sdk": "^2.1093.0",
+    "archiver": "^5.3.2",
+    "aws-sdk": "^2.1610.0",
     "glob": "^7.2.3",
     "mime": "^2.6.0",
     "yargs": "^16.2.0"
@@ -75,8 +74,8 @@
       "rm"
     ]
   },
-  "stability": "experimental",
-  "maturity": "experimental",
+  "stability": "stable",
+  "maturity": "stable",
   "publishConfig": {
     "tag": "latest"
   }

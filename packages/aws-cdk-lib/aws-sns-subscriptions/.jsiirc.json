@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "java": {
+      "package": "software.amazon.awscdk.services.sns.subscriptions"
+    },
+    "dotnet": {
+      "namespace": "Amazon.CDK.AWS.SNS.Subscriptions"
+    },
+    "python": {
+      "module": "aws_cdk.aws_sns_subscriptions"
+    }
+  }
+}

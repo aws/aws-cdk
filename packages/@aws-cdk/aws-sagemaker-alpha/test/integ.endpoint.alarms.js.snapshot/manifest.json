@@ -1,0 +1,207 @@
+{
+  "version": "21.0.0",
+  "artifacts": {
+    "aws-cdk-sagemaker-endpoint-alarms.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "aws-cdk-sagemaker-endpoint-alarms.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "aws-cdk-sagemaker-endpoint-alarms": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-cdk-sagemaker-endpoint-alarms.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a8773958f8215d1c73afd5170e32c721525ba4ae099b316e6d7818e6943ac8b9.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "aws-cdk-sagemaker-endpoint-alarms.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "aws-cdk-sagemaker-endpoint-alarms.assets"
+      ],
+      "metadata": {
+        "/aws-cdk-sagemaker-endpoint-alarms/ModelWithArtifact/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ModelWithArtifactRole854ED848"
+          }
+        ],
+        "/aws-cdk-sagemaker-endpoint-alarms/ModelWithArtifact/Role/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ModelWithArtifactRoleDefaultPolicy63A6F076"
+          }
+        ],
+        "/aws-cdk-sagemaker-endpoint-alarms/ModelWithArtifact/Model": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ModelWithArtifactModel7EBC6421"
+          }
+        ],
+        "/aws-cdk-sagemaker-endpoint-alarms/EndpointConfig/EndpointConfig": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EndpointConfigFD7B6F91"
+          }
+        ],
+        "/aws-cdk-sagemaker-endpoint-alarms/Endpoint/Endpoint": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Endpoint8024A810"
+          }
+        ],
+        "/aws-cdk-sagemaker-endpoint-alarms/Invoker/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Invoker060A9026"
+          }
+        ],
+        "/aws-cdk-sagemaker-endpoint-alarms/Invoker/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "InvokerDefaultPolicy3FF8208D"
+          }
+        ],
+        "/aws-cdk-sagemaker-endpoint-alarms/InvocationsAlarm/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "InvocationsAlarmBC3830BD"
+          }
+        ],
+        "/aws-cdk-sagemaker-endpoint-alarms/InvocationsPerInstanceAlarm/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "InvocationsPerInstanceAlarm82CBCF29"
+          }
+        ],
+        "/aws-cdk-sagemaker-endpoint-alarms/ModelLatencyAlarm/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ModelLatencyAlarm96AC7D24"
+          }
+        ],
+        "/aws-cdk-sagemaker-endpoint-alarms/OverheadLatencyAlarm/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "OverheadLatencyAlarm10D8981B"
+          }
+        ],
+        "/aws-cdk-sagemaker-endpoint-alarms/Invocation5XXErrorsAlarm/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Invocation5XXErrorsAlarmF9BAF026"
+          }
+        ],
+        "/aws-cdk-sagemaker-endpoint-alarms/DiskUtilizationAlarm/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DiskUtilizationAlarmE19E4184"
+          }
+        ],
+        "/aws-cdk-sagemaker-endpoint-alarms/CPUUtilizationAlarm/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CPUUtilizationAlarm4D91B4D0"
+          }
+        ],
+        "/aws-cdk-sagemaker-endpoint-alarms/MemoryUtilizationAlarm/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MemoryUtilizationAlarm544270BF"
+          }
+        ],
+        "/aws-cdk-sagemaker-endpoint-alarms/GPUUtilizationAlarm/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "GPUUtilizationAlarmEC9BEC6F"
+          }
+        ],
+        "/aws-cdk-sagemaker-endpoint-alarms/GPUMemoryUtilizationAlarm/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "GPUMemoryUtilizationAlarmD03813BC"
+          }
+        ],
+        "/aws-cdk-sagemaker-endpoint-alarms/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/aws-cdk-sagemaker-endpoint-alarms/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "aws-cdk-sagemaker-endpoint-alarms"
+    },
+    "integtestendpointalarmsDefaultTestDeployAssert25A3073D.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "integtestendpointalarmsDefaultTestDeployAssert25A3073D.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "integtestendpointalarmsDefaultTestDeployAssert25A3073D": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "integtestendpointalarmsDefaultTestDeployAssert25A3073D.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "integtestendpointalarmsDefaultTestDeployAssert25A3073D.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "integtestendpointalarmsDefaultTestDeployAssert25A3073D.assets"
+      ],
+      "metadata": {
+        "/integtest-endpoint-alarms/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/integtest-endpoint-alarms/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "integtest-endpoint-alarms/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}

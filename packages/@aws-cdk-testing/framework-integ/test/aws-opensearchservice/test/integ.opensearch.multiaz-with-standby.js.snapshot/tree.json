@@ -1,0 +1,153 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "cdk-integ-opensearch-multiaz-with-standby": {
+        "id": "cdk-integ-opensearch-multiaz-with-standby",
+        "path": "cdk-integ-opensearch-multiaz-with-standby",
+        "children": {
+          "Domain": {
+            "id": "Domain",
+            "path": "cdk-integ-opensearch-multiaz-with-standby/Domain",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "cdk-integ-opensearch-multiaz-with-standby/Domain/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::OpenSearchService::Domain",
+                  "aws:cdk:cloudformation:props": {
+                    "clusterConfig": {
+                      "dedicatedMasterEnabled": true,
+                      "dedicatedMasterCount": 3,
+                      "dedicatedMasterType": "r5.large.search",
+                      "instanceCount": 3,
+                      "instanceType": "r5.large.search",
+                      "multiAzWithStandbyEnabled": true,
+                      "zoneAwarenessEnabled": true,
+                      "zoneAwarenessConfig": {
+                        "availabilityZoneCount": 3
+                      }
+                    },
+                    "domainEndpointOptions": {
+                      "enforceHttps": false,
+                      "tlsSecurityPolicy": "Policy-Min-TLS-1-0-2019-07"
+                    },
+                    "ebsOptions": {
+                      "ebsEnabled": true,
+                      "volumeSize": 10,
+                      "volumeType": "gp3"
+                    },
+                    "encryptionAtRestOptions": {
+                      "enabled": false
+                    },
+                    "engineVersion": "OpenSearch_1.3",
+                    "logPublishingOptions": {},
+                    "nodeToNodeEncryptionOptions": {
+                      "enabled": false
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_opensearchservice.CfnDomain",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_opensearchservice.Domain",
+              "version": "0.0.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "cdk-integ-opensearch-multiaz-with-standby/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "cdk-integ-opensearch-multiaz-with-standby/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnRule",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "IntegOpenSearchMultiAzWithStandby": {
+        "id": "IntegOpenSearchMultiAzWithStandby",
+        "path": "IntegOpenSearchMultiAzWithStandby",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "IntegOpenSearchMultiAzWithStandby/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "IntegOpenSearchMultiAzWithStandby/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.55"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "IntegOpenSearchMultiAzWithStandby/DefaultTest/DeployAssert",
+                "children": {
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "IntegOpenSearchMultiAzWithStandby/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "IntegOpenSearchMultiAzWithStandby/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnRule",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.2.55"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "aws-cdk-lib.App",
+      "version": "0.0.0"
+    }
+  }
+}

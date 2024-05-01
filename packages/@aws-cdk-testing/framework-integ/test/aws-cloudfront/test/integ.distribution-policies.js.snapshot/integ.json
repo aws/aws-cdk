@@ -1,0 +1,12 @@
+{
+  "version": "32.0.0",
+  "testCases": {
+    "DistributionPolicies/DefaultTest": {
+      "stacks": [
+        "integ-distribution-policies"
+      ],
+      "assertionStack": "DistributionPolicies/DefaultTest/DeployAssert",
+      "assertionStackName": "DistributionPoliciesDefaultTestDeployAssert1B8724D9"
+    }
+  }
+}

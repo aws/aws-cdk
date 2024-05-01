@@ -1,0 +1,197 @@
+{
+  "version": "34.0.0",
+  "artifacts": {
+    "integ-servicecatalog-product-encrypted-asset.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "integ-servicecatalog-product-encrypted-asset.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "integ-servicecatalog-product-encrypted-asset": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://12345678/test-region",
+      "properties": {
+        "templateFile": "integ-servicecatalog-product-encrypted-asset.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-deploy-role-12345678-test-region",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-cfn-exec-role-12345678-test-region",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-12345678-test-region/8c65cc43046b741c9561bf476deb455fd8b78bf32d23145bd63874d5eb007fad.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "integ-servicecatalog-product-encrypted-asset.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-lookup-role-12345678-test-region",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "integ-servicecatalog-product-encrypted-asset.assets"
+      ],
+      "metadata": {
+        "/integ-servicecatalog-product-encrypted-asset/TestPortfolio/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TestPortfolio4AC794EB"
+          }
+        ],
+        "/integ-servicecatalog-product-encrypted-asset/TestPortfolio/PortfolioProductAssociation1f17ee66e93a": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TestPortfolioPortfolioProductAssociation1f17ee66e93a16195E73"
+          }
+        ],
+        "/integ-servicecatalog-product-encrypted-asset/KmsKey/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "KmsKey46693ADD"
+          }
+        ],
+        "/integ-servicecatalog-product-encrypted-asset/TestAssetBucket/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TestAssetBucket9434EFAE"
+          }
+        ],
+        "/integ-servicecatalog-product-encrypted-asset/TestAssetBucket/Policy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TestAssetBucketPolicy62167ACB"
+          }
+        ],
+        "/integ-servicecatalog-product-encrypted-asset/TestAssetBucket/AutoDeleteObjectsCustomResource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TestAssetBucketAutoDeleteObjectsCustomResource5A0F8F22"
+          }
+        ],
+        "/integ-servicecatalog-product-encrypted-asset/TestAssetBucket/ProductAssetsDeployment/AwsCliLayer/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TestAssetBucketProductAssetsDeploymentAwsCliLayerD1E52C82"
+          }
+        ],
+        "/integ-servicecatalog-product-encrypted-asset/TestAssetBucket/ProductAssetsDeployment/CustomResource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TestAssetBucketProductAssetsDeploymentCustomResource5F81E30F"
+          }
+        ],
+        "/integ-servicecatalog-product-encrypted-asset/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
+          }
+        ],
+        "/integ-servicecatalog-product-encrypted-asset/Custom::S3AutoDeleteObjectsCustomResourceProvider/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F"
+          }
+        ],
+        "/integ-servicecatalog-product-encrypted-asset/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRole89A01265"
+          }
+        ],
+        "/integ-servicecatalog-product-encrypted-asset/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756CServiceRoleDefaultPolicy88902FDF"
+          }
+        ],
+        "/integ-servicecatalog-product-encrypted-asset/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C81C01536"
+          }
+        ],
+        "/integ-servicecatalog-product-encrypted-asset/TestProduct/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TestProduct7606930B"
+          }
+        ],
+        "/integ-servicecatalog-product-encrypted-asset/PortfolioId": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PortfolioId"
+          }
+        ],
+        "/integ-servicecatalog-product-encrypted-asset/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/integ-servicecatalog-product-encrypted-asset/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "integ-servicecatalog-product-encrypted-asset"
+    },
+    "integproductencryptedassetDefaultTestDeployAssertCD64745E.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "integproductencryptedassetDefaultTestDeployAssertCD64745E.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "integproductencryptedassetDefaultTestDeployAssertCD64745E": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "integproductencryptedassetDefaultTestDeployAssertCD64745E.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "integproductencryptedassetDefaultTestDeployAssertCD64745E.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "integproductencryptedassetDefaultTestDeployAssertCD64745E.assets"
+      ],
+      "metadata": {
+        "/integ-product-encrypted-asset/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/integ-product-encrypted-asset/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "integ-product-encrypted-asset/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}

@@ -5,23 +5,32 @@ import * as chalk from 'chalk';
 import * as chokidar from 'chokidar';
 import * as fs from 'fs-extra';
 import * as promptly from 'promptly';
-import { environmentsFromDescriptors, globEnvironmentsFromStacks, looksLikeGlob } from '../lib/api/cxapp/environments';
+import * as uuid from 'uuid';
+import { DeploymentMethod } from './api';
 import { SdkProvider } from './api/aws-auth';
 import { Bootstrapper, BootstrapEnvironmentOptions } from './api/bootstrap';
-import { CloudFormationDeployments } from './api/cloudformation-deployments';
 import { CloudAssembly, DefaultSelection, ExtendedStackSelection, StackCollection, StackSelector } from './api/cxapp/cloud-assembly';
 import { CloudExecutable } from './api/cxapp/cloud-executable';
 import { GarbageCollector } from './api/garbage-collector';
+import { Deployments } from './api/deployments';
+import { HotswapMode } from './api/hotswap/common';
 import { findCloudWatchLogGroups } from './api/logs/find-cloudwatch-logs';
 import { CloudWatchLogEventMonitor } from './api/logs/logs-monitor';
+import { createDiffChangeSet, ResourcesToImport } from './api/util/cloudformation';
 import { StackActivityProgress } from './api/util/cloudformation/stack-activity-monitor';
+import { generateCdkApp, generateStack, readFromPath, readFromStack, setEnvironment, parseSourceOptions, generateTemplate, FromScan, TemplateSourceOptions, GenerateTemplateOutput, CfnTemplateGeneratorProvider, writeMigrateJsonFile, buildGenertedTemplateOutput, buildCfnClient, appendWarningsToReadme, isThereAWarning } from './commands/migrate';
 import { printSecurityDiff, printStackDiff, RequireApproval } from './diff';
-import { ResourceImporter } from './import';
-import { data, debug, error, highlight, print, success, warning } from './logging';
+import { ResourceImporter, removeNonImportResources } from './import';
+import { listStacks } from './list-stacks';
+import { data, debug, error, highlight, print, success, warning, withCorkedLogging } from './logging';
 import { deserializeStructure, serializeStructure } from './serialize';
 import { Configuration, PROJECT_CONFIG } from './settings';
 import { numberFromBool, partition } from './util';
 import { validateSnsTopicArn } from './util/validate-notification-arn';
+import { Concurrency, WorkGraph } from './util/work-graph';
+import { WorkGraphBuilder } from './util/work-graph-builder';
+import { AssetBuildNode, AssetPublishNode, StackNode } from './util/work-graph-types';
+import { environmentsFromDescriptors, globEnvironmentsFromStacks, looksLikeGlob } from '../lib/api/cxapp/environments';
 
 export interface CdkToolkitProps {
 
@@ -33,7 +42,7 @@ export interface CdkToolkitProps {
   /**
    * The provisioning engine used to apply changes to the cloud
    */
-  cloudFormation: CloudFormationDeployments;
+  deployments: Deployments;
 
   /**
    * Whether to be verbose
@@ -68,6 +77,24 @@ export interface CdkToolkitProps {
 }
 
 /**
+ * When to build assets
+ */
+export enum AssetBuildTime {
+  /**
+   * Build all assets before deploying the first stack
+   *
+   * This is intended for expensive Docker image builds; so that if the Docker image build
+   * fails, no stacks are unnecessarily deployed (with the attendant wait time).
+   */
+  ALL_BEFORE_DEPLOY,
+
+  /**
+   * Build assets just-in-time, before publishing
+   */
+  JUST_IN_TIME,
+}
+
+/**
  * Toolkit logic
  *
  * The toolkit runs the `cloudExecutable` to obtain a cloud assembly and
@@ -95,8 +122,11 @@ export class CdkToolkit {
     const strict = !!options.strict;
     const contextLines = options.contextLines || 3;
     const stream = options.stream || process.stderr;
+    const quiet = options.quiet || false;
 
     let diffs = 0;
+    const parameterMap = buildParameterMap(options.parameters);
+
     if (options.templatePath !== undefined) {
       // Compare single stack against fixed template
       if (stacks.stackCount !== 1) {
@@ -106,20 +136,76 @@ export class CdkToolkit {
       if (!await fs.pathExists(options.templatePath)) {
         throw new Error(`There is no file at ${options.templatePath}`);
       }
+
       const template = deserializeStructure(await fs.readFile(options.templatePath, { encoding: 'UTF-8' }));
       diffs = options.securityOnly
-        ? numberFromBool(printSecurityDiff(template, stacks.firstStack, RequireApproval.Broadening))
-        : printStackDiff(template, stacks.firstStack, strict, contextLines, stream);
+        ? numberFromBool(printSecurityDiff(template, stacks.firstStack, RequireApproval.Broadening, undefined))
+        : printStackDiff(template, stacks.firstStack, strict, contextLines, quiet, undefined, false, stream);
     } else {
       // Compare N stacks against deployed templates
       for (const stack of stacks.stackArtifacts) {
-        stream.write(format('Stack %s\n', chalk.bold(stack.displayName)));
-        const currentTemplate = await this.props.cloudFormation.readCurrentTemplateWithNestedStacks(stack, options.compareAgainstProcessedTemplate);
-        diffs += options.securityOnly
-          ? numberFromBool(printSecurityDiff(currentTemplate, stack, RequireApproval.Broadening))
-          : printStackDiff(currentTemplate, stack, strict, contextLines, stream);
+        if (!quiet) {
+          stream.write(format('Stack %s\n', chalk.bold(stack.displayName)));
+        }
+
+        const templateWithNestedStacks = await this.props.deployments.readCurrentTemplateWithNestedStacks(
+          stack, options.compareAgainstProcessedTemplate,
+        );
+        const currentTemplate = templateWithNestedStacks.deployedRootTemplate;
+        const nestedStacks = templateWithNestedStacks.nestedStacks;
+
+        const resourcesToImport = await this.tryGetResources(await this.props.deployments.resolveEnvironment(stack));
+        if (resourcesToImport) {
+          removeNonImportResources(stack);
+        }
+
+        let changeSet = undefined;
+
+        if (options.changeSet) {
+
+          let stackExists = false;
+          try {
+            stackExists = await this.props.deployments.stackExists({
+              stack,
+              deployName: stack.stackName,
+              tryLookupRole: true,
+            });
+          } catch (e: any) {
+            debug(e.message);
+            stream.write('Checking if the stack exists before creating the changeset has failed, will base the diff on template differences (run again with -v to see the reason)\n');
+            stackExists = false;
+          }
+
+          if (stackExists) {
+            changeSet = await createDiffChangeSet({
+              stack,
+              uuid: uuid.v4(),
+              deployments: this.props.deployments,
+              willExecute: false,
+              sdkProvider: this.props.sdkProvider,
+              parameters: Object.assign({}, parameterMap['*'], parameterMap[stack.stackName]),
+              resourcesToImport,
+              stream,
+            });
+          } else {
+            debug(`the stack '${stack.stackName}' has not been deployed to CloudFormation or describeStacks call failed, skipping changeset creation.`);
+          }
+        }
+
+        if (resourcesToImport) {
+          stream.write('Parameters and rules created during migration do not affect resource configuration.\n');
+        }
+
+        const stackCount =
+        options.securityOnly
+          ? (numberFromBool(printSecurityDiff(currentTemplate, stack, RequireApproval.Broadening, changeSet)))
+          : (printStackDiff(currentTemplate, stack, strict, contextLines, quiet, changeSet, !!resourcesToImport, stream, nestedStacks));
+
+        diffs += stackCount;
       }
     }
+
+    stream.write(format('\n✨  Number of stacks with differences: %s\n', diffs));
 
     return diffs && options.fail ? 1 : 0;
   }
@@ -138,49 +224,67 @@ export class CdkToolkit {
     }
 
     const startSynthTime = new Date().getTime();
-    const stacks = await this.selectStacksForDeploy(options.selector, options.exclusively, options.cacheCloudAssembly);
+    const stackCollection = await this.selectStacksForDeploy(options.selector, options.exclusively,
+      options.cacheCloudAssembly, options.ignoreNoStacks);
     const elapsedSynthTime = new Date().getTime() - startSynthTime;
     print('\n✨  Synthesis time: %ss\n', formatTime(elapsedSynthTime));
 
+    if (stackCollection.stackCount === 0) {
+      // eslint-disable-next-line no-console
+      console.error('This app contains no stacks');
+      return;
+    }
+
+    await this.tryMigrateResources(stackCollection, options);
+
     const requireApproval = options.requireApproval ?? RequireApproval.Broadening;
 
-    const parameterMap: { [name: string]: { [name: string]: string | undefined } } = { '*': {} };
-    for (const key in options.parameters) {
-      if (options.parameters.hasOwnProperty(key)) {
-        const [stack, parameter] = key.split(':', 2);
-        if (!parameter) {
-          parameterMap['*'][stack] = options.parameters[key];
-        } else {
-          if (!parameterMap[stack]) {
-            parameterMap[stack] = {};
-          }
-          parameterMap[stack][parameter] = options.parameters[key];
-        }
-      }
+    const parameterMap = buildParameterMap(options.parameters);
+
+    if (options.hotswap !== HotswapMode.FULL_DEPLOYMENT) {
+      warning('⚠️ The --hotswap and --hotswap-fallback flags deliberately introduce CloudFormation drift to speed up deployments');
+      warning('⚠️ They should only be used for development - never use them for your production Stacks!\n');
     }
 
-    if (options.hotswap) {
-      warning('⚠️ The --hotswap flag deliberately introduces CloudFormation drift to speed up deployments');
-      warning('⚠️ It should only be used for development - never use it for your production Stacks!');
-    }
+    const stacks = stackCollection.stackArtifacts;
 
     const stackOutputs: { [key: string]: any } = { };
     const outputsFile = options.outputsFile;
 
-    for (const stack of stacks.stackArtifacts) {
-      if (stacks.stackCount !== 1) { highlight(stack.displayName); }
+    const buildAsset = async (assetNode: AssetBuildNode) => {
+      await this.props.deployments.buildSingleAsset(assetNode.assetManifestArtifact, assetNode.assetManifest, assetNode.asset, {
+        stack: assetNode.parentStack,
+        roleArn: options.roleArn,
+        toolkitStackName: options.toolkitStackName,
+        stackName: assetNode.parentStack.stackName,
+      });
+    };
+
+    const publishAsset = async (assetNode: AssetPublishNode) => {
+      await this.props.deployments.publishSingleAsset(assetNode.assetManifest, assetNode.asset, {
+        stack: assetNode.parentStack,
+        roleArn: options.roleArn,
+        toolkitStackName: options.toolkitStackName,
+        stackName: assetNode.parentStack.stackName,
+      });
+    };
+
+    const deployStack = async (assetNode: StackNode) => {
+      const stack = assetNode.stack;
+      if (stackCollection.stackCount !== 1) { highlight(stack.displayName); }
+
       if (!stack.environment) {
         // eslint-disable-next-line max-len
         throw new Error(`Stack ${stack.displayName} does not define an environment, and AWS credentials could not be obtained from standard locations or no region was configured.`);
       }
 
       if (Object.keys(stack.template.Resources || {}).length === 0) { // The generated stack has no resources
-        if (!await this.props.cloudFormation.stackExists({ stack })) {
+        if (!await this.props.deployments.stackExists({ stack })) {
           warning('%s: stack has no resources, skipping deployment.', chalk.bold(stack.displayName));
         } else {
           warning('%s: stack has no resources, deleting existing stack.', chalk.bold(stack.displayName));
           await this.destroy({
-            selector: { patterns: [stack.stackName] },
+            selector: { patterns: [stack.hierarchicalId] },
             exclusively: true,
             force: true,
             roleArn: options.roleArn,
@@ -188,26 +292,35 @@ export class CdkToolkit {
             ci: options.ci,
           });
         }
-        continue;
+        return;
       }
 
       if (requireApproval !== RequireApproval.Never) {
-        const currentTemplate = await this.props.cloudFormation.readCurrentTemplate(stack);
+        const currentTemplate = await this.props.deployments.readCurrentTemplate(stack);
         if (printSecurityDiff(currentTemplate, stack, requireApproval)) {
+          await withCorkedLogging(async () => {
+            // only talk to user if STDIN is a terminal (otherwise, fail)
+            if (!process.stdin.isTTY) {
+              throw new Error(
+                '"--require-approval" is enabled and stack includes security-sensitive updates, ' +
+                'but terminal (TTY) is not attached so we are unable to get a confirmation from the user');
+            }
 
-          // only talk to user if STDIN is a terminal (otherwise, fail)
-          if (!process.stdin.isTTY) {
-            throw new Error(
-              '"--require-approval" is enabled and stack includes security-sensitive updates, ' +
-              'but terminal (TTY) is not attached so we are unable to get a confirmation from the user');
-          }
+            // only talk to user if concurrency is 1 (otherwise, fail)
+            if (concurrency > 1) {
+              throw new Error(
+                '"--require-approval" is enabled and stack includes security-sensitive updates, ' +
+                'but concurrency is greater than 1 so we are unable to get a confirmation from the user');
+            }
 
-          const confirmed = await promptly.confirm('Do you wish to deploy these changes (y/n)?');
-          if (!confirmed) { throw new Error('Aborted by user'); }
+            const confirmed = await promptly.confirm('Do you wish to deploy these changes (y/n)?');
+            if (!confirmed) { throw new Error('Aborted by user'); }
+          });
         }
       }
 
-      print('%s: deploying...', chalk.bold(stack.displayName));
+      const stackIndex = stacks.indexOf(stack)+1;
+      print('%s: deploying... [%s/%s]', chalk.bold(stack.displayName), stackIndex, stackCollection.stackCount);
       const startDeployTime = new Date().getTime();
 
       let tags = options.tags;
@@ -217,7 +330,7 @@ export class CdkToolkit {
 
       let elapsedDeployTime = 0;
       try {
-        const result = await this.props.cloudFormation.deployStack({
+        const result = await this.props.deployments.deployStack({
           stack,
           deployName: stack.stackName,
           roleArn: options.roleArn,
@@ -227,14 +340,17 @@ export class CdkToolkit {
           tags,
           execute: options.execute,
           changeSetName: options.changeSetName,
+          deploymentMethod: options.deploymentMethod,
           force: options.force,
           parameters: Object.assign({}, parameterMap['*'], parameterMap[stack.stackName]),
           usePreviousParameters: options.usePreviousParameters,
-          progress: options.progress,
+          progress,
           ci: options.ci,
           rollback: options.rollback,
           hotswap: options.hotswap,
           extraUserAgent: options.extraUserAgent,
+          assetParallelism: options.assetParallelism,
+          ignoreNoStacks: options.ignoreNoStacks,
         });
 
         const message = result.noOp
@@ -279,6 +395,42 @@ export class CdkToolkit {
         }
       }
       print('\n✨  Total time: %ss\n', formatTime(elapsedSynthTime + elapsedDeployTime));
+    };
+
+    const assetBuildTime = options.assetBuildTime ?? AssetBuildTime.ALL_BEFORE_DEPLOY;
+    const prebuildAssets = assetBuildTime === AssetBuildTime.ALL_BEFORE_DEPLOY;
+    const concurrency = options.concurrency || 1;
+    const progress = concurrency > 1 ? StackActivityProgress.EVENTS : options.progress;
+    if (concurrency > 1 && options.progress && options.progress != StackActivityProgress.EVENTS) {
+      warning('⚠️ The --concurrency flag only supports --progress "events". Switching to "events".');
+    }
+
+    try {
+      const stacksAndTheirAssetManifests = stacks.flatMap(stack => [
+        stack,
+        ...stack.dependencies.filter(cxapi.AssetManifestArtifact.isAssetManifestArtifact),
+      ]);
+      const workGraph = new WorkGraphBuilder(prebuildAssets).build(stacksAndTheirAssetManifests);
+
+      // Unless we are running with '--force', skip already published assets
+      if (!options.force) {
+        await this.removePublishedAssets(workGraph, options);
+      }
+
+      const graphConcurrency: Concurrency = {
+        'stack': concurrency,
+        'asset-build': 1, // This will be CPU-bound/memory bound, mostly matters for Docker builds
+        'asset-publish': (options.assetParallelism ?? true) ? 8 : 1, // This will be I/O-bound, 8 in parallel seems reasonable
+      };
+
+      await workGraph.doParallel(graphConcurrency, {
+        deployStack,
+        buildAsset,
+        publishAsset,
+      });
+    } catch (e) {
+      error('\n ❌ Deployment failed: %s', e);
+      throw e;
     }
   }
 
@@ -286,7 +438,7 @@ export class CdkToolkit {
     const rootDir = path.dirname(path.resolve(PROJECT_CONFIG));
     debug("root directory used for 'watch' is: %s", rootDir);
 
-    const watchSettings: { include?: string | string[], exclude: string | string [] } | undefined =
+    const watchSettings: { include?: string | string[]; exclude: string | string [] } | undefined =
         this.props.configuration.settings.get(['watch']);
     if (!watchSettings) {
       throw new Error("Cannot use the 'watch' command without specifying at least one directory to monitor. " +
@@ -373,8 +525,7 @@ export class CdkToolkit {
   }
 
   public async import(options: ImportOptions) {
-    print(chalk.grey("The 'cdk import' feature is currently in preview."));
-    const stacks = await this.selectStacksForDeploy(options.selector, true, true);
+    const stacks = await this.selectStacksForDeploy(options.selector, true, true, false);
 
     if (stacks.stackCount > 1) {
       throw new Error(`Stack selection is ambiguous, please choose a specific stack for import [${stacks.stackArtifacts.map(x => x.id).join(', ')}]`);
@@ -388,9 +539,7 @@ export class CdkToolkit {
 
     highlight(stack.displayName);
 
-    const resourceImporter = new ResourceImporter(stack, this.props.cloudFormation, {
-      toolkitStackName: options.toolkitStackName,
-    });
+    const resourceImporter = new ResourceImporter(stack, this.props.deployments);
     const { additions, hasNonAdditions } = await resourceImporter.discoverImportableResources(options.force);
     if (additions.length === 0) {
       warning('%s: no new resources compared to the currently deployed stack, skipping import.', chalk.bold(stack.displayName));
@@ -422,14 +571,11 @@ export class CdkToolkit {
     // Import the resources according to the given mapping
     print('%s: importing resources into stack...', chalk.bold(stack.displayName));
     const tags = tagsForStack(stack);
-    await resourceImporter.importResources(actualImport, {
-      stack,
-      deployName: stack.stackName,
+    await resourceImporter.importResourcesFromMap(actualImport, {
       roleArn: options.roleArn,
       toolkitStackName: options.toolkitStackName,
       tags,
-      execute: options.execute,
-      changeSetName: options.changeSetName,
+      deploymentMethod: options.deploymentMethod,
       usePreviousParameters: true,
       progress: options.progress,
       rollback: options.rollback,
@@ -464,10 +610,10 @@ export class CdkToolkit {
     }
 
     const action = options.fromDeploy ? 'deploy' : 'destroy';
-    for (const stack of stacks.stackArtifacts) {
-      success('%s: destroying...', chalk.blue(stack.displayName));
+    for (const [index, stack] of stacks.stackArtifacts.entries()) {
+      success('%s: destroying... [%s/%s]', chalk.blue(stack.displayName), index+1, stacks.stackCount);
       try {
-        await this.props.cloudFormation.destroyStack({
+        await this.props.deployments.destroyStack({
           stack,
           deployName: stack.stackName,
           roleArn: options.roleArn,
@@ -481,16 +627,37 @@ export class CdkToolkit {
     }
   }
 
-  public async list(selectors: string[], options: { long?: boolean, json?: boolean } = { }): Promise<number> {
-    const stacks = await this.selectStacksForList(selectors);
+  public async list(selectors: string[], options: { long?: boolean; json?: boolean; showDeps?: boolean } = { }): Promise<number> {
+    const stacks = await listStacks(this, {
+      selectors: selectors,
+    });
 
-    // if we are in "long" mode, emit the array as-is (JSON/YAML)
+    if (options.long && options.showDeps) {
+      data(serializeStructure(stacks, options.json ?? false));
+      return 0;
+    }
+
+    if (options.showDeps) {
+      const stackDeps = [];
+
+      for (const stack of stacks) {
+        stackDeps.push({
+          id: stack.id,
+          dependencies: stack.dependencies,
+        });
+      }
+
+      data(serializeStructure(stackDeps, options.json ?? false));
+      return 0;
+    }
+
     if (options.long) {
       const long = [];
-      for (const stack of stacks.stackArtifacts) {
+
+      for (const stack of stacks) {
         long.push({
-          id: stack.hierarchicalId,
-          name: stack.stackName,
+          id: stack.id,
+          name: stack.name,
           environment: stack.environment,
         });
       }
@@ -499,8 +666,8 @@ export class CdkToolkit {
     }
 
     // just print stack IDs
-    for (const stack of stacks.stackArtifacts) {
-      data(stack.hierarchicalId);
+    for (const stack of stacks) {
+      data(stack.id);
     }
 
     return 0; // exit-code
@@ -510,7 +677,7 @@ export class CdkToolkit {
    * Synthesize the given set of stacks (called when the user runs 'cdk synth')
    *
    * INPUT: Stack names can be supplied using a glob filter. If no stacks are
-   * given, all stacks from the application are implictly selected.
+   * given, all stacks from the application are implicitly selected.
    *
    * OUTPUT: If more than one stack ends up being selected, an output directory
    * should be supplied, where the templates will be written.
@@ -569,16 +736,16 @@ export class CdkToolkit {
   /**
    * Bootstrap the CDK Toolkit stack in the accounts used by the specified stack(s).
    *
-   * @param environmentSpecs environment names that need to have toolkit support
-   *             provisioned, as a glob filter. If none is provided,
-   *             all stacks are implicitly selected.
-   * @param toolkitStackName the name to be used for the CDK Toolkit stack.
+   * @param userEnvironmentSpecs environment names that need to have toolkit support
+   *             provisioned, as a glob filter. If none is provided, all stacks are implicitly selected.
+   * @param bootstrapper Legacy or modern.
+   * @param options The name, role ARN, bootstrapping parameters, etc. to be used for the CDK Toolkit stack.
    */
   public async bootstrap(userEnvironmentSpecs: string[], bootstrapper: Bootstrapper, options: BootstrapEnvironmentOptions): Promise<void> {
     // If there is an '--app' argument and an environment looks like a glob, we
-    // select the environments from the app. Otherwise use what the user said.
+    // select the environments from the app. Otherwise, use what the user said.
 
-    // By default glob for everything
+    // By default, glob for everything
     const environmentSpecs = userEnvironmentSpecs.length > 0 ? [...userEnvironmentSpecs] : ['**'];
 
     // Partition into globs and non-globs (this will mutate environmentSpecs).
@@ -617,6 +784,89 @@ export class CdkToolkit {
     }));
   }
 
+  /**
+   * Migrates a CloudFormation stack/template to a CDK app
+   * @param options Options for CDK app creation
+   */
+  public async migrate(options: MigrateOptions): Promise<void> {
+    warning('This command is an experimental feature.');
+    const language = options.language?.toLowerCase() ?? 'typescript';
+    const environment = setEnvironment(options.account, options.region);
+    let generateTemplateOutput: GenerateTemplateOutput | undefined;
+    let cfn: CfnTemplateGeneratorProvider | undefined;
+    let templateToDelete: string | undefined;
+
+    try {
+      // if neither fromPath nor fromStack is provided, generate a template using cloudformation
+      const scanType = parseSourceOptions(options.fromPath, options.fromStack, options.stackName).source;
+      if (scanType == TemplateSourceOptions.SCAN) {
+        generateTemplateOutput = await generateTemplate({
+          stackName: options.stackName,
+          filters: options.filter,
+          fromScan: options.fromScan,
+          sdkProvider: this.props.sdkProvider,
+          environment: environment,
+        });
+        templateToDelete = generateTemplateOutput.templateId;
+      } else if (scanType == TemplateSourceOptions.PATH) {
+        const templateBody = readFromPath(options.fromPath!);
+
+        const parsedTemplate = deserializeStructure(templateBody);
+        const templateId = parsedTemplate.Metadata?.TemplateId?.toString();
+        if (templateId) {
+          // if we have a template id, we can call describe generated template to get the resource identifiers
+          // resource metadata, and template source to generate the template
+          cfn = new CfnTemplateGeneratorProvider(await buildCfnClient(this.props.sdkProvider, environment));
+          const generatedTemplateSummary = await cfn.describeGeneratedTemplate(templateId);
+          generateTemplateOutput = buildGenertedTemplateOutput(generatedTemplateSummary, templateBody, generatedTemplateSummary.GeneratedTemplateId!);
+        } else {
+          generateTemplateOutput = {
+            migrateJson: {
+              templateBody: templateBody,
+              source: 'localfile',
+            },
+          };
+        }
+      } else if (scanType == TemplateSourceOptions.STACK) {
+        const template = await readFromStack(options.stackName, this.props.sdkProvider, environment);
+        if (!template) {
+          throw new Error(`No template found for stack-name: ${options.stackName}`);
+        }
+        generateTemplateOutput = {
+          migrateJson: {
+            templateBody: template,
+            source: options.stackName,
+          },
+        };
+      } else {
+        // We shouldn't ever get here, but just in case.
+        throw new Error(`Invalid source option provided: ${scanType}`);
+      }
+      const stack = generateStack(generateTemplateOutput.migrateJson.templateBody, options.stackName, language);
+      success(' ⏳  Generating CDK app for %s...', chalk.blue(options.stackName));
+      await generateCdkApp(options.stackName, stack!, language, options.outputPath, options.compress);
+      if (generateTemplateOutput) {
+        writeMigrateJsonFile(options.outputPath, options.stackName, generateTemplateOutput.migrateJson);
+      }
+      if (isThereAWarning(generateTemplateOutput)) {
+        warning(' ⚠️  Some resources could not be migrated completely. Please review the README.md file for more information.');
+        appendWarningsToReadme(`${path.join(options.outputPath ?? process.cwd(), options.stackName)}/README.md`, generateTemplateOutput.resources!);
+      }
+    } catch (e) {
+      error(' ❌  Migrate failed for `%s`: %s', options.stackName, (e as Error).message);
+      throw e;
+    } finally {
+      if (templateToDelete) {
+        if (!cfn) {
+          cfn = new CfnTemplateGeneratorProvider(await buildCfnClient(this.props.sdkProvider, environment));
+        }
+        if (!process.env.MIGRATE_INTEG_TEST) {
+          await cfn.deleteGeneratedTemplate(templateToDelete);
+        }
+      }
+    }
+  }
+
   private async selectStacksForList(patterns: string[]) {
     const assembly = await this.assembly();
     const stacks = await assembly.selectStacks({ patterns }, { defaultBehavior: DefaultSelection.AllStacks });
@@ -626,11 +876,13 @@ export class CdkToolkit {
     return stacks;
   }
 
-  private async selectStacksForDeploy(selector: StackSelector, exclusively?: boolean, cacheCloudAssembly?: boolean): Promise<StackCollection> {
+  private async selectStacksForDeploy(selector: StackSelector, exclusively?: boolean,
+    cacheCloudAssembly?: boolean, ignoreNoStacks?: boolean): Promise<StackCollection> {
     const assembly = await this.assembly(cacheCloudAssembly);
     const stacks = await assembly.selectStacks(selector, {
       extend: exclusively ? ExtendedStackSelection.None : ExtendedStackSelection.Upstream,
       defaultBehavior: DefaultSelection.OnlySingle,
+      ignoreNoStacks,
     });
 
     this.validateStacksSelected(stacks, selector.patterns);
@@ -709,11 +961,11 @@ export class CdkToolkit {
     return assembly.stackById(stacks.firstStack.id);
   }
 
-  private assembly(cacheCloudAssembly?: boolean): Promise<CloudAssembly> {
+  public assembly(cacheCloudAssembly?: boolean): Promise<CloudAssembly> {
     return this.props.cloudExecutable.synthesize(cacheCloudAssembly);
   }
 
-  private patternsArrayForWatch(patterns: string | string[] | undefined, options: { rootDir: string, returnRootDirIfEmpty: boolean }): string[] {
+  private patternsArrayForWatch(patterns: string | string[] | undefined, options: { rootDir: string; returnRootDirIfEmpty: boolean }): string[] {
     const patternsArray: string[] = patterns !== undefined
       ? (Array.isArray(patterns) ? patterns : [patterns])
       : [];
@@ -723,8 +975,6 @@ export class CdkToolkit {
   }
 
   private async invokeDeployFromWatch(options: WatchOptions, cloudWatchLogMonitor?: CloudWatchLogEventMonitor): Promise<void> {
-    // 'watch' has different defaults than regular 'deploy'
-    const hotswap = options.hotswap === undefined ? true : options.hotswap;
     const deployOptions: DeployOptions = {
       ...options,
       requireApproval: RequireApproval.Never,
@@ -734,15 +984,86 @@ export class CdkToolkit {
       watch: false,
       cloudWatchLogMonitor,
       cacheCloudAssembly: false,
-      hotswap: hotswap,
-      extraUserAgent: `cdk-watch/hotswap-${hotswap ? 'on' : 'off'}`,
+      hotswap: options.hotswap,
+      extraUserAgent: `cdk-watch/hotswap-${options.hotswap !== HotswapMode.FALL_BACK ? 'on' : 'off'}`,
+      concurrency: options.concurrency,
     };
 
     try {
       await this.deploy(deployOptions);
-    } catch (e) {
+    } catch {
       // just continue - deploy will show the error
     }
+  }
+
+  /**
+   * Remove the asset publishing and building from the work graph for assets that are already in place
+   */
+  private async removePublishedAssets(graph: WorkGraph, options: DeployOptions) {
+    await graph.removeUnnecessaryAssets(assetNode => this.props.deployments.isSingleAssetPublished(assetNode.assetManifest, assetNode.asset, {
+      stack: assetNode.parentStack,
+      roleArn: options.roleArn,
+      toolkitStackName: options.toolkitStackName,
+      stackName: assetNode.parentStack.stackName,
+    }));
+  }
+
+  /**
+   * Checks to see if a migrate.json file exists. If it does and the source is either `filepath` or
+   * is in the same environment as the stack deployment, a new stack is created and the resources are
+   * migrated to the stack using an IMPORT changeset. The normal deployment will resume after this is complete
+   * to add back in any outputs and the CDKMetadata.
+   */
+  private async tryMigrateResources(stacks: StackCollection, options: DeployOptions): Promise<void> {
+    const stack = stacks.stackArtifacts[0];
+    const migrateDeployment = new ResourceImporter(stack, this.props.deployments);
+    const resourcesToImport = await this.tryGetResources(await migrateDeployment.resolveEnvironment());
+
+    if (resourcesToImport) {
+      print('%s: creating stack for resource migration...', chalk.bold(stack.displayName));
+      print('%s: importing resources into stack...', chalk.bold(stack.displayName));
+
+      await this.performResourceMigration(migrateDeployment, resourcesToImport, options);
+
+      fs.rmSync('migrate.json');
+      print('%s: applying CDKMetadata and Outputs to stack (if applicable)...', chalk.bold(stack.displayName));
+    }
+  }
+
+  /**
+   * Creates a new stack with just the resources to be migrated
+   */
+  private async performResourceMigration(migrateDeployment: ResourceImporter, resourcesToImport: ResourcesToImport, options: DeployOptions) {
+    const startDeployTime = new Date().getTime();
+    let elapsedDeployTime = 0;
+
+    // Initial Deployment
+    await migrateDeployment.importResourcesFromMigrate(resourcesToImport, {
+      roleArn: options.roleArn,
+      toolkitStackName: options.toolkitStackName,
+      deploymentMethod: options.deploymentMethod,
+      usePreviousParameters: true,
+      progress: options.progress,
+      rollback: options.rollback,
+    });
+
+    elapsedDeployTime = new Date().getTime() - startDeployTime;
+    print('\n✨  Resource migration time: %ss\n', formatTime(elapsedDeployTime));
+  }
+
+  private async tryGetResources(environment: cxapi.Environment): Promise<ResourcesToImport | undefined> {
+    try {
+      const migrateFile = fs.readJsonSync('migrate.json', { encoding: 'utf-8' });
+      const sourceEnv = (migrateFile.Source as string).split(':');
+      if (sourceEnv[0] === 'localfile' ||
+        (sourceEnv[4] === environment.account && sourceEnv[3] === environment.region)) {
+        return migrateFile.Resources;
+      }
+    } catch (e) {
+      // Nothing to do
+    }
+
+    return undefined;
   }
 }
 
@@ -808,6 +1129,26 @@ export interface DiffOptions {
    * @default false
    */
   compareAgainstProcessedTemplate?: boolean;
+
+  /*
+  * Run diff in quiet mode without printing the diff statuses
+  *
+  * @default false
+  */
+  quiet?: boolean;
+
+  /**
+   * Additional parameters for CloudFormation at diff time, used to create a change set
+   * @default {}
+   */
+  parameters?: { [name: string]: string | undefined };
+
+  /**
+   * Whether or not to create, analyze, and subsequently delete a changeset
+   *
+   * @default true
+   */
+  changeSet?: boolean;
 }
 
 interface CfnDeployOptions {
@@ -831,15 +1172,24 @@ interface CfnDeployOptions {
   /**
    * Optional name to use for the CloudFormation change set.
    * If not provided, a name will be generated automatically.
+   *
+   * @deprecated Use 'deploymentMethod' instead
    */
   changeSetName?: string;
 
   /**
    * Whether to execute the ChangeSet
    * Not providing `execute` parameter will result in execution of ChangeSet
+   *
    * @default true
+   * @deprecated Use 'deploymentMethod' instead
    */
   execute?: boolean;
+
+  /**
+   * Deployment method
+   */
+  readonly deploymentMethod?: DeploymentMethod;
 
   /**
    * Display mode for stack deployment progress.
@@ -881,9 +1231,9 @@ interface WatchOptions extends Omit<CfnDeployOptions, 'execute'> {
    * A 'hotswap' deployment will attempt to short-circuit CloudFormation
    * and update the affected resources like Lambda functions directly.
    *
-   * @default - false for regular deployments, true for 'watch' deployments
+   * @default - `HotswapMode.FALL_BACK` for regular deployments, `HotswapMode.HOTSWAP_ONLY` for 'watch' deployments
    */
-  readonly hotswap?: boolean;
+  readonly hotswap: HotswapMode;
 
   /**
    * The extra string to append to the User-Agent header when performing AWS SDK calls.
@@ -899,6 +1249,14 @@ interface WatchOptions extends Omit<CfnDeployOptions, 'execute'> {
    * @default - false
    */
   readonly traceLogs?: boolean;
+
+  /**
+   * Maximum number of simultaneous deployments (dependency permitting) to execute.
+   * The default is '1', which executes all deployments serially.
+   *
+   * @default 1
+   */
+  readonly concurrency?: number;
 }
 
 export interface DeployOptions extends CfnDeployOptions, WatchOptions {
@@ -970,6 +1328,39 @@ export interface DeployOptions extends CfnDeployOptions, WatchOptions {
    * @default - not monitoring CloudWatch logs
    */
   readonly cloudWatchLogMonitor?: CloudWatchLogEventMonitor;
+
+  /**
+   * Maximum number of simultaneous deployments (dependency permitting) to execute.
+   * The default is '1', which executes all deployments serially.
+   *
+   * @default 1
+   */
+  readonly concurrency?: number;
+
+  /**
+   * Build/publish assets for a single stack in parallel
+   *
+   * Independent of whether stacks are being done in parallel or no.
+   *
+   * @default true
+   */
+  readonly assetParallelism?: boolean;
+
+  /**
+   * When to build assets
+   *
+   * The default is the Docker-friendly default.
+   *
+   * @default AssetBuildTime.ALL_BEFORE_DEPLOY
+   */
+  readonly assetBuildTime?: AssetBuildTime;
+
+  /**
+   * Whether to deploy if the app contains no stacks.
+   *
+   * @default false
+   */
+  readonly ignoreNoStacks?: boolean;
 }
 
 export interface ImportOptions extends CfnDeployOptions {
@@ -982,7 +1373,7 @@ export interface ImportOptions extends CfnDeployOptions {
   readonly recordResourceMapping?: string;
 
   /**
-   * Path to a file with with the physical resource mapping to CDK constructs in JSON format
+   * Path to a file with the physical resource mapping to CDK constructs in JSON format
    *
    * @default - No mapping file
    */
@@ -1020,7 +1411,7 @@ export interface DestroyOptions {
   /**
    * Whether the destroy request came from a deploy.
    */
-  fromDeploy?: boolean
+  fromDeploy?: boolean;
 
   /**
    * Whether we are on a CI system
@@ -1028,6 +1419,77 @@ export interface DestroyOptions {
    * @default false
    */
   readonly ci?: boolean;
+}
+
+export interface MigrateOptions {
+  /**
+   * The name assigned to the generated stack. This is also used to get
+   * the stack from the user's account if `--from-stack` is used.
+   */
+  readonly stackName: string;
+
+  /**
+   * The target language for the generated the CDK app.
+   *
+   * @default typescript
+   */
+  readonly language?: string;
+
+  /**
+   * The local path of the template used to generate the CDK app.
+   *
+   * @default - Local path is not used for the template source.
+   */
+  readonly fromPath?: string;
+
+  /**
+   * Whether to get the template from an existing CloudFormation stack.
+   *
+   * @default false
+   */
+  readonly fromStack?: boolean;
+
+  /**
+   * The output path at which to create the CDK app.
+   *
+   * @default - The current directory
+   */
+  readonly outputPath?: string;
+
+  /**
+   * The account from which to retrieve the template of the CloudFormation stack.
+   *
+   * @default - Uses the account for the credentials in use by the user.
+   */
+  readonly account?: string;
+
+  /**
+   * The region from which to retrieve the template of the CloudFormation stack.
+   *
+   * @default - Uses the default region for the credentials in use by the user.
+   */
+  readonly region?: string;
+
+  /**
+   * Filtering criteria used to select the resources to be included in the generated CDK app.
+   *
+   * @default - Include all resources
+   */
+  readonly filter?: string[];
+
+  /**
+   * Whether to initiate a new account scan for generating the CDK app.
+   *
+   * @default false
+   */
+  readonly fromScan?: FromScan;
+
+  /**
+   * Whether to zip the generated cdk app folder.
+   *
+   * @default false
+   */
+  readonly compress?: boolean;
 }
 
 /**
@@ -1060,8 +1522,29 @@ function roundPercentage(num: number): number {
 }
 
 /**
- * Given a time in miliseconds, return an equivalent amount in seconds.
+ * Given a time in milliseconds, return an equivalent amount in seconds.
  */
 function millisecondsToSeconds(num: number): number {
   return num / 1000;
+}
+
+function buildParameterMap(parameters: {
+  [name: string]: string | undefined;
+} | undefined): { [name: string]: { [name: string]: string | undefined } } {
+  const parameterMap: { [name: string]: { [name: string]: string | undefined } } = { '*': {} };
+  for (const key in parameters) {
+    if (parameters.hasOwnProperty(key)) {
+      const [stack, parameter] = key.split(':', 2);
+      if (!parameter) {
+        parameterMap['*'][stack] = parameters[key];
+      } else {
+        if (!parameterMap[stack]) {
+          parameterMap[stack] = {};
+        }
+        parameterMap[stack][parameter] = parameters[key];
+      }
+    }
+  }
+
+  return parameterMap;
 }

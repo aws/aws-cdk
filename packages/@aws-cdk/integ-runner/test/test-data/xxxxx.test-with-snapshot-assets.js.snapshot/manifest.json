@@ -1,0 +1,43 @@
+{
+  "version": "21.0.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      },
+      "metadata": {}
+    },
+    "test-stack.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "test-stack.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "test-stack": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "test-stack.template.json",
+        "validateOnSynth": false
+      },
+      "metadata": {
+        "/test-stack/MyFunction1/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyFunction1ServiceRole9852B06B"
+          }
+        ],
+        "/test-stack/MyFunction1/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyFunction12A744C2E"
+          }
+        ]
+      },
+      "displayName": "test-stack"
+    }
+  }
+}

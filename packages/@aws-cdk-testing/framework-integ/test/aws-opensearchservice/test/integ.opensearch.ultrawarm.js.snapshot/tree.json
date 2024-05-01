@@ -1,0 +1,82 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.85"
+        }
+      },
+      "cdk-integ-opensearch-ultrawarm": {
+        "id": "cdk-integ-opensearch-ultrawarm",
+        "path": "cdk-integ-opensearch-ultrawarm",
+        "children": {
+          "Domain": {
+            "id": "Domain",
+            "path": "cdk-integ-opensearch-ultrawarm/Domain",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "cdk-integ-opensearch-ultrawarm/Domain/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::OpenSearchService::Domain",
+                  "aws:cdk:cloudformation:props": {
+                    "clusterConfig": {
+                      "dedicatedMasterEnabled": true,
+                      "dedicatedMasterCount": 2,
+                      "dedicatedMasterType": "r5.large.search",
+                      "instanceCount": 1,
+                      "instanceType": "r5.large.search",
+                      "warmEnabled": true,
+                      "warmCount": 2,
+                      "warmType": "ultrawarm1.medium.search",
+                      "zoneAwarenessEnabled": false
+                    },
+                    "domainEndpointOptions": {
+                      "enforceHttps": false,
+                      "tlsSecurityPolicy": "Policy-Min-TLS-1-0-2019-07"
+                    },
+                    "ebsOptions": {
+                      "ebsEnabled": true,
+                      "volumeSize": 10,
+                      "volumeType": "gp2"
+                    },
+                    "encryptionAtRestOptions": {
+                      "enabled": false
+                    },
+                    "engineVersion": "Elasticsearch_7.1",
+                    "logPublishingOptions": {},
+                    "nodeToNodeEncryptionOptions": {
+                      "enabled": false
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "@aws-cdk/aws-opensearchservice.CfnDomain",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-opensearchservice.Domain",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.1.85"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "constructs.Construct",
+      "version": "10.1.85"
+    }
+  }
+}

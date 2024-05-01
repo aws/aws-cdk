@@ -1,0 +1,556 @@
+{
+  "version": "33.0.0",
+  "artifacts": {
+    "test-efs-permission-integ.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "test-efs-permission-integ.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "test-efs-permission-integ": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "test-efs-permission-integ.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/05f3c52783d6c78fee3bb802603f716c49200a127a1121831c8aa08acb6ff86a.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "test-efs-permission-integ.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "test-efs-permission-integ.assets"
+      ],
+      "metadata": {
+        "/test-efs-permission-integ/Vpc/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Vpc8378EB38"
+          }
+        ],
+        "/test-efs-permission-integ/Vpc/PublicSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet1Subnet5C2D37C4"
+          }
+        ],
+        "/test-efs-permission-integ/Vpc/PublicSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet1RouteTable6C95E38E"
+          }
+        ],
+        "/test-efs-permission-integ/Vpc/PublicSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet1RouteTableAssociation97140677"
+          }
+        ],
+        "/test-efs-permission-integ/Vpc/PublicSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet1DefaultRoute3DA9E72A"
+          }
+        ],
+        "/test-efs-permission-integ/Vpc/PublicSubnet1/EIP": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet1EIPD7E02669"
+          }
+        ],
+        "/test-efs-permission-integ/Vpc/PublicSubnet1/NATGateway": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet1NATGateway4D7517AA"
+          }
+        ],
+        "/test-efs-permission-integ/Vpc/PublicSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet2Subnet691E08A3"
+          }
+        ],
+        "/test-efs-permission-integ/Vpc/PublicSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet2RouteTable94F7E489"
+          }
+        ],
+        "/test-efs-permission-integ/Vpc/PublicSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet2RouteTableAssociationDD5762D8"
+          }
+        ],
+        "/test-efs-permission-integ/Vpc/PublicSubnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet2DefaultRoute97F91067"
+          }
+        ],
+        "/test-efs-permission-integ/Vpc/PublicSubnet2/EIP": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet2EIP3C605A87"
+          }
+        ],
+        "/test-efs-permission-integ/Vpc/PublicSubnet2/NATGateway": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPublicSubnet2NATGateway9182C01D"
+          }
+        ],
+        "/test-efs-permission-integ/Vpc/PrivateSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet1Subnet536B997A"
+          }
+        ],
+        "/test-efs-permission-integ/Vpc/PrivateSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet1RouteTableB2C5B500"
+          }
+        ],
+        "/test-efs-permission-integ/Vpc/PrivateSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet1RouteTableAssociation70C59FA6"
+          }
+        ],
+        "/test-efs-permission-integ/Vpc/PrivateSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet1DefaultRouteBE02A9ED"
+          }
+        ],
+        "/test-efs-permission-integ/Vpc/PrivateSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet2Subnet3788AAA1"
+          }
+        ],
+        "/test-efs-permission-integ/Vpc/PrivateSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet2RouteTableA678073B"
+          }
+        ],
+        "/test-efs-permission-integ/Vpc/PrivateSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet2RouteTableAssociationA89CAD56"
+          }
+        ],
+        "/test-efs-permission-integ/Vpc/PrivateSubnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcPrivateSubnet2DefaultRoute060D2087"
+          }
+        ],
+        "/test-efs-permission-integ/Vpc/IGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcIGWD7BA715C"
+          }
+        ],
+        "/test-efs-permission-integ/Vpc/VPCGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcVPCGWBF912B6E"
+          }
+        ],
+        "/test-efs-permission-integ/Vpc/RestrictDefaultSecurityGroupCustomResource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VpcRestrictDefaultSecurityGroupCustomResourceC73DA2BE"
+          }
+        ],
+        "/test-efs-permission-integ/Custom::VpcRestrictDefaultSGCustomResourceProvider/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomVpcRestrictDefaultSGCustomResourceProviderRole26592FE0"
+          }
+        ],
+        "/test-efs-permission-integ/Custom::VpcRestrictDefaultSGCustomResourceProvider/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomVpcRestrictDefaultSGCustomResourceProviderHandlerDC833E5E"
+          }
+        ],
+        "/test-efs-permission-integ/FileSystem/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FileSystem8A8E25C0"
+          }
+        ],
+        "/test-efs-permission-integ/FileSystem/EfsSecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FileSystemEfsSecurityGroup212D3ACB"
+          }
+        ],
+        "/test-efs-permission-integ/FileSystem/EfsSecurityGroup/from testefspermissionintegWriteInstanceInstanceSecurityGroup8A71A4B2:2049": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FileSystemEfsSecurityGroupfromtestefspermissionintegWriteInstanceInstanceSecurityGroup8A71A4B22049255111EA"
+          }
+        ],
+        "/test-efs-permission-integ/FileSystem/EfsSecurityGroup/from testefspermissionintegReadInstanceInstanceSecurityGroupD14710ED:2049": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FileSystemEfsSecurityGroupfromtestefspermissionintegReadInstanceInstanceSecurityGroupD14710ED20494CAE7A73"
+          }
+        ],
+        "/test-efs-permission-integ/FileSystem/EfsSecurityGroup/from testefspermissionintegAnonymousInstanceInstanceSecurityGroup64A7B2BD:2049": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FileSystemEfsSecurityGroupfromtestefspermissionintegAnonymousInstanceInstanceSecurityGroup64A7B2BD2049AF74717E"
+          }
+        ],
+        "/test-efs-permission-integ/FileSystem/EfsMountTarget-PrivateSubnet1": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FileSystemEfsMountTargetPrivateSubnet1BB305AF3"
+          }
+        ],
+        "/test-efs-permission-integ/FileSystem/EfsMountTarget-PrivateSubnet2": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FileSystemEfsMountTargetPrivateSubnet265F3ED67"
+          }
+        ],
+        "/test-efs-permission-integ/WriteInstance/InstanceSecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WriteInstanceInstanceSecurityGroupBB94A852"
+          }
+        ],
+        "/test-efs-permission-integ/WriteInstance/InstanceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WriteInstanceInstanceRole74D7BFCC"
+          }
+        ],
+        "/test-efs-permission-integ/WriteInstance/InstanceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WriteInstanceInstanceRoleDefaultPolicy692CCD00"
+          }
+        ],
+        "/test-efs-permission-integ/WriteInstance/InstanceProfile": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WriteInstanceInstanceProfile6EEEF088"
+          }
+        ],
+        "/test-efs-permission-integ/WriteInstance/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WriteInstance7FF20E8Eb90cd3a29a6c7625"
+          }
+        ],
+        "/test-efs-permission-integ/SsmParameterValue:--aws--service--ami-amazon-linux-latest--al2023-ami-kernel-6.1-arm64:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SsmParameterValueawsserviceamiamazonlinuxlatestal2023amikernel61arm64C96584B6F00A464EAD1953AFF4B05118Parameter"
+          }
+        ],
+        "/test-efs-permission-integ/ReadInstance/InstanceSecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ReadInstanceInstanceSecurityGroup4E6DE54D"
+          }
+        ],
+        "/test-efs-permission-integ/ReadInstance/InstanceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ReadInstanceInstanceRoleFE151AE8"
+          }
+        ],
+        "/test-efs-permission-integ/ReadInstance/InstanceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ReadInstanceInstanceRoleDefaultPolicy54DA36A2"
+          }
+        ],
+        "/test-efs-permission-integ/ReadInstance/InstanceProfile": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ReadInstanceInstanceProfile8FAC51BA"
+          }
+        ],
+        "/test-efs-permission-integ/ReadInstance/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ReadInstanceE94183C76867391ec2104698"
+          }
+        ],
+        "/test-efs-permission-integ/AnonymousInstance/InstanceSecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AnonymousInstanceInstanceSecurityGroup648A5675"
+          }
+        ],
+        "/test-efs-permission-integ/AnonymousInstance/InstanceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AnonymousInstanceInstanceRole174145F6"
+          }
+        ],
+        "/test-efs-permission-integ/AnonymousInstance/InstanceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AnonymousInstanceInstanceRoleDefaultPolicy7A752F3D"
+          }
+        ],
+        "/test-efs-permission-integ/AnonymousInstance/InstanceProfile": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AnonymousInstanceInstanceProfile5C6B5DC3"
+          }
+        ],
+        "/test-efs-permission-integ/AnonymousInstance/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AnonymousInstance51D4C7152602e043eee6300d"
+          }
+        ],
+        "/test-efs-permission-integ/Exports/Output{\"Ref\":\"AnonymousInstance51D4C7152602e043eee6300d\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefAnonymousInstance51D4C7152602e043eee6300d7C50D25E"
+          }
+        ],
+        "/test-efs-permission-integ/Exports/Output{\"Ref\":\"FileSystem8A8E25C0\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefFileSystem8A8E25C0B454ACF3"
+          }
+        ],
+        "/test-efs-permission-integ/Exports/Output{\"Ref\":\"ReadInstanceE94183C76867391ec2104698\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefReadInstanceE94183C76867391ec2104698F9816D55"
+          }
+        ],
+        "/test-efs-permission-integ/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/test-efs-permission-integ/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ],
+        "FileSystemEfsMountTarget1586453F0": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FileSystemEfsMountTarget1586453F0",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "FileSystemEfsMountTarget24B8EBB43": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "FileSystemEfsMountTarget24B8EBB43",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ]
+      },
+      "displayName": "test-efs-permission-integ"
+    },
+    "EfsPermissionTestDefaultTestDeployAssert4DFC2F97.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "EfsPermissionTestDefaultTestDeployAssert4DFC2F97.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "EfsPermissionTestDefaultTestDeployAssert4DFC2F97": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "EfsPermissionTestDefaultTestDeployAssert4DFC2F97.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/b58a1e0223b778282f5cf47307c51a5e737ba1e3b640d3f97767e0a0391a2b16.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "EfsPermissionTestDefaultTestDeployAssert4DFC2F97.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "test-efs-permission-integ",
+        "EfsPermissionTestDefaultTestDeployAssert4DFC2F97.assets"
+      ],
+      "metadata": {
+        "/EfsPermissionTest/DefaultTest/DeployAssert/AwsApiCallSSMsendCommand03c1b116df63115fe31278034644bb0d/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallSSMsendCommand03c1b116df63115fe31278034644bb0d"
+          }
+        ],
+        "/EfsPermissionTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+          }
+        ],
+        "/EfsPermissionTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+          }
+        ],
+        "/EfsPermissionTest/DefaultTest/DeployAssert/AwsApiCallSSMgetCommandInvocation404a358eb0bfedeb6ecd7ce5dc6c2cef/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallSSMgetCommandInvocation404a358eb0bfedeb6ecd7ce5dc6c2cef"
+          }
+        ],
+        "/EfsPermissionTest/DefaultTest/DeployAssert/AwsApiCallSSMgetCommandInvocation404a358eb0bfedeb6ecd7ce5dc6c2cef/WaitFor/IsCompleteProvider/Invoke": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallSSMgetCommandInvocation404a358eb0bfedeb6ecd7ce5dc6c2cefWaitForIsCompleteProviderInvoke0E3B9656"
+          }
+        ],
+        "/EfsPermissionTest/DefaultTest/DeployAssert/AwsApiCallSSMgetCommandInvocation404a358eb0bfedeb6ecd7ce5dc6c2cef/WaitFor/TimeoutProvider/Invoke": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallSSMgetCommandInvocation404a358eb0bfedeb6ecd7ce5dc6c2cefWaitForTimeoutProviderInvokeB2FF1355"
+          }
+        ],
+        "/EfsPermissionTest/DefaultTest/DeployAssert/AwsApiCallSSMgetCommandInvocation404a358eb0bfedeb6ecd7ce5dc6c2cef/WaitFor/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallSSMgetCommandInvocation404a358eb0bfedeb6ecd7ce5dc6c2cefWaitForRoleCB1932A9"
+          }
+        ],
+        "/EfsPermissionTest/DefaultTest/DeployAssert/AwsApiCallSSMgetCommandInvocation404a358eb0bfedeb6ecd7ce5dc6c2cef/WaitFor/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallSSMgetCommandInvocation404a358eb0bfedeb6ecd7ce5dc6c2cefWaitFor25410491"
+          }
+        ],
+        "/EfsPermissionTest/DefaultTest/DeployAssert/AwsApiCallSSMgetCommandInvocation404a358eb0bfedeb6ecd7ce5dc6c2cef/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsAwsApiCallSSMgetCommandInvocation404a358eb0bfedeb6ecd7ce5dc6c2cef"
+          }
+        ],
+        "/EfsPermissionTest/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction76b3e830a873425f8453eddd85c86925Role918961BB"
+          }
+        ],
+        "/EfsPermissionTest/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction76b3e830a873425f8453eddd85c86925Handler81461ECE"
+          }
+        ],
+        "/EfsPermissionTest/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aRoleB84BD8CE"
+          }
+        ],
+        "/EfsPermissionTest/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aHandlerADF3E6EA"
+          }
+        ],
+        "/EfsPermissionTest/DefaultTest/DeployAssert/AwsApiCallSSMsendCommand1c27023c69a32461de2a0ddfc884d23f/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallSSMsendCommand1c27023c69a32461de2a0ddfc884d23f"
+          }
+        ],
+        "/EfsPermissionTest/DefaultTest/DeployAssert/AwsApiCallSSMgetCommandInvocation8cffc809b96b591acbfcba480a4458a2/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallSSMgetCommandInvocation8cffc809b96b591acbfcba480a4458a2"
+          }
+        ],
+        "/EfsPermissionTest/DefaultTest/DeployAssert/AwsApiCallSSMgetCommandInvocation8cffc809b96b591acbfcba480a4458a2/WaitFor/IsCompleteProvider/Invoke": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallSSMgetCommandInvocation8cffc809b96b591acbfcba480a4458a2WaitForIsCompleteProviderInvoke0043BB8D"
+          }
+        ],
+        "/EfsPermissionTest/DefaultTest/DeployAssert/AwsApiCallSSMgetCommandInvocation8cffc809b96b591acbfcba480a4458a2/WaitFor/TimeoutProvider/Invoke": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallSSMgetCommandInvocation8cffc809b96b591acbfcba480a4458a2WaitForTimeoutProviderInvokeABA3643B"
+          }
+        ],
+        "/EfsPermissionTest/DefaultTest/DeployAssert/AwsApiCallSSMgetCommandInvocation8cffc809b96b591acbfcba480a4458a2/WaitFor/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallSSMgetCommandInvocation8cffc809b96b591acbfcba480a4458a2WaitForRoleA472C364"
+          }
+        ],
+        "/EfsPermissionTest/DefaultTest/DeployAssert/AwsApiCallSSMgetCommandInvocation8cffc809b96b591acbfcba480a4458a2/WaitFor/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallSSMgetCommandInvocation8cffc809b96b591acbfcba480a4458a2WaitForBC48DF7E"
+          }
+        ],
+        "/EfsPermissionTest/DefaultTest/DeployAssert/AwsApiCallSSMgetCommandInvocation8cffc809b96b591acbfcba480a4458a2/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsAwsApiCallSSMgetCommandInvocation8cffc809b96b591acbfcba480a4458a2"
+          }
+        ],
+        "/EfsPermissionTest/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/EfsPermissionTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "EfsPermissionTest/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}

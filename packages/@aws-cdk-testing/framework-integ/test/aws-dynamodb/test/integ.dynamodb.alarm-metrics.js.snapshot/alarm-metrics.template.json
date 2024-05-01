@@ -1,0 +1,187 @@
+{
+ "Resources": {
+  "TableCD117FA1": {
+   "Type": "AWS::DynamoDB::Table",
+   "Properties": {
+    "KeySchema": [
+     {
+      "AttributeName": "metric",
+      "KeyType": "HASH"
+     }
+    ],
+    "AttributeDefinitions": [
+     {
+      "AttributeName": "metric",
+      "AttributeType": "S"
+     }
+    ],
+    "ProvisionedThroughput": {
+     "ReadCapacityUnits": 5,
+     "WriteCapacityUnits": 5
+    }
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "TableThrottleAlarm606592BC": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+    "EvaluationPeriods": 1,
+    "Metrics": [
+     {
+      "Expression": "putitem + scan",
+      "Id": "expr_1",
+      "Label": "Sum of throttled requests across all operations"
+     },
+     {
+      "Id": "putitem",
+      "MetricStat": {
+       "Metric": {
+        "Dimensions": [
+         {
+          "Name": "Operation",
+          "Value": "PutItem"
+         },
+         {
+          "Name": "TableName",
+          "Value": {
+           "Ref": "TableCD117FA1"
+          }
+         }
+        ],
+        "MetricName": "ThrottledRequests",
+        "Namespace": "AWS/DynamoDB"
+       },
+       "Period": 60,
+       "Stat": "Sum"
+      },
+      "ReturnData": false
+     },
+     {
+      "Id": "scan",
+      "MetricStat": {
+       "Metric": {
+        "Dimensions": [
+         {
+          "Name": "Operation",
+          "Value": "Scan"
+         },
+         {
+          "Name": "TableName",
+          "Value": {
+           "Ref": "TableCD117FA1"
+          }
+         }
+        ],
+        "MetricName": "ThrottledRequests",
+        "Namespace": "AWS/DynamoDB"
+       },
+       "Period": 60,
+       "Stat": "Sum"
+      },
+      "ReturnData": false
+     }
+    ],
+    "Threshold": 1
+   }
+  },
+  "TableErrorAlarm12A4E2F3": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+    "EvaluationPeriods": 1,
+    "Metrics": [
+     {
+      "Expression": "putitem + scan",
+      "Id": "expr_1",
+      "Label": "Sum of errors across all operations"
+     },
+     {
+      "Id": "putitem",
+      "MetricStat": {
+       "Metric": {
+        "Dimensions": [
+         {
+          "Name": "Operation",
+          "Value": "PutItem"
+         },
+         {
+          "Name": "TableName",
+          "Value": {
+           "Ref": "TableCD117FA1"
+          }
+         }
+        ],
+        "MetricName": "SystemErrors",
+        "Namespace": "AWS/DynamoDB"
+       },
+       "Period": 60,
+       "Stat": "Sum"
+      },
+      "ReturnData": false
+     },
+     {
+      "Id": "scan",
+      "MetricStat": {
+       "Metric": {
+        "Dimensions": [
+         {
+          "Name": "Operation",
+          "Value": "Scan"
+         },
+         {
+          "Name": "TableName",
+          "Value": {
+           "Ref": "TableCD117FA1"
+          }
+         }
+        ],
+        "MetricName": "SystemErrors",
+        "Namespace": "AWS/DynamoDB"
+       },
+       "Period": 60,
+       "Stat": "Sum"
+      },
+      "ReturnData": false
+     }
+    ],
+    "Threshold": 1
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

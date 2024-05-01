@@ -1,0 +1,13 @@
+{
+  "version": "35.0.0",
+  "testCases": {
+    "integrationtest-inspector-start-assessment-run/DefaultTest": {
+      "stacks": [
+        "aws-cdk-scheduler-targets-inspector-start-assessment-run"
+      ],
+      "stackUpdateWorkflow": false,
+      "assertionStack": "integrationtest-inspector-start-assessment-run/DefaultTest/DeployAssert",
+      "assertionStackName": "integrationtestinspectorstartassessmentrunDefaultTestDeployAssertEF13D77A"
+    }
+  }
+}

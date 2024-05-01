@@ -1,0 +1,136 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "DashboardVariablesIntegrationTest": {
+        "id": "DashboardVariablesIntegrationTest",
+        "path": "DashboardVariablesIntegrationTest",
+        "children": {
+          "Dash": {
+            "id": "Dash",
+            "path": "DashboardVariablesIntegrationTest/Dash",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "DashboardVariablesIntegrationTest/Dash/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::CloudWatch::Dashboard",
+                  "aws:cdk:cloudformation:props": {
+                    "dashboardBody": {
+                      "Fn::Join": [
+                        "",
+                        [
+                          "{\"widgets\":[{\"type\":\"text\",\"width\":6,\"height\":2,\"x\":0,\"y\":0,\"properties\":{\"markdown\":\"The dashboard is showing RegionPlaceholder region\",\"background\":\"transparent\"}},{\"type\":\"metric\",\"width\":6,\"height\":6,\"x\":0,\"y\":2,\"properties\":{\"view\":\"timeSeries\",\"title\":\"My fancy graph\",\"region\":\"",
+                          {
+                            "Ref": "AWS::Region"
+                          },
+                          "\",\"metrics\":[[\"AWS/S3\",\"BucketSizeBytes\",\"BucketName\",\"my-bucket\",\"StorageType\",\"StandardStorage\",{\"label\":\"[BucketName: ${PROP('Dim.BucketName')}] BucketSizeBytes\",\"stat\":\"Maximum\"}]],\"yAxis\":{}}}],\"variables\":[{\"pattern\":\"RegionPlaceholder\",\"type\":\"pattern\",\"inputType\":\"radio\",\"id\":\"region3\",\"defaultValue\":\"us-east-1\",\"visible\":true,\"label\":\"RegionPatternWithValues\",\"values\":[{\"label\":\"IAD\",\"value\":\"us-east-1\"},{\"label\":\"DUB\",\"value\":\"us-west-2\"}]},{\"property\":\"BucketName\",\"type\":\"property\",\"inputType\":\"select\",\"id\":\"BucketName\",\"defaultValue\":\"__FIRST\",\"visible\":true,\"label\":\"BucketName\",\"search\":\"{AWS/S3,BucketName,StorageType} MetricName=\\\"BucketSizeBytes\\\"\",\"populateFrom\":\"BucketName\"}]}"
+                        ]
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_cloudwatch.CfnDashboard",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_cloudwatch.Dashboard",
+              "version": "0.0.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "DashboardVariablesIntegrationTest/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "DashboardVariablesIntegrationTest/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnRule",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "cdk-integ-dashboard-with-variables": {
+        "id": "cdk-integ-dashboard-with-variables",
+        "path": "cdk-integ-dashboard-with-variables",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "cdk-integ-dashboard-with-variables/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "cdk-integ-dashboard-with-variables/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.2.55"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "cdk-integ-dashboard-with-variables/DefaultTest/DeployAssert",
+                "children": {
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "cdk-integ-dashboard-with-variables/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "cdk-integ-dashboard-with-variables/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnRule",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.2.55"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "aws-cdk-lib.App",
+      "version": "0.0.0"
+    }
+  }
+}

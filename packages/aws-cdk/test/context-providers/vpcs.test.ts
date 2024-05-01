@@ -1,3 +1,4 @@
+/* eslint-disable import/order */
 import * as aws from 'aws-sdk';
 import * as AWS from 'aws-sdk-mock';
 import { VpcNetworkContextProviderPlugin } from '../../lib/context-providers/vpcs';
@@ -77,6 +78,7 @@ test('looks up the requested VPC', async () => {
   expect(result).toEqual({
     vpcId: 'vpc-1234567',
     vpcCidrBlock: '1.1.1.1/16',
+    ownerAccountId: '123456789012',
     availabilityZones: ['bermuda-triangle-1337'],
     isolatedSubnetIds: undefined,
     isolatedSubnetNames: undefined,
@@ -233,6 +235,7 @@ test('does not throw when subnet with subnetGroupNameTag is found', async () => 
   expect(result).toEqual({
     vpcId: 'vpc-1234567',
     vpcCidrBlock: '1.1.1.1/16',
+    ownerAccountId: '123456789012',
     availabilityZones: ['bermuda-triangle-1337'],
     isolatedSubnetIds: undefined,
     isolatedSubnetNames: undefined,
@@ -328,6 +331,7 @@ test('uses the VPC main route table when a subnet has no specific association', 
   expect(result).toEqual({
     vpcId: 'vpc-1234567',
     vpcCidrBlock: '1.1.1.1/16',
+    ownerAccountId: '123456789012',
     availabilityZones: ['bermuda-triangle-1337'],
     isolatedSubnetIds: undefined,
     isolatedSubnetNames: undefined,
@@ -391,6 +395,7 @@ test('Recognize public subnet by route table', async () => {
   expect(result).toEqual({
     vpcId: 'vpc-1234567',
     vpcCidrBlock: '1.1.1.1/16',
+    ownerAccountId: '123456789012',
     availabilityZones: ['bermuda-triangle-1337'],
     isolatedSubnetIds: undefined,
     isolatedSubnetNames: undefined,
@@ -406,7 +411,7 @@ test('Recognize public subnet by route table', async () => {
   });
 });
 
-test('Recognize private subnet by route table', async () => {
+test('Recognize private subnet by route table with NAT Gateway', async () => {
   // GIVEN
   const filter = { foo: 'bar' };
   const provider = new VpcNetworkContextProviderPlugin(mockSDK);
@@ -454,6 +459,71 @@ test('Recognize private subnet by route table', async () => {
   expect(result).toEqual({
     vpcId: 'vpc-1234567',
     vpcCidrBlock: '1.1.1.1/16',
+    ownerAccountId: '123456789012',
+    availabilityZones: ['bermuda-triangle-1337'],
+    isolatedSubnetIds: undefined,
+    isolatedSubnetNames: undefined,
+    isolatedSubnetRouteTableIds: undefined,
+    privateSubnetIds: ['sub-123456'],
+    privateSubnetNames: ['Private'],
+    privateSubnetRouteTableIds: ['rtb-123456'],
+    publicSubnetIds: undefined,
+    publicSubnetNames: undefined,
+    publicSubnetRouteTableIds: undefined,
+    vpnGatewayId: undefined,
+    subnetGroups: undefined,
+  });
+});
+
+test('Recognize private subnet by route table with Transit Gateway', async () => {
+  // GIVEN
+  const filter = { foo: 'bar' };
+  const provider = new VpcNetworkContextProviderPlugin(mockSDK);
+
+  mockVpcLookup({
+    subnets: [
+      { SubnetId: 'sub-123456', AvailabilityZone: 'bermuda-triangle-1337', MapPublicIpOnLaunch: false },
+    ],
+    routeTables: [
+      {
+        Associations: [{ SubnetId: 'sub-123456' }],
+        RouteTableId: 'rtb-123456',
+        Routes: [
+          {
+            DestinationCidrBlock: '10.0.2.0/26',
+            Origin: 'CreateRoute',
+            State: 'active',
+            VpcPeeringConnectionId: 'pcx-xxxxxx',
+          },
+          {
+            DestinationCidrBlock: '10.0.1.0/24',
+            GatewayId: 'local',
+            Origin: 'CreateRouteTable',
+            State: 'active',
+          },
+          {
+            DestinationCidrBlock: '0.0.0.0/0',
+            TransitGatewayId: 'tgw-xxxxxx',
+            Origin: 'CreateRoute',
+            State: 'active',
+          },
+        ],
+      },
+    ],
+  });
+
+  // WHEN
+  const result = await provider.getValue({
+    account: '1234',
+    region: 'us-east-1',
+    filter,
+  });
+
+  // THEN
+  expect(result).toEqual({
+    vpcId: 'vpc-1234567',
+    vpcCidrBlock: '1.1.1.1/16',
+    ownerAccountId: '123456789012',
     availabilityZones: ['bermuda-triangle-1337'],
     isolatedSubnetIds: undefined,
     isolatedSubnetNames: undefined,
@@ -505,6 +575,7 @@ test('Recognize isolated subnet by route table', async () => {
   expect(result).toEqual({
     vpcId: 'vpc-1234567',
     vpcCidrBlock: '1.1.1.1/16',
+    ownerAccountId: '123456789012',
     availabilityZones: ['bermuda-triangle-1337'],
     isolatedSubnetIds: ['sub-123456'],
     isolatedSubnetNames: ['Isolated'],
@@ -531,7 +602,7 @@ function mockVpcLookup(options: VpcLookupOptions) {
 
   AWS.mock('EC2', 'describeVpcs', (params: aws.EC2.DescribeVpcsRequest, cb: AwsCallback<aws.EC2.DescribeVpcsResult>) => {
     expect(params.Filters).toEqual([{ Name: 'foo', Values: ['bar'] }]);
-    return cb(null, { Vpcs: [{ VpcId, CidrBlock: '1.1.1.1/16' }] });
+    return cb(null, { Vpcs: [{ VpcId, CidrBlock: '1.1.1.1/16', OwnerId: '123456789012' }] });
   });
 
   AWS.mock('EC2', 'describeSubnets', (params: aws.EC2.DescribeSubnetsRequest, cb: AwsCallback<aws.EC2.DescribeSubnetsResult>) => {

@@ -1,0 +1,19 @@
+{
+  "version": "33.0.0",
+  "files": {
+    "f2e43c7b225e4a3bb913b8e3255e177873b0cf9eeb474e63af30152e8a0bdd01": {
+      "source": {
+        "path": "aws-cdk-s3-minimum-tls-version.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "f2e43c7b225e4a3bb913b8e3255e177873b0cf9eeb474e63af30152e8a0bdd01.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

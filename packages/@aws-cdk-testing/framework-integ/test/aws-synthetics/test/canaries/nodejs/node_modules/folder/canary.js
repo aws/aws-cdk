@@ -1,0 +1,52 @@
+var synthetics = require('Synthetics');
+const log = require('SyntheticsLogger');
+const https = require('https');
+const http = require('http');
+
+const apiCanaryBlueprint = async function () {
+    const postData = "";
+
+    const verifyRequest = async function (requestOption) {
+      return new Promise((resolve, reject) => {
+        log.info("Making request with options: " + JSON.stringify(requestOption));
+        let req
+        if (requestOption.protocol === 'https:') {
+          req = https.request(requestOption);
+        } else {
+          req = http.request(requestOption);
+        }
+        req.on('response', (res) => {
+          log.info(`Status Code: ${res.statusCode}`)
+          log.info(`Response Headers: ${JSON.stringify(res.headers)}`)
+          if (res.statusCode !== 200) {
+              reject("Failed: " + requestOption.pathname);
+          }
+          res.on('data', (d) => {
+            log.info("Response: " + d);
+          });
+          res.on('end', () => {
+            resolve();
+          })
+        });
+
+        req.on('error', (error) => {
+          reject(error);
+        });
+
+        if (postData) {
+          req.write(postData);
+        }
+        req.end();
+      });
+    }
+
+    const headers = {}
+    headers['User-Agent'] = [synthetics.getCanaryUserAgentString(), headers['User-Agent']].join(' ');
+    const requestOptions = new URL(process.env.URL);
+    requestOptions['headers'] = headers;
+    await verifyRequest(requestOptions);
+};
+
+exports.functionName = async () => {
+    return await apiCanaryBlueprint();
+};

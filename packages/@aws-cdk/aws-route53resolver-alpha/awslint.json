@@ -1,0 +1,7 @@
+{
+  "exclude": [
+    "props-physical-name:@aws-cdk/aws-route53resolver-alpha.FirewallDomainListProps",
+    "props-physical-name:@aws-cdk/aws-route53resolver-alpha.FirewallRuleGroupProps",
+    "props-physical-name:@aws-cdk/aws-route53resolver-alpha.FirewallRuleGroupAssociationProps"
+  ]
+}

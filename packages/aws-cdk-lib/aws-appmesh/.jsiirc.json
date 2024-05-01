@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "dotnet": {
+      "namespace": "Amazon.CDK.AWS.AppMesh"
+    },
+    "java": {
+      "package": "software.amazon.awscdk.services.appmesh"
+    },
+    "python": {
+      "module": "aws_cdk.aws_appmesh"
+    }
+  }
+}

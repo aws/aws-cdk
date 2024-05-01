@@ -1,3 +1,4 @@
+/* eslint-disable import/order */
 import * as path from 'path';
 import { setTimeout as _setTimeout } from 'timers';
 import { promisify } from 'util';
@@ -86,9 +87,8 @@ test('Skip version check if environment variable is set', async () => {
 });
 
 describe('version message', () => {
-  let previousIsTty: true | undefined;
+  const previousIsTty = process.stdout.isTTY;
   beforeAll(() => {
-    previousIsTty = process.stdout.isTTY;
     process.stdout.isTTY = true;
   });
 

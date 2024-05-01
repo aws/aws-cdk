@@ -1,6 +1,7 @@
+/* eslint-disable import/order */
 import { SSMPARAM_NO_INVALIDATE } from '@aws-cdk/cx-api';
-import { CloudFormationStack, TemplateParameters } from '../../lib/api/util/cloudformation';
 import { MockedObject, MockSdkProvider, SyncHandlerSubsetOf } from './mock-sdk';
+import { CloudFormationStack, TemplateParameters } from '../../lib/api/util/cloudformation';
 
 const PARAM = 'TheParameter';
 const DEFAULT = 'TheDefault';

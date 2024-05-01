@@ -9,9 +9,10 @@ export function getDocTag(documentable: reflect.Documentable, tag: string): stri
   const t = documentable.docs.customTag(tag);
   if (t) { return t; }
 
-  if ((documentable instanceof reflect.Property || documentable instanceof reflect.Method) && documentable.overrides) {
-    if (documentable.overrides.isClassType() || documentable.overrides.isInterfaceType()) {
-      const baseMembers = documentable.overrides.allMembers.filter(m => m.name === documentable.name);
+  if ((documentable instanceof reflect.Property || documentable instanceof reflect.Method)) {
+    const overrides = documentable.overrides;
+    if (overrides?.isClassType() || overrides?.isInterfaceType()) {
+      const baseMembers = overrides.allMembers.filter(m => m.name === documentable.name);
       for (const base of baseMembers) {
         const baseTag = getDocTag(base, tag);
         if (baseTag) {

@@ -27,7 +27,6 @@ export interface LibraryReadmeOptions {
  * It lives in pkglint because these all need it:
  *
  * - pkglint, in order to be able to rewrite READMEs to their desired content
- * - cfnspec, in order to generate new library directories on-the-fly when new modules
  *   appear in the CloudFormation specification
  * - ubergen, to rewrite the README of an experimental package back to its 'cfn-only' state
  *

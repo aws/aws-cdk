@@ -1,11 +1,11 @@
 #!/bin/bash
-#
-# Run our integration tests in regression mode against the
-# previous version of the framework, relative to the version being packed now.
-#
-set -euo pipefail
-integdir=$(cd $(dirname $0) && pwd)
+set -eu
+# This is a backwards compatibility script. All logic has moved to '@aws-cdk-testing/cli-integ'
+# and should be called from there directly.
 
-source ${integdir}/test-cli-regression.bash
+# Contract: '@aws-cdk-testing/cli-integ' package is installed in ${INTEG_TOOLS}
+previous=$(${INTEG_TOOLS}/bin/query-github last-release --token $GITHUB_TOKEN --prior-to $VERSION)
+echo "Previous version is: $previous"
 
-run_regression_against_framework_version PREVIOUS_VERSION
+# Old tests, new CLI, old framework
+exec $INTEG_TOOLS/bin/download-and-run-old-tests "$previous" --regression --use-cli-release=$VERSION --framework-version=$previous cli-integ-tests

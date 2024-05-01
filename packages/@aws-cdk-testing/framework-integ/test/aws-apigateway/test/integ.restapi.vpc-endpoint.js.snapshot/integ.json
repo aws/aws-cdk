@@ -1,0 +1,11 @@
+{
+  "version": "20.0.0",
+  "testCases": {
+    "apigateway-vpcendpoint/DefaultTest": {
+      "stacks": [
+        "test-apigateway-vpcendpoint"
+      ],
+      "assertionStack": "apigateway-vpcendpoint/DefaultTest/DeployAssert"
+    }
+  }
+}

@@ -1,7 +1,7 @@
 import * as reflect from 'jsii-reflect';
-import { Linter } from '../linter';
 import { ConstructReflection } from './construct';
 import { CoreTypes } from './core-types';
+import { Linter } from '../linter';
 
 export const eventsLinter = new Linter<EventsReflection>(assembly => assembly.classes
   .filter(t => CoreTypes.isConstructClass(t))
@@ -17,8 +17,8 @@ export class EventsReflection extends ConstructReflection {
   }
 }
 
-const ON_EVENT_OPTIONS_FQN = '@aws-cdk/aws-events.OnEventOptions';
-const EVENT_RULE_FQN = '@aws-cdk/aws-events.Rule';
+const ON_EVENT_OPTIONS_FQN = 'aws-cdk-lib.aws_events.OnEventOptions';
+const EVENT_RULE_FQN = 'aws-cdk-lib.aws_events.Rule';
 
 eventsLinter.add({
   code: 'events-in-interface',

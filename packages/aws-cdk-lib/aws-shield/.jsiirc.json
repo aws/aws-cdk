@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "java": {
+      "package": "software.amazon.awscdk.services.shield"
+    },
+    "dotnet": {
+      "package": "Amazon.CDK.AWS.Shield"
+    },
+    "python": {
+      "module": "aws_cdk.aws_shield"
+    }
+  }
+}

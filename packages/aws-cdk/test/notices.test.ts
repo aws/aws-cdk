@@ -1,3 +1,4 @@
+/* eslint-disable import/order */
 import * as https from 'https';
 import * as os from 'os';
 import * as path from 'path';
@@ -146,11 +147,11 @@ describe('cli notices', () => {
       const notices = [FRAMEWORK_2_1_0_AFFECTED_NOTICE];
 
       expect(filterNotices(notices, {
-        outdir: path.join(__dirname, 'cloud-assembly-trees/built-with-2_12_0'),
+        outdir: path.join(__dirname, 'cloud-assembly-trees', 'built-with-2_12_0'),
       })).toEqual([]);
 
       expect(filterNotices(notices, {
-        outdir: path.join(__dirname, 'cloud-assembly-trees/built-with-1_144_0'),
+        outdir: path.join(__dirname, 'cloud-assembly-trees', 'built-with-1_144_0'),
       })).toEqual([FRAMEWORK_2_1_0_AFFECTED_NOTICE]);
     });
 
@@ -159,22 +160,22 @@ describe('cli notices', () => {
 
       // module-level match
       expect(filterNotices(notices, {
-        outdir: path.join(__dirname, 'cloud-assembly-trees/experimental-module'),
+        outdir: path.join(__dirname, 'cloud-assembly-trees', 'experimental-module'),
       })).toEqual([NOTICE_FOR_APIGATEWAYV2]);
 
       // no apigatewayv2 in the tree
       expect(filterNotices(notices, {
-        outdir: path.join(__dirname, 'cloud-assembly-trees/built-with-2_12_0'),
+        outdir: path.join(__dirname, 'cloud-assembly-trees', 'built-with-2_12_0'),
       })).toEqual([]);
 
       // module name mismatch: apigateway != apigatewayv2
       expect(filterNotices([NOTICE_FOR_APIGATEWAY], {
-        outdir: path.join(__dirname, 'cloud-assembly-trees/experimental-module'),
+        outdir: path.join(__dirname, 'cloud-assembly-trees', 'experimental-module'),
       })).toEqual([]);
 
       // construct-level match
       expect(filterNotices([NOTICE_FOR_APIGATEWAYV2_CFN_STAGE], {
-        outdir: path.join(__dirname, 'cloud-assembly-trees/experimental-module'),
+        outdir: path.join(__dirname, 'cloud-assembly-trees', 'experimental-module'),
       })).toEqual([NOTICE_FOR_APIGATEWAYV2_CFN_STAGE]);
     });
 
@@ -390,7 +391,7 @@ describe('cli notices', () => {
       });
 
       expect(result).toEqual(`
-NOTICES
+NOTICES         (What's this? https://github.com/aws/aws-cdk/wiki/CLI-Notices)
 
 16603	Toggling off auto_delete_objects for Bucket empties the bucket
 

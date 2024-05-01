@@ -2,3 +2,4 @@
 *.js
 
 !decs.d.ts
+!.eslintrc.js

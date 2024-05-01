@@ -1,5 +1,3 @@
-import 'source-map-support/register';
-
 export * from './aws-auth/credentials';
 export * from './bootstrap';
 export * from './deploy-stack';

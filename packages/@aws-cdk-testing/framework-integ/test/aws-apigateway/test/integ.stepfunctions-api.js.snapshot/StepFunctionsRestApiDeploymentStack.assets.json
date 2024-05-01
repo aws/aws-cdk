@@ -1,0 +1,19 @@
+{
+  "version": "30.0.0",
+  "files": {
+    "de2c198bbb6588ccbe00d0f0794f7217c429e3d7e3c5b4326e3b085b0d697753": {
+      "source": {
+        "path": "StepFunctionsRestApiDeploymentStack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "de2c198bbb6588ccbe00d0f0794f7217c429e3d7e3c5b4326e3b085b0d697753.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

@@ -1,0 +1,237 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "Stack": {
+        "id": "Stack",
+        "path": "Stack",
+        "children": {
+          "Bus": {
+            "id": "Bus",
+            "path": "Stack/Bus",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "Stack/Bus/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Events::EventBus",
+                  "aws:cdk:cloudformation:props": {
+                    "name": "StackBusAA0A1E4B"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_events.CfnEventBus",
+                  "version": "0.0.0"
+                }
+              },
+              "cdk-Statement1": {
+                "id": "cdk-Statement1",
+                "path": "Stack/Bus/cdk-Statement1",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "Stack/Bus/cdk-Statement1/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::Events::EventBusPolicy",
+                      "aws:cdk:cloudformation:props": {
+                        "eventBusName": {
+                          "Ref": "BusEA82B648"
+                        },
+                        "statement": {
+                          "Action": "events:PutEvents",
+                          "Effect": "Allow",
+                          "Principal": {
+                            "AWS": {
+                              "Fn::Join": [
+                                "",
+                                [
+                                  "arn:",
+                                  {
+                                    "Ref": "AWS::Partition"
+                                  },
+                                  ":iam::",
+                                  {
+                                    "Ref": "AWS::AccountId"
+                                  },
+                                  ":root"
+                                ]
+                              ]
+                            }
+                          },
+                          "Resource": {
+                            "Fn::GetAtt": [
+                              "BusEA82B648",
+                              "Arn"
+                            ]
+                          },
+                          "Sid": "cdk-Statement1"
+                        },
+                        "statementId": "cdk-Statement1"
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_events.CfnEventBusPolicy",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_events.EventBusPolicy",
+                  "version": "0.0.0"
+                }
+              },
+              "cdk-Statement2": {
+                "id": "cdk-Statement2",
+                "path": "Stack/Bus/cdk-Statement2",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "Stack/Bus/cdk-Statement2/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::Events::EventBusPolicy",
+                      "aws:cdk:cloudformation:props": {
+                        "eventBusName": {
+                          "Ref": "BusEA82B648"
+                        },
+                        "statement": {
+                          "Action": "events:PutRule",
+                          "Effect": "Allow",
+                          "Principal": {
+                            "AWS": {
+                              "Fn::Join": [
+                                "",
+                                [
+                                  "arn:",
+                                  {
+                                    "Ref": "AWS::Partition"
+                                  },
+                                  ":iam::",
+                                  {
+                                    "Ref": "AWS::AccountId"
+                                  },
+                                  ":root"
+                                ]
+                              ]
+                            }
+                          },
+                          "Resource": {
+                            "Fn::GetAtt": [
+                              "BusEA82B648",
+                              "Arn"
+                            ]
+                          },
+                          "Sid": "cdk-Statement2"
+                        },
+                        "statementId": "cdk-Statement2"
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_events.CfnEventBusPolicy",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_events.EventBusPolicy",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_events.EventBus",
+              "version": "0.0.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "Stack/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "Stack/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnRule",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "IntegTest-EventBusStack": {
+        "id": "IntegTest-EventBusStack",
+        "path": "IntegTest-EventBusStack",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "IntegTest-EventBusStack/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "IntegTest-EventBusStack/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "IntegTest-EventBusStack/DefaultTest/DeployAssert",
+                "children": {
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "IntegTest-EventBusStack/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "IntegTest-EventBusStack/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnRule",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.3.0"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "aws-cdk-lib.App",
+      "version": "0.0.0"
+    }
+  }
+}
