@@ -378,6 +378,7 @@ const fargateTaskDefinition = new ecs.FargateTaskDefinition(this, 'TaskDef', {
 
 **Note:** `pidMode` is only supported for tasks that are hosted on AWS Fargate if the tasks are using platform version 1.4.0
 or later (Linux). Only the `task` option is supported for Linux containers. `pidMode` isn't supported for Windows containers on Fargate.
+If `pidMode` is specified for a Fargate task, then `runtimePlatform.operatingSystemFamily` must also be specified.
 
 To add containers to a task definition, call `addContainer()`:
 

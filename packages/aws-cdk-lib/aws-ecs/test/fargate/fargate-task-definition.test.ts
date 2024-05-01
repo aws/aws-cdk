@@ -164,6 +164,24 @@ describe('fargate task definition', () => {
       // THEN
     });
 
+    test('throws when pidMode is specified without an operating system family', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+
+      // WHEN
+      // THEN
+      expect(() => {
+        new ecs.FargateTaskDefinition(stack, 'FargateTaskDef', {
+          pidMode: ecs.PidMode.TASK,
+          runtimePlatform: {
+            cpuArchitecture: ecs.CpuArchitecture.X86_64,
+          },
+          cpu: 1024,
+          memoryLimitMiB: 2048,
+        });
+      }).toThrow(/Specifying 'pidMode' requires that operating system family also be provided./);
+    });
+
     test('throws when pidMode is specified on Windows', () => {
       // GIVEN
       const stack = new cdk.Stack();
