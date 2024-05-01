@@ -49,11 +49,11 @@ export abstract class CustomResourceProviderBase extends Construct {
   }
 
   /**
-   * Base runtime
+   * Returns the current runtime value passed under props
    */
   public get runtime(): string {
     if (!this._runtime) {
-      throw new Error('Runtime not provided');
+      throw new Error('This custom resource runtime does not have an input runtime');
     }
     return this._runtime;
   }
