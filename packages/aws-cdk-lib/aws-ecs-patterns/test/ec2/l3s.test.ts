@@ -4,9 +4,8 @@ import { Certificate } from '../../../aws-certificatemanager';
 import * as ec2 from '../../../aws-ec2';
 import { MachineImage } from '../../../aws-ec2';
 import * as ecs from '../../../aws-ecs';
-import * as elbv2 from '../../../aws-elasticloadbalancingv2';
 import { AsgCapacityProvider } from '../../../aws-ecs';
-import { ApplicationLoadBalancer, ApplicationProtocol, ApplicationProtocolVersion, NetworkLoadBalancer } from '../../../aws-elasticloadbalancingv2';
+import { ApplicationLoadBalancer, ApplicationProtocol, ApplicationProtocolVersion, IpAddressType, NetworkLoadBalancer } from '../../../aws-elasticloadbalancingv2';
 import { PublicHostedZone } from '../../../aws-route53';
 import * as cloudmap from '../../../aws-servicediscovery';
 import * as cdk from '../../../core';
@@ -866,7 +865,7 @@ describe('NetworkLoadBalancedEc2Service', () => {
       taskImageOptions: {
         image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
       },
-      ipAddressType: elbv2.IpAddressType.DUAL_STACK,
+      ipAddressType: IpAddressType.DUAL_STACK,
     });
 
     // THEN
