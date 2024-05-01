@@ -78,7 +78,7 @@ abstract class RuntimeAspectsBase implements IAspect {
       const isCompleteHandler = provider.isCompleteHandler as lambda.Function;
       const isCompleteHandlerRuntime = this.getChildFunctionNode(isCompleteHandler);
       if (this.isValidRuntime(this.getRuntimeProperty(targetNode))) {
-        isCompleteHandlerRuntime.addPropertyOverride('Runtime', 'nodejs20.x');
+        isCompleteHandlerRuntime.addPropertyOverride('Runtime', this.targetRuntime);
       }
     }
   }
@@ -87,7 +87,7 @@ abstract class RuntimeAspectsBase implements IAspect {
     const functionnode = ruleSet.node.findChild('DropSpam');
     const ses = functionnode.node.findChild('Function') as lambda.CfnFunction;
     if (ses.runtime && this.isValidRuntime(ses.runtime)) {
-      ses.addPropertyOverride('Runtime', 'nodejs20.x');
+      ses.addPropertyOverride('Runtime', this.targetRuntime);
     }
   }
 
