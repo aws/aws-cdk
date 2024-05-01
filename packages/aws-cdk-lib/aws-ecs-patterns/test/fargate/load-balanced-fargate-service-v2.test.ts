@@ -3,13 +3,11 @@ import { Certificate } from '../../../aws-certificatemanager';
 import { Vpc } from '../../../aws-ec2';
 import * as ecs from '../../../aws-ecs';
 import { ContainerDefinition, ContainerImage } from '../../../aws-ecs';
-import { ApplicationProtocol, SslPolicy } from '../../../aws-elasticloadbalancingv2';
+import { ApplicationProtocol, IpAddressType, SslPolicy } from '../../../aws-elasticloadbalancingv2';
 import { CompositePrincipal, Role, ServicePrincipal } from '../../../aws-iam';
 import { PublicHostedZone } from '../../../aws-route53';
 import { Duration, Stack } from '../../../core';
 import { ApplicationLoadBalancedFargateService, ApplicationMultipleTargetGroupsFargateService, NetworkLoadBalancedFargateService, NetworkMultipleTargetGroupsFargateService } from '../../lib';
-import * as ec2 from 'aws-cdk-lib/aws-ec2';
-import * as elbv2 from 'aws-cdk-lib/aws-elasticloadbalancingv2';
 
 const enableExecuteCommandPermissions = {
   Statement: [
@@ -758,7 +756,7 @@ describe('Network Load Balancer', () => {
           containerPort: 80,
         },
         listenerPort: 80,
-        ipAddressType: elbv2.IpAddressType.DUAL_STACK,
+        ipAddressType: IpAddressType.DUAL_STACK,
       });
 
       // THEN
