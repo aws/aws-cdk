@@ -13,6 +13,14 @@ new FileSystem(stack, 'FileSystem', {
   oneZone: true,
 });
 
+new FileSystem(stack, 'FileSystem2', {
+  vpc,
+  oneZone: true,
+  vpcSubnets: {
+    availabilityZones: [vpc.availabilityZones[1]],
+  },
+});
+
 new integ.IntegTest(app, 'test-efs-one-zone-integ-test', {
   testCases: [stack],
 });
