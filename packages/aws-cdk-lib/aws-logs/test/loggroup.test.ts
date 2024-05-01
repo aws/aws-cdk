@@ -182,6 +182,26 @@ describe('log group', () => {
     Annotations.fromStack(stack).hasWarning('*', Match.stringLikeRegexp(/The LogGroupClass property is not supported in the following regions.+us-isob-east-1/));
   });
 
+  test('with standard log group class in china region', () => {
+    // GIVEN
+    const app = new App();
+    const stack = new Stack(app, 'TestStack', {
+      env: {
+        region: 'cn-north-1',
+      },
+    });
+
+    // WHEN
+    new LogGroup(stack, 'LogGroup', {
+      logGroupClass: LogGroupClass.STANDARD,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Logs::LogGroup', {
+      LogGroupClass: LogGroupClass.STANDARD,
+    });
+  });
+
   test('will delete log group if asked to', () => {
     // GIVEN
     const stack = new Stack();
