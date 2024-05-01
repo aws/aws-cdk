@@ -102,6 +102,7 @@ export const CODEPIPELINE_CROSS_ACCOUNT_KEYS_DEFAULT_VALUE_TO_FALSE = '@aws-cdk/
 export const CODEPIPELINE_DEFAULT_PIPELINE_TYPE_TO_V2 = '@aws-cdk/aws-codepipeline:defaultPipelineTypeToV2';
 export const KMS_REDUCE_CROSS_ACCOUNT_REGION_POLICY_SCOPE = '@aws-cdk/aws-kms:reduceCrossAccountRegionPolicyScope';
 export const EKS_NODEGROUP_NAME = '@aws-cdk/aws-eks:nodegroupNameAttribute';
+export const EBS_DEFAULT_GP3 = '@aws-cdk/aws-ec2:ebsDefaultGp3Volume';
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
@@ -1044,8 +1045,20 @@ export const FLAGS: Record<string, FlagInfo> = {
       When this feature flag is enabled, the nodegroupName attribute will be exactly the name of the nodegroup without
       any prefix.
     `,
+    introducedIn: { v2: '2.139.0' },
+    recommendedValue: true,
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [EBS_DEFAULT_GP3]: {
+    type: FlagType.ApiDefault,
+    summary: 'When enabled, the default volume type of the EBS volume will be GP3',
+    detailsMd: `
+      When this featuer flag is enabled, the default volume type of the EBS volume will be \`EbsDeviceVolumeType.GENERAL_PURPOSE_SSD_GP3\`.
+    `,
     introducedIn: { v2: 'V2NEXT' },
     recommendedValue: true,
+    compatibilityWithOldBehaviorMd: 'Pass `volumeType: EbsDeviceVolumeType.GENERAL_PURPOSE_SSD` to `Volume` construct to restore the previous behavior.',
   },
 };
 
