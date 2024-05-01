@@ -40,10 +40,6 @@ export class CfnResource extends CfnRefElement {
     return x !== null && typeof(x) === 'object' && x.cfnResourceType !== undefined;
   }
 
-  public getResourceProperty(key: string): any {
-    return this._cfnProperties[key];
-  }
-
   // MAINTAINERS NOTE: this class serves as the base class for the generated L1
   // ("CFN") resources (such as `s3.CfnBucket`). These resources will have a
   // property for each CloudFormation property of the resource. This means that
@@ -377,6 +373,13 @@ export class CfnResource extends CfnRefElement {
    */
   public getMetadata(key: string): any {
     return this.cfnOptions.metadata?.[key];
+  }
+
+  /**
+   * Retrieve the value of a specific property for this resource.
+   */
+  public getResourceProperty(key: string): any {
+    return this._cfnProperties[key];
   }
 
   /**
