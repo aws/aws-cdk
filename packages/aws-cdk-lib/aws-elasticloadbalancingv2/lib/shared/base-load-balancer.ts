@@ -52,6 +52,8 @@ export interface BaseLoadBalancerProps {
    * Indicates whether cross-zone load balancing is enabled.
    *
    * @default - false for Network Load Balancers and true for Application Load Balancers.
+   * This can not be `false` for Application Load Balancers.
+   * @see - https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticloadbalancingv2-loadbalancer-loadbalancerattribute.html
    */
   readonly crossZoneEnabled?: boolean;
 
@@ -243,7 +245,11 @@ export abstract class BaseLoadBalancer extends Resource {
     }
 
     this.setAttribute('deletion_protection.enabled', baseProps.deletionProtection ? 'true' : 'false');
-    if (baseProps.crossZoneEnabled) { this.setAttribute('load_balancing.cross_zone.enabled', 'true'); }
+
+    if (baseProps.crossZoneEnabled !== undefined) {
+      this.setAttribute('load_balancing.cross_zone.enabled', baseProps.crossZoneEnabled === true ? 'true' : 'false');
+    }
+
     if (baseProps.denyAllIgwTraffic !== undefined) {
       this.setAttribute('ipv6.deny_all_igw_traffic', baseProps.denyAllIgwTraffic.toString());
     }

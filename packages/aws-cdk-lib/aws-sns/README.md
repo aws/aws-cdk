@@ -19,6 +19,19 @@ const topic = new sns.Topic(this, 'Topic', {
 });
 ```
 
+Add an SNS Topic to your stack with a specified signature version, which corresponds 
+to the hashing algorithm used while creating the signature of the notifications, 
+subscription confirmations, or unsubscribe confirmation messages sent by Amazon SNS.
+
+The default signature version is `1` (`SHA1`).
+SNS also supports signature version `2` (`SHA256`).
+
+```ts
+const topic = new sns.Topic(this, 'Topic', {
+  signatureVersion: '2',
+});
+```
+
 Note that FIFO topics require a topic name to be provided. The required `.fifo` suffix will be automatically generated and added to the topic name if it is not explicitly provided.
 
 ## Subscriptions
@@ -305,3 +318,19 @@ const topic = new sns.Topic(this, 'MyTopic', {
 
 **Note**: The `messageRetentionPeriodInDays` property is only available for FIFO topics.
 
+## TracingConfig
+
+Tracing mode of an Amazon SNS topic.
+
+If PassThrough, the topic passes trace headers received from the Amazon SNS publisher to its subscription.
+If set to Active, Amazon SNS will vend X-Ray segment data to topic owner account if the sampled flag in the tracing header is true.
+
+The default TracingConfig is `TracingConfig.PASS_THROUGH`.
+
+Example with a tracingConfig set to Active:
+
+```ts
+const topic = new sns.Topic(this, 'MyTopic', {
+  tracingConfig: sns.TracingConfig.ACTIVE,
+});
+```

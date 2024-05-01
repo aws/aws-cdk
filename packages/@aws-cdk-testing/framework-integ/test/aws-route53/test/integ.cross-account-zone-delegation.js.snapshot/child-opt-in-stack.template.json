@@ -3,7 +3,7 @@
   "SubZoneF7955E1A": {
    "Type": "AWS::Route53::HostedZone",
    "Properties": {
-    "Name": "sub.uniqueexample.com."
+    "Name": "sub2.uniqueexample.com."
    }
   },
   "delegatecrossaccountzonedelegationhandlerrolePolicychildoptinstackdelegatecrossaccountzonedelegationhandlerroleD1C6F26DE28FC01D": {
@@ -61,7 +61,7 @@
     },
     "AssumeRoleArn": "arn:aws:iam::12345678:role/MyUniqueDelegationRole",
     "ParentZoneName": "uniqueexample.com",
-    "DelegatedZoneName": "sub.uniqueexample.com",
+    "DelegatedZoneName": "sub2.uniqueexample.com",
     "DelegatedZoneNameServers": {
      "Fn::GetAtt": [
       "SubZoneF7955E1A",
@@ -103,7 +103,7 @@
    "Properties": {
     "Code": {
      "S3Bucket": "cdk-hnb659fds-assets-234567890123-af-south-1",
-     "S3Key": "aca4a134bf7ace6088b21213be7ab4357e3705f714362b690d76376b8f1df53a.zip"
+     "S3Key": "df3b0c6a1a1c298cd483caec10a008f70e053a49a8472aa907dfa3021fed2bd6.zip"
     },
     "Timeout": 900,
     "MemorySize": 128,
