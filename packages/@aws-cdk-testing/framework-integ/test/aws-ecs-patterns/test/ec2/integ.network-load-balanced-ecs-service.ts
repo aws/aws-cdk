@@ -57,7 +57,7 @@ new NetworkLoadBalancedEc2Service(stack, 'myService', {
       weight: 2,
     },
   ],
-  ipAddressType: IpAddressType.DUAL_STACK,
+  ipAddressType: IpAddressType.IPV4,
 });
 
 new integ.IntegTest(app, 'networkLoadBalancedEc2ServiceTest', {
