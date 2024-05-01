@@ -8,6 +8,8 @@ import { CompositePrincipal, Role, ServicePrincipal } from '../../../aws-iam';
 import { PublicHostedZone } from '../../../aws-route53';
 import { Duration, Stack } from '../../../core';
 import { ApplicationLoadBalancedFargateService, ApplicationMultipleTargetGroupsFargateService, NetworkLoadBalancedFargateService, NetworkMultipleTargetGroupsFargateService } from '../../lib';
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import * as elbv2 from 'aws-cdk-lib/aws-elasticloadbalancingv2';
 
 const enableExecuteCommandPermissions = {
   Statement: [
@@ -738,6 +740,30 @@ describe('Network Load Balancer', () => {
         VpcId: {
           Ref: 'VPCB9E5F0B4',
         },
+      });
+    });
+
+    test('specify IPV6 address type for NLB', () => {
+      // GIVEN
+      const stack = new Stack();
+      const vpc = new Vpc(stack, 'VPC', { maxAzs: 2 });
+
+      // WHEN
+      new NetworkLoadBalancedFargateService(stack, 'NLBService', {
+        cluster: new ecs.Cluster(stack, 'Cluster', { vpc }),
+        memoryLimitMiB: 1024,
+        cpu: 512,
+        taskImageOptions: {
+          image: ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+          containerPort: 80,
+        },
+        listenerPort: 80,
+        ipAddressType: elbv2.IpAddressType.DUAL_STACK,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+        IpAddressType: 'dualstack',
       });
     });
   });
