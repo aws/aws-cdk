@@ -1,0 +1,106 @@
+{
+  "name": "@aws-cdk/aws-nodejs-aspect",
+  "private": true,
+  "version": "0.0.0",
+  "description": "An example CDK Construct Library that can serve as a template for creating nodejs aspect",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "jsii": {
+    "outdir": "dist",
+    "targets": {
+      "java": {
+        "package": "software.amazon.awscdk.aws.nodejs.aspect",
+        "maven": {
+          "groupId": "software.amazon.awscdk",
+          "artifactId": "cdk-aws-nodejs-aspect"
+        }
+      },
+      "dotnet": {
+        "namespace": "Amazon.CDK.AWS.Nodejs.Aspect",
+        "packageId": "Amazon.CDK.AWS.Nodejs.Aspect",
+        "iconUrl": "https://raw.githubusercontent.com/aws/aws-cdk/main/logo/default-256-dark.png"
+      },
+      "python": {
+        "distName": "aws-cdk.aws-nodejs-aspect",
+        "module": "aws_cdk.aws-nodejs-aspect",
+        "classifiers": [
+          "Framework :: AWS CDK",
+          "Framework :: AWS CDK :: 2"
+        ]
+      }
+    },
+    "projectReferences": true,
+    "metadata": {
+      "jsii": {
+        "rosetta": {
+          "strict": true
+        }
+      }
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aws/aws-cdk.git",
+    "directory": "packages/@aws-cdk/aws-nodejs-aspect"
+  },
+  "scripts": {
+    "build": "cdk-build",
+    "watch": "cdk-watch",
+    "lint": "cdk-lint",
+    "test": "cdk-test",
+    "integ": "integ-runner --language javascript",
+    "pkglint": "pkglint -f",
+    "package": "cdk-package",
+    "awslint": "cdk-awslint",
+    "build+test": "yarn build && yarn test",
+    "build+test+package": "yarn build+test && yarn package",
+    "compat": "cdk-compat",
+    "rosetta:extract": "yarn --silent jsii-rosetta extract",
+    "build+extract": "yarn build && yarn rosetta:extract",
+    "build+test+extract": "yarn build+test && yarn rosetta:extract"
+  },
+  "keywords": [
+    "aws",
+    "cdk",
+    "nodejs",
+    "aspect"
+  ],
+  "author": {
+    "name": "Amazon Web Services",
+    "url": "https://aws.amazon.com",
+    "organization": true
+  },
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "@aws-cdk/cdk-build-tools": "0.0.0",
+    "@aws-cdk/integ-runner": "0.0.0",
+    "@aws-cdk/integ-tests-alpha": "^0.0.0",
+    "@aws-cdk/lambda-layer-kubectl-v24": "^2.0.242",
+    "@aws-cdk/lambda-layer-kubectl-v29": "^2.0.0",    
+    "@aws-cdk/pkglint": "0.0.0",
+    "@types/jest": "^29.5.12",
+    "aws-cdk-lib": "0.0.0",
+    "jest": "^29.7.0",
+    "constructs": "^10.0.0"
+    
+  },
+  "homepage": "https://github.com/aws/aws-cdk",
+  "peerDependencies": {
+    "aws-cdk-lib": "^0.0.0",
+    "constructs": "^10.0.0"
+  },
+  "separate-module": false,
+  "engines": {
+    "node": ">= 14.15.0"
+  },
+  "stability": "experimental",
+  "maturity": "experimental",
+  "awscdkio": {
+    "announce": false
+  },
+  "cdk-build": {
+    "env": {
+      "AWSLINT_BASE_CONSTRUCT": true
+    }
+  }
+}
