@@ -727,6 +727,35 @@ describe('InitService', () => {
     expect(capture).toContain('Group=ec2-user');
     expect(capture).toContain('Description=my service');
   });
+
+  test('can create systemd file with environment variables', () => {
+    // WHEN
+    const file = ec2.InitService.systemdConfigFile('myserver', {
+      command: '/start/my/service',
+      cwd: '/my/dir',
+      user: 'ec2-user',
+      group: 'ec2-user',
+      description: 'my service',
+      environmentFiles: ['/files/one', '/files/two'],
+      environmentVariables: {
+        HELLO: 'WORLD',
+      },
+    });
+
+    // THEN
+    const bindOptions = defaultOptions(InitPlatform.LINUX);
+    const rendered = file._bind(bindOptions).config;
+    expect(rendered).toEqual({
+      '/etc/systemd/system/myserver.service': expect.objectContaining({
+        content: expect.any(String),
+      }),
+    });
+
+    const capture = rendered['/etc/systemd/system/myserver.service'].content;
+    expect(capture).toContain('EnvironmentFile=/files/one');
+    expect(capture).toContain('EnvironmentFile=/files/two');
+    expect(capture).toContain('Environment="HELLO=WORLD"');
+  });
 });
 
 describe('InitSource', () => {
