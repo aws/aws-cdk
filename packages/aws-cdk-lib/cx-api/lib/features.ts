@@ -1056,7 +1056,7 @@ export const FLAGS: Record<string, FlagInfo> = {
     detailsMd: `
       When this featuer flag is enabled, the default volume type of the EBS volume will be \`EbsDeviceVolumeType.GENERAL_PURPOSE_SSD_GP3\`.
     `,
-    introducedIn: { v2: 'V2NEXT' },
+    introducedIn: { v2: '2.140.0' },
     recommendedValue: true,
     compatibilityWithOldBehaviorMd: 'Pass `volumeType: EbsDeviceVolumeType.GENERAL_PURPOSE_SSD` to `Volume` construct to restore the previous behavior.',
   },
