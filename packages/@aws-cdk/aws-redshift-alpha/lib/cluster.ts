@@ -569,7 +569,7 @@ export class Cluster extends ClusterBase {
 
     if (props.multiAz) {
       if (!nodeType.startsWith('ra3')) {
-        throw new Error(`Multi-AZ cluster is only supported for RA3 node types. got: ${nodeType}`);
+        throw new Error(`Multi-AZ cluster is only supported for RA3 node types, got: ${props.nodeType}`);
       }
       if (clusterType === ClusterType.SINGLE_NODE) {
         throw new Error('Multi-AZ cluster is not supported for single-node clusters. got: `ClusterType.SINGLE_NODE`');
