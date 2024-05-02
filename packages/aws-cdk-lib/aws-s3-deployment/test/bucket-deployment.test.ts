@@ -92,6 +92,21 @@ test('deploy with configured log retention', () => {
   Template.fromStack(stack).hasResourceProperties('Custom::LogRetention', { RetentionInDays: 7 });
 });
 
+test('deploy lambda with cheapest architecture', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const bucket = new s3.Bucket(stack, 'Dest');
+
+  // WHEN
+  new s3deploy.BucketDeployment(stack, 'Deploy', {
+    sources: [s3deploy.Source.asset(path.join(__dirname, 'my-website'))],
+    destinationBucket: bucket,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', { Architectures: ['arm64'] });
+});
+
 test('deploy with log group', () => {
   // GIVEN
   const stack = new cdk.Stack();

@@ -342,6 +342,7 @@ export class BucketDeployment extends Construct {
         // This is necessary to make the CLI work in ADC regions.
         AWS_CA_BUNDLE: '/etc/pki/ca-trust/extracted/pem/tls-ca-bundle.pem',
       },
+      architecture: lambda.Architecture.ARM_64,
       lambdaPurpose: 'Custom::CDKBucketDeployment',
       timeout: cdk.Duration.minutes(15),
       role: props.role,
