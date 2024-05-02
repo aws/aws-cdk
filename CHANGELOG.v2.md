@@ -28,11 +28,6 @@ All notable changes to this project will be documented in this file. See [standa
 * **stepfunctions:** regex in DistributedMap label is incorrectly escaping characters ([#29765](https://github.com/aws/aws-cdk/issues/29765)) ([7c4eb71](https://github.com/aws/aws-cdk/commit/7c4eb71a981ad90b5186cf88daf152206150df35))
 * cdk diff prints upgrade bootstrap warning even when current version exceeds the recommended version ([#29938](https://github.com/aws/aws-cdk/issues/29938)) ([28b0080](https://github.com/aws/aws-cdk/commit/28b00801a29c68dfb34c506bcbcd8c14da0402d5)), closes [#28888](https://github.com/aws/aws-cdk/issues/28888)
 
-
-### Reverts
-
-* "fix(lambda): version.fromVersionArn creates invalid Version object" ([#30003](https://github.com/aws/aws-cdk/issues/30003)) ([0cb9abd](https://github.com/aws/aws-cdk/commit/0cb9abdb258261010053e50c2ab60bc8c217145e))
-
 ## [2.139.1](https://github.com/aws/aws-cdk/compare/v2.139.0...v2.139.1) (2024-04-29)
 
 
