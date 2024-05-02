@@ -8,6 +8,66 @@ import * as sqs from '../../../aws-sqs';
 import * as cdk from '../../../core';
 import * as targets from '../../lib';
 
+test('use a SpecRestApi APIGateway event rule target', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const specRestApi = newTestSpecRestApi(stack);
+  const rule = new events.Rule(stack, 'Rule', {
+    schedule: events.Schedule.rate(cdk.Duration.minutes(1)),
+  });
+
+  // WHEN
+  const apiGatewayTarget = new targets.ApiGateway(specRestApi);
+  rule.addTarget(apiGatewayTarget);
+
+  // THEN
+  expect(() => apiGatewayTarget.restApi).toThrow('The iRestApi is not a RestApi construct, and cannot be retrieved this way.');
+  expect(apiGatewayTarget.iRestApi).toBe(specRestApi);
+
+  Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
+    Targets: [
+      {
+        Arn: {
+          'Fn::Join': [
+            '',
+            [
+              'arn:',
+              {
+                Ref: 'AWS::Partition',
+              },
+              ':execute-api:',
+              {
+                Ref: 'AWS::Region',
+              },
+              ':',
+              {
+                Ref: 'AWS::AccountId',
+              },
+              ':',
+              {
+                Ref: 'MySpecRestApiFB7DB2AB',
+              },
+              '/',
+              {
+                Ref: 'MySpecRestApiDeploymentStageprod8522A503',
+              },
+              '/*/',
+            ],
+          ],
+        },
+        HttpParameters: {},
+        Id: 'Target0',
+        RoleArn: {
+          'Fn::GetAtt': [
+            'MySpecRestApiEventsRole25C1D10F',
+            'Arn',
+          ],
+        },
+      },
+    ],
+  });
+});
+
 test('use api gateway rest api as an event rule target', () => {
   // GIVEN
   const stack = new cdk.Stack();
@@ -260,4 +320,13 @@ function newTestRestApi(scope: constructs.Construct, suffix = '') {
   return new api.LambdaRestApi( scope, `MyLambdaRestApi${suffix}`, {
     handler: lambdaFunctin,
   } );
+}
+
+function newTestSpecRestApi(scope: constructs.Construct, suffix = '') {
+  return new api.SpecRestApi(scope, `MySpecRestApi${suffix}`, {
+    apiDefinition: api.ApiDefinition.fromInline({
+      openapi: '3.0.2',
+      paths: {},
+    }),
+  });
 }

@@ -1,6 +1,6 @@
 The @aws-cdk/integ-runner package includes the following third-party software/licensing:
 
-** ajv@8.12.0 - https://www.npmjs.com/package/ajv/v/8.12.0 | MIT
+** ajv@8.13.0 - https://www.npmjs.com/package/ajv/v/8.13.0 | MIT
 The MIT License (MIT)
 
 Copyright (c) 2015-2021 Evgeny Poberezkin
@@ -847,7 +847,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 ----------------
 
-** table@6.8.1 - https://www.npmjs.com/package/table/v/6.8.1 | BSD-3-Clause
+** table@6.8.2 - https://www.npmjs.com/package/table/v/6.8.2 | BSD-3-Clause
 Copyright (c) 2018, Gajus Kuizinas (http://gajus.com/)
 All rights reserved.
 

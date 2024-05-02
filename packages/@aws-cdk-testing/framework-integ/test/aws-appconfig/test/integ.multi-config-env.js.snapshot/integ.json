@@ -1,0 +1,12 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "appconfig-multi-config-env/DefaultTest": {
+      "stacks": [
+        "aws-appconfig-multi-config-env"
+      ],
+      "assertionStack": "appconfig-multi-config-env/DefaultTest/DeployAssert",
+      "assertionStackName": "appconfigmulticonfigenvDefaultTestDeployAssert1621E45D"
+    }
+  }
+}
