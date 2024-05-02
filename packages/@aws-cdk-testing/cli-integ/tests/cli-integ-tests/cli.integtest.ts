@@ -1,6 +1,12 @@
 import { promises as fs, existsSync } from 'fs';
 import * as os from 'os';
 import * as path from 'path';
+import { CreateStackCommand, DescribeStackResourcesCommand, DescribeStacksCommand, ListChangeSetsCommand } from '@aws-sdk/client-cloudformation';
+import { DescribeServicesCommand } from '@aws-sdk/client-ecs';
+import { CreateRoleCommand, DeleteRoleCommand, DeleteRolePolicyCommand, ListRolePoliciesCommand, PutRolePolicyCommand } from '@aws-sdk/client-iam';
+import { InvokeCommand } from '@aws-sdk/client-lambda';
+import { CreateTopicCommand, DeleteTopicCommand } from '@aws-sdk/client-sns';
+import { AssumeRoleCommand, GetCallerIdentityCommand } from '@aws-sdk/client-sts';
 import { integTest, cloneDirectory, shell, withDefaultFixture, retry, sleep, randomInteger, withSamIntegrationFixture, RESOURCES_DIR, withCDKMigrateFixture, withExtendedTimeoutFixture } from '../../lib';
 
 jest.setTimeout(2 * 60 * 60_000); // Includes the time to acquire locks, worst-case single-threaded runtime
@@ -202,9 +208,9 @@ integTest('deploy', withDefaultFixture(async (fixture) => {
   const stackArn = await fixture.cdkDeploy('test-2', { captureStderr: false });
 
   // verify the number of resources in the stack
-  const response = await fixture.aws.cloudFormation('describeStackResources', {
+  const response = await fixture.aws.cloudFormation.send(new DescribeStackResourcesCommand({
     StackName: stackArn,
-  });
+  }));
   expect(response.StackResources?.length).toEqual(2);
 }));
 
@@ -215,9 +221,9 @@ integTest('deploy --method=direct', withDefaultFixture(async (fixture) => {
   });
 
   // verify the number of resources in the stack
-  const response = await fixture.aws.cloudFormation('describeStackResources', {
+  const response = await fixture.aws.cloudFormation.send(new DescribeStackResourcesCommand({
     StackName: stackArn,
-  });
+  }));
   expect(response.StackResources?.length).toBeGreaterThan(0);
 }));
 
@@ -250,9 +256,9 @@ integTest('nested stack with parameters', withDefaultFixture(async (fixture) => 
   expect(stackArn.split('\n').length).toEqual(1);
 
   // verify the number of resources in the stack
-  const response = await fixture.aws.cloudFormation('describeStackResources', {
+  const response = await fixture.aws.cloudFormation.send(new DescribeStackResourcesCommand({
     StackName: stackArn,
-  });
+  }));
   expect(response.StackResources?.length).toEqual(1);
 }));
 
@@ -265,15 +271,15 @@ integTest('deploy without execute a named change set', withDefaultFixture(async 
   // verify that we only deployed a single stack (there's a single ARN in the output)
   expect(stackArn.split('\n').length).toEqual(1);
 
-  const response = await fixture.aws.cloudFormation('describeStacks', {
+  const response = await fixture.aws.cloudFormation.send(new DescribeStacksCommand({
     StackName: stackArn,
-  });
+  }));
   expect(response.Stacks?.[0].StackStatus).toEqual('REVIEW_IN_PROGRESS');
 
   //verify a change set was created with the provided name
-  const changeSetResponse = await fixture.aws.cloudFormation('listChangeSets', {
+  const changeSetResponse = await fixture.aws.cloudFormation.send(new ListChangeSetsCommand({
     StackName: stackArn,
-  });
+  }));
   const changeSets = changeSetResponse.Summaries || [];
   expect(changeSets.length).toEqual(1);
   expect(changeSets[0].ChangeSetName).toEqual(changeSetName);
@@ -291,9 +297,9 @@ integTest('security related changes without a CLI are expected to fail', withDef
   })).rejects.toThrow('exited with error');
 
   // Ensure stack was not deployed
-  await expect(fixture.aws.cloudFormation('describeStacks', {
+  await expect(fixture.aws.cloudFormation.send(new DescribeStacksCommand({
     StackName: fixture.fullStackName(stackName),
-  })).rejects.toThrow('does not exist');
+  }))).rejects.toThrow('does not exist');
 }));
 
 integTest('deploy wildcard with outputs', withDefaultFixture(async (fixture) => {
@@ -323,9 +329,9 @@ integTest('deploy with parameters', withDefaultFixture(async (fixture) => {
     captureStderr: false,
   });
 
-  const response = await fixture.aws.cloudFormation('describeStacks', {
+  const response = await fixture.aws.cloudFormation.send(new DescribeStacksCommand({
     StackName: stackArn,
-  });
+  }));
 
   expect(response.Stacks?.[0].Parameters).toContainEqual(
     {
@@ -344,9 +350,9 @@ integTest('update to stack in ROLLBACK_COMPLETE state will delete stack and crea
     captureStderr: false,
   })).rejects.toThrow('exited with error');
 
-  const response = await fixture.aws.cloudFormation('describeStacks', {
+  const response = await fixture.aws.cloudFormation.send(new DescribeStacksCommand({
     StackName: fixture.fullStackName('param-test-1'),
-  });
+  }));
 
   const stackArn = response.Stacks?.[0].StackId;
   expect(response.Stacks?.[0].StackStatus).toEqual('ROLLBACK_COMPLETE');
@@ -359,9 +365,9 @@ integTest('update to stack in ROLLBACK_COMPLETE state will delete stack and crea
     captureStderr: false,
   });
 
-  const newStackResponse = await fixture.aws.cloudFormation('describeStacks', {
+  const newStackResponse = await fixture.aws.cloudFormation.send(new DescribeStacksCommand({
     StackName: newStackArn,
-  });
+  }));
 
   // THEN
   expect(stackArn).not.toEqual(newStackArn); // new stack was created
@@ -383,9 +389,9 @@ integTest('stack in UPDATE_ROLLBACK_COMPLETE state can be updated', withDefaultF
     captureStderr: false,
   });
 
-  let response = await fixture.aws.cloudFormation('describeStacks', {
+  let response = await fixture.aws.cloudFormation.send(new DescribeStacksCommand({
     StackName: stackArn,
-  });
+  }));
 
   expect(response.Stacks?.[0].StackStatus).toEqual('CREATE_COMPLETE');
 
@@ -397,9 +403,9 @@ integTest('stack in UPDATE_ROLLBACK_COMPLETE state can be updated', withDefaultF
     captureStderr: false,
   })).rejects.toThrow('exited with error');;
 
-  response = await fixture.aws.cloudFormation('describeStacks', {
+  response = await fixture.aws.cloudFormation.send(new DescribeStacksCommand({
     StackName: stackArn,
-  });
+  }));
 
   expect(response.Stacks?.[0].StackStatus).toEqual('UPDATE_ROLLBACK_COMPLETE');
 
@@ -411,9 +417,9 @@ integTest('stack in UPDATE_ROLLBACK_COMPLETE state can be updated', withDefaultF
     captureStderr: false,
   });
 
-  response = await fixture.aws.cloudFormation('describeStacks', {
+  response = await fixture.aws.cloudFormation.send(new DescribeStacksCommand({
     StackName: stackArn,
-  });
+  }));
 
   // THEN
   expect(response.Stacks?.[0].StackStatus).toEqual('UPDATE_COMPLETE');
@@ -448,9 +454,9 @@ integTest('deploy with parameters multi', withDefaultFixture(async (fixture) => 
     captureStderr: false,
   });
 
-  const response = await fixture.aws.cloudFormation('describeStacks', {
+  const response = await fixture.aws.cloudFormation.send(new DescribeStacksCommand({
     StackName: stackArn,
-  });
+  }));
 
   expect(response.Stacks?.[0].Parameters).toContainEqual(
     {
@@ -469,7 +475,7 @@ integTest('deploy with parameters multi', withDefaultFixture(async (fixture) => 
 integTest('deploy with notification ARN', withDefaultFixture(async (fixture) => {
   const topicName = `${fixture.stackNamePrefix}-test-topic`;
 
-  const response = await fixture.aws.sns('createTopic', { Name: topicName });
+  const response = await fixture.aws.sns.send(new CreateTopicCommand({ Name: topicName }));
   const topicArn = response.TopicArn!;
   try {
     await fixture.cdkDeploy('test-2', {
@@ -477,14 +483,14 @@ integTest('deploy with notification ARN', withDefaultFixture(async (fixture) => 
     });
 
     // verify that the stack we deployed has our notification ARN
-    const describeResponse = await fixture.aws.cloudFormation('describeStacks', {
+    const describeResponse = await fixture.aws.cloudFormation.send(new DescribeStacksCommand({
       StackName: fixture.fullStackName('test-2'),
-    });
+    }));
     expect(describeResponse.Stacks?.[0].NotificationARNs).toEqual([topicArn]);
   } finally {
-    await fixture.aws.sns('deleteTopic', {
+    await fixture.aws.sns.send(new DeleteTopicCommand({
       TopicArn: topicArn,
-    });
+    }));
   }
 }));
 
@@ -499,7 +505,7 @@ integTest('deploy with role', withDefaultFixture(async (fixture) => {
 
   await deleteRole();
 
-  const createResponse = await fixture.aws.iam('createRole', {
+  const createResponse = await fixture.aws.iam.send(new CreateRoleCommand({
     RoleName: roleName,
     AssumeRolePolicyDocument: JSON.stringify({
       Version: '2012-10-17',
@@ -509,14 +515,23 @@ integTest('deploy with role', withDefaultFixture(async (fixture) => {
         Effect: 'Allow',
       }, {
         Action: 'sts:AssumeRole',
-        Principal: { AWS: (await fixture.aws.sts('getCallerIdentity', {})).Arn },
+        Principal: { AWS: (await fixture.aws.sts.send(new GetCallerIdentityCommand({}))).Arn },
         Effect: 'Allow',
       }],
     }),
-  });
+  }));
+
+  if (!createResponse.Role) {
+    throw new Error('Role is expected to be present!!');
+  }
+
+  if (!createResponse.Role.Arn) {
+    throw new Error('Role arn is expected to be present!!');
+  }
+
   const roleArn = createResponse.Role.Arn;
   try {
-    await fixture.aws.iam('putRolePolicy', {
+    await fixture.aws.iam.send(new PutRolePolicyCommand({
       RoleName: roleName,
       PolicyName: 'DefaultPolicy',
       PolicyDocument: JSON.stringify({
@@ -527,13 +542,13 @@ integTest('deploy with role', withDefaultFixture(async (fixture) => {
           Effect: 'Allow',
         }],
       }),
-    });
+    }));
 
     await retry(fixture.output, 'Trying to assume fresh role', retry.forSeconds(300), async () => {
-      await fixture.aws.sts('assumeRole', {
+      await fixture.aws.sts.send(new AssumeRoleCommand({
         RoleArn: roleArn,
         RoleSessionName: 'testing',
-      });
+      }));
     });
 
     // In principle, the role has replicated from 'us-east-1' to wherever we're testing.
@@ -557,13 +572,20 @@ integTest('deploy with role', withDefaultFixture(async (fixture) => {
 
   async function deleteRole() {
     try {
-      for (const policyName of (await fixture.aws.iam('listRolePolicies', { RoleName: roleName })).PolicyNames) {
-        await fixture.aws.iam('deleteRolePolicy', {
+      const response = await fixture.aws.iam.send(
+        new ListRolePoliciesCommand({ RoleName: roleName }));
+
+      if (!response.PolicyNames) {
+        throw new Error('Policy names cannot be undefined for deleteRole() function');
+      }
+
+      for (const policyName of response.PolicyNames) {
+        await fixture.aws.iam.send(new DeleteRolePolicyCommand({
           RoleName: roleName,
           PolicyName: policyName,
-        });
+        }));
       }
-      await fixture.aws.iam('deleteRole', { RoleName: roleName });
+      await fixture.aws.iam.send(new DeleteRoleCommand({ RoleName: roleName }));
     } catch (e: any) {
       if (e.message.indexOf('cannot be found') > -1) { return; }
       throw e;
@@ -579,9 +601,9 @@ integTest('deploy with role', withDefaultFixture(async (fixture) => {
     }
 
     const stackArn = await fixture.cdkDeploy(fixture.stackNamePrefix, { neverRequireApproval: true, verbose: true, captureStderr: false }, true);
-    const response = await fixture.aws.cloudFormation('describeStacks', {
+    const response = await fixture.aws.cloudFormation.send(new DescribeStacksCommand({
       StackName: stackArn,
-    });
+    }));
 
     expect(response.Stacks?.[0].StackStatus).toEqual('CREATE_COMPLETE');
     await fixture.cdkDestroy(fixture.stackNamePrefix);
@@ -673,14 +695,15 @@ integTest('cdk migrate generates migrate.json', withCDKMigrateFixture('typescrip
 ['typescript', 'python', 'csharp', 'java'].forEach(language => {
   integTest(`cdk migrate --from-stack creates deployable ${language} app`, withExtendedTimeoutFixture(async (fixture) => {
     const migrateStackName = fixture.fullStackName('migrate-stack');
-    await fixture.aws.cloudFormation('createStack', {
+    await fixture.aws.cloudFormation.send(new CreateStackCommand({
       StackName: migrateStackName,
       TemplateBody: await fs.readFile(path.join(__dirname, '..', '..', 'resources', 'templates', 'sqs-template.json'), 'utf8'),
-    });
+    }));
     try {
       let stackStatus = 'CREATE_IN_PROGRESS';
       while (stackStatus === 'CREATE_IN_PROGRESS') {
-        stackStatus = await (await (fixture.aws.cloudFormation('describeStacks', { StackName: migrateStackName }))).Stacks?.[0].StackStatus!;
+        stackStatus = await (await (fixture.aws.cloudFormation.send(
+          new DescribeStacksCommand({ StackName: migrateStackName })))).Stacks?.[0].StackStatus!;
         await sleep(1000);
       }
       await fixture.cdk(
@@ -689,9 +712,9 @@ integTest('cdk migrate generates migrate.json', withCDKMigrateFixture('typescrip
       );
       await fixture.shell(['cd', path.join(fixture.integTestDir, migrateStackName)]);
       await fixture.cdk(['deploy', migrateStackName], { neverRequireApproval: true, verbose: true, captureStderr: false });
-      const response = await fixture.aws.cloudFormation('describeStacks', {
+      const response = await fixture.aws.cloudFormation.send(new DescribeStacksCommand({
         StackName: migrateStackName,
-      });
+      }));
 
       expect(response.Stacks?.[0].StackStatus).toEqual('UPDATE_COMPLETE');
     } finally {
@@ -799,17 +822,17 @@ integTest('deploy stack with docker asset', withDefaultFixture(async (fixture) =
 integTest('deploy and test stack with lambda asset', withDefaultFixture(async (fixture) => {
   const stackArn = await fixture.cdkDeploy('lambda', { captureStderr: false });
 
-  const response = await fixture.aws.cloudFormation('describeStacks', {
+  const response = await fixture.aws.cloudFormation.send(new DescribeStacksCommand({
     StackName: stackArn,
-  });
+  }));
   const lambdaArn = response.Stacks?.[0].Outputs?.[0].OutputValue;
   if (lambdaArn === undefined) {
     throw new Error('Stack did not have expected Lambda ARN output');
   }
 
-  const output = await fixture.aws.lambda('invoke', {
+  const output = await fixture.aws.lambda.send(new InvokeCommand({
     FunctionName: lambdaArn,
-  });
+  }));
 
   expect(JSON.stringify(output.Payload)).toContain('dear asset');
 }));
@@ -1012,7 +1035,7 @@ integTest('deploy stack without resource', withDefaultFixture(async (fixture) =>
   await fixture.cdkDeploy('conditional-resource', { modEnv: { NO_RESOURCE: 'TRUE' } });
 
   // This should have succeeded but not deployed the stack.
-  await expect(fixture.aws.cloudFormation('describeStacks', { StackName: fixture.fullStackName('conditional-resource') }))
+  await expect(fixture.aws.cloudFormation.send(new DescribeStacksCommand({ StackName: fixture.fullStackName('conditional-resource') })))
     .rejects.toThrow('conditional-resource does not exist');
 
   // Deploy the stack with resources
@@ -1021,7 +1044,7 @@ integTest('deploy stack without resource', withDefaultFixture(async (fixture) =>
   // Then again WITHOUT resources (this should destroy the stack)
   await fixture.cdkDeploy('conditional-resource', { modEnv: { NO_RESOURCE: 'TRUE' } });
 
-  await expect(fixture.aws.cloudFormation('describeStacks', { StackName: fixture.fullStackName('conditional-resource') }))
+  await expect(fixture.aws.cloudFormation.send(new DescribeStacksCommand({ StackName: fixture.fullStackName('conditional-resource') })))
     .rejects.toThrow('conditional-resource does not exist');
 }));
 
@@ -1084,7 +1107,7 @@ integTest('fast deploy', withDefaultFixture(async (fixture) => {
   expect(changeSet4.ChangeSetId).not.toEqual(changeSet3.ChangeSetId);
 
   async function getLatestChangeSet() {
-    const response = await fixture.aws.cloudFormation('describeStacks', { StackName: stackArn });
+    const response = await fixture.aws.cloudFormation.send(new DescribeStacksCommand({ StackName: stackArn }));
     if (!response.Stacks?.[0]) { throw new Error('Did not get a ChangeSet at all'); }
     fixture.log(`Found Change Set ${response.Stacks?.[0].ChangeSetId}`);
     return response.Stacks?.[0];
@@ -1516,9 +1539,9 @@ integTest('hotswap deployment supports Lambda function\'s description and enviro
     },
   });
 
-  const response = await fixture.aws.cloudFormation('describeStacks', {
+  const response = await fixture.aws.cloudFormation.send(new DescribeStacksCommand({
     StackName: stackArn,
-  });
+  }));
   const functionName = response.Stacks?.[0].Outputs?.[0].OutputValue;
 
   // THEN
@@ -1552,9 +1575,9 @@ integTest('hotswap deployment supports Fn::ImportValue intrinsic', withDefaultFi
       },
     });
 
-    const response = await fixture.aws.cloudFormation('describeStacks', {
+    const response = await fixture.aws.cloudFormation.send(new DescribeStacksCommand({
       StackName: stackArn,
-    });
+    }));
     const functionName = response.Stacks?.[0].Outputs?.[0].OutputValue;
 
     // THEN
@@ -1587,9 +1610,9 @@ integTest('hotswap deployment supports ecs service', withDefaultFixture(async (f
     },
   });
 
-  const response = await fixture.aws.cloudFormation('describeStacks', {
+  const response = await fixture.aws.cloudFormation.send(new DescribeStacksCommand({
     StackName: stackArn,
-  });
+  }));
   const serviceName = response.Stacks?.[0].Outputs?.find(output => output.OutputKey == 'ServiceName')?.OutputValue;
 
   // THEN
@@ -1614,18 +1637,18 @@ integTest('hotswap deployment for ecs service waits for deployment to complete',
     },
   });
 
-  const describeStacksResponse = await fixture.aws.cloudFormation('describeStacks', {
+  const describeStacksResponse = await fixture.aws.cloudFormation.send(new DescribeStacksCommand({
     StackName: stackArn,
-  });
+  }));
   const clusterName = describeStacksResponse.Stacks?.[0].Outputs?.find(output => output.OutputKey == 'ClusterName')?.OutputValue!;
   const serviceName = describeStacksResponse.Stacks?.[0].Outputs?.find(output => output.OutputKey == 'ServiceName')?.OutputValue!;
 
   // THEN
 
-  const describeServicesResponse = await fixture.aws.ecs('describeServices', {
+  const describeServicesResponse = await fixture.aws.ecs.send(new DescribeServicesCommand({
     cluster: clusterName,
     services: [serviceName],
-  });
+  }));
   expect(describeServicesResponse.services?.[0].deployments).toHaveLength(1); // only one deployment present
 
 }));
