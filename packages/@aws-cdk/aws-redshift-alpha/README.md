@@ -556,11 +556,14 @@ const cluster = new Cluster(this, 'Redshift', {
 cluster.addIamRole(role);
 ```
 
-## [Multi-AZ](https://docs.aws.amazon.com/redshift/latest/mgmt/managing-cluster-multi-az.html)
+## Multi-AZ
 
-Amazon Redshift supports multiple Availability Zones (Multi-AZ) deployments for provisioned RA3 clusters. By using Multi-AZ deployments, your Amazon Redshift data warehouse can continue operating in failure scenarios when an unexpected event happens in an Availability Zone.
+Amazon Redshift supports [multiple Availability Zones (Multi-AZ) deployments]((https://docs.aws.amazon.com/redshift/latest/mgmt/managing-cluster-multi-az.html)) for provisioned RA3 clusters.
+By using Multi-AZ deployments, your Amazon Redshift data warehouse can continue operating in failure scenarios when an unexpected event happens in an Availability Zone.
 
 ```ts
+declare const vpc: ec2.IVpc;
+
 new redshift.Cluster(stack, 'Cluster', {
   masterUser: {
     masterUsername: 'admin',
