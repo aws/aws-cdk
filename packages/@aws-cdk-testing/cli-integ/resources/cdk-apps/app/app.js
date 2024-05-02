@@ -11,6 +11,7 @@ if (process.env.PACKAGE_LAYOUT_VERSION === '1') {
   var sns = require('@aws-cdk/aws-sns');
   var sqs = require('@aws-cdk/aws-sqs');
   var lambda = require('@aws-cdk/aws-lambda');
+  var sso = require('@aws-cdk/aws-sso');
   var docker = require('@aws-cdk/aws-ecr-assets');
 } else {
   var cdk = require('aws-cdk-lib');
@@ -19,6 +20,7 @@ if (process.env.PACKAGE_LAYOUT_VERSION === '1') {
     LegacyStackSynthesizer,
     aws_ec2: ec2,
     aws_ecs: ecs,
+    aws_sso: sso,
     aws_s3: s3,
     aws_ssm: ssm,
     aws_iam: iam,
@@ -65,6 +67,62 @@ class YourStack extends cdk.Stack {
     super(parent, id, props);
     new sns.Topic(this, 'topic1');
     new sns.Topic(this, 'topic2');
+  }
+}
+
+class SsoPermissionSetNoPolicy extends Stack {
+  constructor(scope, id) {
+    super(scope, id);
+
+    new sso.CfnPermissionSet(this, "permission-set-without-managed-policy", {
+      instanceArn: 'arn:aws:sso:::instance/testvalue',
+      name: 'testName',
+      permissionsBoundary: { customerManagedPolicyReference: { name: 'why', path: '/how/' }},
+     })
+  }
+}
+
+class SsoPermissionSetManagedPolicy extends Stack {
+  constructor(scope, id) {
+    super(scope, id);
+    new sso.CfnPermissionSet(this, "permission-set-with-managed-policy", {
+      managedPolicies: ['arn:aws:iam::aws:policy/administratoraccess'],
+      customerManagedPolicyReferences: [{ name: 'forSSO' }],
+      permissionsBoundary: { managedPolicyArn: 'arn:aws:iam::aws:policy/AdministratorAccess' },
+      instanceArn: 'arn:aws:sso:::instance/testvalue',
+      name: 'niceWork',
+     })
+  }
+}
+
+class SsoAssignment extends Stack {
+  constructor(scope, id) {
+    super(scope, id);
+     new sso.CfnAssignment(this, "assignment", {
+       instanceArn: 'arn:aws:sso:::instance/testvalue',
+       permissionSetArn: 'arn:aws:sso:::testvalue',
+       principalId: '11111111-2222-3333-4444-test',
+       principalType: 'USER',
+       targetId: '111111111111',
+       targetType: 'AWS_ACCOUNT'
+     });
+  }
+}
+
+class SsoInstanceAccessControlConfig extends Stack {
+  constructor(scope, id) {
+    super(scope, id);
+     new sso.CfnInstanceAccessControlAttributeConfiguration(this, 'instanceAccessControlConfig', {
+       instanceArn: 'arn:aws:sso:::instance/testvalue',
+       accessControlAttributes: [
+         { key: 'first', value: { source: ['a'] } },
+         { key: 'second', value: { source: ['b'] } },
+         { key: 'third', value: { source: ['c'] } },
+         { key: 'fourth', value: { source: ['d'] } },
+         { key: 'fifth', value: { source: ['e'] } },
+         { key: 'sixth', value: { source: ['f'] } },
+       ]
+     })
   }
 }
 
@@ -591,6 +649,13 @@ switch (stackSet) {
     new EcsHotswapStack(app, `${stackPrefix}-ecs-hotswap`);
     new DockerStack(app, `${stackPrefix}-docker`);
     new DockerStackWithCustomFile(app, `${stackPrefix}-docker-with-custom-file`);
+
+    // SSO stacks
+    new SsoInstanceAccessControlConfig(app, `${stackPrefix}-sso-access-control`);
+    new SsoAssignment(app, `${stackPrefix}-sso-assignment`);
+    new SsoPermissionSetManagedPolicy(app, `${stackPrefix}-sso-perm-set-with-managed-policy`);
+    new SsoPermissionSetNoPolicy(app, `${stackPrefix}-sso-perm-set-without-managed-policy`);
+
     const failed = new FailedStack(app, `${stackPrefix}-failed`)
 
     // A stack that depends on the failed stack -- used to test that '-e' does not deploy the failing stack
