@@ -561,6 +561,8 @@ cluster.addIamRole(role);
 Amazon Redshift supports [multiple Availability Zones (Multi-AZ) deployments]((https://docs.aws.amazon.com/redshift/latest/mgmt/managing-cluster-multi-az.html)) for provisioned RA3 clusters.
 By using Multi-AZ deployments, your Amazon Redshift data warehouse can continue operating in failure scenarios when an unexpected event happens in an Availability Zone.
 
+To create a Multi-AZ cluster, set the `multiAz` property to `true` when creating the cluster.
+
 ```ts
 declare const vpc: ec2.IVpc;
 
