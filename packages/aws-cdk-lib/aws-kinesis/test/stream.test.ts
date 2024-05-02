@@ -1,7 +1,7 @@
 import { Match, Template } from '../../assertions';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
-import { App, Duration, Stack, CfnParameter, RemovalPolicy } from '../../core';
+import { App, Duration, Stack, CfnParameter, RemovalPolicy, CfnDeletionPolicy } from '../../core';
 import { Stream, StreamEncryption, StreamMode } from '../lib';
 
 describe('Kinesis data streams', () => {
@@ -1270,8 +1270,8 @@ describe('Kinesis data streams', () => {
     new Stream(stack, 'Stream');
 
     // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::Kinesis::Stream', {
-      DeletionPolicy: RemovalPolicy.RETAIN,
+    Template.fromStack(stack).hasResource('AWS::Kinesis::Stream', {
+      DeletionPolicy: CfnDeletionPolicy.RETAIN,
     });
   });
 
@@ -1285,8 +1285,8 @@ describe('Kinesis data streams', () => {
     });
 
     // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::Kinesis::Stream', {
-      DeletionPolicy: RemovalPolicy.DESTROY,
+    Template.fromStack(stack).hasResource('AWS::Kinesis::Stream', {
+      DeletionPolicy: CfnDeletionPolicy.DELETE,
     });
   });
 });
