@@ -543,6 +543,9 @@
   "aws-proton": [
     "AWS::Proton"
   ],
+  "aws-qbusiness": [
+    "AWS::QBusiness"
+  ],
   "aws-qldb": [
     "AWS::QLDB"
   ],

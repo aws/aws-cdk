@@ -146,6 +146,13 @@ export interface FunctionProps {
    * @default - no key value store is associated
    */
   readonly keyValueStore?: IKeyValueStore;
+
+  /**
+   * A flag that determines whether to automatically publish the function to the LIVE stage when it’s created.
+   *
+   * @default - true
+   */
+  readonly autoPublish?: boolean;
 }
 
 /**
@@ -200,7 +207,7 @@ export class Function extends Resource implements IFunction {
     }
 
     const resource = new CfnFunction(this, 'Resource', {
-      autoPublish: true,
+      autoPublish: props.autoPublish ?? true,
       functionCode: props.code.render(),
       functionConfig: {
         comment: props.comment ?? this.functionName,
