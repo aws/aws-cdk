@@ -198,6 +198,7 @@ export * as aws_pinpoint from './aws-pinpoint';
 export * as aws_pinpointemail from './aws-pinpointemail';
 export * as aws_pipes from './aws-pipes';
 export * as aws_proton from './aws-proton';
+export * as aws_qbusiness from './aws-qbusiness';
 export * as aws_qldb from './aws-qldb';
 export * as aws_quicksight from './aws-quicksight';
 export * as aws_ram from './aws-ram';

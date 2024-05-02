@@ -59,7 +59,9 @@
     "StreamModeDetails": {
      "StreamMode": "ON_DEMAND"
     }
-   }
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
   },
   "RealtimeLog31F8FA14": {
    "Type": "AWS::CloudFront::RealtimeLogConfig",
