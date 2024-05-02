@@ -73,7 +73,7 @@ export interface ParameterGroupProps {
   /**
    * The name of this parameter group.
    *
-   * @default CloudFormation-generated name
+   * @default - CloudFormation-generated name
    */
   readonly name?: string;
 
