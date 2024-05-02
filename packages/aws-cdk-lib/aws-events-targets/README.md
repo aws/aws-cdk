@@ -408,7 +408,7 @@ rule.addTarget(new targets.AppSync(api, {
   variables: events.RuleTargetInput.fromObject({
     message: 'hello world',
   }),
-  role: role
+  eventRole: role
 }));
 ```
 
