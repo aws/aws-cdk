@@ -389,7 +389,7 @@ export interface ClusterProps {
   /**
    * Indicating whether Amazon Redshift should deploy the cluster in two Availability Zones.
    *
-   * @default false
+   * @default - false
    */
   readonly multiAz?: boolean;
 }
