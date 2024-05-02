@@ -1,0 +1,12 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "ApiDestinationTarget/DefaultTest": {
+      "stacks": [
+        "aws-events-targets-api-destination-integ"
+      ],
+      "assertionStack": "ApiDestinationTarget/DefaultTest/DeployAssert",
+      "assertionStackName": "ApiDestinationTargetDefaultTestDeployAssert3FEA1C4B"
+    }
+  }
+}

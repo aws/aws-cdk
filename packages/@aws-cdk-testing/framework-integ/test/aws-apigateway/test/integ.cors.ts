@@ -17,7 +17,7 @@ class TestStack extends Stack {
     const handler = new lambda.Function(this, 'handler', {
       runtime: STANDARD_NODEJS_RUNTIME,
       handler: 'index.handler',
-      code: lambda.Code.fromAsset(path.join(__dirname, 'integ.cors.handler')),
+      code: lambda.Code.fromAsset(path.join(__dirname, 'integ.cors.handler'), { exclude: ['*.ts'] }),
     });
 
     const twitch = api.root.addResource('twitch');

@@ -19,7 +19,7 @@ const stack = new Stack(app, 'TokenAuthorizerIAMRoleInteg');
 const authorizerFn = new lambda.Function(stack, 'MyAuthorizerFunction', {
   runtime: STANDARD_NODEJS_RUNTIME,
   handler: 'index.handler',
-  code: lambda.AssetCode.fromAsset(path.join(__dirname, 'integ.token-authorizer.handler')),
+  code: lambda.AssetCode.fromAsset(path.join(__dirname, 'integ.token-authorizer.handler'), { exclude: ['*.ts'] }),
 });
 
 const role = new iam.Role(stack, 'authorizerRole', {

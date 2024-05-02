@@ -189,6 +189,21 @@ describe('CloudFront Function', () => {
     });
   });
 
+  test('autoPublish false', () => {
+    const stack = new Stack();
+
+    new Function(stack, 'TestFn', {
+      code: FunctionCode.fromInline('code'),
+      runtime: FunctionRuntime.JS_2_0,
+      keyValueStore: undefined,
+      autoPublish: false,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Function', {
+      AutoPublish: false,
+    });
+  });
+
   describe('key value store association', () => {
     test('minimal example', () => {
       const stack = new Stack();

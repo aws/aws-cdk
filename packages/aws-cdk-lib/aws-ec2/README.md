@@ -1465,6 +1465,23 @@ ec2.CloudFormationInit.fromElements(
 );
 ```
 
+You can use the `environmentVariables` or `environmentFiles` parameters to specify environment variables
+for your services:
+
+```ts
+new ec2.InitConfig([
+  ec2.InitFile.fromString('/myvars.env', 'VAR_FROM_FILE="VAR_FROM_FILE"'),
+  ec2.InitService.systemdConfigFile('myapp', {
+    command: '/usr/bin/python3 -m http.server 8080',
+    cwd: '/var/www/html',
+    environmentVariables: {
+      MY_VAR: 'MY_VAR',
+    },
+    environmentFiles: ['/myvars.env'],
+  }),
+])
+```
+
 ### Bastion Hosts
 
 A bastion host functions as an instance used to access servers and resources in a VPC without open up the complete VPC on a network level.
@@ -1565,6 +1582,29 @@ new ec2.Instance(this, 'Instance', {
   ],
 });
 
+```
+
+#### EBS Optimized Instances
+
+An Amazon EBS–optimized instance uses an optimized configuration stack and provides additional, dedicated capacity for Amazon EBS I/O. This optimization provides the best performance for your EBS volumes by minimizing contention between Amazon EBS I/O and other traffic from your instance.
+
+Depending on the instance type, this features is enabled by default while others require explicit activation. Please refer to the [documentation](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ebs-optimized.html) for details.
+
+```ts
+declare const vpc: ec2.Vpc;
+declare const instanceType: ec2.InstanceType;
+declare const machineImage: ec2.IMachineImage;
+
+new ec2.Instance(this, 'Instance', {
+  vpc,
+  instanceType,
+  machineImage,
+  ebsOptimized: true,
+  blockDevices: [{
+    deviceName: '/dev/xvda',
+    volume: ec2.BlockDeviceVolume.ebs(8),
+  }],
+});
 ```
 
 ### Volumes

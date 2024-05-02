@@ -18,7 +18,9 @@
       }
      ]
     }
-   }
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
   },
   "Schedule83A77FD1": {
    "Type": "AWS::Scheduler::Schedule",

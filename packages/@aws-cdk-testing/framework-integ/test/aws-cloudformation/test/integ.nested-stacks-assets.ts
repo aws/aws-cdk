@@ -11,7 +11,7 @@ class MyNestedStack extends NestedStack {
     super(scope, id);
 
     new lambda.Function(this, 'Handler', {
-      code: lambda.Code.fromAsset(path.join(__dirname, 'asset-directory-fixture')),
+      code: lambda.Code.fromAsset(path.join(__dirname, 'asset-directory-fixture'), { exclude: ['*.ts'] }),
       runtime: STANDARD_NODEJS_RUNTIME,
       handler: 'index.handler',
     });
