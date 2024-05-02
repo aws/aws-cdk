@@ -142,7 +142,7 @@ export class ClusterResourceHandler extends ResourceHandler {
       throw new Error('Cannot update logging and access at the same time');
     }
 
-    if (updates.updateLogging || updates.updateAccess) {
+    if (updates.updateLogging || updates.updateAccess || updates.updateAccessConfig) {
       const config: EKS.UpdateClusterConfigCommandInput = {
         name: this.clusterName,
       };
@@ -158,7 +158,12 @@ export class ClusterResourceHandler extends ResourceHandler {
           endpointPublicAccess: this.newProps.resourcesVpcConfig?.endpointPublicAccess,
           publicAccessCidrs: this.newProps.resourcesVpcConfig?.publicAccessCidrs,
         };
-      }
+      };
+
+      if (updates.updateAccessConfig) {
+        config.accessConfig = this.newProps.accessConfig;
+      };
+
       const updateResponse = await this.eks.updateClusterConfig(config);
 
       return { EksUpdateId: updateResponse.update?.id };
@@ -311,6 +316,7 @@ interface UpdateMap {
   updateLogging: boolean; // logging
   updateEncryption: boolean; // encryption (cannot be updated)
   updateAccess: boolean; // resourcesVpcConfig.endpointPrivateAccess and endpointPublicAccess
+  updateAccessConfig: boolean; // accessConfig
 }
 
 function analyzeUpdate(oldProps: Partial<EKS.CreateClusterCommandInput>, newProps: EKS.CreateClusterCommandInput): UpdateMap {
@@ -324,6 +330,8 @@ function analyzeUpdate(oldProps: Partial<EKS.CreateClusterCommandInput>, newProp
   const newPublicAccessCidrs = new Set(newVpcProps.publicAccessCidrs ?? []);
   const newEnc = newProps.encryptionConfig || {};
   const oldEnc = oldProps.encryptionConfig || {};
+  const newAccessConfig = newProps.accessConfig || {};
+  const oldAccessConfig = oldProps.accessConfig || {};
 
   return {
     replaceName: newProps.name !== oldProps.name,
@@ -338,6 +346,7 @@ function analyzeUpdate(oldProps: Partial<EKS.CreateClusterCommandInput>, newProp
     updateVersion: newProps.version !== oldProps.version,
     updateEncryption: JSON.stringify(newEnc) !== JSON.stringify(oldEnc),
     updateLogging: JSON.stringify(newProps.logging) !== JSON.stringify(oldProps.logging),
+    updateAccessConfig: newAccessConfig !== oldAccessConfig,
   };
 }
 

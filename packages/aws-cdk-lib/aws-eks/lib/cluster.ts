@@ -675,6 +675,12 @@ export interface ClusterOptions extends CommonClusterOptions {
    * @default - none
    */
   readonly clusterLogging?: ClusterLoggingTypes[];
+
+  /**
+   * The desired authentication mode for the cluster.
+   * @default AuthenticationMode.CONFIG_MAP;
+   */
+  readonly authenticationMode?: AuthenticationMode;
 }
 
 /**
@@ -808,12 +814,6 @@ export interface ClusterProps extends ClusterOptions {
    * @default - Default Lambda IAM Execution Role
    */
   readonly kubectlLambdaRole?: iam.IRole;
-
-  /**
-   * The desired authentication mode for the cluster.
-   * @default AuthenticationMode.CONFIG_MAP;
-   */
-  readonly authenticationMode?: AuthenticationMode;
 
   /**
    * Whether or not the cluster creator IAM principal was set as a cluster admin access entry
@@ -1011,13 +1011,23 @@ export enum IpFamily {
 }
 
 /**
- * Authentication mode of the clsuter.
+ * Represents the authentication mode for an Amazon EKS cluster.
  */
 export enum AuthenticationMode {
+  /**
+   * Authenticates using a Kubernetes ConfigMap.
+   */
   CONFIG_MAP = 'CONFIG_MAP',
+  /**
+   * Authenticates using both the Kubernetes API server and a ConfigMap.
+   */
   API_AND_CONFIG_MAP = 'API_AND_CONFIG_MAP',
+  /**
+   * Authenticates using the Kubernetes API server.
+   */
   API = 'API',
 }
+
 
 abstract class ClusterBase extends Resource implements ICluster {
   public abstract readonly connections: ec2.Connections;
