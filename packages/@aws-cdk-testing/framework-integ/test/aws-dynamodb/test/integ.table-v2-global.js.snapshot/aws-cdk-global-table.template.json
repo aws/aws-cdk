@@ -17,7 +17,9 @@
       }
      ]
     }
-   }
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
   },
   "GlobalTable89F068B2": {
    "Type": "AWS::DynamoDB::GlobalTable",
