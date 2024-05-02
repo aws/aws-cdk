@@ -657,7 +657,7 @@ describe('multi AZ cluster', () => {
         nodeType: NodeType.DS2_XLARGE,
         multiAz: true,
       });
-    }).toThrow('Multi-AZ cluster is only supported for RA3 node types.');
+    }).toThrow('Multi-AZ cluster is only supported for RA3 node types, got: ds2.xlarge');
   });
 
   test('throw error for single node cluster', () => {
@@ -671,7 +671,7 @@ describe('multi AZ cluster', () => {
         multiAz: true,
         clusterType: ClusterType.SINGLE_NODE,
       });
-    }).toThrow('Multi-AZ cluster is not supported for single-node clusters.');
+    }).toThrow('Multi-AZ cluster is not supported for `clusterType` single-node');
   });
 });
 
