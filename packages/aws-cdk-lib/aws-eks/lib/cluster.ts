@@ -3,6 +3,7 @@ import * as path from 'path';
 import { Construct, Node } from 'constructs';
 import * as semver from 'semver';
 import * as YAML from 'yaml';
+import { AccessEntry, AccessPolicy, AccessScopeType } from './access-entry';
 import { AlbController, AlbControllerOptions } from './alb-controller';
 import { AwsAuth } from './aws-auth';
 import { ClusterResource, clusterArnComponents } from './cluster-resource';
@@ -1028,7 +1029,6 @@ export enum AuthenticationMode {
   API = 'API',
 }
 
-
 abstract class ClusterBase extends Resource implements ICluster {
   public abstract readonly connections: ec2.Connections;
   public abstract readonly vpc: ec2.IVpc;
@@ -1752,6 +1752,28 @@ export class Cluster extends ClusterBase {
 
     this.defineCoreDnsComputeType(props.coreDnsComputeType ?? CoreDnsComputeType.EC2);
 
+  }
+
+  /**
+   * Grants the specified IAM role full administrative access to the EKS cluster.
+   *
+   * This method creates an `AccessEntry` resource that grants the specified IAM role
+   * the `AMAZON_EKS_ADMIN_POLICY` policy, which provides full administrative access
+   * to the EKS cluster.
+   *
+   * @param role - The IAM role to grant cluster admin access to.
+   */
+  public grantClusterAdminAccess(role: iam.IRole) {
+    new AccessEntry(this, `${role.roleName}Access`, {
+      cluster: this,
+      principal: role.roleArn,
+      accessPolicies: [
+        {
+          policy: AccessPolicy.AMAZON_EKS_ADMIN_POLICY,
+          accessScope: { type: AccessScopeType.CLUSTER },
+        },
+      ],
+    });
   }
 
   /**
