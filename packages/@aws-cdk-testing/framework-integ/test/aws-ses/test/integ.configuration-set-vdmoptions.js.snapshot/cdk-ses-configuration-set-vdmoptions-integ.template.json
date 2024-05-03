@@ -1,6 +1,6 @@
 {
  "Resources": {
-  "ConfigurationSetVdmOptions06EA009B": {
+  "VdmOptionsEnabled69EBE7CE": {
    "Type": "AWS::SES::ConfigurationSet",
    "Properties": {
     "VdmOptions": {
@@ -13,25 +13,21 @@
     }
    }
   },
-  "EngagementMetricsOnly703CA524": {
+  "VdmOptionsDisabledE1F2258E": {
    "Type": "AWS::SES::ConfigurationSet",
    "Properties": {
     "VdmOptions": {
      "DashboardOptions": {
-      "EngagementMetrics": "ENABLED"
+      "EngagementMetrics": "DISABLED"
+     },
+     "GuardianOptions": {
+      "OptimizedSharedDelivery": "DISABLED"
      }
     }
    }
   },
-  "OptimizedSharedDeliberyOnly96A1EA54": {
-   "Type": "AWS::SES::ConfigurationSet",
-   "Properties": {
-    "VdmOptions": {
-     "GuardianOptions": {
-      "OptimizedSharedDelivery": "ENABLED"
-     }
-    }
-   }
+  "VdmOptionsNotConfigured273D3326": {
+   "Type": "AWS::SES::ConfigurationSet"
   }
  },
  "Parameters": {

@@ -77,7 +77,7 @@ export interface ConfigurationSetProps {
   /**
    * The Virtual Deliverability Manager (VDM) options that apply to the configuration set
    *
-   * @default - use account level settings
+   * @default - VDM options not configured at the configuration set level. In this case, use account level settings.
    */
   readonly vdmOptions?: VdmOptions;
 }
@@ -89,14 +89,14 @@ export interface VdmOptions {
   /**
    * If true, engagement metrics are enabled for the configuration set
    *
-   * @default - use account level settings
+   * @default - Engagement metrics not configured at the configuration set level. In this case, use account level settings.
    */
   readonly engagementMetrics?: boolean;
 
   /**
    * If true, optimized shared delivery is enabled for the configuration set
    *
-   * @default - use account level settings
+   * @default - Optimized shared delivery not configured at the configuration set level. In this case, use account level settings.
    */
   readonly optimizedSharedDelivery?: boolean;
 }
@@ -177,10 +177,10 @@ export class ConfigurationSet extends Resource implements IConfigurationSet {
         customRedirectDomain: props.customTrackingRedirectDomain,
       }),
       vdmOptions: undefinedIfNoKeys({
-        dashboardOptions: props.vdmOptions?.engagementMetrics ? {
+        dashboardOptions: props.vdmOptions?.engagementMetrics !== undefined ? {
           engagementMetrics: booleanToEnabledDisabled(props.vdmOptions?.engagementMetrics),
         } : undefined,
-        guardianOptions: props.vdmOptions?.optimizedSharedDelivery ? {
+        guardianOptions: props.vdmOptions?.optimizedSharedDelivery !== undefined ? {
           optimizedSharedDelivery: booleanToEnabledDisabled(props.vdmOptions?.optimizedSharedDelivery),
         } : undefined,
       },

@@ -7,23 +7,21 @@ class TestStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
-    new ses.ConfigurationSet(this, 'ConfigurationSetVdmOptions', {
+    new ses.ConfigurationSet(this, 'VdmOptionsEnabled', {
       vdmOptions: {
         engagementMetrics: true,
         optimizedSharedDelivery: true,
       },
     });
 
-    new ses.ConfigurationSet(this, 'EngagementMetricsOnly', {
+    new ses.ConfigurationSet(this, 'VdmOptionsDisabled', {
       vdmOptions: {
-        engagementMetrics: true,
+        engagementMetrics: false,
+        optimizedSharedDelivery: false,
       },
     });
 
-    new ses.ConfigurationSet(this, 'OptimizedSharedDeliberyOnly', {
-      vdmOptions: {
-        optimizedSharedDelivery: true,
-      },
+    new ses.ConfigurationSet(this, 'VdmOptionsNotConfigured', {
     });
   }
 }

@@ -8,13 +8,13 @@
         "id": "cdk-ses-configuration-set-vdmoptions-integ",
         "path": "cdk-ses-configuration-set-vdmoptions-integ",
         "children": {
-          "ConfigurationSetVdmOptions": {
-            "id": "ConfigurationSetVdmOptions",
-            "path": "cdk-ses-configuration-set-vdmoptions-integ/ConfigurationSetVdmOptions",
+          "VdmOptionsEnabled": {
+            "id": "VdmOptionsEnabled",
+            "path": "cdk-ses-configuration-set-vdmoptions-integ/VdmOptionsEnabled",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "cdk-ses-configuration-set-vdmoptions-integ/ConfigurationSetVdmOptions/Resource",
+                "path": "cdk-ses-configuration-set-vdmoptions-integ/VdmOptionsEnabled/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::SES::ConfigurationSet",
                   "aws:cdk:cloudformation:props": {
@@ -39,19 +39,22 @@
               "version": "0.0.0"
             }
           },
-          "EngagementMetricsOnly": {
-            "id": "EngagementMetricsOnly",
-            "path": "cdk-ses-configuration-set-vdmoptions-integ/EngagementMetricsOnly",
+          "VdmOptionsDisabled": {
+            "id": "VdmOptionsDisabled",
+            "path": "cdk-ses-configuration-set-vdmoptions-integ/VdmOptionsDisabled",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "cdk-ses-configuration-set-vdmoptions-integ/EngagementMetricsOnly/Resource",
+                "path": "cdk-ses-configuration-set-vdmoptions-integ/VdmOptionsDisabled/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::SES::ConfigurationSet",
                   "aws:cdk:cloudformation:props": {
                     "vdmOptions": {
                       "dashboardOptions": {
-                        "engagementMetrics": "ENABLED"
+                        "engagementMetrics": "DISABLED"
+                      },
+                      "guardianOptions": {
+                        "optimizedSharedDelivery": "DISABLED"
                       }
                     }
                   }
@@ -67,22 +70,16 @@
               "version": "0.0.0"
             }
           },
-          "OptimizedSharedDeliberyOnly": {
-            "id": "OptimizedSharedDeliberyOnly",
-            "path": "cdk-ses-configuration-set-vdmoptions-integ/OptimizedSharedDeliberyOnly",
+          "VdmOptionsNotConfigured": {
+            "id": "VdmOptionsNotConfigured",
+            "path": "cdk-ses-configuration-set-vdmoptions-integ/VdmOptionsNotConfigured",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "cdk-ses-configuration-set-vdmoptions-integ/OptimizedSharedDeliberyOnly/Resource",
+                "path": "cdk-ses-configuration-set-vdmoptions-integ/VdmOptionsNotConfigured/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::SES::ConfigurationSet",
-                  "aws:cdk:cloudformation:props": {
-                    "vdmOptions": {
-                      "guardianOptions": {
-                        "optimizedSharedDelivery": "ENABLED"
-                      }
-                    }
-                  }
+                  "aws:cdk:cloudformation:props": {}
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_ses.CfnConfigurationSet",
