@@ -1,9 +1,7 @@
 /* eslint-disable no-console */
 import * as path from 'path';
 import * as cxapi from '@aws-cdk/cx-api';
-import * as cfn from '@aws-sdk/client-cloudformation';
-import * as ecr from '@aws-sdk/client-ecr';
-import * as s3 from '@aws-sdk/client-s3';
+import { CloudFormation, ECR, S3 } from 'aws-sdk';
 import { ISDK, SdkProvider } from './aws-auth';
 import { Mode } from './aws-auth/credentials';
 import { ToolkitInfo } from './toolkit-info';
