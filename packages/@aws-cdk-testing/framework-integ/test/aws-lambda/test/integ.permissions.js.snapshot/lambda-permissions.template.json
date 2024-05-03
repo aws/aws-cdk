@@ -106,7 +106,7 @@
     "PrincipalOrgID": "o-xxxxxxxxxx2"
    }
   },
-  "MyLambdaInvokeeSO2bF2vs89Bu95ZGbotCaJ9349433GggVuY4yuDDo6A19947D": {
+  "MyLambdaInvokeuz4W2yTbGThmvdaaDTPvZaj4QwgyGHVAJ0384HNZc259082DE": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",
@@ -120,7 +120,7 @@
     "PrincipalOrgID": "o-yyyyyyyyyy2"
    }
   },
-  "MyLambdaInvokevlkDSBAbWHnqhYUcxXc8dNNBhmEU5NTv6gX4EMtBA9DCAF0DD": {
+  "MyLambdaInvokePaKsdYKGi1vlRPtO5abSuPlD732bbpd4pyJuWGZToQ4C024630": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",

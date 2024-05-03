@@ -189,9 +189,9 @@
                   "version": "0.0.0"
                 }
               },
-              "InvokeeSO2bF2vs89Bu95ZGbotCaJ9349433Gg+gVuY4yuDDo=": {
-                "id": "InvokeeSO2bF2vs89Bu95ZGbotCaJ9349433Gg+gVuY4yuDDo=",
-                "path": "lambda-permissions/MyLambda/InvokeeSO2bF2vs89Bu95ZGbotCaJ9349433Gg+gVuY4yuDDo=",
+              "Invokeuz4W2yT--bGThmvdaaDTPv--Zaj4QwgyGHVAJ0384HNZc=": {
+                "id": "Invokeuz4W2yT--bGThmvdaaDTPv--Zaj4QwgyGHVAJ0384HNZc=",
+                "path": "lambda-permissions/MyLambda/Invokeuz4W2yT--bGThmvdaaDTPv--Zaj4QwgyGHVAJ0384HNZc=",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
                   "aws:cdk:cloudformation:props": {
@@ -211,9 +211,9 @@
                   "version": "0.0.0"
                 }
               },
-              "Invokev--lkDSBAbWHnqhYUcxXc8d+NNBhmEU5NTv6gX4EMtBA=": {
-                "id": "Invokev--lkDSBAbWHnqhYUcxXc8d+NNBhmEU5NTv6gX4EMtBA=",
-                "path": "lambda-permissions/MyLambda/Invokev--lkDSBAbWHnqhYUcxXc8d+NNBhmEU5NTv6gX4EMtBA=",
+              "InvokePaKsdYKGi1vlRPtO5abSuPlD--732bbpd4pyJuWGZToQ=": {
+                "id": "InvokePaKsdYKGi1vlRPtO5abSuPlD--732bbpd4pyJuWGZToQ=",
+                "path": "lambda-permissions/MyLambda/InvokePaKsdYKGi1vlRPtO5abSuPlD--732bbpd4pyJuWGZToQ=",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
                   "aws:cdk:cloudformation:props": {

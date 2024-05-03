@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/7bb46ab3ee8f5a5ea32ecdb2339294d95acaf255531ed2a40e8e845f4104bce6.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/65bd4647d6fbc45a6dd9e138bf67e3e8dac09d64a3964095fd6da7a9bfa743ff.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -70,16 +70,16 @@
             "data": "MyLambdaInvokeZQDUzUWqDuiGYFrGB6ik9uIPJSgF8GSLIg6NTO8jHPIBE1EB3A4"
           }
         ],
-        "/lambda-permissions/MyLambda/InvokeeSO2bF2vs89Bu95ZGbotCaJ9349433Gg+gVuY4yuDDo=": [
+        "/lambda-permissions/MyLambda/Invokeuz4W2yT--bGThmvdaaDTPv--Zaj4QwgyGHVAJ0384HNZc=": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyLambdaInvokeeSO2bF2vs89Bu95ZGbotCaJ9349433GggVuY4yuDDo6A19947D"
+            "data": "MyLambdaInvokeuz4W2yTbGThmvdaaDTPvZaj4QwgyGHVAJ0384HNZc259082DE"
           }
         ],
-        "/lambda-permissions/MyLambda/Invokev--lkDSBAbWHnqhYUcxXc8d+NNBhmEU5NTv6gX4EMtBA=": [
+        "/lambda-permissions/MyLambda/InvokePaKsdYKGi1vlRPtO5abSuPlD--732bbpd4pyJuWGZToQ=": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyLambdaInvokevlkDSBAbWHnqhYUcxXc8dNNBhmEU5NTv6gX4EMtBA9DCAF0DD"
+            "data": "MyLambdaInvokePaKsdYKGi1vlRPtO5abSuPlD732bbpd4pyJuWGZToQ4C024630"
           }
         ],
         "/lambda-permissions/MyLambda/FunctionUrl/Resource": [
