@@ -207,9 +207,9 @@ that accesses the function or layer).
 ```ts
 declare const fn: lambda.Function;
 const principal = new iam.ServicePrincipal('my-service');
-declare const version: lambda.IVersion;
-// Grant invoke only to latest version
-fn.grantInvokeVersion(principal, version);
+// Grant invoke only to latest version and unqualified lambda arn
+fn.grantInvokeLatestVersion(principal);
+
 ```
 
 If you want to grant access for invoking a specific version of Lambda function, you can use `fn.grantInovkeVersion(grantee, version)`
@@ -217,8 +217,9 @@ If you want to grant access for invoking a specific version of Lambda function, 
 ```ts
 declare const fn: lambda.Function;
 const principal = new iam.ServicePrincipal('my-service');
-// Grant invoke only to latest version
-fn.grantInvokeLatestVersion(principal);
+declare const version: lambda.IVersion;
+// Grant invoke only to the specific version
+fn.grantInvokeVersion(principal, version);
 ```
 
 For more information, see
