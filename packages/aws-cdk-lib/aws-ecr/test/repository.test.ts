@@ -980,6 +980,33 @@ describe('repository', () => {
         },
       });
     });
+
+    test('grant read adds appropriate permissions', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const repo = new ecr.Repository(stack, 'TestRepo');
+
+      // WHEN
+      repo.onEvent('EcrOnEventRule', {
+        target: {
+          bind: () => ({ arn: 'ARN', id: '' }),
+        },
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
+        'EventPattern': {
+          'source': [
+            'aws.ecr',
+          ],
+          'detail': {
+            'repository-name': [
+              { 'Ref': 'TestRepo08D311A0' },
+            ],
+          },
+        },
+      });
+    });
   });
 
   describe('repository name validation', () => {
