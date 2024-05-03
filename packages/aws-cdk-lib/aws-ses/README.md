@@ -239,3 +239,16 @@ Use the `VdmAttributes` construct to configure the Virtual Deliverability Manage
 // Enables engagement tracking and optimized shared delivery by default
 new ses.VdmAttributes(this, 'Vdm');
 ```
+
+If you want to configure the Virtual Deliverablity Manager for the specified configuration set, use `vdmOptions` in the `ConfigurationSet` construct.
+
+This configuration level settings override the account level settings.
+
+```ts
+new ses.ConfigurationSet(this, 'ConfigurationSetWithVdmOptions', {
+  vdmOptions: {
+    engagementMetrics: true,
+    optimizedSharedDelivery: true,
+  },
+});
+```

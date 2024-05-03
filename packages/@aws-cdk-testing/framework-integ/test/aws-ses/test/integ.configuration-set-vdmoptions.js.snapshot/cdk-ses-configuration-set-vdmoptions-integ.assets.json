@@ -1,0 +1,19 @@
+{
+  "version": "36.0.0",
+  "files": {
+    "8e60f55e5d6f1ae035fc3b44b025e91f21058a7b6aa592235e933159dfc6515b": {
+      "source": {
+        "path": "cdk-ses-configuration-set-vdmoptions-integ.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "8e60f55e5d6f1ae035fc3b44b025e91f21058a7b6aa592235e933159dfc6515b.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

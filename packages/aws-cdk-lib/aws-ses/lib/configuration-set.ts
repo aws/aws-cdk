@@ -73,6 +73,32 @@ export interface ConfigurationSetProps {
    * @default - use the default awstrack.me domain
    */
   readonly customTrackingRedirectDomain?: string;
+
+  /**
+   * The Virtual Deliverability Manager (VDM) options that apply to the configuration set
+   *
+   * @default - use account level settings
+   */
+  readonly vdmOptions?: VdmOptions;
+}
+
+/**
+ * Properties for the Virtual Deliverability Manager (VDM) options that apply to the configuration set
+ */
+export interface VdmOptions {
+  /**
+   * Whether engagement metrics are enabled for the configuration set
+   *
+   * @default - use account level settings
+   */
+  readonly engagementMetrics?: boolean;
+
+  /**
+   * Whether optimized shared delivery is enabled for the configuration set
+   *
+   * @default - use account level settings
+   */
+  readonly optimizedSharedDelivery?: boolean;
 }
 
 /**
@@ -150,6 +176,15 @@ export class ConfigurationSet extends Resource implements IConfigurationSet {
       trackingOptions: undefinedIfNoKeys({
         customRedirectDomain: props.customTrackingRedirectDomain,
       }),
+      vdmOptions: undefinedIfNoKeys({
+        dashboardOptions: props.vdmOptions?.engagementMetrics ? {
+          engagementMetrics: booleanToEnabledDisabled(props.vdmOptions?.engagementMetrics),
+        } : undefined,
+        guardianOptions: props.vdmOptions?.optimizedSharedDelivery ? {
+          optimizedSharedDelivery: booleanToEnabledDisabled(props.vdmOptions?.optimizedSharedDelivery),
+        } : undefined,
+      },
+      ),
     });
 
     this.configurationSetName = configurationSet.ref;
@@ -179,4 +214,10 @@ function renderSuppressedReasons(suppressionReasons?: SuppressionReasons): strin
     case SuppressionReasons.COMPLAINTS_ONLY:
       return ['COMPLAINT'];
   }
+}
+
+function booleanToEnabledDisabled(value: boolean): 'ENABLED' | 'DISABLED' {
+  return value === true
+    ? 'ENABLED'
+    : 'DISABLED';
 }

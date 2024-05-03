@@ -1,0 +1,188 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "cdk-ses-configuration-set-vdmoptions-integ": {
+        "id": "cdk-ses-configuration-set-vdmoptions-integ",
+        "path": "cdk-ses-configuration-set-vdmoptions-integ",
+        "children": {
+          "ConfigurationSetVdmOptions": {
+            "id": "ConfigurationSetVdmOptions",
+            "path": "cdk-ses-configuration-set-vdmoptions-integ/ConfigurationSetVdmOptions",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "cdk-ses-configuration-set-vdmoptions-integ/ConfigurationSetVdmOptions/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::SES::ConfigurationSet",
+                  "aws:cdk:cloudformation:props": {
+                    "vdmOptions": {
+                      "dashboardOptions": {
+                        "engagementMetrics": "ENABLED"
+                      },
+                      "guardianOptions": {
+                        "optimizedSharedDelivery": "ENABLED"
+                      }
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_ses.CfnConfigurationSet",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_ses.ConfigurationSet",
+              "version": "0.0.0"
+            }
+          },
+          "EngagementMetricsOnly": {
+            "id": "EngagementMetricsOnly",
+            "path": "cdk-ses-configuration-set-vdmoptions-integ/EngagementMetricsOnly",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "cdk-ses-configuration-set-vdmoptions-integ/EngagementMetricsOnly/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::SES::ConfigurationSet",
+                  "aws:cdk:cloudformation:props": {
+                    "vdmOptions": {
+                      "dashboardOptions": {
+                        "engagementMetrics": "ENABLED"
+                      }
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_ses.CfnConfigurationSet",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_ses.ConfigurationSet",
+              "version": "0.0.0"
+            }
+          },
+          "OptimizedSharedDeliberyOnly": {
+            "id": "OptimizedSharedDeliberyOnly",
+            "path": "cdk-ses-configuration-set-vdmoptions-integ/OptimizedSharedDeliberyOnly",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "cdk-ses-configuration-set-vdmoptions-integ/OptimizedSharedDeliberyOnly/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::SES::ConfigurationSet",
+                  "aws:cdk:cloudformation:props": {
+                    "vdmOptions": {
+                      "guardianOptions": {
+                        "optimizedSharedDelivery": "ENABLED"
+                      }
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_ses.CfnConfigurationSet",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_ses.ConfigurationSet",
+              "version": "0.0.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "cdk-ses-configuration-set-vdmoptions-integ/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "cdk-ses-configuration-set-vdmoptions-integ/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnRule",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "ConfigurationSetVdmOptionsInteg": {
+        "id": "ConfigurationSetVdmOptionsInteg",
+        "path": "ConfigurationSetVdmOptionsInteg",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "ConfigurationSetVdmOptionsInteg/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "ConfigurationSetVdmOptionsInteg/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "ConfigurationSetVdmOptionsInteg/DefaultTest/DeployAssert",
+                "children": {
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "ConfigurationSetVdmOptionsInteg/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "ConfigurationSetVdmOptionsInteg/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnRule",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.3.0"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "aws-cdk-lib.App",
+      "version": "0.0.0"
+    }
+  }
+}
