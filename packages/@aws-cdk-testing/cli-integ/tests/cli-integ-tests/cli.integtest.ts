@@ -775,6 +775,158 @@ integTest('cdk diff --fail with multiple stack exits with if any of the stacks c
   await expect(fixture.cdk(['diff', '--fail', fixture.fullStackName('test-1'), fixture.fullStackName('test-2')])).rejects.toThrow('exited with error');
 }));
 
+integTest('cdk diff --security-only successfully outputs sso-permission-set-without-managed-policy information', withDefaultFixture(async (fixture) => {
+  const diff = await fixture.cdk(
+    ['diff', '--security-only', fixture.fullStackName('sso-perm-set-without-managed-policy')],
+  );
+  `┌───┬──────────────────────────────────────────┬──────────────────────────────────┬────────────────────┬───────────────────────────────────┬─────────────────────────────────┐
+   │   │ Resource                                 │ InstanceArn                      │ PermissionSet name │ PermissionsBoundary               │ CustomerManagedPolicyReferences │
+   ├───┼──────────────────────────────────────────┼──────────────────────────────────┼────────────────────┼───────────────────────────────────┼─────────────────────────────────┤
+   │ + │\${permission-set-without-managed-policy} │ arn:aws:sso:::instance/testvalue │ testName           │ CustomerManagedPolicyReference: { │                                 │
+   │   │                                          │                                  │                    │   Name: why, Path: /how/          │                                 │
+   │   │                                          │                                  │                    │ }                                 │                                 │
+`;
+  expect(diff).toContain('Resource');
+  expect(diff).toContain('permission-set-without-managed-policy');
+
+  expect(diff).toContain('InstanceArn');
+  expect(diff).toContain('arn:aws:sso:::instance/testvalue');
+
+  expect(diff).toContain('PermissionSet name');
+  expect(diff).toContain('testName');
+
+  expect(diff).toContain('PermissionsBoundary');
+  expect(diff).toContain('CustomerManagedPolicyReference: {');
+  expect(diff).toContain('Name: why, Path: /how/');
+  expect(diff).toContain('}');
+
+  expect(diff).toContain('CustomerManagedPolicyReferences');
+}));
+
+integTest('cdk diff --security-only successfully outputs sso-permission-set-with-managed-policy information', withDefaultFixture(async (fixture) => {
+  const diff = await fixture.cdk(
+    ['diff', '--security-only', fixture.fullStackName('sso-perm-set-with-managed-policy')],
+  );
+  `┌───┬──────────────────────────────────────────┬──────────────────────────────────┬────────────────────┬───────────────────────────────────────────────────────────────┬─────────────────────────────────┐
+   │   │ Resource                                 │ InstanceArn                      │ PermissionSet name │ PermissionsBoundary                                           │ CustomerManagedPolicyReferences │
+   ├───┼──────────────────────────────────────────┼──────────────────────────────────┼────────────────────┼───────────────────────────────────────────────────────────────┼─────────────────────────────────┤
+   │ + │\${permission-set-with-managed-policy}    │ arn:aws:sso:::instance/testvalue │ niceWork           │ ManagedPolicyArn: arn:aws:iam::aws:policy/AdministratorAccess │ Name: forSSO, Path:             │
+`;
+
+  expect(diff).toContain('Resource');
+  expect(diff).toContain('permission-set-with-managed-policy');
+
+  expect(diff).toContain('InstanceArn');
+  expect(diff).toContain('arn:aws:sso:::instance/testvalue');
+
+  expect(diff).toContain('PermissionSet name');
+  expect(diff).toContain('niceWork');
+
+  expect(diff).toContain('PermissionsBoundary');
+  expect(diff).toContain('ManagedPolicyArn: arn:aws:iam::aws:policy/AdministratorAccess');
+
+  expect(diff).toContain('CustomerManagedPolicyReferences');
+  expect(diff).toContain('Name: forSSO, Path:');
+}));
+
+integTest('cdk diff --security-only successfully outputs sso-assignment information', withDefaultFixture(async (fixture) => {
+  const diff = await fixture.cdk(
+    ['diff', '--security-only', fixture.fullStackName('sso-assignment')],
+  );
+  `┌───┬───────────────┬──────────────────────────────────┬─────────────────────────┬──────────────────────────────┬───────────────┬──────────────┬─────────────┐
+   │   │ Resource      │ InstanceArn                      │ PermissionSetArn        │ PrincipalId                  │ PrincipalType │ TargetId     │ TargetType  │
+   ├───┼───────────────┼──────────────────────────────────┼─────────────────────────┼──────────────────────────────┼───────────────┼──────────────┼─────────────┤
+   │ + │\${assignment} │ arn:aws:sso:::instance/testvalue │ arn:aws:sso:::testvalue │ 11111111-2222-3333-4444-test │ USER          │ 111111111111 │ AWS_ACCOUNT │
+   └───┴───────────────┴──────────────────────────────────┴─────────────────────────┴──────────────────────────────┴───────────────┴──────────────┴─────────────┘
+`;
+  expect(diff).toContain('Resource');
+  expect(diff).toContain('assignment');
+
+  expect(diff).toContain('InstanceArn');
+  expect(diff).toContain('arn:aws:sso:::instance/testvalue');
+
+  expect(diff).toContain('PermissionSetArn');
+  expect(diff).toContain('arn:aws:sso:::testvalue');
+
+  expect(diff).toContain('PrincipalId');
+  expect(diff).toContain('11111111-2222-3333-4444-test');
+
+  expect(diff).toContain('PrincipalType');
+  expect(diff).toContain('USER');
+
+  expect(diff).toContain('TargetId');
+  expect(diff).toContain('111111111111');
+
+  expect(diff).toContain('TargetType');
+  expect(diff).toContain('AWS_ACCOUNT');
+}));
+
+integTest('cdk diff --security-only successfully outputs sso-access-control information', withDefaultFixture(async (fixture) => {
+  const diff = await fixture.cdk(
+    ['diff', '--security-only', fixture.fullStackName('sso-access-control')],
+  );
+  `┌───┬────────────────────────────────┬────────────────────────┬─────────────────────────────────┐
+   │   │ Resource                       │ InstanceArn            │ AccessControlAttributes         │
+   ├───┼────────────────────────────────┼────────────────────────┼─────────────────────────────────┤
+   │ + │\${instanceAccessControlConfig} │ arn:aws:test:testvalue │ Key: first, Values: [a]         │
+   │   │                                │                        │ Key: second, Values: [b]        │
+   │   │                                │                        │ Key: third, Values: [c]         │
+   │   │                                │                        │ Key: fourth, Values: [d]        │
+   │   │                                │                        │ Key: fifth, Values: [e]         │
+   │   │                                │                        │ Key: sixth, Values: [f]         │
+   └───┴────────────────────────────────┴────────────────────────┴─────────────────────────────────┘
+`;
+  expect(diff).toContain('Resource');
+  expect(diff).toContain('instanceAccessControlConfig');
+
+  expect(diff).toContain('InstanceArn');
+  expect(diff).toContain('arn:aws:sso:::instance/testvalue');
+
+  expect(diff).toContain('AccessControlAttributes');
+  expect(diff).toContain('Key: first, Values: [a]');
+  expect(diff).toContain('Key: second, Values: [b]');
+  expect(diff).toContain('Key: third, Values: [c]');
+  expect(diff).toContain('Key: fourth, Values: [d]');
+  expect(diff).toContain('Key: fifth, Values: [e]');
+  expect(diff).toContain('Key: sixth, Values: [f]');
+}));
+
+integTest('cdk diff --security-only --fail exits when security diff for sso access control config', withDefaultFixture(async (fixture) => {
+  await expect(
+    fixture.cdk(
+      ['diff', '--security-only', '--fail', fixture.fullStackName('sso-access-control')],
+    ),
+  ).rejects
+    .toThrow('exited with error');
+}));
+
+integTest('cdk diff --security-only --fail exits when security diff for sso-perm-set-without-managed-policy', withDefaultFixture(async (fixture) => {
+  await expect(
+    fixture.cdk(
+      ['diff', '--security-only', '--fail', fixture.fullStackName('sso-perm-set-without-managed-policy')],
+    ),
+  ).rejects
+    .toThrow('exited with error');
+}));
+
+integTest('cdk diff --security-only --fail exits when security diff for sso-perm-set-with-managed-policy', withDefaultFixture(async (fixture) => {
+  await expect(
+    fixture.cdk(
+      ['diff', '--security-only', '--fail', fixture.fullStackName('sso-perm-set-with-managed-policy')],
+    ),
+  ).rejects
+    .toThrow('exited with error');
+}));
+
+integTest('cdk diff --security-only --fail exits when security diff for sso-assignment', withDefaultFixture(async (fixture) => {
+  await expect(
+    fixture.cdk(
+      ['diff', '--security-only', '--fail', fixture.fullStackName('sso-assignment')],
+    ),
+  ).rejects
+    .toThrow('exited with error');
+}));
+
 integTest('cdk diff --security-only --fail exits when security changes are present', withDefaultFixture(async (fixture) => {
   const stackName = 'iam-test';
   await expect(fixture.cdk(['diff', '--security-only', '--fail', fixture.fullStackName(stackName)])).rejects.toThrow('exited with error');
