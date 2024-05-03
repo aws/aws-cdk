@@ -6,6 +6,7 @@ import { IAMClient } from '@aws-sdk/client-iam';
 import { LambdaClient } from '@aws-sdk/client-lambda';
 import { S3Client, DeleteObjectsCommand, ListObjectVersionsCommand, ObjectIdentifier, DeleteBucketCommand } from '@aws-sdk/client-s3';
 import { SNSClient } from '@aws-sdk/client-sns';
+import { SSOClient } from '@aws-sdk/client-sso';
 import { STSClient, GetCallerIdentityCommand } from '@aws-sdk/client-sts';
 import { fromContainerMetadata, fromTemporaryCredentials } from '@aws-sdk/credential-providers';
 import { parse } from 'ini';
@@ -23,11 +24,11 @@ export class AwsClients {
   // TODO Can this be type safe instead on any with sdk v3
   private readonly config: any;
 
-  // TODO Reduce these commands to particular operations since it decreases bundle size
   public readonly cloudFormation: CloudFormationClient;
   public readonly s3: S3Client;
   public readonly ecr: ECRClient;
   public readonly ecs: ECSClient;
+  public readonly sso: SSOClient;
   public readonly sns: SNSClient;
   public readonly iam: IAMClient;
   public readonly lambda: LambdaClient;
@@ -35,7 +36,6 @@ export class AwsClients {
 
   constructor(public readonly region: string, private readonly output: NodeJS.WritableStream) {
     this.config = {
-      // TODO
       credentials: chainableCredentials(this.region),
       region: this.region,
       maxAttempts: 9, // maxAttempts = 1 + maxRetries
@@ -45,6 +45,7 @@ export class AwsClients {
     this.s3 = new S3Client(this.config);
     this.ecr = new ECRClient(this.config);
     this.ecs = new ECSClient(this.config);
+    this.sso = new SSOClient(this.config);
     this.sns = new SNSClient(this.config);
     this.iam = new IAMClient(this.config);
     this.lambda = new LambdaClient(this.config);
@@ -59,7 +60,6 @@ export class AwsClients {
     });
     const command = new GetCallerIdentityCommand({});
 
-    // TODO return (await new AWS.STS({ ...this.config, maxRetries: 1 }).getCallerIdentity().promise()).Account!;
     return (await client.send(command)).Account!;
   }
 
