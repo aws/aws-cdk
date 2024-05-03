@@ -3,7 +3,7 @@ import * as path from 'path';
 import { Construct, Node } from 'constructs';
 import * as semver from 'semver';
 import * as YAML from 'yaml';
-import { AccessEntry, AccessPolicy, AccessScopeType } from './access-entry';
+import { AccessEntry, AccessPolicy, AccessScopeType, IAccessPolicy } from './access-entry';
 import { AlbController, AlbControllerOptions } from './alb-controller';
 import { AwsAuth } from './aws-auth';
 import { ClusterResource, clusterArnComponents } from './cluster-resource';
@@ -1755,24 +1755,56 @@ export class Cluster extends ClusterBase {
   }
 
   /**
+   * Grants Amazon EKS admin access to the specified IAM role within the given Kubernetes namespaces.
+   *
+   * This method creates an `AccessEntry` construct that grants the specified IAM role the Amazon EKS admin policy
+   * within the provided Kubernetes namespaces. This allows the IAM role to perform administrative actions within
+   * the specified namespaces of the EKS cluster.
+   *
+   * @param role - The IAM role to be granted the Amazon EKS admin access.
+   * @param namespaces - The list of Kubernetes namespaces within which the IAM role will be granted the admin access.
+   */
+  public grantEksAdminAccess(role: iam.IRole, namespaces: string[]) {
+    this.grantAccess(`${role.roleName}Access`, role, [{
+      policy: AccessPolicy.AMAZON_EKS_ADMIN_POLICY,
+      accessScope: {
+        type: AccessScopeType.NAMESPACE,
+        namespaces,
+      },
+    }]);
+  }
+
+  /**
    * Grants the specified IAM role full administrative access to the EKS cluster.
    *
    * This method creates an `AccessEntry` resource that grants the specified IAM role
-   * the `AMAZON_EKS_ADMIN_POLICY` policy, which provides full administrative access
+   * the `AMAZON_EKS_CLUSTER_ADMIN_POLICY` policy, which provides full administrative access
    * to the EKS cluster.
    *
    * @param role - The IAM role to grant cluster admin access to.
    */
   public grantClusterAdminAccess(role: iam.IRole) {
-    new AccessEntry(this, `${role.roleName}Access`, {
+    this.grantAccess(`${role.roleName}Access`, role, [{
+      policy: AccessPolicy.AMAZON_EKS_CLUSTER_ADMIN_POLICY,
+      accessScope: { type: AccessScopeType.CLUSTER },
+    }]);
+  }
+
+  /**
+   * Grants the specified IAM role access to the EKS cluster based on the provided access policies.
+   *
+   * This method creates an `AccessEntry` construct that grants the specified IAM role the access permissions
+   * defined by the provided `IAccessPolicy` array. This allows the IAM role to perform the actions permitted
+   * by the access policies within the EKS cluster.
+   *
+   * @param role - The IAM role to be granted access to the EKS cluster.
+   * @param accessPolicies - An array of `IAccessPolicy` objects that define the access permissions to be granted to the IAM role.
+   */
+  public grantAccess(id: string, role: iam.IRole, accessPolicies: IAccessPolicy[]) {
+    new AccessEntry(this, id, {
       cluster: this,
       principal: role.roleArn,
-      accessPolicies: [
-        {
-          policy: AccessPolicy.AMAZON_EKS_ADMIN_POLICY,
-          accessScope: { type: AccessScopeType.CLUSTER },
-        },
-      ],
+      accessPolicies,
     });
   }
 

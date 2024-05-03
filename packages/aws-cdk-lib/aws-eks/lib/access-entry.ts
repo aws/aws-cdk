@@ -160,17 +160,12 @@ export interface IAccessPolicy {
 
 /**
  * Represents the properties required to create an Amazon EKS access entry.
- *
- * @interface AccessEntryProps
- * @property {ICluster} cluster - The Amazon EKS cluster to which the access entry applies.
- * @property {IAccessPolicy[]} accessPolicies - The access policies that define the permissions and scope for the access entry.
- * @property {string} principal - The Amazon Resource Name (ARN) of the principal (user or role) to associate the access entry with.
  */
 export interface AccessEntryProps {
-  /*
-   * The AccessEntry name.
+  /**
+   * The name of the AccessEntry.
    *
-   * @default - None
+   * @default - No access entry name is provided
    */
   readonly accessEntryName?: string;
   /**
