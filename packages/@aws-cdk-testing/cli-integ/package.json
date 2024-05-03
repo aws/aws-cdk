@@ -50,7 +50,6 @@
     "@aws-sdk/client-sts": "3.421.0",
     "@aws-sdk/client-sso": "3.421.0",
     "@aws-sdk/credential-providers": "3.421.0",
-    "aws-sdk": "^2.1600.0",
     "axios": "^1.6.8",
     "fs-extra": "^9.1.0",
     "glob": "^7.2.3",

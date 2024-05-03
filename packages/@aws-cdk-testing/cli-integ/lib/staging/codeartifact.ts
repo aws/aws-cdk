@@ -52,8 +52,6 @@ export class TestRepository {
 
     let nextToken: string | undefined;
     do {
-
-      // await codeArtifact.listRepositories({ nextToken }).promise();
       const page = await codeArtifact.send(new ListRepositoriesCommand({
         nextToken: nextToken,
       }));
