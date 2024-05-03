@@ -1,7 +1,8 @@
 /* eslint-disable no-console */
 import * as path from 'path';
 import * as cxapi from '@aws-cdk/cx-api';
-import { CloudFormation, ECR, S3 } from 'aws-sdk';
+import { AWSError, CloudFormation, ECR, S3 } from 'aws-sdk';
+import { PromiseResult } from 'aws-sdk/lib/request';
 import { ISDK, SdkProvider } from './aws-auth';
 import { Mode } from './aws-auth/credentials';
 import { ToolkitInfo } from './toolkit-info';
@@ -106,21 +107,21 @@ export class GarbageCollector {
     if (this.garbageCollectingS3) {
       print('Getting bootstrap bucket');
       start = Date.now();
-      const bucket = await this.getBootstrapBucket(sdk);
+      const bucketName = (await ToolkitInfo.lookup(this.props.resolvedEnvironment, sdk, undefined)).bucketName;
       print('Got bootstrap bucket:', formatTime(start), 'seconds');
 
       print('Collecting isolated objects');
       start = Date.now();
-      const isolatedObjects = await this.collectIsolatedObjects(s3, bucket);
+      const isolatedObjects = await this.collectIsolatedObjects(s3, bucketName);
       print('Collected isolated buckets:', formatTime(start), 'seconds');
 
-      if (!this.props.dryRun) {
+      if (this.props.dryRun) {
+        print('dry run was set, so skipping object tagging and deletion');
+      } else {
         print('Tagging isolated objects');
         start = Date.now();
-        await this.tagIsolatedObjects(s3, bucket, isolatedObjects);
+        await this.tagIsolatedObjects(s3, bucketName, isolatedObjects);
         print('Tagged isolated buckets:', formatTime(start), 'seconds');
-      } else {
-        print('dry run was set, so skipping object tagging');
       }
     }
 
@@ -179,6 +180,8 @@ export class GarbageCollector {
   private async collectHashes(cfn: CloudFormation) {
     const stackNames: string[] = [];
     await paginateSdkCall(async (nextToken) => {
+      // Would it make sense to only filter for active stacks?
+      // I think it would make sense to ignore all stacks that have been deleted for more than 1 day, but otherwise don't touch
       const response = await cfn.listStacks({ NextToken: nextToken }).promise();
       stackNames.push(...(response.StackSummaries ?? []).map(s => s.StackId ?? s.StackName));
       return response.NextToken;
@@ -186,21 +189,25 @@ export class GarbageCollector {
 
     print(`Parsing through ${stackNames.length} stacks`);
 
-    for (const stack of stackNames) {
-      const template = await cfn.getTemplate({
-        StackName: stack,
-      }).promise();
+    for (const stackArn of stackNames) {
+      // This crashes on 'Processed template of Stack cdktest-0ibttybjfx2h-bootstrap-stack is not ready. Specify Original to get user-submitted template.'
+      let template: PromiseResult<CloudFormation.GetTemplateOutput, AWSError>;
+      try {
+        template = await cfn.getTemplate({
+          StackName: stackArn,
+          TemplateStage: 'Original',
+        }).promise();
+      } catch (error) {
+        warning('Encountered an error while getting a cfn template -- skipping gc for', stackArn);
+        warning(error as string);
+        continue;
+      }
 
-      const templateHashes = template.TemplateBody?.match(/[a-f0-9]{64}/g);
-      templateHashes?.forEach(this.hashes.add, this.hashes);
+      const templateHashes = template.TemplateBody?.match(/[a-f0-9]{64}/g); // I think this could have false positives?
+      templateHashes?.forEach((h) => this.hashes.add(h));
     }
 
     print(`Found ${this.hashes.size} unique hashes`);
-  }
-
-  private async getBootstrapBucket(sdk: ISDK) {
-    const info = await ToolkitInfo.lookup(this.props.resolvedEnvironment, sdk, undefined);
-    return info.bucketName;
   }
 
   private async collectIsolatedObjects(s3: S3, bucket: string) {

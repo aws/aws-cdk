@@ -716,6 +716,11 @@ export class CdkToolkit {
     // eslint-disable-next-line no-console
     console.log(environment, dryRun, type, days);
 
+    if (environment === undefined) {
+      throw new Error('You must include the environment');
+    }
+    // need to handle case where environment is null
+
     const splitEnv = environment.split('/');
     const resolvedEnvironment: cxapi.Environment = {
       name: 'garbage env',
