@@ -94,7 +94,7 @@ export interface VdmOptions {
   readonly engagementMetrics?: boolean;
 
   /**
-   * Whether optimized shared delivery is enabled for the configuration set
+   * If true, optimized shared delivery is enabled for the configuration set
    *
    * @default - use account level settings
    */
