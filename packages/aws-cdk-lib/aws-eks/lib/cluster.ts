@@ -1761,11 +1761,12 @@ export class Cluster extends ClusterBase {
    * within the provided Kubernetes namespaces. This allows the IAM role to perform administrative actions within
    * the specified namespaces of the EKS cluster.
    *
+   * @param id - The ID of the access entry resource.
    * @param role - The IAM role to be granted the Amazon EKS admin access.
    * @param namespaces - The list of Kubernetes namespaces within which the IAM role will be granted the admin access.
    */
-  public grantEksAdminAccess(role: iam.IRole, namespaces: string[]) {
-    this.grantAccess(`${role.roleName}Access`, role, [{
+  public grantEksAdminAccess(id: string, role: iam.IRole, namespaces: string[]) {
+    this.grantAccess(id, role, [{
       policy: AccessPolicy.AMAZON_EKS_ADMIN_POLICY,
       accessScope: {
         type: AccessScopeType.NAMESPACE,
@@ -1781,10 +1782,11 @@ export class Cluster extends ClusterBase {
    * the `AMAZON_EKS_CLUSTER_ADMIN_POLICY` policy, which provides full administrative access
    * to the EKS cluster.
    *
+   * @param id - The ID of the access entry resource.
    * @param role - The IAM role to grant cluster admin access to.
    */
-  public grantClusterAdminAccess(role: iam.IRole) {
-    this.grantAccess(`${role.roleName}Access`, role, [{
+  public grantClusterAdminAccess(id: string, role: iam.IRole) {
+    this.grantAccess(id, role, [{
       policy: AccessPolicy.AMAZON_EKS_CLUSTER_ADMIN_POLICY,
       accessScope: { type: AccessScopeType.CLUSTER },
     }]);
