@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/4ea9200ae61d3546467486640684d82d8722a51e498bd2f92106b9c3912edfdc.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/2a0c9ab351877403efca7490b5ac5c6c52cc4738e9f7e5ec7c38fb974a3aba7b.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -76,6 +76,12 @@
             "data": "RepoOnEventOnEventTargetLambda2934FA99"
           }
         ],
+        "/aws-ecr-integ-stack/RepoOnEvent/OnEventTargetLambda/AllowEventRuleawsecrintegstackLambdaFunctionB6045AA7": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RepoOnEventOnEventTargetLambdaAllowEventRuleawsecrintegstackLambdaFunctionB6045AA7FBA3AA33"
+          }
+        ],
         "/aws-ecr-integ-stack/LambdaFunction/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -98,24 +104,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
-          }
-        ],
-        "MyUserDC45028B": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyUserDC45028B",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "MyUserDefaultPolicy7B897426": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyUserDefaultPolicy7B897426",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
           }
         ]
       },

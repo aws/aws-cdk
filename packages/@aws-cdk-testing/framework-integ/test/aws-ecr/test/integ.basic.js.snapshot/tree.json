@@ -42,7 +42,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.Resource",
+              "fqn": "aws-cdk-lib.aws_ecr.Repository",
               "version": "0.0.0"
             }
           },
@@ -147,7 +147,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.Resource",
+              "fqn": "aws-cdk-lib.aws_ecr.Repository",
               "version": "0.0.0"
             }
           },
@@ -200,7 +200,7 @@
                         "state": "ENABLED",
                         "targets": [
                           {
-                            "id": "OnEventTargetLambda",
+                            "id": "Target0",
                             "arn": {
                               "Fn::GetAtt": [
                                 "LambdaFunctionBF21E41F",
@@ -215,6 +215,33 @@
                       "fqn": "aws-cdk-lib.aws_events.CfnRule",
                       "version": "0.0.0"
                     }
+                  },
+                  "AllowEventRuleawsecrintegstackLambdaFunctionB6045AA7": {
+                    "id": "AllowEventRuleawsecrintegstackLambdaFunctionB6045AA7",
+                    "path": "aws-ecr-integ-stack/RepoOnEvent/OnEventTargetLambda/AllowEventRuleawsecrintegstackLambdaFunctionB6045AA7",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
+                      "aws:cdk:cloudformation:props": {
+                        "action": "lambda:InvokeFunction",
+                        "functionName": {
+                          "Fn::GetAtt": [
+                            "LambdaFunctionBF21E41F",
+                            "Arn"
+                          ]
+                        },
+                        "principal": "events.amazonaws.com",
+                        "sourceArn": {
+                          "Fn::GetAtt": [
+                            "RepoOnEventOnEventTargetLambda2934FA99",
+                            "Arn"
+                          ]
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_lambda.CfnPermission",
+                      "version": "0.0.0"
+                    }
                   }
                 },
                 "constructInfo": {
@@ -224,7 +251,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.Resource",
+              "fqn": "aws-cdk-lib.aws_ecr.Repository",
               "version": "0.0.0"
             }
           },

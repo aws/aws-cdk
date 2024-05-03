@@ -103,9 +103,28 @@
         "Arn"
        ]
       },
-      "Id": "OnEventTargetLambda"
+      "Id": "Target0"
      }
     ]
+   }
+  },
+  "RepoOnEventOnEventTargetLambdaAllowEventRuleawsecrintegstackLambdaFunctionB6045AA7FBA3AA33": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "LambdaFunctionBF21E41F",
+      "Arn"
+     ]
+    },
+    "Principal": "events.amazonaws.com",
+    "SourceArn": {
+     "Fn::GetAtt": [
+      "RepoOnEventOnEventTargetLambda2934FA99",
+      "Arn"
+     ]
+    }
    }
   },
   "LambdaFunctionServiceRoleC555A460": {
