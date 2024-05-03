@@ -208,3 +208,23 @@ repository.addToResourcePolicy(new iam.PolicyStatement({
   principals: [new iam.AnyPrincipal()],
 }));
 ```
+
+## CloudWatch event rules
+
+You can publish repository events to a CloudWatch event rule with `onEvent`:
+
+```ts
+import * as lambda from 'aws-cdk-lib/aws-lambda';
+import { LambdaFunction } from 'aws-cdk-lib/aws-events-targets';
+
+const repo = new ecr.Repository(this, 'Repo');
+const lambdaHandler = new lambda.Function(this, 'LambdaFunction', {
+  runtime: lambda.Runtime.PYTHON_3_12,
+  code: lambda.Code.fromInline('# dummy func'),
+  handler: 'index.handler',
+});
+
+repo.onEvent('OnEventTargetLambda', {
+  target: new LambdaFunction(lambdaHandler),
+});
+```
