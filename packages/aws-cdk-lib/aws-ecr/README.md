@@ -215,6 +215,7 @@ You can publish repository events to a CloudWatch event rule with `onEvent`:
 
 ```ts
 import * as lambda from 'aws-cdk-lib/aws-lambda';
+import { LambdaFunction } from 'aws-cdk-lib/aws-events-targets';
 
 const repo = new ecr.Repository(this, 'Repo');
 const lambdaHandler = new lambda.Function(this, 'LambdaFunction', {
