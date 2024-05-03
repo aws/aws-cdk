@@ -116,8 +116,14 @@ export class EdgeFunction extends Resource implements lambda.IVersion {
   public addToRolePolicy(statement: iam.PolicyStatement): void {
     return this.lambda.addToRolePolicy(statement);
   }
-  public grantInvoke(identity: iam.IGrantable, props?: lambda.GrantInvokeProps): iam.Grant {
-    return this.lambda.grantInvoke(identity, props);
+  public grantInvoke(identity: iam.IGrantable): iam.Grant {
+    return this.lambda.grantInvoke(identity);
+  }
+  public grantInvokeLatestVersion(identity: iam.IGrantable): iam.Grant {
+    return this.lambda.grantInvokeLatestVersion(identity);
+  }
+  public grantInvokeVersion(identity: iam.IGrantable, version: lambda.IVersion): iam.Grant {
+    return this.lambda.grantInvokeVersion(identity, version);
   }
   public grantInvokeUrl(identity: iam.IGrantable): iam.Grant {
     return this.lambda.grantInvokeUrl(identity);

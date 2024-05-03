@@ -201,13 +201,24 @@ You can also restrict permissions given to AWS services by providing
 a source account or ARN (representing the account and identifier of the resource
 that accesses the function or layer).
 
-**Important**: By default `fn.grantInvoke()` grants permission to the principal to invoke any version of the function, including all past ones. If you only want the principal to invoke the latest version, use `grantInvoke(grantee, { onlyGrantLatestVersion:true })`.
+**Important**: 
+> By default `fn.grantInvoke()` grants permission to the principal to invoke any version of the function, including all past ones. If you only want the principal to be granted permission to invoke the latest version or the unqualified Lambda ARN, use `grantInvokeLatestVersion(grantee)`.
+
+```ts
+declare const fn: lambda.Function;
+const principal = new iam.ServicePrincipal('my-service');
+declare const version: lambda.IVersion;
+// Grant invoke only to latest version
+fn.grantInvokeVersion(principal, version);
+```
+
+If you want to grant access for invoking a specific version of Lambda function, you can use `fn.grantInovkeVersion(grantee, version)`
 
 ```ts
 declare const fn: lambda.Function;
 const principal = new iam.ServicePrincipal('my-service');
 // Grant invoke only to latest version
-fn.grantInvoke(principal, { onlyGrantLatestVersion : true });
+fn.grantInvokeLatestVersion(principal);
 ```
 
 For more information, see

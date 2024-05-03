@@ -78,7 +78,7 @@
     "PrincipalOrgID": "o-xxxxxxxxxx"
    }
   },
-  "MyLambdaInvokeiasez2Hq1vE2Fl1I4Yaq8UbNdwu1QsvuMXzIoTAF759EB93": {
+  "MyLambdaInvokeeGvYElS6PTHSMTWuZJGucRJGsEgHU9SwyLyJrgpnic82377EF6": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",
@@ -92,7 +92,35 @@
     "PrincipalOrgID": "o-yyyyyyyyyy2"
    }
   },
-  "MyLambdaInvokeeCd3Xf1YrYI9J9KZWaa7iTC3wv2MejAlHdcglgF5m4c0F884F73": {
+  "MyLambdaInvokeZQDUzUWqDuiGYFrGB6ik9uIPJSgF8GSLIg6NTO8jHPIBE1EB3A4": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "MyLambdaCCE802FB",
+      "Arn"
+     ]
+    },
+    "Principal": "*",
+    "PrincipalOrgID": "o-xxxxxxxxxx2"
+   }
+  },
+  "MyLambdaInvokeeSO2bF2vs89Bu95ZGbotCaJ9349433GggVuY4yuDDo6A19947D": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "MyLambdaCCE802FB",
+      "Arn"
+     ]
+    },
+    "Principal": "*",
+    "PrincipalOrgID": "o-yyyyyyyyyy2"
+   }
+  },
+  "MyLambdaInvokevlkDSBAbWHnqhYUcxXc8dNNBhmEU5NTv6gX4EMtBA9DCAF0DD": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",
@@ -143,6 +171,14 @@
      ]
     },
     "Principal": "apigateway.amazonaws.com"
+   }
+  },
+  "v192FF9954": {
+   "Type": "AWS::Lambda::Version",
+   "Properties": {
+    "FunctionName": {
+     "Ref": "MyLambdaCCE802FB"
+    }
    }
   },
   "MyRoleF48FFE04": {

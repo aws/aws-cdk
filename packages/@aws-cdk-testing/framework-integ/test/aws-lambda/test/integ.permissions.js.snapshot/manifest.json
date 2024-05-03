@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/018c275dea5b6c3d59a2559a0749bbb85138bfa549ff989fc5bdea87a681546f.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/7bb46ab3ee8f5a5ea32ecdb2339294d95acaf255531ed2a40e8e845f4104bce6.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -58,16 +58,28 @@
             "data": "MyLambdaInvoke138AF9IJcZORjZNKCKShZMMuVQwCnUkbFqMoQf5of0C1F7DFD8"
           }
         ],
-        "/lambda-permissions/MyLambda/Invoke--iasez2Hq1vE2Fl1I4--Yaq8UbNdw--u1QsvuMXzIo+TA=": [
+        "/lambda-permissions/MyLambda/InvokeeGvYElS6PTHSMTWuZJGucRJGsEgHU9SwyLyJrgp--nic=": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyLambdaInvokeiasez2Hq1vE2Fl1I4Yaq8UbNdwu1QsvuMXzIoTAF759EB93"
+            "data": "MyLambdaInvokeeGvYElS6PTHSMTWuZJGucRJGsEgHU9SwyLyJrgpnic82377EF6"
           }
         ],
-        "/lambda-permissions/MyLambda/InvokeeCd3Xf1YrYI9J9KZWaa7iTC3wv2MejAlHdcglgF5m4c=": [
+        "/lambda-permissions/MyLambda/InvokeZQDUzUWqDuiGYFrGB6ik9uIPJSgF8GSLIg6NTO8jHPI=": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "MyLambdaInvokeeCd3Xf1YrYI9J9KZWaa7iTC3wv2MejAlHdcglgF5m4c0F884F73"
+            "data": "MyLambdaInvokeZQDUzUWqDuiGYFrGB6ik9uIPJSgF8GSLIg6NTO8jHPIBE1EB3A4"
+          }
+        ],
+        "/lambda-permissions/MyLambda/InvokeeSO2bF2vs89Bu95ZGbotCaJ9349433Gg+gVuY4yuDDo=": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyLambdaInvokeeSO2bF2vs89Bu95ZGbotCaJ9349433GggVuY4yuDDo6A19947D"
+          }
+        ],
+        "/lambda-permissions/MyLambda/Invokev--lkDSBAbWHnqhYUcxXc8d+NNBhmEU5NTv6gX4EMtBA=": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyLambdaInvokevlkDSBAbWHnqhYUcxXc8dNNBhmEU5NTv6gX4EMtBA9DCAF0DD"
           }
         ],
         "/lambda-permissions/MyLambda/FunctionUrl/Resource": [
@@ -86,6 +98,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "MyLambdaInvokeFcyXBRX02EWa52GlFECQiCzDt0fdRUDi4mo4foC5aU41318F58"
+          }
+        ],
+        "/lambda-permissions/v1/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "v192FF9954"
           }
         ],
         "/lambda-permissions/MyRole/Resource": [

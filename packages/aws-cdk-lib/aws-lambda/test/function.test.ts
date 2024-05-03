@@ -1282,7 +1282,7 @@ describe('function', () => {
       });
     });
 
-    test('adds iam:InvokeFunction with onlyGrantLatestVersion', () => {
+    test('adds grantInvokeLatestVersion ', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const role = new iam.Role(stack, 'Role', {
@@ -1295,7 +1295,7 @@ describe('function', () => {
       });
 
       // WHEN
-      fn.grantInvoke(role, { onlyGrantLatestVersion: true });
+      fn.grantInvokeLatestVersion(role);
 
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
@@ -1305,7 +1305,43 @@ describe('function', () => {
             {
               Action: 'lambda:InvokeFunction',
               Effect: 'Allow',
-              Resource: { 'Fn::GetAtt': ['Function76856677', 'Arn'] },
+              Resource: [
+                { 'Fn::GetAtt': ['Function76856677', 'Arn'] },
+                { 'Fn::Join': ['', [{ 'Fn::GetAtt': ['Function76856677', 'Arn'] }, ':$LATEST']] },
+              ],
+            },
+          ],
+        },
+      });
+    });
+
+    test('adds grantInvokeVersion ', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const role = new iam.Role(stack, 'Role', {
+        assumedBy: new iam.AccountPrincipal('1234'),
+      });
+      const fn = new lambda.Function(stack, 'Function', {
+        code: lambda.Code.fromInline('xxx'),
+        handler: 'index.handler',
+        runtime: lambda.Runtime.NODEJS_LATEST,
+      });
+
+      const lv2 = new lambda.Version(stack, 'v2', {
+        lambda: fn,
+      });
+      // WHEN
+      fn.grantInvokeVersion(role, lv2);
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+        PolicyDocument: {
+          Version: '2012-10-17',
+          Statement: [
+            {
+              Action: 'lambda:InvokeFunction',
+              Effect: 'Allow',
+              Resource: { 'Fn::Join': ['', [{ 'Fn::GetAtt': ['Function76856677', 'Arn'] }, ':', { 'Fn::GetAtt': ['v248F3DDCC', 'Version'] }]] },
             },
           ],
         },

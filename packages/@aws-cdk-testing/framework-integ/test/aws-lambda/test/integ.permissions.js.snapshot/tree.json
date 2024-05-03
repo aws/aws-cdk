@@ -137,9 +137,17 @@
                   "version": "0.0.0"
                 }
               },
-              "Invoke--iasez2Hq1vE2Fl1I4--Yaq8UbNdw--u1QsvuMXzIo+TA=": {
-                "id": "Invoke--iasez2Hq1vE2Fl1I4--Yaq8UbNdw--u1QsvuMXzIo+TA=",
-                "path": "lambda-permissions/MyLambda/Invoke--iasez2Hq1vE2Fl1I4--Yaq8UbNdw--u1QsvuMXzIo+TA=",
+              "$LATEST": {
+                "id": "$LATEST",
+                "path": "lambda-permissions/MyLambda/$LATEST",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Resource",
+                  "version": "0.0.0"
+                }
+              },
+              "InvokeeGvYElS6PTHSMTWuZJGucRJGsEgHU9SwyLyJrgp--nic=": {
+                "id": "InvokeeGvYElS6PTHSMTWuZJGucRJGsEgHU9SwyLyJrgp--nic=",
+                "path": "lambda-permissions/MyLambda/InvokeeGvYElS6PTHSMTWuZJGucRJGsEgHU9SwyLyJrgp--nic=",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
                   "aws:cdk:cloudformation:props": {
@@ -159,9 +167,53 @@
                   "version": "0.0.0"
                 }
               },
-              "InvokeeCd3Xf1YrYI9J9KZWaa7iTC3wv2MejAlHdcglgF5m4c=": {
-                "id": "InvokeeCd3Xf1YrYI9J9KZWaa7iTC3wv2MejAlHdcglgF5m4c=",
-                "path": "lambda-permissions/MyLambda/InvokeeCd3Xf1YrYI9J9KZWaa7iTC3wv2MejAlHdcglgF5m4c=",
+              "InvokeZQDUzUWqDuiGYFrGB6ik9uIPJSgF8GSLIg6NTO8jHPI=": {
+                "id": "InvokeZQDUzUWqDuiGYFrGB6ik9uIPJSgF8GSLIg6NTO8jHPI=",
+                "path": "lambda-permissions/MyLambda/InvokeZQDUzUWqDuiGYFrGB6ik9uIPJSgF8GSLIg6NTO8jHPI=",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
+                  "aws:cdk:cloudformation:props": {
+                    "action": "lambda:InvokeFunction",
+                    "functionName": {
+                      "Fn::GetAtt": [
+                        "MyLambdaCCE802FB",
+                        "Arn"
+                      ]
+                    },
+                    "principal": "*",
+                    "principalOrgId": "o-xxxxxxxxxx2"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_lambda.CfnPermission",
+                  "version": "0.0.0"
+                }
+              },
+              "InvokeeSO2bF2vs89Bu95ZGbotCaJ9349433Gg+gVuY4yuDDo=": {
+                "id": "InvokeeSO2bF2vs89Bu95ZGbotCaJ9349433Gg+gVuY4yuDDo=",
+                "path": "lambda-permissions/MyLambda/InvokeeSO2bF2vs89Bu95ZGbotCaJ9349433Gg+gVuY4yuDDo=",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
+                  "aws:cdk:cloudformation:props": {
+                    "action": "lambda:InvokeFunction",
+                    "functionName": {
+                      "Fn::GetAtt": [
+                        "MyLambdaCCE802FB",
+                        "Arn"
+                      ]
+                    },
+                    "principal": "*",
+                    "principalOrgId": "o-yyyyyyyyyy2"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_lambda.CfnPermission",
+                  "version": "0.0.0"
+                }
+              },
+              "Invokev--lkDSBAbWHnqhYUcxXc8d+NNBhmEU5NTv6gX4EMtBA=": {
+                "id": "Invokev--lkDSBAbWHnqhYUcxXc8d+NNBhmEU5NTv6gX4EMtBA=",
+                "path": "lambda-permissions/MyLambda/Invokev--lkDSBAbWHnqhYUcxXc8d+NNBhmEU5NTv6gX4EMtBA=",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
                   "aws:cdk:cloudformation:props": {
@@ -257,6 +309,32 @@
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_lambda.Function",
+              "version": "0.0.0"
+            }
+          },
+          "v1": {
+            "id": "v1",
+            "path": "lambda-permissions/v1",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "lambda-permissions/v1/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::Version",
+                  "aws:cdk:cloudformation:props": {
+                    "functionName": {
+                      "Ref": "MyLambdaCCE802FB"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_lambda.CfnVersion",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_lambda.Version",
               "version": "0.0.0"
             }
           },

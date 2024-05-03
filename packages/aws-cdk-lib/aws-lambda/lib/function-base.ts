@@ -95,7 +95,18 @@ export interface IFunction extends IResource, ec2.IConnectable, iam.IGrantable {
   /**
    * Grant the given identity permissions to invoke this Lambda
    */
-  grantInvoke(grantee: iam.IGrantable, props?: GrantInvokeProps): iam.Grant;
+  grantInvoke(identity: iam.IGrantable): iam.Grant;
+
+  /**
+   * Grant the given identity permissions to invoke the $LATEST version or
+   * unqualified version of this Lambda
+   */
+  grantInvokeLatestVersion(identity: iam.IGrantable): iam.Grant;
+
+  /**
+   * Grant the given identity permissions to invoke the given version of this Lambda
+   */
+  grantInvokeVersion(identity: iam.IGrantable, version: IVersion): iam.Grant;
 
   /**
    * Grant the given identity permissions to invoke this Lambda Function URL
@@ -225,19 +236,6 @@ export interface FunctionAttributes {
    * @default - Architecture.X86_64
    */
   readonly architecture?: Architecture;
-}
-
-/**
- * Parameters to pass into grantInvoke method
- */
-export interface GrantInvokeProps {
-  /**
-   * Controls whether to grant invoke access to all function versions. Defaults to `false`.
-   *  - When set to `false`, both the function and functions with specific versions can be invoked.
-   *  - When set to `true`, only the function without a specific version (`$Latest`) can be invoked.
-   * @default false
-   */
-  readonly onlyGrantLatestVersion?: boolean;
 }
 
 export abstract class FunctionBase extends Resource implements IFunction, ec2.IClientVpnConnectionHandler {
@@ -431,17 +429,12 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
 
   /**
    * Grant the given identity permissions to invoke this Lambda
-   * @param grantee The principal (identity) to grant invocation permission.
-   * @param props onlyGrantLatestVersion (Optional) Controls whether to grant access only to latest function versions. Defaults to `false`.
-   *  - When set to `false`, both the function and functions with specific versions can be invoked.
-   *  - When set to `true`, only the function without a specific version (`$Latest`) can be invoked.
    */
-  public grantInvoke(grantee: iam.IGrantable, props: GrantInvokeProps = {}): iam.Grant {
+  public grantInvoke(grantee: iam.IGrantable): iam.Grant {
     const hash = createHash('sha256')
       .update(JSON.stringify({
         principal: grantee.grantPrincipal.toString(),
         conditions: grantee.grantPrincipal.policyFragment.conditions,
-        onlyGrantLatestVersion: props.onlyGrantLatestVersion,
       }), 'utf8')
       .digest('base64');
     const identifier = `Invoke${hash}`;
@@ -449,9 +442,39 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
     // Memoize the result so subsequent grantInvoke() calls are idempotent
     let grant = this._invocationGrants[identifier];
     if (!grant) {
-      let resouceArns = this.resourceArnsForGrantInvoke;
-      if (props.onlyGrantLatestVersion) {
-        resouceArns = [this.functionArn];
+      grant = this.grant(grantee, identifier, 'lambda:InvokeFunction', this.resourceArnsForGrantInvoke);
+      this._invocationGrants[identifier] = grant;
+    }
+    return grant;
+  }
+
+  /**
+   * Grant the given identity permissions to invoke the $LATEST version or
+   * unqualified version of this Lambda
+   */
+  public grantInvokeLatestVersion(grantee: iam.IGrantable): iam.Grant {
+    return this.grantInvokeVersion(grantee, this.latestVersion);
+  }
+
+  /**
+   * Grant the given identity permissions to invoke the given version of this Lambda
+   */
+  public grantInvokeVersion(grantee: iam.IGrantable, version: IVersion): iam.Grant {
+    const hash = createHash('sha256')
+      .update(JSON.stringify({
+        principal: grantee.grantPrincipal.toString(),
+        conditions: grantee.grantPrincipal.policyFragment.conditions,
+        version: version.version,
+      }), 'utf8')
+      .digest('base64');
+    const identifier = `Invoke${hash}`;
+
+    // Memoize the result so subsequent grantInvoke() calls are idempotent
+    let grant = this._invocationGrants[identifier];
+    if (!grant) {
+      let resouceArns = [`${this.functionArn}:${version.version}`];
+      if (version == this.latestVersion) {
+        resouceArns = [this.functionArn, `${this.functionArn}:$LATEST`];
       }
       grant = this.grant(grantee, identifier, 'lambda:InvokeFunction', resouceArns);
       this._invocationGrants[identifier] = grant;
