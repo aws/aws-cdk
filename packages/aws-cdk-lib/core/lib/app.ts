@@ -1,4 +1,6 @@
 import { Construct } from 'constructs';
+import { Environment } from './environment';
+import { PermissionsBoundary } from './permissions-boundary';
 import * as fs from 'fs-extra';
 import { PRIVATE_CONTEXT_DEFAULT_STACK_SYNTHESIZER } from './private/private-context';
 import { addCustomSynthesis, ICustomSynthesis } from './private/synthesis';
@@ -126,6 +128,47 @@ export interface AppProps {
    * @default - no validation plugins
    */
   readonly policyValidationBeta1?: IPolicyValidationPluginBeta1[];
+
+   /**
+   * Default AWS environment (account/region) for `Stack`s in this `App`.
+   *
+   * Stacks defined inside this `App` with either `region` or `account` missing
+   * from its env will use the corresponding field given here.
+   *
+   * If either `region` or `account`is is not configured for `Stack` (either on
+   * the `Stack` itself or on the containing `App` or `Stage`), the Stack will be
+   * *environment-agnostic*.
+   *
+   * Environment-agnostic stacks can be deployed to any environment, may not be
+   * able to take advantage of all features of the CDK. For example, they will
+   * not be able to use environmental context lookups, will not automatically
+   * translate Service Principals to the right format based on the environment's
+   * AWS partition, and other such enhancements.
+   *
+   * @example
+   *
+   * // Use a concrete account and region to deploy this Stage to
+   * new App({
+   *   env: { account: '123456789012', region: 'us-east-1' },
+   * });
+   *
+   * // Use the CLI's current credentials to determine the target environment
+   * new App({
+   *   env: { account: process.env.CDK_DEFAULT_ACCOUNT, region: process.env.CDK_DEFAULT_REGION },
+   * });
+   *
+   * @default - The environments should be configured on the `Stack`s.
+   */
+   readonly env?: Environment;
+
+   /**
+   * Options for applying a permissions boundary to all IAM Roles
+   * and Users created within this App
+   *
+   * @default - no permissions boundary is applied
+   */
+  readonly permissionsBoundary?: PermissionsBoundary;
+
 }
 
 /**
@@ -168,6 +211,8 @@ export class App extends Stage {
     super(undefined as any, '', {
       outdir: props.outdir ?? process.env[cxapi.OUTDIR_ENV],
       policyValidationBeta1: props.policyValidationBeta1,
+      permissionsBoundary: props.permissionsBoundary,
+      env: props.env,
     });
 
     Object.defineProperty(this, APP_SYMBOL, { value: true });

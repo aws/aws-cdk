@@ -4,7 +4,7 @@ import { Construct } from 'constructs';
 import * as fs from 'fs-extra';
 import { ContextProvider } from '../../cloud-assembly-schema';
 import * as cxapi from '../../cx-api';
-import { CfnResource, DefaultStackSynthesizer, Stack, StackProps } from '../lib';
+import { CfnResource, DefaultStackSynthesizer, Stack, StackProps, Stage } from '../lib';
 import { Annotations } from '../lib/annotations';
 import { App, AppProps } from '../lib/app';
 
@@ -361,6 +361,37 @@ describe('app', () => {
     expect(app.node.tryGetContext('isNumber')).toEqual(10);
     expect(app.node.tryGetContext('isObject')).toEqual({ isString: 'string', isNumber: 10 });
   });
+  test('Stack inherits unspecified part of the env from App', () => {
+    // GIVEN
+    const app = new App({
+      env: { account: 'account', region: 'region' },
+    });
+
+    // WHEN
+    const stack1 = new Stack(app, 'Stack1', { env: { region: 'elsewhere' } });
+    const stack2 = new Stack(app, 'Stack2', { env: { account: 'tnuocca' } });
+
+    // THEN
+    expect(acctRegion(stack1)).toEqual(['account', 'elsewhere']);
+    expect(acctRegion(stack2)).toEqual(['tnuocca', 'region']);
+  });
+
+  test('envs are inherited deeply', () => {
+    // GIVEN
+    const app = new App({
+      env: { account: 'account', region: 'region' },
+    });
+
+    // WHEN
+    const innerAcct = new Stage(app, 'Acct', { env: { account: 'tnuocca' } });
+    const innerRegion = new Stage(app, 'Rgn', { env: { region: 'elsewhere' } });
+    const innerNeither = new Stage(app, 'Neither');
+
+    // THEN
+    expect(acctRegion(new Stack(innerAcct, 'Stack'))).toEqual(['tnuocca', 'region']);
+    expect(acctRegion(new Stack(innerRegion, 'Stack'))).toEqual(['account', 'elsewhere']);
+    expect(acctRegion(new Stack(innerNeither, 'Stack'))).toEqual(['account', 'region']);
+  });
 });
 
 class MyConstruct extends Construct {
@@ -370,4 +401,8 @@ class MyConstruct extends Construct {
     new CfnResource(this, 'r1', { type: 'ResourceType1' });
     new CfnResource(this, 'r2', { type: 'ResourceType2', properties: { FromContext: this.node.tryGetContext('ctx1') } });
   }
+}
+
+function acctRegion(s: Stack) {
+  return [s.account, s.region];
 }
