@@ -17,7 +17,9 @@
       }
      ]
     }
-   }
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
   },
   "TargetQueue08AD2B3C": {
    "Type": "AWS::SQS::Queue",
