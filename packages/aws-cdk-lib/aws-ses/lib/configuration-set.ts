@@ -87,7 +87,7 @@ export interface ConfigurationSetProps {
  */
 export interface VdmOptions {
   /**
-   * Whether engagement metrics are enabled for the configuration set
+   * If true, engagement metrics are enabled for the configuration set
    *
    * @default - use account level settings
    */
