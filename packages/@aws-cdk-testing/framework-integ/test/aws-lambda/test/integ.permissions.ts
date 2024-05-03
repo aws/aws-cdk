@@ -22,7 +22,7 @@ fn.grantInvokeLatestVersion(new iam.AnyPrincipal().inOrganization('o-yyyyyyyyyy2
 fn.grantInvokeLatestVersion(new iam.OrganizationPrincipal('o-xxxxxxxxxx2'));
 
 const version1 = new lambda.Version(stack, 'v1', {
-  lambda: fn
+  lambda: fn,
 });
 
 fn.grantInvokeVersion(new iam.AnyPrincipal().inOrganization('o-yyyyyyyyyy2'), version1);
