@@ -35,6 +35,8 @@ In addition, the library also supports defining Kubernetes resource manifests wi
     - [Encryption](#encryption)
   - [Permissions and Security](#permissions-and-security)
     - [AWS IAM Mapping](#aws-iam-mapping)
+    - [Access Config](#access-config)
+    - [Access Entry](#access-mapping)
     - [Cluster Security Group](#cluster-security-group)
     - [Node SSH Access](#node-ssh-access)
     - [Service Accounts](#service-accounts)
@@ -1059,6 +1061,7 @@ your_current_role.addToPolicy(new iam.PolicyStatement({
 import { KubectlV29Layer } from '@aws-cdk/lambda-layer-kubectl-v29';
 declare const vpc: ec2.Vpc;
 
+
 const mastersRole = new iam.Role(this, 'MastersRole', {
   assumedBy: new iam.ArnPrincipal('arn_for_trusted_principal'),
 });
@@ -1099,6 +1102,98 @@ consoleReadOnlyRole.addToPolicy(new iam.PolicyStatement({
 // Add this role to system:masters RBAC group
 cluster.awsAuth.addMastersRole(consoleReadOnlyRole)
 ```
+
+### Access Config
+
+Amazon EKS supports three modes of authentication: `CONFIG_MAP`, `API_AND_CONFIG_MAP`, and `API`. You can enable cluster
+to use access entry APIs by using authenticationMode `API` or `API_AND_CONFIG_MAP`. Use authenticationMode `CONFIG_MAP`
+to continue using aws-auth configMap exclusively. When `API_AND_CONFIG_MAP` is enabled, the cluster will source authenticated
+AWS IAM principals from both Amazon EKS access entry APIs and the aws-auth configMap, with priority given to the access entry API.
+
+To specify the `authenticationMode`:
+
+```ts
+import { KubectlV29Layer } from '@aws-cdk/lambda-layer-kubectl-v29';
+declare const vpc: ec2.Vpc;
+
+new eks.Cluster(stack, 'Cluster', {
+  vpc,
+  version: eks.KubernetesVersion.V1_29,
+  kubectlLayer: new KubectlV29Layer(this, 'KubectlLayer'),
+  authenticationMode: eks.AuthenticationMode.API_AND_CONFIG_MAP,
+});
+```
+
+> **Note** - Switching authentication modes on an existing cluster is a one-way operation. You can switch from
+> `CONFIG_MAP` to `API_AND_CONFIG_MAP`. You can then switch from `API_AND_CONFIG_MAP` to `API`.
+> You cannot revert these operations in the opposite direction. Meaning you cannot switch back to
+> `CONFIG_MAP` or `API_AND_CONFIG_MAP` from `API`. And you cannot switch back to `CONFIG_MAP` from `API_AND_CONFIG_MAP`.
+
+Read [A deep dive into simplified Amazon EKS access management controls
+](https://aws.amazon.com/blogs/containers/a-deep-dive-into-simplified-amazon-eks-access-management-controls/) for more details.
+
+
+### Access Entry
+
+An access entry is a cluster identity—directly linked to an AWS IAM principal user or role that is used to authenticate to
+an Amazon EKS cluster. An Amazon EKS access policy authorizes an access entry to perform specific cluster actions.
+
+Access policies are Amazon EKS-specific policies that assign Kubernetes permissions to access entries. Amazon EKS supports
+only predefined and AWS managed policies. Access policies are not AWS IAM entities and are defined and managed by Amazon EKS.
+Amazon EKS access policies include permission sets that support common use cases of administration, editing, or read-only access
+to Kubernetes resources. See [Access Policy Permissions](https://docs.aws.amazon.com/eks/latest/userguide/access-policies.html#access-policy-permissions) for more details.
+
+Use `AccessPolicy` to include predefined AWS managed policies:
+
+```ts
+// AmazonEKSClusterAdminPolicy with `cluster` scope
+AccessPolicy.fromAccessPolicyName('AmazonEKSClusterAdminPolicy');
+// AmazonEKSAdminPolicy with `namespace` scope
+AccessPolicy.fromAccessPolicyName('AmazonEKSAdminPolicy', { namespaces: ['foo', 'bar'] } );
+```
+
+Use `grantAccess()` to grant the AccessPolicy to an IAM principal:
+
+```ts
+import { KubectlV29Layer } from '@aws-cdk/lambda-layer-kubectl-v29';
+declare const vpc: ec2.Vpc;
+
+const clusterAdminRole = new iam.Role(this, 'ClusterAdminRole', {
+  assumedBy: new iam.ArnPrincipal('arn_for_trusted_principal'),
+});
+
+const eksAdminRole = new iam.Role(this, 'EKSAdminRole', {
+  assumedBy: new iam.ArnPrincipal('arn_for_trusted_principal'),
+});
+
+const eksAdminViewRole = new iam.Role(this, 'EKSAdminViewRole', {
+  assumedBy: new iam.ArnPrincipal('arn_for_trusted_principal'),
+});
+
+const cluster = new eks.Cluster(stack, 'Cluster', {
+  vpc,
+  mastersRole: clusterAdminRole,
+  version: eks.KubernetesVersion.V1_29,
+  kubectlLayer: new KubectlV29Layer(this, 'KubectlLayer'),
+  authenticationMode: eks.AuthenticationMode.API_AND_CONFIG_MAP,
+});
+
+// Cluster Admin role for this cluster
+cluster.grantAccess('clusterAdminAccess', clusterAdminRole.roleArn, [
+  AccessPolicy.fromAccessPolicyName('AmazonEKSClusterAdminPolicy'),
+]);
+
+// EKS Admin role for specified namespaces of thie cluster
+cluster.grantAccess('eksAdminRoleAccess', eksAdminRole.roleArn, [
+  AccessPolicy.fromAccessPolicyName('AmazonEKSAdminPolicy', { namespaces: ['foo', 'bar'] } ),
+]);
+
+// EKS Admin Viewer role for specified namespaces of thie cluster
+cluster.grantAccess('eksAdminViewRoleAccess', eksAdminViewRole.roleArn, [
+  AccessPolicy.fromAccessPolicyName('AmazonEKSAdminViewPolicy', { namespaces: ['foo', 'bar'] } ),
+]);
+```
+
 
 ### Cluster Security Group
 
