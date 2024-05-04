@@ -72,7 +72,7 @@ export interface CallAwsServiceCrossRegionProps extends sfn.TaskStateBaseProps {
 
   /**
    * The AWS region to call this AWS API for.
-   * @example us-east-1
+   * @example 'us-east-1'
    */
   readonly region: string;
 
