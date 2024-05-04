@@ -145,6 +145,7 @@ const bucketEnv = appConfigApp.addEnvironment('BucketEnv');
 const bucket = new Bucket(stack, 'MyBucket', {
   versioned: true,
   removalPolicy: RemovalPolicy.DESTROY,
+  autoDeleteObjects: true,
 });
 bucket.applyRemovalPolicy(RemovalPolicy.DESTROY);
 const deployment = new s3Deployment.BucketDeployment(stack, 'DeployConfigInBucket', {
