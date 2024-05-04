@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/14384aa6d668222d0f303cb1570d380a8e6a876e38f4014b4eb6a76f0db683a8.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/7a5863010d002c097abb83468679f1d7cbeebf4726340787cdda2945551a64d7.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -52,6 +52,12 @@
             "data": "VdmOptionsNotConfigured273D3326"
           }
         ],
+        "/cdk-ses-configuration-set-vdmoptions-integ/VdmAccountLevelSettings/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "VdmAccountLevelSettings4BBA5196"
+          }
+        ],
         "/cdk-ses-configuration-set-vdmoptions-integ/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
@@ -62,33 +68,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
-          }
-        ],
-        "ConfigurationSetVdmOptions06EA009B": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ConfigurationSetVdmOptions06EA009B",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "EngagementMetricsOnly703CA524": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "EngagementMetricsOnly703CA524",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "OptimizedSharedDeliberyOnly96A1EA54": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "OptimizedSharedDeliberyOnly96A1EA54",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
           }
         ]
       },

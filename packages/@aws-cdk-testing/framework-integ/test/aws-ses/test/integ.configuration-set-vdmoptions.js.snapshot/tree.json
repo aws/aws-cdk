@@ -92,6 +92,35 @@
               "version": "0.0.0"
             }
           },
+          "VdmAccountLevelSettings": {
+            "id": "VdmAccountLevelSettings",
+            "path": "cdk-ses-configuration-set-vdmoptions-integ/VdmAccountLevelSettings",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "cdk-ses-configuration-set-vdmoptions-integ/VdmAccountLevelSettings/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::SES::VdmAttributes",
+                  "aws:cdk:cloudformation:props": {
+                    "dashboardAttributes": {
+                      "engagementMetrics": "ENABLED"
+                    },
+                    "guardianAttributes": {
+                      "optimizedSharedDelivery": "ENABLED"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_ses.CfnVdmAttributes",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_ses.VdmAttributes",
+              "version": "0.0.0"
+            }
+          },
           "BootstrapVersion": {
             "id": "BootstrapVersion",
             "path": "cdk-ses-configuration-set-vdmoptions-integ/BootstrapVersion",

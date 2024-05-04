@@ -240,10 +240,11 @@ Use the `VdmAttributes` construct to configure the Virtual Deliverability Manage
 new ses.VdmAttributes(this, 'Vdm');
 ```
 
-If you want to configure the Virtual Deliverablity Manager for the specified configuration set, use `vdmOptions` in the `ConfigurationSet` construct.
-For more information, see [Virtual Deliverability Manager for Amazon SES](https://docs.aws.amazon.com/ses/latest/dg/vdm.html).
+If you want to override the VDM settings in the specified configuration set, use `vdmOptions` in the `ConfigurationSet` construct.
 
-This configuration level settings override the account level settings.
+> *Note* The configuration set level settings need to be used together with the account level settings.
+> If you enable only the configuration set level settings, VDM will not be enabled until the account level settings are configured.
+> For more information, see [Virtual Deliverability Manager settings](https://docs.aws.amazon.com/ses/latest/dg/vdm-settings.html).
 
 ```ts
 new ses.ConfigurationSet(this, 'ConfigurationSetWithVdmOptions', {

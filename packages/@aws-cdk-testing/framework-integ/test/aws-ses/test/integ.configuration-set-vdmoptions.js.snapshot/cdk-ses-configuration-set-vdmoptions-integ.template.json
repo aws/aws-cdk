@@ -28,6 +28,17 @@
   },
   "VdmOptionsNotConfigured273D3326": {
    "Type": "AWS::SES::ConfigurationSet"
+  },
+  "VdmAccountLevelSettings4BBA5196": {
+   "Type": "AWS::SES::VdmAttributes",
+   "Properties": {
+    "DashboardAttributes": {
+     "EngagementMetrics": "ENABLED"
+    },
+    "GuardianAttributes": {
+     "OptimizedSharedDelivery": "ENABLED"
+    }
+   }
   }
  },
  "Parameters": {

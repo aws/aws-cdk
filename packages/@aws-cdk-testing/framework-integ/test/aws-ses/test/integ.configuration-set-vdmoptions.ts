@@ -23,6 +23,11 @@ class TestStack extends Stack {
 
     new ses.ConfigurationSet(this, 'VdmOptionsNotConfigured', {
     });
+
+    new ses.VdmAttributes(this, 'VdmAccountLevelSettings', {
+      engagementMetrics: true,
+      optimizedSharedDelivery: true,
+    });
   }
 }
 
