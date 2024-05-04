@@ -1166,17 +1166,6 @@ export class Function extends FunctionBase {
    * function and undefined if not.
    */
   private getLoggingConfig(props: FunctionProps): CfnFunction.LoggingConfigProperty | undefined {
-    if ((props.applicationLogLevel || props.applicationLogLevelV2 || props.systemLogLevel || props.systemLogLevelV2)
-      && props.logFormat !== LogFormat.JSON
-      && props.loggingFormat === undefined) {
-      throw new Error(`To use ApplicationLogLevel and/or SystemLogLevel you must set LogFormat to '${LogFormat.JSON}', got '${props.logFormat}'.`);
-    }
-
-    if ((props.applicationLogLevel || props.applicationLogLevelV2 || props.systemLogLevel || props.systemLogLevelV2)
-      && props.loggingFormat !== LoggingFormat.JSON && props.logFormat === undefined) {
-      throw new Error(`To use ApplicationLogLevel and/or SystemLogLevel you must set LoggingFormat to '${LoggingFormat.JSON}', got '${props.loggingFormat}'.`);
-    }
-
     if (props.logFormat && props.loggingFormat) {
       throw new Error('Only define LogFormat or LoggingFormat, not both.');
     }
@@ -1187,6 +1176,16 @@ export class Function extends FunctionBase {
 
     if (props.systemLogLevel && props.systemLogLevelV2) {
       throw new Error('Only define systemLogLevel or systemLogLevelV2, not both.');
+    }
+
+    if (props.applicationLogLevel || props.applicationLogLevelV2 || props.systemLogLevel || props.systemLogLevelV2) {
+      if (props.logFormat !== LoggingFormat.JSON && props.loggingFormat === undefined) {
+        throw new Error(`To use ApplicationLogLevel and/or SystemLogLevel you must set LogFormat to '${LogFormat.JSON}', got '${props.logFormat}'.`);
+      }
+
+      if (props.loggingFormat !== LoggingFormat.JSON && props.logFormat === undefined) {
+        throw new Error(`To use ApplicationLogLevel and/or SystemLogLevel you must set LoggingFormat to '${LoggingFormat.JSON}', got '${props.loggingFormat}'.`);
+      }
     }
 
     let loggingConfig: CfnFunction.LoggingConfigProperty;
