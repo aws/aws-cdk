@@ -3,7 +3,7 @@ import * as path from 'path';
 import { Construct, Node } from 'constructs';
 import * as semver from 'semver';
 import * as YAML from 'yaml';
-import { AccessEntry, AccessPolicy, AccessScopeType, IAccessPolicy } from './access-entry';
+import { IAccessPolicy, IAccessEntry, AccessEntry } from './access-entry';
 import { AlbController, AlbControllerOptions } from './alb-controller';
 import { AwsAuth } from './aws-auth';
 import { ClusterResource, clusterArnComponents } from './cluster-resource';
@@ -1285,6 +1285,8 @@ export class Cluster extends ClusterBase {
     return new ImportedCluster(scope, id, attrs);
   }
 
+  private accessEntries: Map<string, IAccessEntry> = new Map();
+
   /**
    * The VPC in which this Cluster was created
    */
@@ -1753,6 +1755,32 @@ export class Cluster extends ClusterBase {
     this.defineCoreDnsComputeType(props.coreDnsComputeType ?? CoreDnsComputeType.EC2);
 
   }
+  /**
+   * Adds an access entry to the cluster's access entries map.
+   *
+   * If an entry already exists for the given principal, it adds the provided access policies to the existing entry.
+   * If no entry exists for the given principal, it creates a new access entry with the provided access policies.
+   *
+   * @param principal - The principal (e.g., IAM user or role) for which the access entry is being added.
+   * @param policies - An array of access policies to be associated with the principal.
+   *
+   * @throws {Error} If the uniqueName generated for the new access entry is not unique.
+   *
+   * @returns {void}
+   */
+  public addToAccessEntry(id: string, principal: string, policies: IAccessPolicy[]) {
+    const entry = this.accessEntries.get(principal);
+    if (entry) {
+      (entry as AccessEntry).addAccessPolicies(policies);
+    } else {
+      const newEntry = new AccessEntry(this, id, {
+        principal,
+        cluster: this,
+        accessPolicies: policies,
+      });
+      this.accessEntries.set(principal, newEntry);
+    }
+  }
 
   /**
    * Grants Amazon EKS admin access to the specified IAM role within the given Kubernetes namespaces.
@@ -1765,15 +1793,15 @@ export class Cluster extends ClusterBase {
    * @param role - The IAM role to be granted the Amazon EKS admin access.
    * @param namespaces - The list of Kubernetes namespaces within which the IAM role will be granted the admin access.
    */
-  public grantEksAdminAccess(id: string, role: iam.IRole, namespaces: string[]) {
-    this.grantAccess(id, role, [{
-      policy: AccessPolicy.AMAZON_EKS_ADMIN_POLICY,
-      accessScope: {
-        type: AccessScopeType.NAMESPACE,
-        namespaces,
-      },
-    }]);
-  }
+  // public grantEksAdminAccess(id: string, principal: string, namespaces: string[]) {
+  //   this.grantAccess(id, principal, [{
+  //     policy: AccessPolicy.AMAZON_EKS_ADMIN_POLICY,
+  //     accessScope: {
+  //       type: AccessScopeType.NAMESPACE,
+  //       namespaces,
+  //     },
+  //   }]);
+  // }
 
   /**
    * Grants the specified IAM role full administrative access to the EKS cluster.
@@ -1785,12 +1813,12 @@ export class Cluster extends ClusterBase {
    * @param id - The ID of the access entry resource.
    * @param role - The IAM role to grant cluster admin access to.
    */
-  public grantClusterAdminAccess(id: string, role: iam.IRole) {
-    this.grantAccess(id, role, [{
-      policy: AccessPolicy.AMAZON_EKS_CLUSTER_ADMIN_POLICY,
-      accessScope: { type: AccessScopeType.CLUSTER },
-    }]);
-  }
+  // public grantClusterAdminAccess(id: string, principal: string) {
+  //   this.grantAccess(id, principal, [{
+  //     policy: AccessPolicy.AMAZON_EKS_CLUSTER_ADMIN_POLICY,
+  //     accessScope: { type: AccessScopeType.CLUSTER },
+  //   }]);
+  // }
 
   /**
    * Grants the specified IAM role access to the EKS cluster based on the provided access policies.
@@ -1802,12 +1830,8 @@ export class Cluster extends ClusterBase {
    * @param role - The IAM role to be granted access to the EKS cluster.
    * @param accessPolicies - An array of `IAccessPolicy` objects that define the access permissions to be granted to the IAM role.
    */
-  public grantAccess(id: string, role: iam.IRole, accessPolicies: IAccessPolicy[]) {
-    new AccessEntry(this, id, {
-      cluster: this,
-      principal: role.roleArn,
-      accessPolicies,
-    });
+  public grantAccess(id: string, principal: string, accessPolicies: IAccessPolicy[]) {
+    this.addToAccessEntry(id, principal, accessPolicies);
   }
 
   /**

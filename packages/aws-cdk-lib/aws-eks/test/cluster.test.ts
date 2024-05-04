@@ -3351,7 +3351,7 @@ describe('cluster', () => {
         mastersRole,
         version: CLUSTER_VERSION,
       });
-      cluster.grantAccess('mastersAccess', mastersRole, [
+      cluster.grantAccess('mastersAccess', mastersRole.roleArn, [
         {
           policy: eks.AccessPolicy.AMAZON_EKS_CLUSTER_ADMIN_POLICY,
           accessScope: { type: eks.AccessScopeType.CLUSTER },
@@ -3389,7 +3389,7 @@ describe('cluster', () => {
         mastersRole,
         version: CLUSTER_VERSION,
       });
-      cluster.grantClusterAdminAccess('mastersAccess', mastersRole);
+      cluster.grantClusterAdminAccess('mastersAccess', mastersRole.roleArn);
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::EKS::AccessEntry', {
         AccessPolicies: [
@@ -3422,7 +3422,7 @@ describe('cluster', () => {
         mastersRole,
         version: CLUSTER_VERSION,
       });
-      cluster.grantEksAdminAccess('mastersAccess', mastersRole, ['mock-namespace']);
+      cluster.grantEksAdminAccess('mastersAccess', mastersRole.roleArn, ['mock-namespace']);
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::EKS::AccessEntry', {
         AccessPolicies: [
@@ -3445,7 +3445,6 @@ describe('cluster', () => {
 
       });
     });
-
 
   });
 

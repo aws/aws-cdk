@@ -2,7 +2,7 @@ import { Construct } from 'constructs';
 import { ICluster } from './cluster';
 import { CfnAccessEntry } from './eks.generated';
 import {
-  Resource, IResource, Aws,
+  Resource, IResource, Aws, Lazy,
 } from '../../core';
 
 /**
@@ -85,51 +85,51 @@ export interface AccessScope {
 }
 
 /**
- * Represents an Amazon EKS Access Policy.
+ * Represents an Amazon EKS Access Policy ARN.
  *
  * Amazon EKS Access Policies are used to control access to Amazon EKS clusters.
  *
  * @see https://docs.aws.amazon.com/eks/latest/userguide/access-policies.html
  */
-export class AccessPolicy {
+export class AccessPolicyArn {
   /**
    * The Amazon EKS Admin Policy. This access policy includes permissions that grant an IAM principal
    * most permissions to resources. When associated to an access entry, its access scope is typically
    * one or more Kubernetes namespaces.
    */
-  public static readonly AMAZON_EKS_ADMIN_POLICY = AccessPolicy.of('AmazonEKSAdminPolicy');
+  public static readonly AMAZON_EKS_ADMIN_POLICY = AccessPolicyArn.of('AmazonEKSAdminPolicy');
 
   /**
    * The Amazon EKS Cluster Admin Policy. This access policy includes permissions that grant an IAM
    * principal administrator access to a cluster. When associated to an access entry, its access scope
    * is typically the cluster, rather than a Kubernetes namespace.
    */
-  public static readonly AMAZON_EKS_CLUSTER_ADMIN_POLICY = AccessPolicy.of('AmazonEKSClusterAdminPolicy');
+  public static readonly AMAZON_EKS_CLUSTER_ADMIN_POLICY = AccessPolicyArn.of('AmazonEKSClusterAdminPolicy');
 
   /**
    * The Amazon EKS Admin View Policy. This access policy includes permissions that grant an IAM principal
    * access to list/view all resources in a cluster.
    */
-  public static readonly AMAZON_EKS_ADMIN_VIEW_POLICY = AccessPolicy.of('AmazonEKSAdminViewPolicy');
+  public static readonly AMAZON_EKS_ADMIN_VIEW_POLICY = AccessPolicyArn.of('AmazonEKSAdminViewPolicy');
 
   /**
    * The Amazon EKS Edit Policy. This access policy includes permissions that allow an IAM principal
    * to edit most Kubernetes resources.
    */
-  public static readonly AMAZON_EKS_EDIT_POLICY = AccessPolicy.of('AmazonEKSEditPolicy');
+  public static readonly AMAZON_EKS_EDIT_POLICY = AccessPolicyArn.of('AmazonEKSEditPolicy');
 
   /**
    * The Amazon EKS View Policy. This access policy includes permissions that grant an IAM principal
    * access to list/view all resources in a cluster.
    */
-  public static readonly AMAZON_EKS_VIEW_POLICY = AccessPolicy.of('AmazonEKSViewPolicy');
+  public static readonly AMAZON_EKS_VIEW_POLICY = AccessPolicyArn.of('AmazonEKSViewPolicy');
 
   /**
    * Creates a new instance of the AccessPolicy class with the specified policy name.
    * @param policyName The name of the access policy.
    * @returns A new instance of the AccessPolicy class.
    */
-  public static of(policyName: string) { return new AccessPolicy(policyName); }
+  public static of(policyName: string) { return new AccessPolicyArn(policyName); }
 
   /**
    * The Amazon Resource Name (ARN) of the access policy.
@@ -155,7 +155,75 @@ export interface IAccessPolicy {
   /**
    * The access policy itself, which defines the specific permissions.
    */
-  readonly policy: AccessPolicy;
+  readonly policy: string;
+}
+
+/**
+ * Properties for configuring an Amazon EKS Access Policy.
+ *
+ * @interface AccessPolicyProps
+ * @property {AccessScope} accessScope - The scope of the access policy, which determines the level of access granted.
+ * @property {AccessPolicyArn} policy - The access policy itself, which defines the specific permissions.
+ */
+export interface AccessPolicyProps {
+  /**
+   * The scope of the access policy, which determines the level of access granted.
+   */
+  readonly accessScope: AccessScope;
+  /**
+   * The access policy itself, which defines the specific permissions.
+   */
+  readonly policy: AccessPolicyArn;
+}
+
+export interface AccessPolicyNameOptions {
+  /**
+   *
+   * @default - no namespaces.
+   */
+  readonly namespaces?: string[];
+  /**
+   *
+   * @default - auto-determined by policyName
+   */
+  readonly accessScope?: AccessScope;
+}
+
+/**
+ * Represents an Amazon EKS Access Policy that implements the IAccessPolicy interface.
+ *
+ * @implements {IAccessPolicy}
+ */
+export class AccessPolicy implements IAccessPolicy {
+  public static fromAccessPolicyName(policyName: string, options?: AccessPolicyNameOptions): IAccessPolicy {
+    class Import implements IAccessPolicy {
+      public readonly policy = `arn:${Aws.PARTITION}:eks::aws:cluster-access-policy/${policyName}`
+      public readonly accessScope: AccessScope = options?.accessScope ?? {
+        type: policyName === 'AmazonEKSClusterAdminPolicy' ? AccessScopeType.CLUSTER : AccessScopeType.NAMESPACE,
+        namespaces: options?.namespaces,
+      };
+    }
+    return new Import();
+  }
+  /**
+   * The scope of the access policy, which determines the level of access granted.
+   */
+  public readonly accessScope: AccessScope;
+
+  /**
+   * The access policy itself, which defines the specific permissions.
+   */
+  public readonly policy: string;
+
+  /**
+   * Constructs a new instance of the AccessPolicy class.
+   *
+   * @param {AccessPolicyProps} props - The properties for configuring the access policy.
+   */
+  constructor(props: AccessPolicyProps) {
+    this.accessScope = props.accessScope;
+    this.policy = props.policy.policyArn;
+  }
 }
 
 /**
@@ -202,6 +270,7 @@ export class AccessEntry extends Resource implements IAccessEntry {
     class Import extends Resource implements IAccessEntry {
       public readonly accessEntryName = attrs.accessEntryName;
       public readonly accessEntryArn = attrs.accessEntryArn;
+
     }
     return new Import(scope, id);
   }
@@ -213,14 +282,30 @@ export class AccessEntry extends Resource implements IAccessEntry {
    * The Amazon Resource Name (ARN) of the access entry.
    */
   public readonly accessEntryArn: string;
+  private cluster: ICluster;
+  private principal: string;
+  private accessPolicies: IAccessPolicy[];
 
   constructor(scope: Construct, id: string, props: AccessEntryProps ) {
     super(scope, id);
 
+    this.cluster = props.cluster;
+    this.principal = props.principal;
+    this.accessPolicies = props.accessPolicies;
+
     const resource = new CfnAccessEntry(this, 'Resource', {
-      clusterName: props.cluster.clusterName,
-      principalArn: props.principal,
-      accessPolicies: this.mapAccessPolicies(props.accessPolicies),
+      clusterName: this.cluster.clusterName,
+      principalArn: this.principal,
+      accessPolicies: Lazy.any({
+        produce: () => this.accessPolicies.map(p => ({
+          accessScope: {
+            type: p.accessScope.type,
+            namespaces: p.accessScope.namespaces,
+          },
+          policyArn: p.policy,
+        })),
+      }),
+
     });
     this.accessEntryName = this.getResourceNameAttribute(resource.ref);
     this.accessEntryArn = this.getResourceArnAttribute(resource.attrAccessEntryArn, {
@@ -230,17 +315,49 @@ export class AccessEntry extends Resource implements IAccessEntry {
     });
   }
   /**
-   * Maps the provided access policies to the format required by the CfnAccessEntry construct.
-   * @param accessPolicies - The access policies to map.
-   * @returns The mapped access policies.
+   * Add the access policies for this entry.
+   * @param newAccessPolicies - The new access policies to add.
    */
-  private mapAccessPolicies(accessPolicies: IAccessPolicy[]): { accessScope: AccessScope; policyArn: string }[] {
-    return accessPolicies.map(p => ({
-      accessScope: {
-        type: p.accessScope.type,
-        namespaces: p.accessScope.namespaces,
-      },
-      policyArn: p.policy.policyArn,
-    }));
+  public addAccessPolicies(newAccessPolicies: IAccessPolicy[]): void {
+    // add newAccessPolicies to this.accessPolicies
+    this.accessPolicies.push(...newAccessPolicies);
   }
 }
+
+// /**
+//  * AccessGrant class to grant permissions to a principal.
+//  */
+// export class AccessGrant {
+//   /**
+//    * Grant permissions to a principal.
+//    *
+//    * @param cluster - The Amazon EKS cluster.
+//    * @param principal - The principal to grant permissions to.
+//    * @param accessPolicies - The access policies to grant.
+//    * @returns The access entry.
+//    */
+//   public static grant(cluster: ICluster, principal: string, accessPolicies: IAccessPolicy[]): IAccessEntry {
+//     if (this.accessEntries.has(principal)) {
+//       const existingEntry = this.accessEntries.get(principal)!;
+//       (existingEntry as AccessEntry).addAccessPolicies(accessPolicies);
+//       // return existingEntry;
+//     } else {
+//       const uniqueName = `${principal}-${cluster.clusterName}`;
+//       // hash the uniqueName and get the first 12 chars
+//       const hash = crypto.createHash('sha256').update(uniqueName).digest('hex').slice(0, 12);;
+
+//       const newEntry = new AccessEntry(cluster, hash, {
+//         cluster,
+//         principal,
+//         accessPolicies,
+//       });
+//       this.accessEntries.set(principal, newEntry);
+//       // return newEntry;
+//     }
+//     return new AccessGrant(cluster, principal, accessPolicies);
+//   }
+//   private static accessEntries: Map<string, IAccessEntry> = new Map();
+//   constructor() {
+
+//   })
+// }
