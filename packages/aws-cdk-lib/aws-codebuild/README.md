@@ -70,6 +70,11 @@ const gitHubSource = codebuild.Source.gitHub({
       .andBranchIs('main')
       .andCommitMessageIs('the commit message'),
   ], // optional, by default all pushes and Pull Requests will trigger a build
+  [
+    codebuild.FilterGroup
+      .inEventOf(codebuild.EventAction.RELEASED)
+      .andBranchIs('main')
+  ], 
 });
 ```
 
