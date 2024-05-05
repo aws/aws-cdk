@@ -1,6 +1,6 @@
 import { Construct, IConstruct } from 'constructs';
 import { AwsAuthMapping } from './aws-auth-mapping';
-import { Cluster } from './cluster';
+import { Cluster, AuthenticationMode } from './cluster';
 import { KubernetesManifest } from './k8s-manifest';
 import * as iam from '../../aws-iam';
 import { Lazy, Stack } from '../../core';
@@ -27,11 +27,18 @@ export class AwsAuth extends Construct {
   private readonly roleMappings = new Array<{ role: iam.IRole; mapping: AwsAuthMapping }>();
   private readonly userMappings = new Array<{ user: iam.IUser; mapping: AwsAuthMapping }>();
   private readonly accounts = new Array<string>();
+  private readonly cluster: Cluster;
 
   constructor(scope: Construct, id: string, props: AwsAuthProps) {
     super(scope, id);
 
+    // Throw if the cluster does not support ConfigMap.
+    if (!this.supportConfigMap()) {
+      throw new Error('ConfigMap not supported in the AuthenticationMode');
+    }
+
     this.stack = Stack.of(this);
+    this.cluster = props.cluster;
 
     new KubernetesManifest(this, 'manifest', {
       cluster: props.cluster,
@@ -96,6 +103,10 @@ export class AwsAuth extends Construct {
    */
   public addAccount(accountId: string) {
     this.accounts.push(accountId);
+  }
+
+  private supportConfigMap(): boolean {
+    return this.cluster.authenticationMode !== AuthenticationMode.API ? true : false;
   }
 
   private assertSameStack(construct: IConstruct) {

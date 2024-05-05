@@ -3,7 +3,7 @@ import * as path from 'path';
 import { Construct, Node } from 'constructs';
 import * as semver from 'semver';
 import * as YAML from 'yaml';
-import { IAccessPolicy, IAccessEntry, AccessEntry } from './access-entry';
+import { IAccessPolicy, IAccessEntry, AccessEntry, AccessPolicy } from './access-entry';
 import { AlbController, AlbControllerOptions } from './alb-controller';
 import { AwsAuth } from './aws-auth';
 import { ClusterResource, clusterArnComponents } from './cluster-resource';
@@ -184,6 +184,12 @@ export interface ICluster extends IResource, ec2.IConnectable {
    * apply` operation with the `--prune` switch.
    */
   readonly prune: boolean;
+
+  /**
+   * The authentication mode for the cluster.
+   * @default AuthenticationMode.CONFIG_MAP
+   */
+  readonly authenticationMode?: AuthenticationMode;
 
   /**
    * Creates a new service account with corresponding IAM Role (IRSA).
@@ -679,7 +685,7 @@ export interface ClusterOptions extends CommonClusterOptions {
 
   /**
    * The desired authentication mode for the cluster.
-   * @default AuthenticationMode.CONFIG_MAP;
+   * @default AuthenticationMode.CONFIG_MAP
    */
   readonly authenticationMode?: AuthenticationMode;
 }
@@ -1472,6 +1478,17 @@ export class Cluster extends ClusterBase {
   public readonly albController?: AlbController;
 
   /**
+   * The authentication mode for the Amazon EKS cluster.
+   *
+   * The authentication mode determines how users and applications authenticate to the Kubernetes API server.
+   *
+   * @property {AuthenticationMode} [authenticationMode] - The authentication mode for the Amazon EKS cluster.
+   *
+   * @default CONFIG_MAP.
+   */
+  public readonly authenticationMode?: AuthenticationMode;
+
+  /**
    * If this cluster is kubectl-enabled, returns the `ClusterResource` object
    * that manages it. If this cluster is not kubectl-enabled (i.e. uses the
    * stock `CfnCluster`), this is `undefined`.
@@ -1610,6 +1627,8 @@ export class Cluster extends ClusterBase {
       throw new Error('Cannot specify serviceIpv4Cidr with ipFamily equal to IpFamily.IP_V6');
     }
 
+    this.authenticationMode = props.authenticationMode;
+
     const resource = this._clusterResource = new ClusterResource(this, 'Resource', {
       name: this.physicalName,
       environment: props.clusterHandlerEnvironment,
@@ -1716,12 +1735,22 @@ export class Cluster extends ClusterBase {
       new CfnOutput(this, 'ClusterName', { value: this.clusterName });
     }
 
+    const supportConfigMap = this.authenticationMode !== AuthenticationMode.API ? true : false;
+
     // do not create a masters role if one is not provided. Trusting the accountRootPrincipal() is too permissive.
     if (props.mastersRole) {
       const mastersRole = props.mastersRole;
 
-      // map the IAM role to the `system:masters` group.
-      this.awsAuth.addMastersRole(mastersRole);
+      if (supportConfigMap) {
+        // map the IAM role to the `system:masters` group.
+        this.awsAuth.addMastersRole(mastersRole);
+      } else {
+        // assuming authentication API is supported.
+        // adding an access entry with AmazonEKSClusterAdminPolicy for it.
+        this.grantAccess('mastersRoleAccess', props.mastersRole.roleArn, [
+          AccessPolicy.fromAccessPolicyName('AmazonEKSClusterAdminPolicy'),
+        ]);
+      }
 
       if (props.outputMastersRoleArn) {
         new CfnOutput(this, 'MastersRoleArn', { value: mastersRole.roleArn });
