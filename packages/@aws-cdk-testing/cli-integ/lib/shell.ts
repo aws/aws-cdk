@@ -66,7 +66,9 @@ export async function shell(command: string[], options: ShellOptions = {}): Prom
       if (code === 0 || options.allowErrExit) {
         resolve(out);
       } else {
-        (options.output ?? process.stdout).write(out + '\n');
+        if (options.show === 'error') {
+          (options.output ?? process.stdout).write(out + '\n');
+        }
         reject(new Error(`'${command.join(' ')}' exited with error code ${code}.`));
       }
     });
