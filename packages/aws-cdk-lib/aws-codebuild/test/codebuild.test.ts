@@ -567,6 +567,9 @@ describe('default properties', () => {
         webhookFilters: [
           codebuild.FilterGroup.inEventOf(codebuild.EventAction.PUSH).andTagIsNot('stable'),
           codebuild.FilterGroup.inEventOf(codebuild.EventAction.PULL_REQUEST_REOPENED).andBaseBranchIs('main'),
+          codebuild.FilterGroup.inEventOf(codebuild.EventAction.RELEASED).andBaseBranchIs('main'),
+          codebuild.FilterGroup.inEventOf(codebuild.EventAction.PRERELEASED).andBaseBranchIs('main'),
+          codebuild.FilterGroup.inEventOf(codebuild.EventAction.WORKFLOW_JOB_QUEUED).andBaseBranchIs('main'),
         ],
       }),
     });
@@ -593,6 +596,18 @@ describe('default properties', () => {
           ],
           [
             { Type: 'EVENT', Pattern: 'PULL_REQUEST_REOPENED' },
+            { Type: 'BASE_REF', Pattern: 'refs/heads/main' },
+          ],
+          [
+            { Type: 'EVENT', Pattern: 'RELEASED' },
+            { Type: 'BASE_REF', Pattern: 'refs/heads/main' },
+          ],
+          [
+            { Type: 'EVENT', Pattern: 'PRERELEASED' },
+            { Type: 'BASE_REF', Pattern: 'refs/heads/main' },
+          ],
+          [
+            { Type: 'EVENT', Pattern: 'WORKFLOW_JOB_QUEUED' },
             { Type: 'BASE_REF', Pattern: 'refs/heads/main' },
           ],
         ],
@@ -664,6 +679,7 @@ describe('default properties', () => {
             codebuild.EventAction.PULL_REQUEST_CREATED,
             codebuild.EventAction.PULL_REQUEST_UPDATED,
             codebuild.EventAction.PULL_REQUEST_MERGED,
+            codebuild.EventAction.PULL_REQUEST_CLOSED,
           ).andTagIs('v.*'),
           // duplicate event actions are fine
           codebuild.FilterGroup.inEventOf(codebuild.EventAction.PUSH, codebuild.EventAction.PUSH).andActorAccountIsNot('aws-cdk-dev'),
@@ -685,7 +701,7 @@ describe('default properties', () => {
         Webhook: true,
         FilterGroups: [
           [
-            { Type: 'EVENT', Pattern: 'PULL_REQUEST_CREATED, PULL_REQUEST_UPDATED, PULL_REQUEST_MERGED' },
+            { Type: 'EVENT', Pattern: 'PULL_REQUEST_CREATED, PULL_REQUEST_UPDATED, PULL_REQUEST_MERGED, PULL_REQUEST_CLOSED' },
             { Type: 'HEAD_REF', Pattern: 'refs/tags/v.*' },
           ],
           [
