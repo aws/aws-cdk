@@ -542,7 +542,7 @@ In both the cases, you will get a synth time error if you attempt to use it in c
 
 ### Customizing the Lambda function implementing the custom resource
 
-Use the `role`, `timeout`, `logGroup`, `functionName` and `removalPolicy` properties to customize
+Use the `role`, `timeout`, `memorySize`, `logGroup`, `functionName` and `removalPolicy` properties to customize
 the Lambda function implementing the custom resource:
 
 ```ts
@@ -550,6 +550,7 @@ declare const myRole: iam.Role;
 new cr.AwsCustomResource(this, 'Customized', {
   role: myRole, // must be assumable by the `lambda.amazonaws.com` service principal
   timeout: Duration.minutes(10), // defaults to 2 minutes
+  memorySize: 1025, // defaults to 512 if installLatestAwsSdk is true
   logGroup: new logs.LogGroup(this, 'AwsCustomResourceLogs', {
     retention: logs.RetentionDays.ONE_DAY,
   }),

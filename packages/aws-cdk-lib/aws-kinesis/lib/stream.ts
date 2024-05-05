@@ -4,7 +4,7 @@ import { CfnStream } from './kinesis.generated';
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
-import { ArnFormat, Aws, CfnCondition, Duration, Fn, IResolvable, IResource, Resource, Stack, Token } from '../../core';
+import { ArnFormat, Aws, CfnCondition, Duration, Fn, IResolvable, IResource, RemovalPolicy, Resource, Stack, Token } from '../../core';
 
 const READ_OPERATIONS = [
   'kinesis:DescribeStreamSummary',
@@ -710,6 +710,13 @@ export interface StreamProps {
    * @default StreamMode.PROVISIONED
    */
   readonly streamMode?: StreamMode;
+
+  /**
+   * Policy to apply when the stream is removed from the stack.
+   *
+   * @default RemovalPolicy.RETAIN
+   */
+  readonly removalPolicy?: RemovalPolicy;
 }
 
 /**
@@ -788,6 +795,7 @@ export class Stream extends StreamBase {
         }
         : undefined),
     });
+    this.stream.applyRemovalPolicy(props.removalPolicy);
 
     this.streamArn = this.getResourceArnAttribute(this.stream.attrArn, {
       service: 'kinesis',

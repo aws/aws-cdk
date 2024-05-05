@@ -326,3 +326,19 @@ _cdk.json_
   }
 }
 ```
+
+* `@aws-cdk/aws-ec2:ebsDefaultGp3Volume`
+
+When enabled, the default volume type of the EBS volume will be GP3.
+
+When this featuer flag is enabled, the default volume type of the EBS volume will be `EbsDeviceVolumeType.GENERAL_PURPOSE_SSD_GP3`
+
+_cdk.json_
+
+```json
+{
+  "context": {
+    "@aws-cdk/aws-ec2:ebsDefaultGp3Volume": true
+  }
+}
+```

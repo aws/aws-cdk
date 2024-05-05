@@ -46,6 +46,31 @@ yarn build # Build the @aws-cdk-testing/cli-integ package
 ../../../scripts/align-version.sh # Align the versions of CDK packages
 ```
 
+### Running tests with debugger
+
+```json
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "node",
+      "request": "launch",
+      "args": ["-a", "cli-integ-tests", "-t", "context in stage propagates to top"],
+      "name": "debug integ tests",
+      "program": "~/aws-cdk/packages/@aws-cdk-testing/cli-integ/bin/run-suite",
+      "console": "integratedTerminal",
+      "sourceMaps": true,
+      "skipFiles": [ "<node_internals>/**/*" ],
+      "stopOnEntry": false
+    }
+  ]
+}
+```
+
+1. Assuming you checked out the `aws-cdk` repository in your `~` directory, use the above `launch.json`.
+2. In the `"args"` value after `"-t"`, place the name of the test that you'd like to run.
+3. Press the VS code green arrow to launch the debugger.
+
 ### Running a test suite
 
 You run a suite using the `bin/run-suite` tool. You must select either a version of the CLI and framework which can be `npm install`ed, or point to the root of the source tree:

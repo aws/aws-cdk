@@ -671,18 +671,7 @@ export class Function extends FunctionBase {
    * in the same account and region as the stack you are importing it into.
    */
   public static fromFunctionArn(scope: Construct, id: string, functionArn: string): IFunction {
-    /**
-     * If the functionArn has a trailing version or alias (more than 7 parts when split by ":",
-     * we trim off the trailing version/alias to retrieve the real functionArn.
-     * See lambda resource ARN format here: https://docs.aws.amazon.com/lambda/latest/dg/lambda-api-permissions-ref.html
-     */
-    const parts = functionArn.split(':');
-    if (parts.length > 7) {
-      const _functionArn = parts.slice(0, 7).join(':');
-      return Function.fromFunctionAttributes(scope, id, { functionArn: _functionArn });
-    } else {
-      return Function.fromFunctionAttributes(scope, id, { functionArn });
-    }
+    return Function.fromFunctionAttributes(scope, id, { functionArn });
   }
 
   /**

@@ -608,6 +608,92 @@ test('timeout defaults to 2 minutes', () => {
   });
 });
 
+test('memorySize defaults to 512 M if installLatestAwsSdk is true', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+
+  // WHEN
+  new AwsCustomResource(stack, 'AwsSdk', {
+    onCreate: {
+      service: 'service',
+      action: 'action',
+      physicalResourceId: PhysicalResourceId.of('id'),
+    },
+    policy: AwsCustomResourcePolicy.fromSdkCalls({ resources: AwsCustomResourcePolicy.ANY_RESOURCE }),
+    installLatestAwsSdk: true,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+    MemorySize: 512,
+  });
+});
+
+test('memorySize is undefined if installLatestAwsSdk is false', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+
+  // WHEN
+  new AwsCustomResource(stack, 'AwsSdk', {
+    onCreate: {
+      service: 'service',
+      action: 'action',
+      physicalResourceId: PhysicalResourceId.of('id'),
+    },
+    policy: AwsCustomResourcePolicy.fromSdkCalls({ resources: AwsCustomResourcePolicy.ANY_RESOURCE }),
+    installLatestAwsSdk: false,
+  });
+
+  // THEN
+  Template.fromStack(stack).resourcePropertiesCountIs('AWS::Lambda::Function', {
+    MemorySize: 512,
+  }, 0);
+});
+
+test('use memorySize prop if installLatestAwsSdk is true', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+
+  // WHEN
+  new AwsCustomResource(stack, 'AwsSdk', {
+    onCreate: {
+      service: 'service',
+      action: 'action',
+      physicalResourceId: PhysicalResourceId.of('id'),
+    },
+    policy: AwsCustomResourcePolicy.fromSdkCalls({ resources: AwsCustomResourcePolicy.ANY_RESOURCE }),
+    installLatestAwsSdk: true,
+    memorySize: 1024,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+    MemorySize: 1024,
+  });
+});
+
+test('use memorySize prop if installLatestAwsSdk is false', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+
+  // WHEN
+  new AwsCustomResource(stack, 'AwsSdk', {
+    onCreate: {
+      service: 'service',
+      action: 'action',
+      physicalResourceId: PhysicalResourceId.of('id'),
+    },
+    policy: AwsCustomResourcePolicy.fromSdkCalls({ resources: AwsCustomResourcePolicy.ANY_RESOURCE }),
+    installLatestAwsSdk: false,
+    memorySize: 1024,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+    MemorySize: 1024,
+  });
+});
+
 test('can specify timeout', () => {
   // GIVEN
   const stack = new cdk.Stack();

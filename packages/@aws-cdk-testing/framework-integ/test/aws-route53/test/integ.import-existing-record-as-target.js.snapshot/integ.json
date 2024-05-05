@@ -1,0 +1,12 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "AwsCdkARecordDnsIntegTest/DefaultTest": {
+      "stacks": [
+        "aws-cdk-route53-integ"
+      ],
+      "assertionStack": "AwsCdkARecordDnsIntegTest/DefaultTest/DeployAssert",
+      "assertionStackName": "AwsCdkARecordDnsIntegTestDefaultTestDeployAssert5618DC96"
+    }
+  }
+}

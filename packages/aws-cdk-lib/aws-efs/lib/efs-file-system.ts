@@ -4,7 +4,7 @@ import { CfnFileSystem, CfnMountTarget } from './efs.generated';
 import * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
-import { ArnFormat, FeatureFlags, Lazy, RemovalPolicy, Resource, Size, Stack, Tags } from '../../core';
+import { ArnFormat, FeatureFlags, Lazy, RemovalPolicy, Resource, Size, Stack, Tags, Token } from '../../core';
 import * as cxapi from '../../cx-api';
 
 /**
@@ -721,19 +721,21 @@ export class FileSystem extends FileSystemBase {
 
   private readonly _mountTargetsAvailable = new DependencyGroup();
 
+  private readonly props: FileSystemProps;
+
   /**
    * Constructor for creating a new EFS FileSystem.
    */
   constructor(scope: Construct, id: string, props: FileSystemProps) {
     super(scope, id);
 
+    this.props = props;
+
     if (props.performanceMode === PerformanceMode.MAX_IO && props.oneZone) {
       throw new Error('performanceMode MAX_IO is not supported for One Zone file systems.');
     }
 
-    if (props.oneZone && props.vpcSubnets) {
-      throw new Error('vpcSubnets cannot be specified when oneZone is enabled.');
-    }
+    if (props.oneZone) { this.oneZoneValidation(); }
 
     if (props.throughputMode === ThroughputMode.PROVISIONED && props.provisionedThroughputPerSecond === undefined) {
       throw new Error('Property provisionedThroughputPerSecond is required when throughputMode is PROVISIONED');
@@ -767,7 +769,10 @@ export class FileSystem extends FileSystemBase {
       lifecyclePolicies.push({ transitionToArchive: props.transitionToArchivePolicy });
     }
 
-    const oneZoneAzName = props.vpc.availabilityZones[0];
+    // if props.vpcSubnets.availabilityZones is defined, select the first one as the zone otherwise
+    // the first AZ of the VPC.
+    const oneZoneAzName = props.vpcSubnets?.availabilityZones ?
+      props.vpcSubnets.availabilityZones[0] : props.vpc.availabilityZones[0];
 
     const fileSystemProtection = props.replicationOverwriteProtection !== undefined ? {
       replicationOverwriteProtection: props.replicationOverwriteProtection,
@@ -878,6 +883,29 @@ export class FileSystem extends FileSystemBase {
       });
     }
     this.mountTargetsAvailable = this._mountTargetsAvailable;
+  }
+
+  private oneZoneValidation() {
+    // validate when props.oneZone is enabled
+    if (this.props.vpcSubnets && !this.props.vpcSubnets.availabilityZones) {
+      throw new Error('When oneZone is enabled and vpcSubnets defined, vpcSubnets.availabilityZones can not be undefined.');
+    }
+    // when vpcSubnets.availabilityZones is defined
+    if (this.props.vpcSubnets && this.props.vpcSubnets.availabilityZones) {
+      // it has to be only one az
+      if (this.props.vpcSubnets.availabilityZones?.length !== 1) {
+        throw new Error('When oneZone is enabled, vpcSubnets.availabilityZones should exactly have one zone.');
+      }
+      // it has to be in availabilityZones
+      // but we only check this when vpc.availabilityZones are valid(not dummy values nore unresolved tokens)
+      const isNotUnresolvedToken = (x: string) => !Token.isUnresolved(x);
+      const isNotDummy = (x: string) => !x.startsWith('dummy');
+      if (this.props.vpc.availabilityZones.every(isNotUnresolvedToken) &&
+      this.props.vpc.availabilityZones.every(isNotDummy) &&
+      !this.props.vpc.availabilityZones.includes(this.props.vpcSubnets.availabilityZones[0])) {
+        throw new Error('vpcSubnets.availabilityZones specified is not in vpc.availabilityZones.');
+      }
+    }
   }
 
   /**

@@ -2,7 +2,7 @@ import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as cdk from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import { PublicHostedZone, VpcEndpointServiceDomainName } from 'aws-cdk-lib/aws-route53';
-import { IntegTest } from '@aws-cdk/integ-tests-alpha';
+import { ExpectedResult, IntegTest, Match } from '@aws-cdk/integ-tests-alpha';
 
 /**
  * A load balancer that can host a VPC Endpoint Service.
@@ -40,15 +40,25 @@ const vpces = new ec2.VpcEndpointService(stack, 'VPCES', {
 const zone = new PublicHostedZone(stack, 'PHZ', {
   zoneName: 'aws-cdk.dev',
 });
-new VpcEndpointServiceDomainName(stack, 'EndpointDomain', {
+const endpointDomain = new VpcEndpointServiceDomainName(stack, 'EndpointDomain', {
   endpointService: vpces,
   domainName: 'my-stuff.aws-cdk.dev',
   publicHostedZone: zone,
 });
 
-new IntegTest(app, 'AwsCdkVpcEndpointDnsIntegTest', {
+const integTest = new IntegTest(app, 'AwsCdkVpcEndpointDnsIntegTest', {
   testCases: [stack],
   diffAssets: true,
 });
+const endpointServices = integTest.assertions.awsApiCall('EC2', 'describeVpcEndpointServices', {
+  ServiceNames: [vpces.vpcEndpointServiceName],
+});
+endpointServices.expect(ExpectedResult.objectLike({
+  ServiceDetails: Match.arrayWith([
+    Match.objectLike({
+      PrivateDnsName: endpointDomain.domainName,
+    }),
+  ]),
+}));
 
 app.synth();

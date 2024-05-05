@@ -832,6 +832,16 @@
    ]
   }
  },
+ "Outputs": {
+  "ExportsOutputRefVPCES3AE7D56580DE08DD": {
+   "Value": {
+    "Ref": "VPCES3AE7D565"
+   },
+   "Export": {
+    "Name": "aws-cdk-vpc-endpoint-dns-integ:ExportsOutputRefVPCES3AE7D56580DE08DD"
+   }
+  }
+ },
  "Parameters": {
   "BootstrapVersion": {
    "Type": "AWS::SSM::Parameter::Value<String>",

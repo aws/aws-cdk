@@ -128,11 +128,13 @@ export class TemplateDiff implements ITemplateDiff {
         continue;
       }
 
-      if (!resourceChange.newResourceType) {
+      if (!resourceChange.resourceType) {
+        // We use resourceChange.resourceType to loadResourceModel so that we can inspect the
+        // properties of a resource even after the resource is removed from the template.
         continue;
       }
 
-      const newTypeProps = loadResourceModel(resourceChange.newResourceType)?.properties || {};
+      const newTypeProps = loadResourceModel(resourceChange.resourceType)?.properties || {};
       for (const [propertyName, prop] of Object.entries(newTypeProps)) {
         const propScrutinyType = prop.scrutinizable || PropertyScrutinyType.None;
         if (scrutinyTypes.includes(propScrutinyType)) {

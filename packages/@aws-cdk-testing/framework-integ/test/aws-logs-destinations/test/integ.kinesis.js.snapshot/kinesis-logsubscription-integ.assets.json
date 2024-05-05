@@ -1,7 +1,7 @@
 {
-  "version": "31.0.0",
+  "version": "36.0.0",
   "files": {
-    "efceebbbcc092c93099cfaca90900ecfff8e9bfcacb36ee0f61c69d9485ab5c1": {
+    "784e27c5125d905a35525d3729339e00bee74adf3bfe722e7317914dd1db32c9": {
       "source": {
         "path": "kinesis-logsubscription-integ.template.json",
         "packaging": "file"
@@ -9,7 +9,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "efceebbbcc092c93099cfaca90900ecfff8e9bfcacb36ee0f61c69d9485ab5c1.json",
+          "objectKey": "784e27c5125d905a35525d3729339e00bee74adf3bfe722e7317914dd1db32c9.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

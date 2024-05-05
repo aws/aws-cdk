@@ -20,3 +20,6 @@ nyc.config.js
 **/*.ts.snapshot
 
 !jest.config.js
+
+# deployment asset cache
+**/.cache/**

@@ -92,7 +92,9 @@
       }
      ]
     }
-   }
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
   },
   "DeliveryStreamServiceRole964EEBCC": {
    "Type": "AWS::IAM::Role",
