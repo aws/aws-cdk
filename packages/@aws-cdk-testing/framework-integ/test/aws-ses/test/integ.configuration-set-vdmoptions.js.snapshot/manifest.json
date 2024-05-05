@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/7a5863010d002c097abb83468679f1d7cbeebf4726340787cdda2945551a64d7.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/8ac289940c44da6e8a5d77884ba8fe280a1f7c5c680dd7de7462670e67f39ff2.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -58,6 +58,24 @@
             "data": "VdmAccountLevelSettings4BBA5196"
           }
         ],
+        "/cdk-ses-configuration-set-vdmoptions-integ/Exports/Output{\"Ref\":\"VdmOptionsEnabled69EBE7CE\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefVdmOptionsEnabled69EBE7CE3C47B59E"
+          }
+        ],
+        "/cdk-ses-configuration-set-vdmoptions-integ/Exports/Output{\"Ref\":\"VdmOptionsDisabledE1F2258E\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefVdmOptionsDisabledE1F2258ECF65F287"
+          }
+        ],
+        "/cdk-ses-configuration-set-vdmoptions-integ/Exports/Output{\"Ref\":\"VdmOptionsNotConfigured273D3326\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefVdmOptionsNotConfigured273D33265DF527D8"
+          }
+        ],
         "/cdk-ses-configuration-set-vdmoptions-integ/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
@@ -90,7 +108,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f12cb47f3c17b6075f5f38fca84c1f992ac7ff31352acd67d501980f6476e5ef.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -103,9 +121,70 @@
         }
       },
       "dependencies": [
+        "cdk-ses-configuration-set-vdmoptions-integ",
         "ConfigurationSetVdmOptionsIntegDefaultTestDeployAssertF0560934.assets"
       ],
       "metadata": {
+        "/ConfigurationSetVdmOptionsInteg/DefaultTest/DeployAssert/AwsApiCallSESV2GetAccount/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallSESV2GetAccount"
+          }
+        ],
+        "/ConfigurationSetVdmOptionsInteg/DefaultTest/DeployAssert/AwsApiCallSESV2GetAccount/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsAwsApiCallSESV2GetAccount"
+          }
+        ],
+        "/ConfigurationSetVdmOptionsInteg/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+          }
+        ],
+        "/ConfigurationSetVdmOptionsInteg/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+          }
+        ],
+        "/ConfigurationSetVdmOptionsInteg/DefaultTest/DeployAssert/AwsApiCallSESV2GetConfigurationSet342f201e0feef7da0afa433831b5ac09/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallSESV2GetConfigurationSet342f201e0feef7da0afa433831b5ac09"
+          }
+        ],
+        "/ConfigurationSetVdmOptionsInteg/DefaultTest/DeployAssert/AwsApiCallSESV2GetConfigurationSet342f201e0feef7da0afa433831b5ac09/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsAwsApiCallSESV2GetConfigurationSet342f201e0feef7da0afa433831b5ac09"
+          }
+        ],
+        "/ConfigurationSetVdmOptionsInteg/DefaultTest/DeployAssert/AwsApiCallSESV2GetConfigurationSetf9dda889176b8db0f23f79d267fee416/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallSESV2GetConfigurationSetf9dda889176b8db0f23f79d267fee416"
+          }
+        ],
+        "/ConfigurationSetVdmOptionsInteg/DefaultTest/DeployAssert/AwsApiCallSESV2GetConfigurationSetf9dda889176b8db0f23f79d267fee416/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsAwsApiCallSESV2GetConfigurationSetf9dda889176b8db0f23f79d267fee416"
+          }
+        ],
+        "/ConfigurationSetVdmOptionsInteg/DefaultTest/DeployAssert/AwsApiCallSESV2GetConfigurationSet5a378d0aea91e548bcf72352d56e45f9/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallSESV2GetConfigurationSet5a378d0aea91e548bcf72352d56e45f9"
+          }
+        ],
+        "/ConfigurationSetVdmOptionsInteg/DefaultTest/DeployAssert/AwsApiCallSESV2GetConfigurationSet5a378d0aea91e548bcf72352d56e45f9/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsAwsApiCallSESV2GetConfigurationSet5a378d0aea91e548bcf72352d56e45f9"
+          }
+        ],
         "/ConfigurationSetVdmOptionsInteg/DefaultTest/DeployAssert/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",

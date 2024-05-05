@@ -77,7 +77,7 @@ export interface ConfigurationSetProps {
   /**
    * The Virtual Deliverability Manager (VDM) options that apply to the configuration set
    *
-   * @default - VDM options not configured at the configuration set level. In this case, use account level settings.
+   * @default - VDM options not configured at the configuration set level. In this case, use account level settings. (To set the account level settings using CDK, use the `VdmAttributes` Construct.)
    */
   readonly vdmOptions?: VdmOptions;
 }
