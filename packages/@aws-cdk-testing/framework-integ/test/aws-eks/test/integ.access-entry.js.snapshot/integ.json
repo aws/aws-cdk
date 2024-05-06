@@ -1,0 +1,29 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "access-entry-test/DefaultTest": {
+      "stacks": [
+        "integ-eks-stack1",
+        "integ-eks-stack2",
+        "integ-eks-stack3",
+        "integ-eks-stack4"
+      ],
+      "cdkCommandOptions": {
+        "deploy": {
+          "args": {
+            "rollback": false,
+            "concurrency": 4,
+            "stacks": [
+              "integ-eks-stack1",
+              "integ-eks-stack2",
+              "integ-eks-stack3",
+              "integ-eks-stack4"
+            ]
+          }
+        }
+      },
+      "assertionStack": "access-entry-test/DefaultTest/DeployAssert",
+      "assertionStackName": "accessentrytestDefaultTestDeployAssert3C963259"
+    }
+  }
+}

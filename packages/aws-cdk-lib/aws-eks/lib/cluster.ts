@@ -1735,21 +1735,22 @@ export class Cluster extends ClusterBase {
       new CfnOutput(this, 'ClusterName', { value: this.clusterName });
     }
 
-    const supportConfigMap = this.authenticationMode !== AuthenticationMode.API ? true : false;
+    const supportAuthenticationApi = (this.authenticationMode === AuthenticationMode.API ||
+      this.authenticationMode === AuthenticationMode.API_AND_CONFIG_MAP) ? true : false;
 
     // do not create a masters role if one is not provided. Trusting the accountRootPrincipal() is too permissive.
     if (props.mastersRole) {
       const mastersRole = props.mastersRole;
 
-      if (supportConfigMap) {
-        // map the IAM role to the `system:masters` group.
-        this.awsAuth.addMastersRole(mastersRole);
-      } else {
-        // assuming authentication API is supported.
-        // adding an access entry with AmazonEKSClusterAdminPolicy for it.
+      // if we support authentication API we create access entry
+      if (supportAuthenticationApi) {
         this.grantAccess('mastersRoleAccess', props.mastersRole.roleArn, [
           AccessPolicy.fromAccessPolicyName('AmazonEKSClusterAdminPolicy'),
         ]);
+      } else {
+        // if we don't support authentication API we should fallback to configmap
+        // this would avoid breaking changes as well if authenticationMode is undefined
+        this.awsAuth.addMastersRole(mastersRole);
       }
 
       if (props.outputMastersRoleArn) {
