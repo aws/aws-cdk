@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/fbe2a94bccc0b248ac202a82bf20b72a6cc89a774c92ffa2c9d5b202fefbc9fc.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/60a4f71cce6f2ffd39f4c99ef1b0259eedd9e8704618437758980bea680a8a93.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -278,6 +278,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "ClustercharttestskipcrdinstallationB8323954"
+          }
+        ],
+        "/aws-cdk-eks-helm-test/Cluster/chart-test-atomic-installation/Resource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClustercharttestatomicinstallationB879263E"
           }
         ],
         "/aws-cdk-eks-helm-test/Cluster/chart-test-non-ecr-oci-chart/Resource/Default": [

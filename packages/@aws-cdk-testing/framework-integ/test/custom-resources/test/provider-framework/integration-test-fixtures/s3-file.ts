@@ -78,7 +78,7 @@ class S3FileProvider extends Construct {
 
     this.provider = new cr.Provider(this, 's3file-provider', {
       onEventHandler: new lambda.Function(this, 's3file-on-event', {
-        code: lambda.Code.fromAsset(path.join(__dirname, 's3-file-handler')),
+        code: lambda.Code.fromAsset(path.join(__dirname, 's3-file-handler'), { exclude: ['*.ts'] }),
         runtime: STANDARD_NODEJS_RUNTIME,
         handler: 'index.onEvent',
         initialPolicy: [
