@@ -1,3 +1,6 @@
+// This code is similar to what is present here: tools/@aws-cdk/cdk-build-tools/lib/os.ts
+// Please make updates in both files if you are changing the code
+
 /**
  * Renders the command to include escape characters for each platform.
  *

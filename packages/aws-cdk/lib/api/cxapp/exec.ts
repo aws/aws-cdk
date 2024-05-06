@@ -91,12 +91,20 @@ export async function execProgram(aws: SdkProvider, config: Configuration): Prom
 
   return { assembly, lock: await writerLock.convertToReaderLock() };
 
-  async function exec(commandAndArgs: string[]) {
+  async function exec(commandAndArgs: any) {
     return new Promise<void>((ok, fail) => {
-      // const command = commandAndArgs[0];
-      // const commandArgs = commandAndArgs.slice(1);
+      let command: string;
 
-      const command = renderCommandLine(commandAndArgs);
+      if (Array.isArray(commandAndArgs)) {
+        command = renderCommandLine(commandAndArgs.map(item => String(item)));
+      } else if (typeof commandAndArgs === 'string') {
+        command = commandAndArgs;
+      } else if (commandAndArgs !== null && commandAndArgs !== undefined) {
+        command = String(commandAndArgs);
+      } else {
+        throw new Error(`The command passed is invalid. Got: ${commandAndArgs}`);
+      }
+
       // We use a slightly lower-level interface to:
       //
       // - Pass arguments in an array instead of a string, to get around a
@@ -125,7 +133,7 @@ export async function execProgram(aws: SdkProvider, config: Configuration): Prom
         if (code === 0) {
           return ok();
         } else {
-          debug('failed command:', commandAndArgs);
+          debug('failed command:', command);
           return fail(new Error(`Subprocess exited with error ${code}`));
         }
       });

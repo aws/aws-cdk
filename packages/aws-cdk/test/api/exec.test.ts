@@ -234,6 +234,20 @@ test('cli does not throw when the `build` script succeeds', async () => {
   await lock.release();
 }, TEN_SECOND_TIMEOUT);
 
+test('cli command is executed for a path with spaces in it', async () => {
+  // GIVEN
+  config.settings.set(['app'], ['/here/is/a path/with/spaces/someExecutable', 'executable-app.js']);
+
+  mockSpawn({
+    commandLine: '\'/here/is/a path/with/spaces/someExecutable\' executable-app.js',
+    sideEffect: () => writeOutputAssembly(),
+  });
+
+  // WHEN
+  const { lock } = await execProgram(sdkProvider, config);
+  await lock.release();
+}, TEN_SECOND_TIMEOUT);
+
 function writeOutputAssembly() {
   const asm = testAssembly({
     stacks: [],

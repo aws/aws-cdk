@@ -1,3 +1,6 @@
+// This code is similar to what is present here: packages/aws-cdk/lib/helper.ts
+// Please make updates in both files if you are changing the code
+
 import * as child_process from 'child_process';
 import * as fs from 'fs';
 import * as util from 'util';
