@@ -8,6 +8,8 @@ class TestStack extends cdk.Stack {
   constructor(scope: cdk.App, id: string, props: cdk.StackProps = {}) {
     super(scope, id, props);
 
+    // Create a state machine that creates a DynamoDB table in a foreign region, puts an item, and deletes the table
+
     const targetRegion = 'eu-west-1';
     const tableName = `TestTable${cdk.Stack.of(this).stackName}`;
     const tableArn =
@@ -116,8 +118,8 @@ integ.assertions.awsApiCall('StepFunctions', 'describeExecution', {
 }).expect(ExpectedResult.objectLike({
   status: 'SUCCEEDED',
 })).waitForAssertions({
-  totalTimeout: cdk.Duration.seconds(10),
-  interval: cdk.Duration.seconds(3),
+  totalTimeout: cdk.Duration.minutes(5),
+  interval: cdk.Duration.seconds(10),
 });
 
 app.synth();

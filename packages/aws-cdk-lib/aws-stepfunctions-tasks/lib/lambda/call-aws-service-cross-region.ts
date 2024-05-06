@@ -7,28 +7,22 @@ import { CrossRegionAwsSdkSingletonFunction } from '../../../custom-resource-han
 
 /**
  * Properties for calling an AWS service's API action from your
- * state machine.
- *
- * @see https://docs.aws.amazon.com/step-functions/latest/dg/supported-services-awssdk.html
+ * state machine across regions.
  */
 export interface CallAwsServiceCrossRegionProps extends sfn.TaskStateBaseProps {
   /**
    * The AWS service to call in AWS SDK for JavaScript v3 style.
+   *
+   * @see https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/
    */
   readonly service: string;
 
   /**
    * The API action to call.
+   *
    * Use camelCase.
    */
   readonly action: string;
-
-  /**
-   * The AWS API endpoint.
-   *
-   * @default Do not override API endpoint.
-   */
-  readonly endpoint?: string;
 
   /**
    * Parameters for the API action call.
@@ -77,7 +71,14 @@ export interface CallAwsServiceCrossRegionProps extends sfn.TaskStateBaseProps {
   readonly region: string;
 
   /**
-   * Whether to retry on Lambda service exceptions.
+   * The AWS API endpoint.
+   *
+   * @default Do not override API endpoint.
+   */
+  readonly endpoint?: string;
+
+  /**
+   * Whether to retry on the backend Lambda service exceptions.
    *
    * This handles `Lambda.ServiceException`, `Lambda.AWSLambdaException` and
    * `Lambda.SdkClientException` with an interval of 2 seconds, a back-off rate
@@ -92,6 +93,8 @@ export interface CallAwsServiceCrossRegionProps extends sfn.TaskStateBaseProps {
 
 /**
  * A Step Functions task to call an AWS service API across regions.
+ *
+ * This task creates a Lambda function to call cross-region AWS API and invokes it.
  */
 export class CallAwsServiceCrossRegion extends sfn.TaskStateBase {
   protected readonly taskMetrics?: sfn.TaskMetricsConfig;
