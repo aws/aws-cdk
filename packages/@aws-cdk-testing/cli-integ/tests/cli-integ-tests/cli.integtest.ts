@@ -945,7 +945,7 @@ integTest('cdk diff --quiet does not print \'There were no differences\' message
 }));
 
 integTest('deploy stack with docker asset', withDefaultFixture(async (fixture) => {
-  await fixture.cdkDeploy('docker');
+  await fixture.cdkDeploy('docker', { show: 'error' });
 }));
 
 integTest('deploy and test stack with lambda asset', withDefaultFixture(async (fixture) => {
@@ -1321,7 +1321,7 @@ integTest('generating and loading assembly', withDefaultFixture(async (fixture) 
   try {
 
     // deploy a docker image with custom file without synth (uses assets)
-    await fixture.cdkDeploy('docker-with-custom-file', { options: ['-a', '.'], cwd: asmOutputDir });
+    await fixture.cdkDeploy('docker-with-custom-file', { options: ['-a', '.'], cwd: asmOutputDir, show: 'error' });
 
   } finally {
     // Rename back to restore fixture to original state
