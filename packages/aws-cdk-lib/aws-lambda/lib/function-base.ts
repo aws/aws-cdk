@@ -355,7 +355,9 @@ export abstract class FunctionBase extends Resource implements IFunction, ec2.IC
    */
   public addPermission(id: string, permission: Permission) {
     if (!this.canCreatePermissions) {
-      Annotations.of(this).addWarningV2('UnclearLambdaEnvironment', `addPermission() has no effect on a Lambda Function with region=${this.env.region}, account=${this.env.account}, in a Stack with region=${Stack.of(this).region}, account=${Stack.of(this).account}. Suppress this warning if this is is intentional, or pass sameEnvironment=true to fromFunctionAttributes() if you would like to add the permissions.`);
+      if (!this._skipPermissions) {
+        Annotations.of(this).addWarningV2('UnclearLambdaEnvironment', `addPermission() has no effect on a Lambda Function with region=${this.env.region}, account=${this.env.account}, in a Stack with region=${Stack.of(this).region}, account=${Stack.of(this).account}. Suppress this warning if this is is intentional, or pass sameEnvironment=true to fromFunctionAttributes() if you would like to add the permissions.`);
+      }
       return;
     }
 
