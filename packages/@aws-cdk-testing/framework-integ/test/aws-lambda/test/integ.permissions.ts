@@ -17,18 +17,6 @@ fn.grantInvoke(new iam.AnyPrincipal().inOrganization('o-yyyyyyyyyy'));
 
 fn.grantInvoke(new iam.OrganizationPrincipal('o-xxxxxxxxxx'));
 
-fn.grantInvokeLatestVersion(new iam.AnyPrincipal().inOrganization('o-yyyyyyyyyy2'));
-
-fn.grantInvokeLatestVersion(new iam.OrganizationPrincipal('o-xxxxxxxxxx2'));
-
-const version1 = new lambda.Version(stack, 'v1', {
-  lambda: fn,
-});
-
-fn.grantInvokeVersion(new iam.AnyPrincipal().inOrganization('o-yyyyyyyyyy2'), version1);
-
-fn.grantInvokeVersion(new iam.OrganizationPrincipal('o-xxxxxxxxxx2'), version1);
-
 const fnUrl = fn.addFunctionUrl();
 const role = new iam.Role(stack, 'MyRole', {
   assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
