@@ -1098,7 +1098,6 @@ declare const cluster: ecs.Cluster;
 
 const networkLoadbalancedFargateService = new ecsPatterns.NetworkLoadBalancedFargateService(stack, 'NlbFargateService', {
   cluster,
-  memoryLimitMiB: 1024,
   taskImageOptions: {
     image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
   },
@@ -1107,7 +1106,6 @@ const networkLoadbalancedFargateService = new ecsPatterns.NetworkLoadBalancedFar
 
 const networkLoadbalancedEc2Service = new ecsPatterns.NetworkLoadBalancedEc2Service(stack, 'NlbEc2Service', {
   cluster,
-  memoryLimitMiB: 1024,
   taskImageOptions: {
     image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
   },
