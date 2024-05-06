@@ -203,6 +203,8 @@ export interface NetworkLoadBalancedServiceBaseProps {
    * If you want to add a UDP or TCP_UDP listener to the load balancer,
    * you must choose IPv4.
    *
+   * @see https://docs.aws.amazon.com/elasticloadbalancing/latest/network/load-balancer-ip-address-type.html
+   *
    * @default IpAddressType.IPV4
    */
   readonly ipAddressType?: IpAddressType;
