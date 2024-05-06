@@ -1093,8 +1093,10 @@ const queueProcessingFargateService = new ecsPatterns.NetworkLoadBalancedFargate
 
 ```ts
 // The VPC and subnet must have associated IPv6 CIDR blocks.
-declare const vpc: ec2.Vpc;
-declare const cluster: ecs.Cluster;
+const vpc = new ec2.Vpc(this, 'Vpc', {
+  ipProtocol: ec2.IpProtocol.DUAL_STACK,
+});
+const cluster = new ecs.Cluster(this, 'EcsCluster', { vpc });
 
 const networkLoadbalancedFargateService = new ecsPatterns.NetworkLoadBalancedFargateService(stack, 'NlbFargateService', {
   cluster,
