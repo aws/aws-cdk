@@ -346,7 +346,7 @@ function analyzeUpdate(oldProps: Partial<EKS.CreateClusterCommandInput>, newProp
     updateVersion: newProps.version !== oldProps.version,
     updateEncryption: JSON.stringify(newEnc) !== JSON.stringify(oldEnc),
     updateLogging: JSON.stringify(newProps.logging) !== JSON.stringify(oldProps.logging),
-    updateAccessConfig: newAccessConfig !== oldAccessConfig,
+    updateAccessConfig: JSON.stringify(newAccessConfig) !== JSON.stringify(oldAccessConfig),
   };
 }
 
