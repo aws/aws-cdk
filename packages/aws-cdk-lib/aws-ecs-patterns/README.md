@@ -1088,3 +1088,29 @@ const queueProcessingFargateService = new ecsPatterns.NetworkLoadBalancedFargate
   securityGroups: [securityGroup],
 });
 ```
+
+### Use dualstack NLB
+
+```ts
+// The VPC and subnet must have associated IPv6 CIDR blocks.
+declare const vpc: ec2.Vpc;
+declare const cluster: ecs.Cluster;
+
+const networkLoadbalancedFargateService = new ecsPatterns.NetworkLoadBalancedFargateService(stack, 'NlbFargateService', {
+  cluster,
+  memoryLimitMiB: 1024,
+  taskImageOptions: {
+    image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+  },
+  ipAddressType: elbv2.IpAddressType.DUAL_STACK,
+});
+
+const networkLoadbalancedEc2Service = new ecsPatterns.NetworkLoadBalancedEc2Service(stack, 'NlbEc2Service', {
+  cluster,
+  memoryLimitMiB: 1024,
+  taskImageOptions: {
+    image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+  },
+  ipAddressType: elbv2.IpAddressType.DUAL_STACK,
+});
+```
