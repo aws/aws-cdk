@@ -58,7 +58,6 @@ interface AssetInfo {
 }
 
 export class GarbageCollector {
-  private readonly hashes: Set<string> = new Set();
   private taggedObjects: AssetInfo = {
     size: 0,
     amount: 0,
@@ -93,15 +92,22 @@ export class GarbageCollector {
   }
 
   public async garbageCollect() {
+    const assetHashes: Set<string> = new Set();
+
     const totalStart = Date.now();
 
     // set up the sdks used in garbage collection
     const sdk = (await this.props.sdkProvider.forEnvironment(this.props.resolvedEnvironment, Mode.ForWriting)).sdk;
     const { cfn, s3, ecr } = this.setUpSDKs(sdk);
 
-    print('Collecting Hashes');
     let start = Date.now();
-    await this.collectHashes(cfn);
+
+    print('Collecting Hashes');
+    (await this.getAssetHashes(cfn)).
+      forEach(
+        (h) => assetHashes.add(h),
+      );
+
     print('Finished collecting hashes: ', formatTime(start), ' seconds');
 
     if (this.garbageCollectingS3) {
@@ -112,7 +118,7 @@ export class GarbageCollector {
 
       print('Collecting isolated objects');
       start = Date.now();
-      const isolatedObjects = await this.collectIsolatedObjects(s3, bucketName);
+      const isolatedObjects = await this.collectIsolatedObjects(s3, bucketName, assetHashes);
       print('Collected isolated buckets:', formatTime(start), 'seconds');
 
       if (this.props.dryRun) {
@@ -134,7 +140,7 @@ export class GarbageCollector {
       for (const repo of repos) {
         print(`Collecting isolated images in ${repo}`);
         start = Date.now();
-        const isolatedImages = await this.collectIsolatedImages(ecr, repo);
+        const isolatedImages = await this.collectIsolatedImages(ecr, repo, assetHashes);
         print(`Collected isolated images in ${repo}:`, formatTime(start), 'seconds');
 
         if (!this.props.dryRun) {
@@ -177,7 +183,7 @@ export class GarbageCollector {
     }
   }
 
-  private async collectHashes(cfn: CloudFormation) {
+  private async getAssetHashes(cfn: CloudFormation): Promise<Set<string>> {
     const stackNames: string[] = [];
     await paginateSdkCall(async (nextToken) => {
       // Would it make sense to only filter for active stacks?
@@ -189,6 +195,7 @@ export class GarbageCollector {
 
     print(`Parsing through ${stackNames.length} stacks`);
 
+    const result: Set<string> = new Set();
     for (const stackArn of stackNames) {
       // This crashes on 'Processed template of Stack cdktest-0ibttybjfx2h-bootstrap-stack is not ready. Specify Original to get user-submitted template.'
       let template: PromiseResult<CloudFormation.GetTemplateOutput, AWSError>;
@@ -198,19 +205,23 @@ export class GarbageCollector {
           TemplateStage: 'Original',
         }).promise();
       } catch (error) {
-        warning('Encountered an error while getting a cfn template -- skipping gc for', stackArn);
+        warning('Encountered an error while getting a cfn template -- skipping gc for', stackArn); // it would be good to accumulate these stackArns in a list to present to the user at the end.
         warning(error as string);
         continue;
       }
 
-      const templateHashes = template.TemplateBody?.match(/[a-f0-9]{64}/g); // I think this could have false positives?
-      templateHashes?.forEach((h) => this.hashes.add(h));
+      template.TemplateBody?.
+        match(/[a-f0-9]{64}/g)?. // I think this could have false positives? It would be better to do this with a map?
+        forEach(
+          (h) => result.add(h),
+        );
     }
 
-    print(`Found ${this.hashes.size} unique hashes`);
+    print(`Found ${result.size} unique hashes`);
+    return result;
   }
 
-  private async collectIsolatedObjects(s3: S3, bucket: string) {
+  private async collectIsolatedObjects(s3: S3, bucket: string, assetHashes: Set<string>) {
     const isolatedObjects: string[] = [];
     await paginateSdkCall(async (nextToken) => {
       const response = await s3.listObjectsV2({
@@ -219,7 +230,7 @@ export class GarbageCollector {
       }).promise();
       response.Contents?.forEach((obj) => {
         const hash = getHash(obj.Key ?? '');
-        if (!this.hashes.has(hash)) {
+        if (!assetHashes.has(hash)) {
           isolatedObjects.push(obj.Key ?? '');
         }
       });
@@ -322,7 +333,7 @@ export class GarbageCollector {
     return bootstrappedRepos;
   }
 
-  private async collectIsolatedImages(ecr: ECR, repo: string) {
+  private async collectIsolatedImages(ecr: ECR, repo: string, assetHashes: Set<string>) {
     const isolatedImages: string[] = [];
     await paginateSdkCall(async (nextToken) => {
       const response = await ecr.listImages({
@@ -335,7 +346,7 @@ export class GarbageCollector {
       for (const [digest, tags] of Object.entries(images)) {
         let del = true;
         for (const tag of tags) {
-          if (this.hashes.has(tag)) {
+          if (assetHashes.has(tag)) {
             del = false;
           }
         }
