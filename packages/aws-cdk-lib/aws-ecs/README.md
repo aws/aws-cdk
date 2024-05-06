@@ -362,6 +362,23 @@ const fargateTaskDefinition = new ecs.FargateTaskDefinition(this, 'TaskDef', {
 });
 ```
 
+To specify the process namespace to use for the containers in the task, use the `pidMode` property:
+
+```ts
+const fargateTaskDefinition = new ecs.FargateTaskDefinition(this, 'TaskDef', {
+  runtimePlatform: {
+    operatingSystemFamily: ecs.OperatingSystemFamily.LINUX,
+    cpuArchitecture: ecs.CpuArchitecture.ARM64,
+  },
+  memoryLimitMiB: 512,
+  cpu: 256,
+  pidMode: ecs.PidMode.HOST,
+});
+```
+
+**Note:** `pidMode` is only supported for tasks that are hosted on AWS Fargate if the tasks are using platform version 1.4.0
+or later (Linux). This isn't supported for Windows containers on Fargate.
+
 To add containers to a task definition, call `addContainer()`:
 
 ```ts
@@ -599,6 +616,24 @@ taskDefinition.addContainer('container', {
     },
   ],
 });
+```
+
+## Docker labels
+
+You can add labels to the container with the `dockerLabels` property or with the `addDockerLabel` method:
+
+```ts
+declare const taskDefinition: ecs.TaskDefinition;
+
+const container = taskDefinition.addContainer('cont', {
+  image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+  memoryLimitMiB: 1024,
+  dockerLabels: {
+    foo: 'bar',
+  },
+});
+
+container.addDockerLabel('label', 'value');
 ```
 
 ### Using Windows containers on Fargate

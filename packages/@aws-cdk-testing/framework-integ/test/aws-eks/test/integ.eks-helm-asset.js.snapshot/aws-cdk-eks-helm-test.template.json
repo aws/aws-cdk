@@ -1164,6 +1164,39 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
+  "ClustercharttestatomicinstallationB879263E": {
+   "Type": "Custom::AWSCDK-EKS-HelmChart",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "awscdkawseksKubectlProviderNestedStackawscdkawseksKubectlProviderNestedStackResourceA7AEBA6B",
+      "Outputs.awscdkekshelmtestawscdkawseksKubectlProviderframeworkonEvent9D93C644Arn"
+     ]
+    },
+    "ClusterName": {
+     "Ref": "Cluster9EE0221C"
+    },
+    "RoleArn": {
+     "Fn::GetAtt": [
+      "ClusterCreationRole360249B6",
+      "Arn"
+     ]
+    },
+    "Release": "rds-chart-release",
+    "Chart": "rds-chart",
+    "Version": "v1.1.2",
+    "Namespace": "ack-system",
+    "Repository": "oci://public.ecr.aws/aws-controllers-k8s/rds-chart",
+    "CreateNamespace": true,
+    "SkipCrds": true,
+    "Atomic": true
+   },
+   "DependsOn": [
+    "ClusterKubectlReadyBarrier200052AF"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
   "Clustercharttestnonecrocichart7A9190B5": {
    "Type": "Custom::AWSCDK-EKS-HelmChart",
    "Properties": {
@@ -1214,7 +1247,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/cfe4234d5a3fa2ed78432a687d93a3f8c5eb78d80c0718429d972ad3c4e5140e.json"
+       "/cae1a4462b1644427d95ba56c27cfccdedb123321ec9f099e10c4b288f7b0c8b.json"
       ]
      ]
     }
@@ -1264,7 +1297,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/9d0eee72ef8ab38da26aac26f0f3c7dd16b7ce8d691d9b63b86a0efec29725b1.json"
+       "/4b8f19f7bb7985e7b254a6e15a1820220c080096b9c971e88445051898337b56.json"
       ]
      ]
     }
