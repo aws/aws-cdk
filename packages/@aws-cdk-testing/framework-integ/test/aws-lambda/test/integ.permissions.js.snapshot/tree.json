@@ -20,8 +20,8 @@
                     "id": "ImportServiceRole",
                     "path": "lambda-permissions/MyLambda/ServiceRole/ImportServiceRole",
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.2.70"
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "0.0.0"
                     }
                   },
                   "Resource": {
@@ -59,14 +59,14 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.2.70"
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                      "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.2.70"
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
+                  "version": "0.0.0"
                 }
               },
               "Resource": {
@@ -89,8 +89,8 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.2.70"
+                  "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
+                  "version": "0.0.0"
                 }
               },
               "Invokehl--ab6+Vr41INt1IUX--IhhCesB4gzNedP5IURKNgciw=": {
@@ -111,8 +111,8 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.2.70"
+                  "fqn": "aws-cdk-lib.aws_lambda.CfnPermission",
+                  "version": "0.0.0"
                 }
               },
               "Invoke138AF9IJcZORjZ--NKCKShZMMuVQwCnUkbFqMoQf5of0=": {
@@ -133,8 +133,8 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.2.70"
+                  "fqn": "aws-cdk-lib.aws_lambda.CfnPermission",
+                  "version": "0.0.0"
                 }
               },
               "FunctionUrl": {
@@ -157,14 +157,14 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.2.70"
+                      "fqn": "aws-cdk-lib.aws_lambda.CfnUrl",
+                      "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.2.70"
+                  "fqn": "aws-cdk-lib.aws_lambda.FunctionUrl",
+                  "version": "0.0.0"
                 }
               },
               "InvokeSz2P2C4jO--iX4AmIs1ANCq2qfq8PhgVeKtRAVyAkFmM=": {
@@ -185,8 +185,8 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.2.70"
+                  "fqn": "aws-cdk-lib.aws_lambda.CfnPermission",
+                  "version": "0.0.0"
                 }
               },
               "InvokeFcyXBRX02EWa52GlF+ECQiCzDt0fdRUDi4mo4foC5aU=": {
@@ -206,14 +206,44 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.2.70"
+                  "fqn": "aws-cdk-lib.aws_lambda.CfnPermission",
+                  "version": "0.0.0"
+                }
+              },
+              "$LATEST": {
+                "id": "$LATEST",
+                "path": "lambda-permissions/MyLambda/$LATEST",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_lambda.FunctionBase",
+                  "version": "0.0.0"
+                }
+              },
+              "InvokeZQDUzUWqDuiGYFrGB6ik9uIPJSgF8GSLIg6NTO8jHPI=": {
+                "id": "InvokeZQDUzUWqDuiGYFrGB6ik9uIPJSgF8GSLIg6NTO8jHPI=",
+                "path": "lambda-permissions/MyLambda/InvokeZQDUzUWqDuiGYFrGB6ik9uIPJSgF8GSLIg6NTO8jHPI=",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
+                  "aws:cdk:cloudformation:props": {
+                    "action": "lambda:InvokeFunction",
+                    "functionName": {
+                      "Fn::GetAtt": [
+                        "MyLambdaCCE802FB",
+                        "Arn"
+                      ]
+                    },
+                    "principal": "*",
+                    "principalOrgId": "o-xxxxxxxxxx2"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_lambda.CfnPermission",
+                  "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.2.70"
+              "fqn": "aws-cdk-lib.aws_lambda.Function",
+              "version": "0.0.0"
             }
           },
           "MyRole": {
@@ -224,8 +254,8 @@
                 "id": "ImportMyRole",
                 "path": "lambda-permissions/MyRole/ImportMyRole",
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.2.70"
+                  "fqn": "aws-cdk-lib.Resource",
+                  "version": "0.0.0"
                 }
               },
               "Resource": {
@@ -249,8 +279,8 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.2.70"
+                  "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                  "version": "0.0.0"
                 }
               },
               "DefaultPolicy": {
@@ -274,6 +304,52 @@
                                   "Arn"
                                 ]
                               }
+                            },
+                            {
+                              "Action": "lambda:InvokeFunction",
+                              "Effect": "Allow",
+                              "Resource": [
+                                {
+                                  "Fn::GetAtt": [
+                                    "MyLambdaCCE802FB",
+                                    "Arn"
+                                  ]
+                                },
+                                {
+                                  "Fn::Join": [
+                                    "",
+                                    [
+                                      {
+                                        "Fn::GetAtt": [
+                                          "MyLambdaCCE802FB",
+                                          "Arn"
+                                        ]
+                                      },
+                                      ":",
+                                      {
+                                        "Fn::GetAtt": [
+                                          "v192FF9954",
+                                          "Version"
+                                        ]
+                                      }
+                                    ]
+                                  ]
+                                },
+                                {
+                                  "Fn::Join": [
+                                    "",
+                                    [
+                                      {
+                                        "Fn::GetAtt": [
+                                          "MyLambdaCCE802FB",
+                                          "Arn"
+                                        ]
+                                      },
+                                      ":$LATEST"
+                                    ]
+                                  ]
+                                }
+                              ]
                             }
                           ],
                           "Version": "2012-10-17"
@@ -287,42 +363,68 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.2.70"
+                      "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                      "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.2.70"
+                  "fqn": "aws-cdk-lib.aws_iam.Policy",
+                  "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.2.70"
+              "fqn": "aws-cdk-lib.aws_iam.Role",
+              "version": "0.0.0"
+            }
+          },
+          "v1": {
+            "id": "v1",
+            "path": "lambda-permissions/v1",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "lambda-permissions/v1/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::Version",
+                  "aws:cdk:cloudformation:props": {
+                    "functionName": {
+                      "Ref": "MyLambdaCCE802FB"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_lambda.CfnVersion",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_lambda.Version",
+              "version": "0.0.0"
             }
           },
           "BootstrapVersion": {
             "id": "BootstrapVersion",
             "path": "lambda-permissions/BootstrapVersion",
             "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.2.70"
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
             }
           },
           "CheckBootstrapVersion": {
             "id": "CheckBootstrapVersion",
             "path": "lambda-permissions/CheckBootstrapVersion",
             "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.2.70"
+              "fqn": "aws-cdk-lib.CfnRule",
+              "version": "0.0.0"
             }
           }
         },
         "constructInfo": {
-          "fqn": "constructs.Construct",
-          "version": "10.2.70"
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "0.0.0"
         }
       },
       "Tree": {
@@ -330,13 +432,13 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.2.70"
+          "version": "10.3.0"
         }
       }
     },
     "constructInfo": {
-      "fqn": "constructs.Construct",
-      "version": "10.2.70"
+      "fqn": "aws-cdk-lib.App",
+      "version": "0.0.0"
     }
   }
 }
