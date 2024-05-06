@@ -25,11 +25,14 @@ export interface FleetProps {
 
   /**
    * The instance type of the compute fleet.
+   *
+   * @see https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_codebuild.ComputeType.html
    */
   readonly computeType: FleetComputeType;
 
   /**
-   * The environment type of the fleet.
+   * The build environment (operating system/architecture/accelerator) type
+   * made available to projects using this fleet
    */
   readonly environmentType: EnvironmentType;
 }
@@ -58,7 +61,8 @@ export interface IFleet extends IResource {
   readonly computeType: FleetComputeType;
 
   /**
-   * The environment type of the fleet.
+   * The build environment (operating system/architecture/accelerator) type
+   * made available to projects using this fleet
    */
   readonly environmentType: EnvironmentType;
 }
@@ -109,11 +113,14 @@ export class Fleet extends Resource implements IFleet {
 
   /**
    * The compute type of the fleet.
+   *
+   * @see https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_codebuild.ComputeType.html
    */
   public readonly computeType: FleetComputeType;
 
   /**
-   * The environment type of the fleet.
+   * The build environment (operating system/architecture/accelerator) type
+   * made available to projects using this fleet
    */
   public readonly environmentType: EnvironmentType;
 
