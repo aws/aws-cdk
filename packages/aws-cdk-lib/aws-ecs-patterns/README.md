@@ -1092,13 +1092,15 @@ const queueProcessingFargateService = new ecsPatterns.NetworkLoadBalancedFargate
 ### Use dualstack NLB
 
 ```ts
+import * as elbv2 from 'aws-cdk-lib/aws-elasticloadbalancingv2';
+
 // The VPC and subnet must have associated IPv6 CIDR blocks.
 const vpc = new ec2.Vpc(this, 'Vpc', {
   ipProtocol: ec2.IpProtocol.DUAL_STACK,
 });
 const cluster = new ecs.Cluster(this, 'EcsCluster', { vpc });
 
-const networkLoadbalancedFargateService = new ecsPatterns.NetworkLoadBalancedFargateService(stack, 'NlbFargateService', {
+const networkLoadbalancedFargateService = new ecsPatterns.NetworkLoadBalancedFargateService(this, 'NlbFargateService', {
   cluster,
   taskImageOptions: {
     image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
@@ -1106,7 +1108,7 @@ const networkLoadbalancedFargateService = new ecsPatterns.NetworkLoadBalancedFar
   ipAddressType: elbv2.IpAddressType.DUAL_STACK,
 });
 
-const networkLoadbalancedEc2Service = new ecsPatterns.NetworkLoadBalancedEc2Service(stack, 'NlbEc2Service', {
+const networkLoadbalancedEc2Service = new ecsPatterns.NetworkLoadBalancedEc2Service(this, 'NlbEc2Service', {
   cluster,
   taskImageOptions: {
     image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
