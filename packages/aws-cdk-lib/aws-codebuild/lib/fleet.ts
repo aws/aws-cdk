@@ -52,6 +52,8 @@ export interface IFleet extends IResource {
 
   /**
    * The compute type of the fleet.
+   *
+   * @see https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_codebuild.ComputeType.html
    */
   readonly computeType: FleetComputeType;
 
