@@ -226,8 +226,9 @@ function refineDiffWithChangeSet(diff: types.TemplateDiff, changeSet: DescribeCh
   const replacements = findResourceReplacements(changeSet);
 
   // Add resources and properties that aren't in the template diff but that ARE in the changeset diff
+  const resourceDiffLogicalIds = diff.resources.logicalIds;
   for (const logicalId of Object.keys(replacements)) {
-    if (!(logicalId in diff.resources)) {
+    if (!(resourceDiffLogicalIds.includes(logicalId))) {
       const noChangeResourceDiff = impl.diffResource(newTemplateResources[logicalId], newTemplateResources[logicalId]);
       diff.resources.add(logicalId, noChangeResourceDiff);
     }
