@@ -3,9 +3,7 @@ import { Template, Annotations, Match } from '../../../assertions';
 import * as ccommit from '../../../aws-codecommit';
 import { Pipeline } from '../../../aws-codepipeline';
 import * as iam from '../../../aws-iam';
-import * as kms from 'aws-cdk-lib/aws-kms';
 import * as s3 from '../../../aws-s3';
-import * as aws_s3_deployment from 'aws-cdk-lib/aws-s3-deployment';
 import * as sqs from '../../../aws-sqs';
 import * as cdk from '../../../core';
 import { Stack } from '../../../core';
@@ -13,7 +11,6 @@ import * as cxapi from '../../../cx-api';
 import * as cdkp from '../../lib';
 import { CodePipeline } from '../../lib';
 import { PIPELINE_ENV, TestApp, ModernTestGitHubNpmPipeline, FileAssetApp, TwoStackApp, StageWithStackOutput } from '../testhelpers';
-import { Application } from '../../../aws-appconfig';
 
 let app: TestApp;
 
@@ -208,7 +205,7 @@ test('CodeBuild asset role has the right Principal', () => {
   const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk');
   pipeline.addStage(new FileAssetApp(pipelineStack, 'App', {}));;
   const template = Template.fromStack(pipelineStack);
-  const assetRole = template.toJSON()['Resources']['CdkAssetsFileRole6BE17A07'];
+  const assetRole = template.toJSON().Resources.CdkAssetsFileRole6BE17A07;
   const statementLength = assetRole.Properties.AssumeRolePolicyDocument.Statement;
   expect(statementLength).toStrictEqual(
     [
