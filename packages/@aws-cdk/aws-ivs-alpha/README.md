@@ -39,6 +39,24 @@ You can create a channel
 const myChannel = new ivs.Channel(this, 'Channel');
 ```
 
+You can use Advanced Channel type by setting the `type` property to
+`ivs.ChannelType.ADVANCED_HD` or `ivs.ChannelType.ADVANCED_SD`.
+
+Additionally, when using the Advanced Channel type, you can set
+the `preset` property to `ivs.Preset.CONSTRAINED_BANDWIDTH_DELIVERY`
+or `ivs.Preset.HIGHER_BANDWIDTH_DELIVERY`.
+If you don't specify the `preset`, `ivs.Preset.CONSTRAINED_BANDWIDTH_DELIVERY` is set by default.
+
+For more information, see [Amazon IVS Streaming Configuration](See also: https://docs.aws.amazon.com/ivs/latest/LowLatencyUserGuide/streaming-config.html).
+
+```ts
+const myChannel = new ivs.Channel(stack, 'myChannel', {
+  type: ivs.ChannelType.ADVANCED_HD,
+  preset: ivs.Preset.CONSTRAINED_BANDWIDTH_DELIVERY,
+});
+```
+
+
 ### Importing an existing channel
 
 You can reference an existing channel, for example, if you need to create a
@@ -87,5 +105,3 @@ const myChannel = new ivs.Channel(this, 'Channel', {
   authorized: true, // default value is false
 });
 ```
-
-

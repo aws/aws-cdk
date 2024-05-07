@@ -56,8 +56,9 @@ export enum LatencyMode {
 */
 export enum ChannelType {
   /**
-   * Multiple qualities are generated from the original input, to automatically give viewers the best experience for
-   * their devices and network conditions.
+   * Multiple qualities are generated from the original input, to automatically give viewers the best experience for their devices and network conditions.
+   * Transcoding allows higher playback quality across a range of download speeds. Resolution can be up to 1080p and bitrate can be up to 8.5 Mbps.
+   * Audio is transcoded only for renditions 360p and below; above that, audio is passed through.
    *
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ivs-channel.html
    */
@@ -69,6 +70,42 @@ export enum ChannelType {
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ivs-channel.html
    */
   BASIC = 'BASIC',
+
+  /**
+   * Multiple qualities are generated from the original input, to automatically give viewers the best experience for their devices and network conditions.
+   * Input resolution can be up to 1080p and bitrate can be up to 8.5 Mbps; output is capped at SD quality (480p).
+   * Audio for all renditions is transcoded, and an audio-only rendition is available.
+   *
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ivs-channel.html
+   */
+  ADVANCED_SD = 'ADVANCED_SD',
+
+  /**
+   * Multiple qualities are generated from the original input, to automatically give viewers the best experience for their devices and network conditions.
+   * Input resolution can be up to 1080p and bitrate can be up to 8.5 Mbps; output is capped at HD quality (720p).
+   * Audio for all renditions is transcoded, and an audio-only rendition is available.
+   *
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ivs-channel.html
+   */
+  ADVANCED_HD = 'ADVANCED_HD',
+}
+
+/**
+  * An optional transcode preset for the channel. This is selectable only for ADVANCED_HD and ADVANCED_SD channel types.
+*/
+export enum Preset {
+  /**
+   * Use a lower bitrate than STANDARD for each quality level. Use it if you have low download bandwidth and/or simple video content (e.g., talking heads).
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ivs-channel.html
+   */
+  CONSTRAINED_BANDWIDTH_DELIVERY = 'CONSTRAINED_BANDWIDTH_DELIVERY',
+
+  /**
+   * Use a higher bitrate for each quality level. Use it if you have high download bandwidth and/or complex video content (e.g., flashes and quick scene changes).
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ivs-channel.html
+   */
+  HIGHER_BANDWIDTH_DELIVERY = 'HIGHER_BANDWIDTH_DELIVERY',
+
 }
 
 /**
@@ -107,6 +144,13 @@ export interface ChannelProps {
    * @default ChannelType.STANDARD
    */
   readonly type?: ChannelType;
+
+  /**
+   * An optional transcode preset for the channel. Can be used for ADVANCED_HD and ADVANCED_SD channel types.
+   *
+   * @default - Preset.HIGHER_BANDWIDTH_DELIVERY when channel type is ADVANCED_SD or ADVANCED_HD.
+   */
+  readonly preset?: Preset;
 }
 
 /**
@@ -162,11 +206,22 @@ export class Channel extends ChannelBase {
       throw new Error(`channelName must contain only numbers, letters, hyphens and underscores, got: '${this.physicalName}'`);
     }
 
+    if ((props.type === ChannelType.STANDARD || props.type === ChannelType.BASIC) && props.preset !== undefined) {
+      throw new Error('preset cannot be used when STANDARD or BASIC channel type');
+    }
+
+    let preset = undefined;
+
+    if (props.type === ChannelType.ADVANCED_HD || props.type === ChannelType.ADVANCED_SD) {
+      preset = props.preset || Preset.HIGHER_BANDWIDTH_DELIVERY;
+    }
+
     const resource = new CfnChannel(this, 'Resource', {
       authorized: props.authorized,
       latencyMode: props.latencyMode,
       name: this.physicalName,
       type: props.type,
+      preset: preset,
     });
 
     this.channelArn = resource.attrArn;

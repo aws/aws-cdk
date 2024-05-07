@@ -164,3 +164,33 @@ test('channel from invalid channel arn resource throws error', () => {
     () => ivs.Channel.fromChannelArn(stack, 'ChannelRef', 'arn:aws:ivs:us-west-2:123456789012:stream-key/abcdABCDefgh'))
     .toThrow('Invalid resource, expected \'channel\', got \'stream-key\'');
 });
+
+test('channel type advanced without preset setting', () => {
+  new ivs.Channel(stack, 'Channel', {
+    type: ivs.ChannelType.ADVANCED_SD,
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::IVS::Channel', {
+    Type: 'ADVANCED_SD',
+    Preset: 'HIGHER_BANDWIDTH_DELIVERY',
+  });
+});
+
+test('channel type advanced with preset setting', () => {
+  new ivs.Channel(stack, 'Channel', {
+    type: ivs.ChannelType.ADVANCED_HD,
+    preset: ivs.Preset.CONSTRAINED_BANDWIDTH_DELIVERY,
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::IVS::Channel', {
+    Type: 'ADVANCED_HD',
+    Preset: 'CONSTRAINED_BANDWIDTH_DELIVERY',
+  });
+});
+
+test('set preset with STANDARD or BASIC channel type should throw', () => {
+  expect(() => new ivs.Channel(stack, 'Channel', {
+    type: ivs.ChannelType.STANDARD,
+    preset: ivs.Preset.CONSTRAINED_BANDWIDTH_DELIVERY,
+  })).toThrow('preset cannot be used when STANDARD or BASIC channel type');
+});
