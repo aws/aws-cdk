@@ -47,8 +47,8 @@
     "cdk8s-plus-27": "2.9.1",
     "cdk8s": "2.68.65",
     "constructs": "^10.0.0",
-    "jsii-reflect": "1.97.0",
-    "jsii": "~5.4.0"
+    "jsii": "~5.4.0",
+    "jsii-reflect": "1.97.0"
   },
   "repository": {
     "url": "https://github.com/aws/aws-cdk.git",
