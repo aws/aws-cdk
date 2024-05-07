@@ -212,9 +212,6 @@ export class Channel extends ChannelBase {
 
     let preset = undefined;
 
-    if (props.type === ChannelType.ADVANCED_HD || props.type === ChannelType.ADVANCED_SD) {
-      preset = props.preset || Preset.HIGHER_BANDWIDTH_DELIVERY;
-    }
 
     const resource = new CfnChannel(this, 'Resource', {
       authorized: props.authorized,
