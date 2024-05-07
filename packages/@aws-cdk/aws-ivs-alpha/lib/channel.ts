@@ -148,7 +148,7 @@ export interface ChannelProps {
   /**
    * An optional transcode preset for the channel. Can be used for ADVANCED_HD and ADVANCED_SD channel types.
    *
-   * @default - Preset.HIGHER_BANDWIDTH_DELIVERY when channel type is ADVANCED_SD or ADVANCED_HD.
+   * @default - Preset.HIGHER_BANDWIDTH_DELIVERY if channelType is ADVANCED_SD or ADVANCED_HD, none otherwise
    */
   readonly preset?: Preset;
 }
