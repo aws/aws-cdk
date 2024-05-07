@@ -55,7 +55,7 @@ export function fullDiff(
   normalize(newTemplate);
   const theDiff = diffTemplate(currentTemplate, newTemplate);
   if (changeSet) {
-    filterFalsePositives(theDiff, changeSet, newTemplate.Resources);
+    refineDiffWithChangeSet(theDiff, changeSet, newTemplate.Resources);
     addImportInformation(theDiff, changeSet);
   } else if (isImport) {
     makeAllResourceChangesImports(theDiff);
@@ -144,13 +144,6 @@ function calculateTemplateDiff(currentTemplate: { [key: string]: any }, newTempl
 }
 
 /**
- * Compare two CloudFormation resources and return semantic differences between them
- */
-export function diffResource(oldValue: types.Resource, newValue: types.Resource): types.ResourceDifference {
-  return impl.diffResource(oldValue, newValue);
-}
-
-/**
  * Replace all references to the given logicalID on the given template, in-place
  *
  * Returns true iff any references were replaced.
@@ -229,39 +222,32 @@ function makeAllResourceChangesImports(diff: types.TemplateDiff) {
   });
 }
 
-function filterFalsePositives(diff: types.TemplateDiff, changeSet: DescribeChangeSetOutput, newTemplateResources: {[logicalId: string]: any}) {
+function refineDiffWithChangeSet(diff: types.TemplateDiff, changeSet: DescribeChangeSetOutput, newTemplateResources: {[logicalId: string]: any}) {
   const replacements = findResourceReplacements(changeSet);
 
-  for (const logicalId of Object.keys(newTemplateResources || {})) {
-    if (logicalId in replacements) {
-      // diff.resources.get(logicalId).isDifferent = true;
-      // Then the properties that have been replaced need to be referenced
-      for (const propertyName of Object.keys(replacements[logicalId].propertiesReplaced)) {
+  // Add resources and properties that aren't in the template diff but that ARE in the changeset diff
+  for (const logicalId of Object.keys(replacements)) {
+    if (!(logicalId in diff.resources)) {
+      const noChangeResourceDiff = impl.diffResource(newTemplateResources[logicalId], newTemplateResources[logicalId]);
+      diff.resources.add(logicalId, noChangeResourceDiff);
+    }
 
-        if (logicalId in diff.resources) {
-          // In this case, a property of a changed resource may have been skipped
-          if (!(propertyName in diff.resources.get(logicalId).propertyUpdates)) {
-            const newProp = new types.PropertyDifference(
-              // these fields we be decided below
-              {}, {}, { changeImpact: undefined },
-            );
-            newProp.isDifferent = true;
-            diff.resources.get(logicalId).propertyUpdates[propertyName] = newProp;
-          }
-        } else {
-          // In this case, we missed the resource entirely.
-          diff.resources.add(logicalId, diffResource(newTemplateResources[logicalId], newTemplateResources[logicalId]));
-          const newProp = new types.PropertyDifference(
-            // these fields we be decided below
-            {}, {}, { changeImpact: undefined },
-          );
-          newProp.isDifferent = true;
-          diff.resources.get(logicalId).setPropertyChange(propertyName, newProp);
-        }
+    for (const propertyName of Object.keys(replacements[logicalId].propertiesReplaced)) {
+      if (propertyName in diff.resources.get(logicalId).propertyUpdates) {
+        // If the property is already marked to be updated, then we don't need to do anything.
+        continue;
       }
+
+      const newProp = new types.PropertyDifference(
+        // these fields we be decided below
+        {}, {}, { changeImpact: undefined },
+      );
+      newProp.isDifferent = true;
+      diff.resources.get(logicalId).setPropertyChange(propertyName, newProp);
     }
   };
 
+  // Now use the changeset diff to make property changeImpact more accurate.
   diff.resources.forEachDifference((logicalId: string, change: types.ResourceDifference) => {
     if (change.resourceType.includes('AWS::Serverless')) {
       // CFN applies the SAM transform before creating the changeset, so the changeset contains no information about SAM resources
