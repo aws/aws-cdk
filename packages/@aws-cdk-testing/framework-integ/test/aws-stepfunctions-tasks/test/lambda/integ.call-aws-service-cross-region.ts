@@ -42,7 +42,7 @@ class TestStack extends cdk.Stack {
       },
       iamResources: ['*'],
       region: targetRegion,
-      resultPath: '$.createTable',
+      resultPath: sfn.JsonPath.DISCARD,
     });
 
     const pollTable = new tasks.CallAwsServiceCrossRegion(this, 'DescribeTable', {
@@ -68,16 +68,14 @@ class TestStack extends cdk.Stack {
       },
       iamResources: [tableArn],
       region: targetRegion,
-      resultPath: '$.putItem',
+      resultPath: sfn.JsonPath.DISCARD,
     });
 
     const isAvailable = new sfn.Choice(this, 'IsTableAvailable?');
     const condition1 = sfn.Condition.stringEquals('$.polling.Table.TableStatus', 'ACTIVE');
-
     const waitPolling = new sfn.Wait(this, 'Wait Polling', {
       time: sfn.WaitTime.duration(cdk.Duration.seconds(5)),
     });
-
     const poll = pollTable.next(
       isAvailable
         .when(condition1, putItem) //
@@ -92,10 +90,22 @@ class TestStack extends cdk.Stack {
       },
       iamResources: [tableArn],
       region: targetRegion,
-      resultPath: '$.deleteTable',
+      resultPath: sfn.JsonPath.DISCARD,
     });
-
     putItem.next(deleteTable);
+
+    // listApplications just to test same-region API call
+    const listApplications = new tasks.CallAwsServiceCrossRegion(this, 'ListApplications', {
+      service: 'appconfig',
+      action: 'listApplications',
+      iamResources: ['*'],
+      region: cdk.Stack.of(this).region,
+      parameters: {
+        MaxResults: 1,
+      },
+      resultPath: '$.listApplications',
+    });
+    deleteTable.next(listApplications);
 
     this.stateMachine = new sfn.StateMachine(this, 'StateMachine', {
       definition: createTable.next(poll),

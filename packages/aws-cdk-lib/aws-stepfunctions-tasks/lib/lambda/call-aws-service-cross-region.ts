@@ -14,6 +14,7 @@ export interface CallAwsServiceCrossRegionProps extends sfn.TaskStateBaseProps {
    * The AWS service to call in AWS SDK for JavaScript v3 style.
    *
    * @see https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/
+   * @example 's3'
    */
   readonly service: string;
 
@@ -162,8 +163,7 @@ export class CallAwsServiceCrossRegion extends sfn.TaskStateBase {
 
   /**
    * Provides the Lambda Invoke service integration task configuration
-   */
-  /**
+   *
    * @internal
    */
   protected _renderTask(): any {

@@ -37,7 +37,10 @@
     "PolicyDocument": {
      "Statement": [
       {
-       "Action": "dynamodb:createTable",
+       "Action": [
+        "appconfig:listApplications",
+        "dynamodb:createTable"
+       ],
        "Effect": "Allow",
        "Resource": "*"
       },
@@ -83,7 +86,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "756b28415ed0307653d18aa3d97e6b7dc5981413fd835eb82866b95c5e80de33.zip"
+     "S3Key": "ea123b4e391a9f352cc5dadc2250aab676981408fc6ccb0efb0d106bbd933ae3.zip"
     },
     "Handler": "index.handler",
     "Role": {
@@ -166,7 +169,7 @@
      "Fn::Join": [
       "",
       [
-       "{\"StartAt\":\"CreateTable\",\"States\":{\"CreateTable\":{\"Next\":\"DescribeTable\",\"Retry\":[{\"ErrorEquals\":[\"Lambda.ClientExecutionTimeoutException\",\"Lambda.ServiceException\",\"Lambda.AWSLambdaException\",\"Lambda.SdkClientException\"],\"IntervalSeconds\":2,\"MaxAttempts\":6,\"BackoffRate\":2}],\"Type\":\"Task\",\"ResultPath\":\"$.createTable\",\"Resource\":\"",
+       "{\"StartAt\":\"CreateTable\",\"States\":{\"CreateTable\":{\"Next\":\"DescribeTable\",\"Retry\":[{\"ErrorEquals\":[\"Lambda.ClientExecutionTimeoutException\",\"Lambda.ServiceException\",\"Lambda.AWSLambdaException\",\"Lambda.SdkClientException\"],\"IntervalSeconds\":2,\"MaxAttempts\":6,\"BackoffRate\":2}],\"Type\":\"Task\",\"ResultPath\":null,\"Resource\":\"",
        {
         "Fn::GetAtt": [
          "CrossRegionAwsSdk8a0c93f3dbef4b71ac137aaf2048ce7eF7430F4F",
@@ -180,21 +183,32 @@
          "Arn"
         ]
        },
-       "\",\"Parameters\":{\"region\":\"eu-west-1\",\"action\":\"describeTable\",\"service\":\"dynamodb\",\"parameters\":{\"TableName\":\"TestTableaws-stepfunctions-aws-sdk-integ\"}}},\"Wait Polling\":{\"Type\":\"Wait\",\"Seconds\":5,\"Next\":\"DescribeTable\"},\"IsTableAvailable?\":{\"Type\":\"Choice\",\"Choices\":[{\"Variable\":\"$.polling.Table.TableStatus\",\"StringEquals\":\"ACTIVE\",\"Next\":\"PutItem\"}],\"Default\":\"Wait Polling\"},\"PutItem\":{\"Next\":\"DeleteTable\",\"Retry\":[{\"ErrorEquals\":[\"Lambda.ClientExecutionTimeoutException\",\"Lambda.ServiceException\",\"Lambda.AWSLambdaException\",\"Lambda.SdkClientException\"],\"IntervalSeconds\":2,\"MaxAttempts\":6,\"BackoffRate\":2}],\"Type\":\"Task\",\"ResultPath\":\"$.putItem\",\"Resource\":\"",
+       "\",\"Parameters\":{\"region\":\"eu-west-1\",\"action\":\"describeTable\",\"service\":\"dynamodb\",\"parameters\":{\"TableName\":\"TestTableaws-stepfunctions-aws-sdk-integ\"}}},\"Wait Polling\":{\"Type\":\"Wait\",\"Seconds\":5,\"Next\":\"DescribeTable\"},\"IsTableAvailable?\":{\"Type\":\"Choice\",\"Choices\":[{\"Variable\":\"$.polling.Table.TableStatus\",\"StringEquals\":\"ACTIVE\",\"Next\":\"PutItem\"}],\"Default\":\"Wait Polling\"},\"PutItem\":{\"Next\":\"DeleteTable\",\"Retry\":[{\"ErrorEquals\":[\"Lambda.ClientExecutionTimeoutException\",\"Lambda.ServiceException\",\"Lambda.AWSLambdaException\",\"Lambda.SdkClientException\"],\"IntervalSeconds\":2,\"MaxAttempts\":6,\"BackoffRate\":2}],\"Type\":\"Task\",\"ResultPath\":null,\"Resource\":\"",
        {
         "Fn::GetAtt": [
          "CrossRegionAwsSdk8a0c93f3dbef4b71ac137aaf2048ce7eF7430F4F",
          "Arn"
         ]
        },
-       "\",\"Parameters\":{\"region\":\"eu-west-1\",\"action\":\"putItem\",\"service\":\"dynamodb\",\"parameters\":{\"TableName\":\"TestTableaws-stepfunctions-aws-sdk-integ\",\"Item\":{\"PK\":{\"S\":\"id\"},\"data\":{\"S\":\"some data\"}}}}},\"DeleteTable\":{\"End\":true,\"Retry\":[{\"ErrorEquals\":[\"Lambda.ClientExecutionTimeoutException\",\"Lambda.ServiceException\",\"Lambda.AWSLambdaException\",\"Lambda.SdkClientException\"],\"IntervalSeconds\":2,\"MaxAttempts\":6,\"BackoffRate\":2}],\"Type\":\"Task\",\"ResultPath\":\"$.deleteTable\",\"Resource\":\"",
+       "\",\"Parameters\":{\"region\":\"eu-west-1\",\"action\":\"putItem\",\"service\":\"dynamodb\",\"parameters\":{\"TableName\":\"TestTableaws-stepfunctions-aws-sdk-integ\",\"Item\":{\"PK\":{\"S\":\"id\"},\"data\":{\"S\":\"some data\"}}}}},\"DeleteTable\":{\"Next\":\"ListApplications\",\"Retry\":[{\"ErrorEquals\":[\"Lambda.ClientExecutionTimeoutException\",\"Lambda.ServiceException\",\"Lambda.AWSLambdaException\",\"Lambda.SdkClientException\"],\"IntervalSeconds\":2,\"MaxAttempts\":6,\"BackoffRate\":2}],\"Type\":\"Task\",\"ResultPath\":null,\"Resource\":\"",
        {
         "Fn::GetAtt": [
          "CrossRegionAwsSdk8a0c93f3dbef4b71ac137aaf2048ce7eF7430F4F",
          "Arn"
         ]
        },
-       "\",\"Parameters\":{\"region\":\"eu-west-1\",\"action\":\"deleteTable\",\"service\":\"dynamodb\",\"parameters\":{\"TableName\":\"TestTableaws-stepfunctions-aws-sdk-integ\"}}}}}"
+       "\",\"Parameters\":{\"region\":\"eu-west-1\",\"action\":\"deleteTable\",\"service\":\"dynamodb\",\"parameters\":{\"TableName\":\"TestTableaws-stepfunctions-aws-sdk-integ\"}}},\"ListApplications\":{\"End\":true,\"Retry\":[{\"ErrorEquals\":[\"Lambda.ClientExecutionTimeoutException\",\"Lambda.ServiceException\",\"Lambda.AWSLambdaException\",\"Lambda.SdkClientException\"],\"IntervalSeconds\":2,\"MaxAttempts\":6,\"BackoffRate\":2}],\"Type\":\"Task\",\"ResultPath\":\"$.listApplications\",\"Resource\":\"",
+       {
+        "Fn::GetAtt": [
+         "CrossRegionAwsSdk8a0c93f3dbef4b71ac137aaf2048ce7eF7430F4F",
+         "Arn"
+        ]
+       },
+       "\",\"Parameters\":{\"region\":\"",
+       {
+        "Ref": "AWS::Region"
+       },
+       "\",\"action\":\"listApplications\",\"service\":\"appconfig\",\"parameters\":{\"MaxResults\":1}}}}}"
       ]
      ]
     },
