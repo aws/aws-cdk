@@ -30,7 +30,7 @@ beforeEach(() => {
 });
 
 /* eslint-disable no-console */
-// console.log = jest.fn();
+console.log = jest.fn();
 
 const eventCommon = {
   ServiceToken: 'token',
@@ -467,9 +467,8 @@ test('installs the latest SDK', async () => {
   // Symlink to normal SDK to be able to call mockClient()
   await fs.ensureDir('/tmp/node_modules/@aws-sdk');
   await fs.symlink(require.resolve('@aws-sdk/client-s3'), tmpPath);
-  console.log('path exists', await fs.pathExists(tmpPath));
+
   const localAwsSdk: typeof S3 = await import(tmpPath);
-  console.log('local sdk', localAwsSdk);
   const localS3MockClient = mockClient(localAwsSdk.S3Client);
 
   // Now remove the symlink and let the handler install it
