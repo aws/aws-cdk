@@ -731,8 +731,8 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "fqn": "aws-cdk-lib.aws_ec2.CfnSecurityGroup",
+                  "version": "0.0.0"
                 }
               }
             },
@@ -896,6 +896,22 @@
                   "version": "10.3.0"
                 }
               },
+              "ImportedInstanceProfile": {
+                "id": "ImportedInstanceProfile",
+                "path": "aws-ecs-integ-alb/FirstAutoScalingGroup/ImportedInstanceProfile",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Resource",
+                  "version": "0.0.0"
+                }
+              },
+              "ImportedInstanceProfile": {
+                "id": "ImportedInstanceProfile",
+                "path": "aws-ecs-integ-alb/FirstAutoScalingGroup/ImportedInstanceProfile",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Resource",
+                  "version": "0.0.0"
+                }
+              },
               "LaunchTemplate": {
                 "id": "LaunchTemplate",
                 "path": "aws-ecs-integ-alb/FirstAutoScalingGroup/LaunchTemplate",
@@ -985,8 +1001,8 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "fqn": "aws-cdk-lib.aws_ec2.LaunchTemplate",
+                  "version": "0.0.0"
                 }
               },
               "ASG": {
@@ -1242,6 +1258,22 @@
                   "version": "10.3.0"
                 }
               },
+              "ImportedInstanceProfile": {
+                "id": "ImportedInstanceProfile",
+                "path": "aws-ecs-integ-alb/SecondAutoScalingGroup/ImportedInstanceProfile",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Resource",
+                  "version": "0.0.0"
+                }
+              },
+              "ImportedInstanceProfile": {
+                "id": "ImportedInstanceProfile",
+                "path": "aws-ecs-integ-alb/SecondAutoScalingGroup/ImportedInstanceProfile",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Resource",
+                  "version": "0.0.0"
+                }
+              },
               "LaunchTemplate": {
                 "id": "LaunchTemplate",
                 "path": "aws-ecs-integ-alb/SecondAutoScalingGroup/LaunchTemplate",
@@ -1331,8 +1363,8 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "fqn": "aws-cdk-lib.aws_ec2.LaunchTemplate",
+                  "version": "0.0.0"
                 }
               },
               "ASG": {
@@ -1431,6 +1463,7 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
                       "aws:cdk:cloudformation:props": {
+                        "ipAddressType": "ipv4",
                         "loadBalancerAttributes": [
                           {
                             "key": "deletion_protection.enabled",
