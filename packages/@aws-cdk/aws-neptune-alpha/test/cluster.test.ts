@@ -879,6 +879,59 @@ describe('DatabaseCluster', () => {
       RetentionInDays: 30,
     });
   });
+
+  test('cluster with copyTagsToSnapshot default', () => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new DatabaseCluster(stack, 'Database', {
+      vpc,
+      instanceType: InstanceType.R5_LARGE,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Neptune::DBCluster', {
+      CopyTagsToSnapshot: Match.absent(),
+    });
+  });
+
+  test('cluster with copyTagsToSnapshot disabled', () => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new DatabaseCluster(stack, 'Database', {
+      vpc,
+      instanceType: InstanceType.R5_LARGE,
+      copyTagsToSnapshot: false,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Neptune::DBCluster', {
+      CopyTagsToSnapshot: false,
+    });
+  });
+
+  test('cluster with copyTagsToSnapshot enabled', () => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new DatabaseCluster(stack, 'Database', {
+      vpc,
+      instanceType: InstanceType.R5_LARGE,
+      copyTagsToSnapshot: true,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Neptune::DBCluster', {
+      CopyTagsToSnapshot: true,
+    });
+  });
 });
 
 function testStack() {

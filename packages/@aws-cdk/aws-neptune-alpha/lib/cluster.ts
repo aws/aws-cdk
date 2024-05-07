@@ -321,6 +321,13 @@ export interface DatabaseClusterProps {
    * @default - required if instanceType is db.serverless
    */
   readonly serverlessScalingConfiguration?: ServerlessScalingConfiguration;
+
+  /**
+   * Whether to copy tags to the snapshot when a snapshot is created.
+   *
+   * @default - not copy tags to the snapshot
+   */
+  readonly copyTagsToSnapshot?: boolean;
 }
 
 /**
@@ -616,6 +623,9 @@ export class DatabaseCluster extends DatabaseClusterBase implements IDatabaseClu
       enableCloudwatchLogsExports: props.cloudwatchLogsExports?.map(logType => logType.value),
       storageEncrypted,
       serverlessScalingConfiguration: props.serverlessScalingConfiguration,
+      // Tags
+      copyTagsToSnapshot: props.copyTagsToSnapshot,
+
     });
 
     cluster.applyRemovalPolicy(props.removalPolicy, {

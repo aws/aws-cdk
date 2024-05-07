@@ -31,6 +31,7 @@ To set up a Neptune database, define a `DatabaseCluster`. You must always launch
 const cluster = new neptune.DatabaseCluster(this, 'Database', {
   vpc,
   instanceType: neptune.InstanceType.R5_LARGE,
+  copyTagsToSnapshot: true  // whether to save the cluster tags when creating the snapshot.
 });
 ```
 
