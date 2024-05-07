@@ -552,6 +552,115 @@ describe('cluster resource provider', () => {
           expect(error.message).toEqual('Cannot remove cluster version configuration. Current version is 1.2');
         });
       });
+      describe('assessConfig change', () => {
+        test('from undefined to a specific value', async () => {
+          const handler = new ClusterResourceHandler(mocks.client, mocks.newRequest('Update', {
+            accessConfig: { authenticationMode: 'API' },
+          }, {
+            accessConfig: { authenticationMode: undefined },
+          }));
+          const resp = await handler.onEvent();
+          expect(resp).toEqual({ EksUpdateId: mocks.MOCK_UPDATE_STATUS_ID });
+          expect(mocks.actualRequest.updateClusterConfigRequest!).toEqual({
+            name: 'physical-resource-id',
+            accessConfig: { authenticationMode: 'API' },
+          });
+          expect(mocks.actualRequest.createClusterRequest).toEqual(undefined);
+        });
+
+        test('from a specific value to another value', async () => {
+          const handler = new ClusterResourceHandler(mocks.client, mocks.newRequest('Update', {
+            accessConfig: { authenticationMode: 'API' },
+          }, {
+            accessConfig: { authenticationMode: 'API_AND_CONFIG_MAP' },
+          }));
+
+          const resp = await handler.onEvent();
+          expect(resp).toEqual({ EksUpdateId: mocks.MOCK_UPDATE_STATUS_ID });
+          expect(mocks.actualRequest.updateClusterConfigRequest!).toEqual({
+            name: 'physical-resource-id',
+            accessConfig: { authenticationMode: 'API' },
+          });
+          expect(mocks.actualRequest.createClusterRequest).toEqual(undefined);
+        });
+
+        test('fails from any defined value to undefined', async () => {
+          const handler = new ClusterResourceHandler(mocks.client, mocks.newRequest('Update', {
+            accessConfig: undefined,
+          }, {
+            accessConfig: { authenticationMode: 'API_AND_CONFIG_MAP' },
+          }));
+          let error: any;
+          try {
+            await handler.onEvent();
+          } catch (e) {
+            error = e;
+          }
+
+          expect(error.message).toEqual('Cannot fallback authenticationMode from defined to undefined');
+        });
+        test('fails from API_AND_CONFIG_MAP to CONFIG_MAP', async () => {
+          const handler = new ClusterResourceHandler(mocks.client, mocks.newRequest('Update', {
+            accessConfig: { authenticationMode: 'CONFIG_MAP' },
+          }, {
+            accessConfig: { authenticationMode: 'API_AND_CONFIG_MAP' },
+          }));
+          let error: any;
+          try {
+            await handler.onEvent();
+          } catch (e) {
+            error = e;
+          }
+
+          expect(error.message).toEqual('Cannot fallback authenticationMode from API_AND_CONFIG_MAP to CONFIG_MAP');
+        });
+        test('fails from API to undefined', async () => {
+          const handler = new ClusterResourceHandler(mocks.client, mocks.newRequest('Update', {
+            accessConfig: { authenticationMode: undefined },
+          }, {
+            accessConfig: { authenticationMode: 'API' },
+          }));
+          let error: any;
+          try {
+            await handler.onEvent();
+          } catch (e) {
+            error = e;
+          }
+
+          expect(error.message).toEqual('Cannot fallback authenticationMode from API to undefined');
+        });
+        test('fails from API to API_AND_CONFIG_MAP', async () => {
+          const handler = new ClusterResourceHandler(mocks.client, mocks.newRequest('Update', {
+            accessConfig: { authenticationMode: 'API_AND_CONFIG_MAP' },
+          }, {
+            accessConfig: { authenticationMode: 'API' },
+          }));
+          let error: any;
+          try {
+            await handler.onEvent();
+          } catch (e) {
+            error = e;
+          }
+
+          expect(error.message).toEqual('Cannot fallback authenticationMode from API to API_AND_CONFIG_MAP');
+        });
+        test('fails from API to CONFIG_MAP', async () => {
+          const handler = new ClusterResourceHandler(mocks.client, mocks.newRequest('Update', {
+            accessConfig: { authenticationMode: 'CONFIG_MAP' },
+          }, {
+            accessConfig: { authenticationMode: 'API' },
+          }));
+          let error: any;
+          try {
+            await handler.onEvent();
+          } catch (e) {
+            error = e;
+          }
+
+          expect(error.message).toEqual('Cannot fallback authenticationMode from API to CONFIG_MAP');
+        });
+
+      });
 
       describe('logging or access change', () => {
         test('from undefined to partial logging enabled', async () => {

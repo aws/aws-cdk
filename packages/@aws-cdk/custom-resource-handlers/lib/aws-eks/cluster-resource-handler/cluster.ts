@@ -1,9 +1,9 @@
 /* eslint-disable no-console */
 // eslint-disable-next-line import/no-extraneous-dependencies
 import * as EKS from '@aws-sdk/client-eks';
+import { IsCompleteResponse, OnEventResponse } from 'aws-cdk-lib/custom-resources/lib/provider-framework/types';
 import { EksClient, ResourceEvent, ResourceHandler } from './common';
 import { compareLoggingProps } from './compareLogging';
-import { IsCompleteResponse, OnEventResponse } from 'aws-cdk-lib/custom-resources/lib/provider-framework/types';
 
 const MAX_CLUSTER_NAME_LEN = 100;
 
@@ -161,6 +161,21 @@ export class ClusterResourceHandler extends ResourceHandler {
       };
 
       if (updates.updateAccessConfig) {
+        // old value is API - cannot fallback from API to any other mode
+        if (this.oldProps.accessConfig?.authenticationMode === 'API' &&
+          this.newProps.accessConfig?.authenticationMode !== 'API') {
+          throw new Error(`Cannot fallback authenticationMode from API to ${this.newProps.accessConfig?.authenticationMode}`);
+        }
+        // old value is API_AND_CONFIG_MAP - cannot fallback to CONFIG_MAP
+        if (this.oldProps.accessConfig?.authenticationMode === 'API_AND_CONFIG_MAP' &&
+          this.newProps.accessConfig?.authenticationMode === 'CONFIG_MAP') {
+          throw new Error(`Cannot fallback authenticationMode from API_AND_CONFIG_MAP to ${this.newProps.accessConfig?.authenticationMode}`);
+        }
+        // cannot fallback from defined to undefined
+        if (this.oldProps.accessConfig?.authenticationMode !== undefined &&
+          this.newProps.accessConfig?.authenticationMode === undefined) {
+          throw new Error('Cannot fallback authenticationMode from defined to undefined');
+        }
         config.accessConfig = this.newProps.accessConfig;
       };
 
