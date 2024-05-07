@@ -200,7 +200,7 @@ test('CodeBuild action role has the right AssumeRolePolicyDocument', () => {
 
 test('CodeBuild asset role has the right Principal', () => {
   const stack = new cdk.Stack();
-  stack.node.setContext(cxapi.PIPELINE_REDUCE_ASSET_ROLE_TRUST_SCOPE, true);
+  stack.node.setContext(cxapi.PIPELINE_REDUCE_ASSET_ROLE_TRUST_SCOPE, false);
   const pipelineStack = new cdk.Stack(stack, 'PipelineStack', { env: PIPELINE_ENV });
   new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk');
 
