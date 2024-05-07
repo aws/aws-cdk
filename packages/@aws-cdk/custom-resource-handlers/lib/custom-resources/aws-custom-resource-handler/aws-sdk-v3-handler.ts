@@ -40,7 +40,7 @@ interface AwsSdk {
 async function loadAwsSdk(
   packageName: string,
   installLatestAwsSdk?: 'true' | 'false',
-): AwsSdk {
+): Promise<AwsSdk> {
   try {
     // Try to install the latest version, and fall back to the pre-installed version if that fails
     if (!installedSdk[packageName] && installLatestAwsSdk === 'true') {
@@ -53,7 +53,7 @@ async function loadAwsSdk(
         return require(packageName); // Fallback to pre-installed version
       }
     }
-    
+
     // Try to load the installed version, and fall back to the pre-installed version if that fails
     try {
       // MUST use require here. Dynamic import() do not support importing from directories
