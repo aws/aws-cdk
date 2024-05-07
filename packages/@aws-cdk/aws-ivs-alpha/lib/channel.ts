@@ -200,7 +200,7 @@ export class Channel extends ChannelBase {
       throw new Error(`channelName must contain only numbers, letters, hyphens and underscores, got: '${this.physicalName}'`);
     }
 
-    if ((props.type === ChannelType.STANDARD || props.type === ChannelType.BASIC) && props.preset !== undefined) {
+    if ([ChannelType.STANDARD, ChannelType.BASIC].includes(props.type) && props.preset) {
       throw new Error('preset cannot be used when STANDARD or BASIC channel type');
     }
 
