@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/8469ff24b6d6382a1650f2ba209a6d85f79b4bc1df6216b3bcc7ef3b388e7b09.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/982e2a8ebe5f26027216a18352d9db7571d99dca378a5bc51d6694965ed2385e.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -44,6 +44,18 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "AdvancedChannelWithPresetSetting5981FCA9"
+          }
+        ],
+        "/aws-cdk-ivs/Exports/Output{\"Fn::GetAtt\":[\"AdvancedChannelWithoutPresetSetting56CDB01B\",\"Arn\"]}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputFnGetAttAdvancedChannelWithoutPresetSetting56CDB01BArnDCD4734C"
+          }
+        ],
+        "/aws-cdk-ivs/Exports/Output{\"Fn::GetAtt\":[\"AdvancedChannelWithPresetSetting5981FCA9\",\"Arn\"]}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputFnGetAttAdvancedChannelWithPresetSetting5981FCA9Arn6ED27899"
           }
         ],
         "/aws-cdk-ivs/BootstrapVersion": [
@@ -78,7 +90,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/6a1499c05d9ab0ab4183dd69ef07c487c4b72ed94b4a0f0680d0b1891428613c.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -91,9 +103,46 @@
         }
       },
       "dependencies": [
+        "aws-cdk-ivs",
         "ivstestDefaultTestDeployAssertDCE80D47.assets"
       ],
       "metadata": {
+        "/ivs-test/DefaultTest/DeployAssert/AwsApiCallIVSGetChannel6f08daab7fca1958c2a421f6607444b6/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallIVSGetChannel6f08daab7fca1958c2a421f6607444b6"
+          }
+        ],
+        "/ivs-test/DefaultTest/DeployAssert/AwsApiCallIVSGetChannel6f08daab7fca1958c2a421f6607444b6/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsAwsApiCallIVSGetChannel6f08daab7fca1958c2a421f6607444b6"
+          }
+        ],
+        "/ivs-test/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+          }
+        ],
+        "/ivs-test/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+          }
+        ],
+        "/ivs-test/DefaultTest/DeployAssert/AwsApiCallIVSGetChannel66d0ded52919471afc55195f445a6cf5/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallIVSGetChannel66d0ded52919471afc55195f445a6cf5"
+          }
+        ],
+        "/ivs-test/DefaultTest/DeployAssert/AwsApiCallIVSGetChannel66d0ded52919471afc55195f445a6cf5/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsAwsApiCallIVSGetChannel66d0ded52919471afc55195f445a6cf5"
+          }
+        ],
         "/ivs-test/DefaultTest/DeployAssert/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",

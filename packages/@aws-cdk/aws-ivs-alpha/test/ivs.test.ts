@@ -1,4 +1,4 @@
-import { Template } from 'aws-cdk-lib/assertions';
+import { Match, Template } from 'aws-cdk-lib/assertions';
 import { App, Stack } from 'aws-cdk-lib';
 import * as ivs from '../lib';
 
@@ -172,7 +172,7 @@ test('channel type advanced without preset setting', () => {
 
   Template.fromStack(stack).hasResourceProperties('AWS::IVS::Channel', {
     Type: 'ADVANCED_SD',
-    Preset: 'HIGHER_BANDWIDTH_DELIVERY',
+    Preset: Match.absent(),
   });
 });
 

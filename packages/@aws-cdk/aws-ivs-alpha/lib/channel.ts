@@ -53,21 +53,19 @@ export enum LatencyMode {
 /**
   * The channel type, which determines the allowable resolution and bitrate.
   * If you exceed the allowable resolution or bitrate, the stream probably will disconnect immediately.
+  *
+  * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ivs-channel.html
 */
 export enum ChannelType {
   /**
    * Multiple qualities are generated from the original input, to automatically give viewers the best experience for their devices and network conditions.
    * Transcoding allows higher playback quality across a range of download speeds. Resolution can be up to 1080p and bitrate can be up to 8.5 Mbps.
    * Audio is transcoded only for renditions 360p and below; above that, audio is passed through.
-   *
-   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ivs-channel.html
    */
   STANDARD = 'STANDARD',
 
   /**
    * delivers the original input to viewers. The viewer’s video-quality choice is limited to the original input.
-   *
-   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ivs-channel.html
    */
   BASIC = 'BASIC',
 
@@ -75,8 +73,6 @@ export enum ChannelType {
    * Multiple qualities are generated from the original input, to automatically give viewers the best experience for their devices and network conditions.
    * Input resolution can be up to 1080p and bitrate can be up to 8.5 Mbps; output is capped at SD quality (480p).
    * Audio for all renditions is transcoded, and an audio-only rendition is available.
-   *
-   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ivs-channel.html
    */
   ADVANCED_SD = 'ADVANCED_SD',
 
@@ -84,25 +80,23 @@ export enum ChannelType {
    * Multiple qualities are generated from the original input, to automatically give viewers the best experience for their devices and network conditions.
    * Input resolution can be up to 1080p and bitrate can be up to 8.5 Mbps; output is capped at HD quality (720p).
    * Audio for all renditions is transcoded, and an audio-only rendition is available.
-   *
-   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ivs-channel.html
    */
   ADVANCED_HD = 'ADVANCED_HD',
 }
 
 /**
   * An optional transcode preset for the channel. This is selectable only for ADVANCED_HD and ADVANCED_SD channel types.
+  *
+  * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ivs-channel.html
 */
 export enum Preset {
   /**
    * Use a lower bitrate than STANDARD for each quality level. Use it if you have low download bandwidth and/or simple video content (e.g., talking heads).
-   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ivs-channel.html
    */
   CONSTRAINED_BANDWIDTH_DELIVERY = 'CONSTRAINED_BANDWIDTH_DELIVERY',
 
   /**
    * Use a higher bitrate for each quality level. Use it if you have high download bandwidth and/or complex video content (e.g., flashes and quick scene changes).
-   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ivs-channel.html
    */
   HIGHER_BANDWIDTH_DELIVERY = 'HIGHER_BANDWIDTH_DELIVERY',
 
@@ -210,15 +204,12 @@ export class Channel extends ChannelBase {
       throw new Error('preset cannot be used when STANDARD or BASIC channel type');
     }
 
-    let preset = undefined;
-
-
     const resource = new CfnChannel(this, 'Resource', {
       authorized: props.authorized,
       latencyMode: props.latencyMode,
       name: this.physicalName,
       type: props.type,
-      preset,
+      preset: props.preset,
     });
 
     this.channelArn = resource.attrArn;
