@@ -89,7 +89,7 @@ describe('User Pool Client', () => {
               {
                 Ref: 'clientWithSecretD25031A8',
               },
-              '"}}',
+              '"},"logApiResponseData":true}',
             ],
           ],
         },
@@ -113,7 +113,7 @@ describe('User Pool Client', () => {
               {
                 Ref: 'clientWithSecretD25031A8',
               },
-              '"}}',
+              '"},"logApiResponseData":true}',
             ],
           ],
         },

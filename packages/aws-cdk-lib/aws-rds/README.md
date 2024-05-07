@@ -1078,6 +1078,7 @@ const parameterGroup = new rds.ParameterGroup(this, 'ParameterGroup', {
   engine: rds.DatabaseInstanceEngine.sqlServerEe({
     version: rds.SqlServerEngineVersion.VER_11,
   }),
+  name: 'my-parameter-group',
   parameters: {
     locks: '100',
   },
