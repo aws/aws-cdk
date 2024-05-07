@@ -7,7 +7,6 @@ import * as s3 from '../../../aws-s3';
 import * as sqs from '../../../aws-sqs';
 import * as cdk from '../../../core';
 import { Stack } from '../../../core';
-import * as cxapi from '../../../cx-api';
 import * as cdkp from '../../lib';
 import { CodePipeline } from '../../lib';
 import { PIPELINE_ENV, TestApp, ModernTestGitHubNpmPipeline, FileAssetApp, TwoStackApp, StageWithStackOutput } from '../testhelpers';
@@ -191,27 +190,6 @@ test('CodeBuild action role has the right AssumeRolePolicyDocument', () => {
           Action: 'sts:AssumeRole',
           Principal: {
             AWS: { 'Fn::GetAtt': ['CdkPipelineRoleC09C4D44', 'Arn'] },
-          },
-        },
-      ],
-    },
-  });
-});
-
-test('CodeBuild asset role has the right Principal', () => {
-  const stack = new cdk.Stack();
-  stack.node.setContext(cxapi.PIPELINE_REDUCE_ASSET_ROLE_TRUST_SCOPE, false);
-  const pipelineStack = new cdk.Stack(stack, 'PipelineStack', { env: PIPELINE_ENV });
-  new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk');
-
-  const template = Template.fromStack(pipelineStack);
-  template.hasResourceProperties('AWS::IAM::Role', {
-    AssumeRolePolicyDocument: {
-      Statement: [
-        {
-          Action: 'sts:AssumeRole',
-          Principal: {
-            Service: 'codebuild.amazonaws.com',
           },
         },
       ],

@@ -51,7 +51,7 @@ const app = new App({
   postCliContext: {
     '@aws-cdk/core:newStyleStackSynthesis': '1',
     '@aws-cdk/aws-codepipeline:defaultPipelineTypeToV2': false,
-    [PIPELINE_REDUCE_ASSET_ROLE_TRUST_SCOPE]: false
+    [PIPELINE_REDUCE_ASSET_ROLE_TRUST_SCOPE]: false,
   },
 });
 new PipelineStack(app, 'PipelineStack');
