@@ -33,13 +33,14 @@ export class TestStack extends Stack {
 
     this.tableTwo = new dynamodb.Table(this, 'TableTest2', {
       partitionKey: {
-        name: 'id',
+        name: 'PK',
         type: dynamodb.AttributeType.STRING,
       },
       removalPolicy: RemovalPolicy.DESTROY,
     });
 
-    this.tableTwo.grant(new iam.AccountPrincipal('123456789012'));
+    // const permissions: string[] = ['dynamodb:GetItem', 'dynamodb:UpdateItem'];
+    this.tableTwo.grantReadData(new iam.AccountPrincipal('123456789012'));
   }
 }
 
