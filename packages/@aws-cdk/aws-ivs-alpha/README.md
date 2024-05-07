@@ -45,7 +45,6 @@ You can use Advanced Channel type by setting the `type` property to
 Additionally, when using the Advanced Channel type, you can set
 the `preset` property to `ivs.Preset.CONSTRAINED_BANDWIDTH_DELIVERY`
 or `ivs.Preset.HIGHER_BANDWIDTH_DELIVERY`.
-If you don't specify the `preset`, `ivs.Preset.CONSTRAINED_BANDWIDTH_DELIVERY` is set by default.
 
 For more information, see [Amazon IVS Streaming Configuration](https://docs.aws.amazon.com/ivs/latest/LowLatencyUserGuide/streaming-config.html).
 
