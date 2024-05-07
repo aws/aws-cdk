@@ -2,12 +2,23 @@ import { App, RemovalPolicy, Stack, StackProps } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import * as dynamodb from 'aws-cdk-lib/aws-dynamodb';
 import * as iam from 'aws-cdk-lib/aws-iam';
+import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
 const app = new App();
 
 class TestStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
+
+    const docu = new iam.PolicyDocument({
+      statements: [
+        new iam.PolicyStatement({
+          actions: ['dynamodb:*'],
+          principals: [new iam.AccountRootPrincipal()],
+          resources: ['*'],
+        }),
+      ],
+    });
 
     // table with resource policy
     new dynamodb.TableV2(this, 'TableTestV2-1', {
@@ -16,35 +27,21 @@ class TestStack extends Stack {
         type: dynamodb.AttributeType.STRING,
       },
       removalPolicy: RemovalPolicy.DESTROY,
-      replicas: [{
-        region: 'eu-west-2',
-        resourcePolicy: iam.PolicyDocument.fromJson({
-          Statement: [
-            {
-              Action: 'dynamodb:*',
-              Effect: 'Allow',
-              Principal: {
-                AWS: '123456789101',
-              },
-              Resource: '*',
-            },
-          ],
-          Version: '2012-10-17',
-        }),
-      }],
+      resourcePolicy: docu,
     });
-
-    // table without resource policy
-    // new dynamodb.Table(this, 'TableTest2', {
-    //   partitionKey: {
-    //     name: 'id',
-    //     type: dynamodb.AttributeType.STRING,
-    //   },
-    //   removalPolicy: RemovalPolicy.DESTROY,
-    // });
   }
 }
 
-new TestStack(app, 'ResourcePolicyTest', { env: { region: 'eu-west-1' } });
+const stack = new TestStack(app, 'ResourcePolicyTest-v2', { env: { region: 'eu-west-1' } });
 
-app.synth();
+new IntegTest(app, 'table-v2-resource-policy-integ-test', {
+  testCases: [stack],
+  regions: ['us-east-1'],
+  cdkCommandOptions: {
+    deploy: {
+      args: {
+        rollback: true,
+      },
+    },
+  },
+});
