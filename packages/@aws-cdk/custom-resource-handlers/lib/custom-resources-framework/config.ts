@@ -6,6 +6,11 @@ import * as path from 'path';
  */
 export enum Runtime {
   /**
+   * The NodeJs 20.x runtime
+   */
+  NODEJS_20_X = 'nodejs20.x',
+
+  /**
    * The NodeJs 18.x runtime
    */
   NODEJS_18_X = 'nodejs18.x',
@@ -20,6 +25,18 @@ export enum Runtime {
    */
   PYTHON_3_10 = 'python3.10',
 }
+
+/**
+ * The latest node runtime available.
+ *
+ * Note: This node runtime is NOT necessarily available in all AWS regions.
+ */
+export const NODEJS_LATEST = Runtime.NODEJS_20_X;
+
+/**
+ * The latest node runtime available in all AWS regions.
+ */
+export const NODEJS_DEFAULT = Runtime.NODEJS_18_X;
 
 /**
  * Handler framework component types.

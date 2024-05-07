@@ -103,6 +103,7 @@ export const CODEPIPELINE_DEFAULT_PIPELINE_TYPE_TO_V2 = '@aws-cdk/aws-codepipeli
 export const KMS_REDUCE_CROSS_ACCOUNT_REGION_POLICY_SCOPE = '@aws-cdk/aws-kms:reduceCrossAccountRegionPolicyScope';
 export const EKS_NODEGROUP_NAME = '@aws-cdk/aws-eks:nodegroupNameAttribute';
 export const EBS_DEFAULT_GP3 = '@aws-cdk/aws-ec2:ebsDefaultGp3Volume';
+export const CUSTOM_RESOURCE_USE_LATEST_NODE_RUNTIME = '@aws-cdk/custom-resource-handlers:customResourceUseLatestNodeRuntime';
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
@@ -1059,6 +1060,18 @@ export const FLAGS: Record<string, FlagInfo> = {
     introducedIn: { v2: '2.140.0' },
     recommendedValue: true,
     compatibilityWithOldBehaviorMd: 'Pass `volumeType: EbsDeviceVolumeType.GENERAL_PURPOSE_SSD` to `Volume` construct to restore the previous behavior.',
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [CUSTOM_RESOURCE_USE_LATEST_NODE_RUNTIME]: {
+    type: FlagType.VisibleContext,
+    summary: 'When enabled, the node runtime used by custom resource providers vended by the CDK will be the latest node runtime made available by Lambda',
+    detailsMd: `
+      When this feature flag is enabled, the node runtime used by custom resource providers vended by the CDK will be the latest node runtime made available
+      by Lambda. Note that this node runtime may NOT be available in all AWS regions.
+    `,
+    introducedIn: { v2: 'V2NEXT' },
+    recommendedValue: false,
   },
 };
 

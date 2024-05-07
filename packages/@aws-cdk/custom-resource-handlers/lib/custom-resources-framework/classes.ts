@@ -14,7 +14,7 @@ import {
   SuperInitializer,
   Expression,
 } from '@cdklabs/typewriter';
-import { Runtime } from './config';
+import { NODEJS_DEFAULT, NODEJS_LATEST, Runtime } from './config';
 import { HandlerFrameworkModule } from './framework';
 import {
   CONSTRUCTS_MODULE,
@@ -23,6 +23,9 @@ import {
   CORE_INTERNAL_STACK,
   CORE_INTERNAL_CR_PROVIDER,
   PATH_MODULE,
+  CORE_INTERNAL_FEATURE_FLAGS,
+  CXAPI_MODULE,
+  CORE_INTERNAL_CXAPI_MODULE,
 } from './modules';
 import { toLambdaRuntime } from './utils/framework-utils';
 
@@ -70,14 +73,16 @@ export interface HandlerFrameworkClassProps {
   readonly codeDirectory: string;
 
   /**
-   * The runtime environment for the framework component.
-   */
-  readonly runtime: Runtime;
-
-  /**
    * The name of the method within your code that framework component calls.
    */
   readonly handler: string;
+
+  /**
+   * The runtime environment for the framework component.
+   *
+   * @default
+   */
+  readonly runtime?: Runtime;
 }
 
 export abstract class HandlerFrameworkClass extends ClassType {
@@ -95,13 +100,16 @@ export abstract class HandlerFrameworkClass extends ClassType {
           export: true,
         });
 
+        if (!props.runtime) {
+          this.externalModules.push(...[CORE_MODULE, CXAPI_MODULE]);
+        }
         this.importExternalModulesInto(scope);
 
         const superProps = new ObjectLiteral([
           new Splat(expr.ident('props')),
           ['code', expr.directCode(`lambda.Code.fromAsset(path.join(__dirname, '${props.codeDirectory}'))`)],
           ['handler', expr.lit(props.handler)],
-          ['runtime', expr.directCode(toLambdaRuntime(props.runtime))],
+          ['runtime', expr.directCode(this.buildRuntimeProperty(scope, props.runtime))],
         ]);
         this.buildConstructor({
           constructorPropsType: LAMBDA_MODULE.FunctionOptions,
@@ -127,6 +135,9 @@ export abstract class HandlerFrameworkClass extends ClassType {
           export: true,
         });
 
+        if (!props.runtime) {
+          this.externalModules.push(...[CORE_MODULE, CXAPI_MODULE]);
+        }
         this.importExternalModulesInto(scope);
 
         const uuid: PropertySpec = {
@@ -163,7 +174,7 @@ export abstract class HandlerFrameworkClass extends ClassType {
           new Splat(expr.ident('props')),
           ['code', expr.directCode(`lambda.Code.fromAsset(path.join(__dirname, '${props.codeDirectory}'))`)],
           ['handler', expr.lit(props.handler)],
-          ['runtime', expr.directCode(toLambdaRuntime(props.runtime))],
+          ['runtime', expr.directCode(this.buildRuntimeProperty(scope, props.runtime))],
         ]);
         this.buildConstructor({
           constructorPropsType: _interface.type,
@@ -192,8 +203,14 @@ export abstract class HandlerFrameworkClass extends ClassType {
 
         if (scope.coreInternal) {
           this.externalModules.push(...[CORE_INTERNAL_STACK, CORE_INTERNAL_CR_PROVIDER]);
+          if (!props.runtime) {
+            this.externalModules.push(...[CORE_INTERNAL_FEATURE_FLAGS, CORE_INTERNAL_CXAPI_MODULE]);
+          }
         } else {
           this.externalModules.push(CORE_MODULE);
+          if (!props.runtime) {
+            this.externalModules.push(CXAPI_MODULE);
+          }
         }
         this.importExternalModulesInto(scope);
 
@@ -249,7 +266,7 @@ export abstract class HandlerFrameworkClass extends ClassType {
         });
         getOrCreateProviderMethod.addBody(
           stmt.constVar(expr.ident('id'), expr.directCode('`${uniqueid}CustomResourceProvider`')),
-          stmt.constVar(expr.ident('stack'), expr.directCode('Stack.of(scope)')),
+          stmt.constVar(expr.ident('stack'), expr.directCode(`${scope.coreInternal ? '' : 'cdk.'}Stack.of(scope)`)),
           stmt.constVar(expr.ident('existing'), expr.directCode(`stack.node.tryFindChild(id) as ${this.type}`)),
           stmt.ret(expr.directCode(`existing ?? new ${this.name}(stack, id, props)`)),
         );
@@ -257,7 +274,7 @@ export abstract class HandlerFrameworkClass extends ClassType {
         const superProps = new ObjectLiteral([
           new Splat(expr.ident('props')),
           ['codeDirectory', expr.directCode(`path.join(__dirname, '${props.codeDirectory}')`)],
-          ['runtimeName', expr.lit(props.runtime)],
+          ['runtimeName', expr.directCode(this.buildRuntimeProperty(scope, props.runtime, true))],
         ]);
         this.buildConstructor({
           constructorPropsType: scope.coreInternal
@@ -296,11 +313,7 @@ export abstract class HandlerFrameworkClass extends ClassType {
         return;
       }
       case CORE_MODULE.fqn: {
-        CORE_MODULE.importSelective(scope, [
-          'Stack',
-          'CustomResourceProviderBase',
-          'CustomResourceProviderOptions',
-        ]);
+        CORE_MODULE.import(scope, 'cdk');
         return;
       }
       case CORE_INTERNAL_CR_PROVIDER.fqn: {
@@ -314,8 +327,20 @@ export abstract class HandlerFrameworkClass extends ClassType {
         CORE_INTERNAL_STACK.importSelective(scope, ['Stack']);
         return;
       }
+      case CORE_INTERNAL_FEATURE_FLAGS.fqn: {
+        CORE_INTERNAL_FEATURE_FLAGS.importSelective(scope, ['FeatureFlags']);
+        return;
+      }
       case LAMBDA_MODULE.fqn: {
         LAMBDA_MODULE.import(scope, 'lambda');
+        return;
+      }
+      case CXAPI_MODULE.fqn: {
+        CXAPI_MODULE.importSelective(scope, ['CUSTOM_RESOURCE_USE_LATEST_NODE_RUNTIME']);
+        return;
+      }
+      case CORE_INTERNAL_CXAPI_MODULE.fqn: {
+        CORE_INTERNAL_CXAPI_MODULE.importSelective(scope, ['CUSTOM_RESOURCE_USE_LATEST_NODE_RUNTIME']);
         return;
       }
     }
@@ -352,5 +377,15 @@ export abstract class HandlerFrameworkClass extends ClassType {
 
     const superInitializerArgs: Expression[] = [scope, id, props.superProps];
     init.addBody(new SuperInitializer(...superInitializerArgs));
+  }
+
+  private buildRuntimeProperty(scope: HandlerFrameworkModule, runtime?: Runtime, isProvider: boolean = false) {
+    if (runtime?.includes('python')) {
+      return toLambdaRuntime(runtime);
+    }
+    const featureFlagCondition = `${scope.coreInternal ? '' : 'cdk.'}FeatureFlags.of(scope).isEnabled(CUSTOM_RESOURCE_USE_LATEST_NODE_RUNTIME)`;
+    return isProvider
+      ? `${featureFlagCondition} ? '${NODEJS_LATEST}' : '${NODEJS_DEFAULT}'`
+      : `${featureFlagCondition} ? ${toLambdaRuntime(NODEJS_LATEST)} : ${toLambdaRuntime(NODEJS_DEFAULT)}`;
   }
 }

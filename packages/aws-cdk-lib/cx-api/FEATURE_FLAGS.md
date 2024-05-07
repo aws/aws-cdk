@@ -69,6 +69,7 @@ Flags come in three types:
 | [@aws-cdk/aws-kms:reduceCrossAccountRegionPolicyScope](#aws-cdkaws-kmsreducecrossaccountregionpolicyscope) | When enabled, IAM Policy created from KMS key grant will reduce the resource scope to this key only. | 2.134.0 | (fix) |
 | [@aws-cdk/aws-eks:nodegroupNameAttribute](#aws-cdkaws-eksnodegroupnameattribute) | When enabled, nodegroupName attribute of the provisioned EKS NodeGroup will not have the cluster name prefix. | 2.139.0 | (fix) |
 | [@aws-cdk/aws-ec2:ebsDefaultGp3Volume](#aws-cdkaws-ec2ebsdefaultgp3volume) | When enabled, the default volume type of the EBS volume will be GP3 | 2.140.0 | (default) |
+| [@aws-cdk/custom-resource-handlers:customResourceUseLatestNodeRuntime](#aws-cdkcustom-resource-handlerscustomresourceuselatestnoderuntime) | When enabled, the node runtime used by custom resource providers vended by the CDK will be the latest node runtime made available by Lambda | V2NEXT | (config) |
 
 <!-- END table -->
 
@@ -128,7 +129,8 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/aws-codepipeline:defaultPipelineTypeToV2": true,
     "@aws-cdk/aws-kms:reduceCrossAccountRegionPolicyScope": true,
     "@aws-cdk/aws-eks:nodegroupNameAttribute": true,
-    "@aws-cdk/aws-ec2:ebsDefaultGp3Volume": true
+    "@aws-cdk/aws-ec2:ebsDefaultGp3Volume": true,
+    "@aws-cdk/custom-resource-handlers:customResourceUseLatestNodeRuntime": false
   }
 }
 ```
@@ -1296,6 +1298,20 @@ When this featuer flag is enabled, the default volume type of the EBS volume wil
 | 2.140.0 | `false` | `true` |
 
 **Compatibility with old behavior:** Pass `volumeType: EbsDeviceVolumeType.GENERAL_PURPOSE_SSD` to `Volume` construct to restore the previous behavior.
+
+
+### @aws-cdk/custom-resource-handlers:customResourceUseLatestNodeRuntime
+
+*When enabled, the node runtime used by custom resource providers vended by the CDK will be the latest node runtime made available by Lambda* (config)
+
+When this feature flag is enabled, the node runtime used by custom resource providers vended by the CDK will be the latest node runtime made available
+by Lambda. Note that this node runtime may NOT be available in all AWS regions.
+
+
+| Since | Default | Recommended |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| V2NEXT | `false` | `false` |
 
 
 <!-- END details -->

@@ -2,15 +2,10 @@
 import { ExternalModule, InterfaceType, Module, TypeScriptRenderer } from '@cdklabs/typewriter';
 import * as fs from 'fs-extra';
 import { HandlerFrameworkClass, HandlerFrameworkClassProps } from './classes';
-import { ComponentType, ComponentProps, Runtime } from './config';
+import { ComponentType, ComponentProps } from './config';
 import { buildComponentName } from './utils/framework-utils';
 
 export class HandlerFrameworkModule extends Module {
-  /**
-   * The latest nodejs runtime version available across all AWS regions.
-   */
-  private static readonly DEFAULT_RUNTIME = Runtime.NODEJS_18_X;
-
   private readonly renderer = new TypeScriptRenderer();
   private readonly externalModules = new Map<string, boolean>();
   private readonly _interfaces = new Map<string, InterfaceType>();
@@ -50,7 +45,7 @@ export class HandlerFrameworkModule extends Module {
       name,
       handler,
       codeDirectory,
-      runtime: component.runtime ?? HandlerFrameworkModule.DEFAULT_RUNTIME,
+      runtime: component.runtime,
     };
 
     switch (component.type) {
