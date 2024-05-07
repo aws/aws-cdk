@@ -1,0 +1,19 @@
+{
+  "version": "36.0.0",
+  "files": {
+    "97f3cb49b4a5d87dae23c00326add5504a8b2269cb75c78ed04c196c9a605809": {
+      "source": {
+        "path": "resource-policy-stack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "97f3cb49b4a5d87dae23c00326add5504a8b2269cb75c78ed04c196c9a605809.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

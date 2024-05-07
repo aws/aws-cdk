@@ -2,46 +2,58 @@ import { App, RemovalPolicy, Stack, StackProps } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import * as dynamodb from 'aws-cdk-lib/aws-dynamodb';
 import * as iam from 'aws-cdk-lib/aws-iam';
+import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
-const app = new App();
+export class TestStack extends Stack {
 
-class TestStack extends Stack {
+  readonly table: dynamodb.Table;
+  readonly tableTwo: dynamodb.Table;
+
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
-    // table with resource policy
-    new dynamodb.Table(this, 'TableTest1', {
-      partitionKey: {
-        name: 'id',
-        type: dynamodb.AttributeType.STRING,
-      },
-      removalPolicy: RemovalPolicy.DESTROY,
-      resourcePolicy: iam.PolicyDocument.fromJson({
-        Statement: [
-          {
-            Action: 'dynamodb:*',
-            Effect: 'Allow',
-            Principal: {
-              AWS: '123456789101',
-            },
-            Resource: '*',
-          },
-        ],
-        Version: '2012-10-17',
-      }),
+    const doc = new iam.PolicyDocument({
+      statements: [
+        new iam.PolicyStatement({
+          actions: ['dynamodb:*'],
+          principals: [new iam.AccountRootPrincipal()],
+          resources: ['*'],
+        }),
+      ],
     });
 
-    // table without resource policy
-    new dynamodb.Table(this, 'TableTest2', {
+    this.table = new dynamodb.Table(this, 'TableTest1', {
+      partitionKey: {
+        name: 'id',
+        type: dynamodb.AttributeType.STRING,
+      },
+      removalPolicy: RemovalPolicy.DESTROY,
+      resourcePolicy: doc,
+    });
+
+    this.tableTwo = new dynamodb.Table(this, 'TableTest2', {
       partitionKey: {
         name: 'id',
         type: dynamodb.AttributeType.STRING,
       },
       removalPolicy: RemovalPolicy.DESTROY,
     });
+
+    this.tableTwo.grant(new iam.AccountPrincipal('123456789012'));
   }
 }
 
-new TestStack(app, 'ResourcePolicyTest');
+const app = new App();
+const stack = new TestStack(app, 'resource-policy-stack', {});
 
-app.synth();
+new IntegTest(app, 'resource-policy-integ-test', {
+  testCases: [stack],
+  regions: ['us-east-1'],
+  cdkCommandOptions: {
+    deploy: {
+      args: {
+        rollback: true,
+      },
+    },
+  },
+});
