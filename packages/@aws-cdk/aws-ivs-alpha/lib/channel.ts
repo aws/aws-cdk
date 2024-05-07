@@ -218,7 +218,7 @@ export class Channel extends ChannelBase {
       latencyMode: props.latencyMode,
       name: this.physicalName,
       type: props.type,
-      preset: preset,
+      preset,
     });
 
     this.channelArn = resource.attrArn;
