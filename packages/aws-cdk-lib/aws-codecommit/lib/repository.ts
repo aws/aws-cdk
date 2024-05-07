@@ -4,6 +4,7 @@ import { CfnRepository } from './codecommit.generated';
 import * as notifications from '../../aws-codestarnotifications';
 import * as events from '../../aws-events';
 import * as iam from '../../aws-iam';
+import * as kms from '../../aws-kms';
 import { ArnFormat, IResource, Lazy, Resource, Stack } from '../../core';
 
 /**
@@ -496,6 +497,13 @@ export interface RepositoryProps {
    * @default - No initialization (create empty repo)
    */
   readonly code?: Code;
+
+  /**
+   * The customer managed key used to encrypt and decrypt the data in repository.
+   *
+   * @default - Use an AWS managed key
+   */
+  readonly kmsKey?: kms.IKey;
 }
 
 /**
@@ -561,6 +569,7 @@ export class Repository extends RepositoryBase {
       repositoryDescription: props.description,
       triggers: Lazy.any({ produce: () => this.triggers }, { omitEmptyArray: true }),
       code: (props.code?.bind(this))?.code,
+      kmsKeyId: props.kmsKey?.keyArn,
     });
 
     this.repositoryName = this.getResourceNameAttribute(repository.attrName);

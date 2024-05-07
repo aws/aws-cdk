@@ -194,6 +194,12 @@ If you prefer to use a custom AMI, use `machineImage:
 MachineImage.genericLinux({ ... })` and configure the right AMI ID for the
 regions you want to deploy to.
 
+> **Warning**
+> The NAT instances created using this method will be **unmonitored**.
+> They are not part of an Auto Scaling Group,
+> and if they become unavailable or are terminated for any reason,
+> will not be restarted or replaced.
+
 By default, the NAT instances will route all traffic. To control what traffic
 gets routed, pass a custom value for `defaultAllowedTraffic` and access the
 `NatInstanceProvider.connections` member after having passed the NAT provider to
@@ -209,12 +215,44 @@ const provider = ec2.NatProvider.instanceV2({
 new ec2.Vpc(this, 'TheVPC', {
   natGatewayProvider: provider,
 });
-provider.connections.allowFrom(ec2.Peer.ipv4('1.2.3.4/8'), ec2.Port.tcp(80));
+provider.connections.allowFrom(ec2.Peer.ipv4('1.2.3.4/8'), ec2.Port.HTTP);
+```
+
+You can also customize the characteristics of your NAT instances, including their security group,
+as well as their initialization scripts:
+
+```ts
+declare const bucket: s3.Bucket;
+
+const userData = ec2.UserData.forLinux();
+userData.addCommands(
+  ...ec2.NatInstanceProviderV2.DEFAULT_USER_DATA_COMMANDS,
+  'echo "hello world!" > hello.txt',
+  `aws s3 cp hello.txt s3://${bucket.bucketName}`,
+);
+
+const provider = ec2.NatProvider.instanceV2({
+  instanceType: new ec2.InstanceType('t3.small'),
+  creditSpecification: ec2.CpuCredits.UNLIMITED,
+  defaultAllowedTraffic: ec2.NatTrafficDirection.NONE,
+});
+
+const vpc = new ec2.Vpc(this, 'TheVPC', {
+  natGatewayProvider: provider,
+  natGateways: 2,
+});
+
+const securityGroup = new ec2.SecurityGroup(this, 'SecurityGroup', { vpc });
+    securityGroup.addEgressRule(ec2.Peer.anyIpv4(), ec2.Port.tcp(443));
+for (const gateway of provider.gatewayInstances) {
+  bucket.grantWrite(gateway);
+  gateway.addSecurityGroup(securityGroup);
+}
 ```
 
 [using NAT instances](test/integ.nat-instances.lit.ts) [Deprecated]
 
-The construct will use the AWS official NAT instance AMI, which has already 
+The V1 `NatProvider.instance` construct will use the AWS official NAT instance AMI, which has already
 reached EOL on Dec 31, 2023. For more information, see the following blog post: 
 [Amazon Linux AMI end of life](https://aws.amazon.com/blogs/aws/update-on-amazon-linux-ami-end-of-life/).
 
@@ -228,7 +266,7 @@ const provider = ec2.NatProvider.instance({
 new ec2.Vpc(this, 'TheVPC', {
   natGatewayProvider: provider,
 });
-provider.connections.allowFrom(ec2.Peer.ipv4('1.2.3.4/8'), ec2.Port.tcp(80));
+provider.connections.allowFrom(ec2.Peer.ipv4('1.2.3.4/8'), ec2.Port.HTTP);
 ```
 
 ### Ip Address Management
@@ -686,13 +724,13 @@ declare const appFleet: autoscaling.AutoScalingGroup;
 declare const dbFleet: autoscaling.AutoScalingGroup;
 
 // Allow connections from anywhere
-loadBalancer.connections.allowFromAnyIpv4(ec2.Port.tcp(443), 'Allow inbound HTTPS');
+loadBalancer.connections.allowFromAnyIpv4(ec2.Port.HTTPS, 'Allow inbound HTTPS');
 
 // The same, but an explicit IP address
-loadBalancer.connections.allowFrom(ec2.Peer.ipv4('1.2.3.4/32'), ec2.Port.tcp(443), 'Allow inbound HTTPS');
+loadBalancer.connections.allowFrom(ec2.Peer.ipv4('1.2.3.4/32'), ec2.Port.HTTPS, 'Allow inbound HTTPS');
 
 // Allow connection between AutoScalingGroups
-appFleet.connections.allowTo(dbFleet, ec2.Port.tcp(443), 'App can call database');
+appFleet.connections.allowTo(dbFleet, ec2.Port.HTTPS, 'App can call database');
 ```
 
 ### Connection Peers
@@ -709,7 +747,7 @@ peer = ec2.Peer.anyIpv4();
 peer = ec2.Peer.ipv6('::0/0');
 peer = ec2.Peer.anyIpv6();
 peer = ec2.Peer.prefixList('pl-12345');
-appFleet.connections.allowTo(peer, ec2.Port.tcp(443), 'Allow outbound HTTPS');
+appFleet.connections.allowTo(peer, ec2.Port.HTTPS, 'Allow outbound HTTPS');
 ```
 
 Any object that has a security group can itself be used as a connection peer:
@@ -720,9 +758,9 @@ declare const fleet2: autoscaling.AutoScalingGroup;
 declare const appFleet: autoscaling.AutoScalingGroup;
 
 // These automatically create appropriate ingress and egress rules in both security groups
-fleet1.connections.allowTo(fleet2, ec2.Port.tcp(80), 'Allow between fleets');
+fleet1.connections.allowTo(fleet2, ec2.Port.HTTP, 'Allow between fleets');
 
-appFleet.connections.allowFromAnyIpv4(ec2.Port.tcp(80), 'Allow from load balancer');
+appFleet.connections.allowFromAnyIpv4(ec2.Port.HTTP, 'Allow from load balancer');
 ```
 
 ### Port Ranges
@@ -732,6 +770,7 @@ the connection specifier:
 
 ```ts
 ec2.Port.tcp(80)
+ec2.Port.HTTPS
 ec2.Port.tcpRange(60000, 65535)
 ec2.Port.allTcp()
 ec2.Port.allIcmp()
@@ -785,7 +824,7 @@ const mySecurityGroupWithoutInlineRules = new ec2.SecurityGroup(this, 'SecurityG
   disableInlineRules: true
 });
 //This will add the rule as an external cloud formation construct
-mySecurityGroupWithoutInlineRules.addIngressRule(ec2.Peer.anyIpv4(), ec2.Port.tcp(22), 'allow ssh access from the world');
+mySecurityGroupWithoutInlineRules.addIngressRule(ec2.Peer.anyIpv4(), ec2.Port.SSH, 'allow ssh access from the world');
 ```
 
 ### Importing an existing security group
@@ -1426,6 +1465,23 @@ ec2.CloudFormationInit.fromElements(
 );
 ```
 
+You can use the `environmentVariables` or `environmentFiles` parameters to specify environment variables
+for your services:
+
+```ts
+new ec2.InitConfig([
+  ec2.InitFile.fromString('/myvars.env', 'VAR_FROM_FILE="VAR_FROM_FILE"'),
+  ec2.InitService.systemdConfigFile('myapp', {
+    command: '/usr/bin/python3 -m http.server 8080',
+    cwd: '/var/www/html',
+    environmentVariables: {
+      MY_VAR: 'MY_VAR',
+    },
+    environmentFiles: ['/myvars.env'],
+  }),
+])
+```
+
 ### Bastion Hosts
 
 A bastion host functions as an instance used to access servers and resources in a VPC without open up the complete VPC on a network level.
@@ -1526,6 +1582,29 @@ new ec2.Instance(this, 'Instance', {
   ],
 });
 
+```
+
+#### EBS Optimized Instances
+
+An Amazon EBS–optimized instance uses an optimized configuration stack and provides additional, dedicated capacity for Amazon EBS I/O. This optimization provides the best performance for your EBS volumes by minimizing contention between Amazon EBS I/O and other traffic from your instance.
+
+Depending on the instance type, this features is enabled by default while others require explicit activation. Please refer to the [documentation](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ebs-optimized.html) for details.
+
+```ts
+declare const vpc: ec2.Vpc;
+declare const instanceType: ec2.InstanceType;
+declare const machineImage: ec2.IMachineImage;
+
+new ec2.Instance(this, 'Instance', {
+  vpc,
+  instanceType,
+  machineImage,
+  ebsOptimized: true,
+  blockDevices: [{
+    deviceName: '/dev/xvda',
+    volume: ec2.BlockDeviceVolume.ebs(8),
+  }],
+});
 ```
 
 ### Volumes

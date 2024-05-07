@@ -13,7 +13,7 @@ import { StackActivityProgress } from './util/cloudformation/stack-activity-moni
 import { replaceEnvPlaceholders } from './util/placeholders';
 import { makeBodyParameterAndUpload } from './util/template-body-parameter';
 import { Tag } from '../cdk-toolkit';
-import { debug, warning } from '../logging';
+import { debug, warning, error } from '../logging';
 import { buildAssets, publishAssets, BuildAssetsOptions, PublishAssetsOptions, PublishingAws, EVENT_TO_LOGGER } from '../util/asset-publishing';
 
 /**
@@ -273,6 +273,7 @@ export interface DestroyStackOptions {
 export interface StackExistsOptions {
   stack: cxapi.CloudFormationStackArtifact;
   deployName?: string;
+  tryLookupRole?: boolean;
 }
 
 export interface DeploymentsProps {
@@ -440,7 +441,12 @@ export class Deployments {
   }
 
   public async stackExists(options: StackExistsOptions): Promise<boolean> {
-    const { stackSdk } = await this.prepareSdkFor(options.stack, undefined, Mode.ForReading);
+    let stackSdk;
+    if (options.tryLookupRole) {
+      stackSdk = (await this.prepareSdkWithLookupOrDeployRole(options.stack)).stackSdk;
+    } else {
+      stackSdk = (await this.prepareSdkFor(options.stack, undefined, Mode.ForReading)).stackSdk;
+    }
     const stack = await CloudFormationStack.lookup(stackSdk.cloudFormation(), options.deployName ?? options.stack.stackName);
     return stack.exists;
   }
@@ -536,8 +542,9 @@ export class Deployments {
 
     // try to assume the lookup role
     const warningMessage = `Could not assume ${arns.lookupRoleArn}, proceeding anyway.`;
-    const upgradeMessage = `(To get rid of this warning, please upgrade to bootstrap version >= ${stack.lookupRole?.requiresBootstrapStackVersion})`;
+
     try {
+      // Trying to assume lookup role and cache the sdk for the environment
       const stackSdk = await this.cachedSdkForEnvironment(resolvedEnvironment, Mode.ForReading, {
         assumeRoleArn: arns.lookupRoleArn,
         assumeRoleExternalId: stack.lookupRole?.assumeRoleExternalId,
@@ -549,22 +556,26 @@ export class Deployments {
       if (stackSdk.didAssumeRole && stack.lookupRole?.bootstrapStackVersionSsmParameter && stack.lookupRole.requiresBootstrapStackVersion) {
         const version = await envResources.versionFromSsmParameter(stack.lookupRole.bootstrapStackVersionSsmParameter);
         if (version < stack.lookupRole.requiresBootstrapStackVersion) {
-          throw new Error(`Bootstrap stack version '${stack.lookupRole.requiresBootstrapStackVersion}' is required, found version '${version}'.`);
+          throw new Error(`Bootstrap stack version '${stack.lookupRole.requiresBootstrapStackVersion}' is required, found version '${version}'. To get rid of this error, please upgrade to bootstrap version >= ${stack.lookupRole.requiresBootstrapStackVersion}`);
         }
-        // we may not have assumed the lookup role because one was not provided
-        // if that is the case then don't print the upgrade warning
-      } else if (!stackSdk.didAssumeRole && stack.lookupRole?.requiresBootstrapStackVersion) {
-        warning(upgradeMessage);
+      } else if (!stackSdk.didAssumeRole) {
+        const lookUpRoleExists = stack.lookupRole ? true : false;
+        warning(`Lookup role ${ lookUpRoleExists ? 'exists but' : 'does not exist, hence'} was not assumed. Proceeding with default credentials.`);
       }
       return { ...stackSdk, resolvedEnvironment, envResources };
     } catch (e: any) {
       debug(e);
-      // only print out the warnings if the lookupRole exists AND there is a required
-      // bootstrap version, otherwise the warnings will print `undefined`
-      if (stack.lookupRole && stack.lookupRole.requiresBootstrapStackVersion) {
+
+      // only print out the warnings if the lookupRole exists
+      if (stack.lookupRole) {
         warning(warningMessage);
-        warning(upgradeMessage);
       }
+
+      // This error should be shown even if debug mode is off
+      if (e instanceof Error && e.message.includes('Bootstrap stack version')) {
+        error(e.message);
+      }
+
       throw (e);
     }
   }

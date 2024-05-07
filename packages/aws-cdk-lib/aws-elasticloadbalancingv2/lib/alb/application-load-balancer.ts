@@ -16,6 +16,8 @@ import { parseLoadBalancerFullName } from '../shared/util';
 
 /**
  * Properties for defining an Application Load Balancer
+ *
+ * @see https://docs.aws.amazon.com/elasticloadbalancing/latest/application/application-load-balancers.html#load-balancer-attributes
  */
 export interface ApplicationLoadBalancerProps extends BaseLoadBalancerProps {
   /**
@@ -68,6 +70,74 @@ export interface ApplicationLoadBalancerProps extends BaseLoadBalancerProps {
    * @default - Duration.seconds(3600)
    */
   readonly clientKeepAlive?: Duration;
+
+  /**
+   * Indicates whether the Application Load Balancer should preserve the host header in the HTTP request
+   * and send it to the target without any change.
+   *
+   * @default false
+   */
+  readonly preserveHostHeader?: boolean;
+
+  /**
+   * Indicates whether the two headers (x-amzn-tls-version and x-amzn-tls-cipher-suite),
+   * which contain information about the negotiated TLS version and cipher suite,
+   * are added to the client request before sending it to the target.
+   *
+   * The x-amzn-tls-version header has information about the TLS protocol version negotiated with the client,
+   * and the x-amzn-tls-cipher-suite header has information about the cipher suite negotiated with the client.
+   *
+   * Both headers are in OpenSSL format.
+   *
+   * @default false
+   */
+  readonly xAmznTlsVersionAndCipherSuiteHeaders?: boolean;
+
+  /**
+   * Indicates whether the X-Forwarded-For header should preserve the source port
+   * that the client used to connect to the load balancer.
+   *
+   * @default false
+   */
+  readonly preserveXffClientPort?: boolean;
+
+  /**
+   * Enables you to modify, preserve, or remove the X-Forwarded-For header in the HTTP request
+   * before the Application Load Balancer sends the request to the target.
+   *
+   * @default XffHeaderProcessingMode.APPEND
+   */
+  readonly xffHeaderProcessingMode?: XffHeaderProcessingMode;
+
+  /**
+   * Indicates whether to allow a WAF-enabled load balancer to route requests to targets
+   * if it is unable to forward the request to AWS WAF.
+   *
+   * @default false
+   */
+  readonly wafFailOpen?: boolean;
+}
+
+/**
+ * Processing mode of the X-Forwarded-For header in the HTTP request
+ * before the Application Load Balancer sends the request to the target.
+ */
+export enum XffHeaderProcessingMode {
+  /**
+   * Application Load Balancer adds the client IP address (of the last hop) to the X-Forwarded-For header
+   * in the HTTP request before it sends it to targets.
+   */
+  APPEND = 'append',
+  /**
+   * Application Load Balancer preserves the X-Forwarded-For header in the HTTP request,
+   * and sends it to targets without any change.
+   */
+  PRESERVE = 'preserve',
+  /**
+   * Application Load Balancer removes the X-Forwarded-For header
+   * in the HTTP request before it sends it to targets.
+   */
+  REMOVE = 'remove',
 }
 
 /**
@@ -129,6 +199,11 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
     if (props.idleTimeout !== undefined) { this.setAttribute('idle_timeout.timeout_seconds', props.idleTimeout.toSeconds().toString()); }
     if (props.dropInvalidHeaderFields) {this.setAttribute('routing.http.drop_invalid_header_fields.enabled', 'true'); }
     if (props.desyncMitigationMode !== undefined) {this.setAttribute('routing.http.desync_mitigation_mode', props.desyncMitigationMode); }
+    if (props.preserveHostHeader) { this.setAttribute('routing.http.preserve_host_header.enabled', 'true'); }
+    if (props.xAmznTlsVersionAndCipherSuiteHeaders) { this.setAttribute('routing.http.x_amzn_tls_version_and_cipher_suite.enabled', 'true'); }
+    if (props.preserveXffClientPort) { this.setAttribute('routing.http.xff_client_port.enabled', 'true'); }
+    if (props.xffHeaderProcessingMode !== undefined) { this.setAttribute('routing.http.xff_header_processing.mode', props.xffHeaderProcessingMode); }
+    if (props.wafFailOpen) { this.setAttribute('waf.fail_open.enabled', 'true'); }
     if (props.clientKeepAlive !== undefined) {
       const clientKeepAliveInMillis = props.clientKeepAlive.toMilliseconds();
       if (clientKeepAliveInMillis < 1000) {
@@ -140,6 +215,10 @@ export class ApplicationLoadBalancer extends BaseLoadBalancer implements IApplic
         throw new Error(`\'clientKeepAlive\' must be between 60 and 604800 seconds. Got: ${clientKeepAliveInSeconds} seconds`);
       }
       this.setAttribute('client_keep_alive.seconds', clientKeepAliveInSeconds.toString());
+    }
+
+    if (props.crossZoneEnabled === false) {
+      throw new Error('crossZoneEnabled cannot be false with Application Load Balancers.');
     }
   }
 

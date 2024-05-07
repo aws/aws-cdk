@@ -1078,6 +1078,7 @@ const parameterGroup = new rds.ParameterGroup(this, 'ParameterGroup', {
   engine: rds.DatabaseInstanceEngine.sqlServerEe({
     version: rds.SqlServerEngineVersion.VER_11,
   }),
+  name: 'my-parameter-group',
   parameters: {
     locks: '100',
   },
@@ -1221,6 +1222,20 @@ new rds.DatabaseCluster(this, 'DatabaseCluster', {
     vpc: vpc,
     preferredMaintenanceWindow: 'Sun:23:15-Sun:23:45',
   },
+  preferredMaintenanceWindow: 'Sat:22:15-Sat:22:45',
+});
+```
+
+You can also set the preferred maintenance window via reader and writer props:
+
+```ts
+declare const vpc: ec2.Vpc;
+new rds.DatabaseCluster(this, 'DatabaseCluster', {
+  engine: rds.DatabaseClusterEngine.AURORA,
+  vpc: vpc,
+  writer: rds.ClusterInstance.provisioned('WriterInstance', {
+    preferredMaintenanceWindow: 'Sat:22:15-Sat:22:45',
+  }),
   preferredMaintenanceWindow: 'Sat:22:15-Sat:22:45',
 });
 ```

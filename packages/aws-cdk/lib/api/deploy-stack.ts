@@ -269,11 +269,13 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
     ? templateParams.updateExisting(finalParameterValues, cloudFormationStack.parameters)
     : templateParams.supplyAll(finalParameterValues);
 
+  const hotswapMode = options.hotswap ?? HotswapMode.FULL_DEPLOYMENT;
+
   if (await canSkipDeploy(options, cloudFormationStack, stackParams.hasChanges(cloudFormationStack.parameters))) {
     debug(`${deployName}: skipping deployment (use --force to override)`);
     // if we can skip deployment and we are performing a hotswap, let the user know
     // that no hotswap deployment happened
-    if (options.hotswap !== HotswapMode.FULL_DEPLOYMENT) {
+    if (hotswapMode !== HotswapMode.FULL_DEPLOYMENT) {
       print(`\n ${ICON} %s\n`, chalk.bold('hotswap deployment skipped - no changes were detected (use --force to override)'));
     }
     return {
@@ -296,8 +298,7 @@ export async function deployStack(options: DeployStackOptions): Promise<DeploySt
     parallel: options.assetParallelism,
   });
 
-  const hotswapMode = options.hotswap;
-  if (hotswapMode && hotswapMode !== HotswapMode.FULL_DEPLOYMENT) {
+  if (hotswapMode !== HotswapMode.FULL_DEPLOYMENT) {
     // attempt to short-circuit the deployment if possible
     try {
       const hotswapDeploymentResult = await tryHotswapDeployment(
