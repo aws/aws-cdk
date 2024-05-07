@@ -47,7 +47,7 @@ the `preset` property to `ivs.Preset.CONSTRAINED_BANDWIDTH_DELIVERY`
 or `ivs.Preset.HIGHER_BANDWIDTH_DELIVERY`.
 If you don't specify the `preset`, `ivs.Preset.CONSTRAINED_BANDWIDTH_DELIVERY` is set by default.
 
-For more information, see [Amazon IVS Streaming Configuration](See also: https://docs.aws.amazon.com/ivs/latest/LowLatencyUserGuide/streaming-config.html).
+For more information, see [Amazon IVS Streaming Configuration](https://docs.aws.amazon.com/ivs/latest/LowLatencyUserGuide/streaming-config.html).
 
 ```ts
 const myChannel = new ivs.Channel(this, 'myChannel', {
