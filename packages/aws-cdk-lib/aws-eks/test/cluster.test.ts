@@ -3352,10 +3352,7 @@ describe('cluster', () => {
         version: CLUSTER_VERSION,
       });
       cluster.grantAccess('mastersAccess', mastersRole.roleArn, [
-        {
-          policy: eks.AccessPolicy.AMAZON_EKS_CLUSTER_ADMIN_POLICY,
-          accessScope: { type: eks.AccessScopeType.CLUSTER },
-        },
+        eks.AccessPolicy.fromAccessPolicyName('AmazonEKSClusterAdminPolicy'),
       ]);
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::EKS::AccessEntry', {
@@ -3370,73 +3367,6 @@ describe('cluster', () => {
                   'arn:',
                   { Ref: 'AWS::Partition' },
                   ':eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy',
-                ],
-              ],
-            },
-          },
-        ],
-
-      });
-    });
-    // cluster can grantClusterAdminAccess();
-    test('cluster can grantClusterAdminAccess', () => {
-      // GIVEN
-      const { stack, vpc } = testFixture();
-      // WHEN
-      const mastersRole = new iam.Role(stack, 'role', { assumedBy: new iam.AccountRootPrincipal() });
-      const cluster = new eks.Cluster(stack, 'Cluster', {
-        vpc,
-        mastersRole,
-        version: CLUSTER_VERSION,
-      });
-      cluster.grantClusterAdminAccess('mastersAccess', mastersRole.roleArn);
-      // THEN
-      Template.fromStack(stack).hasResourceProperties('AWS::EKS::AccessEntry', {
-        AccessPolicies: [
-          {
-            AccessScope: {
-              Type: 'cluster',
-            },
-            PolicyArn: {
-              'Fn::Join': [
-                '', [
-                  'arn:',
-                  { Ref: 'AWS::Partition' },
-                  ':eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy',
-                ],
-              ],
-            },
-          },
-        ],
-
-      });
-    });
-    // cluster can grantEksAdminAccess();
-    test('cluster can grantEksAdminAccess', () => {
-      // GIVEN
-      const { stack, vpc } = testFixture();
-      // WHEN
-      const mastersRole = new iam.Role(stack, 'role', { assumedBy: new iam.AccountRootPrincipal() });
-      const cluster = new eks.Cluster(stack, 'Cluster', {
-        vpc,
-        mastersRole,
-        version: CLUSTER_VERSION,
-      });
-      cluster.grantEksAdminAccess('mastersAccess', mastersRole.roleArn, ['mock-namespace']);
-      // THEN
-      Template.fromStack(stack).hasResourceProperties('AWS::EKS::AccessEntry', {
-        AccessPolicies: [
-          {
-            AccessScope: {
-              Type: 'namespace',
-              Namespaces: ['mock-namespace'],
-            },
-            PolicyArn: {
-              'Fn::Join': [
-                '', [
-                  'arn:',
-                  { Ref: 'AWS::Partition' },
-                  ':eks::aws:cluster-access-policy/AmazonEKSAdminPolicy',
                 ],
               ],
             },
