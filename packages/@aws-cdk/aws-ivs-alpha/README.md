@@ -50,7 +50,7 @@ If you don't specify the `preset`, `ivs.Preset.CONSTRAINED_BANDWIDTH_DELIVERY` i
 For more information, see [Amazon IVS Streaming Configuration](See also: https://docs.aws.amazon.com/ivs/latest/LowLatencyUserGuide/streaming-config.html).
 
 ```ts
-const myChannel = new ivs.Channel(stack, 'myChannel', {
+const myChannel = new ivs.Channel(this, 'myChannel', {
   type: ivs.ChannelType.ADVANCED_HD,
   preset: ivs.Preset.CONSTRAINED_BANDWIDTH_DELIVERY,
 });
