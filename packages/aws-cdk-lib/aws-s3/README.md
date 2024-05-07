@@ -622,6 +622,8 @@ as it does not contain any objects.
 To override this and force all objects to get deleted during bucket deletion,
 enable the`autoDeleteObjects` option.
 
+The auto-deletion for objects within S3 buckets is handled by a custom resource. Enabling this feature by setting it to true would additionally include the imposition of the `s3:PutBucketPolicy` to restrict external write access during cleanup, thus mitigating potential race conditions.
+
 ```ts
 const bucket = new s3.Bucket(this, 'MyTempFileBucket', {
   removalPolicy: cdk.RemovalPolicy.DESTROY,
