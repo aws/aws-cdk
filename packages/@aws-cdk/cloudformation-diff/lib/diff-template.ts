@@ -239,7 +239,7 @@ function refineDiffWithChangeSet(diff: types.TemplateDiff, changeSet: DescribeCh
       }
 
       const newProp = new types.PropertyDifference(
-        // these fields we be decided below
+        // these fields will be decided below
         {}, {}, { changeImpact: undefined },
       );
       newProp.isDifferent = true;
