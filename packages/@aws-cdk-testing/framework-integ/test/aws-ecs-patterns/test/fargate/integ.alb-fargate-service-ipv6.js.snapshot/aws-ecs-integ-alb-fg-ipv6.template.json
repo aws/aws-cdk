@@ -10,7 +10,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-ecs-integ-alb-fg-https/Vpc"
+      "Value": "aws-ecs-integ-alb-fg-ipv6/Vpc"
      }
     ]
    }
@@ -71,7 +71,7 @@
      },
      {
       "Key": "Name",
-      "Value": "aws-ecs-integ-alb-fg-https/Vpc/PublicSubnet1"
+      "Value": "aws-ecs-integ-alb-fg-ipv6/Vpc/PublicSubnet1"
      }
     ],
     "VpcId": {
@@ -88,7 +88,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-ecs-integ-alb-fg-https/Vpc/PublicSubnet1"
+      "Value": "aws-ecs-integ-alb-fg-ipv6/Vpc/PublicSubnet1"
      }
     ],
     "VpcId": {
@@ -151,7 +151,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-ecs-integ-alb-fg-https/Vpc/PublicSubnet1"
+      "Value": "aws-ecs-integ-alb-fg-ipv6/Vpc/PublicSubnet1"
      }
     ]
    },
@@ -174,7 +174,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-ecs-integ-alb-fg-https/Vpc/PublicSubnet1"
+      "Value": "aws-ecs-integ-alb-fg-ipv6/Vpc/PublicSubnet1"
      }
     ]
    },
@@ -232,7 +232,7 @@
      },
      {
       "Key": "Name",
-      "Value": "aws-ecs-integ-alb-fg-https/Vpc/PublicSubnet2"
+      "Value": "aws-ecs-integ-alb-fg-ipv6/Vpc/PublicSubnet2"
      }
     ],
     "VpcId": {
@@ -249,7 +249,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-ecs-integ-alb-fg-https/Vpc/PublicSubnet2"
+      "Value": "aws-ecs-integ-alb-fg-ipv6/Vpc/PublicSubnet2"
      }
     ],
     "VpcId": {
@@ -312,7 +312,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-ecs-integ-alb-fg-https/Vpc/PublicSubnet2"
+      "Value": "aws-ecs-integ-alb-fg-ipv6/Vpc/PublicSubnet2"
      }
     ]
    },
@@ -335,7 +335,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-ecs-integ-alb-fg-https/Vpc/PublicSubnet2"
+      "Value": "aws-ecs-integ-alb-fg-ipv6/Vpc/PublicSubnet2"
      }
     ]
    },
@@ -393,7 +393,7 @@
      },
      {
       "Key": "Name",
-      "Value": "aws-ecs-integ-alb-fg-https/Vpc/PrivateSubnet1"
+      "Value": "aws-ecs-integ-alb-fg-ipv6/Vpc/PrivateSubnet1"
      }
     ],
     "VpcId": {
@@ -410,7 +410,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-ecs-integ-alb-fg-https/Vpc/PrivateSubnet1"
+      "Value": "aws-ecs-integ-alb-fg-ipv6/Vpc/PrivateSubnet1"
      }
     ],
     "VpcId": {
@@ -512,7 +512,7 @@
      },
      {
       "Key": "Name",
-      "Value": "aws-ecs-integ-alb-fg-https/Vpc/PrivateSubnet2"
+      "Value": "aws-ecs-integ-alb-fg-ipv6/Vpc/PrivateSubnet2"
      }
     ],
     "VpcId": {
@@ -529,7 +529,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-ecs-integ-alb-fg-https/Vpc/PrivateSubnet2"
+      "Value": "aws-ecs-integ-alb-fg-ipv6/Vpc/PrivateSubnet2"
      }
     ],
     "VpcId": {
@@ -590,7 +590,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "aws-ecs-integ-alb-fg-https/Vpc"
+      "Value": "aws-ecs-integ-alb-fg-ipv6/Vpc"
      }
     ]
    }
@@ -658,7 +658,7 @@
   "myServiceLBSecurityGroupFE0ED608": {
    "Type": "AWS::EC2::SecurityGroup",
    "Properties": {
-    "GroupDescription": "Automatically created Security Group for ELB awsecsintegalbfghttpsmyServiceLB8BEE3C49",
+    "GroupDescription": "Automatically created Security Group for ELB awsecsintegalbfgipv6myServiceLB94476F3B",
     "SecurityGroupIngress": [
      {
       "CidrIp": "0.0.0.0/0",
@@ -680,7 +680,7 @@
     }
    }
   },
-  "myServiceLBSecurityGrouptoawsecsintegalbfghttpsmyServiceSecurityGroup49C558AD803FB613FF": {
+  "myServiceLBSecurityGrouptoawsecsintegalbfgipv6myServiceSecurityGroup28B87E3980254A6B84": {
    "Type": "AWS::EC2::SecurityGroupEgress",
    "Properties": {
     "Description": "Load balancer to target",
@@ -788,7 +788,7 @@
       "Arn"
      ]
     },
-    "Family": "awsecsintegalbfghttpsmyServiceTaskDefD8ABFBF2",
+    "Family": "awsecsintegalbfgipv6myServiceTaskDef22EA8023",
     "Memory": "512",
     "NetworkMode": "awsvpc",
     "RequiresCompatibilities": [
@@ -914,7 +914,7 @@
   "myServiceSecurityGroupC3B9D4E0": {
    "Type": "AWS::EC2::SecurityGroup",
    "Properties": {
-    "GroupDescription": "aws-ecs-integ-alb-fg-https/myService/Service/SecurityGroup",
+    "GroupDescription": "aws-ecs-integ-alb-fg-ipv6/myService/Service/SecurityGroup",
     "SecurityGroupEgress": [
      {
       "CidrIp": "0.0.0.0/0",
@@ -930,7 +930,7 @@
     "myServiceTaskDefTaskRole1C1DE6CC"
    ]
   },
-  "myServiceSecurityGroupfromawsecsintegalbfghttpsmyServiceLBSecurityGroupA934AF89808E9FB7A3": {
+  "myServiceSecurityGroupfromawsecsintegalbfgipv6myServiceLBSecurityGroupDE1E1DFA804F93A06E": {
    "Type": "AWS::EC2::SecurityGroupIngress",
    "Properties": {
     "Description": "Load balancer to target",
@@ -988,7 +988,7 @@
     ]
    },
    "Export": {
-    "Name": "aws-ecs-integ-alb-fg-https:ExportsOutputFnGetAttmyServiceLB168895E1DNSName11ECCD10"
+    "Name": "aws-ecs-integ-alb-fg-ipv6:ExportsOutputFnGetAttmyServiceLB168895E1DNSName11ECCD10"
    }
   }
  },

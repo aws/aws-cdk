@@ -16,7 +16,7 @@
        [
         "http://",
         {
-         "Fn::ImportValue": "aws-ecs-integ-alb-fg-https:ExportsOutputFnGetAttmyServiceLB168895E1DNSName11ECCD10"
+         "Fn::ImportValue": "aws-ecs-integ-alb-fg-ipv6:ExportsOutputFnGetAttmyServiceLB168895E1DNSName11ECCD10"
         }
        ]
       ]
@@ -29,7 +29,7 @@
     "stateMachineArn": {
      "Ref": "HttpApiCalla6a71180dbc50162b9dc35142e5e629fWaitForC6489EE1"
     },
-    "salt": "1715051931121"
+    "salt": "1715062638804"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"

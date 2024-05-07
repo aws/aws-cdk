@@ -1,28 +1,28 @@
 {
   "version": "36.0.0",
   "artifacts": {
-    "aws-ecs-integ-alb-fg-https.assets": {
+    "aws-ecs-integ-alb-fg-ipv6.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "aws-ecs-integ-alb-fg-https.assets.json",
+        "file": "aws-ecs-integ-alb-fg-ipv6.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "aws-ecs-integ-alb-fg-https": {
+    "aws-ecs-integ-alb-fg-ipv6": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "aws-ecs-integ-alb-fg-https.template.json",
+        "templateFile": "aws-ecs-integ-alb-fg-ipv6.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/cb363a06e361547a1dc74f1e58e361df975011626ed9e3b582b4f98fa283bade.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/dcdd2132ca92d249f124ab90b8c64325abb3ae4977bb25c362fcce8501837dcf.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "aws-ecs-integ-alb-fg-https.assets"
+          "aws-ecs-integ-alb-fg-ipv6.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -31,299 +31,299 @@
         }
       },
       "dependencies": [
-        "aws-ecs-integ-alb-fg-https.assets"
+        "aws-ecs-integ-alb-fg-ipv6.assets"
       ],
       "metadata": {
-        "/aws-ecs-integ-alb-fg-https/Vpc/Resource": [
+        "/aws-ecs-integ-alb-fg-ipv6/Vpc/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "Vpc8378EB38"
           }
         ],
-        "/aws-ecs-integ-alb-fg-https/Vpc/ipv6cidr": [
+        "/aws-ecs-integ-alb-fg-ipv6/Vpc/ipv6cidr": [
           {
             "type": "aws:cdk:logicalId",
             "data": "Vpcipv6cidr40D3CB78"
           }
         ],
-        "/aws-ecs-integ-alb-fg-https/Vpc/PublicSubnet1/Subnet": [
+        "/aws-ecs-integ-alb-fg-ipv6/Vpc/PublicSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPublicSubnet1Subnet5C2D37C4"
           }
         ],
-        "/aws-ecs-integ-alb-fg-https/Vpc/PublicSubnet1/RouteTable": [
+        "/aws-ecs-integ-alb-fg-ipv6/Vpc/PublicSubnet1/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPublicSubnet1RouteTable6C95E38E"
           }
         ],
-        "/aws-ecs-integ-alb-fg-https/Vpc/PublicSubnet1/RouteTableAssociation": [
+        "/aws-ecs-integ-alb-fg-ipv6/Vpc/PublicSubnet1/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPublicSubnet1RouteTableAssociation97140677"
           }
         ],
-        "/aws-ecs-integ-alb-fg-https/Vpc/PublicSubnet1/DefaultRoute": [
+        "/aws-ecs-integ-alb-fg-ipv6/Vpc/PublicSubnet1/DefaultRoute": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPublicSubnet1DefaultRoute3DA9E72A"
           }
         ],
-        "/aws-ecs-integ-alb-fg-https/Vpc/PublicSubnet1/DefaultRoute6": [
+        "/aws-ecs-integ-alb-fg-ipv6/Vpc/PublicSubnet1/DefaultRoute6": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPublicSubnet1DefaultRoute6A21265FB"
           }
         ],
-        "/aws-ecs-integ-alb-fg-https/Vpc/PublicSubnet1/EIP": [
+        "/aws-ecs-integ-alb-fg-ipv6/Vpc/PublicSubnet1/EIP": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPublicSubnet1EIPD7E02669"
           }
         ],
-        "/aws-ecs-integ-alb-fg-https/Vpc/PublicSubnet1/NATGateway": [
+        "/aws-ecs-integ-alb-fg-ipv6/Vpc/PublicSubnet1/NATGateway": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPublicSubnet1NATGateway4D7517AA"
           }
         ],
-        "/aws-ecs-integ-alb-fg-https/Vpc/PublicSubnet2/Subnet": [
+        "/aws-ecs-integ-alb-fg-ipv6/Vpc/PublicSubnet2/Subnet": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPublicSubnet2Subnet691E08A3"
           }
         ],
-        "/aws-ecs-integ-alb-fg-https/Vpc/PublicSubnet2/RouteTable": [
+        "/aws-ecs-integ-alb-fg-ipv6/Vpc/PublicSubnet2/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPublicSubnet2RouteTable94F7E489"
           }
         ],
-        "/aws-ecs-integ-alb-fg-https/Vpc/PublicSubnet2/RouteTableAssociation": [
+        "/aws-ecs-integ-alb-fg-ipv6/Vpc/PublicSubnet2/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPublicSubnet2RouteTableAssociationDD5762D8"
           }
         ],
-        "/aws-ecs-integ-alb-fg-https/Vpc/PublicSubnet2/DefaultRoute": [
+        "/aws-ecs-integ-alb-fg-ipv6/Vpc/PublicSubnet2/DefaultRoute": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPublicSubnet2DefaultRoute97F91067"
           }
         ],
-        "/aws-ecs-integ-alb-fg-https/Vpc/PublicSubnet2/DefaultRoute6": [
+        "/aws-ecs-integ-alb-fg-ipv6/Vpc/PublicSubnet2/DefaultRoute6": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPublicSubnet2DefaultRoute63E63096C"
           }
         ],
-        "/aws-ecs-integ-alb-fg-https/Vpc/PublicSubnet2/EIP": [
+        "/aws-ecs-integ-alb-fg-ipv6/Vpc/PublicSubnet2/EIP": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPublicSubnet2EIP3C605A87"
           }
         ],
-        "/aws-ecs-integ-alb-fg-https/Vpc/PublicSubnet2/NATGateway": [
+        "/aws-ecs-integ-alb-fg-ipv6/Vpc/PublicSubnet2/NATGateway": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPublicSubnet2NATGateway9182C01D"
           }
         ],
-        "/aws-ecs-integ-alb-fg-https/Vpc/PrivateSubnet1/Subnet": [
+        "/aws-ecs-integ-alb-fg-ipv6/Vpc/PrivateSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPrivateSubnet1Subnet536B997A"
           }
         ],
-        "/aws-ecs-integ-alb-fg-https/Vpc/PrivateSubnet1/RouteTable": [
+        "/aws-ecs-integ-alb-fg-ipv6/Vpc/PrivateSubnet1/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPrivateSubnet1RouteTableB2C5B500"
           }
         ],
-        "/aws-ecs-integ-alb-fg-https/Vpc/PrivateSubnet1/RouteTableAssociation": [
+        "/aws-ecs-integ-alb-fg-ipv6/Vpc/PrivateSubnet1/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPrivateSubnet1RouteTableAssociation70C59FA6"
           }
         ],
-        "/aws-ecs-integ-alb-fg-https/Vpc/PrivateSubnet1/DefaultRoute": [
+        "/aws-ecs-integ-alb-fg-ipv6/Vpc/PrivateSubnet1/DefaultRoute": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPrivateSubnet1DefaultRouteBE02A9ED"
           }
         ],
-        "/aws-ecs-integ-alb-fg-https/Vpc/PrivateSubnet1/DefaultRoute6": [
+        "/aws-ecs-integ-alb-fg-ipv6/Vpc/PrivateSubnet1/DefaultRoute6": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPrivateSubnet1DefaultRoute6B45CB740"
           }
         ],
-        "/aws-ecs-integ-alb-fg-https/Vpc/PrivateSubnet2/Subnet": [
+        "/aws-ecs-integ-alb-fg-ipv6/Vpc/PrivateSubnet2/Subnet": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPrivateSubnet2Subnet3788AAA1"
           }
         ],
-        "/aws-ecs-integ-alb-fg-https/Vpc/PrivateSubnet2/RouteTable": [
+        "/aws-ecs-integ-alb-fg-ipv6/Vpc/PrivateSubnet2/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPrivateSubnet2RouteTableA678073B"
           }
         ],
-        "/aws-ecs-integ-alb-fg-https/Vpc/PrivateSubnet2/RouteTableAssociation": [
+        "/aws-ecs-integ-alb-fg-ipv6/Vpc/PrivateSubnet2/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPrivateSubnet2RouteTableAssociationA89CAD56"
           }
         ],
-        "/aws-ecs-integ-alb-fg-https/Vpc/PrivateSubnet2/DefaultRoute": [
+        "/aws-ecs-integ-alb-fg-ipv6/Vpc/PrivateSubnet2/DefaultRoute": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPrivateSubnet2DefaultRoute060D2087"
           }
         ],
-        "/aws-ecs-integ-alb-fg-https/Vpc/PrivateSubnet2/DefaultRoute6": [
+        "/aws-ecs-integ-alb-fg-ipv6/Vpc/PrivateSubnet2/DefaultRoute6": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcPrivateSubnet2DefaultRoute6DDF1236D"
           }
         ],
-        "/aws-ecs-integ-alb-fg-https/Vpc/IGW": [
+        "/aws-ecs-integ-alb-fg-ipv6/Vpc/IGW": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcIGWD7BA715C"
           }
         ],
-        "/aws-ecs-integ-alb-fg-https/Vpc/VPCGW": [
+        "/aws-ecs-integ-alb-fg-ipv6/Vpc/VPCGW": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcVPCGWBF912B6E"
           }
         ],
-        "/aws-ecs-integ-alb-fg-https/Vpc/EIGW6": [
+        "/aws-ecs-integ-alb-fg-ipv6/Vpc/EIGW6": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VpcEIGW61416F369"
           }
         ],
-        "/aws-ecs-integ-alb-fg-https/Cluster/Resource": [
+        "/aws-ecs-integ-alb-fg-ipv6/Cluster/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ClusterEB0386A7"
           }
         ],
-        "/aws-ecs-integ-alb-fg-https/myService/LB/Resource": [
+        "/aws-ecs-integ-alb-fg-ipv6/myService/LB/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "myServiceLB168895E1"
           }
         ],
-        "/aws-ecs-integ-alb-fg-https/myService/LB/SecurityGroup/Resource": [
+        "/aws-ecs-integ-alb-fg-ipv6/myService/LB/SecurityGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "myServiceLBSecurityGroupFE0ED608"
           }
         ],
-        "/aws-ecs-integ-alb-fg-https/myService/LB/SecurityGroup/to awsecsintegalbfghttpsmyServiceSecurityGroup49C558AD:80": [
+        "/aws-ecs-integ-alb-fg-ipv6/myService/LB/SecurityGroup/to awsecsintegalbfgipv6myServiceSecurityGroup28B87E39:80": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "myServiceLBSecurityGrouptoawsecsintegalbfghttpsmyServiceSecurityGroup49C558AD803FB613FF"
+            "data": "myServiceLBSecurityGrouptoawsecsintegalbfgipv6myServiceSecurityGroup28B87E3980254A6B84"
           }
         ],
-        "/aws-ecs-integ-alb-fg-https/myService/LB/PublicListener/Resource": [
+        "/aws-ecs-integ-alb-fg-ipv6/myService/LB/PublicListener/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "myServiceLBPublicListenerC78AE8A0"
           }
         ],
-        "/aws-ecs-integ-alb-fg-https/myService/LB/PublicListener/ECSGroup/Resource": [
+        "/aws-ecs-integ-alb-fg-ipv6/myService/LB/PublicListener/ECSGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "myServiceLBPublicListenerECSGroup17E9BBC1"
           }
         ],
-        "/aws-ecs-integ-alb-fg-https/myService/LoadBalancerDNS": [
+        "/aws-ecs-integ-alb-fg-ipv6/myService/LoadBalancerDNS": [
           {
             "type": "aws:cdk:logicalId",
             "data": "myServiceLoadBalancerDNS3A083E9F"
           }
         ],
-        "/aws-ecs-integ-alb-fg-https/myService/ServiceURL": [
+        "/aws-ecs-integ-alb-fg-ipv6/myService/ServiceURL": [
           {
             "type": "aws:cdk:logicalId",
             "data": "myServiceServiceURL1258C56B"
           }
         ],
-        "/aws-ecs-integ-alb-fg-https/myService/TaskDef/TaskRole/Resource": [
+        "/aws-ecs-integ-alb-fg-ipv6/myService/TaskDef/TaskRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "myServiceTaskDefTaskRole1C1DE6CC"
           }
         ],
-        "/aws-ecs-integ-alb-fg-https/myService/TaskDef/Resource": [
+        "/aws-ecs-integ-alb-fg-ipv6/myService/TaskDef/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "myServiceTaskDef7FB8322A"
           }
         ],
-        "/aws-ecs-integ-alb-fg-https/myService/TaskDef/web/LogGroup/Resource": [
+        "/aws-ecs-integ-alb-fg-ipv6/myService/TaskDef/web/LogGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "myServiceTaskDefwebLogGroupA1767F2C"
           }
         ],
-        "/aws-ecs-integ-alb-fg-https/myService/TaskDef/ExecutionRole/Resource": [
+        "/aws-ecs-integ-alb-fg-ipv6/myService/TaskDef/ExecutionRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "myServiceTaskDefExecutionRole618CD311"
           }
         ],
-        "/aws-ecs-integ-alb-fg-https/myService/TaskDef/ExecutionRole/DefaultPolicy/Resource": [
+        "/aws-ecs-integ-alb-fg-ipv6/myService/TaskDef/ExecutionRole/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "myServiceTaskDefExecutionRoleDefaultPolicyBDAEC571"
           }
         ],
-        "/aws-ecs-integ-alb-fg-https/myService/Service/Service": [
+        "/aws-ecs-integ-alb-fg-ipv6/myService/Service/Service": [
           {
             "type": "aws:cdk:logicalId",
             "data": "myServiceB0B6FAA0"
           }
         ],
-        "/aws-ecs-integ-alb-fg-https/myService/Service/SecurityGroup/Resource": [
+        "/aws-ecs-integ-alb-fg-ipv6/myService/Service/SecurityGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "myServiceSecurityGroupC3B9D4E0"
           }
         ],
-        "/aws-ecs-integ-alb-fg-https/myService/Service/SecurityGroup/from awsecsintegalbfghttpsmyServiceLBSecurityGroupA934AF89:80": [
+        "/aws-ecs-integ-alb-fg-ipv6/myService/Service/SecurityGroup/from awsecsintegalbfgipv6myServiceLBSecurityGroupDE1E1DFA:80": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "myServiceSecurityGroupfromawsecsintegalbfghttpsmyServiceLBSecurityGroupA934AF89808E9FB7A3"
+            "data": "myServiceSecurityGroupfromawsecsintegalbfgipv6myServiceLBSecurityGroupDE1E1DFA804F93A06E"
           }
         ],
-        "/aws-ecs-integ-alb-fg-https/Exports/Output{\"Fn::GetAtt\":[\"myServiceLB168895E1\",\"DNSName\"]}": [
+        "/aws-ecs-integ-alb-fg-ipv6/Exports/Output{\"Fn::GetAtt\":[\"myServiceLB168895E1\",\"DNSName\"]}": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ExportsOutputFnGetAttmyServiceLB168895E1DNSName11ECCD10"
           }
         ],
-        "/aws-ecs-integ-alb-fg-https/BootstrapVersion": [
+        "/aws-ecs-integ-alb-fg-ipv6/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/aws-ecs-integ-alb-fg-https/CheckBootstrapVersion": [
+        "/aws-ecs-integ-alb-fg-ipv6/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "aws-ecs-integ-alb-fg-https"
+      "displayName": "aws-ecs-integ-alb-fg-ipv6"
     },
     "albFargateServiceTestDefaultTestDeployAssert11CD2C41.assets": {
       "type": "cdk:asset-manifest",
@@ -342,7 +342,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/dce4c7733a75dae7e503a886f47879708fc784d3c6ed1836643477ed21c8ccfb.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/042a3a4eb632f3788ab10e521cc030bcf280f0fb7ecd5223dfdcd43c42167336.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -355,7 +355,7 @@
         }
       },
       "dependencies": [
-        "aws-ecs-integ-alb-fg-https",
+        "aws-ecs-integ-alb-fg-ipv6",
         "albFargateServiceTestDefaultTestDeployAssert11CD2C41.assets"
       ],
       "metadata": {

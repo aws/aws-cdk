@@ -6,11 +6,14 @@ import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { ApplicationLoadBalancedFargateService } from 'aws-cdk-lib/aws-ecs-patterns';
 
 const app = new App();
-const stack = new Stack(app, 'aws-ecs-integ-alb-fg-https');
-const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 2, ipProtocol: ec2.IpProtocol.DUAL_STACK, restrictDefaultSecurityGroup: false });
+const stack = new Stack(app, 'aws-ecs-integ-alb-fg-ipv6');
+const vpc = new ec2.Vpc(stack, 'Vpc', {
+  maxAzs: 2,
+  ipProtocol: ec2.IpProtocol.DUAL_STACK,
+  restrictDefaultSecurityGroup: false,
+});
 const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
 
-// Loadbalancer with HTTPS
 const service = new ApplicationLoadBalancedFargateService(stack, 'myService', {
   cluster,
   memoryLimitMiB: 512,
