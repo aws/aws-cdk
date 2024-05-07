@@ -1048,7 +1048,7 @@ export const FLAGS: Record<string, FlagInfo> = {
       Use a feature flag to make sure existing customers who might be relying
       on the overly-broad trust policy are not broken.
     `,
-    introducedIn: { v2: '2.141.0' },
+    introducedIn: { v2: '2.140.0' },
     recommendedValue: true,
     compatibilityWithOldBehaviorMd: 'Disable the feature flag to add the root account principal back',
   },
