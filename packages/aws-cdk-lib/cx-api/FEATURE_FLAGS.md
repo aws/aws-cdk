@@ -67,6 +67,7 @@ Flags come in three types:
 | [@aws-cdk/aws-codepipeline:crossAccountKeysDefaultValueToFalse](#aws-cdkaws-codepipelinecrossaccountkeysdefaultvaluetofalse) | Enables Pipeline to set the default value for crossAccountKeys to false. | 2.127.0 | (default) |
 | [@aws-cdk/aws-codepipeline:defaultPipelineTypeToV2](#aws-cdkaws-codepipelinedefaultpipelinetypetov2) | Enables Pipeline to set the default pipeline type to V2. | 2.133.0 | (default) |
 | [@aws-cdk/aws-kms:reduceCrossAccountRegionPolicyScope](#aws-cdkaws-kmsreducecrossaccountregionpolicyscope) | When enabled, IAM Policy created from KMS key grant will reduce the resource scope to this key only. | 2.134.0 | (fix) |
+| [@aws-cdk/pipelines:reduceAssetRoleTrustScope](#aws-cdkpipelinesreduceassetroletrustscope) | Remove the root account principal from PipelineAssetsFileRole trust policy | 2.141.0 | (default) |
 
 <!-- END table -->
 
@@ -124,7 +125,8 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/aws-cloudwatch-actions:changeLambdaPermissionLogicalIdForLambdaAction": true,
     "@aws-cdk/aws-codepipeline:crossAccountKeysDefaultValueToFalse": true,
     "@aws-cdk/aws-codepipeline:defaultPipelineTypeToV2": true,
-    "@aws-cdk/aws-kms:reduceCrossAccountRegionPolicyScope": true
+    "@aws-cdk/aws-kms:reduceCrossAccountRegionPolicyScope": true,
+    "@aws-cdk/pipelines:reduceAssetRoleTrustScope": true
   }
 }
 ```
@@ -1263,6 +1265,24 @@ When this feature flag is enabled and calling KMS key grant method, the created 
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
 | 2.134.0 | `false` | `true` |
+
+
+### @aws-cdk/pipelines:reduceAssetRoleTrustScope
+
+*Remove the root account principal from PipelineAssetsFileRole trust policy* (default)
+
+Remove the root account principal from the generated PipelineAssetsFileRole trust policy,
+because it's only assumed by the codebuild.
+Use a feature flag to make sure existing customers who might be relying
+on the overly-broad trust policy are not broken.
+
+
+| Since | Default | Recommended |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| 2.141.0 | `false` | `true` |
+
+**Compatibility with old behavior:** Disable the feature flag to add the root account principal back
 
 
 <!-- END details -->
