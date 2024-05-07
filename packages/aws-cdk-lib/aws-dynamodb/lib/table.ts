@@ -21,6 +21,7 @@ import {
   Aws, CfnCondition, CfnCustomResource, CfnResource, Duration,
   Fn, Lazy, Names, RemovalPolicy, Stack, Token, CustomResource,
 } from '../../core';
+import { Grant, IResourceWithPolicy } from '../../aws-iam';
 
 const HASH_KEY_TYPE = 'HASH';
 const RANGE_KEY_TYPE = 'RANGE';
@@ -372,7 +373,7 @@ export interface TableOptions extends SchemaOptions {
   readonly importSource?: ImportSourceSpecification;
 
   /**
-   * Resource policy to assign to DynamoDB Table.
+   * Resource policy to assign to table.
    *
    * @default - No resource policy statements are added to the created table.
    */
@@ -486,7 +487,7 @@ export interface TableAttributes {
   readonly grantIndexPermissions?: boolean;
 }
 
-export abstract class TableBase extends Resource implements ITable {
+export abstract class TableBase extends Resource implements ITable, IResourceWithPolicy {
   /**
    * @attribute
    */
@@ -507,6 +508,11 @@ export abstract class TableBase extends Resource implements ITable {
    */
   public abstract readonly encryptionKey?: kms.IKey;
 
+  /**
+   * @attribute
+   */
+  public abstract resourcePolicy?: iam.PolicyDocument;
+
   protected readonly regionalArns = new Array<string>();
 
   /**
@@ -520,7 +526,7 @@ export abstract class TableBase extends Resource implements ITable {
    * @param actions The set of actions to allow (i.e. "dynamodb:PutItem", "dynamodb:GetItem", ...)
    */
   public grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
-    return iam.Grant.addToPrincipal({
+    return iam.Grant.addToPrincipalOrResource({
       grantee,
       actions,
       resourceArns: [
@@ -531,10 +537,9 @@ export abstract class TableBase extends Resource implements ITable {
           produce: () => this.hasIndex ? `${arn}/index/*` : Aws.NO_VALUE,
         })),
       ],
-      scope: this,
+      resource: this,
     });
   }
-
   /**
    * Adds an IAM policy statement associated with this table's stream to an
    * IAM principal's policy.
@@ -646,6 +651,23 @@ export abstract class TableBase extends Resource implements ITable {
   public grantFullAccess(grantee: iam.IGrantable) {
     const keyActions = perms.KEY_READ_ACTIONS.concat(perms.KEY_WRITE_ACTIONS);
     return this.combinedGrant(grantee, { keyActions, tableActions: ['dynamodb:*'] });
+  }
+
+  /**
+   * Adds a statement to the resource policy associated with this file system.
+   * A resource policy will be automatically created upon the first call to `addToResourcePolicy`.
+   *
+   * Note that this does not work with imported file systems.
+   *
+   * @param statement The policy statement to add
+   */
+  public addToResourcePolicy(statement: iam.PolicyStatement): iam.AddToResourcePolicyResult {
+    this.resourcePolicy = this.resourcePolicy ?? new iam.PolicyDocument({ statements: [] });
+    this.resourcePolicy.addStatements(statement);
+    return {
+      statementAdded: true,
+      policyDependable: this,
+    };
   }
 
   /**
@@ -898,11 +920,11 @@ export abstract class TableBase extends Resource implements ITable {
           produce: () => this.hasIndex ? `${arn}/index/*` : Aws.NO_VALUE,
         })),
       ];
-      const ret = iam.Grant.addToPrincipal({
+      const ret = Grant.addToPrincipalOrResource({
         grantee,
         actions: opts.tableActions,
         resourceArns: resources,
-        scope: this,
+        resource: this,
       });
       return ret;
     }
@@ -911,11 +933,11 @@ export abstract class TableBase extends Resource implements ITable {
         throw new Error(`DynamoDB Streams must be enabled on the table ${this.node.path}`);
       }
       const resources = [this.tableStreamArn];
-      const ret = iam.Grant.addToPrincipal({
+      const ret = Grant.addToPrincipalOrResource({
         grantee,
         actions: opts.streamActions,
         resourceArns: resources,
-        scope: this,
+        resource: this,
       });
       return ret;
     }
@@ -986,6 +1008,7 @@ export class Table extends TableBase {
       public readonly tableArn: string;
       public readonly tableStreamArn?: string;
       public readonly encryptionKey?: kms.IKey;
+      public resourcePolicy?: iam.PolicyDocument | undefined;
       protected readonly hasIndex = (attrs.grantIndexPermissions ?? false) ||
         (attrs.globalIndexes ?? []).length > 0 ||
         (attrs.localIndexes ?? []).length > 0;
@@ -1023,6 +1046,8 @@ export class Table extends TableBase {
   }
 
   public readonly encryptionKey?: kms.IKey;
+
+  public resourcePolicy?: iam.PolicyDocument | undefined;
 
   /**
    * @attribute

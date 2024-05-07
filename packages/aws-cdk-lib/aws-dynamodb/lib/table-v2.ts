@@ -9,6 +9,7 @@ import {
   SecondaryIndexProps, BillingMode, ProjectionType,
 } from './shared';
 import { TableBaseV2, ITableV2 } from './table-v2-base';
+import { PolicyDocument } from '../../aws-iam';
 import { IStream } from '../../aws-kinesis';
 import { IKey, Key } from '../../aws-kms';
 import { ArnFormat, CfnTag, Lazy, PhysicalName, RemovalPolicy, Stack, Token } from '../../core';
@@ -121,6 +122,13 @@ export interface TableOptionsV2 {
    * @default - no tags
    */
   readonly tags?: CfnTag[];
+
+  /**
+   * Resource policy to assign to DynamoDB Table.
+   *
+   * @default - No resource policy statements are added to the created table.
+   */
+  readonly resourcePolicy?: PolicyDocument;
 }
 
 /**
@@ -147,6 +155,13 @@ export interface ReplicaTableProps extends TableOptionsV2 {
    * @default - inherited from the primary table
    */
   readonly globalSecondaryIndexOptions?: { [indexName: string]: ReplicaGlobalSecondaryIndexOptions };
+
+  /**
+   * Resource policy to assign to DynamoDB Table.
+   *
+   * @default - No resource policy statements are added to the created table.
+   */
+  readonly resourcePolicy?: PolicyDocument;
 }
 
 /**
@@ -620,6 +635,9 @@ export class TableV2 extends TableBaseV2 {
         ? props.readCapacity._renderReadCapacity()
         : this.readProvisioning,
       tags: props.tags,
+      resourcePolicy: props.resourcePolicy
+        ? { policyDocument: props.resourcePolicy }
+        : undefined,
     };
   }
 
