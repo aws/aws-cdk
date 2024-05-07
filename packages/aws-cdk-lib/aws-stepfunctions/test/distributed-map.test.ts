@@ -765,6 +765,19 @@ describe('Distributed Map State', () => {
 
     expect(() => app.synth()).toThrow(/label cannot contain any whitespace or special characters/);
   });
+
+  test('does not fail in synthesis if label has `s`', () => {
+    const app = createAppWithMap((stack) => {
+      const map = new stepfunctions.DistributedMap(stack, 'Map State', {
+        label: 's',
+        itemsPath: stepfunctions.JsonPath.stringAt('$.inputForMap'),
+      });
+
+      return map;
+    });
+
+    app.synth();
+  });
 });
 
 function render(sm: stepfunctions.IChainable) {

@@ -344,6 +344,30 @@ const rule = new events.Rule(this, 'Rule', {
 });
 ```
 
+You can also import an existing connection and destination
+to create additional rules:
+
+```ts
+const connection = events.Connection.fromEventBusArn(
+  this,
+  'Connection',
+  'arn:aws:events:us-east-1:123456789012:event-bus/EventBusName',
+  'arn:aws:secretsmanager:us-east-1:123456789012:secret:SecretName-f3gDy9',
+);
+
+const apiDestinationArn = 'arn:aws:events:us-east-1:123456789012:api-destination/DestinationName';
+const destination = events.ApiDestination.fromApiDestinationAttributes(
+  this,
+  'Destination',
+  { apiDestinationArn, connection },
+);
+
+const rule = new events.Rule(this, 'OtherRule', {
+  schedule: events.Schedule.rate(Duration.minutes(10)),
+  targets: [new targets.ApiDestination(destination)],
+});
+```
+
 ## Put an event on an EventBridge bus
 
 Use the `EventBus` target to route event to a different EventBus.
