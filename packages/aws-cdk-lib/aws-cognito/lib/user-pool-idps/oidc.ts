@@ -1,7 +1,7 @@
 import { Construct } from 'constructs';
 import { UserPoolIdentityProviderProps } from './base';
 import { UserPoolIdentityProviderBase } from './private/user-pool-idp-base';
-import { Names, Token } from '../../../core';
+import { Names, SecretValue, Token } from '../../../core';
 import { CfnUserPoolIdentityProvider } from '../cognito.generated';
 
 /**
@@ -14,9 +14,17 @@ export interface UserPoolIdentityProviderOidcProps extends UserPoolIdentityProvi
   readonly clientId: string;
 
   /**
-   * The client secret
+   * The client secret as a plain text string. Exactly one of clientSecret or clientSecretValue has to be provided.
+   * @default none
+   * @deprecated use clientSecretValue instead
    */
-  readonly clientSecret: string;
+  readonly clientSecret?: string;
+
+  /**
+   * The client secret read from a @SecretValue. Exactly one of clientSecret or clientSecretValue has to be provided.
+   * @default none
+   */
+  readonly clientSecretValue?: SecretValue;
 
   /**
    * Issuer URL
@@ -109,13 +117,19 @@ export class UserPoolIdentityProviderOidc extends UserPoolIdentityProviderBase {
 
     const scopes = props.scopes ?? ['openid'];
 
+    //at least one of the properties must be configured
+    if ((!props.clientSecret && !props.clientSecretValue) ||
+        (props.clientSecret && props.clientSecretValue)) {
+      throw new Error('Exactly one of "clientSecret" or "clientSecretValue" must be configured.');
+    }
+
     const resource = new CfnUserPoolIdentityProvider(this, 'Resource', {
       userPoolId: props.userPool.userPoolId,
       providerName: this.getProviderName(props.name),
       providerType: 'OIDC',
       providerDetails: {
         client_id: props.clientId,
-        client_secret: props.clientSecret,
+        client_secret: props.clientSecretValue ? props.clientSecretValue.unsafeUnwrap() : props.clientSecret,
         authorize_scopes: scopes.join(' '),
         attributes_request_method: props.attributeRequestMethod ?? OidcAttributeRequestMethod.GET,
         oidc_issuer: props.issuerUrl,

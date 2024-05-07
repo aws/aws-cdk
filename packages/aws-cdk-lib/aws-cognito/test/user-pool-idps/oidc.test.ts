@@ -1,5 +1,5 @@
 import { Template } from '../../../assertions';
-import { Stack } from '../../../core';
+import { SecretValue, Stack } from '../../../core';
 import { ProviderAttribute, UserPool, UserPoolIdentityProviderOidc } from '../../lib';
 
 describe('UserPoolIdentityProvider', () => {
@@ -225,6 +225,36 @@ describe('UserPoolIdentityProvider', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolIdentityProvider', {
         ProviderName: 'oidcoidcoidcoidccoidcoidcoidcxyz',
       });
+    });
+
+    test('throws with invalid param combination when clientSecret and clientSecretValue are passed', () => {
+      // GIVEN
+      const stack = new Stack();
+      const pool = new UserPool(stack, 'userpool');
+
+      // THEN
+      expect(() => new UserPoolIdentityProviderOidc(stack, 'userpoolidp', {
+        userPool: pool,
+        name: 'xy',
+        clientId: 'client-id',
+        clientSecret: 'client-secret',
+        clientSecretValue: SecretValue.unsafePlainText('client-secret'),
+        issuerUrl: 'https://my-issuer-url.com',
+      })).toThrow(/Exactly one of "clientSecret" or "clientSecretValue" must be configured./);
+    });
+
+    test('throws with invalid param combination when neither clientSecret nor clientSecretValue are passed', () => {
+      // GIVEN
+      const stack = new Stack();
+      const pool = new UserPool(stack, 'userpool');
+
+      // THEN
+      expect(() => new UserPoolIdentityProviderOidc(stack, 'userpoolidp', {
+        userPool: pool,
+        name: 'xy',
+        clientId: 'client-id',
+        issuerUrl: 'https://my-issuer-url.com',
+      })).toThrow(/Exactly one of "clientSecret" or "clientSecretValue" must be configured./);
     });
   });
 });
