@@ -65,7 +65,7 @@ export enum ChannelType {
   STANDARD = 'STANDARD',
 
   /**
-   * delivers the original input to viewers. The viewer’s video-quality choice is limited to the original input.
+   * Delivers the original input to viewers. The viewer’s video-quality choice is limited to the original input.
    */
   BASIC = 'BASIC',
 
