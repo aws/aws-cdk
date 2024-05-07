@@ -1051,7 +1051,8 @@ export const FLAGS: Record<string, FlagInfo> = {
     introducedIn: { v2: '2.141.0' },
     recommendedValue: true,
     compatibilityWithOldBehaviorMd: 'Disable the feature flag to add the root account principal back',
-    
+  },
+  
   //////////////////////////////////////////////////////////////////////
   [EKS_NODEGROUP_NAME]: {
     type: FlagType.BugFix,
