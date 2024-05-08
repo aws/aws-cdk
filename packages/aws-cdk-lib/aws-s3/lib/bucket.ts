@@ -1471,6 +1471,11 @@ export interface BucketProps {
    * all objects in the bucket being deleted. Be sure to update your bucket resources
    * by deploying with CDK version `1.126.0` or later **before** switching this value to `false`.
    *
+   * Setting the `autoDeleteObjects: true` on a bucket will include `s3:PutBucketPolicy` action
+   * to the Bucket Policy. The reason being upon bucket deletion, the custom resource provider
+   * needs to update the bucket policy by adding a `DENY` policy for `s3:PutObject` to
+   * prevent a race condition on emptying with external bucket writers.
+   *
    * @default false
    */
   readonly autoDeleteObjects?: boolean;
