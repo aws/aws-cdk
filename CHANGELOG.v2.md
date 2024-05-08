@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.141.0](https://github.com/aws/aws-cdk/compare/v2.140.0...v2.141.0) (2024-05-08)
+
+
+### Features
+
+* **rds:** implement setting parameter group name ([#29965](https://github.com/aws/aws-cdk/issues/29965)) ([50331a1](https://github.com/aws/aws-cdk/commit/50331a19cfbe30e3d46f8eed15d74d5975fb1527))
+* support for IAM Identity Center in security diff ([#30009](https://github.com/aws/aws-cdk/issues/30009)) ([0a3cb94](https://github.com/aws/aws-cdk/commit/0a3cb94b9c3c945fa52d36f402b628a330066e5b)), closes [#29835](https://github.com/aws/aws-cdk/issues/29835)
+* update L1 CloudFormation resource definitions ([#30074](https://github.com/aws/aws-cdk/issues/30074)) ([8e98078](https://github.com/aws/aws-cdk/commit/8e98078a54896b7a9531ba4b11bb0c6221383e34))
+
+
+### Bug Fixes
+
+* **ecr:** incorrect format for rule pattern ([#29243](https://github.com/aws/aws-cdk/issues/29243)) ([fff9cf6](https://github.com/aws/aws-cdk/commit/fff9cf694b14811682c8671a1e55afa53151df8b)), closes [#29225](https://github.com/aws/aws-cdk/issues/29225)
+* **pipelines:** pipeline asset role trust policy has account root principal ([#30084](https://github.com/aws/aws-cdk/issues/30084)) ([3928eae](https://github.com/aws/aws-cdk/commit/3928eae1ee92a03ba9959288f05f59d6bd5edcba))
+
 ## [2.140.0](https://github.com/aws/aws-cdk/compare/v2.139.1...v2.140.0) (2024-05-02)
 
 

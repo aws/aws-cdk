@@ -29,6 +29,7 @@ describe('parameter group', () => {
     const parameterGroup = new ParameterGroup(stack, 'Params', {
       engine: DatabaseClusterEngine.AURORA,
       description: 'desc',
+      name: 'name',
       parameters: {
         key: 'value',
       },
@@ -37,6 +38,7 @@ describe('parameter group', () => {
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBParameterGroup', {
+      DBParameterGroupName: 'name',
       Description: 'desc',
       Family: 'aurora5.6',
       Parameters: {
@@ -53,6 +55,7 @@ describe('parameter group', () => {
     const parameterGroup = new ParameterGroup(stack, 'Params', {
       engine: DatabaseClusterEngine.AURORA,
       description: 'desc',
+      name: 'name',
       parameters: {
         key: 'value',
       },
@@ -61,6 +64,7 @@ describe('parameter group', () => {
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBClusterParameterGroup', {
+      DBClusterParameterGroupName: 'name',
       Description: 'desc',
       Family: 'aurora5.6',
       Parameters: {
