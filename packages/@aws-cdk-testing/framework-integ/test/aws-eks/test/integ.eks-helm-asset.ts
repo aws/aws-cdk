@@ -90,10 +90,10 @@ class EksClusterStack extends Stack {
 
     //testing installation with atomic flag set to true
     this.cluster.addHelmChart('test-atomic-installation', {
-      chart: 'aws-cli',
-      release: 'aws-cli-release',
-      repository: 'oci://public.ecr.aws/bitnami/aws-cli',
-      version: '1.32.100-debian-12-r0',
+      chart: 'iam-controller',
+      release: 'iam-controller-release',
+      repository: 'oci://public.ecr.aws/aws-controllers-k8s/iam-controller',
+      version: '1.3.8',
       namespace: 'ack-system',
       createNamespace: true,
       skipCrds: true,
