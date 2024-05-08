@@ -1,8 +1,25 @@
 /* eslint-disable import/no-extraneous-dependencies */
-import { ClassType, Module, Type, TypeScriptRenderer, stmt, expr, MemberVisibility, ExternalModule, Method } from '@cdklabs/typewriter';
+import {
+  ClassType,
+  Module,
+  Type,
+  TypeScriptRenderer,
+  stmt,
+  expr,
+  MemberVisibility,
+  ExternalModule,
+  Method,
+} from '@cdklabs/typewriter';
 import * as fs from 'fs-extra';
 import { DEFAULT_NODE_RUNTIME } from './config';
-import { CONSTRUCTS_MODULE, CORE_INTERNAL_REGION_INFO, CORE_INTERNAL_STACK, CORE_MODULE, LAMBDA_MODULE, REGION_INFO } from './modules';
+import {
+  CONSTRUCTS_MODULE,
+  CORE_INTERNAL_REGION_INFO,
+  CORE_INTERNAL_STACK,
+  CORE_MODULE,
+  LAMBDA_MODULE,
+  REGION_INFO,
+} from './modules';
 
 /**
  *

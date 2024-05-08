@@ -70,14 +70,16 @@ export interface HandlerFrameworkClassProps {
   readonly codeDirectory: string;
 
   /**
-   * The runtime environment for the framework component.
-   */
-  readonly runtime: Runtime;
-
-  /**
    * The name of the method within your code that framework component calls.
    */
   readonly handler: string;
+
+  /**
+   * The runtime environment for the framework component.
+   *
+   * @default -
+   */
+  readonly runtime?: Runtime;
 }
 
 export abstract class HandlerFrameworkClass extends ClassType {

@@ -2,7 +2,7 @@
 import { ExternalModule, InterfaceType, Module, TypeScriptRenderer } from '@cdklabs/typewriter';
 import * as fs from 'fs-extra';
 import { HandlerFrameworkClass, HandlerFrameworkClassProps } from './classes';
-import { ComponentType, ComponentProps, DEFAULT_NODE_RUNTIME } from './config';
+import { ComponentType, ComponentProps } from './config';
 import { buildComponentName } from './utils/framework-utils';
 
 export class HandlerFrameworkModule extends Module {
@@ -45,7 +45,7 @@ export class HandlerFrameworkModule extends Module {
       name,
       handler,
       codeDirectory,
-      runtime: component.runtime ?? DEFAULT_NODE_RUNTIME,
+      runtime: component.runtime,
     };
 
     switch (component.type) {
