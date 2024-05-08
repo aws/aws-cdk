@@ -1043,12 +1043,11 @@ export const FLAGS: Record<string, FlagInfo> = {
     type: FlagType.ApiDefault,
     summary: 'Remove the root account principal from PipelineAssetsFileRole trust policy',
     detailsMd: `
-      Remove the root account principal from the generated PipelineAssetsFileRole trust policy,
-      because it's only assumed by the codebuild.
-      Use a feature flag to make sure existing customers who might be relying
-      on the overly-broad trust policy are not broken.
+      When this feature flag is enabled, the root account principal will not be added to the trust policy of asset role.
+      When this feature flag is disabled, it will keep the root account principal in the trust policy.
     `,
-    introducedIn: { v2: '2.140.0' },
+    introducedIn: { v2: 'V2NEXT' },
+    defaults: { v2: true },
     recommendedValue: true,
     compatibilityWithOldBehaviorMd: 'Disable the feature flag to add the root account principal back',
   },

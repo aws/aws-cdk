@@ -198,7 +198,7 @@ test('CodeBuild action role has the right AssumeRolePolicyDocument', () => {
   });
 });
 
-test('CodeBuild asset role has the right Principal', () => {
+test('CodeBuild asset role has the right Principal with the feature enabled', () => {
   const stack = new cdk.Stack();
   stack.node.setContext(cxapi.PIPELINE_REDUCE_ASSET_ROLE_TRUST_SCOPE, true);
   const pipelineStack = new cdk.Stack(stack, 'PipelineStack', { env: PIPELINE_ENV });
@@ -214,6 +214,39 @@ test('CodeBuild asset role has the right Principal', () => {
         Effect: 'Allow',
         Principal: {
           Service: 'codebuild.amazonaws.com',
+        },
+      },
+    ],
+  );
+});
+
+test('CodeBuild asset role has the right Principal with the feature disabled', () => {
+  const stack = new cdk.Stack();
+  stack.node.setContext(cxapi.PIPELINE_REDUCE_ASSET_ROLE_TRUST_SCOPE, false);
+  const pipelineStack = new cdk.Stack(stack, 'PipelineStack', { env: PIPELINE_ENV });
+  const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk');
+  pipeline.addStage(new FileAssetApp(pipelineStack, 'App', {}));;
+  const template = Template.fromStack(pipelineStack);
+  const assetRole = template.toJSON().Resources.CdkAssetsFileRole6BE17A07;
+  const statementLength = assetRole.Properties.AssumeRolePolicyDocument.Statement;
+  expect(statementLength).toStrictEqual(
+    [
+      {
+        Action: 'sts:AssumeRole',
+        Effect: 'Allow',
+        Principal: {
+          Service: 'codebuild.amazonaws.com',
+        },
+      },
+      {
+        Action: 'sts:AssumeRole',
+        Effect: 'Allow',
+        Principal: {
+          AWS: {
+            'Fn::Join': ['', [
+              'arn:', { Ref: 'AWS::Partition' }, `:iam::${PIPELINE_ENV.account}:root`,
+            ]],
+          },
         },
       },
     ],

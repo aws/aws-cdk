@@ -396,6 +396,17 @@ describe('basic pipeline', () => {
                   Service: 'codebuild.amazonaws.com',
                 },
               },
+              {
+                Action: 'sts:AssumeRole',
+                Effect: 'Allow',
+                Principal: {
+                  AWS: {
+                    'Fn::Join': ['', [
+                      'arn:', { Ref: 'AWS::Partition' }, `:iam::${PIPELINE_ENV.account}:root`,
+                    ]],
+                  },
+                },
+              },
             ],
           },
         });
