@@ -153,7 +153,7 @@ class RuntimeDeterminerClass extends ClassType {
         expr.ident('runtimeName'),
         expr.directCode(`${this.name}.${determineLatestRuntimeNameMethod.name}(scope)`),
       ),
-      stmt.ret(expr.directCode(`${LAMBDA_MODULE.Runtime}(runtimeName, ${LAMBDA_MODULE.RuntimeFamily}.NODE_JS, { supportsInlineCode: true })`)),
+      stmt.ret(expr.directCode(`${LAMBDA_MODULE.Runtime}(runtimeName, ${LAMBDA_MODULE.RuntimeFamily}.NODEJS, { supportsInlineCode: true })`)),
     );
   }
 }

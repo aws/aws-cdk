@@ -34,6 +34,10 @@ function recurse() {
           cr=$(echo $file | rev | cut -d "/" -f 2-5 | rev)
           airlift $cr $cr/__init__.py
           ;;
+        $customresourcedir/dist/*.generated.ts)
+          cr=$(echo $file | rev | cut -d "/" -f 1-2 | rev)
+          cp $customresourcedir/$cr $awscdklibdir/custom-resource-handlers/$cr
+          ;;
       esac
     fi
 
