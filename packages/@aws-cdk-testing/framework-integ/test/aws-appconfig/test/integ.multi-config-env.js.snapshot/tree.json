@@ -1,0 +1,334 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "aws-appconfig-multi-config-env": {
+        "id": "aws-appconfig-multi-config-env",
+        "path": "aws-appconfig-multi-config-env",
+        "children": {
+          "MyApplicationForEnv": {
+            "id": "MyApplicationForEnv",
+            "path": "aws-appconfig-multi-config-env/MyApplicationForEnv",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-appconfig-multi-config-env/MyApplicationForEnv/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::AppConfig::Application",
+                  "aws:cdk:cloudformation:props": {
+                    "name": "awsappconfigmulticonfigenv-MyApplicationForEnv-1EE3EA95"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
+            }
+          },
+          "MultiConfigEnvironment": {
+            "id": "MultiConfigEnvironment",
+            "path": "aws-appconfig-multi-config-env/MultiConfigEnvironment",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-appconfig-multi-config-env/MultiConfigEnvironment/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::AppConfig::Environment",
+                  "aws:cdk:cloudformation:props": {
+                    "applicationId": {
+                      "Ref": "MyApplicationForEnv1F597ED9"
+                    },
+                    "name": "awsappconfigmulticonfigenv-MultiConfigEnvironment-59525230"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
+            }
+          },
+          "QuickDeploymentStrategy": {
+            "id": "QuickDeploymentStrategy",
+            "path": "aws-appconfig-multi-config-env/QuickDeploymentStrategy",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-appconfig-multi-config-env/QuickDeploymentStrategy/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::AppConfig::DeploymentStrategy",
+                  "aws:cdk:cloudformation:props": {
+                    "deploymentDurationInMinutes": 1,
+                    "growthFactor": 50,
+                    "growthType": "LINEAR",
+                    "name": "awsappconfigmulticonfigenv-QuickDeploymentStrategy-CAB72574",
+                    "replicateTo": "NONE"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
+            }
+          },
+          "MyFirstConfig": {
+            "id": "MyFirstConfig",
+            "path": "aws-appconfig-multi-config-env/MyFirstConfig",
+            "children": {
+              "ConfigurationProfile": {
+                "id": "ConfigurationProfile",
+                "path": "aws-appconfig-multi-config-env/MyFirstConfig/ConfigurationProfile",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::AppConfig::ConfigurationProfile",
+                  "aws:cdk:cloudformation:props": {
+                    "applicationId": {
+                      "Ref": "MyApplicationForEnv1F597ED9"
+                    },
+                    "locationUri": "hosted",
+                    "name": "awsappconfigmulticonfigenv-MyFirstConfig-2FF7CAAB"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-appconfig-multi-config-env/MyFirstConfig/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::AppConfig::HostedConfigurationVersion",
+                  "aws:cdk:cloudformation:props": {
+                    "applicationId": {
+                      "Ref": "MyApplicationForEnv1F597ED9"
+                    },
+                    "configurationProfileId": {
+                      "Ref": "MyFirstConfigConfigurationProfileAB11F87A"
+                    },
+                    "content": "first config content",
+                    "contentType": "application/octet-stream"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              },
+              "Deployment5AEBA": {
+                "id": "Deployment5AEBA",
+                "path": "aws-appconfig-multi-config-env/MyFirstConfig/Deployment5AEBA",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::AppConfig::Deployment",
+                  "aws:cdk:cloudformation:props": {
+                    "applicationId": {
+                      "Ref": "MyApplicationForEnv1F597ED9"
+                    },
+                    "configurationProfileId": {
+                      "Ref": "MyFirstConfigConfigurationProfileAB11F87A"
+                    },
+                    "configurationVersion": {
+                      "Ref": "MyFirstConfig117AFBAC"
+                    },
+                    "deploymentStrategyId": {
+                      "Ref": "QuickDeploymentStrategy980252EC"
+                    },
+                    "environmentId": {
+                      "Ref": "MultiConfigEnvironment5F41B747"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
+            }
+          },
+          "MySecondConfig": {
+            "id": "MySecondConfig",
+            "path": "aws-appconfig-multi-config-env/MySecondConfig",
+            "children": {
+              "ConfigurationProfile": {
+                "id": "ConfigurationProfile",
+                "path": "aws-appconfig-multi-config-env/MySecondConfig/ConfigurationProfile",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::AppConfig::ConfigurationProfile",
+                  "aws:cdk:cloudformation:props": {
+                    "applicationId": {
+                      "Ref": "MyApplicationForEnv1F597ED9"
+                    },
+                    "locationUri": "hosted",
+                    "name": "awsappconfigmulticonfigenv-MySecondConfig-4F837809"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-appconfig-multi-config-env/MySecondConfig/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::AppConfig::HostedConfigurationVersion",
+                  "aws:cdk:cloudformation:props": {
+                    "applicationId": {
+                      "Ref": "MyApplicationForEnv1F597ED9"
+                    },
+                    "configurationProfileId": {
+                      "Ref": "MySecondConfigConfigurationProfileD0CC1BAA"
+                    },
+                    "content": "second config content",
+                    "contentType": "application/octet-stream"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              },
+              "Deployment5AEBA": {
+                "id": "Deployment5AEBA",
+                "path": "aws-appconfig-multi-config-env/MySecondConfig/Deployment5AEBA",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::AppConfig::Deployment",
+                  "aws:cdk:cloudformation:props": {
+                    "applicationId": {
+                      "Ref": "MyApplicationForEnv1F597ED9"
+                    },
+                    "configurationProfileId": {
+                      "Ref": "MySecondConfigConfigurationProfileD0CC1BAA"
+                    },
+                    "configurationVersion": {
+                      "Ref": "MySecondConfig28DEBAC4"
+                    },
+                    "deploymentStrategyId": {
+                      "Ref": "QuickDeploymentStrategy980252EC"
+                    },
+                    "environmentId": {
+                      "Ref": "MultiConfigEnvironment5F41B747"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "aws-appconfig-multi-config-env/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "aws-appconfig-multi-config-env/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.3.0"
+        }
+      },
+      "appconfig-multi-config-env": {
+        "id": "appconfig-multi-config-env",
+        "path": "appconfig-multi-config-env",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "appconfig-multi-config-env/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "appconfig-multi-config-env/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "appconfig-multi-config-env/DefaultTest/DeployAssert",
+                "children": {
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "appconfig-multi-config-env/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "appconfig-multi-config-env/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.3.0"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "constructs.Construct",
+      "version": "10.3.0"
+    }
+  }
+}
