@@ -3,6 +3,7 @@ import * as path from 'path';
 import * as esbuild from 'esbuild';
 import { config, ComponentProps } from '../lib/custom-resources-framework/config';
 import { HandlerFrameworkModule } from '../lib/custom-resources-framework/framework';
+import { RuntimeDeterminerModule } from '../lib/custom-resources-framework/runtime-determiner';
 
 const framework: { [fqn: string]: ComponentProps[] } = {};
 
@@ -27,6 +28,12 @@ async function main() {
       module.renderTo(`dist/${fqn}.generated.ts`);
     }
   }
+
+  const coreRuntimeDeterminer = RuntimeDeterminerModule.buildForCore();
+  coreRuntimeDeterminer.renderTo(`dist/core/${coreRuntimeDeterminer.fqn}.generated.ts`);
+
+  const standardLibRuntimeDeterminer = RuntimeDeterminerModule.buildForStandardLib();
+  standardLibRuntimeDeterminer.renderTo(`dist/${standardLibRuntimeDeterminer.fqn}.generated.ts`);
 
   function recurse(_config: any, _path: string[]) {
     // base case - this is a framework component array and we will build a module with
