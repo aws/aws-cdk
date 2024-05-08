@@ -622,7 +622,7 @@ as it does not contain any objects.
 To override this and force all objects to get deleted during bucket deletion,
 enable the`autoDeleteObjects` option.
 
-The auto-deletion for objects within S3 buckets is handled by a custom resource. Enabling this feature by setting it to true would additionally include the imposition of the `s3:PutBucketPolicy` to restrict external write access during cleanup, thus mitigating potential race conditions.
+In order to facilitate bucket deletion, we add the `s3:PutBucketPolicy` action from AWS Identity and Access Management (IAM) policies. This action authorizes users to manage bucket policies for Amazon S3 buckets, enabling them to adjust access control settings by either establishing new policies or modifying existing ones. As part of this we update the policy to **Deny** `s3:PutObject` action within the specified bucket preventing new objects from being created in the bucket. Consequently, this measure ensures that during the bucket emptying phase, the onset of potential race conditions is mitigated, as no new objects can be generated within the bucket.
 
 ```ts
 const bucket = new s3.Bucket(this, 'MyTempFileBucket', {
