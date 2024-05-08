@@ -946,7 +946,6 @@ integTest('cdk diff --quiet does not print \'There were no differences\' message
 }));
 
 integTest('cdk diff picks up changes that are only present in changeset', withDefaultFixture(async (fixture) => {
-  // eslint-disable-next-line no-console
   const ssmClient = new SSM.SSMClient();
   await ssmClient.send(new SSM.PutParameterCommand(
     {
@@ -974,7 +973,6 @@ integTest('cdk diff picks up changes that are only present in changeset', withDe
 
     // WHEN
     const diff = await fixture.cdk(['diff', fixture.fullStackName('queue-name-defined-by-ssm-param')]);
-
     `
       Resources
       [~] AWS::SQS::Queue DiffFromChangeSetQueue DiffFromChangeSetQueue06622C07 replace
