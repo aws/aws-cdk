@@ -294,8 +294,8 @@ describe('cluster resource provider', () => {
           roleArn: 'arn:of:role',
           resourcesVpcConfig:
           {
-            subnetIds: ['subnet1', 'subnet2'],
-            securityGroupIds: ['sg1'],
+            subnetIds: ['subnet1'],
+            securityGroupIds: ['sg2'],
           },
         });
       });
@@ -633,7 +633,7 @@ describe('cluster resource provider', () => {
           } catch (e) {
             error = e;
           }
-          expect(error.message).toEqual('Cannot update logging and access at the same time');
+          expect(error.message).toEqual('Only one type of update - VpcConfigUpdate, LoggingUpdate or EndpointAccessUpdate can be allowed');
         });
         test('both logging and access defined and modify both of them', async () => {
           const handler = new ClusterResourceHandler(mocks.client, mocks.newRequest('Update', {
@@ -671,7 +671,7 @@ describe('cluster resource provider', () => {
           } catch (e) {
             error = e;
           }
-          expect(error.message).toEqual('Cannot update logging and access at the same time');
+          expect(error.message).toEqual('Only one type of update - VpcConfigUpdate, LoggingUpdate or EndpointAccessUpdate can be allowed');
         });
         test('Given logging enabled and unchanged, updating the only publicAccessCidrs is allowed ', async () => {
           const handler = new ClusterResourceHandler(mocks.client, mocks.newRequest('Update', {
