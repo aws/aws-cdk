@@ -1580,6 +1580,7 @@ integTest('skips notice refresh', withDefaultFixture(async (fixture) => {
 integTest('test resource import', withDefaultFixture(async (fixture) => {
   const outputsFile = path.join(fixture.integTestDir, 'outputs', 'outputs.json');
   await fs.mkdir(path.dirname(outputsFile), { recursive: true });
+  const fullStackName = fixture.fullStackName('importable-stack');
 
   // Initial deploy
   await fixture.cdkDeploy('importable-stack', {
@@ -1588,25 +1589,42 @@ integTest('test resource import', withDefaultFixture(async (fixture) => {
   });
 
   const outputs = JSON.parse((await fs.readFile(outputsFile, { encoding: 'utf-8' })).toString());
-  const queueName = outputs.QueueName;
-  const queueLogicalId = outputs.QueueLogicalId;
-  fixture.log(`Setup complete, created queue ${queueName}`);
+  fixture.log('Setup complete');
   try {
-    // Deploy again, orphaning the queue
+    // Deploy again, orphaning the queues
     await fixture.cdkDeploy('importable-stack', {
       modEnv: { OMIT_TOPIC: '1', LARGE_TEMPLATE: '1' },
     });
 
     // Write a resource mapping file based on the ID from step one, then run an import
     const mappingFile = path.join(fixture.integTestDir, 'outputs', 'mapping.json');
-    await fs.writeFile(mappingFile, JSON.stringify({ [queueLogicalId]: { QueueName: queueName } }), { encoding: 'utf-8' });
+    type QueueMap = {
+      [queueLogicalId: string]: { QueueName: string };
+    };
+
+    let queues: QueueMap = {};
+
+    for (let i = 1; i <= 70; i++) {
+      const queueName = outputs[fullStackName][`QueueName${i}`];
+      const queueLogicalId = outputs[fullStackName][`QueueLogicalId${i}`];
+
+      queues[queueLogicalId] = { QueueName: queueName };
+    }
+
+    const jsonFile = JSON.stringify(queues);
+    await fs.writeFile(
+      mappingFile,
+      jsonFile,
+      { encoding: 'utf-8' },
+    );
 
     await fixture.cdk(['import',
       '--resource-mapping', mappingFile,
       fixture.fullStackName('importable-stack')]);
   } finally {
+    fixture.log('what');
     // Cleanup
-    await fixture.cdkDestroy('importable-stack');
+    // await fixture.cdkDestroy('importable-stack');
   }
 }));
 

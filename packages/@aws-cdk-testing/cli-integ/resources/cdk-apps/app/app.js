@@ -199,15 +199,25 @@ class MigrateStack extends cdk.Stack {
       new cdk.CfnOutput(this, 'QueueLogicalId', {
         value: queue.node.defaultChild.logicalId,
       });
-    }
 
-    if (process.env.LARGE_TEMPLATE) {
-      for (let i = 0; i < 70; i++) {
-        const q = new sqs.Queue(this, `cdk-import-queue-test${i}`, {
-          enforceSSL: true,
-        });
+      if (process.env.LARGE_TEMPLATE) {
+        for (let i = 0; i < 70; i++) {
+          const q = new sqs.Queue(this, `cdk-import-queue-test${i}`, {
+            enforceSSL: true,
+            removalPolicy: process.env.ORPHAN_TOPIC ? cdk.RemovalPolicy.RETAIN : cdk.RemovalPolicy.DESTROY,
+          });
+
+          new cdk.CfnOutput(this, `QueueName${i}`, {
+            value: q.queueName,
+          });
+
+          new cdk.CfnOutput(this, `QueueLogicalId${i}`, {
+            value: q.node.defaultChild.logicalId,
+          });
+        }
       }
     }
+
 
     if (process.env.SAMPLE_RESOURCES) {
       const myTopic = new sns.Topic(this, 'migratetopic1', {

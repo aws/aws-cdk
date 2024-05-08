@@ -5,17 +5,14 @@
   "version": "0.2.0",
   "configurations": [
     {
-      // Has convenient settings for attaching to a NodeJS process for debugging purposes
-      // that are NOT the default and otherwise every developers has to configure for
-      // themselves again and again.
       "type": "node",
-      "request": "attach",
-      "name": "Attach to NodeJS",
-      // If we don't do this, every step-into into an async function call will go into
-      // NodeJS internals which are hard to step out of.
-      "skipFiles": [
-        "<node_internals>/**"
-      ],
+      "request": "launch",
+      "args": ["-a", "cli-integ-tests", "-t", "test resource import"],
+      "name": "debug integ tests",
+      "program": "/Users/bergjak/workplace/CDK/aws-cdk/packages/@aws-cdk-testing/cli-integ/bin/run-suite",
+      "console": "integratedTerminal",
+      "sourceMaps": true,
+      "skipFiles": [ "<node_internals>/**/*" ],
       // Saves some button-pressing latency on attaching
       "stopOnEntry": false
     }
