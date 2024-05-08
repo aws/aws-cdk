@@ -29,7 +29,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-ivs-alpha.Channel",
+              "fqn": "aws-cdk-lib.Resource",
               "version": "0.0.0"
             }
           },
@@ -55,7 +55,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-ivs-alpha.Channel",
+              "fqn": "aws-cdk-lib.Resource",
               "version": "0.0.0"
             }
           },
