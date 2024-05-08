@@ -272,34 +272,6 @@ describe('cluster resource provider', () => {
         });
       });
 
-      test('subnets or security groups requires a replacement', async () => {
-        const handler = new ClusterResourceHandler(mocks.client, mocks.newRequest('Update', {
-          ...mocks.MOCK_PROPS,
-          resourcesVpcConfig: {
-            subnetIds: ['subnet1', 'subnet2'],
-            securityGroupIds: ['sg1'],
-          },
-        }, {
-          ...mocks.MOCK_PROPS,
-          resourcesVpcConfig: {
-            subnetIds: ['subnet1'],
-            securityGroupIds: ['sg2'],
-          },
-        }));
-        const resp = await handler.onEvent();
-
-        expect(resp).toEqual({ PhysicalResourceId: 'MyResourceId-fakerequestid' });
-        expect(mocks.actualRequest.createClusterRequest).toEqual({
-          name: 'MyResourceId-fakerequestid',
-          roleArn: 'arn:of:role',
-          resourcesVpcConfig:
-          {
-            subnetIds: ['subnet1'],
-            securityGroupIds: ['sg2'],
-          },
-        });
-      });
-
       test('change subnets or security groups order should not trigger an update', async () => {
         const handler = new ClusterResourceHandler(mocks.client, mocks.newRequest('Update', {
           ...mocks.MOCK_PROPS,
@@ -551,6 +523,26 @@ describe('cluster resource provider', () => {
 
           expect(error.message).toEqual('Cannot remove cluster version configuration. Current version is 1.2');
         });
+
+        test('subnets or security groups does not require a replacement', async () => {
+          const handler = new ClusterResourceHandler(mocks.client, mocks.newRequest('Update', {
+            ...mocks.MOCK_PROPS,
+            resourcesVpcConfig: {
+              subnetIds: ['subnet1', 'subnet2'],
+              securityGroupIds: ['sg1'],
+            },
+          }, {
+            ...mocks.MOCK_PROPS,
+            resourcesVpcConfig: {
+              subnetIds: ['subnet1'],
+              securityGroupIds: ['sg2'],
+            },
+          }));
+          const resp = await handler.onEvent();
+          expect(resp).toEqual({ EksUpdateId: 'MockEksUpdateStatusId' });
+          expect(mocks.actualRequest.createClusterRequest).toEqual(undefined);
+        });
+
       });
 
       describe('logging or access change', () => {
