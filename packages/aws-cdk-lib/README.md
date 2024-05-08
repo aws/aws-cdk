@@ -268,7 +268,13 @@ In order to mimic strong references, a Custom Resource is also created in the co
 stack which marks the SSM parameters as being "imported". When a parameter has been successfully
 imported, the producing stack cannot update the value.
 
-Note that CloudFormation restricts the total size of a Custom Resource Provider response body to [4096 bytes](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/crpg-ref-responses.html). This is relevant because the Custom Resource Provider for the producing stack will respond back to CloudFormation with a response body that includes all exported parameter names and their associated values. Similarly, the Custom Resource Provider for the consuming stack will respond back to CloudFormation with a response body that includes all imported parameter names and their associated values. To limit the total size of the response and prevent deployment errors from a response object that is too large, you should try to minimize the length of the stack name. Limiting the length of the stack name will minimize the length of the parameter name that is generated for each SSM parameter, i.e., '/cdk/exports/${consumingStackName}/${export-name}', which will reduce the size of the response body.
+> [!NOTE]
+> As a consequence of this feature being built on a Custom Resource, we are restricted to a
+> CloudFormation response body size limitation of [4096 bytes](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/crpg-ref-responses.html).
+> To prevent deployment errors related to the Custom Resource Provider response body being too
+> large, we recommend limiting the use of nested stacks and minimizing the length of stack names.
+> Doing this will prevent SSM parameter names from becoming too long which will reduce the size of the
+> response body.
 
 See the [adr](https://github.com/aws/aws-cdk/blob/main/packages/@aws-cdk/core/adr/cross-region-stack-references)
 for more details on this feature.
