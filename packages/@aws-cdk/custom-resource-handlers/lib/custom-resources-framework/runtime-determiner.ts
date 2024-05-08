@@ -1,8 +1,8 @@
 /* eslint-disable import/no-extraneous-dependencies */
-import { ClassType, Module, Type, TypeScriptRenderer, stmt, expr, MemberVisibility, ExternalModule } from '@cdklabs/typewriter';
+import { ClassType, Module, Type, TypeScriptRenderer, stmt, expr, MemberVisibility, ExternalModule, Method } from '@cdklabs/typewriter';
 import * as fs from 'fs-extra';
 import { DEFAULT_NODE_RUNTIME } from './config';
-import { CONSTRUCTS_MODULE, CORE_INTERNAL_REGION_INFO, CORE_INTERNAL_STACK, CORE_MODULE, REGION_INFO } from './modules';
+import { CONSTRUCTS_MODULE, CORE_INTERNAL_REGION_INFO, CORE_INTERNAL_STACK, CORE_MODULE, LAMBDA_MODULE, REGION_INFO } from './modules';
 
 /**
  *
@@ -74,12 +74,15 @@ class RuntimeDeterminerClass extends ClassType {
     if (scope.isCoreInternal) {
       this.externalModules.push(...[CORE_INTERNAL_STACK, CORE_INTERNAL_REGION_INFO]);
     } else {
-      this.externalModules.push(...[CORE_MODULE, REGION_INFO]);
+      this.externalModules.push(...[CORE_MODULE, REGION_INFO, LAMBDA_MODULE]);
     }
 
     this.importExternalModulesInto(scope);
 
-    this.buildDetermineLatestRuntimeName();
+    const determineLatestRuntimeName = this.buildDetermineLatestRuntimeName();
+    if (!scope.isCoreInternal) {
+      this.buildDetermineLatestLambdaRuntime(determineLatestRuntimeName);
+    }
   }
 
   private importExternalModulesInto(scope: RuntimeDeterminerModule) {
@@ -110,6 +113,10 @@ class RuntimeDeterminerClass extends ClassType {
         CORE_INTERNAL_REGION_INFO.importSelective(scope, ['FactName']);
         return;
       }
+      case LAMBDA_MODULE.fqn: {
+        LAMBDA_MODULE.importSelective(scope, ['Runtime', 'RuntimeFamily']);
+        return;
+      }
     }
   }
 
@@ -126,6 +133,27 @@ class RuntimeDeterminerClass extends ClassType {
     });
     runtimeDeterminer.addBody(
       stmt.ret(expr.directCode(`Stack.of(scope).regionalFact(FactName.DEFAULT_CR_NODE_VERSION, '${DEFAULT_NODE_RUNTIME}')`)),
+    );
+    return runtimeDeterminer;
+  }
+
+  private buildDetermineLatestLambdaRuntime(determineLatestRuntimeNameMethod: Method) {
+    const runtimeDeterminer = this.addMethod({
+      static: true,
+      name: 'determineLatestLambdaRuntime',
+      returnType: LAMBDA_MODULE.Runtime,
+      visibility: MemberVisibility.Public,
+    });
+    runtimeDeterminer.addParameter({
+      name: 'scope',
+      type: CONSTRUCTS_MODULE.Construct,
+    });
+    runtimeDeterminer.addBody(
+      stmt.constVar(
+        expr.ident('runtimeName'),
+        expr.directCode(`${this.name}.${determineLatestRuntimeNameMethod.name}(scope)`),
+      ),
+      stmt.ret(expr.directCode(`${LAMBDA_MODULE.Runtime}(runtimeName, ${LAMBDA_MODULE.RuntimeFamily}.NODE_JS, { supportsInlineCode: true })`)),
     );
   }
 }

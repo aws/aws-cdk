@@ -46,6 +46,8 @@ class LambdaModule extends ExternalModule {
   public readonly Function = Type.fromName(this, 'Function');
   public readonly SingletonFunction = Type.fromName(this, 'SingletonFunction');
   public readonly FunctionOptions = Type.fromName(this, 'FunctionOptions');
+  public readonly Runtime = Type.fromName(this, 'Runtime');
+  public readonly RuntimeFamily = Type.fromName(this, 'RuntimeFamily');
 
   public constructor() {
     super('../../../aws-lambda');

@@ -196,6 +196,11 @@ export class FactName {
   public static readonly SAML_SIGN_ON_URL = 'samlSignOnUrl';
 
   /**
+   * The default NodeJS version used for custom resource function runtimes
+   */
+  public static readonly DEFAULT_CR_NODE_VERSION = 'defaultCrNodeVersion';
+
+  /**
    * The ARN of CloudWatch Lambda Insights for a version (e.g. 1.0.98.0)
    */
   public static cloudwatchLambdaInsightsVersion(version: string, arch?: string) {
