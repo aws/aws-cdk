@@ -50,7 +50,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "8dd602cf5aa1420570d23fd9ec2d7b613ac9861fe0fd0a1fd5f8bbd65b5d3abd.zip"
+     "S3Key": "86ceb94f726e853fbe597fdc168e87c5a8bda64e9e27fdd9cb0fd0983b091205.zip"
     },
     "Description": "onEvent handler for EKS cluster resource provider",
     "Environment": {
@@ -115,7 +115,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "8dd602cf5aa1420570d23fd9ec2d7b613ac9861fe0fd0a1fd5f8bbd65b5d3abd.zip"
+     "S3Key": "86ceb94f726e853fbe597fdc168e87c5a8bda64e9e27fdd9cb0fd0983b091205.zip"
     },
     "Description": "isComplete handler for EKS cluster resource provider",
     "Environment": {
