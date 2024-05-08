@@ -116,7 +116,7 @@ export class ClusterResourceHandler extends ResourceHandler {
     // if there is an update that requires replacement, go ahead and just create
     // a new cluster with the new config. The old cluster will automatically be
     // deleted by cloudformation upon success.
-    if (updates.replaceName || updates.replaceRole || updates.replaceVpc) {
+    if (updates.replaceName || updates.replaceRole || updates.replaceVpc || updates.updateBootstrapClusterCreatorAdminPermissions) {
 
       // if we are replacing this cluster and the cluster has an explicit
       // physical name, the creation of the new cluster will fail with "there is
@@ -142,7 +142,7 @@ export class ClusterResourceHandler extends ResourceHandler {
       throw new Error('Cannot update logging and access at the same time');
     }
 
-    if (updates.updateLogging || updates.updateAccess || updates.updateAccessConfig) {
+    if (updates.updateLogging || updates.updateAccess || updates.updateAuthMode) {
       const config: EKS.UpdateClusterConfigCommandInput = {
         name: this.clusterName,
       };
@@ -160,7 +160,7 @@ export class ClusterResourceHandler extends ResourceHandler {
         };
       };
 
-      if (updates.updateAccessConfig) {
+      if (updates.updateAuthMode) {
         // old value is API - cannot fallback from API to any other mode
         if (this.oldProps.accessConfig?.authenticationMode === 'API' &&
           this.newProps.accessConfig?.authenticationMode !== 'API') {
@@ -331,7 +331,8 @@ interface UpdateMap {
   updateLogging: boolean; // logging
   updateEncryption: boolean; // encryption (cannot be updated)
   updateAccess: boolean; // resourcesVpcConfig.endpointPrivateAccess and endpointPublicAccess
-  updateAccessConfig: boolean; // accessConfig
+  updateAuthMode: boolean; // accessConfig.authenticationMode
+  updateBootstrapClusterCreatorAdminPermissions: boolean; // accessConfig.bootstrapClusterCreatorAdminPermissions
 }
 
 function analyzeUpdate(oldProps: Partial<EKS.CreateClusterCommandInput>, newProps: EKS.CreateClusterCommandInput): UpdateMap {
@@ -361,7 +362,9 @@ function analyzeUpdate(oldProps: Partial<EKS.CreateClusterCommandInput>, newProp
     updateVersion: newProps.version !== oldProps.version,
     updateEncryption: JSON.stringify(newEnc) !== JSON.stringify(oldEnc),
     updateLogging: JSON.stringify(newProps.logging) !== JSON.stringify(oldProps.logging),
-    updateAccessConfig: JSON.stringify(newAccessConfig) !== JSON.stringify(oldAccessConfig),
+    updateAuthMode: JSON.stringify(newAccessConfig.authenticationMode) !== JSON.stringify(oldAccessConfig.authenticationMode),
+    updateBootstrapClusterCreatorAdminPermissions: JSON.stringify(newAccessConfig.bootstrapClusterCreatorAdminPermissions) !==
+      JSON.stringify(oldAccessConfig.bootstrapClusterCreatorAdminPermissions),
   };
 }
 

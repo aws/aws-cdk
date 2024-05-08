@@ -826,6 +826,8 @@ export interface ClusterProps extends ClusterOptions {
    * Whether or not the cluster creator IAM principal was set as a cluster admin access entry
    * during cluster creation time.
    *
+   * Changing this value after the cluster has been created will result in the cluster being replaced.
+   *
    * @default true
    */
   readonly bootstrapClusterCreatorAdminPermissions?: boolean;
