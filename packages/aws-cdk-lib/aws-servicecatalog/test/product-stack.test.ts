@@ -389,7 +389,6 @@ describe('ProductStack', () => {
     // GIVEN
     const app = new cdk.App();
     const mainStack = new cdk.Stack(app, 'MyStack');
-    const testKmsKey = new kms.Key(mainStack, 'TestKmsKey');
     const testAssetBucket = new s3.Bucket(mainStack, 'TestAssetBucket', {
       bucketName: 'test-asset-bucket',
     });
