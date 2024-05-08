@@ -1116,7 +1116,7 @@ To specify the `authenticationMode`:
 import { KubectlV29Layer } from '@aws-cdk/lambda-layer-kubectl-v29';
 declare const vpc: ec2.Vpc;
 
-new eks.Cluster(stack, 'Cluster', {
+new eks.Cluster(this, 'Cluster', {
   vpc,
   version: eks.KubernetesVersion.V1_29,
   kubectlLayer: new KubectlV29Layer(this, 'KubectlLayer'),
@@ -1146,10 +1146,11 @@ to Kubernetes resources. See [Access Policy Permissions](https://docs.aws.amazon
 Use `AccessPolicy` to include predefined AWS managed policies:
 
 ```ts
+
 // AmazonEKSClusterAdminPolicy with `cluster` scope
-AccessPolicy.fromAccessPolicyName('AmazonEKSClusterAdminPolicy');
+eks.AccessPolicy.fromAccessPolicyName('AmazonEKSClusterAdminPolicy');
 // AmazonEKSAdminPolicy with `namespace` scope
-AccessPolicy.fromAccessPolicyName('AmazonEKSAdminPolicy', { namespaces: ['foo', 'bar'] } );
+eks.AccessPolicy.fromAccessPolicyName('AmazonEKSAdminPolicy', { namespaces: ['foo', 'bar'] } );
 ```
 
 Use `grantAccess()` to grant the AccessPolicy to an IAM principal:
@@ -1170,7 +1171,7 @@ const eksAdminViewRole = new iam.Role(this, 'EKSAdminViewRole', {
   assumedBy: new iam.ArnPrincipal('arn_for_trusted_principal'),
 });
 
-const cluster = new eks.Cluster(stack, 'Cluster', {
+const cluster = new eks.Cluster(this, 'Cluster', {
   vpc,
   mastersRole: clusterAdminRole,
   version: eks.KubernetesVersion.V1_29,
@@ -1180,17 +1181,17 @@ const cluster = new eks.Cluster(stack, 'Cluster', {
 
 // Cluster Admin role for this cluster
 cluster.grantAccess('clusterAdminAccess', clusterAdminRole.roleArn, [
-  AccessPolicy.fromAccessPolicyName('AmazonEKSClusterAdminPolicy'),
+  eks.AccessPolicy.fromAccessPolicyName('AmazonEKSClusterAdminPolicy'),
 ]);
 
 // EKS Admin role for specified namespaces of thie cluster
 cluster.grantAccess('eksAdminRoleAccess', eksAdminRole.roleArn, [
-  AccessPolicy.fromAccessPolicyName('AmazonEKSAdminPolicy', { namespaces: ['foo', 'bar'] } ),
+  eks.AccessPolicy.fromAccessPolicyName('AmazonEKSAdminPolicy', { namespaces: ['foo', 'bar'] } ),
 ]);
 
 // EKS Admin Viewer role for specified namespaces of thie cluster
 cluster.grantAccess('eksAdminViewRoleAccess', eksAdminViewRole.roleArn, [
-  AccessPolicy.fromAccessPolicyName('AmazonEKSAdminViewPolicy', { namespaces: ['foo', 'bar'] } ),
+  eks.AccessPolicy.fromAccessPolicyName('AmazonEKSAdminViewPolicy', { namespaces: ['foo', 'bar'] } ),
 ]);
 ```
 
