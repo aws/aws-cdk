@@ -464,7 +464,7 @@ export interface GraphqlApiAttributes {
   readonly visibility?: Visibility;
 
   /**
-   * The GraphQl API visibility
+   * The Authorization Types for this GraphQL Api
    *
    * @default - none, required to construct event rules from imported APIs
    */
