@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/60a4f71cce6f2ffd39f4c99ef1b0259eedd9e8704618437758980bea680a8a93.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/03153c55266e7023063bee764f0d5ae491a81afa66365dbde79d3a7460db7890.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -274,12 +274,6 @@
             "data": "Clustercharttestocichartdifferentreleasename6D3FD1A1"
           }
         ],
-        "/aws-cdk-eks-helm-test/Cluster/chart-test-skip-crd-installation/Resource/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClustercharttestskipcrdinstallationB8323954"
-          }
-        ],
         "/aws-cdk-eks-helm-test/Cluster/chart-test-atomic-installation/Resource/Default": [
           {
             "type": "aws:cdk:logicalId",
@@ -506,6 +500,15 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
+          }
+        ],
+        "ClustercharttestskipcrdinstallationB8323954": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ClustercharttestskipcrdinstallationB8323954",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },

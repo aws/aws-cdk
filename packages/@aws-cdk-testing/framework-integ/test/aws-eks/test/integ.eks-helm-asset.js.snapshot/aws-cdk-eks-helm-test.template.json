@@ -846,7 +846,8 @@
         ]
        }
       ]
-     }
+     },
+     "accessConfig": {}
     },
     "AssumeRoleArn": {
      "Fn::GetAtt": [
@@ -854,7 +855,7 @@
       "Arn"
      ]
     },
-    "AttributesRevision": 2
+    "AttributesRevision": 3
    },
    "DependsOn": [
     "ClusterCreationRoleDefaultPolicyE8BDFC7B",
@@ -1132,38 +1133,6 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "ClustercharttestskipcrdinstallationB8323954": {
-   "Type": "Custom::AWSCDK-EKS-HelmChart",
-   "Properties": {
-    "ServiceToken": {
-     "Fn::GetAtt": [
-      "awscdkawseksKubectlProviderNestedStackawscdkawseksKubectlProviderNestedStackResourceA7AEBA6B",
-      "Outputs.awscdkekshelmtestawscdkawseksKubectlProviderframeworkonEvent9D93C644Arn"
-     ]
-    },
-    "ClusterName": {
-     "Ref": "Cluster9EE0221C"
-    },
-    "RoleArn": {
-     "Fn::GetAtt": [
-      "ClusterCreationRole360249B6",
-      "Arn"
-     ]
-    },
-    "Release": "rds-chart-release",
-    "Chart": "rds-chart",
-    "Version": "v1.1.2",
-    "Namespace": "ack-system",
-    "Repository": "oci://public.ecr.aws/aws-controllers-k8s/rds-chart",
-    "CreateNamespace": true,
-    "SkipCrds": true
-   },
-   "DependsOn": [
-    "ClusterKubectlReadyBarrier200052AF"
-   ],
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
-  },
   "ClustercharttestatomicinstallationB879263E": {
    "Type": "Custom::AWSCDK-EKS-HelmChart",
    "Properties": {
@@ -1247,7 +1216,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/cae1a4462b1644427d95ba56c27cfccdedb123321ec9f099e10c4b288f7b0c8b.json"
+       "/458bc924cb3a9044b35c88316d411bcadc037d8b536c7b3992a3b251658b3ebc.json"
       ]
      ]
     }
@@ -1297,7 +1266,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/4b8f19f7bb7985e7b254a6e15a1820220c080096b9c971e88445051898337b56.json"
+       "/7858174fb3f83ec5d585f3547d419e579c41c90299078da11cb3b3b3cd379d1d.json"
       ]
      ]
     }

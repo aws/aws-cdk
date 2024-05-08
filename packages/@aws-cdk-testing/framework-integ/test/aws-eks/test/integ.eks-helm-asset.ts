@@ -77,18 +77,8 @@ class EksClusterStack extends Stack {
       createNamespace: true,
     });
 
-    // testing the disable mechanism of the installation of CRDs
-    this.cluster.addHelmChart('test-skip-crd-installation', {
-      chart: 'rds-chart',
-      release: 'rds-chart-release',
-      repository: 'oci://public.ecr.aws/aws-controllers-k8s/rds-chart',
-      version: 'v1.1.2',
-      namespace: 'ack-system',
-      createNamespace: true,
-      skipCrds: true,
-    });
-
-    //testing installation with atomic flag set to true
+    // testing the disable mechanism of the installation of CRDs and
+    // testing installation with atomic flag set to true
     this.cluster.addHelmChart('test-atomic-installation', {
       chart: 'rds-chart',
       release: 'rds-chart-release',

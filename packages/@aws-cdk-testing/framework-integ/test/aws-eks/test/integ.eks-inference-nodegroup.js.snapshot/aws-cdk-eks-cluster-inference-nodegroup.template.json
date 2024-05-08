@@ -758,7 +758,8 @@
       ],
       "endpointPublicAccess": true,
       "endpointPrivateAccess": true
-     }
+     },
+     "accessConfig": {}
     },
     "AssumeRoleArn": {
      "Fn::GetAtt": [
@@ -766,7 +767,7 @@
       "Arn"
      ]
     },
-    "AttributesRevision": 2
+    "AttributesRevision": 3
    },
    "DependsOn": [
     "ClusterCreationRoleDefaultPolicyE8BDFC7B",
@@ -826,7 +827,7 @@
       "OpenIdConnectIssuerUrl"
      ]
     },
-    "CodeHash": "9243a37c51ef38f361f19b938e8dd0cd37fd4a2c18460dca4546ad79d72b465c"
+    "CodeHash": "469d5d61e22fea12a07cfcadd430b3a6babbbd52a6d677d3eb99b583b278761d"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -1194,7 +1195,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/030d8652f6917dbfe1a5c3372acc5af81e7b93f2aa6bf9507b2ffbe4b94726a4.json"
+       "/f4a060e127d6a8a545ac35c228c5f634dacbb9bce62dfcfab00ec7d030faa63c.json"
       ]
      ]
     }
@@ -1244,7 +1245,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/93f01e17ed12901678bd6301f0161c060d6ce4de20dedb23fa3280aa83ada79c.json"
+       "/af6eabdf2d91c55c1b133a5a5de4071e5349ba564ccfc1b934c916841e222a65.json"
       ]
      ]
     }
@@ -1870,7 +1871,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "9243a37c51ef38f361f19b938e8dd0cd37fd4a2c18460dca4546ad79d72b465c.zip"
+     "S3Key": "469d5d61e22fea12a07cfcadd430b3a6babbbd52a6d677d3eb99b583b278761d.zip"
     },
     "Timeout": 900,
     "MemorySize": 128,
@@ -1916,7 +1917,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "7e3e77a5ee3d2db0eeb9f1ca27d1864b68dcd5f1ef5f72269689043834710c60.zip"
+     "S3Key": "a4052fc8993f394f879e80c418974b5f01321a8ea600ed16668222a0705b6d1a.zip"
     },
     "Timeout": 900,
     "MemorySize": 128,
