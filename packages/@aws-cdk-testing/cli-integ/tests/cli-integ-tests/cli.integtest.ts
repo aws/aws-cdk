@@ -1,6 +1,7 @@
 import { promises as fs, existsSync } from 'fs';
 import * as os from 'os';
 import * as path from 'path';
+import * as SSM from '@aws-sdk/client-ssm';
 import { integTest, cloneDirectory, shell, withDefaultFixture, retry, sleep, randomInteger, withSamIntegrationFixture, RESOURCES_DIR, withCDKMigrateFixture, withExtendedTimeoutFixture } from '../../lib';
 
 jest.setTimeout(2 * 60 * 60_000); // Includes the time to acquire locks, worst-case single-threaded runtime
@@ -942,6 +943,59 @@ integTest('cdk diff --quiet does not print \'There were no differences\' message
   // THEN
   expect(diff).not.toContain('Stack test-1');
   expect(diff).not.toContain('There were no differences');
+}));
+
+integTest('cdk diff picks up changes that are only present in changeset', withDefaultFixture(async (fixture) => {
+  // eslint-disable-next-line no-console
+  const ssmClient = new SSM.SSMClient();
+  await ssmClient.send(new SSM.PutParameterCommand(
+    {
+      Name: 'for-queue-name-defined-by-ssm-param',
+      Value: Math.floor(Math.random() * 100_000_000_000_001).toString(),
+      Overwrite: true,
+      Type: 'String',
+    },
+  ));
+
+  // GIVEN
+  try {
+    await fixture.cdkDeploy('queue-name-defined-by-ssm-param');
+
+    // We want to change the ssm value. Then the CFN changeset will detect that the queue will be changed upon deploy.
+    const newRandomValueForSsmParam = Math.floor(Math.random() * 100_000_000_000_001).toString();
+    await ssmClient.send(new SSM.PutParameterCommand(
+      {
+        Name: 'for-queue-name-defined-by-ssm-param',
+        Value: newRandomValueForSsmParam,
+        Type: 'String',
+        Overwrite: true,
+      },
+    ));
+
+    // WHEN
+    const diff = await fixture.cdk(['diff', fixture.fullStackName('queue-name-defined-by-ssm-param')]);
+
+    `
+      Resources
+      [~] AWS::SQS::Queue DiffFromChangeSetQueue DiffFromChangeSetQueue06622C07 replace
+       └─ [~] QueueName (requires replacement)
+      [~] AWS::SSM::Parameter DiffFromChangeSetSSMParam DiffFromChangeSetSSMParam92A9A723
+       └─ [~] Value
+    `;
+
+    // THEN
+    // the reason these aren't just 1 line is because the terminal output includes colors, which comes up like \u001b[4m\u001b[1mResources\u001b
+    // which is not very human friendly...
+    expect(diff).toContain('AWS::SQS::Queue');
+    expect(diff).toContain('DiffFromChangeSetQueue');
+    expect(diff).toContain('QueueName (requires replacement)');
+    expect(diff).toContain('AWS::SSM::Parameter');
+    expect(diff).toContain('DiffFromChangeSetSSMParam');
+    expect(diff).toContain('Value');
+    expect(diff).toContain('Number of stacks with differences: 1');
+  } finally {
+    await fixture.cdkDestroy('queue-name-defined-by-ssm-param');
+  }
 }));
 
 integTest('deploy stack with docker asset', withDefaultFixture(async (fixture) => {
