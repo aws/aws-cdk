@@ -1132,6 +1132,11 @@ new eks.Cluster(this, 'Cluster', {
 Read [A deep dive into simplified Amazon EKS access management controls
 ](https://aws.amazon.com/blogs/containers/a-deep-dive-into-simplified-amazon-eks-access-management-controls/) for more details.
 
+You can disable granting the cluster admin permissions to the cluster creator role on bootstrapping by setting 
+`bootstrapClusterCreatorAdminPermissions` to false. 
+
+> **Note** - Switching `bootstrapClusterCreatorAdminPermissions` on an existing cluster would cause cluster replacement and should be avoided in production.
+
 
 ### Access Entry
 
