@@ -1848,6 +1848,36 @@ test('can automatically add ssm permissions', () => {
   });
 });
 
+test('can Setting Visibility', () => {
+  // GIVEN
+  const stackPublic = new cdk.Stack();
+  const stackPrivate = new cdk.Stack();
+
+  // WHEN
+  new codebuild.Project(stackPublic, 'ProjectPublic', {
+    source: codebuild.Source.s3({
+      bucket: new s3.Bucket(stackPublic, 'Bucket-ProjectPublic'),
+      path: 'path',
+    }),
+    visibility: codebuild.ProjectVisibility.PUBLIC_READ,
+  });
+  new codebuild.Project(stackPrivate, 'ProjectPrivate', {
+    source: codebuild.Source.s3({
+      bucket: new s3.Bucket(stackPrivate, 'Bucket-ProjectPrivate'),
+      path: 'path',
+    }),
+    visibility: codebuild.ProjectVisibility.PRIVATE,
+  });
+
+  // THEN
+  Template.fromStack(stackPublic).hasResourceProperties('AWS::CodeBuild::Project', {
+    Visibility: 'PUBLIC_READ',
+  });
+  Template.fromStack(stackPrivate).hasResourceProperties('AWS::CodeBuild::Project', {
+    Visibility: 'PRIVATE',
+  });
+});
+
 describe('can be imported', () => {
   test('by ARN', () => {
     const stack = new cdk.Stack();

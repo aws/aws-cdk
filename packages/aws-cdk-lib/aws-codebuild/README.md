@@ -872,3 +872,18 @@ new codebuild.Project(this, 'MyProject', {
   concurrentBuildLimit: 1
 });
 ```
+
+## Visibility
+When you can specify the visibility of the project builds. This setting controls whether the builds are publicly readable or remain private.
+
+Visibility Options:
+- PUBLIC_READ: The project builds are visible to the public.
+- PRIVATE: The project builds are not visible to the public.
+
+Examples:
+
+```ts
+new codebuild.Project(this, 'MyProject', {
+  visibility: codebuild.ProjectVisibility.PUBLIC_READ,
+});
+```

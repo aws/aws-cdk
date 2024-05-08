@@ -725,6 +725,13 @@ export interface CommonProjectProps {
    * @default false
    */
   readonly ssmSessionPermissions?: boolean;
+
+  /**
+   * Specifies the visibility of the project's builds.
+   *
+   * @default - no visibility is set
+   */
+  readonly visibility?: ProjectVisibility;
 }
 
 export interface ProjectProps extends CommonProjectProps {
@@ -1124,6 +1131,7 @@ export class Project extends ProjectBase {
       triggers: sourceConfig.buildTriggers,
       sourceVersion: sourceConfig.sourceVersion,
       vpcConfig: this.configureVpc(props),
+      visibility: props.visibility,
       logsConfig: this.renderLoggingConfiguration(props.logging),
       buildBatchConfig: Lazy.any({
         produce: () => {
@@ -2191,6 +2199,21 @@ export enum BuildEnvironmentVariableType {
    * An environment variable stored in AWS Secrets Manager.
    */
   SECRETS_MANAGER = 'SECRETS_MANAGER',
+}
+
+/**
+ * Specifies the visibility of the project's builds.
+ */
+export enum ProjectVisibility {
+  /**
+   * The project builds are visible to the public.
+   */
+  PUBLIC_READ = 'PUBLIC_READ',
+
+  /**
+   * The project builds are not visible to the public.
+   */
+  PRIVATE = 'PRIVATE',
 }
 
 /**
