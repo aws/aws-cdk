@@ -164,6 +164,47 @@ export class ClusterResourceHandler extends ResourceHandler {
       return { EksUpdateId: updateResponse.update?.id };
     }
 
+    if (updates.updateTags) {
+      try {
+        //Describe cluster to get arn and to make sure Cluster exists
+        const cluster = (await this.eks.describeCluster({ name: this.clusterName })).cluster;
+        if (this.oldProps.tags) {
+          if (this.newProps.tags) {
+            //Update tags
+            const tagsToAdd = getTagsToUpdate(this.oldProps.tags, this.newProps.tags);
+            const tagConfig: EKS.TagResourceCommandInput = {
+              resourceArn: cluster?.arn,
+              tags: tagsToAdd,
+            };
+            await this.eks.tagResource(tagConfig);
+            //Remove tags
+            const tagsToRemove = getTagsToRemove(this.oldProps.tags, this.newProps.tags);
+            const unTagConfig: EKS.UntagResourceCommandInput = {
+              resourceArn: cluster?.arn,
+              tagKeys: tagsToRemove,
+            };
+            await this.eks.untagResource(unTagConfig);
+          } else {
+            //Remove all tags
+            const config: EKS.UntagResourceCommandInput = {
+              resourceArn: cluster?.arn,
+              tagKeys: Object.keys(this.oldProps.tags),
+            };
+            await this.eks.untagResource(config);
+          }
+        } else {
+          //Add all tags
+          const config: EKS.TagResourceCommandInput = {
+            resourceArn: cluster?.arn,
+            tags: this.newProps.tags,
+          };
+          await this.eks.tagResource(config);
+        }
+      } catch (e: any) {
+        throw e;
+      }
+    }
+
     // no updates
     return;
   }
@@ -311,6 +352,7 @@ interface UpdateMap {
   updateLogging: boolean; // logging
   updateEncryption: boolean; // encryption (cannot be updated)
   updateAccess: boolean; // resourcesVpcConfig.endpointPrivateAccess and endpointPublicAccess
+  updateTags: boolean; // tags
 }
 
 function analyzeUpdate(oldProps: Partial<EKS.CreateClusterCommandInput>, newProps: EKS.CreateClusterCommandInput): UpdateMap {
@@ -338,9 +380,38 @@ function analyzeUpdate(oldProps: Partial<EKS.CreateClusterCommandInput>, newProp
     updateVersion: newProps.version !== oldProps.version,
     updateEncryption: JSON.stringify(newEnc) !== JSON.stringify(oldEnc),
     updateLogging: JSON.stringify(newProps.logging) !== JSON.stringify(oldProps.logging),
+    updateTags: JSON.stringify(newProps.tags) !== JSON.stringify(oldProps.tags),
   };
 }
 
 function setsEqual(first: Set<string>, second: Set<string>) {
   return first.size === second.size && [...first].every((e: string) => second.has(e));
+}
+
+function getTagsToUpdate<T extends Record<string, string>>(obj1: T, obj2: T): T {
+  const diff: T = {} as T;
+  // Get all tag keys that are newly added and keys whose value have changed
+  for (const key in obj2) {
+    if (obj2.hasOwnProperty(key)) {
+      if (!obj1.hasOwnProperty(key)) {
+        diff[key] = obj2[key];
+      } else if (obj1[key] !== obj2[key]) {
+        diff[key] = obj2[key];
+      }
+    }
+  }
+
+  return diff;
+}
+
+function getTagsToRemove<T extends Record<string, string>>(obj1: T, obj2: T): string[] {
+  const missingKeys: string[] = [];
+  //Get all tag keys to remove
+  for (const key in obj1) {
+    if (obj1.hasOwnProperty(key) && !obj2.hasOwnProperty(key)) {
+      missingKeys.push(key);
+    }
+  }
+
+  return missingKeys;
 }
