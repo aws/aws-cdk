@@ -341,6 +341,8 @@ export class PullRequestLinter {
       repo: this.prParams.repo,
       ref: sha,
     });
+    let status = statuses.data.filter(status => status.context === CODE_BUILD_CONTEXT).map(status => status.state);
+    console.log("CodeBuild Commit Statuses: ", status);
     return statuses.data.some(status => status.context === CODE_BUILD_CONTEXT && status.state === 'success');
   }
 
