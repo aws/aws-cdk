@@ -140,7 +140,7 @@ class RuntimeDeterminerClass extends ClassType {
   private buildDetermineLatestRuntimeName() {
     const runtimeDeterminer = this.addMethod({
       static: true,
-      name: 'determineLatestRuntimeName',
+      name: 'determineLatestLambdaNodeRuntimeName',
       returnType: Type.STRING,
       visibility: MemberVisibility.Public,
     });
@@ -149,15 +149,15 @@ class RuntimeDeterminerClass extends ClassType {
       type: CONSTRUCTS_MODULE.Construct,
     });
     runtimeDeterminer.addBody(
-      stmt.ret(expr.directCode(`Stack.of(scope).regionalFact(FactName.DEFAULT_CR_NODE_VERSION, '${DEFAULT_NODE_RUNTIME}')`)),
+      stmt.ret(expr.directCode(`${CORE_MODULE.Stack}.of(scope).regionalFact(${REGION_INFO.FactName}.DEFAULT_CR_NODE_VERSION, '${DEFAULT_NODE_RUNTIME}')`)),
     );
     return runtimeDeterminer;
   }
 
-  private buildDetermineLatestLambdaRuntime(determineLatestRuntimeNameMethod: Method) {
+  private buildDetermineLatestLambdaRuntime(getLatestRuntimeNameMethod: Method) {
     const runtimeDeterminer = this.addMethod({
       static: true,
-      name: 'determineLatestLambdaRuntime',
+      name: 'determineLatestLambdaNodeRuntime',
       returnType: LAMBDA_MODULE.Runtime,
       visibility: MemberVisibility.Public,
     });
@@ -168,9 +168,9 @@ class RuntimeDeterminerClass extends ClassType {
     runtimeDeterminer.addBody(
       stmt.constVar(
         expr.ident('runtimeName'),
-        expr.directCode(`${this.name}.${determineLatestRuntimeNameMethod.name}(scope)`),
+        expr.directCode(`${this.name}.${getLatestRuntimeNameMethod.name}(scope)`),
       ),
-      stmt.ret(expr.directCode(`${LAMBDA_MODULE.Runtime}(runtimeName, ${LAMBDA_MODULE.RuntimeFamily}.NODEJS, { supportsInlineCode: true })`)),
+      stmt.ret(expr.directCode(`new ${LAMBDA_MODULE.Runtime}(runtimeName, ${LAMBDA_MODULE.RuntimeFamily}.NODEJS, { supportsInlineCode: true })`)),
     );
   }
 }

@@ -22,6 +22,11 @@ function recurse() {
   for file in $dir/*; do
     if [ -f $file ]; then
       case $file in
+        $customresourcedir/dist/runtime-determiner/*.generated.ts)
+          cr=$(echo $file | rev | cut -d "/" -f 1-2 | rev)
+          echo $awscdklibdir/aws-lambda/lib/$cr
+          cp $customresourcedir/$cr $awscdklibdir/aws-lambda/lib/$cr
+          ;;
         $customresourcedir/dist/*[^-alpha]/*.generated.ts)
           cr=$(echo $file | rev | cut -d "/" -f 2-3 | rev)
           airlift $cr $cr/*.generated.ts
@@ -33,10 +38,6 @@ function recurse() {
         $customresourcedir/dist/*[^-alpha]/*/*/__init__.py)
           cr=$(echo $file | rev | cut -d "/" -f 2-5 | rev)
           airlift $cr $cr/__init__.py
-          ;;
-        $customresourcedir/dist/*.generated.ts)
-          cr=$(echo $file | rev | cut -d "/" -f 1-2 | rev)
-          cp $customresourcedir/$cr $awscdklibdir/custom-resource-handlers/$cr
           ;;
       esac
     fi

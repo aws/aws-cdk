@@ -29,11 +29,7 @@ async function main() {
     }
   }
 
-  const coreRuntimeDeterminer = RuntimeDeterminerModule.buildForCore();
-  coreRuntimeDeterminer.renderTo(`dist/core/${coreRuntimeDeterminer.fqn}.generated.ts`);
-
-  const standardLibRuntimeDeterminer = RuntimeDeterminerModule.buildForStandardLib();
-  standardLibRuntimeDeterminer.renderTo(`dist/${standardLibRuntimeDeterminer.fqn}.generated.ts`);
+  generateRuntimeDeterminers();
 
   function recurse(_config: any, _path: string[]) {
     // base case - this is a framework component array and we will build a module with
@@ -131,6 +127,14 @@ function ignoreWarnings(result: esbuild.BuildResult) {
     }
   }
   return ret;
+}
+
+function generateRuntimeDeterminers() {
+  // const coreRuntimeDeterminer = RuntimeDeterminerModule.buildForCore();
+  // coreRuntimeDeterminer.renderTo(`dist/core/${coreRuntimeDeterminer.fqn}.generated.ts`);
+
+  const standardLibRuntimeDeterminer = RuntimeDeterminerModule.buildForStandardLib();
+  standardLibRuntimeDeterminer.renderTo(`dist/${standardLibRuntimeDeterminer.fqn}.generated.ts`);
 }
 
 main().catch((e) => {

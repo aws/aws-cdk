@@ -23,6 +23,8 @@ import {
   CORE_INTERNAL_STACK,
   CORE_INTERNAL_CR_PROVIDER,
   PATH_MODULE,
+  CORE_INTERNAL_RUNTIME_DETERMINER,
+  RUNTIME_DETERMINER,
 } from './modules';
 import { toLambdaRuntime } from './utils/framework-utils';
 
@@ -77,7 +79,7 @@ export interface HandlerFrameworkClassProps {
   /**
    * The runtime environment for the framework component.
    *
-   * @default -
+   * @default - the latest Lambda runtime available in the region.
    */
   readonly runtime?: Runtime;
 }
@@ -97,13 +99,11 @@ export abstract class HandlerFrameworkClass extends ClassType {
           export: true,
         });
 
-        this.importExternalModulesInto(scope);
-
         const superProps = new ObjectLiteral([
           new Splat(expr.ident('props')),
           ['code', expr.directCode(`lambda.Code.fromAsset(path.join(__dirname, '${props.codeDirectory}'))`)],
           ['handler', expr.lit(props.handler)],
-          ['runtime', expr.directCode(toLambdaRuntime(props.runtime))],
+          ['runtime', expr.directCode(this.buildRuntimeProperty(scope, props.runtime))],
         ]);
         this.buildConstructor({
           constructorPropsType: LAMBDA_MODULE.FunctionOptions,
@@ -111,6 +111,8 @@ export abstract class HandlerFrameworkClass extends ClassType {
           optionalConstructorProps: true,
           constructorVisbility: MemberVisibility.Public,
         });
+
+        this.importExternalModulesInto(scope);
       }
     })();
   }
@@ -128,8 +130,6 @@ export abstract class HandlerFrameworkClass extends ClassType {
           extends: LAMBDA_MODULE.SingletonFunction,
           export: true,
         });
-
-        this.importExternalModulesInto(scope);
 
         const uuid: PropertySpec = {
           name: 'uuid',
@@ -165,13 +165,15 @@ export abstract class HandlerFrameworkClass extends ClassType {
           new Splat(expr.ident('props')),
           ['code', expr.directCode(`lambda.Code.fromAsset(path.join(__dirname, '${props.codeDirectory}'))`)],
           ['handler', expr.lit(props.handler)],
-          ['runtime', expr.directCode(toLambdaRuntime(props.runtime))],
+          ['runtime', expr.directCode(this.buildRuntimeProperty(scope, props.runtime))],
         ]);
         this.buildConstructor({
           constructorPropsType: _interface.type,
           superProps,
           constructorVisbility: MemberVisibility.Public,
         });
+
+        this.importExternalModulesInto(scope);
       }
     })();
   }
@@ -197,7 +199,6 @@ export abstract class HandlerFrameworkClass extends ClassType {
         } else {
           this.externalModules.push(CORE_MODULE);
         }
-        this.importExternalModulesInto(scope);
 
         const getOrCreateMethod = this.addMethod({
           name: 'getOrCreate',
@@ -259,7 +260,7 @@ export abstract class HandlerFrameworkClass extends ClassType {
         const superProps = new ObjectLiteral([
           new Splat(expr.ident('props')),
           ['codeDirectory', expr.directCode(`path.join(__dirname, '${props.codeDirectory}')`)],
-          ['runtimeName', expr.lit(props.runtime)],
+          ['runtimeName', expr.lit('nodejs18.x')],
         ]);
         this.buildConstructor({
           constructorPropsType: scope.coreInternal
@@ -269,6 +270,8 @@ export abstract class HandlerFrameworkClass extends ClassType {
           constructorVisbility: MemberVisibility.Private,
           optionalConstructorProps: true,
         });
+
+        this.importExternalModulesInto(scope);
       }
     })();
   }
@@ -320,6 +323,14 @@ export abstract class HandlerFrameworkClass extends ClassType {
         LAMBDA_MODULE.import(scope, 'lambda');
         return;
       }
+      case RUNTIME_DETERMINER.fqn: {
+        RUNTIME_DETERMINER.importSelective(scope, ['RuntimeDeterminer']);
+        return;
+      }
+      case CORE_INTERNAL_RUNTIME_DETERMINER.fqn: {
+        CORE_INTERNAL_RUNTIME_DETERMINER.importSelective(scope, ['RuntimeDeterminer']);
+        return;
+      }
     }
   }
 
@@ -354,5 +365,21 @@ export abstract class HandlerFrameworkClass extends ClassType {
 
     const superInitializerArgs: Expression[] = [scope, id, props.superProps];
     init.addBody(new SuperInitializer(...superInitializerArgs));
+  }
+
+  private buildRuntimeProperty(scope: HandlerFrameworkModule, runtime?: Runtime, isProvider: boolean = false) {
+    if (runtime) {
+      return toLambdaRuntime(runtime);
+    }
+
+    if (scope.coreInternal) {
+      this.externalModules.push(CORE_INTERNAL_RUNTIME_DETERMINER);
+    } else {
+      this.externalModules.push(RUNTIME_DETERMINER);
+    }
+
+    return isProvider
+      ? 'RuntimeDeterminer.determineLatestLambdaRuntimeName(scope)'
+      : 'RuntimeDeterminer.determineLatestLambdaRuntime(scope)';
   }
 }
