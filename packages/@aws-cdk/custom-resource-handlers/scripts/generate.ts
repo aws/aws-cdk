@@ -6,8 +6,6 @@ import { HandlerFrameworkModule } from '../lib/custom-resources-framework/framew
 
 const framework: { [fqn: string]: ComponentProps[] } = {};
 
-// test comment
-
 async function main() {
   recurse(config, []);
 
