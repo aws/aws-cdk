@@ -1255,12 +1255,8 @@ describe('changeset', () => {
       },
     };
 
-    // Template diff misses the change:
+    // WHEN
     const diffWithoutChangeSet = fullDiff(currentTemplate, currentTemplate);
-    // THEN
-    expect(diffWithoutChangeSet.differenceCount).toBe(0);
-    expect(diffWithoutChangeSet.resources.changes).toEqual({});
-    // AND THEN
     const diffWithChangeSet = fullDiff(currentTemplate, currentTemplate,
       {
         Changes: [
@@ -1290,6 +1286,9 @@ describe('changeset', () => {
     );
 
     // THEN
+    expect(diffWithoutChangeSet.differenceCount).toBe(0);
+    expect(diffWithoutChangeSet.resources.changes).toEqual({});
+
     expect(diffWithChangeSet.differenceCount).toBe(1);
     expect(diffWithChangeSet.resources.changes).toEqual(
       {
@@ -1376,13 +1375,8 @@ describe('changeset', () => {
       },
     };
 
-    // Template diff misses the change:
+    // WHEN
     const diffWithoutChangeSet = fullDiff(currentTemplate, currentTemplate);
-    // THEN
-    expect(diffWithoutChangeSet.differenceCount).toBe(0);
-    expect(diffWithoutChangeSet.resources.changes).toEqual({});
-
-    // AND THEN
     const diffWithChangeSet = fullDiff(currentTemplate, currentTemplate,
       {
         Changes: [
@@ -1410,10 +1404,12 @@ describe('changeset', () => {
           ResolvedValue: 'changedVal',
         }],
       },
-
     );
 
     // THEN
+    expect(diffWithoutChangeSet.differenceCount).toBe(0);
+    expect(diffWithoutChangeSet.resources.changes).toEqual({});
+
     expect(diffWithChangeSet.differenceCount).toBe(1);
     expect(diffWithChangeSet.resources.changes).toEqual(
       {
@@ -1523,8 +1519,44 @@ describe('changeset', () => {
       },
     };
 
-    // Template diff misses the change:
+    // WHEN
     const diffWithoutChangeSet = fullDiff(currentTemplate, newTemplate);
+    const diffWithChangeSet = fullDiff(currentTemplate, newTemplate,
+      {
+        Changes: [
+          {
+            Type: 'Resource',
+            ResourceChange: {
+              PolicyAction: 'ReplaceAndDelete',
+              Action: 'Modify',
+              LogicalResourceId: 'Queue',
+              PhysicalResourceId: 'https://sqs.us-east-1.amazonaws.com/012345678901/newValueNEEEWWWEEERRRRR',
+              ResourceType: 'AWS::SQS::Queue',
+              Replacement: 'True',
+              Scope: [
+                'Properties',
+              ],
+              Details: [{
+                Target: { Attribute: 'Properties', Name: 'QueueName', RequiresRecreation: 'Always' },
+                Evaluation: 'Static',
+                ChangeSource: 'DirectModification',
+              },
+              {
+                Target: { Attribute: 'Properties', Name: 'ReceiveMessageWaitTimeSeconds', RequiresRecreation: 'Never' },
+                Evaluation: 'Static',
+                ChangeSource: 'DirectModification',
+              }],
+            },
+          },
+        ],
+        Parameters: [{
+          ParameterKey: 'SsmParameterValuetestbugreportC9',
+          ParameterValue: 'goodJob',
+          ResolvedValue: 'changedddd',
+        }],
+      },
+    );
+
     // THEN
     expect(diffWithoutChangeSet.differenceCount).toBe(1);
     expect(diffWithoutChangeSet.resources.changes).toEqual(
@@ -1616,44 +1648,6 @@ describe('changeset', () => {
       },
     );
 
-    // AND THEN
-    const diffWithChangeSet = fullDiff(currentTemplate, newTemplate,
-      {
-        Changes: [
-          {
-            Type: 'Resource',
-            ResourceChange: {
-              PolicyAction: 'ReplaceAndDelete',
-              Action: 'Modify',
-              LogicalResourceId: 'Queue',
-              PhysicalResourceId: 'https://sqs.us-east-1.amazonaws.com/012345678901/newValueNEEEWWWEEERRRRR',
-              ResourceType: 'AWS::SQS::Queue',
-              Replacement: 'True',
-              Scope: [
-                'Properties',
-              ],
-              Details: [{
-                Target: { Attribute: 'Properties', Name: 'QueueName', RequiresRecreation: 'Always' },
-                Evaluation: 'Static',
-                ChangeSource: 'DirectModification',
-              },
-              {
-                Target: { Attribute: 'Properties', Name: 'ReceiveMessageWaitTimeSeconds', RequiresRecreation: 'Never' },
-                Evaluation: 'Static',
-                ChangeSource: 'DirectModification',
-              }],
-            },
-          },
-        ],
-        Parameters: [{
-          ParameterKey: 'SsmParameterValuetestbugreportC9',
-          ParameterValue: 'goodJob',
-          ResolvedValue: 'changedddd',
-        }],
-      },
-    );
-
-    // THEN
     expect(diffWithChangeSet.differenceCount).toBe(1); // this is the count of how many resources have changed
     expect(diffWithChangeSet.resources.get('Queue').propertyUpdates).toEqual(
       {
