@@ -183,9 +183,9 @@ class MigrateStack extends cdk.Stack {
   constructor(parent, id, props) {
     super(parent, id, props);
 
-    if (process.env.OMIT_TOPIC !== '1') {
+    if (process.env.INCLUDE_SINGLE_QUEUE === '1') {
       const queue = new sqs.Queue(this, 'Queue', {
-        removalPolicy: process.env.ORPHAN_TOPIC ? cdk.RemovalPolicy.RETAIN : cdk.RemovalPolicy.DESTROY,
+        removalPolicy: (process.env.RETAIN_SINGLE_QUEUE === '1') ? cdk.RemovalPolicy.RETAIN : cdk.RemovalPolicy.DESTROY,
       });
 
       new cdk.CfnOutput(this, 'QueueName', {
@@ -199,25 +199,16 @@ class MigrateStack extends cdk.Stack {
       new cdk.CfnOutput(this, 'QueueLogicalId', {
         value: queue.node.defaultChild.logicalId,
       });
-
-      if (process.env.LARGE_TEMPLATE) {
-        for (let i = 1; i <= 2; i++) {
-          const q = new sqs.Queue(this, `cdk-import-queue-test${i}`, {
-            enforceSSL: true,
-            removalPolicy: process.env.ORPHAN_TOPIC ? cdk.RemovalPolicy.RETAIN : cdk.RemovalPolicy.DESTROY,
-          });
-
-          new cdk.CfnOutput(this, `QueueLogicalId${i}`, {
-            value: q.node.defaultChild.logicalId,
-          });
-
-          new cdk.CfnOutput(this, `QueueUrl${i}`, {
-            value: q.queueUrl,
-          });
-        }
-      }
     }
 
+    if (process.env.LARGE_TEMPLATE === '1') {
+      for (let i = 1; i <= 70; i++) {
+        new sqs.Queue(this, `cdk-import-queue-test${i}`, {
+          enforceSSL: true,
+          removalPolicy: cdk.RemovalPolicy.DESTROY,
+        });
+      }
+    }
 
     if (process.env.SAMPLE_RESOURCES) {
       const myTopic = new sns.Topic(this, 'migratetopic1', {

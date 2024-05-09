@@ -1,6 +1,7 @@
 import { promises as fs, existsSync } from 'fs';
 import * as os from 'os';
 import * as path from 'path';
+import * as CFN from '@aws-sdk/client-cloudformation';
 import { integTest, cloneDirectory, shell, withDefaultFixture, retry, sleep, randomInteger, withSamIntegrationFixture, RESOURCES_DIR, withCDKMigrateFixture, withExtendedTimeoutFixture } from '../../lib';
 
 jest.setTimeout(2 * 60 * 60_000); // Includes the time to acquire locks, worst-case single-threaded runtime
@@ -1575,62 +1576,60 @@ integTest('skips notice refresh', withDefaultFixture(async (fixture) => {
 }));
 
 /**
- * Create a queue with a fresh name, redeploy orphaning the queue, then import it again
+ * Create a queue, orphan that queue, then import the queue.
+ *
+ * We want to test with a large template to make sure large templates can work with import.
  */
 integTest('test resource import', withDefaultFixture(async (fixture) => {
+  // GIVEN
   const outputsFile = path.join(fixture.integTestDir, 'outputs', 'outputs.json');
   await fs.mkdir(path.dirname(outputsFile), { recursive: true });
-  const fullStackName = fixture.fullStackName('importable-stack');
 
-  // Initial deploy
   await fixture.cdkDeploy('importable-stack', {
-    modEnv: { ORPHAN_TOPIC: '1', LARGE_TEMPLATE: '1' },
+    modEnv: { LARGE_TEMPLATE: '1', INCLUDE_SINGLE_QUEUE: '1', RETAIN_SINGLE_QUEUE: '1' },
     options: ['--outputs-file', outputsFile],
   });
 
   const outputs = JSON.parse((await fs.readFile(outputsFile, { encoding: 'utf-8' })).toString());
   fixture.log('Setup complete');
-  try {
-    // Deploy again, orphaning the queues
-    await fixture.cdkDeploy('importable-stack', {
-      modEnv: { OMIT_TOPIC: '1', LARGE_TEMPLATE: '1' },
-    });
 
+  const cfnClient = new CFN.CloudFormationClient();
+  let queues: { [queueLogicalId: string]: { QueueUrl: string } } = {};
+  try {
     // Write a resource mapping file based on the ID from step one, then run an import
     const mappingFile = path.join(fixture.integTestDir, 'outputs', 'mapping.json');
-    type QueueMap = {
-      [queueLogicalId: string]: { QueueUrl: string };
-    };
+    const fullStackName = fixture.fullStackName('importable-stack');
+    const queueUrl = outputs[fullStackName].QueueUrl;
+    const queueLogicalId = outputs[fullStackName].QueueLogicalId;
+    queues[queueLogicalId] = { QueueUrl: queueUrl };
 
-    let queues: QueueMap = {};
+    // Remove the queue from the stack but don't delete the queue from AWS
+    await fixture.cdkDeploy('importable-stack', {
+      modEnv: { LARGE_TEMPLATE: '1', INCLUDE_SINGLE_QUEUE: '0', RETAIN_SINGLE_QUEUE: '0' },
+    });
+    const cfnTemplateBeforeImport = await cfnClient.send(new CFN.GetTemplateCommand({ StackName: fullStackName }));
+    expect(cfnTemplateBeforeImport.TemplateBody).not.toContain(queueLogicalId);
 
-    for (let i = 1; i <= 2; i++) {
-      const queueUrl = outputs[fullStackName][`QueueUrl${i}`];
-      const queueLogicalId = outputs[fullStackName][`QueueLogicalId${i}`];
-
-      queues[queueLogicalId] = { QueueUrl: queueUrl };
-    }
-
-    const jsonFile = JSON.stringify(queues);
     await fs.writeFile(
       mappingFile,
-      jsonFile,
+      JSON.stringify(queues),
       { encoding: 'utf-8' },
     );
 
-    // I AM NOT SURE IF SYNTH IS ACTUALLY NEEDED HERE
-    let out = await fixture.cdkSynth({ modEnv: { OMIT_TOPIC: '0', LARGE_TEMPLATE: '1' } });
-    // eslint-disable-next-line no-console
-    console.log(out);
-
-    out = await fixture.cdk(
+    // WHEN
+    await fixture.cdk(
       ['import', '-m', mappingFile, fixture.fullStackName('importable-stack')],
-      { modEnv: { OMIT_TOPIC: '0', LARGE_TEMPLATE: '1' } },
+      { modEnv: { LARGE_TEMPLATE: '1', INCLUDE_SINGLE_QUEUE: '1', RETAIN_SINGLE_QUEUE: '0' } },
     );
-    // eslint-disable-next-line no-console
-    console.log(out);
+
+    // THEN
+    const describeStacksResponse = await cfnClient.send(new CFN.DescribeStacksCommand({ StackName: fullStackName }));
+    const cfnTemplateAfterImport = await cfnClient.send(new CFN.GetTemplateCommand({ StackName: fullStackName }));
+    expect(cfnTemplateAfterImport.TemplateBody).toContain(queueLogicalId);
+    expect(describeStacksResponse.Stacks![0].StackStatus).toEqual('IMPORT_COMPLETE');
+    expect(cfnTemplateAfterImport.TemplateBody).toContain(queueLogicalId);
   } finally {
-    // Cleanup
+    // Clean up
     await fixture.cdkDestroy('importable-stack');
   }
 }));
@@ -1641,10 +1640,9 @@ integTest('test migrate deployment for app with localfile source in migrate.json
 
   // Initial deploy
   await fixture.cdkDeploy('migrate-stack', {
-    modEnv: { ORPHAN_TOPIC: '1' },
+    modEnv: { LARGE_TEMPLATE: '0', RETAIN_SINGLE_QUEUE: '1', INCLUDE_SINGLE_QUEUE: '1' },
     options: ['--outputs-file', outputsFile],
   });
-
   const outputs = JSON.parse((await fs.readFile(outputsFile, { encoding: 'utf-8' })).toString());
   const stackName = fixture.fullStackName('migrate-stack');
   const queueName = outputs[stackName].QueueName;
@@ -1667,7 +1665,7 @@ integTest('test migrate deployment for app with localfile source in migrate.json
   // Create new stack from existing queue
   try {
     fixture.log(`Deploying new stack ${fixture.fullStackName}, migrating ${queueName} into stack`);
-    await fixture.cdkDeploy('migrate-stack');
+    await fixture.cdkDeploy('migrate-stack', { modEnv: { LARGE_TEMPLATE: '0', RETAIN_SINGLE_QUEUE: '0', INCLUDE_SINGLE_QUEUE: '1' } });
   } finally {
     // Cleanup
     await fixture.cdkDestroy('migrate-stack');
