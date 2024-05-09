@@ -395,7 +395,7 @@ describe('cluster resource provider', () => {
           name: 'new-explicit-cluster-name',
           roleArn: 'new-arn',
         });
-      });
+      });      
     });
 
     test('encryption config cannot be updated', async () => {
@@ -738,6 +738,23 @@ describe('cluster resource provider', () => {
           }));
           const resp = await handler.onEvent();
           expect(resp).toEqual({ EksUpdateId: 'MockEksUpdateStatusId' });
+        });
+      });
+      describe('tag updates', () => {
+        test('change of tags', async () => {
+          const handler = new ClusterResourceHandler(mocks.client, mocks.newRequest('Update', {
+            ...mocks.MOCK_PROPS,
+            tags: {
+              foo: 'bar',
+            },
+          }, {
+            ...mocks.MOCK_PROPS,
+            tags: {
+              hello: 'world',
+            },
+          }));
+          const resp = await handler.onEvent();
+          expect(mocks.actualRequest.createClusterRequest).toEqual(undefined);
         });
       });
     });
