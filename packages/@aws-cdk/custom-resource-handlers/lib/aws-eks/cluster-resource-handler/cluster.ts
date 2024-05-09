@@ -138,18 +138,22 @@ export class ClusterResourceHandler extends ResourceHandler {
           if (this.newProps.tags) {
             //Update tags
             const tagsToAdd = getTagsToUpdate(this.oldProps.tags, this.newProps.tags);
-            const tagConfig: EKS.TagResourceCommandInput = {
-              resourceArn: cluster?.arn,
-              tags: tagsToAdd,
-            };
-            await this.eks.tagResource(tagConfig);
+            if (tagsToAdd) {
+              const tagConfig: EKS.TagResourceCommandInput = {
+                resourceArn: cluster?.arn,
+                tags: tagsToAdd,
+              };
+              await this.eks.tagResource(tagConfig);
+            }
             //Remove tags
             const tagsToRemove = getTagsToRemove(this.oldProps.tags, this.newProps.tags);
-            const unTagConfig: EKS.UntagResourceCommandInput = {
-              resourceArn: cluster?.arn,
-              tagKeys: tagsToRemove,
-            };
-            await this.eks.untagResource(unTagConfig);
+            if (tagsToRemove.length > 0 ) {
+              const config: EKS.UntagResourceCommandInput = {
+                resourceArn: cluster?.arn,
+                tagKeys: tagsToRemove,
+              };
+              await this.eks.untagResource(config);
+            }
           } else {
             //Remove all tags
             const config: EKS.UntagResourceCommandInput = {
