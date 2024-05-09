@@ -276,7 +276,7 @@ imported, the producing stack cannot update the value.
 > Doing this will prevent SSM parameter names from becoming too long which will reduce the size of the
 > response body.
 
-See the [adr](https://github.com/aws/aws-cdk/blob/main/packages/@aws-cdk/core/adr/cross-region-stack-references)
+See the [adr](https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/core/adr/cross-region-stack-references)
 for more details on this feature.
 
 ### Removing automatic cross-stack references
