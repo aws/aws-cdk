@@ -55,6 +55,8 @@ export interface NodejsFunctionProps extends lambda.FunctionOptions {
    * This sets the `AWS_NODEJS_CONNECTION_REUSE_ENABLED` environment variable
    * to `1`.
    *
+   * @see https://docs.aws.amazon.com/lambda/latest/dg/lambda-runtimes.html#runtime-support-policy
+   *
    * @default - false (obsolete) for runtimes >= Node 18, true for runtimes <= Node 16.
    */
   readonly awsSdkConnectionReuse?: boolean;
