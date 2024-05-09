@@ -143,6 +143,18 @@ describe('IAM user', () => {
       'Fn::Select': [4, { 'Fn::Split': [':', { Ref: 'ARN' }] }],
     });
   });
+  test('user imported by a new User cosntruct has a principalAccount', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    const user = User.fromUserArn(stack, 'import', new User(stack, 'LocalUser').userArn);
+
+    // THEN
+    expect(stack.resolve(user.principalAccount)).toStrictEqual(
+      { 'Fn::Select': [4, { 'Fn::Split': [':', { 'Fn::GetAtt': ['LocalUser87F70DDF', 'Arn'] }] }] },
+    );
+  });
 
   test('user imported by user ARN with path', () => {
     // GIVEN
