@@ -46,6 +46,7 @@ export interface NodejsFunctionProps extends lambda.FunctionOptions {
    * The `AWS_NODEJS_CONNECTION_REUSE_ENABLED` environment variable does not exist in the AWS SDK for JavaScript v3.
    *
    * This prop will be deprecated when the Lambda Node16 runtime is deprecated on June 12, 2024.
+   * See https://docs.aws.amazon.com/lambda/latest/dg/lambda-runtimes.html#runtime-support-policy
    *
    * Info for Node 16 runtimes / SDK v2 users:
    *
@@ -55,7 +56,7 @@ export interface NodejsFunctionProps extends lambda.FunctionOptions {
    * This sets the `AWS_NODEJS_CONNECTION_REUSE_ENABLED` environment variable
    * to `1`.
    *
-   * @see https://docs.aws.amazon.com/lambda/latest/dg/lambda-runtimes.html#runtime-support-policy
+   * @see https://docs.aws.amazon.com/sdk-for-javascript/v3/developer-guide/node-reusing-connections.html
    *
    * @default - false (obsolete) for runtimes >= Node 18, true for runtimes <= Node 16.
    */
