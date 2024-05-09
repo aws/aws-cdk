@@ -12,45 +12,29 @@
             "id": "UserParameter",
             "path": "dummy-stack/UserParameter",
             "constructInfo": {
-<<<<<<< HEAD
               "fqn": "aws-cdk-lib.CfnParameter",
               "version": "0.0.0"
-=======
-              "fqn": "constructs.Construct",
-              "version": "10.3.0"
->>>>>>> f99eec9d90dd39bb8148f723cd9da0be4effe3e4
             }
           },
           "imported-user": {
             "id": "imported-user",
             "path": "dummy-stack/imported-user",
             "constructInfo": {
-<<<<<<< HEAD
               "fqn": "aws-cdk-lib.Resource",
               "version": "0.0.0"
-=======
-              "fqn": "constructs.Construct",
-              "version": "10.3.0"
->>>>>>> f99eec9d90dd39bb8148f723cd9da0be4effe3e4
             }
           },
           "imported-user2": {
             "id": "imported-user2",
             "path": "dummy-stack/imported-user2",
             "constructInfo": {
-<<<<<<< HEAD
               "fqn": "aws-cdk-lib.Resource",
               "version": "0.0.0"
-=======
-              "fqn": "constructs.Construct",
-              "version": "10.3.0"
->>>>>>> f99eec9d90dd39bb8148f723cd9da0be4effe3e4
             }
           },
           "User": {
             "id": "User",
             "path": "dummy-stack/User",
-<<<<<<< HEAD
             "children": {
               "Resource": {
                 "id": "Resource",
@@ -100,19 +84,6 @@
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnOutput",
               "version": "0.0.0"
-=======
-            "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.3.0"
-            }
-          },
-          "User2": {
-            "id": "User2",
-            "path": "dummy-stack/User2",
-            "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.3.0"
->>>>>>> f99eec9d90dd39bb8148f723cd9da0be4effe3e4
             }
           },
           "integ-test": {
@@ -139,37 +110,22 @@
                         "id": "BootstrapVersion",
                         "path": "dummy-stack/integ-test/DefaultTest/DeployAssert/BootstrapVersion",
                         "constructInfo": {
-<<<<<<< HEAD
                           "fqn": "aws-cdk-lib.CfnParameter",
                           "version": "0.0.0"
-=======
-                          "fqn": "constructs.Construct",
-                          "version": "10.3.0"
->>>>>>> f99eec9d90dd39bb8148f723cd9da0be4effe3e4
                         }
                       },
                       "CheckBootstrapVersion": {
                         "id": "CheckBootstrapVersion",
                         "path": "dummy-stack/integ-test/DefaultTest/DeployAssert/CheckBootstrapVersion",
                         "constructInfo": {
-<<<<<<< HEAD
                           "fqn": "aws-cdk-lib.CfnRule",
                           "version": "0.0.0"
-=======
-                          "fqn": "constructs.Construct",
-                          "version": "10.3.0"
->>>>>>> f99eec9d90dd39bb8148f723cd9da0be4effe3e4
                         }
                       }
                     },
                     "constructInfo": {
-<<<<<<< HEAD
                       "fqn": "aws-cdk-lib.Stack",
                       "version": "0.0.0"
-=======
-                      "fqn": "constructs.Construct",
-                      "version": "10.3.0"
->>>>>>> f99eec9d90dd39bb8148f723cd9da0be4effe3e4
                     }
                   }
                 },
@@ -188,37 +144,22 @@
             "id": "BootstrapVersion",
             "path": "dummy-stack/BootstrapVersion",
             "constructInfo": {
-<<<<<<< HEAD
               "fqn": "aws-cdk-lib.CfnParameter",
               "version": "0.0.0"
-=======
-              "fqn": "constructs.Construct",
-              "version": "10.3.0"
->>>>>>> f99eec9d90dd39bb8148f723cd9da0be4effe3e4
             }
           },
           "CheckBootstrapVersion": {
             "id": "CheckBootstrapVersion",
             "path": "dummy-stack/CheckBootstrapVersion",
             "constructInfo": {
-<<<<<<< HEAD
               "fqn": "aws-cdk-lib.CfnRule",
               "version": "0.0.0"
-=======
-              "fqn": "constructs.Construct",
-              "version": "10.3.0"
->>>>>>> f99eec9d90dd39bb8148f723cd9da0be4effe3e4
             }
           }
         },
         "constructInfo": {
-<<<<<<< HEAD
           "fqn": "aws-cdk-lib.Stack",
           "version": "0.0.0"
-=======
-          "fqn": "constructs.Construct",
-          "version": "10.3.0"
->>>>>>> f99eec9d90dd39bb8148f723cd9da0be4effe3e4
         }
       },
       "Tree": {
@@ -231,13 +172,8 @@
       }
     },
     "constructInfo": {
-<<<<<<< HEAD
       "fqn": "aws-cdk-lib.App",
       "version": "0.0.0"
-=======
-      "fqn": "constructs.Construct",
-      "version": "10.3.0"
->>>>>>> f99eec9d90dd39bb8148f723cd9da0be4effe3e4
     }
   }
 }
