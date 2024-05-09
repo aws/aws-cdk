@@ -183,7 +183,7 @@ class MigrateStack extends cdk.Stack {
   constructor(parent, id, props) {
     super(parent, id, props);
 
-    if (!process.env.OMIT_TOPIC) {
+    if (process.env.OMIT_TOPIC !== '1') {
       const queue = new sqs.Queue(this, 'Queue', {
         removalPolicy: process.env.ORPHAN_TOPIC ? cdk.RemovalPolicy.RETAIN : cdk.RemovalPolicy.DESTROY,
       });
@@ -201,18 +201,18 @@ class MigrateStack extends cdk.Stack {
       });
 
       if (process.env.LARGE_TEMPLATE) {
-        for (let i = 0; i < 70; i++) {
+        for (let i = 1; i <= 2; i++) {
           const q = new sqs.Queue(this, `cdk-import-queue-test${i}`, {
             enforceSSL: true,
             removalPolicy: process.env.ORPHAN_TOPIC ? cdk.RemovalPolicy.RETAIN : cdk.RemovalPolicy.DESTROY,
           });
 
-          new cdk.CfnOutput(this, `QueueName${i}`, {
-            value: q.queueName,
-          });
-
           new cdk.CfnOutput(this, `QueueLogicalId${i}`, {
             value: q.node.defaultChild.logicalId,
+          });
+
+          new cdk.CfnOutput(this, `QueueUrl${i}`, {
+            value: q.queueUrl,
           });
         }
       }

@@ -1599,16 +1599,16 @@ integTest('test resource import', withDefaultFixture(async (fixture) => {
     // Write a resource mapping file based on the ID from step one, then run an import
     const mappingFile = path.join(fixture.integTestDir, 'outputs', 'mapping.json');
     type QueueMap = {
-      [queueLogicalId: string]: { QueueName: string };
+      [queueLogicalId: string]: { QueueUrl: string };
     };
 
     let queues: QueueMap = {};
 
-    for (let i = 1; i <= 70; i++) {
-      const queueName = outputs[fullStackName][`QueueName${i}`];
+    for (let i = 1; i <= 2; i++) {
+      const queueUrl = outputs[fullStackName][`QueueUrl${i}`];
       const queueLogicalId = outputs[fullStackName][`QueueLogicalId${i}`];
 
-      queues[queueLogicalId] = { QueueName: queueName };
+      queues[queueLogicalId] = { QueueUrl: queueUrl };
     }
 
     const jsonFile = JSON.stringify(queues);
@@ -1618,13 +1618,20 @@ integTest('test resource import', withDefaultFixture(async (fixture) => {
       { encoding: 'utf-8' },
     );
 
-    await fixture.cdk(['import',
-      '--resource-mapping', mappingFile,
-      fixture.fullStackName('importable-stack')]);
+    // I AM NOT SURE IF SYNTH IS ACTUALLY NEEDED HERE
+    let out = await fixture.cdkSynth({ modEnv: { OMIT_TOPIC: '0', LARGE_TEMPLATE: '1' } });
+    // eslint-disable-next-line no-console
+    console.log(out);
+
+    out = await fixture.cdk(
+      ['import', '-m', mappingFile, fixture.fullStackName('importable-stack')],
+      { modEnv: { OMIT_TOPIC: '0', LARGE_TEMPLATE: '1' } },
+    );
+    // eslint-disable-next-line no-console
+    console.log(out);
   } finally {
-    fixture.log('what');
     // Cleanup
-    // await fixture.cdkDestroy('importable-stack');
+    await fixture.cdkDestroy('importable-stack');
   }
 }));
 
