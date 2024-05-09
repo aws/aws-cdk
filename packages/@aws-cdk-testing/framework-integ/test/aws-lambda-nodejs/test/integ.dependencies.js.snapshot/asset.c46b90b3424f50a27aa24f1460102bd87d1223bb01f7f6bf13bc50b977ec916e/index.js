@@ -23,10 +23,15 @@ __export(dependencies_sdk_v3_exports, {
   handler: () => handler
 });
 module.exports = __toCommonJS(dependencies_sdk_v3_exports);
-var import_client_s3 = require("@aws-sdk/client-s3");
-var s3 = new import_client_s3.S3Client({});
+var import_client_dynamodb = require("@aws-sdk/client-dynamodb");
 async function handler() {
-  console.log(s3);
+  const client = new import_client_dynamodb.DynamoDBClient();
+  const input = {
+    TableName: process.env.TABLE_NAME
+  };
+  const command = new import_client_dynamodb.DescribeTableCommand(input);
+  const response = await client.send(command);
+  console.log(response);
 }
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
