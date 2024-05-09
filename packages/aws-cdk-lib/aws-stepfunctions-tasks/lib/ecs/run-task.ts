@@ -90,6 +90,20 @@ export interface EcsRunTaskProps extends sfn.TaskStateBaseProps {
    * @default false
    */
   readonly enableExecuteCommand?: boolean;
+
+  /**
+   * Cpu setting override
+   *
+   * @default - No override
+   */
+  readonly cpu?: string;
+
+  /**
+   * Memory setting override
+   *
+   * @default - No override
+   */
+  readonly memoryMiB?: string;
 }
 
 /**
@@ -312,6 +326,8 @@ export class EcsRunTask extends sfn.TaskStateBase implements ec2.IConnectable {
         NetworkConfiguration: this.networkConfiguration,
         Overrides: renderOverrides(this.props.containerOverrides),
         PropagateTags: this.props.propagatedTagSource,
+        Cpu: this.props.cpu,
+        Memory: this.props.memoryMiB,
         ...this.props.launchTarget.bind(this, { taskDefinition: this.props.taskDefinition, cluster: this.props.cluster }).parameters,
         EnableExecuteCommand: this.props.enableExecuteCommand,
       }),
