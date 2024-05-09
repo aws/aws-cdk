@@ -13,7 +13,6 @@ new DatabaseCluster(stack, 'DatabaseCopyTagsToSnapshotDisabled', {
   engineVersion: '3.6.0',
   masterUser: {
     username: 'docdb',
-    password: cdk.SecretValue.unsafePlainText('7959866cacc02c2d243ecfe177464fe6'),
   },
   instanceType: ec2.InstanceType.of(ec2.InstanceClass.R5, ec2.InstanceSize.LARGE),
   vpc,
@@ -25,7 +24,6 @@ new DatabaseCluster(stack, 'DatabaseCopyTagsToSnapshotEnabled', {
   engineVersion: '3.6.0',
   masterUser: {
     username: 'docdb',
-    password: cdk.SecretValue.unsafePlainText('7959866cacc02c2d243ecfe177464fe6'),
   },
   instanceType: ec2.InstanceType.of(ec2.InstanceClass.R5, ec2.InstanceSize.LARGE),
   vpc,

@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/28e4dbcea86e0c21bbdf7e7e038cc9c4a3aaeca68b0cc9c0be95dd9222363e14.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/11f0f2efc8a009948fd095d8a79efce755af0a7e5e0f3f92db99c9eaea4443e6.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -202,6 +202,18 @@
             "data": "DatabaseCopyTagsToSnapshotDisabledSecurityGroupDA546735"
           }
         ],
+        "/aws-cdk-docdb-integ/DatabaseCopyTagsToSnapshotDisabled/Secret/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DatabaseCopyTagsToSnapshotDisabledSecret84FDE733"
+          }
+        ],
+        "/aws-cdk-docdb-integ/DatabaseCopyTagsToSnapshotDisabled/Secret/Attachment/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DatabaseCopyTagsToSnapshotDisabledSecretAttachment8F3CA1ED"
+          }
+        ],
         "/aws-cdk-docdb-integ/DatabaseCopyTagsToSnapshotDisabled/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -224,6 +236,18 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "DatabaseCopyTagsToSnapshotEnabledSecurityGroup227F101E"
+          }
+        ],
+        "/aws-cdk-docdb-integ/DatabaseCopyTagsToSnapshotEnabled/Secret/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DatabaseCopyTagsToSnapshotEnabledSecret3AD5FDE3"
+          }
+        ],
+        "/aws-cdk-docdb-integ/DatabaseCopyTagsToSnapshotEnabled/Secret/Attachment/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DatabaseCopyTagsToSnapshotEnabledSecretAttachment760D889A"
           }
         ],
         "/aws-cdk-docdb-integ/DatabaseCopyTagsToSnapshotEnabled/Resource": [
