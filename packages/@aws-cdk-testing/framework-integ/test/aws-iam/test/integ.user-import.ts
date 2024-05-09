@@ -16,7 +16,6 @@ const userparam = new CfnParameter(stack, 'UserParameter', {
 
 const imported = iam.User.fromUserArn(stack, 'imported-user', userArn);
 const imported2 = iam.User.fromUserArn(stack, 'imported-user2', userparam.valueAsString );
-<<<<<<< HEAD
 const imported3 = iam.User.fromUserArn(stack, 'LocalUser', new iam.User(stack, 'User').userArn);
 
 // should be 123456789012
@@ -25,13 +24,6 @@ new CfnOutput(stack, 'UserOutput', { value: imported.principalAccount! });
 new CfnOutput(stack, 'User2Output', { value: imported2.principalAccount! });
 // should be your current account
 new CfnOutput(stack, 'User3Output', { value: imported3.principalAccount! });
-=======
-
-// should be 123456789012
-new CfnOutput(stack, 'User', { value: imported.principalAccount! });
-// should be 123456789012
-new CfnOutput(stack, 'User2', { value: imported2.principalAccount! });
->>>>>>> f99eec9d90dd39bb8148f723cd9da0be4effe3e4
 
 new IntegTest(stack, 'integ-test', {
   testCases: [stack],
