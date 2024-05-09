@@ -1114,6 +1114,71 @@ describe('DatabaseCluster', () => {
       });
     }).toThrow(/AWS::EC2::SecurityGroup does not support the SNAPSHOT removal policy/);
   });
+
+  test('cluster with copyTagsToSnapshot default', () => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new DatabaseCluster(stack, 'Database', {
+      masterUser: {
+        username: 'admin',
+        password: cdk.SecretValue.unsafePlainText('tooshort'),
+      },
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+      vpc,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::DocDB::DBCluster', {
+      CopyTagsToSnapshot: Match.absent(),
+    });
+  });
+
+  test('cluster with copyTagsToSnapshot disabled', () => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new DatabaseCluster(stack, 'Database', {
+      masterUser: {
+        username: 'admin',
+        password: cdk.SecretValue.unsafePlainText('tooshort'),
+      },
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+      vpc,
+      copyTagsToSnapshot: false,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::DocDB::DBCluster', {
+      CopyTagsToSnapshot: false,
+    });
+  });
+
+  test('cluster with copyTagsToSnapshot enabled', () => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new DatabaseCluster(stack, 'Database', {
+      masterUser: {
+        username: 'admin',
+        password: cdk.SecretValue.unsafePlainText('tooshort'),
+      },
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
+      vpc,
+      copyTagsToSnapshot: true,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::DocDB::DBCluster', {
+      CopyTagsToSnapshot: true,
+    });
+  });
 });
 
 function testStack() {

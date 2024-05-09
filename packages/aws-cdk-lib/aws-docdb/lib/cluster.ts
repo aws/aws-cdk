@@ -217,6 +217,13 @@ export interface DatabaseClusterProps {
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-attribute-deletionpolicy.html
    */
   readonly securityGroupRemovalPolicy?: RemovalPolicy;
+
+  /**
+   * Whether to copy tags to the snapshot when a snapshot is created.
+   *
+   * @default - not copy tags to the snapshot
+   */
+  readonly copyTagsToSnapshot?: boolean;
 }
 
 /**
@@ -507,6 +514,8 @@ export class DatabaseCluster extends DatabaseClusterBase {
       // Encryption
       kmsKeyId: props.kmsKey?.keyArn,
       storageEncrypted,
+      // Tags
+      copyTagsToSnapshot: props.copyTagsToSnapshot,
     });
 
     this.cluster.applyRemovalPolicy(props.removalPolicy, {
