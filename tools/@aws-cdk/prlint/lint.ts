@@ -419,6 +419,7 @@ export class PullRequestLinter {
           [review.user!.login]: newest,
         };
       }, {} as Record<string, typeof reviews.data[0]>);
+    console.log('raw data: ', JSON.stringify(reviewsByTrustedCommunityMembers));
     const communityApproved = Object.values(reviewsByTrustedCommunityMembers).some(({state}) => state === 'APPROVED');
     const communityRequestedChanges = !communityApproved && Object.values(reviewsByTrustedCommunityMembers).some(({state}) => state === 'CHANGES_REQUESTED')
 
@@ -580,7 +581,9 @@ export class PullRequestLinter {
       // also assess whether the PR needs review or not
       try {
         const state = await this.codeBuildJobSucceeded(sha);
+        console.log(`PR code build job ${state ? "SUCCESSFUL" : "not yet successful"}`);
         if (state) {
+          console.log('Assessing if the PR needs a review now');
           await this.assessNeedsReview(pr);
         }
       } catch (e) {
