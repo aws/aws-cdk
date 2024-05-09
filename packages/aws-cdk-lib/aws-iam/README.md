@@ -490,11 +490,7 @@ OR
 
 ```ts
 new App({
-  context: {
-    [PERMISSIONS_BOUNDARY_CONTEXT_KEY]: {
-      name: 'cdk-${Qualifier}-PermissionsBoundary',
-    },
-  },
+  permissionsBoundary: PermissionsBoundary.fromName('cdk-${Qualifier}-PermissionsBoundary'),
 });
 ```
 
