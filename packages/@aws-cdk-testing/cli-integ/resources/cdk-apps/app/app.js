@@ -248,10 +248,37 @@ class MigrateStack extends cdk.Stack {
   }
 }
 
-class ImportableStack extends MigrateStack {
+class ImportableStack extends cdk.Stack {
   constructor(parent, id, props) {
     super(parent, id, props);
     new cdk.CfnWaitConditionHandle(this, 'Handle');
+
+    if (process.env.INCLUDE_SINGLE_QUEUE === '1') {
+      const queue = new sqs.Queue(this, 'Queue', {
+        removalPolicy: (process.env.RETAIN_SINGLE_QUEUE === '1') ? cdk.RemovalPolicy.RETAIN : cdk.RemovalPolicy.DESTROY,
+      });
+
+      new cdk.CfnOutput(this, 'QueueName', {
+        value: queue.queueName,
+      });
+
+      new cdk.CfnOutput(this, 'QueueUrl', {
+        value: queue.queueUrl,
+      });
+      
+      new cdk.CfnOutput(this, 'QueueLogicalId', {
+        value: queue.node.defaultChild.logicalId,
+      });
+    }
+
+    if (process.env.LARGE_TEMPLATE === '1') {
+      for (let i = 1; i <= 70; i++) {
+        new sqs.Queue(this, `cdk-import-queue-test${i}`, {
+          enforceSSL: true,
+          removalPolicy: cdk.RemovalPolicy.DESTROY,
+        });
+      }
+    }
   }
 }
 

@@ -1619,37 +1619,60 @@ integTest('skips notice refresh', withDefaultFixture(async (fixture) => {
 }));
 
 /**
- * Create a queue with a fresh name, redeploy orphaning the queue, then import it again
+ * Create a queue, orphan that queue, then import the queue.
+ *
+ * We want to test with a large template to make sure large templates can work with import.
  */
 integTest('test resource import', withDefaultFixture(async (fixture) => {
-  const outputsFile = path.join(fixture.integTestDir, 'outputs', 'outputs.json');
+  // GIVEN
+  const randomPrefix = randomString();
+  const uniqueOutputsFileName = `${randomPrefix}Outputs.json`; // other tests use the outputs file. Make sure we don't collide.
+  const outputsFile = path.join(fixture.integTestDir, 'outputs', uniqueOutputsFileName);
   await fs.mkdir(path.dirname(outputsFile), { recursive: true });
 
-  // Initial deploy
+  // First, create a stack that includes many queues, and one queue that will be removed from the stack but NOT deleted from AWS.
   await fixture.cdkDeploy('importable-stack', {
-    modEnv: { ORPHAN_TOPIC: '1' },
+    modEnv: { LARGE_TEMPLATE: '1', INCLUDE_SINGLE_QUEUE: '1', RETAIN_SINGLE_QUEUE: '1' },
     options: ['--outputs-file', outputsFile],
   });
 
-  const outputs = JSON.parse((await fs.readFile(outputsFile, { encoding: 'utf-8' })).toString());
-  const queueName = outputs.QueueName;
-  const queueLogicalId = outputs.QueueLogicalId;
-  fixture.log(`Setup complete, created queue ${queueName}`);
   try {
-    // Deploy again, orphaning the queue
+
+    // Second, now the queue we will remove is in the stack and has a logicalId. We can now make the resource mapping file.
+    // This resource mapping file will be used to tell the import operation what queue to bring into the stack.
+    const fullStackName = fixture.fullStackName('importable-stack');
+    const outputs = JSON.parse((await fs.readFile(outputsFile, { encoding: 'utf-8' })).toString());
+    const queueLogicalId = outputs[fullStackName].QueueLogicalId;
+    const queueResourceMap = {
+      [queueLogicalId]: { QueueUrl: outputs[fullStackName].QueueUrl },
+    };
+    const mappingFile = path.join(fixture.integTestDir, 'outputs', `${randomPrefix}Mapping.json`);
+    await fs.writeFile(
+      mappingFile,
+      JSON.stringify(queueResourceMap),
+      { encoding: 'utf-8' },
+    );
+
+    // Third, remove the queue from the stack, but don't delete the queue from AWS.
     await fixture.cdkDeploy('importable-stack', {
-      modEnv: { OMIT_TOPIC: '1' },
+      modEnv: { LARGE_TEMPLATE: '1', INCLUDE_SINGLE_QUEUE: '0', RETAIN_SINGLE_QUEUE: '0' },
     });
+    const cfnTemplateBeforeImport = await fixture.aws.cloudFormation('getTemplate', { StackName: fullStackName });
+    expect(cfnTemplateBeforeImport.TemplateBody).not.toContain(queueLogicalId);
 
-    // Write a resource mapping file based on the ID from step one, then run an import
-    const mappingFile = path.join(fixture.integTestDir, 'outputs', 'mapping.json');
-    await fs.writeFile(mappingFile, JSON.stringify({ [queueLogicalId]: { QueueName: queueName } }), { encoding: 'utf-8' });
+    // WHEN
+    await fixture.cdk(
+      ['import', '--resource-mapping', mappingFile, fixture.fullStackName('importable-stack')],
+      { modEnv: { LARGE_TEMPLATE: '1', INCLUDE_SINGLE_QUEUE: '1', RETAIN_SINGLE_QUEUE: '0' } },
+    );
 
-    await fixture.cdk(['import',
-      '--resource-mapping', mappingFile,
-      fixture.fullStackName('importable-stack')]);
+    // THEN
+    const describeStacksResponse = await fixture.aws.cloudFormation('describeStacks', { StackName: fullStackName });
+    const cfnTemplateAfterImport = await fixture.aws.cloudFormation('getTemplate', { StackName: fullStackName });
+    expect(describeStacksResponse.Stacks![0].StackStatus).toEqual('IMPORT_COMPLETE');
+    expect(cfnTemplateAfterImport.TemplateBody).toContain(queueLogicalId);
   } finally {
-    // Cleanup
+    // Clean up
     await fixture.cdkDestroy('importable-stack');
   }
 }));
