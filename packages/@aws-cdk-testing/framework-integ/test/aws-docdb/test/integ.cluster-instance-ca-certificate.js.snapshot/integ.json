@@ -1,0 +1,12 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "ClusterInstanceCACertificateTest/DefaultTest": {
+      "stacks": [
+        "cdk-integ-docdb-cluster-instance-ca-certificate"
+      ],
+      "assertionStack": "ClusterInstanceCACertificateTest/DefaultTest/DeployAssert",
+      "assertionStackName": "ClusterInstanceCACertificateTestDefaultTestDeployAssertD9510038"
+    }
+  }
+}
