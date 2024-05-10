@@ -68,7 +68,8 @@ Flags come in three types:
 | [@aws-cdk/aws-codepipeline:defaultPipelineTypeToV2](#aws-cdkaws-codepipelinedefaultpipelinetypetov2) | Enables Pipeline to set the default pipeline type to V2. | 2.133.0 | (default) |
 | [@aws-cdk/aws-kms:reduceCrossAccountRegionPolicyScope](#aws-cdkaws-kmsreducecrossaccountregionpolicyscope) | When enabled, IAM Policy created from KMS key grant will reduce the resource scope to this key only. | 2.134.0 | (fix) |
 | [@aws-cdk/aws-eks:nodegroupNameAttribute](#aws-cdkaws-eksnodegroupnameattribute) | When enabled, nodegroupName attribute of the provisioned EKS NodeGroup will not have the cluster name prefix. | 2.139.0 | (fix) |
-| [@aws-cdk/aws-ec2:ebsDefaultGp3Volume](#aws-cdkaws-ec2ebsdefaultgp3volume) | When enabled, the default volume type of the EBS volume will be GP3 | V2NEXT | (default) |
+| [@aws-cdk/aws-ec2:ebsDefaultGp3Volume](#aws-cdkaws-ec2ebsdefaultgp3volume) | When enabled, the default volume type of the EBS volume will be GP3 | 2.140.0 | (default) |
+| [@aws-cdk/pipelines:reduceAssetRoleTrustScope](#aws-cdkpipelinesreduceassetroletrustscope) | Remove the root account principal from PipelineAssetsFileRole trust policy | 2.141.0 | (default) |
 
 <!-- END table -->
 
@@ -171,6 +172,7 @@ are migrating a v1 CDK project to v2, explicitly set any of these flags which do
 | [@aws-cdk/aws-apigateway:usagePlanKeyOrderInsensitiveId](#aws-cdkaws-apigatewayusageplankeyorderinsensitiveid) | Allow adding/removing multiple UsagePlanKeys independently | (fix) | 1.98.0 | `false` | `true` |
 | [@aws-cdk/aws-lambda:recognizeVersionProps](#aws-cdkaws-lambdarecognizeversionprops) | Enable this feature flag to opt in to the updated logical id calculation for Lambda Version created using the  `fn.currentVersion`. | (fix) | 1.106.0 | `false` | `true` |
 | [@aws-cdk/aws-cloudfront:defaultSecurityPolicyTLSv1.2\_2021](#aws-cdkaws-cloudfrontdefaultsecuritypolicytlsv12_2021) | Enable this feature flag to have cloudfront distributions use the security policy TLSv1.2_2021 by default. | (fix) | 1.117.0 | `false` | `true` |
+| [@aws-cdk/pipelines:reduceAssetRoleTrustScope](#aws-cdkpipelinesreduceassetroletrustscope) | Remove the root account principal from PipelineAssetsFileRole trust policy | (default) |  | `false` | `true` |
 
 <!-- END diff -->
 
@@ -185,7 +187,8 @@ Here is an example of a `cdk.json` file that restores v1 behavior for these flag
     "@aws-cdk/aws-rds:lowercaseDbIdentifier": false,
     "@aws-cdk/aws-apigateway:usagePlanKeyOrderInsensitiveId": false,
     "@aws-cdk/aws-lambda:recognizeVersionProps": false,
-    "@aws-cdk/aws-cloudfront:defaultSecurityPolicyTLSv1.2_2021": false
+    "@aws-cdk/aws-cloudfront:defaultSecurityPolicyTLSv1.2_2021": false,
+    "@aws-cdk/pipelines:reduceAssetRoleTrustScope": false
   }
 }
 ```
@@ -1293,9 +1296,25 @@ When this featuer flag is enabled, the default volume type of the EBS volume wil
 | Since | Default | Recommended |
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
-| V2NEXT | `false` | `true` |
+| 2.140.0 | `false` | `true` |
 
 **Compatibility with old behavior:** Pass `volumeType: EbsDeviceVolumeType.GENERAL_PURPOSE_SSD` to `Volume` construct to restore the previous behavior.
+
+
+### @aws-cdk/pipelines:reduceAssetRoleTrustScope
+
+*Remove the root account principal from PipelineAssetsFileRole trust policy* (default)
+
+When this feature flag is enabled, the root account principal will not be added to the trust policy of asset role.
+When this feature flag is disabled, it will keep the root account principal in the trust policy.
+
+
+| Since | Default | Recommended |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| 2.141.0 | `true` | `true` |
+
+**Compatibility with old behavior:** Disable the feature flag to add the root account principal back
 
 
 <!-- END details -->
