@@ -197,7 +197,8 @@ export interface TaskDefinitionProps extends CommonTaskDefinitionProps {
    * are using platform version 1.4.0 or later (Linux). Only the TASK option
    * is supported for Linux-based Fargate containers. Not supported in Windows
    * containers. If pidMode is specified for a Fargate task, then
-   * runtimePlatform.operatingSystemFamily must also be specified.
+   * runtimePlatform.operatingSystemFamily must also be specified.  For more
+   * information, see [Task Definition Parameters](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task_definition_parameters.html#task_definition_pidmode).
    *
    * @default - PidMode used by the task is not specified
    */
