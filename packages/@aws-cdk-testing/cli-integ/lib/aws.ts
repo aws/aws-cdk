@@ -229,7 +229,7 @@ function chainableCredentials(region: string) {
     const profile = ini[profileName];
 
     if (!profile) {
-      throw new Error(`Profile '${profileName}' does not exist in config file (${configPath}.\n File Contents: ${configFileContents})\n Parsed File: ${JSON.stringify(ini, null, 2)}`);
+      throw new Error(`Profile '${profileName}' does not exist in config file (${configPath}.\n File Contents: ${configFileContents})\n Parsed File: ${JSON.stringify(ini, null, 2)}\n Profile Name: ${profileName}`);
     }
 
     const arn = profile.role_arn;
