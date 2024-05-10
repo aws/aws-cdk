@@ -211,6 +211,17 @@ export async function sleep(ms: number) {
   return new Promise(ok => setTimeout(ok, ms));
 }
 
+function getCredentialsFromConfig(configPath: string, profileName: string) {
+  const configFileContents = readFileSync(configPath, { encoding: 'utf-8' });
+  const ini = parse(configFileContents);
+
+  // ini reads the config and is not able to separate 'profile' from the config obtained
+  // so the return would be 'profile foo' instead of `foo`
+  const expectedProfileName = `profile ${profileName}`;
+
+  return ini[expectedProfileName];
+}
+
 function chainableCredentials(region: string) {
 
   const profileName = process.env.AWS_PROFILE;
@@ -223,10 +234,11 @@ function chainableCredentials(region: string) {
     // can't use '~' since the SDK doesn't seem to expand it...?
     const configPath = `${process.env.HOME}/.aws/config`;
 
+    // TODO remove these after debugging
     const configFileContents = readFileSync(configPath, { encoding: 'utf-8' });
     const ini = parse(configFileContents);
 
-    const profile = ini[profileName];
+    const profile = getCredentialsFromConfig(configPath, profileName);
 
     if (!profile) {
       throw new Error(`Profile '${profileName}' does not exist in config file (${configPath}.\n File Contents: ${configFileContents})\n Parsed File: ${JSON.stringify(ini, null, 2)}\n Profile Name: ${profileName}`);
