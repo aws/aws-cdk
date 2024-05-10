@@ -69,12 +69,60 @@ new efs.FileSystem(this, 'OneZoneFileSystem', {
 ⚠️ One Zone file systems are not compatible with the MAX_IO performance mode.
 
 ⚠️ When `oneZone` is enabled, the file system is automatically placed in the first availability zone of the VPC.
-It is not currently possible to specify a different availability zone.
+To specify a different availability zone:
+
+```ts
+declare const vpc: ec2.Vpc;
+
+new efs.FileSystem(this, 'OneZoneFileSystem', {
+  vpc,
+  oneZone: true,
+  vpcSubnets: {
+    availabilityZones: ['us-east-1b'],
+  },
+})
+```
 
 ⚠️ When `oneZone` is enabled, mount targets will be created only in the specified availability zone.
 This is to prevent deployment failures due to cross-AZ configurations.
 
-⚠️ When `oneZone` is enabled, `vpcSubnets` cannot be specified.
+⚠️ When `oneZone` is enabled, `vpcSubnets` can be specified with
+`availabilityZones` that contains exactly one single zone.
+
+### Replicating file systems
+
+You can create a replica of your EFS file system in the AWS Region of your preference.
+
+```ts
+declare const vpc: ec2.Vpc;
+
+// auto generate a regional replication destination file system
+new efs.FileSystem(this, 'RegionalReplicationFileSystem', {
+  vpc,
+  replicationConfiguration: efs.ReplicationConfiguration.regionalFileSystem('us-west-2'),
+});
+
+// auto generate a one zone replication destination file system
+new efs.FileSystem(this, 'OneZoneReplicationFileSystem', {
+  vpc,
+  replicationConfiguration: efs.ReplicationConfiguration.oneZoneFileSystem('us-east-1', 'us-east-1a'),
+});
+
+const destinationFileSystem = new efs.FileSystem(this, 'DestinationFileSystem', {
+  vpc,
+  // set as the read-only file system for use as a replication destination
+  replicationOverwriteProtection: efs.ReplicationOverwriteProtection.DISABLED,
+});
+// specify the replication destination file system
+new efs.FileSystem(this, 'ReplicationFileSystem', {
+  vpc,
+  replicationConfiguration: efs.ReplicationConfiguration.existingFileSystem(destinationFileSystem),
+});
+```
+
+**Note**: EFS now supports only one replication destination and thus allows specifying just one `replicationConfiguration` for each file system.
+
+> Visit [Replicating file systems](https://docs.aws.amazon.com/efs/latest/ug/efs-replication.html) for more details.
 
 ### IAM to control file system data access
 

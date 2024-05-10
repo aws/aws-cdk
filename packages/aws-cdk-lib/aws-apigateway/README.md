@@ -267,6 +267,11 @@ The following example uses sets up two Resources '/pets' and '/books' in separat
 
 [Resources grouped into nested stacks](test/integ.restapi-import.lit.ts)
 
+> **Warning:** In the code above, an API Gateway deployment is created during the initial CDK deployment.
+However, if there are changes to the resources in subsequent CDK deployments, a new API Gateway deployment is not
+automatically created. As a result, the latest state of the resources is not reflected. To ensure the latest state
+of the resources is reflected, a manual deployment of the API Gateway is required after the CDK deployment. See [Controlled triggering of deployments](#controlled-triggering-of-deployments) for more info.
+
 ## Integration Targets
 
 Methods are associated with backend integrations, which are invoked when this
@@ -936,7 +941,7 @@ Instructions for configuring your trust store can be found [here](https://aws.am
 By default, the `RestApi` construct will automatically create an API Gateway
 [Deployment] and a "prod" [Stage] which represent the API configuration you
 defined in your CDK app. This means that when you deploy your app, your API will
-be have open access from the internet via the stage URL.
+have open access from the internet via the stage URL.
 
 The URL of your API can be obtained from the attribute `restApi.url`, and is
 also exported as an `Output` from your stack, so it's printed when you `cdk
@@ -993,6 +998,67 @@ import * as cdk from 'aws-cdk-lib/core';
 const api = new apigateway.RestApi(this, 'books', {
   cloudWatchRole: true,
   cloudWatchRoleRemovalPolicy: cdk.RemovalPolicy.DESTROY,
+});
+```
+### Deploying to an existing stage
+
+#### Using RestApi
+
+If you want to use an existing stage to deploy your `RestApi`, first set `{ deploy: false }` so the construct doesn't automatically create new `Deployment` and `Stage` resources.  Then you can manually define a `apigateway.Deployment` resource and specify the stage name for your existing stage using the `stageName` property.
+
+Note that as long as the deployment's logical ID doesn't change, it will represent the snapshot in time when the resource was created. To ensure your deployment reflects changes to the `RestApi` model, see [Controlled triggering of deployments](#controlled-triggering-of-deployments).
+```ts
+const restApi = new apigateway.RestApi(this, 'my-rest-api', {
+  deploy: false,
+});
+
+// Use `stageName` to deploy to an existing stage
+const deployment = new apigateway.Deployment(this, 'my-deployment', {
+  api: restApi,
+  stageName: 'dev',
+  retainDeployments: true, // keep old deployments
+});
+```
+#### Using SpecRestApi
+If you want to use an existing stage to deploy your `SpecRestApi`, first set `{ deploy: false }` so the construct doesn't automatically create new `Deployment` and `Stage` resources. Then you can manually define a `apigateway.Deployment` resource and specify the stage name for your existing stage using the `stageName` property.
+
+To automatically create a new deployment that reflects the latest API changes, you can use the `addToLogicalId()` method and pass in your OpenAPI definition.
+
+```ts
+const myApiDefinition = apigateway.ApiDefinition.fromAsset('path-to-file.json');
+const specRestApi = new apigateway.SpecRestApi(this, 'my-specrest-api', {
+  deploy: false,
+  apiDefinition: myApiDefinition
+});
+
+// Use `stageName` to deploy to an existing stage
+const deployment = new apigateway.Deployment(this, 'my-deployment', {
+  api: specRestApi,
+  stageName: 'dev',
+  retainDeployments: true, // keep old deployments
+});
+
+// Trigger a new deployment on OpenAPI definition updates
+deployment.addToLogicalId(myApiDefinition);
+
+```
+
+> Note: If the `stageName` property is set but a stage with the corresponding name does not exist, a new stage resource will be created with the provided stage name.
+
+> Note: If you update the `stageName` property, you should be triggering a new deployment (i.e. with an updated logical ID and API changes). Otherwise, an error will occur during deployment.
+
+### Controlled triggering of deployments
+
+By default, the `RestApi` construct deploys changes immediately. If you want to
+control when deployments happen, set `{ deploy: false }` and create a `Deployment` construct yourself. Add a revision counter to the construct ID, and update it in your source code whenever you want to trigger a new deployment:
+```ts
+const restApi = new apigateway.RestApi(this, 'my-api', {
+  deploy: false,
+});
+
+const deploymentRevision = 5; // Bump this counter to trigger a new deployment
+new apigateway.Deployment(this, `Deployment${deploymentRevision}`, {
+  api: restApi
 });
 ```
 

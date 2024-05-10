@@ -85,6 +85,11 @@ describe('tests', () => {
       dropInvalidHeaderFields: true,
       clientKeepAlive: cdk.Duration.seconds(200),
       denyAllIgwTraffic: true,
+      preserveHostHeader: true,
+      xAmznTlsVersionAndCipherSuiteHeaders: true,
+      preserveXffClientPort: true,
+      xffHeaderProcessingMode: elbv2.XffHeaderProcessingMode.PRESERVE,
+      wafFailOpen: true,
     });
 
     // THEN
@@ -108,6 +113,26 @@ describe('tests', () => {
         },
         {
           Key: 'routing.http.drop_invalid_header_fields.enabled',
+          Value: 'true',
+        },
+        {
+          Key: 'routing.http.preserve_host_header.enabled',
+          Value: 'true',
+        },
+        {
+          Key: 'routing.http.x_amzn_tls_version_and_cipher_suite.enabled',
+          Value: 'true',
+        },
+        {
+          Key: 'routing.http.xff_client_port.enabled',
+          Value: 'true',
+        },
+        {
+          Key: 'routing.http.xff_header_processing.mode',
+          Value: 'preserve',
+        },
+        {
+          Key: 'waf.fail_open.enabled',
           Value: 'true',
         },
         {
@@ -774,6 +799,72 @@ describe('tests', () => {
         { 'Fn::GetAtt': ['SecurityGroup23BE86BB7', 'GroupId'] },
       ],
       Type: 'application',
+    });
+  });
+
+  // test cases for crossZoneEnabled
+  describe('crossZoneEnabled', () => {
+    test('crossZoneEnabled can be true', () => {
+      // GIVEN
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'stack');
+      const vpc = new ec2.Vpc(stack, 'Vpc');
+
+      // WHEN
+      new elbv2.ApplicationLoadBalancer(stack, 'alb', {
+        vpc,
+        crossZoneEnabled: true,
+      });
+      const t = Template.fromStack(stack);
+      t.resourceCountIs('AWS::ElasticLoadBalancingV2::LoadBalancer', 1);
+      t.hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+        LoadBalancerAttributes: [
+          {
+            Key: 'deletion_protection.enabled',
+            Value: 'false',
+          },
+          {
+            Key: 'load_balancing.cross_zone.enabled',
+            Value: 'true',
+          },
+        ],
+      });
+    });
+    test('crossZoneEnabled can be undefined', () => {
+      // GIVEN
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'stack');
+      const vpc = new ec2.Vpc(stack, 'Vpc');
+
+      // WHEN
+      new elbv2.ApplicationLoadBalancer(stack, 'alb', {
+        vpc,
+      });
+      const t = Template.fromStack(stack);
+      t.resourceCountIs('AWS::ElasticLoadBalancingV2::LoadBalancer', 1);
+      t.hasResourceProperties('AWS::ElasticLoadBalancingV2::LoadBalancer', {
+        LoadBalancerAttributes: [
+          {
+            Key: 'deletion_protection.enabled',
+            Value: 'false',
+          },
+        ],
+      });
+    });
+    test('crossZoneEnabled cannot be false', () => {
+      // GIVEN
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'stack');
+      const vpc = new ec2.Vpc(stack, 'Vpc');
+
+      // expect the error
+      expect(() => {
+        new elbv2.ApplicationLoadBalancer(stack, 'alb', {
+          vpc,
+          crossZoneEnabled: false,
+        });
+      }).toThrow('crossZoneEnabled cannot be false with Application Load Balancers.');
+
     });
   });
 
