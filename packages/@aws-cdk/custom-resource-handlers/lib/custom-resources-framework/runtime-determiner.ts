@@ -78,7 +78,7 @@ export class RuntimeDeterminerModule extends Module {
         expr.directCode('determineLatestNodeRuntimeName(scope)'),
       ),
       stmt.ret(
-        expr.directCode(`new ${LAMBDA_INTERNAL_RUNTIME.Runtime}(runtimeName, ${LAMBDA_INTERNAL_RUNTIME.RuntimeFamily}, { supportsInlineCode: true })`),
+        expr.directCode(`new ${LAMBDA_INTERNAL_RUNTIME.Runtime}(runtimeName, ${LAMBDA_INTERNAL_RUNTIME.RuntimeFamily}.NODEJS, { supportsInlineCode: true })`),
       ),
     );
   }

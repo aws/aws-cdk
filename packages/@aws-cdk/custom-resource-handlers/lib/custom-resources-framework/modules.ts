@@ -48,7 +48,6 @@ class LambdaModule extends ExternalModule {
   public readonly FunctionOptions = Type.fromName(this, 'FunctionOptions');
   public readonly Runtime = Type.fromName(this, 'Runtime');
   public readonly RuntimeFamily = Type.fromName(this, 'RuntimeFamily');
-  public readonly determineLatestNodeRuntime = 'determineLatestNodeRuntime';
 
   public constructor() {
     super('../../../aws-lambda');
@@ -80,6 +79,14 @@ class LambdaInternalRuntime extends ExternalModule {
   }
 }
 
+class LambdaRuntimeDeterminer extends ExternalModule {
+  public readonly determineLatestNodeRuntime = 'determineLatestNodeRuntime';
+
+  public constructor() {
+    super('../../../aws-lambda/lib/runtime-determiner-lambda.generated');
+  }
+}
+
 class CoreRuntimeDeterminer extends ExternalModule {
   public readonly determineLatestNodeRuntimeName = 'determineLatestNodeRuntimeName';
 
@@ -102,6 +109,7 @@ export const CONSTRUCTS_MODULE = new ConstructsModule();
 export const LAMBDA_MODULE = new LambdaModule();
 export const REGION_INFO = new RegionInfo();
 export const CORE_RUNTIME_DETERMINER = new CoreRuntimeDeterminer();
+export const LAMBDA_RUNTIME_DETERMINER = new LambdaRuntimeDeterminer();
 
 export const CORE_INTERNAL_STACK = new CoreInternalStack();
 export const CORE_INTERNAL_CR_PROVIDER = new CoreInternalCustomResourceProvider();

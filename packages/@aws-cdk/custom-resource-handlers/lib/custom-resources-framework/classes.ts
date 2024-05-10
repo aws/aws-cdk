@@ -25,6 +25,7 @@ import {
   PATH_MODULE,
   CORE_RUNTIME_DETERMINER,
   CORE_INTERNAL_RUNTIME_DETERMINER,
+  LAMBDA_RUNTIME_DETERMINER,
 } from './modules';
 import { toLambdaRuntime } from './utils/framework-utils';
 
@@ -331,6 +332,10 @@ export abstract class HandlerFrameworkClass extends ClassType {
         module.importSelective(scope, [CORE_RUNTIME_DETERMINER.determineLatestNodeRuntimeName]);
         return;
       }
+      case LAMBDA_RUNTIME_DETERMINER.fqn: {
+        module.importSelective(scope, [LAMBDA_RUNTIME_DETERMINER.determineLatestNodeRuntime]);
+        return;
+      }
     }
   }
 
@@ -376,10 +381,12 @@ export abstract class HandlerFrameworkClass extends ClassType {
       this.externalModules.push(
         scope.coreInternal ? CORE_INTERNAL_RUNTIME_DETERMINER : CORE_RUNTIME_DETERMINER,
       );
+    } else {
+      this.externalModules.push(LAMBDA_RUNTIME_DETERMINER);
     }
 
     return isProvider
       ? expr.directCode('determineLatestNodeRuntimeName(scope)')
-      : expr.directCode('lambda.determineLatestNodeRuntime(scope)');
+      : expr.directCode('determineLatestNodeRuntime(scope)');
   }
 }
