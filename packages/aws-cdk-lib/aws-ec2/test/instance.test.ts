@@ -25,6 +25,7 @@ import {
   WindowsVersion,
   KeyPair,
   KeyPairType,
+  CpuCredits,
 } from '../lib';
 
 let stack: Stack;
@@ -613,6 +614,35 @@ describe('instance', () => {
     });
   });
 
+  test('burstable instance with explicit credit specification', () => {
+    // WHEN
+    new Instance(stack, 'Instance', {
+      vpc,
+      machineImage: new AmazonLinuxImage(),
+      instanceType: InstanceType.of(InstanceClass.T3, InstanceSize.LARGE),
+      creditSpecification: CpuCredits.STANDARD,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::Instance', {
+      InstanceType: 't3.large',
+      CreditSpecification: {
+        CPUCredits: 'standard',
+      },
+    });
+  });
+
+  test('throw if creditSpecification is defined for a non-burstable instance type', () => {
+    // THEN
+    expect(() => {
+      new Instance(stack, 'Instance', {
+        vpc,
+        machineImage: new AmazonLinuxImage(),
+        instanceType: InstanceType.of(InstanceClass.M5, InstanceSize.LARGE),
+        creditSpecification: CpuCredits.STANDARD,
+      });
+    }).toThrow('creditSpecification is supported only for T4g, T3a, T3, T2 instance type, got: m5.large');
+  });
 });
 
 test('add CloudFormation Init to instance', () => {
@@ -858,4 +888,20 @@ test('associate public IP address with instance and no public subnet', () => {
       associatePublicIpAddress: true,
     });
   }).toThrow("To set 'associatePublicIpAddress: true' you must select Public subnets (vpcSubnets: { subnetType: SubnetType.PUBLIC })");
+});
+
+test('specify ebs optimized instance', () => {
+  // WHEN
+  new Instance(stack, 'Instance', {
+    vpc,
+    machineImage: new AmazonLinuxImage(),
+    instanceType: new InstanceType('t3.large'),
+    ebsOptimized: true,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::EC2::Instance', {
+    InstanceType: 't3.large',
+    EbsOptimized: true,
+  });
 });

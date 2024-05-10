@@ -13,7 +13,7 @@ import * as cpa from '../../../aws-codepipeline-actions';
 import * as ec2 from '../../../aws-ec2';
 import * as iam from '../../../aws-iam';
 import * as s3 from '../../../aws-s3';
-import { Aws, CfnCapabilities, Duration, PhysicalName, Stack, Names } from '../../../core';
+import { Aws, CfnCapabilities, Duration, PhysicalName, Stack, Names, FeatureFlags } from '../../../core';
 import * as cxapi from '../../../cx-api';
 import { AssetType, FileSet, IFileSetProducer, ManualApprovalStep, ShellStep, StackAsset, StackDeployment, Step } from '../blueprint';
 import { DockerCredential, dockerCredentialsInstallCommands, DockerCredentialUsage } from '../docker-credentials';
@@ -467,6 +467,7 @@ export class CodePipeline extends PipelineBase {
     } else {
       this._pipeline = new cp.Pipeline(this, 'Pipeline', {
         pipelineName: this.props.pipelineName,
+        pipelineType: cp.PipelineType.V1,
         crossAccountKeys: this.props.crossAccountKeys ?? false,
         crossRegionReplicationBuckets: this.props.crossRegionReplicationBuckets,
         reuseCrossRegionSupportStacks: this.props.reuseCrossRegionSupportStacks,
@@ -983,13 +984,20 @@ export class CodePipeline extends PipelineBase {
 
     const stack = Stack.of(this);
 
-    const rolePrefix = assetType === AssetType.DOCKER_IMAGE ? 'Docker' : 'File';
-    const assetRole = new AssetSingletonRole(this.assetsScope, `${rolePrefix}Role`, {
-      roleName: PhysicalName.GENERATE_IF_NEEDED,
-      assumedBy: new iam.CompositePrincipal(
+    const removeRootPrincipal = FeatureFlags.of(this).isEnabled(cxapi.PIPELINE_REDUCE_ASSET_ROLE_TRUST_SCOPE);
+
+    const assumePrincipal = removeRootPrincipal ? new iam.CompositePrincipal(
+      new iam.ServicePrincipal('codebuild.amazonaws.com'),
+    ) :
+      new iam.CompositePrincipal(
         new iam.ServicePrincipal('codebuild.amazonaws.com'),
         new iam.AccountPrincipal(stack.account),
-      ),
+      );
+
+    const rolePrefix = assetType === AssetType.DOCKER_IMAGE ? 'Docker' : 'File';
+    let assetRole = new AssetSingletonRole(this.assetsScope, `${rolePrefix}Role`, {
+      roleName: PhysicalName.GENERATE_IF_NEEDED,
+      assumedBy: assumePrincipal,
     });
 
     // Grant pull access for any ECR registries and secrets that exist

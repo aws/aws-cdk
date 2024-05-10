@@ -156,6 +156,11 @@ environment.
 When passing a runtime that is known to include a version of the aws sdk, it will be excluded by default. For example, when
 passing `NODEJS_16_X`, `aws-sdk` is excluded. When passing `NODEJS_18_X`,  all `@aws-sdk/*` packages are excluded.
 
+> [!WARNING]
+> The NodeJS runtime of Node 16 will be deprecated by Lambda on June 12, 2024. Lambda runtimes Node 18 and higher include SDKv3 and not SDKv2. Updating your Lambda runtime from <=Node 16 to any newer version will require bundling the SDK with your handler code, or updating all SDK calls in your handler code to use SDKv3 (which is not a trivial update). Please account for this added complexity and update as soon as possible.
+
+
+
 This can be configured by specifying `bundling.externalModules`:
 
 ```ts
@@ -165,6 +170,16 @@ new nodejs.NodejsFunction(this, 'my-handler', {
       '@aws-sdk/*', // Use the AWS SDK for JS v3 available in the Lambda runtime
       'cool-module', // 'cool-module' is already available in a Layer
     ],
+  },
+});
+```
+Includes AWS SDK in the bundle asset by setting `bundleAwsSDK` to `true`. This will be essentially exclude sdk from the external 
+module and not be resolved to the Lambda provided sdk.
+
+```ts
+new nodejs.NodejsFunction(this, 'my-handler', {
+  bundling: {
+    bundleAwsSDK: true,
   },
 });
 ```

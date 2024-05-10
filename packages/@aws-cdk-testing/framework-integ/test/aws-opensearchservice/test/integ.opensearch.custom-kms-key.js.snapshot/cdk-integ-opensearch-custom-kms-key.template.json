@@ -98,7 +98,7 @@
        {
         "Ref": "Domain66AC69E0"
        },
-       "AccessPolicy\"}}"
+       "AccessPolicy\"},\"logApiResponseData\":true}"
       ]
      ]
     },
@@ -122,7 +122,7 @@
        {
         "Ref": "Domain66AC69E0"
        },
-       "AccessPolicy\"}}"
+       "AccessPolicy\"},\"logApiResponseData\":true}"
       ]
      ]
     },
@@ -228,7 +228,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "1b474110b3f79050ba8693912584a5d5bac8c7e94d63afa8c73f1d087444e7cc.zip"
+     "S3Key": "746da84b10e215c552e68b6d2061024e4429f0386f43a35ef5e4d2940655692e.zip"
     },
     "Handler": "index.handler",
     "Role": {
@@ -244,6 +244,16 @@
     "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleDefaultPolicyD28E1A5E",
     "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
    ]
+  }
+ },
+ "Outputs": {
+  "ExportsOutputRefDomain66AC69E084F15077": {
+   "Value": {
+    "Ref": "Domain66AC69E0"
+   },
+   "Export": {
+    "Name": "cdk-integ-opensearch-custom-kms-key:ExportsOutputRefDomain66AC69E084F15077"
+   }
   }
  },
  "Parameters": {

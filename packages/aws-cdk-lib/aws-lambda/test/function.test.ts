@@ -7,6 +7,7 @@ import { ProfilingGroup } from '../../aws-codeguruprofiler';
 import * as ec2 from '../../aws-ec2';
 import * as efs from '../../aws-efs';
 import * as iam from '../../aws-iam';
+import { AccountPrincipal } from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as logs from '../../aws-logs';
 import * as s3 from '../../aws-s3';
@@ -15,6 +16,7 @@ import * as sns from '../../aws-sns';
 import * as sqs from '../../aws-sqs';
 import * as cdk from '../../core';
 import { Aspects, Lazy, Size } from '../../core';
+import { getWarnings } from '../../core/test/util';
 import * as cxapi from '../../cx-api';
 import * as lambda from '../lib';
 import { AdotLambdaLayerJavaSdkVersion } from '../lib/adot-layers';
@@ -221,6 +223,55 @@ describe('function', () => {
       fn.addPermission('S2', { principal: new iam.AccountPrincipal('account') });
       fn.addPermission('S3', { principal: new iam.ArnPrincipal('my:arn') });
       fn.addPermission('S4', { principal: new iam.OrganizationPrincipal('my:org') });
+    });
+
+    test('does not show warning if skipPermissions is set', () => {
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app);
+      const imported = lambda.Function.fromFunctionAttributes(stack, 'Imported', {
+        functionArn: 'arn:aws:lambda:us-west-2:123456789012:function:my-function',
+        skipPermissions: true,
+      });
+      imported.addPermission('Permission', {
+        action: 'lambda:InvokeFunction',
+        principal: new AccountPrincipal('123456789010'),
+      });
+
+      expect(getWarnings(app.synth()).length).toBe(0);
+    });
+
+    test('shows warning if skipPermissions is not set', () => {
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app);
+      const imported = lambda.Function.fromFunctionAttributes(stack, 'Imported', {
+        functionArn: 'arn:aws:lambda:us-west-2:123456789012:function:my-function',
+      });
+      imported.addPermission('Permission', {
+        action: 'lambda:InvokeFunction',
+        principal: new AccountPrincipal('123456789010'),
+      });
+
+      expect(getWarnings(app.synth())).toEqual([
+        {
+          message: {
+            'Fn::Join': [
+              '',
+              [
+                'addPermission() has no effect on a Lambda Function with region=us-west-2, account=123456789012, in a Stack with region=',
+                {
+                  Ref: 'AWS::Region',
+                },
+                ', account=',
+                {
+                  Ref: 'AWS::AccountId',
+                },
+                '. Suppress this warning if this is is intentional, or pass sameEnvironment=true to fromFunctionAttributes() if you would like to add the permissions. [ack: UnclearLambdaEnvironment]',
+              ],
+            ],
+          },
+          path: '/Default/Imported',
+        },
+      ]);
     });
 
     test('applies source account/ARN conditions if the principal has conditions', () => {
@@ -3831,6 +3882,100 @@ describe('VPC configuration', () => {
       securityGroups: [],
       allowAllOutbound: false,
     })).not.toThrow();
+  });
+
+  test('with ipv6AllowedForDualStack and no VPC', () => {
+    const stack = new cdk.Stack();
+    expect(() => new lambda.Function(stack, 'MyLambda', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.PYTHON_3_9,
+      ipv6AllowedForDualStack: true,
+    })).toThrow(/Cannot configure 'ipv6AllowedForDualStack' without configuring a VPC/);
+  });
+
+  test('set ipv6AllowedForDualStack with VPC', () => {
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Vpc', {
+      maxAzs: 3,
+      natGateways: 1,
+    });
+    const securityGroup = new ec2.SecurityGroup(stack, 'LambdaSG', {
+      vpc,
+      allowAllOutbound: true,
+      allowAllIpv6Outbound: true,
+    });
+    new lambda.Function(stack, 'MyLambda', {
+      vpc: vpc,
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.PYTHON_3_9,
+      ipv6AllowedForDualStack: true,
+      securityGroups: [securityGroup],
+      vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS },
+    });
+
+    Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
+      Properties:
+      {
+        Code: { ZipFile: 'foo' },
+        Handler: 'index.handler',
+        Runtime: 'python3.9',
+        Role: { 'Fn::GetAtt': ['MyLambdaServiceRole4539ECB6', 'Arn'] },
+        VpcConfig: {
+          Ipv6AllowedForDualStack: true,
+          SecurityGroupIds: [
+            { 'Fn::GetAtt': ['LambdaSG9DBFCFB7', 'GroupId'] },
+          ],
+          SubnetIds: [
+            { Ref: 'VpcPrivateSubnet1Subnet536B997A' },
+            { Ref: 'VpcPrivateSubnet2Subnet3788AAA1' },
+          ],
+        },
+      },
+    });
+  });
+
+  test('set ipv6AllowedForDualStack to False with VPC', () => {
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Vpc', {
+      maxAzs: 3,
+      natGateways: 1,
+    });
+    const securityGroup = new ec2.SecurityGroup(stack, 'LambdaSG', {
+      vpc,
+      allowAllOutbound: true,
+      allowAllIpv6Outbound: true,
+    });
+    new lambda.Function(stack, 'MyLambda', {
+      vpc: vpc,
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.PYTHON_3_9,
+      ipv6AllowedForDualStack: false,
+      securityGroups: [securityGroup],
+      vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS },
+    });
+
+    Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
+      Properties:
+      {
+        Code: { ZipFile: 'foo' },
+        Handler: 'index.handler',
+        Runtime: 'python3.9',
+        Role: { 'Fn::GetAtt': ['MyLambdaServiceRole4539ECB6', 'Arn'] },
+        VpcConfig: {
+          Ipv6AllowedForDualStack: false,
+          SecurityGroupIds: [
+            { 'Fn::GetAtt': ['LambdaSG9DBFCFB7', 'GroupId'] },
+          ],
+          SubnetIds: [
+            { Ref: 'VpcPrivateSubnet1Subnet536B997A' },
+            { Ref: 'VpcPrivateSubnet2Subnet3788AAA1' },
+          ],
+        },
+      },
+    });
   });
 });
 

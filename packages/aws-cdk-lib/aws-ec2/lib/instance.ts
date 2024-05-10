@@ -6,6 +6,7 @@ import { Connections, IConnectable } from './connections';
 import { CfnInstance } from './ec2.generated';
 import { InstanceType } from './instance-types';
 import { IKeyPair } from './key-pair';
+import { CpuCredits } from './launch-template';
 import { IMachineImage, OperatingSystemType } from './machine-image';
 import { instanceBlockDeviceMappings } from './private/ebs-util';
 import { ISecurityGroup, SecurityGroup } from './security-group';
@@ -295,6 +296,25 @@ export interface InstanceProps {
    * @default - public IP address is automatically assigned based on default behavior
    */
   readonly associatePublicIpAddress?: boolean;
+
+  /**
+   * Specifying the CPU credit type for burstable EC2 instance types (T2, T3, T3a, etc).
+   * The unlimited CPU credit option is not supported for T3 instances with a dedicated host.
+   *
+   * @default - T2 instances are standard, while T3, T4g, and T3a instances are unlimited.
+   */
+  readonly creditSpecification?: CpuCredits;
+
+  /**
+   * Indicates whether the instance is optimized for Amazon EBS I/O.
+   *
+   * This optimization provides dedicated throughput to Amazon EBS and an optimized configuration stack to provide optimal Amazon EBS I/O performance.
+   * This optimization isn't available with all instance types.
+   * Additional usage charges apply when using an EBS-optimized instance.
+   *
+   * @default false
+   */
+  readonly ebsOptimized?: boolean;
 }
 
 /**
@@ -368,6 +388,11 @@ export class Instance extends Resource implements IInstance {
 
     if (props.keyName && props.keyPair) {
       throw new Error('Cannot specify both of \'keyName\' and \'keyPair\'; prefer \'keyPair\'');
+    }
+
+    // if credit specification is set, then the instance type must be burstable
+    if (props.creditSpecification && !props.instanceType.isBurstable()) {
+      throw new Error(`creditSpecification is supported only for T4g, T3a, T3, T2 instance type, got: ${props.instanceType.toString()}`);
     }
 
     if (props.securityGroup) {
@@ -459,6 +484,8 @@ export class Instance extends Resource implements IInstance {
       privateIpAddress: networkInterfaces ? undefined : props.privateIpAddress,
       propagateTagsToVolumeOnCreation: props.propagateTagsToVolumeOnCreation,
       monitoring: props.detailedMonitoring,
+      creditSpecification: props.creditSpecification ? { cpuCredits: props.creditSpecification } : undefined,
+      ebsOptimized: props.ebsOptimized,
     });
     this.instance.node.addDependency(this.role);
 

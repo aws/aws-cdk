@@ -120,6 +120,20 @@ rule.addTarget(new targets.CloudWatchLogGroup(logGroup, {
 }));
 ```
 
+The cloudwatch log event target will create an AWS custom resource internally which will default
+to set `installLatestAwsSdk` to `true`. This may be problematic for CN partition deployment. To
+workaround this issue, set `installLatestAwsSdk` to `false`.
+
+```ts
+import * as logs from 'aws-cdk-lib/aws-logs';
+declare const logGroup: logs.LogGroup;
+declare const rule: events.Rule;
+
+rule.addTarget(new targets.CloudWatchLogGroup(logGroup, {
+  installLatestAwsSdk: false,
+}));
+```
+
 ## Start a CodeBuild build
 
 Use the `CodeBuildProject` target to trigger a CodeBuild project.
@@ -325,6 +339,30 @@ const destination = new events.ApiDestination(this, 'Destination', {
 
 const rule = new events.Rule(this, 'Rule', {
   schedule: events.Schedule.rate(Duration.minutes(1)),
+  targets: [new targets.ApiDestination(destination)],
+});
+```
+
+You can also import an existing connection and destination
+to create additional rules:
+
+```ts
+const connection = events.Connection.fromEventBusArn(
+  this,
+  'Connection',
+  'arn:aws:events:us-east-1:123456789012:event-bus/EventBusName',
+  'arn:aws:secretsmanager:us-east-1:123456789012:secret:SecretName-f3gDy9',
+);
+
+const apiDestinationArn = 'arn:aws:events:us-east-1:123456789012:api-destination/DestinationName';
+const destination = events.ApiDestination.fromApiDestinationAttributes(
+  this,
+  'Destination',
+  { apiDestinationArn, connection },
+);
+
+const rule = new events.Rule(this, 'OtherRule', {
+  schedule: events.Schedule.rate(Duration.minutes(10)),
   targets: [new targets.ApiDestination(destination)],
 });
 ```

@@ -7,6 +7,7 @@ import * as s3 from '../../../aws-s3';
 import * as sqs from '../../../aws-sqs';
 import * as cdk from '../../../core';
 import { Stack } from '../../../core';
+import * as cxapi from '../../../cx-api';
 import * as cdkp from '../../lib';
 import { CodePipeline } from '../../lib';
 import { PIPELINE_ENV, TestApp, ModernTestGitHubNpmPipeline, FileAssetApp, TwoStackApp, StageWithStackOutput } from '../testhelpers';
@@ -174,6 +175,8 @@ test('Policy sizes do not exceed the maximum size', () => {
   // expect template size warning
   const annotations = Annotations.fromStack(pipelineStack);
   annotations.hasWarning('*', Match.stringLikeRegexp('^Template size is approaching limit'));
+  const warnings = annotations.findWarning('*', Match.anyValue());
+  expect(warnings.length).toEqual(1);
 });
 
 test('CodeBuild action role has the right AssumeRolePolicyDocument', () => {
@@ -193,6 +196,61 @@ test('CodeBuild action role has the right AssumeRolePolicyDocument', () => {
       ],
     },
   });
+});
+
+test('CodeBuild asset role has the right Principal with the feature enabled', () => {
+  const stack = new cdk.Stack();
+  stack.node.setContext(cxapi.PIPELINE_REDUCE_ASSET_ROLE_TRUST_SCOPE, true);
+  const pipelineStack = new cdk.Stack(stack, 'PipelineStack', { env: PIPELINE_ENV });
+  const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk');
+  pipeline.addStage(new FileAssetApp(pipelineStack, 'App', {}));;
+  const template = Template.fromStack(pipelineStack);
+  const assetRole = template.toJSON().Resources.CdkAssetsFileRole6BE17A07;
+  const statementLength = assetRole.Properties.AssumeRolePolicyDocument.Statement;
+  expect(statementLength).toStrictEqual(
+    [
+      {
+        Action: 'sts:AssumeRole',
+        Effect: 'Allow',
+        Principal: {
+          Service: 'codebuild.amazonaws.com',
+        },
+      },
+    ],
+  );
+});
+
+test('CodeBuild asset role has the right Principal with the feature disabled', () => {
+  const stack = new cdk.Stack();
+  stack.node.setContext(cxapi.PIPELINE_REDUCE_ASSET_ROLE_TRUST_SCOPE, false);
+  const pipelineStack = new cdk.Stack(stack, 'PipelineStack', { env: PIPELINE_ENV });
+  const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk');
+  pipeline.addStage(new FileAssetApp(pipelineStack, 'App', {}));;
+  const template = Template.fromStack(pipelineStack);
+  const assetRole = template.toJSON().Resources.CdkAssetsFileRole6BE17A07;
+  const statementLength = assetRole.Properties.AssumeRolePolicyDocument.Statement;
+  expect(statementLength).toStrictEqual(
+    [
+      {
+        Action: 'sts:AssumeRole',
+        Effect: 'Allow',
+        Principal: {
+          Service: 'codebuild.amazonaws.com',
+        },
+      },
+      {
+        Action: 'sts:AssumeRole',
+        Effect: 'Allow',
+        Principal: {
+          AWS: {
+            'Fn::Join': ['', [
+              'arn:', { Ref: 'AWS::Partition' }, `:iam::${PIPELINE_ENV.account}:root`,
+            ]],
+          },
+        },
+      },
+    ],
+  );
 });
 
 test('CodePipeline throws when key rotation is enabled without enabling cross account keys', ()=>{

@@ -27,7 +27,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1704912473386"
+    "salt": "1714139965728"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -112,6 +112,15 @@
            ]
           }
          ]
+        },
+        {
+         "Action": [
+          "cognito-idp:AdminGetUser"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
         }
        ]
       }
@@ -127,7 +136,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "4984c845346313a408899c8ff361d3b7b97953a9d4202e47694ef2a101f4b5c3.zip"
+     "S3Key": "65c9f57ca55e2d458059a930e997f2bc96560b3a3654cc442616d12089449d39.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
@@ -138,6 +147,39 @@
      ]
     }
    }
+  },
+  "AwsApiCallCognitoIdentityServiceProvideradminGetUsercd0af199640a9a7c74928b3c52106837": {
+   "Type": "Custom::DeployAssert@SdkCallCognitoIdentityServiceProviderad",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "CognitoIdentityServiceProvider",
+    "api": "adminGetUser",
+    "expected": "{\"$ObjectLike\":{\"UserStatus\":\"CONFIRMED\",\"Enabled\":true,\"UserAttributes\":[{\"Name\":\"email\",\"Value\":\"test-user@example.com\"},{\"Name\":\"email_verified\",\"Value\":\"true\"},{\"Name\":\"sub\",\"Value\":{\"$StringLike\":\"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$\"}}]}}",
+    "parameters": {
+     "UserPoolId": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "integ-cognito:ExportsOutputRefUserPool6BA7E5F296FD7236"
+        },
+        "\""
+       ]
+      ]
+     },
+     "Username": "\"test-user@example.com\""
+    },
+    "flattenResponse": "false",
+    "salt": "1714139965730"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   }
  },
  "Outputs": {
@@ -145,6 +187,14 @@
    "Value": {
     "Fn::GetAtt": [
      "LambdaInvoke018ab0799f88e5aed4847cc0bb1ff6bd",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallCognitoIdentityServiceProvideradminGetUsercd0af199640a9a7c74928b3c52106837": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallCognitoIdentityServiceProvideradminGetUsercd0af199640a9a7c74928b3c52106837",
      "assertion"
     ]
    }

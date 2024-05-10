@@ -7,6 +7,7 @@ import * as sqs from 'aws-cdk-lib/aws-sqs';
 import { App, Stack, StackProps, Stage, StageProps } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import * as pipelines from 'aws-cdk-lib/pipelines';
+import { PIPELINE_REDUCE_ASSET_ROLE_TRUST_SCOPE } from 'aws-cdk-lib/cx-api';
 
 class PipelineStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
@@ -47,8 +48,10 @@ class AppStage extends Stage {
 }
 
 const app = new App({
-  context: {
+  postCliContext: {
     '@aws-cdk/core:newStyleStackSynthesis': '1',
+    '@aws-cdk/aws-codepipeline:defaultPipelineTypeToV2': false,
+    [PIPELINE_REDUCE_ASSET_ROLE_TRUST_SCOPE]: false,
   },
 });
 new PipelineStack(app, 'PipelineStack');
