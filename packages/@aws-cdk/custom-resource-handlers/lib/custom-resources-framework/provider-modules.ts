@@ -70,15 +70,6 @@ class CoreInternalRegionInfo extends ExternalModule {
   }
 }
 
-class LambdaInternalRuntime extends ExternalModule {
-  public readonly Runtime = Type.fromName(this, 'Runtime');
-  public readonly RuntimeFamily = Type.fromName(this, 'RuntimeFamily');
-
-  public constructor() {
-    super('./runtime');
-  }
-}
-
 class LambdaRuntimeDeterminer extends ExternalModule {
   public readonly determineLatestNodeRuntime = 'determineLatestNodeRuntime';
 
@@ -115,5 +106,3 @@ export const CORE_INTERNAL_STACK = new CoreInternalStack();
 export const CORE_INTERNAL_CR_PROVIDER = new CoreInternalCustomResourceProvider();
 export const CORE_INTERNAL_REGION_INFO = new CoreInternalRegionInfo();
 export const CORE_INTERNAL_RUNTIME_DETERMINER = new CoreInternalRuntimeDeterminer();
-
-export const LAMBDA_INTERNAL_RUNTIME = new LambdaInternalRuntime();

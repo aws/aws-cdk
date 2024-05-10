@@ -14,9 +14,8 @@ import {
   CONSTRUCTS_MODULE,
   CORE_INTERNAL_REGION_INFO,
   CORE_INTERNAL_STACK,
-  CORE_RUNTIME_DETERMINER,
-  LAMBDA_INTERNAL_RUNTIME,
 } from './modules';
+import { LAMBDA_INTERNAL_RUNTIME, CORE_RUNTIME_DETERMINER } from './runtime-determiner-modules';
 
 export class RuntimeDeterminerModule extends Module {
   public static buildForCore() {
