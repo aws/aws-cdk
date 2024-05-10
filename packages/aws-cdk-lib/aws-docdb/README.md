@@ -255,6 +255,6 @@ const cluster = new docdb.DatabaseCluster(this, 'Database', {
     subnetType: ec2.SubnetType.PUBLIC,
   },
   vpc,
-  caCertificate: docdb.CaCertificate.RDS_CA_RDS4096_G1, // CA certificate for all instances under this cluster
+  caCertificate: docdb.CaCertificate.RDS_CA_RSA4096_G1, // CA certificate for all instances under this cluster
 });
 ```

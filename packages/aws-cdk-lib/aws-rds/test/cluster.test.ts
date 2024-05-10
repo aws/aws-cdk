@@ -1154,11 +1154,11 @@ describe('cluster new api', () => {
         vpc,
         writer: ClusterInstance.provisioned('writer', {
           instanceType: ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.XLARGE24 ),
-          caCertificate: CaCertificate.RDS_CA_RDS4096_G1,
+          caCertificate: CaCertificate.RDS_CA_RSA4096_G1,
         }),
         readers: [
           ClusterInstance.serverlessV2('reader', {
-            caCertificate: CaCertificate.RDS_CA_RDS2048_G1,
+            caCertificate: CaCertificate.RDS_CA_RSA2048_G1,
           }),
           ClusterInstance.provisioned('reader2', {
             promotionTier: 1,

@@ -17,7 +17,7 @@ new DatabaseCluster(stack, 'Database', {
     password: SecretValue.unsafePlainText('7959866cacc02c2d243ecfe177464fe6'),
   },
   instanceType: instanceType,
-  caCertificate: CaCertificate.RDS_CA_RDS4096_G1,
+  caCertificate: CaCertificate.RDS_CA_RSA4096_G1,
   vpcSubnets: { subnetType: SubnetType.PUBLIC },
   vpc,
   removalPolicy: RemovalPolicy.DESTROY,
