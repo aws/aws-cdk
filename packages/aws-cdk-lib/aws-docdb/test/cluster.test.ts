@@ -86,7 +86,7 @@ describe('DatabaseCluster', () => {
         password: cdk.SecretValue.unsafePlainText('tooshort'),
       },
       instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
-      caCertificate: CaCertificate.RDS_CA_RDS4096_G1,
+      caCertificate: CaCertificate.RDS_CA_RSA4096_G1,
       vpc,
     });
 
