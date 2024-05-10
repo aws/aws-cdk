@@ -633,8 +633,8 @@ enable the `deleteReports` option as well as setting the removal policy to
 
 ```ts
 const reportGroup = new codebuild.ReportGroup(this, 'ReportGroup', {
-      deleteReports: true,
       removalPolicy: RemovalPolicy.DESTROY,
+      deleteReports: true,
 });
 ```
 
