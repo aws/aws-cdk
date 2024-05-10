@@ -4,21 +4,21 @@
     "id": "App",
     "path": "",
     "children": {
-      "tester": {
-        "id": "tester",
-        "path": "tester",
+      "TestStack": {
+        "id": "TestStack",
+        "path": "TestStack",
         "children": {
           "Imported": {
             "id": "Imported",
-            "path": "tester/Imported",
+            "path": "TestStack/Imported",
             "children": {
               "Notifications": {
                 "id": "Notifications",
-                "path": "tester/Imported/Notifications",
+                "path": "TestStack/Imported/Notifications",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "tester/Imported/Notifications/Resource",
+                    "path": "TestStack/Imported/Notifications/Resource",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.CfnResource",
                       "version": "0.0.0"
@@ -30,9 +30,9 @@
                   "version": "10.3.0"
                 }
               },
-              "AllowBucketNotificationsTotesterFD715D26C": {
-                "id": "AllowBucketNotificationsTotesterFD715D26C",
-                "path": "tester/Imported/AllowBucketNotificationsTotesterFD715D26C",
+              "AllowBucketNotificationsToTestStackF6B9A9222": {
+                "id": "AllowBucketNotificationsToTestStackF6B9A9222",
+                "path": "TestStack/Imported/AllowBucketNotificationsToTestStackF6B9A9222",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
                   "aws:cdk:cloudformation:props": {
@@ -55,7 +55,7 @@
                           {
                             "Ref": "AWS::Partition"
                           },
-                          ":s3:::cdk-test-bucket-event-source"
+                          ":s3:::cdk-integ-test-imported-bucket-name"
                         ]
                       ]
                     }
@@ -74,15 +74,15 @@
           },
           "F": {
             "id": "F",
-            "path": "tester/F",
+            "path": "TestStack/F",
             "children": {
               "ServiceRole": {
                 "id": "ServiceRole",
-                "path": "tester/F/ServiceRole",
+                "path": "TestStack/F/ServiceRole",
                 "children": {
                   "ImportServiceRole": {
                     "id": "ImportServiceRole",
-                    "path": "tester/F/ServiceRole/ImportServiceRole",
+                    "path": "TestStack/F/ServiceRole/ImportServiceRole",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
@@ -90,7 +90,7 @@
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "tester/F/ServiceRole/Resource",
+                    "path": "TestStack/F/ServiceRole/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                       "aws:cdk:cloudformation:props": {
@@ -135,7 +135,7 @@
               },
               "Resource": {
                 "id": "Resource",
-                "path": "tester/F/Resource",
+                "path": "TestStack/F/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
                   "aws:cdk:cloudformation:props": {
@@ -165,15 +165,15 @@
           },
           "BucketNotificationsHandler050a0587b7544547bf325f094a3db834": {
             "id": "BucketNotificationsHandler050a0587b7544547bf325f094a3db834",
-            "path": "tester/BucketNotificationsHandler050a0587b7544547bf325f094a3db834",
+            "path": "TestStack/BucketNotificationsHandler050a0587b7544547bf325f094a3db834",
             "children": {
               "Role": {
                 "id": "Role",
-                "path": "tester/BucketNotificationsHandler050a0587b7544547bf325f094a3db834/Role",
+                "path": "TestStack/BucketNotificationsHandler050a0587b7544547bf325f094a3db834/Role",
                 "children": {
                   "ImportRole": {
                     "id": "ImportRole",
-                    "path": "tester/BucketNotificationsHandler050a0587b7544547bf325f094a3db834/Role/ImportRole",
+                    "path": "TestStack/BucketNotificationsHandler050a0587b7544547bf325f094a3db834/Role/ImportRole",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
@@ -181,7 +181,7 @@
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "tester/BucketNotificationsHandler050a0587b7544547bf325f094a3db834/Role/Resource",
+                    "path": "TestStack/BucketNotificationsHandler050a0587b7544547bf325f094a3db834/Role/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                       "aws:cdk:cloudformation:props": {
@@ -220,11 +220,11 @@
                   },
                   "DefaultPolicy": {
                     "id": "DefaultPolicy",
-                    "path": "tester/BucketNotificationsHandler050a0587b7544547bf325f094a3db834/Role/DefaultPolicy",
+                    "path": "TestStack/BucketNotificationsHandler050a0587b7544547bf325f094a3db834/Role/DefaultPolicy",
                     "children": {
                       "Resource": {
                         "id": "Resource",
-                        "path": "tester/BucketNotificationsHandler050a0587b7544547bf325f094a3db834/Role/DefaultPolicy/Resource",
+                        "path": "TestStack/BucketNotificationsHandler050a0587b7544547bf325f094a3db834/Role/DefaultPolicy/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
                           "aws:cdk:cloudformation:props": {
@@ -268,7 +268,7 @@
               },
               "Resource": {
                 "id": "Resource",
-                "path": "tester/BucketNotificationsHandler050a0587b7544547bf325f094a3db834/Resource",
+                "path": "TestStack/BucketNotificationsHandler050a0587b7544547bf325f094a3db834/Resource",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.CfnResource",
                   "version": "0.0.0"
@@ -282,7 +282,7 @@
           },
           "BootstrapVersion": {
             "id": "BootstrapVersion",
-            "path": "tester/BootstrapVersion",
+            "path": "TestStack/BootstrapVersion",
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnParameter",
               "version": "0.0.0"
@@ -290,7 +290,7 @@
           },
           "CheckBootstrapVersion": {
             "id": "CheckBootstrapVersion",
-            "path": "tester/CheckBootstrapVersion",
+            "path": "TestStack/CheckBootstrapVersion",
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnRule",
               "version": "0.0.0"
@@ -302,21 +302,21 @@
           "version": "0.0.0"
         }
       },
-      "testersetup": {
-        "id": "testersetup",
-        "path": "testersetup",
+      "TestStacksetup": {
+        "id": "TestStacksetup",
+        "path": "TestStacksetup",
         "children": {
           "bucket": {
             "id": "bucket",
-            "path": "testersetup/bucket",
+            "path": "TestStacksetup/bucket",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "testersetup/bucket/Resource",
+                "path": "TestStacksetup/bucket/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::S3::Bucket",
                   "aws:cdk:cloudformation:props": {
-                    "bucketName": "cdk-test-bucket-event-source"
+                    "bucketName": "cdk-integ-test-imported-bucket-name"
                   }
                 },
                 "constructInfo": {
@@ -332,7 +332,7 @@
           },
           "BootstrapVersion": {
             "id": "BootstrapVersion",
-            "path": "testersetup/BootstrapVersion",
+            "path": "TestStacksetup/BootstrapVersion",
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnParameter",
               "version": "0.0.0"
@@ -340,7 +340,7 @@
           },
           "CheckBootstrapVersion": {
             "id": "CheckBootstrapVersion",
-            "path": "testersetup/CheckBootstrapVersion",
+            "path": "TestStacksetup/CheckBootstrapVersion",
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnRule",
               "version": "0.0.0"

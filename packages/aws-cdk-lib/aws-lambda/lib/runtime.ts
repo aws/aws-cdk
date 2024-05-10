@@ -279,6 +279,11 @@ export class Runtime {
   public static readonly RUBY_3_2 = new Runtime('ruby3.2', RuntimeFamily.RUBY);
 
   /**
+  * The Ruby 3.3 runtime (ruby3.3)
+  */
+  public static readonly RUBY_3_3 = new Runtime('ruby3.3', RuntimeFamily.RUBY);
+
+  /**
    * The custom provided runtime (provided)
    * @deprecated Legacy runtime no longer supported by AWS Lambda. Migrate to the latest provided.al2023 runtime.
    */

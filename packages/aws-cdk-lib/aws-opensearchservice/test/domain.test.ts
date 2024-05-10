@@ -295,7 +295,7 @@ each([testedOpenSearchVersions]).test('can set a self-referencing custom policy'
         {
           Ref: 'Domain66AC69E0',
         },
-        'AccessPolicy"}}',
+        'AccessPolicy"},"logApiResponseData":true}',
       ],
     ],
   };
@@ -406,6 +406,27 @@ each([testedOpenSearchVersions]).test('can specify multiAZWithStandbyEnabled in 
       MultiAZWithStandbyEnabled: true,
     },
   });
+});
+
+each([testedOpenSearchVersions]).test('multiAZWithStandbyEnabled: true throws with t3 instance type (data node)', (engineVersion) => {
+  expect(() => new Domain(stack, 'Domain', {
+    version: engineVersion,
+    capacity: {
+      dataNodeInstanceType: 't3.medium.search',
+      multiAzWithStandbyEnabled: true,
+    },
+  })).toThrow(/T3 instance type does not support Multi-AZ with standby feature\./);
+});
+
+each([testedOpenSearchVersions]).test('multiAZWithStandbyEnabled: true throws with t3 instance type (master node)', (engineVersion) => {
+  expect(() => new Domain(stack, 'Domain', {
+    version: engineVersion,
+    capacity: {
+      masterNodeInstanceType: 't3.medium.search',
+      masterNodes: 1,
+      multiAzWithStandbyEnabled: true,
+    },
+  })).toThrow(/T3 instance type does not support Multi-AZ with standby feature\./);
 });
 
 each([testedOpenSearchVersions]).test('ENABLE_OPENSEARCH_MULTIAZ_WITH_STANDBY set multiAZWithStandbyEnabled value', (engineVersion) => {
@@ -654,7 +675,7 @@ each([testedOpenSearchVersions]).describe('log groups', (engineVersion) => {
                 'Arn',
               ],
             },
-            '\\"}],\\"Version\\":\\"2012-10-17\\"}"},"physicalResourceId":{"id":"ESLogGroupPolicyc836fd92f07ec41eb70c2f6f08dc4b43cfb7c25391"}}',
+            '\\"}],\\"Version\\":\\"2012-10-17\\"}"},"physicalResourceId":{"id":"ESLogGroupPolicyc836fd92f07ec41eb70c2f6f08dc4b43cfb7c25391"},"logApiResponseData":true}',
           ],
         ],
       },
@@ -672,7 +693,7 @@ each([testedOpenSearchVersions]).describe('log groups', (engineVersion) => {
                 'Arn',
               ],
             },
-            '\\"}],\\"Version\\":\\"2012-10-17\\"}"},"physicalResourceId":{"id":"ESLogGroupPolicyc8f05f015be3baf6ec1ee06cd1ee5cc8706ebbe5b2"}}',
+            '\\"}],\\"Version\\":\\"2012-10-17\\"}"},"physicalResourceId":{"id":"ESLogGroupPolicyc8f05f015be3baf6ec1ee06cd1ee5cc8706ebbe5b2"},"logApiResponseData":true}',
           ],
         ],
       },
@@ -843,6 +864,90 @@ each([testedOpenSearchVersions]).describe('log groups', (engineVersion) => {
         AUDIT_LOGS: Match.absent(),
         SEARCH_SLOW_LOGS: Match.absent(),
         INDEX_SLOW_LOGS: Match.absent(),
+      },
+    });
+  });
+
+  test('can disable application logs', () => {
+    new Domain(stack, 'Domain1', {
+      version: engineVersion,
+      logging: {
+        appLogEnabled: false,
+      },
+    });
+
+    Template.fromStack(stack).resourceCountIs('Custom::CloudwatchLogResourcePolicy', 0);
+    Template.fromStack(stack).hasResourceProperties('AWS::OpenSearchService::Domain', {
+      LogPublishingOptions: {
+        ES_APPLICATION_LOGS: {
+          Enabled: false,
+        },
+        AUDIT_LOGS: Match.absent(),
+        SEARCH_SLOW_LOGS: Match.absent(),
+        INDEX_SLOW_LOGS: Match.absent(),
+      },
+    });
+  });
+
+  test('can disable audit logs', () => {
+    new Domain(stack, 'Domain1', {
+      version: engineVersion,
+      logging: {
+        auditLogEnabled: false,
+      },
+    });
+
+    Template.fromStack(stack).resourceCountIs('Custom::CloudwatchLogResourcePolicy', 0);
+    Template.fromStack(stack).hasResourceProperties('AWS::OpenSearchService::Domain', {
+      LogPublishingOptions: {
+        ES_APPLICATION_LOGS: Match.absent(),
+        AUDIT_LOGS: {
+          Enabled: false,
+        },
+        SEARCH_SLOW_LOGS: Match.absent(),
+        INDEX_SLOW_LOGS: Match.absent(),
+      },
+    });
+  });
+
+  test('can disable slow search logs', () => {
+    new Domain(stack, 'Domain1', {
+      version: engineVersion,
+      logging: {
+        slowSearchLogEnabled: false,
+      },
+    });
+
+    Template.fromStack(stack).resourceCountIs('Custom::CloudwatchLogResourcePolicy', 0);
+    Template.fromStack(stack).hasResourceProperties('AWS::OpenSearchService::Domain', {
+      LogPublishingOptions: {
+        ES_APPLICATION_LOGS: Match.absent(),
+        AUDIT_LOGS: Match.absent(),
+        SEARCH_SLOW_LOGS: {
+          Enabled: false,
+        },
+        INDEX_SLOW_LOGS: Match.absent(),
+      },
+    });
+  });
+
+  test('can disable slow index logs', () => {
+    new Domain(stack, 'Domain1', {
+      version: engineVersion,
+      logging: {
+        slowIndexLogEnabled: false,
+      },
+    });
+
+    Template.fromStack(stack).resourceCountIs('Custom::CloudwatchLogResourcePolicy', 0);
+    Template.fromStack(stack).hasResourceProperties('AWS::OpenSearchService::Domain', {
+      LogPublishingOptions: {
+        ES_APPLICATION_LOGS: Match.absent(),
+        AUDIT_LOGS: Match.absent(),
+        SEARCH_SLOW_LOGS: Match.absent(),
+        INDEX_SLOW_LOGS: {
+          Enabled: false,
+        },
       },
     });
   });

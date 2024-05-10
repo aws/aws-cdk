@@ -292,3 +292,53 @@ _cdk.json_
   }
 }
 ```
+
+* `@aws-cdk/aws-kms:reduceCrossAccountRegionPolicyScope`
+
+Reduce resource scope of the IAM Policy created from KMS key grant to granting key only.
+
+When this feature flag is enabled and calling KMS key grant method, the created IAM policy will reduce the resource scope from
+'*' to this specific granting KMS key.
+
+_cdk.json_
+
+```json
+{
+  "context": {
+    "@aws-cdk/aws-kms:reduceCrossAccountRegionPolicyScope": true
+  }
+}
+```
+
+* `@aws-cdk/aws-eks:nodegroupNameAttribute`
+
+When enabled, nodegroupName attribute of the provisioned EKS NodeGroup will not have the cluster name prefix.
+
+When this feature flag is enabled, the nodegroupName attribute will be exactly the name of the nodegroup
+without any prefix.
+
+_cdk.json_
+
+```json
+{
+  "context": {
+    "@aws-cdk/aws-eks:nodegroupNameAttribute": true
+  }
+}
+```
+
+* `@aws-cdk/aws-ec2:ebsDefaultGp3Volume`
+
+When enabled, the default volume type of the EBS volume will be GP3.
+
+When this featuer flag is enabled, the default volume type of the EBS volume will be `EbsDeviceVolumeType.GENERAL_PURPOSE_SSD_GP3`
+
+_cdk.json_
+
+```json
+{
+  "context": {
+    "@aws-cdk/aws-ec2:ebsDefaultGp3Volume": true
+  }
+}
+```

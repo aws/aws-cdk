@@ -972,7 +972,9 @@ new rds.DatabaseCluster(this, 'dbcluster', {
 ## Creating a Database Proxy
 
 Amazon RDS Proxy sits between your application and your relational database to efficiently manage
-connections to the database and improve scalability of the application. Learn more about at [Amazon RDS Proxy](https://aws.amazon.com/rds/proxy/)
+connections to the database and improve scalability of the application. Learn more about at [Amazon RDS Proxy](https://aws.amazon.com/rds/proxy/). 
+
+RDS Proxy is supported for MySQL, MariaDB, Postgres, and SQL Server.
 
 The following code configures an RDS Proxy for a `DatabaseInstance`.
 
@@ -1076,6 +1078,7 @@ const parameterGroup = new rds.ParameterGroup(this, 'ParameterGroup', {
   engine: rds.DatabaseInstanceEngine.sqlServerEe({
     version: rds.SqlServerEngineVersion.VER_11,
   }),
+  name: 'my-parameter-group',
   parameters: {
     locks: '100',
   },
@@ -1189,8 +1192,6 @@ const cluster = new rds.DatabaseCluster(this, 'Cluster', {
   enableDataApi: true, // Optional - will be automatically set if you call grantDataApiAccess()
 });
 cluster.grantDataApiAccess(fn);
-// It is necessary to grant the function access to the secret associated with the cluster for `DatabaseCluster`.
-cluster.secret!.grantRead(fn);
 ```
 
 **Note**: To invoke the Data API, the resource will need to read the secret associated with the cluster.
@@ -1221,6 +1222,20 @@ new rds.DatabaseCluster(this, 'DatabaseCluster', {
     vpc: vpc,
     preferredMaintenanceWindow: 'Sun:23:15-Sun:23:45',
   },
+  preferredMaintenanceWindow: 'Sat:22:15-Sat:22:45',
+});
+```
+
+You can also set the preferred maintenance window via reader and writer props:
+
+```ts
+declare const vpc: ec2.Vpc;
+new rds.DatabaseCluster(this, 'DatabaseCluster', {
+  engine: rds.DatabaseClusterEngine.AURORA,
+  vpc: vpc,
+  writer: rds.ClusterInstance.provisioned('WriterInstance', {
+    preferredMaintenanceWindow: 'Sat:22:15-Sat:22:45',
+  }),
   preferredMaintenanceWindow: 'Sat:22:15-Sat:22:45',
 });
 ```

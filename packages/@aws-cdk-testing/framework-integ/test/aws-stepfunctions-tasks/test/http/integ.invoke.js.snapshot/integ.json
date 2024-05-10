@@ -1,0 +1,12 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "HttpInvokeTest/DefaultTest": {
+      "stacks": [
+        "aws-stepfunctions-tasks-http-invoke-integ"
+      ],
+      "assertionStack": "HttpInvokeTest/DefaultTest/DeployAssert",
+      "assertionStackName": "HttpInvokeTestDefaultTestDeployAssertBA1B4726"
+    }
+  }
+}
