@@ -473,6 +473,12 @@ export class TaskDefinition extends TaskDefinitionBase {
       this.checkFargateWindowsBasedTasksSize(props.cpu!, props.memoryMiB!, props.runtimePlatform!);
     }
 
+    // Validate CPU and memory combinations if fargate compatible
+    if (isFargateCompatible(props.compatibility)) {
+      // Check the combination as per doc https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task-cpu-memory-error.html
+      this.validateFargateTaskDefinitionMemoryCpu(props.cpu!, props.memoryMiB!);
+    }
+
     this.runtimePlatform = props.runtimePlatform;
     this._cpu = props.cpu;
     this._memory = props.memoryMiB;
@@ -894,6 +900,35 @@ export class TaskDefinition extends TaskDefinitionBase {
       throw new Error(`If operatingSystemFamily is ${runtimePlatform.operatingSystemFamily!._operatingSystemFamily}, then cpu must be in 1024 (1 vCPU), 2048 (2 vCPU), or 4096 (4 vCPU). Provided value was: ${cpu}`);
     }
   };
+
+  private validateFargateTaskDefinitionMemoryCpu(cpu: string, memory: string) {
+    const validCpuMemoryCombinations = [
+      { cpu: 256, memory: [512, 1024, 2048] },
+      { cpu: 512, memory: this.range(1024, 4096, 1024) },
+      { cpu: 1024, memory: this.range(2048, 8192, 1024) },
+      { cpu: 2048, memory: this.range(4096, 16384, 1024) },
+      { cpu: 4096, memory: this.range(8192, 30720, 1024) },
+      { cpu: 8192, memory: this.range(16384, 61440, 4096) },
+      { cpu: 16384, memory: this.range(32768, 122880, 8192) },
+    ];
+
+    const isValidCombination = validCpuMemoryCombinations.some((combo) => {
+      return combo.cpu === Number(cpu) && combo.memory.includes(Number(memory));
+    });
+
+    if (!isValidCombination) {
+      throw new Error('Invalid CPU and memory combinations for FARGATE compatible task definition - https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task-cpu-memory-error.html');
+    }
+  }
+
+  private range(start: number, end: number, step: number): number[] {
+    const result = [];
+    for (let i = start; i <= end; i += step) {
+      result.push(i);
+    }
+    return result;
+  }
+
 }
 
 /**
