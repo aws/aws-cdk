@@ -213,13 +213,16 @@
                     ],
                     "replicas": [
                       {
-                        "region": "us-west-1"
+                        "region": "us-west-1",
+                        "readOnDemandThroughputSettings": {}
                       },
                       {
-                        "region": "us-east-2"
+                        "region": "us-east-2",
+                        "readOnDemandThroughputSettings": {}
                       },
                       {
-                        "region": "us-east-1"
+                        "region": "us-east-1",
+                        "readOnDemandThroughputSettings": {}
                       }
                     ],
                     "streamSpecification": {
@@ -243,7 +246,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_dynamodb.TableV2",
+              "fqn": "aws-cdk-lib.aws_dynamodb.TableBaseV2",
               "version": "0.0.0"
             }
           },
@@ -282,7 +285,7 @@
                 "path": "aws-cdk-global-table-replica-integ/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.70"
+                  "version": "10.3.0"
                 }
               },
               "DeployAssert": {
@@ -302,7 +305,7 @@
                             "path": "aws-cdk-global-table-replica-integ/DefaultTest/DeployAssert/LambdaInvoke4465da4335c2e66e81914dde9d8ac6f9/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.2.70"
+                              "version": "10.3.0"
                             }
                           }
                         },
@@ -382,7 +385,7 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.2.70"
+                      "version": "10.3.0"
                     }
                   },
                   "BootstrapVersion": {
@@ -424,7 +427,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.2.70"
+          "version": "10.3.0"
         }
       }
     },

@@ -47,6 +47,7 @@
       "Projection": {
        "ProjectionType": "ALL"
       },
+      "WriteOnDemandThroughputSettings": {},
       "WriteProvisionedThroughputSettings": {
        "WriteCapacityAutoScalingSettings": {
         "MaxCapacity": 20,
@@ -69,6 +70,7 @@
       "Projection": {
        "ProjectionType": "ALL"
       },
+      "WriteOnDemandThroughputSettings": {},
       "WriteProvisionedThroughputSettings": {
        "WriteCapacityAutoScalingSettings": {
         "MaxCapacity": 30,
@@ -119,6 +121,7 @@
          "Enabled": true
         },
         "IndexName": "gsi1",
+        "ReadOnDemandThroughputSettings": {},
         "ReadProvisionedThroughputSettings": {
          "ReadCapacityUnits": 10
         }
@@ -128,6 +131,7 @@
          "Enabled": false
         },
         "IndexName": "gsi2",
+        "ReadOnDemandThroughputSettings": {},
         "ReadProvisionedThroughputSettings": {
          "ReadCapacityUnits": 10
         }
@@ -136,6 +140,7 @@
       "PointInTimeRecoverySpecification": {
        "PointInTimeRecoveryEnabled": true
       },
+      "ReadOnDemandThroughputSettings": {},
       "ReadProvisionedThroughputSettings": {
        "ReadCapacityAutoScalingSettings": {
         "MaxCapacity": 25,
@@ -161,6 +166,7 @@
       "GlobalSecondaryIndexes": [
        {
         "IndexName": "gsi1",
+        "ReadOnDemandThroughputSettings": {},
         "ReadProvisionedThroughputSettings": {
          "ReadCapacityUnits": 15
         }
@@ -170,6 +176,7 @@
          "Enabled": true
         },
         "IndexName": "gsi2",
+        "ReadOnDemandThroughputSettings": {},
         "ReadProvisionedThroughputSettings": {
          "ReadCapacityUnits": 10
         }
@@ -178,6 +185,7 @@
       "PointInTimeRecoverySpecification": {
        "PointInTimeRecoveryEnabled": true
       },
+      "ReadOnDemandThroughputSettings": {},
       "ReadProvisionedThroughputSettings": {
        "ReadCapacityUnits": 10
       },
@@ -200,6 +208,7 @@
          "Enabled": true
         },
         "IndexName": "gsi1",
+        "ReadOnDemandThroughputSettings": {},
         "ReadProvisionedThroughputSettings": {
          "ReadCapacityUnits": 10
         }
@@ -209,6 +218,7 @@
          "Enabled": true
         },
         "IndexName": "gsi2",
+        "ReadOnDemandThroughputSettings": {},
         "ReadProvisionedThroughputSettings": {
          "ReadCapacityUnits": 10
         }
@@ -225,6 +235,7 @@
       "PointInTimeRecoverySpecification": {
        "PointInTimeRecoveryEnabled": true
       },
+      "ReadOnDemandThroughputSettings": {},
       "ReadProvisionedThroughputSettings": {
        "ReadCapacityUnits": 10
       },

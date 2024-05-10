@@ -95,7 +95,8 @@
                               "targetValue": 60
                             }
                           }
-                        }
+                        },
+                        "writeOnDemandThroughputSettings": {}
                       },
                       {
                         "indexName": "gsi2",
@@ -116,7 +117,8 @@
                               "targetValue": 70
                             }
                           }
-                        }
+                        },
+                        "writeOnDemandThroughputSettings": {}
                       }
                     ],
                     "keySchema": [
@@ -156,6 +158,7 @@
                             "readProvisionedThroughputSettings": {
                               "readCapacityUnits": 10
                             },
+                            "readOnDemandThroughputSettings": {},
                             "contributorInsightsSpecification": {
                               "enabled": true
                             }
@@ -165,6 +168,7 @@
                             "readProvisionedThroughputSettings": {
                               "readCapacityUnits": 10
                             },
+                            "readOnDemandThroughputSettings": {},
                             "contributorInsightsSpecification": {
                               "enabled": false
                             }
@@ -191,7 +195,8 @@
                             "key": "USE2ReplicaTagKey",
                             "value": "USE2ReplicaTagValue"
                           }
-                        ]
+                        ],
+                        "readOnDemandThroughputSettings": {}
                       },
                       {
                         "region": "us-west-2",
@@ -200,13 +205,15 @@
                             "indexName": "gsi1",
                             "readProvisionedThroughputSettings": {
                               "readCapacityUnits": 15
-                            }
+                            },
+                            "readOnDemandThroughputSettings": {}
                           },
                           {
                             "indexName": "gsi2",
                             "readProvisionedThroughputSettings": {
                               "readCapacityUnits": 10
                             },
+                            "readOnDemandThroughputSettings": {},
                             "contributorInsightsSpecification": {
                               "enabled": true
                             }
@@ -227,7 +234,8 @@
                             "key": "USW2ReplicaTagKey",
                             "value": "USW2ReplicaTagValue"
                           }
-                        ]
+                        ],
+                        "readOnDemandThroughputSettings": {}
                       },
                       {
                         "region": "us-east-1",
@@ -237,6 +245,7 @@
                             "readProvisionedThroughputSettings": {
                               "readCapacityUnits": 10
                             },
+                            "readOnDemandThroughputSettings": {},
                             "contributorInsightsSpecification": {
                               "enabled": true
                             }
@@ -246,6 +255,7 @@
                             "readProvisionedThroughputSettings": {
                               "readCapacityUnits": 10
                             },
+                            "readOnDemandThroughputSettings": {},
                             "contributorInsightsSpecification": {
                               "enabled": true
                             }
@@ -274,7 +284,8 @@
                             "key": "primaryTableTagKey",
                             "value": "primaryTableTagValue"
                           }
-                        ]
+                        ],
+                        "readOnDemandThroughputSettings": {}
                       }
                     ],
                     "sseSpecification": {
@@ -308,7 +319,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_dynamodb.TableV2",
+              "fqn": "aws-cdk-lib.aws_dynamodb.TableBaseV2",
               "version": "0.0.0"
             }
           },

@@ -11,12 +11,12 @@
     },
     "service": "Lambda",
     "api": "invoke",
-    "expected": "{\"$ObjectLike\":{\"Payload\":{\"status_code\":200}}}",
+    "expected": "{\"$ObjectLike\":{}}",
     "parameters": {
      "FunctionName": "\"global-table-lambda\""
     },
     "flattenResponse": "false",
-    "salt": "1694205517464"
+    "salt": "1715260257976"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -111,7 +111,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "d4087f9b90522f437499693de83d9bb1d3d93a99d4d34dad4625e71132244692.zip"
+     "S3Key": "5d1d4edf325214cb8fa33ca3d5969e29df888b1dd35dd573917f63833958a9a7.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
