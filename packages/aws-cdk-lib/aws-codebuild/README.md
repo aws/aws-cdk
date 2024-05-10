@@ -632,7 +632,7 @@ enable the `deleteReports` option as well as setting the removal policy to
 `RemovalPolicy.DESTROY`.
 
 ```ts
-const reportGroup = new codebuild.ReportGroup(stack, 'ReportGroup', {
+const reportGroup = new codebuild.ReportGroup(this, 'ReportGroup', {
       deleteReports: true,
       removalPolicy: cdk.RemovalPolicy.DESTROY,
 });
