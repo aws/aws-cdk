@@ -40,7 +40,7 @@ describe('ApplicationLoadBalancedEc2Service', () => {
         command: ['/bin/bash'],
       },
       desiredCount: 2,
-      ipAddressType: IpAddressType.IPV4,
+      ipAddressType: IpAddressType.DUAL_STACK,
     });
 
     // THEN - stack contains a load balancer and a service
