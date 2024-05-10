@@ -570,7 +570,7 @@
     "Family": "awsecsintegruntimeTaskDefGraviton28E28B263",
     "Memory": "1024",
     "NetworkMode": "awsvpc",
-    "PidMode": "host",
+    "PidMode": "task",
     "RequiresCompatibilities": [
      "FARGATE"
     ],
