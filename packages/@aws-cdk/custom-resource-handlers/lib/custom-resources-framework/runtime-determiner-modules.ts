@@ -1,5 +1,6 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import { ExternalModule, Type } from '@cdklabs/typewriter';
+import { makeCallableExpr } from './utils/framework-utils';
 
 class LambdaInternalRuntime extends ExternalModule {
   public readonly Runtime = Type.fromName(this, 'Runtime');
@@ -11,7 +12,7 @@ class LambdaInternalRuntime extends ExternalModule {
 }
 
 class CoreRuntimeDeterminer extends ExternalModule {
-  public readonly determineLatestNodeRuntimeName = 'determineLatestNodeRuntimeName';
+  public readonly determineLatestNodeRuntimeName = makeCallableExpr(this, 'determineLatestNodeRuntimeName');
 
   public constructor() {
     super('../../core/lib/dist/core/runtime-determiner-core.generated');

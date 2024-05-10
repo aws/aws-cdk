@@ -7,6 +7,7 @@ import {
   ExternalModule,
   FreeFunction,
   Type,
+  $T,
 } from '@cdklabs/typewriter';
 import * as fs from 'fs-extra';
 import { DEFAULT_NODE_RUNTIME } from './config';
@@ -45,17 +46,22 @@ export class RuntimeDeterminerModule extends Module {
   private buildDetermineLatestNodeRuntimeName() {
     this.externalModules.push(...[CORE_INTERNAL_STACK, CORE_INTERNAL_REGION_INFO]);
     const fn = new FreeFunction(this, {
-      name: 'determineLatestNodeRuntimeName',
+      name: CORE_RUNTIME_DETERMINER.determineLatestNodeRuntimeName.name,
       export: true,
       returnType: Type.STRING,
     });
-    fn.addParameter({
+    const scope = fn.addParameter({
       name: 'scope',
       type: CONSTRUCTS_MODULE.Construct,
     });
     fn.addBody(
       stmt.ret(
-        expr.directCode(`${CORE_INTERNAL_STACK.Stack}.of(scope).regionalFact(${CORE_INTERNAL_REGION_INFO.FactName}.DEFAULT_CR_NODE_VERSION, '${DEFAULT_NODE_RUNTIME}')`),
+        $T(CORE_INTERNAL_STACK.Stack)
+          .of(expr.directCode(scope.spec.name))
+          .regionalFact(
+            $T(CORE_INTERNAL_REGION_INFO.FactName).DEFAULT_CR_NODE_VERSION,
+            expr.directCode(`'${DEFAULT_NODE_RUNTIME}'`),
+          ),
       ),
     );
   }
@@ -67,17 +73,22 @@ export class RuntimeDeterminerModule extends Module {
       export: true,
       returnType: LAMBDA_INTERNAL_RUNTIME.Runtime,
     });
-    fn.addParameter({
+    const scope = fn.addParameter({
       name: 'scope',
       type: CONSTRUCTS_MODULE.Construct,
     });
+    const runtimeName = expr.ident('runtimeName');
     fn.addBody(
       stmt.constVar(
-        expr.ident('runtimeName'),
-        expr.directCode('determineLatestNodeRuntimeName(scope)'),
+        runtimeName,
+        CORE_RUNTIME_DETERMINER.determineLatestNodeRuntimeName.expr.call(expr.ident(scope.spec.name)),
       ),
       stmt.ret(
-        expr.directCode(`new ${LAMBDA_INTERNAL_RUNTIME.Runtime}(runtimeName, ${LAMBDA_INTERNAL_RUNTIME.RuntimeFamily}.NODEJS, { supportsInlineCode: true })`),
+        $T(LAMBDA_INTERNAL_RUNTIME.Runtime).newInstance(
+          runtimeName,
+          $T(LAMBDA_INTERNAL_RUNTIME.RuntimeFamily).NODEJS,
+          expr.directCode('{ supportsInlineCode: true }'),
+        ),
       ),
     );
   }
@@ -110,7 +121,7 @@ export class RuntimeDeterminerModule extends Module {
         return;
       }
       case CORE_RUNTIME_DETERMINER.fqn: {
-        module.importSelective(this, [CORE_RUNTIME_DETERMINER.determineLatestNodeRuntimeName]);
+        module.importSelective(this, [CORE_RUNTIME_DETERMINER.determineLatestNodeRuntimeName.name]);
         return;
       }
     }
