@@ -1640,9 +1640,10 @@ integTest('test migrate deployment for app with localfile source in migrate.json
 
   // Initial deploy
   await fixture.cdkDeploy('migrate-stack', {
-    modEnv: { LARGE_TEMPLATE: '0', RETAIN_SINGLE_QUEUE: '1', INCLUDE_SINGLE_QUEUE: '1' },
+    modEnv: { ORPHAN_TOPIC: '1' },
     options: ['--outputs-file', outputsFile],
   });
+
   const outputs = JSON.parse((await fs.readFile(outputsFile, { encoding: 'utf-8' })).toString());
   const stackName = fixture.fullStackName('migrate-stack');
   const queueName = outputs[stackName].QueueName;
@@ -1665,7 +1666,7 @@ integTest('test migrate deployment for app with localfile source in migrate.json
   // Create new stack from existing queue
   try {
     fixture.log(`Deploying new stack ${fixture.fullStackName}, migrating ${queueName} into stack`);
-    await fixture.cdkDeploy('migrate-stack', { modEnv: { LARGE_TEMPLATE: '0', RETAIN_SINGLE_QUEUE: '0', INCLUDE_SINGLE_QUEUE: '1' } });
+    await fixture.cdkDeploy('migrate-stack');
   } finally {
     // Cleanup
     await fixture.cdkDestroy('migrate-stack');
