@@ -1625,7 +1625,6 @@ integTest('test resource import', withDefaultFixture(async (fixture) => {
     // THEN
     const describeStacksResponse = await fixture.aws.cloudFormation('describeStacks', { StackName: fullStackName });
     const cfnTemplateAfterImport = await fixture.aws.cloudFormation('getTemplate', { StackName: fullStackName });
-    expect(cfnTemplateAfterImport.TemplateBody).toContain(queueLogicalId);
     expect(describeStacksResponse.Stacks![0].StackStatus).toEqual('IMPORT_COMPLETE');
     expect(cfnTemplateAfterImport.TemplateBody).toContain(queueLogicalId);
   } finally {
