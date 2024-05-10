@@ -1,5 +1,6 @@
 import * as fc from 'fast-check';
 import { arbitraryTemplate } from './test-arbitraries';
+import { sqsQueue, sqsQueueWithAargs, ssmParam } from './util';
 import { fullDiff, ResourceImpact } from '../lib/diff-template';
 
 const POLICY_DOCUMENT = { foo: 'Bar' }; // Obviously a fake one!
@@ -1242,16 +1243,7 @@ describe('changeset', () => {
         },
       },
       Resources: {
-        mySsmParameter: {
-          Type: 'AWS::SSM::Parameter',
-          Properties: {
-            Name: 'mySsmParameterFromStack',
-            Type: 'String',
-            Value: {
-              Ref: 'SsmParameterValuetestbugreportC9',
-            },
-          },
-        },
+        mySsmParameter: ssmParam,
       },
     };
 
@@ -1293,26 +1285,8 @@ describe('changeset', () => {
     expect(diffWithChangeSet.resources.changes).toEqual(
       {
         mySsmParameter: {
-          oldValue: {
-            Type: 'AWS::SSM::Parameter',
-            Properties: {
-              Name: 'mySsmParameterFromStack',
-              Type: 'String',
-              Value: {
-                Ref: 'SsmParameterValuetestbugreportC9',
-              },
-            },
-          },
-          newValue: {
-            Type: 'AWS::SSM::Parameter',
-            Properties: {
-              Name: 'mySsmParameterFromStack',
-              Type: 'String',
-              Value: {
-                Ref: 'SsmParameterValuetestbugreportC9',
-              },
-            },
-          },
+          oldValue: ssmParam,
+          newValue: ssmParam,
           resourceTypes: {
             oldType: 'AWS::SSM::Parameter',
             newType: 'AWS::SSM::Parameter',
@@ -1331,10 +1305,8 @@ describe('changeset', () => {
               changeImpact: 'NO_CHANGE',
             },
             Value: {
-              oldValue: {
-              },
-              newValue: {
-              },
+              oldValue: {},
+              newValue: {},
               isDifferent: true,
               changeImpact: 'WILL_UPDATE', // this is what changed!
             },
@@ -1414,32 +1386,16 @@ describe('changeset', () => {
     expect(diffWithChangeSet.resources.changes).toEqual(
       {
         Queue: {
-          oldValue: {
-            Type: 'AWS::SQS::Queue',
-            Properties: {
-              QueueName: {
-                Ref: 'SsmParameterValuetestbugreportC9',
-              },
-            },
-          },
-          newValue: {
-            Type: 'AWS::SQS::Queue',
-            Properties: {
-              QueueName: {
-                Ref: 'SsmParameterValuetestbugreportC9',
-              },
-            },
-          },
+          oldValue: sqsQueue,
+          newValue: sqsQueue,
           resourceTypes: {
             oldType: 'AWS::SQS::Queue',
             newType: 'AWS::SQS::Queue',
           },
           propertyDiffs: {
             QueueName: {
-              oldValue: {
-              },
-              newValue: {
-              },
+              oldValue: {},
+              newValue: {},
               isDifferent: true,
               changeImpact: 'WILL_REPLACE', // this is what changed!
             },
@@ -1471,23 +1427,7 @@ describe('changeset', () => {
         },
       },
       Resources: {
-        Queue: {
-          Type: 'AWS::SQS::Queue',
-          Properties: {
-            QueueName: {
-              'Fn::Join': [
-                '',
-                [
-                  'newValue',
-                  {
-                    Ref: 'SsmParameterValuetestbugreportC9',
-                  },
-                ],
-              ],
-            },
-            ReceiveMessageWaitTimeSeconds: 10,
-          },
-        },
+        Queue: sqsQueueWithAargs({ waitTime: 10 }),
       },
     };
 
@@ -1499,23 +1439,7 @@ describe('changeset', () => {
         },
       },
       Resources: {
-        Queue: {
-          Type: 'AWS::SQS::Queue',
-          Properties: {
-            QueueName: {
-              'Fn::Join': [
-                '',
-                [
-                  'newValue',
-                  {
-                    Ref: 'SsmParameterValuetestbugreportC9',
-                  },
-                ],
-              ],
-            },
-            ReceiveMessageWaitTimeSeconds: 20,
-          },
-        },
+        Queue: sqsQueueWithAargs({ waitTime: 20 }),
       },
     };
 
@@ -1562,40 +1486,8 @@ describe('changeset', () => {
     expect(diffWithoutChangeSet.resources.changes).toEqual(
       {
         Queue: {
-          oldValue: {
-            Type: 'AWS::SQS::Queue',
-            Properties: {
-              QueueName: {
-                'Fn::Join': [
-                  '',
-                  [
-                    'newValue',
-                    {
-                      Ref: 'SsmParameterValuetestbugreportC9',
-                    },
-                  ],
-                ],
-              },
-              ReceiveMessageWaitTimeSeconds: 10,
-            },
-          },
-          newValue: {
-            Type: 'AWS::SQS::Queue',
-            Properties: {
-              QueueName: {
-                'Fn::Join': [
-                  '',
-                  [
-                    'newValue',
-                    {
-                      Ref: 'SsmParameterValuetestbugreportC9',
-                    },
-                  ],
-                ],
-              },
-              ReceiveMessageWaitTimeSeconds: 20,
-            },
-          },
+          oldValue: sqsQueueWithAargs({ waitTime: 10 }),
+          newValue: sqsQueueWithAargs({ waitTime: 20 }),
           resourceTypes: {
             oldType: 'AWS::SQS::Queue',
             newType: 'AWS::SQS::Queue',
@@ -1603,26 +1495,10 @@ describe('changeset', () => {
           propertyDiffs: {
             QueueName: {
               oldValue: {
-                'Fn::Join': [
-                  '',
-                  [
-                    'newValue',
-                    {
-                      Ref: 'SsmParameterValuetestbugreportC9',
-                    },
-                  ],
-                ],
+                Ref: 'SsmParameterValuetestbugreportC9',
               },
               newValue: {
-                'Fn::Join': [
-                  '',
-                  [
-                    'newValue',
-                    {
-                      Ref: 'SsmParameterValuetestbugreportC9',
-                    },
-                  ],
-                ],
+                Ref: 'SsmParameterValuetestbugreportC9',
               },
               isDifferent: false,
               changeImpact: 'NO_CHANGE',
@@ -1649,61 +1525,11 @@ describe('changeset', () => {
     );
 
     expect(diffWithChangeSet.differenceCount).toBe(1); // this is the count of how many resources have changed
-    expect(diffWithChangeSet.resources.get('Queue').propertyUpdates).toEqual(
-      {
-        QueueName: {
-          oldValue: {
-          },
-          newValue: {
-          },
-          isDifferent: true,
-          changeImpact: 'WILL_REPLACE',
-        },
-        ReceiveMessageWaitTimeSeconds: {
-          oldValue: 10,
-          newValue: 20,
-          isDifferent: true,
-          changeImpact: 'WILL_UPDATE',
-        },
-      },
-    );
     expect(diffWithChangeSet.resources.changes).toEqual(
       {
         Queue: {
-          oldValue: {
-            Type: 'AWS::SQS::Queue',
-            Properties: {
-              QueueName: {
-                'Fn::Join': [
-                  '',
-                  [
-                    'newValue',
-                    {
-                      Ref: 'SsmParameterValuetestbugreportC9',
-                    },
-                  ],
-                ],
-              },
-              ReceiveMessageWaitTimeSeconds: 10,
-            },
-          },
-          newValue: {
-            Type: 'AWS::SQS::Queue',
-            Properties: {
-              QueueName: {
-                'Fn::Join': [
-                  '',
-                  [
-                    'newValue',
-                    {
-                      Ref: 'SsmParameterValuetestbugreportC9',
-                    },
-                  ],
-                ],
-              },
-              ReceiveMessageWaitTimeSeconds: 20,
-            },
-          },
+          oldValue: sqsQueueWithAargs({ waitTime: 10 }),
+          newValue: sqsQueueWithAargs({ waitTime: 20 }),
           resourceTypes: {
             oldType: 'AWS::SQS::Queue',
             newType: 'AWS::SQS::Queue',
