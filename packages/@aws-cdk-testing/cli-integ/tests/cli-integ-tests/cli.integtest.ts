@@ -1,8 +1,7 @@
 import { promises as fs, existsSync } from 'fs';
 import * as os from 'os';
 import * as path from 'path';
-import * as SSM from '@aws-sdk/client-ssm';
-import { integTest, cloneDirectory, shell, withDefaultFixture, retry, sleep, randomInteger, withSamIntegrationFixture, RESOURCES_DIR, withCDKMigrateFixture, withExtendedTimeoutFixture } from '../../lib';
+import { integTest, cloneDirectory, shell, withDefaultFixture, retry, sleep, randomInteger, withSamIntegrationFixture, RESOURCES_DIR, withCDKMigrateFixture, withExtendedTimeoutFixture, randomString } from '../../lib';
 
 jest.setTimeout(2 * 60 * 60_000); // Includes the time to acquire locks, worst-case single-threaded runtime
 
@@ -947,30 +946,25 @@ integTest('cdk diff --quiet does not print \'There were no differences\' message
 
 integTest('cdk diff picks up changes that are only present in changeset', withDefaultFixture(async (fixture) => {
   // GIVEN
-  const ssmClient = new SSM.SSMClient();
-  await ssmClient.send(new SSM.PutParameterCommand(
-    {
-      Name: 'for-queue-name-defined-by-ssm-param',
-      Value: Math.floor(Math.random() * 100_000_000_000_001).toString(),
-      Overwrite: true,
-      Type: 'String',
-    },
-  ));
+  await fixture.aws.ssm('putParameter', {
+    Name: 'for-queue-name-defined-by-ssm-param',
+    Value: randomString(),
+    Type: 'String',
+    Overwrite: true,
+  });
 
   try {
     await fixture.cdkDeploy('queue-name-defined-by-ssm-param');
 
     // WHEN
     // We want to change the ssm value. Then the CFN changeset will detect that the queue will be changed upon deploy.
-    const newRandomValueForSsmParam = Math.floor(Math.random() * 100_000_000_000_001).toString();
-    await ssmClient.send(new SSM.PutParameterCommand(
-      {
-        Name: 'for-queue-name-defined-by-ssm-param',
-        Value: newRandomValueForSsmParam,
-        Type: 'String',
-        Overwrite: true,
-      },
-    ));
+    await fixture.aws.ssm('putParameter', {
+      Name: 'for-queue-name-defined-by-ssm-param',
+      Value: randomString(),
+      Type: 'String',
+      Overwrite: true,
+    });
+
     const diff = await fixture.cdk(['diff', fixture.fullStackName('queue-name-defined-by-ssm-param')]);
 
     // THEN
