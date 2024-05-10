@@ -377,9 +377,9 @@ The code snippet below creates an AppSync GraphQL API target that is invoked eve
 ```ts
 import * as appsync from 'aws-cdk-lib/aws-appsync';
 
-const api = new appsync.GraphqlApi(stack, 'api', {
+const api = new appsync.GraphqlApi(this, 'api', {
   name: 'api',
-  definition: appsync.Definition.fromFile(path.join(__dirname, 'schema.graphql')),
+  definition: appsync.Definition.fromFile('schema.graphql'),
   authorizationConfig: {
     defaultAuthorization: { authorizationType: appsync.AuthorizationType.IAM }
   },
@@ -403,7 +403,7 @@ You can pass an existing role with the proper permissions to be used for the tar
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as appsync from 'aws-cdk-lib/aws-appsync';
 
-const api = appsync.GraphqlApi.fromGraphqlApiAttributes(stack, 'ImportedAPI', {
+const api = appsync.GraphqlApi.fromGraphqlApiAttributes(this, 'ImportedAPI', {
   graphqlApiId: '<api-id>',
   graphqlApiArn: '<api-arn>',
   graphQLEndpointArn: '<api-endpoint-arn>',
