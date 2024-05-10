@@ -393,15 +393,15 @@ function setsEqual(first: Set<string>, second: Set<string>) {
   return first.size === second.size && [...first].every((e: string) => second.has(e));
 }
 
-function getTagsToUpdate<T extends Record<string, string>>(obj1: T, obj2: T): T {
+function getTagsToUpdate<T extends Record<string, string>>(oldTags: T, newTags: T): T {
   const diff: T = {} as T;
   // Get all tag keys that are newly added and keys whose value have changed
-  for (const key in obj2) {
-    if (obj2.hasOwnProperty(key)) {
-      if (!obj1.hasOwnProperty(key)) {
-        diff[key] = obj2[key];
-      } else if (obj1[key] !== obj2[key]) {
-        diff[key] = obj2[key];
+  for (const key in newTags) {
+    if (newTags.hasOwnProperty(key)) {
+      if (!oldTags.hasOwnProperty(key)) {
+        diff[key] = newTags[key];
+      } else if (oldTags[key] !== newTags[key]) {
+        diff[key] = newTags[key];
       }
     }
   }
@@ -409,11 +409,11 @@ function getTagsToUpdate<T extends Record<string, string>>(obj1: T, obj2: T): T 
   return diff;
 }
 
-function getTagsToRemove<T extends Record<string, string>>(obj1: T, obj2: T): string[] {
+function getTagsToRemove<T extends Record<string, string>>(oldTags: T, newTags: T): string[] {
   const missingKeys: string[] = [];
   //Get all tag keys to remove
-  for (const key in obj1) {
-    if (obj1.hasOwnProperty(key) && !obj2.hasOwnProperty(key)) {
+  for (const key in oldTags) {
+    if (oldTags.hasOwnProperty(key) && !newTags.hasOwnProperty(key)) {
       missingKeys.push(key);
     }
   }
