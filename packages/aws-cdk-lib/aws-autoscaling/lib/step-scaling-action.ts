@@ -75,7 +75,7 @@ export class StepScalingAction extends Construct {
     // Specify cooldown property in StepScaling policy type is ineffective and may cause deployment failure
     // in certain regions. We can't simply remove the property since it break existing users. Since setting
     // this value is ineffective, we can safely ignore the value of this property with a warning.
-    if (props.cooldown && props.cooldown.toSeconds().toString()) {
+    if (props.cooldown) {
       Annotations.of(this).addWarningV2('@aws-cdk/aws-autoscaling:cooldownOnStepScaling', '\'Cooldown\' is valid only if the policy type is SimpleScaling. Default to ignore the values set.');
     }
 
