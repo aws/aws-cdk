@@ -376,7 +376,14 @@ The code snippet below creates an AppSync GraphQL API target that is invoked eve
 
 ```ts
 import * as appsync from 'aws-cdk-lib/aws-appsync';
-declare const api: appsync.GraphqlApi;
+
+const api = new appsync.GraphqlApi(stack, 'api', {
+  name: 'api',
+  definition: appsync.Definition.fromFile(path.join(__dirname, 'schema.graphql')),
+  authorizationConfig: {
+    defaultAuthorization: { authorizationType: appsync.AuthorizationType.IAM }
+  },
+});
 
 const rule = new events.Rule(this, 'Rule', {
   schedule: events.Schedule.rate(cdk.Duration.hours(1)),
@@ -395,7 +402,14 @@ You can pass an existing role with the proper permissions to be used for the tar
 ```ts
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as appsync from 'aws-cdk-lib/aws-appsync';
-declare const api: appsync.GraphqlApi;
+
+const api = appsync.GraphqlApi.fromGraphqlApiAttributes(stack, 'ImportedAPI', {
+  graphqlApiId: '<api-id>',
+  graphqlApiArn: '<api-arn>',
+  graphQLEndpointArn: '<api-endpoint-arn>',
+  visibility: appsync.Visibility.GLOBAL,
+  modes: [appsync.AuthorizationType.IAM],
+});
 
 const rule = new events.Rule(this, 'Rule', { schedule: events.Schedule.rate(cdk.Duration.minutes(1)), });
 const role = new iam.Role(this, 'Role', { assumedBy: new iam.ServicePrincipal('events.amazonaws.com') });

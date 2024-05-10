@@ -39,6 +39,7 @@ describe('AppSync GraphQL API target', () => {
     const noEndpointArnAPI = appsync.GraphqlApi.fromGraphqlApiAttributes(stack, 'ImportedAPI', {
       graphqlApiId: 'MyApiId',
       graphqlApiArn: 'MyApiArn',
+      modes: [appsync.AuthorizationType.IAM],
     });
 
     const rule = new events.Rule(stack, 'Rule', {
@@ -52,7 +53,7 @@ describe('AppSync GraphQL API target', () => {
           message: events.EventField.fromPath('$.detail'),
         }),
       }));
-    }).toThrow('You must have AWS_IAM authorization mode enabled on your API to configure an AppSync target');
+    }).toThrow('You must have a valid `graphQLEndpointArn` set');
   });
 
   test('Accepts API create with fromGraphqlApiAttributes', () => {
