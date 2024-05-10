@@ -383,7 +383,8 @@ export class TaskDefinition extends TaskDefinitionBase {
    * Only supported for tasks that are hosted on AWS Fargate if the tasks
    * are using platform version 1.4.0 or later (Linux). Not supported in
    * Windows containers. If pidMode is specified for a Fargate task,
-   * then runtimePlatform.operatingSystemFamily must also be specified.
+   * then runtimePlatform.operatingSystemFamily must also be specified.  For more
+   * information, see [Task Definition Parameters](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task_definition_parameters.html#task_definition_pidmode).
    */
   public readonly pidMode?: PidMode;
 
