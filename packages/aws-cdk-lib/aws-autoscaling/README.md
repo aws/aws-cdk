@@ -23,7 +23,8 @@ new autoscaling.AutoScalingGroup(this, 'ASG', {
 
 Creating an `AutoScalingGroup` from a Launch Configuration has been deprecated. All new accounts created after December 31, 2023 will no longer be able to create Launch Configurations. With the `@aws-cdk/aws-autoscaling:generateLaunchTemplateInsteadOfLaunchConfig` feature flag set to true, `AutoScalingGroup` properties used to create a Launch Configuration will now be used to create a `LaunchTemplate` using a [Launch Configuration to `LaunchTemplate` mapping](https://docs.aws.amazon.com/autoscaling/ec2/userguide/migrate-launch-configurations-with-cloudformation.html#launch-configuration-mapping-reference). Specifically, the following `AutoScalingGroup` properties will be used to generate a `LaunchTemplate`:
 * machineImage
-* keyName
+* keyName (deprecated, prefer keyPair)
+* keyPair
 * instanceType
 * instanceMonitoring
 * securityGroup
@@ -735,6 +736,30 @@ new autoscaling.AutoScalingGroup(this, 'ASG', {
   // ...
 
   defaultInstanceWarmup: Duration.seconds(5),
+});
+```
+
+## Configuring KeyPair for instances
+
+You can use a keyPair to build your asg when you decide not to use a ready-made LanchTemplate.
+
+To configure KeyPair for an autoscaling group, pass the `keyPair` as a prop:
+
+```ts
+declare const vpc: ec2.Vpc;
+declare const instanceType: ec2.InstanceType;
+declare const machineImage: ec2.IMachineImage;
+
+const myKeyPair = new ec2.KeyPair(this, 'MyKeyPair');
+
+new autoscaling.AutoScalingGroup(this, 'ASG', {
+  vpc,
+  instanceType,
+  machineImage,
+
+  // ...
+
+  keyPair: myKeyPair,
 });
 ```
 
