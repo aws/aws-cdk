@@ -23,8 +23,8 @@ import {
   CORE_INTERNAL_STACK,
   CORE_INTERNAL_CR_PROVIDER,
   PATH_MODULE,
+  CORE_RUNTIME_DETERMINER,
   CORE_INTERNAL_RUNTIME_DETERMINER,
-  RUNTIME_DETERMINER,
 } from './modules';
 import { toLambdaRuntime } from './utils/framework-utils';
 
@@ -103,7 +103,7 @@ export abstract class HandlerFrameworkClass extends ClassType {
           new Splat(expr.ident('props')),
           ['code', expr.directCode(`lambda.Code.fromAsset(path.join(__dirname, '${props.codeDirectory}'))`)],
           ['handler', expr.lit(props.handler)],
-          ['runtime', expr.directCode(this.buildRuntimeProperty(scope, props.runtime))],
+          ['runtime', this.buildRuntimeProperty(scope, props.runtime)],
         ]);
         this.buildConstructor({
           constructorPropsType: LAMBDA_MODULE.FunctionOptions,
@@ -165,7 +165,7 @@ export abstract class HandlerFrameworkClass extends ClassType {
           new Splat(expr.ident('props')),
           ['code', expr.directCode(`lambda.Code.fromAsset(path.join(__dirname, '${props.codeDirectory}'))`)],
           ['handler', expr.lit(props.handler)],
-          ['runtime', expr.directCode(this.buildRuntimeProperty(scope, props.runtime))],
+          ['runtime', this.buildRuntimeProperty(scope, props.runtime)],
         ]);
         this.buildConstructor({
           constructorPropsType: _interface.type,
@@ -260,7 +260,7 @@ export abstract class HandlerFrameworkClass extends ClassType {
         const superProps = new ObjectLiteral([
           new Splat(expr.ident('props')),
           ['codeDirectory', expr.directCode(`path.join(__dirname, '${props.codeDirectory}')`)],
-          ['runtimeName', expr.lit('nodejs18.x')],
+          ['runtimeName', this.buildRuntimeProperty(scope, props.runtime, true)],
         ]);
         this.buildConstructor({
           constructorPropsType: scope.coreInternal
@@ -293,42 +293,42 @@ export abstract class HandlerFrameworkClass extends ClassType {
   private importExternalModuleInto(scope: HandlerFrameworkModule, module: ExternalModule) {
     switch (module.fqn) {
       case PATH_MODULE.fqn: {
-        PATH_MODULE.import(scope, 'path');
+        module.import(scope, 'path');
         return;
       }
       case CONSTRUCTS_MODULE.fqn: {
-        CONSTRUCTS_MODULE.importSelective(scope, ['Construct']);
+        module.importSelective(scope, [CONSTRUCTS_MODULE.Construct.toString()]);
         return;
       }
       case CORE_MODULE.fqn: {
-        CORE_MODULE.importSelective(scope, [
-          'Stack',
-          'CustomResourceProviderBase',
-          'CustomResourceProviderOptions',
+        module.importSelective(scope, [
+          CORE_MODULE.Stack.toString(),
+          CORE_MODULE.CustomResourceProviderBase.toString(),
+          CORE_MODULE.CustomResourceProviderOptions.toString(),
         ]);
         return;
       }
       case CORE_INTERNAL_CR_PROVIDER.fqn: {
-        CORE_INTERNAL_CR_PROVIDER.importSelective(scope, [
-          'CustomResourceProviderBase',
-          'CustomResourceProviderOptions',
+        module.importSelective(scope, [
+          CORE_INTERNAL_CR_PROVIDER.CustomResourceProviderBase.toString(),
+          CORE_INTERNAL_CR_PROVIDER.CustomResourceProviderOptions.toString(),
         ]);
         return;
       }
       case CORE_INTERNAL_STACK.fqn: {
-        CORE_INTERNAL_STACK.importSelective(scope, ['Stack']);
+        module.importSelective(scope, [CORE_INTERNAL_STACK.Stack.toString()]);
         return;
       }
       case LAMBDA_MODULE.fqn: {
-        LAMBDA_MODULE.import(scope, 'lambda');
-        return;
-      }
-      case RUNTIME_DETERMINER.fqn: {
-        RUNTIME_DETERMINER.importSelective(scope, ['RuntimeDeterminer']);
+        module.import(scope, 'lambda');
         return;
       }
       case CORE_INTERNAL_RUNTIME_DETERMINER.fqn: {
-        CORE_INTERNAL_RUNTIME_DETERMINER.importSelective(scope, ['RuntimeDeterminer']);
+        module.importSelective(scope, [CORE_INTERNAL_RUNTIME_DETERMINER.determineLatestNodeRuntimeName]);
+        return;
+      }
+      case CORE_RUNTIME_DETERMINER.fqn: {
+        module.importSelective(scope, [CORE_RUNTIME_DETERMINER.determineLatestNodeRuntimeName]);
         return;
       }
     }
@@ -369,17 +369,17 @@ export abstract class HandlerFrameworkClass extends ClassType {
 
   private buildRuntimeProperty(scope: HandlerFrameworkModule, runtime?: Runtime, isProvider: boolean = false) {
     if (runtime) {
-      return toLambdaRuntime(runtime);
+      return isProvider ? expr.lit(runtime) : expr.directCode(toLambdaRuntime(runtime));
     }
 
-    if (scope.coreInternal) {
-      this.externalModules.push(CORE_INTERNAL_RUNTIME_DETERMINER);
-    } else {
-      this.externalModules.push(RUNTIME_DETERMINER);
+    if (isProvider) {
+      this.externalModules.push(
+        scope.coreInternal ? CORE_INTERNAL_RUNTIME_DETERMINER : CORE_RUNTIME_DETERMINER,
+      );
     }
 
     return isProvider
-      ? 'RuntimeDeterminer.determineLatestLambdaRuntimeName(scope)'
-      : 'RuntimeDeterminer.determineLatestLambdaRuntime(scope)';
+      ? expr.directCode('determineLatestNodeRuntimeName(scope)')
+      : expr.directCode('lambda.determineLatestNodeRuntime(scope)');
   }
 }

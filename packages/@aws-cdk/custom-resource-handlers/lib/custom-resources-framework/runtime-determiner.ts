@@ -1,14 +1,12 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import {
-  ClassType,
   Module,
-  Type,
   TypeScriptRenderer,
   stmt,
   expr,
-  MemberVisibility,
   ExternalModule,
-  Method,
+  FreeFunction,
+  Type,
 } from '@cdklabs/typewriter';
 import * as fs from 'fs-extra';
 import { DEFAULT_NODE_RUNTIME } from './config';
@@ -16,161 +14,106 @@ import {
   CONSTRUCTS_MODULE,
   CORE_INTERNAL_REGION_INFO,
   CORE_INTERNAL_STACK,
-  CORE_MODULE,
-  LAMBDA_MODULE,
-  REGION_INFO,
+  CORE_RUNTIME_DETERMINER,
+  LAMBDA_INTERNAL_RUNTIME,
 } from './modules';
 
-/**
- *
- */
 export class RuntimeDeterminerModule extends Module {
-  /**
-   *
-   */
   public static buildForCore() {
-    return RuntimeDeterminerModule.build(RuntimeDeterminerModule.CORE);
+    return new RuntimeDeterminerModule('runtime-determiner-core');
   }
 
-  /**
-   *
-   */
-  public static buildForStandardLib() {
-    return RuntimeDeterminerModule.build(RuntimeDeterminerModule.STANDARD);
-  }
-
-  private static readonly CORE = 'core';
-  private static readonly STANDARD = 'standard';
-
-  private static build(fqn: string) {
-    const module = new RuntimeDeterminerModule(fqn);
-    RuntimeDeterminerClass.buildInto(module);
-    return module;
+  public static buildForLambda() {
+    return new RuntimeDeterminerModule('runtime-determiner-lambda');
   }
 
   private readonly renderer = new TypeScriptRenderer();
-
-  /**
-   *
-   */
-  public readonly isCoreInternal: boolean;
+  private readonly externalModules: ExternalModule[] = [CONSTRUCTS_MODULE];
 
   private constructor(fqn: string) {
-    super(`runtime-determiner-${fqn}`);
-    this.isCoreInternal = fqn.includes(RuntimeDeterminerModule.CORE);
+    super(fqn);
+    fqn.includes('core') ? this.buildDetermineLatestNodeRuntimeName() : this.buildDetermineLatestNodeRuntime();
+    this.importExternalModules();
   }
 
   /**
-   *
+   * Renders this module into a specified file.
    */
   public renderTo(file: string) {
     fs.outputFileSync(file, this.renderer.render(this));
   }
-}
 
-/**
- *
- */
-class RuntimeDeterminerClass extends ClassType {
-  /**
-   *
-   */
-  public static buildInto(scope: RuntimeDeterminerModule) {
-    new RuntimeDeterminerClass(scope);
-  }
-
-  private externalModules: ExternalModule[] = [CONSTRUCTS_MODULE];
-
-  private constructor(scope: RuntimeDeterminerModule) {
-    super(scope, {
-      name: 'RuntimeDeterminer',
+  private buildDetermineLatestNodeRuntimeName() {
+    this.externalModules.push(...[CORE_INTERNAL_STACK, CORE_INTERNAL_REGION_INFO]);
+    const fn = new FreeFunction(this, {
+      name: 'determineLatestNodeRuntimeName',
       export: true,
-      abstract: true,
+      returnType: Type.STRING,
     });
-
-    if (scope.isCoreInternal) {
-      this.externalModules.push(...[CORE_INTERNAL_STACK, CORE_INTERNAL_REGION_INFO]);
-    } else {
-      this.externalModules.push(...[CORE_MODULE, REGION_INFO, LAMBDA_MODULE]);
-    }
-
-    this.importExternalModulesInto(scope);
-
-    const determineLatestRuntimeName = this.buildDetermineLatestRuntimeName();
-    if (!scope.isCoreInternal) {
-      this.buildDetermineLatestLambdaRuntime(determineLatestRuntimeName);
-    }
+    fn.addParameter({
+      name: 'scope',
+      type: CONSTRUCTS_MODULE.Construct,
+    });
+    fn.addBody(
+      stmt.ret(
+        expr.directCode(`${CORE_INTERNAL_STACK.Stack}.of(scope).regionalFact(${CORE_INTERNAL_REGION_INFO.FactName}.DEFAULT_CR_NODE_VERSION, '${DEFAULT_NODE_RUNTIME}')`),
+      ),
+    );
   }
 
-  private importExternalModulesInto(scope: RuntimeDeterminerModule) {
+  private buildDetermineLatestNodeRuntime() {
+    this.externalModules.push(...[LAMBDA_INTERNAL_RUNTIME, CORE_RUNTIME_DETERMINER]);
+    const fn = new FreeFunction(this, {
+      name: 'determineLatestNodeRuntime',
+      export: true,
+      returnType: LAMBDA_INTERNAL_RUNTIME.Runtime,
+    });
+    fn.addParameter({
+      name: 'scope',
+      type: CONSTRUCTS_MODULE.Construct,
+    });
+    fn.addBody(
+      stmt.constVar(
+        expr.ident('runtimeName'),
+        expr.directCode('determineLatestNodeRuntimeName(scope)'),
+      ),
+      stmt.ret(
+        expr.directCode(`new ${LAMBDA_INTERNAL_RUNTIME.Runtime}(runtimeName, ${LAMBDA_INTERNAL_RUNTIME.RuntimeFamily}, { supportsInlineCode: true })`),
+      ),
+    );
+  }
+
+  private importExternalModules() {
     for (const module of this.externalModules) {
-      this.importExternalModuleInto(scope, module);
+      this.importExternalModule(module);
     }
   }
 
-  private importExternalModuleInto(scope: RuntimeDeterminerModule, module: ExternalModule) {
+  private importExternalModule(module: ExternalModule) {
     switch (module.fqn) {
       case CONSTRUCTS_MODULE.fqn: {
-        CONSTRUCTS_MODULE.importSelective(scope, ['Construct']);
+        module.importSelective(this, [CONSTRUCTS_MODULE.Construct.toString()]);
         return;
       }
-      case CORE_MODULE.fqn: {
-        CORE_MODULE.importSelective(scope, ['Stack']);
-        return;
-      }
-      case CORE_INTERNAL_STACK.fqn: {
-        CORE_INTERNAL_STACK.importSelective(scope, ['Stack']);
-        return;
-      }
-      case REGION_INFO.fqn: {
-        REGION_INFO.importSelective(scope, ['FactName']);
+      case LAMBDA_INTERNAL_RUNTIME.fqn: {
+        module.importSelective(this, [
+          LAMBDA_INTERNAL_RUNTIME.Runtime.toString(),
+          LAMBDA_INTERNAL_RUNTIME.RuntimeFamily.toString(),
+        ]);
         return;
       }
       case CORE_INTERNAL_REGION_INFO.fqn: {
-        CORE_INTERNAL_REGION_INFO.importSelective(scope, ['FactName']);
+        module.importSelective(this, [CORE_INTERNAL_REGION_INFO.FactName.toString()]);
         return;
       }
-      case LAMBDA_MODULE.fqn: {
-        LAMBDA_MODULE.importSelective(scope, ['Runtime', 'RuntimeFamily']);
+      case CORE_INTERNAL_STACK.fqn: {
+        module.importSelective(this, [CORE_INTERNAL_STACK.Stack.toString()]);
+        return;
+      }
+      case CORE_RUNTIME_DETERMINER.fqn: {
+        module.importSelective(this, [CORE_RUNTIME_DETERMINER.determineLatestNodeRuntimeName]);
         return;
       }
     }
-  }
-
-  private buildDetermineLatestRuntimeName() {
-    const runtimeDeterminer = this.addMethod({
-      static: true,
-      name: 'determineLatestLambdaNodeRuntimeName',
-      returnType: Type.STRING,
-      visibility: MemberVisibility.Public,
-    });
-    runtimeDeterminer.addParameter({
-      name: 'scope',
-      type: CONSTRUCTS_MODULE.Construct,
-    });
-    runtimeDeterminer.addBody(
-      stmt.ret(expr.directCode(`${CORE_MODULE.Stack}.of(scope).regionalFact(${REGION_INFO.FactName}.DEFAULT_CR_NODE_VERSION, '${DEFAULT_NODE_RUNTIME}')`)),
-    );
-    return runtimeDeterminer;
-  }
-
-  private buildDetermineLatestLambdaRuntime(getLatestRuntimeNameMethod: Method) {
-    const runtimeDeterminer = this.addMethod({
-      static: true,
-      name: 'determineLatestLambdaNodeRuntime',
-      returnType: LAMBDA_MODULE.Runtime,
-      visibility: MemberVisibility.Public,
-    });
-    runtimeDeterminer.addParameter({
-      name: 'scope',
-      type: CONSTRUCTS_MODULE.Construct,
-    });
-    runtimeDeterminer.addBody(
-      stmt.constVar(
-        expr.ident('runtimeName'),
-        expr.directCode(`${this.name}.${getLatestRuntimeNameMethod.name}(scope)`),
-      ),
-      stmt.ret(expr.directCode(`new ${LAMBDA_MODULE.Runtime}(runtimeName, ${LAMBDA_MODULE.RuntimeFamily}.NODEJS, { supportsInlineCode: true })`)),
-    );
   }
 }

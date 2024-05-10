@@ -48,7 +48,7 @@ class LambdaModule extends ExternalModule {
   public readonly FunctionOptions = Type.fromName(this, 'FunctionOptions');
   public readonly Runtime = Type.fromName(this, 'Runtime');
   public readonly RuntimeFamily = Type.fromName(this, 'RuntimeFamily');
-  public readonly RegionalNodeRuntime = Type.fromName(this, 'RegionalNodeRuntime');
+  public readonly determineLatestNodeRuntime = 'determineLatestNodeRuntime';
 
   public constructor() {
     super('../../../aws-lambda');
@@ -71,30 +71,41 @@ class CoreInternalRegionInfo extends ExternalModule {
   }
 }
 
-class RuntimeDeterminer extends ExternalModule {
-  public readonly RuntimeDeterminer = Type.fromName(this, 'RuntimeDeterminer');
+class LambdaInternalRuntime extends ExternalModule {
+  public readonly Runtime = Type.fromName(this, 'Runtime');
+  public readonly RuntimeFamily = Type.fromName(this, 'RuntimeFamily');
 
   public constructor() {
-    super('../runtime-determiner/runtime-determiner-standard.generated');
+    super('./runtime');
+  }
+}
+
+class CoreRuntimeDeterminer extends ExternalModule {
+  public readonly determineLatestNodeRuntimeName = 'determineLatestNodeRuntimeName';
+
+  public constructor() {
+    super('../../../core/lib/dist/core/runtime-determiner-core.generated');
   }
 }
 
 class CoreInternalRuntimeDeterminer extends ExternalModule {
-  public readonly RuntimeDeterminer = Type.fromName(this, 'RuntimeDeterminer');
+  public readonly determineLatestNodeRuntimeName = 'determineLatestNodeRuntimeName';
 
   public constructor() {
     super('./runtime-determiner-core.generated');
   }
 }
 
+export const CORE_MODULE = new CoreModule();
 export const PATH_MODULE = new PathModule();
 export const CONSTRUCTS_MODULE = new ConstructsModule();
 export const LAMBDA_MODULE = new LambdaModule();
 export const REGION_INFO = new RegionInfo();
-export const RUNTIME_DETERMINER = new RuntimeDeterminer();
+export const CORE_RUNTIME_DETERMINER = new CoreRuntimeDeterminer();
 
-export const CORE_MODULE = new CoreModule();
 export const CORE_INTERNAL_STACK = new CoreInternalStack();
 export const CORE_INTERNAL_CR_PROVIDER = new CoreInternalCustomResourceProvider();
-export const CORE_INTERNAL_RUNTIME_DETERMINER = new CoreInternalRuntimeDeterminer();
 export const CORE_INTERNAL_REGION_INFO = new CoreInternalRegionInfo();
+export const CORE_INTERNAL_RUNTIME_DETERMINER = new CoreInternalRuntimeDeterminer();
+
+export const LAMBDA_INTERNAL_RUNTIME = new LambdaInternalRuntime();

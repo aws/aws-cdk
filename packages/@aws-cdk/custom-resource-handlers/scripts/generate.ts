@@ -130,10 +130,10 @@ function ignoreWarnings(result: esbuild.BuildResult) {
 }
 
 function generateRuntimeDeterminers() {
-  // const coreRuntimeDeterminer = RuntimeDeterminerModule.buildForCore();
-  // coreRuntimeDeterminer.renderTo(`dist/core/${coreRuntimeDeterminer.fqn}.generated.ts`);
+  const coreRuntimeDeterminer = RuntimeDeterminerModule.buildForCore();
+  coreRuntimeDeterminer.renderTo(`dist/core/${coreRuntimeDeterminer.fqn}.generated.ts`);
 
-  const standardLibRuntimeDeterminer = RuntimeDeterminerModule.buildForStandardLib();
+  const standardLibRuntimeDeterminer = RuntimeDeterminerModule.buildForLambda();
   standardLibRuntimeDeterminer.renderTo(`dist/${standardLibRuntimeDeterminer.fqn}.generated.ts`);
 }
 
