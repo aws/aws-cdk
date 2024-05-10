@@ -223,12 +223,13 @@ function chainableCredentials(region: string) {
     // can't use '~' since the SDK doesn't seem to expand it...?
     const configPath = `${process.env.HOME}/.aws/config`;
 
-    const ini = parse(readFileSync(configPath, 'utf-8'));
+    const configFileContents = readFileSync(configPath, { encoding: 'utf-8' });
+    const ini = parse(configFileContents);
 
     const profile = ini[profileName];
 
     if (!profile) {
-      throw new Error(`Profile '${profileName}' does not exist in config file (${configPath})`);
+      throw new Error(`Profile '${profileName}' does not exist in config file (${configPath}.\n File Contents: ${configFileContents})\n Parsed File: ${JSON.stringify(ini, null, 2)}`);
     }
 
     const arn = profile.role_arn;
