@@ -1,7 +1,6 @@
 import { promises as fs, existsSync } from 'fs';
 import * as os from 'os';
 import * as path from 'path';
-import * as CFN from '@aws-sdk/client-cloudformation';
 import { integTest, cloneDirectory, shell, withDefaultFixture, retry, sleep, randomInteger, withSamIntegrationFixture, RESOURCES_DIR, withCDKMigrateFixture, withExtendedTimeoutFixture } from '../../lib';
 
 jest.setTimeout(2 * 60 * 60_000); // Includes the time to acquire locks, worst-case single-threaded runtime
@@ -1593,7 +1592,6 @@ integTest('test resource import', withDefaultFixture(async (fixture) => {
   const outputs = JSON.parse((await fs.readFile(outputsFile, { encoding: 'utf-8' })).toString());
   fixture.log('Setup complete');
 
-  const cfnClient = new CFN.CloudFormationClient();
   let queues: { [queueLogicalId: string]: { QueueUrl: string } } = {};
   try {
     // Write a resource mapping file based on the ID from step one, then run an import
@@ -1607,7 +1605,7 @@ integTest('test resource import', withDefaultFixture(async (fixture) => {
     await fixture.cdkDeploy('importable-stack', {
       modEnv: { LARGE_TEMPLATE: '1', INCLUDE_SINGLE_QUEUE: '0', RETAIN_SINGLE_QUEUE: '0' },
     });
-    const cfnTemplateBeforeImport = await cfnClient.send(new CFN.GetTemplateCommand({ StackName: fullStackName }));
+    const cfnTemplateBeforeImport = await fixture.aws.cloudFormation('getTemplate', { StackName: fullStackName });
     expect(cfnTemplateBeforeImport.TemplateBody).not.toContain(queueLogicalId);
 
     await fs.writeFile(
@@ -1623,8 +1621,8 @@ integTest('test resource import', withDefaultFixture(async (fixture) => {
     );
 
     // THEN
-    const describeStacksResponse = await cfnClient.send(new CFN.DescribeStacksCommand({ StackName: fullStackName }));
-    const cfnTemplateAfterImport = await cfnClient.send(new CFN.GetTemplateCommand({ StackName: fullStackName }));
+    const describeStacksResponse = await fixture.aws.cloudFormation('describeStacks', { StackName: fullStackName });
+    const cfnTemplateAfterImport = await fixture.aws.cloudFormation('getTemplate', { StackName: fullStackName });
     expect(cfnTemplateAfterImport.TemplateBody).toContain(queueLogicalId);
     expect(describeStacksResponse.Stacks![0].StackStatus).toEqual('IMPORT_COMPLETE');
     expect(cfnTemplateAfterImport.TemplateBody).toContain(queueLogicalId);

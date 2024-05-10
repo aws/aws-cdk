@@ -38,7 +38,6 @@
     "@types/yargs": "^15.0.19"
   },
   "dependencies": {
-    "@aws-sdk/client-cloudformation": "^3.572.0",
     "@octokit/rest": "^18.12.0",
     "aws-sdk": "^2.1610.0",
     "axios": "^1.6.8",
