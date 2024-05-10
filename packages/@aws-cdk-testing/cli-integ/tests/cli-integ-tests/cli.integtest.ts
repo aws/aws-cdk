@@ -1,7 +1,7 @@
 import { promises as fs, existsSync } from 'fs';
 import * as os from 'os';
 import * as path from 'path';
-import { integTest, cloneDirectory, shell, withDefaultFixture, retry, sleep, randomInteger, withSamIntegrationFixture, RESOURCES_DIR, withCDKMigrateFixture, withExtendedTimeoutFixture } from '../../lib';
+import { integTest, cloneDirectory, shell, withDefaultFixture, retry, sleep, randomInteger, withSamIntegrationFixture, RESOURCES_DIR, withCDKMigrateFixture, withExtendedTimeoutFixture, randomString } from '../../lib';
 
 jest.setTimeout(2 * 60 * 60_000); // Includes the time to acquire locks, worst-case single-threaded runtime
 
@@ -1581,7 +1581,9 @@ integTest('skips notice refresh', withDefaultFixture(async (fixture) => {
  */
 integTest('test resource import', withDefaultFixture(async (fixture) => {
   // GIVEN
-  const outputsFile = path.join(fixture.integTestDir, 'outputs', 'outputs.json');
+  const randomPrefix = randomString();
+  const uniqueOutputsFileName = `${randomPrefix}Outputs.json`; // other tests use the outputs file. Make sure we don't collide.
+  const outputsFile = path.join(fixture.integTestDir, 'outputs', uniqueOutputsFileName);
   await fs.mkdir(path.dirname(outputsFile), { recursive: true });
 
   await fixture.cdkDeploy('importable-stack', {
@@ -1595,7 +1597,7 @@ integTest('test resource import', withDefaultFixture(async (fixture) => {
   let queues: { [queueLogicalId: string]: { QueueUrl: string } } = {};
   try {
     // Write a resource mapping file based on the ID from step one, then run an import
-    const mappingFile = path.join(fixture.integTestDir, 'outputs', 'mapping.json');
+    const mappingFile = path.join(fixture.integTestDir, 'outputs', `${randomPrefix}Mapping.json`);
     const fullStackName = fixture.fullStackName('importable-stack');
     const queueUrl = outputs[fullStackName].QueueUrl;
     const queueLogicalId = outputs[fullStackName].QueueLogicalId;
