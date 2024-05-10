@@ -1586,39 +1586,39 @@ integTest('test resource import', withDefaultFixture(async (fixture) => {
   const outputsFile = path.join(fixture.integTestDir, 'outputs', uniqueOutputsFileName);
   await fs.mkdir(path.dirname(outputsFile), { recursive: true });
 
+  // First, create a stack that includes many queues, and one queue that will be removed from the stack but NOT deleted from AWS.
   await fixture.cdkDeploy('importable-stack', {
     modEnv: { LARGE_TEMPLATE: '1', INCLUDE_SINGLE_QUEUE: '1', RETAIN_SINGLE_QUEUE: '1' },
     options: ['--outputs-file', outputsFile],
   });
 
-  const outputs = JSON.parse((await fs.readFile(outputsFile, { encoding: 'utf-8' })).toString());
-  fixture.log('Setup complete');
-
-  let queues: { [queueLogicalId: string]: { QueueUrl: string } } = {};
   try {
-    // Write a resource mapping file based on the ID from step one, then run an import
-    const mappingFile = path.join(fixture.integTestDir, 'outputs', `${randomPrefix}Mapping.json`);
-    const fullStackName = fixture.fullStackName('importable-stack');
-    const queueUrl = outputs[fullStackName].QueueUrl;
-    const queueLogicalId = outputs[fullStackName].QueueLogicalId;
-    queues[queueLogicalId] = { QueueUrl: queueUrl };
 
-    // Remove the queue from the stack but don't delete the queue from AWS
+    // Second, now the queue we will remove is in the stack and has a logicalId. We can now make the resource mapping file.
+    // This resource mapping file will be used to tell the import operation what queue to bring into the stack.
+    const fullStackName = fixture.fullStackName('importable-stack');
+    const outputs = JSON.parse((await fs.readFile(outputsFile, { encoding: 'utf-8' })).toString());
+    const queueLogicalId = outputs[fullStackName].QueueLogicalId;
+    const queueResourceMap = {
+      [queueLogicalId]: { QueueUrl: outputs[fullStackName].QueueUrl },
+    };
+    const mappingFile = path.join(fixture.integTestDir, 'outputs', `${randomPrefix}Mapping.json`);
+    await fs.writeFile(
+      mappingFile,
+      JSON.stringify(queueResourceMap),
+      { encoding: 'utf-8' },
+    );
+
+    // Third, remove the queue from the stack, but don't delete the queue from AWS.
     await fixture.cdkDeploy('importable-stack', {
       modEnv: { LARGE_TEMPLATE: '1', INCLUDE_SINGLE_QUEUE: '0', RETAIN_SINGLE_QUEUE: '0' },
     });
     const cfnTemplateBeforeImport = await fixture.aws.cloudFormation('getTemplate', { StackName: fullStackName });
     expect(cfnTemplateBeforeImport.TemplateBody).not.toContain(queueLogicalId);
 
-    await fs.writeFile(
-      mappingFile,
-      JSON.stringify(queues),
-      { encoding: 'utf-8' },
-    );
-
     // WHEN
     await fixture.cdk(
-      ['import', '-m', mappingFile, fixture.fullStackName('importable-stack')],
+      ['import', '--resource-mapping', mappingFile, fixture.fullStackName('importable-stack')],
       { modEnv: { LARGE_TEMPLATE: '1', INCLUDE_SINGLE_QUEUE: '1', RETAIN_SINGLE_QUEUE: '0' } },
     );
 
