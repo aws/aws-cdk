@@ -632,8 +632,10 @@ enable the `deleteReports` option as well as setting the removal policy to
 `RemovalPolicy.DESTROY`.
 
 ```ts
+import * as cdk from 'aws-cdk-lib';
+
 const reportGroup = new codebuild.ReportGroup(this, 'ReportGroup', {
-      removalPolicy: RemovalPolicy.DESTROY,
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
       deleteReports: true,
 });
 ```
