@@ -5,7 +5,6 @@ import {
   expr,
   Type,
   Splat,
-  ExternalModule,
   PropertySpec,
   InterfaceSpec,
   InterfaceType,
@@ -13,19 +12,15 @@ import {
   MemberVisibility,
   SuperInitializer,
   Expression,
+  ClassSpec,
 } from '@cdklabs/typewriter';
 import { Runtime } from './config';
 import { HandlerFrameworkModule } from './framework';
 import {
+  PATH_MODULE,
   CONSTRUCTS_MODULE,
   LAMBDA_MODULE,
   CORE_MODULE,
-  CORE_INTERNAL_STACK,
-  CORE_INTERNAL_CR_PROVIDER,
-  PATH_MODULE,
-  CORE_RUNTIME_DETERMINER,
-  CORE_INTERNAL_RUNTIME_DETERMINER,
-  LAMBDA_RUNTIME_DETERMINER,
 } from './modules';
 import { toLambdaRuntime } from './utils/framework-utils';
 
@@ -91,14 +86,14 @@ export abstract class HandlerFrameworkClass extends ClassType {
    */
   public static buildFunction(scope: HandlerFrameworkModule, props: HandlerFrameworkClassProps): HandlerFrameworkClass {
     return new (class Function extends HandlerFrameworkClass {
-      protected readonly externalModules = [PATH_MODULE, CONSTRUCTS_MODULE, LAMBDA_MODULE];
-
       public constructor() {
         super(scope, {
           name: props.name,
           extends: LAMBDA_MODULE.Function,
           export: true,
         });
+
+        scope.registerImport(LAMBDA_MODULE);
 
         const superProps = new ObjectLiteral([
           new Splat(expr.ident('props')),
@@ -112,8 +107,6 @@ export abstract class HandlerFrameworkClass extends ClassType {
           optionalConstructorProps: true,
           constructorVisbility: MemberVisibility.Public,
         });
-
-        this.importExternalModulesInto(scope);
       }
     })();
   }
@@ -123,14 +116,14 @@ export abstract class HandlerFrameworkClass extends ClassType {
    */
   public static buildSingletonFunction(scope: HandlerFrameworkModule, props: HandlerFrameworkClassProps): HandlerFrameworkClass {
     return new (class SingletonFunction extends HandlerFrameworkClass {
-      protected readonly externalModules = [PATH_MODULE, CONSTRUCTS_MODULE, LAMBDA_MODULE];
-
       public constructor() {
         super(scope, {
           name: props.name,
           extends: LAMBDA_MODULE.SingletonFunction,
           export: true,
         });
+
+        scope.registerImport(LAMBDA_MODULE);
 
         const uuid: PropertySpec = {
           name: 'uuid',
@@ -173,8 +166,6 @@ export abstract class HandlerFrameworkClass extends ClassType {
           superProps,
           constructorVisbility: MemberVisibility.Public,
         });
-
-        this.importExternalModulesInto(scope);
       }
     })();
   }
@@ -184,21 +175,30 @@ export abstract class HandlerFrameworkClass extends ClassType {
    */
   public static buildCustomResourceProvider(scope: HandlerFrameworkModule, props: HandlerFrameworkClassProps): HandlerFrameworkClass {
     return new (class CustomResourceProvider extends HandlerFrameworkClass {
-      protected readonly externalModules: ExternalModule[] = [PATH_MODULE, CONSTRUCTS_MODULE];
-
       public constructor() {
         super(scope, {
           name: props.name,
-          extends: scope.coreInternal
-            ? CORE_INTERNAL_CR_PROVIDER.CustomResourceProviderBase
-            : CORE_MODULE.CustomResourceProviderBase,
+          extends: CORE_MODULE.CustomResourceProviderBase,
           export: true,
         });
 
         if (scope.coreInternal) {
-          this.externalModules.push(...[CORE_INTERNAL_STACK, CORE_INTERNAL_CR_PROVIDER]);
+          scope.registerImport(CORE_MODULE, {
+            targets: [CORE_MODULE.Stack.toString()],
+            fromLocation: '../../stack',
+          });
+          scope.registerImport(CORE_MODULE, {
+            targets: [CORE_MODULE.CustomResourceProviderBase.toString(), CORE_MODULE.CustomResourceProviderOptions.toString()],
+            fromLocation: '../../custom-resource-provider',
+          });
         } else {
-          this.externalModules.push(CORE_MODULE);
+          scope.registerImport(CORE_MODULE, {
+            targets: [
+              CORE_MODULE.Stack.toString(),
+              CORE_MODULE.CustomResourceProviderBase.toString(),
+              CORE_MODULE.CustomResourceProviderOptions.toString(),
+            ],
+          });
         }
 
         const getOrCreateMethod = this.addMethod({
@@ -219,9 +219,7 @@ export abstract class HandlerFrameworkClass extends ClassType {
         });
         getOrCreateMethod.addParameter({
           name: 'props',
-          type: scope.coreInternal
-            ? CORE_INTERNAL_CR_PROVIDER.CustomResourceProviderOptions
-            : CORE_MODULE.CustomResourceProviderOptions,
+          type: CORE_MODULE.CustomResourceProviderOptions,
           optional: true,
         });
         getOrCreateMethod.addBody(
@@ -246,9 +244,7 @@ export abstract class HandlerFrameworkClass extends ClassType {
         });
         getOrCreateProviderMethod.addParameter({
           name: 'props',
-          type: scope.coreInternal
-            ? CORE_INTERNAL_CR_PROVIDER.CustomResourceProviderOptions
-            : CORE_MODULE.CustomResourceProviderOptions,
+          type: CORE_MODULE.CustomResourceProviderOptions,
           optional: true,
         });
         getOrCreateProviderMethod.addBody(
@@ -264,79 +260,21 @@ export abstract class HandlerFrameworkClass extends ClassType {
           ['runtimeName', this.buildRuntimeProperty(scope, props.runtime, true)],
         ]);
         this.buildConstructor({
-          constructorPropsType: scope.coreInternal
-            ? CORE_INTERNAL_CR_PROVIDER.CustomResourceProviderOptions
-            : CORE_MODULE.CustomResourceProviderOptions,
+          constructorPropsType: CORE_MODULE.CustomResourceProviderOptions,
           superProps,
           constructorVisbility: MemberVisibility.Private,
           optionalConstructorProps: true,
         });
-
-        this.importExternalModulesInto(scope);
       }
     })();
   }
 
-  /**
-   * External modules that this class depends on.
-   */
-  protected abstract readonly externalModules: ExternalModule[];
-
-  private importExternalModulesInto(scope: HandlerFrameworkModule) {
-    for (const module of this.externalModules) {
-      if (!scope.hasExternalModule(module)) {
-        scope.addExternalModule(module);
-        this.importExternalModuleInto(scope, module);
-      }
-    }
-  }
-
-  private importExternalModuleInto(scope: HandlerFrameworkModule, module: ExternalModule) {
-    switch (module.fqn) {
-      case PATH_MODULE.fqn: {
-        module.import(scope, 'path');
-        return;
-      }
-      case CONSTRUCTS_MODULE.fqn: {
-        module.importSelective(scope, [CONSTRUCTS_MODULE.Construct.toString()]);
-        return;
-      }
-      case CORE_MODULE.fqn: {
-        module.importSelective(scope, [
-          CORE_MODULE.Stack.toString(),
-          CORE_MODULE.CustomResourceProviderBase.toString(),
-          CORE_MODULE.CustomResourceProviderOptions.toString(),
-        ]);
-        return;
-      }
-      case CORE_INTERNAL_CR_PROVIDER.fqn: {
-        module.importSelective(scope, [
-          CORE_INTERNAL_CR_PROVIDER.CustomResourceProviderBase.toString(),
-          CORE_INTERNAL_CR_PROVIDER.CustomResourceProviderOptions.toString(),
-        ]);
-        return;
-      }
-      case CORE_INTERNAL_STACK.fqn: {
-        module.importSelective(scope, [CORE_INTERNAL_STACK.Stack.toString()]);
-        return;
-      }
-      case LAMBDA_MODULE.fqn: {
-        module.import(scope, 'lambda');
-        return;
-      }
-      case CORE_INTERNAL_RUNTIME_DETERMINER.fqn: {
-        module.importSelective(scope, [CORE_INTERNAL_RUNTIME_DETERMINER.determineLatestNodeRuntimeName]);
-        return;
-      }
-      case CORE_RUNTIME_DETERMINER.fqn: {
-        module.importSelective(scope, [CORE_RUNTIME_DETERMINER.determineLatestNodeRuntimeName]);
-        return;
-      }
-      case LAMBDA_RUNTIME_DETERMINER.fqn: {
-        module.importSelective(scope, [LAMBDA_RUNTIME_DETERMINER.determineLatestNodeRuntime]);
-        return;
-      }
-    }
+  protected constructor(scope: HandlerFrameworkModule, spec: ClassSpec) {
+    super(scope, spec);
+    scope.registerImport(PATH_MODULE);
+    scope.registerImport(CONSTRUCTS_MODULE, {
+      targets: [CONSTRUCTS_MODULE.Construct.toString()],
+    });
   }
 
   private getOrCreateInterface(scope: HandlerFrameworkModule, spec: InterfaceSpec) {
@@ -378,11 +316,17 @@ export abstract class HandlerFrameworkClass extends ClassType {
     }
 
     if (isProvider) {
-      this.externalModules.push(
-        scope.coreInternal ? CORE_INTERNAL_RUNTIME_DETERMINER : CORE_RUNTIME_DETERMINER,
-      );
+      scope.registerImport(CORE_MODULE, {
+        targets: [CORE_MODULE.determineLatestNodeRuntimeName.name],
+        fromLocation: scope.coreInternal
+          ? './runtime-determiner-core.generated'
+          : '../../../core/lib/dist/core/runtime-determiner-core.generated',
+      });
     } else {
-      this.externalModules.push(LAMBDA_RUNTIME_DETERMINER);
+      scope.registerImport(LAMBDA_MODULE, {
+        targets: [LAMBDA_MODULE.determineLatestNodeRuntime.name],
+        fromLocation: '../../../aws-lambda/lib/runtime-determiner-lambda.generated',
+      });
     }
 
     return isProvider

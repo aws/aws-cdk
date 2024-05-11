@@ -4,9 +4,12 @@ import * as fs from 'fs-extra';
 import { HandlerFrameworkClass, HandlerFrameworkClassProps } from './classes';
 import { ComponentType, ComponentProps } from './config';
 import { buildComponentName } from './utils/framework-utils';
+import { ModuleImportOptions, ModuleImporter } from './module-importer';
+import { ImportableModule } from './modules';
 
 export class HandlerFrameworkModule extends Module {
   private readonly renderer = new TypeScriptRenderer();
+  private readonly importer = new ModuleImporter();
   private readonly externalModules = new Map<string, boolean>();
   private readonly _interfaces = new Map<string, InterfaceType>();
   private _hasComponents = false;
@@ -68,6 +71,7 @@ export class HandlerFrameworkModule extends Module {
    * Render module with components into an output file.
    */
   public renderTo(file: string) {
+    this.importer.importModulesInto(this);
     fs.outputFileSync(file, this.renderer.render(this));
   }
 
@@ -76,6 +80,13 @@ export class HandlerFrameworkModule extends Module {
    */
   public addExternalModule(module: ExternalModule) {
     this.externalModules.set(module.fqn, true);
+  }
+
+  /**
+   *
+   */
+  public registerImport(module: ImportableModule, options: ModuleImportOptions = {}) {
+    this.importer.registerImport(module, options);
   }
 
   /**
