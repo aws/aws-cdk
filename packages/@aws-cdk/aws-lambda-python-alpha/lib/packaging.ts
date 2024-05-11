@@ -1,5 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
+import * as crypto from 'crypto';
 
 export enum DependenciesFile {
   PIP = 'requirements.txt',
@@ -99,8 +100,50 @@ export class Packaging {
     }
   }
 
+  public static getAssetHash(entry: string): string | undefined {
+    const hash = crypto.createHash('sha256');
+    if (fs.existsSync(path.join(entry, DependenciesFile.PIPENV))) {
+      const dependenciesFile = fs.readFileSync(path.join(entry, DependenciesFile.PIPENV));
+      hash.update(dependenciesFile);
+      return hash.digest('hex');
+    } if (fs.existsSync(path.join(entry, DependenciesFile.POETRY))) {
+      const dependenciesFile = fs.readFileSync(path.join(entry, DependenciesFile.POETRY));
+      hash.update(dependenciesFile);
+      return hash.digest('hex');
+    } else if (fs.existsSync(path.join(entry, DependenciesFile.PIP))) {
+      const dependenciesFile = fs.readFileSync(path.join(entry, DependenciesFile.PIP));
+      hash.update(dependenciesFile);
+      return hash.digest('hex');
+    } else {
+      throw new Error('No dependencies file found');
+    }
+  }
+
+  /**
+   * Compute the asset hash of the dependencies file.
+   */
+  public static dependenciesHash(entry: string): string | undefined {
+    const hash = crypto.createHash('sha256');
+    if (fs.existsSync(path.join(entry, DependenciesFile.PIPENV))) {
+      const dependenciesFile = fs.readFileSync(path.join(entry, DependenciesFile.PIPENV));
+      hash.update(dependenciesFile);
+      return hash.digest('hex');
+    } if (fs.existsSync(path.join(entry, DependenciesFile.POETRY))) {
+      const dependenciesFile = fs.readFileSync(path.join(entry, DependenciesFile.POETRY));
+      hash.update(dependenciesFile);
+      return hash.digest('hex');
+    } else if (fs.existsSync(path.join(entry, DependenciesFile.PIP))) {
+      const dependenciesFile = fs.readFileSync(path.join(entry, DependenciesFile.PIP));
+      hash.update(dependenciesFile);
+      return hash.digest('hex');
+    } else {
+      return
+    }
+  }
+
   public readonly dependenciesFile: string;
   public readonly exportCommand?: string;
+  public readonly assetHash?: string;
   constructor(props: PackagingProps) {
     this.dependenciesFile = props.dependenciesFile;
     this.exportCommand = props.exportCommand;

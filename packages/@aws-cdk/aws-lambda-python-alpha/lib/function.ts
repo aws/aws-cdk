@@ -6,6 +6,7 @@ import { Construct } from 'constructs';
 import { Bundling } from './bundling';
 import { BundlingOptions } from './types';
 import { PythonLayerVersion } from './layer';
+import { Packaging } from './packaging';
 
 /**
  * Properties for a PythonFunction
@@ -84,10 +85,9 @@ export class PythonFunction extends Function {
         bundling: {
           ...props.bundling,
           installDependencies: true,
-          // TODO: Make sure the layer is updated only when the dependencies change
           // assetExcludes: ["TODO: exclude everything except the dependencies file"]
-          // assetHashType: AssetHashType.CUSTOM,
-          // assetHash: "TODO: hash of the dependencies file"
+          assetHashType: AssetHashType.CUSTOM,
+          assetHash: Packaging.dependenciesHash(entry),
         },
       });
     }
