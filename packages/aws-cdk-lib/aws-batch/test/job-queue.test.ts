@@ -1,7 +1,7 @@
 import { Template } from '../../assertions';
 import * as ec2 from '../../aws-ec2';
-import { DefaultTokenResolver, Stack, StringConcat, Tokenization } from '../../core';
-import { FairshareSchedulingPolicy, JobQueue, ManagedEc2EcsComputeEnvironment } from '../lib';
+import { DefaultTokenResolver, Duration, Stack, StringConcat, Tokenization } from '../../core';
+import { FairshareSchedulingPolicy, JobQueue, ManagedEc2EcsComputeEnvironment, JobStateTimeLimitActionsAction, JobStateTimeLimitActionsReason, JobStateTimeLimitActionsState } from '../lib';
 
 test('JobQueue respects computeEnvironments', () => {
   // GIVEN
@@ -258,4 +258,79 @@ test('JobQueue throws when there are no linked ComputeEnvironments', () => {
   expect(() => {
     Template.fromStack(stack);
   }).toThrow(/This JobQueue does not link any ComputeEnvironments/);
+});
+
+test('JobQueue with JobStateTimeLimitActions', () => {
+  // GIVEN
+  const stack = new Stack();
+  const vpc = new ec2.Vpc(stack, 'vpc');
+
+  // WHEN
+  new JobQueue(stack, 'joBBQ', {
+    computeEnvironments: [{
+      computeEnvironment: new ManagedEc2EcsComputeEnvironment(stack, 'CE', {
+        vpc,
+      }),
+      order: 1,
+    }],
+    jobStateTimeLimitActions: [
+      {
+        action: JobStateTimeLimitActionsAction.CANCEL,
+        maxTimeSeconds: Duration.minutes(10),
+        reason: JobStateTimeLimitActionsReason.INSUFFICIENT_INSTANCE_CAPACITY,
+        state: JobStateTimeLimitActionsState.RUNNABLE,
+      },
+      {
+        action: JobStateTimeLimitActionsAction.CANCEL,
+        maxTimeSeconds: Duration.minutes(10),
+        reason: JobStateTimeLimitActionsReason.COMPUTE_ENVIRONMENT_MAX_RESOURCE,
+        state: JobStateTimeLimitActionsState.RUNNABLE,
+      },
+      {
+        action: JobStateTimeLimitActionsAction.CANCEL,
+        maxTimeSeconds: Duration.minutes(10),
+        reason: JobStateTimeLimitActionsReason.JOB_RESOURCE_REQUIREMENT,
+        state: JobStateTimeLimitActionsState.RUNNABLE,
+      },
+    ],
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Batch::JobQueue', {
+    JobStateTimeLimitActions: [
+      {
+        Action: 'CANCEL',
+        MaxTimeSeconds: 600,
+        Reason: 'CAPACITY:INSUFFICIENT_INSTANCE_CAPACITY',
+        State: 'RUNNABLE',
+      },
+      {
+        Action: 'CANCEL',
+        MaxTimeSeconds: 600,
+        Reason: 'MISCONFIGURATION:COMPUTE_ENVIRONMENT_MAX_RESOURCE',
+        State: 'RUNNABLE',
+      },
+      {
+        Action: 'CANCEL',
+        MaxTimeSeconds: 600,
+        Reason: 'MISCONFIGURATION:JOB_RESOURCE_REQUIREMENT',
+        State: 'RUNNABLE',
+      },
+    ],
+  });
+});
+
+test('JobQueue with JobStateTimeLimitActions throws when maxTimeSeconds has an illegal value', () => {
+  const stack = new Stack();
+
+  expect(() => new JobQueue(stack, 'joBBQ', {
+    jobStateTimeLimitActions: [
+      {
+        action: JobStateTimeLimitActionsAction.CANCEL,
+        maxTimeSeconds: Duration.seconds(90000),
+        reason: JobStateTimeLimitActionsReason.COMPUTE_ENVIRONMENT_MAX_RESOURCE,
+        state: JobStateTimeLimitActionsState.RUNNABLE,
+      },
+    ],
+  })).toThrow('maxTimeSeconds must be between 60 and 86400, got 90000');
 });

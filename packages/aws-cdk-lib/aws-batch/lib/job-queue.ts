@@ -2,7 +2,7 @@ import { Construct } from 'constructs';
 import { CfnJobQueue } from './batch.generated';
 import { IComputeEnvironment } from './compute-environment-base';
 import { ISchedulingPolicy } from './scheduling-policy';
-import { ArnFormat, IResource, Lazy, Resource, Stack } from '../../core';
+import { ArnFormat, Duration, IResource, Lazy, Resource, Stack } from '../../core';
 
 /**
  * Represents a JobQueue
@@ -117,6 +117,14 @@ export interface JobQueueProps {
    * @default - no scheduling policy
    */
   readonly schedulingPolicy?: ISchedulingPolicy;
+
+  /**
+   * Specifies an action that AWS Batch will take after the job has remained at the head of the queue
+   * in the specified state for longer than the specified time.
+   *
+   * @default - no actions set
+   */
+  readonly jobStateTimeLimitActions?: JobStateTimeLimitAction[];
 }
 
 /**
@@ -133,6 +141,62 @@ export interface OrderedComputeEnvironment {
    * The order associated with `computeEnvironment`
    */
   readonly order: number;
+}
+
+/**
+ * Specifies an action that AWS Batch will take after the job has remained at
+ * the head of the queue in the specified state for longer than the specified time.
+ */
+
+export interface JobStateTimeLimitAction {
+  /**
+ * The action to take when a job is at the head of the job queue in the specified state
+ * for the specified period of time.
+ */
+  readonly action: JobStateTimeLimitActionsAction;
+
+  /**
+   * The approximate amount of time, in seconds, that must pass with the job in the specified
+   * state before the action is taken.
+   * The minimum value is 600 (10 minutes) and the maximum value is 86,400 (24 hours).
+   */
+  readonly maxTimeSeconds: Duration;
+
+  /**
+   * The reason to log for the action being taken.
+   * @see https://docs.aws.amazon.com/batch/latest/userguide/troubleshooting.html#job_stuck_in_runnable
+   */
+  readonly reason: JobStateTimeLimitActionsReason;
+
+  /**
+   * The state of the job needed to trigger the action.
+   */
+  readonly state: JobStateTimeLimitActionsState;
+}
+
+/**
+ * The action to take when a job is at the head of the job queue in the specified state
+ * for the specified period of time.
+ */
+export enum JobStateTimeLimitActionsAction {
+  CANCEL = 'CANCEL',
+}
+
+/**
+ * The reason to log for the action being taken.
+ * @see https://docs.aws.amazon.com/batch/latest/userguide/troubleshooting.html#job_stuck_in_runnable
+ */
+export enum JobStateTimeLimitActionsReason {
+  INSUFFICIENT_INSTANCE_CAPACITY = 'CAPACITY:INSUFFICIENT_INSTANCE_CAPACITY',
+  COMPUTE_ENVIRONMENT_MAX_RESOURCE = 'MISCONFIGURATION:COMPUTE_ENVIRONMENT_MAX_RESOURCE',
+  JOB_RESOURCE_REQUIREMENT = 'MISCONFIGURATION:JOB_RESOURCE_REQUIREMENT',
+}
+
+/**
+ * The state of the job needed to trigger the action.
+ */
+export enum JobStateTimeLimitActionsState {
+  RUNNABLE = 'RUNNABLE',
 }
 
 /**
@@ -191,6 +255,8 @@ export class JobQueue extends Resource implements IJobQueue {
       jobQueueName: props?.jobQueueName,
       state: (this.enabled ?? true) ? 'ENABLED' : 'DISABLED',
       schedulingPolicyArn: this.schedulingPolicy?.schedulingPolicyArn,
+      jobStateTimeLimitActions: props?.jobStateTimeLimitActions !== undefined ?
+        this.parseJobStateTimeLimitActions(props.jobStateTimeLimitActions) : undefined,
     });
 
     this.jobQueueArn = this.getResourceArnAttribute(resource.attrJobQueueArn, {
@@ -208,6 +274,25 @@ export class JobQueue extends Resource implements IJobQueue {
       computeEnvironment,
       order,
     });
+  }
+
+  private parseJobStateTimeLimitActions(jobStateTimeLimitActions: JobStateTimeLimitAction[]): CfnJobQueue.JobStateTimeLimitActionProperty[] {
+    return jobStateTimeLimitActions.map(parseJobStateTimeLimitAction);
+
+    function parseJobStateTimeLimitAction(jobStateTimeLimitAction: JobStateTimeLimitAction): CfnJobQueue.JobStateTimeLimitActionProperty {
+      const maxTimeSeconds = jobStateTimeLimitAction.maxTimeSeconds.toSeconds();
+
+      if (maxTimeSeconds < 600 || maxTimeSeconds > 86400) {
+        throw new Error(`maxTimeSeconds must be between 60 and 86400, got ${maxTimeSeconds}`);
+      }
+
+      return {
+        action: jobStateTimeLimitAction.action,
+        maxTimeSeconds,
+        reason: jobStateTimeLimitAction.reason,
+        state: jobStateTimeLimitAction.state,
+      };
+    }
   }
 }
 
