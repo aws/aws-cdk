@@ -210,6 +210,11 @@ export class Runtime {
   public static readonly PYTHON_3 = Runtime.of('PYTHON_3')
 
   /**
+   * Python 3.11
+   */
+  public static readonly PYTHON_311 = Runtime.of('PYTHON_311')
+
+  /**
    * Ruby 3.1
    */
   public static readonly RUBY_31 = Runtime.of('RUBY_31')
