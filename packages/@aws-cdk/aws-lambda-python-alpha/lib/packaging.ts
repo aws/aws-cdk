@@ -143,7 +143,6 @@ export class Packaging {
 
   public readonly dependenciesFile: string;
   public readonly exportCommand?: string;
-  public readonly assetHash?: string;
   constructor(props: PackagingProps) {
     this.dependenciesFile = props.dependenciesFile;
     this.exportCommand = props.exportCommand;
