@@ -1,5 +1,5 @@
 /* eslint-disable import/no-extraneous-dependencies */
-import { ExternalModule, InterfaceType, Module, TypeScriptRenderer } from '@cdklabs/typewriter';
+import { InterfaceType, Module, TypeScriptRenderer } from '@cdklabs/typewriter';
 import * as fs from 'fs-extra';
 import { HandlerFrameworkClass, HandlerFrameworkClassProps } from './classes';
 import { ComponentType, ComponentProps } from './config';
@@ -10,7 +10,6 @@ import { ImportableModule } from './modules';
 export class HandlerFrameworkModule extends Module {
   private readonly renderer = new TypeScriptRenderer();
   private readonly importer = new ModuleImporter();
-  private readonly externalModules = new Map<string, boolean>();
   private readonly _interfaces = new Map<string, InterfaceType>();
   private _hasComponents = false;
 
@@ -76,24 +75,10 @@ export class HandlerFrameworkModule extends Module {
   }
 
   /**
-   * Add an external module to be imported.
-   */
-  public addExternalModule(module: ExternalModule) {
-    this.externalModules.set(module.fqn, true);
-  }
-
-  /**
-   *
+   * Register an external module to be imported into this module.
    */
   public registerImport(module: ImportableModule, options: ModuleImportOptions = {}) {
     this.importer.registerImport(module, options);
-  }
-
-  /**
-   * If an external module has been added as an import to this module.
-   */
-  public hasExternalModule(module: ExternalModule) {
-    return this.externalModules.has(module.fqn);
   }
 
   /**
