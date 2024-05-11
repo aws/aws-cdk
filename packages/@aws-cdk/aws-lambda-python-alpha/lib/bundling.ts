@@ -47,6 +47,12 @@ export interface BundlingProps extends BundlingOptions {
    * @default - BundlingFileAccess.BIND_MOUNT
    */
   bundlingFileAccess?: BundlingFileAccess;
+
+  /**
+   * Whether or not to install the dependencies
+   * @default true
+   */
+  readonly installDependencies?: boolean;
 }
 
 /**
@@ -73,6 +79,7 @@ export class Bundling implements CdkBundlingOptions {
   public readonly securityOpt?: string;
   public readonly network?: string;
   public readonly bundlingFileAccess?: BundlingFileAccess;
+  public readonly installDependencies?: boolean;
 
   constructor(props: BundlingProps) {
     const {
@@ -85,6 +92,7 @@ export class Bundling implements CdkBundlingOptions {
       poetryWithoutUrls,
       commandHooks,
       assetExcludes = [],
+      installDependencies = true,
     } = props;
 
     const outputPath = path.posix.join(AssetStaging.BUNDLING_OUTPUT_DIR, outputPathSuffix);
@@ -97,6 +105,7 @@ export class Bundling implements CdkBundlingOptions {
       poetryWithoutUrls,
       commandHooks,
       assetExcludes,
+      installDependencies,
     });
 
     this.image = image ?? DockerImage.fromBuild(path.join(__dirname, '..', 'lib'), {
@@ -119,17 +128,19 @@ export class Bundling implements CdkBundlingOptions {
   }
 
   private createBundlingCommand(options: BundlingCommandOptions): string[] {
-    const packaging = Packaging.fromEntry(options.entry, options.poetryIncludeHashes, options.poetryWithoutUrls);
     let bundlingCommands: string[] = [];
     bundlingCommands.push(...options.commandHooks?.beforeBundling(options.inputDir, options.outputDir) ?? []);
     const exclusionStr = options.assetExcludes?.map(item => `--exclude='${item}'`).join(' ');
     bundlingCommands.push([
       'rsync', '-rLv', exclusionStr ?? '', `${options.inputDir}/`, options.outputDir,
     ].filter(item => item).join(' '));
-    bundlingCommands.push(`cd ${options.outputDir}`);
-    bundlingCommands.push(packaging.exportCommand ?? '');
-    if (packaging.dependenciesFile) {
-      bundlingCommands.push(`python -m pip install -r ${DependenciesFile.PIP} -t ${options.outputDir}`);
+    if (options.installDependencies) {
+      const packaging = Packaging.fromEntry(options.entry, options.poetryIncludeHashes, options.poetryWithoutUrls);
+      bundlingCommands.push(`cd ${options.outputDir}`);
+      bundlingCommands.push(packaging.exportCommand ?? '');
+      if (packaging.dependenciesFile) {
+        bundlingCommands.push(`python -m pip install -r ${DependenciesFile.PIP} -t ${options.outputDir}`);
+      }
     }
     bundlingCommands.push(...options.commandHooks?.afterBundling(options.inputDir, options.outputDir) ?? []);
     return bundlingCommands;
@@ -144,6 +155,7 @@ interface BundlingCommandOptions {
   readonly poetryIncludeHashes?: boolean;
   readonly poetryWithoutUrls?: boolean;
   readonly commandHooks?: ICommandHooks;
+  readonly installDependencies: boolean;
 }
 
 /**

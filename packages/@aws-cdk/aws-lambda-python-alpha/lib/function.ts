@@ -1,10 +1,11 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { Function, FunctionOptions, Runtime, RuntimeFamily } from 'aws-cdk-lib/aws-lambda';
-import { Stack } from 'aws-cdk-lib/core';
+import { Architecture, Function, FunctionOptions, Runtime, RuntimeFamily } from 'aws-cdk-lib/aws-lambda';
+import { AssetHashType, Stack } from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import { Bundling } from './bundling';
 import { BundlingOptions } from './types';
+import { PythonLayerVersion } from './layer';
 
 /**
  * Properties for a PythonFunction
@@ -42,6 +43,11 @@ export interface PythonFunctionProps extends FunctionOptions {
    * @default - Use the default bundling Docker image, with x86_64 architecture.
    */
   readonly bundling?: BundlingOptions;
+
+  /**
+   * Whether or not to create a layer for the function's dependencies.
+   */
+  readonly layer?: boolean;
 }
 
 /**
@@ -60,11 +66,29 @@ export class PythonFunction extends Function {
     if (!fs.existsSync(resolvedIndex)) {
       throw new Error(`Cannot find index file at ${resolvedIndex}`);
     }
-
+    
     const resolvedHandler =`${index.slice(0, -3)}.${handler}`.replace(/\//g, '.');
 
     if (props.runtime && props.runtime.family !== RuntimeFamily.PYTHON) {
       throw new Error('Only `PYTHON` runtimes are supported.');
+    }
+
+    // Layer
+    let layer: PythonLayerVersion | undefined;
+    if (props.layer) {
+      layer = new PythonLayerVersion(scope, `${id}Layer`, {
+        entry,
+        compatibleRuntimes: [props.runtime],
+        compatibleArchitectures: [props.architecture ?? Architecture.X86_64],
+        bundling: {
+          ...props.bundling,
+          installDependencies: true,
+          // TODO: Make sure the layer is updated only when the dependencies change
+          // assetExcludes: ["TODO: exclude everything except the dependencies file"]
+          // assetHashType: AssetHashType.CUSTOM,
+          // assetHash: "TODO: hash of the dependencies file"
+        },
+      });
     }
 
     super(scope, id, {
@@ -77,8 +101,13 @@ export class PythonFunction extends Function {
         // define architecture based on the target architecture of the function, possibly overriden in bundling options
         architecture: props.architecture,
         ...props.bundling,
+        installDependencies: layer ? false : true,
       }),
       handler: resolvedHandler,
+      layers: layer ? [
+        ...(props.layers ?? []),
+        layer,
+      ] : props.layers,
     });
   }
 }

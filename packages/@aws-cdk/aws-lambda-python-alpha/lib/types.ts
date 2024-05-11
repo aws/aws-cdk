@@ -105,6 +105,12 @@ export interface BundlingOptions extends DockerRunOptions {
    * @default - BundlingFileAccess.BIND_MOUNT
    */
   readonly bundlingFileAccess?: BundlingFileAccess;
+
+  /**
+   * Whether or not to install the dependencies
+   * @default true
+   */
+  readonly installDependencies?: boolean;
 }
 
 /**
