@@ -13,6 +13,7 @@ import {
   SuperInitializer,
   Expression,
   ClassSpec,
+  $T,
 } from '@cdklabs/typewriter';
 import { Runtime } from './config';
 import { HandlerFrameworkModule } from './framework';
@@ -97,7 +98,9 @@ export abstract class HandlerFrameworkClass extends ClassType {
 
         const superProps = new ObjectLiteral([
           new Splat(expr.ident('props')),
-          ['code', expr.directCode(`lambda.Code.fromAsset(path.join(__dirname, '${props.codeDirectory}'))`)],
+          ['code', $T(LAMBDA_MODULE.Code).fromAsset(
+            PATH_MODULE.join.expr.call(expr.directCode(`__dirname, '${props.codeDirectory}'`)),
+          )],
           ['handler', expr.lit(props.handler)],
           ['runtime', this.buildRuntimeProperty(scope, props.runtime)],
         ]);
@@ -157,7 +160,9 @@ export abstract class HandlerFrameworkClass extends ClassType {
 
         const superProps = new ObjectLiteral([
           new Splat(expr.ident('props')),
-          ['code', expr.directCode(`lambda.Code.fromAsset(path.join(__dirname, '${props.codeDirectory}'))`)],
+          ['code', $T(LAMBDA_MODULE.Code).fromAsset(
+            PATH_MODULE.join.expr.call(expr.directCode(`__dirname, '${props.codeDirectory}'`)),
+          )],
           ['handler', expr.lit(props.handler)],
           ['runtime', this.buildRuntimeProperty(scope, props.runtime)],
         ]);
@@ -256,7 +261,7 @@ export abstract class HandlerFrameworkClass extends ClassType {
 
         const superProps = new ObjectLiteral([
           new Splat(expr.ident('props')),
-          ['codeDirectory', expr.directCode(`path.join(__dirname, '${props.codeDirectory}')`)],
+          ['codeDirectory', PATH_MODULE.join.expr.call(expr.directCode(`__dirname, '${props.codeDirectory}'`))],
           ['runtimeName', this.buildRuntimeProperty(scope, props.runtime, true)],
         ]);
         this.buildConstructor({

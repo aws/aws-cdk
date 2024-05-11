@@ -6,6 +6,8 @@ export abstract class ImportableModule extends ExternalModule {
 }
 
 class PathModule extends ImportableModule {
+  public readonly join = makeCallableExpr(this, 'join');
+
   public readonly importAs = 'path';
 
   public constructor() {
@@ -43,6 +45,7 @@ class LambdaModule extends ImportableModule {
   public readonly FunctionOptions = Type.fromName(this, 'FunctionOptions');
   public readonly Runtime = Type.fromName(this, 'Runtime');
   public readonly RuntimeFamily = Type.fromName(this, 'RuntimeFamily');
+  public readonly Code = Type.fromName(this, 'Code');
 
   public readonly determineLatestNodeRuntime = makeCallableExpr(this, 'determineLatestNodeRuntime');
 
