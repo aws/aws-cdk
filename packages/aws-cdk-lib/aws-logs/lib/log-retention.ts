@@ -5,6 +5,7 @@ import * as iam from '../../aws-iam';
 import * as s3_assets from '../../aws-s3-assets';
 import * as cdk from '../../core';
 import { ArnFormat } from '../../core';
+import { determineLatestNodeRuntimeName } from '../../core/lib/dist/core/runtime-determiner-core.generated';
 
 /**
  * Construction properties for a LogRetention.
@@ -170,7 +171,7 @@ class LogRetentionFunction extends Construct implements cdk.ITaggable {
       type: 'AWS::Lambda::Function',
       properties: {
         Handler: 'index.handler',
-        Runtime: 'nodejs18.x',
+        Runtime: determineLatestNodeRuntimeName(this),
         Timeout: cdk.Duration.minutes(15).toSeconds(),
         Code: {
           S3Bucket: asset.s3BucketName,
