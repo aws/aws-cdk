@@ -89,6 +89,24 @@ export class FoundationModelIdentifier {
   /** Base model "anthropic.claude-3-sonnet-20240229-v1:0". */
   public static readonly ANTHROPIC_CLAUDE_3_SONNET_20240229_V1_0 = new FoundationModelIdentifier('anthropic.claude-3-sonnet-20240229-v1:0');
 
+  /** Base model "anthropic.claude-3-sonnet-20240229-v1:0:28k" */
+  public static readonly ANTHROPIC_CLAUDE_3_SONNET_20240229_V1_0_28K = new FoundationModelIdentifier('anthropic.claude-3-sonnet-20240229-v1:0:28k');
+
+  /** Base model "anthropic.claude-3-sonnet-20240229-v1:0:200k" */
+  public static readonly ANTHROPIC_CLAUDE_3_SONNET_20240229_V1_0_200K = new FoundationModelIdentifier('anthropic.claude-3-sonnet-20240229-v1:0:200k');
+
+  /** Base model "anthropic.claude-3-haiku-20240307-v1:0". */
+  public static readonly ANTHROPIC_CLAUDE_3_HAIKU_20240307_V1_0 = new FoundationModelIdentifier('anthropic.claude-3-haiku-20240307-v1:0');
+
+  /** Base model "anthropic.claude-3-haiku-20240307-v1:0:48k" */
+  public static readonly ANTHROPIC_CLAUDE_3_HAIKU_20240307_V1_0_48K = new FoundationModelIdentifier('anthropic.claude-3-haiku-20240307-v1:0:48k');
+
+  /** Base model "anthropic.claude-3-haiku-20240307-v1:0:200k" */
+  public static readonly ANTHROPIC_CLAUDE_3_HAIKU_20240307_V1_0_200K = new FoundationModelIdentifier('anthropic.claude-3-haiku-20240307-v1:0:200k');
+
+  /** Base model "anthropic.claude-3-opus-20240229-v1:0" */
+  public static readonly ANTHROPIC_CLAUDE_3_OPUS_20240229_V1_0 = new FoundationModelIdentifier('anthropic.claude-3-opus-20240229-v1:0');
+
   /** Base model "anthropic.claude-instant-v1". */
   public static readonly ANTHROPIC_CLAUDE_INSTANT_V1 = new FoundationModelIdentifier('anthropic.claude-instant-v1');
 
