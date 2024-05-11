@@ -221,7 +221,7 @@ export interface DatabaseClusterProps {
   /**
    * Whether to copy tags to the snapshot when a snapshot is created.
    *
-   * @default - not copy tags to the snapshot
+   * @default - false
    */
   readonly copyTagsToSnapshot?: boolean;
 }

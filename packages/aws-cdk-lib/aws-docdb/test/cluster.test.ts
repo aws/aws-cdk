@@ -1136,8 +1136,7 @@ describe('DatabaseCluster', () => {
     });
   });
 
-  test('cluster with copyTagsToSnapshot disabled', () => {
-    // GIVEN
+  test.each([false, true])('cluster with copyTagsToSnapshot set', (value) => {
     const stack = testStack();
     const vpc = new ec2.Vpc(stack, 'VPC');
 
@@ -1149,34 +1148,12 @@ describe('DatabaseCluster', () => {
       },
       instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
       vpc,
-      copyTagsToSnapshot: false,
+      copyTagsToSnapshot: value,
     });
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::DocDB::DBCluster', {
-      CopyTagsToSnapshot: false,
-    });
-  });
-
-  test('cluster with copyTagsToSnapshot enabled', () => {
-    // GIVEN
-    const stack = testStack();
-    const vpc = new ec2.Vpc(stack, 'VPC');
-
-    // WHEN
-    new DatabaseCluster(stack, 'Database', {
-      masterUser: {
-        username: 'admin',
-        password: cdk.SecretValue.unsafePlainText('tooshort'),
-      },
-      instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.SMALL),
-      vpc,
-      copyTagsToSnapshot: true,
-    });
-
-    // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::DocDB::DBCluster', {
-      CopyTagsToSnapshot: true,
+      CopyTagsToSnapshot: value,
     });
   });
 });
