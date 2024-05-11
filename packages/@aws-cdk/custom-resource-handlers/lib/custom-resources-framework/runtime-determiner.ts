@@ -19,10 +19,18 @@ import {
 import { ModuleImporter } from './module-importer';
 
 export class RuntimeDeterminerModule extends Module {
+  /**
+   * Build a runtime determiner that will be airlifted directly into core. Due to circle dependencies with
+   * aws-lambda, this generated runtime determiner will only determine the runtime name and not a Lambda
+   * Runtime.
+   */
   public static buildForCore() {
     return new RuntimeDeterminerModule('runtime-determiner-core');
   }
 
+  /**
+   * Build a runtime determiner that will be airlifted directly into aws-lambda.
+   */
   public static buildForLambda() {
     return new RuntimeDeterminerModule('runtime-determiner-lambda');
   }

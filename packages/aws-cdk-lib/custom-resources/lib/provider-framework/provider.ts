@@ -8,9 +8,9 @@ import * as ec2 from '../../../aws-ec2';
 import * as iam from '../../../aws-iam';
 import * as kms from '../../../aws-kms';
 import * as lambda from '../../../aws-lambda';
+import { determineLatestNodeRuntime } from '../../../aws-lambda/lib/runtime-determiner-lambda.generated';
 import * as logs from '../../../aws-logs';
 import { Duration } from '../../../core';
-import { determineLatestNodeRuntime } from '../../../aws-lambda/lib/runtime-determiner-lambda.generated';
 
 const RUNTIME_HANDLER_PATH = path.join(__dirname, 'runtime');
 const FRAMEWORK_HANDLER_TIMEOUT = Duration.minutes(15); // keep it simple for now

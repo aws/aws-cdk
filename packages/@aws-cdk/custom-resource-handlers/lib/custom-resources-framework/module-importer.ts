@@ -42,7 +42,7 @@ export class ModuleImporter {
   }
 
   /**
-   * Import all modules registered module into the target module.
+   * Import all registered modules into the target module.
    */
   public importModulesInto(scope: Module) {
     for (const { module, targets, fromLocation } of Object.values(this.imports)) {
