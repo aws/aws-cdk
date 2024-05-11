@@ -46,6 +46,7 @@ export interface PythonFunctionProps extends FunctionOptions {
 
   /**
    * Whether or not to create a layer for the function's dependencies.
+   * @default - No layer is created.
    */
   readonly layer?: boolean;
 }
