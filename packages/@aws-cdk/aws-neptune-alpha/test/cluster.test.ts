@@ -897,8 +897,7 @@ describe('DatabaseCluster', () => {
     });
   });
 
-  test('cluster with copyTagsToSnapshot disabled', () => {
-    // GIVEN
+  test.each([false, true])('cluster with copyTagsToSnapshot set', (value) => {
     const stack = testStack();
     const vpc = new ec2.Vpc(stack, 'VPC');
 
@@ -906,30 +905,12 @@ describe('DatabaseCluster', () => {
     new DatabaseCluster(stack, 'Database', {
       vpc,
       instanceType: InstanceType.R5_LARGE,
-      copyTagsToSnapshot: false,
+      copyTagsToSnapshot: value,
     });
 
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::Neptune::DBCluster', {
-      CopyTagsToSnapshot: false,
-    });
-  });
-
-  test('cluster with copyTagsToSnapshot enabled', () => {
-    // GIVEN
-    const stack = testStack();
-    const vpc = new ec2.Vpc(stack, 'VPC');
-
-    // WHEN
-    new DatabaseCluster(stack, 'Database', {
-      vpc,
-      instanceType: InstanceType.R5_LARGE,
-      copyTagsToSnapshot: true,
-    });
-
-    // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::Neptune::DBCluster', {
-      CopyTagsToSnapshot: true,
+      CopyTagsToSnapshot: value,
     });
   });
 });

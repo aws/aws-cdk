@@ -85,7 +85,7 @@ export class EngineVersion {
    * Constructor for specifying a custom engine version
    * @param version the engine version of Neptune
    */
-  public constructor(public readonly version: string) {}
+  public constructor(public readonly version: string) { }
 }
 
 /**
@@ -105,7 +105,7 @@ export class LogType {
    * Constructor for specifying a custom log type
    * @param value the log type
    */
-  public constructor(public readonly value: string) {}
+  public constructor(public readonly value: string) { }
 }
 
 export interface ServerlessScalingConfiguration {
@@ -325,7 +325,7 @@ export interface DatabaseClusterProps {
   /**
    * Whether to copy tags to the snapshot when a snapshot is created.
    *
-   * @default - not copy tags to the snapshot
+   * @default - false
    */
   readonly copyTagsToSnapshot?: boolean;
 }
