@@ -329,8 +329,9 @@ export abstract class HandlerFrameworkClass extends ClassType {
       });
     }
 
+    const _scope = expr.ident('scope');
     return isProvider
-      ? expr.directCode('determineLatestNodeRuntimeName(scope)')
-      : expr.directCode('determineLatestNodeRuntime(scope)');
+      ? CORE_MODULE.determineLatestNodeRuntimeName.expr.call(_scope)
+      : LAMBDA_MODULE.determineLatestNodeRuntime.expr.call(_scope);
   }
 }
