@@ -963,8 +963,8 @@ describe('vpc endpoint', () => {
           Ref: 'VPCB9E5F0B4',
         },
         PrivateDnsEnabled: false,
-        VpcEndpointType: "Interface",
-            });
+        VpcEndpointType: 'Interface',
+      });
     });
 
     test('vpc interface endpoint does\'nt support private dns enabled', () => {

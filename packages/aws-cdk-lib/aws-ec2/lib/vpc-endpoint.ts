@@ -565,6 +565,7 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
 
   /**
    * Whether Private DNS is supported by default.
+   * If the interface endpoint doesn't support Private DNS, privateDnsDefault will be set false.
    */
   public readonly privateDnsDefault?: boolean = true;
 
@@ -645,6 +646,9 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
     return VPC_ENDPOINT_SERVICE_EXCEPTIONS[region]?.includes(name) ? '.cn' : '';
   }
 
+  /**
+ * Get whether the inteface endpoint support Private DNS
+ */
   private getPrivateDnsDefault(name: string) {
     const PRIVATE_DNS_NOT_SUPPORTED_SERVICES = [
       'dynamodb',

@@ -253,7 +253,7 @@ for (const gateway of provider.gatewayInstances) {
 [using NAT instances](test/integ.nat-instances.lit.ts) [Deprecated]
 
 The V1 `NatProvider.instance` construct will use the AWS official NAT instance AMI, which has already
-reached EOL on Dec 31, 2023. For more information, see the following blog post: 
+reached EOL on Dec 31, 2023. For more information, see the following blog post:
 [Amazon Linux AMI end of life](https://aws.amazon.com/blogs/aws/update-on-amazon-linux-ami-end-of-life/).
 
 ```ts
@@ -451,7 +451,7 @@ Here is a break down of IPv4 and IPv6 specifc `subnetConfiguration` properties i
 ```ts
 const vpc = new ec2.Vpc(this, 'TheVPC', {
   ipProtocol: ec2.IpProtocol.DUAL_STACK,
-  
+
   subnetConfiguration: [
     {
       // general properties
@@ -474,7 +474,7 @@ The property `mapPublicIpOnLaunch` controls if a public IPv4 address will be ass
 
 The `ipv6AssignAddressOnCreation` property controls the same behavior for the IPv6 address. It defaults to true.
 
-Using IPv6 specific properties in an IPv4 only VPC will result in errors. 
+Using IPv6 specific properties in an IPv4 only VPC will result in errors.
 
 ### Accessing the Internet Gateway
 
@@ -1060,6 +1060,9 @@ new ec2.InterfaceVpcEndpoint(this, 'VPC Endpoint', {
   service: ec2.InterfaceVpcEndpointAwsService.KEYSPACES,
 });
 ```
+
+If the interface endpoint doesn't support Private DNS, `privateDnsDefault` will be set false.
+In that case, you can't set `privateDnsEnabled` to be true.
 
 #### Security groups for interface VPC endpoints
 
