@@ -300,7 +300,7 @@ export class JobQueue extends Resource implements IJobQueue {
       const maxTimeSeconds = jobStateTimeLimitAction.maxTimeSeconds.toSeconds();
 
       if (maxTimeSeconds < 600 || maxTimeSeconds > 86400) {
-        throw new Error(`maxTimeSeconds must be between 60 and 86400, got ${maxTimeSeconds}`);
+        throw new Error(`maxTimeSeconds must be between 600 and 86400, got ${maxTimeSeconds}`);
       }
 
       return {

@@ -332,5 +332,5 @@ test('JobQueue with JobStateTimeLimitActions throws when maxTimeSeconds has an i
         state: JobStateTimeLimitActionsState.RUNNABLE,
       },
     ],
-  })).toThrow('maxTimeSeconds must be between 60 and 86400, got 90000');
+  })).toThrow('maxTimeSeconds must be between 600 and 86400, got 90000');
 });
