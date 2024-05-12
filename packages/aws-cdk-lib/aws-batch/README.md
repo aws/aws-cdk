@@ -240,13 +240,15 @@ Specifies an action that AWS Batch will take after the job has remained at the h
 specified state for longer than the specified time.
 
 ```ts
+import * as cdk from 'aws-cdk-lib';
+
 new batch.JobQueue(this, 'JobQueue', {
     jobStateTimeLimitActions: [
       {
-        action: JobStateTimeLimitActionsAction.CANCEL,
-        maxTimeSeconds: Duration.minutes(10),
-        reason: JobStateTimeLimitActionsReason.INSUFFICIENT_INSTANCE_CAPACITY,
-        state: JobStateTimeLimitActionsState.RUNNABLE,
+        action: batch.JobStateTimeLimitActionsAction.CANCEL,
+        maxTimeSeconds: cdk.Duration.minutes(10),
+        reason: batch.JobStateTimeLimitActionsReason.INSUFFICIENT_INSTANCE_CAPACITY,
+        state: batch.JobStateTimeLimitActionsState.RUNNABLE,
       },
     ]
 });
