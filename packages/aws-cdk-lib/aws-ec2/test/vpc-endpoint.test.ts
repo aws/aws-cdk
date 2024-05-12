@@ -947,18 +947,7 @@ describe('vpc endpoint', () => {
 
       //THEN
       Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPCEndpoint', {
-        ServiceName: {
-          'Fn::Join': [
-            '',
-            [
-              'com.amazonaws.',
-              {
-                Ref: 'AWS::Region',
-              },
-              '.dynamodb',
-            ],
-          ],
-        },
+        ServiceName: 'com.amazonaws.us-west-2.dynamodb',
         VpcId: {
           Ref: 'VPCB9E5F0B4',
         },
