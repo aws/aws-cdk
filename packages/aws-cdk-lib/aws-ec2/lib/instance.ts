@@ -16,7 +16,6 @@ import { IVpc, Subnet, SubnetSelection } from './vpc';
 import * as iam from '../../aws-iam';
 import { Annotations, Aspects, Duration, Fn, IResource, Lazy, Resource, Stack, Tags } from '../../core';
 import { md5hash } from '../../core/lib/helpers-internal';
-import { InstanceInitiatedShutdownBehavior } from './instance';
 
 /**
  * Name tag constant
