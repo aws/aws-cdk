@@ -179,6 +179,9 @@ export interface JobStateTimeLimitAction {
  * for the specified period of time.
  */
 export enum JobStateTimeLimitActionsAction {
+  /**
+  * Cancel the job.
+  */
   CANCEL = 'CANCEL',
 }
 
@@ -187,8 +190,19 @@ export enum JobStateTimeLimitActionsAction {
  * @see https://docs.aws.amazon.com/batch/latest/userguide/troubleshooting.html#job_stuck_in_runnable
  */
 export enum JobStateTimeLimitActionsReason {
+  /**
+  * All connected compute environments have insufficient capacity errors.
+  */
   INSUFFICIENT_INSTANCE_CAPACITY = 'CAPACITY:INSUFFICIENT_INSTANCE_CAPACITY',
+
+  /**
+  * All compute environments have a maxvCpus parameter that is smaller than the job requirements.
+  */
   COMPUTE_ENVIRONMENT_MAX_RESOURCE = 'MISCONFIGURATION:COMPUTE_ENVIRONMENT_MAX_RESOURCE',
+
+  /**
+  * None of the compute environments have instances that meet the job requirements.
+  */
   JOB_RESOURCE_REQUIREMENT = 'MISCONFIGURATION:JOB_RESOURCE_REQUIREMENT',
 }
 
@@ -196,6 +210,9 @@ export enum JobStateTimeLimitActionsReason {
  * The state of the job needed to trigger the action.
  */
 export enum JobStateTimeLimitActionsState {
+  /**
+  * RUNNABLE state triggers the action.
+  */
   RUNNABLE = 'RUNNABLE',
 }
 
