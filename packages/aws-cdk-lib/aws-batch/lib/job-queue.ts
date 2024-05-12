@@ -152,8 +152,10 @@ export interface JobStateTimeLimitAction {
   /**
  * The action to take when a job is at the head of the job queue in the specified state
  * for the specified period of time.
+ *
+ * @default JobStateTimeLimitActionsAction.CANCEL
  */
-  readonly action: JobStateTimeLimitActionsAction;
+  readonly action?: JobStateTimeLimitActionsAction;
 
   /**
    * The approximate amount of time, in seconds, that must pass with the job in the specified
@@ -170,8 +172,10 @@ export interface JobStateTimeLimitAction {
 
   /**
    * The state of the job needed to trigger the action.
+   *
+   * @default JobStateTimeLimitActionsState.RUNNABLE
    */
-  readonly state: JobStateTimeLimitActionsState;
+  readonly state?: JobStateTimeLimitActionsState;
 }
 
 /**
@@ -304,10 +308,10 @@ export class JobQueue extends Resource implements IJobQueue {
       }
 
       return {
-        action: jobStateTimeLimitAction.action,
+        action: jobStateTimeLimitAction.action ?? JobStateTimeLimitActionsAction.CANCEL,
         maxTimeSeconds,
         reason: jobStateTimeLimitAction.reason,
-        state: jobStateTimeLimitAction.state,
+        state: jobStateTimeLimitAction.state ?? JobStateTimeLimitActionsState.RUNNABLE,
       };
     }
   }

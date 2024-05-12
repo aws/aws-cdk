@@ -287,10 +287,8 @@ test('JobQueue with JobStateTimeLimitActions', () => {
         state: JobStateTimeLimitActionsState.RUNNABLE,
       },
       {
-        action: JobStateTimeLimitActionsAction.CANCEL,
         maxTimeSeconds: Duration.minutes(10),
         reason: JobStateTimeLimitActionsReason.JOB_RESOURCE_REQUIREMENT,
-        state: JobStateTimeLimitActionsState.RUNNABLE,
       },
     ],
   });

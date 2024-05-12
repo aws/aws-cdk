@@ -29,10 +29,8 @@ new batch.JobQueue(stack, 'joBBQ', {
       state: batch.JobStateTimeLimitActionsState.RUNNABLE,
     },
     {
-      action: batch.JobStateTimeLimitActionsAction.CANCEL,
       maxTimeSeconds: Duration.minutes(10),
       reason: batch.JobStateTimeLimitActionsReason.JOB_RESOURCE_REQUIREMENT,
-      state: batch.JobStateTimeLimitActionsState.RUNNABLE,
     },
   ],
 });
