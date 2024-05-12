@@ -6,7 +6,7 @@ import { Connections, IConnectable } from './connections';
 import { CfnInstance } from './ec2.generated';
 import { InstanceType } from './instance-types';
 import { IKeyPair } from './key-pair';
-import { CpuCredits } from './launch-template';
+import { CpuCredits, InstanceInitiatedShutdownBehavior } from './launch-template';
 import { IMachineImage, OperatingSystemType } from './machine-image';
 import { instanceBlockDeviceMappings } from './private/ebs-util';
 import { ISecurityGroup, SecurityGroup } from './security-group';
@@ -16,6 +16,7 @@ import { IVpc, Subnet, SubnetSelection } from './vpc';
 import * as iam from '../../aws-iam';
 import { Annotations, Aspects, Duration, Fn, IResource, Lazy, Resource, Stack, Tags } from '../../core';
 import { md5hash } from '../../core/lib/helpers-internal';
+import { InstanceInitiatedShutdownBehavior } from './instance';
 
 /**
  * Name tag constant
@@ -315,6 +316,14 @@ export interface InstanceProps {
    * @default false
    */
   readonly ebsOptimized?: boolean;
+
+  /**
+   * Indicates whether an instance stops or terminates when you initiate shutdown from the instance
+   * (using the operating system command for system shutdown).
+   *
+   * @default InstanceInitiatedShutdownBehavior.STOP
+   */
+  readonly instanceInitiatedShutdownBehavior?: InstanceInitiatedShutdownBehavior;
 }
 
 /**
@@ -486,6 +495,7 @@ export class Instance extends Resource implements IInstance {
       monitoring: props.detailedMonitoring,
       creditSpecification: props.creditSpecification ? { cpuCredits: props.creditSpecification } : undefined,
       ebsOptimized: props.ebsOptimized,
+      instanceInitiatedShutdownBehavior: props.instanceInitiatedShutdownBehavior,
     });
     this.instance.node.addDependency(this.role);
 
