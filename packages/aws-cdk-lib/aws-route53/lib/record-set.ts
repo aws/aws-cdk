@@ -211,6 +211,15 @@ export interface RecordSetOptions {
   readonly cidrRoutingConfig?: ICidrRoutingConfig;
 
   /**
+   * The configuration for non-simple routing policies in Amazon Route 53 record sets.
+   *
+   * This parameter is not specified with `geoLocation`, `weight`, `region`, or `multiValueAnswer`.
+   *
+   * @default - Do not use non-simple routing policies
+   */
+  readonly routingConfiguration?: RoutingConfiguration;
+
+  /**
    * The Amazon EC2 Region where you created the resource that this resource record set refers to.
    * The resource typically is an AWS resource, such as an EC2 instance or an ELB load balancer,
    * and is referred to by an IP address or a DNS domain name, depending on the record type.
@@ -319,10 +328,33 @@ export abstract class RoutingConfiguration {
   public readonly cidrRoutingConfig?: ICidrRoutingConfig;
 
   constructor(props: RoutingConfigurationProps) {
-    this.cidrRoutingConfig = props.cidrRoutingConfig;
+    if (props.cidrRoutingConfig) {
+      const { cidrList, locationName, collectionName } = props.cidrRoutingConfig;
+      if (!Token.isUnresolved(locationName) && locationName && (locationName.length < 1 || locationName.length > 16)) {
+        throw new Error(`locationName must be between 1 and 16 characters long, got: ${locationName.length}`);
+      }
+      if (!Token.isUnresolved(locationName) && locationName && !/^[0-9A-Za-z_\-]+$/.test(locationName) && locationName !== '*') {
+        throw new Error(`locationName must only contain alphanumeric characters, underscores, and hyphens, or only '*', got: ${locationName}`);
+      }
+      if (cidrList && (cidrList.length < 1 || cidrList.length > 1000)) {
+        throw new Error(`cidrList must contain between 1 and 1000 elements, got: ${cidrList.length}`);
+      }
+      if (!Token.isUnresolved(collectionName) && collectionName &&(collectionName.length < 1 || collectionName.length > 64)) {
+        throw new Error(`collectionName must be between 1 and 64 characters long, got: ${collectionName.length}`);
+      }
+      if (!Token.isUnresolved(collectionName) && collectionName && !/^[0-9A-Za-z_\-]+$/.test(collectionName)) {
+        throw new Error(`collectionName must only contain alphanumeric characters, underscores, and hyphens, got: ${collectionName}`);
+      }
+      this.cidrRoutingConfig = props.cidrRoutingConfig;
+    }
   }
 }
 
+/**
+ * Configuration for IP-based routing.
+ *
+ * @see @see https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/routing-policy-ipbased.html
+ */
 class IpBasedRoutingConfiguration extends RoutingConfiguration {
   constructor(props: IpBasedRoutingConfigurationProps) {
     super({
@@ -342,22 +374,15 @@ export interface ICidrRoutingConfig {
   /**
    * List of CIDR blocks.
    *
-   * When specifying the default location (locationName is '*'), it cannot be set, but for all other cases, it is mandatory.
-   *
    * @default - zero bit CIDR block (0.0.0.0/0 or ::/0) for the default location
    */
   cidrList?: string[];
   /**
    * The name of the location.
-   *
-   * When '*' is specified, it is treated as the default location.
-   * In this case, the cidrList cannot be specified.
    */
   locationName: string;
   /**
    * The name of a CIDR collection.
-   *
-   * This parameter is ignored when the `collection` property is specified.
    *
    * @default - Auto generated name
    */
@@ -480,30 +505,10 @@ export class RecordSet extends Resource implements IRecordSet {
 
     const recordName = determineFullyQualifiedDomainName(props.recordName || props.zone.zoneName, props.zone);
 
-    if (props.cidrRoutingConfig) {
-      const { locationName, cidrList, collectionName, collection } = props.cidrRoutingConfig;
-      if (!Token.isUnresolved(locationName) && locationName && (locationName.length < 1 || locationName.length > 16)) {
-        throw new Error(`locationName must be between 1 and 16 characters long, got: ${locationName.length}`);
+    if (props.routingConfiguration) {
+      if (props.routingConfiguration.cidrRoutingConfig) {
+        this.configureIpBasedRouting(props.routingConfiguration.cidrRoutingConfig);
       }
-      if (!Token.isUnresolved(locationName) && locationName === '*' && cidrList) {
-        throw new Error('cidrList can only be specified for non-default locations');
-      }
-      if (!Token.isUnresolved(locationName) && locationName === '*' && collection) {
-        throw new Error('Default location cannot be specified when using an existing CIDR collection');
-      }
-      if (!Token.isUnresolved(locationName) && locationName && !/^[0-9A-Za-z_\-]+$/.test(locationName) && locationName !== '*') {
-        throw new Error(`locationName must only contain alphanumeric characters, underscores, and hyphens, or only '*', got: ${locationName}`);
-      }
-      if (cidrList && (cidrList.length < 1 || cidrList.length > 1000)) {
-        throw new Error(`cidrList must contain between 1 and 1000 elements, got: ${cidrList.length}`);
-      }
-      if (!Token.isUnresolved(collectionName) && collectionName &&(collectionName.length < 1 || collectionName.length > 64)) {
-        throw new Error(`collectionName must be between 1 and 64 characters long, got: ${collectionName.length}`);
-      }
-      if (!Token.isUnresolved(collectionName) && collectionName && !/^[0-9A-Za-z_\-]+$/.test(collectionName)) {
-        throw new Error(`collectionName must only contain alphanumeric characters, underscores, and hyphens, got: ${collectionName}`);
-      }
-      this.configureIpBasedRouting(props.cidrRoutingConfig);
     }
 
     const recordSet = new CfnRecordSet(this, 'Resource', {
