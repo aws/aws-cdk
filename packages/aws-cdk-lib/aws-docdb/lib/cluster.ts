@@ -261,7 +261,7 @@ export interface DatabaseClusterProps {
    *
    * @default - StorageType.STANDARD
    */
-  readonly storageType: StorageType;
+  readonly storageType?: StorageType;
 }
 
 /**
