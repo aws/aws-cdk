@@ -240,8 +240,6 @@ Specifies an action that AWS Batch will take after the job has remained at the h
 specified state for longer than the specified time.
 
 ```ts
-import * as cdk from 'aws-cdk-lib';
-
 new batch.JobQueue(this, 'JobQueue', {
     jobStateTimeLimitActions: [
       {
