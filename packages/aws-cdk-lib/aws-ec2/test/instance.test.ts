@@ -26,6 +26,7 @@ import {
   KeyPair,
   KeyPairType,
   CpuCredits,
+  InstanceInitiatedShutdownBehavior,
 } from '../lib';
 
 let stack: Stack;
@@ -642,6 +643,22 @@ describe('instance', () => {
         creditSpecification: CpuCredits.STANDARD,
       });
     }).toThrow('creditSpecification is supported only for T4g, T3a, T3, T2 instance type, got: m5.large');
+  });
+
+  test('set instanceInitiatedShutdownBehavior', () => {
+    // WHEN
+    new Instance(stack, 'Instance', {
+      vpc,
+      machineImage: new AmazonLinuxImage(),
+      instanceType: new InstanceType('t2.micro'),
+      instanceInitiatedShutdownBehavior: InstanceInitiatedShutdownBehavior.TERMINATE,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::Instance', {
+      InstanceType: 't2.micro',
+      InstanceInitiatedShutdownBehavior: 'terminate',
+    });
   });
 });
 
