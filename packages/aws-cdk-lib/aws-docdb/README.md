@@ -20,6 +20,7 @@ const cluster = new docdb.DatabaseCluster(this, 'Database', {
     subnetType: ec2.SubnetType.PUBLIC,
   },
   vpc,
+  copyTagsToSnapshot: true  // whether to save the cluster tags when creating the snapshot.
 });
 ```
 
