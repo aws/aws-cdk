@@ -538,7 +538,7 @@ export class DatabaseCluster extends DatabaseClusterBase {
       && props.engineVersion !== undefined
       && Number(props.engineVersion.split('.')[0]) < MIN_ENGINE_VERSION_FOR_IO_OPTIMIZED_STORAGE
     ) {
-      throw new Error('I/O-optimized storage is supported starting with engine version 5.0.0');
+      throw new Error(`I/O-optimized storage is supported starting with engine version 5.0.0, got ${props.engineVersion}`);
     }
 
     // Create the DocDB cluster
