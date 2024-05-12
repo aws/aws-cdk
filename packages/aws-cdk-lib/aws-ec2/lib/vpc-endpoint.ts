@@ -817,7 +817,7 @@ export class InterfaceVpcEndpoint extends VpcEndpoint implements IInterfaceVpcEn
     }
 
     if (props.service instanceof InterfaceVpcEndpointAwsService && props.service.privateDnsDefault === false && props.privateDnsEnabled === true) {
-      throw new Error(`Cannot create a VPC Endpoint enable private dns enabled: ${props.service.shortName}`);
+      throw new Error(`Cannot create a VPC Endpoint private dns enabled: ${props.service.shortName}`);
     }
 
     // Determine which subnets to place the endpoint in

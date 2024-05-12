@@ -976,7 +976,7 @@ describe('vpc endpoint', () => {
         service: InterfaceVpcEndpointAwsService.DYNAMODB,
         privateDnsEnabled: true,
       }),
-      ).toThrow('Cannot create a VPC Endpoint enable private dns enabled: dynamodb');
+      ).toThrow('Cannot create a VPC Endpoint private dns enabled: dynamodb');
     });
   });
 });
