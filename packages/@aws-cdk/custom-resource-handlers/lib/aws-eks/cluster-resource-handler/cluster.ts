@@ -132,7 +132,7 @@ export class ClusterResourceHandler extends ResourceHandler {
     // Update tags
     if (updates.updateTags) {
       try {
-        //Describe cluster to get arn and to make sure Cluster exists
+        // Describe the cluster to get the ARN for tagging APIs and to make sure Cluster exists
         const cluster = (await this.eks.describeCluster({ name: this.clusterName })).cluster;
         if (this.oldProps.tags) {
           if (this.newProps.tags) {
