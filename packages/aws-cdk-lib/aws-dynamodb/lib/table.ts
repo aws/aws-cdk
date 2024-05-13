@@ -1046,6 +1046,9 @@ export class Table extends TableBase {
 
   public readonly encryptionKey?: kms.IKey;
 
+  /**
+   * @attribute
+   */
   public resourcePolicy?: iam.PolicyDocument | undefined;
 
   /**
