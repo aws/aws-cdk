@@ -1,6 +1,6 @@
 import * as path from 'path';
 import { format } from 'util';
-import { fullDiff, TemplateDiff } from '@aws-cdk/cloudformation-diff';
+import { fullDiff } from '@aws-cdk/cloudformation-diff';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as chalk from 'chalk';
 import * as chokidar from 'chokidar';
