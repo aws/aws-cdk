@@ -1,7 +1,7 @@
 import { Construct } from 'constructs';
 import { IAutoScalingGroup } from './auto-scaling-group';
 import { CfnScalingPolicy } from './autoscaling.generated';
-import { Duration, Lazy } from '../../core';
+import { Annotations, Duration, Lazy } from '../../core';
 
 /**
  * Properties for a scaling policy
@@ -16,6 +16,7 @@ export interface StepScalingActionProps {
    * Period after a scaling completes before another scaling activity can start.
    *
    * @default The default cooldown configured on the AutoScalingGroup
+   * @deprecated cooldown is not valid with step scaling action
    */
   readonly cooldown?: Duration;
 
@@ -71,10 +72,16 @@ export class StepScalingAction extends Construct {
   constructor(scope: Construct, id: string, props: StepScalingActionProps) {
     super(scope, id);
 
+    // Specify cooldown property in StepScaling policy type is ineffective and may cause deployment failure
+    // in certain regions. We can't simply remove the property since it break existing users. Since setting
+    // this value is ineffective, we can safely ignore the value of this property with a warning.
+    if (props.cooldown) {
+      Annotations.of(this).addWarningV2('@aws-cdk/aws-autoscaling:cooldownOnStepScaling', '\'Cooldown\' is valid only if the policy type is SimpleScaling. Default to ignore the values set.');
+    }
+
     const resource = new CfnScalingPolicy(this, 'Resource', {
       policyType: 'StepScaling',
       autoScalingGroupName: props.autoScalingGroup.autoScalingGroupName,
-      cooldown: props.cooldown && props.cooldown.toSeconds().toString(),
       estimatedInstanceWarmup: props.estimatedInstanceWarmup && props.estimatedInstanceWarmup.toSeconds(),
       adjustmentType: props.adjustmentType,
       minAdjustmentMagnitude: props.minAdjustmentMagnitude,

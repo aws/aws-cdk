@@ -66,7 +66,7 @@ describe('DatabaseInstance', () => {
     new DatabaseInstance(stack, 'Instance', {
       cluster: stack.cluster,
       instanceType: SINGLE_INSTANCE_TYPE,
-      caCertificate: CaCertificate.RDS_CA_RDS4096_G1,
+      caCertificate: CaCertificate.RDS_CA_RSA4096_G1,
     });
 
     // THEN

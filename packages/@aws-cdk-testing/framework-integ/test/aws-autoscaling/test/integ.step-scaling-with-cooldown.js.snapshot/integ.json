@@ -1,0 +1,12 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "step-scaling-with-cooldown/DefaultTest": {
+      "stacks": [
+        "aws-cdk-autoscaling-integ"
+      ],
+      "assertionStack": "step-scaling-with-cooldown/DefaultTest/DeployAssert",
+      "assertionStackName": "stepscalingwithcooldownDefaultTestDeployAssert13B8C40F"
+    }
+  }
+}

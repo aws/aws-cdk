@@ -116,7 +116,7 @@ export class ClusterResourceHandler extends ResourceHandler {
     // if there is an update that requires replacement, go ahead and just create
     // a new cluster with the new config. The old cluster will automatically be
     // deleted by cloudformation upon success.
-    if (updates.replaceName || updates.replaceRole || updates.replaceVpc) {
+    if (updates.replaceName || updates.replaceRole ) {
 
       // if we are replacing this cluster and the cluster has an explicit
       // physical name, the creation of the new cluster will fail with "there is
@@ -138,11 +138,12 @@ export class ClusterResourceHandler extends ResourceHandler {
       return this.updateClusterVersion(this.newProps.version);
     }
 
-    if (updates.updateLogging && updates.updateAccess) {
-      throw new Error('Cannot update logging and access at the same time');
+    if ((updates.updateLogging && updates.updateAccess) || (updates.updateLogging && updates.updateVpc) ||
+      (updates.updateVpc && updates.updateAccess)) {
+      throw new Error('Only one type of update - VpcConfigUpdate, LoggingUpdate or EndpointAccessUpdate can be allowed');
     }
 
-    if (updates.updateLogging || updates.updateAccess) {
+    if (updates.updateLogging || updates.updateAccess || updates.updateVpc) {
       const config: EKS.UpdateClusterConfigCommandInput = {
         name: this.clusterName,
       };
@@ -150,13 +151,16 @@ export class ClusterResourceHandler extends ResourceHandler {
         config.logging = this.newProps.logging;
       };
       if (updates.updateAccess) {
-        // Updating the cluster with securityGroupIds and subnetIds (as specified in the warning here:
-        // https://awscli.amazonaws.com/v2/documentation/api/latest/reference/eks/update-cluster-config.html)
-        // will fail, therefore we take only the access fields explicitly
         config.resourcesVpcConfig = {
           endpointPrivateAccess: this.newProps.resourcesVpcConfig?.endpointPrivateAccess,
           endpointPublicAccess: this.newProps.resourcesVpcConfig?.endpointPublicAccess,
           publicAccessCidrs: this.newProps.resourcesVpcConfig?.publicAccessCidrs,
+        };
+      }
+      if (updates.updateVpc) {
+        config.resourcesVpcConfig = {
+          subnetIds: this.newProps.resourcesVpcConfig?.subnetIds,
+          securityGroupIds: this.newProps.resourcesVpcConfig?.securityGroupIds,
         };
       }
       const updateResponse = await this.eks.updateClusterConfig(config);
@@ -304,13 +308,13 @@ function parseProps(props: any): EKS.CreateClusterCommandInput {
 
 interface UpdateMap {
   replaceName: boolean; // name
-  replaceVpc: boolean; // resourcesVpcConfig.subnetIds and securityGroupIds
   replaceRole: boolean; // roleArn
 
   updateVersion: boolean; // version
   updateLogging: boolean; // logging
   updateEncryption: boolean; // encryption (cannot be updated)
   updateAccess: boolean; // resourcesVpcConfig.endpointPrivateAccess and endpointPublicAccess
+  updateVpc: boolean; // resourcesVpcConfig.subnetIds and securityGroupIds
 }
 
 function analyzeUpdate(oldProps: Partial<EKS.CreateClusterCommandInput>, newProps: EKS.CreateClusterCommandInput): UpdateMap {
@@ -327,7 +331,7 @@ function analyzeUpdate(oldProps: Partial<EKS.CreateClusterCommandInput>, newProp
 
   return {
     replaceName: newProps.name !== oldProps.name,
-    replaceVpc:
+    updateVpc:
       JSON.stringify(newVpcProps.subnetIds?.sort()) !== JSON.stringify(oldVpcProps.subnetIds?.sort()) ||
       JSON.stringify(newVpcProps.securityGroupIds?.sort()) !== JSON.stringify(oldVpcProps.securityGroupIds?.sort()),
     updateAccess:
