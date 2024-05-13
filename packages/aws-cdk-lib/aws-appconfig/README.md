@@ -84,12 +84,14 @@ See [About the AWS AppConfig data plane service](https://docs.aws.amazon.com/app
 
 You can grant read configuration permission on an Environment to any Principal as follows:
 ```ts
-const app = new appconfig.Application(stack, 'MyAppConfig');
-const env = new appconfig.Environment(stack, 'MyEnvironment', {
+import * as iam from 'aws-cdk-lib/aws-iam';
+
+const app = new appconfig.Application(this, 'MyAppConfig');
+const env = new appconfig.Environment(this, 'MyEnvironment', {
   application: app,
 });
 
-const user = new iam.User(stack, 'MyUser');
+const user = new iam.User(this, 'MyUser');
 env.grantReadConfig(user); // Grant read permission on the environment to the user
 ```
 
