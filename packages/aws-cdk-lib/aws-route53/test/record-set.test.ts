@@ -1289,7 +1289,7 @@ describe('record set', () => {
     geoLocation?: route53.GeoLocation;
     region?: string;
     multiValueAnswer?: boolean;
-    cidrRoutingConfig?: route53.CidrRoutingConfig;
+    cidrRoutingConfig?: route53.IpBasedRouting;
   }
 
   const generateTestCases = (): TestRecordSetProps[] => {
@@ -1421,6 +1421,9 @@ describe('record set', () => {
         recordName: 'www',
         recordType: route53.RecordType.A,
         target: route53.RecordTarget.fromIpAddresses('1.2.3.4'),
+        routing: {
+          ipBasedRouting: 
+        }
         cidrRoutingConfig: {
           locationName: '*',
         },

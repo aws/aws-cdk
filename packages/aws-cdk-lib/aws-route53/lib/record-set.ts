@@ -201,23 +201,13 @@ export interface RecordSetOptions {
   readonly weight?: number;
 
   /**
-   * The configuration for IP-based routing in Amazon Route 53 record sets.
-   * It is used to direct traffic to different resources based on the IP address of the request.
-   *
-   * @see https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/routing-policy-ipbased.html
-   *
-   * @default - Do not set IP based routing
-   */
-  readonly cidrRoutingConfig?: CidrRoutingConfig;
-
-  /**
    * The configuration for non-simple routing policies in Amazon Route 53 record sets.
    *
    * This parameter is not specified with `geoLocation`, `weight`, `region`, or `multiValueAnswer`.
    *
    * @default - Do not use non-simple routing policies
    */
-  readonly routingConfiguration?: RoutingConfiguration;
+  readonly routing?: Routing;
 
   /**
    * The Amazon EC2 Region where you created the resource that this resource record set refers to.
@@ -252,8 +242,8 @@ export interface RecordSetOptions {
   readonly setIdentifier?: string;
 }
 
-export interface RoutingConfigurationProps {
-  readonly cidrRoutingConfig?: CidrRoutingConfig;
+export interface RoutingProps {
+  readonly ipBasedRouting?: IpBasedRouting;
 }
 
 export interface IpBasedRoutingConfigurationProps {
@@ -298,8 +288,8 @@ export interface IpBasedRoutingConfigurationProps {
   readonly collection?: CfnCidrCollection;
 }
 
-export abstract class RoutingConfiguration {
-  public static defaultIpBasedRouting(collectionName?: string): RoutingConfiguration {
+export abstract class Routing {
+  public static defaultIpBasedRouting(collectionName?: string): Routing {
     return new IpBasedRoutingConfiguration({
       locationName: '*',
       collectionName,
@@ -310,7 +300,7 @@ export abstract class RoutingConfiguration {
     cidrList: string[];
     locationName?: string;
     collectionName?: string;
-  }): RoutingConfiguration {
+  }): Routing {
     return new IpBasedRoutingConfiguration(props);
   }
 
@@ -318,15 +308,15 @@ export abstract class RoutingConfiguration {
     cidrList: string[];
     locationName?: string;
     collection: CfnCidrCollection;
-  }): RoutingConfiguration {
+  }): Routing {
     return new IpBasedRoutingConfiguration(props);
   }
 
-  public readonly cidrRoutingConfig?: CidrRoutingConfig;
+  public readonly ipBasedRouting?: IpBasedRouting;
 
-  constructor(props: RoutingConfigurationProps) {
-    if (props.cidrRoutingConfig) {
-      const { cidrList, locationName, collectionName } = props.cidrRoutingConfig;
+  constructor(props: RoutingProps) {
+    if (props.ipBasedRouting) {
+      const { cidrList, locationName, collectionName } = props.ipBasedRouting;
       if (!Token.isUnresolved(locationName) && locationName && (locationName.length < 1 || locationName.length > 16)) {
         throw new Error(`locationName must be between 1 and 16 characters long, got: ${locationName.length}`);
       }
@@ -342,7 +332,7 @@ export abstract class RoutingConfiguration {
       if (!Token.isUnresolved(collectionName) && collectionName && !/^[0-9A-Za-z_\-]+$/.test(collectionName)) {
         throw new Error(`collectionName must only contain alphanumeric characters, underscores, and hyphens, got: ${collectionName}`);
       }
-      this.cidrRoutingConfig = props.cidrRoutingConfig;
+      this.ipBasedRouting = props.ipBasedRouting;
     }
   }
 }
@@ -352,10 +342,10 @@ export abstract class RoutingConfiguration {
  *
  * @see https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/routing-policy-ipbased.html
  */
-class IpBasedRoutingConfiguration extends RoutingConfiguration {
+class IpBasedRoutingConfiguration extends Routing {
   constructor(props: IpBasedRoutingConfigurationProps) {
     super({
-      cidrRoutingConfig: {
+      ipBasedRouting: {
         cidrList: props.cidrList,
         locationName: props.locationName,
         collectionName: props.collectionName,
@@ -368,7 +358,7 @@ class IpBasedRoutingConfiguration extends RoutingConfiguration {
 /**
  * Configuration for IP-based routing.
  */
-export interface CidrRoutingConfig {
+export interface IpBasedRouting {
   /**
    * List of CIDR blocks.
    *
@@ -478,7 +468,7 @@ export class RecordSet extends Resource implements IRecordSet {
       && !props.geoLocation
       && !props.region
       && !props.multiValueAnswer
-      && !props.cidrRoutingConfig
+      && !props.routing
     ) {
       throw new Error('setIdentifier can only be specified for non-simple routing policies');
     }
@@ -491,10 +481,10 @@ export class RecordSet extends Resource implements IRecordSet {
       props.region,
       props.weight,
       props.multiValueAnswer,
-      props.cidrRoutingConfig,
+      props.routing,
     ].filter((variable) => variable !== undefined).length;
     if (nonSimpleRoutingPolicies > 1) {
-      throw new Error('Only one of region, weight, multiValueAnswer, cidrRoutingConfig or geoLocation can be defined');
+      throw new Error('Only one of region, weight, multiValueAnswer, cidrRoutingConfig, geoLocation or routingConfiguration can be defined');
     }
 
     this.geoLocation = props.geoLocation;
@@ -506,9 +496,9 @@ export class RecordSet extends Resource implements IRecordSet {
 
     const recordName = determineFullyQualifiedDomainName(props.recordName || props.zone.zoneName, props.zone);
 
-    if (props.routingConfiguration) {
-      if (props.routingConfiguration.cidrRoutingConfig) {
-        this.configureIpBasedRouting(props.routingConfiguration.cidrRoutingConfig);
+    if (props.routing) {
+      if (props.routing.ipBasedRouting) {
+        this.configureIpBasedRouting(props.routing.ipBasedRouting);
       }
     }
 
@@ -582,7 +572,7 @@ export class RecordSet extends Resource implements IRecordSet {
     return this._cidrCollection;
   }
 
-  private configureIpBasedRouting(cidrRoutingConfig: CidrRoutingConfig): void {
+  private configureIpBasedRouting(cidrRoutingConfig: IpBasedRouting): void {
     const locationName = cidrRoutingConfig.locationName ?? Names.uniqueResourceName(this, { maxLength: 8 }).substring(0, 16);
     const cidrList = cidrRoutingConfig.cidrList;
     const isDefaultLocation = locationName === '*';
