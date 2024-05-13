@@ -325,6 +325,7 @@
     "Managed": true
    },
    "DependsOn": [
+    "Bucket2Policy945B22E3",
     "MyQueuePolicy6BBEDDAC",
     "MyQueueE6CA6235"
    ]
