@@ -216,17 +216,17 @@ Use the `evaluationModes` property to specify the evaluation mode:
 declare const fn: lambda.Function;
 declare const samplePolicyText: string;
 
-new config.ManagedRule(stack, 'ManagedRule', {
+new config.ManagedRule(this, 'ManagedRule', {
   identifier: config.ManagedRuleIdentifiers.API_GW_XRAY_ENABLED,
   evaluationModes: config.EvaluationMode.DETECTIVE_AND_PROACTIVE,
 });
 
-new config.CustomRule(stack, 'CustomRule', {
+new config.CustomRule(this, 'CustomRule', {
   lambdaFunction: fn,
   evaluationModes: config.EvaluationMode.PROACTIVE,
 });
 
-new config.CustomPolicy(stack, 'CustomPolicy', {
+new config.CustomPolicy(this, 'CustomPolicy', {
   policyText: samplePolicyText,
   evaluationModes: config.EvaluationMode.DETECTIVE,
 });
