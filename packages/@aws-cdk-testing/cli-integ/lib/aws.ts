@@ -21,7 +21,6 @@ export class AwsClients {
     return new AwsClients(region, output);
   }
 
-  // TODO Can this be type safe instead on any with sdk v3
   private readonly config: any;
 
   public readonly cloudFormation: CloudFormationClient;
@@ -77,7 +76,6 @@ export class AwsClients {
         StackName: stackName,
       }));
 
-      // TODO confirm at end that all is good
       await retry(this.output, `Deleting ${stackName}`, retry.forSeconds(600), async () => {
         const status = await this.stackStatus(stackName);
         if (status !== undefined && status.endsWith('_FAILED')) {
@@ -95,7 +93,7 @@ export class AwsClients {
       return (await this.cloudFormation.send(new DescribeStacksCommand({
         StackName: stackName,
       }))).Stacks?.[0].StackStatus;
-    } catch (e: any) { // TODO confirm these errors make sense in sdk v3
+    } catch (e: any) {
       if (isStackMissingError(e)) { return undefined; }
       throw e;
     }
@@ -144,19 +142,16 @@ export class AwsClients {
         Bucket: bucketName,
       }));
     } catch (e: any) {
-      // TODO make sure this error makes sense with sdk v3
       if (isBucketMissingError(e)) { return; }
       throw e;
     }
   }
 }
 
-// TODO do these align with new errors in sdk v3?
 export function isStackMissingError(e: Error) {
   return e.message.indexOf('does not exist') > -1;
 }
 
-// TODO do these align with new errors in sdk v3?
 export function isBucketMissingError(e: Error) {
   return e.message.indexOf('does not exist') > -1;
 }
@@ -234,14 +229,10 @@ function chainableCredentials(region: string) {
     // can't use '~' since the SDK doesn't seem to expand it...?
     const configPath = `${process.env.HOME}/.aws/config`;
 
-    // TODO remove these after debugging
-    const configFileContents = readFileSync(configPath, { encoding: 'utf-8' });
-    const ini = parse(configFileContents);
-
     const profile = getCredentialsFromConfig(configPath, profileName);
 
     if (!profile) {
-      throw new Error(`Profile '${profileName}' does not exist in config file (${configPath}.\n File Contents: ${configFileContents})\n Parsed File: ${JSON.stringify(ini, null, 2)}\n Profile Name: ${profileName}`);
+      throw new Error(`Profile '${profileName}' does not exist in config file (${configPath}.`);
     }
 
     const arn = profile.role_arn;
@@ -270,5 +261,3 @@ function chainableCredentials(region: string) {
 
   return undefined;
 }
-
-// TODO confirm return types of functions and add them if not explicitly mentioned
