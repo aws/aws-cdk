@@ -2127,12 +2127,18 @@ export class Bucket extends BucketBase {
       throw new Error(`encryptionKey is specified, so 'encryption' must be set to KMS or DSSE (value: ${encryptionType})`);
     }
 
-    // if bucketKeyEnabled is set, encryption must be set to KMS or DSSE.
+    // if bucketKeyEnabled is set, encryption must be set to KMS, DSSE or S3.
     if (
       props.bucketKeyEnabled &&
-      ![BucketEncryption.KMS, BucketEncryption.KMS_MANAGED, BucketEncryption.DSSE, BucketEncryption.DSSE_MANAGED].includes(encryptionType)
+      ![
+        BucketEncryption.KMS,
+        BucketEncryption.KMS_MANAGED,
+        BucketEncryption.DSSE,
+        BucketEncryption.DSSE_MANAGED,
+        BucketEncryption.S3_MANAGED,
+      ].includes(encryptionType)
     ) {
-      throw new Error(`bucketKeyEnabled is specified, so 'encryption' must be set to KMS or DSSE (value: ${encryptionType})`);
+      throw new Error(`bucketKeyEnabled is specified, so 'encryption' must be set to KMS, DSSE or S3 (value: ${encryptionType})`);
     }
 
     if (encryptionType === BucketEncryption.UNENCRYPTED) {
@@ -2160,6 +2166,7 @@ export class Bucket extends BucketBase {
 
     if (encryptionType === BucketEncryption.S3_MANAGED) {
       const bucketEncryption = {
+        bucketKeyEnabled: props.bucketKeyEnabled,
         serverSideEncryptionConfiguration: [
           { serverSideEncryptionByDefault: { sseAlgorithm: 'AES256' } },
         ],
