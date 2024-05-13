@@ -1440,7 +1440,8 @@ export interface BucketProps {
    *   attendant cost implications of that).
    * - If enabled, S3 will use its own time-limited key instead.
    *
-   * Only relevant, when Encryption is set to `BucketEncryption.KMS` or `BucketEncryption.KMS_MANAGED`.
+   * Only relevant, when Encryption is set to `BucketEncryption.KMS`, `BucketEncryption.KMS_MANAGED` or
+   * `BucketEncryption.S3_MANAGED`.
    *
    * @default - false
    */
@@ -2105,6 +2106,7 @@ export class Bucket extends BucketBase {
    * | KMS              | undefined           | e                      | SSE-KMS, bucketKeyEnabled = e   | new key                      |
    * | KMS_MANAGED      | undefined           | e                      | SSE-KMS, bucketKeyEnabled = e   | undefined                    |
    * | S3_MANAGED       | undefined           | false                  | SSE-S3                          | undefined                    |
+   * | S3_MANAGED       | undefined           | e                      | SSE-S3, bucketKeyEnabled = e    | undefined                    |
    * | UNENCRYPTED      | undefined           | true                   | ERROR!                          | ERROR!                       |
    * | UNENCRYPTED      | k                   | e                      | ERROR!                          | ERROR!                       |
    * | KMS_MANAGED      | k                   | e                      | ERROR!                          | ERROR!                       |
@@ -2166,9 +2168,12 @@ export class Bucket extends BucketBase {
 
     if (encryptionType === BucketEncryption.S3_MANAGED) {
       const bucketEncryption = {
-        bucketKeyEnabled: props.bucketKeyEnabled,
         serverSideEncryptionConfiguration: [
-          { serverSideEncryptionByDefault: { sseAlgorithm: 'AES256' } },
+          {
+            bucketKeyEnabled: props.bucketKeyEnabled,
+            serverSideEncryptionByDefault:
+            { sseAlgorithm: 'AES256' },
+          },
         ],
       };
 
