@@ -164,7 +164,7 @@ test('can pass values to the aws-load-balancer-controller helm chart', () => {
     cluster,
     version: AlbControllerVersion.V2_6_2,
     repository: 'custom',
-    values: {
+    helmChartValues: {
       enableWafv2: false,
     },
   });
@@ -190,18 +190,18 @@ test('can pass values to the aws-load-balancer-controller helm chart', () => {
   });
 });
 
-test('values passed to the aws-load-balancer-controller do not override values set by construct', () => {
+test('values passed to the aws-load-balancer-controller result in an error if they conflict with restricted values set by the construct', () => {
   const { stack } = testFixture();
 
   const cluster = new Cluster(stack, 'Cluster', {
     version: KubernetesVersion.V1_27,
   });
 
-  AlbController.create(stack, {
+  expect(() => AlbController.create(stack, {
     cluster,
     version: AlbControllerVersion.V2_6_2,
     repository: 'custom',
-    values: {
+    helmChartValues: {
       clusterName: 'test-cluster',
       serviceAccount: {
         create: true,
@@ -214,27 +214,7 @@ test('values passed to the aws-load-balancer-controller do not override values s
         tag: 'test-tag',
       },
     },
-  });
-
-  Template.fromStack(stack).hasResourceProperties(HelmChart.RESOURCE_TYPE, {
-    Version: '1.6.2', // The helm chart version associated with AlbControllerVersion.V2_6_2
-    Values: {
-      'Fn::Join': [
-        '',
-        [
-          '{"clusterName":"',
-          {
-            Ref: 'Cluster9EE0221C',
-          },
-          '","serviceAccount":{"create":false,"name":"aws-load-balancer-controller"},"region":"us-east-1","vpcId":"',
-          {
-            Ref: 'ClusterDefaultVpcFA9F2722',
-          },
-          '","image":{"repository":"custom","tag":"v2.6.2"}}',
-        ],
-      ],
-    },
-  });
+  })).toThrow(/The following aws-load-balancer-controller HelmChart value keys are restricted and cannot be overridden: .*/);
 });
 
 describe('AlbController AwsAuth creation', () => {

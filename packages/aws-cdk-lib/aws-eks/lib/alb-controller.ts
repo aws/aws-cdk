@@ -275,7 +275,7 @@ export interface AlbControllerOptions {
   /**
    * Override values to be used by the chart.
    * For nested values use a nested dictionary. For example:
-   * values: {
+   * helmChartValues: {
    *  autoscaling: false,
    *  ingressClassParams: { create: true }
    * }
@@ -291,7 +291,7 @@ export interface AlbControllerOptions {
    *
    * @default - No values are provided to the chart.
    */
-  readonly values?: {[key: string]: any};
+  readonly helmChartValues?: {[key: string]: any};
 }
 
 /**
@@ -352,6 +352,8 @@ export class AlbController extends Construct {
     }
 
     // https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.2/deploy/installation/#add-controller-to-cluster
+    const { helmChartValues = {} } = props;
+    this.validateHelmChartValues(helmChartValues);
     const chart = new HelmChart(this, 'Resource', {
       cluster: props.cluster,
       chart: 'aws-load-balancer-controller',
@@ -363,7 +365,8 @@ export class AlbController extends Construct {
       wait: true,
       timeout: Duration.minutes(15),
       values: {
-        ...(props.values ?? {}),
+        ...helmChartValues,
+        // if you modify these values, you must also update this.restrictedHelmChartValueKeys
         clusterName: props.cluster.clusterName,
         serviceAccount: {
           create: false,
@@ -401,5 +404,23 @@ export class AlbController extends Construct {
       return rewriteResource(resources);
     }
     return resources.map(rewriteResource);
+  }
+
+  private validateHelmChartValues(values: {[key: string]: any}) {
+    const valuesKeySet = new Set(Object.keys(values));
+    const invalidKeys = new Set([...valuesKeySet].filter((key) => this.restrictedHelmChartValueKeys.has(key)));
+    if (invalidKeys.size > 0) {
+      throw new Error(`The following aws-load-balancer-controller HelmChart value keys are restricted and cannot be overridden: ${Array.from(this.restrictedHelmChartValueKeys).join(', ')}. (Invalid keys: ${Array.from(invalidKeys).join(', ')})`);
+    }
+  }
+
+  private get restrictedHelmChartValueKeys(): Set<string> {
+    return new Set([
+      'clusterName',
+      'serviceAccount',
+      'region',
+      'vpcId',
+      'image',
+    ]);
   }
 }
