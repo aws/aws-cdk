@@ -97,9 +97,6 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
-                        "vpcId": {
-                          "Ref": "VPCB9E5F0B4"
-                        },
                         "availabilityZone": {
                           "Fn::Select": [
                             0,
@@ -123,7 +120,10 @@
                             "key": "Name",
                             "value": "aws-cdk-sagemaker-model/VPC/PublicSubnet1"
                           }
-                        ]
+                        ],
+                        "vpcId": {
+                          "Ref": "VPCB9E5F0B4"
+                        }
                       }
                     },
                     "constructInfo": {
@@ -145,15 +145,15 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
-                        "vpcId": {
-                          "Ref": "VPCB9E5F0B4"
-                        },
                         "tags": [
                           {
                             "key": "Name",
                             "value": "aws-cdk-sagemaker-model/VPC/PublicSubnet1"
                           }
-                        ]
+                        ],
+                        "vpcId": {
+                          "Ref": "VPCB9E5F0B4"
+                        }
                       }
                     },
                     "constructInfo": {
@@ -186,12 +186,12 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
-                        "routeTableId": {
-                          "Ref": "VPCPublicSubnet1RouteTableFEE4B781"
-                        },
                         "destinationCidrBlock": "0.0.0.0/0",
                         "gatewayId": {
                           "Ref": "VPCIGWB7E252D3"
+                        },
+                        "routeTableId": {
+                          "Ref": "VPCPublicSubnet1RouteTableFEE4B781"
                         }
                       }
                     },
@@ -226,14 +226,14 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::NatGateway",
                       "aws:cdk:cloudformation:props": {
-                        "subnetId": {
-                          "Ref": "VPCPublicSubnet1SubnetB4246D30"
-                        },
                         "allocationId": {
                           "Fn::GetAtt": [
                             "VPCPublicSubnet1EIP6AD938E8",
                             "AllocationId"
                           ]
+                        },
+                        "subnetId": {
+                          "Ref": "VPCPublicSubnet1SubnetB4246D30"
                         },
                         "tags": [
                           {
@@ -264,9 +264,6 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
-                        "vpcId": {
-                          "Ref": "VPCB9E5F0B4"
-                        },
                         "availabilityZone": {
                           "Fn::Select": [
                             1,
@@ -290,7 +287,10 @@
                             "key": "Name",
                             "value": "aws-cdk-sagemaker-model/VPC/PublicSubnet2"
                           }
-                        ]
+                        ],
+                        "vpcId": {
+                          "Ref": "VPCB9E5F0B4"
+                        }
                       }
                     },
                     "constructInfo": {
@@ -312,15 +312,15 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
-                        "vpcId": {
-                          "Ref": "VPCB9E5F0B4"
-                        },
                         "tags": [
                           {
                             "key": "Name",
                             "value": "aws-cdk-sagemaker-model/VPC/PublicSubnet2"
                           }
-                        ]
+                        ],
+                        "vpcId": {
+                          "Ref": "VPCB9E5F0B4"
+                        }
                       }
                     },
                     "constructInfo": {
@@ -353,12 +353,12 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
-                        "routeTableId": {
-                          "Ref": "VPCPublicSubnet2RouteTable6F1A15F1"
-                        },
                         "destinationCidrBlock": "0.0.0.0/0",
                         "gatewayId": {
                           "Ref": "VPCIGWB7E252D3"
+                        },
+                        "routeTableId": {
+                          "Ref": "VPCPublicSubnet2RouteTable6F1A15F1"
                         }
                       }
                     },
@@ -393,14 +393,14 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::NatGateway",
                       "aws:cdk:cloudformation:props": {
-                        "subnetId": {
-                          "Ref": "VPCPublicSubnet2Subnet74179F39"
-                        },
                         "allocationId": {
                           "Fn::GetAtt": [
                             "VPCPublicSubnet2EIP4947BC00",
                             "AllocationId"
                           ]
+                        },
+                        "subnetId": {
+                          "Ref": "VPCPublicSubnet2Subnet74179F39"
                         },
                         "tags": [
                           {
@@ -431,9 +431,6 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
-                        "vpcId": {
-                          "Ref": "VPCB9E5F0B4"
-                        },
                         "availabilityZone": {
                           "Fn::Select": [
                             0,
@@ -457,7 +454,10 @@
                             "key": "Name",
                             "value": "aws-cdk-sagemaker-model/VPC/PrivateSubnet1"
                           }
-                        ]
+                        ],
+                        "vpcId": {
+                          "Ref": "VPCB9E5F0B4"
+                        }
                       }
                     },
                     "constructInfo": {
@@ -479,15 +479,15 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
-                        "vpcId": {
-                          "Ref": "VPCB9E5F0B4"
-                        },
                         "tags": [
                           {
                             "key": "Name",
                             "value": "aws-cdk-sagemaker-model/VPC/PrivateSubnet1"
                           }
-                        ]
+                        ],
+                        "vpcId": {
+                          "Ref": "VPCB9E5F0B4"
+                        }
                       }
                     },
                     "constructInfo": {
@@ -520,12 +520,12 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
-                        "routeTableId": {
-                          "Ref": "VPCPrivateSubnet1RouteTableBE8A6027"
-                        },
                         "destinationCidrBlock": "0.0.0.0/0",
                         "natGatewayId": {
                           "Ref": "VPCPublicSubnet1NATGatewayE0556630"
+                        },
+                        "routeTableId": {
+                          "Ref": "VPCPrivateSubnet1RouteTableBE8A6027"
                         }
                       }
                     },
@@ -550,9 +550,6 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
-                        "vpcId": {
-                          "Ref": "VPCB9E5F0B4"
-                        },
                         "availabilityZone": {
                           "Fn::Select": [
                             1,
@@ -576,7 +573,10 @@
                             "key": "Name",
                             "value": "aws-cdk-sagemaker-model/VPC/PrivateSubnet2"
                           }
-                        ]
+                        ],
+                        "vpcId": {
+                          "Ref": "VPCB9E5F0B4"
+                        }
                       }
                     },
                     "constructInfo": {
@@ -598,15 +598,15 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
-                        "vpcId": {
-                          "Ref": "VPCB9E5F0B4"
-                        },
                         "tags": [
                           {
                             "key": "Name",
                             "value": "aws-cdk-sagemaker-model/VPC/PrivateSubnet2"
                           }
-                        ]
+                        ],
+                        "vpcId": {
+                          "Ref": "VPCB9E5F0B4"
+                        }
                       }
                     },
                     "constructInfo": {
@@ -639,12 +639,12 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
-                        "routeTableId": {
-                          "Ref": "VPCPrivateSubnet2RouteTable0A19E10E"
-                        },
                         "destinationCidrBlock": "0.0.0.0/0",
                         "natGatewayId": {
                           "Ref": "VPCPublicSubnet2NATGateway3C070193"
+                        },
+                        "routeTableId": {
+                          "Ref": "VPCPrivateSubnet2RouteTable0A19E10E"
                         }
                       }
                     },
@@ -684,11 +684,11 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EC2::VPCGatewayAttachment",
                   "aws:cdk:cloudformation:props": {
-                    "vpcId": {
-                      "Ref": "VPCB9E5F0B4"
-                    },
                     "internetGatewayId": {
                       "Ref": "VPCIGWB7E252D3"
+                    },
+                    "vpcId": {
+                      "Ref": "VPCB9E5F0B4"
                     }
                   }
                 },
@@ -1169,13 +1169,13 @@
                   "version": "0.0.0"
                 }
               },
-              "ModelImage633a6e898c0256cb2deaf7e22053a66b": {
-                "id": "ModelImage633a6e898c0256cb2deaf7e22053a66b",
-                "path": "aws-cdk-sagemaker-model/InferencePipelineModel/ModelImage633a6e898c0256cb2deaf7e22053a66b",
+              "ModelImage4351027d8888cb0133eeba7ae4ab91c5": {
+                "id": "ModelImage4351027d8888cb0133eeba7ae4ab91c5",
+                "path": "aws-cdk-sagemaker-model/InferencePipelineModel/ModelImage4351027d8888cb0133eeba7ae4ab91c5",
                 "children": {
                   "Staging": {
                     "id": "Staging",
-                    "path": "aws-cdk-sagemaker-model/InferencePipelineModel/ModelImage633a6e898c0256cb2deaf7e22053a66b/Staging",
+                    "path": "aws-cdk-sagemaker-model/InferencePipelineModel/ModelImage4351027d8888cb0133eeba7ae4ab91c5/Staging",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.AssetStaging",
                       "version": "0.0.0"
@@ -1183,7 +1183,7 @@
                   },
                   "Repository": {
                     "id": "Repository",
-                    "path": "aws-cdk-sagemaker-model/InferencePipelineModel/ModelImage633a6e898c0256cb2deaf7e22053a66b/Repository",
+                    "path": "aws-cdk-sagemaker-model/InferencePipelineModel/ModelImage4351027d8888cb0133eeba7ae4ab91c5/Repository",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_ecr.RepositoryBase",
                       "version": "0.0.0"
@@ -1195,13 +1195,13 @@
                   "version": "0.0.0"
                 }
               },
-              "ModelDatab5852dea925d702939eb0aa28d4cf14d": {
-                "id": "ModelDatab5852dea925d702939eb0aa28d4cf14d",
-                "path": "aws-cdk-sagemaker-model/InferencePipelineModel/ModelDatab5852dea925d702939eb0aa28d4cf14d",
+              "ModelDatab93b3e254f66541093e95be708719bbd": {
+                "id": "ModelDatab93b3e254f66541093e95be708719bbd",
+                "path": "aws-cdk-sagemaker-model/InferencePipelineModel/ModelDatab93b3e254f66541093e95be708719bbd",
                 "children": {
                   "Stage": {
                     "id": "Stage",
-                    "path": "aws-cdk-sagemaker-model/InferencePipelineModel/ModelDatab5852dea925d702939eb0aa28d4cf14d/Stage",
+                    "path": "aws-cdk-sagemaker-model/InferencePipelineModel/ModelDatab93b3e254f66541093e95be708719bbd/Stage",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.AssetStaging",
                       "version": "0.0.0"
@@ -1209,7 +1209,7 @@
                   },
                   "AssetBucket": {
                     "id": "AssetBucket",
-                    "path": "aws-cdk-sagemaker-model/InferencePipelineModel/ModelDatab5852dea925d702939eb0aa28d4cf14d/AssetBucket",
+                    "path": "aws-cdk-sagemaker-model/InferencePipelineModel/ModelDatab93b3e254f66541093e95be708719bbd/AssetBucket",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_s3.BucketBase",
                       "version": "0.0.0"
@@ -1227,12 +1227,6 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::SageMaker::Model",
                   "aws:cdk:cloudformation:props": {
-                    "executionRoleArn": {
-                      "Fn::GetAtt": [
-                        "InferencePipelineModelRole6A99C5B3",
-                        "Arn"
-                      ]
-                    },
                     "containers": [
                       {
                         "image": {
@@ -1255,7 +1249,13 @@
                           "Fn::Sub": "https://s3.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/126d48fa0e32fbef5078b9d88658b35ad29d4291eb86675a64c75fa4f1338916.gz"
                         }
                       }
-                    ]
+                    ],
+                    "executionRoleArn": {
+                      "Fn::GetAtt": [
+                        "InferencePipelineModelRole6A99C5B3",
+                        "Arn"
+                      ]
+                    }
                   }
                 },
                 "constructInfo": {
@@ -1506,7 +1506,7 @@
                 "path": "integtest-model/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.1.270"
+                  "version": "10.3.0"
                 }
               },
               "DeployAssert": {
@@ -1552,7 +1552,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.270"
+          "version": "10.3.0"
         }
       }
     },
