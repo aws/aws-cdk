@@ -1,7 +1,7 @@
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as ecs from 'aws-cdk-lib/aws-ecs';
 import * as cdk from 'aws-cdk-lib';
-import * as integ from '@aws-cdk/integ-tests-alpha';
+import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as ecsPatterns from 'aws-cdk-lib/aws-ecs-patterns';
 import * as elbv2 from 'aws-cdk-lib/aws-elasticloadbalancingv2';
 
@@ -39,6 +39,14 @@ const nlbLoadbalancedFargateService = new ecsPatterns.NetworkLoadBalancedFargate
 nlbLoadbalancedFargateService.loadBalancer.connections.addSecurityGroup(securityGroupNlb);
 nlbLoadbalancedFargateService.loadBalancer.connections.allowFromAnyIpv4(ec2.Port.tcp(80));
 
-new integ.IntegTest(app, 'NlbIpv6Test', {
+const integ = new IntegTest(app, 'NlbIpv6Test', {
   testCases: [stack],
+});
+
+integ.assertions.httpApiCall(`http://${nlbLoadbalancedFargateService.loadBalancer.loadBalancerDnsName}`, {
+  method: 'GET',
+  port: 80,
+}).waitForAssertions({
+  totalTimeout: cdk.Duration.minutes(10),
+  interval: cdk.Duration.seconds(10),
 });

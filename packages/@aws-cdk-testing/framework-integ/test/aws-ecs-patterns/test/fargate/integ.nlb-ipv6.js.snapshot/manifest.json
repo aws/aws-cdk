@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/49dd3e6e4db20402bce83634d6f3082968cafd1cf8e39b9550f514cc79491379.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f37388f3910f9061cb0d62184c4d0ee67bf9bd1707dc3179d2105e0efe8c6a58.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -286,6 +286,12 @@
             "data": "NlbFargateService108D864F"
           }
         ],
+        "/NlbIpv6Stack/Exports/Output{\"Fn::GetAtt\":[\"NlbFargateServiceLBDFBF1D54\",\"DNSName\"]}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputFnGetAttNlbFargateServiceLBDFBF1D54DNSNameCE845CD9"
+          }
+        ],
         "/NlbIpv6Stack/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
@@ -318,7 +324,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/2dc7fc5f7d7ffe9cdf74861fa4dfcd32fb519cf78aedcc7fa47138f15d53f48d.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -331,9 +337,76 @@
         }
       },
       "dependencies": [
+        "NlbIpv6Stack",
         "NlbIpv6TestDefaultTestDeployAssertFB8F1DF0.assets"
       ],
       "metadata": {
+        "/NlbIpv6Test/DefaultTest/DeployAssert/HttpApiCall9a7dea60842c0842873575c7d6a3a27d/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "HttpApiCall9a7dea60842c0842873575c7d6a3a27d"
+          }
+        ],
+        "/NlbIpv6Test/DefaultTest/DeployAssert/HttpApiCall9a7dea60842c0842873575c7d6a3a27d/WaitFor/IsCompleteProvider/Invoke": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "HttpApiCall9a7dea60842c0842873575c7d6a3a27dWaitForIsCompleteProviderInvoke657E0119"
+          }
+        ],
+        "/NlbIpv6Test/DefaultTest/DeployAssert/HttpApiCall9a7dea60842c0842873575c7d6a3a27d/WaitFor/TimeoutProvider/Invoke": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "HttpApiCall9a7dea60842c0842873575c7d6a3a27dWaitForTimeoutProviderInvokeDC2D23CF"
+          }
+        ],
+        "/NlbIpv6Test/DefaultTest/DeployAssert/HttpApiCall9a7dea60842c0842873575c7d6a3a27d/WaitFor/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "HttpApiCall9a7dea60842c0842873575c7d6a3a27dWaitForRole178B021A"
+          }
+        ],
+        "/NlbIpv6Test/DefaultTest/DeployAssert/HttpApiCall9a7dea60842c0842873575c7d6a3a27d/WaitFor/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "HttpApiCall9a7dea60842c0842873575c7d6a3a27dWaitForC585FC77"
+          }
+        ],
+        "/NlbIpv6Test/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+          }
+        ],
+        "/NlbIpv6Test/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+          }
+        ],
+        "/NlbIpv6Test/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction76b3e830a873425f8453eddd85c86925Role918961BB"
+          }
+        ],
+        "/NlbIpv6Test/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction76b3e830a873425f8453eddd85c86925Handler81461ECE"
+          }
+        ],
+        "/NlbIpv6Test/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aRoleB84BD8CE"
+          }
+        ],
+        "/NlbIpv6Test/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aHandlerADF3E6EA"
+          }
+        ],
         "/NlbIpv6Test/DefaultTest/DeployAssert/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",

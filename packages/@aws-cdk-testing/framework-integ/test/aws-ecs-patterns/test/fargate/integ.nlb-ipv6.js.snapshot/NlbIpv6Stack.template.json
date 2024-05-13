@@ -937,6 +937,17 @@
      "DNSName"
     ]
    }
+  },
+  "ExportsOutputFnGetAttNlbFargateServiceLBDFBF1D54DNSNameCE845CD9": {
+   "Value": {
+    "Fn::GetAtt": [
+     "NlbFargateServiceLBDFBF1D54",
+     "DNSName"
+    ]
+   },
+   "Export": {
+    "Name": "NlbIpv6Stack:ExportsOutputFnGetAttNlbFargateServiceLBDFBF1D54DNSNameCE845CD9"
+   }
   }
  },
  "Parameters": {
