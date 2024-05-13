@@ -99,7 +99,7 @@ export abstract class HandlerFrameworkClass extends ClassType {
         const superProps = new ObjectLiteral([
           new Splat(expr.ident('props')),
           ['code', $T(LAMBDA_MODULE.Code).fromAsset(
-            PATH_MODULE.join.expr.call(expr.directCode(`__dirname, '${props.codeDirectory}'`)),
+            PATH_MODULE.join.call(expr.directCode(`__dirname, '${props.codeDirectory}'`)),
           )],
           ['handler', expr.lit(props.handler)],
           ['runtime', this.buildRuntimeProperty(scope, props.runtime)],
@@ -161,7 +161,7 @@ export abstract class HandlerFrameworkClass extends ClassType {
         const superProps = new ObjectLiteral([
           new Splat(expr.ident('props')),
           ['code', $T(LAMBDA_MODULE.Code).fromAsset(
-            PATH_MODULE.join.expr.call(expr.directCode(`__dirname, '${props.codeDirectory}'`)),
+            PATH_MODULE.join.call(expr.directCode(`__dirname, '${props.codeDirectory}'`)),
           )],
           ['handler', expr.lit(props.handler)],
           ['runtime', this.buildRuntimeProperty(scope, props.runtime)],
@@ -189,19 +189,22 @@ export abstract class HandlerFrameworkClass extends ClassType {
 
         if (scope.coreInternal) {
           scope.registerImport(CORE_MODULE, {
-            targets: [CORE_MODULE.Stack.toString()],
+            targets: [CORE_MODULE.Stack],
             fromLocation: '../../stack',
           });
           scope.registerImport(CORE_MODULE, {
-            targets: [CORE_MODULE.CustomResourceProviderBase.toString(), CORE_MODULE.CustomResourceProviderOptions.toString()],
+            targets: [
+              CORE_MODULE.CustomResourceProviderBase,
+              CORE_MODULE.CustomResourceProviderOptions,
+            ],
             fromLocation: '../../custom-resource-provider',
           });
         } else {
           scope.registerImport(CORE_MODULE, {
             targets: [
-              CORE_MODULE.Stack.toString(),
-              CORE_MODULE.CustomResourceProviderBase.toString(),
-              CORE_MODULE.CustomResourceProviderOptions.toString(),
+              CORE_MODULE.Stack,
+              CORE_MODULE.CustomResourceProviderBase,
+              CORE_MODULE.CustomResourceProviderOptions,
             ],
           });
         }
@@ -261,7 +264,7 @@ export abstract class HandlerFrameworkClass extends ClassType {
 
         const superProps = new ObjectLiteral([
           new Splat(expr.ident('props')),
-          ['codeDirectory', PATH_MODULE.join.expr.call(expr.directCode(`__dirname, '${props.codeDirectory}'`))],
+          ['codeDirectory', PATH_MODULE.join.call(expr.directCode(`__dirname, '${props.codeDirectory}'`))],
           ['runtimeName', this.buildRuntimeProperty(scope, props.runtime, true)],
         ]);
         this.buildConstructor({
@@ -278,7 +281,7 @@ export abstract class HandlerFrameworkClass extends ClassType {
     super(scope, spec);
     scope.registerImport(PATH_MODULE);
     scope.registerImport(CONSTRUCTS_MODULE, {
-      targets: [CONSTRUCTS_MODULE.Construct.toString()],
+      targets: [CONSTRUCTS_MODULE.Construct],
     });
   }
 
@@ -322,21 +325,21 @@ export abstract class HandlerFrameworkClass extends ClassType {
 
     if (isProvider) {
       scope.registerImport(CORE_MODULE, {
-        targets: [CORE_MODULE.determineLatestNodeRuntimeName.name],
+        targets: [CORE_MODULE.determineLatestNodeRuntimeName],
         fromLocation: scope.coreInternal
           ? './runtime-determiner-core.generated'
           : '../../../core/lib/dist/core/runtime-determiner-core.generated',
       });
     } else {
       scope.registerImport(LAMBDA_MODULE, {
-        targets: [LAMBDA_MODULE.determineLatestNodeRuntime.name],
+        targets: [LAMBDA_MODULE.determineLatestNodeRuntime],
         fromLocation: '../../../aws-lambda/lib/runtime-determiner-lambda.generated',
       });
     }
 
     const _scope = expr.ident('scope');
     return isProvider
-      ? CORE_MODULE.determineLatestNodeRuntimeName.expr.call(_scope)
-      : LAMBDA_MODULE.determineLatestNodeRuntime.expr.call(_scope);
+      ? CORE_MODULE.determineLatestNodeRuntimeName.call(_scope)
+      : LAMBDA_MODULE.determineLatestNodeRuntime.call(_scope);
   }
 }

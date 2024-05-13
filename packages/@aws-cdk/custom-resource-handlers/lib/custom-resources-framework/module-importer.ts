@@ -1,6 +1,9 @@
 /* eslint-disable import/no-extraneous-dependencies */
-import { Module } from '@cdklabs/typewriter';
-import { ImportableModule } from './modules';
+import { Module, Type } from '@cdklabs/typewriter';
+import { CallableExpr, ImportableModule } from './modules';
+
+type Target = CallableExpr | Type;
+type ModuleImport = { [fqn: string]: { module: ImportableModule; targets: Set<Target>; fromLocation?: string } };
 
 /**
  * Options used to import an external module.
@@ -12,7 +15,7 @@ export interface ModuleImportOptions {
    *
    * @default - all targets will be imported from the external module
    */
-  readonly targets?: string[];
+  readonly targets?: Target[];
 
   /**
    * Override the location the module is imported from.
@@ -26,7 +29,7 @@ export interface ModuleImportOptions {
  * A class used to manage external module imports for a target module.
  */
 export class ModuleImporter {
-  private readonly imports: { [fqn: string]: { module: ImportableModule; targets: Set<string>; fromLocation?: string } } = {};
+  private readonly imports: ModuleImport = {};
 
   /**
    * Add an external module to be imported.
@@ -50,9 +53,10 @@ export class ModuleImporter {
     }
   }
 
-  private importModuleInto(scope: Module, module: ImportableModule, targets: Set<string>, fromLocation?: string) {
+  private importModuleInto(scope: Module, module: ImportableModule, targets: Set<Target>, fromLocation?: string) {
     if (targets.size > 0) {
-      module.importSelective(scope, Array.from(targets), { fromLocation });
+      const _targets = Array.from(targets).map(target => target.toString());
+      module.importSelective(scope, _targets, { fromLocation });
       return;
     }
     module.import(scope, module.importAs, { fromLocation });

@@ -3,9 +3,9 @@ import { InterfaceType, Module, TypeScriptRenderer } from '@cdklabs/typewriter';
 import * as fs from 'fs-extra';
 import { HandlerFrameworkClass, HandlerFrameworkClassProps } from './classes';
 import { ComponentType, ComponentProps } from './config';
-import { buildComponentName } from './utils/framework-utils';
 import { ModuleImportOptions, ModuleImporter } from './module-importer';
 import { ImportableModule } from './modules';
+import { buildComponentName } from './utils/framework-utils';
 
 export class HandlerFrameworkModule extends Module {
   private readonly renderer = new TypeScriptRenderer();
