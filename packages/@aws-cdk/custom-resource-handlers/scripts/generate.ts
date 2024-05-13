@@ -133,8 +133,8 @@ function generateRuntimeDeterminers() {
   const coreRuntimeDeterminer = RuntimeDeterminerModule.buildForCore();
   coreRuntimeDeterminer.renderTo(`dist/core/${coreRuntimeDeterminer.fqn}.generated.ts`);
 
-  const standardLibRuntimeDeterminer = RuntimeDeterminerModule.buildForLambda();
-  standardLibRuntimeDeterminer.renderTo(`dist/${standardLibRuntimeDeterminer.fqn}.generated.ts`);
+  const lambdaRuntimeDeterminer = RuntimeDeterminerModule.buildForLambda();
+  lambdaRuntimeDeterminer.renderTo(`dist/${lambdaRuntimeDeterminer.fqn}.generated.ts`);
 }
 
 main().catch((e) => {
