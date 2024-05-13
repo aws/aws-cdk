@@ -116,6 +116,22 @@ abstract class EnvironmentBase extends Resource implements IEnvironment, IExtens
   public addExtension(extension: IExtension) {
     this.extensible.addExtension(extension);
   }
+
+  public grant(grantee: iam.IGrantable, ...actions: string[]) {
+    return iam.Grant.addToPrincipal({
+      grantee,
+      actions,
+      resourceArns: [`${this.environmentArn}/*`],
+    });
+  }
+
+  public grantReadConfig(grantee: iam.IGrantable) {
+    return this.grant(grantee,
+      'appconfig:GetLatestConfiguration',
+      'appconfig:StartConfigurationSession',
+    );
+  }
+
 }
 
 /**
@@ -543,4 +559,19 @@ export interface IEnvironment extends IResource {
    * @param extension The extension to create an association for
    */
   addExtension(extension: IExtension): void;
+
+  /**
+   * Grant the given identity the specified actions
+   * @param grantee the identity to be granted the actions
+   * @param actions the data-access actions
+   */
+  grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant;
+
+  /** TODO
+   * Grants read configuration permissions for this environment
+   * to an IAM principal (Role/Group/User).
+   *
+   * @param grantee Principal to grant read rights to
+   */
+  grantReadConfig(grantee: iam.IGrantable): iam.Grant;
 }
