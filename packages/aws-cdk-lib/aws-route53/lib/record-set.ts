@@ -484,7 +484,7 @@ export class RecordSet extends Resource implements IRecordSet {
       props.routing,
     ].filter((variable) => variable !== undefined).length;
     if (nonSimpleRoutingPolicies > 1) {
-      throw new Error('Only one of region, weight, multiValueAnswer, cidrRoutingConfig, geoLocation or routingConfiguration can be defined');
+      throw new Error('Only one of region, weight, multiValueAnswer, cidrRoutingConfig, geoLocation or routing can be defined');
     }
 
     this.geoLocation = props.geoLocation;
