@@ -1,5 +1,4 @@
 /* eslint-disable import/no-extraneous-dependencies */
-import { $E, IScope, ThingSymbol, expr } from '@cdklabs/typewriter';
 import { ComponentType, Runtime } from '../config';
 
 export function buildComponentName(fqn: string, type: ComponentType, entrypoint: string) {
@@ -25,11 +24,4 @@ export function toLambdaRuntime(runtime: Runtime) {
       return 'lambda.Runtime.PYTHON_3_10';
     }
   }
-}
-
-export function makeCallableExpr(scope: IScope, name: string) {
-  return {
-    name,
-    expr: $E(expr.sym(new ThingSymbol(name, scope))),
-  };
 }
