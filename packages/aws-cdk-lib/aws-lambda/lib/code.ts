@@ -55,6 +55,16 @@ export abstract class Code {
   }
 
   /**
+   * Runs a command to build the asset that will be used.
+   *
+   * @param outfile A file path where the output of running the given command should be directed.
+   * @param command The command which will be executed. For example, [ 'node', 'bundle_code.js' ].
+   */
+  public static fromBuiltAsset(outfile: string, command: string[], options?: s3_assets.AssetOptions): AssetCode {
+    return new AssetCode(outfile, options);
+  }
+
+  /**
    * Loads the function code from an asset created by a Docker build.
    *
    * By default, the asset is expected to be located at `/asset` in the
