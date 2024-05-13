@@ -956,7 +956,7 @@ describe('vpc endpoint', () => {
       });
     });
 
-    test('vpc interface endpoint does\'nt support private dns enabled', () => {
+    test('vpc interface endpoint does not support private dns enabled', () => {
       //GIVEN
       const stack = new Stack(undefined, 'TestStack');
       const vpc = new Vpc(stack, 'VPC');
