@@ -2171,8 +2171,7 @@ export class Bucket extends BucketBase {
         serverSideEncryptionConfiguration: [
           {
             bucketKeyEnabled: props.bucketKeyEnabled,
-            serverSideEncryptionByDefault:
-            { sseAlgorithm: 'AES256' },
+            serverSideEncryptionByDefault: { sseAlgorithm: 'AES256' },
           },
         ],
       };
