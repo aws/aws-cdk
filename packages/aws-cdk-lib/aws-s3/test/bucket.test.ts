@@ -578,16 +578,16 @@ describe('bucket', () => {
     const stack = new cdk.Stack();
 
     // WHEN
-    new s3.Bucket(stack, 'MyBucket', { bucketKeyEnabled: true, encryption: s3.BucketEncryption.S3_MANAGED, });
+    new s3.Bucket(stack, 'MyBucket', { bucketKeyEnabled: true, encryption: s3.BucketEncryption.S3_MANAGED });
     Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
       BucketEncryption: {
         ServerSideEncryptionConfiguration: [
           {
-            ServerSideEncryptionByDefault: { SSEAlgorithm: 'AES256', },
+            ServerSideEncryptionByDefault: { SSEAlgorithm: 'AES256' },
             BucketKeyEnabled: true,
           },
         ],
-      }
+      },
     });
 
   });
