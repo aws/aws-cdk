@@ -34,9 +34,10 @@ export function printStackDiff(
   changeSet?: DescribeChangeSetOutput,
   isImport?: boolean,
   stream: FormatStream = process.stderr,
-  nestedStackTemplates?: { [nestedStackLogicalId: string]: NestedStackTemplates }): number {
+  nestedStackTemplates?: { [nestedStackLogicalId: string]: NestedStackTemplates },
+  diff?: TemplateDiff): number {
 
-  let diff = fullDiff(oldTemplate, newTemplate.template, changeSet, isImport);
+  diff = diff ?? fullDiff(oldTemplate, newTemplate.template, changeSet, isImport);
 
   // detect and filter out mangled characters from the diff
   let filteredChangesCount = 0;
@@ -117,8 +118,9 @@ export function printSecurityDiff(
   newTemplate: cxapi.CloudFormationStackArtifact,
   requireApproval: RequireApproval,
   changeSet?: DescribeChangeSetOutput,
+  diff?: TemplateDiff,
 ): boolean {
-  const diff = fullDiff(oldTemplate, newTemplate.template, changeSet);
+  diff = diff ?? fullDiff(oldTemplate, newTemplate.template, changeSet);
 
   if (difRequiresApproval(diff, requireApproval)) {
     // eslint-disable-next-line max-len
