@@ -238,6 +238,7 @@ export class Rule extends Resource implements IRule {
       deadLetterConfig: targetProps.deadLetterConfig,
       retryPolicy: targetProps.retryPolicy,
       sqsParameters: targetProps.sqsParameters,
+      appSyncParameters: targetProps.appSyncParameters,
       input: inputProps && inputProps.input,
       inputPath: inputProps && inputProps.inputPath,
       inputTransformer: inputProps?.inputTemplate !== undefined ? {
