@@ -148,9 +148,6 @@
                     "evaluationModes": [
                       {
                         "mode": "PROACTIVE"
-                      },
-                      {
-                        "mode": "DETECTIVE"
                       }
                     ],
                     "scope": {
@@ -198,10 +195,10 @@
                   "aws:cdk:cloudformation:props": {
                     "evaluationModes": [
                       {
-                        "mode": "PROACTIVE"
+                        "mode": "DETECTIVE"
                       },
                       {
-                        "mode": "DETECTIVE"
+                        "mode": "PROACTIVE"
                       }
                     ],
                     "source": {

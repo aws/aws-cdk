@@ -18,12 +18,12 @@ new config.CustomRule(stack, 'CustomRule', {
   lambdaFunction: fn,
   periodic: true,
   ruleScope: config.RuleScope.fromResources([config.ResourceType.EC2_INSTANCE]),
-  evaluationModes: [config.EvaluationMode.PROACTIVE, config.EvaluationMode.DETECTIVE],
+  evaluationModes: config.EvaluationMode.PROACTIVE,
 });
 
 new config.ManagedRule(stack, 'ManagedRule', {
   identifier: config.ManagedRuleIdentifiers.API_GW_XRAY_ENABLED,
-  evaluationModes: [config.EvaluationMode.PROACTIVE, config.EvaluationMode.DETECTIVE],
+  evaluationModes: config.EvaluationMode.DETECTIVE_AND_PROACTIVE,
 });
 
 const samplePolicyText = `
@@ -47,7 +47,7 @@ new config.CustomPolicy(stack, 'CustomPolicy', {
   policyText: samplePolicyText,
   enableDebugLog: true,
   ruleScope: config.RuleScope.fromResources([config.ResourceType.DYNAMODB_TABLE]),
-  evaluationModes: [config.EvaluationMode.DETECTIVE],
+  evaluationModes: config.EvaluationMode.DETECTIVE,
 });
 
 new integ.IntegTest(app, 'ConfigRuleEvaluationModeTest', {
