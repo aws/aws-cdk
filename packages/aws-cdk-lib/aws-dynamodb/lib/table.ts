@@ -21,7 +21,6 @@ import {
   Aws, CfnCondition, CfnCustomResource, CfnResource, Duration,
   Fn, Lazy, Names, RemovalPolicy, Stack, Token, CustomResource,
 } from '../../core';
-import { Grant, IResourceWithPolicy } from '../../aws-iam';
 
 const HASH_KEY_TYPE = 'HASH';
 const RANGE_KEY_TYPE = 'RANGE';
@@ -374,8 +373,8 @@ export interface TableOptions extends SchemaOptions {
 
   /**
    * Resource policy to assign to table.
-   *
-   * @default - No resource policy statements are added to the created table.
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-dynamodb-table.html#cfn-dynamodb-table-resourcepolicy
+   * @default - No resource policy statement
    */
   readonly resourcePolicy?: iam.PolicyDocument;
 }
@@ -487,7 +486,7 @@ export interface TableAttributes {
   readonly grantIndexPermissions?: boolean;
 }
 
-export abstract class TableBase extends Resource implements ITable, IResourceWithPolicy {
+export abstract class TableBase extends Resource implements ITable, iam.IResourceWithPolicy {
   /**
    * @attribute
    */
@@ -920,7 +919,7 @@ export abstract class TableBase extends Resource implements ITable, IResourceWit
           produce: () => this.hasIndex ? `${arn}/index/*` : Aws.NO_VALUE,
         })),
       ];
-      const ret = Grant.addToPrincipalOrResource({
+      const ret = iam.Grant.addToPrincipalOrResource({
         grantee,
         actions: opts.tableActions,
         resourceArns: resources,
@@ -933,7 +932,7 @@ export abstract class TableBase extends Resource implements ITable, IResourceWit
         throw new Error(`DynamoDB Streams must be enabled on the table ${this.node.path}`);
       }
       const resources = [this.tableStreamArn];
-      const ret = Grant.addToPrincipalOrResource({
+      const ret = iam.Grant.addToPrincipalOrResource({
         grantee,
         actions: opts.streamActions,
         resourceArns: resources,
