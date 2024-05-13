@@ -76,11 +76,11 @@ export abstract class TableBaseV2 extends Resource implements ITableV2, IResourc
   public grant(grantee: IGrantable, ...actions: string[]): Grant {
     const resourceArns = [this.tableArn];
     this.hasIndex && resourceArns.push(`${this.tableArn}/index/*`);
-    return Grant.addToPrincipal({
+    return Grant.addToPrincipalOrResource({
       grantee,
       actions,
       resourceArns,
-      scope: this,
+      resource: this,
     });
   }
 

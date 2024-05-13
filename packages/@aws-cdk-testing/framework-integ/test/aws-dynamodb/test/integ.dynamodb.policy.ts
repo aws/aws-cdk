@@ -39,7 +39,6 @@ export class TestStack extends Stack {
       removalPolicy: RemovalPolicy.DESTROY,
     });
 
-    // const permissions: string[] = ['dynamodb:GetItem', 'dynamodb:UpdateItem'];
     this.tableTwo.grantReadData(new iam.AccountPrincipal('123456789012'));
   }
 }
