@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { IAliasRecordTarget } from './alias-record-target';
+import { AliasRecordTargetConfig, IAliasRecordTarget } from './alias-record-target';
 import { GeoLocation } from './geo-location';
 import { IHostedZone } from './hosted-zone-ref';
 import { CfnRecordSet } from './route53.generated';
@@ -302,7 +302,7 @@ export class RecordSet extends Resource implements IRecordSet {
     if (props.setIdentifier && (props.setIdentifier.length < 1 || props.setIdentifier.length > 128)) {
       throw new Error(`setIdentifier must be between 1 and 128 characters long, got: ${props.setIdentifier.length}`);
     }
-    if (props.setIdentifier && !props.weight && !props.geoLocation && !props.region && !props.multiValueAnswer) {
+    if (props.setIdentifier && props.weight === undefined && !props.geoLocation && !props.region && !props.multiValueAnswer) {
       throw new Error('setIdentifier can only be specified for non-simple routing policies');
     }
     if (props.multiValueAnswer && props.target.aliasTarget) {
@@ -405,7 +405,7 @@ export class RecordSet extends Resource implements IRecordSet {
       return identifier;
     }
 
-    if (this.weight) {
+    if (this.weight !== undefined) {
       const idPrefix = `WEIGHT_${this.weight}_ID_`;
       return this.createIdentifier(idPrefix);
     }
@@ -447,17 +447,63 @@ export interface ARecordProps extends RecordSetOptions {
 }
 
 /**
+ * Construction properties to import existing ARecord as target.
+ */
+export interface ARecordAttrs extends RecordSetOptions{
+  /**
+   * Existing A record DNS name to set RecordTarget
+   */
+  readonly targetDNS: string;
+}
+
+/**
  * A DNS A record
  *
  * @resource AWS::Route53::RecordSet
  */
 export class ARecord extends RecordSet {
+
+  /**
+   * Creates new A record of type alias with target set to an existing A Record DNS.
+   * Use when the target A record is created outside of CDK
+   * For records created as part of CDK use @aws-cdk-lib/aws-route53-targets/route53-record.ts
+   * @param scope the parent Construct for this Construct
+   * @param id Logical Id of the resource
+   * @param attrs the ARecordAttributes (Target Arecord DNS name and HostedZone)
+   * @returns AWS::Route53::RecordSet of type A with target alias set to existing A record
+   */
+  public static fromARecordAttributes(scope: Construct, id: string, attrs: ARecordAttrs): ARecord {
+    const aliasTarget = RecordTarget.fromAlias(new ARecordAsAliasTarget(attrs));
+    return new ARecord(scope, id, {
+      ...attrs,
+      target: aliasTarget,
+    });
+  }
+
   constructor(scope: Construct, id: string, props: ARecordProps) {
     super(scope, id, {
       ...props,
       recordType: RecordType.A,
       target: props.target,
     });
+  }
+}
+
+/**
+ * Converts the type of a given ARecord DNS name, created outside CDK, to an AliasRecordTarget
+ */
+class ARecordAsAliasTarget implements IAliasRecordTarget {
+  constructor(private readonly aRrecordAttrs: ARecordAttrs) {
+  }
+
+  public bind(_record: IRecordSet, _zone?: IHostedZone | undefined): AliasRecordTargetConfig {
+    if (!_zone) {
+      throw new Error('Cannot bind to record without a zone');
+    }
+    return {
+      dnsName: this.aRrecordAttrs.targetDNS,
+      hostedZoneId: this.aRrecordAttrs.zone.hostedZoneId,
+    };
   }
 }
 
@@ -859,6 +905,13 @@ export interface CrossAccountZoneDelegationRecordProps {
    * @default RemovalPolicy.DESTROY
    */
   readonly removalPolicy?: RemovalPolicy;
+
+  /**
+   * Region from which to obtain temporary credentials.
+   *
+   * @default - the Route53 signing region in the current partition
+   */
+  readonly assumeRoleRegion?: string;
 }
 
 /**
@@ -897,6 +950,7 @@ export class CrossAccountZoneDelegationRecord extends Construct {
         DelegatedZoneName: props.delegatedZone.zoneName,
         DelegatedZoneNameServers: props.delegatedZone.hostedZoneNameServers!,
         TTL: (props.ttl || Duration.days(2)).toSeconds(),
+        AssumeRoleRegion: props.assumeRoleRegion,
       },
     });
 

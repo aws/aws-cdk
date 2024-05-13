@@ -188,6 +188,34 @@ describe('record set', () => {
     });
   });
 
+  test('A record with imported alias', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    const zone = new route53.HostedZone(stack, 'HostedZone', {
+      zoneName: 'myzone',
+    });
+
+    // WHEN
+    route53.ARecord.fromARecordAttributes(zone, 'Alias', {
+      zone,
+      targetDNS: 'foo1.example.com',
+      recordName: '_foo',
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Route53::RecordSet', {
+      Name: '_foo.myzone.',
+      Type: 'A',
+      AliasTarget: {
+        DNSName: 'foo1.example.com',
+        HostedZoneId: {
+          Ref: 'HostedZoneDB99F866',
+        },
+      },
+    });
+  });
+
   test('AAAA record with ip addresses', () => {
     // GIVEN
     const stack = new Stack();
@@ -811,6 +839,60 @@ describe('record set', () => {
     });
   });
 
+  test('Cross account zone delegation record with stsRegion', () => {
+    // GIVEN
+    const stack = new Stack();
+    const parentZone = new route53.PublicHostedZone(stack, 'ParentHostedZone', {
+      zoneName: 'myzone.com',
+      crossAccountZoneDelegationPrincipal: new iam.AccountPrincipal('123456789012'),
+    });
+
+    // WHEN
+    const childZone = new route53.PublicHostedZone(stack, 'ChildHostedZone', {
+      zoneName: 'sub.myzone.com',
+    });
+    new route53.CrossAccountZoneDelegationRecord(stack, 'Delegation', {
+      delegatedZone: childZone,
+      parentHostedZoneId: parentZone.hostedZoneId,
+      delegationRole: parentZone.crossAccountZoneDelegationRole!,
+      ttl: Duration.seconds(60),
+      removalPolicy: RemovalPolicy.RETAIN,
+      assumeRoleRegion: 'fake-region-1',
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('Custom::CrossAccountZoneDelegation', {
+      ServiceToken: {
+        'Fn::GetAtt': [
+          'CustomCrossAccountZoneDelegationCustomResourceProviderHandler44A84265',
+          'Arn',
+        ],
+      },
+      AssumeRoleArn: {
+        'Fn::GetAtt': [
+          'ParentHostedZoneCrossAccountZoneDelegationRole95B1C36E',
+          'Arn',
+        ],
+      },
+      ParentZoneId: {
+        Ref: 'ParentHostedZoneC2BD86E1',
+      },
+      DelegatedZoneName: 'sub.myzone.com',
+      DelegatedZoneNameServers: {
+        'Fn::GetAtt': [
+          'ChildHostedZone4B14AC71',
+          'NameServers',
+        ],
+      },
+      TTL: 60,
+      AssumeRoleRegion: 'fake-region-1',
+    });
+    Template.fromStack(stack).hasResource('Custom::CrossAccountZoneDelegation', {
+      DeletionPolicy: 'Retain',
+      UpdateReplacePolicy: 'Retain',
+    });
+  });
+
   testDeprecated('Cross account zone delegation record with parentHostedZoneName', () => {
     // GIVEN
     const stack = new Stack();
@@ -1130,6 +1212,39 @@ describe('record set', () => {
       TTL: '1800',
       Weight: 50,
       SetIdentifier: 'WEIGHT_50_ID_RecordSet',
+    });
+  });
+
+  test('with weight of 0', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    const zone = new route53.HostedZone(stack, 'HostedZone', {
+      zoneName: 'myzone',
+    });
+
+    // WHEN
+    new route53.RecordSet(stack, 'RecordSet', {
+      zone,
+      recordName: 'www',
+      recordType: route53.RecordType.CNAME,
+      target: route53.RecordTarget.fromValues('zzz'),
+      weight: 0,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Route53::RecordSet', {
+      Name: 'www.myzone.',
+      Type: 'CNAME',
+      HostedZoneId: {
+        Ref: 'HostedZoneDB99F866',
+      },
+      ResourceRecords: [
+        'zzz',
+      ],
+      TTL: '1800',
+      Weight: 0,
+      SetIdentifier: 'WEIGHT_0_ID_RecordSet',
     });
   });
 

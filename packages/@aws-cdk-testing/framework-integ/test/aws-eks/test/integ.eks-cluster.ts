@@ -97,6 +97,7 @@ class EksClusterStack extends Stack {
     new CfnOutput(this, 'ClusterSecurityGroupId', { value: this.cluster.clusterSecurityGroupId });
     new CfnOutput(this, 'ClusterEncryptionConfigKeyArn', { value: this.cluster.clusterEncryptionConfigKeyArn });
     new CfnOutput(this, 'ClusterName', { value: this.cluster.clusterName });
+    new CfnOutput(this, 'NodegroupName', { value: this.cluster.defaultNodegroup!.nodegroupName });
   }
 
   private assertServiceAccount() {
