@@ -49,6 +49,7 @@
     "@aws-sdk/client-lambda": "3.421.0",
     "@aws-sdk/client-sts": "3.421.0",
     "@aws-sdk/client-sso": "3.421.0",
+    "@aws-sdk/client-ssm": "3.421.0",
     "@aws-sdk/credential-providers": "3.421.0",
     "axios": "^1.6.8",
     "fs-extra": "^9.1.0",
