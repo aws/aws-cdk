@@ -37,15 +37,21 @@ export interface IRule extends IResource {
 /**
  * The mode of evaluation for the rule.
  */
-export enum EvaluationMode {
+export class EvaluationMode {
   /**
    * Evaluate resources that have already been deployed
    */
-  DETECTIVE = 'DETECTIVE',
+  public static DETECTIVE = new EvaluationMode(['DETECTIVE']);
   /**
    * Evaluate resources before they have been deployed
    */
-  PROACTIVE = 'PROACTIVE',
+  public static PROACTIVE = new EvaluationMode(['PROACTIVE']);
+  /**
+   * Evaluate resources that have already been deployed and before they have been deployed
+   */
+  public static DETECTIVE_AND_PROACTIVE = new EvaluationMode(['DETECTIVE', 'PROACTIVE']);
+
+  protected constructor(public readonly modes: string[]) {}
 }
 
 /**
@@ -242,7 +248,7 @@ export interface RuleProps {
    *
    * @default - Detective evaluation mode only
    */
-  readonly evaluationModes?: EvaluationMode[];
+  readonly evaluationModes?: EvaluationMode;
 }
 
 /**
@@ -292,7 +298,7 @@ export class ManagedRule extends RuleNew {
         owner: 'AWS',
         sourceIdentifier: props.identifier,
       },
-      evaluationModes: props.evaluationModes?.map((mode) => ({
+      evaluationModes: props.evaluationModes?.modes.map((mode) => ({
         mode,
       })),
     });
@@ -468,7 +474,7 @@ export class CustomRule extends RuleNew {
         sourceDetails,
         sourceIdentifier: props.lambdaFunction.functionArn,
       },
-      evaluationModes: props.evaluationModes?.map((mode) => ({
+      evaluationModes: props.evaluationModes?.modes.map((mode) => ({
         mode,
       })),
     });
@@ -556,7 +562,7 @@ export class CustomPolicy extends RuleNew {
           policyText: props.policyText,
         },
       },
-      evaluationModes: props.evaluationModes?.map((mode) => ({
+      evaluationModes: props.evaluationModes?.modes.map((mode) => ({
         mode,
       })),
     });

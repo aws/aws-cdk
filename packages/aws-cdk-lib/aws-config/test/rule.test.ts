@@ -18,7 +18,7 @@ describe('rule', () => {
       },
       maximumExecutionFrequency: config.MaximumExecutionFrequency.THREE_HOURS,
       configRuleName: 'cool rule',
-      evaluationModes: [config.EvaluationMode.DETECTIVE, config.EvaluationMode.PROACTIVE],
+      evaluationModes: config.EvaluationMode.DETECTIVE_AND_PROACTIVE,
     });
 
     // THEN
@@ -64,7 +64,7 @@ describe('rule', () => {
       maximumExecutionFrequency: config.MaximumExecutionFrequency.SIX_HOURS,
       configRuleName: 'cool rule',
       periodic: true,
-      evaluationModes: [config.EvaluationMode.DETECTIVE, config.EvaluationMode.PROACTIVE],
+      evaluationModes: config.EvaluationMode.DETECTIVE_AND_PROACTIVE,
     });
 
     // THEN
@@ -437,12 +437,12 @@ describe('rule', () => {
     new config.CustomPolicy(stack, 'Rule', {
       policyText: `
       let status = ['ACTIVE']
-  
+
       rule tableisactive when
           resourceType == "AWS::DynamoDB::Table" {
           configuration.tableStatus == %status
       }
-  
+
       rule checkcompliance when
           resourceType == "AWS::DynamoDB::Table"
           tableisactive {
@@ -451,7 +451,7 @@ describe('rule', () => {
       }`,
       description: 'really cool rule',
       configRuleName: 'cool rule',
-      evaluationModes: [config.EvaluationMode.DETECTIVE, config.EvaluationMode.PROACTIVE],
+      evaluationModes: config.EvaluationMode.DETECTIVE_AND_PROACTIVE,
     });
 
     // THEN
