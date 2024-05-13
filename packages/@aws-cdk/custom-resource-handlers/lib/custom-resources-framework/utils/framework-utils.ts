@@ -1,4 +1,3 @@
-/* eslint-disable import/no-extraneous-dependencies */
 import { ComponentType, Runtime } from '../config';
 
 export function buildComponentName(fqn: string, type: ComponentType, entrypoint: string) {
