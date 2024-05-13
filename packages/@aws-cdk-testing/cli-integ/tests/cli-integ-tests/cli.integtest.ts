@@ -986,7 +986,7 @@ integTest('deploy and test stack with lambda asset', withDefaultFixture(async (f
     FunctionName: lambdaArn,
   }));
 
-  expect(JSON.stringify(output.Payload)).toContain('dear asset');
+  expect(JSON.stringify(output.Payload?.transformToString())).toContain('dear asset');
 }));
 
 integTest('cdk ls', withDefaultFixture(async (fixture) => {
