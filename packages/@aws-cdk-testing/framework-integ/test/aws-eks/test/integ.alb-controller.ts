@@ -9,7 +9,7 @@ import { Pinger } from './pinger/pinger';
 import * as eks from 'aws-cdk-lib/aws-eks';
 
 interface EksClusterAlbControllerStackProps extends StackProps {
-  albControllerValues?: {[key:string]: any};
+  albControllerHelmChartValues?: {[key:string]: any};
 }
 
 class EksClusterAlbControllerStack extends Stack {
@@ -25,7 +25,7 @@ class EksClusterAlbControllerStack extends Stack {
       ...getClusterVersionConfig(this),
       albController: {
         version: eks.AlbControllerVersion.V2_6_2,
-        values: props.albControllerValues,
+        helmChartValues: props.albControllerHelmChartValues,
       },
     });
 
@@ -75,7 +75,7 @@ class EksClusterAlbControllerStack extends Stack {
 
 const app = new App();
 const stack = new EksClusterAlbControllerStack(app, 'aws-cdk-eks-cluster-alb-controller');
-const stackWithAlbControllerValues = new EksClusterAlbControllerStack(app, 'aws-cdk-eks-cluster-alb-controller-values', { albControllerValues: { enableWafv2: false } });
+const stackWithAlbControllerValues = new EksClusterAlbControllerStack(app, 'aws-cdk-eks-cluster-alb-controller-values', { albControllerHelmChartValues: { enableWafv2: false } });
 new integ.IntegTest(app, 'aws-cdk-cluster-alb-controller-integ', {
   testCases: [stack, stackWithAlbControllerValues],
   // Test includes assets that are updated weekly. If not disabled, the upgrade PR will fail.
