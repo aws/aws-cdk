@@ -853,6 +853,8 @@ when you use the API to sign them up, sign them in, and reset their password.
 
 
 ```ts
+declare const importedPool: cognito.UserPool;
+
 const userPoolClient = new cognito.UserPoolClient(this, 'UserPoolClient', {
   userPool: importedPool,
   generateSecret: true,
