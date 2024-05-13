@@ -510,11 +510,11 @@
   "Certificate4E7ABB08": {
    "Type": "AWS::CertificateManager::Certificate",
    "Properties": {
-    "DomainName": "*.example.com",
+    "DomainName": "jmw.adms.tbtech.com",
     "DomainValidationOptions": [
      {
-      "DomainName": "*.example.com",
-      "HostedZoneId": "Z23ABC4XYZL05B"
+      "DomainName": "jmw.adms.tbtech.com",
+      "HostedZoneId": "Z05299392XSBPCID3AHUE"
      }
     ],
     "Tags": [
@@ -566,7 +566,7 @@
   "UserPoolDomainD0EA232A": {
    "Type": "AWS::Cognito::UserPoolDomain",
    "Properties": {
-    "Domain": "z23abc4xyzl05b",
+    "Domain": "z05299392xsbpcid3ahue",
     "UserPoolId": {
      "Ref": "UserPool6BA7E5F2"
     }
@@ -587,7 +587,7 @@
      "aws.cognito.signin.user.admin"
     ],
     "CallbackURLs": [
-     "https://*.example.com/oauth2/idpresponse"
+     "https://jmw.adms.tbtech.com/oauth2/idpresponse"
     ],
     "GenerateSecret": true,
     "SupportedIdentityProviders": [
@@ -895,7 +895,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "746da84b10e215c552e68b6d2061024e4429f0386f43a35ef5e4d2940655692e.zip"
+     "S3Key": "4c349b026f9dadd9a6737d4682c2da3e53101244798442ccec89ee0a0bd96f26.zip"
     },
     "Handler": "index.handler",
     "Role": {
@@ -936,8 +936,8 @@
       ]
      }
     },
-    "HostedZoneId": "Z23ABC4XYZL05B",
-    "Name": "example.com.",
+    "HostedZoneId": "Z05299392XSBPCID3AHUE",
+    "Name": "jmw.adms.tbtech.com.",
     "Type": "A"
    }
   },
@@ -1108,7 +1108,7 @@
      "Variables": {
       "TEST_USERNAME": "test-user@example.com",
       "TEST_PASSWORD": "TestUser@123",
-      "TEST_URL": "https://*.example.com"
+      "TEST_URL": "https://jmw.adms.tbtech.com"
      }
     },
     "FunctionName": "cdk-integ-alb-oidc-signin-handler",
