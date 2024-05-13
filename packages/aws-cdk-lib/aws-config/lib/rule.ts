@@ -41,16 +41,19 @@ export class EvaluationMode {
   /**
    * Evaluate resources that have already been deployed
    */
-  public static DETECTIVE = new EvaluationMode(['DETECTIVE']);
+  public static readonly DETECTIVE = new EvaluationMode(['DETECTIVE']);
   /**
    * Evaluate resources before they have been deployed
    */
-  public static PROACTIVE = new EvaluationMode(['PROACTIVE']);
+  public static readonly PROACTIVE = new EvaluationMode(['PROACTIVE']);
   /**
    * Evaluate resources that have already been deployed and before they have been deployed
    */
-  public static DETECTIVE_AND_PROACTIVE = new EvaluationMode(['DETECTIVE', 'PROACTIVE']);
+  public static readonly DETECTIVE_AND_PROACTIVE = new EvaluationMode(['DETECTIVE', 'PROACTIVE']);
 
+  /**
+   * @param modes The modes of evaluation for the rule
+   */
   protected constructor(public readonly modes: string[]) {}
 }
 
