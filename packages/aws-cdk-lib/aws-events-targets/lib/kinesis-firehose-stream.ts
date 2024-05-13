@@ -68,7 +68,8 @@ export interface IDeliveryStream extends IResource {
 }
 
 /**
- * Customize the Firehose Stream Event Target
+ * Customize the Firehose Stream Event Target V2 to support L2 Kinesis Delivery Stream
+ * instead of L1 Cfn Kinesis Delivery Stream.
  */
 export class KinesisFirehoseStreamV2 implements events.IRuleTarget {
 
