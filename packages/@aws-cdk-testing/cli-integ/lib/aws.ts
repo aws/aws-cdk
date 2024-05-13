@@ -6,6 +6,7 @@ import { IAMClient } from '@aws-sdk/client-iam';
 import { LambdaClient } from '@aws-sdk/client-lambda';
 import { S3Client, DeleteObjectsCommand, ListObjectVersionsCommand, ObjectIdentifier, DeleteBucketCommand } from '@aws-sdk/client-s3';
 import { SNSClient } from '@aws-sdk/client-sns';
+import { SSMClient } from '@aws-sdk/client-ssm';
 import { SSOClient } from '@aws-sdk/client-sso';
 import { STSClient, GetCallerIdentityCommand } from '@aws-sdk/client-sts';
 import { fromContainerMetadata, fromTemporaryCredentials } from '@aws-sdk/credential-providers';
@@ -28,6 +29,7 @@ export class AwsClients {
   public readonly ecr: ECRClient;
   public readonly ecs: ECSClient;
   public readonly sso: SSOClient;
+  public readonly ssm: SSMClient;
   public readonly sns: SNSClient;
   public readonly iam: IAMClient;
   public readonly lambda: LambdaClient;
@@ -45,6 +47,7 @@ export class AwsClients {
     this.ecr = new ECRClient(this.config);
     this.ecs = new ECSClient(this.config);
     this.sso = new SSOClient(this.config);
+    this.ssm = new SSMClient(this.config);
     this.sns = new SNSClient(this.config);
     this.iam = new IAMClient(this.config);
     this.lambda = new LambdaClient(this.config);

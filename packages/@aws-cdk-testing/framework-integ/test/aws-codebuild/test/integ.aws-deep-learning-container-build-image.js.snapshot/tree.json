@@ -4,14 +4,6 @@
     "id": "App",
     "path": "",
     "children": {
-      "Tree": {
-        "id": "Tree",
-        "path": "Tree",
-        "constructInfo": {
-          "fqn": "constructs.Construct",
-          "version": "10.1.85"
-        }
-      },
       "aws-deep-learning-container-build-image": {
         "id": "aws-deep-learning-container-build-image",
         "path": "aws-deep-learning-container-build-image",
@@ -24,6 +16,14 @@
                 "id": "Role",
                 "path": "aws-deep-learning-container-build-image/Project/Role",
                 "children": {
+                  "ImportRole": {
+                    "id": "ImportRole",
+                    "path": "aws-deep-learning-container-build-image/Project/Role/ImportRole",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
                   "Resource": {
                     "id": "Resource",
                     "path": "aws-deep-learning-container-build-image/Project/Role/Resource",
@@ -45,7 +45,7 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-iam.CfnRole",
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
                       "version": "0.0.0"
                     }
                   },
@@ -203,19 +203,19 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "@aws-cdk/aws-iam.CfnPolicy",
+                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
                           "version": "0.0.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "@aws-cdk/aws-iam.Policy",
+                      "fqn": "aws-cdk-lib.aws_iam.Policy",
                       "version": "0.0.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-iam.Role",
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
                   "version": "0.0.0"
                 }
               },
@@ -228,6 +228,10 @@
                     "artifacts": {
                       "type": "NO_ARTIFACTS"
                     },
+                    "cache": {
+                      "type": "NO_CACHE"
+                    },
+                    "encryptionKey": "alias/aws/s3",
                     "environment": {
                       "type": "LINUX_GPU_CONTAINER",
                       "image": {
@@ -268,15 +272,11 @@
                     "source": {
                       "type": "NO_SOURCE",
                       "buildSpec": "{\n  \"version\": \"0.2\",\n  \"phases\": {\n    \"build\": {\n      \"commands\": [\n        \"ls\"\n      ]\n    }\n  }\n}"
-                    },
-                    "cache": {
-                      "type": "NO_CACHE"
-                    },
-                    "encryptionKey": "alias/aws/s3"
+                    }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-codebuild.CfnProject",
+                  "fqn": "aws-cdk-lib.aws_codebuild.CfnProject",
                   "version": "0.0.0"
                 }
               },
@@ -284,13 +284,13 @@
                 "id": "AwsDlcRepositoryCodeBuild",
                 "path": "aws-deep-learning-container-build-image/Project/AwsDlcRepositoryCodeBuild",
                 "constructInfo": {
-                  "fqn": "@aws-cdk/aws-ecr.RepositoryBase",
+                  "fqn": "aws-cdk-lib.aws_ecr.RepositoryBase",
                   "version": "0.0.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-codebuild.Project",
+              "fqn": "aws-cdk-lib.aws_codebuild.Project",
               "version": "0.0.0"
             }
           },
@@ -298,20 +298,44 @@
             "id": "DlcRepositoryAccountMap",
             "path": "aws-deep-learning-container-build-image/DlcRepositoryAccountMap",
             "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.1.85"
+              "fqn": "aws-cdk-lib.CfnMapping",
+              "version": "0.0.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "aws-deep-learning-container-build-image/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "aws-deep-learning-container-build-image/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnRule",
+              "version": "0.0.0"
             }
           }
         },
         "constructInfo": {
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.1.85"
+          "version": "10.3.0"
         }
       }
     },
     "constructInfo": {
-      "fqn": "constructs.Construct",
-      "version": "10.1.85"
+      "fqn": "aws-cdk-lib.App",
+      "version": "0.0.0"
     }
   }
 }
