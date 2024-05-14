@@ -1289,7 +1289,7 @@ describe('record set', () => {
     geoLocation?: route53.GeoLocation;
     region?: string;
     multiValueAnswer?: boolean;
-    cidrRoutingConfig?: route53.IpBasedRouting;
+    cidrRoutingConfig?: route53.IpBasedRoutingProps;
   }
 
   const generateTestCases = (): TestRecordSetProps[] => {
@@ -1471,10 +1471,10 @@ describe('record set', () => {
         recordName: 'www',
         recordType: route53.RecordType.A,
         target: route53.RecordTarget.fromIpAddresses('1.2.3.4'),
-        routing: route53.Routing.cidrListIpBasedRouting({
-          cidrList: ['1.100.1.0/24', '1.101.1.0/24'],
-          locationName: 'myLocation',
-        }),
+        routing: route53.Routing.cidrListIpBasedRouting(
+          ['1.100.1.0/24', '1.101.1.0/24'],
+          'myLocation',
+        ),
       });
 
       // THEN
@@ -1531,11 +1531,11 @@ describe('record set', () => {
         recordName: 'www',
         recordType: route53.RecordType.A,
         target: route53.RecordTarget.fromIpAddresses('1.2.3.4'),
-        routing: route53.Routing.cidrListIpBasedRouting({
-          cidrList: ['1.100.1.0/24', '1.101.1.0/24'],
-          locationName: 'myLocation',
-          collectionName: 'myCollection',
-        }),
+        routing: route53.Routing.cidrListIpBasedRouting(
+          ['1.100.1.0/24', '1.101.1.0/24'],
+          'myLocation',
+          'myCollection',
+        ),
       });
 
       // WHEN
@@ -1613,10 +1613,10 @@ describe('record set', () => {
         recordName: 'www',
         recordType: route53.RecordType.A,
         target: route53.RecordTarget.fromIpAddresses('1.2.3.4'),
-        routing: route53.Routing.cidrListIpBasedRouting({
-          locationName: 'a'.repeat(17),
-          cidrList: ['192.168.1.0/24'],
-        }),
+        routing: route53.Routing.cidrListIpBasedRouting(
+          ['192.168.1.0/24'],
+          'a'.repeat(17),
+        ),
       })).toThrow('locationName must be between 1 and 16 characters long, got: 17');
     });
 
@@ -1632,10 +1632,10 @@ describe('record set', () => {
         recordName: 'www',
         recordType: route53.RecordType.A,
         target: route53.RecordTarget.fromIpAddresses('1.2.3.4'),
-        routing: route53.Routing.cidrListIpBasedRouting({
+        routing: route53.Routing.cidrListIpBasedRouting(
+          ['192.168.1.0/24'],
           locationName,
-          cidrList: ['192.168.1.0/24'],
-        }),
+        ),
       })).toThrow(`locationName must only contain alphanumeric characters, underscores, and hyphens, or only '*', got: ${locationName}`);
     });
 
@@ -1651,10 +1651,10 @@ describe('record set', () => {
         recordName: 'www',
         recordType: route53.RecordType.A,
         target: route53.RecordTarget.fromIpAddresses('1.2.3.4'),
-        routing: route53.Routing.cidrListIpBasedRouting({
-          locationName: 'myLocation',
-          cidrList: Array(length).fill('192.168.1.0/24'),
-        }),
+        routing: route53.Routing.cidrListIpBasedRouting(
+          Array(length).fill('192.168.1.0/24'),
+          'myLocation',
+        ),
       })).toThrow(`cidrList must contain between 1 and 1000 elements, got: ${length}`);
     });
 
@@ -1670,11 +1670,11 @@ describe('record set', () => {
         recordName: 'www',
         recordType: route53.RecordType.A,
         target: route53.RecordTarget.fromIpAddresses('1.2.3.4'),
-        routing: route53.Routing.cidrListIpBasedRouting({
-          locationName: 'myLocation',
-          cidrList: ['192.168.1.0/24'],
-          collectionName: 'a'.repeat(65),
-        }),
+        routing: route53.Routing.cidrListIpBasedRouting(
+          ['192.168.1.0/24'],
+          'myLocation',
+          'a'.repeat(65),
+        ),
       })).toThrow('collectionName must be between 1 and 64 characters long, got: 65');
     });
 
@@ -1690,11 +1690,11 @@ describe('record set', () => {
         recordName: 'www',
         recordType: route53.RecordType.A,
         target: route53.RecordTarget.fromIpAddresses('1.2.3.4'),
-        routing: route53.Routing.cidrListIpBasedRouting({
-          locationName: 'myLocation',
-          cidrList: ['192.168.1.0/24'],
-          collectionName: 'test#',
-        }),
+        routing: route53.Routing.cidrListIpBasedRouting(
+          ['192.168.1.0/24'],
+          'myLocation',
+          'test#',
+        ),
       })).toThrow('collectionName must only contain alphanumeric characters, underscores, and hyphens, got: test#');
     });
 
@@ -1719,11 +1719,11 @@ describe('record set', () => {
         recordName: 'www',
         recordType: route53.RecordType.A,
         target: route53.RecordTarget.fromIpAddresses('1.2.3.4'),
-        routing: route53.Routing.existingCollectionIpBasedRouting({
-          cidrList: ['10.0.1.0/24'],
-          locationName: 'myLocation2',
+        routing: route53.Routing.existingCollectionIpBasedRouting(
+          ['10.0.1.0/24'],
+          'myLocation2',
           collection,
-        }),
+        ),
       });
 
       // THEN

@@ -5,7 +5,7 @@ import { IHostedZone } from './hosted-zone-ref';
 import { CfnCidrCollection, CfnRecordSet } from './route53.generated';
 import { determineFullyQualifiedDomainName } from './util';
 import * as iam from '../../aws-iam';
-import { CustomResource, Duration, IResource, Lazy, Names, RemovalPolicy, Resource, Token } from '../../core';
+import { CustomResource, Duration, IResource, Names, RemovalPolicy, Resource, Token } from '../../core';
 import { CrossAccountZoneDelegationProvider } from '../../custom-resource-handlers/dist/aws-route53/cross-account-zone-delegation-provider.generated';
 import { DeleteExistingRecordSetProvider } from '../../custom-resource-handlers/dist/aws-route53/delete-existing-record-set-provider.generated';
 
@@ -242,77 +242,46 @@ export interface RecordSetOptions {
   readonly setIdentifier?: string;
 }
 
+/**
+ * Configuration for non-simple routing.
+ */
 export interface RoutingProps {
-  readonly ipBasedRouting?: IpBasedRouting;
-}
-
-export interface IpBasedRoutingConfigurationProps {
-  /**
-   * List of CIDR blocks.
-   *
-   * When specifying the default location (locationName is '*'), it cannot be set, but for all other cases, it is mandatory.
-   *
-   * @default - zero bit CIDR block (0.0.0.0/0 or ::/0) for the default location
-   */
-  readonly cidrList?: string[];
-
-  /**
-    * The name of the location.
-    *
-    * When '*' is specified, it is treated as the default location.
-    * In this case, the cidrList cannot be specified.
-    *
-    * @default - Auto generated name
-    */
-  readonly locationName?: string;
-
-  /**
-    * The name of a CIDR collection.
-    *
-    * This parameter is ignored when the `collection` property is specified.
-    *
-    * @default - Auto generated name
-    */
-  readonly collectionName?: string;
-
-  /**
-    * Existing Cidr Collection.
-    *
-    * Use this to add a new Location to an existing Cidr Collection.
-    * Note that for IP-based routing, all resource record sets for the same record set name and type must reference the same CIDR collection.
-    *
-    * @see https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/routing-policy-ipbased.html
-    *
-    * @default - Create a new CIDR Collection
-    */
-  readonly collection?: CfnCidrCollection;
+  readonly ipBasedRouting?: IpBasedRoutingProps;
 }
 
 export abstract class Routing {
   public static defaultIpBasedRouting(collectionName?: string): Routing {
-    return new IpBasedRoutingConfiguration({
+    return new IpBasedRouting({
       locationName: '*',
       collectionName,
     });
   }
 
-  public static cidrListIpBasedRouting(props: {
-    cidrList: string[];
-    locationName?: string;
-    collectionName?: string;
-  }): Routing {
-    return new IpBasedRoutingConfiguration(props);
+  public static cidrListIpBasedRouting(
+    cidrList: string[],
+    locationName: string,
+    collectionName?: string,
+  ): Routing {
+    return new IpBasedRouting({
+      cidrList,
+      locationName,
+      collectionName,
+    });
   }
 
-  public static existingCollectionIpBasedRouting(props: {
-    cidrList: string[];
-    locationName?: string;
-    collection: CfnCidrCollection;
-  }): Routing {
-    return new IpBasedRoutingConfiguration(props);
+  public static existingCollectionIpBasedRouting(
+    cidrList: string[],
+    locationName: string,
+    collection: CfnCidrCollection,
+  ): Routing {
+    return new IpBasedRouting({
+      cidrList,
+      locationName,
+      collection,
+    });
   }
 
-  public readonly ipBasedRouting?: IpBasedRouting;
+  public readonly ipBasedRouting?: IpBasedRoutingProps;
 
   constructor(props: RoutingProps) {
     if (props.ipBasedRouting) {
@@ -342,8 +311,8 @@ export abstract class Routing {
  *
  * @see https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/routing-policy-ipbased.html
  */
-class IpBasedRoutingConfiguration extends Routing {
-  constructor(props: IpBasedRoutingConfigurationProps) {
+class IpBasedRouting extends Routing {
+  constructor(props: IpBasedRoutingProps) {
     super({
       ipBasedRouting: {
         cidrList: props.cidrList,
@@ -358,7 +327,7 @@ class IpBasedRoutingConfiguration extends Routing {
 /**
  * Configuration for IP-based routing.
  */
-export interface IpBasedRouting {
+export interface IpBasedRoutingProps {
   /**
    * List of CIDR blocks.
    *
@@ -369,7 +338,7 @@ export interface IpBasedRouting {
   /**
    * The name of the location.
    */
-  readonly locationName?: string;
+  readonly locationName: string;
 
   /**
    * The name of a CIDR collection.
@@ -572,7 +541,7 @@ export class RecordSet extends Resource implements IRecordSet {
     return this._cidrCollection;
   }
 
-  private configureIpBasedRouting(cidrRoutingConfig: IpBasedRouting): void {
+  private configureIpBasedRouting(cidrRoutingConfig: IpBasedRoutingProps): void {
     const locationName = cidrRoutingConfig.locationName ?? Names.uniqueResourceName(this, { maxLength: 8 }).substring(0, 16);
     const cidrList = cidrRoutingConfig.cidrList;
     const isDefaultLocation = locationName === '*';
