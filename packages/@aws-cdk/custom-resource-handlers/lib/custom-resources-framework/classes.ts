@@ -330,10 +330,6 @@ export abstract class ProviderFrameworkClass extends ClassType {
           ? '../../custom-resource-provider/custom-resource-provider'
           : '../../../core',
       });
-    } else {
-      scope.registerImport(LAMBDA_MODULE, {
-        targets: [LAMBDA_MODULE.determineLatestNodeRuntime],
-      });
     }
 
     const _scope = expr.ident('scope');
