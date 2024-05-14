@@ -16,7 +16,7 @@ import {
   $T,
 } from '@cdklabs/typewriter';
 import { Runtime } from './config';
-import { HandlerFrameworkModule } from './framework';
+import { ProviderFrameworkModule } from './framework';
 import {
   PATH_MODULE,
   CONSTRUCTS_MODULE,
@@ -55,9 +55,9 @@ interface ConstructorBuildProps {
 }
 
 /**
- * Initialization properties used to build a `HandlerFrameworkClass` instance.
+ * Initialization properties used to build a `ProviderFrameworkClass` instance.
  */
-export interface HandlerFrameworkClassProps {
+export interface ProviderFrameworkClassProps {
   /**
    * The name of the framework component class.
    */
@@ -81,12 +81,12 @@ export interface HandlerFrameworkClassProps {
   readonly runtime?: Runtime;
 }
 
-export abstract class HandlerFrameworkClass extends ClassType {
+export abstract class ProviderFrameworkClass extends ClassType {
   /**
    * Builds a code generated Lambda function class.
    */
-  public static buildFunction(scope: HandlerFrameworkModule, props: HandlerFrameworkClassProps): HandlerFrameworkClass {
-    return new (class Function extends HandlerFrameworkClass {
+  public static buildFunction(scope: ProviderFrameworkModule, props: ProviderFrameworkClassProps): ProviderFrameworkClass {
+    return new (class Function extends ProviderFrameworkClass {
       public constructor() {
         super(scope, {
           name: props.name,
@@ -117,8 +117,8 @@ export abstract class HandlerFrameworkClass extends ClassType {
   /**
    * Builds a code generated Lambda singleton function class.
    */
-  public static buildSingletonFunction(scope: HandlerFrameworkModule, props: HandlerFrameworkClassProps): HandlerFrameworkClass {
-    return new (class SingletonFunction extends HandlerFrameworkClass {
+  public static buildSingletonFunction(scope: ProviderFrameworkModule, props: ProviderFrameworkClassProps): ProviderFrameworkClass {
+    return new (class SingletonFunction extends ProviderFrameworkClass {
       public constructor() {
         super(scope, {
           name: props.name,
@@ -178,8 +178,8 @@ export abstract class HandlerFrameworkClass extends ClassType {
   /**
    * Builds a code generated custom resource provider class.
    */
-  public static buildCustomResourceProvider(scope: HandlerFrameworkModule, props: HandlerFrameworkClassProps): HandlerFrameworkClass {
-    return new (class CustomResourceProvider extends HandlerFrameworkClass {
+  public static buildCustomResourceProvider(scope: ProviderFrameworkModule, props: ProviderFrameworkClassProps): ProviderFrameworkClass {
+    return new (class CustomResourceProvider extends ProviderFrameworkClass {
       public constructor() {
         super(scope, {
           name: props.name,
@@ -187,7 +187,7 @@ export abstract class HandlerFrameworkClass extends ClassType {
           export: true,
         });
 
-        if (scope.coreInternal) {
+        if (scope.isCoreInternal) {
           scope.registerImport(CORE_MODULE, {
             targets: [CORE_MODULE.Stack],
             fromLocation: '../../stack',
@@ -277,7 +277,7 @@ export abstract class HandlerFrameworkClass extends ClassType {
     })();
   }
 
-  protected constructor(scope: HandlerFrameworkModule, spec: ClassSpec) {
+  protected constructor(scope: ProviderFrameworkModule, spec: ClassSpec) {
     super(scope, spec);
     scope.registerImport(PATH_MODULE);
     scope.registerImport(CONSTRUCTS_MODULE, {
@@ -285,7 +285,7 @@ export abstract class HandlerFrameworkClass extends ClassType {
     });
   }
 
-  private getOrCreateInterface(scope: HandlerFrameworkModule, spec: InterfaceSpec) {
+  private getOrCreateInterface(scope: ProviderFrameworkModule, spec: InterfaceSpec) {
     const existing = scope.getInterface(spec.name);
     if (existing) {
       return existing;
@@ -318,7 +318,7 @@ export abstract class HandlerFrameworkClass extends ClassType {
     init.addBody(new SuperInitializer(...superInitializerArgs));
   }
 
-  private buildRuntimeProperty(scope: HandlerFrameworkModule, runtime?: Runtime, isProvider: boolean = false) {
+  private buildRuntimeProperty(scope: ProviderFrameworkModule, runtime?: Runtime, isProvider: boolean = false) {
     if (runtime) {
       return isProvider ? expr.lit(runtime) : expr.directCode(toLambdaRuntime(runtime));
     }
@@ -326,7 +326,7 @@ export abstract class HandlerFrameworkClass extends ClassType {
     if (isProvider) {
       scope.registerImport(CORE_MODULE, {
         targets: [CORE_MODULE.determineLatestNodeRuntimeName],
-        fromLocation: scope.coreInternal
+        fromLocation: scope.isCoreInternal
           ? './runtime-determiner-core.generated'
           : '../../../core/lib/dist/core/runtime-determiner-core.generated',
       });

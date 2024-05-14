@@ -1,13 +1,13 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import { InterfaceType, Module, TypeScriptRenderer } from '@cdklabs/typewriter';
 import * as fs from 'fs-extra';
-import { HandlerFrameworkClass, HandlerFrameworkClassProps } from './classes';
+import { ProviderFrameworkClass, ProviderFrameworkClassProps } from './classes';
 import { ComponentType, ComponentProps } from './config';
 import { ModuleImportOptions, ModuleImporter } from './module-importer';
 import { ImportableModule } from './modules';
 import { buildComponentName } from './utils/framework-utils';
 
-export class HandlerFrameworkModule extends Module {
+export class ProviderFrameworkModule extends Module {
   private readonly renderer = new TypeScriptRenderer();
   private readonly importer = new ModuleImporter();
   private readonly _interfaces = new Map<string, InterfaceType>();
@@ -16,10 +16,10 @@ export class HandlerFrameworkModule extends Module {
   /**
    * Whether the module being generated will live inside of aws-cdk-lib/core.
    */
-  public readonly coreInternal: boolean;
+  public readonly isCoreInternal: boolean;
 
   /**
-   * Whether the module contains handler framework components.
+   * Whether the module contains provider framework components.
    */
   public get hasComponents() {
     return this._hasComponents;
@@ -27,7 +27,7 @@ export class HandlerFrameworkModule extends Module {
 
   public constructor(fqn: string) {
     super(fqn);
-    this.coreInternal = fqn.includes('core');
+    this.isCoreInternal = fqn.includes('core');
   }
 
   /**
@@ -43,7 +43,7 @@ export class HandlerFrameworkModule extends Module {
     const handler = component.handler ?? 'index.handler';
     const name = buildComponentName(this.fqn, component.type, handler);
 
-    const props: HandlerFrameworkClassProps = {
+    const props: ProviderFrameworkClassProps = {
       name,
       handler,
       codeDirectory,
@@ -52,15 +52,15 @@ export class HandlerFrameworkModule extends Module {
 
     switch (component.type) {
       case ComponentType.FUNCTION: {
-        HandlerFrameworkClass.buildFunction(this, props);
+        ProviderFrameworkClass.buildFunction(this, props);
         break;
       }
       case ComponentType.SINGLETON_FUNCTION: {
-        HandlerFrameworkClass.buildSingletonFunction(this, props);
+        ProviderFrameworkClass.buildSingletonFunction(this, props);
         break;
       }
       case ComponentType.CUSTOM_RESOURCE_PROVIDER: {
-        HandlerFrameworkClass.buildCustomResourceProvider(this, props);
+        ProviderFrameworkClass.buildCustomResourceProvider(this, props);
         break;
       }
     }

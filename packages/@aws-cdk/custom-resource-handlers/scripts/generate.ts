@@ -2,7 +2,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as esbuild from 'esbuild';
 import { config, ComponentProps } from '../lib/custom-resources-framework/config';
-import { HandlerFrameworkModule } from '../lib/custom-resources-framework/framework';
+import { ProviderFrameworkModule } from '../lib/custom-resources-framework/framework';
 import { RuntimeDeterminerModule } from '../lib/custom-resources-framework/runtime-determiner';
 
 const framework: { [fqn: string]: ComponentProps[] } = {};
@@ -11,7 +11,7 @@ async function main() {
   recurse(config, []);
 
   for (const [fqn, components] of Object.entries(framework)) {
-    const module = new HandlerFrameworkModule(fqn);
+    const module = new ProviderFrameworkModule(fqn);
     for (const component of components) {
       const outfile = calculateOutfile(component.sourceCode);
       if (component.minifyAndBundle ?? true) {
