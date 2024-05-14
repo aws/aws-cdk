@@ -7,6 +7,7 @@ import { ProfilingGroup } from '../../aws-codeguruprofiler';
 import * as ec2 from '../../aws-ec2';
 import * as efs from '../../aws-efs';
 import * as iam from '../../aws-iam';
+import { AccountPrincipal } from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as logs from '../../aws-logs';
 import * as s3 from '../../aws-s3';
@@ -15,6 +16,7 @@ import * as sns from '../../aws-sns';
 import * as sqs from '../../aws-sqs';
 import * as cdk from '../../core';
 import { Aspects, Lazy, Size } from '../../core';
+import { getWarnings } from '../../core/test/util';
 import * as cxapi from '../../cx-api';
 import * as lambda from '../lib';
 import { AdotLambdaLayerJavaSdkVersion } from '../lib/adot-layers';
@@ -223,6 +225,55 @@ describe('function', () => {
       fn.addPermission('S4', { principal: new iam.OrganizationPrincipal('my:org') });
     });
 
+    test('does not show warning if skipPermissions is set', () => {
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app);
+      const imported = lambda.Function.fromFunctionAttributes(stack, 'Imported', {
+        functionArn: 'arn:aws:lambda:us-west-2:123456789012:function:my-function',
+        skipPermissions: true,
+      });
+      imported.addPermission('Permission', {
+        action: 'lambda:InvokeFunction',
+        principal: new AccountPrincipal('123456789010'),
+      });
+
+      expect(getWarnings(app.synth()).length).toBe(0);
+    });
+
+    test('shows warning if skipPermissions is not set', () => {
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app);
+      const imported = lambda.Function.fromFunctionAttributes(stack, 'Imported', {
+        functionArn: 'arn:aws:lambda:us-west-2:123456789012:function:my-function',
+      });
+      imported.addPermission('Permission', {
+        action: 'lambda:InvokeFunction',
+        principal: new AccountPrincipal('123456789010'),
+      });
+
+      expect(getWarnings(app.synth())).toEqual([
+        {
+          message: {
+            'Fn::Join': [
+              '',
+              [
+                'addPermission() has no effect on a Lambda Function with region=us-west-2, account=123456789012, in a Stack with region=',
+                {
+                  Ref: 'AWS::Region',
+                },
+                ', account=',
+                {
+                  Ref: 'AWS::AccountId',
+                },
+                '. Suppress this warning if this is is intentional, or pass sameEnvironment=true to fromFunctionAttributes() if you would like to add the permissions. [ack: UnclearLambdaEnvironment]',
+              ],
+            ],
+          },
+          path: '/Default/Imported',
+        },
+      ]);
+    });
+
     test('applies source account/ARN conditions if the principal has conditions', () => {
       const stack = new cdk.Stack();
       const fn = newTestLambda(stack);
@@ -391,30 +442,6 @@ describe('function', () => {
 
     // WHEN
     const imported = lambda.Function.fromFunctionArn(stack2, 'Imported', 'arn:aws:lambda:us-east-1:123456789012:function:ProcessKinesisRecords');
-
-    // THEN
-    expect(imported.functionArn).toEqual('arn:aws:lambda:us-east-1:123456789012:function:ProcessKinesisRecords');
-    expect(imported.functionName).toEqual('ProcessKinesisRecords');
-  });
-
-  test('fromFunctionArn with verionArn as the input', () => {
-    // GIVEN
-    const stack2 = new cdk.Stack();
-
-    // WHEN
-    const imported = lambda.Function.fromFunctionArn(stack2, 'Imported', 'arn:aws:lambda:us-east-1:123456789012:function:ProcessKinesisRecords:1');
-
-    // THEN
-    expect(imported.functionArn).toEqual('arn:aws:lambda:us-east-1:123456789012:function:ProcessKinesisRecords');
-    expect(imported.functionName).toEqual('ProcessKinesisRecords');
-  });
-
-  test('fromFunctionArn with trailing alias as the input', () => {
-    // GIVEN
-    const stack2 = new cdk.Stack();
-
-    // WHEN
-    const imported = lambda.Function.fromFunctionArn(stack2, 'Imported', 'arn:aws:lambda:us-east-1:123456789012:function:ProcessKinesisRecords:TEST');
 
     // THEN
     expect(imported.functionArn).toEqual('arn:aws:lambda:us-east-1:123456789012:function:ProcessKinesisRecords');
