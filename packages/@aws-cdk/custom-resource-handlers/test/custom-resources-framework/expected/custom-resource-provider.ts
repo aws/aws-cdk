@@ -1,7 +1,7 @@
 /* eslint-disable prettier/prettier,max-len */
 import * as path from "path";
 import { Construct } from "constructs";
-import { Stack, CustomResourceProviderBase, CustomResourceProviderOptions } from "../../../core";
+import { Stack, CustomResourceProviderBase, CustomResourceProviderOptions, determineLatestNodeRuntimeName } from "../../../core";
 
 export class TestProvider extends CustomResourceProviderBase {
   /**
@@ -25,7 +25,7 @@ export class TestProvider extends CustomResourceProviderBase {
     super(scope, id, {
       ...props,
       "codeDirectory": path.join(__dirname, 'my-handler'),
-      "runtimeName": "nodejs18.x"
+      "runtimeName": determineLatestNodeRuntimeName(scope)
     });
   }
 }

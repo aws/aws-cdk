@@ -1,13 +1,13 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import { InterfaceType, Module, TypeScriptRenderer } from '@cdklabs/typewriter';
 import * as fs from 'fs-extra';
-import { ProviderFrameworkClass, ProviderFrameworkClassProps } from './classes';
+import { HandlerFrameworkClass, HandlerFrameworkClassProps } from './classes';
 import { ComponentType, ComponentProps } from './config';
 import { ModuleImportOptions, ModuleImporter } from './module-importer';
 import { ImportableModule } from './modules';
 import { buildComponentName } from './utils/framework-utils';
 
-export class ProviderFrameworkModule extends Module {
+export class HandlerFrameworkModule extends Module {
   private readonly renderer = new TypeScriptRenderer();
   private readonly importer = new ModuleImporter();
   private readonly _interfaces = new Map<string, InterfaceType>();
@@ -43,7 +43,7 @@ export class ProviderFrameworkModule extends Module {
     const handler = component.handler ?? 'index.handler';
     const name = buildComponentName(this.fqn, component.type, handler);
 
-    const props: ProviderFrameworkClassProps = {
+    const props: HandlerFrameworkClassProps = {
       name,
       handler,
       codeDirectory,
@@ -52,15 +52,15 @@ export class ProviderFrameworkModule extends Module {
 
     switch (component.type) {
       case ComponentType.FUNCTION: {
-        ProviderFrameworkClass.buildFunction(this, props);
+        HandlerFrameworkClass.buildFunction(this, props);
         break;
       }
       case ComponentType.SINGLETON_FUNCTION: {
-        ProviderFrameworkClass.buildSingletonFunction(this, props);
+        HandlerFrameworkClass.buildSingletonFunction(this, props);
         break;
       }
       case ComponentType.CUSTOM_RESOURCE_PROVIDER: {
-        ProviderFrameworkClass.buildCustomResourceProvider(this, props);
+        HandlerFrameworkClass.buildCustomResourceProvider(this, props);
         break;
       }
     }
