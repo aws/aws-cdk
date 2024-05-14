@@ -2,6 +2,7 @@ import { InstanceClass, InstanceSize, InstanceType, SubnetSelection, SubnetType,
 import { App, Duration, Stack, StackProps } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import * as rds from 'aws-cdk-lib/aws-rds';
+import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
 class TestStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
@@ -23,7 +24,7 @@ class TestStack extends Stack {
     const vpcSubnets: SubnetSelection = { subnetType: SubnetType.PRIVATE_ISOLATED };
 
     const postgresSource = new rds.DatabaseInstance(this, 'PostgresSource', {
-      engine: rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_15_2 }),
+      engine: rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_16_2 }),
       backupRetention: Duration.days(5),
       instanceType,
       vpc,
@@ -64,5 +65,8 @@ class TestStack extends Stack {
 }
 
 const app = new App();
-new TestStack(app, 'cdk-rds-read-replica');
-app.synth();
+const stackUnderTest = new TestStack(app, 'cdk-rds-read-replica');
+
+new IntegTest(app, 'cdk-rds-read-replica-test', {
+  testCases: [stackUnderTest],
+});
