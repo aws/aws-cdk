@@ -1,40 +1,19 @@
 /* eslint-disable import/no-extraneous-dependencies */
-import {
-  $E,
-  Expression,
-  ExternalModule,
-  IScope,
-  ThingSymbol,
-  Type,
-  expr,
-} from '@cdklabs/typewriter';
+import { ExternalModule, Type } from '@cdklabs/typewriter';
+import { CallableExpr } from './callable-expr';
 
+/**
+ * A class representing an external module that can be imported into a target module.
+ */
 export abstract class ImportableModule extends ExternalModule {
+  /**
+   * The name to import all targets in the module as.
+   */
   public abstract importAs: string;
 }
 
-export class CallableExpr {
-  public static from(scope: IScope, name: string) {
-    return new CallableExpr(scope, name);
-  }
-
-  private readonly expr: Expression;
-
-  private constructor(readonly scope: IScope, private readonly name: string) {
-    this.expr = $E(expr.sym(new ThingSymbol(name, scope)));
-  }
-
-  public call(...args: Expression[]) {
-    return this.expr.call(...args);
-  }
-
-  public toString() {
-    return this.name;
-  }
-}
-
 class PathModule extends ImportableModule {
-  public readonly join = CallableExpr.from(this, 'join');
+  public readonly join = CallableExpr.fromName(this, 'join');
 
   public readonly importAs = 'path';
 
@@ -58,7 +37,7 @@ class CoreModule extends ImportableModule {
   public readonly CustomResourceProviderBase = Type.fromName(this, 'CustomResourceProviderBase');
   public readonly CustomResourceProviderOptions = Type.fromName(this, 'CustomResourceProviderOptions');
 
-  public readonly determineLatestNodeRuntimeName = CallableExpr.from(this, 'determineLatestNodeRuntimeName');
+  public readonly determineLatestNodeRuntimeName = CallableExpr.fromName(this, 'determineLatestNodeRuntimeName');
 
   public readonly importAs = 'cdk';
 
@@ -75,7 +54,7 @@ class LambdaModule extends ImportableModule {
   public readonly RuntimeFamily = Type.fromName(this, 'RuntimeFamily');
   public readonly Code = Type.fromName(this, 'Code');
 
-  public readonly determineLatestNodeRuntime = CallableExpr.from(this, 'determineLatestNodeRuntime');
+  public readonly determineLatestNodeRuntime = CallableExpr.fromName(this, 'determineLatestNodeRuntime');
 
   public readonly importAs = 'lambda';
 

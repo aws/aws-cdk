@@ -1,6 +1,7 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import { Module, Type } from '@cdklabs/typewriter';
-import { CallableExpr, ImportableModule } from './modules';
+import { CallableExpr } from './callable-expr';
+import { ImportableModule } from './modules';
 
 type Target = CallableExpr | Type;
 type ModuleImport = { [fqn: string]: { module: ImportableModule; targets: Set<Target>; fromLocation?: string } };

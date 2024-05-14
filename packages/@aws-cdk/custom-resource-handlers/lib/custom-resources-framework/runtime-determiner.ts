@@ -72,7 +72,7 @@ export class RuntimeDeterminerModule extends Module {
         $T(CORE_MODULE.Stack)
           .of(expr.directCode(scope.spec.name))
           .regionalFact(
-            $T(REGION_INFO_MODULE.FactName).DEFAULT_CR_NODE_VERSION,
+            $T(REGION_INFO_MODULE.FactName).LATEST_NODE_RUNTIME,
             expr.directCode(`'${DEFAULT_NODE_RUNTIME}'`),
           ),
       ),
