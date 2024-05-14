@@ -3,7 +3,17 @@ import { Template } from '../../assertions';
 import { ISubnet, Port, SecurityGroup, Subnet, Vpc } from '../../aws-ec2';
 import { Key } from '../../aws-kms';
 import { Aws, Duration, Stack, Token } from '../../core';
-import { LustreConfiguration, LustreDeploymentType, LustreAutoImportPolicy, LustreFileSystem, LustreMaintenanceTime, Weekday, LustreDataCompressionType, DailyAutomaticBackupStartTime } from '../lib';
+import {
+  LustreConfiguration,
+  LustreDeploymentType,
+  LustreAutoImportPolicy,
+  LustreFileSystem,
+  LustreMaintenanceTime,
+  Weekday,
+  LustreDataCompressionType,
+  DailyAutomaticBackupStartTime,
+  StorageType,
+} from '../lib';
 
 describe('FSx for Lustre File System', () => {
   let lustreConfiguration: LustreConfiguration;
@@ -794,6 +804,47 @@ describe('FSx for Lustre File System', () => {
           });
         }).toThrow('automaticBackupRetention period must be set a non-zero day when dailyAutomaticBackupStartTime is set');
       });
+
+      test.each([
+        LustreDeploymentType.PERSISTENT_2,
+        LustreDeploymentType.SCRATCH_1,
+        LustreDeploymentType.SCRATCH_2,
+      ])('HDD storage type is not supported for %s', (deploymentType: LustreDeploymentType) => {
+        lustreConfiguration = {
+          deploymentType,
+        };
+
+        expect(() => {
+          new LustreFileSystem(stack, 'FsxFileSystem', {
+            lustreConfiguration,
+            storageCapacityGiB: storageCapacity,
+            vpc,
+            vpcSubnet,
+            storageType: StorageType.HDD,
+          });
+        }).toThrow(`Storage type HDD is only supported for PERSISTENT_1 deployment type, got: ${deploymentType}`);
+      });
+    });
+  });
+
+  test.each([StorageType.SSD, StorageType.HDD])('specify storage type %s', (storageType: StorageType) => {
+    lustreConfiguration = {
+      deploymentType: LustreDeploymentType.PERSISTENT_1,
+    };
+
+    new LustreFileSystem(stack, 'FsxFileSystem', {
+      lustreConfiguration,
+      storageCapacityGiB: storageCapacity,
+      vpc,
+      vpcSubnet,
+      storageType,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::FSx::FileSystem', {
+      LustreConfiguration: {
+        DeploymentType: LustreDeploymentType.PERSISTENT_1,
+      },
+      StorageType: storageType,
     });
   });
 

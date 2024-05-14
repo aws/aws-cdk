@@ -1,6 +1,6 @@
 import { Construct } from 'constructs';
 import { DailyAutomaticBackupStartTime } from './daily-automatic-backup-start-time';
-import { FileSystemAttributes, FileSystemBase, FileSystemProps, IFileSystem } from './file-system';
+import { FileSystemAttributes, FileSystemBase, FileSystemProps, IFileSystem, StorageType } from './file-system';
 import { CfnFileSystem } from './fsx.generated';
 import { LustreMaintenanceTime } from './maintenance-time';
 import { Connections, ISecurityGroup, ISubnet, Port, SecurityGroup } from '../../aws-ec2';
@@ -289,6 +289,7 @@ export class LustreFileSystem extends FileSystemBase {
       lustreConfiguration,
       securityGroupIds: [securityGroup.securityGroupId],
       storageCapacity: props.storageCapacityGiB,
+      storageType: props.storageType,
     });
     this.fileSystem.applyRemovalPolicy(props.removalPolicy);
 
@@ -316,6 +317,18 @@ export class LustreFileSystem extends FileSystemBase {
     this.validateAutomaticBackupRetention(deploymentType, lustreConfiguration.automaticBackupRetention);
 
     this.validateDailyAutomaticBackupStartTime(lustreConfiguration.automaticBackupRetention, lustreConfiguration.dailyAutomaticBackupStartTime);
+    this.validateStorageType(deploymentType, props.storageType);
+  }
+
+  /**
+   * Validates if the storage type corresponds to the appropriate deployment type.
+   */
+  private validateStorageType(deploymentType: LustreDeploymentType, storageType?: StorageType): void {
+    if (storageType === undefined) { return; }
+
+    if (storageType === StorageType.HDD && deploymentType !== LustreDeploymentType.PERSISTENT_1) {
+      throw new Error(`Storage type HDD is only supported for PERSISTENT_1 deployment type, got: ${deploymentType}`);
+    }
   }
 
   /**

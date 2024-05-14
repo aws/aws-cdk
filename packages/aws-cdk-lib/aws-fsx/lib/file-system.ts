@@ -3,6 +3,20 @@ import { IKey } from '../../aws-kms';
 import { RemovalPolicy, Resource } from '../../core';
 
 /**
+ * the storage type for the file system.
+ */
+export enum StorageType {
+  /**
+   * Solid State Drive storage
+   */
+  SSD = 'SSD',
+  /**
+   * Hard Disk Drive storage
+   */
+  HDD = 'HDD',
+}
+
+/**
  * Interface to implement FSx File Systems.
  */
 export interface IFileSystem extends IConnectable {
@@ -59,6 +73,15 @@ export interface FileSystemProps {
    * @default RemovalPolicy.RETAIN
    */
   readonly removalPolicy?: RemovalPolicy;
+
+  /**
+   * The storage type for the file system that you're creating.
+   *
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-fsx-filesystem.html#cfn-fsx-filesystem-storagetype
+   *
+   * @default StorageType.SSD
+   */
+  readonly storageType?: StorageType;
 }
 
 /**
