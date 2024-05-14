@@ -715,7 +715,7 @@ describe('triggers', () => {
       }],
     });
   });
-  
+
   test('undefined events in pullRequestFilter for trigger is set to all events', () => {
     const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
       pipelineType: codepipeline.PipelineType.V2,
