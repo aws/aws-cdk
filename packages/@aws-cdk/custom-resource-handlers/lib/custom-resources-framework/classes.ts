@@ -242,7 +242,7 @@ export abstract class ProviderFrameworkClass extends ClassType {
             summary: 'Returns a stack-level singleton for the custom resource provider.',
           },
         });
-        getOrCreateProviderMethod.addParameter({
+        const _scope = getOrCreateProviderMethod.addParameter({
           name: 'scope',
           type: CONSTRUCTS_MODULE.Construct,
         });
@@ -257,7 +257,7 @@ export abstract class ProviderFrameworkClass extends ClassType {
         });
         getOrCreateProviderMethod.addBody(
           stmt.constVar(expr.ident('id'), expr.directCode('`${uniqueid}CustomResourceProvider`')),
-          stmt.constVar(expr.ident('stack'), expr.directCode('Stack.of(scope)')),
+          stmt.constVar(expr.ident('stack'), $T(CORE_MODULE.Stack).of(expr.directCode(_scope.spec.name))),
           stmt.constVar(expr.ident('existing'), expr.directCode(`stack.node.tryFindChild(id) as ${this.type}`)),
           stmt.ret(expr.directCode(`existing ?? new ${this.name}(stack, id, props)`)),
         );
