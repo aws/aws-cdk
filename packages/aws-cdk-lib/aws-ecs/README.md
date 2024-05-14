@@ -362,6 +362,24 @@ const fargateTaskDefinition = new ecs.FargateTaskDefinition(this, 'TaskDef', {
 });
 ```
 
+To specify the process namespace to use for the containers in the task, use the `pidMode` property:
+
+```ts
+const fargateTaskDefinition = new ecs.FargateTaskDefinition(this, 'TaskDef', {
+  runtimePlatform: {
+    operatingSystemFamily: ecs.OperatingSystemFamily.LINUX,
+    cpuArchitecture: ecs.CpuArchitecture.ARM64,
+  },
+  memoryLimitMiB: 512,
+  cpu: 256,
+  pidMode: ecs.PidMode.TASK,
+});
+```
+
+**Note:** `pidMode` is only supported for tasks that are hosted on AWS Fargate if the tasks are using platform version 1.4.0
+or later (Linux). Only the `task` option is supported for Linux containers. `pidMode` isn't supported for Windows containers on Fargate.
+If `pidMode` is specified for a Fargate task, then `runtimePlatform.operatingSystemFamily` must also be specified.
+
 To add containers to a task definition, call `addContainer()`:
 
 ```ts

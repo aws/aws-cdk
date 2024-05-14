@@ -15,7 +15,7 @@ new DatabaseInstance(stack, 'Instance', {
   }),
   instanceType: InstanceType.of(InstanceClass.T3, InstanceSize.MICRO),
   vpc,
-  caCertificate: CaCertificate.RDS_CA_RDS2048_G1,
+  caCertificate: CaCertificate.RDS_CA_RSA2048_G1,
 });
 
 new integ.IntegTest(app, 'InstanceCACertificateTest', {

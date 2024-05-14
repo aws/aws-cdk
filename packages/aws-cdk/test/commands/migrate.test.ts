@@ -134,7 +134,7 @@ describe('Migrate Function Tests', () => {
   });
 
   test('generateStack throws error when called for other language', () => {
-    expect(() => generateStack(validTemplate, 'BadBadBad', 'php')).toThrowError('BadBadBadStack could not be generated because template and/or language inputs caused the source code to panic');
+    expect(() => generateStack(validTemplate, 'BadBadBad', 'php')).toThrowError('BadBadBadStack could not be generated because php is not a supported language');
   });
 
   test('generateStack throws error for invalid resource property', () => {
