@@ -83,6 +83,13 @@ export interface NodejsFunctionProps extends lambda.FunctionOptions {
    * @default - the directory containing the `depsLockFilePath`
    */
   readonly projectRoot?: string;
+
+  /**
+   * The path to the directory containing project config files (`package.json` or `tsconfig.json`)
+   *
+   * @default - the code is bundled
+   */
+  readonly code?: lambda.Code;
 }
 
 /**
@@ -94,27 +101,37 @@ export class NodejsFunction extends lambda.Function {
       throw new Error('Only `NODEJS` runtimes are supported.');
     }
 
-    // Entry and defaults
-    const entry = path.resolve(findEntry(id, props.entry));
-    const handler = props.handler ?? 'handler';
-    const architecture = props.architecture ?? Architecture.X86_64;
-    const depsLockFilePath = findLockFile(props.depsLockFilePath);
-    const projectRoot = props.projectRoot ?? path.dirname(depsLockFilePath);
     const runtime = getRuntime(scope, props);
+    const handler = props.handler ?? 'handler';
 
-    super(scope, id, {
-      ...props,
-      runtime,
-      code: Bundling.bundle(scope, {
-        ...props.bundling ?? {},
-        entry,
+    if (props.code !== undefined) {
+      super(scope, id, {
+        ...props,
         runtime,
-        architecture,
-        depsLockFilePath,
-        projectRoot,
-      }),
-      handler: handler.indexOf('.') !== -1 ? `${handler}` : `index.${handler}`,
-    });
+        code: props.code,
+        handler: handler.indexOf('.') !== -1 ? `${handler}` : `index.${handler}`,
+      });
+    } else {
+    // Entry and defaults
+      const entry = path.resolve(findEntry(id, props.entry));
+      const architecture = props.architecture ?? Architecture.X86_64;
+      const depsLockFilePath = findLockFile(props.depsLockFilePath);
+      const projectRoot = props.projectRoot ?? path.dirname(depsLockFilePath);
+
+      super(scope, id, {
+        ...props,
+        runtime,
+        code: props.code || Bundling.bundle(scope, {
+          ...props.bundling ?? {},
+          entry,
+          runtime,
+          architecture,
+          depsLockFilePath,
+          projectRoot,
+        }),
+        handler: handler.indexOf('.') !== -1 ? `${handler}` : `index.${handler}`,
+      });
+    }
 
     // Enable connection reuse for aws-sdk
     if (props.awsSdkConnectionReuse ?? true) {

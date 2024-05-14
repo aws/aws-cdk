@@ -1,3 +1,4 @@
+import { SpawnSyncOptions, spawnSync } from 'child_process';
 import { Construct } from 'constructs';
 import * as ecr from '../../aws-ecr';
 import * as ecr_assets from '../../aws-ecr-assets';
@@ -57,11 +58,34 @@ export abstract class Code {
   /**
    * Runs a command to build the asset that will be used.
    *
-   * @param outfile A file path where the output of running the given command should be directed.
+   * @param outdir The directory path of where the output of running the given command should be directed, which must contain the code.
    * @param command The command which will be executed. For example, [ 'node', 'bundle_code.js' ].
    */
-  public static fromBuiltAsset(outfile: string, command: string[], options?: s3_assets.AssetOptions): AssetCode {
-    return new AssetCode(outfile, options);
+  public static fromBuiltAsset(outdir: string, command: string[], options?: s3_assets.AssetOptions): AssetCode {
+    if (command.length <= 1) {
+      throw new Error('command must contain at least one argument. For example, ["node", "buildFile.js"].');
+    }
+
+    _exec(command[0], command.splice(1));
+
+    return new AssetCode(outdir, options);
+
+    function _exec(cmd: string, args: string[], opts?: SpawnSyncOptions) {
+      const proc = spawnSync(cmd, args, opts);
+
+      if (proc.error) {
+        throw proc.error;
+      }
+
+      if (proc.status !== 0) {
+        if (proc.stdout || proc.stderr) {
+          throw new Error(`[Status ${proc.status}] stdout: ${proc.stdout?.toString().trim()}\n\n\nstderr: ${proc.stderr?.toString().trim()}`);
+        }
+        throw new Error(`${cmd} ${args.join(' ')} ${opts?.cwd ? `run in directory ${opts.cwd}` : ''} exited with status ${proc.status}`);
+      }
+
+      return proc;
+    }
   }
 
   /**
