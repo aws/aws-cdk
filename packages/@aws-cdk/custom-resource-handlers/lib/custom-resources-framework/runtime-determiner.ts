@@ -59,7 +59,7 @@ export class RuntimeDeterminerModule extends Module {
   private buildDetermineLatestNodeRuntimeName() {
     this.addDetermineLatestNodeRuntimeNameImports();
     const fn = new FreeFunction(this, {
-      name: CORE_MODULE.determineLatestNodeRuntimeName.toString(),
+      name: CORE_MODULE.determineLatestNodeRuntimeName.name,
       export: true,
       returnType: Type.STRING,
     });
@@ -82,7 +82,7 @@ export class RuntimeDeterminerModule extends Module {
   private buildDetermineLatestNodeRuntime() {
     this.addDetermineLatestNodeRuntimeImports();
     const fn = new FreeFunction(this, {
-      name: LAMBDA_MODULE.determineLatestNodeRuntime.toString(),
+      name: LAMBDA_MODULE.determineLatestNodeRuntime.name,
       export: true,
       returnType: LAMBDA_MODULE.Runtime,
     });
