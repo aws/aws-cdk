@@ -22,11 +22,6 @@ export enum Runtime {
 }
 
 /**
- * The latest nodejs runtime version available across all AWS regions.
- */
-export const DEFAULT_NODE_RUNTIME = Runtime.NODEJS_18_X;
-
-/**
  * Handler framework component types.
  */
 export enum ComponentType {
