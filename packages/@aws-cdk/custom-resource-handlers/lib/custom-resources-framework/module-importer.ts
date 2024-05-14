@@ -33,7 +33,7 @@ export class ModuleImporter {
   private readonly imports: ModuleImport = {};
 
   /**
-   * Add an external module to be imported.
+   * Register an external module to be imported.
    */
   public registerImport(module: ImportableModule, options: ModuleImportOptions = {}) {
     const fqn = options.fromLocation ?? module.fqn;
