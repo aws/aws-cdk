@@ -22,7 +22,6 @@ import {
   CONSTRUCTS_MODULE,
   LAMBDA_MODULE,
   CORE_MODULE,
-  CUSTOM_RESOURCES_MODULE,
 } from './modules';
 import { toLambdaRuntime } from './utils/framework-utils';
 
@@ -326,20 +325,18 @@ export abstract class ProviderFrameworkClass extends ClassType {
 
     if (isProvider) {
       scope.registerImport(CORE_MODULE, {
-        targets: [CORE_MODULE.builtInCustomResourceProviderNodeRuntime],
+        targets: [CORE_MODULE.determineLatestNodeRuntimeName],
         fromLocation: scope.isCoreInternal
           ? '../../custom-resource-provider/custom-resource-provider'
           : '../../../core',
       });
     } else {
-      scope.registerImport(CUSTOM_RESOURCES_MODULE, {
-        targets: [CUSTOM_RESOURCES_MODULE.builtInCustomResourceNodeRuntime],
-      });
+      scope.registerImport(LAMBDA_MODULE);
     }
 
     const _scope = expr.ident('scope');
     return isProvider
-      ? CORE_MODULE.builtInCustomResourceProviderNodeRuntime.call(_scope)
-      : CUSTOM_RESOURCES_MODULE.builtInCustomResourceNodeRuntime.call(_scope);
+      ? CORE_MODULE.determineLatestNodeRuntimeName.call(_scope)
+      : LAMBDA_MODULE.determineLatestNodeRuntime.call(_scope);
   }
 }

@@ -37,7 +37,7 @@ class CoreModule extends ImportableModule {
   public readonly CustomResourceProviderBase = Type.fromName(this, 'CustomResourceProviderBase');
   public readonly CustomResourceProviderOptions = Type.fromName(this, 'CustomResourceProviderOptions');
 
-  public readonly builtInCustomResourceProviderNodeRuntime = CallableExpr.fromName(this, 'builtInCustomResourceProviderNodeRuntime');
+  public readonly determineLatestNodeRuntimeName = CallableExpr.fromName(this, 'determineLatestNodeRuntimeName');
 
   public readonly importAs = 'cdk';
 
@@ -53,6 +53,8 @@ class LambdaModule extends ImportableModule {
   public readonly Runtime = Type.fromName(this, 'Runtime');
   public readonly RuntimeFamily = Type.fromName(this, 'RuntimeFamily');
   public readonly Code = Type.fromName(this, 'Code');
+
+  public readonly determineLatestNodeRuntime = CallableExpr.fromName(this, 'determineLatestNodeRuntime');
 
   public readonly importAs = 'lambda';
 
@@ -71,19 +73,8 @@ class RegionInfoModule extends ImportableModule {
   }
 }
 
-class CustomResourcesModule extends ImportableModule {
-  public readonly builtInCustomResourceNodeRuntime = CallableExpr.fromName(this, 'builtInCustomResourceNodeRuntime');
-
-  public readonly importAs = 'cr';
-
-  public constructor() {
-    super('../../../custom-resources');
-  }
-}
-
 export const PATH_MODULE = new PathModule();
 export const CONSTRUCTS_MODULE = new ConstructsModule();
 export const CORE_MODULE = new CoreModule();
 export const LAMBDA_MODULE = new LambdaModule();
 export const REGION_INFO_MODULE = new RegionInfoModule();
-export const CUSTOM_RESOURCES_MODULE = new CustomResourcesModule();

@@ -2,30 +2,15 @@ import { Construct } from 'constructs';
 import { Logging } from './logging';
 import * as ec2 from '../../../aws-ec2';
 import * as iam from '../../../aws-iam';
-import * as lambda from '../../../aws-lambda';
 import * as logs from '../../../aws-logs';
 import * as cdk from '../../../core';
 import { Annotations } from '../../../core';
 import { AwsCustomResourceSingletonFunction } from '../../../custom-resource-handlers/dist/custom-resources/aws-custom-resource-provider.generated';
 import * as cxapi from '../../../cx-api';
-import { FactName } from '../../../region-info';
 import { awsSdkToIamAction } from '../helpers-internal/sdk-info';
 
 // Shared definition with packages/@aws-cdk/custom-resource-handlers/lib/custom-resources/aws-custom-resource-handler/shared.ts
 const PHYSICAL_RESOURCE_ID_REFERENCE = 'PHYSICAL:RESOURCEID:';
-
-/**
- * The lambda runtime used by default for aws-cdk vended custom resources. Can change
- * based on region.
- */
-export function builtInCustomResourceNodeRuntime(scope: Construct): lambda.Runtime {
-  // Runtime regional fact should always return a known runtime string that lambda.Runtime
-  // can index off, but for type safety we also default it here.
-  const runtimeName = cdk.Stack.of(scope).regionalFact(FactName.LATEST_NODE_RUNTIME, 'nodejs18.x');
-  return runtimeName
-    ? new lambda.Runtime(runtimeName, lambda.RuntimeFamily.NODEJS, { supportsInlineCode: true })
-    : lambda.Runtime.NODEJS_18_X;
-}
 
 /**
  * Reference to the physical resource id that can be passed to the AWS operation as a parameter.
