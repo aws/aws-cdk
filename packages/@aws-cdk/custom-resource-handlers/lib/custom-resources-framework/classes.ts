@@ -327,7 +327,7 @@ export abstract class ProviderFrameworkClass extends ClassType {
       scope.registerImport(CORE_MODULE, {
         targets: [CORE_MODULE.determineLatestNodeRuntimeName],
         fromLocation: scope.isCoreInternal
-          ? '../../custom-resource-provider/custom-resource-provider'
+          ? '../../custom-resource-provider'
           : '../../../core',
       });
     }

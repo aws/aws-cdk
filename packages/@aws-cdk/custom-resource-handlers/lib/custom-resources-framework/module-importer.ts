@@ -38,7 +38,7 @@ export class ModuleImporter {
   public registerImport(module: ImportableModule, options: ModuleImportOptions = {}) {
     const fqn = options.fromLocation ?? module.fqn;
     const targets = options.targets ?? [];
-    const registeredTargets = this.imports[fqn].targets ?? new Set();
+    const registeredTargets = this.imports[fqn]?.targets ?? new Set();
 
     if (this.imports.hasOwnProperty(fqn)) {
       if (registeredTargets.size > 0 && targets.length > 0) {
