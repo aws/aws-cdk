@@ -2,6 +2,7 @@ import * as path from 'path';
 import { Match, Template } from '../../assertions';
 import * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
+import * as kms from '../../aws-kms';
 import * as s3 from '../../aws-s3';
 import { Duration, Lazy, Stack } from '../../core';
 import * as synthetics from '../lib';
@@ -785,5 +786,139 @@ describe('handler validation', () => {
         runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_9,
       });
     }).toThrow(/Canary Handler length must be between 1 and 128/);
+  });
+});
+
+describe('artifact encryption test', () => {
+  test('SSE_S3 without a key', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    new synthetics.Canary(stack, 'Canary', {
+      test: synthetics.Test.custom({
+        handler: 'index.handler',
+        code: synthetics.Code.fromInline(`
+          exports.handler = async () => {
+            console.log(\'hello world\');
+          };`),
+      }),
+      runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_7_0,
+      artifactS3Encryption: {
+        encryptionMode: synthetics.EncryptionMode.S3_MANAGED,
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Synthetics::Canary', {
+      ArtifactConfig: {
+        S3Encryption: {
+          EncryptionMode: 'SSE_S3',
+          KmsKeyArn: Match.absent(),
+        },
+      },
+    });
+  });
+
+  test('auto-creates KMS key if encryption type is SSE_KMS but no key is provided', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    const canary = new synthetics.Canary(stack, 'Canary', {
+      test: synthetics.Test.custom({
+        handler: 'index.handler',
+        code: synthetics.Code.fromInline(`
+          exports.handler = async () => {
+            console.log(\'hello world\');
+          };`),
+      }),
+      runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_7_0,
+      artifactS3Encryption: {
+        encryptionMode: synthetics.EncryptionMode.KMS,
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
+      Description: 'Created by Default/Canary',
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Synthetics::Canary', {
+      ArtifactConfig: {
+        S3Encryption: {
+          EncryptionMode: 'SSE_KMS',
+          KmsKeyArn: stack.resolve(canary.encryptionKey?.keyArn),
+        },
+      },
+    });
+  });
+
+  test('SSE_KMS with a key', () => {
+    // GIVEN
+    const stack = new Stack();
+    const key = new kms.Key(stack, 'myKey');
+
+    // WHEN
+    new synthetics.Canary(stack, 'Canary', {
+      test: synthetics.Test.custom({
+        handler: 'index.handler',
+        code: synthetics.Code.fromInline(`
+          exports.handler = async () => {
+            console.log(\'hello world\');
+          };`),
+      }),
+      runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_7_0,
+      artifactS3Encryption: {
+        encryptionMode: synthetics.EncryptionMode.KMS,
+        kmsKey: key,
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Synthetics::Canary', {
+      ArtifactConfig: {
+        S3Encryption: {
+          EncryptionMode: 'SSE_KMS',
+          KmsKeyArn: stack.resolve(key.keyArn),
+        },
+      },
+    });
+  });
+
+  test('SSE-S3 with a key throw an error', () => {
+    const stack = new Stack();
+    const key = new kms.Key(stack, 'myKey');
+
+    expect(() => {
+      new synthetics.Canary(stack, 'Canary', {
+        test: synthetics.Test.custom({
+          handler: 'index.functionName',
+          code: synthetics.Code.fromAsset(path.join(__dirname, 'canaries')),
+        }),
+        runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_7_0,
+        artifactS3Encryption: {
+          encryptionMode: synthetics.EncryptionMode.S3_MANAGED,
+          kmsKey: key,
+        },
+      });
+    }).toThrow('A customer-managed KMS key was provided, but the encryption mode is not set to SSE-KMS.');
+  });
+
+  test('Artifact encryption for non-Node.js runtime throws an error', () => {
+    const stack = new Stack();
+
+    expect(() => {
+      new synthetics.Canary(stack, 'Canary', {
+        runtime: synthetics.Runtime.SYNTHETICS_PYTHON_SELENIUM_3_0,
+        test: synthetics.Test.custom({
+          handler: 'index.handler',
+          code: synthetics.Code.fromInline('# Synthetics handler code'),
+        }),
+        artifactS3Encryption: {
+          encryptionMode: synthetics.EncryptionMode.S3_MANAGED,
+        },
+      });
+    }).toThrow('Artifact encryption is only supported for Node.js runtime.');
   });
 });

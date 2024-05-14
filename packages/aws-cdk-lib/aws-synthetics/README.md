@@ -114,7 +114,7 @@ const canary = new synthetics.Canary(this, 'Canary', {
 });
 ```
 
-> Note: To properly clean up your canary on deletion, you still have to manually delete other resources 
+> Note: To properly clean up your canary on deletion, you still have to manually delete other resources
 > like S3 buckets and CloudWatch logs.
 
 ### Configuring the Canary Script
@@ -245,6 +245,34 @@ const canary = new synthetics.Canary(this, 'MyCanary', {
   runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_6_2,
   artifactsBucketLifecycleRules: [{
     expiration: Duration.days(30),
+  }],
+});
+```
+
+Canary artifacts are encrypted at rest using an AWS-managed key by default.
+
+Additionally, you can choose the encryption options SSE-S3 or SSE-KMS by setting the `artifactS3Encryption` property.
+
+You can also supply your own external KMS key by specifying the `kmsKey` property. If you don't, a KMS key will be automatically created and associated with the canary.
+
+```ts
+import * as kms from 'aws-cdk-lib/aws-kms';
+
+const key = new kms.Key(stack, 'myKey');
+
+const canary = new synthetics.Canary(this, 'MyCanary', {
+  schedule: synthetics.Schedule.rate(Duration.minutes(5)),
+  test: synthetics.Test.custom({
+    code: synthetics.Code.fromAsset(path.join(__dirname, 'canary')),
+    handler: 'index.handler',
+  }),
+  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_7_0,
+  artifactsBucketLifecycleRules: [{
+    expiration: Duration.days(30),
+    artifactS3Encryption: {
+      encryptionMode: synthetics.EncryptionMode.KMS,
+      kmsKey: key, // external KMS Key set
+    },
   }],
 });
 ```

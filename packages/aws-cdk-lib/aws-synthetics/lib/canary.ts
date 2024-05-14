@@ -1,13 +1,14 @@
 import * as crypto from 'crypto';
 import { Construct } from 'constructs';
 import { Code } from './code';
-import { Runtime } from './runtime';
+import { Runtime, RuntimeFamily } from './runtime';
 import { Schedule } from './schedule';
 import { CloudWatchSyntheticsMetrics } from './synthetics-canned-metrics.generated';
 import { CfnCanary } from './synthetics.generated';
 import { Metric, MetricOptions, MetricProps } from '../../aws-cloudwatch';
 import * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
+import * as kms from '../../aws-kms';
 import * as s3 from '../../aws-s3';
 import * as cdk from '../../core';
 import { AutoDeleteUnderlyingResourcesProvider } from '../../custom-resource-handlers/dist/aws-synthetics/auto-delete-underlying-resources-provider.generated';
@@ -229,6 +230,48 @@ export interface CanaryProps {
    * @default - no rules applied to the generated bucket.
    */
   readonly artifactsBucketLifecycleRules?: Array<s3.LifecycleRule>;
+
+  /**
+   * Canary Artifacts in S3 encryption configuration.
+   * Artifact encryption is only supported for Node.js runtime.
+   *
+   * @default - Artifacts are encrypted at rest using an AWS managed key
+   *
+   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_artifact_encryption.html
+   */
+  readonly artifactS3Encryption?: ArtifactS3Encryption;
+}
+
+/**
+ * Canary Artifacts in S3 encryption configuration.
+ */
+export interface ArtifactS3Encryption {
+  /**
+    * Encryption mode.
+    * @default - Artifacts are encrypted at rest using an AWS managed key
+    */
+  readonly encryptionMode?: EncryptionMode;
+
+  /**
+   * The KMS key to be used to encrypt the data.
+   * @default - no kms key if mode = S3_MANAGED.
+   * A key will be created if one is not provided and mode = KMS.
+   */
+  readonly kmsKey?: kms.IKey;
+}
+
+export enum EncryptionMode {
+  /**
+   * Server-side encryption (SSE) with an Amazon S3-managed key.
+   *
+   */
+  S3_MANAGED = 'SSE_S3',
+
+  /**
+   * Server-side encryption (SSE) with an AWS KMS customer managed key.
+   *
+   */
+  KMS = 'SSE_KMS',
 }
 
 /**
@@ -264,6 +307,11 @@ export class Canary extends cdk.Resource implements ec2.IConnectable {
   public readonly artifactsBucket: s3.IBucket;
 
   /**
+   * Optional KMS encryption key associated with this canary.
+   */
+  public readonly encryptionKey?: kms.IKey;
+
+  /**
    * Actual connections object for the underlying Lambda
    *
    * May be unset, in which case the canary Lambda is not configured for use in a VPC.
@@ -296,6 +344,31 @@ export class Canary extends cdk.Resource implements ec2.IConnectable {
       this._connections = new ec2.Connections({});
     }
 
+    if (props.runtime.family !== RuntimeFamily.NODEJS && props.artifactS3Encryption) {
+      throw new Error('Artifact encryption is only supported for Node.js runtime.');
+    }
+
+    if (props.artifactS3Encryption?.encryptionMode !== EncryptionMode.KMS && props.artifactS3Encryption?.kmsKey) {
+      throw new Error('A customer-managed KMS key was provided, but the encryption mode is not set to SSE-KMS.');
+    }
+
+    let encryptionKey;
+    if (props.artifactS3Encryption?.encryptionMode === EncryptionMode.KMS) {
+      encryptionKey = props.artifactS3Encryption?.kmsKey ?? new kms.Key(this, 'Key', { description: `Created by ${this.node.path}` });
+    }
+
+    encryptionKey?.grantEncryptDecrypt(this.role);
+
+    let artifactConfig;
+    if (props.artifactS3Encryption) {
+      artifactConfig = {
+        s3Encryption: {
+          encryptionMode: props.artifactS3Encryption.encryptionMode,
+          kmsKeyArn: encryptionKey?.keyArn ?? undefined,
+        },
+      };
+    }
+
     const resource: CfnCanary = new CfnCanary(this, 'Resource', {
       artifactS3Location: this.artifactsBucket.s3UrlForObject(props.artifactsBucketLocation?.prefix),
       executionRoleArn: this.role.roleArn,
@@ -308,12 +381,15 @@ export class Canary extends cdk.Resource implements ec2.IConnectable {
       code: this.createCode(props),
       runConfig: this.createRunConfig(props),
       vpcConfig: this.createVpcConfig(props),
+      artifactConfig,
     });
     this._resource = resource;
 
     this.canaryId = resource.attrId;
     this.canaryState = resource.attrState;
     this.canaryName = this.getResourceNameAttribute(resource.ref);
+
+    this.encryptionKey = encryptionKey;
 
     if (props.cleanup === Cleanup.LAMBDA) {
       this.cleanupUnderlyingResources();
@@ -420,7 +496,7 @@ export class Canary extends cdk.Resource implements ec2.IConnectable {
           actions: ['s3:GetBucketLocation'],
         }),
         new iam.PolicyStatement({
-          resources: [this.artifactsBucket.arnForObjects(`${prefix ? prefix+'/*' : '*'}`)],
+          resources: [this.artifactsBucket.arnForObjects(`${prefix ? prefix + '/*' : '*'}`)],
           actions: ['s3:PutObject'],
         }),
         new iam.PolicyStatement({
