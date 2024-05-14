@@ -3370,7 +3370,7 @@ export const PARTITION_SAML_SIGN_ON_URL: Record<Partition, string> = {
   [Partition.UsIsoB]: 'https://signin.sc2shome.sgov.gov/saml',
 };
 
-export const CR_DEFAULT_RUNTIME_MAP: Record<Partition, string> = {
+export const LATEST_NODE_RUNTIME_MAP: Record<Partition, string> = {
   [Partition.Default]: 'nodejs20.x',
   [Partition.Cn]: 'nodejs18.x',
   [Partition.UsGov]: 'nodejs18.x',

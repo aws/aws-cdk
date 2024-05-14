@@ -13,7 +13,7 @@ import {
   PARAMS_AND_SECRETS_LAMBDA_LAYER_ARNS,
   APPCONFIG_LAMBDA_LAYER_ARNS,
   PARTITION_SAML_SIGN_ON_URL,
-  CR_DEFAULT_RUNTIME_MAP,
+  LATEST_NODE_RUNTIME_MAP,
 } from './fact-tables';
 import { AWS_CDK_METADATA } from './metadata';
 import {
@@ -88,7 +88,7 @@ export async function main(): Promise<void> {
 
     registerFact(region, 'SAML_SIGN_ON_URL', PARTITION_SAML_SIGN_ON_URL[partition]);
 
-    registerFact(region, 'DEFAULT_CR_NODE_VERSION', CR_DEFAULT_RUNTIME_MAP[partition]);
+    registerFact(region, 'LATEST_NODE_RUNTIME', LATEST_NODE_RUNTIME_MAP[partition]);
 
     const firehoseCidrBlock = FIREHOSE_CIDR_BLOCKS[region];
     if (firehoseCidrBlock) {
