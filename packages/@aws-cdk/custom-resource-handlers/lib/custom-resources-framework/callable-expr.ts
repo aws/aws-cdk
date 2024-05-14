@@ -2,7 +2,7 @@
 import { $E, Expression, IScope, ThingSymbol, expr } from '@cdklabs/typewriter';
 
 /**
- * A class representing an expression proxy which Builds a JavaScript object that
+ * A class representing an expression proxy which builds a JavaScript object that
  * will mirror the JavaScript operations done to it in an expression tree.
  */
 export class CallableExpr {
