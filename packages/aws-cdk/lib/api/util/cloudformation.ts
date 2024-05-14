@@ -441,16 +441,16 @@ export function changeSetHasNoChanges(description: CloudFormation.DescribeChange
  *
  * @param cfn        a CloudFormation client
  * @param stackName      the name of the stack to wait for after a delete
- * @param optimistic  optimistic stabilization support
+ * @param exitOnConfigComplete  whether to exit on configuration complete
  *
  * @returns     the CloudFormation description of the stabilized stack after the delete attempt
  */
 export async function waitForStackDelete(
   cfn: CloudFormation,
   stackName: string,
-  optimistic?: boolean): Promise<CloudFormationStack | undefined> {
+  exitOnConfigComplete?: boolean): Promise<CloudFormationStack | undefined> {
 
-  const stack = await stabilizeStack(cfn, stackName, optimistic);
+  const stack = await stabilizeStack(cfn, stackName, exitOnConfigComplete);
   if (!stack) { return undefined; }
 
   const status = stack.stackStatus;
@@ -470,16 +470,16 @@ export async function waitForStackDelete(
  *
  * @param cfn        a CloudFormation client
  * @param stackName      the name of the stack to wait for after an update
- * @param optimistic  optimistic stabilization support
+ * @param exitOnConfigComplete  exit on configuration complete
  *
  * @returns     the CloudFormation description of the stabilized stack after the update attempt
  */
 export async function waitForStackDeploy(
   cfn: CloudFormation,
   stackName: string,
-  optimistic?: boolean): Promise<CloudFormationStack | undefined> {
+  exitOnConfigComplete?: boolean): Promise<CloudFormationStack | undefined> {
 
-  const stack = await stabilizeStack(cfn, stackName, optimistic);
+  const stack = await stabilizeStack(cfn, stackName, exitOnConfigComplete);
   if (!stack) { return undefined; }
 
   const status = stack.stackStatus;
@@ -487,8 +487,8 @@ export async function waitForStackDeploy(
 
   if (status.isCreationFailure) {
     throw new Error(`The stack named ${stackName} failed creation, it may need to be manually deleted from the AWS console: ${status}`);
-  } else if (detailedStatus.isConfigurationComplete) {
-    // Optimistic stabilization. Considering this in a stable status.
+  } else if (exitOnConfigComplete && detailedStatus.isConfigurationComplete) {
+    // Considering this in a stable status with exitOnConfigComplete is provided.
     // When this happens, status.isDeploySuccess would be false but we consider it a successful deployment.
     return stack;
   } else if (!status.isDeploySuccess) {
@@ -501,7 +501,7 @@ export async function waitForStackDeploy(
 /**
  * Wait for a stack to become stable (no longer _IN_PROGRESS), returning it
  */
-export async function stabilizeStack(cfn: CloudFormation, stackName: string, optimistic?: boolean) {
+export async function stabilizeStack(cfn: CloudFormation, stackName: string, exitOnConfigComplete?: boolean) {
   debug('Waiting for stack %s to finish creating or updating...', stackName);
   return waitFor(async () => {
     const stack = await CloudFormationStack.lookup(cfn, stackName);
@@ -512,8 +512,8 @@ export async function stabilizeStack(cfn: CloudFormation, stackName: string, opt
     const status = stack.stackStatus;
     const detailedStatus = stack.stackDetailedStatus;
     if (status.isInProgress) {
-      // stack in optimistic stabilization status
-      if (optimistic && detailedStatus.isConfigurationComplete) {
+      // stack in CONFIGURATION_COMPLETE detailed status
+      if (exitOnConfigComplete && detailedStatus.isConfigurationComplete) {
         debug('Stack %s in CONFIGURATION_COMPLETE detailed status. Considering this in a stable status (%s)', stackName, status);
         return stack;
       }

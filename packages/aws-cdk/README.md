@@ -466,17 +466,21 @@ and might have breaking changes in the future.
 
 #### Optimistic Stabilization
 
-You can pass the `--optimistic` flag to the `deploy` command:
+You can pass the `--exist-on-config-complete` flag to the `deploy` command:
 
 ```console
-$ cdk deploy --optimistic [StackNames]
+$ cdk deploy --exist-on-config-complete [StackNames]
 ```
 
-This will perform a deployment with optimistic stabilization strategy by watching the `CONFIGURATION_COMPLETE`
-detailed status and immediately return success when detected. This speeds up the stack deployment
-by ignoring the stack-level eventual consistency checks. Read [this](https://aws.amazon.com/blogs/devops/how-we-sped-up-aws-cloudformation-deployments-with-optimistic-stabilization/) for more details.
+This approach triggers a deployment and monitors the `CONFIGURATION_COMPLETE` detailed status from AWS CloudFormation.
+It immediately exits with a successful status once the `CONFIGURATION_COMPLETE` status is detected. This can speed up
+the stack deployment process by skipping the stack-level eventual consistency checks, which can be beneficial when you
+have multiple stacks that depend on each other.
 
-The `--optimistic` flag is supported by `cdk deploy` and `cdk destroy`.
+For more details on this, you can refer to the blog post at
+[this link](https://aws.amazon.com/blogs/devops/how-we-sped-up-aws-cloudformation-deployments-with-optimistic-stabilization/).
+
+The `--exist-on-config-complete` flag is supported by `cdk deploy` and `cdk destroy`.
 
 ### `cdk watch`
 

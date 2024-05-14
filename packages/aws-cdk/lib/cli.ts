@@ -175,7 +175,7 @@ async function parseCommandLineArguments(args: string[]) {
       .option('asset-parallelism', { type: 'boolean', desc: 'Whether to build/publish assets in parallel' })
       .option('asset-prebuild', { type: 'boolean', desc: 'Whether to build all assets before deploying the first stack (useful for failing Docker builds)', default: true })
       .option('ignore-no-stacks', { type: 'boolean', desc: 'Whether to deploy if the app contains no stacks', default: false })
-      .option('optimistic', { type: 'boolean', desc: 'Whether to deploy with optimistic stabilization', default: false }),
+      .option('exit-on-config-complete', { type: 'boolean', desc: 'Whether to exit on configuration complete', default: false }),
     )
     .command('import [STACK]', 'Import existing resource(s) into the given STACK', (yargs: Argv) => yargs
       .option('execute', { type: 'boolean', desc: 'Whether to execute ChangeSet (--no-execute will NOT execute the ChangeSet)', default: true })
@@ -257,7 +257,7 @@ async function parseCommandLineArguments(args: string[]) {
       .option('all', { type: 'boolean', default: false, desc: 'Destroy all available stacks' })
       .option('exclusively', { type: 'boolean', alias: 'e', desc: 'Only destroy requested stacks, don\'t include dependees' })
       .option('force', { type: 'boolean', alias: 'f', desc: 'Do not ask for confirmation before destroying the stacks' })
-      .option('optimistic', { type: 'boolean', desc: 'Whether to destroy with optimistic stabilization', default: false }))
+      .option('exit-on-config-complete', { type: 'boolean', desc: 'Whether to exit on configuration complete', default: false }))
     .command('diff [STACKS..]', 'Compares the specified stack with the deployed stack or a local template file, and returns with status 1 if any difference is found', (yargs: Argv) => yargs
       .option('exclusively', { type: 'boolean', alias: 'e', desc: 'Only diff requested stacks, don\'t include dependencies' })
       .option('context-lines', { type: 'number', desc: 'Number of context lines to include in arbitrary JSON diff rendering', default: 3, requiresArg: true })
@@ -606,7 +606,7 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
           assetParallelism: configuration.settings.get(['assetParallelism']),
           assetBuildTime: configuration.settings.get(['assetPrebuild']) ? AssetBuildTime.ALL_BEFORE_DEPLOY : AssetBuildTime.JUST_IN_TIME,
           ignoreNoStacks: args.ignoreNoStacks,
-          optimistic: args.optimistic,
+          exitOnConfigComplete: args.exitOnConfigComplete,
         });
 
       case 'import':

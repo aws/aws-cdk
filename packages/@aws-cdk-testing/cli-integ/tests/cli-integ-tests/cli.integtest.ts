@@ -490,7 +490,7 @@ integTest('deploy with notification ARN', withDefaultFixture(async (fixture) => 
 
 integTest('deploy with optimistic stabilization', withDefaultFixture(async (fixture) => {
   const deployOutput = await fixture.cdkDeploy('detailed-status', {
-    options: ['--optimistic', '--debug'],
+    options: ['--exist-on-config-complete', '--debug'],
   });
 
   expect(deployOutput).toContain('in CONFIGURATION_COMPLETE detailed status. Considering this in a stable status');

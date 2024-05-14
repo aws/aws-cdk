@@ -200,11 +200,11 @@ export interface DeployStackOptions {
   readonly assetParallelism?: boolean;
 
   /**
-   * Whether to enable optimistic stabilization.
+   * Whether to enable exit on configuration complete.
    *
    * @default false
    */
-  readonly optimistic?: boolean;
+  readonly exitOnConfigComplete?: boolean;
 }
 
 export type DeploymentMethod =
@@ -346,7 +346,7 @@ class FullCloudFormationDeployment {
   private readonly update: boolean;
   private readonly verb: string;
   private readonly uuid: string;
-  private readonly optimistic: boolean;
+  private readonly exitOnConfigComplete: boolean;
 
   constructor(
     private readonly options: DeployStackOptions,
@@ -361,7 +361,7 @@ class FullCloudFormationDeployment {
     this.update = cloudFormationStack.exists && cloudFormationStack.stackStatus.name !== 'REVIEW_IN_PROGRESS';
     this.verb = this.update ? 'update' : 'create';
     this.uuid = uuid.v4();
-    this.optimistic = options.optimistic ?? false;
+    this.exitOnConfigComplete = options.exitOnConfigComplete ?? false;
   }
 
   public async performDeployment(): Promise<DeployStackResult> {
@@ -523,7 +523,7 @@ class FullCloudFormationDeployment {
 
     let finalState = this.cloudFormationStack;
     try {
-      const successStack = await waitForStackDeploy(this.cfn, this.stackName, this.optimistic);
+      const successStack = await waitForStackDeploy(this.cfn, this.stackName, this.exitOnConfigComplete);
 
       // This shouldn't really happen, but catch it anyway. You never know.
       if (!successStack) { throw new Error('Stack deploy failed (the stack disappeared while we were deploying it)'); }
@@ -579,7 +579,7 @@ export interface DestroyStackOptions {
   deployName?: string;
   quiet?: boolean;
   ci?: boolean;
-  optimistic?: boolean;
+  exitOnConfigComplete?: boolean;
 }
 
 export async function destroyStack(options: DestroyStackOptions) {
@@ -596,7 +596,7 @@ export async function destroyStack(options: DestroyStackOptions) {
 
   try {
     await cfn.deleteStack({ StackName: deployName, RoleARN: options.roleArn }).promise();
-    const destroyedStack = await waitForStackDelete(cfn, deployName, options.optimistic);
+    const destroyedStack = await waitForStackDelete(cfn, deployName, options.exitOnConfigComplete);
     if (destroyedStack && destroyedStack.stackStatus.name !== 'DELETE_COMPLETE') {
       throw new Error(`Failed to destroy ${deployName}: ${destroyedStack.stackStatus}`);
     }

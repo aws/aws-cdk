@@ -293,7 +293,7 @@ export class Settings {
       assetParallelism: argv['asset-parallelism'],
       assetPrebuild: argv['asset-prebuild'],
       ignoreNoStacks: argv['ignore-no-stacks'],
-      optimistic: argv.optimistic,
+      exitOnConfigComplete: argv.exitOnConfigComplete,
     });
   }
 

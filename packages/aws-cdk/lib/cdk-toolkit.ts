@@ -350,7 +350,7 @@ export class CdkToolkit {
           extraUserAgent: options.extraUserAgent,
           assetParallelism: options.assetParallelism,
           ignoreNoStacks: options.ignoreNoStacks,
-          optimistic: options.optimistic,
+          exitOnConfigComplete: options.exitOnConfigComplete,
         });
 
         const message = result.noOp
@@ -1342,11 +1342,11 @@ export interface DeployOptions extends CfnDeployOptions, WatchOptions {
   readonly ignoreNoStacks?: boolean;
 
   /**
-   * Whether to enable the optimistic stabilization.
+   * Whether to exit on configuration complete.
    *
    * @default false
    */
-  readonly optimistic?: boolean;
+  readonly exitOnConfigComplete?: boolean;
 }
 
 export interface ImportOptions extends CfnDeployOptions {
