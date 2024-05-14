@@ -35,16 +35,16 @@ export interface CallAwsServiceCrossRegionProps extends sfn.TaskStateBaseProps {
   readonly parameters?: { [key: string]: any };
 
   /**
-   * The resources for the IAM statement that will be added to the state
-   * machine role's policy to allow the state machine to make the API call.
+   * The resources for the IAM statement that will be added to the Lambda
+   * function role's policy to allow the state machine to make the API call.
    *
    * By default the action for this IAM statement will be `service:action`.
    */
   readonly iamResources: string[];
 
   /**
-   * The action for the IAM statement that will be added to the state
-   * machine role's policy to allow the state machine to make the API call.
+   * The action for the IAM statement that will be added to the Lambda
+   * function role's policy to allow the state machine to make the API call.
    *
    * Use in the case where the IAM action name does not match with the
    * API service/action name, e.g. `s3:ListBuckets` requires `s3:ListAllMyBuckets`.
@@ -81,8 +81,9 @@ export interface CallAwsServiceCrossRegionProps extends sfn.TaskStateBaseProps {
   /**
    * Whether to retry on the backend Lambda service exceptions.
    *
-   * This handles `Lambda.ServiceException`, `Lambda.AWSLambdaException` and
-   * `Lambda.SdkClientException` with an interval of 2 seconds, a back-off rate
+   * This handles `Lambda.ServiceException`, `Lambda.AWSLambdaException`,
+   * `Lambda.SdkClientException`, and `Lambda.ClientExecutionTimeoutException`
+   * with an interval of 2 seconds, a back-off rate
    * of 2 and 6 maximum attempts.
    *
    * @see https://docs.aws.amazon.com/step-functions/latest/dg/bp-lambda-serviceexception.html
@@ -121,9 +122,11 @@ export class CallAwsServiceCrossRegion extends sfn.TaskStateBase {
     // props.service expects a service name in the AWS SDK for JavaScript v3 format.
     // In some services, this format differs from the one used in IAM.
     // We try to automatically convert those formats here (not exhaustive though).
+    // Users can set iamAction property to override IAM service name if necessary.
     const iamServiceMap: Record<string, string> = {
-      cloudwatchlogs: 'cloudwatch-logs',
-      mediapackagevod: 'mediapackage-vod',
+      'sfn': 'states',
+      'cloudwatch-logs': 'logs',
+      'mwaa': 'airflow',
     };
     const iamService = iamServiceMap[props.service] ?? props.service;
 
@@ -169,14 +172,13 @@ export class CallAwsServiceCrossRegion extends sfn.TaskStateBase {
   protected _renderTask(): any {
     return {
       Resource: this.lambdaFunction.functionArn,
-      Parameters:
-        sfn.FieldUtils.renderObject({
-          region: this.props.region,
-          endpoint: this.props.endpoint,
-          action: this.props.action,
-          service: this.props.service,
-          parameters: this.props.parameters,
-        }),
+      Parameters: sfn.FieldUtils.renderObject({
+        region: this.props.region,
+        endpoint: this.props.endpoint,
+        action: this.props.action,
+        service: this.props.service,
+        parameters: this.props.parameters,
+      }),
     };
   }
 }
