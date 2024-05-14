@@ -96,6 +96,62 @@ describe('State Machine Resources', () => {
     });
   }),
 
+  test.each([
+    [
+      "States.Format('error: {}.', $.error)",
+      "States.Format('cause: {}.', $.cause)",
+    ],
+    [
+      stepfunctions.JsonPath.format('error: {}.', stepfunctions.JsonPath.stringAt('$.error')),
+      stepfunctions.JsonPath.format('cause: {}.', stepfunctions.JsonPath.stringAt('$.cause')),
+    ],
+  ])('Fail should render ErrorPath / CausePath correctly when specifying CausePath using intrinsics', (errorPath, causePath) => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fail = new stepfunctions.Fail(stack, 'Fail', {
+      errorPath,
+      causePath,
+    });
+
+    // WHEN
+    const failState = stack.resolve(fail.toStateJson());
+
+    // THEN
+    expect(failState).toStrictEqual({
+      CausePath: "States.Format('cause: {}.', $.cause)",
+      ErrorPath: "States.Format('error: {}.', $.error)",
+      Type: 'Fail',
+    });
+  }),
+
+  test('fails in synthesis if error and errorPath are defined in Fail state', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app);
+
+    // WHEN
+    new stepfunctions.Fail(stack, 'Fail', {
+      error: 'error',
+      errorPath: '$.error',
+    });
+
+    expect(() => app.synth()).toThrow(/Fail state cannot have both error and errorPath/);
+  }),
+
+  test('fails in synthesis if cause and causePath are defined in Fail state', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app);
+
+    // WHEN
+    new stepfunctions.Fail(stack, 'Fail', {
+      cause: 'cause',
+      causePath: '$.cause',
+    });
+
+    expect(() => app.synth()).toThrow(/Fail state cannot have both cause and causePath/);
+  }),
+
   testDeprecated('Task should render InputPath / Parameters / OutputPath correctly', () => {
     // GIVEN
     const stack = new cdk.Stack();
@@ -721,7 +777,6 @@ describe('State Machine Resources', () => {
       ],
     });
   });
-
 });
 
 interface FakeTaskProps extends stepfunctions.TaskStateBaseProps {
