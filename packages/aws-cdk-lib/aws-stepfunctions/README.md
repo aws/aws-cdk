@@ -492,7 +492,7 @@ The available functions include States.Format, States.JsonToString, States.Array
 
 ```ts
 const fail = new sfn.Fail(this, 'Fail', {
-  errorPath: sfn.JsonPath.format('error: {}.', stepfunctions.JsonPath.stringAt('$.someError')),
+  errorPath: sfn.JsonPath.format('error: {}.', sfn.JsonPath.stringAt('$.someError')),
   causePath: "States.Format('cause: {}.', $.someCause)",
 });
 ```
