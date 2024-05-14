@@ -417,6 +417,36 @@ class LambdaHotswapStack extends cdk.Stack {
   }
 }
 
+class DetailedStatusStack extends cdk.Stack{
+  constructor(parent, id, props) {
+    super(parent, id, props);
+
+    const vpc = new ec2.Vpc(this, 'Vpc', {
+      natGateways: 0,
+      maxAzs: 1,
+      subnetConfiguration: [
+        {
+          cidrMask: 24,
+          name: 'Public',
+          subnetType: ec2.SubnetType.PUBLIC,
+        },
+      ],
+    });
+
+    const instance = new ec2.CfnInstance(this, 'Instance', {
+      instanceType: 't3.nano',
+      imageId: new ec2.AmazonLinuxImage().getImage(this).imageId,
+      subnetId: vpc.publicSubnets[0].subnetId,
+    });
+    new ec2.Volume(this, 'Volume', {
+      availabilityZone: instance.attrAvailabilityZone,
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+      size: cdk.Size.gibibytes(1),
+    });
+
+  }
+}
+
 class EcsHotswapStack extends cdk.Stack {
   constructor(parent, id, props) {
     super(parent, id, props);
@@ -647,6 +677,7 @@ switch (stackSet) {
     new LambdaStack(app, `${stackPrefix}-lambda`);
     new LambdaHotswapStack(app, `${stackPrefix}-lambda-hotswap`);
     new EcsHotswapStack(app, `${stackPrefix}-ecs-hotswap`);
+    new DetailedStatusStack(app, `${stackPrefix}-detailed-status`);
     new DockerStack(app, `${stackPrefix}-docker`);
     new DockerStackWithCustomFile(app, `${stackPrefix}-docker-with-custom-file`);
 

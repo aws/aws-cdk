@@ -489,14 +489,11 @@ integTest('deploy with notification ARN', withDefaultFixture(async (fixture) => 
 }));
 
 integTest('deploy with optimistic stabilization', withDefaultFixture(async (fixture) => {
-  await fixture.cdkDeploy('test-optimistic', {
-    options: ['--optimistic'],
+  const deployOutput = await fixture.cdkDeploy('detailed-status', {
+    options: ['--optimistic', '--debug'],
   });
-  // verify that the stack we deployed has our notification ARN
-  const describeResponse = await fixture.aws.cloudFormation('describeStacks', {
-    StackName: fixture.fullStackName('test-optimistic'),
-  });
-  expect(describeResponse.Stacks?.[0].DetailedStatus).toEqual('CONFIGURATION_COMPLETE');
+
+  expect(deployOutput).toContain('in CONFIGURATION_COMPLETE detailed status. Considering this in a stable status');
 }));
 
 // NOTE: this doesn't currently work with modern-style synthesis, as the bootstrap
