@@ -233,7 +233,9 @@ const fileSystem = new fsx.LustreFileSystem(this, 'FsxLustreFileSystem', {
 });
 ```
 
-HDD storage type is only supported for `PERSISTENT_1` deployment type.
+- HDD storage type is only supported for `PERSISTENT_1` deployment type.
+- If you specify `HDD` storage type, FileSystem implicitly uses cache to improve the performance for frequently accessed files by caching up to 20% of the total storage capacity of the file system.
+
 For more information, see [document](https://docs.aws.amazon.com/fsx/latest/LustreGuide/what-is.html#storage-options).
 
 ## FSx for Windows File Server
