@@ -37,12 +37,13 @@ export class ModuleImporter {
    */
   public registerImport(module: ImportableModule, options: ModuleImportOptions = {}) {
     const fqn = options.fromLocation ?? module.fqn;
-    if (this.imports.hasOwnProperty(fqn)) {
-      const _targets = new Set([...this.imports[fqn].targets, ...(options.targets ?? [])]);
-      this.imports[fqn].targets = _targets;
+    const targets = options.targets ?? [];
+    if (this.imports.hasOwnProperty(fqn) && this.imports[fqn].targets.size > 0 && targets.length > 0) {
+      const registeredTargets = this.imports[fqn].targets;
+      this.imports[fqn].targets = new Set([...registeredTargets, ...targets]);
       return;
     }
-    this.imports[fqn] = { module, targets: new Set([...(options.targets ?? [])]), fromLocation: options.fromLocation };
+    this.imports[fqn] = { module, targets: new Set(), fromLocation: options.fromLocation };
   }
 
   /**
