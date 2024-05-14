@@ -843,6 +843,7 @@ describe('FSx for Lustre File System', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::FSx::FileSystem', {
       LustreConfiguration: {
         DeploymentType: LustreDeploymentType.PERSISTENT_1,
+        ...( storageType === StorageType.HDD ? { DriveCacheType: 'READ' } : undefined ),
       },
       StorageType: storageType,
     });

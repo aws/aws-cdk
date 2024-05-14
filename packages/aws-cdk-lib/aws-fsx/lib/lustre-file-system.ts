@@ -270,6 +270,10 @@ export class LustreFileSystem extends FileSystemBase {
       weeklyMaintenanceStartTime: props.lustreConfiguration.weeklyMaintenanceStartTime?.toTimestamp(),
       automaticBackupRetentionDays: props.lustreConfiguration.automaticBackupRetention?.toDays(),
       dailyAutomaticBackupStartTime: props.lustreConfiguration.dailyAutomaticBackupStartTime?.toTimestamp(),
+      driveCacheType: (
+        props.storageType === StorageType.HDD
+        && props.lustreConfiguration.deploymentType === LustreDeploymentType.PERSISTENT_1
+      ) ? 'READ' : undefined,
     };
     const lustreConfiguration = Object.assign({}, props.lustreConfiguration, updatedLustureProps);
 
