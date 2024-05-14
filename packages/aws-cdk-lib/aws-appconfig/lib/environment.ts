@@ -567,7 +567,7 @@ export interface IEnvironment extends IResource {
    */
   grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant;
 
-  /** TODO
+  /**
    * Grants read configuration permissions for this environment
    * to an IAM principal (Role/Group/User).
    *
