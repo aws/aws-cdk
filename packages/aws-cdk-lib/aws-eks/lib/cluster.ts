@@ -823,7 +823,7 @@ export interface ClusterProps extends ClusterOptions {
   readonly kubectlLambdaRole?: iam.IRole;
 
   /**
-   * Whether or not the cluster creator IAM principal was set as a cluster admin access entry
+   * Whether or not IAM principal of the cluster creator was set as a cluster admin access entry
    * during cluster creation time.
    *
    * Changing this value after the cluster has been created will result in the cluster being replaced.
