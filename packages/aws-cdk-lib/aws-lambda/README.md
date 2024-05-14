@@ -480,6 +480,15 @@ new CfnOutput(this, 'TheUrl', {
   value: fnUrl.url,
 });
 ```
+To get the domain name from the function url, simply call `domainName` on the `FunctionUrl` construct:
+```ts
+... 
+
+new CfnOutput(this, 'TheDomainName', {
+  value: fnUrl.domainName,
+});
+```
+The .domainName attribute will return the domain name (the function url, without the scheme and the trailing slash). For example, if fnUrl.url returns `https://*******.lambda-url.ap-southeast-2.on.aws/`, then fnUrl.domainName will return `*******.lambda-url.ap-southeast-2.on.aws`.
 
 Calls to this URL need to be signed with SigV4.
 

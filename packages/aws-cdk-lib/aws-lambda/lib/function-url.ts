@@ -4,7 +4,7 @@ import { IFunction } from './function-base';
 import { IVersion } from './lambda-version';
 import { CfnUrl } from './lambda.generated';
 import * as iam from '../../aws-iam';
-import { Duration, IResource, Resource } from '../../core';
+import { Duration, Fn, IResource, Resource } from '../../core';
 
 /**
  * The auth types for a function url
@@ -133,8 +133,16 @@ export interface IFunctionUrl extends IResource {
    * The url of the Lambda function.
    *
    * @attribute FunctionUrl
+   * For example `https://*******.lambda-url.ap-southeast-2.on.aws/`
    */
   readonly url: string;
+
+  /**
+   * The domain name of the Lambda Function URL
+   *
+   * For example `*******.lambda-url.ap-southeast-2.on.aws`
+   */
+  readonly domainName: string;
 
   /**
    * The ARN of the function this URL refers to
@@ -241,6 +249,12 @@ export class FunctionUrl extends Resource implements IFunctionUrl {
         functionUrlAuthType: props.authType,
       });
     }
+  }
+
+  get domainName(): string {
+    return Fn.select(
+      0, Fn.split('/', Fn.select(1, Fn.split('https://', this.url))),
+    );
   }
 
   public grantInvokeUrl(grantee: iam.IGrantable): iam.Grant {
