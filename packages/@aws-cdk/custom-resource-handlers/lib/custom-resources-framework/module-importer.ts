@@ -56,7 +56,17 @@ export class ModuleImporter {
 
   private importModuleInto(scope: Module, module: ImportableModule, targets: Set<Target>, fromLocation?: string) {
     if (targets.size > 0) {
-      const _targets = Array.from(targets).map(target => target.toString());
+      const _targets = Array.from(targets).map(target => {
+        if (target instanceof Type) {
+          return target.toString();
+        }
+
+        if (target instanceof CallableExpr) {
+          return target.name;
+        }
+
+        throw new Error(`${target} for ImportableModule ${module.importName} is neither an instance of a CallableExpr nor Type`);
+      });
       module.importSelective(scope, _targets, { fromLocation });
       return;
     }
