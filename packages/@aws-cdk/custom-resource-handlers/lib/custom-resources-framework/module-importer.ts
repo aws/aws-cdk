@@ -46,7 +46,11 @@ export class ModuleImporter {
         return;
       }
     }
-    this.imports[fqn] = { module, targets: new Set([...registeredTargets, ...targets]), fromLocation: options.fromLocation };
+    this.imports[fqn] = {
+      module,
+      targets: new Set([...registeredTargets, ...targets]),
+      fromLocation: options.fromLocation,
+    };
   }
 
   /**
