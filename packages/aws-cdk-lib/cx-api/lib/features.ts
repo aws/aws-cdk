@@ -1,4 +1,4 @@
-import { FlagInfo, FlagType, MAGIC_V2NEXT } from './private/flag-modeling';
+import { FlagInfo, FlagType } from './private/flag-modeling';
 
 ////////////////////////////////////////////////////////////////////////
 //
@@ -1084,7 +1084,7 @@ export const FLAGS: Record<string, FlagInfo> = {
     detailsMd: `
       When this featuer flag is enabled, remove the default deployment alarm settings when creating a AWS ECS service.
     `,
-    introducedIn: { v2: MAGIC_V2NEXT },
+    introducedIn: { v2: 'V2NEXT' },
     recommendedValue: true,
     compatibilityWithOldBehaviorMd: 'Set AWS::ECS::Service \'DeploymentAlarms\' manually to restore the previous behavior.',
   },
