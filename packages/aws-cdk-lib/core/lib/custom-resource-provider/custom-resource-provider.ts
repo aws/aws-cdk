@@ -1,6 +1,7 @@
 import { Construct } from 'constructs';
 import { CustomResourceProviderBase } from './custom-resource-provider-base';
 import { CustomResourceProviderOptions } from './shared';
+import { FactName } from '../../../region-info';
 import { Stack } from '../stack';
 
 /**
@@ -119,6 +120,15 @@ export class CustomResourceProvider extends CustomResourceProviderBase {
       runtimeName: customResourceProviderRuntimeToString(props.runtime),
     });
   }
+}
+
+/**
+ * The lambda runtime used by default for aws-cdk vended custom resources. Can change
+ * based on region.
+ */
+export function builtInCustomResourceProviderNodeRuntime(scope: Construct): CustomResourceProviderRuntime {
+  const runtimeName = Stack.of(scope).regionalFact(FactName.LATEST_NODE_RUNTIME, 'nodejs18.x');
+  return Object.values(CustomResourceProviderRuntime).find(value => value === runtimeName) ?? CustomResourceProviderRuntime.NODEJS_18_X;
 }
 
 function customResourceProviderRuntimeToString(x: CustomResourceProviderRuntime): string {

@@ -15,7 +15,7 @@ export class CallableExpr {
 
   private readonly expr: Expression;
 
-  private constructor(readonly scope: IScope, public readonly name: string) {
+  private constructor(readonly scope: IScope, private readonly name: string) {
     this.expr = $E(expr.sym(new ThingSymbol(name, scope)));
   }
 
@@ -24,5 +24,12 @@ export class CallableExpr {
    */
   public call(...args: Expression[]) {
     return this.expr.call(...args);
+  }
+
+  /**
+   * The name of the expression proxy.
+   */
+  public toString() {
+    return this.name;
   }
 }

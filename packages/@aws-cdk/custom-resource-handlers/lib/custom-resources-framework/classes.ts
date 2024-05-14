@@ -22,6 +22,7 @@ import {
   CONSTRUCTS_MODULE,
   LAMBDA_MODULE,
   CORE_MODULE,
+  CUSTOM_RESOURCES_MODULE,
 } from './modules';
 import { toLambdaRuntime } from './utils/framework-utils';
 
@@ -325,21 +326,20 @@ export abstract class ProviderFrameworkClass extends ClassType {
 
     if (isProvider) {
       scope.registerImport(CORE_MODULE, {
-        targets: [CORE_MODULE.determineLatestNodeRuntimeName],
+        targets: [CORE_MODULE.builtInCustomResourceProviderNodeRuntime],
         fromLocation: scope.isCoreInternal
-          ? './runtime-determiner-core.generated'
-          : '../../../core/lib/dist/core/runtime-determiner-core.generated',
+          ? '../../custom-resource-provider/custom-resource-provider'
+          : '../../../core',
       });
     } else {
-      scope.registerImport(LAMBDA_MODULE, {
-        targets: [LAMBDA_MODULE.determineLatestNodeRuntime],
-        fromLocation: '../../../aws-lambda/lib/runtime-determiner-lambda.generated',
+      scope.registerImport(CUSTOM_RESOURCES_MODULE, {
+        targets: [CUSTOM_RESOURCES_MODULE.builtInCustomResourceNodeRuntime],
       });
     }
 
     const _scope = expr.ident('scope');
     return isProvider
-      ? CORE_MODULE.determineLatestNodeRuntimeName.call(_scope)
-      : LAMBDA_MODULE.determineLatestNodeRuntime.call(_scope);
+      ? CORE_MODULE.builtInCustomResourceProviderNodeRuntime.call(_scope)
+      : CUSTOM_RESOURCES_MODULE.builtInCustomResourceNodeRuntime.call(_scope);
   }
 }
