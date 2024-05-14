@@ -1791,7 +1791,7 @@
                     "triggers": [
                       {
                         "gitConfiguration": {
-                          "push": [
+                          "pullRequest": [
                             {
                               "branches": {
                                 "excludes": [
@@ -1812,7 +1812,11 @@
                                   "/path/to/include1",
                                   "/path/to/include2"
                                 ]
-                              }
+                              },
+                              "events": [
+                                "OPEN",
+                                "UPDATED"
+                              ]
                             }
                           ],
                           "sourceActionName": "CodeStarConnectionsSourceAction2"

@@ -1290,7 +1290,7 @@
                 "Triggers": [
                     {
                         "GitConfiguration": {
-                            "Push": [
+                            "PullRequest": [
                                 {
                                     "Branches": {
                                         "Excludes": [
@@ -1302,6 +1302,10 @@
                                             "include2"
                                         ]
                                     },
+                                    "Events": [
+                                        "OPEN",
+                                        "UPDATED"
+                                    ],
                                     "FilePaths": {
                                         "Excludes": [
                                             "/path/to/exclude1",

@@ -69,7 +69,7 @@ const sourceAction2 = new cpactions.CodeStarConnectionsSourceAction({
   repo: 'cdk-codepipeline-demo-2',
 });
 
-// for push filter with branches and file paths
+// for pull request filter with branches and file paths
 new codepipeline.Pipeline(stack, 'Pipeline2', {
   pipelineName: 'my-pipeline2',
   pipelineType: codepipeline.PipelineType.V2,
@@ -98,6 +98,55 @@ new codepipeline.Pipeline(stack, 'Pipeline2', {
     providerType: codepipeline.ProviderType.CODE_STAR_SOURCE_CONNECTION,
     gitConfiguration: {
       sourceAction: sourceAction2,
+      pullRequestFilter: [{
+        branchesExcludes: ['exclude1', 'exclude2'],
+        branchesIncludes: ['include1', 'include2'],
+        filePathsExcludes: ['/path/to/exclude1', '/path/to/exclude2'],
+        filePathsIncludes: ['/path/to/include1', '/path/to/include2'],
+        events: [codepipeline.GitPullRequestEvent.OPEN, codepipeline.GitPullRequestEvent.UPDATED],
+      }],
+    },
+  }],
+});
+
+const sourceOutput3 = new codepipeline.Artifact();
+const sourceAction3 = new cpactions.CodeStarConnectionsSourceAction({
+  actionName: 'CodeStarConnectionsSourceAction3',
+  output: sourceOutput3,
+  connectionArn,
+  owner: 'go-to-k',
+  repo: 'cdk-codepipeline-demo-3',
+});
+
+// for push filter with branches and file paths
+new codepipeline.Pipeline(stack, 'Pipeline3', {
+  pipelineName: 'my-pipeline3',
+  pipelineType: codepipeline.PipelineType.V2,
+  crossAccountKeys: true,
+  stages: [
+    {
+      stageName: 'Source',
+      actions: [sourceAction3],
+    },
+    {
+      stageName: 'Build',
+      actions: [
+        new cpactions.CodeBuildAction({
+          actionName: 'CodeBuild3',
+          project: new codebuild.PipelineProject(stack, 'MyProject3'),
+          input: sourceOutput3,
+          outputs: [new codepipeline.Artifact()],
+          environmentVariables: {
+            CommitId: { value: sourceAction3.variables.commitId },
+          },
+        }),
+      ],
+    },
+  ],
+  triggers: [{
+    providerType: codepipeline.ProviderType.CODE_STAR_SOURCE_CONNECTION,
+    gitConfiguration: {
+      sourceAction: sourceAction3,
       pushFilter: [{
         branchesExcludes: ['exclude1', 'exclude2'],
         branchesIncludes: ['include1', 'include2'],
@@ -118,5 +167,8 @@ awsApiCall1.assertAtPath('pipeline.name', ExpectedResult.stringLikeRegexp('my-pi
 
 const awsApiCall2 = integrationTest.assertions.awsApiCall('CodePipeline', 'getPipeline', { name: 'my-pipeline2' });
 awsApiCall2.assertAtPath('pipeline.name', ExpectedResult.stringLikeRegexp('my-pipeline2'));
+
+const awsApiCall3 = integrationTest.assertions.awsApiCall('CodePipeline', 'getPipeline', { name: 'my-pipeline3' });
+awsApiCall3.assertAtPath('pipeline.name', ExpectedResult.stringLikeRegexp('my-pipeline3'));
 
 app.synth();

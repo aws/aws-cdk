@@ -125,22 +125,30 @@ export const ELBV2_ACCOUNTS: { [region: string]: string } = {
   'us-west-2': '797873946194',
 };
 
-// https://aws.amazon.com/releasenotes/available-deep-learning-containers-images
+// https://docs.aws.amazon.com/deep-learning-containers/latest/devguide/deep-learning-containers-images.html
+// https://github.com/aws/deep-learning-containers/blob/master/available_images.md
 export const DLC_REPOSITORY_ACCOUNTS: { [region: string]: string } = {
   'ap-east-1': '871362719292',
   'ap-northeast-1': '763104351884',
   'ap-northeast-2': '763104351884',
   'ap-south-1': '763104351884',
+  'ap-south-2': '772153158452',
   'ap-southeast-1': '763104351884',
   'ap-southeast-2': '763104351884',
+  'ap-southeast-3': '907027046896',
+  'ap-southeast-4': '457447274322',
   'ca-central-1': '763104351884',
   'cn-north-1': '727897471807',
   'cn-northwest-1': '727897471807',
   'eu-central-1': '763104351884',
+  'eu-central-2': '380420809688',
   'eu-north-1': '763104351884',
+  'eu-south-1': '692866216735',
+  'eu-south-2': '503227376785',
   'eu-west-1': '763104351884',
   'eu-west-2': '763104351884',
   'eu-west-3': '763104351884',
+  'me-central-1': '914824155844',
   'me-south-1': '217643126080',
   'sa-east-1': '763104351884',
   'us-east-1': '763104351884',
