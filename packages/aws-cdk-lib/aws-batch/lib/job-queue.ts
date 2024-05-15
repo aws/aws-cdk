@@ -166,6 +166,7 @@ export interface JobStateTimeLimitAction {
 
   /**
    * The reason to log for the action being taken.
+   *
    * @see https://docs.aws.amazon.com/batch/latest/userguide/troubleshooting.html#job_stuck_in_runnable
    */
   readonly reason: JobStateTimeLimitActionsReason;
