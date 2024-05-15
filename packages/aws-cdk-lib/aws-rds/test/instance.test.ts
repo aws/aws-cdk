@@ -413,7 +413,7 @@ describe('instance', () => {
     // WHEN
     const instance = new rds.DatabaseInstanceFromSnapshot(stack, 'Instance', {
       snapshotIdentifier: 'my-snapshot',
-      engine: rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_15_2 }),
+      engine: rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_16_2 }),
       instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.LARGE),
       vpc,
       cloudwatchLogsExports: [],
@@ -446,7 +446,7 @@ describe('instance', () => {
     test('create an instance from snapshot', () => {
       new rds.DatabaseInstanceFromSnapshot(stack, 'Instance', {
         snapshotIdentifier: 'my-snapshot',
-        engine: rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_15_2 }),
+        engine: rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_16_2 }),
         instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.LARGE),
         vpc,
       });
@@ -856,7 +856,7 @@ describe('instance', () => {
   test('addRotationSingleUser()', () => {
     // GIVEN
     const instance = new rds.DatabaseInstance(stack, 'Database', {
-      engine: rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_15_2 }),
+      engine: rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_16_2 }),
       vpc,
     });
 
@@ -883,7 +883,7 @@ describe('instance', () => {
   test('addRotationMultiUser()', () => {
     // GIVEN
     const instance = new rds.DatabaseInstance(stack, 'Database', {
-      engine: rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_15_2 }),
+      engine: rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_16_2 }),
       vpc,
     });
 
@@ -935,7 +935,7 @@ describe('instance', () => {
     // WHEN
     // DB in isolated subnet (no internet connectivity)
     const instance = new rds.DatabaseInstance(stack, 'Database', {
-      engine: rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_15_2 }),
+      engine: rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_16_2 }),
       vpc: vpcWithIsolated,
       vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_ISOLATED },
     });
@@ -997,7 +997,7 @@ describe('instance', () => {
     // WHEN
     // DB in isolated subnet (no internet connectivity)
     const instance = new rds.DatabaseInstance(stack, 'Database', {
-      engine: rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_15_2 }),
+      engine: rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_16_2 }),
       vpc: vpcWithIsolated,
       vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_ISOLATED },
     });
@@ -1053,7 +1053,7 @@ describe('instance', () => {
     // WHEN
     // DB in isolated subnet (no internet connectivity)
     const instance = new rds.DatabaseInstance(stack, 'Database', {
-      engine: rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_15_2 }),
+      engine: rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_16_2 }),
       vpc: vpcIsolatedOnly,
       vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_ISOLATED },
     });
@@ -1559,7 +1559,7 @@ describe('instance', () => {
 
   test('reuse an existing subnet group', () => {
     new rds.DatabaseInstance(stack, 'Database', {
-      engine: rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_15_2 }),
+      engine: rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_16_2 }),
       vpc,
       subnetGroup: rds.SubnetGroup.fromSubnetGroupName(stack, 'SubnetGroup', 'my-subnet-group'),
     });
@@ -1572,7 +1572,7 @@ describe('instance', () => {
 
   test('defaultChild returns the DB Instance', () => {
     const instance = new rds.DatabaseInstance(stack, 'Database', {
-      engine: rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_15_2 }),
+      engine: rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_16_2 }),
       vpc,
     });
 
@@ -1584,7 +1584,7 @@ describe('instance', () => {
     new rds.DatabaseInstance(stack, 'Instance', {
       vpc,
       engine: rds.DatabaseInstanceEngine.postgres({
-        version: rds.PostgresEngineVersion.VER_15_2,
+        version: rds.PostgresEngineVersion.VER_16_2,
       }),
     });
 
@@ -1720,7 +1720,7 @@ describe('instance', () => {
   test('fromGeneratedSecret', () => {
     // WHEN
     new rds.DatabaseInstance(stack, 'Database', {
-      engine: rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_15_2 }),
+      engine: rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_16_2 }),
       vpc,
       credentials: rds.Credentials.fromGeneratedSecret('postgres'),
     });
@@ -1746,7 +1746,7 @@ describe('instance', () => {
   test('fromGeneratedSecret with replica regions', () => {
     // WHEN
     new rds.DatabaseInstance(stack, 'Database', {
-      engine: rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_15_2 }),
+      engine: rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_16_2 }),
       vpc,
       credentials: rds.Credentials.fromGeneratedSecret('postgres', {
         replicaRegions: [{ region: 'eu-west-1' }],
@@ -1766,7 +1766,7 @@ describe('instance', () => {
   test('fromPassword', () => {
     // WHEN
     new rds.DatabaseInstance(stack, 'Database', {
-      engine: rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_15_2 }),
+      engine: rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_16_2 }),
       vpc,
       credentials: rds.Credentials.fromPassword('postgres', cdk.SecretValue.ssmSecure('/dbPassword', '1')),
     });
@@ -1899,7 +1899,7 @@ describe('instance', () => {
     const instanceType = ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.SMALL);
     const backupRetention = cdk.Duration.days(5);
     const source = new rds.DatabaseInstance(stack, 'Source', {
-      engine: rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_15_2 }),
+      engine: rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_16_2 }),
       backupRetention,
       instanceType,
       vpc,
@@ -1912,13 +1912,13 @@ describe('instance', () => {
         instanceType,
         vpc,
       });
-    }).toThrow(/Cannot set 'backupRetention', as engine 'postgres-15.2' does not support automatic backups for read replicas/);
+    }).toThrow(/Cannot set 'backupRetention', as engine 'postgres-16.2' does not support automatic backups for read replicas/);
   });
 
   test('read replica with allocatedStorage', () => {
     // GIVEN
     const instanceType = ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.SMALL);
-    const engine = rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_15_2 });
+    const engine = rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_16_2 });
     const parameterGroup = new rds.ParameterGroup(stack, 'ParameterGroup', { engine });
     const source = new rds.DatabaseInstance(stack, 'Source', {
       engine,
@@ -1944,7 +1944,7 @@ describe('instance', () => {
   test('can set parameter group on read replica', () => {
     // GIVEN
     const instanceType = ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.SMALL);
-    const engine = rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_15_2 });
+    const engine = rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_16_2 });
     const parameterGroup = new rds.ParameterGroup(stack, 'ParameterGroup', { engine });
     const source = new rds.DatabaseInstance(stack, 'Source', {
       engine,
@@ -2008,7 +2008,7 @@ describe('instance', () => {
   test('engine is specified for read replica using domain', () => {
     // GIVEN
     const instanceType = ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.SMALL);
-    const engine = rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_15_2 });
+    const engine = rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_16_2 });
     const source = new rds.DatabaseInstance(stack, 'Source', {
       engine,
       instanceType,
