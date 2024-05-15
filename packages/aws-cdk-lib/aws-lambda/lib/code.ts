@@ -69,7 +69,7 @@ export abstract class Code {
   public static fromCustomCommand(
     output: string,
     command: string[],
-    commandOptions?: {[option: string]: any},
+    commandOptions?: {[option: string]: any}, // jsii build fails if the type is SpawnSyncOptions... so best we can do is point user to those options.
     assetOptions?: s3_assets.AssetOptions,
   ): AssetCode {
     if (command.length === 0) {
