@@ -1,0 +1,12 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "FsxLustreStorageTypeTest/DefaultTest": {
+      "stacks": [
+        "FsxLustreStorageTypeStack"
+      ],
+      "assertionStack": "FsxLustreStorageTypeTest/DefaultTest/DeployAssert",
+      "assertionStackName": "FsxLustreStorageTypeTestDefaultTestDeployAssert50B0FE3D"
+    }
+  }
+}
