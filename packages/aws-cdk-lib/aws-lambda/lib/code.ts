@@ -84,7 +84,7 @@ export abstract class Code {
       : spawnSync(cmd, commandArguments, commandOptions);
 
     if (proc.error) {
-      throw proc.error;
+      throw new Error(`Failed to execute custom command: ${proc.error}`);
     }
     if (proc.status !== 0) {
       throw new Error(`${command.join(' ')} exited with status: ${proc.status}\n\nstdout: ${proc.stdout?.toString().trim()}\n\nstderr: ${proc.stderr?.toString().trim()}`);
