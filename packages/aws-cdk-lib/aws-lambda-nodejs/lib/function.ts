@@ -27,8 +27,12 @@ export interface NodejsFunctionProps extends lambda.FunctionOptions {
   /**
    * The name of the exported handler in the entry file.
    *
-   * The handler is prefixed with `index.` unless the specified handler value contains a `.`,
-   * in which case it is used as-is.
+   * * If the `code` property is supplied, then you must include the `handler` property. The handler should be the name of the file
+   * that contains the exported handler and the function that should be called when the AWS Lambda is invoked. For example, if
+   * you had a file called `myLambda.js` and the function to be invoked was `myHandler`, then you should input `handler` property as `myLambda.myHandler`.
+   *
+   * * If the `code` property is not supplied and the handler input does not contain a `.`, then the handler is prefixed with `index.` (index period). Otherwise,
+   * the handler property is not modified.
    *
    * @default handler
    */
@@ -85,9 +89,13 @@ export interface NodejsFunctionProps extends lambda.FunctionOptions {
   readonly projectRoot?: string;
 
   /**
-   * The path to the directory containing project config files (`package.json` or `tsconfig.json`)
+   * The code that will be deployed to the Lambda Handler. If included, then properties related to
+   * bundling of the code are ignored. In the constructor of NodeJsFunction, where the Super is called,
+   * you can see which bundling properties are ignored.
    *
-   * @default - the code is bundled
+   * * If the `code` field is specified, then you must include the `handler` property.
+   *
+   * @default - the code is bundled by esbuild
    */
   readonly code?: lambda.Code;
 }
@@ -102,26 +110,30 @@ export class NodejsFunction extends lambda.Function {
     }
 
     const runtime = getRuntime(scope, props);
-    const handler = props.handler ?? 'handler';
 
     if (props.code !== undefined) {
+      if (props.handler === undefined) {
+        throw new Error('Cannot determine handler when `code` property is specified. Use `handler` property to specify a handler.');
+      }
+
       super(scope, id, {
         ...props,
         runtime,
         code: props.code,
-        handler: handler.indexOf('.') !== -1 ? `${handler}` : `index.${handler}`,
+        handler: props.handler!,
       });
     } else {
-    // Entry and defaults
+      // Entry and defaults
       const entry = path.resolve(findEntry(id, props.entry));
       const architecture = props.architecture ?? Architecture.X86_64;
       const depsLockFilePath = findLockFile(props.depsLockFilePath);
       const projectRoot = props.projectRoot ?? path.dirname(depsLockFilePath);
+      const handler = props.handler ?? 'handler';
 
       super(scope, id, {
         ...props,
         runtime,
-        code: props.code || Bundling.bundle(scope, {
+        code: Bundling.bundle(scope, {
           ...props.bundling ?? {},
           entry,
           runtime,

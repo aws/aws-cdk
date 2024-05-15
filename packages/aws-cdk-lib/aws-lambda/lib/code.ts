@@ -64,7 +64,7 @@ export abstract class Code {
    * @param command The command which will be executed to generate the output, for example, [ 'node', 'bundle_code.js' ]
    * @param options The same options that are available for `Code.fromAsset` -- but bundling options are not allowed
    */
-  public static fromCustomCommandAsset(output: string, command: string[], options?: s3_assets.AssetOptions): AssetCode {
+  public static fromCustomCommand(output: string, command: string[], options?: s3_assets.AssetOptions): AssetCode {
     if (options?.bundling !== undefined) {
       throw new Error('Bundling options cannot be specified for assets built with custom command.');
     }
