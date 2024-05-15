@@ -18,18 +18,18 @@ new batch.JobQueue(stack, 'joBBQ', {
   jobStateTimeLimitActions: [
     {
       action: batch.JobStateTimeLimitActionsAction.CANCEL,
-      maxTimeSeconds: Duration.minutes(10),
+      maxTime: Duration.minutes(10),
       reason: batch.JobStateTimeLimitActionsReason.INSUFFICIENT_INSTANCE_CAPACITY,
       state: batch.JobStateTimeLimitActionsState.RUNNABLE,
     },
     {
       action: batch.JobStateTimeLimitActionsAction.CANCEL,
-      maxTimeSeconds: Duration.minutes(10),
+      maxTime: Duration.minutes(10),
       reason: batch.JobStateTimeLimitActionsReason.COMPUTE_ENVIRONMENT_MAX_RESOURCE,
       state: batch.JobStateTimeLimitActionsState.RUNNABLE,
     },
     {
-      maxTimeSeconds: Duration.minutes(10),
+      maxTime: Duration.minutes(10),
       reason: batch.JobStateTimeLimitActionsReason.JOB_RESOURCE_REQUIREMENT,
     },
   ],

@@ -1,4 +1,4 @@
-import { Template } from '../../assertions';
+import { Match, Template } from '../../assertions';
 import * as ec2 from '../../aws-ec2';
 import { DefaultTokenResolver, Duration, Stack, StringConcat, Tokenization } from '../../core';
 import { FairshareSchedulingPolicy, JobQueue, ManagedEc2EcsComputeEnvironment, JobStateTimeLimitActionsAction, JobStateTimeLimitActionsReason, JobStateTimeLimitActionsState } from '../lib';
@@ -276,18 +276,18 @@ test('JobQueue with JobStateTimeLimitActions', () => {
     jobStateTimeLimitActions: [
       {
         action: JobStateTimeLimitActionsAction.CANCEL,
-        maxTimeSeconds: Duration.minutes(10),
+        maxTime: Duration.minutes(10),
         reason: JobStateTimeLimitActionsReason.INSUFFICIENT_INSTANCE_CAPACITY,
         state: JobStateTimeLimitActionsState.RUNNABLE,
       },
       {
         action: JobStateTimeLimitActionsAction.CANCEL,
-        maxTimeSeconds: Duration.minutes(10),
+        maxTime: Duration.minutes(10),
         reason: JobStateTimeLimitActionsReason.COMPUTE_ENVIRONMENT_MAX_RESOURCE,
         state: JobStateTimeLimitActionsState.RUNNABLE,
       },
       {
-        maxTimeSeconds: Duration.minutes(10),
+        maxTime: Duration.minutes(10),
         reason: JobStateTimeLimitActionsReason.JOB_RESOURCE_REQUIREMENT,
       },
     ],
@@ -318,17 +318,39 @@ test('JobQueue with JobStateTimeLimitActions', () => {
   });
 });
 
-test('JobQueue with JobStateTimeLimitActions throws when maxTimeSeconds has an illegal value', () => {
+test('JobQueue with JobStateTimeLimitActions throws when maxTime has an illegal value', () => {
   const stack = new Stack();
 
   expect(() => new JobQueue(stack, 'joBBQ', {
     jobStateTimeLimitActions: [
       {
         action: JobStateTimeLimitActionsAction.CANCEL,
-        maxTimeSeconds: Duration.seconds(90000),
+        maxTime: Duration.seconds(90000),
         reason: JobStateTimeLimitActionsReason.COMPUTE_ENVIRONMENT_MAX_RESOURCE,
         state: JobStateTimeLimitActionsState.RUNNABLE,
       },
     ],
-  })).toThrow('maxTimeSeconds must be between 600 and 86400, got 90000');
+  })).toThrow('maxTime must be between 600 and 86400 seconds, got 90000 seconds at jobStateTimeLimitActions[0]');
+});
+
+test('JobQueue with an empty array of JobStateTimeLimitActions', () => {
+  // GIVEN
+  const stack = new Stack();
+  const vpc = new ec2.Vpc(stack, 'vpc');
+
+  // WHEN
+  new JobQueue(stack, 'joBBQ', {
+    computeEnvironments: [{
+      computeEnvironment: new ManagedEc2EcsComputeEnvironment(stack, 'CE', {
+        vpc,
+      }),
+      order: 1,
+    }],
+    jobStateTimeLimitActions: [],
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Batch::JobQueue', {
+    JobStateTimeLimitActions: Match.absent(),
+  });
 });

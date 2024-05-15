@@ -326,7 +326,6 @@ export class JobQueue extends Resource implements IJobQueue {
     }
   }
 }
-}
 
 function validateOrderedComputeEnvironments(computeEnvironments: OrderedComputeEnvironment[]): string[] {
   const seenOrders: number[] = [];
