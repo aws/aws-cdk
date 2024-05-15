@@ -1787,32 +1787,6 @@ export class Cluster extends ClusterBase {
     this.defineCoreDnsComputeType(props.coreDnsComputeType ?? CoreDnsComputeType.EC2);
 
   }
-  /**
-   * Adds an access entry to the cluster's access entries map.
-   *
-   * If an entry already exists for the given principal, it adds the provided access policies to the existing entry.
-   * If no entry exists for the given principal, it creates a new access entry with the provided access policies.
-   *
-   * @param principal - The principal (e.g., IAM user or role) for which the access entry is being added.
-   * @param policies - An array of access policies to be associated with the principal.
-   *
-   * @throws {Error} If the uniqueName generated for the new access entry is not unique.
-   *
-   * @returns {void}
-   */
-  public addToAccessEntry(id: string, principal: string, policies: IAccessPolicy[]) {
-    const entry = this.accessEntries.get(principal);
-    if (entry) {
-      (entry as AccessEntry).addAccessPolicies(policies);
-    } else {
-      const newEntry = new AccessEntry(this, id, {
-        principal,
-        cluster: this,
-        accessPolicies: policies,
-      });
-      this.accessEntries.set(principal, newEntry);
-    }
-  }
 
   /**
    * Grants the specified IAM principal access to the EKS cluster based on the provided access policies.
@@ -2039,6 +2013,33 @@ export class Cluster extends ClusterBase {
   public _attachKubectlResourceScope(resourceScope: Construct): KubectlProvider {
     Node.of(resourceScope).addDependency(this._kubectlReadyBarrier);
     return this._kubectlResourceProvider;
+  }
+
+  /**
+   * Adds an access entry to the cluster's access entries map.
+   *
+   * If an entry already exists for the given principal, it adds the provided access policies to the existing entry.
+   * If no entry exists for the given principal, it creates a new access entry with the provided access policies.
+   *
+   * @param principal - The principal (e.g., IAM user or role) for which the access entry is being added.
+   * @param policies - An array of access policies to be associated with the principal.
+   *
+   * @throws {Error} If the uniqueName generated for the new access entry is not unique.
+   *
+   * @returns {void}
+   */
+  private addToAccessEntry(id: string, principal: string, policies: IAccessPolicy[]) {
+    const entry = this.accessEntries.get(principal);
+    if (entry) {
+      (entry as AccessEntry).addAccessPolicies(policies);
+    } else {
+      const newEntry = new AccessEntry(this, id, {
+        principal,
+        cluster: this,
+        accessPolicies: policies,
+      });
+      this.accessEntries.set(principal, newEntry);
+    }
   }
 
   private defineKubectlProvider() {
