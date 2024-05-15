@@ -5,7 +5,11 @@ import { App, Duration, Stack } from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import { QueueProcessingFargateService } from 'aws-cdk-lib/aws-ecs-patterns';
 
-const app = new App();
+const app = new App({
+  postCliContext: {
+    '@aws-cdk/aws-ecs:removeDefaultDeploymentAlarm': false,
+  },
+});
 const stack = new Stack(app, 'aws-ecs-patterns-queu-no-cooldown');
 const vpc = new ec2.Vpc(stack, 'VPC', {
   restrictDefaultSecurityGroup: false,
