@@ -1,7 +1,7 @@
 /* eslint-disable import/order */
 import * as AWS from 'aws-sdk';
 import * as setup from './hotswap-test-setup';
-import { HotswapMode } from '../../../lib/api/hotswap/common';
+import { HotswapMode, HotswapProperties, EcsHotswapProperties } from '../../../lib/api/hotswap/common';
 
 let hotswapMockSdkProvider: setup.HotswapMockSdkProvider;
 let mockRegisterTaskDef: jest.Mock<AWS.ECS.RegisterTaskDefinitionResponse, AWS.ECS.RegisterTaskDefinitionRequest[]>;
@@ -632,6 +632,87 @@ describe.each([HotswapMode.FALL_BACK, HotswapMode.HOTSWAP_ONLY])('%p mode', (hot
       taskDefinition: 'arn:aws:ecs:region:account:task-definition/my-task-def:3',
       deploymentConfiguration: {
         minimumHealthyPercent: 0,
+      },
+      forceNewDeployment: true,
+    });
+  });
+});
+
+describe.each([
+  new HotswapProperties(new EcsHotswapProperties(10)),
+  new HotswapProperties(new EcsHotswapProperties(undefined, 100)),
+  new HotswapProperties(new EcsHotswapProperties(10, 100)),
+])('hotswap properties', (hotswapProperties) => {
+  test('should handle all possible hotswap properties', async () => {
+    // GIVEN
+    setup.setCurrentCfnStackTemplate({
+      Resources: {
+        TaskDef: {
+          Type: 'AWS::ECS::TaskDefinition',
+          Properties: {
+            Family: 'my-task-def',
+            ContainerDefinitions: [
+              { Image: 'image1' },
+            ],
+          },
+        },
+        Service: {
+          Type: 'AWS::ECS::Service',
+          Properties: {
+            TaskDefinition: { Ref: 'TaskDef' },
+          },
+        },
+      },
+    });
+    setup.pushStackResourceSummaries(
+      setup.stackSummaryOf('Service', 'AWS::ECS::Service',
+        'arn:aws:ecs:region:account:service/my-cluster/my-service'),
+    );
+    mockRegisterTaskDef.mockReturnValue({
+      taskDefinition: {
+        taskDefinitionArn: 'arn:aws:ecs:region:account:task-definition/my-task-def:3',
+      },
+    });
+    const cdkStackArtifact = setup.cdkStackArtifactOf({
+      template: {
+        Resources: {
+          TaskDef: {
+            Type: 'AWS::ECS::TaskDefinition',
+            Properties: {
+              Family: 'my-task-def',
+              ContainerDefinitions: [
+                { Image: 'image2' },
+              ],
+            },
+          },
+          Service: {
+            Type: 'AWS::ECS::Service',
+            Properties: {
+              TaskDefinition: { Ref: 'TaskDef' },
+            },
+          },
+        },
+      },
+    });
+
+    // WHEN
+    const deployStackResult = await hotswapMockSdkProvider.tryHotswapDeployment(HotswapMode.HOTSWAP_ONLY, cdkStackArtifact, {}, hotswapProperties);
+
+    // THEN
+    expect(deployStackResult).not.toBeUndefined();
+    expect(mockRegisterTaskDef).toBeCalledWith({
+      family: 'my-task-def',
+      containerDefinitions: [
+        { image: 'image2' },
+      ],
+    });
+    expect(mockUpdateService).toBeCalledWith({
+      service: 'arn:aws:ecs:region:account:service/my-cluster/my-service',
+      cluster: 'my-cluster',
+      taskDefinition: 'arn:aws:ecs:region:account:task-definition/my-task-def:3',
+      deploymentConfiguration: {
+        minimumHealthyPercent: hotswapProperties.ecsHotswapProperties?.minimumHealthyPercent == undefined ? 0 :hotswapProperties.ecsHotswapProperties?.minimumHealthyPercent,
+        maximumPercent: hotswapProperties.ecsHotswapProperties?.maximumHealthyPercent,
       },
       forceNewDeployment: true,
     });

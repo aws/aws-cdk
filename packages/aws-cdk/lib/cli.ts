@@ -158,6 +158,17 @@ async function parseCommandLineArguments(args: string[]) {
           'and falls back to a full deployment if that is not possible. ' +
           'Do not use this in production environments',
       })
+      .option('hotswap-ecs-minimum-healthy-percent', {
+        type: 'number',
+        default: 0,
+        desc: 'When using hotswap for ECS, set the minimum healthy percent' +
+          'for the updated task definition',
+      })
+      .option('hotswap-ecs-maximum-healthy-percent', {
+        type: 'number',
+        desc: 'When using hotswap for ECS, set the minimum healthy percent' +
+          'for the updated task definition',
+      })
       .option('watch', {
         type: 'boolean',
         desc: 'Continuously observe the project files, ' +
@@ -597,7 +608,10 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
           progress: configuration.settings.get(['progress']),
           ci: args.ci,
           rollback: configuration.settings.get(['rollback']),
+          // TODO: Add min/max checks with boolean hotswap flag usage.
           hotswap: determineHotswapMode(args.hotswap, args.hotswapFallback),
+          hotswapEcsMinimumHealthyPercent: args.hotswapMinimumHealthyPercent,
+          hotswapEcsMaximumHealthyPercent: args.hotswapMaximumHealthyPercent,
           watch: args.watch,
           traceLogs: args.logs,
           concurrency: args.concurrency,
@@ -780,6 +794,8 @@ function yargsNegativeAlias<T extends { [x in S | L ]: boolean | undefined }, S 
 }
 
 function determineHotswapMode(hotswap?: boolean, hotswapFallback?: boolean, watch?: boolean): HotswapMode {
+  // TODO: This could be where we can check if someone has set Min/Max Health % WITHOUT also calling --hotswap
+  //       and raise an error.  You must use the new flags with --hotswap or --hotswap-fallback; not without.
   if (hotswap && hotswapFallback) {
     throw new Error('Can not supply both --hotswap and --hotswap-fallback at the same time');
   } else if (!hotswap && !hotswapFallback) {
