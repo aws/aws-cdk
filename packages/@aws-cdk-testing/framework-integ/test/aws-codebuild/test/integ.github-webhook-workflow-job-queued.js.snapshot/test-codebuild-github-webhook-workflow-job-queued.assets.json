@@ -1,0 +1,19 @@
+{
+  "version": "36.0.0",
+  "files": {
+    "f4c74c4d08a460df833261b036cc4051884a8c475bc7eaaea6c4b08b0ff530f3": {
+      "source": {
+        "path": "test-codebuild-github-webhook-workflow-job-queued.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "f4c74c4d08a460df833261b036cc4051884a8c475bc7eaaea6c4b08b0ff530f3.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

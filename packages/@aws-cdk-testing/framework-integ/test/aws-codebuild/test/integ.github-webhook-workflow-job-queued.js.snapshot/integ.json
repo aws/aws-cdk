@@ -1,0 +1,12 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "ProjectTest/DefaultTest": {
+      "stacks": [
+        "test-codebuild-github-webhook-workflow-job-queued"
+      ],
+      "assertionStack": "ProjectTest/DefaultTest/DeployAssert",
+      "assertionStackName": "ProjectTestDefaultTestDeployAssert638ACE4F"
+    }
+  }
+}
