@@ -313,6 +313,7 @@ export class LustreFileSystem extends FileSystemBase {
   private validateProps(props: LustreFileSystemProps) {
     const lustreConfiguration = props.lustreConfiguration;
     const deploymentType = lustreConfiguration.deploymentType;
+    const perUnitStorageThroughput = lustreConfiguration.perUnitStorageThroughput;
 
     // Make sure the import path is valid before validating the export path
     this.validateImportPath(lustreConfiguration.importPath);
@@ -320,12 +321,12 @@ export class LustreFileSystem extends FileSystemBase {
 
     this.validateImportedFileChunkSize(lustreConfiguration.importedFileChunkSizeMiB);
     this.validateAutoImportPolicy(deploymentType, lustreConfiguration.importPath, lustreConfiguration.autoImportPolicy);
-    this.validatePerUnitStorageThroughput(deploymentType, lustreConfiguration.perUnitStorageThroughput, props.storageType);
-    this.validateStorageCapacity(deploymentType, props.storageCapacityGiB);
 
     this.validateAutomaticBackupRetention(deploymentType, lustreConfiguration.automaticBackupRetention);
 
     this.validateDailyAutomaticBackupStartTime(lustreConfiguration.automaticBackupRetention, lustreConfiguration.dailyAutomaticBackupStartTime);
+    this.validatePerUnitStorageThroughput(deploymentType, perUnitStorageThroughput, props.storageType);
+    this.validateStorageCapacity(deploymentType, props.storageCapacityGiB, props.storageType, perUnitStorageThroughput);
     this.validateStorageType(deploymentType, props.storageType);
   }
 
@@ -436,14 +437,39 @@ export class LustreFileSystem extends FileSystemBase {
   /**
    * Validates the storage capacity is an acceptable value for the deployment type.
    */
-  private validateStorageCapacity(deploymentType: LustreDeploymentType, storageCapacity: number): void {
+  private validateStorageCapacity(
+    deploymentType: LustreDeploymentType,
+    storageCapacity: number,
+    storageType?: StorageType,
+    perUnitStorageThroughput?: number,
+  ): void {
     if (deploymentType === LustreDeploymentType.SCRATCH_1) {
       if (![1200, 2400, 3600].includes(storageCapacity) && storageCapacity % 3600 !== 0) {
-        throw new Error('storageCapacity must be 1,200, 2,400, 3,600, or a multiple of 3,600');
+        throw new Error('storageCapacity must be 1,200, 2,400, 3,600, or a multiple of 3,600 for SCRATCH_1 deployment type');
       }
-    } else {
+    }
+
+    if (
+      deploymentType === LustreDeploymentType.PERSISTENT_2
+      || deploymentType === LustreDeploymentType.SCRATCH_2
+    ) {
       if (![1200, 2400].includes(storageCapacity) && storageCapacity % 2400 !== 0) {
-        throw new Error('storageCapacity must be 1,200, 2,400, or a multiple of 2,400');
+        throw new Error('storageCapacity must be 1,200, 2,400, or a multiple of 2,400 for SCRATCH_2 and PERSISTENT_2 deployment types');
+      }
+    }
+
+    if (deploymentType === LustreDeploymentType.PERSISTENT_1) {
+      if (storageType === StorageType.HDD) {
+        if (perUnitStorageThroughput === 12 && storageCapacity % 6000 !== 0) {
+          throw new Error('storageCapacity must be a multiple of 6,000 for PERSISTENT_1 HDD storage with 12 MB/s/TiB throughput');
+        }
+        if (perUnitStorageThroughput === 40 && storageCapacity % 1800 !== 0) {
+          throw new Error('storageCapacity must be a multiple of 1,800 for PERSISTENT_1 HDD storage with 40 MB/s/TiB throughput');
+        }
+      } else {
+        if (![1200, 2400].includes(storageCapacity) && storageCapacity % 2400 !== 0) {
+          throw new Error('storageCapacity must be 1,200, 2,400, or a multiple of 2,400 for PERSISTENT_1 SSD storage');
+        }
       }
     }
   }
