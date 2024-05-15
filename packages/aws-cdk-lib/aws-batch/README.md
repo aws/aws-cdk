@@ -245,7 +245,7 @@ new batch.JobQueue(this, 'JobQueue', {
     jobStateTimeLimitActions: [
       {
         action: batch.JobStateTimeLimitActionsAction.CANCEL,
-        maxTimeSeconds: cdk.Duration.minutes(10),
+        maxTime: cdk.Duration.minutes(10),
         reason: batch.JobStateTimeLimitActionsReason.INSUFFICIENT_INSTANCE_CAPACITY,
         state: batch.JobStateTimeLimitActionsState.RUNNABLE,
       },
