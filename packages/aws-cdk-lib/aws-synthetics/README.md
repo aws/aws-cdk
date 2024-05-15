@@ -269,10 +269,10 @@ const canary = new synthetics.Canary(this, 'MyCanary', {
   runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_7_0,
   artifactsBucketLifecycleRules: [{
     expiration: Duration.days(30),
-    artifactS3Encryption: {
-      encryptionMode: synthetics.EncryptionMode.KMS,
-      kmsKey: key, // external KMS Key set
-    },
   }],
+  artifactS3Encryption: {
+    encryptionMode: synthetics.EncryptionMode.KMS,
+    kmsKey: key, // external KMS Key set
+  },
 });
 ```
