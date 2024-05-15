@@ -78,11 +78,11 @@ new appconfig.Environment(this, 'MyEnvironment', {
 Environment monitors also support L1 `CfnEnvironment.MonitorsProperty` constructs through the `fromCfnMonitorsProperty` method.
 However, this is not the recommended approach for CloudWatch alarms because a role will not be auto-generated if not provided.
 
-See [About the AWS AppConfig data plane service](https://docs.aws.amazon.com/appconfig/latest/userguide/about-data-plane.html) more information.
+See [About the AWS AppConfig data plane service](https://docs.aws.amazon.com/appconfig/latest/userguide/about-data-plane.html) for more information.
 
 ### Permissions
 
-You can grant read configuration permission on an Environment to any Principal as follows:
+You can grant permissions to read a configuration to an Environment with the grantReadConfig method as follows:
 ```ts
 import * as iam from 'aws-cdk-lib/aws-iam';
 

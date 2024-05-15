@@ -561,15 +561,17 @@ export interface IEnvironment extends IResource {
   addExtension(extension: IExtension): void;
 
   /**
-   * Grant the given identity the specified actions
-   * @param grantee the identity to be granted the actions
-   * @param actions the data-access actions
+   * Adds an IAM policy statement associated with this environment to an IAM principal's policy.
+   *
+   * @param grantee the principal (no-op if undefined)
+   * @param actions the set of actions to allow (i.e., 'appconfig:GetLatestConfiguration', 'appconfig:StartConfigurationSession', etc.)
    */
   grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant;
 
   /**
-   * Grants read configuration permissions for this environment
-   * to an IAM principal (Role/Group/User).
+   * Permits an IAM principal a configuration read operations on this environment.
+   *
+   * Actions: GetLatestConfiguration, StartConfigurationSession.
    *
    * @param grantee Principal to grant read rights to
    */
