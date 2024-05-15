@@ -880,7 +880,7 @@ describe('DatabaseCluster', () => {
     });
   });
 
-  test('cluster with copyTagsToSnapshot default', () => {
+  test('copyTagsToSnapshot is not set by default', () => {
     // GIVEN
     const stack = testStack();
     const vpc = new ec2.Vpc(stack, 'VPC');
