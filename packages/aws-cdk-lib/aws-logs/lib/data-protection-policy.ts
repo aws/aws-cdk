@@ -321,7 +321,7 @@ export class CustomDataIdentifier extends DataIdentifier {
   /**
    * Create a custom data identifier.
    * @param name - the name of the custom data identifier. This cannot share the same name as a managed data identifier.
-   * @param regex - the regular expresssion to detect and mask log events for.
+   * @param regex - the regular expression to detect and mask log events for.
    */
   constructor(public readonly name: string, public readonly regex: string) {
     super(name);
