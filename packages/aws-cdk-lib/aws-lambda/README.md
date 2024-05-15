@@ -26,6 +26,10 @@ runtime code.
  * `lambda.Code.fromDockerBuild(path, options)` - use the result of a Docker
    build as code. The runtime code is expected to be located at `/asset` in the
    image and will be zipped and uploaded to S3 as an asset.
+ * `lambda.Code.fromCustomCommand(output, command, commandOptions, assetOptions)` - 
+   supply a command that is invoked during cdk synth. That command is meant to direct
+   the generated code to output (a zip file or a directory), which is then used as the 
+   code for the created AWS Lambda.
 
 The following example shows how to define a Python function and deploy the code
 from the local directory `my-lambda-handler` to it:
