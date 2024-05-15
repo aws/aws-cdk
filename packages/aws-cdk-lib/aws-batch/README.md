@@ -237,7 +237,7 @@ highPriorityQueue.addComputeEnvironment(sharedComputeEnv, 1);
 ### React to jobs stuck in RUNNABLE state
 
 You can react to jobs stuck in RUNNABLE state by setting a `jobStateTimeLimitActions` in `JobQueue`.
-Specifies an action that AWS Batch will take after the job has remained at the head of the queue in the
+Specifies actions that AWS Batch will take after the job has remained at the head of the queue in the
 specified state for longer than the specified time.
 
 ```ts
