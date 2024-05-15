@@ -185,8 +185,8 @@ export interface JobStateTimeLimitAction {
  */
 export enum JobStateTimeLimitActionsAction {
   /**
-  * Cancel the job.
-  */
+   * Cancel the job.
+   */
   CANCEL = 'CANCEL',
 }
 
