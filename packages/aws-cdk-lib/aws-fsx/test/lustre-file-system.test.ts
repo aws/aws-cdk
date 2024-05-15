@@ -512,12 +512,12 @@ describe('FSx for Lustre File System', () => {
       });
     });
 
-    describe('perUnitStorageThroughput', () => {
+    describe('perUnitStorageThroughput_PERSISTENT_1', () => {
       test.each([
         50,
         100,
         200,
-      ])('valid perUnitStorageThroughput of %d', (throughput: number) => {
+      ])('valid perUnitStorageThroughput of %d for SSD storage', (throughput: number) => {
         lustreConfiguration = {
           deploymentType: LustreDeploymentType.PERSISTENT_1,
           perUnitStorageThroughput: throughput,
@@ -544,7 +544,7 @@ describe('FSx for Lustre File System', () => {
         250,
         500,
         1000,
-      ])('invalid perUnitStorageThroughput', (invalidValue: number) => {
+      ])('invalid perUnitStorageThroughput for SSD storage', (invalidValue: number) => {
         lustreConfiguration = {
           deploymentType: LustreDeploymentType.PERSISTENT_1,
           perUnitStorageThroughput: invalidValue,
@@ -558,6 +558,46 @@ describe('FSx for Lustre File System', () => {
             vpcSubnet,
           });
         }).toThrowError('perUnitStorageThroughput must be 50, 100, or 200 MB/s/TiB for PERSISTENT_1 deployment type, got: ' + invalidValue);
+      });
+
+      test.each([12, 40])('valid perUnitStorageThroughput of %d for HDD storage', (validValue: number) => {
+        lustreConfiguration = {
+          deploymentType: LustreDeploymentType.PERSISTENT_1,
+          perUnitStorageThroughput: validValue,
+        };
+
+        new LustreFileSystem(stack, 'FsxFileSystem', {
+          lustreConfiguration,
+          storageCapacityGiB: storageCapacity,
+          vpc,
+          vpcSubnet,
+          storageType: StorageType.HDD,
+        });
+
+        Template.fromStack(stack).hasResourceProperties('AWS::FSx::FileSystem', {
+          LustreConfiguration: {
+            DeploymentType: LustreDeploymentType.PERSISTENT_1,
+            PerUnitStorageThroughput: validValue,
+          },
+          StorageType: StorageType.HDD,
+        });
+      });
+
+      test.each([1, 50, 100, 125, 200, 250, 500, 1000])('invalid perUnitStorageThroughput of %d for HDD storage', (invalidValue: number) => {
+        lustreConfiguration = {
+          deploymentType: LustreDeploymentType.PERSISTENT_1,
+          perUnitStorageThroughput: invalidValue,
+        };
+
+        expect(() => {
+          new LustreFileSystem(stack, 'FsxFileSystem', {
+            lustreConfiguration,
+            storageCapacityGiB: storageCapacity,
+            vpc,
+            vpcSubnet,
+            storageType: StorageType.HDD,
+          });
+        }).toThrow('perUnitStorageThroughput must be 12 or 40 MB/s/TiB for HDD storage type, got: ' + invalidValue);
       });
 
       test('setting perUnitStorageThroughput on wrong deploymentType', () => {

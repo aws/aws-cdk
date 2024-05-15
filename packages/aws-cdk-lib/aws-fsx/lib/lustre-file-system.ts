@@ -129,10 +129,15 @@ export interface LustreConfiguration {
   readonly dataCompressionType?: LustreDataCompressionType;
 
   /**
-   * Required for the PERSISTENT_1 deployment type, describes the amount of read and write throughput for each 1
-   * tebibyte of storage, in MB/s/TiB. Valid values are 50, 100, 200.
+   * Required with PERSISTENT_1 and PERSISTENT_2 deployment types,
+   * provisions the amount of read and write throughput for each 1 tebibyte (TiB) of file system storage capacity, in MB/s/TiB.
    *
-   * @default - no default, conditionally required for PERSISTENT_1 deployment type
+   * Valid values:
+   * - For PERSISTENT_1 SSD storage: 50, 100, 200 MB/s/TiB.
+   * - For PERSISTENT_1 HDD storage: 12, 40 MB/s/TiB.
+   * - For PERSISTENT_2 SSD storage: 125, 250, 500, 1000 MB/s/TiB.
+   *
+   * @default - no default, conditionally required for PERSISTENT_1 and PERSISTENT_2 deployment type
    */
   readonly perUnitStorageThroughput?: number;
 
@@ -315,7 +320,7 @@ export class LustreFileSystem extends FileSystemBase {
 
     this.validateImportedFileChunkSize(lustreConfiguration.importedFileChunkSizeMiB);
     this.validateAutoImportPolicy(deploymentType, lustreConfiguration.importPath, lustreConfiguration.autoImportPolicy);
-    this.validatePerUnitStorageThroughput(deploymentType, lustreConfiguration.perUnitStorageThroughput);
+    this.validatePerUnitStorageThroughput(deploymentType, lustreConfiguration.perUnitStorageThroughput, props.storageType);
     this.validateStorageCapacity(deploymentType, props.storageCapacityGiB);
 
     this.validateAutomaticBackupRetention(deploymentType, lustreConfiguration.automaticBackupRetention);
@@ -401,7 +406,11 @@ export class LustreFileSystem extends FileSystemBase {
   /**
    * Validates the perUnitStorageThroughput is defined correctly for the given deploymentType.
    */
-  private validatePerUnitStorageThroughput(deploymentType: LustreDeploymentType, perUnitStorageThroughput?: number) {
+  private validatePerUnitStorageThroughput(
+    deploymentType: LustreDeploymentType,
+    perUnitStorageThroughput?: number,
+    storageType?: StorageType,
+  ): void {
     if (perUnitStorageThroughput === undefined) { return; }
 
     if (deploymentType !== LustreDeploymentType.PERSISTENT_1 && deploymentType !== LustreDeploymentType.PERSISTENT_2) {
@@ -409,8 +418,11 @@ export class LustreFileSystem extends FileSystemBase {
     }
 
     if (deploymentType === LustreDeploymentType.PERSISTENT_1) {
-      if (![50, 100, 200].includes(perUnitStorageThroughput)) {
-        throw new Error('perUnitStorageThroughput must be 50, 100, or 200 MB/s/TiB for PERSISTENT_1 deployment type, got: ' + perUnitStorageThroughput);
+      if (storageType === StorageType.HDD && ![12, 40].includes(perUnitStorageThroughput)) {
+        throw new Error(`perUnitStorageThroughput must be 12 or 40 MB/s/TiB for PERSISTENT_1 HDD storage, got: ${perUnitStorageThroughput}`);
+      }
+      if ((storageType === undefined || storageType === StorageType.SSD) && ![50, 100, 200].includes(perUnitStorageThroughput)) {
+        throw new Error('perUnitStorageThroughput must be 50, 100, or 200 MB/s/TiB for PERSISTENT_1 SSD storage, got: ' + perUnitStorageThroughput);
       }
     }
 
