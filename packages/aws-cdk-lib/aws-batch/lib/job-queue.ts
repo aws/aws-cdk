@@ -149,11 +149,11 @@ export interface OrderedComputeEnvironment {
  */
 export interface JobStateTimeLimitAction {
   /**
- * The action to take when a job is at the head of the job queue in the specified state
- * for the specified period of time.
- *
- * @default JobStateTimeLimitActionsAction.CANCEL
- */
+   * The action to take when a job is at the head of the job queue in the specified state
+   * for the specified period of time.
+   *
+   * @default JobStateTimeLimitActionsAction.CANCEL
+   */
   readonly action?: JobStateTimeLimitActionsAction;
 
   /**
