@@ -278,8 +278,7 @@ export class JobQueue extends Resource implements IJobQueue {
       jobQueueName: props?.jobQueueName,
       state: (this.enabled ?? true) ? 'ENABLED' : 'DISABLED',
       schedulingPolicyArn: this.schedulingPolicy?.schedulingPolicyArn,
-      jobStateTimeLimitActions: props?.jobStateTimeLimitActions !== undefined ?
-        this.parseJobStateTimeLimitActions(props.jobStateTimeLimitActions) : undefined,
+      jobStateTimeLimitActions: this.renderJobStateTimeLimitActions(props?.jobStateTimeLimitActions),
     });
 
     this.jobQueueArn = this.getResourceArnAttribute(resource.attrJobQueueArn, {
