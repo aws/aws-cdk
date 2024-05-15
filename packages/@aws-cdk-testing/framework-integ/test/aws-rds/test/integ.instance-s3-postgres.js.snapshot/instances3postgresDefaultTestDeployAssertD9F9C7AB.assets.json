@@ -1,15 +1,15 @@
 {
   "version": "36.0.0",
   "files": {
-    "a4ac9d4b27295d21cbde16cf7bb6bcebea301d2951d939c5dc44a4a0733dfcf2": {
+    "21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22": {
       "source": {
-        "path": "aws-cdk-rds-instance-dual-integ.template.json",
+        "path": "instances3postgresDefaultTestDeployAssertD9F9C7AB.template.json",
         "packaging": "file"
       },
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "a4ac9d4b27295d21cbde16cf7bb6bcebea301d2951d939c5dc44a4a0733dfcf2.json",
+          "objectKey": "21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
