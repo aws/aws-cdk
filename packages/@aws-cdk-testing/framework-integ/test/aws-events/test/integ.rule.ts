@@ -31,7 +31,7 @@ new Rule(stack, 'MyRule', {
       suffix: Match.suffix('.com'),
       equalsIgnoreCase: Match.equalsIgnoreCase('ignore case'),
     },
-    detailType: ['detailType1'],
+    detailType: ['detailType1', { prefix: 'detailPrefix' }],
     id: ['id1', 'id2'],
     region: ['region1', 'region2', 'region3'],
     resources: ['r1'],

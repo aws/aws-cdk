@@ -196,6 +196,30 @@ describe('rule', () => {
     });
   });
 
+  test('eventPattern detailType supports filtering patterns as inputs', () => {
+    const stack = new cdk.Stack();
+
+    new Rule(stack, 'MyRule', {
+      eventPattern: {
+        detailType: [{ 'prefix': 'detailType1' }, 'anotherDetailType', { 'anything-but': 'initializing' }],
+      },
+    });
+
+    Template.fromStack(stack).templateMatches({
+      'Resources': {
+        'MyRuleA44AB831': {
+          'Type': 'AWS::Events::Rule',
+          'Properties': {
+            'EventPattern': {
+              'detail-type': [{ 'prefix': 'detailType1' }, 'anotherDetailType', { 'anything-but': 'initializing' }],
+            },
+            'State': 'ENABLED',
+          },
+        },
+      },
+    });
+  });
+
   test('fails synthesis if neither eventPattern nor scheduleExpression are specified', () => {
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'MyStack');
@@ -309,6 +333,37 @@ describe('rule', () => {
                 'AWS API Call via CloudTrail',
                 'EC2 Instance State-change Notification',
               ],
+            },
+            'State': 'ENABLED',
+          },
+        },
+      },
+    });
+  });
+
+  test('addEventPattern can support event matching patterns in detailType', () => {
+    const stack = new cdk.Stack();
+
+    const rule = new Rule(stack, 'MyRule');
+    rule.addEventPattern({
+      detailType: [{ 'prefix': 'event_prefix' }],
+    });
+
+    rule.addEventPattern({
+      detailType: ['EC2 Instance State-change Notification', 'AWS API Call via CloudTrail'],
+    });
+
+    Template.fromStack(stack).templateMatches({
+      'Resources': {
+        'MyRuleA44AB831': {
+          'Type': 'AWS::Events::Rule',
+          'Properties': {
+            'EventPattern': {
+              'detail-type': [{
+                'prefix': 'event_prefix',
+              },
+              'EC2 Instance State-change Notification',
+              'AWS API Call via CloudTrail'],
             },
             'State': 'ENABLED',
           },
