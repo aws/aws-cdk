@@ -119,8 +119,8 @@ export interface JobQueueProps {
   readonly schedulingPolicy?: ISchedulingPolicy;
 
   /**
-   * Specifies an action that AWS Batch will take after the job has remained at the head of the queue
-   * in the specified state for longer than the specified time.
+   * The set of actions that AWS Batch perform on jobs that remain at the head of the job queue in
+   * the specified state longer than specified times.
    *
    * @default - no actions
    */
