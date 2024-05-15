@@ -104,7 +104,9 @@ describe('lambda.Code.fromCustomCommand', () => {
     expect(() => new NodejsFunction(stack, 'handler1', {
       handler: handlerName,
       code: Code.fromCustomCommand('function.test.handler7.zip', ['node'], undefined),
-    })).toThrow('Cannot determine handler when `code` property is specified. Use `handler` property to specify a handler.');
+    })).toThrow('Cannot determine handler when `code` property is specified. Use `handler` property to specify a handler.\n'
+     + 'The handler should be the name of the exported function to be invoked and the file containing that function.\n'
+     + 'For example, handler should be specified in the form `myFile.myFunction`');
   });
 
   test('if code and handler properties are included, the template can be synthesized', () => {

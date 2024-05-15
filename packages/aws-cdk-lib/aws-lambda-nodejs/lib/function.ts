@@ -113,7 +113,11 @@ export class NodejsFunction extends lambda.Function {
 
     if (props.code !== undefined) {
       if (props.handler === undefined) {
-        throw new Error('Cannot determine handler when `code` property is specified. Use `handler` property to specify a handler.');
+        throw new Error(
+          'Cannot determine handler when `code` property is specified. Use `handler` property to specify a handler.\n'
+          + 'The handler should be the name of the exported function to be invoked and the file containing that function.\n'
+          + 'For example, handler should be specified in the form `myFile.myFunction`',
+        );
       }
 
       super(scope, id, {
