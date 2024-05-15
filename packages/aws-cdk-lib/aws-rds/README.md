@@ -312,7 +312,7 @@ declare const vpc: ec2.Vpc;
 const cluster = new rds.DatabaseCluster(this, 'Database', {
   engine: rds.DatabaseClusterEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_3_01_0 }),
   writer: rds.ClusterInstance.provisioned('writer', {
-    caCertificate: rds.CaCertificate.RDS_CA_RDS2048_G1,
+    caCertificate: rds.CaCertificate.RDS_CA_RSA2048_G1,
   }),
   readers: [
     rds.ClusterInstance.serverlessV2('reader', {
@@ -527,7 +527,7 @@ declare const vpc: ec2.Vpc;
 new rds.DatabaseInstance(this, 'Instance', {
   engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_30 }),
   vpc,
-  caCertificate: rds.CaCertificate.RDS_CA_RDS2048_G1,
+  caCertificate: rds.CaCertificate.RDS_CA_RSA2048_G1,
 });
 ```
 

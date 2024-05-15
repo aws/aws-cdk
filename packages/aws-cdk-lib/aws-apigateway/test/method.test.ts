@@ -714,6 +714,7 @@ describe('method', () => {
       resource: api.root,
       options: {
         apiKeyRequired: true,
+        authorizationType: apigw.AuthorizationType.COGNITO,
         authorizationScopes: ['AuthScope1', 'AuthScope2'],
       },
     });
@@ -733,6 +734,7 @@ describe('method', () => {
       cloudWatchRole: false,
       deploy: false,
       defaultMethodOptions: {
+        authorizationType: apigw.AuthorizationType.COGNITO,
         authorizationScopes: ['DefaultAuth'],
       },
     });
@@ -754,33 +756,35 @@ describe('method', () => {
 
   });
 
-  test('Method options Auth Scopes is picked up', () => {
+  test.each([
+    [apigw.AuthorizationType.IAM, undefined],
+    [apigw.AuthorizationType.NONE, undefined],
+    [apigw.AuthorizationType.CUSTOM, undefined],
+    [apigw.AuthorizationType.COGNITO, ['MethodAuthScope']],
+  ])('Test combination of authType and expected authScopes', (authType, scopes) => {
     // GIVEN
     const stack = new cdk.Stack();
     const api = new apigw.RestApi(stack, 'test-api', {
       cloudWatchRole: false,
       deploy: false,
-      defaultMethodOptions: {
-        authorizationScopes: ['DefaultAuth'],
-      },
     });
 
     // WHEN
     new apigw.Method(stack, 'MethodAuthScopeUsed', {
-      httpMethod: 'POST',
+      httpMethod: 'OPTIONS',
       resource: api.root,
       options: {
         apiKeyRequired: true,
+        authorizationType: authType,
         authorizationScopes: ['MethodAuthScope'],
       },
     });
 
     // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Method', {
-      ApiKeyRequired: true,
-      AuthorizationScopes: ['MethodAuthScope'],
-    });
-
+    expect(() => Template.fromStack(stack).hasResourceProperties('AWS::ApiGateway::Method', {
+      AuthorizationScopes: scopes,
+      AuthorizationType: authType,
+    }));
   });
 
   test('Auth Scopes absent', () => {

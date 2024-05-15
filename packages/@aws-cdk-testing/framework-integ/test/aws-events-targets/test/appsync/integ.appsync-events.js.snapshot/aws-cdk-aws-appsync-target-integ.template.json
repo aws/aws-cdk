@@ -1,0 +1,238 @@
+{
+ "Resources": {
+  "baseApiCDA4D43A": {
+   "Type": "AWS::AppSync::GraphQLApi",
+   "Properties": {
+    "AuthenticationType": "AWS_IAM",
+    "Name": "aws-cdk-aws-appsync-target-integ-api"
+   }
+  },
+  "baseApiSchemaB12C7BB0": {
+   "Type": "AWS::AppSync::GraphQLSchema",
+   "Properties": {
+    "ApiId": {
+     "Fn::GetAtt": [
+      "baseApiCDA4D43A",
+      "ApiId"
+     ]
+    },
+    "Definition": "type Event {\n  message: String\n}\ntype Query {\n  getTests: [Event]!\n}\ntype Mutation {\n  publish(message: String!): Event\n}\n\ntype Subscription {\n  onPublish: Event @aws_subscribe(mutations: [\"publish\"])\n}\n"
+   }
+  },
+  "baseApinone7DDDEE3D": {
+   "Type": "AWS::AppSync::DataSource",
+   "Properties": {
+    "ApiId": {
+     "Fn::GetAtt": [
+      "baseApiCDA4D43A",
+      "ApiId"
+     ]
+    },
+    "Name": "none",
+    "Type": "NONE"
+   }
+  },
+  "baseApipublisherC3F47EA2": {
+   "Type": "AWS::AppSync::Resolver",
+   "Properties": {
+    "ApiId": {
+     "Fn::GetAtt": [
+      "baseApiCDA4D43A",
+      "ApiId"
+     ]
+    },
+    "Code": "export const request = (ctx) => ({payload: null})\nexport const response = (ctx) => ctx.args.message",
+    "DataSourceName": "none",
+    "FieldName": "publish",
+    "Kind": "UNIT",
+    "Runtime": {
+     "Name": "APPSYNC_JS",
+     "RuntimeVersion": "1.0.0"
+    },
+    "TypeName": "Mutation"
+   },
+   "DependsOn": [
+    "baseApinone7DDDEE3D",
+    "baseApiSchemaB12C7BB0"
+   ]
+  },
+  "baseApiEventsRoleAC472BD7": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "events.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "baseApiEventsRoleDefaultPolicy94199357": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "appsync:GraphQL",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":appsync:",
+          {
+           "Ref": "AWS::Region"
+          },
+          ":",
+          {
+           "Ref": "AWS::AccountId"
+          },
+          ":apis/",
+          {
+           "Fn::GetAtt": [
+            "baseApiCDA4D43A",
+            "ApiId"
+           ]
+          },
+          "/types/Mutation/*"
+         ]
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "baseApiEventsRoleDefaultPolicy94199357",
+    "Roles": [
+     {
+      "Ref": "baseApiEventsRoleAC472BD7"
+     }
+    ]
+   }
+  },
+  "Queue4A7E3555": {
+   "Type": "AWS::SQS::Queue",
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "QueuePolicy25439813": {
+   "Type": "AWS::SQS::QueuePolicy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sqs:SendMessage",
+       "Condition": {
+        "ArnEquals": {
+         "aws:SourceArn": {
+          "Fn::GetAtt": [
+           "TimerBF6F831F",
+           "Arn"
+          ]
+         }
+        }
+       },
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "events.amazonaws.com"
+       },
+       "Resource": {
+        "Fn::GetAtt": [
+         "Queue4A7E3555",
+         "Arn"
+        ]
+       },
+       "Sid": "AllowEventRuleawscdkawsappsynctargetintegTimer2A2187F8"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Queues": [
+     {
+      "Ref": "Queue4A7E3555"
+     }
+    ]
+   }
+  },
+  "TimerBF6F831F": {
+   "Type": "AWS::Events::Rule",
+   "Properties": {
+    "ScheduleExpression": "rate(1 minute)",
+    "State": "ENABLED",
+    "Targets": [
+     {
+      "AppSyncParameters": {
+       "GraphQLOperation": "mutation Publish($message: String!){ publish(message: $message) { message } }"
+      },
+      "Arn": {
+       "Fn::GetAtt": [
+        "baseApiCDA4D43A",
+        "GraphQLEndpointArn"
+       ]
+      },
+      "DeadLetterConfig": {
+       "Arn": {
+        "Fn::GetAtt": [
+         "Queue4A7E3555",
+         "Arn"
+        ]
+       }
+      },
+      "Id": "Target0",
+      "Input": "{\"message\":\"hello world\"}",
+      "RoleArn": {
+       "Fn::GetAtt": [
+        "baseApiEventsRoleAC472BD7",
+        "Arn"
+       ]
+      }
+     }
+    ]
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

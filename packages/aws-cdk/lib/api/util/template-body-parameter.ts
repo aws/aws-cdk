@@ -1,3 +1,4 @@
+import * as path from 'path';
 import * as cxapi from '@aws-cdk/cx-api';
 import * as chalk from 'chalk';
 import * as fs from 'fs-extra';
@@ -68,7 +69,8 @@ export async function makeBodyParameter(
   if (overrideTemplate) {
     // Add a variant of this template
     templateFile = `${stack.templateFile}-${templateHash}.yaml`;
-    await fs.writeFile(templateFile, templateJson, { encoding: 'utf-8' });
+    const templateFilePath = path.join(stack.assembly.directory, templateFile);
+    await fs.writeFile(templateFilePath, templateJson, { encoding: 'utf-8' });
   }
 
   assetManifest.addFileAsset(templateHash, {

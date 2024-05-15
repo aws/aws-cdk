@@ -1,7 +1,7 @@
 import { promises as fs, existsSync } from 'fs';
 import * as os from 'os';
 import * as path from 'path';
-import { integTest, cloneDirectory, shell, withDefaultFixture, retry, sleep, randomInteger, withSamIntegrationFixture, RESOURCES_DIR, withCDKMigrateFixture, withExtendedTimeoutFixture } from '../../lib';
+import { integTest, cloneDirectory, shell, withDefaultFixture, retry, sleep, randomInteger, withSamIntegrationFixture, RESOURCES_DIR, withCDKMigrateFixture, withExtendedTimeoutFixture, randomString } from '../../lib';
 
 jest.setTimeout(2 * 60 * 60_000); // Includes the time to acquire locks, worst-case single-threaded runtime
 
@@ -944,6 +944,50 @@ integTest('cdk diff --quiet does not print \'There were no differences\' message
   expect(diff).not.toContain('There were no differences');
 }));
 
+integTest('cdk diff picks up changes that are only present in changeset', withDefaultFixture(async (fixture) => {
+  // GIVEN
+  await fixture.aws.ssm('putParameter', {
+    Name: 'for-queue-name-defined-by-ssm-param',
+    Value: randomString(),
+    Type: 'String',
+    Overwrite: true,
+  });
+
+  try {
+    await fixture.cdkDeploy('queue-name-defined-by-ssm-param');
+
+    // WHEN
+    // We want to change the ssm value. Then the CFN changeset will detect that the queue will be changed upon deploy.
+    await fixture.aws.ssm('putParameter', {
+      Name: 'for-queue-name-defined-by-ssm-param',
+      Value: randomString(),
+      Type: 'String',
+      Overwrite: true,
+    });
+
+    const diff = await fixture.cdk(['diff', fixture.fullStackName('queue-name-defined-by-ssm-param')]);
+
+    // THEN
+    const normalizedPlainTextOutput = diff.replace(/\x1B\[[0-?]*[ -/]*[@-~]/g, '') // remove all color and formatting (bolding, italic, etc)
+      .replace(/ /g, '') // remove all spaces
+      .replace(/\n/g, '') // remove all new lines
+      .replace(/\d+/g, ''); // remove all digits
+
+    const normalizedExpectedOutput = `
+      Resources
+      [~] AWS::SQS::Queue DiffFromChangeSetQueue DiffFromChangeSetQueue06622C07 replace
+       └─ [~] QueueName (requires replacement)
+      [~] AWS::SSM::Parameter DiffFromChangeSetSSMParam DiffFromChangeSetSSMParam92A9A723
+       └─ [~] Value`
+      .replace(/ /g, '')
+      .replace(/\n/g, '')
+      .replace(/\d+/g, '');
+    expect(normalizedPlainTextOutput).toContain(normalizedExpectedOutput);
+  } finally {
+    await fixture.cdkDestroy('queue-name-defined-by-ssm-param');
+  }
+}));
+
 integTest('deploy stack with docker asset', withDefaultFixture(async (fixture) => {
   await fixture.cdkDeploy('docker');
 }));
@@ -1575,37 +1619,60 @@ integTest('skips notice refresh', withDefaultFixture(async (fixture) => {
 }));
 
 /**
- * Create a queue with a fresh name, redeploy orphaning the queue, then import it again
+ * Create a queue, orphan that queue, then import the queue.
+ *
+ * We want to test with a large template to make sure large templates can work with import.
  */
 integTest('test resource import', withDefaultFixture(async (fixture) => {
-  const outputsFile = path.join(fixture.integTestDir, 'outputs', 'outputs.json');
+  // GIVEN
+  const randomPrefix = randomString();
+  const uniqueOutputsFileName = `${randomPrefix}Outputs.json`; // other tests use the outputs file. Make sure we don't collide.
+  const outputsFile = path.join(fixture.integTestDir, 'outputs', uniqueOutputsFileName);
   await fs.mkdir(path.dirname(outputsFile), { recursive: true });
 
-  // Initial deploy
+  // First, create a stack that includes many queues, and one queue that will be removed from the stack but NOT deleted from AWS.
   await fixture.cdkDeploy('importable-stack', {
-    modEnv: { ORPHAN_TOPIC: '1' },
+    modEnv: { LARGE_TEMPLATE: '1', INCLUDE_SINGLE_QUEUE: '1', RETAIN_SINGLE_QUEUE: '1' },
     options: ['--outputs-file', outputsFile],
   });
 
-  const outputs = JSON.parse((await fs.readFile(outputsFile, { encoding: 'utf-8' })).toString());
-  const queueName = outputs.QueueName;
-  const queueLogicalId = outputs.QueueLogicalId;
-  fixture.log(`Setup complete, created queue ${queueName}`);
   try {
-    // Deploy again, orphaning the queue
+
+    // Second, now the queue we will remove is in the stack and has a logicalId. We can now make the resource mapping file.
+    // This resource mapping file will be used to tell the import operation what queue to bring into the stack.
+    const fullStackName = fixture.fullStackName('importable-stack');
+    const outputs = JSON.parse((await fs.readFile(outputsFile, { encoding: 'utf-8' })).toString());
+    const queueLogicalId = outputs[fullStackName].QueueLogicalId;
+    const queueResourceMap = {
+      [queueLogicalId]: { QueueUrl: outputs[fullStackName].QueueUrl },
+    };
+    const mappingFile = path.join(fixture.integTestDir, 'outputs', `${randomPrefix}Mapping.json`);
+    await fs.writeFile(
+      mappingFile,
+      JSON.stringify(queueResourceMap),
+      { encoding: 'utf-8' },
+    );
+
+    // Third, remove the queue from the stack, but don't delete the queue from AWS.
     await fixture.cdkDeploy('importable-stack', {
-      modEnv: { OMIT_TOPIC: '1' },
+      modEnv: { LARGE_TEMPLATE: '1', INCLUDE_SINGLE_QUEUE: '0', RETAIN_SINGLE_QUEUE: '0' },
     });
+    const cfnTemplateBeforeImport = await fixture.aws.cloudFormation('getTemplate', { StackName: fullStackName });
+    expect(cfnTemplateBeforeImport.TemplateBody).not.toContain(queueLogicalId);
 
-    // Write a resource mapping file based on the ID from step one, then run an import
-    const mappingFile = path.join(fixture.integTestDir, 'outputs', 'mapping.json');
-    await fs.writeFile(mappingFile, JSON.stringify({ [queueLogicalId]: { QueueName: queueName } }), { encoding: 'utf-8' });
+    // WHEN
+    await fixture.cdk(
+      ['import', '--resource-mapping', mappingFile, fixture.fullStackName('importable-stack')],
+      { modEnv: { LARGE_TEMPLATE: '1', INCLUDE_SINGLE_QUEUE: '1', RETAIN_SINGLE_QUEUE: '0' } },
+    );
 
-    await fixture.cdk(['import',
-      '--resource-mapping', mappingFile,
-      fixture.fullStackName('importable-stack')]);
+    // THEN
+    const describeStacksResponse = await fixture.aws.cloudFormation('describeStacks', { StackName: fullStackName });
+    const cfnTemplateAfterImport = await fixture.aws.cloudFormation('getTemplate', { StackName: fullStackName });
+    expect(describeStacksResponse.Stacks![0].StackStatus).toEqual('IMPORT_COMPLETE');
+    expect(cfnTemplateAfterImport.TemplateBody).toContain(queueLogicalId);
   } finally {
-    // Cleanup
+    // Clean up
     await fixture.cdkDestroy('importable-stack');
   }
 }));

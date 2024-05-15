@@ -126,6 +126,22 @@ class SsoInstanceAccessControlConfig extends Stack {
   }
 }
 
+class DiffFromChangeSetStack extends Stack {
+  constructor(scope, id) {
+    super(scope, id);
+
+    const queueNameFromParameter = ssm.StringParameter.valueForStringParameter(this, 'for-queue-name-defined-by-ssm-param');
+    new sqs.Queue(this, "DiffFromChangeSetQueue", {
+      queueName: queueNameFromParameter,
+    })
+
+    new ssm.StringParameter(this, 'DiffFromChangeSetSSMParam', {
+      parameterName: 'DiffFromChangeSetSSMParamName',
+      stringValue: queueNameFromParameter,
+    });
+  }
+}
+
 class ListMultipleDependentStack extends Stack {
   constructor(scope, id) {
     super(scope, id);
@@ -232,10 +248,37 @@ class MigrateStack extends cdk.Stack {
   }
 }
 
-class ImportableStack extends MigrateStack {
+class ImportableStack extends cdk.Stack {
   constructor(parent, id, props) {
     super(parent, id, props);
     new cdk.CfnWaitConditionHandle(this, 'Handle');
+
+    if (process.env.INCLUDE_SINGLE_QUEUE === '1') {
+      const queue = new sqs.Queue(this, 'Queue', {
+        removalPolicy: (process.env.RETAIN_SINGLE_QUEUE === '1') ? cdk.RemovalPolicy.RETAIN : cdk.RemovalPolicy.DESTROY,
+      });
+
+      new cdk.CfnOutput(this, 'QueueName', {
+        value: queue.queueName,
+      });
+
+      new cdk.CfnOutput(this, 'QueueUrl', {
+        value: queue.queueUrl,
+      });
+      
+      new cdk.CfnOutput(this, 'QueueLogicalId', {
+        value: queue.node.defaultChild.logicalId,
+      });
+    }
+
+    if (process.env.LARGE_TEMPLATE === '1') {
+      for (let i = 1; i <= 70; i++) {
+        new sqs.Queue(this, `cdk-import-queue-test${i}`, {
+          enforceSSL: true,
+          removalPolicy: cdk.RemovalPolicy.DESTROY,
+        });
+      }
+    }
   }
 }
 
@@ -657,6 +700,8 @@ switch (stackSet) {
     new SsoPermissionSetNoPolicy(app, `${stackPrefix}-sso-perm-set-without-managed-policy`);
 
     const failed = new FailedStack(app, `${stackPrefix}-failed`)
+
+    new DiffFromChangeSetStack(app, `${stackPrefix}-queue-name-defined-by-ssm-param`)
 
     // A stack that depends on the failed stack -- used to test that '-e' does not deploy the failing stack
     const dependsOnFailed = new OutputsStack(app, `${stackPrefix}-depends-on-failed`);

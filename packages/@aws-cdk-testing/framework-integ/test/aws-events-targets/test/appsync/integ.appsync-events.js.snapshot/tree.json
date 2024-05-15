@@ -1,0 +1,464 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "aws-cdk-aws-appsync-target-integ": {
+        "id": "aws-cdk-aws-appsync-target-integ",
+        "path": "aws-cdk-aws-appsync-target-integ",
+        "children": {
+          "baseApi": {
+            "id": "baseApi",
+            "path": "aws-cdk-aws-appsync-target-integ/baseApi",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-aws-appsync-target-integ/baseApi/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::AppSync::GraphQLApi",
+                  "aws:cdk:cloudformation:props": {
+                    "authenticationType": "AWS_IAM",
+                    "name": "aws-cdk-aws-appsync-target-integ-api"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_appsync.CfnGraphQLApi",
+                  "version": "0.0.0"
+                }
+              },
+              "Schema": {
+                "id": "Schema",
+                "path": "aws-cdk-aws-appsync-target-integ/baseApi/Schema",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::AppSync::GraphQLSchema",
+                  "aws:cdk:cloudformation:props": {
+                    "apiId": {
+                      "Fn::GetAtt": [
+                        "baseApiCDA4D43A",
+                        "ApiId"
+                      ]
+                    },
+                    "definition": "type Event {\n  message: String\n}\ntype Query {\n  getTests: [Event]!\n}\ntype Mutation {\n  publish(message: String!): Event\n}\n\ntype Subscription {\n  onPublish: Event @aws_subscribe(mutations: [\"publish\"])\n}\n"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_appsync.CfnGraphQLSchema",
+                  "version": "0.0.0"
+                }
+              },
+              "LogGroup": {
+                "id": "LogGroup",
+                "path": "aws-cdk-aws-appsync-target-integ/baseApi/LogGroup",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Resource",
+                  "version": "0.0.0"
+                }
+              },
+              "none": {
+                "id": "none",
+                "path": "aws-cdk-aws-appsync-target-integ/baseApi/none",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-cdk-aws-appsync-target-integ/baseApi/none/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::AppSync::DataSource",
+                      "aws:cdk:cloudformation:props": {
+                        "apiId": {
+                          "Fn::GetAtt": [
+                            "baseApiCDA4D43A",
+                            "ApiId"
+                          ]
+                        },
+                        "name": "none",
+                        "type": "NONE"
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_appsync.CfnDataSource",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_appsync.NoneDataSource",
+                  "version": "0.0.0"
+                }
+              },
+              "publisher": {
+                "id": "publisher",
+                "path": "aws-cdk-aws-appsync-target-integ/baseApi/publisher",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-cdk-aws-appsync-target-integ/baseApi/publisher/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::AppSync::Resolver",
+                      "aws:cdk:cloudformation:props": {
+                        "apiId": {
+                          "Fn::GetAtt": [
+                            "baseApiCDA4D43A",
+                            "ApiId"
+                          ]
+                        },
+                        "code": "export const request = (ctx) => ({payload: null})\nexport const response = (ctx) => ctx.args.message",
+                        "dataSourceName": "none",
+                        "fieldName": "publish",
+                        "kind": "UNIT",
+                        "runtime": {
+                          "name": "APPSYNC_JS",
+                          "runtimeVersion": "1.0.0"
+                        },
+                        "typeName": "Mutation"
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_appsync.CfnResolver",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_appsync.Resolver",
+                  "version": "0.0.0"
+                }
+              },
+              "EventsRole": {
+                "id": "EventsRole",
+                "path": "aws-cdk-aws-appsync-target-integ/baseApi/EventsRole",
+                "children": {
+                  "ImportEventsRole": {
+                    "id": "ImportEventsRole",
+                    "path": "aws-cdk-aws-appsync-target-integ/baseApi/EventsRole/ImportEventsRole",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-cdk-aws-appsync-target-integ/baseApi/EventsRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "events.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "DefaultPolicy": {
+                    "id": "DefaultPolicy",
+                    "path": "aws-cdk-aws-appsync-target-integ/baseApi/EventsRole/DefaultPolicy",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "aws-cdk-aws-appsync-target-integ/baseApi/EventsRole/DefaultPolicy/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": "appsync:GraphQL",
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::Join": [
+                                      "",
+                                      [
+                                        "arn:",
+                                        {
+                                          "Ref": "AWS::Partition"
+                                        },
+                                        ":appsync:",
+                                        {
+                                          "Ref": "AWS::Region"
+                                        },
+                                        ":",
+                                        {
+                                          "Ref": "AWS::AccountId"
+                                        },
+                                        ":apis/",
+                                        {
+                                          "Fn::GetAtt": [
+                                            "baseApiCDA4D43A",
+                                            "ApiId"
+                                          ]
+                                        },
+                                        "/types/Mutation/*"
+                                      ]
+                                    ]
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "baseApiEventsRoleDefaultPolicy94199357",
+                            "roles": [
+                              {
+                                "Ref": "baseApiEventsRoleAC472BD7"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.Policy",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_appsync.GraphqlApi",
+              "version": "0.0.0"
+            }
+          },
+          "Queue": {
+            "id": "Queue",
+            "path": "aws-cdk-aws-appsync-target-integ/Queue",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-aws-appsync-target-integ/Queue/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::SQS::Queue",
+                  "aws:cdk:cloudformation:props": {}
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_sqs.CfnQueue",
+                  "version": "0.0.0"
+                }
+              },
+              "Policy": {
+                "id": "Policy",
+                "path": "aws-cdk-aws-appsync-target-integ/Queue/Policy",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-cdk-aws-appsync-target-integ/Queue/Policy/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::SQS::QueuePolicy",
+                      "aws:cdk:cloudformation:props": {
+                        "policyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sqs:SendMessage",
+                              "Condition": {
+                                "ArnEquals": {
+                                  "aws:SourceArn": {
+                                    "Fn::GetAtt": [
+                                      "TimerBF6F831F",
+                                      "Arn"
+                                    ]
+                                  }
+                                }
+                              },
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "events.amazonaws.com"
+                              },
+                              "Resource": {
+                                "Fn::GetAtt": [
+                                  "Queue4A7E3555",
+                                  "Arn"
+                                ]
+                              },
+                              "Sid": "AllowEventRuleawscdkawsappsynctargetintegTimer2A2187F8"
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "queues": [
+                          {
+                            "Ref": "Queue4A7E3555"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_sqs.CfnQueuePolicy",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_sqs.QueuePolicy",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_sqs.Queue",
+              "version": "0.0.0"
+            }
+          },
+          "Timer": {
+            "id": "Timer",
+            "path": "aws-cdk-aws-appsync-target-integ/Timer",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-aws-appsync-target-integ/Timer/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Events::Rule",
+                  "aws:cdk:cloudformation:props": {
+                    "scheduleExpression": "rate(1 minute)",
+                    "state": "ENABLED",
+                    "targets": [
+                      {
+                        "id": "Target0",
+                        "arn": {
+                          "Fn::GetAtt": [
+                            "baseApiCDA4D43A",
+                            "GraphQLEndpointArn"
+                          ]
+                        },
+                        "roleArn": {
+                          "Fn::GetAtt": [
+                            "baseApiEventsRoleAC472BD7",
+                            "Arn"
+                          ]
+                        },
+                        "deadLetterConfig": {
+                          "arn": {
+                            "Fn::GetAtt": [
+                              "Queue4A7E3555",
+                              "Arn"
+                            ]
+                          }
+                        },
+                        "appSyncParameters": {
+                          "graphQlOperation": "mutation Publish($message: String!){ publish(message: $message) { message } }"
+                        },
+                        "input": "{\"message\":\"hello world\"}"
+                      }
+                    ]
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_events.CfnRule",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_events.Rule",
+              "version": "0.0.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "aws-cdk-aws-appsync-target-integ/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "aws-cdk-aws-appsync-target-integ/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnRule",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "aws-appsync-integ": {
+        "id": "aws-appsync-integ",
+        "path": "aws-appsync-integ",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "aws-appsync-integ/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "aws-appsync-integ/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "aws-appsync-integ/DefaultTest/DeployAssert",
+                "children": {
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "aws-appsync-integ/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "aws-appsync-integ/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnRule",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.3.0"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "aws-cdk-lib.App",
+      "version": "0.0.0"
+    }
+  }
+}
