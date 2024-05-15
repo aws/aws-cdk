@@ -258,7 +258,7 @@ You can also supply your own external KMS key by specifying the `kmsKey` propert
 ```ts
 import * as kms from 'aws-cdk-lib/aws-kms';
 
-const key = new kms.Key(stack, 'myKey');
+const key = new kms.Key(this, 'myKey');
 
 const canary = new synthetics.Canary(this, 'MyCanary', {
   schedule: synthetics.Schedule.rate(Duration.minutes(5)),
