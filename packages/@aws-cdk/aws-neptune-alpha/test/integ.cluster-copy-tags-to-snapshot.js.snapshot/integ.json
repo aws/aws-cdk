@@ -3,7 +3,7 @@
   "testCases": {
     "ClusterTest/DefaultTest": {
       "stacks": [
-        "aws-cdk-neptune-integ"
+        "aws-cdk-neptune-integ-copy-tags-to-snapshot"
       ],
       "assertionStack": "ClusterTest/DefaultTest/DeployAssert",
       "assertionStackName": "ClusterTestDefaultTestDeployAssert6A1BBA9D"
