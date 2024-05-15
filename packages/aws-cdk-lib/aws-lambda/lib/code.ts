@@ -62,10 +62,18 @@ export abstract class Code {
    * * For example, if you use the command to run a build script (e.g., [ 'node', 'bundle_code.js' ]), and the build script generates a directory `/my/lambda/code`
    * containing code that should be ran in a Lambda function, then output should be set to `/my/lambda/code`
    * @param command The command which will be executed to generate the output, for example, [ 'node', 'bundle_code.js' ]
-   * @param options The same options that are available for `Code.fromAsset` -- but bundling options are not allowed
+   * @param assetOptions The same options that are available for `Code.fromAsset` -- but bundling options are not allowed
+   * @param commandOptions Options that are passed to the spawned process, which determine the characteristics of the spawned process.
+   * * See `child_process.SpawnSyncOptions` for possible inputs and defaults (https://nodejs.org/api/child_process.html#child_processspawnsynccommand-args-options).
    */
-  public static fromCustomCommand(output: string, command: string[], options?: s3_assets.AssetOptions): AssetCode {
-    if (options?.bundling !== undefined) {
+  public static fromCustomCommand(
+    output: string,
+    command: string[],
+    commandOptions?: {[option: string]: any},
+    assetOptions?: s3_assets.AssetOptions,
+  ): AssetCode {
+    if (assetOptions?.bundling !== undefined) {
+      // Bundling is for options regarding "Bundl[ing] the asset by executing a command in a Docker container or a custom bundling provider," which
       throw new Error('Bundling options cannot be specified for assets built with custom command.');
     }
     if (command.length === 0) {
@@ -74,15 +82,19 @@ export abstract class Code {
 
     const cmd = command[0];
     const commandArguments = command.splice(1);
-    const process = spawnSync(cmd, commandArguments);
-    if (process.error) {
-      throw process.error;
+
+    const proc = commandOptions === undefined
+      ? spawnSync(cmd, commandArguments) // use the default spawnSyncOptions
+      : spawnSync(cmd, commandArguments, commandOptions);
+
+    if (proc.error) {
+      throw proc.error;
     }
-    if (process.status !== 0) {
-      throw new Error(`${cmd} ${commandArguments.join(' ')} exited with status ${process.status}\n\nstdout: ${process.stdout?.toString().trim()}\n\nstderr: ${process.stderr?.toString().trim()}`);
+    if (proc.status !== 0) {
+      throw new Error(`${command.join(' ')} exited with status: ${proc.status}\n\nstdout: ${proc.stdout?.toString().trim()}\n\nstderr: ${proc.stderr?.toString().trim()}`);
     }
 
-    return new AssetCode(output, options);
+    return new AssetCode(output, assetOptions);
   }
 
   /**
