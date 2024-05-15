@@ -344,7 +344,7 @@ export interface AwsCustomResourceProps {
   /**
    * The memory size for the singleton Lambda function implementing this custom resource.
    *
-   * @default 512 mega in case if installLatestAwsSdk is false.
+   * @default 512 mega in case if installLatestAwsSdk is true.
    */
   readonly memorySize?: number;
 
@@ -370,7 +370,7 @@ export interface AwsCustomResourceProps {
   readonly logGroup?: logs.ILogGroup;
 
   /**
-   * Whether to install the latest AWS SDK v2.
+   * Whether to install the latest AWS SDK.
    *
    * If not specified, this uses whatever JavaScript SDK version is the default in
    * AWS Lambda at the time of execution.
