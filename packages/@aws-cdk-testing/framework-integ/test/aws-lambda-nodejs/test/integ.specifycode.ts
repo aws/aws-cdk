@@ -11,11 +11,11 @@ class TestStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
-    // This test generates a file from `integ-handlers/custom_command_handler.js` and places that generated file
+    // This test generates a file from `integ-handlers/custom_command_input/custom_command_handler.js` and places that generated file
     // at `integ-handlers/custom_command_output/mylambdafile.js`.
     // Then mylambdafile.js is the code that's uploaded to the Lambda function.
 
-    const pathToBuildScript = path.join(__dirname, 'integ-handlers/build.js');
+    const pathToBuildScript = path.join(__dirname, 'integ-handlers/custom_command_input/build.js');
     const customCommand = ['node', pathToBuildScript];
     const outputDirectoryFromCustomCommand = path.join(__dirname, 'integ-handlers/custom_command_output');
 
