@@ -1,4 +1,4 @@
-import { SpawnSyncOptions, spawnSync } from 'child_process';
+import { spawnSync } from 'child_process';
 import { Construct } from 'constructs';
 import * as ecr from '../../aws-ecr';
 import * as ecr_assets from '../../aws-ecr-assets';
@@ -56,36 +56,33 @@ export abstract class Code {
   }
 
   /**
-   * Runs a command to build the asset that will be used.
+   * Runs a command to build the code asset that will be used.
    *
-   * @param outdir The directory path of where the output of running the given command should be directed, which must contain the code.
-   * @param command The command which will be executed. For example, [ 'node', 'bundle_code.js' ].
+   * @param output Where the output of the command will be directed, either a directory or a .zip file with the output Lambda code bundle
+   * * For example, if you use the command to run a build script (e.g., [ 'node', 'bundle_code.js' ]), and the build script generates a directory `/my/lambda/code`
+   * containing code that should be ran in a Lambda function, then output should be set to `/my/lambda/code`
+   * @param command The command which will be executed to generate the output, for example, [ 'node', 'bundle_code.js' ]
+   * @param options The same options that are available for `Code.fromAsset` -- but bundling options are not allowed
    */
-  public static fromBuiltAsset(outdir: string, command: string[], options?: s3_assets.AssetOptions): AssetCode {
-    if (command.length <= 1) {
+  public static fromCustomCommandAsset(output: string, command: string[], options?: s3_assets.AssetOptions): AssetCode {
+    if (options?.bundling !== undefined) {
+      throw new Error('Bundling options cannot be specified for assets built with custom command.');
+    }
+    if (command.length === 0) {
       throw new Error('command must contain at least one argument. For example, ["node", "buildFile.js"].');
     }
 
-    _exec(command[0], command.splice(1));
-
-    return new AssetCode(outdir, options);
-
-    function _exec(cmd: string, args: string[], opts?: SpawnSyncOptions) {
-      const proc = spawnSync(cmd, args, opts);
-
-      if (proc.error) {
-        throw proc.error;
-      }
-
-      if (proc.status !== 0) {
-        if (proc.stdout || proc.stderr) {
-          throw new Error(`[Status ${proc.status}] stdout: ${proc.stdout?.toString().trim()}\n\n\nstderr: ${proc.stderr?.toString().trim()}`);
-        }
-        throw new Error(`${cmd} ${args.join(' ')} ${opts?.cwd ? `run in directory ${opts.cwd}` : ''} exited with status ${proc.status}`);
-      }
-
-      return proc;
+    const cmd = command[0];
+    const commandArguments = command.splice(1);
+    const process = spawnSync(cmd, commandArguments);
+    if (process.error) {
+      throw process.error;
     }
+    if (process.status !== 0) {
+      throw new Error(`${cmd} ${commandArguments.join(' ')} exited with status ${process.status}\n\nstdout: ${process.stdout?.toString().trim()}\n\nstderr: ${process.stderr?.toString().trim()}`);
+    }
+
+    return new AssetCode(output, options);
   }
 
   /**
