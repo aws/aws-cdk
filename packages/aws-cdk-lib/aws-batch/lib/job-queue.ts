@@ -157,11 +157,12 @@ export interface JobStateTimeLimitAction {
   readonly action?: JobStateTimeLimitActionsAction;
 
   /**
-   * The approximate amount of time, in seconds, that must pass with the job in the specified
+   * The approximate amount of time, that must pass with the job in the specified
    * state before the action is taken.
-   * The minimum value is 600 (10 minutes) and the maximum value is 86,400 (24 hours).
+   *
+   * The minimum value is 10 minutes and the maximum value is 24 hours.
    */
-  readonly maxTimeSeconds: Duration;
+  readonly maxTime: Duration;
 
   /**
    * The reason to log for the action being taken.
