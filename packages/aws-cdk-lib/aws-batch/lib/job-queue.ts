@@ -217,8 +217,8 @@ export enum JobStateTimeLimitActionsReason {
  */
 export enum JobStateTimeLimitActionsState {
   /**
-  * RUNNABLE state triggers the action.
-  */
+   * RUNNABLE state triggers the action.
+   */
   RUNNABLE = 'RUNNABLE',
 }
 
