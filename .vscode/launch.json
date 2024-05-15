@@ -7,7 +7,7 @@
     {
       "type": "node",
       "request": "launch",
-      "args": ["jest", "--runTestsByPath", "/Users/bergjak/workplace/CDK/aws-cdk/packages/aws-cdk-lib/aws-lambda/test/code.test.ts"],
+      "args": ["jest", "--runTestsByPath", "/Users/bergjak/workplace/CDK/aws-cdk/packages/aws-cdk-lib/aws-lambda-nodejs/test/function.test.ts"],
       "name": "debug unit test",
       "program": "/opt/homebrew/bin/yarn",
       "cwd": "/Users/bergjak/workplace/CDK/aws-cdk/packages/aws-cdk-lib",
