@@ -11,7 +11,7 @@
     },
     "service": "Lambda",
     "api": "invoke",
-    "expected": "{\"$ObjectLike\":{\"StatusCode\":200}}",
+    "expected": "{\"$ObjectLike\":{\"StatusCode\":200,\"Payload\":\"\\\"NICE\\\"\"}}",
     "parameters": {
      "FunctionName": {
       "Fn::Join": [
@@ -27,7 +27,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1715800712699"
+    "salt": "1715807257426"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"

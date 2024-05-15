@@ -7,7 +7,7 @@ spawnSync('rm', [pathToGeneratedFile], {
   stdio: 'inherit',
 });
 
-spawnSync('cp', [path.join(__dirname, 'dependencies.ts'), pathToGeneratedFile], {
+spawnSync('cp', [path.join(__dirname, 'custom_command_handler.js'), pathToGeneratedFile], {
   stdio: 'inherit',
 });
 

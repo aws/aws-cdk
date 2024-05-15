@@ -38,14 +38,14 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "e52b26732fec3bba07acb8e9cb67c7bf4ea9730c1c8e86d15402ecb138aca4ea.zip"
+     "S3Key": "c12bcea99402579807f652afcfc96ca3da8544cdb4d02ba9cad57e2cca16c5ea.zip"
     },
     "Environment": {
      "Variables": {
       "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1"
      }
     },
-    "Handler": "mylambdafile.myfunction",
+    "Handler": "mylambdafile.handler",
     "Role": {
      "Fn::GetAtt": [
       "codespecifiedServiceRole6246BDD0",

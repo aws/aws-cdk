@@ -11,12 +11,16 @@ class TestStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
+    // This test generates a file from `integ-handlers/custom_command_handler.js` and places that generated file
+    // at `integ-handlers/custom_command_output/mylambdafile.js`.
+    // Then mylambdafile.js is the code that's uploaded to the Lambda function.
+
     const pathToBuildScript = path.join(__dirname, 'integ-handlers/build.js');
     const customCommand = ['node', pathToBuildScript];
     const outputDirectoryFromCustomCommand = path.join(__dirname, 'integ-handlers/custom_command_output');
 
     this.lambdaFunction = new lambda.NodejsFunction(this, 'codespecified', {
-      handler: 'mylambdafile.myfunction',
+      handler: 'mylambdafile.handler',
       code: Code.fromCustomCommand(
         outputDirectoryFromCustomCommand,
         customCommand,
@@ -25,7 +29,6 @@ class TestStack extends Stack {
   }
 }
 
-/// !cdk-integ cdk-integ-lambda-nodejs-codespecified LambdaNodeJsCodeSpecified/DefaultTest/DeployAssert
 const app = new App();
 const stack = new TestStack(app, 'cdk-integ-lambda-nodejs-codespecified');
 const integ = new IntegTest(app, 'LambdaNodeJsCodeSpecified', {
@@ -38,6 +41,6 @@ const response = integ.assertions.invokeFunction({
 });
 
 response.expect(ExpectedResult.objectLike({
-  // expect invoking without error
-  StatusCode: 200,
+  StatusCode: 200, // The lambda can fail to execute but still have StatusCode 200 -- so it's necessary to check that the Payload is correct.
+  Payload: '"NICE"', // The generated lambda function returns text that says "NICE".
 }));
