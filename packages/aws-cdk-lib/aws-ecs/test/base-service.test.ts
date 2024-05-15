@@ -96,7 +96,7 @@ describe('For alarm-based rollbacks', () => {
     }],
   ])('deploymentAlarms is (not set)/(set) by default for ECS deployment controller when feature flag is enabled/disabled', (flag, settings) => {
     // GIVEN
-    const app = new cdk.App({ context: { [cxapi.REMOVE_DEFAULT_DEPLOYMENT_ALARM]: flag } });
+    const app = new cdk.App({ context: { [cxapi.ECS_REMOVE_DEFAULT_DEPLOYMENT_ALARM]: flag } });
     stack = new cdk.Stack(app);
     const vpc = new ec2.Vpc(stack, 'Vpc');
     const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });

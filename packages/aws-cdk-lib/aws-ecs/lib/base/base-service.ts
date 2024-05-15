@@ -763,7 +763,7 @@ export abstract class BaseService extends Resource
     } else if ((!props.deploymentController ||
       props.deploymentController?.type === DeploymentControllerType.ECS) && this.deploymentAlarmsAvailableInRegion()) {
       // Only set default deployment alarms settings when feature flag is not enabled.
-      if (!FeatureFlags.of(this).isEnabled(cxapi.REMOVE_DEFAULT_DEPLOYMENT_ALARM)) {
+      if (!FeatureFlags.of(this).isEnabled(cxapi.ECS_REMOVE_DEFAULT_DEPLOYMENT_ALARM)) {
         this.deploymentAlarms = {
           alarmNames: [],
           enable: false,
