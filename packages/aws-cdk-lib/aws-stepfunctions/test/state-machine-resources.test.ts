@@ -105,7 +105,7 @@ describe('State Machine Resources', () => {
       stepfunctions.JsonPath.format('error: {}.', stepfunctions.JsonPath.stringAt('$.error')),
       stepfunctions.JsonPath.format('cause: {}.', stepfunctions.JsonPath.stringAt('$.cause')),
     ],
-  ])('Fail should render ErrorPath / CausePath correctly when specifying CausePath using intrinsics', (errorPath, causePath) => {
+  ])('Fail should render ErrorPath / CausePath correctly when specifying ErrorPath / CausePath using intrinsics', (errorPath, causePath) => {
     // GIVEN
     const stack = new cdk.Stack();
     const fail = new stepfunctions.Fail(stack, 'Fail', {
