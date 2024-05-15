@@ -261,7 +261,7 @@ export interface ArtifactS3Encryption {
 }
 
 /**
- * Encryption mode.
+ * Encryption mode for canary artifacts.
  */
 export enum EncryptionMode {
   /**
