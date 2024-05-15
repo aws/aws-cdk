@@ -122,7 +122,7 @@ export interface JobQueueProps {
    * Specifies an action that AWS Batch will take after the job has remained at the head of the queue
    * in the specified state for longer than the specified time.
    *
-   * @default - no actions set
+   * @default - no actions
    */
   readonly jobStateTimeLimitActions?: JobStateTimeLimitAction[];
 }
