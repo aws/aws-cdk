@@ -121,7 +121,10 @@
       ]
      },
      "detail-type": [
-      "detailType1"
+      "detailType1",
+      {
+       "prefix": "detailType2"
+      }
      ],
      "id": [
       "id1",

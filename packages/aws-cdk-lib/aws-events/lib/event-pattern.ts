@@ -285,13 +285,15 @@ export interface EventPattern {
 
   /**
    * Identifies, in combination with the source field, the fields and values
-   * that appear in the detail field.
+   * that appear in the detail field. Can be a list of strings or JSON event
+   * filtering patterns.
    *
    * Represents the "detail-type" event field.
    *
+   * @see https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-event-patterns-content-based-filtering.html
    * @default - No filtering on detail type
    */
-  readonly detailType?: string[];
+  readonly detailType?: (string|{ [key: string]: any })[];
 
   /**
    * Identifies the service that sourced the event. All events sourced from
