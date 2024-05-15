@@ -299,14 +299,23 @@ export class JobQueue extends Resource implements IJobQueue {
     });
   }
 
-  private parseJobStateTimeLimitActions(jobStateTimeLimitActions: JobStateTimeLimitAction[]): CfnJobQueue.JobStateTimeLimitActionProperty[] {
-    return jobStateTimeLimitActions.map(parseJobStateTimeLimitAction);
+  private renderJobStateTimeLimitActions(
+    jobStateTimeLimitActions?: JobStateTimeLimitAction[],
+  ): CfnJobQueue.JobStateTimeLimitActionProperty[] | undefined {
+    if (!jobStateTimeLimitActions || jobStateTimeLimitActions.length === 0) {
+      return;
+    }
 
-    function parseJobStateTimeLimitAction(jobStateTimeLimitAction: JobStateTimeLimitAction): CfnJobQueue.JobStateTimeLimitActionProperty {
-      const maxTimeSeconds = jobStateTimeLimitAction.maxTimeSeconds.toSeconds();
+    return jobStateTimeLimitActions.map((action, index) => renderJobStateTimeLimitAction(action, index));
+
+    function renderJobStateTimeLimitAction(
+      jobStateTimeLimitAction: JobStateTimeLimitAction,
+      index: number,
+    ): CfnJobQueue.JobStateTimeLimitActionProperty {
+      const maxTimeSeconds = jobStateTimeLimitAction.maxTime.toSeconds();
 
       if (maxTimeSeconds < 600 || maxTimeSeconds > 86400) {
-        throw new Error(`maxTimeSeconds must be between 600 and 86400, got ${maxTimeSeconds}`);
+        throw new Error(`maxTime must be between 600 and 86400 seconds, got ${maxTimeSeconds} seconds at jobStateTimeLimitActions[${index}]`);
       }
 
       return {
@@ -317,6 +326,7 @@ export class JobQueue extends Resource implements IJobQueue {
       };
     }
   }
+}
 }
 
 function validateOrderedComputeEnvironments(computeEnvironments: OrderedComputeEnvironment[]): string[] {
