@@ -625,7 +625,6 @@ export class DatabaseCluster extends DatabaseClusterBase implements IDatabaseClu
       serverlessScalingConfiguration: props.serverlessScalingConfiguration,
       // Tags
       copyTagsToSnapshot: props.copyTagsToSnapshot,
-
     });
 
     cluster.applyRemovalPolicy(props.removalPolicy, {
