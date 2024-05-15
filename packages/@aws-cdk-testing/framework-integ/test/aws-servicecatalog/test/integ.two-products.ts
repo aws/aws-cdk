@@ -36,6 +36,7 @@ class PortfolioStack extends cdk.Stack {
         cloudFormationTemplate: servicecatalog.CloudFormationTemplate.fromProductStack(
           new TestAssetProductStack1(this, 'MyProductStack1', {
             assetBucket: testAssetBucket,
+            memoryLimit: 256,
           }),
         ),
       }],
