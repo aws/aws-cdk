@@ -68,11 +68,7 @@ class TestStack extends cdk.Stack {
   }
 }
 
-const app = new cdk.App({
-  postCliContext: {
-    '@aws-cdk/aws-ecs:removeDefaultDeploymentAlarm': true,
-  },
-});
+const app = new cdk.App();
 const stack = new TestStack(app, 'integ-aws-ecs-ebs-task-attach');
 
 new integ.IntegTest(app, 'EBSTaskAttach', {
