@@ -72,10 +72,6 @@ export abstract class Code {
     commandOptions?: {[option: string]: any},
     assetOptions?: s3_assets.AssetOptions,
   ): AssetCode {
-    if (assetOptions?.bundling !== undefined) {
-      // Bundling is for options regarding "Bundl[ing] the asset by executing a command in a Docker container or a custom bundling provider," which
-      throw new Error('Bundling options cannot be specified for assets built with custom command.');
-    }
     if (command.length === 0) {
       throw new Error('command must contain at least one argument. For example, ["node", "buildFile.js"].');
     }
