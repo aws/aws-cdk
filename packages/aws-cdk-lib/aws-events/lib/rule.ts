@@ -1,26 +1,14 @@
-import { Node, Construct } from "constructs";
-import { IEventBus } from "./event-bus";
-import { EventPattern } from "./event-pattern";
-import { CfnEventBusPolicy, CfnRule } from "./events.generated";
-import { EventCommonOptions } from "./on-event-options";
-import { IRule } from "./rule-ref";
-import { Schedule } from "./schedule";
-import { IRuleTarget } from "./target";
-import { mergeEventPattern, renderEventPattern } from "./util";
-import { IRole, PolicyStatement, Role, ServicePrincipal } from "../../aws-iam";
-import {
-  App,
-  IResource,
-  Lazy,
-  Names,
-  Resource,
-  Stack,
-  Token,
-  TokenComparison,
-  PhysicalName,
-  ArnFormat,
-  Annotations,
-} from "../../core";
+import { Node, Construct } from 'constructs';
+import { IEventBus } from './event-bus';
+import { EventPattern } from './event-pattern';
+import { CfnEventBusPolicy, CfnRule } from './events.generated';
+import { EventCommonOptions } from './on-event-options';
+import { IRule } from './rule-ref';
+import { Schedule } from './schedule';
+import { IRuleTarget } from './target';
+import { mergeEventPattern, renderEventPattern } from './util';
+import { IRole, PolicyStatement, Role, ServicePrincipal } from '../../aws-iam';
+import { App, IResource, Lazy, Names, Resource, Stack, Token, TokenComparison, PhysicalName, ArnFormat, Annotations } from '../../core';
 
 /**
  * Properties for defining an EventBridge Rule
@@ -72,6 +60,7 @@ export interface RuleProps extends EventCommonOptions {
  * @resource AWS::Events::Rule
  */
 export class Rule extends Resource implements IRule {
+
   /**
    * Import an existing EventBridge Rule provided an ARN
    *
@@ -79,19 +68,12 @@ export class Rule extends Resource implements IRule {
    * @param id The construct's name.
    * @param eventRuleArn Event Rule ARN (i.e. arn:aws:events:<region>:<account-id>:rule/MyScheduledRule).
    */
-  public static fromEventRuleArn(
-    scope: Construct,
-    id: string,
-    eventRuleArn: string
-  ): IRule {
-    const parts = Stack.of(scope).splitArn(
-      eventRuleArn,
-      ArnFormat.SLASH_RESOURCE_NAME
-    );
+  public static fromEventRuleArn(scope: Construct, id: string, eventRuleArn: string): IRule {
+    const parts = Stack.of(scope).splitArn(eventRuleArn, ArnFormat.SLASH_RESOURCE_NAME);
 
     class Import extends Resource implements IRule {
       public ruleArn = eventRuleArn;
-      public ruleName = parts.resourceName || "";
+      public ruleName = parts.resourceName || '';
     }
     return new Import(scope, id, {
       environmentFromArn: eventRuleArn,
@@ -102,22 +84,20 @@ export class Rule extends Resource implements IRule {
   public readonly ruleName: string;
 
   private readonly targets = new Array<CfnRule.TargetProperty>();
-  private readonly eventPattern: EventPattern = {};
+  private readonly eventPattern: EventPattern = { };
   private readonly scheduleExpression?: string;
   private readonly description?: string;
 
   /** Set to keep track of what target accounts and regions we've already created event buses for */
   private readonly _xEnvTargetsAdded = new Set<string>();
 
-  constructor(scope: Construct, id: string, props: RuleProps = {}) {
+  constructor(scope: Construct, id: string, props: RuleProps = { }) {
     super(determineRuleScope(scope, props), id, {
       physicalName: props.ruleName,
     });
 
     if (props.eventBus && props.schedule) {
-      throw new Error(
-        "Cannot associate rule with 'eventBus' when using 'schedule'"
-      );
+      throw new Error('Cannot associate rule with \'eventBus\' when using \'schedule\'');
     }
 
     this.description = props.description;
@@ -126,15 +106,10 @@ export class Rule extends Resource implements IRule {
     // add a warning on synth when minute is not defined in a cron schedule
     props.schedule?._bind(this);
 
-    const resource = new CfnRule(this, "Resource", {
+    const resource = new CfnRule(this, 'Resource', {
       name: this.physicalName,
       description: this.description,
-      state:
-        props.enabled == null
-          ? "ENABLED"
-          : props.enabled
-          ? "ENABLED"
-          : "DISABLED",
+      state: props.enabled == null ? 'ENABLED' : (props.enabled ? 'ENABLED' : 'DISABLED'),
       scheduleExpression: this.scheduleExpression,
       eventPattern: Lazy.any({ produce: () => this._renderEventPattern() }),
       targets: Lazy.any({ produce: () => this.renderTargets() }),
@@ -142,8 +117,8 @@ export class Rule extends Resource implements IRule {
     });
 
     this.ruleArn = this.getResourceArnAttribute(resource.attrArn, {
-      service: "events",
-      resource: "rule",
+      service: 'events',
+      resource: 'rule',
       resourceName: this.physicalName,
     });
     this.ruleName = this.getResourceNameAttribute(resource.ref);
@@ -164,9 +139,7 @@ export class Rule extends Resource implements IRule {
    * No-op if target is undefined.
    */
   public addTarget(target?: IRuleTarget): void {
-    if (!target) {
-      return;
-    }
+    if (!target) { return; }
 
     // Simply increment id for each `addTarget` call. This is guaranteed to be unique.
     const autoGeneratedId = `Target${this.targets.length}`;
@@ -180,12 +153,8 @@ export class Rule extends Resource implements IRule {
     if (targetProps.targetResource) {
       const targetStack = Stack.of(targetProps.targetResource);
 
-      const targetAccount =
-        (targetProps.targetResource as IResource).env?.account ||
-        targetStack.account;
-      const targetRegion =
-        (targetProps.targetResource as IResource).env?.region ||
-        targetStack.region;
+      const targetAccount = (targetProps.targetResource as IResource).env?.account || targetStack.account;
+      const targetRegion = (targetProps.targetResource as IResource).env?.region || targetStack.region;
 
       const sourceStack = Stack.of(this);
       const sourceAccount = sourceStack.account;
@@ -196,58 +165,38 @@ export class Rule extends Resource implements IRule {
       // - forwarding rule in the source stack (target: default event bus of the receiver region)
       // - eventbus permissions policy (creating an extra stack)
       // - receiver rule in the target stack (target: the actual target)
-      if (
-        !this.sameEnvDimension(sourceAccount, targetAccount) ||
-        !this.sameEnvDimension(sourceRegion, targetRegion)
-      ) {
+      if (!this.sameEnvDimension(sourceAccount, targetAccount) || !this.sameEnvDimension(sourceRegion, targetRegion)) {
         // cross-account and/or cross-region event - strap in, this works differently than regular events!
         // based on:
         // https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-cross-account.html
 
         // for cross-account or cross-region events, we require a concrete target account and region
         if (!targetAccount || Token.isUnresolved(targetAccount)) {
-          throw new Error(
-            "You need to provide a concrete account for the target stack when using cross-account or cross-region events"
-          );
+          throw new Error('You need to provide a concrete account for the target stack when using cross-account or cross-region events');
         }
         if (!targetRegion || Token.isUnresolved(targetRegion)) {
-          throw new Error(
-            "You need to provide a concrete region for the target stack when using cross-account or cross-region events"
-          );
+          throw new Error('You need to provide a concrete region for the target stack when using cross-account or cross-region events');
         }
         if (Token.isUnresolved(sourceAccount)) {
-          throw new Error(
-            "You need to provide a concrete account for the source stack when using cross-account or cross-region events"
-          );
+          throw new Error('You need to provide a concrete account for the source stack when using cross-account or cross-region events');
         }
 
         // Don't exactly understand why this code was here (seems unlikely this rule would be violated), but
         // let's leave it in nonetheless.
         const sourceApp = this.node.root;
         if (!sourceApp || !App.isApp(sourceApp)) {
-          throw new Error(
-            "Event stack which uses cross-account or cross-region targets must be part of a CDK app"
-          );
+          throw new Error('Event stack which uses cross-account or cross-region targets must be part of a CDK app');
         }
         const targetApp = Node.of(targetProps.targetResource).root;
         if (!targetApp || !App.isApp(targetApp)) {
-          throw new Error(
-            "Target stack which uses cross-account or cross-region event targets must be part of a CDK app"
-          );
+          throw new Error('Target stack which uses cross-account or cross-region event targets must be part of a CDK app');
         }
         if (sourceApp !== targetApp) {
-          throw new Error(
-            "Event stack and target stack must belong to the same CDK app"
-          );
+          throw new Error('Event stack and target stack must belong to the same CDK app');
         }
 
         // The target of this Rule will be the default event bus of the target environment
-        this.ensureXEnvTargetEventBus(
-          targetStack,
-          targetAccount,
-          targetRegion,
-          id
-        );
+        this.ensureXEnvTargetEventBus(targetStack, targetAccount, targetRegion, id);
 
         // The actual rule lives in the target stack. Other than the account, it's identical to this one,
         // but only evaluated at render time (via a special subclass).
@@ -261,24 +210,13 @@ export class Rule extends Resource implements IRule {
         // happens in the source env; and activating, which happens in the target env).
         //
         // Don't have time to do that right now.
-        const mirrorRuleScope = this.obtainMirrorRuleScope(
-          targetStack,
-          targetAccount,
-          targetRegion
-        );
-        new MirrorRule(
-          mirrorRuleScope,
-          `${Names.uniqueId(this)}-${id}`,
-          {
-            targets: [target],
-            eventPattern: this.eventPattern,
-            schedule: this.scheduleExpression
-              ? Schedule.expression(this.scheduleExpression)
-              : undefined,
-            description: this.description,
-          },
-          this
-        );
+        const mirrorRuleScope = this.obtainMirrorRuleScope(targetStack, targetAccount, targetRegion);
+        new MirrorRule(mirrorRuleScope, `${Names.uniqueId(this)}-${id}`, {
+          targets: [target],
+          eventPattern: this.eventPattern,
+          schedule: this.scheduleExpression ? Schedule.expression(this.scheduleExpression) : undefined,
+          description: this.description,
+        }, this);
 
         return;
       }
@@ -304,13 +242,10 @@ export class Rule extends Resource implements IRule {
       appSyncParameters: targetProps.appSyncParameters,
       input: inputProps && inputProps.input,
       inputPath: inputProps && inputProps.inputPath,
-      inputTransformer:
-        inputProps?.inputTemplate !== undefined
-          ? {
-              inputTemplate: inputProps.inputTemplate,
-              inputPathsMap: inputProps.inputPathsMap,
-            }
-          : undefined,
+      inputTransformer: inputProps?.inputTemplate !== undefined ? {
+        inputTemplate: inputProps.inputTemplate,
+        inputPathsMap: inputProps.inputPathsMap,
+      } : undefined,
     });
   }
 
@@ -369,22 +304,15 @@ export class Rule extends Resource implements IRule {
     const name = this.physicalName;
     if (name !== undefined && !Token.isUnresolved(name)) {
       if (name.length < 1 || name.length > 64) {
-        errors.push(
-          `Event rule name must be between 1 and 64 characters. Received: ${name}`
-        );
+        errors.push(`Event rule name must be between 1 and 64 characters. Received: ${name}`);
       }
       if (!/^[\.\-_A-Za-z0-9]+$/.test(name)) {
-        errors.push(
-          `Event rule name ${name} can contain only letters, numbers, periods, hyphens, or underscores with no spaces.`
-        );
+        errors.push(`Event rule name ${name} can contain only letters, numbers, periods, hyphens, or underscores with no spaces.`);
       }
     }
 
-    if (
-      Object.keys(this.eventPattern).length === 0 &&
-      !this.scheduleExpression
-    ) {
-      errors.push("Either 'eventPattern' or 'schedule' must be defined");
+    if (Object.keys(this.eventPattern).length === 0 && !this.scheduleExpression) {
+      errors.push('Either \'eventPattern\' or \'schedule\' must be defined');
     }
 
     return errors;
@@ -403,24 +331,17 @@ export class Rule extends Resource implements IRule {
    *
    * For cross-account rules, uses a support stack to set up a policy on the target event bus.
    */
-  private ensureXEnvTargetEventBus(
-    targetStack: Stack,
-    targetAccount: string,
-    targetRegion: string,
-    id: string
-  ) {
+  private ensureXEnvTargetEventBus(targetStack: Stack, targetAccount: string, targetRegion: string, id: string) {
     // the _actual_ target is just the event bus of the target's account
     // make sure we only add it once per account per region
     const key = `${targetAccount}:${targetRegion}`;
-    if (this._xEnvTargetsAdded.has(key)) {
-      return;
-    }
+    if (this._xEnvTargetsAdded.has(key)) { return; }
     this._xEnvTargetsAdded.add(key);
 
     const eventBusArn = targetStack.formatArn({
-      service: "events",
-      resource: "event-bus",
-      resourceName: "default",
+      service: 'events',
+      resource: 'event-bus',
+      resourceName: 'default',
       region: targetRegion,
       account: targetAccount,
     });
@@ -452,9 +373,7 @@ export class Rule extends Resource implements IRule {
     // for a role).
     if (!this.sameEnvDimension(sourceAccount, targetAccount)) {
       const stackId = `EventBusPolicy-${sourceAccount}-${targetRegion}-${targetAccount}`;
-      let eventBusPolicyStack: Stack = sourceApp.node.tryFindChild(
-        stackId
-      ) as Stack;
+      let eventBusPolicyStack: Stack = sourceApp.node.tryFindChild(stackId) as Stack;
       if (!eventBusPolicyStack) {
         eventBusPolicyStack = new Stack(sourceApp, stackId, {
           env: {
@@ -466,13 +385,11 @@ export class Rule extends Resource implements IRule {
           stackName: `${targetStack.stackName}-EventBusPolicy-support-${targetRegion}-${sourceAccount}`,
         });
         const statementPrefix = `Allow-account-${sourceAccount}-`;
-        new CfnEventBusPolicy(eventBusPolicyStack, "GivePermToOtherAccount", {
-          action: "events:PutEvents",
-          statementId:
-            statementPrefix +
-            Names.uniqueResourceName(this, {
-              maxLength: 64 - statementPrefix.length,
-            }),
+        new CfnEventBusPolicy(eventBusPolicyStack, 'GivePermToOtherAccount', {
+          action: 'events:PutEvents',
+          statementId: statementPrefix + Names.uniqueResourceName(this, {
+            maxLength: 64 - statementPrefix.length,
+          }),
           principal: sourceAccount,
         });
       }
@@ -490,24 +407,15 @@ export class Rule extends Resource implements IRule {
    * We don't implement the second yet, as I have to think long and hard on whether we
    * can reuse the existing support stack or not, and I don't have time for that right now.
    */
-  private obtainMirrorRuleScope(
-    targetStack: Stack,
-    targetAccount: string,
-    targetRegion: string
-  ): Construct {
+  private obtainMirrorRuleScope(targetStack: Stack, targetAccount: string, targetRegion: string): Construct {
     // for cross-account or cross-region events, we cannot create new components for an imported resource
     // because we don't have the target stack
-    if (
-      this.sameEnvDimension(targetStack.account, targetAccount) &&
-      this.sameEnvDimension(targetStack.region, targetRegion)
-    ) {
+    if (this.sameEnvDimension(targetStack.account, targetAccount) && this.sameEnvDimension(targetStack.region, targetRegion)) {
       return targetStack;
     }
 
     // For now, we don't do the work for the support stack yet
-    throw new Error(
-      "Cannot create a cross-account or cross-region rule for an imported resource (create a stack with the right environment for the imported resource)"
-    );
+    throw new Error('Cannot create a cross-account or cross-region rule for an imported resource (create a stack with the right environment for the imported resource)');
   }
 
   /**
@@ -518,21 +426,19 @@ export class Rule extends Resource implements IRule {
    * @internal
    */
   private crossRegionPutEventsRole(eventBusArn: string): IRole {
-    const id = "EventsRole";
+    const id = 'EventsRole';
     let role = this.node.tryFindChild(id) as IRole;
     if (!role) {
       role = new Role(this, id, {
         roleName: PhysicalName.GENERATE_IF_NEEDED,
-        assumedBy: new ServicePrincipal("events.amazonaws.com"),
+        assumedBy: new ServicePrincipal('events.amazonaws.com'),
       });
     }
 
-    role.addToPrincipalPolicy(
-      new PolicyStatement({
-        actions: ["events:PutEvents"],
-        resources: [eventBusArn],
-      })
-    );
+    role.addToPrincipalPolicy(new PolicyStatement({
+      actions: ['events:PutEvents'],
+      resources: [eventBusArn],
+    }));
 
     return role;
   }
@@ -546,11 +452,8 @@ export class Rule extends Resource implements IRule {
   private sameEnvDimension(dim1: string, dim2: string) {
     switch (Token.compareStrings(dim1, dim2)) {
       case TokenComparison.ONE_UNRESOLVED:
-        Annotations.of(this).addWarningV2(
-          "@aws-cdk/aws-events:ruleUnresolvedEnvironment",
-          "Either the Event Rule or target has an unresolved environment. \n \
-          If they are being used in a cross-environment setup you need to specify the environment for both."
-        );
+        Annotations.of(this).addWarningV2('@aws-cdk/aws-events:ruleUnresolvedEnvironment', 'Either the Event Rule or target has an unresolved environment. \n \
+          If they are being used in a cross-environment setup you need to specify the environment for both.');
         return true;
       case TokenComparison.BOTH_UNRESOLVED:
       case TokenComparison.SAME:
@@ -572,19 +475,10 @@ function determineRuleScope(scope: Construct, props: RuleProps): Construct {
   }
   // cross-region/account Events require their own setup,
   // so we use the base scope in that case
-  const regionComparison = Token.compareStrings(
-    scopeStack.region,
-    targetStack.region
-  );
-  const accountComparison = Token.compareStrings(
-    scopeStack.account,
-    targetStack.account
-  );
-  const stacksInSameAccountAndRegion =
-    (regionComparison === TokenComparison.SAME ||
-      regionComparison === TokenComparison.BOTH_UNRESOLVED) &&
-    (accountComparison === TokenComparison.SAME ||
-      accountComparison === TokenComparison.BOTH_UNRESOLVED);
+  const regionComparison = Token.compareStrings(scopeStack.region, targetStack.region);
+  const accountComparison = Token.compareStrings(scopeStack.account, targetStack.account);
+  const stacksInSameAccountAndRegion = (regionComparison === TokenComparison.SAME || regionComparison === TokenComparison.BOTH_UNRESOLVED) &&
+    (accountComparison === TokenComparison.SAME || accountComparison === TokenComparison.BOTH_UNRESOLVED);
   return stacksInSameAccountAndRegion ? props.crossStackScope : scope;
 }
 
@@ -592,12 +486,7 @@ function determineRuleScope(scope: Construct, props: RuleProps): Construct {
  * A rule that mirrors another rule
  */
 class MirrorRule extends Rule {
-  constructor(
-    scope: Construct,
-    id: string,
-    props: RuleProps,
-    private readonly source: Rule
-  ) {
+  constructor(scope: Construct, id: string, props: RuleProps, private readonly source: Rule) {
     super(scope, id, props);
   }
 
