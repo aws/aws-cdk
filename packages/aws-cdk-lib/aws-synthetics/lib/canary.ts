@@ -260,6 +260,9 @@ export interface ArtifactS3Encryption {
   readonly kmsKey?: kms.IKey;
 }
 
+/**
+ * Encryption mode.
+ */
 export enum EncryptionMode {
   /**
    * Server-side encryption (SSE) with an Amazon S3-managed key.
