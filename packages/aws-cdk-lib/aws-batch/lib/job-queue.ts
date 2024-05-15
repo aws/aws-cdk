@@ -147,7 +147,6 @@ export interface OrderedComputeEnvironment {
  * Specifies an action that AWS Batch will take after the job has remained at
  * the head of the queue in the specified state for longer than the specified time.
  */
-
 export interface JobStateTimeLimitAction {
   /**
  * The action to take when a job is at the head of the job queue in the specified state
