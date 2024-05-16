@@ -258,6 +258,64 @@ describe('CodeCommit Source Action', () => {
       });
     });
 
+    test('check when a content based filter event pattern is provided', () => {
+      const stack = new Stack();
+
+      const eventPattern
+      = {
+        'detail-type': [{ 'equals-ignore-case': 'codecommit repository state change' }],
+        'resources': ['foo'],
+        'source': ['aws.codecommit'],
+        'detail': {
+          referenceType: ['branch'],
+          referenceName: ['test-branch'],
+        },
+      };
+
+      minimalPipeline(stack, cpactions.CodeCommitTrigger.EVENTS, {
+        customEventRule: {
+          eventPattern,
+          target: new LambdaFunction(new Function(stack, 'TestFunction', {
+            runtime: Runtime.NODEJS_LATEST,
+            handler: 'index.handler',
+            code: Code.fromInline('exports.handler = handler.toString()'),
+          })),
+        },
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
+        'EventPattern': {
+          'source': [
+            'aws.codecommit',
+          ],
+          'resources': ['foo', {
+            'Fn::GetAtt': [
+              'MyRepoF4F48043',
+              'Arn',
+            ],
+          }],
+          'detail-type': [{
+            'equals-ignore-case': 'codecommit repository state change',
+          }],
+          'detail': {
+            'referenceType': [
+              'branch',
+            ],
+            'referenceName': [
+              'test-branch',
+            ],
+          },
+        },
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+        'Handler': 'index.handler',
+        'Code': {
+          'ZipFile': 'exports.handler = handler.toString()',
+        },
+      });
+    });
+
     test('cannot be created with an empty branch', () => {
       const stack = new Stack();
       const repo = new codecommit.Repository(stack, 'MyRepo', {

@@ -23,7 +23,7 @@ const repo = new codecommit.Repository(stack, 'MyRepo', {
 
 const eventPattern
       = {
-        'detail-type': ['CodeCommit Repository State Change'],
+        'detail-type': [{ 'equals-ignore-case': 'codecommit repository state change' }],
         'resources': [repo.repositoryArn],
         'source': ['aws.codecommit'],
         'detail': {

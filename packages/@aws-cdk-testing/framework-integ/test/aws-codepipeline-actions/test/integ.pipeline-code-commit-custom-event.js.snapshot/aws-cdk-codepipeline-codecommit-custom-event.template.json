@@ -12,7 +12,9 @@
     "Description": "Custom event rule for CodeCommit",
     "EventPattern": {
      "detail-type": [
-      "CodeCommit Repository State Change"
+      {
+       "equals-ignore-case": "codecommit repository state change"
+      }
      ],
      "resources": [
       {
