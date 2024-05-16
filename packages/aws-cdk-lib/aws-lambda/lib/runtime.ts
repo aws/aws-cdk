@@ -376,8 +376,6 @@ export class Runtime {
 
 /**
  * The latest Lambda node runtime available by AWS region.
- *
- * @internal
  */
 export function determineLatestNodeRuntime(scope: Construct): Runtime {
   // Runtime regional fact should always return a known runtime string that Runtime can index off, but for type
