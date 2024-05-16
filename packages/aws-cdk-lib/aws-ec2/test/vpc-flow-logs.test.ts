@@ -712,6 +712,16 @@ test('log format for built-in types is correct', () => {
       LogFormat.PKT_DST_AWS_SERVICE,
       LogFormat.FLOW_DIRECTION,
       LogFormat.TRAFFIC_PATH,
+      LogFormat.ECS_CLUSTER_ARN,
+      LogFormat.ECS_CLUSTER_NAME,
+      LogFormat.ECS_CONTAINER_INSTANCE_ARN,
+      LogFormat.ECS_CONTAINER_INSTANCE_ID,
+      LogFormat.ECS_CONTAINER_ID,
+      LogFormat.ECS_SECOND_CONTAINER_ID,
+      LogFormat.ECS_SERVICE_NAME,
+      LogFormat.ECS_TASK_DEFINITION_ARN,
+      LogFormat.ECS_TASK_ARN,
+      LogFormat.ECS_TASK_ID,
     ],
   });
 
