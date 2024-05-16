@@ -1912,7 +1912,7 @@ describe('instance', () => {
         instanceType,
         vpc,
       });
-    }).toThrow(/Cannot set 'backupRetention', as engine 'postgres-16.2' does not support automatic backups for read replicas/);
+    }).toThrow(/Cannot set 'backupRetention', as engine 'postgres-16.3' does not support automatic backups for read replicas/);
   });
 
   test('read replica with allocatedStorage', () => {
