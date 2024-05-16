@@ -38,7 +38,7 @@
    "Type": "AWS::Lambda::Function",
    "Properties": {
     "Code": {
-     "ZipFile": "bar"
+     "ZipFile": "foo"
     },
     "Handler": "index.handler",
     "Role": {
@@ -53,7 +53,7 @@
     "Lambda2ServiceRole31A072E1"
    ]
   },
-  "Lambda2CurrentVersion72012B74851867dca0169a0ebcd946bf24681998": {
+  "Lambda2CurrentVersion72012B7448e7ccb012bdf87615c944d94691ab6d": {
    "Type": "AWS::Lambda::Version",
    "Properties": {
     "FunctionName": {
@@ -67,7 +67,7 @@
     "Name": "/cdk/EdgeFunctionArn/eu-west-1/integ-distribution-lambda-cross-region/Lambda2",
     "Type": "String",
     "Value": {
-     "Ref": "Lambda2CurrentVersion72012B74851867dca0169a0ebcd946bf24681998"
+     "Ref": "Lambda2CurrentVersion72012B7448e7ccb012bdf87615c944d94691ab6d"
     }
    }
   },
@@ -79,7 +79,7 @@
     },
     "FunctionVersion": {
      "Fn::GetAtt": [
-      "Lambda2CurrentVersion72012B74851867dca0169a0ebcd946bf24681998",
+      "Lambda2CurrentVersion72012B7448e7ccb012bdf87615c944d94691ab6d",
       "Version"
      ]
     },
