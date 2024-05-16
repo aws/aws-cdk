@@ -1903,7 +1903,7 @@ You can enable [AWS Nitro Enclaves](https://docs.aws.amazon.com/enclaves/latest/
 declare const vpc: ec2.Vpc;
 
 const instance = new ec2.Instance(this, 'Instance', {
-  instanceType: ec2.InstanceType.of(ec2.InstanceClass.T5, ec2.InstanceSize.XLARGE),
+  instanceType: ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.XLARGE),
   machineImage: new ec2.AmazonLinuxImage(),
   vpc: vpc,
   nitroEnclaveEnabled: true,
@@ -1915,15 +1915,17 @@ const instance = new ec2.Instance(this, 'Instance', {
 You can enable [Instance Hibernation](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/Hibernate.html) for your EC2 instances by setting the `hibernationConfigured` property to `true`. Instance Hibernation saves the instance's in-memory (RAM) state when an instance is stopped, and restores that state when the instance is started.
 
 ```ts
+declare const vpc: ec2.Vpc;
+
 const instance = new ec2.Instance(this, 'Instance', {
-  instanceType: ec2.InstanceType.of(ec2.InstanceClass.T5, ec2.InstanceSize.XLARGE),
+  instanceType: ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.XLARGE),
   machineImage: new ec2.AmazonLinuxImage(),
   vpc: vpc,
   hibernationConfigured: true,
   blockDevices: [{
     deviceName: '/dev/xvda',
-    volume: BlockDeviceVolume.ebs(30, {
-      volumeType: EbsDeviceVolumeType.GP3,
+    volume: ec2.BlockDeviceVolume.ebs(30, {
+      volumeType: ec2.EbsDeviceVolumeType.GP3,
       encrypted: true,
       deleteOnTermination: true,
     }),
