@@ -591,6 +591,17 @@ describe('bucket', () => {
     });
 
   });
+  test('bucketKeyEnabled can not be enabled with UNENCRYPTED', () => {
+    const stack = new cdk.Stack();
+
+    // WHEN
+    expect(() => {
+      new s3.Bucket(stack, 'MyBucket', {
+        bucketKeyEnabled: true,
+        encryption: s3.BucketEncryption.UNENCRYPTED,
+      });
+    }).toThrow(/bucketKeyEnabled is specified, so 'encryption' must be set to KMS, DSSE or S3/);
+  });
 
   test('bucketKeyEnabled can NOT be enabled with encryption undefined', () => {
     const stack = new cdk.Stack();

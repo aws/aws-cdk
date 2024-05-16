@@ -2129,9 +2129,7 @@ export class Bucket extends BucketBase {
     }
 
     // if bucketKeyEnabled is set, encryption can not be BucketEncryption.UNENCRYPTED
-    if (
-      props.bucketKeyEnabled && encryptionType === BucketEncryption.UNENCRYPTED
-    ) {
+    if (props.bucketKeyEnabled && encryptionType === BucketEncryption.UNENCRYPTED) {
       throw new Error(`bucketKeyEnabled is specified, so 'encryption' must be set to KMS, DSSE or S3 (value: ${encryptionType})`);
     }
 
