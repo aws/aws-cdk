@@ -508,7 +508,9 @@ export abstract class TableBase extends Resource implements ITable, iam.IResourc
   public abstract readonly encryptionKey?: kms.IKey;
 
   /**
-   * @attribute
+   * Resource policy to assign to table.
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-dynamodb-table.html#cfn-dynamodb-table-resourcepolicy
+   * @default - No resource policy statement
    */
   public abstract resourcePolicy?: iam.PolicyDocument;
 
@@ -1047,6 +1049,10 @@ export class Table extends TableBase {
   public readonly encryptionKey?: kms.IKey;
 
   /**
+   *   /**
+   * Resource policy to assign to table.
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-dynamodb-table.html#cfn-dynamodb-table-resourcepolicy
+   * @default - No resource policy statement
    * @attribute
    */
   public resourcePolicy?: iam.PolicyDocument | undefined;
