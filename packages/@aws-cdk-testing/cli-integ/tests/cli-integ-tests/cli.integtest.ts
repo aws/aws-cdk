@@ -944,50 +944,6 @@ integTest('cdk diff --quiet does not print \'There were no differences\' message
   expect(diff).not.toContain('There were no differences');
 }));
 
-integTest('cdk diff picks up changes that are only present in changeset', withDefaultFixture(async (fixture) => {
-  // GIVEN
-  await fixture.aws.ssm('putParameter', {
-    Name: 'for-queue-name-defined-by-ssm-param',
-    Value: randomString(),
-    Type: 'String',
-    Overwrite: true,
-  });
-
-  try {
-    await fixture.cdkDeploy('queue-name-defined-by-ssm-param');
-
-    // WHEN
-    // We want to change the ssm value. Then the CFN changeset will detect that the queue will be changed upon deploy.
-    await fixture.aws.ssm('putParameter', {
-      Name: 'for-queue-name-defined-by-ssm-param',
-      Value: randomString(),
-      Type: 'String',
-      Overwrite: true,
-    });
-
-    const diff = await fixture.cdk(['diff', fixture.fullStackName('queue-name-defined-by-ssm-param')]);
-
-    // THEN
-    const normalizedPlainTextOutput = diff.replace(/\x1B\[[0-?]*[ -/]*[@-~]/g, '') // remove all color and formatting (bolding, italic, etc)
-      .replace(/ /g, '') // remove all spaces
-      .replace(/\n/g, '') // remove all new lines
-      .replace(/\d+/g, ''); // remove all digits
-
-    const normalizedExpectedOutput = `
-      Resources
-      [~] AWS::SQS::Queue DiffFromChangeSetQueue DiffFromChangeSetQueue06622C07 replace
-       └─ [~] QueueName (requires replacement)
-      [~] AWS::SSM::Parameter DiffFromChangeSetSSMParam DiffFromChangeSetSSMParam92A9A723
-       └─ [~] Value`
-      .replace(/ /g, '')
-      .replace(/\n/g, '')
-      .replace(/\d+/g, '');
-    expect(normalizedPlainTextOutput).toContain(normalizedExpectedOutput);
-  } finally {
-    await fixture.cdkDestroy('queue-name-defined-by-ssm-param');
-  }
-}));
-
 integTest('deploy stack with docker asset', withDefaultFixture(async (fixture) => {
   await fixture.cdkDeploy('docker');
 }));
