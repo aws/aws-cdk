@@ -15,8 +15,8 @@ class TestStack extends Stack {
     // at `integ-handlers/custom_command_output/mylambdafile.js`.
     // Then mylambdafile.js is the code that's uploaded to the Lambda function.
 
-    const pathToBuildScript = path.join(__dirname, 'integ-handlers/custom_command_input/build.js');
-    const customCommand = ['node', pathToBuildScript];
+    const pathToBuildScript = path.join(__dirname, 'integ-handlers/custom_command_input/build.sh');
+    const customCommand = ['bash', pathToBuildScript];
     const outputDirectoryFromCustomCommand = path.join(__dirname, 'integ-handlers/custom_command_output');
 
     this.lambdaFunction = new lambda.NodejsFunction(this, 'codespecified', {
