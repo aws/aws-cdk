@@ -1,14 +1,12 @@
 {
-  "version": "31.0.0",
+  "version": "36.0.0",
   "testCases": {
-    "integ.read-replica": {
+    "instance-dual-test/DefaultTest": {
       "stacks": [
         "cdk-rds-read-replica"
       ],
-      "diffAssets": false,
-      "stackUpdateWorkflow": true
+      "assertionStack": "instance-dual-test/DefaultTest/DeployAssert",
+      "assertionStackName": "instancedualtestDefaultTestDeployAssertD87FA35D"
     }
-  },
-  "synthContext": {},
-  "enableLookups": false
+  }
 }

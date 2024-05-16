@@ -3,6 +3,7 @@ import * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
 import * as cdk from '../../core';
 import { App, Stack } from '../../core';
+import * as cxapi from '../../cx-api';
 import * as ecs from '../lib';
 
 describe('When import an ECS Service', () => {
@@ -82,8 +83,21 @@ describe('For alarm-based rollbacks', () => {
     stack = new cdk.Stack();
   });
 
-  test('deploymentAlarms is set by default for ECS deployment controller', () => {
+  test.each([
+    [true, {
+      Alarms: Match.absent(),
+    }],
+    [false, {
+      Alarms: {
+        AlarmNames: [],
+        Enable: false,
+        Rollback: false,
+      },
+    }],
+  ])('deploymentAlarms is (not set)/(set) by default for ECS deployment controller when feature flag is enabled/disabled', (flag, settings) => {
     // GIVEN
+    const app = new cdk.App({ context: { [cxapi.ECS_REMOVE_DEFAULT_DEPLOYMENT_ALARM]: flag } });
+    stack = new cdk.Stack(app);
     const vpc = new ec2.Vpc(stack, 'Vpc');
     const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
     const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
@@ -102,15 +116,10 @@ describe('For alarm-based rollbacks', () => {
       maxHealthyPercent: 200,
     });
 
+    const template = Template.fromStack(stack);
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
-      DeploymentConfiguration: {
-        Alarms: {
-          AlarmNames: [],
-          Enable: false,
-          Rollback: false,
-        },
-      },
+      DeploymentConfiguration: settings,
     });
   });
 
