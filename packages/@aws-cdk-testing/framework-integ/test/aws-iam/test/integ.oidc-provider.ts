@@ -6,19 +6,19 @@ const app = new App();
 const stack = new Stack(app, 'oidc-provider-integ-test');
 
 const noClients = new iam.OpenIdConnectProvider(stack, 'NoClientsNoThumbprint', {
-  url: 'https://oidc.eks.us-east-1.amazonaws.com/id/test2',
+  url: 'https://oidc.eks.us-east-1.amazonaws.com/id/test1',
 });
 
 const clients = new iam.OpenIdConnectProvider(stack, 'Clients', {
   url: 'https://oidc.eks.us-east-1.amazonaws.com/id/test3',
-  clientIds: ['foo', 'bar'],
+  clientIds: ['foo', 'bazz'],
 });
 
 const thumbprints = new iam.OpenIdConnectProvider(stack, 'Thumbprints', {
   url: 'https://oidc.eks.us-east-1.amazonaws.com/id/test4',
   thumbprints: [
-    'aa00aa1122aa00aa1122aa00aa1122aa00aa1122',
-    'aa00aa1122aa00aa1122aa00aa1122aa00aa1111',
+    'aa00aa1122aa00aa1122aa00aa1122aa00aa1123',
+    'aa00aa1122aa00aa1122aa00aa1122aa00aa1114',
   ],
 });
 
