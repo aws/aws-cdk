@@ -66,6 +66,33 @@ export abstract class LambdaInsightsVersion {
   public static readonly VERSION_1_0_229_0 = LambdaInsightsVersion.fromInsightsVersion('1.0.229.0');
 
   /**
+   * Version 1.0.273.0
+   */
+  public static readonly VERSION_1_0_273_0 = LambdaInsightsVersion.fromInsightsVersion('1.0.273.0');
+
+  /**
+   * Version 1.0.275.0
+   */
+  public static readonly VERSION_1_0_275_0 = LambdaInsightsVersion.fromInsightsVersion('1.0.275.0');
+
+  /**
+   * Version 1.0.295.0
+   */
+  public static readonly VERSION_1_0_295_0 = LambdaInsightsVersion.fromInsightsVersion('1.0.295.0');
+
+  /**
+   * Version 1.0.317.0
+   * Important - this version includes the removal of support for the Amazon Linux 1 platform.
+   */
+  public static readonly VERSION_1_0_317_0 = LambdaInsightsVersion.fromInsightsVersion('1.0.317.0');
+
+  /**
+   * The latest layer version available in this CDK version. New versions could
+   * introduce incompatible changes. Make sure to test them before deploying to production.
+   */
+  public static readonly LATEST = this.VERSION_1_0_317_0
+
+  /**
    * Use the insights extension associated with the provided ARN. Make sure the ARN is associated
    * with same region as your function
    *
