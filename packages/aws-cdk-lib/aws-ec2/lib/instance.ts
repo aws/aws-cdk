@@ -315,6 +315,22 @@ export interface InstanceProps {
    * @default false
    */
   readonly ebsOptimized?: boolean;
+
+  /**
+   * If this parameter is set to true, the instance is enabled for AWS Nitro Enclaves; otherwise, it is not enabled for AWS Nitro Enclaves.
+   *
+   * @default false.
+   */
+  readonly nitroEnclaveEnabled?: boolean;
+
+  /**
+   * If you set this parameter to true, the instance is enabled for hibernation.
+   * You can't enable hibernation and AWS Nitro Enclaves on the same instance.
+   *
+   * @default false
+   */
+  readonly hibernationConfigured?: boolean;
+
 }
 
 /**
@@ -466,6 +482,10 @@ export class Instance extends Resource implements IInstance {
       throw new Error(`${props.keyPair.type} keys are not compatible with the chosen AMI`);
     }
 
+    if (props.nitroEnclaveEnabled && props.hibernationConfigured) {
+      throw new Error('You can\'t enable hibernation and AWS Nitro Enclaves on the same instance.');
+    }
+
     // if network interfaces array is configured then subnetId, securityGroupIds,
     // and privateIpAddress are configured on the network interface level and
     // there is no need to configure them on the instance level
@@ -486,6 +506,8 @@ export class Instance extends Resource implements IInstance {
       monitoring: props.detailedMonitoring,
       creditSpecification: props.creditSpecification ? { cpuCredits: props.creditSpecification } : undefined,
       ebsOptimized: props.ebsOptimized,
+      enclaveOptions: props.nitroEnclaveEnabled !== undefined ? { enabled: props.nitroEnclaveEnabled } : undefined,
+      hibernationOptions: props.hibernationConfigured !== undefined ? { configured: props.hibernationConfigured } : undefined,
     });
     this.instance.node.addDependency(this.role);
 

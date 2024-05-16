@@ -905,3 +905,72 @@ test('specify ebs optimized instance', () => {
     EbsOptimized: true,
   });
 });
+
+test.each([
+  [true, true],
+  [false, false],
+])('given nitroEnclaveEnabled %p', (given: boolean, expected: boolean) => {
+  // WHEN
+  new Instance(stack, 'Instance', {
+    vpc,
+    machineImage: new AmazonLinuxImage(),
+    instanceType: InstanceType.of(InstanceClass.M5, InstanceSize.XLARGE),
+    nitroEnclaveEnabled: given,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::EC2::Instance', {
+    EnclaveOptions: {
+      Enabled: expected,
+    },
+  });
+});
+
+test.each([
+  [true, true],
+  [false, false],
+])('given hibernationConfigured %p', (given: boolean, expected: boolean) => {
+  // WHEN
+  new Instance(stack, 'Instance', {
+    vpc,
+    machineImage: new AmazonLinuxImage(),
+    instanceType: InstanceType.of(InstanceClass.M5, InstanceSize.XLARGE),
+    hibernationConfigured: given,
+    blockDevices: [{
+      deviceName: '/dev/xvda',
+      volume: BlockDeviceVolume.ebs(30, {
+        volumeType: EbsDeviceVolumeType.GP3,
+        encrypted: true,
+        deleteOnTermination: true,
+      }),
+    }],
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::EC2::Instance', {
+    HibernationOptions: {
+      Configured: expected,
+    },
+  });
+});
+
+test('throw if AWS Nitro Enclaves and hibernation are enabled', () => {
+  // WHEN/THEN
+  expect(() => {
+    new Instance(stack, 'Instance', {
+      vpc,
+      machineImage: new AmazonLinuxImage(),
+      instanceType: InstanceType.of(InstanceClass.M5, InstanceSize.LARGE),
+      nitroEnclaveEnabled: true,
+      hibernationConfigured: true,
+      blockDevices: [{
+        deviceName: '/dev/xvda',
+        volume: BlockDeviceVolume.ebs(30, {
+          volumeType: EbsDeviceVolumeType.GP3,
+          encrypted: true,
+          deleteOnTermination: true,
+        }),
+      }],
+    });
+  }).toThrow('You can\'t enable hibernation and AWS Nitro Enclaves on the same instance.');
+});
