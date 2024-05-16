@@ -61,6 +61,7 @@ export interface FileSystemProps {
 
   /**
    * The storage capacity of the file system being created.
+   *
    * For Windows file systems, valid values are 32 GiB to 65,536 GiB.
    * For SCRATCH_1 deployment types, valid values are 1,200, 2,400, 3,600, then continuing in increments of 3,600 GiB.
    * For SCRATCH_2, PERSISTENT_2 and PERSISTENT_1 deployment types using SSD storage type, the valid values are 1200 GiB, 2400 GiB, and increments of 2400 GiB.
