@@ -466,10 +466,10 @@ and might have breaking changes in the future.
 
 #### Optimistic Stabilization
 
-You can pass the `--exist-on-config-complete` flag to the `deploy` command:
+You can pass the `--exit-on-config-complete` flag to the `deploy` command:
 
 ```console
-$ cdk deploy --exist-on-config-complete [StackNames]
+$ cdk deploy --exit-on-config-complete [StackNames]
 ```
 
 This approach triggers a deployment and monitors the `CONFIGURATION_COMPLETE` detailed status from AWS CloudFormation.
@@ -480,7 +480,7 @@ have multiple stacks that depend on each other.
 For more details on this, you can refer to the blog post at
 [this link](https://aws.amazon.com/blogs/devops/how-we-sped-up-aws-cloudformation-deployments-with-optimistic-stabilization/).
 
-The `--exist-on-config-complete` flag is supported by `cdk deploy` and `cdk destroy`.
+The `--exit-on-config-complete` flag is supported by `cdk deploy` and `cdk destroy`.
 
 ### `cdk watch`
 
