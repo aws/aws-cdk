@@ -975,7 +975,7 @@
                       "Ref": "dbInstanceSubnetGroupD062EC9E"
                     },
                     "engine": "postgres",
-                    "engineVersion": "15.2",
+                    "engineVersion": "16.2",
                     "masterUsername": {
                       "Fn::Join": [
                         "",
