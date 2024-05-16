@@ -33,7 +33,33 @@
                     ],
                     "replicas": [
                       {
-                        "region": "eu-west-1"
+                        "region": "eu-west-1",
+                        "resourcePolicy": {
+                          "policyDocument": {
+                            "Statement": [
+                              {
+                                "Action": "dynamodb:*",
+                                "Effect": "Allow",
+                                "Principal": {
+                                  "AWS": {
+                                    "Fn::Join": [
+                                      "",
+                                      [
+                                        "arn:aws:iam::",
+                                        {
+                                          "Ref": "AWS::AccountId"
+                                        },
+                                        ":root"
+                                      ]
+                                    ]
+                                  }
+                                },
+                                "Resource": "*"
+                              }
+                            ],
+                            "Version": "2012-10-17"
+                          }
+                        }
                       }
                     ]
                   }

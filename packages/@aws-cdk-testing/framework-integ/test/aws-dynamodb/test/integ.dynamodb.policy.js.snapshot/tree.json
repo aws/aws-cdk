@@ -97,13 +97,13 @@
                   "aws:cdk:cloudformation:props": {
                     "attributeDefinitions": [
                       {
-                        "attributeName": "id",
+                        "attributeName": "PK",
                         "attributeType": "S"
                       }
                     ],
                     "keySchema": [
                       {
-                        "attributeName": "id",
+                        "attributeName": "PK",
                         "keyType": "HASH"
                       }
                     ],

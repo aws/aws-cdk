@@ -58,13 +58,13 @@
    "Properties": {
     "AttributeDefinitions": [
      {
-      "AttributeName": "id",
+      "AttributeName": "PK",
       "AttributeType": "S"
      }
     ],
     "KeySchema": [
      {
-      "AttributeName": "id",
+      "AttributeName": "PK",
       "KeyType": "HASH"
      }
     ],
