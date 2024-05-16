@@ -113,4 +113,33 @@ describe('bundling', () => {
       'public.ecr.aws/docker/library/alpine',
     ]), { encoding: 'utf-8', stdio: ['ignore', process.stderr, 'inherit'] })).toEqual(true);
   });
+
+  test('AssetBundlingBindMount bundles with given platform', () => {
+    // GIVEN
+    sinon.stub(process, 'platform').value('darwin');
+    const spawnSyncStub = sinon.stub(child_process, 'spawnSync').returns({
+      status: 0,
+      stderr: Buffer.from('stderr'),
+      stdout: Buffer.from('stdout'),
+      pid: 123,
+      output: ['stdout', 'stderr'],
+      signal: null,
+    });
+    const options = {
+      sourcePath: '/tmp/source',
+      bundleDir: '/tmp/output',
+      image: DockerImage.fromRegistry('public.ecr.aws/docker/library/alpine'),
+      user: '1000',
+      platform: 'linux/arm64',
+    };
+    const helper = new AssetBundlingBindMount(options);
+    helper.run();
+
+    // actual docker run with bind mount is called
+    expect(spawnSyncStub.calledWith(DOCKER_CMD, sinon.match.array.contains([
+      'run', '--rm',
+      '--platform', 'linux/arm64',
+      'public.ecr.aws/docker/library/alpine',
+    ]), { encoding: 'utf-8', stdio: ['ignore', process.stderr, 'inherit'] })).toEqual(true);
+  });
 });

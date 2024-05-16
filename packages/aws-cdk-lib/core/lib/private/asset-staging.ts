@@ -52,6 +52,7 @@ export class AssetBundlingBindMount extends AssetBundlingBase {
   public run() {
     this.options.image.run({
       command: this.options.command,
+      platform: this.options.platform,
       user: this.determineUser(),
       environment: this.options.environment,
       entrypoint: this.options.entrypoint,
@@ -178,6 +179,7 @@ export class AssetBundlingVolumeCopy extends AssetBundlingBase {
 
     this.options.image.run({
       command: this.options.command,
+      platform: this.options.platform,
       user: user,
       environment: this.options.environment,
       entrypoint: this.options.entrypoint,
