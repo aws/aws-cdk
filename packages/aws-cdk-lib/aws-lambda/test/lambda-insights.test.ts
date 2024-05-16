@@ -250,4 +250,15 @@ describe('lambda-insights', () => {
       Layers: ['arn:aws:lambda:us-east-1:580247275435:layer:LambdaInsightsExtension:21'],
     });
   });
+  test('LATEST links to v1.0.317.0', () => {
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'Stack', {
+      env: { account: '123456789012', region: 'us-east-1' },
+    });
+    functionWithInsightsVersion(stack, 'MyLambda', lambda.LambdaInsightsVersion.LATEST, lambda.Architecture.X86_64);
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+      Layers: ['arn:aws:lambda:us-east-1:580247275435:layer:LambdaInsightsExtension:52'],
+    });
+  });
 });
