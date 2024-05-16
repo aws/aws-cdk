@@ -53,7 +53,6 @@ class EksClusterStack extends Stack {
         eks.ClusterLoggingTypes.AUTHENTICATOR,
         eks.ClusterLoggingTypes.SCHEDULER,
       ],
-      clusterName: 'updated-cluster-name',
     });
 
     this.assertFargateProfile();
@@ -340,7 +339,7 @@ const app = new App();
 // since the EKS optimized AMI is hard-coded here based on the region,
 // we need to actually pass in a specific region.
 const stack = new EksClusterStack(app, 'aws-cdk-eks-cluster', {
-  env: { region: 'us-east-1' },
+  env: { region: 'us-west-2' },
 });
 
 if (process.env.CDK_INTEG_ACCOUNT !== '12345678') {
