@@ -53,6 +53,7 @@ class EksClusterStack extends Stack {
         eks.ClusterLoggingTypes.AUTHENTICATOR,
         eks.ClusterLoggingTypes.SCHEDULER,
       ],
+      clusterName: 'updated-cluster-name',
     });
 
     this.assertFargateProfile();
