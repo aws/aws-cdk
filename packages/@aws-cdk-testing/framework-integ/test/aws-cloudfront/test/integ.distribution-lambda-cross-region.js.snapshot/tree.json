@@ -267,7 +267,7 @@
                   "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
                   "aws:cdk:cloudformation:props": {
                     "code": {
-                      "zipFile": "foo"
+                      "zipFile": "bar"
                     },
                     "handler": "index.handler",
                     "role": {
@@ -323,7 +323,7 @@
                         "name": "/cdk/EdgeFunctionArn/eu-west-1/integ-distribution-lambda-cross-region/Lambda",
                         "type": "String",
                         "value": {
-                          "Ref": "LambdaCurrentVersionDF706F6Aceabca74f785ac2be6cd5e57eeaf3b05"
+                          "Ref": "LambdaCurrentVersionDF706F6Abacf7b09ce9c22504574480a4043f64c"
                         }
                       }
                     },
@@ -353,7 +353,7 @@
                         },
                         "functionVersion": {
                           "Fn::GetAtt": [
-                            "LambdaCurrentVersionDF706F6Aceabca74f785ac2be6cd5e57eeaf3b05",
+                            "LambdaCurrentVersionDF706F6Abacf7b09ce9c22504574480a4043f64c",
                             "Version"
                           ]
                         },
@@ -482,7 +482,7 @@
                   "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
                   "aws:cdk:cloudformation:props": {
                     "code": {
-                      "zipFile": "foo"
+                      "zipFile": "bar"
                     },
                     "handler": "index.handler",
                     "role": {
@@ -538,7 +538,7 @@
                         "name": "/cdk/EdgeFunctionArn/eu-west-1/integ-distribution-lambda-cross-region/Lambda2",
                         "type": "String",
                         "value": {
-                          "Ref": "Lambda2CurrentVersion72012B7448e7ccb012bdf87615c944d94691ab6d"
+                          "Ref": "Lambda2CurrentVersion72012B74851867dca0169a0ebcd946bf24681998"
                         }
                       }
                     },
@@ -568,7 +568,7 @@
                         },
                         "functionVersion": {
                           "Fn::GetAtt": [
-                            "Lambda2CurrentVersion72012B7448e7ccb012bdf87615c944d94691ab6d",
+                            "Lambda2CurrentVersion72012B74851867dca0169a0ebcd946bf24681998",
                             "Version"
                           ]
                         },
