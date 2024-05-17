@@ -383,7 +383,7 @@ describe('tests', () => {
               Principal: { AWS: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::127311923021:root']] } },
               Resource: {
                 'Fn::Join': ['', [{ 'Fn::GetAtt': ['AccessLogBucketDA470295', 'Arn'] }, '/AWSLogs/',
-                { Ref: 'AWS::AccountId' }, '/*']],
+                  { Ref: 'AWS::AccountId' }, '/*']],
               },
             },
             {
@@ -392,7 +392,7 @@ describe('tests', () => {
               Principal: { Service: 'delivery.logs.amazonaws.com' },
               Resource: {
                 'Fn::Join': ['', [{ 'Fn::GetAtt': ['AccessLogBucketDA470295', 'Arn'] }, '/AWSLogs/',
-                { Ref: 'AWS::AccountId' }, '/*']],
+                  { Ref: 'AWS::AccountId' }, '/*']],
               },
               Condition: { StringEquals: { 's3:x-amz-acl': 'bucket-owner-full-control' } },
             },
@@ -446,7 +446,7 @@ describe('tests', () => {
               Principal: { AWS: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::127311923021:root']] } },
               Resource: {
                 'Fn::Join': ['', [{ 'Fn::GetAtt': ['AccessLogBucketDA470295', 'Arn'] }, '/prefix-of-access-logs/AWSLogs/',
-                { Ref: 'AWS::AccountId' }, '/*']],
+                  { Ref: 'AWS::AccountId' }, '/*']],
               },
             },
             {
@@ -455,7 +455,7 @@ describe('tests', () => {
               Principal: { Service: 'delivery.logs.amazonaws.com' },
               Resource: {
                 'Fn::Join': ['', [{ 'Fn::GetAtt': ['AccessLogBucketDA470295', 'Arn'] }, '/prefix-of-access-logs/AWSLogs/',
-                { Ref: 'AWS::AccountId' }, '/*']],
+                  { Ref: 'AWS::AccountId' }, '/*']],
               },
               Condition: { StringEquals: { 's3:x-amz-acl': 'bucket-owner-full-control' } },
             },
