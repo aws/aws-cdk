@@ -7,8 +7,8 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### Reverts
 
-* "fix(diff): properties from ChangeSet diff were ignored" ([#30243](https://github.com/aws/aws-cdk/issues/30243)) ([3748472](https://github.com/aws/aws-cdk/commit/37484726f235013ec0e71cefb9e1fc35caf12e74))
-* "chore(cli): skipping old cli integ test cdk diff changes in change set for new changes" ([#30245](https://github.com/aws/aws-cdk/issues/30245)) ([1ba6e87](https://github.com/aws/aws-cdk/commit/1ba6e87fb2cb4fab0da81c4d21912d05dd2e964b)), closes [aws/aws-cdk#30241](https://github.com/aws/aws-cdk/issues/30241)
+* fix(diff): properties from ChangeSet diff were ignored ([#30243](https://github.com/aws/aws-cdk/issues/30243)) ([3748472](https://github.com/aws/aws-cdk/commit/37484726f235013ec0e71cefb9e1fc35caf12e74))
+* chore(cli): skipping old cli integ test cdk diff changes in change set for new changes ([#30245](https://github.com/aws/aws-cdk/issues/30245)) ([1ba6e87](https://github.com/aws/aws-cdk/commit/1ba6e87fb2cb4fab0da81c4d21912d05dd2e964b)), closes [aws/aws-cdk#30241](https://github.com/aws/aws-cdk/issues/30241)
 
 ## [2.142.0](https://github.com/aws/aws-cdk/compare/v2.141.0...v2.142.0) (2024-05-15)
 
