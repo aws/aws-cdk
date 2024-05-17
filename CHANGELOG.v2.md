@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.142.1](https://github.com/aws/aws-cdk/compare/v2.142.0...v2.142.1) (2024-05-17)
+
+
+### Reverts
+
+* fix(diff): properties from ChangeSet diff were ignored ([#30243](https://github.com/aws/aws-cdk/issues/30243)) ([3748472](https://github.com/aws/aws-cdk/commit/37484726f235013ec0e71cefb9e1fc35caf12e74))
+
 ## [2.142.0](https://github.com/aws/aws-cdk/compare/v2.141.0...v2.142.0) (2024-05-15)
 
 
