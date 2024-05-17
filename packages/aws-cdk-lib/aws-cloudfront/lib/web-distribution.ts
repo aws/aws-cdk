@@ -4,6 +4,7 @@ import { HttpVersion, IDistribution, LambdaEdgeEventType, OriginProtocolPolicy, 
 import { FunctionAssociation } from './function';
 import { GeoRestriction } from './geo-restriction';
 import { IKeyGroup } from './key-group';
+import { IOriginAccessControl } from './origin-access-control';
 import { IOriginAccessIdentity } from './origin-access-identity';
 import { formatDistributionArn } from './private/utils';
 import * as certificatemanager from '../../aws-certificatemanager';
@@ -213,6 +214,12 @@ export interface SourceConfiguration {
    * @default - origin shield not enabled
    */
   readonly originShieldRegion?: string;
+
+  /**
+   * Origin Access Control
+   * @default - No origin access control
+   */
+  readonly originAccessControl?: IOriginAccessControl;
 }
 
 /**
