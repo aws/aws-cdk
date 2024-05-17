@@ -4,7 +4,11 @@ import * as cdk from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as ecsPatterns from 'aws-cdk-lib/aws-ecs-patterns';
 
-const app = new cdk.App();
+const app = new cdk.App({
+  postCliContext: {
+    '@aws-cdk/aws-ecs:removeDefaultDeploymentAlarm': false,
+  },
+});
 const stack = new cdk.Stack(app, 'aws-ecs-integ-lb-fargate');
 
 // Create VPC and cluster

@@ -317,6 +317,10 @@
                       {
                         "key": "deletion_protection.enabled",
                         "value": "false"
+                      },
+                      {
+                        "key": "ipv6.deny_all_igw_traffic",
+                        "value": "true"
                       }
                     ],
                     "scheme": "internal",
@@ -446,7 +450,7 @@
                 "path": "NlbDualstackInternalInteg/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.70"
+                  "version": "10.3.0"
                 }
               },
               "DeployAssert": {
@@ -492,7 +496,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.2.70"
+          "version": "10.3.0"
         }
       }
     },
