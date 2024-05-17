@@ -1,7 +1,7 @@
 {
-  "version": "32.0.0",
+  "version": "35.0.0",
   "files": {
-    "460a0b8d4989f665efc27a1e63f215c996a3a5b06947e2aefabb5f815a98d6d4": {
+    "b9282abff1440ddcc386ce3231c4f3d94fd9c1abcc3ef95e1b89dc49deae5f0d": {
       "source": {
         "path": "aws-ecs-integ-nlb-healthchecks.template.json",
         "packaging": "file"
@@ -9,7 +9,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "460a0b8d4989f665efc27a1e63f215c996a3a5b06947e2aefabb5f815a98d6d4.json",
+          "objectKey": "b9282abff1440ddcc386ce3231c4f3d94fd9c1abcc3ef95e1b89dc49deae5f0d.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

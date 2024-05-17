@@ -255,7 +255,7 @@ describe('instance engine', () => {
 
   describe('PostgreSQL engine bindToInstance', () => {
     test('returns s3 import/export feature if the version supports it', () => {
-      const engineNewerVersion = rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_15_2 });
+      const engineNewerVersion = rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_16_2 });
 
       const engineConfig = engineNewerVersion.bindToInstance(new cdk.Stack(), {});
       expect(engineConfig.features?.s3Import).toEqual('s3Import');

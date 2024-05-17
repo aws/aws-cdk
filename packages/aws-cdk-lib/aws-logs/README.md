@@ -61,7 +61,7 @@ const logGroup = new logs.LogGroup(this, 'LogGroup');
 logGroup.grantWrite(new iam.ServicePrincipal('es.amazonaws.com'));
 ```
 
-Similarily, read permissions can be granted to the log group as follows.
+Similarly, read permissions can be granted to the log group as follows.
 
 ```ts
 const logGroup = new logs.LogGroup(this, 'LogGroup');

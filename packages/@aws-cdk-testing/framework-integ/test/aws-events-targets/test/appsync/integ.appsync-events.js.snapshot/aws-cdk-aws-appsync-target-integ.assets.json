@@ -1,0 +1,19 @@
+{
+  "version": "36.0.0",
+  "files": {
+    "fa005296bfe6cbad01df3cb800a324adbe7bcdb6273343c59488a74b1a9834a1": {
+      "source": {
+        "path": "aws-cdk-aws-appsync-target-integ.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "fa005296bfe6cbad01df3cb800a324adbe7bcdb6273343c59488a74b1a9834a1.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

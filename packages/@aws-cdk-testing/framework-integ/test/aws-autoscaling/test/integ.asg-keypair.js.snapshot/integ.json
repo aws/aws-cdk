@@ -1,0 +1,12 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "AsgIntegKeyPair/DefaultTest": {
+      "stacks": [
+        "aws-cdk-asg-integ"
+      ],
+      "assertionStack": "AsgIntegKeyPair/DefaultTest/DeployAssert",
+      "assertionStackName": "AsgIntegKeyPairDefaultTestDeployAssert4EC47FB2"
+    }
+  }
+}

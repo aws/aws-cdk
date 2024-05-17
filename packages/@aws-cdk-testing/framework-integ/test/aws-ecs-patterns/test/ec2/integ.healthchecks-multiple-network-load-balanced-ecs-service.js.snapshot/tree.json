@@ -31,8 +31,8 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_ec2.CfnVPC",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
                 }
               },
               "PublicSubnet1": {
@@ -45,9 +45,6 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
-                        "vpcId": {
-                          "Ref": "Vpc8378EB38"
-                        },
                         "availabilityZone": {
                           "Fn::Select": [
                             0,
@@ -71,20 +68,23 @@
                             "key": "Name",
                             "value": "aws-ecs-integ-nlb-healthchecks/Vpc/PublicSubnet1"
                           }
-                        ]
+                        ],
+                        "vpcId": {
+                          "Ref": "Vpc8378EB38"
+                        }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_ec2.CfnSubnet",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
                     }
                   },
                   "Acl": {
                     "id": "Acl",
                     "path": "aws-ecs-integ-nlb-healthchecks/Vpc/PublicSubnet1/Acl",
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.Resource",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
                     }
                   },
                   "RouteTable": {
@@ -93,20 +93,20 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
-                        "vpcId": {
-                          "Ref": "Vpc8378EB38"
-                        },
                         "tags": [
                           {
                             "key": "Name",
                             "value": "aws-ecs-integ-nlb-healthchecks/Vpc/PublicSubnet1"
                           }
-                        ]
+                        ],
+                        "vpcId": {
+                          "Ref": "Vpc8378EB38"
+                        }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_ec2.CfnRouteTable",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
                     }
                   },
                   "RouteTableAssociation": {
@@ -124,8 +124,8 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_ec2.CfnSubnetRouteTableAssociation",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
                     }
                   },
                   "DefaultRoute": {
@@ -134,18 +134,18 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
-                        "routeTableId": {
-                          "Ref": "VpcPublicSubnet1RouteTable6C95E38E"
-                        },
                         "destinationCidrBlock": "0.0.0.0/0",
                         "gatewayId": {
                           "Ref": "VpcIGWD7BA715C"
+                        },
+                        "routeTableId": {
+                          "Ref": "VpcPublicSubnet1RouteTable6C95E38E"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_ec2.CfnRoute",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
                     }
                   },
                   "EIP": {
@@ -164,8 +164,8 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_ec2.CfnEIP",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
                     }
                   },
                   "NATGateway": {
@@ -174,14 +174,14 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::NatGateway",
                       "aws:cdk:cloudformation:props": {
-                        "subnetId": {
-                          "Ref": "VpcPublicSubnet1Subnet5C2D37C4"
-                        },
                         "allocationId": {
                           "Fn::GetAtt": [
                             "VpcPublicSubnet1EIPD7E02669",
                             "AllocationId"
                           ]
+                        },
+                        "subnetId": {
+                          "Ref": "VpcPublicSubnet1Subnet5C2D37C4"
                         },
                         "tags": [
                           {
@@ -192,14 +192,14 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_ec2.CfnNatGateway",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_ec2.PublicSubnet",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
                 }
               },
               "PublicSubnet2": {
@@ -212,9 +212,6 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
-                        "vpcId": {
-                          "Ref": "Vpc8378EB38"
-                        },
                         "availabilityZone": {
                           "Fn::Select": [
                             1,
@@ -238,20 +235,23 @@
                             "key": "Name",
                             "value": "aws-ecs-integ-nlb-healthchecks/Vpc/PublicSubnet2"
                           }
-                        ]
+                        ],
+                        "vpcId": {
+                          "Ref": "Vpc8378EB38"
+                        }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_ec2.CfnSubnet",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
                     }
                   },
                   "Acl": {
                     "id": "Acl",
                     "path": "aws-ecs-integ-nlb-healthchecks/Vpc/PublicSubnet2/Acl",
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.Resource",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
                     }
                   },
                   "RouteTable": {
@@ -260,20 +260,20 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
-                        "vpcId": {
-                          "Ref": "Vpc8378EB38"
-                        },
                         "tags": [
                           {
                             "key": "Name",
                             "value": "aws-ecs-integ-nlb-healthchecks/Vpc/PublicSubnet2"
                           }
-                        ]
+                        ],
+                        "vpcId": {
+                          "Ref": "Vpc8378EB38"
+                        }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_ec2.CfnRouteTable",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
                     }
                   },
                   "RouteTableAssociation": {
@@ -291,8 +291,8 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_ec2.CfnSubnetRouteTableAssociation",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
                     }
                   },
                   "DefaultRoute": {
@@ -301,18 +301,18 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
-                        "routeTableId": {
-                          "Ref": "VpcPublicSubnet2RouteTable94F7E489"
-                        },
                         "destinationCidrBlock": "0.0.0.0/0",
                         "gatewayId": {
                           "Ref": "VpcIGWD7BA715C"
+                        },
+                        "routeTableId": {
+                          "Ref": "VpcPublicSubnet2RouteTable94F7E489"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_ec2.CfnRoute",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
                     }
                   },
                   "EIP": {
@@ -331,8 +331,8 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_ec2.CfnEIP",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
                     }
                   },
                   "NATGateway": {
@@ -341,14 +341,14 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::NatGateway",
                       "aws:cdk:cloudformation:props": {
-                        "subnetId": {
-                          "Ref": "VpcPublicSubnet2Subnet691E08A3"
-                        },
                         "allocationId": {
                           "Fn::GetAtt": [
                             "VpcPublicSubnet2EIP3C605A87",
                             "AllocationId"
                           ]
+                        },
+                        "subnetId": {
+                          "Ref": "VpcPublicSubnet2Subnet691E08A3"
                         },
                         "tags": [
                           {
@@ -359,14 +359,14 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_ec2.CfnNatGateway",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_ec2.PublicSubnet",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
                 }
               },
               "PrivateSubnet1": {
@@ -379,9 +379,6 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
-                        "vpcId": {
-                          "Ref": "Vpc8378EB38"
-                        },
                         "availabilityZone": {
                           "Fn::Select": [
                             0,
@@ -405,20 +402,23 @@
                             "key": "Name",
                             "value": "aws-ecs-integ-nlb-healthchecks/Vpc/PrivateSubnet1"
                           }
-                        ]
+                        ],
+                        "vpcId": {
+                          "Ref": "Vpc8378EB38"
+                        }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_ec2.CfnSubnet",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
                     }
                   },
                   "Acl": {
                     "id": "Acl",
                     "path": "aws-ecs-integ-nlb-healthchecks/Vpc/PrivateSubnet1/Acl",
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.Resource",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
                     }
                   },
                   "RouteTable": {
@@ -427,20 +427,20 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
-                        "vpcId": {
-                          "Ref": "Vpc8378EB38"
-                        },
                         "tags": [
                           {
                             "key": "Name",
                             "value": "aws-ecs-integ-nlb-healthchecks/Vpc/PrivateSubnet1"
                           }
-                        ]
+                        ],
+                        "vpcId": {
+                          "Ref": "Vpc8378EB38"
+                        }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_ec2.CfnRouteTable",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
                     }
                   },
                   "RouteTableAssociation": {
@@ -458,8 +458,8 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_ec2.CfnSubnetRouteTableAssociation",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
                     }
                   },
                   "DefaultRoute": {
@@ -468,24 +468,24 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
-                        "routeTableId": {
-                          "Ref": "VpcPrivateSubnet1RouteTableB2C5B500"
-                        },
                         "destinationCidrBlock": "0.0.0.0/0",
                         "natGatewayId": {
                           "Ref": "VpcPublicSubnet1NATGateway4D7517AA"
+                        },
+                        "routeTableId": {
+                          "Ref": "VpcPrivateSubnet1RouteTableB2C5B500"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_ec2.CfnRoute",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_ec2.PrivateSubnet",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
                 }
               },
               "PrivateSubnet2": {
@@ -498,9 +498,6 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
-                        "vpcId": {
-                          "Ref": "Vpc8378EB38"
-                        },
                         "availabilityZone": {
                           "Fn::Select": [
                             1,
@@ -524,20 +521,23 @@
                             "key": "Name",
                             "value": "aws-ecs-integ-nlb-healthchecks/Vpc/PrivateSubnet2"
                           }
-                        ]
+                        ],
+                        "vpcId": {
+                          "Ref": "Vpc8378EB38"
+                        }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_ec2.CfnSubnet",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
                     }
                   },
                   "Acl": {
                     "id": "Acl",
                     "path": "aws-ecs-integ-nlb-healthchecks/Vpc/PrivateSubnet2/Acl",
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.Resource",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
                     }
                   },
                   "RouteTable": {
@@ -546,20 +546,20 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
-                        "vpcId": {
-                          "Ref": "Vpc8378EB38"
-                        },
                         "tags": [
                           {
                             "key": "Name",
                             "value": "aws-ecs-integ-nlb-healthchecks/Vpc/PrivateSubnet2"
                           }
-                        ]
+                        ],
+                        "vpcId": {
+                          "Ref": "Vpc8378EB38"
+                        }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_ec2.CfnRouteTable",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
                     }
                   },
                   "RouteTableAssociation": {
@@ -577,8 +577,8 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_ec2.CfnSubnetRouteTableAssociation",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
                     }
                   },
                   "DefaultRoute": {
@@ -587,24 +587,24 @@
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
-                        "routeTableId": {
-                          "Ref": "VpcPrivateSubnet2RouteTableA678073B"
-                        },
                         "destinationCidrBlock": "0.0.0.0/0",
                         "natGatewayId": {
                           "Ref": "VpcPublicSubnet2NATGateway9182C01D"
+                        },
+                        "routeTableId": {
+                          "Ref": "VpcPrivateSubnet2RouteTableA678073B"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_ec2.CfnRoute",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_ec2.PrivateSubnet",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
                 }
               },
               "IGW": {
@@ -622,8 +622,8 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_ec2.CfnInternetGateway",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
                 }
               },
               "VPCGW": {
@@ -632,23 +632,23 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EC2::VPCGatewayAttachment",
                   "aws:cdk:cloudformation:props": {
-                    "vpcId": {
-                      "Ref": "Vpc8378EB38"
-                    },
                     "internetGatewayId": {
                       "Ref": "VpcIGWD7BA715C"
+                    },
+                    "vpcId": {
+                      "Ref": "Vpc8378EB38"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_ec2.CfnVPCGatewayAttachment",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_ec2.Vpc",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
             }
           },
           "Cluster": {
@@ -663,8 +663,8 @@
                   "aws:cdk:cloudformation:props": {}
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_ecs.CfnCluster",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
                 }
               },
               "Cluster": {
@@ -685,14 +685,14 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_ecs.CfnClusterCapacityProviderAssociations",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_ecs.Cluster",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
             }
           },
           "MyAutoScalingGroupSG": {
@@ -728,14 +728,14 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_ec2.CfnSecurityGroup",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_ec2.SecurityGroup",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
             }
           },
           "MyAutoScalingGroup": {
@@ -750,8 +750,8 @@
                     "id": "ImportInstanceRole",
                     "path": "aws-ecs-integ-nlb-healthchecks/MyAutoScalingGroup/InstanceRole/ImportInstanceRole",
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.Resource",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
                     }
                   },
                   "Resource": {
@@ -772,29 +772,23 @@
                           ],
                           "Version": "2012-10-17"
                         },
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_ec2.CfnSecurityGroup",
-                          "version": "0.0.0"
-                        }
+                        "tags": [
+                          {
+                            "key": "Name",
+                            "value": "aws-ecs-integ-nlb-healthchecks/MyAutoScalingGroup"
+                          }
+                        ]
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_ec2.SecurityGroup",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
                     }
                   },
                   "DefaultPolicy": {
                     "id": "DefaultPolicy",
                     "path": "aws-ecs-integ-nlb-healthchecks/MyAutoScalingGroup/InstanceRole/DefaultPolicy",
                     "children": {
-                      "ImportInstanceRole": {
-                        "id": "ImportInstanceRole",
-                        "path": "aws-ecs-integ-nlb-healthchecks/Cluster/DefaultAutoScalingGroup/InstanceRole/ImportInstanceRole",
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.Resource",
-                          "version": "0.0.0"
-                        }
-                      },
                       "Resource": {
                         "id": "Resource",
                         "path": "aws-ecs-integ-nlb-healthchecks/MyAutoScalingGroup/InstanceRole/DefaultPolicy/Resource",
@@ -816,43 +810,15 @@
                                       "Arn"
                                     ]
                                   }
-                                }
-                              ],
-                              "Version": "2012-10-17"
-                            },
-                            "tags": [
-                              {
-                                "key": "Name",
-                                "value": "aws-ecs-integ-nlb-healthchecks/Cluster/DefaultAutoScalingGroup"
-                              }
-                            ]
-                          }
-                        },
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_iam.CfnRole",
-                          "version": "0.0.0"
-                        }
-                      },
-                      "DefaultPolicy": {
-                        "id": "DefaultPolicy",
-                        "path": "aws-ecs-integ-nlb-healthchecks/Cluster/DefaultAutoScalingGroup/InstanceRole/DefaultPolicy",
-                        "children": {
-                          "Resource": {
-                            "id": "Resource",
-                            "path": "aws-ecs-integ-nlb-healthchecks/Cluster/DefaultAutoScalingGroup/InstanceRole/DefaultPolicy/Resource",
-                            "attributes": {
-                              "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
-                              "aws:cdk:cloudformation:props": {
-                                "policyDocument": {
-                                  "Statement": [
-                                    {
-                                      "Action": [
-                                        "ecs:DeregisterContainerInstance",
-                                        "ecs:RegisterContainerInstance",
-                                        "ecs:Submit*"
-                                      ],
-                                      "Effect": "Allow",
-                                      "Resource": {
+                                },
+                                {
+                                  "Action": [
+                                    "ecs:Poll",
+                                    "ecs:StartTelemetrySession"
+                                  ],
+                                  "Condition": {
+                                    "ArnEquals": {
+                                      "ecs:cluster": {
                                         "Fn::GetAtt": [
                                           "ClusterEB0386A7",
                                           "Arn"
@@ -876,27 +842,29 @@
                               ],
                               "Version": "2012-10-17"
                             },
-                            "constructInfo": {
-                              "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
-                              "version": "0.0.0"
-                            }
+                            "policyName": "MyAutoScalingGroupInstanceRoleDefaultPolicyD7C4BACE",
+                            "roles": [
+                              {
+                                "Ref": "MyAutoScalingGroupInstanceRoleDFBF3134"
+                              }
+                            ]
                           }
                         },
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_iam.Policy",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.3.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_iam.Role",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_iam.Role",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
                 }
               },
               "InstanceProfile": {
@@ -909,15 +877,29 @@
                       {
                         "Ref": "MyAutoScalingGroupInstanceRoleDFBF3134"
                       }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_iam.CfnInstanceProfile",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "LaunchConfig": {
-                    "id": "LaunchConfig",
-                    "path": "aws-ecs-integ-nlb-healthchecks/Cluster/DefaultAutoScalingGroup/LaunchConfig",
+                    ]
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              },
+              "ImportedInstanceProfile": {
+                "id": "ImportedInstanceProfile",
+                "path": "aws-ecs-integ-nlb-healthchecks/MyAutoScalingGroup/ImportedInstanceProfile",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              },
+              "LaunchTemplate": {
+                "id": "LaunchTemplate",
+                "path": "aws-ecs-integ-nlb-healthchecks/MyAutoScalingGroup/LaunchTemplate",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-ecs-integ-nlb-healthchecks/MyAutoScalingGroup/LaunchTemplate/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::LaunchTemplate",
                       "aws:cdk:cloudformation:props": {
@@ -928,515 +910,178 @@
                                 "MyAutoScalingGroupInstanceProfile729989CC",
                                 "Arn"
                               ]
-                            ]
-                          }
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_autoscaling.CfnLaunchConfiguration",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "ASG": {
-                    "id": "ASG",
-                    "path": "aws-ecs-integ-nlb-healthchecks/Cluster/DefaultAutoScalingGroup/ASG",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::AutoScaling::AutoScalingGroup",
-                      "aws:cdk:cloudformation:props": {
-                        "maxSize": "1",
-                        "minSize": "1",
-                        "launchConfigurationName": {
-                          "Ref": "ClusterDefaultAutoScalingGroupLaunchConfig81EA5466"
-                        },
-                        "tags": [
-                          {
-                            "key": "Name",
-                            "value": "aws-ecs-integ-nlb-healthchecks/Cluster/DefaultAutoScalingGroup",
-                            "propagateAtLaunch": true
-                          }
-                        ],
-                        "vpcZoneIdentifier": [
-                          {
-                            "Ref": "VpcPrivateSubnet1Subnet536B997A"
-                          },
-                          {
-                            "Ref": "VpcPrivateSubnet2Subnet3788AAA1"
-                          }
-                        ]
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_autoscaling.CfnAutoScalingGroup",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "DrainECSHook": {
-                    "id": "DrainECSHook",
-                    "path": "aws-ecs-integ-nlb-healthchecks/Cluster/DefaultAutoScalingGroup/DrainECSHook",
-                    "children": {
-                      "Function": {
-                        "id": "Function",
-                        "path": "aws-ecs-integ-nlb-healthchecks/Cluster/DefaultAutoScalingGroup/DrainECSHook/Function",
-                        "children": {
-                          "ServiceRole": {
-                            "id": "ServiceRole",
-                            "path": "aws-ecs-integ-nlb-healthchecks/Cluster/DefaultAutoScalingGroup/DrainECSHook/Function/ServiceRole",
-                            "children": {
-                              "ImportServiceRole": {
-                                "id": "ImportServiceRole",
-                                "path": "aws-ecs-integ-nlb-healthchecks/Cluster/DefaultAutoScalingGroup/DrainECSHook/Function/ServiceRole/ImportServiceRole",
-                                "constructInfo": {
-                                  "fqn": "aws-cdk-lib.Resource",
-                                  "version": "0.0.0"
-                                }
-                              },
-                              "Resource": {
-                                "id": "Resource",
-                                "path": "aws-ecs-integ-nlb-healthchecks/Cluster/DefaultAutoScalingGroup/DrainECSHook/Function/ServiceRole/Resource",
-                                "attributes": {
-                                  "aws:cdk:cloudformation:type": "AWS::IAM::Role",
-                                  "aws:cdk:cloudformation:props": {
-                                    "assumeRolePolicyDocument": {
-                                      "Statement": [
-                                        {
-                                          "Action": "sts:AssumeRole",
-                                          "Effect": "Allow",
-                                          "Principal": {
-                                            "Service": "lambda.amazonaws.com"
-                                          }
-                                        }
-                                      ],
-                                      "Version": "2012-10-17"
-                                    },
-                                    "managedPolicyArns": [
-                                      {
-                                        "Fn::Join": [
-                                          "",
-                                          [
-                                            "arn:",
-                                            {
-                                              "Ref": "AWS::Partition"
-                                            },
-                                            ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
-                                          ]
-                                        ]
-                                      }
-                                    ],
-                                    "tags": [
-                                      {
-                                        "key": "Name",
-                                        "value": "aws-ecs-integ-nlb-healthchecks/Cluster/DefaultAutoScalingGroup"
-                                      }
-                                    ]
-                                  }
-                                },
-                                "constructInfo": {
-                                  "fqn": "aws-cdk-lib.aws_iam.CfnRole",
-                                  "version": "0.0.0"
-                                }
-                              },
-                              "DefaultPolicy": {
-                                "id": "DefaultPolicy",
-                                "path": "aws-ecs-integ-nlb-healthchecks/Cluster/DefaultAutoScalingGroup/DrainECSHook/Function/ServiceRole/DefaultPolicy",
-                                "children": {
-                                  "Resource": {
-                                    "id": "Resource",
-                                    "path": "aws-ecs-integ-nlb-healthchecks/Cluster/DefaultAutoScalingGroup/DrainECSHook/Function/ServiceRole/DefaultPolicy/Resource",
-                                    "attributes": {
-                                      "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
-                                      "aws:cdk:cloudformation:props": {
-                                        "policyDocument": {
-                                          "Statement": [
-                                            {
-                                              "Action": [
-                                                "ec2:DescribeHosts",
-                                                "ec2:DescribeInstanceAttribute",
-                                                "ec2:DescribeInstanceStatus",
-                                                "ec2:DescribeInstances"
-                                              ],
-                                              "Effect": "Allow",
-                                              "Resource": "*"
-                                            },
-                                            {
-                                              "Action": "autoscaling:CompleteLifecycleAction",
-                                              "Effect": "Allow",
-                                              "Resource": {
-                                                "Fn::Join": [
-                                                  "",
-                                                  [
-                                                    "arn:",
-                                                    {
-                                                      "Ref": "AWS::Partition"
-                                                    },
-                                                    ":autoscaling:",
-                                                    {
-                                                      "Ref": "AWS::Region"
-                                                    },
-                                                    ":",
-                                                    {
-                                                      "Ref": "AWS::AccountId"
-                                                    },
-                                                    ":autoScalingGroup:*:autoScalingGroupName/",
-                                                    {
-                                                      "Ref": "ClusterDefaultAutoScalingGroupASG0F98E147"
-                                                    }
-                                                  ]
-                                                ]
-                                              }
-                                            },
-                                            {
-                                              "Action": [
-                                                "ecs:DescribeContainerInstances",
-                                                "ecs:DescribeTasks",
-                                                "ecs:ListTasks",
-                                                "ecs:UpdateContainerInstancesState"
-                                              ],
-                                              "Condition": {
-                                                "ArnEquals": {
-                                                  "ecs:cluster": {
-                                                    "Fn::GetAtt": [
-                                                      "ClusterEB0386A7",
-                                                      "Arn"
-                                                    ]
-                                                  }
-                                                }
-                                              },
-                                              "Effect": "Allow",
-                                              "Resource": "*"
-                                            },
-                                            {
-                                              "Action": [
-                                                "ecs:ListContainerInstances",
-                                                "ecs:SubmitContainerStateChange",
-                                                "ecs:SubmitTaskStateChange"
-                                              ],
-                                              "Effect": "Allow",
-                                              "Resource": {
-                                                "Fn::GetAtt": [
-                                                  "ClusterEB0386A7",
-                                                  "Arn"
-                                                ]
-                                              }
-                                            }
-                                          ],
-                                          "Version": "2012-10-17"
-                                        },
-                                        "policyName": "ClusterDefaultAutoScalingGroupDrainECSHookFunctionServiceRoleDefaultPolicy221F6E5E",
-                                        "roles": [
-                                          {
-                                            "Ref": "ClusterDefaultAutoScalingGroupDrainECSHookFunctionServiceRole2AC250B1"
-                                          }
-                                        ]
-                                      }
-                                    },
-                                    "constructInfo": {
-                                      "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
-                                      "version": "0.0.0"
-                                    }
-                                  }
-                                },
-                                "constructInfo": {
-                                  "fqn": "aws-cdk-lib.aws_iam.Policy",
-                                  "version": "0.0.0"
-                                }
-                              }
-                            },
-                            "constructInfo": {
-                              "fqn": "aws-cdk-lib.aws_iam.Role",
-                              "version": "0.0.0"
                             }
                           },
-                          "Resource": {
-                            "id": "Resource",
-                            "path": "aws-ecs-integ-nlb-healthchecks/Cluster/DefaultAutoScalingGroup/DrainECSHook/Function/Resource",
-                            "attributes": {
-                              "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
-                              "aws:cdk:cloudformation:props": {
-                                "code": {
-                                  "zipFile": "import boto3, json, os, time\n\necs = boto3.client('ecs')\nautoscaling = boto3.client('autoscaling')\n\n\ndef lambda_handler(event, context):\n  print(json.dumps(dict(event, ResponseURL='...')))\n  cluster = os.environ['CLUSTER']\n  snsTopicArn = event['Records'][0]['Sns']['TopicArn']\n  lifecycle_event = json.loads(event['Records'][0]['Sns']['Message'])\n  instance_id = lifecycle_event.get('EC2InstanceId')\n  if not instance_id:\n    print('Got event without EC2InstanceId: %s', json.dumps(dict(event, ResponseURL='...')))\n    return\n\n  instance_arn = container_instance_arn(cluster, instance_id)\n  print('Instance %s has container instance ARN %s' % (lifecycle_event['EC2InstanceId'], instance_arn))\n\n  if not instance_arn:\n    return\n\n  task_arns = container_instance_task_arns(cluster, instance_arn)\n\n  if task_arns:\n    print('Instance ARN %s has task ARNs %s' % (instance_arn, ', '.join(task_arns)))\n\n  while has_tasks(cluster, instance_arn, task_arns):\n    time.sleep(10)\n\n  try:\n    print('Terminating instance %s' % instance_id)\n    autoscaling.complete_lifecycle_action(\n        LifecycleActionResult='CONTINUE',\n        **pick(lifecycle_event, 'LifecycleHookName', 'LifecycleActionToken', 'AutoScalingGroupName'))\n  except Exception as e:\n    # Lifecycle action may have already completed.\n    print(str(e))\n\n\ndef container_instance_arn(cluster, instance_id):\n  \"\"\"Turn an instance ID into a container instance ARN.\"\"\"\n  arns = ecs.list_container_instances(cluster=cluster, filter='ec2InstanceId==' + instance_id)['containerInstanceArns']\n  if not arns:\n    return None\n  return arns[0]\n\ndef container_instance_task_arns(cluster, instance_arn):\n  \"\"\"Fetch tasks for a container instance ARN.\"\"\"\n  arns = ecs.list_tasks(cluster=cluster, containerInstance=instance_arn)['taskArns']\n  return arns\n\ndef has_tasks(cluster, instance_arn, task_arns):\n  \"\"\"Return True if the instance is running tasks for the given cluster.\"\"\"\n  instances = ecs.describe_container_instances(cluster=cluster, containerInstances=[instance_arn])['containerInstances']\n  if not instances:\n    return False\n  instance = instances[0]\n\n  if instance['status'] == 'ACTIVE':\n    # Start draining, then try again later\n    set_container_instance_to_draining(cluster, instance_arn)\n    return True\n\n  task_count = None\n\n  if task_arns:\n    # Fetch details for tasks running on the container instance\n    tasks = ecs.describe_tasks(cluster=cluster, tasks=task_arns)['tasks']\n    if tasks:\n      # Consider any non-stopped tasks as running\n      task_count = sum(task['lastStatus'] != 'STOPPED' for task in tasks) + instance['pendingTasksCount']\n\n  if not task_count:\n    # Fallback to instance task counts if detailed task information is unavailable\n    task_count = instance['runningTasksCount'] + instance['pendingTasksCount']\n\n  print('Instance %s has %s tasks' % (instance_arn, task_count))\n\n  return task_count > 0\n\ndef set_container_instance_to_draining(cluster, instance_arn):\n  ecs.update_container_instances_state(\n      cluster=cluster,\n      containerInstances=[instance_arn], status='DRAINING')\n\n\ndef pick(dct, *keys):\n  \"\"\"Pick a subset of a dict.\"\"\"\n  return {k: v for k, v in dct.items() if k in keys}\n"
-                                },
-                                "role": {
-                                  "Fn::GetAtt": [
-                                    "ClusterDefaultAutoScalingGroupDrainECSHookFunctionServiceRole2AC250B1",
-                                    "Arn"
-                                  ]
-                                },
-                                "environment": {
-                                  "variables": {
-                                    "CLUSTER": {
-                                      "Ref": "ClusterEB0386A7"
-                                    }
-                                  }
-                                },
-                                "handler": "index.lambda_handler",
-                                "runtime": "python3.9",
-                                "tags": [
-                                  {
-                                    "key": "Name",
-                                    "value": "aws-ecs-integ-nlb-healthchecks/Cluster/DefaultAutoScalingGroup"
-                                  }
-                                ],
-                                "timeout": 310
-                              }
-                            },
-                            "constructInfo": {
-                              "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
-                              "version": "0.0.0"
-                            }
+                          "imageId": {
+                            "Ref": "SsmParameterValueawsserviceecsoptimizedamiamazonlinux2recommendedimageidC96584B6F00A464EAD1953AFF4B05118Parameter"
                           },
-                          "AllowInvoke:awsecsintegnlbhealthchecksClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopic9374BCF8": {
-                            "id": "AllowInvoke:awsecsintegnlbhealthchecksClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopic9374BCF8",
-                            "path": "aws-ecs-integ-nlb-healthchecks/Cluster/DefaultAutoScalingGroup/DrainECSHook/Function/AllowInvoke:awsecsintegnlbhealthchecksClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopic9374BCF8",
-                            "attributes": {
-                              "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
-                              "aws:cdk:cloudformation:props": {
-                                "action": "lambda:InvokeFunction",
-                                "functionName": {
-                                  "Fn::GetAtt": [
-                                    "ClusterDefaultAutoScalingGroupDrainECSHookFunctionFE918865",
-                                    "Arn"
-                                  ]
-                                },
-                                "principal": "sns.amazonaws.com",
-                                "sourceArn": {
-                                  "Ref": "ClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopicFE5437FB"
-                                }
-                              }
-                            },
-                            "constructInfo": {
-                              "fqn": "aws-cdk-lib.aws_lambda.CfnPermission",
-                              "version": "0.0.0"
-                            }
+                          "instanceType": "t2.micro",
+                          "monitoring": {
+                            "enabled": false
                           },
-                          "Topic": {
-                            "id": "Topic",
-                            "path": "aws-ecs-integ-nlb-healthchecks/Cluster/DefaultAutoScalingGroup/DrainECSHook/Function/Topic",
-                            "children": {
-                              "Resource": {
-                                "id": "Resource",
-                                "path": "aws-ecs-integ-nlb-healthchecks/Cluster/DefaultAutoScalingGroup/DrainECSHook/Function/Topic/Resource",
-                                "attributes": {
-                                  "aws:cdk:cloudformation:type": "AWS::SNS::Subscription",
-                                  "aws:cdk:cloudformation:props": {
-                                    "protocol": "lambda",
-                                    "topicArn": {
-                                      "Ref": "ClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopicFE5437FB"
-                                    },
-                                    "endpoint": {
-                                      "Fn::GetAtt": [
-                                        "ClusterDefaultAutoScalingGroupDrainECSHookFunctionFE918865",
-                                        "Arn"
-                                      ]
-                                    }
-                                  }
-                                },
-                                "constructInfo": {
-                                  "fqn": "aws-cdk-lib.aws_sns.CfnSubscription",
-                                  "version": "0.0.0"
+                          "securityGroupIds": [
+                            {
+                              "Fn::GetAtt": [
+                                "MyAutoScalingGroupSGEBE6954A",
+                                "GroupId"
+                              ]
+                            }
+                          ],
+                          "tagSpecifications": [
+                            {
+                              "resourceType": "instance",
+                              "tags": [
+                                {
+                                  "key": "Name",
+                                  "value": "aws-ecs-integ-nlb-healthchecks/MyAutoScalingGroup/LaunchTemplate"
                                 }
                               ]
                             },
-                            "constructInfo": {
-                              "fqn": "aws-cdk-lib.aws_sns.Subscription",
-                              "version": "0.0.0"
+                            {
+                              "resourceType": "volume",
+                              "tags": [
+                                {
+                                  "key": "Name",
+                                  "value": "aws-ecs-integ-nlb-healthchecks/MyAutoScalingGroup/LaunchTemplate"
+                                }
+                              ]
                             }
-                          }
-                        },
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_lambda.Function",
-                          "version": "0.0.0"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "constructs.Construct",
-                      "version": "10.2.55"
-                    }
-                  },
-                  "LifecycleHookDrainHook": {
-                    "id": "LifecycleHookDrainHook",
-                    "path": "aws-ecs-integ-nlb-healthchecks/Cluster/DefaultAutoScalingGroup/LifecycleHookDrainHook",
-                    "children": {
-                      "Topic": {
-                        "id": "Topic",
-                        "path": "aws-ecs-integ-nlb-healthchecks/Cluster/DefaultAutoScalingGroup/LifecycleHookDrainHook/Topic",
-                        "children": {
-                          "Resource": {
-                            "id": "Resource",
-                            "path": "aws-ecs-integ-nlb-healthchecks/Cluster/DefaultAutoScalingGroup/LifecycleHookDrainHook/Topic/Resource",
-                            "attributes": {
-                              "aws:cdk:cloudformation:type": "AWS::SNS::Topic",
-                              "aws:cdk:cloudformation:props": {
-                                "tags": [
+                          ],
+                          "userData": {
+                            "Fn::Base64": {
+                              "Fn::Join": [
+                                "",
+                                [
+                                  "#!/bin/bash\necho ECS_CLUSTER=",
                                   {
                                     "Ref": "ClusterEB0386A7"
                                   },
                                   " >> /etc/ecs/ecs.config\nsudo iptables --insert FORWARD 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP\nsudo service iptables save\necho ECS_AWSVPC_BLOCK_IMDS=true >> /etc/ecs/ecs.config"
                                 ]
-                              }
-                            },
-                            "constructInfo": {
-                              "fqn": "aws-cdk-lib.aws_sns.CfnTopic",
-                              "version": "0.0.0"
-                            }
-                          }
-                        },
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_sns.Topic",
-                          "version": "0.0.0"
-                        }
-                      },
-                      "Role": {
-                        "id": "Role",
-                        "path": "aws-ecs-integ-nlb-healthchecks/Cluster/DefaultAutoScalingGroup/LifecycleHookDrainHook/Role",
-                        "children": {
-                          "ImportRole": {
-                            "id": "ImportRole",
-                            "path": "aws-ecs-integ-nlb-healthchecks/Cluster/DefaultAutoScalingGroup/LifecycleHookDrainHook/Role/ImportRole",
-                            "constructInfo": {
-                              "fqn": "aws-cdk-lib.Resource",
-                              "version": "0.0.0"
-                            }
-                          },
-                          "Resource": {
-                            "id": "Resource",
-                            "path": "aws-ecs-integ-nlb-healthchecks/Cluster/DefaultAutoScalingGroup/LifecycleHookDrainHook/Role/Resource",
-                            "attributes": {
-                              "aws:cdk:cloudformation:type": "AWS::IAM::Role",
-                              "aws:cdk:cloudformation:props": {
-                                "assumeRolePolicyDocument": {
-                                  "Statement": [
-                                    {
-                                      "Action": "sts:AssumeRole",
-                                      "Effect": "Allow",
-                                      "Principal": {
-                                        "Service": "autoscaling.amazonaws.com"
-                                      }
-                                    }
-                                  ],
-                                  "Version": "2012-10-17"
-                                },
-                                "tags": [
-                                  {
-                                    "key": "Name",
-                                    "value": "aws-ecs-integ-nlb-healthchecks/Cluster/DefaultAutoScalingGroup"
-                                  }
-                                ]
-                              }
-                            },
-                            "constructInfo": {
-                              "fqn": "aws-cdk-lib.aws_iam.CfnRole",
-                              "version": "0.0.0"
-                            }
-                          },
-                          "DefaultPolicy": {
-                            "id": "DefaultPolicy",
-                            "path": "aws-ecs-integ-nlb-healthchecks/Cluster/DefaultAutoScalingGroup/LifecycleHookDrainHook/Role/DefaultPolicy",
-                            "children": {
-                              "Resource": {
-                                "id": "Resource",
-                                "path": "aws-ecs-integ-nlb-healthchecks/Cluster/DefaultAutoScalingGroup/LifecycleHookDrainHook/Role/DefaultPolicy/Resource",
-                                "attributes": {
-                                  "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
-                                  "aws:cdk:cloudformation:props": {
-                                    "policyDocument": {
-                                      "Statement": [
-                                        {
-                                          "Action": "sns:Publish",
-                                          "Effect": "Allow",
-                                          "Resource": {
-                                            "Ref": "ClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopicFE5437FB"
-                                          }
-                                        }
-                                      ],
-                                      "Version": "2012-10-17"
-                                    },
-                                    "policyName": "ClusterDefaultAutoScalingGroupLifecycleHookDrainHookRoleDefaultPolicyFFFD6EA5",
-                                    "roles": [
-                                      {
-                                        "Ref": "ClusterDefaultAutoScalingGroupLifecycleHookDrainHookRole70201663"
-                                      }
-                                    ]
-                                  }
-                                },
-                                "constructInfo": {
-                                  "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
-                                  "version": "0.0.0"
-                                }
-                              }
-                            },
-                            "constructInfo": {
-                              "fqn": "aws-cdk-lib.aws_iam.Policy",
-                              "version": "0.0.0"
-                            }
-                          }
-                        },
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_iam.Role",
-                          "version": "0.0.0"
-                        }
-                      },
-                      "Resource": {
-                        "id": "Resource",
-                        "path": "aws-ecs-integ-nlb-healthchecks/Cluster/DefaultAutoScalingGroup/LifecycleHookDrainHook/Resource",
-                        "attributes": {
-                          "aws:cdk:cloudformation:type": "AWS::AutoScaling::LifecycleHook",
-                          "aws:cdk:cloudformation:props": {
-                            "autoScalingGroupName": {
-                              "Ref": "ClusterDefaultAutoScalingGroupASG0F98E147"
-                            },
-                            "lifecycleTransition": "autoscaling:EC2_INSTANCE_TERMINATING",
-                            "defaultResult": "CONTINUE",
-                            "heartbeatTimeout": 300,
-                            "notificationTargetArn": {
-                              "Ref": "ClusterDefaultAutoScalingGroupLifecycleHookDrainHookTopicFE5437FB"
-                            },
-                            "roleArn": {
-                              "Fn::GetAtt": [
-                                "ClusterDefaultAutoScalingGroupLifecycleHookDrainHookRole70201663",
-                                "Arn"
                               ]
                             }
                           }
                         },
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_autoscaling.CfnLifecycleHook",
-                          "version": "0.0.0"
-                        }
+                        "tagSpecifications": [
+                          {
+                            "resourceType": "launch-template",
+                            "tags": [
+                              {
+                                "key": "Name",
+                                "value": "aws-ecs-integ-nlb-healthchecks/MyAutoScalingGroup/LaunchTemplate"
+                              }
+                            ]
+                          }
+                        ]
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_autoscaling.LifecycleHook",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_autoscaling.AutoScalingGroup",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              },
+              "ASG": {
+                "id": "ASG",
+                "path": "aws-ecs-integ-nlb-healthchecks/MyAutoScalingGroup/ASG",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::AutoScaling::AutoScalingGroup",
+                  "aws:cdk:cloudformation:props": {
+                    "launchTemplate": {
+                      "launchTemplateId": {
+                        "Ref": "MyAutoScalingGroupLaunchTemplate9D9A040D"
+                      },
+                      "version": {
+                        "Fn::GetAtt": [
+                          "MyAutoScalingGroupLaunchTemplate9D9A040D",
+                          "LatestVersionNumber"
+                        ]
+                      }
+                    },
+                    "maxSize": "1",
+                    "minSize": "1",
+                    "newInstancesProtectedFromScaleIn": true,
+                    "tags": [
+                      {
+                        "key": "Name",
+                        "value": "aws-ecs-integ-nlb-healthchecks/MyAutoScalingGroup",
+                        "propagateAtLaunch": true
+                      }
+                    ],
+                    "vpcZoneIdentifier": [
+                      {
+                        "Ref": "VpcPrivateSubnet1Subnet536B997A"
+                      },
+                      {
+                        "Ref": "VpcPrivateSubnet2Subnet3788AAA1"
+                      }
+                    ]
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_ecs.Cluster",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
             }
           },
           "SsmParameterValue:--aws--service--ecs--optimized-ami--amazon-linux-2--recommended--image_id:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": {
             "id": "SsmParameterValue:--aws--service--ecs--optimized-ami--amazon-linux-2--recommended--image_id:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter",
             "path": "aws-ecs-integ-nlb-healthchecks/SsmParameterValue:--aws--service--ecs--optimized-ami--amazon-linux-2--recommended--image_id:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter",
             "constructInfo": {
-              "fqn": "aws-cdk-lib.CfnParameter",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
             }
           },
           "SsmParameterValue:--aws--service--ecs--optimized-ami--amazon-linux-2--recommended--image_id:C96584B6-F00A-464E-AD19-53AFF4B05118": {
             "id": "SsmParameterValue:--aws--service--ecs--optimized-ami--amazon-linux-2--recommended--image_id:C96584B6-F00A-464E-AD19-53AFF4B05118",
             "path": "aws-ecs-integ-nlb-healthchecks/SsmParameterValue:--aws--service--ecs--optimized-ami--amazon-linux-2--recommended--image_id:C96584B6-F00A-464E-AD19-53AFF4B05118",
             "constructInfo": {
-              "fqn": "aws-cdk-lib.Resource",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
+            }
+          },
+          "MyProvider": {
+            "id": "MyProvider",
+            "path": "aws-ecs-integ-nlb-healthchecks/MyProvider",
+            "children": {
+              "MyProvider": {
+                "id": "MyProvider",
+                "path": "aws-ecs-integ-nlb-healthchecks/MyProvider/MyProvider",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::ECS::CapacityProvider",
+                  "aws:cdk:cloudformation:props": {
+                    "autoScalingGroupProvider": {
+                      "autoScalingGroupArn": {
+                        "Ref": "MyAutoScalingGroupASG1686ADA7"
+                      },
+                      "managedScaling": {
+                        "status": "ENABLED",
+                        "targetCapacity": 100
+                      },
+                      "managedTerminationProtection": "ENABLED"
+                    },
+                    "name": "my-capacity-provider"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
             }
           },
           "myService": {
@@ -1472,8 +1117,8 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_elasticloadbalancingv2.CfnLoadBalancer",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
                     }
                   },
                   "listener1": {
@@ -1502,8 +1147,8 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_elasticloadbalancingv2.CfnListener",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.3.0"
                         }
                       },
                       "ECSTargetGroupweb80Group": {
@@ -1525,34 +1170,34 @@
                               }
                             },
                             "constructInfo": {
-                              "fqn": "aws-cdk-lib.aws_elasticloadbalancingv2.CfnTargetGroup",
-                              "version": "0.0.0"
+                              "fqn": "constructs.Construct",
+                              "version": "10.3.0"
                             }
                           }
                         },
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_elasticloadbalancingv2.NetworkTargetGroup",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.3.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_elasticloadbalancingv2.NetworkListener",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_elasticloadbalancingv2.NetworkLoadBalancer",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
                 }
               },
               "LoadBalancerDNSlb1": {
                 "id": "LoadBalancerDNSlb1",
                 "path": "aws-ecs-integ-nlb-healthchecks/myService/LoadBalancerDNSlb1",
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.CfnOutput",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
                 }
               },
               "lb2": {
@@ -1584,8 +1229,8 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_elasticloadbalancingv2.CfnLoadBalancer",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
                     }
                   },
                   "listener2": {
@@ -1614,8 +1259,8 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_elasticloadbalancingv2.CfnListener",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.3.0"
                         }
                       },
                       "ECSTargetGroupweb80Group": {
@@ -1637,34 +1282,34 @@
                               }
                             },
                             "constructInfo": {
-                              "fqn": "aws-cdk-lib.aws_elasticloadbalancingv2.CfnTargetGroup",
-                              "version": "0.0.0"
+                              "fqn": "constructs.Construct",
+                              "version": "10.3.0"
                             }
                           }
                         },
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_elasticloadbalancingv2.NetworkTargetGroup",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.3.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_elasticloadbalancingv2.NetworkListener",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_elasticloadbalancingv2.NetworkLoadBalancer",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
                 }
               },
               "LoadBalancerDNSlb2": {
                 "id": "LoadBalancerDNSlb2",
                 "path": "aws-ecs-integ-nlb-healthchecks/myService/LoadBalancerDNSlb2",
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.CfnOutput",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
                 }
               },
               "TaskDef": {
@@ -1679,8 +1324,8 @@
                         "id": "ImportTaskRole",
                         "path": "aws-ecs-integ-nlb-healthchecks/myService/TaskDef/TaskRole/ImportTaskRole",
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.Resource",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.3.0"
                         }
                       },
                       "Resource": {
@@ -1704,14 +1349,14 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_iam.CfnRole",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.3.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_iam.Role",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
                     }
                   },
                   "Resource": {
@@ -1767,8 +1412,8 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_ecs.CfnTaskDefinition",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
                     }
                   },
                   "web": {
@@ -1787,20 +1432,20 @@
                               "aws:cdk:cloudformation:props": {}
                             },
                             "constructInfo": {
-                              "fqn": "aws-cdk-lib.aws_logs.CfnLogGroup",
-                              "version": "0.0.0"
+                              "fqn": "constructs.Construct",
+                              "version": "10.3.0"
                             }
                           }
                         },
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_logs.LogGroup",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.3.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_ecs.ContainerDefinition",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
                     }
                   },
                   "ExecutionRole": {
@@ -1811,8 +1456,8 @@
                         "id": "ImportExecutionRole",
                         "path": "aws-ecs-integ-nlb-healthchecks/myService/TaskDef/ExecutionRole/ImportExecutionRole",
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.Resource",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.3.0"
                         }
                       },
                       "Resource": {
@@ -1836,8 +1481,8 @@
                           }
                         },
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_iam.CfnRole",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.3.0"
                         }
                       },
                       "DefaultPolicy": {
@@ -1877,26 +1522,26 @@
                               }
                             },
                             "constructInfo": {
-                              "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
-                              "version": "0.0.0"
+                              "fqn": "constructs.Construct",
+                              "version": "10.3.0"
                             }
                           }
                         },
                         "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_iam.Policy",
-                          "version": "0.0.0"
+                          "fqn": "constructs.Construct",
+                          "version": "10.3.0"
                         }
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_iam.Role",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_ecs.Ec2TaskDefinition",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
                 }
               },
               "Service": {
@@ -1914,12 +1559,7 @@
                         },
                         "deploymentConfiguration": {
                           "maximumPercent": 200,
-                          "minimumHealthyPercent": 50,
-                          "alarms": {
-                            "alarmNames": [],
-                            "enable": false,
-                            "rollback": false
-                          }
+                          "minimumHealthyPercent": 50
                         },
                         "enableEcsManagedTags": false,
                         "healthCheckGracePeriodSeconds": 60,
@@ -1947,42 +1587,42 @@
                       }
                     },
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_ecs.CfnService",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_ecs.Ec2Service",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
                 }
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_ecs_patterns.NetworkMultipleTargetGroupsEc2Service",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
             }
           },
           "BootstrapVersion": {
             "id": "BootstrapVersion",
             "path": "aws-ecs-integ-nlb-healthchecks/BootstrapVersion",
             "constructInfo": {
-              "fqn": "aws-cdk-lib.CfnParameter",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
             }
           },
           "CheckBootstrapVersion": {
             "id": "CheckBootstrapVersion",
             "path": "aws-ecs-integ-nlb-healthchecks/CheckBootstrapVersion",
             "constructInfo": {
-              "fqn": "aws-cdk-lib.CfnRule",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
             }
           }
         },
         "constructInfo": {
-          "fqn": "aws-cdk-lib.Stack",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.3.0"
         }
       },
       "Integ": {
@@ -1998,7 +1638,7 @@
                 "path": "Integ/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.55"
+                  "version": "10.3.0"
                 }
               },
               "DeployAssert": {
@@ -2009,22 +1649,22 @@
                     "id": "BootstrapVersion",
                     "path": "Integ/DefaultTest/DeployAssert/BootstrapVersion",
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.CfnParameter",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
                     }
                   },
                   "CheckBootstrapVersion": {
                     "id": "CheckBootstrapVersion",
                     "path": "Integ/DefaultTest/DeployAssert/CheckBootstrapVersion",
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.CfnRule",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.Stack",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
                 }
               }
             },
@@ -2044,13 +1684,13 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.2.55"
+          "version": "10.3.0"
         }
       }
     },
     "constructInfo": {
-      "fqn": "aws-cdk-lib.App",
-      "version": "0.0.0"
+      "fqn": "constructs.Construct",
+      "version": "10.3.0"
     }
   }
 }

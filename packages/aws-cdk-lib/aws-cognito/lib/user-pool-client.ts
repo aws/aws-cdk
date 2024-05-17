@@ -310,6 +310,14 @@ export interface UserPoolClientOptions {
    * @default true for new user pool clients
    */
   readonly enableTokenRevocation?: boolean;
+
+  /**
+   * Enable the propagation of additional user context data.
+   * You can only activate enablePropagateAdditionalUserContextData in an app client that has a client secret.
+   * @see https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pool-settings-adaptive-authentication.html#user-pool-settings-adaptive-authentication-device-fingerprint
+   * @default false for new user pool clients
+   */
+  readonly enablePropagateAdditionalUserContextData?: boolean;
 }
 
 /**
@@ -399,6 +407,10 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
       }
     }
 
+    if (!props.generateSecret && props.enablePropagateAdditionalUserContextData) {
+      throw new Error('Cannot activate enablePropagateAdditionalUserContextData in an app client without a client secret.');
+    }
+
     this._generateSecret = props.generateSecret;
     this.userPool = props.userPool;
 
@@ -417,6 +429,7 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
       readAttributes: props.readAttributes?.attributes(),
       writeAttributes: props.writeAttributes?.attributes(),
       enableTokenRevocation: props.enableTokenRevocation,
+      enablePropagateAdditionalUserContextData: props.enablePropagateAdditionalUserContextData,
     });
     this.configureAuthSessionValidity(resource, props);
     this.configureTokenValidity(resource, props);

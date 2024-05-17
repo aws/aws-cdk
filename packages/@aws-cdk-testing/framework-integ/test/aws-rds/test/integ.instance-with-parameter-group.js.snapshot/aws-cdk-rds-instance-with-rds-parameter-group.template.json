@@ -394,8 +394,9 @@
   "ParameterGroup5E32DECB": {
    "Type": "AWS::RDS::DBParameterGroup",
    "Properties": {
+    "DBParameterGroupName": "name",
     "Description": "desc",
-    "Family": "postgres15",
+    "Family": "postgres16",
     "Parameters": {}
    },
    "UpdateReplacePolicy": "Delete",
@@ -481,7 +482,7 @@
     },
     "EnableIAMDatabaseAuthentication": true,
     "Engine": "postgres",
-    "EngineVersion": "15.2",
+    "EngineVersion": "16.2",
     "MasterUserPassword": {
      "Fn::Join": [
       "",

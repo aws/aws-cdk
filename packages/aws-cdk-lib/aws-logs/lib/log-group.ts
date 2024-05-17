@@ -389,7 +389,7 @@ export interface LogGroupProps {
   /**
    * The KMS customer managed key to encrypt the log group with.
    *
-   * @default Server-side encrpytion managed by the CloudWatch Logs service
+   * @default Server-side encryption managed by the CloudWatch Logs service
    */
   readonly encryptionKey?: kms.IKey;
 

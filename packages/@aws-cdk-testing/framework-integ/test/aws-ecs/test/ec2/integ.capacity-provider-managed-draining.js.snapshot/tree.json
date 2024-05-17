@@ -1198,12 +1198,7 @@
                     },
                     "deploymentConfiguration": {
                       "maximumPercent": 200,
-                      "minimumHealthyPercent": 50,
-                      "alarms": {
-                        "alarmNames": [],
-                        "enable": false,
-                        "rollback": false
-                      }
+                      "minimumHealthyPercent": 50
                     },
                     "desiredCount": 0,
                     "enableEcsManagedTags": false,

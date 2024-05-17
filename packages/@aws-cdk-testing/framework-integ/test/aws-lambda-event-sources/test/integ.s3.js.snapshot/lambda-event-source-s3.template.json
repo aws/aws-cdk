@@ -174,7 +174,8 @@
     "Managed": true
    },
    "DependsOn": [
-    "BAllowBucketNotificationsTolambdaeventsources3F741608059EF9F709"
+    "BAllowBucketNotificationsTolambdaeventsources3F741608059EF9F709",
+    "BPolicy3F02723E"
    ]
   },
   "BAllowBucketNotificationsTolambdaeventsources3F741608059EF9F709": {

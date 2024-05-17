@@ -574,15 +574,41 @@ describe('bucket', () => {
     });
   });
 
-  test('throws error if bucketKeyEnabled is set, but encryption is not KMS', () => {
+  test('bucketKeyEnabled can be enabled with SSE-S3', () => {
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new s3.Bucket(stack, 'MyBucket', { bucketKeyEnabled: true, encryption: s3.BucketEncryption.S3_MANAGED });
+    Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
+      BucketEncryption: {
+        ServerSideEncryptionConfiguration: [
+          {
+            ServerSideEncryptionByDefault: { SSEAlgorithm: 'AES256' },
+            BucketKeyEnabled: true,
+          },
+        ],
+      },
+    });
+
+  });
+  test('bucketKeyEnabled can not be enabled with UNENCRYPTED', () => {
+    const stack = new cdk.Stack();
+
+    // WHEN
+    expect(() => {
+      new s3.Bucket(stack, 'MyBucket', {
+        bucketKeyEnabled: true,
+        encryption: s3.BucketEncryption.UNENCRYPTED,
+      });
+    }).toThrow(/bucketKeyEnabled is specified, so 'encryption' must be set to KMS, DSSE or S3/);
+  });
+
+  test('bucketKeyEnabled can NOT be enabled with encryption undefined', () => {
     const stack = new cdk.Stack();
 
     expect(() => {
-      new s3.Bucket(stack, 'MyBucket', { bucketKeyEnabled: true, encryption: s3.BucketEncryption.S3_MANAGED });
-    }).toThrow("bucketKeyEnabled is specified, so 'encryption' must be set to KMS or DSSE (value: S3_MANAGED)");
-    expect(() => {
       new s3.Bucket(stack, 'MyBucket3', { bucketKeyEnabled: true });
-    }).toThrow("bucketKeyEnabled is specified, so 'encryption' must be set to KMS or DSSE (value: UNENCRYPTED)");
+    }).toThrow("bucketKeyEnabled is specified, so 'encryption' must be set to KMS, DSSE or S3 (value: UNENCRYPTED)");
 
   });
 

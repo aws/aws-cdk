@@ -9,6 +9,7 @@ import * as ec2 from '../../aws-ec2';
 import { IRole } from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as logs from '../../aws-logs';
+import { CaCertificate } from '../../aws-rds';
 import * as secretsmanager from '../../aws-secretsmanager';
 import { CfnResource, Duration, RemovalPolicy, Resource, Token } from '../../core';
 
@@ -87,6 +88,17 @@ export interface DatabaseClusterProps {
    * What type of instance to start for the replicas
    */
   readonly instanceType: ec2.InstanceType;
+
+  /**
+   * The identifier of the CA certificate used for the instances.
+   *
+   * Specifying or updating this property triggers a reboot.
+   *
+   * @see https://docs.aws.amazon.com/documentdb/latest/developerguide/ca_cert_rotation.html
+   *
+   * @default - DocumentDB will choose a certificate authority
+   */
+  readonly caCertificate?: CaCertificate;
 
   /**
     * What subnets to run the DocumentDB instances in.
@@ -217,6 +229,13 @@ export interface DatabaseClusterProps {
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-attribute-deletionpolicy.html
    */
   readonly securityGroupRemovalPolicy?: RemovalPolicy;
+
+  /**
+   * Whether to copy tags to the snapshot when a snapshot is created.
+   *
+   * @default - false
+   */
+  readonly copyTagsToSnapshot?: boolean;
 }
 
 /**
@@ -507,6 +526,8 @@ export class DatabaseCluster extends DatabaseClusterBase {
       // Encryption
       kmsKeyId: props.kmsKey?.keyArn,
       storageEncrypted,
+      // Tags
+      copyTagsToSnapshot: props.copyTagsToSnapshot,
     });
 
     this.cluster.applyRemovalPolicy(props.removalPolicy, {
@@ -533,6 +554,7 @@ export class DatabaseCluster extends DatabaseClusterBase {
     }
 
     const instanceRemovalPolicy = this.getInstanceRemovalPolicy(props);
+    const caCertificateIdentifier = props.caCertificate ? props.caCertificate.toString() : undefined;
 
     for (let i = 0; i < instanceCount; i++) {
       const instanceIndex = i + 1;
@@ -547,6 +569,7 @@ export class DatabaseCluster extends DatabaseClusterBase {
         // Instance properties
         dbInstanceClass: databaseInstanceType(props.instanceType),
         enablePerformanceInsights: props.enablePerformanceInsights,
+        caCertificateIdentifier: caCertificateIdentifier,
       });
 
       instance.applyRemovalPolicy(instanceRemovalPolicy, {

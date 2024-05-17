@@ -90,10 +90,17 @@ export class OperatingSystemFamily {
   private constructor(public readonly _operatingSystemFamily: string) { }
 
   /**
-   * Returns true if the operating system family is Windows
+   * Indicates whether the operating system family is Windows
    */
   public isWindows(): boolean {
-    return this._operatingSystemFamily?.toLowerCase().startsWith('windows') ? true : false;
+    return this._operatingSystemFamily?.toLowerCase().startsWith('windows');
+  }
+
+  /**
+   * Indicates whether the operating system family is Linux
+   */
+  public isLinux(): boolean {
+    return this._operatingSystemFamily?.toLowerCase().startsWith('linux');
   }
 }
 
