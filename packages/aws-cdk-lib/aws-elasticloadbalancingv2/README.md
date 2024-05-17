@@ -254,11 +254,11 @@ For more information, see [Load balancer attributes](https://docs.aws.amazon.com
 The only server-side encryption option that's supported is Amazon S3-managed keys (SSE-S3). For more information
 Documentation: https://docs.aws.amazon.com/elasticloadbalancing/latest/application/enable-access-logging.html
 
-```ts 
+```ts
 
 declare const vpc: ec2.Vpc;
 
-const bucket = new s3.Bucket(this, 'ALBAccessLogsBucket',{ 
+const bucket = new s3.Bucket(this, 'ALBAccessLogsBucket',{
   encryption: s3.BucketEncryption.S3_MANAGED,
   });
 
@@ -266,6 +266,31 @@ const lb = new elbv2.ApplicationLoadBalancer(this, 'LB', { vpc });
 lb.logAccessLogs(bucket);
 
 ```
+
+### Dualstack Application Load Balancer
+
+You can create a dualstack Network Load Balancer using the `ipAddressType` property:
+
+```ts
+declare const vpc: ec2.Vpc;
+
+const lb = new elbv2.ApplicationLoadBalancer(this, 'LB', {
+  vpc,
+  ipAddressType: elbv2.IpAddressType.DUAL_STACK,
+});
+```
+
+By setting `DUAL_STACK_WITHOUT_PUBLIC_IPV4`, you can set IPv6 only public addresses.
+
+```ts
+declare const vpc: ec2.Vpc;
+
+const lb = new elbv2.ApplicationLoadBalancer(this, 'LB', {
+  vpc,
+  ipAddressType: elbv2.IpAddressType.DUAL_STACK_WITHOUT_PUBLIC_IPV4,
+});
+```
+
 
 ## Defining a Network Load Balancer
 
@@ -301,7 +326,7 @@ listener.addTargets('AppFleet', {
 
 ### Enforce security group inbound rules on PrivateLink traffic for a Network Load Balancer
 
-You can indicate whether to evaluate inbound security group rules for traffic 
+You can indicate whether to evaluate inbound security group rules for traffic
 sent to a Network Load Balancer through AWS PrivateLink.
 The evaluation is enabled by default.
 

@@ -1,0 +1,19 @@
+{
+  "version": "36.0.0",
+  "files": {
+    "688bf4caeb2845f3dc89826da60063b380e5d0fe7ab50a95f9ffc76451c42a77": {
+      "source": {
+        "path": "aws-cdk-elbv2-integ-dualstack-without-public-ipv4.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "688bf4caeb2845f3dc89826da60063b380e5d0fe7ab50a95f9ffc76451c42a77.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

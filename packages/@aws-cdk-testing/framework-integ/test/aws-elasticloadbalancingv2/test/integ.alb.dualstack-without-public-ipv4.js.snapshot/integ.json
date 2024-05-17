@@ -1,0 +1,12 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "NlbDualstackInternetFacingInteg/DefaultTest": {
+      "stacks": [
+        "aws-cdk-elbv2-integ-dualstack-without-public-ipv4"
+      ],
+      "assertionStack": "NlbDualstackInternetFacingInteg/DefaultTest/DeployAssert",
+      "assertionStackName": "NlbDualstackInternetFacingIntegDefaultTestDeployAssert2A046EA7"
+    }
+  }
+}
