@@ -1,5 +1,5 @@
 {
-  "version": "32.0.0",
+  "version": "35.0.0",
   "artifacts": {
     "aws-ecs-integ-alb.assets": {
       "type": "cdk:asset-manifest",
@@ -14,10 +14,11 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "aws-ecs-integ-alb.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/d619bbb116c320bc7b7d44d199be916ca8be99cc0ecfafd5cd1894545f3970f7.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/52d101db5802fdc01a874a8d6ec43b914f3e1e08d0acad431c9a97196bbed1b9.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -350,42 +351,6 @@
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
-        ],
-        "FirstAutoScalingGroupInstanceSecurityGroupD970428E": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "FirstAutoScalingGroupInstanceSecurityGroupD970428E",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "FirstAutoScalingGroupLaunchConfig324EED6C": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "FirstAutoScalingGroupLaunchConfig324EED6C",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "SecondAutoScalingGroupInstanceSecurityGroup4660265D": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "SecondAutoScalingGroupInstanceSecurityGroup4660265D",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "SecondAutoScalingGroupLaunchConfigB54F15EA": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "SecondAutoScalingGroupLaunchConfigB54F15EA",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
         ]
       },
       "displayName": "aws-ecs-integ-alb"
@@ -403,6 +368,7 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "applicationLoadBalancedEc2ServiceTestDefaultTestDeployAssert3356477A.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
