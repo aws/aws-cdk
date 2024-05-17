@@ -753,10 +753,7 @@
                           "Effect": "Allow",
                           "Principal": {
                             "AWS": {
-                              "Fn::GetAtt": [
-                                "dbProxyIAMRole662F3AB8",
-                                "Arn"
-                              ]
+                              "Fn::GetAtt": ["dbProxyIAMRole662F3AB8", "Arn"]
                             }
                           },
                           "Resource": "*"
@@ -849,10 +846,7 @@
                       "aws:cdk:cloudformation:props": {
                         "description": "Allow connections to the database Instance from the Proxy",
                         "fromPort": {
-                          "Fn::GetAtt": [
-                            "dbInstance4076B1EC",
-                            "Endpoint.Port"
-                          ]
+                          "Fn::GetAtt": ["dbInstance4076B1EC", "Endpoint.Port"]
                         },
                         "groupId": {
                           "Fn::GetAtt": [
@@ -868,10 +862,7 @@
                           ]
                         },
                         "toPort": {
-                          "Fn::GetAtt": [
-                            "dbInstance4076B1EC",
-                            "Endpoint.Port"
-                          ]
+                          "Fn::GetAtt": ["dbInstance4076B1EC", "Endpoint.Port"]
                         }
                       }
                     },
@@ -914,10 +905,7 @@
                           "excludeCharacters": "\"@/\\"
                         },
                         "kmsKeyId": {
-                          "Fn::GetAtt": [
-                            "SecretEncryptionKey40C82244",
-                            "Arn"
-                          ]
+                          "Fn::GetAtt": ["SecretEncryptionKey40C82244", "Arn"]
                         }
                       }
                     },
@@ -975,7 +963,7 @@
                       "Ref": "dbInstanceSubnetGroupD062EC9E"
                     },
                     "engine": "postgres",
-                    "engineVersion": "16.2",
+                    "EngineVersion": "16.3",
                     "masterUsername": {
                       "Fn::Join": [
                         "",
@@ -1177,10 +1165,7 @@
                     "engineFamily": "POSTGRESQL",
                     "requireTls": true,
                     "roleArn": {
-                      "Fn::GetAtt": [
-                        "dbProxyIAMRole662F3AB8",
-                        "Arn"
-                      ]
+                      "Fn::GetAtt": ["dbProxyIAMRole662F3AB8", "Arn"]
                     },
                     "vpcSecurityGroupIds": [
                       {
@@ -1309,10 +1294,7 @@
                       "aws:cdk:cloudformation:props": {
                         "description": "Allow connections to the database Cluster from the Proxy",
                         "fromPort": {
-                          "Fn::GetAtt": [
-                            "dbClusterE86E47AE",
-                            "Endpoint.Port"
-                          ]
+                          "Fn::GetAtt": ["dbClusterE86E47AE", "Endpoint.Port"]
                         },
                         "groupId": {
                           "Fn::GetAtt": [
@@ -1328,10 +1310,7 @@
                           ]
                         },
                         "toPort": {
-                          "Fn::GetAtt": [
-                            "dbClusterE86E47AE",
-                            "Endpoint.Port"
-                          ]
+                          "Fn::GetAtt": ["dbClusterE86E47AE", "Endpoint.Port"]
                         }
                       }
                     },
@@ -1348,10 +1327,7 @@
                       "aws:cdk:cloudformation:props": {
                         "description": "Allow connections to the database Cluster from the Proxy",
                         "fromPort": {
-                          "Fn::GetAtt": [
-                            "dbClusterE86E47AE",
-                            "Endpoint.Port"
-                          ]
+                          "Fn::GetAtt": ["dbClusterE86E47AE", "Endpoint.Port"]
                         },
                         "groupId": {
                           "Fn::GetAtt": [
@@ -1367,10 +1343,7 @@
                           ]
                         },
                         "toPort": {
-                          "Fn::GetAtt": [
-                            "dbClusterE86E47AE",
-                            "Endpoint.Port"
-                          ]
+                          "Fn::GetAtt": ["dbClusterE86E47AE", "Endpoint.Port"]
                         }
                       }
                     },
@@ -1702,10 +1675,7 @@
                         "engineFamily": "POSTGRESQL",
                         "requireTls": true,
                         "roleArn": {
-                          "Fn::GetAtt": [
-                            "dbClusterProxyIAMRole693E39F5",
-                            "Arn"
-                          ]
+                          "Fn::GetAtt": ["dbClusterProxyIAMRole693E39F5", "Arn"]
                         },
                         "vpcSecurityGroupIds": [
                           {
