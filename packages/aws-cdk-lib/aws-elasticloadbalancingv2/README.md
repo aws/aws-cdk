@@ -280,7 +280,7 @@ const lb = new elbv2.ApplicationLoadBalancer(this, 'LB', {
 });
 ```
 
-By setting `DUAL_STACK_WITHOUT_PUBLIC_IPV4`, you can set IPv6 only public addresses.
+By setting `DUAL_STACK_WITHOUT_PUBLIC_IPV4`, you can provision load balancers without public IPv4s
 
 ```ts
 declare const vpc: ec2.Vpc;

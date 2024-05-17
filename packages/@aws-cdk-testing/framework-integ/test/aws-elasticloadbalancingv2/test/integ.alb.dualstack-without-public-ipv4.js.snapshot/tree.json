@@ -1256,17 +1256,17 @@
           "version": "0.0.0"
         }
       },
-      "NlbDualstackInternetFacingInteg": {
-        "id": "NlbDualstackInternetFacingInteg",
-        "path": "NlbDualstackInternetFacingInteg",
+      "AlbDualstackWithoutPublicIpv4": {
+        "id": "AlbDualstackWithoutPublicIpv4",
+        "path": "AlbDualstackWithoutPublicIpv4",
         "children": {
           "DefaultTest": {
             "id": "DefaultTest",
-            "path": "NlbDualstackInternetFacingInteg/DefaultTest",
+            "path": "AlbDualstackWithoutPublicIpv4/DefaultTest",
             "children": {
               "Default": {
                 "id": "Default",
-                "path": "NlbDualstackInternetFacingInteg/DefaultTest/Default",
+                "path": "AlbDualstackWithoutPublicIpv4/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
                   "version": "10.3.0"
@@ -1274,11 +1274,11 @@
               },
               "DeployAssert": {
                 "id": "DeployAssert",
-                "path": "NlbDualstackInternetFacingInteg/DefaultTest/DeployAssert",
+                "path": "AlbDualstackWithoutPublicIpv4/DefaultTest/DeployAssert",
                 "children": {
                   "BootstrapVersion": {
                     "id": "BootstrapVersion",
-                    "path": "NlbDualstackInternetFacingInteg/DefaultTest/DeployAssert/BootstrapVersion",
+                    "path": "AlbDualstackWithoutPublicIpv4/DefaultTest/DeployAssert/BootstrapVersion",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.CfnParameter",
                       "version": "0.0.0"
@@ -1286,7 +1286,7 @@
                   },
                   "CheckBootstrapVersion": {
                     "id": "CheckBootstrapVersion",
-                    "path": "NlbDualstackInternetFacingInteg/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "path": "AlbDualstackWithoutPublicIpv4/DefaultTest/DeployAssert/CheckBootstrapVersion",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.CfnRule",
                       "version": "0.0.0"

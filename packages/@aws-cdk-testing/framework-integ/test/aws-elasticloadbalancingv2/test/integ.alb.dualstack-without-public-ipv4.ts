@@ -120,7 +120,7 @@ group2.metrics.targetResponseTime().createAlarm(stack, 'ResponseTimeHigh2', {
   evaluationPeriods: 2,
 });
 
-new integ.IntegTest(app, 'NlbDualstackInternetFacingInteg', {
+new integ.IntegTest(app, 'AlbDualstackWithoutPublicIpv4', {
   testCases: [stack],
 });
 

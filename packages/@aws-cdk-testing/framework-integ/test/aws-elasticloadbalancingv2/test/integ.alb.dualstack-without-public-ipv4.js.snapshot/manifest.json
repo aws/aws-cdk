@@ -259,19 +259,19 @@
       },
       "displayName": "aws-cdk-elbv2-integ-dualstack-without-public-ipv4"
     },
-    "NlbDualstackInternetFacingIntegDefaultTestDeployAssert2A046EA7.assets": {
+    "AlbDualstackWithoutPublicIpv4DefaultTestDeployAssertFA6F90DD.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "NlbDualstackInternetFacingIntegDefaultTestDeployAssert2A046EA7.assets.json",
+        "file": "AlbDualstackWithoutPublicIpv4DefaultTestDeployAssertFA6F90DD.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "NlbDualstackInternetFacingIntegDefaultTestDeployAssert2A046EA7": {
+    "AlbDualstackWithoutPublicIpv4DefaultTestDeployAssertFA6F90DD": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "NlbDualstackInternetFacingIntegDefaultTestDeployAssert2A046EA7.template.json",
+        "templateFile": "AlbDualstackWithoutPublicIpv4DefaultTestDeployAssertFA6F90DD.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
@@ -280,7 +280,7 @@
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "NlbDualstackInternetFacingIntegDefaultTestDeployAssert2A046EA7.assets"
+          "AlbDualstackWithoutPublicIpv4DefaultTestDeployAssertFA6F90DD.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -289,23 +289,23 @@
         }
       },
       "dependencies": [
-        "NlbDualstackInternetFacingIntegDefaultTestDeployAssert2A046EA7.assets"
+        "AlbDualstackWithoutPublicIpv4DefaultTestDeployAssertFA6F90DD.assets"
       ],
       "metadata": {
-        "/NlbDualstackInternetFacingInteg/DefaultTest/DeployAssert/BootstrapVersion": [
+        "/AlbDualstackWithoutPublicIpv4/DefaultTest/DeployAssert/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/NlbDualstackInternetFacingInteg/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+        "/AlbDualstackWithoutPublicIpv4/DefaultTest/DeployAssert/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "NlbDualstackInternetFacingInteg/DefaultTest/DeployAssert"
+      "displayName": "AlbDualstackWithoutPublicIpv4/DefaultTest/DeployAssert"
     },
     "Tree": {
       "type": "cdk:tree",
