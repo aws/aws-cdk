@@ -331,7 +331,7 @@ _cdk.json_
 
 When enabled, the default volume type of the EBS volume will be GP3.
 
-When this featuer flag is enabled, the default volume type of the EBS volume will be `EbsDeviceVolumeType.GENERAL_PURPOSE_SSD_GP3`
+When this feature flag is enabled, the default volume type of the EBS volume will be `EbsDeviceVolumeType.GENERAL_PURPOSE_SSD_GP3`
 
 _cdk.json_
 
@@ -373,6 +373,23 @@ _cdk.json_
 {
   "context": {
     "@aws-cdk/aws-stepfunctions-tasks:ecsReduceRunTaskPermissions": true
+  }
+}
+```
+
+* `@aws-cdk/aws-cloudfront:useOriginAccessControl`
+
+Use Origin Access Control instead of Origin Access Identity
+
+When this feature flag is enabled, an origin access control will be created automatically when a new S3 origin is created.
+
+
+_cdk.json_
+
+```json
+{
+  "context": {
+    "@aws-cdk/aws-cloudfront:useOriginAccessControl": true
   }
 }
 ```
