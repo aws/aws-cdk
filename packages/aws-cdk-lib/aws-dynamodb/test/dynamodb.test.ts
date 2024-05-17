@@ -3500,11 +3500,20 @@ test('Resource policy test', () => {
 
   // WHEN
   const table = new Table(stack, 'Table', {
-    partitionKey: { name: 'metric', type: AttributeType.STRING },
+    partitionKey: { name: 'id', type: AttributeType.STRING },
     resourcePolicy: doc,
   });
 
   // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::Table', {
+    KeySchema: [
+      { AttributeName: 'id', KeyType: 'HASH' },
+    ],
+    AttributeDefinitions: [
+      { AttributeName: 'id', AttributeType: 'S' },
+    ],
+  });
+
   Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::Table', {
     'ResourcePolicy': {
       'PolicyDocument': {
