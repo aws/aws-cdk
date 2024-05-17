@@ -1,15 +1,15 @@
 {
   "version": "36.0.0",
   "files": {
-    "5e1cb71a2ebbd6ad655a1f43c8a197eb6843007ae7194b8c2fdc559d4699d13a": {
+    "07d7b501e39a18940f72d7c69e969b9cbae9ae21f85424c29235d75d73d23868": {
       "source": {
-        "path": "aws-cdk-nlb-dualstack-internal.template.json",
+        "path": "aws-cdk-nlb-attributes-integ.template.json",
         "packaging": "file"
       },
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "5e1cb71a2ebbd6ad655a1f43c8a197eb6843007ae7194b8c2fdc559d4699d13a.json",
+          "objectKey": "07d7b501e39a18940f72d7c69e969b9cbae9ae21f85424c29235d75d73d23868.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
