@@ -1128,4 +1128,19 @@ describe('tests', () => {
       }).toThrow(/UDP or TCP_UDP listeners cannot be added to a dualstack network load balancer/);
     });
   });
+
+  describe('dualstack without public ipv4', () => {
+    test('Cannot create dualstack without public ipv4 NetworkLoadBalancer', () => {
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'Stack');
+
+      expect(() => {
+        new elbv2.NetworkLoadBalancer(stack, 'LB', {
+          vpc,
+          internetFacing: true,
+          ipAddressType: elbv2.IpAddressType.DUAL_STACK_WITHOUT_PUBLIC_IPV4,
+        });
+      }).toThrow('\'ipAddressType\' DUAL_STACK_WITHOUT_PUBLIC_IPV4 can only be used with ALB, got network');
+    });
+  });
 });

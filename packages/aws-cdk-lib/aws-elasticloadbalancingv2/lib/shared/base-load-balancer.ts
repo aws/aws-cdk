@@ -9,6 +9,7 @@ import { CfnResource, ContextProvider, IResource, Lazy, Resource, Stack, Token }
 import * as cxapi from '../../../cx-api';
 import { RegionInfo } from '../../../region-info';
 import { CfnLoadBalancer } from '../elasticloadbalancingv2.generated';
+import { IpAddressType } from './enums';
 
 /**
  * Shared properties of both Application and Network Load Balancers
@@ -232,6 +233,11 @@ export abstract class BaseLoadBalancer extends Resource {
     const { subnetIds, internetConnectivityEstablished } = baseProps.vpc.selectSubnets(vpcSubnets);
 
     this.vpc = baseProps.vpc;
+
+    if (additionalProps.ipAddressType === IpAddressType.DUAL_STACK_WITHOUT_PUBLIC_IPV4 &&
+      additionalProps.type !== cxschema.LoadBalancerType.APPLICATION) {
+      throw new Error(`'ipAddressType' DUAL_STACK_WITHOUT_PUBLIC_IPV4 can only be used with ALB, got ${additionalProps.type}`);
+    }
 
     const resource = new CfnLoadBalancer(this, 'Resource', {
       name: this.physicalName,
