@@ -79,7 +79,11 @@ class ServiceConnect extends cdk.Stack {
   }
 }
 
-const app = new cdk.App();
+const app = new cdk.App({
+  postCliContext: {
+    '@aws-cdk/aws-ecs:removeDefaultDeploymentAlarm': false,
+  },
+});
 const stack = new ServiceConnect(app, 'aws-ecs-service-connect');
 
 const test = new integ.IntegTest(app, 'ServiceConnect', {
