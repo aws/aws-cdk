@@ -354,10 +354,6 @@ export class PropertyDifference<ValueType> extends Difference<ValueType> {
 export class DifferenceCollection<V, T extends IDifference<V>> {
   constructor(private readonly diffs: { [logicalId: string]: T }) {}
 
-  public add(logicalId: string, diff: T): void {
-    this.diffs[logicalId] = diff;
-  }
-
   public get changes(): { [logicalId: string]: T } {
     return onlyChanges(this.diffs);
   }
