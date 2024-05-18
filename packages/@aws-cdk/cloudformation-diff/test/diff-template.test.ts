@@ -1,5 +1,6 @@
 import * as fc from 'fast-check';
 import { arbitraryTemplate } from './test-arbitraries';
+import { sqsQueue, sqsQueueWithAargs, ssmParam } from './util';
 import { fullDiff, ResourceImpact } from '../lib/diff-template';
 
 const POLICY_DOCUMENT = { foo: 'Bar' }; // Obviously a fake one!
@@ -1230,5 +1231,323 @@ describe('changeset', () => {
     });
     expect(differences.resources.differenceCount).toBe(1);
     expect(differences.resources.get('BucketResource').changeImpact === ResourceImpact.WILL_IMPORT);
+  });
+  test('properties that only show up in changeset diff are included in fullDiff', () => {
+  // GIVEN
+    const currentTemplate = {
+      Parameters: {
+        SsmParameterValuetestbugreportC9: {
+          Type: 'AWS::SSM::Parameter::Value<String>',
+          Default: 'goodJob',
+        },
+      },
+      Resources: {
+        mySsmParameter: ssmParam,
+      },
+    };
+
+    // WHEN
+    const diffWithoutChangeSet = fullDiff(currentTemplate, currentTemplate);
+    const diffWithChangeSet = fullDiff(currentTemplate, currentTemplate,
+      {
+        Changes: [
+          {
+            Type: 'Resource',
+            ResourceChange: {
+              Action: 'Modify',
+              LogicalResourceId: 'mySsmParameter',
+              PhysicalResourceId: 'mySsmParameterFromStack',
+              ResourceType: 'AWS::SSM::Parameter',
+              Replacement: 'False',
+              Scope: ['Properties'],
+              Details: [{
+                Target: { Attribute: 'Properties', Name: 'Value', RequiresRecreation: 'Never' },
+                Evaluation: 'Static',
+                ChangeSource: 'DirectModification',
+              }],
+            },
+          },
+        ],
+        Parameters: [{
+          ParameterKey: 'SsmParameterValuetestbugreportC9',
+          ParameterValue: 'goodJob',
+          ResolvedValue: 'changedVal',
+        }],
+      },
+    );
+
+    // THEN
+    expect(diffWithoutChangeSet.differenceCount).toBe(0);
+    expect(diffWithoutChangeSet.resources.changes).toEqual({});
+
+    expect(diffWithChangeSet.differenceCount).toBe(1);
+    const y = diffWithChangeSet.resources.changes;
+    console.log(y);
+    expect(diffWithChangeSet.resources.changes).toEqual(
+      {
+        mySsmParameter: {
+          oldValue: undefined,
+          newValue: undefined,
+          resourceTypes: {
+            oldType: 'AWS::SSM::Parameter',
+            newType: 'AWS::SSM::Parameter',
+          },
+          propertyDiffs: {
+            Value: {
+              oldValue: {
+              },
+              newValue: {
+              },
+              isDifferent: true,
+              changeImpact: 'WILL_UPDATE',
+            },
+          },
+          otherDiffs: {
+          },
+          isAddition: true,
+          isRemoval: true,
+          isImport: undefined,
+        },
+      },
+    );
+  });
+
+  test('resources that only show up in changeset diff are included in fullDiff', () => {
+  // GIVEN
+    const currentTemplate = {
+      Parameters: {
+        SsmParameterValuetestbugreportC9: {
+          Type: 'AWS::SSM::Parameter::Value<String>',
+          Default: 'goodJob',
+        },
+      },
+      Resources: {
+        Queue: {
+          Type: 'AWS::SQS::Queue',
+          Properties: {
+            QueueName: {
+              Ref: 'SsmParameterValuetestbugreportC9',
+            },
+          },
+        },
+      },
+    };
+
+    // WHEN
+    const diffWithoutChangeSet = fullDiff(currentTemplate, currentTemplate);
+    const diffWithChangeSet = fullDiff(currentTemplate, currentTemplate,
+      {
+        Changes: [
+          {
+            Type: 'Resource',
+            ResourceChange: {
+              PolicyAction: 'ReplaceAndDelete',
+              Action: 'Modify',
+              LogicalResourceId: 'Queue',
+              PhysicalResourceId: 'https://sqs.us-east-1.amazonaws.com/012345678901/hiii',
+              ResourceType: 'AWS::SQS::Queue',
+              Replacement: 'True',
+              Scope: ['Properties'],
+              Details: [{
+                Target: { Attribute: 'Properties', Name: 'QueueName', RequiresRecreation: 'Always' },
+                Evaluation: 'Static',
+                ChangeSource: 'DirectModification',
+              }],
+            },
+          },
+        ],
+        Parameters: [{
+          ParameterKey: 'SsmParameterValuetestbugreportC9',
+          ParameterValue: 'goodJob',
+          ResolvedValue: 'changedVal',
+        }],
+      },
+    );
+
+    // THEN
+    expect(diffWithoutChangeSet.differenceCount).toBe(0);
+    expect(diffWithoutChangeSet.resources.changes).toEqual({});
+
+    expect(diffWithChangeSet.differenceCount).toBe(1);
+    expect(diffWithChangeSet.resources.changes).toEqual(
+      {
+        Queue: {
+          oldValue: sqsQueue,
+          newValue: sqsQueue,
+          resourceTypes: {
+            oldType: 'AWS::SQS::Queue',
+            newType: 'AWS::SQS::Queue',
+          },
+          propertyDiffs: {
+            QueueName: {
+              oldValue: {},
+              newValue: {},
+              isDifferent: true,
+              changeImpact: 'WILL_REPLACE', // this is what changed!
+            },
+          },
+          otherDiffs: {
+            Type: {
+              oldValue: 'AWS::SQS::Queue',
+              newValue: 'AWS::SQS::Queue',
+              isDifferent: false,
+            },
+          },
+          isAddition: false,
+          isRemoval: false,
+          isImport: undefined,
+        },
+      },
+    );
+  });
+
+  test('a resource in the diff that is missing a property has the missing property added to the diff', () => {
+  // The idea is, we detect 1 change in the template diff -- and we detect another change in the changeset diff.
+
+    // GIVEN
+    const currentTemplate = {
+      Parameters: {
+        SsmParameterValuetestbugreportC9: {
+          Type: 'AWS::SSM::Parameter::Value<String>',
+          Default: 'goodJob',
+        },
+      },
+      Resources: {
+        Queue: sqsQueueWithAargs({ waitTime: 10 }),
+      },
+    };
+
+    const newTemplate = {
+      Parameters: {
+        SsmParameterValuetestbugreportC9: {
+          Type: 'AWS::SSM::Parameter::Value<String>',
+          Default: 'goodJob',
+        },
+      },
+      Resources: {
+        Queue: sqsQueueWithAargs({ waitTime: 20 }),
+      },
+    };
+
+    // WHEN
+    const diffWithoutChangeSet = fullDiff(currentTemplate, newTemplate);
+    const diffWithChangeSet = fullDiff(currentTemplate, newTemplate,
+      {
+        Changes: [
+          {
+            Type: 'Resource',
+            ResourceChange: {
+              PolicyAction: 'ReplaceAndDelete',
+              Action: 'Modify',
+              LogicalResourceId: 'Queue',
+              PhysicalResourceId: 'https://sqs.us-east-1.amazonaws.com/012345678901/newValueNEEEWWWEEERRRRR',
+              ResourceType: 'AWS::SQS::Queue',
+              Replacement: 'True',
+              Scope: [
+                'Properties',
+              ],
+              Details: [{
+                Target: { Attribute: 'Properties', Name: 'QueueName', RequiresRecreation: 'Always' },
+                Evaluation: 'Static',
+                ChangeSource: 'DirectModification',
+              },
+              {
+                Target: { Attribute: 'Properties', Name: 'ReceiveMessageWaitTimeSeconds', RequiresRecreation: 'Never' },
+                Evaluation: 'Static',
+                ChangeSource: 'DirectModification',
+              }],
+            },
+          },
+        ],
+        Parameters: [{
+          ParameterKey: 'SsmParameterValuetestbugreportC9',
+          ParameterValue: 'goodJob',
+          ResolvedValue: 'changedddd',
+        }],
+      },
+    );
+
+    // THEN
+    expect(diffWithoutChangeSet.differenceCount).toBe(1);
+    expect(diffWithoutChangeSet.resources.changes).toEqual(
+      {
+        Queue: {
+          oldValue: sqsQueueWithAargs({ waitTime: 10 }),
+          newValue: sqsQueueWithAargs({ waitTime: 20 }),
+          resourceTypes: {
+            oldType: 'AWS::SQS::Queue',
+            newType: 'AWS::SQS::Queue',
+          },
+          propertyDiffs: {
+            QueueName: {
+              oldValue: {
+                Ref: 'SsmParameterValuetestbugreportC9',
+              },
+              newValue: {
+                Ref: 'SsmParameterValuetestbugreportC9',
+              },
+              isDifferent: false,
+              changeImpact: 'NO_CHANGE',
+            },
+            ReceiveMessageWaitTimeSeconds: {
+              oldValue: 10,
+              newValue: 20,
+              isDifferent: true,
+              changeImpact: 'WILL_UPDATE',
+            },
+          },
+          otherDiffs: {
+            Type: {
+              oldValue: 'AWS::SQS::Queue',
+              newValue: 'AWS::SQS::Queue',
+              isDifferent: false,
+            },
+          },
+          isAddition: false,
+          isRemoval: false,
+          isImport: undefined,
+        },
+      },
+    );
+
+    expect(diffWithChangeSet.differenceCount).toBe(1); // this is the count of how many resources have changed
+    expect(diffWithChangeSet.resources.changes).toEqual(
+      {
+        Queue: {
+          oldValue: sqsQueueWithAargs({ waitTime: 10 }),
+          newValue: sqsQueueWithAargs({ waitTime: 20 }),
+          resourceTypes: {
+            oldType: 'AWS::SQS::Queue',
+            newType: 'AWS::SQS::Queue',
+          },
+          propertyDiffs: {
+            QueueName: {
+              oldValue: {
+              },
+              newValue: {
+              },
+              isDifferent: true,
+              changeImpact: 'WILL_REPLACE',
+            },
+            ReceiveMessageWaitTimeSeconds: {
+              oldValue: 10,
+              newValue: 20,
+              isDifferent: true,
+              changeImpact: 'WILL_UPDATE',
+            },
+          },
+          otherDiffs: {
+            Type: {
+              oldValue: 'AWS::SQS::Queue',
+              newValue: 'AWS::SQS::Queue',
+              isDifferent: false,
+            },
+          },
+          isAddition: false,
+          isRemoval: false,
+          isImport: undefined,
+        },
+      },
+    );
   });
 });

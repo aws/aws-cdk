@@ -63,6 +63,8 @@ export function fullDiff(
     changeSetDiff.addChangeSetResourcesToDiff(theDiff.resources);
     changeSetDiff.enhanceChangeImpacts(theDiff.resources);
     changeSetDiff.addImportInformation(theDiff.resources);
+    // TODO: now that you've added change set resources to diff, you shuold recreate the iamChanges so that the
+    // security diff is more accurate
   } else if (isImport) {
     makeAllResourceChangesImports(theDiff);
   }

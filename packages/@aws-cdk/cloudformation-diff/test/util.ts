@@ -73,3 +73,34 @@ export function largeSsoPermissionSet() {
     ),
   });
 }
+export const ssmParam = {
+  Type: 'AWS::SSM::Parameter',
+  Properties: {
+    Name: 'mySsmParameterFromStack',
+    Type: 'String',
+    Value: {
+      Ref: 'SsmParameterValuetestbugreportC9',
+    },
+  },
+};
+
+export const sqsQueue = {
+  Type: 'AWS::SQS::Queue',
+  Properties: {
+    QueueName: {
+      Ref: 'SsmParameterValuetestbugreportC9',
+    },
+  },
+};
+
+export function sqsQueueWithAargs(args: { waitTime: number }) {
+  return {
+    Type: 'AWS::SQS::Queue',
+    Properties: {
+      QueueName: {
+        Ref: 'SsmParameterValuetestbugreportC9',
+      },
+      ReceiveMessageWaitTimeSeconds: args.waitTime,
+    },
+  };
+}

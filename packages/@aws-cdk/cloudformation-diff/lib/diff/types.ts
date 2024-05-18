@@ -6,15 +6,23 @@ import { SecurityGroupChanges } from '../network/security-group-changes';
 
 export type PropertyMap = {[key: string]: any };
 
-export type ResourceReplacements = { [logicalId: string]: ResourceReplacement };
+export type ChangeSetResources = { [logicalId: string]: ChangeSetResource };
 
-export interface ResourceReplacement {
-  resourceReplaced: boolean;
+export interface ChangeSetResource {
+  resourceWasReplaced: boolean;
   resourceType: string;
-  propertiesReplaced: { [propertyName: string]: ChangeSetReplacement };
+  properties: ChangeSetProperties;
 }
 
-export type ChangeSetReplacement = 'Always' | 'Never' | 'Conditionally';
+export type ChangeSetProperties = {
+  [propertyName: string]: {
+    changeSetReplacementMode: ChangeSetReplacementMode;
+    beforeValue: string | undefined;
+    afterValue: string | undefined;
+  };
+}
+
+export type ChangeSetReplacementMode = 'Always' | 'Never' | 'Conditionally';
 
 /** Semantic differences between two CloudFormation templates. */
 export class TemplateDiff implements ITemplateDiff {
@@ -372,7 +380,7 @@ export class DifferenceCollection<V, T extends IDifference<V>> {
     delete this.diffs[logicalId];
   }
 
-  public add(logicalId: string, diff: T): void {
+  public set(logicalId: string, diff: T): void {
     this.diffs[logicalId] = diff;
   }
 

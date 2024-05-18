@@ -1,6 +1,7 @@
 // The SDK is only used to reference `DescribeChangeSetOutput`, so the SDK is added as a devDependency.
 // The SDK should not make network calls here
 import type { DescribeChangeSetOutput as DescribeChangeSet, ResourceChangeDetail } from '@aws-sdk/client-cloudformation';
+import { diffResource } from '.';
 import * as types from '../diff/types';
 
 export type DescribeChangeSetOutput = DescribeChangeSet;
@@ -11,7 +12,7 @@ export type DescribeChangeSetOutput = DescribeChangeSet;
 export class TemplateAndChangeSetDiffMerger {
   changeSet: DescribeChangeSetOutput;
   currentTemplateResources: {[logicalId: string]: any};
-  replacements: types.ResourceReplacements;
+  changeSetResources: types.ChangeSetResources;
 
   constructor(
     args: {
@@ -21,34 +22,38 @@ export class TemplateAndChangeSetDiffMerger {
   ) {
     this.changeSet = args.changeSet;
     this.currentTemplateResources = args.currentTemplateResources;
-    this.replacements = this.findResourceReplacements(this.changeSet);
+    this.changeSetResources = this.findResourceReplacements(this.changeSet);
   }
 
-  findResourceReplacements(changeSet: DescribeChangeSetOutput): types.ResourceReplacements {
-    const replacements: types.ResourceReplacements = {};
+  findResourceReplacements(changeSet: DescribeChangeSetOutput): types.ChangeSetResources {
+    const replacements: types.ChangeSetResources = {};
     for (const resourceChange of changeSet.Changes ?? []) {
       if (resourceChange.ResourceChange?.LogicalResourceId === undefined) {
         continue;
       }
 
-      const propertiesReplaced: { [propName: string]: types.ChangeSetReplacement } = {};
-      for (const propertyChange of resourceChange.ResourceChange?.Details ?? []) {
+      const propertiesReplaced: types.ChangeSetProperties = {};
+      for (const propertyChange of resourceChange.ResourceChange.Details ?? []) {
         if (propertyChange.Target?.Attribute === 'Properties' && propertyChange.Target.Name) {
-          propertiesReplaced[propertyChange.Target.Name] = this.determineIfResourceIsReplaced(propertyChange);
+          propertiesReplaced[propertyChange.Target.Name] = {
+            changeSetReplacementMode: this.determineIfResourceIsReplaced(propertyChange),
+            beforeValue: propertyChange.Target.BeforeValue,
+            afterValue: propertyChange.Target.AfterValue,
+          };
         }
       }
 
-      replacements[resourceChange.ResourceChange?.LogicalResourceId] = {
-        resourceReplaced: resourceChange.ResourceChange?.Replacement === 'True',
-        resourceType: resourceChange.ResourceChange?.ResourceType ?? 'UNKNOWN', // the changeset should always return the ResourceType... but just in case.
-        propertiesReplaced: propertiesReplaced,
+      replacements[resourceChange.ResourceChange.LogicalResourceId] = {
+        resourceWasReplaced: resourceChange.ResourceChange.Replacement === 'True',
+        resourceType: resourceChange.ResourceChange.ResourceType ?? 'UNKNOWN', // the changeset should always return the ResourceType... but just in case.
+        properties: propertiesReplaced,
       };
     }
 
     return replacements;
   }
 
-  determineIfResourceIsReplaced(propertyChange: ResourceChangeDetail): types.ChangeSetReplacement {
+  determineIfResourceIsReplaced(propertyChange: ResourceChangeDetail): types.ChangeSetReplacementMode {
     if (propertyChange.Target!.RequiresRecreation === 'Always') {
       switch (propertyChange.Evaluation) {
         case 'Static':
@@ -60,7 +65,7 @@ export class TemplateAndChangeSetDiffMerger {
       }
     }
 
-    return propertyChange.Target!.RequiresRecreation as types.ChangeSetReplacement;
+    return propertyChange.Target!.RequiresRecreation as types.ChangeSetReplacementMode;
   }
 
   /**
@@ -70,28 +75,26 @@ export class TemplateAndChangeSetDiffMerger {
   * - One case when this can happen is when a resource is added to the stack through the changeset.
   * - Another case is when a resource is changed because the resource is defined by an SSM parameter, and the value of that SSM parameter changes.
   */
-  addChangeSetResourcesToDiff(resourceDiffsFromTemplate: types.DifferenceCollection<types.Resource, types.ResourceDifference>) {
-    for (const [logicalId, replacement] of Object.entries(this.replacements)) {
-      const resourceDiffFromChangeset = this.maybeCreateResourceTypeDiff({
-        logicalIdsFromTemplateDiff: resourceDiffsFromTemplate.logicalIds,
-        logicalIdOfResourceFromChangeset: logicalId,
-        resourceTypeFromChangeset: replacement.resourceType,
-        resourceTypeFromTemplate: this.currentTemplateResources[logicalId]?.Type,
-      });
-
-      if (resourceDiffFromChangeset) {
-        resourceDiffsFromTemplate.add(logicalId, resourceDiffFromChangeset);
+  addChangeSetResourcesToDiff(resourceDiffs: types.DifferenceCollection<types.Resource, types.ResourceDifference>) {
+    for (const [logicalId, replacement] of Object.entries(this.changeSetResources)) {
+      const resourceNotFoundInTemplateDiff = !(resourceDiffs.logicalIds.includes(logicalId));
+      if (resourceNotFoundInTemplateDiff) {
+        const resourceDiffFromChangeset = diffResource(
+          this.convertResourceFromChangesetToResourceForDiff(replacement, 'OLD_VALUES'),
+          this.convertResourceFromChangesetToResourceForDiff(replacement, 'NEW_VALUES'),
+        );
+        resourceDiffs.set(logicalId, resourceDiffFromChangeset);
       }
 
-      for (const propertyName of Object.keys(this.replacements[logicalId].propertiesReplaced)) {
-        const propertyDiffFromChangeset = this.maybeCreatePropertyDiff({
-          propertyNameFromChangeset: propertyName,
-          propertyUpdatesFromTemplateDiff: resourceDiffsFromTemplate.get(logicalId).propertyUpdates,
-        });
-
-        if (propertyDiffFromChangeset) {
-          resourceDiffsFromTemplate.get(logicalId).setPropertyChange(propertyName, propertyDiffFromChangeset);
+      const propertyChangesFromTemplate = resourceDiffs.get(logicalId).propertyUpdates;
+      for (const propertyName of Object.keys(this.changeSetResources[logicalId].properties)) {
+        if (propertyName in propertyChangesFromTemplate) {
+          // If the property is already marked to be updated, then we don't need to do anything.
+          return;
         }
+        const propertyDiffFromChangeset = new types.PropertyDifference({}, {}, { changeImpact: undefined });
+        propertyDiffFromChangeset.isDifferent = true;
+        resourceDiffs.get(logicalId).setPropertyChange(propertyName, propertyDiffFromChangeset);
       }
     }
   }
@@ -109,42 +112,41 @@ export class TemplateAndChangeSetDiffMerger {
     return newProp;
   }
 
-  maybeCreateResourceTypeDiff(args: {
-    logicalIdsFromTemplateDiff: string[];
-    logicalIdOfResourceFromChangeset: string;
-    resourceTypeFromChangeset: string | undefined;
-    resourceTypeFromTemplate: string | undefined;
-  }): types.ResourceDifference | undefined {
-    const resourceNotFoundInTemplateDiff = !(args.logicalIdsFromTemplateDiff.includes(args.logicalIdOfResourceFromChangeset));
-    if (resourceNotFoundInTemplateDiff) {
-      const noChangeResourceDiff = new types.ResourceDifference(undefined, undefined, {
-        resourceType: {
-          oldType: args.resourceTypeFromTemplate,
-          newType: args.resourceTypeFromChangeset,
-        },
-        propertyDiffs: {},
-        otherDiffs: {},
-      });
-      return noChangeResourceDiff;
+  convertResourceFromChangesetToResourceForDiff(
+    resourceInfoFromChangeset: types.ChangeSetResource,
+    parseOldOrNewValues: 'OLD_VALUES' | 'NEW_VALUES',
+  ): types.Resource {
+    const props: { [logicalId: string]: string | undefined } = {};
+    if (parseOldOrNewValues === 'NEW_VALUES') {
+      for (const [propertyName, value] of Object.entries(resourceInfoFromChangeset.properties)) {
+        props[propertyName] = value.afterValue;
+      }
+    } else {
+      for (const [propertyName, value] of Object.entries(resourceInfoFromChangeset.properties)) {
+        props[propertyName] = value.beforeValue;
+      }
     }
 
-    return undefined;
+    return {
+      Type: resourceInfoFromChangeset.resourceType,
+      Properties: props,
+    };
   }
 
-  enhanceChangeImpacts(resourceDiffsFromTemplate: types.DifferenceCollection<types.Resource, types.ResourceDifference>) {
-    resourceDiffsFromTemplate.forEachDifference((logicalId: string, change: types.ResourceDifference) => {
+  enhanceChangeImpacts(resourceDiffs: types.DifferenceCollection<types.Resource, types.ResourceDifference>) {
+    resourceDiffs.forEachDifference((logicalId: string, change: types.ResourceDifference) => {
       if (change.resourceType?.includes('AWS::Serverless')) {
       // CFN applies the SAM transform before creating the changeset, so the changeset contains no information about SAM resources
         return;
       }
       change.forEachDifference((type: 'Property' | 'Other', name: string, value: types.Difference<any> | types.PropertyDifference<any>) => {
         if (type === 'Property') {
-          if (!this.replacements[logicalId]) {
+          if (!this.changeSetResources[logicalId]) {
             (value as types.PropertyDifference<any>).changeImpact = types.ResourceImpact.NO_CHANGE;
             (value as types.PropertyDifference<any>).isDifferent = false;
             return;
           }
-          switch (this.replacements[logicalId].propertiesReplaced[name]) {
+          switch (this.changeSetResources[logicalId].properties[name]?.changeSetReplacementMode) {
             case 'Always':
               (value as types.PropertyDifference<any>).changeImpact = types.ResourceImpact.WILL_REPLACE;
               break;
@@ -171,9 +173,9 @@ export class TemplateAndChangeSetDiffMerger {
     });
   }
 
-  addImportInformation(resourceDiffsFromTemplate: types.DifferenceCollection<types.Resource, types.ResourceDifference>) {
+  addImportInformation(resourceDiffs: types.DifferenceCollection<types.Resource, types.ResourceDifference>) {
     const imports = this.findResourceImports();
-    resourceDiffsFromTemplate.forEachDifference((logicalId: string, change: types.ResourceDifference) => {
+    resourceDiffs.forEachDifference((logicalId: string, change: types.ResourceDifference) => {
       if (imports.includes(logicalId)) {
         change.isImport = true;
       }
