@@ -1,4 +1,5 @@
 import { Construct } from 'constructs';
+import { IpAddressType } from './enums';
 import { Attributes, ifUndefined, mapTagMapToCxschema, renderAttributes } from './util';
 import * as ec2 from '../../../aws-ec2';
 import * as iam from '../../../aws-iam';
@@ -9,7 +10,6 @@ import { CfnResource, ContextProvider, IResource, Lazy, Resource, Stack, Token }
 import * as cxapi from '../../../cx-api';
 import { RegionInfo } from '../../../region-info';
 import { CfnLoadBalancer } from '../elasticloadbalancingv2.generated';
-import { IpAddressType } from './enums';
 
 /**
  * Shared properties of both Application and Network Load Balancers
