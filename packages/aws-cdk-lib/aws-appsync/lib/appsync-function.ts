@@ -1,7 +1,7 @@
 import { Construct } from 'constructs';
 import { CfnFunctionConfiguration } from './appsync.generated';
 import { Code } from './code';
-import { BaseDataSource } from './data-source';
+import { BaseDataSource, LambdaDataSource } from './data-source';
 import { IGraphqlApi } from './graphqlapi-base';
 import { MappingTemplate } from './mapping-template';
 import { FunctionRuntime } from './runtime';
@@ -45,6 +45,13 @@ export interface BaseAppsyncFunctionProps {
    * @default - no code is used
    */
   readonly code?: Code;
+  /**
+   * The maximum number of resolver request inputs that will be sent to a single AWS Lambda function
+   * in a BatchInvoke operation. You can only set when using LambdaDataSource.
+   *
+   * @default - No max batch size
+   */
+  readonly maxBatchSize?: number;
 }
 
 /**
@@ -106,7 +113,7 @@ export class AppsyncFunction extends Resource implements IAppsyncFunction {
         produce: () => Fn.select(3, Fn.split('/', attrs.functionArn)),
       });
       public readonly functionArn = attrs.functionArn;
-      constructor (s: Construct, i: string) {
+      constructor(s: Construct, i: string) {
         super(s, i);
       }
     }
@@ -152,6 +159,10 @@ export class AppsyncFunction extends Resource implements IAppsyncFunction {
       throw new Error('Mapping templates cannot be used alongside code');
     }
 
+    if (!(props.dataSource instanceof LambdaDataSource) && props.maxBatchSize) {
+      throw new Error('Cannot set maxBatchSize when the data source is not LambdaDataSource');
+    }
+
     const code = props.code?.bind(this);
     this.function = new CfnFunctionConfiguration(this, 'Resource', {
       name: props.name,
@@ -164,6 +175,7 @@ export class AppsyncFunction extends Resource implements IAppsyncFunction {
       functionVersion: '2018-05-29',
       requestMappingTemplate: props.requestMappingTemplate?.renderTemplate(),
       responseMappingTemplate: props.responseMappingTemplate?.renderTemplate(),
+      maxBatchSize: props.maxBatchSize,
     });
     this.functionName = this.function.attrName;
     this.functionArn = this.function.attrFunctionArn;

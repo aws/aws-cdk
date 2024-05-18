@@ -1,0 +1,161 @@
+{
+  "version": "36.0.0",
+  "artifacts": {
+    "aws-cdk-appsync-function-max-batch-size.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "aws-cdk-appsync-function-max-batch-size.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "aws-cdk-appsync-function-max-batch-size": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "aws-cdk-appsync-function-max-batch-size.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/89224c8b14895e605e4e19b7170dc69e61ea0a0c0e3809b2fde62ea258c510b5.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "aws-cdk-appsync-function-max-batch-size.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "aws-cdk-appsync-function-max-batch-size.assets"
+      ],
+      "metadata": {
+        "/aws-cdk-appsync-function-max-batch-size/LambdaAPI/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaAPID6A5A92B"
+          }
+        ],
+        "/aws-cdk-appsync-function-max-batch-size/LambdaAPI/Schema": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaAPISchemaCC5CA3D2"
+          }
+        ],
+        "/aws-cdk-appsync-function-max-batch-size/LambdaAPI/DefaultApiKey": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaAPIDefaultApiKey15F6897D"
+          }
+        ],
+        "/aws-cdk-appsync-function-max-batch-size/LambdaAPI/LambdaDS/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaAPILambdaDSServiceRole21CACDF8"
+          }
+        ],
+        "/aws-cdk-appsync-function-max-batch-size/LambdaAPI/LambdaDS/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaAPILambdaDSServiceRoleDefaultPolicyFB1B9CE8"
+          }
+        ],
+        "/aws-cdk-appsync-function-max-batch-size/LambdaAPI/LambdaDS/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaAPILambdaDSFD6DF39B"
+          }
+        ],
+        "/aws-cdk-appsync-function-max-batch-size/LambdaAPI/TestFunction/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaAPITestFunction64FA697F"
+          }
+        ],
+        "/aws-cdk-appsync-function-max-batch-size/func/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "funcServiceRoleA96CCB44"
+          }
+        ],
+        "/aws-cdk-appsync-function-max-batch-size/func/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "funcC3A0C2E2"
+          }
+        ],
+        "/aws-cdk-appsync-function-max-batch-size/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/aws-cdk-appsync-function-max-batch-size/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "aws-cdk-appsync-function-max-batch-size"
+    },
+    "AppSyncFunctionMaxBatchSizeDefaultTestDeployAssert21899F3D.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "AppSyncFunctionMaxBatchSizeDefaultTestDeployAssert21899F3D.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "AppSyncFunctionMaxBatchSizeDefaultTestDeployAssert21899F3D": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "AppSyncFunctionMaxBatchSizeDefaultTestDeployAssert21899F3D.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "AppSyncFunctionMaxBatchSizeDefaultTestDeployAssert21899F3D.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "AppSyncFunctionMaxBatchSizeDefaultTestDeployAssert21899F3D.assets"
+      ],
+      "metadata": {
+        "/AppSyncFunctionMaxBatchSize/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/AppSyncFunctionMaxBatchSize/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "AppSyncFunctionMaxBatchSize/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}

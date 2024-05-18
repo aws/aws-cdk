@@ -755,6 +755,22 @@ const appsyncFunction = new appsync.AppsyncFunction(this, 'function', {
 });
 ```
 
+When using the `LambdaDataSource`, you can control the maximum number of resolver request
+inputs that will be sent to a single AWS Lambda function in a BatchInvoke operation
+by setting the maxBatchSize property.
+
+```ts
+declare const api: appsync.GraphqlApi;
+declare const lambdaDataSource: appsync.LambdaDataSource;
+
+const appsyncFunction = new appsync.AppsyncFunction(this, 'function', {
+  name: 'appsync_function',
+  api,
+  dataSource: lambdaDataSource,
+  maxBatchSize: 10,
+});
+```
+
 AppSync Functions are used in tandem with pipeline resolvers to compose multiple
 operations.
 
@@ -864,7 +880,7 @@ const api = new appsync.GraphqlApi(this, 'api', {
   definition: appsync.Definition.fromFile(path.join(__dirname, 'appsync.schema.graphql')),
   environmentVariables: {
     EnvKey1: 'non-empty-1',
-  },  
+  },
 });
 
 api.addEnvironmentVariable('EnvKey2', 'non-empty-2');
