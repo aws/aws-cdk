@@ -2,7 +2,7 @@
 // The SDK should not make network calls here
 import type { DescribeChangeSetOutput as DescribeChangeSet } from '@aws-sdk/client-cloudformation';
 import * as impl from './diff';
-import { TemplateAndChangeSetDiffMerger } from './diff/changeset';
+import { TemplateAndChangeSetDiffMerger } from './diff/template-and-changeset-diff-merger';
 import * as types from './diff/types';
 import { deepEqual, diffKeyedEntities, unionOf } from './diff/util';
 
