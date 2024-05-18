@@ -10,6 +10,7 @@ export type ResourceReplacements = { [logicalId: string]: ResourceReplacement };
 
 export interface ResourceReplacement {
   resourceReplaced: boolean;
+  resourceType: string;
   propertiesReplaced: { [propertyName: string]: ChangeSetReplacement };
 }
 
@@ -198,6 +199,10 @@ export class TemplateDiff implements ITemplateDiff {
           }
         }
       } else {
+        if (!resourceChange.resourceType) {
+          continue;
+        }
+
         const resourceModel = loadResourceModel(resourceChange.resourceType);
         if (resourceModel && this.resourceIsScrutinizable(resourceModel, scrutinyTypes)) {
           ret.push({
@@ -630,11 +635,11 @@ export class ResourceDifference implements IDifference<Resource> {
    *
    * If the resource type was changed, it's an error to call this.
    */
-  public get resourceType(): string {
+  public get resourceType(): string | undefined {
     if (this.resourceTypeChanged) {
       throw new Error('Cannot get .resourceType, because the type was changed');
     }
-    return this.resourceTypes.oldType || this.resourceTypes.newType!;
+    return this.resourceTypes.oldType || this.resourceTypes.newType;
   }
 
   /**
