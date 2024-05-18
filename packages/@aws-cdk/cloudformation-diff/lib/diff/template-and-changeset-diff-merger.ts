@@ -1,6 +1,6 @@
 // The SDK is only used to reference `DescribeChangeSetOutput`, so the SDK is added as a devDependency.
 // The SDK should not make network calls here
-import type { DescribeChangeSetOutput as DescribeChangeSet } from '@aws-sdk/client-cloudformation';
+import type { DescribeChangeSetOutput as DescribeChangeSet, ResourceChangeDetail } from '@aws-sdk/client-cloudformation';
 import * as types from '../diff/types';
 
 export type DescribeChangeSetOutput = DescribeChangeSet;
@@ -25,32 +25,42 @@ export class TemplateAndChangeSetDiffMerger {
   }
 
   findResourceReplacements(changeSet: DescribeChangeSetOutput): types.ResourceReplacements {
-    const _replacements: types.ResourceReplacements = {};
+    const replacements: types.ResourceReplacements = {};
     for (const resourceChange of changeSet.Changes ?? []) {
+      if (resourceChange.ResourceChange?.LogicalResourceId === undefined) {
+        continue;
+      }
+
       const propertiesReplaced: { [propName: string]: types.ChangeSetReplacement } = {};
       for (const propertyChange of resourceChange.ResourceChange?.Details ?? []) {
-        if (propertyChange.Target?.Attribute === 'Properties') {
-          const requiresReplacement = propertyChange.Target.RequiresRecreation === 'Always';
-          if (requiresReplacement && propertyChange.Evaluation === 'Static') {
-            propertiesReplaced[propertyChange.Target.Name!] = 'Always';
-          } else if (requiresReplacement && propertyChange.Evaluation === 'Dynamic') {
-          // If Evaluation is 'Dynamic', then this may cause replacement, or it may not.
-          // see 'Replacement': https://docs.aws.amazon.com/AWSCloudFormation/latest/APIReference/API_ResourceChange.html
-            propertiesReplaced[propertyChange.Target.Name!] = 'Conditionally';
-          } else {
-            propertiesReplaced[propertyChange.Target.Name!] = propertyChange.Target.RequiresRecreation as types.ChangeSetReplacement;
-          }
+        if (propertyChange.Target?.Attribute === 'Properties' && propertyChange.Target.Name) {
+          propertiesReplaced[propertyChange.Target.Name] = this.determineIfResourceIsReplaced(propertyChange);
         }
       }
 
-      _replacements[resourceChange.ResourceChange?.LogicalResourceId!] = {
+      replacements[resourceChange.ResourceChange?.LogicalResourceId] = {
         resourceReplaced: resourceChange.ResourceChange?.Replacement === 'True',
-        resourceType: resourceChange.ResourceChange?.ResourceType || 'UNKNOWN', // the changeset should always return the ResourceType... but just in case.
-        propertiesReplaced,
+        resourceType: resourceChange.ResourceChange?.ResourceType ?? 'UNKNOWN', // the changeset should always return the ResourceType... but just in case.
+        propertiesReplaced: propertiesReplaced,
       };
     }
 
-    return _replacements;
+    return replacements;
+  }
+
+  determineIfResourceIsReplaced(propertyChange: ResourceChangeDetail): types.ChangeSetReplacement {
+    if (propertyChange.Target!.RequiresRecreation === 'Always') {
+      switch (propertyChange.Evaluation) {
+        case 'Static':
+          return 'Always';
+        case 'Dynamic':
+          // If Evaluation is 'Dynamic', then this may cause replacement, or it may not.
+          // see 'Replacement': https://docs.aws.amazon.com/AWSCloudFormation/latest/APIReference/API_ResourceChange.html
+          return 'Conditionally';
+      }
+    }
+
+    return propertyChange.Target!.RequiresRecreation as types.ChangeSetReplacement;
   }
 
   /**
@@ -104,7 +114,7 @@ export class TemplateAndChangeSetDiffMerger {
     logicalIdOfResourceFromChangeset: string;
     resourceTypeFromChangeset: string | undefined;
     resourceTypeFromTemplate: string | undefined;
-  }) {
+  }): types.ResourceDifference | undefined {
     const resourceNotFoundInTemplateDiff = !(args.logicalIdsFromTemplateDiff.includes(args.logicalIdOfResourceFromChangeset));
     if (resourceNotFoundInTemplateDiff) {
       const noChangeResourceDiff = new types.ResourceDifference(undefined, undefined, {

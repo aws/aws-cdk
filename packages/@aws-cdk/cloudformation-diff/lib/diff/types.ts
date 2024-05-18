@@ -372,6 +372,10 @@ export class DifferenceCollection<V, T extends IDifference<V>> {
     delete this.diffs[logicalId];
   }
 
+  public add(logicalId: string, diff: T): void {
+    this.diffs[logicalId] = diff;
+  }
+
   public get logicalIds(): string[] {
     return Object.keys(this.changes);
   }

@@ -150,13 +150,6 @@ function calculateTemplateDiff(currentTemplate: { [key: string]: any }, newTempl
 }
 
 /**
- * Compare two CloudFormation resources and return semantic differences between them
- */
-export function diffResource(oldValue: types.Resource, newValue: types.Resource): types.ResourceDifference {
-  return impl.diffResource(oldValue, newValue);
-}
-
-/**
  * Replace all references to the given logicalID on the given template, in-place
  *
  * Returns true iff any references were replaced.
