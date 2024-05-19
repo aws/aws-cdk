@@ -1,6 +1,6 @@
 import { ResourceChangeDetail } from '@aws-sdk/client-cloudformation';
 import { changeSet, changeSetWithMissingChanges, changeSetWithPartiallyFilledChanges, changeSetWithUndefinedDetails, ssmParam, sqsQueueWithAargs, changeSetWithIamChanges } from './util';
-import { fullDiff, Difference, PropertyDifference, ResourceDifference, ResourceImpact, ChangeSetResource, DifferenceCollection, Resource } from '../lib';
+import { fullDiff, PropertyDifference, ResourceDifference, ResourceImpact, ChangeSetResource, DifferenceCollection, Resource } from '../lib';
 import { TemplateAndChangeSetDiffMerger } from '../lib/diff/template-and-changeset-diff-merger';
 
 describe('fullDiff tests', () => {
