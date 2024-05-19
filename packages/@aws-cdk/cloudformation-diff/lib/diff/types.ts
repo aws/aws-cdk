@@ -67,9 +67,11 @@ export class TemplateDiff implements ITemplateDiff {
     this.resources = args.resources || new DifferenceCollection({});
     this.unknown = args.unknown || new DifferenceCollection({});
 
-    this.iamChanges = new IamChanges({
-      propertyChanges: this.scrutinizablePropertyChanges(IamChanges.IamPropertyScrutinies),
-      resourceChanges: this.scrutinizableResourceChanges(IamChanges.IamResourceScrutinies),
+    const x = this.scrutinizablePropertyChanges(IamChanges.IamPropertyScrutinies); // these are missing the old and new values
+    const y = this.scrutinizableResourceChanges(IamChanges.IamResourceScrutinies); // this has the old and new values but is still being ignored in the iam constructor.
+    this.iamChanges = new IamChanges({ // changes are not added because oldvalue and newvalue are undefined, which causes early return
+      propertyChanges: x,
+      resourceChanges: y,
     });
 
     this.securityGroupChanges = new SecurityGroupChanges({

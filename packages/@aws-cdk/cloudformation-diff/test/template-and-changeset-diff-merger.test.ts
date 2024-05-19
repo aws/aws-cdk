@@ -1,7 +1,10 @@
-import { sqsQueueWithAargs, ssmParam } from './util';
+import { ResourceChangeDetail } from '@aws-sdk/client-cloudformation';
+import { changeSet, changeSetWithIamChanges, changeSetWithMissingChanges, changeSetWithPartiallyFilledChanges, changeSetWithUndefinedDetails, sqsQueueWithAargs, ssmParam } from './util';
+import { ChangeSetResource } from '../lib';
+import { TemplateAndChangeSetDiffMerger } from '../lib/diff/template-and-changeset-diff-merger';
 import { fullDiff, ResourceImpact } from '../lib/diff-template';
 
-describe('changeset', () => {
+describe('fullDiff tests', () => {
   test('changeset overrides spec replacements', () => {
     // GIVEN
     const currentTemplate = {
@@ -971,4 +974,296 @@ describe('changeset', () => {
       },
     );
   });
+
+  test('IamChanges that are visible only through changeset are added to TemplatedDiff.iamChanges', () => {
+    // GIVEN
+    const currentTemplate = {};
+
+    // WHEN
+    const diffWithChangeSet = fullDiff(currentTemplate, currentTemplate, changeSetWithIamChanges);
+
+    // THEN
+    expect(diffWithChangeSet.iamChanges.statements.additions).toEqual([{
+      sid: undefined,
+      effect: 'Allow',
+      resources: {
+        values: [
+          'arn:aws:sqs:us-east-1:012345678901:newAndDifferent',
+        ],
+        not: false,
+      },
+      actions: {
+        values: [
+          'sqs:DeleteMessage',
+          'sqs:GetQueueAttributes',
+          'sqs:ReceiveMessage',
+          'sqs:SendMessage',
+        ],
+        not: false,
+      },
+      principals: {
+        values: [
+          'AWS:{{changeSet:KNOWN_AFTER_APPLY}}',
+        ],
+        not: false,
+      },
+      condition: undefined,
+      serializedIntrinsic: undefined,
+    }]);
+
+    expect(diffWithChangeSet.iamChanges.statements.removals).toEqual([{
+      sid: undefined,
+      effect: 'Allow',
+      resources: {
+        values: [
+          'arn:aws:sqs:us-east-1:012345678901:sdflkja',
+        ],
+        not: false,
+      },
+      actions: {
+        values: [
+          'sqs:DeleteMessage',
+          'sqs:GetQueueAttributes',
+          'sqs:ReceiveMessage',
+          'sqs:SendMessage',
+        ],
+        not: false,
+      },
+      principals: {
+        values: [
+          'AWS:sdflkja',
+        ],
+        not: false,
+      },
+      condition: undefined,
+      serializedIntrinsic: undefined,
+    }]);
+
+  });
+
+});
+
+describe('method tests', () => {
+
+  test('InspectChangeSet correctly parses changeset', async () => {
+    // WHEN
+    const templateAndChangeSetDiffMerger = new TemplateAndChangeSetDiffMerger({ changeSet: changeSet });
+
+    // THEN
+    expect(Object.keys(templateAndChangeSetDiffMerger.changeSetResources ?? {}).length).toBe(2);
+    expect((templateAndChangeSetDiffMerger.changeSetResources ?? {}).Queue).toEqual({
+      resourceWasReplaced: true,
+      resourceType: 'AWS::SQS::Queue',
+      properties: {
+        QueueName: {
+          changeSetReplacementMode: 'Always',
+          beforeValue: 'newValuechangedddd',
+          afterValue: 'newValuesdflkja',
+        },
+      },
+    });
+    expect((templateAndChangeSetDiffMerger.changeSetResources ?? {}).mySsmParameter).toEqual({
+      resourceWasReplaced: false,
+      resourceType: 'AWS::SSM::Parameter',
+      properties: {
+        Value: {
+          changeSetReplacementMode: 'Never',
+          beforeValue: 'changedddd',
+          afterValue: 'sdflkja',
+        },
+      },
+    });
+  });
+
+  test('TemplateAndChangeSetDiffMerger constructor can handle undefined changeset', async () => {
+    // WHEN
+    const templateAndChangeSetDiffMerger = new TemplateAndChangeSetDiffMerger({ changeSet: {} });
+
+    // THEN
+    expect(templateAndChangeSetDiffMerger.changeSetResources).toEqual({});
+    expect(templateAndChangeSetDiffMerger.changeSet).toEqual({});
+  });
+
+  test('TemplateAndChangeSetDiffMerger constructor can handle undefined changes in changset.Changes', async () => {
+    // WHEN
+    const templateAndChangeSetDiffMerger = new TemplateAndChangeSetDiffMerger({ changeSet: changeSetWithMissingChanges });
+
+    // THEN
+    expect(templateAndChangeSetDiffMerger.changeSetResources).toEqual({});
+    expect(templateAndChangeSetDiffMerger.changeSet).toEqual(changeSetWithMissingChanges);
+  });
+
+  test('TemplateAndChangeSetDiffMerger constructor can handle partially defined changes in changset.Changes', async () => {
+    // WHEN
+    const templateAndChangeSetDiffMerger = new TemplateAndChangeSetDiffMerger({ changeSet: changeSetWithPartiallyFilledChanges });
+
+    // THEN
+    expect(templateAndChangeSetDiffMerger.changeSet).toEqual(changeSetWithPartiallyFilledChanges);
+    expect(Object.keys(templateAndChangeSetDiffMerger.changeSetResources ?? {}).length).toBe(2);
+    expect((templateAndChangeSetDiffMerger.changeSetResources ?? {}).mySsmParameter).toEqual({
+      resourceWasReplaced: false,
+      resourceType: 'AWS::SSM::Parameter',
+      properties: {},
+    });
+    expect((templateAndChangeSetDiffMerger.changeSetResources ?? {}).Queue).toEqual({
+      resourceWasReplaced: true,
+      resourceType: 'UNKNOWN',
+      properties: {
+        QueueName: {
+          changeSetReplacementMode: 'Always',
+          beforeValue: undefined,
+          afterValue: undefined,
+        },
+      },
+    });
+  });
+
+  test('TemplateAndChangeSetDiffMerger constructor can handle undefined Details in changset.Changes', async () => {
+    // WHEN
+    const templateAndChangeSetDiffMerger = new TemplateAndChangeSetDiffMerger({ changeSet: changeSetWithUndefinedDetails });
+
+    // THEN
+    expect(templateAndChangeSetDiffMerger.changeSet).toEqual(changeSetWithUndefinedDetails);
+    expect(Object.keys(templateAndChangeSetDiffMerger.changeSetResources ?? {}).length).toBe(1);
+    expect((templateAndChangeSetDiffMerger.changeSetResources ?? {}).Queue).toEqual({
+      resourceWasReplaced: true,
+      resourceType: 'UNKNOWN',
+      properties: {},
+    });
+  });
+
+  test('determineChangeSetReplacementMode can evaluate missing Target', async () => {
+    // GIVEN
+    const propertyChangeWithMissingTarget = {
+      Target: undefined,
+    };
+
+    // WHEN
+    const changeSetReplacementMode = TemplateAndChangeSetDiffMerger.determineChangeSetReplacementMode(propertyChangeWithMissingTarget);
+
+    // THEN
+    expect(changeSetReplacementMode).toEqual('Conditionally');
+  });
+
+  test('determineChangeSetReplacementMode can evaluate missing RequiresRecreation', async () => {
+    // GIVEN
+    const propertyChangeWithMissingTargetDetail = {
+      Target: { RequiresRecreation: undefined },
+    };
+
+    // WHEN
+    const changeSetReplacementMode = TemplateAndChangeSetDiffMerger.determineChangeSetReplacementMode(propertyChangeWithMissingTargetDetail);
+
+    // THEN
+    expect(changeSetReplacementMode).toEqual('Conditionally');
+  });
+
+  test('determineChangeSetReplacementMode can evaluate Always and Static', async () => {
+    // GIVEN
+    const propertyChangeWithAlwaysStatic: ResourceChangeDetail = {
+      Target: { RequiresRecreation: 'Always' },
+      Evaluation: 'Static',
+    };
+
+    // WHEN
+    const changeSetReplacementMode = TemplateAndChangeSetDiffMerger.determineChangeSetReplacementMode(propertyChangeWithAlwaysStatic);
+
+    // THEN
+    expect(changeSetReplacementMode).toEqual('Always');
+  });
+
+  test('determineChangeSetReplacementMode can evaluate always dynamic', async () => {
+    // GIVEN
+    const propertyChangeWithAlwaysDynamic: ResourceChangeDetail = {
+      Target: { RequiresRecreation: 'Always' },
+      Evaluation: 'Dynamic',
+    };
+
+    // WHEN
+    const changeSetReplacementMode = TemplateAndChangeSetDiffMerger.determineChangeSetReplacementMode(propertyChangeWithAlwaysDynamic);
+
+    // THEN
+    expect(changeSetReplacementMode).toEqual('Conditionally');
+  });
+
+  test('determineChangeSetReplacementMode with missing Evaluation', async () => {
+    // GIVEN
+    const propertyChangeWithMissingEvaluation: ResourceChangeDetail = {
+      Target: { RequiresRecreation: 'Always' },
+      Evaluation: undefined,
+    };
+
+    // WHEN
+    const changeSetReplacementMode = TemplateAndChangeSetDiffMerger.determineChangeSetReplacementMode(propertyChangeWithMissingEvaluation);
+
+    // THEN
+    expect(changeSetReplacementMode).toEqual('Always');
+  });
+
+  test('convertResourceFromChangesetToResourceForDiff with missing resourceType and properties', async () => {
+    // GIVEN
+    const changeSetResource: ChangeSetResource = {
+      resourceWasReplaced: false,
+      resourceType: undefined,
+      properties: undefined,
+    };
+
+    // WHEN
+    const resourceAfterChange = TemplateAndChangeSetDiffMerger.convertResourceFromChangesetToResourceForDiff(
+      changeSetResource,
+      'AFTER_VALUES',
+    );
+    const resourceBeforeChange = TemplateAndChangeSetDiffMerger.convertResourceFromChangesetToResourceForDiff(
+      changeSetResource,
+      'BEFORE_VALUES',
+    );
+
+    // THEN
+    expect(resourceBeforeChange).toEqual({
+      Type: 'UNKNOWN',
+      Properties: {},
+    });
+
+    expect(resourceAfterChange).toEqual({
+      Type: 'UNKNOWN',
+      Properties: {},
+    });
+  });
+
+  test('convertResourceFromChangesetToResourceForDiff with fully filled input', async () => {
+    // GIVEN
+    const changeSetResource: ChangeSetResource = {
+      resourceWasReplaced: false,
+      resourceType: 'CDK::IS::GREAT',
+      properties: {
+        C: {
+          changeSetReplacementMode: 'Always',
+          beforeValue: 'changedddd',
+          afterValue: 'sdflkja',
+        },
+      },
+    };
+
+    // WHEN
+    const resourceAfterChange = TemplateAndChangeSetDiffMerger.convertResourceFromChangesetToResourceForDiff(
+      changeSetResource,
+      'AFTER_VALUES',
+    );
+    const resourceBeforeChange = TemplateAndChangeSetDiffMerger.convertResourceFromChangesetToResourceForDiff(
+      changeSetResource,
+      'BEFORE_VALUES',
+    );
+
+    // THEN
+    expect(resourceBeforeChange).toEqual({
+      Type: 'CDK::IS::GREAT',
+      Properties: { C: 'changedddd' },
+    });
+
+    expect(resourceAfterChange).toEqual({
+      Type: 'CDK::IS::GREAT',
+      Properties: { C: 'sdflkja' },
+    });
+  });
+
 });

@@ -1,14 +1,12 @@
 // The SDK is only used to reference `DescribeChangeSetOutput`, so the SDK is added as a devDependency.
 // The SDK should not make network calls here
-import type { DescribeChangeSetOutput as DescribeChangeSet } from '@aws-sdk/client-cloudformation';
+import type { DescribeChangeSetOutput } from '@aws-sdk/client-cloudformation';
 import * as impl from './diff';
 import { TemplateAndChangeSetDiffMerger } from './diff/template-and-changeset-diff-merger';
 import * as types from './diff/types';
 import { deepEqual, diffKeyedEntities, unionOf } from './diff/util';
 
 export * from './diff/types';
-
-export type DescribeChangeSetOutput = DescribeChangeSet;
 
 type DiffHandler = (diff: types.ITemplateDiff, oldValue: any, newValue: any) => void;
 type HandlerRegistry = { [section: string]: DiffHandler };
@@ -56,10 +54,7 @@ export function fullDiff(
   normalize(newTemplate);
   let theDiff = diffTemplate(currentTemplate, newTemplate);
   if (changeSet) {
-    const changeSetDiff = new TemplateAndChangeSetDiffMerger({
-      changeSet: changeSet,
-      currentTemplateResources: currentTemplate.Resources,
-    });
+    const changeSetDiff = new TemplateAndChangeSetDiffMerger({ changeSet: changeSet });
     changeSetDiff.addChangeSetResourcesToDiff(theDiff.resources);
     changeSetDiff.addImportInformation(theDiff.resources);
     theDiff = new types.TemplateDiff(theDiff); // do this to propagate security changes.
