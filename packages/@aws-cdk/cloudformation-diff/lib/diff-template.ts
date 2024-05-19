@@ -56,7 +56,10 @@ export function fullDiff(
   if (changeSet) {
     const changeSetDiff = new TemplateAndChangeSetDiffMerger({ changeSet: changeSet });
     changeSetDiff.addChangeSetResourcesToDiff(theDiff.resources);
-    changeSetDiff.hydrateChangeImpacts(theDiff.resources);
+    theDiff.resources.forEachDifference((logicalId: string, change: types.ResourceDifference) =>
+      changeSetDiff.hydrateChangeImpactFromChangeSet(logicalId, change),
+    );
+    // changeSetDiff.hydrateChangeImpacts(theDiff.resources);
     changeSetDiff.addImportInformation(theDiff.resources);
     theDiff = new types.TemplateDiff(theDiff); // do this to propagate security changes.
   } else if (isImport) {

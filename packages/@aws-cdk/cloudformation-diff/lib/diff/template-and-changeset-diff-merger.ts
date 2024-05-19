@@ -61,12 +61,16 @@ export class TemplateAndChangeSetDiffMerger {
   constructor(
     args: {
       changeSet: DescribeChangeSetOutput;
+      changeSetResources?: types.ChangeSetResources; // used for testing -- otherwise, don't populate
     },
   ) {
     this.changeSet = args.changeSet;
-    this.changeSetResources = this.createChangeSetResources(this.changeSet);
+    this.changeSetResources = args.changeSetResources ?? this.createChangeSetResources(this.changeSet);
   }
 
+  /**
+   * use information from the changeset to populate details that are missing in the templateDiff
+   */
   createChangeSetResources(changeSet: DescribeChangeSetOutput): types.ChangeSetResources {
     const changeSetResources: types.ChangeSetResources = {};
     for (const resourceChange of changeSet.Changes ?? []) {
@@ -101,7 +105,7 @@ export class TemplateAndChangeSetDiffMerger {
     function _maybeJsonParse(value: string | undefined): any | undefined {
       let result = value;
       try {
-        result = JSON.parse(value ?? '');
+        result = JSON.parse(value ?? ''); // TODO -- have a test that fails here !!! partial json!! {"blah": "hii
       } catch (e) {}
       return result;
     }
@@ -143,45 +147,44 @@ export class TemplateAndChangeSetDiffMerger {
   /**
    * should be invoked after addChangeSetResourcesToDiff so that the change impacts are included.
    */
-  hydrateChangeImpacts(resourceDiffs: types.DifferenceCollection<types.Resource, types.ResourceDifference>) {
-    resourceDiffs.forEachDifference((logicalId: string, change: types.ResourceDifference) => {
-      if ((!change.resourceTypeChanged) && change.resourceType?.includes('AWS::Serverless')) {
-        // CFN applies the SAM transform before creating the changeset, so the changeset contains no information about SAM resources
-        return;
-      }
-      change.forEachDifference((type: 'Property' | 'Other', name: string, value: types.Difference<any> | types.PropertyDifference<any>) => {
-        if (type === 'Property') {
-          if (!this.changeSetResources[logicalId]) {
+  hydrateChangeImpactFromChangeSet(logicalId: string, change: types.ResourceDifference) {
+    // resourceType getter throws an error if resourceTypeChanged
+    if ((change.resourceTypeChanged === true) || change.resourceType?.includes('AWS::Serverless')) {
+      // CFN applies the SAM transform before creating the changeset, so the changeset contains no information about SAM resources
+      return;
+    }
+    change.forEachDifference((type: 'Property' | 'Other', name: string, value: types.Difference<any> | types.PropertyDifference<any>) => {
+      if (type === 'Property') {
+        if (!this.changeSetResources[logicalId]) {
+          (value as types.PropertyDifference<any>).changeImpact = types.ResourceImpact.NO_CHANGE;
+          (value as types.PropertyDifference<any>).isDifferent = false;
+          return;
+        }
+
+        const changeSetReplacementMode = (this.changeSetResources[logicalId].properties ?? {})[name]?.changeSetReplacementMode;
+        switch (changeSetReplacementMode) {
+          case 'Always':
+            (value as types.PropertyDifference<any>).changeImpact = types.ResourceImpact.WILL_REPLACE;
+            break;
+          case 'Never':
+            (value as types.PropertyDifference<any>).changeImpact = types.ResourceImpact.WILL_UPDATE;
+            break;
+          case 'Conditionally':
+            (value as types.PropertyDifference<any>).changeImpact = types.ResourceImpact.MAY_REPLACE;
+            break;
+          case undefined:
             (value as types.PropertyDifference<any>).changeImpact = types.ResourceImpact.NO_CHANGE;
             (value as types.PropertyDifference<any>).isDifferent = false;
-            return;
-          }
-
-          const changeSetReplacementMode = (this.changeSetResources[logicalId].properties ?? {})[name]?.changeSetReplacementMode;
-          switch (changeSetReplacementMode) {
-            case 'Always':
-              (value as types.PropertyDifference<any>).changeImpact = types.ResourceImpact.WILL_REPLACE;
-              break;
-            case 'Never':
-              (value as types.PropertyDifference<any>).changeImpact = types.ResourceImpact.WILL_UPDATE;
-              break;
-            case 'Conditionally':
-              (value as types.PropertyDifference<any>).changeImpact = types.ResourceImpact.MAY_REPLACE;
-              break;
-            case undefined:
-              (value as types.PropertyDifference<any>).changeImpact = types.ResourceImpact.NO_CHANGE;
-              (value as types.PropertyDifference<any>).isDifferent = false;
-              break;
+            break;
           // otherwise, defer to the changeImpact from `diffTemplate`
-          }
-        } else if (type === 'Other') {
-          switch (name) {
-            case 'Metadata':
-              change.setOtherChange('Metadata', new types.Difference<string>(value.newValue, value.newValue));
-              break;
-          }
         }
-      });
+      } else if (type === 'Other') {
+        switch (name) {
+          case 'Metadata':
+            change.setOtherChange('Metadata', new types.Difference<string>(value.newValue, value.newValue));
+            break;
+        }
+      }
     });
   }
 

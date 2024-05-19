@@ -1,8 +1,7 @@
 import { ResourceChangeDetail } from '@aws-sdk/client-cloudformation';
 import { changeSet, changeSetWithMissingChanges, changeSetWithPartiallyFilledChanges, changeSetWithUndefinedDetails, ssmParam, sqsQueueWithAargs, changeSetWithIamChanges } from './util';
-import { ChangeSetResource, DifferenceCollection, Resource, ResourceDifference } from '../lib';
+import { fullDiff, Difference, PropertyDifference, ResourceDifference, ResourceImpact, ChangeSetResource, DifferenceCollection, Resource } from '../lib';
 import { TemplateAndChangeSetDiffMerger } from '../lib/diff/template-and-changeset-diff-merger';
-import { fullDiff, ResourceImpact } from '../lib/diff-template';
 
 describe('fullDiff tests', () => {
   test('changeset overrides spec replacements', () => {
@@ -1405,17 +1404,271 @@ describe('method tests', () => {
     });
   });
 
-  // test('hydrateChangeImpactFromChangeset can handle blank change', async () => {
-  //   // GIVEN
-  //   const templateAndChangeSetDiffMerger = new TemplateAndChangeSetDiffMerger({ changeSet: {} });
-  //   const queue = new ResourceDifference(undefined, undefined, { resourceType: {}, propertyDiffs: {}, otherDiffs: {} });
-  //   const logicalId = 'Queue';
+  test('hydrateChangeImpactFromChangeset can handle blank change', async () => {
+  // GIVEN
+    const templateAndChangeSetDiffMerger = new TemplateAndChangeSetDiffMerger({ changeSet: {} });
+    const queue = new ResourceDifference(undefined, undefined, { resourceType: {}, propertyDiffs: {}, otherDiffs: {} });
+    const logicalId = 'Queue';
 
-  //   //WHEN
-  //   templateAndChangeSetDiffMerger.hydrateChangeImpactFromChangeset(logicalId, queue);
+    //WHEN
+    templateAndChangeSetDiffMerger.hydrateChangeImpactFromChangeSet(logicalId, queue);
 
-  //   // THEN
-  //   expect(queue.isDifferent).toBe(true);
-  // });
+    // THEN
+    expect(queue.isDifferent).toBe(false);
+    expect(queue.changeImpact).toBe('NO_CHANGE');
+  });
+
+  test('hydrateChangeImpactFromChangeset ignores changes that are not in changeset', async () => {
+    const templateAndChangeSetDiffMerger = new TemplateAndChangeSetDiffMerger({
+      changeSet: {},
+      changeSetResources: {},
+    });
+    const queue = new ResourceDifference(
+      { Type: 'AWS::CDK::GREAT', Properties: { QueueName: 'first' } },
+      { Type: 'AWS::CDK::GREAT', Properties: { QueueName: 'second' } },
+      {
+        resourceType: { oldType: 'AWS::CDK::GREAT', newType: 'AWS::CDK::GREAT' },
+        propertyDiffs: { QueueName: new PropertyDifference<string>( 'first', 'second', { changeImpact: ResourceImpact.WILL_UPDATE }) },
+        otherDiffs: {},
+      },
+    );
+    const logicalId = 'Queue';
+
+    //WHEN
+    templateAndChangeSetDiffMerger.hydrateChangeImpactFromChangeSet(logicalId, queue);
+
+    // THEN
+    expect(queue.isDifferent).toBe(false);
+    expect(queue.changeImpact).toBe('NO_CHANGE');
+  });
+
+  test('hydrateChangeImpactFromChangeset can handle undefined properties', async () => {
+    // GIVEN
+    const logicalId = 'Queue';
+
+    const templateAndChangeSetDiffMerger = new TemplateAndChangeSetDiffMerger({
+      changeSet: {},
+      changeSetResources: {
+        Queue: {} as any,
+      },
+    });
+    const queue = new ResourceDifference(
+      { Type: 'AWS::CDK::GREAT', Properties: { QueueName: 'first' } },
+      { Type: 'AWS::CDK::GREAT', Properties: { QueueName: 'second' } },
+      {
+        resourceType: { oldType: 'AWS::CDK::GREAT', newType: 'AWS::CDK::GREAT' },
+        propertyDiffs: { QueueName: new PropertyDifference<string>( 'first', 'second', { changeImpact: ResourceImpact.WILL_UPDATE }) },
+        otherDiffs: {},
+      },
+    );
+
+    //WHEN
+    templateAndChangeSetDiffMerger.hydrateChangeImpactFromChangeSet(logicalId, queue);
+
+    // THEN
+    expect(queue.isDifferent).toBe(false);
+    expect(queue.changeImpact).toBe('NO_CHANGE');
+  });
+
+  test('hydrateChangeImpactFromChangeset can handle empty properties', async () => {
+    // GIVEN
+    const logicalId = 'Queue';
+
+    const templateAndChangeSetDiffMerger = new TemplateAndChangeSetDiffMerger({
+      changeSet: {},
+      changeSetResources: {
+        Queue: {
+          properties: {},
+        } as any,
+      },
+    });
+    const queue = new ResourceDifference(
+      { Type: 'AWS::CDK::GREAT', Properties: { QueueName: 'first' } },
+      { Type: 'AWS::CDK::GREAT', Properties: { QueueName: 'second' } },
+      {
+        resourceType: { oldType: 'AWS::CDK::GREAT', newType: 'AWS::CDK::GREAT' },
+        propertyDiffs: { QueueName: new PropertyDifference<string>( 'first', 'second', { changeImpact: ResourceImpact.WILL_UPDATE }) },
+        otherDiffs: {},
+      },
+    );
+
+    //WHEN
+    templateAndChangeSetDiffMerger.hydrateChangeImpactFromChangeSet(logicalId, queue);
+
+    // THEN
+    expect(queue.isDifferent).toBe(false);
+    expect(queue.changeImpact).toBe('NO_CHANGE');
+  });
+
+  test('hydrateChangeImpactFromChangeset can handle property without changeSetReplacementMode', async () => {
+    // GIVEN
+    const logicalId = 'Queue';
+
+    const templateAndChangeSetDiffMerger = new TemplateAndChangeSetDiffMerger({
+      changeSet: {},
+      changeSetResources: {
+        Queue: {
+          properties: {
+            QueueName: {} as any,
+          },
+        } as any,
+      },
+    });
+    const queue = new ResourceDifference(
+      { Type: 'AWS::CDK::GREAT', Properties: { QueueName: 'first' } },
+      { Type: 'AWS::CDK::GREAT', Properties: { QueueName: 'second' } },
+      {
+        resourceType: { oldType: 'AWS::CDK::GREAT', newType: 'AWS::CDK::GREAT' },
+        propertyDiffs: { QueueName: new PropertyDifference<string>( 'first', 'second', { changeImpact: ResourceImpact.WILL_UPDATE }) },
+        otherDiffs: {},
+      },
+    );
+
+    //WHEN
+    templateAndChangeSetDiffMerger.hydrateChangeImpactFromChangeSet(logicalId, queue);
+
+    // THEN
+    expect(queue.isDifferent).toBe(false);
+    expect(queue.changeImpact).toBe('NO_CHANGE');
+  });
+
+  test('hydrateChangeImpactFromChangeset handles Never case', async () => {
+    // GIVEN
+    const logicalId = 'Queue';
+
+    const templateAndChangeSetDiffMerger = new TemplateAndChangeSetDiffMerger({
+      changeSet: {},
+      changeSetResources: {
+        Queue: {
+          properties: {
+            QueueName: {
+              changeSetReplacementMode: 'Never',
+            },
+          },
+        } as any,
+      },
+    });
+    const queue = new ResourceDifference(
+      { Type: 'AWS::CDK::GREAT', Properties: { QueueName: 'first' } },
+      { Type: 'AWS::CDK::GREAT', Properties: { QueueName: 'second' } },
+      {
+        resourceType: { oldType: 'AWS::CDK::GREAT', newType: 'AWS::CDK::GREAT' },
+        propertyDiffs: { QueueName: new PropertyDifference<string>( 'first', 'second', { changeImpact: ResourceImpact.NO_CHANGE }) },
+        otherDiffs: {},
+      },
+    );
+
+    //WHEN
+    templateAndChangeSetDiffMerger.hydrateChangeImpactFromChangeSet(logicalId, queue);
+
+    // THEN
+    expect(queue.changeImpact).toBe('WILL_UPDATE');
+    expect(queue.isDifferent).toBe(true);
+  });
+
+  test('hydrateChangeImpactFromChangeset handles Conditionally case', async () => {
+    // GIVEN
+    const logicalId = 'Queue';
+
+    const templateAndChangeSetDiffMerger = new TemplateAndChangeSetDiffMerger({
+      changeSet: {},
+      changeSetResources: {
+        Queue: {
+          properties: {
+            QueueName: {
+              changeSetReplacementMode: 'Conditionally',
+            },
+          },
+        } as any,
+      },
+    });
+    const queue = new ResourceDifference(
+      { Type: 'AWS::CDK::GREAT', Properties: { QueueName: 'first' } },
+      { Type: 'AWS::CDK::GREAT', Properties: { QueueName: 'second' } },
+      {
+        resourceType: { oldType: 'AWS::CDK::GREAT', newType: 'AWS::CDK::GREAT' },
+        propertyDiffs: { QueueName: new PropertyDifference<string>( 'first', 'second', { changeImpact: ResourceImpact.NO_CHANGE }) },
+        otherDiffs: {},
+      },
+    );
+
+    //WHEN
+    templateAndChangeSetDiffMerger.hydrateChangeImpactFromChangeSet(logicalId, queue);
+
+    // THEN
+    expect(queue.changeImpact).toBe('MAY_REPLACE');
+    expect(queue.isDifferent).toBe(true);
+  });
+
+  test('hydrateChangeImpactFromChangeset handles Always case', async () => {
+    // GIVEN
+    const logicalId = 'Queue';
+
+    const templateAndChangeSetDiffMerger = new TemplateAndChangeSetDiffMerger({
+      changeSet: {},
+      changeSetResources: {
+        Queue: {
+          properties: {
+            QueueName: {
+              changeSetReplacementMode: 'Always',
+            },
+          },
+        } as any,
+      },
+    });
+    const queue = new ResourceDifference(
+      { Type: 'AWS::CDK::GREAT', Properties: { QueueName: 'first' } },
+      { Type: 'AWS::CDK::GREAT', Properties: { QueueName: 'second' } },
+      {
+        resourceType: { oldType: 'AWS::CDK::GREAT', newType: 'AWS::CDK::GREAT' },
+        propertyDiffs: { QueueName: new PropertyDifference<string>( 'first', 'second', { changeImpact: ResourceImpact.NO_CHANGE }) },
+        otherDiffs: {},
+      },
+    );
+
+    //WHEN
+    templateAndChangeSetDiffMerger.hydrateChangeImpactFromChangeSet(logicalId, queue);
+
+    // THEN
+    expect(queue.changeImpact).toBe('WILL_REPLACE');
+    expect(queue.isDifferent).toBe(true);
+  });
+
+  test('hydrateChangeImpactFromChangeset returns if AWS::Serverless is resourcetype', async () => {
+    // GIVEN
+    const logicalId = 'Queue';
+
+    const templateAndChangeSetDiffMerger = new TemplateAndChangeSetDiffMerger({
+      changeSet: {},
+      changeSetResources: {
+        Queue: {
+          properties: {
+            QueueName: {
+              changeSetReplacementMode: 'Always',
+            },
+          },
+        } as any,
+      },
+    });
+    const queue = new ResourceDifference(
+      { Type: 'AAWS::Serverless::IDK', Properties: { QueueName: 'first' } },
+      { Type: 'AAWS::Serverless::IDK', Properties: { QueueName: 'second' } },
+      {
+        resourceType: { oldType: 'AWS::Serverless::IDK', newType: 'AWS::Serverless::IDK' },
+        propertyDiffs: {
+          QueueName: new PropertyDifference<string>( 'first', 'second',
+            { changeImpact: ResourceImpact.WILL_ORPHAN }), // choose will_orphan to show that we're ignoring changeset
+        },
+        otherDiffs: {},
+      },
+    );
+
+    //WHEN
+    templateAndChangeSetDiffMerger.hydrateChangeImpactFromChangeSet(logicalId, queue);
+
+    // THEN
+    expect(queue.changeImpact).toBe('WILL_ORPHAN');
+    expect(queue.isDifferent).toBe(true);
+  });
 
 });

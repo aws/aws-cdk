@@ -440,6 +440,4 @@ export const changeSetWithIamChanges: DescribeChangeSetOutput = {
     'CAPABILITY_NAMED_IAM',
   ],
   IncludeNestedStacks: false,
-}
-;
-
+};
