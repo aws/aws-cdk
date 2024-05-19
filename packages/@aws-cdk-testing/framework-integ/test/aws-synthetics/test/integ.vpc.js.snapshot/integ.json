@@ -1,0 +1,12 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "IntegCanaryVpcTest/DefaultTest": {
+      "stacks": [
+        "canary-vpc"
+      ],
+      "assertionStack": "IntegCanaryVpcTest/DefaultTest/DeployAssert",
+      "assertionStackName": "IntegCanaryVpcTestDefaultTestDeployAssert7C76EE18"
+    }
+  }
+}

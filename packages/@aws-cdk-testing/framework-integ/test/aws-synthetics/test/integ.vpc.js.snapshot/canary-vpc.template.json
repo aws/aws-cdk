@@ -1,5 +1,147 @@
 {
  "Resources": {
+  "MyTestBucket81062429": {
+   "Type": "AWS::S3::Bucket",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "aws-cdk:auto-delete-objects",
+      "Value": "true"
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "MyTestBucketPolicyE11AF29F": {
+   "Type": "AWS::S3::BucketPolicy",
+   "Properties": {
+    "Bucket": {
+     "Ref": "MyTestBucket81062429"
+    },
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "s3:DeleteObject*",
+        "s3:GetBucket*",
+        "s3:List*",
+        "s3:PutBucketPolicy"
+       ],
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": {
+         "Fn::GetAtt": [
+          "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092",
+          "Arn"
+         ]
+        }
+       },
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "MyTestBucket81062429",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "MyTestBucket81062429",
+             "Arn"
+            ]
+           },
+           "/*"
+          ]
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "MyTestBucketAutoDeleteObjectsCustomResource1E1AC890": {
+   "Type": "Custom::S3AutoDeleteObjects",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F",
+      "Arn"
+     ]
+    },
+    "BucketName": {
+     "Ref": "MyTestBucket81062429"
+    }
+   },
+   "DependsOn": [
+    "MyTestBucketPolicyE11AF29F"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+     }
+    ]
+   }
+  },
+  "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "96ea260348625427bb7f28ab3b379f62da6f428bcd155cb13f9261aa6a404b0d.zip"
+    },
+    "Timeout": 900,
+    "MemorySize": 128,
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs18.x",
+    "Description": {
+     "Fn::Join": [
+      "",
+      [
+       "Lambda function for auto-deleting objects in ",
+       {
+        "Ref": "MyTestBucket81062429"
+       },
+       " S3 bucket."
+      ]
+     ]
+    }
+   },
+   "DependsOn": [
+    "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
+   ]
+  },
   "MyVpcF9F0CA6F": {
    "Type": "AWS::EC2::VPC",
    "Properties": {
@@ -391,69 +533,6 @@
     }
    }
   },
-  "MyVpcCanaryArtifactsBucketDC69853C": {
-   "Type": "AWS::S3::Bucket",
-   "Properties": {
-    "BucketEncryption": {
-     "ServerSideEncryptionConfiguration": [
-      {
-       "ServerSideEncryptionByDefault": {
-        "SSEAlgorithm": "aws:kms"
-       }
-      }
-     ]
-    }
-   },
-   "UpdateReplacePolicy": "Retain",
-   "DeletionPolicy": "Retain"
-  },
-  "MyVpcCanaryArtifactsBucketPolicy27806F2C": {
-   "Type": "AWS::S3::BucketPolicy",
-   "Properties": {
-    "Bucket": {
-     "Ref": "MyVpcCanaryArtifactsBucketDC69853C"
-    },
-    "PolicyDocument": {
-     "Statement": [
-      {
-       "Action": "s3:*",
-       "Condition": {
-        "Bool": {
-         "aws:SecureTransport": "false"
-        }
-       },
-       "Effect": "Deny",
-       "Principal": {
-        "AWS": "*"
-       },
-       "Resource": [
-        {
-         "Fn::GetAtt": [
-          "MyVpcCanaryArtifactsBucketDC69853C",
-          "Arn"
-         ]
-        },
-        {
-         "Fn::Join": [
-          "",
-          [
-           {
-            "Fn::GetAtt": [
-             "MyVpcCanaryArtifactsBucketDC69853C",
-             "Arn"
-            ]
-           },
-           "/*"
-          ]
-         ]
-        }
-       ]
-      }
-     ],
-     "Version": "2012-10-17"
-    }
-   }
-  },
   "MyVpcCanaryServiceRole2B1BBDE8": {
    "Type": "AWS::IAM::Role",
    "Properties": {
@@ -497,7 +576,7 @@
          "Effect": "Allow",
          "Resource": {
           "Fn::GetAtt": [
-           "MyVpcCanaryArtifactsBucketDC69853C",
+           "MyTestBucket81062429",
            "Arn"
           ]
          }
@@ -511,7 +590,7 @@
            [
             {
              "Fn::GetAtt": [
-              "MyVpcCanaryArtifactsBucketDC69853C",
+              "MyTestBucket81062429",
               "Arn"
              ]
             },
@@ -591,7 +670,7 @@
       [
        "s3://",
        {
-        "Ref": "MyVpcCanaryArtifactsBucketDC69853C"
+        "Ref": "MyTestBucket81062429"
        }
       ]
      ]
@@ -610,12 +689,18 @@
      ]
     },
     "Name": "canary-vpc",
-    "RuntimeVersion": "syn-nodejs-puppeteer-3.8",
+    "RuntimeVersion": "syn-nodejs-puppeteer-7.0",
     "Schedule": {
      "DurationInSeconds": "0",
      "Expression": "rate(5 minutes)"
     },
     "StartCanaryAfterCreation": true,
+    "Tags": [
+     {
+      "Key": "aws-cdk:auto-delete-underlying-resources",
+      "Value": "true"
+     }
+    ],
     "VPCConfig": {
      "SecurityGroupIds": [
       {
@@ -637,6 +722,141 @@
       "Ref": "MyVpcF9F0CA6F"
      }
     }
+   }
+  },
+  "MyVpcCanaryAutoDeleteUnderlyingResourcesCustomResourceB6FBCDC9": {
+   "Type": "Custom::SyntheticsAutoDeleteUnderlyingResources",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "CustomSyntheticsAutoDeleteUnderlyingResourcesCustomResourceProviderHandler26776D4E",
+      "Arn"
+     ]
+    },
+    "CanaryName": {
+     "Ref": "MyVpcCanary8C70C179"
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "CustomSyntheticsAutoDeleteUnderlyingResourcesCustomResourceProviderRole2D11A112": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+     }
+    ],
+    "Policies": [
+     {
+      "PolicyName": "Inline",
+      "PolicyDocument": {
+       "Version": "2012-10-17",
+       "Statement": [
+        {
+         "Effect": "Allow",
+         "Action": [
+          "lambda:DeleteFunction"
+         ],
+         "Resource": {
+          "Fn::Join": [
+           "",
+           [
+            "arn:",
+            {
+             "Ref": "AWS::Partition"
+            },
+            ":lambda:",
+            {
+             "Ref": "AWS::Region"
+            },
+            ":",
+            {
+             "Ref": "AWS::AccountId"
+            },
+            ":function:cwsyn-*"
+           ]
+          ]
+         }
+        },
+        {
+         "Effect": "Allow",
+         "Action": [
+          "synthetics:GetCanary"
+         ],
+         "Resource": "*"
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  "CustomSyntheticsAutoDeleteUnderlyingResourcesCustomResourceProviderHandler26776D4E": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "d57a897c2081bda5ce88819548c8b944dff49e721e1f7f7e9e3dd8323e6ccb0d.zip"
+    },
+    "Timeout": 900,
+    "MemorySize": 128,
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "CustomSyntheticsAutoDeleteUnderlyingResourcesCustomResourceProviderRole2D11A112",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs18.x",
+    "Description": {
+     "Fn::Join": [
+      "",
+      [
+       "Lambda function for auto-deleting underlying resources created by ",
+       {
+        "Ref": "MyVpcCanary8C70C179"
+       },
+       "."
+      ]
+     ]
+    }
+   },
+   "DependsOn": [
+    "CustomSyntheticsAutoDeleteUnderlyingResourcesCustomResourceProviderRole2D11A112"
+   ]
+  }
+ },
+ "Outputs": {
+  "ExportsOutputRefMyVpcF9F0CA6FBC8737E9": {
+   "Value": {
+    "Ref": "MyVpcF9F0CA6F"
+   },
+   "Export": {
+    "Name": "canary-vpc:ExportsOutputRefMyVpcF9F0CA6FBC8737E9"
+   }
+  },
+  "ExportsOutputRefMyVpcCanary8C70C179C72DCC87": {
+   "Value": {
+    "Ref": "MyVpcCanary8C70C179"
+   },
+   "Export": {
+    "Name": "canary-vpc:ExportsOutputRefMyVpcCanary8C70C179C72DCC87"
    }
   }
  },

@@ -1,5 +1,5 @@
 {
-  "version": "34.0.0",
+  "version": "36.0.0",
   "artifacts": {
     "canary-vpc.assets": {
       "type": "cdk:asset-manifest",
@@ -14,10 +14,11 @@
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "canary-vpc.template.json",
+        "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/91fabd97b90c5b2bdb26fa2b1dd4d26f0c6b6003e4f3c99f911b2a5ad0ceab37.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/418f989a14c7770aba54e0c2df9879e861a28eaf78fe8b7d29b103d99a519162.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -33,6 +34,36 @@
         "canary-vpc.assets"
       ],
       "metadata": {
+        "/canary-vpc/MyTestBucket/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyTestBucket81062429"
+          }
+        ],
+        "/canary-vpc/MyTestBucket/Policy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyTestBucketPolicyE11AF29F"
+          }
+        ],
+        "/canary-vpc/MyTestBucket/AutoDeleteObjectsCustomResource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyTestBucketAutoDeleteObjectsCustomResource1E1AC890"
+          }
+        ],
+        "/canary-vpc/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
+          }
+        ],
+        "/canary-vpc/Custom::S3AutoDeleteObjectsCustomResourceProvider/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F"
+          }
+        ],
         "/canary-vpc/MyVpc/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -171,18 +202,6 @@
             "data": "MyVpcVPCGW488ACE0D"
           }
         ],
-        "/canary-vpc/MyVpcCanary/ArtifactsBucket/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyVpcCanaryArtifactsBucketDC69853C"
-          }
-        ],
-        "/canary-vpc/MyVpcCanary/ArtifactsBucket/Policy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyVpcCanaryArtifactsBucketPolicy27806F2C"
-          }
-        ],
         "/canary-vpc/MyVpcCanary/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -201,6 +220,36 @@
             "data": "MyVpcCanary8C70C179"
           }
         ],
+        "/canary-vpc/MyVpcCanary/AutoDeleteUnderlyingResourcesCustomResource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyVpcCanaryAutoDeleteUnderlyingResourcesCustomResourceB6FBCDC9"
+          }
+        ],
+        "/canary-vpc/Custom::SyntheticsAutoDeleteUnderlyingResourcesCustomResourceProvider/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomSyntheticsAutoDeleteUnderlyingResourcesCustomResourceProviderRole2D11A112"
+          }
+        ],
+        "/canary-vpc/Custom::SyntheticsAutoDeleteUnderlyingResourcesCustomResourceProvider/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomSyntheticsAutoDeleteUnderlyingResourcesCustomResourceProviderHandler26776D4E"
+          }
+        ],
+        "/canary-vpc/Exports/Output{\"Ref\":\"MyVpcF9F0CA6F\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefMyVpcF9F0CA6FBC8737E9"
+          }
+        ],
+        "/canary-vpc/Exports/Output{\"Ref\":\"MyVpcCanary8C70C179\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefMyVpcCanary8C70C179C72DCC87"
+          }
+        ],
         "/canary-vpc/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
@@ -215,6 +264,127 @@
         ]
       },
       "displayName": "canary-vpc"
+    },
+    "IntegCanaryVpcTestDefaultTestDeployAssert7C76EE18.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "IntegCanaryVpcTestDefaultTestDeployAssert7C76EE18.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "IntegCanaryVpcTestDefaultTestDeployAssert7C76EE18": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "IntegCanaryVpcTestDefaultTestDeployAssert7C76EE18.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/8a1683c962fac7168629ab08acc529c9a58b9f15ddab9dbd6ed2a5dfa2477b0c.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "IntegCanaryVpcTestDefaultTestDeployAssert7C76EE18.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "canary-vpc",
+        "IntegCanaryVpcTestDefaultTestDeployAssert7C76EE18.assets"
+      ],
+      "metadata": {
+        "/IntegCanaryVpcTest/DefaultTest/DeployAssert/AwsApiCallSyntheticsgetCanary7fb2773ce29d5e7847bae3e25c212729/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallSyntheticsgetCanary7fb2773ce29d5e7847bae3e25c212729"
+          }
+        ],
+        "/IntegCanaryVpcTest/DefaultTest/DeployAssert/AwsApiCallSyntheticsgetCanary7fb2773ce29d5e7847bae3e25c212729/WaitFor/IsCompleteProvider/Invoke": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallSyntheticsgetCanary7fb2773ce29d5e7847bae3e25c212729WaitForIsCompleteProviderInvoke11D9F6FD"
+          }
+        ],
+        "/IntegCanaryVpcTest/DefaultTest/DeployAssert/AwsApiCallSyntheticsgetCanary7fb2773ce29d5e7847bae3e25c212729/WaitFor/TimeoutProvider/Invoke": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallSyntheticsgetCanary7fb2773ce29d5e7847bae3e25c212729WaitForTimeoutProviderInvoke4B4D3FF4"
+          }
+        ],
+        "/IntegCanaryVpcTest/DefaultTest/DeployAssert/AwsApiCallSyntheticsgetCanary7fb2773ce29d5e7847bae3e25c212729/WaitFor/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallSyntheticsgetCanary7fb2773ce29d5e7847bae3e25c212729WaitForRole42C2621A"
+          }
+        ],
+        "/IntegCanaryVpcTest/DefaultTest/DeployAssert/AwsApiCallSyntheticsgetCanary7fb2773ce29d5e7847bae3e25c212729/WaitFor/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallSyntheticsgetCanary7fb2773ce29d5e7847bae3e25c212729WaitFor5B0FC5E7"
+          }
+        ],
+        "/IntegCanaryVpcTest/DefaultTest/DeployAssert/AwsApiCallSyntheticsgetCanary7fb2773ce29d5e7847bae3e25c212729/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsAwsApiCallSyntheticsgetCanary7fb2773ce29d5e7847bae3e25c212729"
+          }
+        ],
+        "/IntegCanaryVpcTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+          }
+        ],
+        "/IntegCanaryVpcTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+          }
+        ],
+        "/IntegCanaryVpcTest/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction76b3e830a873425f8453eddd85c86925Role918961BB"
+          }
+        ],
+        "/IntegCanaryVpcTest/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction76b3e830a873425f8453eddd85c86925Handler81461ECE"
+          }
+        ],
+        "/IntegCanaryVpcTest/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aRoleB84BD8CE"
+          }
+        ],
+        "/IntegCanaryVpcTest/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aHandlerADF3E6EA"
+          }
+        ],
+        "/IntegCanaryVpcTest/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/IntegCanaryVpcTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "IntegCanaryVpcTest/DefaultTest/DeployAssert"
     },
     "Tree": {
       "type": "cdk:tree",

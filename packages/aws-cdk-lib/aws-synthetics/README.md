@@ -20,7 +20,7 @@ const canary = new synthetics.Canary(this, 'MyCanary', {
     code: synthetics.Code.fromAsset(path.join(__dirname, 'canary')),
     handler: 'index.handler',
   }),
-  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_6_2,
+  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_7_0,
   environmentVariables: {
     stage: 'prod',
   },
@@ -110,11 +110,11 @@ const canary = new synthetics.Canary(this, 'Canary', {
     code: synthetics.Code.fromInline('/* Synthetics handler code'),
   }),
   cleanup: synthetics.Cleanup.LAMBDA,
-  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_6_2,
+  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_7_0,
 });
 ```
 
-> Note: To properly clean up your canary on deletion, you still have to manually delete other resources 
+> Note: To properly clean up your canary on deletion, you still have to manually delete other resources
 > like S3 buckets and CloudWatch logs.
 
 ### Configuring the Canary Script
@@ -136,7 +136,7 @@ new synthetics.Canary(this, 'Inline Canary', {
     code: synthetics.Code.fromInline('/* Synthetics handler code */'),
     handler: 'index.handler', // must be 'index.handler'
   }),
-  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_6_2,
+  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_7_0,
 });
 
 // To supply the code from your local filesystem:
@@ -145,7 +145,7 @@ new synthetics.Canary(this, 'Asset Canary', {
     code: synthetics.Code.fromAsset(path.join(__dirname, 'canary')),
     handler: 'index.handler', // must end with '.handler'
   }),
-  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_6_2,
+  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_7_0,
 });
 
 // To supply the code from a S3 bucket:
@@ -156,7 +156,7 @@ new synthetics.Canary(this, 'Bucket Canary', {
     code: synthetics.Code.fromBucket(bucket, 'canary.zip'),
     handler: 'index.handler', // must end with '.handler'
   }),
-  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_6_2,
+  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_7_0,
 });
 ```
 
@@ -195,7 +195,7 @@ new synthetics.Canary(this, 'Vpc Canary', {
     code: synthetics.Code.fromAsset(path.join(__dirname, 'canary')),
     handler: 'index.handler',
   }),
-  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_6_2,
+  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_7_0,
   vpc,
 });
 ```
@@ -242,7 +242,7 @@ const canary = new synthetics.Canary(this, 'MyCanary', {
     code: synthetics.Code.fromAsset(path.join(__dirname, 'canary')),
     handler: 'index.handler',
   }),
-  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_6_2,
+  runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_7_0,
   artifactsBucketLifecycleRules: [{
     expiration: Duration.days(30),
   }],

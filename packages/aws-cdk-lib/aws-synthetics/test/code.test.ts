@@ -51,7 +51,7 @@ describe(synthetics.Code.fromAsset, () => {
         handler: 'canary.handler',
         code: directoryAsset,
       }),
-      runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_8,
+      runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_7_0,
     });
 
     // THEN
@@ -75,7 +75,7 @@ describe(synthetics.Code.fromAsset, () => {
         handler: 'canary.handler',
         code: directoryAsset,
       }),
-      runtime: synthetics.Runtime.SYNTHETICS_PYTHON_SELENIUM_2_0,
+      runtime: synthetics.Runtime.SYNTHETICS_PYTHON_SELENIUM_3_0,
     });
 
     // THEN
@@ -104,7 +104,7 @@ describe(synthetics.Code.fromAsset, () => {
         handler: 'canary.handler',
         code: directoryAsset,
       }),
-      runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_8,
+      runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_7_0,
     });
 
     new synthetics.Canary(stack, 'Canary2', {
@@ -112,7 +112,7 @@ describe(synthetics.Code.fromAsset, () => {
         handler: 'canary.handler',
         code: directoryAsset,
       }),
-      runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_8,
+      runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_7_0,
     });
 
     // THEN
@@ -136,7 +136,7 @@ describe(synthetics.Code.fromAsset, () => {
         handler: 'canary.handler',
         code: directoryAsset,
       }),
-      runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_3_8,
+      runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_7_0,
     });
   });
 

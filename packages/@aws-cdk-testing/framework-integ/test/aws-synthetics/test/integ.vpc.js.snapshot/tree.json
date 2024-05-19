@@ -8,6 +8,157 @@
         "id": "canary-vpc",
         "path": "canary-vpc",
         "children": {
+          "MyTestBucket": {
+            "id": "MyTestBucket",
+            "path": "canary-vpc/MyTestBucket",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "canary-vpc/MyTestBucket/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::S3::Bucket",
+                  "aws:cdk:cloudformation:props": {
+                    "tags": [
+                      {
+                        "key": "aws-cdk:auto-delete-objects",
+                        "value": "true"
+                      }
+                    ]
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3.CfnBucket",
+                  "version": "0.0.0"
+                }
+              },
+              "Policy": {
+                "id": "Policy",
+                "path": "canary-vpc/MyTestBucket/Policy",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "canary-vpc/MyTestBucket/Policy/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::S3::BucketPolicy",
+                      "aws:cdk:cloudformation:props": {
+                        "bucket": {
+                          "Ref": "MyTestBucket81062429"
+                        },
+                        "policyDocument": {
+                          "Statement": [
+                            {
+                              "Action": [
+                                "s3:DeleteObject*",
+                                "s3:GetBucket*",
+                                "s3:List*",
+                                "s3:PutBucketPolicy"
+                              ],
+                              "Effect": "Allow",
+                              "Principal": {
+                                "AWS": {
+                                  "Fn::GetAtt": [
+                                    "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092",
+                                    "Arn"
+                                  ]
+                                }
+                              },
+                              "Resource": [
+                                {
+                                  "Fn::GetAtt": [
+                                    "MyTestBucket81062429",
+                                    "Arn"
+                                  ]
+                                },
+                                {
+                                  "Fn::Join": [
+                                    "",
+                                    [
+                                      {
+                                        "Fn::GetAtt": [
+                                          "MyTestBucket81062429",
+                                          "Arn"
+                                        ]
+                                      },
+                                      "/*"
+                                    ]
+                                  ]
+                                }
+                              ]
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_s3.CfnBucketPolicy",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3.BucketPolicy",
+                  "version": "0.0.0"
+                }
+              },
+              "AutoDeleteObjectsCustomResource": {
+                "id": "AutoDeleteObjectsCustomResource",
+                "path": "canary-vpc/MyTestBucket/AutoDeleteObjectsCustomResource",
+                "children": {
+                  "Default": {
+                    "id": "Default",
+                    "path": "canary-vpc/MyTestBucket/AutoDeleteObjectsCustomResource/Default",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnResource",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CustomResource",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_s3.Bucket",
+              "version": "0.0.0"
+            }
+          },
+          "Custom::S3AutoDeleteObjectsCustomResourceProvider": {
+            "id": "Custom::S3AutoDeleteObjectsCustomResourceProvider",
+            "path": "canary-vpc/Custom::S3AutoDeleteObjectsCustomResourceProvider",
+            "children": {
+              "Staging": {
+                "id": "Staging",
+                "path": "canary-vpc/Custom::S3AutoDeleteObjectsCustomResourceProvider/Staging",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.AssetStaging",
+                  "version": "0.0.0"
+                }
+              },
+              "Role": {
+                "id": "Role",
+                "path": "canary-vpc/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnResource",
+                  "version": "0.0.0"
+                }
+              },
+              "Handler": {
+                "id": "Handler",
+                "path": "canary-vpc/Custom::S3AutoDeleteObjectsCustomResourceProvider/Handler",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnResource",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CustomResourceProviderBase",
+              "version": "0.0.0"
+            }
+          },
           "MyVpc": {
             "id": "MyVpc",
             "path": "canary-vpc/MyVpc",
@@ -655,103 +806,6 @@
             "id": "MyVpcCanary",
             "path": "canary-vpc/MyVpcCanary",
             "children": {
-              "ArtifactsBucket": {
-                "id": "ArtifactsBucket",
-                "path": "canary-vpc/MyVpcCanary/ArtifactsBucket",
-                "children": {
-                  "Resource": {
-                    "id": "Resource",
-                    "path": "canary-vpc/MyVpcCanary/ArtifactsBucket/Resource",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::S3::Bucket",
-                      "aws:cdk:cloudformation:props": {
-                        "bucketEncryption": {
-                          "serverSideEncryptionConfiguration": [
-                            {
-                              "serverSideEncryptionByDefault": {
-                                "sseAlgorithm": "aws:kms"
-                              }
-                            }
-                          ]
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_s3.CfnBucket",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "Policy": {
-                    "id": "Policy",
-                    "path": "canary-vpc/MyVpcCanary/ArtifactsBucket/Policy",
-                    "children": {
-                      "Resource": {
-                        "id": "Resource",
-                        "path": "canary-vpc/MyVpcCanary/ArtifactsBucket/Policy/Resource",
-                        "attributes": {
-                          "aws:cdk:cloudformation:type": "AWS::S3::BucketPolicy",
-                          "aws:cdk:cloudformation:props": {
-                            "bucket": {
-                              "Ref": "MyVpcCanaryArtifactsBucketDC69853C"
-                            },
-                            "policyDocument": {
-                              "Statement": [
-                                {
-                                  "Action": "s3:*",
-                                  "Condition": {
-                                    "Bool": {
-                                      "aws:SecureTransport": "false"
-                                    }
-                                  },
-                                  "Effect": "Deny",
-                                  "Principal": {
-                                    "AWS": "*"
-                                  },
-                                  "Resource": [
-                                    {
-                                      "Fn::GetAtt": [
-                                        "MyVpcCanaryArtifactsBucketDC69853C",
-                                        "Arn"
-                                      ]
-                                    },
-                                    {
-                                      "Fn::Join": [
-                                        "",
-                                        [
-                                          {
-                                            "Fn::GetAtt": [
-                                              "MyVpcCanaryArtifactsBucketDC69853C",
-                                              "Arn"
-                                            ]
-                                          },
-                                          "/*"
-                                        ]
-                                      ]
-                                    }
-                                  ]
-                                }
-                              ],
-                              "Version": "2012-10-17"
-                            }
-                          }
-                        },
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_s3.CfnBucketPolicy",
-                          "version": "0.0.0"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_s3.BucketPolicy",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_s3.Bucket",
-                  "version": "0.0.0"
-                }
-              },
               "ServiceRole": {
                 "id": "ServiceRole",
                 "path": "canary-vpc/MyVpcCanary/ServiceRole",
@@ -811,7 +865,7 @@
                                   "Effect": "Allow",
                                   "Resource": {
                                     "Fn::GetAtt": [
-                                      "MyVpcCanaryArtifactsBucketDC69853C",
+                                      "MyTestBucket81062429",
                                       "Arn"
                                     ]
                                   }
@@ -825,7 +879,7 @@
                                       [
                                         {
                                           "Fn::GetAtt": [
-                                            "MyVpcCanaryArtifactsBucketDC69853C",
+                                            "MyTestBucket81062429",
                                             "Arn"
                                           ]
                                         },
@@ -962,7 +1016,7 @@
                         [
                           "s3://",
                           {
-                            "Ref": "MyVpcCanaryArtifactsBucketDC69853C"
+                            "Ref": "MyTestBucket81062429"
                           }
                         ]
                       ]
@@ -981,12 +1035,18 @@
                       ]
                     },
                     "name": "canary-vpc",
-                    "runtimeVersion": "syn-nodejs-puppeteer-3.8",
+                    "runtimeVersion": "syn-nodejs-puppeteer-7.0",
                     "schedule": {
                       "durationInSeconds": "0",
                       "expression": "rate(5 minutes)"
                     },
                     "startCanaryAfterCreation": true,
+                    "tags": [
+                      {
+                        "key": "aws-cdk:auto-delete-underlying-resources",
+                        "value": "true"
+                      }
+                    ],
                     "vpcConfig": {
                       "vpcId": {
                         "Ref": "MyVpcF9F0CA6F"
@@ -1014,11 +1074,89 @@
                   "fqn": "aws-cdk-lib.aws_synthetics.CfnCanary",
                   "version": "0.0.0"
                 }
+              },
+              "AutoDeleteUnderlyingResourcesCustomResource": {
+                "id": "AutoDeleteUnderlyingResourcesCustomResource",
+                "path": "canary-vpc/MyVpcCanary/AutoDeleteUnderlyingResourcesCustomResource",
+                "children": {
+                  "Default": {
+                    "id": "Default",
+                    "path": "canary-vpc/MyVpcCanary/AutoDeleteUnderlyingResourcesCustomResource/Default",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnResource",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CustomResource",
+                  "version": "0.0.0"
+                }
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/aws-synthetics-alpha.Canary",
+              "fqn": "aws-cdk-lib.aws_synthetics.Canary",
               "version": "0.0.0"
+            }
+          },
+          "Custom::SyntheticsAutoDeleteUnderlyingResourcesCustomResourceProvider": {
+            "id": "Custom::SyntheticsAutoDeleteUnderlyingResourcesCustomResourceProvider",
+            "path": "canary-vpc/Custom::SyntheticsAutoDeleteUnderlyingResourcesCustomResourceProvider",
+            "children": {
+              "Staging": {
+                "id": "Staging",
+                "path": "canary-vpc/Custom::SyntheticsAutoDeleteUnderlyingResourcesCustomResourceProvider/Staging",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.AssetStaging",
+                  "version": "0.0.0"
+                }
+              },
+              "Role": {
+                "id": "Role",
+                "path": "canary-vpc/Custom::SyntheticsAutoDeleteUnderlyingResourcesCustomResourceProvider/Role",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnResource",
+                  "version": "0.0.0"
+                }
+              },
+              "Handler": {
+                "id": "Handler",
+                "path": "canary-vpc/Custom::SyntheticsAutoDeleteUnderlyingResourcesCustomResourceProvider/Handler",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnResource",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CustomResourceProviderBase",
+              "version": "0.0.0"
+            }
+          },
+          "Exports": {
+            "id": "Exports",
+            "path": "canary-vpc/Exports",
+            "children": {
+              "Output{\"Ref\":\"MyVpcF9F0CA6F\"}": {
+                "id": "Output{\"Ref\":\"MyVpcF9F0CA6F\"}",
+                "path": "canary-vpc/Exports/Output{\"Ref\":\"MyVpcF9F0CA6F\"}",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnOutput",
+                  "version": "0.0.0"
+                }
+              },
+              "Output{\"Ref\":\"MyVpcCanary8C70C179\"}": {
+                "id": "Output{\"Ref\":\"MyVpcCanary8C70C179\"}",
+                "path": "canary-vpc/Exports/Output{\"Ref\":\"MyVpcCanary8C70C179\"}",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnOutput",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
             }
           },
           "BootstrapVersion": {
@@ -1043,12 +1181,300 @@
           "version": "0.0.0"
         }
       },
+      "IntegCanaryVpcTest": {
+        "id": "IntegCanaryVpcTest",
+        "path": "IntegCanaryVpcTest",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "IntegCanaryVpcTest/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "IntegCanaryVpcTest/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "IntegCanaryVpcTest/DefaultTest/DeployAssert",
+                "children": {
+                  "AwsApiCallSyntheticsgetCanary7fb2773ce29d5e7847bae3e25c212729": {
+                    "id": "AwsApiCallSyntheticsgetCanary7fb2773ce29d5e7847bae3e25c212729",
+                    "path": "IntegCanaryVpcTest/DefaultTest/DeployAssert/AwsApiCallSyntheticsgetCanary7fb2773ce29d5e7847bae3e25c212729",
+                    "children": {
+                      "SdkProvider": {
+                        "id": "SdkProvider",
+                        "path": "IntegCanaryVpcTest/DefaultTest/DeployAssert/AwsApiCallSyntheticsgetCanary7fb2773ce29d5e7847bae3e25c212729/SdkProvider",
+                        "children": {
+                          "AssertionsProvider": {
+                            "id": "AssertionsProvider",
+                            "path": "IntegCanaryVpcTest/DefaultTest/DeployAssert/AwsApiCallSyntheticsgetCanary7fb2773ce29d5e7847bae3e25c212729/SdkProvider/AssertionsProvider",
+                            "constructInfo": {
+                              "fqn": "constructs.Construct",
+                              "version": "10.3.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/integ-tests-alpha.AssertionsProvider",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Default": {
+                        "id": "Default",
+                        "path": "IntegCanaryVpcTest/DefaultTest/DeployAssert/AwsApiCallSyntheticsgetCanary7fb2773ce29d5e7847bae3e25c212729/Default",
+                        "children": {
+                          "Default": {
+                            "id": "Default",
+                            "path": "IntegCanaryVpcTest/DefaultTest/DeployAssert/AwsApiCallSyntheticsgetCanary7fb2773ce29d5e7847bae3e25c212729/Default/Default",
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.CfnResource",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CustomResource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "WaitFor": {
+                        "id": "WaitFor",
+                        "path": "IntegCanaryVpcTest/DefaultTest/DeployAssert/AwsApiCallSyntheticsgetCanary7fb2773ce29d5e7847bae3e25c212729/WaitFor",
+                        "children": {
+                          "IsCompleteProvider": {
+                            "id": "IsCompleteProvider",
+                            "path": "IntegCanaryVpcTest/DefaultTest/DeployAssert/AwsApiCallSyntheticsgetCanary7fb2773ce29d5e7847bae3e25c212729/WaitFor/IsCompleteProvider",
+                            "children": {
+                              "AssertionsProvider": {
+                                "id": "AssertionsProvider",
+                                "path": "IntegCanaryVpcTest/DefaultTest/DeployAssert/AwsApiCallSyntheticsgetCanary7fb2773ce29d5e7847bae3e25c212729/WaitFor/IsCompleteProvider/AssertionsProvider",
+                                "constructInfo": {
+                                  "fqn": "constructs.Construct",
+                                  "version": "10.3.0"
+                                }
+                              },
+                              "Invoke": {
+                                "id": "Invoke",
+                                "path": "IntegCanaryVpcTest/DefaultTest/DeployAssert/AwsApiCallSyntheticsgetCanary7fb2773ce29d5e7847bae3e25c212729/WaitFor/IsCompleteProvider/Invoke",
+                                "constructInfo": {
+                                  "fqn": "aws-cdk-lib.CfnResource",
+                                  "version": "0.0.0"
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/integ-tests-alpha.AssertionsProvider",
+                              "version": "0.0.0"
+                            }
+                          },
+                          "TimeoutProvider": {
+                            "id": "TimeoutProvider",
+                            "path": "IntegCanaryVpcTest/DefaultTest/DeployAssert/AwsApiCallSyntheticsgetCanary7fb2773ce29d5e7847bae3e25c212729/WaitFor/TimeoutProvider",
+                            "children": {
+                              "AssertionsProvider": {
+                                "id": "AssertionsProvider",
+                                "path": "IntegCanaryVpcTest/DefaultTest/DeployAssert/AwsApiCallSyntheticsgetCanary7fb2773ce29d5e7847bae3e25c212729/WaitFor/TimeoutProvider/AssertionsProvider",
+                                "constructInfo": {
+                                  "fqn": "constructs.Construct",
+                                  "version": "10.3.0"
+                                }
+                              },
+                              "Invoke": {
+                                "id": "Invoke",
+                                "path": "IntegCanaryVpcTest/DefaultTest/DeployAssert/AwsApiCallSyntheticsgetCanary7fb2773ce29d5e7847bae3e25c212729/WaitFor/TimeoutProvider/Invoke",
+                                "constructInfo": {
+                                  "fqn": "aws-cdk-lib.CfnResource",
+                                  "version": "0.0.0"
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "@aws-cdk/integ-tests-alpha.AssertionsProvider",
+                              "version": "0.0.0"
+                            }
+                          },
+                          "Role": {
+                            "id": "Role",
+                            "path": "IntegCanaryVpcTest/DefaultTest/DeployAssert/AwsApiCallSyntheticsgetCanary7fb2773ce29d5e7847bae3e25c212729/WaitFor/Role",
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.CfnResource",
+                              "version": "0.0.0"
+                            }
+                          },
+                          "Resource": {
+                            "id": "Resource",
+                            "path": "IntegCanaryVpcTest/DefaultTest/DeployAssert/AwsApiCallSyntheticsgetCanary7fb2773ce29d5e7847bae3e25c212729/WaitFor/Resource",
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.CfnResource",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/integ-tests-alpha.WaiterStateMachine",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "AssertionResults": {
+                        "id": "AssertionResults",
+                        "path": "IntegCanaryVpcTest/DefaultTest/DeployAssert/AwsApiCallSyntheticsgetCanary7fb2773ce29d5e7847bae3e25c212729/AssertionResults",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CfnOutput",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/integ-tests-alpha.AwsApiCall",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "SingletonFunction1488541a7b23466481b69b4408076b81": {
+                    "id": "SingletonFunction1488541a7b23466481b69b4408076b81",
+                    "path": "IntegCanaryVpcTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81",
+                    "children": {
+                      "Staging": {
+                        "id": "Staging",
+                        "path": "IntegCanaryVpcTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Staging",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.AssetStaging",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Role": {
+                        "id": "Role",
+                        "path": "IntegCanaryVpcTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CfnResource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Handler": {
+                        "id": "Handler",
+                        "path": "IntegCanaryVpcTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CfnResource",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
+                    }
+                  },
+                  "SingletonFunction76b3e830a873425f8453eddd85c86925": {
+                    "id": "SingletonFunction76b3e830a873425f8453eddd85c86925",
+                    "path": "IntegCanaryVpcTest/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925",
+                    "children": {
+                      "Staging": {
+                        "id": "Staging",
+                        "path": "IntegCanaryVpcTest/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Staging",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.AssetStaging",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Role": {
+                        "id": "Role",
+                        "path": "IntegCanaryVpcTest/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Role",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CfnResource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Handler": {
+                        "id": "Handler",
+                        "path": "IntegCanaryVpcTest/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Handler",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CfnResource",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
+                    }
+                  },
+                  "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a": {
+                    "id": "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a",
+                    "path": "IntegCanaryVpcTest/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a",
+                    "children": {
+                      "Staging": {
+                        "id": "Staging",
+                        "path": "IntegCanaryVpcTest/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Staging",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.AssetStaging",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Role": {
+                        "id": "Role",
+                        "path": "IntegCanaryVpcTest/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Role",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CfnResource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Handler": {
+                        "id": "Handler",
+                        "path": "IntegCanaryVpcTest/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Handler",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CfnResource",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
+                    }
+                  },
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "IntegCanaryVpcTest/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "IntegCanaryVpcTest/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnRule",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
+          "version": "0.0.0"
+        }
+      },
       "Tree": {
         "id": "Tree",
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.2.69"
+          "version": "10.3.0"
         }
       }
     },
