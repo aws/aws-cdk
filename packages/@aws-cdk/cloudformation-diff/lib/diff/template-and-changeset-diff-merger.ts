@@ -181,6 +181,7 @@ export class TemplateAndChangeSetDiffMerger {
       } else if (type === 'Other') {
         switch (name) {
           case 'Metadata':
+            // we want to ignore matadata changes in the diff, so compare newValue against newValue.
             change.setOtherChange('Metadata', new types.Difference<string>(value.newValue, value.newValue));
             break;
         }
