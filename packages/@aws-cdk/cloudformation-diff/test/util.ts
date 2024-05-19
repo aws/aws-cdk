@@ -84,15 +84,6 @@ export const ssmParam = {
   },
 };
 
-export const sqsQueue = {
-  Type: 'AWS::SQS::Queue',
-  Properties: {
-    QueueName: {
-      Ref: 'SsmParameterValuetestbugreportC9',
-    },
-  },
-};
-
 export function sqsQueueWithAargs(args: { waitTime: number }) {
   return {
     Type: 'AWS::SQS::Queue',

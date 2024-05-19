@@ -1,6 +1,6 @@
 import * as fc from 'fast-check';
 import { arbitraryTemplate } from './test-arbitraries';
-import { sqsQueue, sqsQueueWithAargs, ssmParam } from './util';
+import { sqsQueueWithAargs, ssmParam } from './util';
 import { fullDiff, ResourceImpact } from '../lib/diff-template';
 
 const POLICY_DOCUMENT = { foo: 'Bar' }; // Obviously a fake one!
@@ -1259,12 +1259,24 @@ describe('changeset', () => {
               PhysicalResourceId: 'mySsmParameterFromStack',
               ResourceType: 'AWS::SSM::Parameter',
               Replacement: 'False',
-              Scope: ['Properties'],
-              Details: [{
-                Target: { Attribute: 'Properties', Name: 'Value', RequiresRecreation: 'Never' },
-                Evaluation: 'Static',
-                ChangeSource: 'DirectModification',
-              }],
+              Scope: [
+                'Properties',
+              ],
+              Details: [
+                {
+                  Target: {
+                    Attribute: 'Properties',
+                    Name: 'Value',
+                    RequiresRecreation: 'Never',
+                    Path: '/Properties/Value',
+                    BeforeValue: 'changedddd',
+                    AfterValue: 'sdflkja',
+                    AttributeChangeType: 'Modify',
+                  },
+                  Evaluation: 'Static',
+                  ChangeSource: 'DirectModification',
+                },
+              ],
             },
           },
         ],
@@ -1283,29 +1295,44 @@ describe('changeset', () => {
     expect(diffWithChangeSet.differenceCount).toBe(1);
     expect(diffWithChangeSet.resources.changes.mySsmParameter).toEqual(
       {
-        oldValue: undefined,
-        newValue: undefined,
+        oldValue: {
+          Type: 'AWS::SSM::Parameter',
+          Properties: {
+            Value: 'changedddd',
+          },
+        },
+        newValue: {
+          Type: 'AWS::SSM::Parameter',
+          Properties: {
+            Value: 'sdflkja',
+          },
+        },
         resourceTypes: {
           oldType: 'AWS::SSM::Parameter',
           newType: 'AWS::SSM::Parameter',
         },
         propertyDiffs: {
           Value: {
-            oldValue: {
-            },
-            newValue: {
-            },
+            oldValue: 'changedddd',
+            newValue: 'sdflkja',
             isDifferent: true,
             changeImpact: 'WILL_UPDATE',
           },
         },
         otherDiffs: {
+          Type: {
+            oldValue: 'AWS::SSM::Parameter',
+            newValue: 'AWS::SSM::Parameter',
+            isDifferent: false,
+          },
         },
-        isAddition: true,
-        isRemoval: true,
+        isAddition: false,
+        isRemoval: false,
         isImport: undefined,
       },
     );
+
+    expect(diffWithChangeSet.resources.changes.mySsmParameter.isUpdate).toEqual(true);
   });
 
   test('resources that only show up in changeset diff are included in fullDiff', () => {
@@ -1340,15 +1367,27 @@ describe('changeset', () => {
               PolicyAction: 'ReplaceAndDelete',
               Action: 'Modify',
               LogicalResourceId: 'Queue',
-              PhysicalResourceId: 'https://sqs.us-east-1.amazonaws.com/012345678901/hiii',
+              PhysicalResourceId: 'https://sqs.us-east-1.amazonaws.com/012345678901/newValuechangedddd',
               ResourceType: 'AWS::SQS::Queue',
               Replacement: 'True',
-              Scope: ['Properties'],
-              Details: [{
-                Target: { Attribute: 'Properties', Name: 'QueueName', RequiresRecreation: 'Always' },
-                Evaluation: 'Static',
-                ChangeSource: 'DirectModification',
-              }],
+              Scope: [
+                'Properties',
+              ],
+              Details: [
+                {
+                  Target: {
+                    Attribute: 'Properties',
+                    Name: 'QueueName',
+                    RequiresRecreation: 'Always',
+                    Path: '/Properties/QueueName',
+                    BeforeValue: 'newValuechangedddd',
+                    AfterValue: 'newValuesdflkja',
+                    AttributeChangeType: 'Modify',
+                  },
+                  Evaluation: 'Static',
+                  ChangeSource: 'DirectModification',
+                },
+              ],
             },
           },
         ],
@@ -1367,18 +1406,26 @@ describe('changeset', () => {
     expect(diffWithChangeSet.differenceCount).toBe(1);
     expect(diffWithChangeSet.resources.changes.Queue).toEqual(
       {
-        oldValue: sqsQueue,
-        newValue: sqsQueue,
+        oldValue: {
+          Type: 'AWS::SQS::Queue',
+          Properties: {
+            QueueName: 'newValuechangedddd',
+          },
+        },
+        newValue: {
+          Type: 'AWS::SQS::Queue',
+          Properties: {
+            QueueName: 'newValuesdflkja',
+          },
+        },
         resourceTypes: {
           oldType: 'AWS::SQS::Queue',
           newType: 'AWS::SQS::Queue',
         },
         propertyDiffs: {
           QueueName: {
-            oldValue: {
-            },
-            newValue: {
-            },
+            oldValue: 'newValuechangedddd',
+            newValue: 'newValuesdflkja',
             isDifferent: true,
             changeImpact: 'WILL_REPLACE',
           },
@@ -1395,6 +1442,8 @@ describe('changeset', () => {
         isImport: undefined,
       },
     );
+
+    expect(diffWithChangeSet.resources.changes.Queue.isUpdate).toEqual(true);
   });
 
   test('a resource in the diff that is missing a property has the missing property added to the diff', () => {
