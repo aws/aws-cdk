@@ -54,7 +54,7 @@ export function fullDiff(
 
   normalize(currentTemplate);
   normalize(newTemplate);
-  const theDiff = diffTemplate(currentTemplate, newTemplate);
+  let theDiff = diffTemplate(currentTemplate, newTemplate);
   if (changeSet) {
     const changeSetDiff = new TemplateAndChangeSetDiffMerger({
       changeSet: changeSet,
@@ -62,8 +62,7 @@ export function fullDiff(
     });
     changeSetDiff.addChangeSetResourcesToDiff(theDiff.resources);
     changeSetDiff.addImportInformation(theDiff.resources);
-    // TODO: now that you've added change set resources to diff, you shuold recreate the iamChanges so that the
-    // security diff is more accurate
+    theDiff = new types.TemplateDiff(theDiff); // do this to propagate security changes.
   } else if (isImport) {
     makeAllResourceChangesImports(theDiff);
   }
