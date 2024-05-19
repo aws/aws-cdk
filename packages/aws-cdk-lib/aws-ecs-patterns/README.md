@@ -1127,7 +1127,7 @@ const service = new ecsPatterns.ApplicationLoadBalancedFargateService(this, 'myS
 const applicationLoadBalancedEc2Service = new ecsPatterns.ApplicationLoadBalancedEc2Service(this, 'myService', {
   cluster,
   taskImageOptions: {
-    image: ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+    image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
   },
   ipAddressType: elbv2.IpAddressType.DUAL_STACK,
 });
