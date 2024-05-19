@@ -197,7 +197,7 @@ async function describeChangeSet(
   changeSetName: string,
   { fetchAll }: { fetchAll: boolean },
 ): Promise<CloudFormation.DescribeChangeSetOutput> {
-  const response = await cfn.describeChangeSet({ StackName: stackName, ChangeSetName: changeSetName }).promise();
+  const response = await cfn.describeChangeSet({ StackName: stackName, ChangeSetName: changeSetName, IncludePropertyValues: true }).promise();
 
   // If fetchAll is true, traverse all pages from the change set description.
   while (fetchAll && response.NextToken != null) {
@@ -205,6 +205,7 @@ async function describeChangeSet(
       StackName: stackName,
       ChangeSetName: response.ChangeSetId ?? changeSetName,
       NextToken: response.NextToken,
+      IncludePropertyValues: true,
     }).promise();
 
     // Consolidate the changes

@@ -10,6 +10,9 @@ export type DescribeChangeSetOutput = DescribeChangeSet;
  * The purpose of this class is to include differences from the ChangeSet to differences in the TemplateDiff.
  */
 export class TemplateAndChangeSetDiffMerger {
+  // If we somehow cannot find the resourceType, then we'll mark it as UNKNOWN, so that can be seen in the diff.
+  private UNKNOWN_RESOURCE_TYPE = 'UNKNOWN';
+
   changeSet: DescribeChangeSetOutput;
   currentTemplateResources: {[logicalId: string]: any};
   changeSetResources: types.ChangeSetResources;
@@ -22,10 +25,10 @@ export class TemplateAndChangeSetDiffMerger {
   ) {
     this.changeSet = args.changeSet;
     this.currentTemplateResources = args.currentTemplateResources;
-    this.changeSetResources = this.findResourceReplacements(this.changeSet);
+    this.changeSetResources = this.inspectChangeSet(this.changeSet);
   }
 
-  findResourceReplacements(changeSet: DescribeChangeSetOutput): types.ChangeSetResources {
+  inspectChangeSet(changeSet: DescribeChangeSetOutput): types.ChangeSetResources {
     const replacements: types.ChangeSetResources = {};
     for (const resourceChange of changeSet.Changes ?? []) {
       if (resourceChange.ResourceChange?.LogicalResourceId === undefined) {
@@ -36,7 +39,7 @@ export class TemplateAndChangeSetDiffMerger {
       for (const propertyChange of resourceChange.ResourceChange.Details ?? []) {
         if (propertyChange.Target?.Attribute === 'Properties' && propertyChange.Target.Name) {
           propertiesReplaced[propertyChange.Target.Name] = {
-            changeSetReplacementMode: this.determineIfResourceIsReplaced(propertyChange),
+            changeSetReplacementMode: this.determineChangeSetReplacementMode(propertyChange),
             beforeValue: propertyChange.Target.BeforeValue,
             afterValue: propertyChange.Target.AfterValue,
           };
@@ -45,7 +48,7 @@ export class TemplateAndChangeSetDiffMerger {
 
       replacements[resourceChange.ResourceChange.LogicalResourceId] = {
         resourceWasReplaced: resourceChange.ResourceChange.Replacement === 'True',
-        resourceType: resourceChange.ResourceChange.ResourceType ?? 'UNKNOWN', // the changeset should always return the ResourceType... but just in case.
+        resourceType: resourceChange.ResourceChange.ResourceType ?? this.UNKNOWN_RESOURCE_TYPE, // DescribeChanegSet doesn't promise to have the ResourceType...
         properties: propertiesReplaced,
       };
     }
@@ -53,7 +56,7 @@ export class TemplateAndChangeSetDiffMerger {
     return replacements;
   }
 
-  determineIfResourceIsReplaced(propertyChange: ResourceChangeDetail): types.ChangeSetReplacementMode {
+  determineChangeSetReplacementMode(propertyChange: ResourceChangeDetail): types.ChangeSetReplacementMode {
     if (propertyChange.Target!.RequiresRecreation === 'Always') {
       switch (propertyChange.Evaluation) {
         case 'Static':
@@ -76,40 +79,31 @@ export class TemplateAndChangeSetDiffMerger {
   * - Another case is when a resource is changed because the resource is defined by an SSM parameter, and the value of that SSM parameter changes.
   */
   addChangeSetResourcesToDiff(resourceDiffs: types.DifferenceCollection<types.Resource, types.ResourceDifference>) {
-    for (const [logicalId, replacement] of Object.entries(this.changeSetResources)) {
+    for (const [logicalId, changeSetResource] of Object.entries(this.changeSetResources)) {
       const resourceNotFoundInTemplateDiff = !(resourceDiffs.logicalIds.includes(logicalId));
       if (resourceNotFoundInTemplateDiff) {
         const resourceDiffFromChangeset = diffResource(
-          this.convertResourceFromChangesetToResourceForDiff(replacement, 'OLD_VALUES'),
-          this.convertResourceFromChangesetToResourceForDiff(replacement, 'NEW_VALUES'),
+          this.convertResourceFromChangesetToResourceForDiff(changeSetResource, 'OLD_VALUES'),
+          this.convertResourceFromChangesetToResourceForDiff(changeSetResource, 'NEW_VALUES'),
         );
         resourceDiffs.set(logicalId, resourceDiffFromChangeset);
       }
 
       const propertyChangesFromTemplate = resourceDiffs.get(logicalId).propertyUpdates;
-      for (const propertyName of Object.keys(this.changeSetResources[logicalId].properties)) {
+      for (const propertyName of Object.keys(this.changeSetResources[logicalId]?.properties ?? {})) {
         if (propertyName in propertyChangesFromTemplate) {
           // If the property is already marked to be updated, then we don't need to do anything.
-          return;
+          continue;
         }
-        const propertyDiffFromChangeset = new types.PropertyDifference({}, {}, { changeImpact: undefined });
-        propertyDiffFromChangeset.isDifferent = true;
-        resourceDiffs.get(logicalId).setPropertyChange(propertyName, propertyDiffFromChangeset);
+
+        // This property diff will be hydrated when enhanceChangeImpacts is called.
+        const emptyPropertyDiff = new types.PropertyDifference({}, {}, {});
+        emptyPropertyDiff.isDifferent = true;
+        resourceDiffs.get(logicalId).setPropertyChange(propertyName, emptyPropertyDiff);
       }
     }
-  }
 
-  maybeCreatePropertyDiff(args: {
-    propertyNameFromChangeset: string;
-    propertyUpdatesFromTemplateDiff: {[key: string]: types.PropertyDifference<any>};
-  }): types.PropertyDifference<any> | undefined {
-    if (args.propertyNameFromChangeset in args.propertyUpdatesFromTemplateDiff) {
-      // If the property is already marked to be updated, then we don't need to do anything.
-      return;
-    }
-    const newProp = new types.PropertyDifference({}, {}, { changeImpact: undefined });
-    newProp.isDifferent = true;
-    return newProp;
+    this.enhanceChangeImpacts(resourceDiffs);
   }
 
   convertResourceFromChangesetToResourceForDiff(
@@ -118,25 +112,25 @@ export class TemplateAndChangeSetDiffMerger {
   ): types.Resource {
     const props: { [logicalId: string]: string | undefined } = {};
     if (parseOldOrNewValues === 'NEW_VALUES') {
-      for (const [propertyName, value] of Object.entries(resourceInfoFromChangeset.properties)) {
+      for (const [propertyName, value] of Object.entries(resourceInfoFromChangeset.properties ?? {})) {
         props[propertyName] = value.afterValue;
       }
     } else {
-      for (const [propertyName, value] of Object.entries(resourceInfoFromChangeset.properties)) {
+      for (const [propertyName, value] of Object.entries(resourceInfoFromChangeset.properties ?? {})) {
         props[propertyName] = value.beforeValue;
       }
     }
 
     return {
-      Type: resourceInfoFromChangeset.resourceType,
+      Type: resourceInfoFromChangeset.resourceType ?? this.UNKNOWN_RESOURCE_TYPE,
       Properties: props,
     };
   }
 
   enhanceChangeImpacts(resourceDiffs: types.DifferenceCollection<types.Resource, types.ResourceDifference>) {
     resourceDiffs.forEachDifference((logicalId: string, change: types.ResourceDifference) => {
-      if (change.resourceType?.includes('AWS::Serverless')) {
-      // CFN applies the SAM transform before creating the changeset, so the changeset contains no information about SAM resources
+      if ((!change.resourceTypeChanged) && change.resourceType?.includes('AWS::Serverless')) {
+        // CFN applies the SAM transform before creating the changeset, so the changeset contains no information about SAM resources
         return;
       }
       change.forEachDifference((type: 'Property' | 'Other', name: string, value: types.Difference<any> | types.PropertyDifference<any>) => {
@@ -146,7 +140,9 @@ export class TemplateAndChangeSetDiffMerger {
             (value as types.PropertyDifference<any>).isDifferent = false;
             return;
           }
-          switch (this.changeSetResources[logicalId].properties[name]?.changeSetReplacementMode) {
+
+          const changeSetReplacementMode = (this.changeSetResources[logicalId]?.properties ?? {})[name]?.changeSetReplacementMode;
+          switch (changeSetReplacementMode) {
             case 'Always':
               (value as types.PropertyDifference<any>).changeImpact = types.ResourceImpact.WILL_REPLACE;
               break;

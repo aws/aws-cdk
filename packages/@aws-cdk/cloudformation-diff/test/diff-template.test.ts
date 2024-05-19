@@ -1281,33 +1281,29 @@ describe('changeset', () => {
     expect(diffWithoutChangeSet.resources.changes).toEqual({});
 
     expect(diffWithChangeSet.differenceCount).toBe(1);
-    const y = diffWithChangeSet.resources.changes;
-    console.log(y);
-    expect(diffWithChangeSet.resources.changes).toEqual(
+    expect(diffWithChangeSet.resources.changes.mySsmParameter).toEqual(
       {
-        mySsmParameter: {
-          oldValue: undefined,
-          newValue: undefined,
-          resourceTypes: {
-            oldType: 'AWS::SSM::Parameter',
-            newType: 'AWS::SSM::Parameter',
-          },
-          propertyDiffs: {
-            Value: {
-              oldValue: {
-              },
-              newValue: {
-              },
-              isDifferent: true,
-              changeImpact: 'WILL_UPDATE',
-            },
-          },
-          otherDiffs: {
-          },
-          isAddition: true,
-          isRemoval: true,
-          isImport: undefined,
+        oldValue: undefined,
+        newValue: undefined,
+        resourceTypes: {
+          oldType: 'AWS::SSM::Parameter',
+          newType: 'AWS::SSM::Parameter',
         },
+        propertyDiffs: {
+          Value: {
+            oldValue: {
+            },
+            newValue: {
+            },
+            isDifferent: true,
+            changeImpact: 'WILL_UPDATE',
+          },
+        },
+        otherDiffs: {
+        },
+        isAddition: true,
+        isRemoval: true,
+        isImport: undefined,
       },
     );
   });
@@ -1369,34 +1365,34 @@ describe('changeset', () => {
     expect(diffWithoutChangeSet.resources.changes).toEqual({});
 
     expect(diffWithChangeSet.differenceCount).toBe(1);
-    expect(diffWithChangeSet.resources.changes).toEqual(
+    expect(diffWithChangeSet.resources.changes.Queue).toEqual(
       {
-        Queue: {
-          oldValue: sqsQueue,
-          newValue: sqsQueue,
-          resourceTypes: {
-            oldType: 'AWS::SQS::Queue',
-            newType: 'AWS::SQS::Queue',
-          },
-          propertyDiffs: {
-            QueueName: {
-              oldValue: {},
-              newValue: {},
-              isDifferent: true,
-              changeImpact: 'WILL_REPLACE', // this is what changed!
-            },
-          },
-          otherDiffs: {
-            Type: {
-              oldValue: 'AWS::SQS::Queue',
-              newValue: 'AWS::SQS::Queue',
-              isDifferent: false,
-            },
-          },
-          isAddition: false,
-          isRemoval: false,
-          isImport: undefined,
+        oldValue: sqsQueue,
+        newValue: sqsQueue,
+        resourceTypes: {
+          oldType: 'AWS::SQS::Queue',
+          newType: 'AWS::SQS::Queue',
         },
+        propertyDiffs: {
+          QueueName: {
+            oldValue: {
+            },
+            newValue: {
+            },
+            isDifferent: true,
+            changeImpact: 'WILL_REPLACE',
+          },
+        },
+        otherDiffs: {
+          Type: {
+            oldValue: 'AWS::SQS::Queue',
+            newValue: 'AWS::SQS::Queue',
+            isDifferent: false,
+          },
+        },
+        isAddition: false,
+        isRemoval: false,
+        isImport: undefined,
       },
     );
   });

@@ -10,13 +10,13 @@ export type ChangeSetResources = { [logicalId: string]: ChangeSetResource };
 
 export interface ChangeSetResource {
   resourceWasReplaced: boolean;
-  resourceType: string;
-  properties: ChangeSetProperties;
+  resourceType: string | undefined;
+  properties: ChangeSetProperties | undefined;
 }
 
 export type ChangeSetProperties = {
   [propertyName: string]: {
-    changeSetReplacementMode: ChangeSetReplacementMode;
+    changeSetReplacementMode: ChangeSetReplacementMode | undefined;
     beforeValue: string | undefined;
     afterValue: string | undefined;
   };
