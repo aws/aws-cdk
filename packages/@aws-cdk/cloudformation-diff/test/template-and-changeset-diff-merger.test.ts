@@ -1,6 +1,6 @@
 import { ResourceChangeDetail } from '@aws-sdk/client-cloudformation';
-import { changeSet, changeSetWithIamChanges, changeSetWithMissingChanges, changeSetWithPartiallyFilledChanges, changeSetWithUndefinedDetails, sqsQueueWithAargs, ssmParam } from './util';
-import { ChangeSetResource } from '../lib';
+import { changeSet, changeSetWithMissingChanges, changeSetWithPartiallyFilledChanges, changeSetWithUndefinedDetails, ssmParam, sqsQueueWithAargs, changeSetWithIamChanges } from './util';
+import { ChangeSetResource, DifferenceCollection, Resource, ResourceDifference } from '../lib';
 import { TemplateAndChangeSetDiffMerger } from '../lib/diff/template-and-changeset-diff-merger';
 import { fullDiff, ResourceImpact } from '../lib/diff-template';
 
@@ -1265,5 +1265,157 @@ describe('method tests', () => {
       Properties: { C: 'sdflkja' },
     });
   });
+
+  test('addChangeSetResourcesToDiff can add resources from changeset', async () => {
+    // GIVEN
+    const resources = new DifferenceCollection<Resource, ResourceDifference>({});
+    const templateAndChangeSetDiffMerger = new TemplateAndChangeSetDiffMerger({ changeSet: changeSet });
+
+    //WHEN
+    templateAndChangeSetDiffMerger.addChangeSetResourcesToDiff(resources);
+
+    // THEN
+    expect(resources.differenceCount).toBe(2);
+    expect(resources.changes.mySsmParameter.isUpdate).toBe(true);
+    expect(resources.changes.mySsmParameter).toEqual({
+      oldValue: {
+        Type: 'AWS::SSM::Parameter',
+        Properties: {
+          Value: 'changedddd',
+        },
+      },
+      newValue: {
+        Type: 'AWS::SSM::Parameter',
+        Properties: {
+          Value: 'sdflkja',
+        },
+      },
+      resourceTypes: {
+        oldType: 'AWS::SSM::Parameter',
+        newType: 'AWS::SSM::Parameter',
+      },
+      propertyDiffs: {
+        Value: {
+          oldValue: 'changedddd',
+          newValue: 'sdflkja',
+          isDifferent: true,
+          changeImpact: 'WILL_UPDATE',
+        },
+      },
+      otherDiffs: {
+        Type: {
+          oldValue: 'AWS::SSM::Parameter',
+          newValue: 'AWS::SSM::Parameter',
+          isDifferent: false,
+        },
+      },
+      isAddition: false,
+      isRemoval: false,
+      isImport: undefined,
+    });
+
+    expect(resources.changes.Queue.isUpdate).toBe(true);
+    expect(resources.changes.Queue).toEqual({
+      oldValue: {
+        Type: 'AWS::SQS::Queue',
+        Properties: {
+          QueueName: 'newValuechangedddd',
+        },
+      },
+      newValue: {
+        Type: 'AWS::SQS::Queue',
+        Properties: {
+          QueueName: 'newValuesdflkja',
+        },
+      },
+      resourceTypes: {
+        oldType: 'AWS::SQS::Queue',
+        newType: 'AWS::SQS::Queue',
+      },
+      propertyDiffs: {
+        QueueName: {
+          oldValue: 'newValuechangedddd',
+          newValue: 'newValuesdflkja',
+          isDifferent: true,
+          changeImpact: 'WILL_REPLACE',
+        },
+      },
+      otherDiffs: {
+        Type: {
+          oldValue: 'AWS::SQS::Queue',
+          newValue: 'AWS::SQS::Queue',
+          isDifferent: false,
+        },
+      },
+      isAddition: false,
+      isRemoval: false,
+      isImport: undefined,
+    });
+  });
+
+  test('addChangeSetResourcesToDiff can add resources from empty changeset', async () => {
+    // GIVEN
+    const resources = new DifferenceCollection<Resource, ResourceDifference>({});
+    const templateAndChangeSetDiffMerger = new TemplateAndChangeSetDiffMerger({ changeSet: changeSetWithMissingChanges });
+
+    //WHEN
+    templateAndChangeSetDiffMerger.addChangeSetResourcesToDiff(resources);
+
+    // THEN
+    expect(resources.differenceCount).toBe(0);
+    expect(resources.changes).toEqual({});
+
+  });
+
+  test('addChangeSetResourcesToDiff can add resources from changeset that have undefined resourceType and Details', async () => {
+    // GIVEN
+    const resources = new DifferenceCollection<Resource, ResourceDifference>({});
+    const templateAndChangeSetDiffMerger = new TemplateAndChangeSetDiffMerger({ changeSet: changeSetWithUndefinedDetails });
+
+    //WHEN
+    templateAndChangeSetDiffMerger.addChangeSetResourcesToDiff(resources);
+
+    // THEN
+    expect(resources.differenceCount).toBe(0);
+    expect(resources.changes).toEqual({});
+
+  });
+
+  test('addChangeSetResourcesToDiff can add resources from changeset that have undefined properties', async () => {
+    // GIVEN
+    const resources = new DifferenceCollection<Resource, ResourceDifference>({});
+    const templateAndChangeSetDiffMerger = new TemplateAndChangeSetDiffMerger({ changeSet: changeSetWithPartiallyFilledChanges });
+
+    //WHEN
+    templateAndChangeSetDiffMerger.addChangeSetResourcesToDiff(resources);
+
+    // THEN
+    expect(resources.differenceCount).toBe(1);
+    expect(resources.changes.Queue.isUpdate).toBe(true);
+    expect(resources.changes.Queue.oldValue).toEqual({
+      Type: 'UNKNOWN',
+      Properties: { QueueName: undefined },
+    });
+    expect(resources.changes.Queue.oldValue).toEqual(resources.changes.Queue.newValue);
+    expect(resources.changes.Queue.propertyUpdates.QueueName).toEqual({
+      oldValue: {},
+      newValue: {},
+      isDifferent: true,
+      changeImpact: undefined, // will be filled in by enhanceChangeImpact
+    });
+  });
+
+  // test('hydrateChangeImpactFromChangeset can handle blank change', async () => {
+  //   // GIVEN
+  //   const templateAndChangeSetDiffMerger = new TemplateAndChangeSetDiffMerger({ changeSet: {} });
+  //   const queue = new ResourceDifference(undefined, undefined, { resourceType: {}, propertyDiffs: {}, otherDiffs: {} });
+  //   const logicalId = 'Queue';
+
+  //   //WHEN
+  //   templateAndChangeSetDiffMerger.hydrateChangeImpactFromChangeset(logicalId, queue);
+
+  //   // THEN
+  //   expect(queue.isDifferent).toBe(true);
+  // });
 
 });

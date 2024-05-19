@@ -56,7 +56,7 @@ export class TemplateAndChangeSetDiffMerger {
   }
 
   changeSet: DescribeChangeSetOutput | undefined;
-  changeSetResources: types.ChangeSetResources | undefined;
+  changeSetResources: types.ChangeSetResources;
 
   constructor(
     args: {
@@ -64,10 +64,10 @@ export class TemplateAndChangeSetDiffMerger {
     },
   ) {
     this.changeSet = args.changeSet;
-    this.changeSetResources = this.inspectChangeSet(this.changeSet);
+    this.changeSetResources = this.createChangeSetResources(this.changeSet);
   }
 
-  inspectChangeSet(changeSet: DescribeChangeSetOutput): types.ChangeSetResources {
+  createChangeSetResources(changeSet: DescribeChangeSetOutput): types.ChangeSetResources {
     const changeSetResources: types.ChangeSetResources = {};
     for (const resourceChange of changeSet.Changes ?? []) {
       if (resourceChange.ResourceChange?.LogicalResourceId === undefined) {
@@ -115,7 +115,7 @@ export class TemplateAndChangeSetDiffMerger {
   * - Another case is when a resource is changed because the resource is defined by an SSM parameter, and the value of that SSM parameter changes.
   */
   addChangeSetResourcesToDiff(resourceDiffs: types.DifferenceCollection<types.Resource, types.ResourceDifference>) {
-    for (const [logicalId, changeSetResource] of Object.entries(this.changeSetResources ?? {})) {
+    for (const [logicalId, changeSetResource] of Object.entries(this.changeSetResources)) {
       const resourceNotFoundInTemplateDiff = !(resourceDiffs.logicalIds.includes(logicalId));
       if (resourceNotFoundInTemplateDiff) {
         const resourceDiffFromChangeset = diffResource(
@@ -126,7 +126,7 @@ export class TemplateAndChangeSetDiffMerger {
       }
 
       const propertyChangesFromTemplate = resourceDiffs.get(logicalId).propertyUpdates;
-      for (const propertyName of Object.keys((this.changeSetResources ?? {})[logicalId]?.properties ?? {})) {
+      for (const propertyName of Object.keys(this.changeSetResources[logicalId].properties ?? {})) {
         if (propertyName in propertyChangesFromTemplate) {
           // If the property is already marked to be updated, then we don't need to do anything.
           continue;
@@ -138,11 +138,12 @@ export class TemplateAndChangeSetDiffMerger {
         resourceDiffs.get(logicalId).setPropertyChange(propertyName, emptyPropertyDiff);
       }
     }
-
-    this.enhanceChangeImpacts(resourceDiffs);
   }
 
-  enhanceChangeImpacts(resourceDiffs: types.DifferenceCollection<types.Resource, types.ResourceDifference>) {
+  /**
+   * should be invoked after addChangeSetResourcesToDiff so that the change impacts are included.
+   */
+  hydrateChangeImpacts(resourceDiffs: types.DifferenceCollection<types.Resource, types.ResourceDifference>) {
     resourceDiffs.forEachDifference((logicalId: string, change: types.ResourceDifference) => {
       if ((!change.resourceTypeChanged) && change.resourceType?.includes('AWS::Serverless')) {
         // CFN applies the SAM transform before creating the changeset, so the changeset contains no information about SAM resources
@@ -150,13 +151,13 @@ export class TemplateAndChangeSetDiffMerger {
       }
       change.forEachDifference((type: 'Property' | 'Other', name: string, value: types.Difference<any> | types.PropertyDifference<any>) => {
         if (type === 'Property') {
-          if (!(this.changeSetResources ?? {})[logicalId]) {
+          if (!this.changeSetResources[logicalId]) {
             (value as types.PropertyDifference<any>).changeImpact = types.ResourceImpact.NO_CHANGE;
             (value as types.PropertyDifference<any>).isDifferent = false;
             return;
           }
 
-          const changeSetReplacementMode = ((this.changeSetResources ?? {})[logicalId]?.properties ?? {})[name]?.changeSetReplacementMode;
+          const changeSetReplacementMode = (this.changeSetResources[logicalId].properties ?? {})[name]?.changeSetReplacementMode;
           switch (changeSetReplacementMode) {
             case 'Always':
               (value as types.PropertyDifference<any>).changeImpact = types.ResourceImpact.WILL_REPLACE;
