@@ -103,11 +103,11 @@ export class TemplateAndChangeSetDiffMerger {
      *  However, there's not a guarantee that it will work, since clouformation will truncate the afterValue and BeforeValue if they're too long.
      */
     function _maybeJsonParse(value: string | undefined): any | undefined {
-      let result = value;
       try {
-        result = JSON.parse(value ?? ''); // TODO -- have a test that fails here !!! partial json!! {"blah": "hii
-      } catch (e) {}
-      return result;
+        return JSON.parse(value ?? '');
+      } catch (e) {
+        return value;
+      }
     }
   }
 
