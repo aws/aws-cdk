@@ -5,24 +5,29 @@ import { diffResource } from '.';
 import * as types from '../diff/types';
 
 export type DescribeChangeSetOutput = DescribeChangeSet;
-export type ChangeSetResourceChangeDetail = RCD;
+type ChangeSetResourceChangeDetail = RCD;
+
+/**
+ * These values come from DescribeChangeSetOutput, which indicate if the property resolves to that value after the change or before the change.
+ */
+export enum BEFORE_OR_AFTER_VALUES {
+  Before = 'BEFORE_VALUES',
+  After = 'AFTER_VALUES',
+}
 
 /**
  * The purpose of this class is to include differences from the ChangeSet to differences in the TemplateDiff.
  */
 export class TemplateAndChangeSetDiffMerger {
   // If we somehow cannot find the resourceType, then we'll mark it as UNKNOWN, so that can be seen in the diff.
-  static UNKNOWN_RESOURCE_TYPE = 'UNKNOWN';
+  static UNKNOWN_RESOURCE_TYPE = 'UNKNOWN_RESOURCE_TYPE';
 
-  /**
-   * @param parseOldOrNewValues These enum values come from DescribeChangeSetOutput, which indicate if the property resolves to that value after the change or before the change.
-   */
   public static convertResourceFromChangesetToResourceForDiff(
     resourceInfoFromChangeset: types.ChangeSetResource,
-    parseOldOrNewValues: 'BEFORE_VALUES' | 'AFTER_VALUES',
+    parseOldOrNewValues: BEFORE_OR_AFTER_VALUES,
   ): types.Resource {
     const props: { [logicalId: string]: string | undefined } = {};
-    if (parseOldOrNewValues === 'AFTER_VALUES') {
+    if (parseOldOrNewValues === BEFORE_OR_AFTER_VALUES.After) {
       for (const [propertyName, value] of Object.entries(resourceInfoFromChangeset.properties ?? {})) {
         props[propertyName] = value.afterValue;
       }
@@ -72,7 +77,7 @@ export class TemplateAndChangeSetDiffMerger {
   }
 
   /**
-   * use information from the changeset to populate details that are missing in the templateDiff
+   * Read resources from the changeSet, extracting information into ChangeSetResources.
    */
   private createChangeSetResources(changeSet: DescribeChangeSetOutput): types.ChangeSetResources {
     const changeSetResources: types.ChangeSetResources = {};
@@ -94,7 +99,7 @@ export class TemplateAndChangeSetDiffMerger {
 
       changeSetResources[resourceChange.ResourceChange.LogicalResourceId] = {
         resourceWasReplaced: resourceChange.ResourceChange.Replacement === 'True',
-        resourceType: resourceChange.ResourceChange.ResourceType ?? TemplateAndChangeSetDiffMerger.UNKNOWN_RESOURCE_TYPE, // DescribeChanegSet doesn't promise to have the ResourceType...
+        resourceType: resourceChange.ResourceChange.ResourceType ?? TemplateAndChangeSetDiffMerger.UNKNOWN_RESOURCE_TYPE, // DescribeChangeSet doesn't promise to have the ResourceType...
         properties: propertiesReplaced,
       };
     }
@@ -126,8 +131,8 @@ export class TemplateAndChangeSetDiffMerger {
       const resourceNotFoundInTemplateDiff = !(resourceDiffs.logicalIds.includes(logicalId));
       if (resourceNotFoundInTemplateDiff) {
         const resourceDiffFromChangeset = diffResource(
-          TemplateAndChangeSetDiffMerger.convertResourceFromChangesetToResourceForDiff(changeSetResource, 'BEFORE_VALUES'),
-          TemplateAndChangeSetDiffMerger.convertResourceFromChangesetToResourceForDiff(changeSetResource, 'AFTER_VALUES'),
+          TemplateAndChangeSetDiffMerger.convertResourceFromChangesetToResourceForDiff(changeSetResource, BEFORE_OR_AFTER_VALUES.Before),
+          TemplateAndChangeSetDiffMerger.convertResourceFromChangesetToResourceForDiff(changeSetResource, BEFORE_OR_AFTER_VALUES.After),
         );
         resourceDiffs.set(logicalId, resourceDiffFromChangeset);
       }

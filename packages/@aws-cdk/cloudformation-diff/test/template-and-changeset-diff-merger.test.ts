@@ -1,7 +1,7 @@
 import { ResourceChangeDetail } from '@aws-sdk/client-cloudformation';
 import { changeSet, changeSetWithMissingChanges, changeSetWithPartiallyFilledChanges, changeSetWithUndefinedDetails, ssmParam, sqsQueueWithAargs, changeSetWithIamChanges } from './util';
 import { fullDiff, PropertyDifference, ResourceDifference, ResourceImpact, ChangeSetResource, DifferenceCollection, Resource } from '../lib';
-import { TemplateAndChangeSetDiffMerger } from '../lib/diff/template-and-changeset-diff-merger';
+import { BEFORE_OR_AFTER_VALUES, TemplateAndChangeSetDiffMerger } from '../lib/diff/template-and-changeset-diff-merger';
 
 describe('fullDiff tests that include changeset', () => {
   test('changeset overrides spec replacements', () => {
@@ -1106,7 +1106,7 @@ describe('method tests', () => {
     });
     expect((templateAndChangeSetDiffMerger.changeSetResources ?? {}).Queue).toEqual({
       resourceWasReplaced: true,
-      resourceType: 'UNKNOWN',
+      resourceType: 'UNKNOWN_RESOURCE_TYPE',
       properties: {
         QueueName: {
           changeSetReplacementMode: 'Always',
@@ -1126,7 +1126,7 @@ describe('method tests', () => {
     expect(Object.keys(templateAndChangeSetDiffMerger.changeSetResources ?? {}).length).toBe(1);
     expect((templateAndChangeSetDiffMerger.changeSetResources ?? {}).Queue).toEqual({
       resourceWasReplaced: true,
-      resourceType: 'UNKNOWN',
+      resourceType: 'UNKNOWN_RESOURCE_TYPE',
       properties: {},
     });
   });
@@ -1210,21 +1210,21 @@ describe('method tests', () => {
     // WHEN
     const resourceAfterChange = TemplateAndChangeSetDiffMerger.convertResourceFromChangesetToResourceForDiff(
       changeSetResource,
-      'AFTER_VALUES',
+      BEFORE_OR_AFTER_VALUES.After,
     );
     const resourceBeforeChange = TemplateAndChangeSetDiffMerger.convertResourceFromChangesetToResourceForDiff(
       changeSetResource,
-      'BEFORE_VALUES',
+      BEFORE_OR_AFTER_VALUES.Before,
     );
 
     // THEN
     expect(resourceBeforeChange).toEqual({
-      Type: 'UNKNOWN',
+      Type: 'UNKNOWN_RESOURCE_TYPE',
       Properties: {},
     });
 
     expect(resourceAfterChange).toEqual({
-      Type: 'UNKNOWN',
+      Type: 'UNKNOWN_RESOURCE_TYPE',
       Properties: {},
     });
   });
@@ -1246,11 +1246,11 @@ describe('method tests', () => {
     // WHEN
     const resourceAfterChange = TemplateAndChangeSetDiffMerger.convertResourceFromChangesetToResourceForDiff(
       changeSetResource,
-      'AFTER_VALUES',
+      BEFORE_OR_AFTER_VALUES.After,
     );
     const resourceBeforeChange = TemplateAndChangeSetDiffMerger.convertResourceFromChangesetToResourceForDiff(
       changeSetResource,
-      'BEFORE_VALUES',
+      BEFORE_OR_AFTER_VALUES.Before,
     );
 
     // THEN
@@ -1392,7 +1392,7 @@ describe('method tests', () => {
     expect(resources.differenceCount).toBe(1);
     expect(resources.changes.Queue.isUpdate).toBe(true);
     expect(resources.changes.Queue.oldValue).toEqual({
-      Type: 'UNKNOWN',
+      Type: 'UNKNOWN_RESOURCE_TYPE',
       Properties: { QueueName: undefined },
     });
     expect(resources.changes.Queue.oldValue).toEqual(resources.changes.Queue.newValue);
