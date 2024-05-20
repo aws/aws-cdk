@@ -44,6 +44,14 @@
               "version": "0.0.0"
             }
           },
+          "LatestNodeRuntimeMap": {
+            "id": "LatestNodeRuntimeMap",
+            "path": "test-condition-with-ref/LatestNodeRuntimeMap",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnMapping",
+              "version": "0.0.0"
+            }
+          },
           "AWSCDKCfnUtilsProviderCustomResourceProvider": {
             "id": "AWSCDKCfnUtilsProviderCustomResourceProvider",
             "path": "test-condition-with-ref/AWSCDKCfnUtilsProviderCustomResourceProvider",
