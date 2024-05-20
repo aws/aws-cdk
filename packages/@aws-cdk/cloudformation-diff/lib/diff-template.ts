@@ -57,7 +57,7 @@ export function fullDiff(
   let theDiff = diffTemplate(currentTemplate, newTemplate);
   if (changeSet) {
     // These methods mutate the state of theDiff, using the changeSet.
-    const changeSetDiff = new TemplateAndChangeSetDiffMerger({ changeSet: changeSet });
+    const changeSetDiff = new TemplateAndChangeSetDiffMerger({ changeSet });
     changeSetDiff.addChangeSetResourcesToDiffResources(theDiff.resources);
     theDiff.resources.forEachDifference((logicalId: string, change: types.ResourceDifference) =>
       changeSetDiff.hydrateChangeImpactFromChangeSet(logicalId, change),

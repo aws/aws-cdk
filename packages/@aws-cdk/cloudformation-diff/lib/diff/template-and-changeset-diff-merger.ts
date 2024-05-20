@@ -17,7 +17,7 @@ export class TemplateAndChangeSetDiffMerger {
   /**
    * @param parseOldOrNewValues These enum values come from DescribeChangeSetOutput, which indicate if the property resolves to that value after the change or before the change.
    */
-  static convertResourceFromChangesetToResourceForDiff(
+  public static convertResourceFromChangesetToResourceForDiff(
     resourceInfoFromChangeset: types.ChangeSetResource,
     parseOldOrNewValues: 'BEFORE_VALUES' | 'AFTER_VALUES',
   ): types.Resource {
@@ -38,7 +38,7 @@ export class TemplateAndChangeSetDiffMerger {
     };
   }
 
-  static determineChangeSetReplacementMode(propertyChange: ChangeSetResourceChangeDetail): types.ChangeSetReplacementMode {
+  public static determineChangeSetReplacementMode(propertyChange: ChangeSetResourceChangeDetail): types.ChangeSetReplacementMode {
     if (propertyChange.Target?.RequiresRecreation === undefined) {
       // We can't determine if the resource will be replaced or not. That's what conditionally means.
       return 'Conditionally';
@@ -74,7 +74,7 @@ export class TemplateAndChangeSetDiffMerger {
   /**
    * use information from the changeset to populate details that are missing in the templateDiff
    */
-  createChangeSetResources(changeSet: DescribeChangeSetOutput): types.ChangeSetResources {
+  private createChangeSetResources(changeSet: DescribeChangeSetOutput): types.ChangeSetResources {
     const changeSetResources: types.ChangeSetResources = {};
     for (const resourceChange of changeSet.Changes ?? []) {
       if (resourceChange.ResourceChange?.LogicalResourceId === undefined) {
@@ -121,7 +121,7 @@ export class TemplateAndChangeSetDiffMerger {
   * - One case when this can happen is when a resource is added to the stack through the changeset.
   * - Another case is when a resource is changed because the resource is defined by an SSM parameter, and the value of that SSM parameter changes.
   */
-  addChangeSetResourcesToDiffResources(resourceDiffs: types.DifferenceCollection<types.Resource, types.ResourceDifference>) {
+  public addChangeSetResourcesToDiffResources(resourceDiffs: types.DifferenceCollection<types.Resource, types.ResourceDifference>) {
     for (const [logicalId, changeSetResource] of Object.entries(this.changeSetResources)) {
       const resourceNotFoundInTemplateDiff = !(resourceDiffs.logicalIds.includes(logicalId));
       if (resourceNotFoundInTemplateDiff) {
@@ -147,7 +147,7 @@ export class TemplateAndChangeSetDiffMerger {
     }
   }
 
-  hydrateChangeImpactFromChangeSet(logicalId: string, change: types.ResourceDifference) {
+  public hydrateChangeImpactFromChangeSet(logicalId: string, change: types.ResourceDifference) {
     // resourceType getter throws an error if resourceTypeChanged
     if ((change.resourceTypeChanged === true) || change.resourceType?.includes('AWS::Serverless')) {
       // CFN applies the SAM transform before creating the changeset, so the changeset contains no information about SAM resources
@@ -189,7 +189,7 @@ export class TemplateAndChangeSetDiffMerger {
     });
   }
 
-  addImportInformation(resourceDiffs: types.DifferenceCollection<types.Resource, types.ResourceDifference>) {
+  public addImportInformation(resourceDiffs: types.DifferenceCollection<types.Resource, types.ResourceDifference>) {
     const imports = this.findResourceImports();
     resourceDiffs.forEachDifference((logicalId: string, change: types.ResourceDifference) => {
       if (imports.includes(logicalId)) {
@@ -198,7 +198,7 @@ export class TemplateAndChangeSetDiffMerger {
     });
   }
 
-  findResourceImports(): string[] {
+  public findResourceImports(): string[] {
     const importedResourceLogicalIds = [];
     for (const resourceChange of this.changeSet?.Changes ?? []) {
       if (resourceChange.ResourceChange?.Action === 'Import') {
