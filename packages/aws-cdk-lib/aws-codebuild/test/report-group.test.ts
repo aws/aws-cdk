@@ -264,7 +264,7 @@ describe('Test Reports Groups', () => {
         deleteReports: true,
       });
     },
-    ).toThrow('Cannot use \'deleteReports\' property on a reportgroup without setting removal policy to \'DESTROY\'.');
+    ).toThrow('Cannot use \'deleteReports\' property on a report group without setting removal policy to \'DESTROY\'.');
   });
 
 });
