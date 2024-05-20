@@ -7,6 +7,7 @@ import { FieldUtils } from '../fields';
 import { StateGraph } from '../state-graph';
 import { StateMachineType } from '../state-machine';
 import { CatchProps, IChainable, INextable, ProcessorConfig, ProcessorMode, RetryProps } from '../types';
+import { Annotations } from '../../../core';
 
 const DISTRIBUTED_MAP_SYMBOL = Symbol.for('@aws-cdk/aws-stepfunctions.DistributedMap');
 
@@ -110,7 +111,7 @@ export class DistributedMap extends MapBase implements INextable {
    * Return whether the given object is a DistributedMap.
    */
   public static isDistributedMap(x: any): x is DistributedMap {
-    return x !== null && typeof(x) === 'object' && DISTRIBUTED_MAP_SYMBOL in x;
+    return x !== null && typeof (x) === 'object' && DISTRIBUTED_MAP_SYMBOL in x;
   }
 
   private readonly mapExecutionType?: StateMachineType;
@@ -234,9 +235,10 @@ export class DistributedMap extends MapBase implements INextable {
    */
   public toStateJson(): object {
     let rendered: any = super.toStateJson();
-    if (this.mapExecutionType) {
-      rendered.ItemProcessor.ProcessorConfig.ExecutionType = this.mapExecutionType;
+    if (rendered.ItemProcessor.ProcessorConfig.ExecutionType) {
+      Annotations.of(this).addWarningV2('@aws-cdk/aws-stepfunctions:propertyIgnored', 'Property \'ProcessorConfig.executionType\' is ignored, use the \'mapExecutionType\' in the \'DistributedMap\' class instead.');
     }
+    rendered.ItemProcessor.ProcessorConfig.ExecutionType = this.mapExecutionType;
 
     return {
       ...rendered,
