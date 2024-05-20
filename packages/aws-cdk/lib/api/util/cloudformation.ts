@@ -197,7 +197,9 @@ async function describeChangeSet(
   changeSetName: string,
   { fetchAll }: { fetchAll: boolean },
 ): Promise<CloudFormation.DescribeChangeSetOutput> {
+  const statusReason = (await cfn.describeChangeSet({ StackName: stackName, ChangeSetName: changeSetName }).promise()).StatusReason;
   const response = await cfn.describeChangeSet({ StackName: stackName, ChangeSetName: changeSetName, IncludePropertyValues: true }).promise();
+  response.StatusReason = statusReason; // As of now, describeChangeSet doesn't include the StatusReason if you specify IncludePropertyValues.
 
   // If fetchAll is true, traverse all pages from the change set description.
   while (fetchAll && response.NextToken != null) {
