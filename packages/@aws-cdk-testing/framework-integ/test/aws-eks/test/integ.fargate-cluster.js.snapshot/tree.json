@@ -1109,7 +1109,48 @@
                                         "eks:UpdateClusterVersion"
                                       ],
                                       "Effect": "Allow",
-                                      "Resource": "*"
+                                      "Resource": [
+                                        {
+                                          "Fn::Join": [
+                                            "",
+                                            [
+                                              "arn:",
+                                              {
+                                                "Ref": "AWS::Partition"
+                                              },
+                                              ":eks:",
+                                              {
+                                                "Ref": "AWS::Region"
+                                              },
+                                              ":",
+                                              {
+                                                "Ref": "AWS::AccountId"
+                                              },
+                                              ":cluster/updated-cluster"
+                                            ]
+                                          ]
+                                        },
+                                        {
+                                          "Fn::Join": [
+                                            "",
+                                            [
+                                              "arn:",
+                                              {
+                                                "Ref": "AWS::Partition"
+                                              },
+                                              ":eks:",
+                                              {
+                                                "Ref": "AWS::Region"
+                                              },
+                                              ":",
+                                              {
+                                                "Ref": "AWS::AccountId"
+                                              },
+                                              ":cluster/updated-cluster/*"
+                                            ]
+                                          ]
+                                        }
+                                      ]
                                     },
                                     {
                                       "Action": [
@@ -1117,7 +1158,26 @@
                                         "eks:DescribeFargateProfile"
                                       ],
                                       "Effect": "Allow",
-                                      "Resource": "*"
+                                      "Resource": {
+                                        "Fn::Join": [
+                                          "",
+                                          [
+                                            "arn:",
+                                            {
+                                              "Ref": "AWS::Partition"
+                                            },
+                                            ":eks:",
+                                            {
+                                              "Ref": "AWS::Region"
+                                            },
+                                            ":",
+                                            {
+                                              "Ref": "AWS::AccountId"
+                                            },
+                                            ":fargateprofile/updated-cluster/*"
+                                          ]
+                                        ]
+                                      }
                                     },
                                     {
                                       "Action": [
@@ -1533,7 +1593,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "b089c653e568b9aa1afed59151f083ffd6d1e9f293f5844238b4dc10a44d6299.zip"
+                          "s3Key": "96e08078ff1c0c6f320ab729994f87b461011e4d042244927d1208c4db523c76.zip"
                         },
                         "description": "onEvent handler for EKS cluster resource provider",
                         "environment": {
@@ -1673,7 +1733,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "b089c653e568b9aa1afed59151f083ffd6d1e9f293f5844238b4dc10a44d6299.zip"
+                          "s3Key": "96e08078ff1c0c6f320ab729994f87b461011e4d042244927d1208c4db523c76.zip"
                         },
                         "description": "isComplete handler for EKS cluster resource provider",
                         "environment": {
@@ -2712,7 +2772,7 @@
                           {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "/11c79d9af63ae24eb6e2544e16381268a23a2ed6bcb1e94674f9b547d6fc4b28.json"
+                          "/c7f6f5e963b89a18b0e1e8c79d49db73c40068bb820a38ec28e2ee972c298fdd.json"
                         ]
                       ]
                     }
