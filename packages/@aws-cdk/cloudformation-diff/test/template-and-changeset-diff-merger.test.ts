@@ -1265,6 +1265,83 @@ describe('method tests', () => {
     });
   });
 
+  test('addChangeSetResourcesToDiff can add resources that have template changes and changeset changes', async () => {
+    // GIVEN
+    const resources = new DifferenceCollection<Resource, ResourceDifference>(
+      {
+        Queue: new ResourceDifference(
+          { Type: 'AWS::SQS::QUEUE', Properties: { QueueName: 'first' } },
+          { Type: 'AWS::SQS::QUEUE', Properties: { QueueName: 'second' } },
+          {
+            resourceType: { oldType: 'AWS::SQS::QUEUE', newType: 'AWS::SQS::QUEUE' },
+            propertyDiffs: { QueueName: new PropertyDifference<string>( 'first', 'second', { changeImpact: ResourceImpact.WILL_UPDATE }) },
+            otherDiffs: {},
+          },
+        ),
+      },
+    );
+
+    const templateAndChangeSetDiffMerger = new TemplateAndChangeSetDiffMerger({
+      changeSet: {},
+      changeSetResources: {
+        Queue: {
+          properties: {
+            DelaySeconds: {
+              changeSetReplacementMode: 'Conditionally',
+              afterValue: 10,
+              beforeValue: 2,
+            },
+          },
+        } as any,
+      },
+    });
+
+    //WHEN
+    templateAndChangeSetDiffMerger.addChangeSetResourcesToDiffResources(resources);
+
+    // THEN
+    expect(resources.differenceCount).toBe(1);
+    expect(resources.changes.Queue.isUpdate).toBe(true);
+    expect(resources.changes.Queue).toEqual({
+      oldValue: {
+        Type: 'AWS::SQS::QUEUE',
+        Properties: {
+          QueueName: 'first',
+        },
+      },
+      newValue: {
+        Type: 'AWS::SQS::QUEUE',
+        Properties: {
+          QueueName: 'second',
+        },
+      },
+      resourceTypes: {
+        oldType: 'AWS::SQS::QUEUE',
+        newType: 'AWS::SQS::QUEUE',
+      },
+      propertyDiffs: {
+        QueueName: {
+          oldValue: 'first',
+          newValue: 'second',
+          isDifferent: true,
+          changeImpact: 'WILL_UPDATE',
+        },
+        DelaySeconds: {
+          oldValue: 2,
+          newValue: 10,
+          isDifferent: true,
+          changeImpact: undefined,
+        },
+      },
+      otherDiffs: {
+      },
+      isAddition: false,
+      isRemoval: false,
+      isImport: undefined,
+    });
+
+  });
+
   test('addChangeSetResourcesToDiff can add resources from changeset', async () => {
     // GIVEN
     const resources = new DifferenceCollection<Resource, ResourceDifference>({});
@@ -1669,6 +1746,28 @@ describe('method tests', () => {
     // THEN
     expect(queue.changeImpact).toBe('WILL_ORPHAN');
     expect(queue.isDifferent).toBe(true);
+  });
+
+  test('it is an error to DifferenceCollection.set if a given logicalId is already in the collection', async () => {
+    // WHEN
+    const logicalId = 'NewAndUnseen1111';
+    const resourceDiff = new ResourceDifference(
+      { Type: 'AWS::CDK::GREAT', Properties: { QueueName: 'first' } },
+      { Type: 'AWS::CDK::GREAT', Properties: { QueueName: 'second' } },
+      {
+        resourceType: { oldType: 'AWS::CDK::GREAT', newType: 'AWS::CDK::GREAT' },
+        propertyDiffs: { QueueName: new PropertyDifference<string>('first', 'second', { changeImpact: ResourceImpact.WILL_UPDATE }) },
+        otherDiffs: {},
+      });
+    const diffColl = new DifferenceCollection<any, any>({
+      [logicalId]: resourceDiff,
+    });
+
+    // THEN
+    expect(() => {
+      diffColl.set(logicalId, resourceDiff);
+    }).toThrow(`LogicalId already exists in this DifferenceCollection. LogicalId: '${logicalId}'`);
+
   });
 
 });

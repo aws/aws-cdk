@@ -128,12 +128,18 @@ export class TemplateAndChangeSetDiffMerger {
   */
   public addChangeSetResourcesToDiffResources(resourceDiffs: types.DifferenceCollection<types.Resource, types.ResourceDifference>) {
     for (const [logicalId, changeSetResource] of Object.entries(this.changeSetResources)) {
+      const oldResource = TemplateAndChangeSetDiffMerger.convertResourceFromChangesetToResourceForDiff(
+        changeSetResource,
+        BEFORE_OR_AFTER_VALUES.Before,
+      );
+      const newResource = TemplateAndChangeSetDiffMerger.convertResourceFromChangesetToResourceForDiff(
+        changeSetResource,
+        BEFORE_OR_AFTER_VALUES.After,
+      );
+
       const resourceNotFoundInTemplateDiff = !(resourceDiffs.logicalIds.includes(logicalId));
       if (resourceNotFoundInTemplateDiff) {
-        const resourceDiffFromChangeset = diffResource(
-          TemplateAndChangeSetDiffMerger.convertResourceFromChangesetToResourceForDiff(changeSetResource, BEFORE_OR_AFTER_VALUES.Before),
-          TemplateAndChangeSetDiffMerger.convertResourceFromChangesetToResourceForDiff(changeSetResource, BEFORE_OR_AFTER_VALUES.After),
-        );
+        const resourceDiffFromChangeset = diffResource(oldResource, newResource);
         resourceDiffs.set(logicalId, resourceDiffFromChangeset);
       }
 
@@ -141,13 +147,18 @@ export class TemplateAndChangeSetDiffMerger {
       for (const propertyName of Object.keys(this.changeSetResources[logicalId].properties ?? {})) {
         if (propertyName in propertyChangesFromTemplate) {
           // If the property is already marked to be updated, then we don't need to do anything.
+          // But in a future change, we could think about always overwriting the template change with what the ChangeSet has, since the ChangeSet diff may be more accurate.
           continue;
         }
 
-        // This property diff will be hydrated when hydrateChangeImpactFromChangeSet is called.
-        const emptyPropertyDiff = new types.PropertyDifference({}, {}, {});
-        emptyPropertyDiff.isDifferent = true;
-        resourceDiffs.get(logicalId).setPropertyChange(propertyName, emptyPropertyDiff);
+        const emptyChangeImpact = {};
+        const propertyDiff = new types.PropertyDifference(
+          oldResource.Properties?.[propertyName] ?? {},
+          newResource.Properties?.[propertyName] ?? {},
+          emptyChangeImpact, // changeImpact will be hydrated when hydrateChangeImpactFromChangeSet is called.
+        );
+        propertyDiff.isDifferent = true;
+        resourceDiffs.get(logicalId).setPropertyChange(propertyName, propertyDiff);
       }
     }
   }

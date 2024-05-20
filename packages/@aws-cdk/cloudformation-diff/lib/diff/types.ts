@@ -380,7 +380,13 @@ export class DifferenceCollection<V, T extends IDifference<V>> {
     delete this.diffs[logicalId];
   }
 
+  /**
+   * Throw an error to prevent the caller from overwriting a change.
+   */
   public set(logicalId: string, diff: T): void {
+    if (this.diffs[logicalId]) {
+      throw new Error(`LogicalId already exists in this DifferenceCollection. LogicalId: '${logicalId}'`);
+    }
     this.diffs[logicalId] = diff;
   }
 
