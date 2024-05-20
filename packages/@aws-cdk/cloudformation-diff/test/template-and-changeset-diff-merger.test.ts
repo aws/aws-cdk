@@ -3,7 +3,7 @@ import { changeSet, changeSetWithMissingChanges, changeSetWithPartiallyFilledCha
 import { fullDiff, PropertyDifference, ResourceDifference, ResourceImpact, ChangeSetResource, DifferenceCollection, Resource } from '../lib';
 import { TemplateAndChangeSetDiffMerger } from '../lib/diff/template-and-changeset-diff-merger';
 
-describe('fullDiff tests', () => {
+describe('fullDiff tests that include changeset', () => {
   test('changeset overrides spec replacements', () => {
     // GIVEN
     const currentTemplate = {
