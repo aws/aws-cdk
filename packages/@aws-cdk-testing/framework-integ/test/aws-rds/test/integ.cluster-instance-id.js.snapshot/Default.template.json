@@ -489,7 +489,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "18d379b052acd60e0d086d5b19d9bef956ebc0bd018c5570960125aab0c7f837.zip"
+     "S3Key": "bde7b5c89cb43285f884c94f0b9e17cdb0f5eb5345005114dd60342e0b8a85a1.zip"
     },
     "Timeout": 900,
     "MemorySize": 128,
@@ -582,7 +582,7 @@
      "Ref": "DatabaseSubnets56F17B9A"
     },
     "Engine": "aurora-mysql",
-    "EngineVersion": "8.0.mysql_aurora.3.01.0",
+    "EngineVersion": "8.0.mysql_aurora.3.06.0",
     "MasterUserPassword": {
      "Fn::Join": [
       "",
@@ -625,7 +625,7 @@
     "DBClusterIdentifier": {
      "Ref": "DatabaseB269D8BB"
     },
-    "DBInstanceClass": "db.t3.small",
+    "DBInstanceClass": "db.t3.medium",
     "Engine": "aurora-mysql",
     "PromotionTier": 0
    },
