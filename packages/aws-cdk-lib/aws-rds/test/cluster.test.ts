@@ -574,7 +574,6 @@ describe('cluster new api', () => {
 
       // THEN
       const template = Template.fromStack(stack);
-      Array.isArray(template);
       // reader1 should depend on the writer
       template.hasResource('AWS::RDS::DBInstance', {
         Properties: {
