@@ -118,7 +118,7 @@ export class TemplateAndChangeSetDiffMerger {
   * - One case when this can happen is when a resource is added to the stack through the changeset.
   * - Another case is when a resource is changed because the resource is defined by an SSM parameter, and the value of that SSM parameter changes.
   */
-  addChangeSetResourcesToDiff(resourceDiffs: types.DifferenceCollection<types.Resource, types.ResourceDifference>) {
+  addChangeSetResourcesToDiffResources(resourceDiffs: types.DifferenceCollection<types.Resource, types.ResourceDifference>) {
     for (const [logicalId, changeSetResource] of Object.entries(this.changeSetResources)) {
       const resourceNotFoundInTemplateDiff = !(resourceDiffs.logicalIds.includes(logicalId));
       if (resourceNotFoundInTemplateDiff) {
@@ -136,7 +136,7 @@ export class TemplateAndChangeSetDiffMerger {
           continue;
         }
 
-        // This property diff will be hydrated when enhanceChangeImpacts is called.
+        // This property diff will be hydrated when hydrateChangeImpactFromChangeSet is called.
         const emptyPropertyDiff = new types.PropertyDifference({}, {}, {});
         emptyPropertyDiff.isDifferent = true;
         resourceDiffs.get(logicalId).setPropertyChange(propertyName, emptyPropertyDiff);
@@ -144,9 +144,6 @@ export class TemplateAndChangeSetDiffMerger {
     }
   }
 
-  /**
-   * should be invoked after addChangeSetResourcesToDiff so that the change impacts are included.
-   */
   hydrateChangeImpactFromChangeSet(logicalId: string, change: types.ResourceDifference) {
     // resourceType getter throws an error if resourceTypeChanged
     if ((change.resourceTypeChanged === true) || change.resourceType?.includes('AWS::Serverless')) {
@@ -176,12 +173,12 @@ export class TemplateAndChangeSetDiffMerger {
             (value as types.PropertyDifference<any>).changeImpact = types.ResourceImpact.NO_CHANGE;
             (value as types.PropertyDifference<any>).isDifferent = false;
             break;
-          // otherwise, defer to the changeImpact from `diffTemplate`
+          // otherwise, defer to the changeImpact from the template diff
         }
       } else if (type === 'Other') {
         switch (name) {
           case 'Metadata':
-            // we want to ignore matadata changes in the diff, so compare newValue against newValue.
+            // we want to ignore metadata changes in the diff, so compare newValue against newValue.
             change.setOtherChange('Metadata', new types.Difference<string>(value.newValue, value.newValue));
             break;
         }

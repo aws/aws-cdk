@@ -1271,7 +1271,7 @@ describe('method tests', () => {
     const templateAndChangeSetDiffMerger = new TemplateAndChangeSetDiffMerger({ changeSet: changeSet });
 
     //WHEN
-    templateAndChangeSetDiffMerger.addChangeSetResourcesToDiff(resources);
+    templateAndChangeSetDiffMerger.addChangeSetResourcesToDiffResources(resources);
 
     // THEN
     expect(resources.differenceCount).toBe(2);
@@ -1358,7 +1358,7 @@ describe('method tests', () => {
     const templateAndChangeSetDiffMerger = new TemplateAndChangeSetDiffMerger({ changeSet: changeSetWithMissingChanges });
 
     //WHEN
-    templateAndChangeSetDiffMerger.addChangeSetResourcesToDiff(resources);
+    templateAndChangeSetDiffMerger.addChangeSetResourcesToDiffResources(resources);
 
     // THEN
     expect(resources.differenceCount).toBe(0);
@@ -1372,7 +1372,7 @@ describe('method tests', () => {
     const templateAndChangeSetDiffMerger = new TemplateAndChangeSetDiffMerger({ changeSet: changeSetWithUndefinedDetails });
 
     //WHEN
-    templateAndChangeSetDiffMerger.addChangeSetResourcesToDiff(resources);
+    templateAndChangeSetDiffMerger.addChangeSetResourcesToDiffResources(resources);
 
     // THEN
     expect(resources.differenceCount).toBe(0);
@@ -1386,7 +1386,7 @@ describe('method tests', () => {
     const templateAndChangeSetDiffMerger = new TemplateAndChangeSetDiffMerger({ changeSet: changeSetWithPartiallyFilledChanges });
 
     //WHEN
-    templateAndChangeSetDiffMerger.addChangeSetResourcesToDiff(resources);
+    templateAndChangeSetDiffMerger.addChangeSetResourcesToDiffResources(resources);
 
     // THEN
     expect(resources.differenceCount).toBe(1);
