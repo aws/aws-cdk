@@ -570,6 +570,7 @@ describe('default properties', () => {
           codebuild.FilterGroup.inEventOf(codebuild.EventAction.RELEASED).andBaseBranchIs('main'),
           codebuild.FilterGroup.inEventOf(codebuild.EventAction.PRERELEASED).andBaseBranchIs('main'),
           codebuild.FilterGroup.inEventOf(codebuild.EventAction.WORKFLOW_JOB_QUEUED).andBaseBranchIs('main'),
+          codebuild.FilterGroup.inEventOf(codebuild.EventAction.PULL_REQUEST_CLOSED).andBaseBranchIs('main'),
         ],
       }),
     });
@@ -608,6 +609,10 @@ describe('default properties', () => {
           ],
           [
             { Type: 'EVENT', Pattern: 'WORKFLOW_JOB_QUEUED' },
+            { Type: 'BASE_REF', Pattern: 'refs/heads/main' },
+          ],
+          [
+            { Type: 'EVENT', Pattern: 'PULL_REQUEST_CLOSED' },
             { Type: 'BASE_REF', Pattern: 'refs/heads/main' },
           ],
         ],
