@@ -8,40 +8,11 @@ export type DescribeChangeSetOutput = DescribeChangeSet;
 type ChangeSetResourceChangeDetail = RCD;
 
 /**
- * These values come from DescribeChangeSetOutput, which indicate if the property resolves to that value after the change or before the change.
- */
-export enum BEFORE_OR_AFTER_VALUES {
-  Before = 'BEFORE_VALUES',
-  After = 'AFTER_VALUES',
-}
-
-/**
  * The purpose of this class is to include differences from the ChangeSet to differences in the TemplateDiff.
  */
 export class TemplateAndChangeSetDiffMerger {
   // If we somehow cannot find the resourceType, then we'll mark it as UNKNOWN, so that can be seen in the diff.
   static UNKNOWN_RESOURCE_TYPE = 'UNKNOWN_RESOURCE_TYPE';
-
-  public static convertResourceFromChangesetToResourceForDiff(
-    resourceInfoFromChangeset: types.ChangeSetResource,
-    parseOldOrNewValues: BEFORE_OR_AFTER_VALUES,
-  ): types.Resource {
-    const props: { [logicalId: string]: string | undefined } = {};
-    if (parseOldOrNewValues === BEFORE_OR_AFTER_VALUES.After) {
-      for (const [propertyName, value] of Object.entries(resourceInfoFromChangeset.properties ?? {})) {
-        props[propertyName] = value.afterValue;
-      }
-    } else {
-      for (const [propertyName, value] of Object.entries(resourceInfoFromChangeset.properties ?? {})) {
-        props[propertyName] = value.beforeValue;
-      }
-    }
-
-    return {
-      Type: resourceInfoFromChangeset.resourceType ?? TemplateAndChangeSetDiffMerger.UNKNOWN_RESOURCE_TYPE,
-      Properties: props,
-    };
-  }
 
   public static determineChangeSetReplacementMode(propertyChange: ChangeSetResourceChangeDetail): types.ChangeSetReplacementMode {
     if (propertyChange.Target?.RequiresRecreation === undefined) {
@@ -91,8 +62,6 @@ export class TemplateAndChangeSetDiffMerger {
         if (propertyChange.Target?.Attribute === 'Properties' && propertyChange.Target.Name) {
           propertiesReplaced[propertyChange.Target.Name] = {
             changeSetReplacementMode: TemplateAndChangeSetDiffMerger.determineChangeSetReplacementMode(propertyChange),
-            beforeValue: _maybeJsonParse(propertyChange.Target.BeforeValue),
-            afterValue: _maybeJsonParse(propertyChange.Target.AfterValue),
           };
         }
       }
@@ -101,14 +70,18 @@ export class TemplateAndChangeSetDiffMerger {
         resourceWasReplaced: resourceChange.ResourceChange.Replacement === 'True',
         resourceType: resourceChange.ResourceChange.ResourceType ?? TemplateAndChangeSetDiffMerger.UNKNOWN_RESOURCE_TYPE, // DescribeChangeSet doesn't promise to have the ResourceType...
         properties: propertiesReplaced,
+        beforeContext: _maybeJsonParse(resourceChange.ResourceChange.BeforeContext),
+        afterContext: _maybeJsonParse(resourceChange.ResourceChange.AfterContext),
       };
     }
 
     return changeSetResources;
 
     /**
-     *  we will try to parse the afterValue so that downstream processing of the diff can access object properties.
-     *  However, there's not a guarantee that it will work, since clouformation will truncate the afterValue and BeforeValue if they're too long.
+     *  we will try to parse the BeforeContext and AfterContext so that downstream processing of the diff can access object properties.
+     *
+     *  This should always succeed. But CFN says they truncate the beforeValue and afterValue if they're too long, and since the afterValue and beforeValue
+     *  are a subset of the BeforeContext and AfterContext, it seems safer to assume that BeforeContext and AfterContext also may truncate.
      */
     function _maybeJsonParse(value: string | undefined): any | undefined {
       try {
@@ -128,18 +101,18 @@ export class TemplateAndChangeSetDiffMerger {
   */
   public addChangeSetResourcesToDiffResources(resourceDiffs: types.DifferenceCollection<types.Resource, types.ResourceDifference>) {
     for (const [logicalId, changeSetResource] of Object.entries(this.changeSetResources)) {
-      const oldResource = TemplateAndChangeSetDiffMerger.convertResourceFromChangesetToResourceForDiff(
-        changeSetResource,
-        BEFORE_OR_AFTER_VALUES.Before,
-      );
-      const newResource = TemplateAndChangeSetDiffMerger.convertResourceFromChangesetToResourceForDiff(
-        changeSetResource,
-        BEFORE_OR_AFTER_VALUES.After,
-      );
+      const oldResource: types.Resource = {
+        Type: changeSetResource.resourceType ?? TemplateAndChangeSetDiffMerger.UNKNOWN_RESOURCE_TYPE,
+        Properties: changeSetResource.beforeContext?.Properties,
+      };
+      const newResource: types.Resource = {
+        Type: changeSetResource.resourceType ?? TemplateAndChangeSetDiffMerger.UNKNOWN_RESOURCE_TYPE,
+        Properties: changeSetResource.afterContext?.Properties,
+      };
 
+      const resourceDiffFromChangeset = diffResource(oldResource, newResource);
       const resourceNotFoundInTemplateDiff = !(resourceDiffs.logicalIds.includes(logicalId));
       if (resourceNotFoundInTemplateDiff) {
-        const resourceDiffFromChangeset = diffResource(oldResource, newResource);
         resourceDiffs.set(logicalId, resourceDiffFromChangeset);
       }
 
@@ -151,14 +124,9 @@ export class TemplateAndChangeSetDiffMerger {
           continue;
         }
 
-        const emptyChangeImpact = {};
-        const propertyDiff = new types.PropertyDifference(
-          oldResource.Properties?.[propertyName] ?? {},
-          newResource.Properties?.[propertyName] ?? {},
-          emptyChangeImpact, // changeImpact will be hydrated when hydrateChangeImpactFromChangeSet is called.
-        );
-        propertyDiff.isDifferent = true;
-        resourceDiffs.get(logicalId).setPropertyChange(propertyName, propertyDiff);
+        if (resourceDiffFromChangeset.propertyUpdates?.[propertyName]) {
+          resourceDiffs.get(logicalId).setPropertyChange(propertyName, resourceDiffFromChangeset.propertyUpdates?.[propertyName]);
+        }
       }
     }
   }

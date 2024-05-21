@@ -1,7 +1,7 @@
 import { ResourceChangeDetail } from '@aws-sdk/client-cloudformation';
 import { changeSet, changeSetWithMissingChanges, changeSetWithPartiallyFilledChanges, changeSetWithUndefinedDetails, ssmParam, sqsQueueWithAargs, changeSetWithIamChanges } from './util';
-import { fullDiff, PropertyDifference, ResourceDifference, ResourceImpact, ChangeSetResource, DifferenceCollection, Resource } from '../lib';
-import { BEFORE_OR_AFTER_VALUES, TemplateAndChangeSetDiffMerger } from '../lib/diff/template-and-changeset-diff-merger';
+import { fullDiff, PropertyDifference, ResourceDifference, ResourceImpact, DifferenceCollection, Resource } from '../lib';
+import { TemplateAndChangeSetDiffMerger } from '../lib/diff/template-and-changeset-diff-merger';
 
 describe('fullDiff tests that include changeset', () => {
   test('changeset overrides spec replacements', () => {
@@ -1197,72 +1197,6 @@ describe('method tests', () => {
 
     // THEN
     expect(changeSetReplacementMode).toEqual('Always');
-  });
-
-  test('convertResourceFromChangesetToResourceForDiff with missing resourceType and properties', async () => {
-    // GIVEN
-    const changeSetResource: ChangeSetResource = {
-      resourceWasReplaced: false,
-      resourceType: undefined,
-      properties: undefined,
-    };
-
-    // WHEN
-    const resourceAfterChange = TemplateAndChangeSetDiffMerger.convertResourceFromChangesetToResourceForDiff(
-      changeSetResource,
-      BEFORE_OR_AFTER_VALUES.After,
-    );
-    const resourceBeforeChange = TemplateAndChangeSetDiffMerger.convertResourceFromChangesetToResourceForDiff(
-      changeSetResource,
-      BEFORE_OR_AFTER_VALUES.Before,
-    );
-
-    // THEN
-    expect(resourceBeforeChange).toEqual({
-      Type: 'UNKNOWN_RESOURCE_TYPE',
-      Properties: {},
-    });
-
-    expect(resourceAfterChange).toEqual({
-      Type: 'UNKNOWN_RESOURCE_TYPE',
-      Properties: {},
-    });
-  });
-
-  test('convertResourceFromChangesetToResourceForDiff with fully filled input', async () => {
-    // GIVEN
-    const changeSetResource: ChangeSetResource = {
-      resourceWasReplaced: false,
-      resourceType: 'CDK::IS::GREAT',
-      properties: {
-        C: {
-          changeSetReplacementMode: 'Always',
-          beforeValue: 'changedddd',
-          afterValue: 'sdflkja',
-        },
-      },
-    };
-
-    // WHEN
-    const resourceAfterChange = TemplateAndChangeSetDiffMerger.convertResourceFromChangesetToResourceForDiff(
-      changeSetResource,
-      BEFORE_OR_AFTER_VALUES.After,
-    );
-    const resourceBeforeChange = TemplateAndChangeSetDiffMerger.convertResourceFromChangesetToResourceForDiff(
-      changeSetResource,
-      BEFORE_OR_AFTER_VALUES.Before,
-    );
-
-    // THEN
-    expect(resourceBeforeChange).toEqual({
-      Type: 'CDK::IS::GREAT',
-      Properties: { C: 'changedddd' },
-    });
-
-    expect(resourceAfterChange).toEqual({
-      Type: 'CDK::IS::GREAT',
-      Properties: { C: 'sdflkja' },
-    });
   });
 
   test('addChangeSetResourcesToDiff can add resources that have template changes and changeset changes', async () => {
