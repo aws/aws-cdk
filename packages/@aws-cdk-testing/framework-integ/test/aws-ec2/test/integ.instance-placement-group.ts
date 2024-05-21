@@ -4,7 +4,7 @@ import {
   PlacementGroup, PlacementGroupStrategy,
   InstanceClass, InstanceSize, SubnetType,
 } from 'aws-cdk-lib/aws-ec2';
-import * as integ from '@aws-cdk/integ-tests-alpha';
+import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
 const app = new App();
 const stack = new Stack(app, 'ec2-instance-placementgroup-stack');
@@ -33,6 +33,6 @@ new Instance(stack, 'Instance', {
   placementGroup: pg,
 });
 
-new integ.IntegTest(app, 'Ec2InstancePlacementGroup', {
+new IntegTest(app, 'Ec2InstancePlacementGroup', {
   testCases: [stack],
 });
