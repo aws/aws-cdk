@@ -530,6 +530,29 @@ class DockerStackWithCustomFile extends cdk.Stack {
     });
   }
 }
+class SecurityDiffFromChangeSetStack extends Stack {
+  constructor(scope, id) {
+    super(scope, id);
+
+    const iamResourceName = ssm.StringParameter.valueForStringParameter(this, 'for-iam-role-defined-by-ssm-param');
+     
+    new iam.Role(this, 'changeSetDiffIamRole', {
+      assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
+      inlinePolicies: {
+        fun: new iam.PolicyDocument({
+          statements: [
+            new iam.PolicyStatement({
+              effect: iam.Effect.DENY,
+              actions: ['sqs:*'],
+              resources: [`arn:aws:sqs:us-east-1:444455556666:${iamResourceName}`],
+            }),
+          ],
+        }),
+      },
+    });
+
+  }
+}
 
 class DiffFromChangeSetStack extends Stack {
   constructor(scope, id) {
@@ -702,6 +725,7 @@ switch (stackSet) {
     const failed = new FailedStack(app, `${stackPrefix}-failed`)
 
     new DiffFromChangeSetStack(app, `${stackPrefix}-queue-name-defined-by-ssm-param`)
+    new SecurityDiffFromChangeSetStack(app, `${stackPrefix}-iam-role-defined-by-ssm-param`)
 
     // A stack that depends on the failed stack -- used to test that '-e' does not deploy the failing stack
     const dependsOnFailed = new OutputsStack(app, `${stackPrefix}-depends-on-failed`);

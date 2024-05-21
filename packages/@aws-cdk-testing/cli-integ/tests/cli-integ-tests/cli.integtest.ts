@@ -1,7 +1,7 @@
 import { promises as fs, existsSync } from 'fs';
 import * as os from 'os';
 import * as path from 'path';
-import { integTest, cloneDirectory, shell, withDefaultFixture, retry, sleep, randomInteger, withSamIntegrationFixture, RESOURCES_DIR, withCDKMigrateFixture, withExtendedTimeoutFixture, randomString } from '../../lib';
+import { integTest, cloneDirectory, shell, withDefaultFixture, retry, sleep, randomInteger, withSamIntegrationFixture, RESOURCES_DIR, withCDKMigrateFixture, withExtendedTimeoutFixture, randomString, normalizeDiffOutput } from '../../lib';
 
 jest.setTimeout(2 * 60 * 60_000); // Includes the time to acquire locks, worst-case single-threaded runtime
 
@@ -944,6 +944,62 @@ integTest('cdk diff --quiet does not print \'There were no differences\' message
   expect(diff).not.toContain('There were no differences');
 }));
 
+integTest('cdk diff picks up security changes that are only in changeset', withDefaultFixture(async (fixture) => {
+  // GIVEN
+  const originalRoleName = randomString();
+  await fixture.aws.ssm('putParameter', {
+    Name: 'for-iam-role-defined-by-ssm-param',
+    Value: originalRoleName,
+    Type: 'String',
+    Overwrite: true,
+  });
+
+  try {
+    await fixture.cdkDeploy('iam-role-defined-by-ssm-param');
+
+    // WHEN
+    // We want to change the ssm value. Then the CFN changeset will detect that the queue will be changed upon deploy.
+    const newRoleName = randomString();
+    await fixture.aws.ssm('putParameter', {
+      Name: 'for-iam-role-defined-by-ssm-param',
+      Value: newRoleName,
+      Type: 'String',
+      Overwrite: true,
+    });
+
+    const diff = await fixture.cdk(['diff', fixture.fullStackName('iam-role-defined-by-ssm-param')]);
+
+    // THEN
+    const normalizedPlainTextOutput = normalizeDiffOutput(diff, true);
+
+    const title = normalizeDiffOutput('IAM Statement Changes');
+    const header = normalizeDiffOutput('│   │ Resource                                                │ Effect │ Action │ Principal                    │ Condition │ ');
+    const remove = normalizeDiffOutput(`│ - │ arn:aws:sqs:us-east-1:444455556666:${originalRoleName}  │ Deny   │ sqs:*  │ AWS:\${changeSetDiffIamRole} │           │ `);
+    const add = normalizeDiffOutput(`   │ + │ arn:aws:sqs:us-east-1:444455556666:${newRoleName}       │ Deny   │ sqs:*  │ AWS:\${changeSetDiffIamRole} │           │ `);
+    const expectedDiff = normalizeDiffOutput(`
+      Resources
+      [~] AWS::IAM::Role changeSetDiffIamRole changeSetDiffIamRole9C803BA2
+      └─ [~] Policies
+          └─ @@ -6,7 +6,7 @@
+              [ ] "Statement": [
+              [ ]   {
+              [ ]     "Action": "sqs:*",
+              [-]     "Resource": "arn:aws:sqs:us-east-1:444455556666:${originalRoleName}",
+              [+]     "Resource": "arn:aws:sqs:us-east-1:444455556666:${newRoleName}",
+              [ ]     "Effect": "Deny"
+              [ ]   }
+              [ ] ]`);
+
+    expect(normalizedPlainTextOutput).toContain(expectedDiff);
+    expect(normalizedPlainTextOutput).toContain(title);
+    expect(normalizedPlainTextOutput).toContain(header);
+    expect(normalizedPlainTextOutput).toContain(remove);
+    expect(normalizedPlainTextOutput).toContain(add);
+  } finally {
+    await fixture.cdkDestroy('iam-role-defined-by-ssm-param');
+  }
+}));
+
 integTest('cdk diff picks up changes that are only present in changeset', withDefaultFixture(async (fixture) => {
   // GIVEN
   const originalQueueName = randomString();
@@ -970,12 +1026,9 @@ integTest('cdk diff picks up changes that are only present in changeset', withDe
     const diff = await fixture.cdk(['diff', fixture.fullStackName('queue-name-defined-by-ssm-param')]);
 
     // THEN
-    const normalizedPlainTextOutput = diff.replace(/\x1B\[[0-?]*[ -/]*[@-~]/g, '') // remove all color and formatting (bolding, italic, etc)
-      .replace(/ /g, '') // remove all spaces
-      .replace(/\n/g, '') // remove all new lines
-      .replace(/\d+/g, ''); // remove all digits
+    const normalizedPlainTextOutput = normalizeDiffOutput(diff, true);
 
-    const normalizedExpectedOutput = `
+    const normalizedExpectedOutput = normalizeDiffOutput(`
       Resources
       [~] AWS::SQS::Queue DiffFromChangeSetQueue DiffFromChangeSetQueue06622C07 replace
        └─ [~] QueueName (requires replacement)
@@ -984,10 +1037,7 @@ integTest('cdk diff picks up changes that are only present in changeset', withDe
       [~] AWS::SSM::Parameter DiffFromChangeSetSSMParam DiffFromChangeSetSSMParam92A9A723
        └─ [~] Value
            ├─ [-] ${originalQueueName}
-           └─ [+] ${newQueueName}`
-      .replace(/ /g, '')
-      .replace(/\n/g, '')
-      .replace(/\d+/g, '');
+           └─ [+] ${newQueueName}`);
 
     expect(normalizedPlainTextOutput).toContain(normalizedExpectedOutput);
   } finally {
