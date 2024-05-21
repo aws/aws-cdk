@@ -393,7 +393,7 @@
                       "Ref": "PostgresSourceSubnetGroupBEEB1740"
                     },
                     "engine": "postgres",
-                    "engineVersion": "16.2",
+                    "EngineVersion": "16.3",
                     "masterUsername": {
                       "Fn::Join": [
                         "",
