@@ -319,6 +319,8 @@ export interface InstanceProps {
 
   /**
    * The placement group that you want to launch the instance into.
+   *
+   * @default - no placement group will be added.
    */
   readonly placementGroup?: IPlacementGroup;
 }
