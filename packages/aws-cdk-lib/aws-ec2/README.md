@@ -1526,12 +1526,16 @@ const host = new ec2.BastionHostLinux(this, 'BastionHost', {
 Specify `placementGroup` to enable the placement group support:
 
 ```ts fixture=with-vpc
-declare const pg: ec2.PlacementGroup;
+declare const instanceType: ec2.InstanceType;
+
+const pg = new ec2.PlacementGroup(stack, 'test-pg', {
+  strategy: PlacementGroupStrategy.SPREAD,
+});
 
 new Instance(stack, 'Instance', {
   vpc,
-  instanceType: InstanceType.of(InstanceClass.T3, InstanceSize.NANO),
-  machineImage: MachineImage.latestAmazonLinux2023(),
+  instanceType,
+  machineImage: ec2.MachineImage.latestAmazonLinux2023(),
   placementGroup: pg,
 });
 ```
