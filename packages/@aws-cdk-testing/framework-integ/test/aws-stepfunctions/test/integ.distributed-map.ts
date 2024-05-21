@@ -50,7 +50,7 @@ testCase.assertions
   })
   .expect(ExpectedResult.objectLike({ status: 'ACTIVE' }))
   .waitForAssertions({
-    interval: cdk.Duration.seconds(30),
+    interval: cdk.Duration.seconds(10),
     totalTimeout: cdk.Duration.minutes(5),
   });
 
@@ -77,7 +77,7 @@ start.next(describe);
 describe.expect(ExpectedResult.objectLike({
   status: 'SUCCEEDED',
 })).waitForAssertions({
-  interval: cdk.Duration.seconds(30),
+  interval: cdk.Duration.seconds(10),
   totalTimeout: cdk.Duration.minutes(5),
 });
 
