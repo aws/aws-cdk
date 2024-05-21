@@ -232,7 +232,6 @@ describe('instance', () => {
       });
 
       const t = Template.fromStack(stack);
-      Array.isArray(t);
       // THEN
       t.hasResourceProperties('AWS::EC2::Instance', {
         PlacementGroupName: {
