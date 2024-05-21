@@ -376,6 +376,12 @@
      "Ref": "SsmParameterValueawsserviceamiamazonlinuxlatestal2023amikernel61x8664C96584B6F00A464EAD1953AFF4B05118Parameter"
     },
     "InstanceType": "t3.nano",
+    "PlacementGroupName": {
+     "Fn::GetAtt": [
+      "testpgC328A9B8",
+      "GroupName"
+     ]
+    },
     "SecurityGroupIds": [
      {
       "Fn::GetAtt": [
