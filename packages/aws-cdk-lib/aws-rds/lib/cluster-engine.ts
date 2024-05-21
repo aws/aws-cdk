@@ -455,9 +455,15 @@ export class AuroraMysqlEngineVersion {
    * @deprecated Version 5.7.mysql_aurora.2.07.8 is no longer supported by Amazon RDS.
    */
   public static readonly VER_2_07_8 = AuroraMysqlEngineVersion.builtIn_5_7('2.07.8');
-  /** Version "5.7.mysql_aurora.2.07.9". */
+  /**
+   * Version "5.7.mysql_aurora.2.07.9".
+   * @deprecated Version 5.7.mysql_aurora.2.07.9 is no longer supported by Amazon RDS.
+   */
   public static readonly VER_2_07_9 = AuroraMysqlEngineVersion.builtIn_5_7('2.07.9');
-  /** Version "5.7.mysql_aurora.2.07.10". */
+  /**
+   * Version "5.7.mysql_aurora.2.07.10".
+   * @deprecated Version 5.7.mysql_aurora.2.07.10 is no longer supported by Amazon RDS.
+   */
   public static readonly VER_2_07_10 = AuroraMysqlEngineVersion.builtIn_5_7('2.07.10');
   /**
    * Version "5.7.mysql_aurora.2.08.0".
