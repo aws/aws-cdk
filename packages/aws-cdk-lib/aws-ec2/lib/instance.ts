@@ -8,6 +8,7 @@ import { InstanceType } from './instance-types';
 import { IKeyPair } from './key-pair';
 import { CpuCredits } from './launch-template';
 import { IMachineImage, OperatingSystemType } from './machine-image';
+import { IPlacementGroup } from './placement-group';
 import { instanceBlockDeviceMappings } from './private/ebs-util';
 import { ISecurityGroup, SecurityGroup } from './security-group';
 import { UserData } from './user-data';
@@ -16,7 +17,6 @@ import { IVpc, Subnet, SubnetSelection } from './vpc';
 import * as iam from '../../aws-iam';
 import { Annotations, Aspects, Duration, Fn, IResource, Lazy, Resource, Stack, Tags } from '../../core';
 import { md5hash } from '../../core/lib/helpers-internal';
-import { IPlacementGroup } from './placement-group';
 
 /**
  * Name tag constant
@@ -318,7 +318,7 @@ export interface InstanceProps {
   readonly ebsOptimized?: boolean;
 
   /**
-   * The name of an existing placement group that you want to launch the instance into (cluster | partition | spread).
+   * The placement group that you want to launch the instance into.
    */
   readonly placementGroup?: IPlacementGroup;
 }
