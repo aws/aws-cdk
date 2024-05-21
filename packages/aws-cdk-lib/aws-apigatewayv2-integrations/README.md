@@ -124,7 +124,7 @@ httpApi.addRoutes({
 SQS integrations enable integrating an HTTP API route with AWS SQS.
 This allows the HTTP API to send, receive and delete messages from an SQS queue.
 
-The following code configures a Step Functions integrations:
+The following code configures a SQS integrations:
 
 ```ts
 import * as sqs from 'aws-cdk-lib/aws-sqs';
