@@ -1106,6 +1106,32 @@ describe('Graphs', () => {
     }]);
   });
 
+  test('add labels to GraphWidget piehcart', () => {
+    // GIVEN
+    const stack = new Stack();
+    const widget = new GraphWidget({
+      left: [new Metric({ namespace: 'CDK', metricName: 'Test' })],
+      view: GraphWidgetView.PIE,
+      labels: { visible: true },
+    });
+
+    // THEN
+    expect(stack.resolve(widget.toJson())).toEqual([{
+      type: 'metric',
+      width: 6,
+      height: 6,
+      properties: {
+        view: 'pie',
+        region: { Ref: 'AWS::Region' },
+        metrics: [
+          ['CDK', 'Test'],
+        ],
+        yAxis: {},
+        labels: { visible: true },
+      },
+    }]);
+  });
+
   describe('TableWidget', () => {
     let stack;
     let metric;

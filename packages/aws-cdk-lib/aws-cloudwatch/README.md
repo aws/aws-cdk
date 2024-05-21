@@ -496,6 +496,16 @@ dashboard.addWidgets(new cloudwatch.GraphWidget({
 }));
 ```
 
+When the `view` property is set to `GraphWidgetView.PIE`, the `labels` property can be used to toggle whether the magnitude of a pie segment is shown on the graph as a percentage of the whole.
+
+```ts
+dashboard.addWiedgets(new cloudwatch.GraphWidget({
+  // ...
+  view: cloudwatch.GraphWidgetView.PIE,
+  labels: { visible: true },
+}));
+```
+
 ### Table Widget
 
 A `TableWidget` can display any number of metrics in tabular form.
