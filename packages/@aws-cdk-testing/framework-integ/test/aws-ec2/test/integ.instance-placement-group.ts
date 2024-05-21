@@ -7,7 +7,7 @@ import {
 import * as integ from '@aws-cdk/integ-tests-alpha';
 
 const app = new App();
-const stack = new Stack(app, 'ec2-instance-test-stack');
+const stack = new Stack(app, 'ec2-instance-placementgroup-stack');
 
 // create a placementGroup
 const pg = new PlacementGroup(stack, 'test-pg', {

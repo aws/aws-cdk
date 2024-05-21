@@ -16,7 +16,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "ec2-instance-test-stack/VPC"
+      "Value": "ec2-instance-placementgroup-stack/VPC"
      }
     ]
    }
@@ -45,7 +45,7 @@
      },
      {
       "Key": "Name",
-      "Value": "ec2-instance-test-stack/VPC/publicSubnet1"
+      "Value": "ec2-instance-placementgroup-stack/VPC/publicSubnet1"
      }
     ],
     "VpcId": {
@@ -59,7 +59,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "ec2-instance-test-stack/VPC/publicSubnet1"
+      "Value": "ec2-instance-placementgroup-stack/VPC/publicSubnet1"
      }
     ],
     "VpcId": {
@@ -117,7 +117,7 @@
      },
      {
       "Key": "Name",
-      "Value": "ec2-instance-test-stack/VPC/publicSubnet2"
+      "Value": "ec2-instance-placementgroup-stack/VPC/publicSubnet2"
      }
     ],
     "VpcId": {
@@ -131,7 +131,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "ec2-instance-test-stack/VPC/publicSubnet2"
+      "Value": "ec2-instance-placementgroup-stack/VPC/publicSubnet2"
      }
     ],
     "VpcId": {
@@ -171,7 +171,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "ec2-instance-test-stack/VPC"
+      "Value": "ec2-instance-placementgroup-stack/VPC"
      }
     ]
    }
@@ -306,7 +306,7 @@
   "InstanceInstanceSecurityGroupF0E2D5BE": {
    "Type": "AWS::EC2::SecurityGroup",
    "Properties": {
-    "GroupDescription": "ec2-instance-test-stack/Instance/InstanceSecurityGroup",
+    "GroupDescription": "ec2-instance-placementgroup-stack/Instance/InstanceSecurityGroup",
     "SecurityGroupEgress": [
      {
       "CidrIp": "0.0.0.0/0",
@@ -317,7 +317,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "ec2-instance-test-stack/Instance"
+      "Value": "ec2-instance-placementgroup-stack/Instance"
      }
     ],
     "VpcId": {
@@ -343,7 +343,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "ec2-instance-test-stack/Instance"
+      "Value": "ec2-instance-placementgroup-stack/Instance"
      }
     ]
    }
@@ -390,7 +390,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "ec2-instance-test-stack/Instance"
+      "Value": "ec2-instance-placementgroup-stack/Instance"
      }
     ],
     "UserData": {
