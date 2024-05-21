@@ -1,0 +1,12 @@
+{
+  "version": "30.0.0",
+  "testCases": {
+    "cdk-integ-dashboard-with-graph-widget-with-lables/DefaultTest": {
+      "stacks": [
+        "DashboardWithGraphWidgetWithLabelsIntegrationTest"
+      ],
+      "assertionStack": "cdk-integ-dashboard-with-graph-widget-with-labels/DefaultTest/DeployAssert",
+      "assertionStackName": "cdkintegdashboardwithgraphwidgetwithlabelsDefaultTestDeployAssertD4707D74"
+    }
+  }
+}
