@@ -496,6 +496,18 @@ dashboard.addWidgets(new cloudwatch.GraphWidget({
 }));
 ```
 
+The `labels` property can be used to toggle the visibility of labels on a graph widget.
+
+```ts
+declare const dashboard: cloudwatch.Dashboard;
+
+dashboard.addWidgets(new cloudwatch.GraphWidget({
+  // ...
+
+  labels: { visible: true },
+}));
+```
+
 ### Table Widget
 
 A `TableWidget` can display any number of metrics in tabular form.
@@ -519,7 +531,7 @@ declare const dashboard: cloudwatch.Dashboard;
 
 dashboard.addWidgets(new cloudwatch.TableWidget({
   // ...
-  
+
   layout: cloudwatch.TableLayout.VERTICAL,
 }));
 ```
@@ -533,7 +545,7 @@ declare const dashboard: cloudwatch.Dashboard;
 
 dashboard.addWidgets(new cloudwatch.TableWidget({
   // ...
-  
+
   summary: {
     columns: [cloudwatch.TableSummaryColumn.AVERAGE],
     hideNonSummaryColumns: true,
@@ -549,7 +561,7 @@ declare const dashboard: cloudwatch.Dashboard;
 
 dashboard.addWidgets(new cloudwatch.TableWidget({
   // ...
-  
+
   thresholds: [
     cloudwatch.TableThreshold.above(1000, cloudwatch.Color.RED),
     cloudwatch.TableThreshold.between(500, 1000, cloudwatch.Color.ORANGE),
