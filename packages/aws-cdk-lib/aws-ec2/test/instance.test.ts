@@ -26,6 +26,7 @@ import {
   KeyPair,
   KeyPairType,
   CpuCredits,
+  PlacementGroup,
 } from '../lib';
 
 let stack: Stack;
@@ -208,6 +209,39 @@ describe('instance', () => {
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::EC2::Instance', {
       PropagateTagsToVolumeOnCreation: true,
+    });
+  });
+  // placementGroup
+  describe('placementGroup', () => {
+    test('can set placementGroup', () => {
+      // WHEN
+      // create a new placementgroup
+      const pg1 = new PlacementGroup(stack, 'myPlacementGroup1');
+      const pg2 = new PlacementGroup(stack, 'myPlacementGroup2');
+      new Instance(stack, 'Instance1', {
+        vpc,
+        machineImage: new AmazonLinuxImage(),
+        instanceType: InstanceType.of(InstanceClass.T3, InstanceSize.LARGE),
+        placementGroup: pg1,
+      });
+      new Instance(stack, 'Instance2', {
+        vpc,
+        machineImage: new AmazonLinuxImage(),
+        instanceType: InstanceType.of(InstanceClass.T3, InstanceSize.LARGE),
+        placementGroup: PlacementGroup.fromPlacementGroupName(stack, 'importedPlacementGroup', 'myPlacementGroup2'),
+      });
+
+      const t = Template.fromStack(stack);
+      Array.isArray(t);
+      // THEN
+      t.hasResourceProperties('AWS::EC2::Instance', {
+        PlacementGroupName: {
+          'Fn::GetAtt': ['myPlacementGroup180969E8B', 'GroupName'],
+        },
+      });
+      t.hasResourceProperties('AWS::EC2::Instance', {
+        PlacementGroupName: 'myPlacementGroup2',
+      });
     });
   });
   describe('blockDeviceMappings', () => {
