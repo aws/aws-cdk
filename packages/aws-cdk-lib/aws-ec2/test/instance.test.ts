@@ -217,7 +217,7 @@ describe('instance', () => {
       // WHEN
       // create a new placementgroup
       const pg1 = new PlacementGroup(stack, 'myPlacementGroup1');
-      const pg2 = new PlacementGroup(stack, 'myPlacementGroup2');
+      new PlacementGroup(stack, 'myPlacementGroup2');
       new Instance(stack, 'Instance1', {
         vpc,
         machineImage: new AmazonLinuxImage(),
