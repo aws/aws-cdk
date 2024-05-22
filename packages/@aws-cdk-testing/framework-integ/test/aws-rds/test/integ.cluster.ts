@@ -50,7 +50,7 @@ class TestStack extends cdk.Stack {
 
     const cluster = new DatabaseCluster(this, 'Database', {
       engine: DatabaseClusterEngine.auroraMysql({
-        version: AuroraMysqlEngineVersion.VER_3_04_2,
+        version: AuroraMysqlEngineVersion.VER_3_03_0,
       }),
       credentials: Credentials.fromUsername('admin', { password: cdk.SecretValue.unsafePlainText('7959866cacc02c2d243ecfe177464fe6') }),
       vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
