@@ -100,11 +100,11 @@ export class TemplateAndChangeSetDiffMerger {
     for (const [logicalId, changeSetResource] of Object.entries(this.changeSetResources)) {
       const oldResource: types.Resource = {
         Type: changeSetResource.resourceType ?? TemplateAndChangeSetDiffMerger.UNKNOWN_RESOURCE_TYPE,
-        Properties: changeSetResource.beforeContext?.Properties,
+        Properties: changeSetResource.beforeContext?.Properties ?? { ChangeSetPlaceHolder: 'BEFORE_DETAIL_NOT_VIEWABLE' },
       };
       const newResource: types.Resource = {
         Type: changeSetResource.resourceType ?? TemplateAndChangeSetDiffMerger.UNKNOWN_RESOURCE_TYPE,
-        Properties: changeSetResource.afterContext?.Properties,
+        Properties: changeSetResource.afterContext?.Properties ?? { ChangeSetPlaceHolder: 'AFTER_DETAIL_NOT_VIEWABLE' },
       };
 
       const resourceDiffFromChangeset = diffResource(oldResource, newResource);

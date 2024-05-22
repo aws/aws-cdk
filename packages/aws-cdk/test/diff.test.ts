@@ -9,6 +9,7 @@ import { CdkToolkit } from '../lib/cdk-toolkit';
 import * as cfn from '../lib/api/util/cloudformation';
 import { NestedStackTemplates } from '../lib/api/nested-stack-helpers';
 import * as fs from 'fs';
+// import * as AWS from 'aws-sdk';
 
 let cloudExecutable: MockCloudExecutable;
 let cloudFormation: jest.Mocked<Deployments>;
@@ -205,6 +206,8 @@ Resources
     // THEN
     const plainTextOutput = buffer.data.replace(/\x1B\[[0-?]*[ -/]*[@-~]/g, '');
     expect(cfn.createDiffChangeSet).toHaveBeenCalled();
+    // eslint-disable-next-line no-console
+    console.log(plainTextOutput);
     expect(plainTextOutput).toContain(`Stack A
 Parameters and rules created during migration do not affect resource configuration.
 Resources
@@ -544,6 +547,34 @@ describe('stack exists checks', () => {
     expect(cfn.createDiffChangeSet).not.toHaveBeenCalled();
   });
 });
+
+// describe('DescribeChangeSet', () => {
+
+//   test('DescribeChangeSet doesnt include IncludePropertyValue in request if no change context', async () => {
+//     // GIVEN
+//     const changeSetSpy = jest.spyOn(cfn, 'maybeGetChangeSetChangeContext');
+//     changeSetSpy.mockResolvedValue(undefined);
+
+//     jest.mock('aws-sdk', () => {
+//       const mockDescribeChangeSet = jest.fn().mockReturnValue({
+//         promise: jest.fn().mockRejectedValueOnce({ Changes: [], NextToken: 'hi' }),
+//       });
+
+//       return {
+//         CloudFormation: jest.fn(() => ({
+//           describeChangeSet: mockDescribeChangeSet,
+//         })),
+//       };
+//     });
+
+//     // WHEN
+//     const cfnClient = new AWS.CloudFormation();
+//     await cfn.describeChangeSet(cfnClient, 'stack', 'changeSet', { fetchAll: true });
+
+//     // THEN
+//   });
+
+// });
 
 describe('nested stacks', () => {
   beforeEach(() => {

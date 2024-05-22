@@ -191,7 +191,7 @@ export class CloudFormationStack {
  *
  * @returns       CloudFormation information about the ChangeSet
  */
-async function describeChangeSet(
+export async function describeChangeSet(
   cfn: CloudFormation,
   stackName: string,
   changeSetName: string,
@@ -199,36 +199,23 @@ async function describeChangeSet(
 ): Promise<CloudFormation.DescribeChangeSetOutput> {
   const response = await cfn.describeChangeSet({ StackName: stackName, ChangeSetName: changeSetName }).promise();
 
-  try {
-    // * As of now, describeChangeSet with IncludePropertyValues doesn't include the StatusReason for a ChangeSet with no changes. There is a fix that's in progress from CloudFormation.
-    // * As of now, the IncludePropertyValues feature is not available in all AWS partitions.
-    //   * TODO: Once the above are fixed, this try catch block can be removed and we can make a single DescribeChangeSet request.
-    const changesWithPropertyValues = (await cfn.describeChangeSet({
-      StackName: stackName, ChangeSetName: changeSetName, IncludePropertyValues: true,
-    } as any).promise())
-      .Changes;
-
-    const changeContextIncludedInResponse = changesWithPropertyValues?.find((change) =>
-      (change?.ResourceChange?.AfterContext !== undefined) || (change?.ResourceChange?.BeforeContext !== undefined),
-    );
-    if (changeContextIncludedInResponse) {
-      response.Changes = changesWithPropertyValues;
-    } else {
-      // We don't want to assume that failure to use the new IncludePropertyValues field will result in an exception being thrown.
-      debug('describeChangeSet with IncludePropertyValues has no BeforeContext or AfterContext. Diff will not include property values from ChangeSet.');
-    }
-  } catch (e: any) {
-    debug('Failed to describeChangeSet with IncludePropertyValues. Diff will not include property values from ChangeSet. Error Message: %s', e?.message);
+  const changeSetChangesWithContext = await maybeGetChangeSetChangeContext(cfn, stackName, changeSetName);
+  if (changeSetChangesWithContext) {
+    response.Changes = changeSetChangesWithContext.Changes;
   }
 
   // If fetchAll is true, traverse all pages from the change set description.
   while (fetchAll && response.NextToken != null) {
-    const nextPage = await cfn.describeChangeSet({
+    const input: any = {
       StackName: stackName,
       ChangeSetName: response.ChangeSetId ?? changeSetName,
       NextToken: response.NextToken,
-      IncludePropertyValues: true,
-    }).promise();
+    };
+    if (changeSetChangesWithContext) {
+      input.IncludePropertyValues = true;
+    }
+
+    const nextPage = await cfn.describeChangeSet(input).promise();
 
     // Consolidate the changes
     if (nextPage.Changes != null) {
@@ -242,6 +229,40 @@ async function describeChangeSet(
   }
 
   return response;
+}
+
+/**
+ * * As of now, describeChangeSet with IncludePropertyValues doesn't include the StatusReason for a ChangeSet with no changes. There is a fix that's in progress from CloudFormation.
+ * * As of now, the IncludePropertyValues feature is not available in all AWS partitions.
+ *     * TODO: Once the above are fixed, we can remove this function and make all describeChangeSet requests with IncludePropertValues set to true.
+ */
+export async function maybeGetChangeSetChangeContext(
+  cfn: CloudFormation,
+  stackName: string,
+  changeSetName: string,
+): Promise<CloudFormation.DescribeChangeSetOutput | undefined> {
+  let changeContextIncludedInResponse = undefined;
+  try {
+    const changesWithPropertyValues = await cfn.describeChangeSet({
+      StackName: stackName,
+      ChangeSetName: changeSetName,
+      IncludePropertyValues: true,
+    }).promise();
+
+    changeContextIncludedInResponse = changesWithPropertyValues?.Changes?.find((change) =>
+      (change?.ResourceChange?.AfterContext !== undefined) || (change?.ResourceChange?.BeforeContext !== undefined),
+    );
+    if (changeContextIncludedInResponse) {
+      return changesWithPropertyValues;
+    }
+
+    // We don't want to assume that failure to use the new IncludePropertyValues field will result in an exception being thrown.
+    debug('describeChangeSet with IncludePropertyValues has no BeforeContext or AfterContext. Diff will not include property values from ChangeSet.');
+  } catch (e: any) {
+    debug('Failed to describeChangeSet with IncludePropertyValues. Diff will not include property values from ChangeSet. Error Message: %s', e?.message);
+  }
+
+  return undefined;
 }
 
 /**
