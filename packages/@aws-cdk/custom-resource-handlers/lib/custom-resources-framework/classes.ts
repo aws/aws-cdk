@@ -81,6 +81,12 @@ export interface HandlerFrameworkClassProps {
   readonly runtime?: Runtime;
 }
 
+interface BuildRuntimePropertyOptions {
+  readonly runtime?: Runtime;
+  readonly isCustomResourceProvider?: boolean;
+  readonly isEvalNodejsProvider?: boolean;
+}
+
 export abstract class HandlerFrameworkClass extends ClassType {
   /**
    * Builds a code generated Lambda function class.
@@ -102,7 +108,7 @@ export abstract class HandlerFrameworkClass extends ClassType {
             PATH_MODULE.join.call(expr.directCode(`__dirname, '${props.codeDirectory}'`)),
           )],
           ['handler', expr.lit(props.handler)],
-          ['runtime', this.buildRuntimeProperty(scope, props.runtime)],
+          ['runtime', this.buildRuntimeProperty(scope, { runtime: props.runtime })],
         ]);
         this.buildConstructor({
           constructorPropsType: LAMBDA_MODULE.FunctionOptions,
@@ -127,10 +133,8 @@ export abstract class HandlerFrameworkClass extends ClassType {
         });
 
         scope.registerImport(LAMBDA_MODULE);
-        
-        const isEvalNodejsProvider = this.fqn.includes('eval-nodejs-provider');
 
-        this.importExternalModulesInto(scope);
+        const isEvalNodejsProvider = this.fqn.includes('eval-nodejs-provider');
 
         const uuid: PropertySpec = {
           name: 'uuid',
@@ -186,7 +190,7 @@ export abstract class HandlerFrameworkClass extends ClassType {
             PATH_MODULE.join.call(expr.directCode(`__dirname, '${props.codeDirectory}'`)),
           )],
           ['handler', expr.lit(props.handler)],
-          ['runtime', expr.directCode(`${isEvalNodejsProvider ? 'props.runtime ?? ' : ''}${this.buildRuntimeProperty(scope, props.runtime)}`)],
+          ['runtime', this.buildRuntimeProperty(scope, { runtime: props.runtime, isEvalNodejsProvider })],
         ]);
         this.buildConstructor({
           constructorPropsType: _interface.type,
@@ -287,7 +291,10 @@ export abstract class HandlerFrameworkClass extends ClassType {
         const superProps = new ObjectLiteral([
           new Splat(expr.ident('props')),
           ['codeDirectory', PATH_MODULE.join.call(expr.directCode(`__dirname, '${props.codeDirectory}'`))],
-          ['runtimeName', this.buildRuntimeProperty(scope, props.runtime, true)],
+          ['runtimeName', this.buildRuntimeProperty(scope, {
+            runtime: props.runtime,
+            isCustomResourceProvider: true,
+          })],
         ]);
         this.buildConstructor({
           constructorPropsType: CORE_MODULE.CustomResourceProviderOptions,
@@ -340,12 +347,14 @@ export abstract class HandlerFrameworkClass extends ClassType {
     init.addBody(new SuperInitializer(...superInitializerArgs));
   }
 
-  private buildRuntimeProperty(scope: HandlerFrameworkModule, runtime?: Runtime, isProvider: boolean = false) {
+  private buildRuntimeProperty(scope: HandlerFrameworkModule, options: BuildRuntimePropertyOptions = {}) {
+    const { runtime, isCustomResourceProvider, isEvalNodejsProvider } = options;
+
     if (runtime) {
-      return isProvider ? expr.lit(runtime) : expr.directCode(toLambdaRuntime(runtime));
+      return isCustomResourceProvider ? expr.lit(runtime) : expr.directCode(toLambdaRuntime(runtime));
     }
 
-    if (isProvider) {
+    if (isCustomResourceProvider) {
       scope.registerImport(CORE_MODULE, {
         targets: [CORE_MODULE.determineLatestNodeRuntimeName],
         fromLocation: scope.isCoreInternal
@@ -355,8 +364,12 @@ export abstract class HandlerFrameworkClass extends ClassType {
     }
 
     const _scope = expr.ident('scope');
-    return isProvider
+    const call = isCustomResourceProvider
       ? CORE_MODULE.determineLatestNodeRuntimeName.call(_scope)
       : LAMBDA_MODULE.determineLatestNodeRuntime.call(_scope);
+
+    return isEvalNodejsProvider
+      ? expr.cond(expr.directCode('props.runtime'), expr.directCode('props.runtime'), call)
+      : call;
   }
 }

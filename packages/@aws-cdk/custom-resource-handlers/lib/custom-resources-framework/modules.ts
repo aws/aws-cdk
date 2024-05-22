@@ -53,7 +53,6 @@ class LambdaModule extends ImportableModule {
   public readonly Runtime = Type.fromName(this, 'Runtime');
   public readonly RuntimeFamily = Type.fromName(this, 'RuntimeFamily');
   public readonly Code = Type.fromName(this, 'Code');
-  public readonly Runtime = Type.fromName(this, 'Runtime');
 
   public readonly determineLatestNodeRuntime = CallableExpr.fromName(this, 'determineLatestNodeRuntime');
 
