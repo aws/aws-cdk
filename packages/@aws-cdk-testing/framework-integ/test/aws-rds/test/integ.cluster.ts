@@ -14,7 +14,7 @@ class TestStack extends cdk.Stack {
 
     const params = new ParameterGroup(this, 'Params', {
       engine: DatabaseClusterEngine.auroraMysql({
-        version: AuroraMysqlEngineVersion.VER_3_03_0,
+        version: AuroraMysqlEngineVersion.VER_3_04_2,
       }),
       description: 'A nice parameter group',
       parameters: {
