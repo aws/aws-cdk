@@ -14,6 +14,14 @@
     "Preset": "CONSTRAINED_BANDWIDTH_DELIVERY",
     "Type": "ADVANCED_HD"
    }
+  },
+  "StandardChannelWithPresetSetting45FDEBBB": {
+   "Type": "AWS::IVS::Channel",
+   "Properties": {
+    "Name": "aws-cdk-ivsStandardChannelWithPresetSetting2553AADD",
+    "Preset": "",
+    "Type": "STANDARD"
+   }
   }
  },
  "Outputs": {
@@ -37,6 +45,17 @@
    },
    "Export": {
     "Name": "aws-cdk-ivs:ExportsOutputFnGetAttAdvancedChannelWithPresetSetting5981FCA9Arn6ED27899"
+   }
+  },
+  "ExportsOutputFnGetAttStandardChannelWithPresetSetting45FDEBBBArn94DAE976": {
+   "Value": {
+    "Fn::GetAtt": [
+     "StandardChannelWithPresetSetting45FDEBBB",
+     "Arn"
+    ]
+   },
+   "Export": {
+    "Name": "aws-cdk-ivs:ExportsOutputFnGetAttStandardChannelWithPresetSetting45FDEBBBArn94DAE976"
    }
   }
  },

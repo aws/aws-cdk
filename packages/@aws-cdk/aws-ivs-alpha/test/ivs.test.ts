@@ -188,9 +188,14 @@ test('channel type advanced with preset setting', () => {
   });
 });
 
-test('set preset with STANDARD or BASIC channel type should throw', () => {
-  expect(() => new ivs.Channel(stack, 'Channel', {
+test('the preset with the STANDARD or BASIC channel type is overwritten with an empty string.', () => {
+  new ivs.Channel(stack, 'Channel', {
     type: ivs.ChannelType.STANDARD,
     preset: ivs.Preset.CONSTRAINED_BANDWIDTH_DELIVERY,
-  })).toThrow('preset cannot be used when STANDARD or BASIC channel type');
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::IVS::Channel', {
+    Type: 'STANDARD',
+    Preset: '',
+  });
 });

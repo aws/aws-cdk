@@ -15,6 +15,11 @@ const advancedChannelWithPresetSetting = new ivs.Channel(stack, 'AdvancedChannel
   preset: ivs.Preset.CONSTRAINED_BANDWIDTH_DELIVERY,
 });
 
+const standardChannelWithPresetSetting = new ivs.Channel(stack, 'StandardChannelWithPresetSetting', {
+  type: ivs.ChannelType.STANDARD,
+  preset: ivs.Preset.CONSTRAINED_BANDWIDTH_DELIVERY,
+});
+
 const test = new integ.IntegTest(app, 'ivs-test', {
   testCases: [stack],
 });
@@ -36,6 +41,16 @@ test.assertions.awsApiCall('IVS', 'GetChannel', {
     channel: {
       preset: 'CONSTRAINED_BANDWIDTH_DELIVERY',
       type: 'ADVANCED_HD',
+    },
+  }));
+
+test.assertions.awsApiCall('IVS', 'GetChannel', {
+  arn: standardChannelWithPresetSetting.channelArn,
+})
+  .expect(integ.ExpectedResult.objectLike({
+    channel: {
+      preset: '',
+      type: 'STANDARD',
     },
   }));
 

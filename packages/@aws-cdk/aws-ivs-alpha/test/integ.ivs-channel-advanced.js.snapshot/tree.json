@@ -29,7 +29,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.Resource",
+              "fqn": "@aws-cdk/aws-ivs-alpha.Channel",
               "version": "0.0.0"
             }
           },
@@ -55,7 +55,33 @@
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.Resource",
+              "fqn": "@aws-cdk/aws-ivs-alpha.Channel",
+              "version": "0.0.0"
+            }
+          },
+          "StandardChannelWithPresetSetting": {
+            "id": "StandardChannelWithPresetSetting",
+            "path": "aws-cdk-ivs/StandardChannelWithPresetSetting",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "aws-cdk-ivs/StandardChannelWithPresetSetting/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::IVS::Channel",
+                  "aws:cdk:cloudformation:props": {
+                    "name": "aws-cdk-ivsStandardChannelWithPresetSetting2553AADD",
+                    "preset": "",
+                    "type": "STANDARD"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_ivs.CfnChannel",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/aws-ivs-alpha.Channel",
               "version": "0.0.0"
             }
           },
@@ -74,6 +100,14 @@
               "Output{\"Fn::GetAtt\":[\"AdvancedChannelWithPresetSetting5981FCA9\",\"Arn\"]}": {
                 "id": "Output{\"Fn::GetAtt\":[\"AdvancedChannelWithPresetSetting5981FCA9\",\"Arn\"]}",
                 "path": "aws-cdk-ivs/Exports/Output{\"Fn::GetAtt\":[\"AdvancedChannelWithPresetSetting5981FCA9\",\"Arn\"]}",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnOutput",
+                  "version": "0.0.0"
+                }
+              },
+              "Output{\"Fn::GetAtt\":[\"StandardChannelWithPresetSetting45FDEBBB\",\"Arn\"]}": {
+                "id": "Output{\"Fn::GetAtt\":[\"StandardChannelWithPresetSetting45FDEBBB\",\"Arn\"]}",
+                "path": "aws-cdk-ivs/Exports/Output{\"Fn::GetAtt\":[\"StandardChannelWithPresetSetting45FDEBBB\",\"Arn\"]}",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.CfnOutput",
                   "version": "0.0.0"
@@ -258,6 +292,60 @@
                       "AssertionResults": {
                         "id": "AssertionResults",
                         "path": "ivs-test/DefaultTest/DeployAssert/AwsApiCallIVSGetChannel66d0ded52919471afc55195f445a6cf5/AssertionResults",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CfnOutput",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "@aws-cdk/integ-tests-alpha.AwsApiCall",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "AwsApiCallIVSGetChannel46937e5f3afa2026ecd5f7aaa4670019": {
+                    "id": "AwsApiCallIVSGetChannel46937e5f3afa2026ecd5f7aaa4670019",
+                    "path": "ivs-test/DefaultTest/DeployAssert/AwsApiCallIVSGetChannel46937e5f3afa2026ecd5f7aaa4670019",
+                    "children": {
+                      "SdkProvider": {
+                        "id": "SdkProvider",
+                        "path": "ivs-test/DefaultTest/DeployAssert/AwsApiCallIVSGetChannel46937e5f3afa2026ecd5f7aaa4670019/SdkProvider",
+                        "children": {
+                          "AssertionsProvider": {
+                            "id": "AssertionsProvider",
+                            "path": "ivs-test/DefaultTest/DeployAssert/AwsApiCallIVSGetChannel46937e5f3afa2026ecd5f7aaa4670019/SdkProvider/AssertionsProvider",
+                            "constructInfo": {
+                              "fqn": "constructs.Construct",
+                              "version": "10.3.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "@aws-cdk/integ-tests-alpha.AssertionsProvider",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Default": {
+                        "id": "Default",
+                        "path": "ivs-test/DefaultTest/DeployAssert/AwsApiCallIVSGetChannel46937e5f3afa2026ecd5f7aaa4670019/Default",
+                        "children": {
+                          "Default": {
+                            "id": "Default",
+                            "path": "ivs-test/DefaultTest/DeployAssert/AwsApiCallIVSGetChannel46937e5f3afa2026ecd5f7aaa4670019/Default/Default",
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.CfnResource",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.CustomResource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "AssertionResults": {
+                        "id": "AssertionResults",
+                        "path": "ivs-test/DefaultTest/DeployAssert/AwsApiCallIVSGetChannel46937e5f3afa2026ecd5f7aaa4670019/AssertionResults",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.CfnOutput",
                           "version": "0.0.0"

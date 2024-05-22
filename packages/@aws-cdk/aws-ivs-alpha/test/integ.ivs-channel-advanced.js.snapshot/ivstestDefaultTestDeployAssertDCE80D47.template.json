@@ -27,7 +27,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1715166333580"
+    "salt": "1716338199347"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -58,6 +58,15 @@
       "PolicyDocument": {
        "Version": "2012-10-17",
        "Statement": [
+        {
+         "Action": [
+          "ivs:GetChannel"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
         {
          "Action": [
           "ivs:GetChannel"
@@ -129,7 +138,39 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1715166333582"
+    "salt": "1716338199348"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallIVSGetChannel46937e5f3afa2026ecd5f7aaa4670019": {
+   "Type": "Custom::DeployAssert@SdkCallIVSGetChannel",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "IVS",
+    "api": "GetChannel",
+    "expected": "{\"$ObjectLike\":{\"channel\":{\"preset\":\"\",\"type\":\"STANDARD\"}}}",
+    "parameters": {
+     "arn": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "aws-cdk-ivs:ExportsOutputFnGetAttStandardChannelWithPresetSetting45FDEBBBArn94DAE976"
+        },
+        "\""
+       ]
+      ]
+     }
+    },
+    "flattenResponse": "false",
+    "salt": "1716338199348"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -148,6 +189,14 @@
    "Value": {
     "Fn::GetAtt": [
      "AwsApiCallIVSGetChannel66d0ded52919471afc55195f445a6cf5",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallIVSGetChannel46937e5f3afa2026ecd5f7aaa4670019": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallIVSGetChannel46937e5f3afa2026ecd5f7aaa4670019",
      "assertion"
     ]
    }

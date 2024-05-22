@@ -141,6 +141,7 @@ export interface ChannelProps {
 
   /**
    * An optional transcode preset for the channel. Can be used for ADVANCED_HD and ADVANCED_SD channel types.
+   * When LOW or STANDARD is used, the preset will be overridden and set to none regardless of the value provided.
    *
    * @default - Preset.HIGHER_BANDWIDTH_DELIVERY if channelType is ADVANCED_SD or ADVANCED_HD, none otherwise
    */
@@ -200,8 +201,12 @@ export class Channel extends ChannelBase {
       throw new Error(`channelName must contain only numbers, letters, hyphens and underscores, got: '${this.physicalName}'`);
     }
 
+    let preset;
+
     if (props.type && [ChannelType.STANDARD, ChannelType.BASIC].includes(props.type) && props.preset) {
-      throw new Error('preset cannot be used when STANDARD or BASIC channel type');
+      preset = '';
+    } else {
+      preset = props.preset;
     }
 
     const resource = new CfnChannel(this, 'Resource', {
@@ -209,7 +214,7 @@ export class Channel extends ChannelBase {
       latencyMode: props.latencyMode,
       name: this.physicalName,
       type: props.type,
-      preset: props.preset,
+      preset,
     });
 
     this.channelArn = resource.attrArn;
