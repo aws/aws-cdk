@@ -354,6 +354,27 @@ const task = new tasks.BedrockInvokeModel(this, 'Prompt Model', {
   },
 });
 ```
+### Using Input Path
+
+Provide S3 URI as an input or output path to invoke a model
+
+```ts
+
+import * as bedrock from 'aws-cdk-lib/aws-bedrock';
+
+const model = bedrock.FoundationModel.fromFoundationModelId(
+  this,
+  'Model',
+  bedrock.FoundationModelIdentifier.AMAZON_TITAN_TEXT_G1_EXPRESS_V1,
+);
+
+const task = new tasks.BedrockInvokeModel(this, 'Prompt Model', {
+  model,
+  inputPath: sfn.JsonPath.stringAt('$.prompt'),
+  outputPath: sfn.JsonPath.stringAt('$.prompt'),
+});
+
+```
 
 ## CodeBuild
 
