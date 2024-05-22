@@ -63,7 +63,7 @@ describe('cluster engine', () => {
   test('cluster parameter group correctly determined for AURORA_MYSQL and given version 3', () => {
     // GIVEN
     const engine = DatabaseClusterEngine.auroraMysql({
-      version: AuroraMysqlEngineVersion.VER_3_01_0,
+      version: AuroraMysqlEngineVersion.VER_3_04_2,
     });
 
     // WHEN
