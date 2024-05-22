@@ -169,6 +169,25 @@ describe('framework', () => {
     const expected = fs.readFileSync(path.resolve(__dirname, 'expected', 'python-runtime', 'custom-resource-provider-core.ts'), 'utf-8');
     expect(result).toContain(expected);
   });
+
+  test('codegen eval-nodejs-provider with exposed runtime property', () => {
+    // GIVEN
+    const module = new HandlerFrameworkModule('cdk-testing/eval-nodejs-provider');
+    const component: ComponentProps = {
+      type: ComponentType.SINGLETON_FUNCTION, // eval-nodejs-provider is a singleton function
+      sourceCode,
+    };
+    const outfile = calculateOutfile(sourceCode);
+    module.build(component, path.dirname(outfile).split('/').pop() ?? 'dist');
+
+    // WHEN
+    module.renderTo(`${tmpDir}/result.ts`);
+
+    // THEN
+    const result = fs.readFileSync(path.resolve(tmpDir, 'result.ts'), 'utf-8');
+    const expected = fs.readFileSync(path.resolve(__dirname, 'expected', 'singleton-function-eval-nodejs.ts'), 'utf-8');
+    expect(result).toContain(expected);
+  });
 });
 
 function calculateCodeDirectory(outpath: string) {
