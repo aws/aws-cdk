@@ -1521,6 +1521,25 @@ const host = new ec2.BastionHostLinux(this, 'BastionHost', {
 });
 ```
 
+### Placement Group 
+
+Specify `placementGroup` to enable the placement group support:
+
+```ts fixture=with-vpc
+declare const instanceType: ec2.InstanceType;
+
+const pg = new ec2.PlacementGroup(this, 'test-pg', {
+  strategy: ec2.PlacementGroupStrategy.SPREAD,
+});
+
+new ec2.Instance(this, 'Instance', {
+  vpc,
+  instanceType,
+  machineImage: ec2.MachineImage.latestAmazonLinux2023(),
+  placementGroup: pg,
+});
+```
+
 ### Block Devices
 
 To add EBS block device mappings, specify the `blockDevices` property. The following example sets the EBS-backed
