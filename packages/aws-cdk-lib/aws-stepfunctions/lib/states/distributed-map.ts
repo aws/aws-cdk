@@ -3,11 +3,11 @@ import { ItemBatcher } from './distributed-map/item-batcher';
 import { IItemReader } from './distributed-map/item-reader';
 import { ResultWriter } from './distributed-map/result-writer';
 import { MapBase, MapBaseProps } from './map-base';
+import { Annotations } from '../../../core';
 import { FieldUtils } from '../fields';
 import { StateGraph } from '../state-graph';
 import { StateMachineType } from '../state-machine';
 import { CatchProps, IChainable, INextable, ProcessorConfig, ProcessorMode, RetryProps } from '../types';
-import { Annotations } from '../../../core';
 
 const DISTRIBUTED_MAP_SYMBOL = Symbol.for('@aws-cdk/aws-stepfunctions.DistributedMap');
 
