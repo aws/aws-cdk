@@ -3,8 +3,8 @@ import * as path from "path";
 import { Construct } from "constructs";
 import * as lambda from "../../../aws-lambda";
 
-export class TestSingletonFunction extends lambda.SingletonFunction {
-  public constructor(scope: Construct, id: string, props: TestSingletonFunctionProps) {
+export class EvalNodejsSingletonFunction extends lambda.SingletonFunction {
+  public constructor(scope: Construct, id: string, props: EvalNodejsSingletonFunctionProps) {
     super(scope, id, {
       ...props,
       "code": lambda.Code.fromAsset(path.join(__dirname, 'my-handler')),
@@ -15,9 +15,9 @@ export class TestSingletonFunction extends lambda.SingletonFunction {
 }
 
 /**
- * Initialization properties for TestSingletonFunction
+ * Initialization properties for EvalNodejsSingletonFunction
  */
-export interface TestSingletonFunctionProps extends lambda.FunctionOptions {
+export interface EvalNodejsSingletonFunctionProps extends lambda.FunctionOptions {
   /**
    * A unique identifier to identify this Lambda.
    *
