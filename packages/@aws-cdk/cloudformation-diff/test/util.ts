@@ -1,4 +1,4 @@
-import { DescribeChangeSetOutput } from '@aws-sdk/client-cloudformation';
+import { Change, DescribeChangeSetOutput } from '@aws-sdk/client-cloudformation';
 
 export function template(resources: {[key: string]: any}) {
   return { Resources: resources };
@@ -86,81 +86,100 @@ export const ssmParam = {
   },
 };
 
-export function sqsQueueWithAargs(args: { waitTime: number }) {
+export function sqsQueueWithAargs(args: { waitTime: number; queueName?: string }) {
   return {
     Type: 'AWS::SQS::Queue',
     Properties: {
       QueueName: {
-        Ref: 'SsmParameterValuetestbugreportC9',
+        Ref: args.queueName ?? 'SsmParameterValuetestbugreportC9',
       },
       ReceiveMessageWaitTimeSeconds: args.waitTime,
     },
   };
 }
 
+export const ssmParamFromChangeset: Change = {
+  Type: 'Resource',
+  ResourceChange: {
+    Action: 'Modify',
+    LogicalResourceId: 'mySsmParameter',
+    PhysicalResourceId: 'mySsmParameterFromStack',
+    ResourceType: 'AWS::SSM::Parameter',
+    Replacement: 'False',
+    Scope: [
+      'Properties',
+    ],
+    Details: [
+      {
+        Target: {
+          Attribute: 'Properties',
+          Name: 'Value',
+          RequiresRecreation: 'Never',
+          Path: '/Properties/Value',
+          BeforeValue: 'changedddd',
+          AfterValue: 'sdflkja',
+          AttributeChangeType: 'Modify',
+        },
+        Evaluation: 'Static',
+        ChangeSource: 'DirectModification',
+      },
+    ],
+    BeforeContext: '{"Properties":{"Value":"changedddd","Type":"String","Name":"mySsmParameterFromStack"},"Metadata":{"aws:cdk:path":"cdkbugreport/mySsmParameter/Resource"}}',
+    AfterContext: '{"Properties":{"Value":"sdflkja","Type":"String","Name":"mySsmParameterFromStack"},"Metadata":{"aws:cdk:path":"cdkbugreport/mySsmParameter/Resource"}}',
+  },
+};
+
+export function queueFromChangeset(args: { beforeContextWaitTime?: string; afterContextWaitTime?: string } ): Change {
+  return {
+    Type: 'Resource',
+    ResourceChange: {
+      PolicyAction: 'ReplaceAndDelete',
+      Action: 'Modify',
+      LogicalResourceId: 'Queue',
+      PhysicalResourceId: 'https://sqs.us-east-1.amazonaws.com/012345678901/newValuechangedddd',
+      ResourceType: 'AWS::SQS::Queue',
+      Replacement: 'True',
+      Scope: [
+        'Properties',
+      ],
+      Details: [
+        {
+          Target: {
+            Attribute: 'Properties',
+            Name: 'ReceiveMessageWaitTimeSeconds',
+            RequiresRecreation: 'Never',
+            Path: '/Properties/ReceiveMessageWaitTimeSeconds',
+            BeforeValue: args.beforeContextWaitTime ?? '20',
+            AfterValue: args.afterContextWaitTime ?? '20',
+            AttributeChangeType: 'Modify',
+          },
+          Evaluation: 'Static',
+          ChangeSource: 'DirectModification',
+        },
+        {
+          Target: {
+            Attribute: 'Properties',
+            Name: 'QueueName',
+            RequiresRecreation: 'Always',
+            Path: '/Properties/QueueName',
+            BeforeValue: 'newValuechangedddd',
+            AfterValue: 'newValuesdflkja',
+            AttributeChangeType: 'Modify',
+          },
+          Evaluation: 'Static',
+          ChangeSource: 'DirectModification',
+        },
+      ],
+      BeforeContext: `{"Properties":{"QueueName":"newValuechangedddd","ReceiveMessageWaitTimeSeconds":"${args.beforeContextWaitTime ?? '20'}"},"Metadata":{"aws:cdk:path":"cdkbugreport/Queue/Resource"},"UpdateReplacePolicy":"Delete","DeletionPolicy":"Delete"}`,
+      AfterContext: `{"Properties":{"QueueName":"newValuesdflkja","ReceiveMessageWaitTimeSeconds":"${args.afterContextWaitTime ?? '20'}"},"Metadata":{"aws:cdk:path":"cdkbugreport/Queue/Resource"},"UpdateReplacePolicy":"Delete","DeletionPolicy":"Delete"}`,
+    },
+  };
+}
+
 export const changeSet: DescribeChangeSetOutput = {
   Changes: [
-    {
-      Type: 'Resource',
-      ResourceChange: {
-        PolicyAction: 'ReplaceAndDelete',
-        Action: 'Modify',
-        LogicalResourceId: 'Queue',
-        PhysicalResourceId: 'https://sqs.us-east-1.amazonaws.com/012345678901/newValuechangedddd',
-        ResourceType: 'AWS::SQS::Queue',
-        Replacement: 'True',
-        Scope: [
-          'Properties',
-        ],
-        Details: [
-          {
-            Target: {
-              Attribute: 'Properties',
-              Name: 'QueueName',
-              RequiresRecreation: 'Always',
-              Path: '/Properties/QueueName',
-              BeforeValue: 'newValuechangedddd',
-              AfterValue: 'newValuesdflkja',
-              AttributeChangeType: 'Modify',
-            },
-            Evaluation: 'Static',
-            ChangeSource: 'DirectModification',
-          },
-        ],
-        BeforeContext: '{"Properties":{"QueueName":"newValuechangedddd","ReceiveMessageWaitTimeSeconds":"20"},"Metadata":{"aws:cdk:path":"cdkbugreport/Queue/Resource"},"UpdateReplacePolicy":"Delete","DeletionPolicy":"Delete"}',
-        AfterContext: '{"Properties":{"QueueName":"newValuesdflkja","ReceiveMessageWaitTimeSeconds":"20"},"Metadata":{"aws:cdk:path":"cdkbugreport/Queue/Resource"},"UpdateReplacePolicy":"Delete","DeletionPolicy":"Delete"}',
-      },
-    },
-    {
-      Type: 'Resource',
-      ResourceChange: {
-        Action: 'Modify',
-        LogicalResourceId: 'mySsmParameter',
-        PhysicalResourceId: 'mySsmParameterFromStack',
-        ResourceType: 'AWS::SSM::Parameter',
-        Replacement: 'False',
-        Scope: [
-          'Properties',
-        ],
-        Details: [
-          {
-            Target: {
-              Attribute: 'Properties',
-              Name: 'Value',
-              RequiresRecreation: 'Never',
-              Path: '/Properties/Value',
-              BeforeValue: 'changedddd',
-              AfterValue: 'sdflkja',
-              AttributeChangeType: 'Modify',
-            },
-            Evaluation: 'Static',
-            ChangeSource: 'DirectModification',
-          },
-        ],
-        BeforeContext: '{"Properties":{"Value":"changedddd","Type":"String","Name":"mySsmParameterFromStack"},"Metadata":{"aws:cdk:path":"cdkbugreport/mySsmParameter/Resource"}}',
-        AfterContext: '{"Properties":{"Value":"sdflkja","Type":"String","Name":"mySsmParameterFromStack"},"Metadata":{"aws:cdk:path":"cdkbugreport/mySsmParameter/Resource"}}',
-      },
-    },
+    queueFromChangeset({}),
+    ssmParamFromChangeset,
   ],
   ChangeSetName: 'newesteverr2223',
   ChangeSetId: 'arn:aws:cloudformation:us-east-1:012345678901:changeSet/newesteverr2223/3cb73e2d-d1c4-4331-9255-c978e496b6d1',
@@ -191,55 +210,24 @@ export const changeSetWithMissingChanges = {
   ],
 };
 
+const copyOfssmChange = JSON.parse(JSON.stringify(ssmParamFromChangeset));
+copyOfssmChange.ResourceChange.ResourceType = undefined;
+copyOfssmChange.ResourceChange.Details[0].Evaluation = undefined;
+const copyOfQueueChange = JSON.parse(JSON.stringify(queueFromChangeset({})));
+copyOfQueueChange.ResourceChange.Details[0].Target = undefined;
+copyOfQueueChange.ResourceChange.ResourceType = undefined;
+const afterContext = JSON.parse(copyOfQueueChange.ResourceChange?.AfterContext);
+afterContext.Properties.QueueName = undefined;
+copyOfQueueChange.ResourceChange.AfterContext = afterContext;
+const beforeContext = JSON.parse(copyOfQueueChange.ResourceChange?.BeforeContext);
+beforeContext.Properties.Random = 'nice';
+beforeContext.Properties.QueueName = undefined;
+copyOfQueueChange.ResourceChange.BeforeContext = beforeContext;
+
 export const changeSetWithPartiallyFilledChanges: DescribeChangeSetOutput = {
   Changes: [
-    {
-      Type: 'Resource',
-      ResourceChange: {
-        PolicyAction: 'ReplaceAndDelete',
-        Action: 'Modify',
-        LogicalResourceId: 'Queue',
-        PhysicalResourceId: 'https://sqs.us-east-1.amazonaws.com/012345678901/newValuechangedddd',
-        ResourceType: undefined,
-        Replacement: 'True',
-        Scope: [
-          'Properties',
-        ],
-        Details: [
-          {
-            Target: {
-              Attribute: 'Properties',
-              Name: 'QueueName',
-              RequiresRecreation: 'Always',
-              Path: '/Properties/QueueName',
-              AttributeChangeType: 'Modify',
-            },
-            Evaluation: undefined,
-            ChangeSource: 'DirectModification',
-          },
-        ],
-      },
-    },
-    {
-      Type: 'Resource',
-      ResourceChange: {
-        Action: 'Modify',
-        LogicalResourceId: 'mySsmParameter',
-        PhysicalResourceId: 'mySsmParameterFromStack',
-        ResourceType: 'AWS::SSM::Parameter',
-        Replacement: 'False',
-        Scope: [
-          'Properties',
-        ],
-        Details: [
-          {
-            Target: undefined,
-            Evaluation: 'Static',
-            ChangeSource: 'DirectModification',
-          },
-        ],
-      },
-    },
+    ssmParamFromChangeset,
+    copyOfQueueChange,
   ],
 };
 

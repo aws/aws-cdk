@@ -54,15 +54,15 @@ export function fullDiff(
 
   normalize(currentTemplate);
   normalize(newTemplate);
-  let theDiff = diffTemplate(currentTemplate, newTemplate);
+  let theDiff = diffTemplate(currentTemplate, newTemplate); // I could remove this step and then run the integ tests and see what happens, assuming those tests use changeset
   if (changeSet) {
     // These methods mutate the state of theDiff, using the changeSet.
     const changeSetDiff = new TemplateAndChangeSetDiffMerger({ changeSet });
-    changeSetDiff.addChangeSetResourcesToDiffResources(theDiff.resources);
+    changeSetDiff.overrideDiffResourcesWithChangeSetResources(theDiff.resources);
     theDiff.resources.forEachDifference((logicalId: string, change: types.ResourceDifference) =>
-      changeSetDiff.hydrateChangeImpactFromChangeSet(logicalId, change),
+      changeSetDiff.overrideDiffResourceChangeImpactWithChangeSetChangeImpact(logicalId, change),
     );
-    changeSetDiff.addImportInformation(theDiff.resources);
+    changeSetDiff.addImportInformationFromChangeset(theDiff.resources);
     theDiff = new types.TemplateDiff(theDiff); // do this to propagate security changes.
   } else if (isImport) {
     makeAllResourceChangesImports(theDiff);

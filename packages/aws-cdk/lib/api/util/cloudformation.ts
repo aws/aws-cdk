@@ -198,14 +198,28 @@ async function describeChangeSet(
   { fetchAll }: { fetchAll: boolean },
 ): Promise<CloudFormation.DescribeChangeSetOutput> {
   const response = await cfn.describeChangeSet({ StackName: stackName, ChangeSetName: changeSetName }).promise();
-  const changesWithPropertyValues = (await cfn.describeChangeSet({
-    StackName: stackName, ChangeSetName: changeSetName, IncludePropertyValues: true,
-  }).promise())
-    .Changes;
 
-  // As of now, describeChangeSet doesn't include the StatusReason if you specify IncludePropertyValues.
-  // So, make a call to get the Changes with property values and a call to get the other outputs.
-  response.Changes = changesWithPropertyValues;
+  try {
+    // * As of now, describeChangeSet with IncludePropertyValues doesn't include the StatusReason for a ChangeSet with no changes. There is a fix that's in progress from CloudFormation.
+    // * As of now, the IncludePropertyValues feature is not available in all AWS partitions.
+    //   * TODO: Once the above are fixed, this try catch block can be removed and we can make a single DescribeChangeSet request.
+    const changesWithPropertyValues = (await cfn.describeChangeSet({
+      StackName: stackName, ChangeSetName: changeSetName, IncludePropertyValues: true,
+    } as any).promise())
+      .Changes;
+
+    const changeContextIncludedInResponse = changesWithPropertyValues?.find((change) =>
+      (change?.ResourceChange?.AfterContext !== undefined) || (change?.ResourceChange?.BeforeContext !== undefined),
+    );
+    if (changeContextIncludedInResponse) {
+      response.Changes = changesWithPropertyValues;
+    } else {
+      // We don't want to assume that failure to use the new IncludePropertyValues field will result in an exception being thrown.
+      debug('describeChangeSet with IncludePropertyValues has no BeforeContext or AfterContext. Diff will not include property values from ChangeSet.');
+    }
+  } catch (e: any) {
+    debug('Failed to describeChangeSet with IncludePropertyValues. Diff will not include property values from ChangeSet. Error Message: %s', e?.message);
+  }
 
   // If fetchAll is true, traverse all pages from the change set description.
   while (fetchAll && response.NextToken != null) {
@@ -328,7 +342,6 @@ export async function createDiffChangeSet(options: PrepareChangeSetOptions): Pro
   // This causes CreateChangeSet to fail with `Template Error: Fn::Equals cannot be partially collapsed`.
   for (const resource of Object.values((options.stack.template.Resources ?? {}))) {
     if ((resource as any).Type === 'AWS::CloudFormation::Stack') {
-      // eslint-disable-next-line no-console
       debug('This stack contains one or more nested stacks, falling back to template-only diff...');
 
       return undefined;

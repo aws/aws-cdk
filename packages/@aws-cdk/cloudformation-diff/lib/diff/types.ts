@@ -17,18 +17,21 @@ export type ChangeSetResources = { [logicalId: string]: ChangeSetResource };
 export interface ChangeSetResource {
   resourceWasReplaced: boolean;
   resourceType: string | undefined;
-  properties: ChangeSetProperties | undefined;
-  beforeContext: any;
-  afterContext: any;
+  propertyReplacementModes: PropertyReplacementModeMap | undefined;
+  beforeContext: any | undefined;
+  afterContext: any | undefined;
 }
 
-export type ChangeSetProperties = {
+export type PropertyReplacementModeMap = {
   [propertyName: string]: {
-    changeSetReplacementMode: ChangeSetReplacementMode | undefined;
+    replacementMode: ReplacementModes | undefined;
   };
 }
 
-export type ChangeSetReplacementMode = 'Always' | 'Never' | 'Conditionally';
+/**
+ * 'Always' means that changing the corresponding property will always cause a resource replacement. Never means never. Conditionally means maybe.
+ */
+export type ReplacementModes = 'Always' | 'Never' | 'Conditionally';
 
 /** Semantic differences between two CloudFormation templates. */
 export class TemplateDiff implements ITemplateDiff {
@@ -390,9 +393,6 @@ export class DifferenceCollection<V, T extends IDifference<V>> {
    * Throw an error to prevent the caller from overwriting a change.
    */
   public set(logicalId: string, diff: T): void {
-    if (this.diffs[logicalId]) {
-      throw new Error(`LogicalId already exists in this DifferenceCollection. LogicalId: '${logicalId}'`);
-    }
     this.diffs[logicalId] = diff;
   }
 

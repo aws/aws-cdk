@@ -14,7 +14,7 @@ export class TemplateAndChangeSetDiffMerger {
   // If we somehow cannot find the resourceType, then we'll mark it as UNKNOWN, so that can be seen in the diff.
   static UNKNOWN_RESOURCE_TYPE = 'UNKNOWN_RESOURCE_TYPE';
 
-  public static determineChangeSetReplacementMode(propertyChange: ChangeSetResourceChangeDetail): types.ChangeSetReplacementMode {
+  public static determineChangeSetReplacementMode(propertyChange: ChangeSetResourceChangeDetail): types.ReplacementModes {
     if (propertyChange.Target?.RequiresRecreation === undefined) {
       // We can't determine if the resource will be replaced or not. That's what conditionally means.
       return 'Conditionally';
@@ -31,7 +31,7 @@ export class TemplateAndChangeSetDiffMerger {
       }
     }
 
-    return propertyChange.Target.RequiresRecreation as types.ChangeSetReplacementMode;
+    return propertyChange.Target.RequiresRecreation as types.ReplacementModes;
   }
 
   changeSet: DescribeChangeSetOutput | undefined;
@@ -44,24 +44,24 @@ export class TemplateAndChangeSetDiffMerger {
     },
   ) {
     this.changeSet = args.changeSet;
-    this.changeSetResources = args.changeSetResources ?? this.createChangeSetResources(this.changeSet);
+    this.changeSetResources = args.changeSetResources ?? this.convertDescribeChangeSetOutputToChangeSetResources(this.changeSet);
   }
 
   /**
    * Read resources from the changeSet, extracting information into ChangeSetResources.
    */
-  private createChangeSetResources(changeSet: DescribeChangeSetOutput): types.ChangeSetResources {
+  private convertDescribeChangeSetOutputToChangeSetResources(changeSet: DescribeChangeSetOutput): types.ChangeSetResources {
     const changeSetResources: types.ChangeSetResources = {};
     for (const resourceChange of changeSet.Changes ?? []) {
       if (resourceChange.ResourceChange?.LogicalResourceId === undefined) {
-        continue;
+        continue; // Being defensive, here.
       }
 
-      const propertiesReplaced: types.ChangeSetProperties = {};
+      const propertyReplacementModes: types.PropertyReplacementModeMap = {};
       for (const propertyChange of resourceChange.ResourceChange.Details ?? []) {
         if (propertyChange.Target?.Attribute === 'Properties' && propertyChange.Target.Name) {
-          propertiesReplaced[propertyChange.Target.Name] = {
-            changeSetReplacementMode: TemplateAndChangeSetDiffMerger.determineChangeSetReplacementMode(propertyChange),
+          propertyReplacementModes[propertyChange.Target.Name] = {
+            replacementMode: TemplateAndChangeSetDiffMerger.determineChangeSetReplacementMode(propertyChange),
           };
         }
       }
@@ -69,7 +69,7 @@ export class TemplateAndChangeSetDiffMerger {
       changeSetResources[resourceChange.ResourceChange.LogicalResourceId] = {
         resourceWasReplaced: resourceChange.ResourceChange.Replacement === 'True',
         resourceType: resourceChange.ResourceChange.ResourceType ?? TemplateAndChangeSetDiffMerger.UNKNOWN_RESOURCE_TYPE, // DescribeChangeSet doesn't promise to have the ResourceType...
-        properties: propertiesReplaced,
+        propertyReplacementModes: propertyReplacementModes,
         beforeContext: _maybeJsonParse(resourceChange.ResourceChange.BeforeContext),
         afterContext: _maybeJsonParse(resourceChange.ResourceChange.AfterContext),
       };
@@ -93,13 +93,10 @@ export class TemplateAndChangeSetDiffMerger {
   }
 
   /**
-  * Finds resource differences that are only visible in the changeset diff from CloudFormation (that is, we can't find this difference in the diff between 2 templates)
-  * and adds those missing differences to the templateDiff.
-  *
-  * - One case when this can happen is when a resource is added to the stack through the changeset.
-  * - Another case is when a resource is changed because the resource is defined by an SSM parameter, and the value of that SSM parameter changes.
+  * Overwrites the resource diff that was computed between the new and old template with the diff of the resources from the ChangeSet.
+  * This is a more accurate way of computing the resource differences, since now cdk diff is reporting directly what the ChangeSet will apply.
   */
-  public addChangeSetResourcesToDiffResources(resourceDiffs: types.DifferenceCollection<types.Resource, types.ResourceDifference>) {
+  public overrideDiffResourcesWithChangeSetResources(resourceDiffs: types.DifferenceCollection<types.Resource, types.ResourceDifference>) {
     for (const [logicalId, changeSetResource] of Object.entries(this.changeSetResources)) {
       const oldResource: types.Resource = {
         Type: changeSetResource.resourceType ?? TemplateAndChangeSetDiffMerger.UNKNOWN_RESOURCE_TYPE,
@@ -111,27 +108,11 @@ export class TemplateAndChangeSetDiffMerger {
       };
 
       const resourceDiffFromChangeset = diffResource(oldResource, newResource);
-      const resourceNotFoundInTemplateDiff = !(resourceDiffs.logicalIds.includes(logicalId));
-      if (resourceNotFoundInTemplateDiff) {
-        resourceDiffs.set(logicalId, resourceDiffFromChangeset);
-      }
-
-      const propertyChangesFromTemplate = resourceDiffs.get(logicalId).propertyUpdates;
-      for (const propertyName of Object.keys(this.changeSetResources[logicalId].properties ?? {})) {
-        if (propertyName in propertyChangesFromTemplate) {
-          // If the property is already marked to be updated, then we don't need to do anything.
-          // But in a future change, we could think about always overwriting the template change with what the ChangeSet has, since the ChangeSet diff may be more accurate.
-          continue;
-        }
-
-        if (resourceDiffFromChangeset.propertyUpdates?.[propertyName]) {
-          resourceDiffs.get(logicalId).setPropertyChange(propertyName, resourceDiffFromChangeset.propertyUpdates?.[propertyName]);
-        }
-      }
+      resourceDiffs.set(logicalId, resourceDiffFromChangeset);
     }
   }
 
-  public hydrateChangeImpactFromChangeSet(logicalId: string, change: types.ResourceDifference) {
+  public overrideDiffResourceChangeImpactWithChangeSetChangeImpact(logicalId: string, change: types.ResourceDifference) {
     // resourceType getter throws an error if resourceTypeChanged
     if ((change.resourceTypeChanged === true) || change.resourceType?.includes('AWS::Serverless')) {
       // CFN applies the SAM transform before creating the changeset, so the changeset contains no information about SAM resources
@@ -145,8 +126,8 @@ export class TemplateAndChangeSetDiffMerger {
           return;
         }
 
-        const changeSetReplacementMode = (this.changeSetResources[logicalId].properties ?? {})[name]?.changeSetReplacementMode;
-        switch (changeSetReplacementMode) {
+        const changingPropertyCausesResourceReplacement = (this.changeSetResources[logicalId].propertyReplacementModes ?? {})[name]?.replacementMode;
+        switch (changingPropertyCausesResourceReplacement) {
           case 'Always':
             (value as types.PropertyDifference<any>).changeImpact = types.ResourceImpact.WILL_REPLACE;
             break;
@@ -173,7 +154,7 @@ export class TemplateAndChangeSetDiffMerger {
     });
   }
 
-  public addImportInformation(resourceDiffs: types.DifferenceCollection<types.Resource, types.ResourceDifference>) {
+  public addImportInformationFromChangeset(resourceDiffs: types.DifferenceCollection<types.Resource, types.ResourceDifference>) {
     const imports = this.findResourceImports();
     resourceDiffs.forEachDifference((logicalId: string, change: types.ResourceDifference) => {
       if (imports.includes(logicalId)) {
