@@ -38,7 +38,7 @@ export interface TestSingletonFunctionProps extends lambda.FunctionOptions {
   readonly lambdaPurpose?: string;
 
   /**
-   * The runtime that the provisioned custom resource provider will use.
+   * The runtime that this Lambda will use.
    *
    * @default lambda.Runtime.NODEJS_18_X
    */

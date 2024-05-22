@@ -161,7 +161,7 @@ export abstract class HandlerFrameworkClass extends ClassType {
             immutable: true,
             optional: true,
             docs: {
-              summary: 'The runtime that the provisioned custom resource provider will use.',
+              summary: 'The runtime that this Lambda will use.',
               docTags: {
                 default: 'lambda.Runtime.NODEJS_18_X',
               },
