@@ -911,7 +911,7 @@ export class MysqlEngineVersion {
   public static readonly VER_8_0_30 = MysqlEngineVersion.of('8.0.30', '8.0');
   /**
    * Version "8.0.31"
-   * @deprecated MySQL 8.0.28 is no longer supported by Amazon RDS.
+   * @deprecated MySQL 8.0.31 is no longer supported by Amazon RDS.
    */
   public static readonly VER_8_0_31 = MysqlEngineVersion.of('8.0.31', '8.0');
   /** Version "8.0.32". */
