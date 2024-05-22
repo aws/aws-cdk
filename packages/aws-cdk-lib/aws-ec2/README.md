@@ -1528,11 +1528,11 @@ Specify `placementGroup` to enable the placement group support:
 ```ts fixture=with-vpc
 declare const instanceType: ec2.InstanceType;
 
-const pg = new ec2.PlacementGroup(stack, 'test-pg', {
-  strategy: PlacementGroupStrategy.SPREAD,
+const pg = new ec2.PlacementGroup(this, 'test-pg', {
+  strategy: ec2.PlacementGroupStrategy.SPREAD,
 });
 
-new Instance(stack, 'Instance', {
+new ec2.Instance(this, 'Instance', {
   vpc,
   instanceType,
   machineImage: ec2.MachineImage.latestAmazonLinux2023(),
