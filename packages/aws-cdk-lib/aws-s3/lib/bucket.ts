@@ -96,11 +96,6 @@ export interface IBucket extends IResource {
   policy?: BucketPolicy;
 
   /**
-   * The account bucket belongs to.
-   */
-  readonly account?: string;
-
-  /**
    * Adds a statement to the resource policy for a principal (i.e.
    * account/role/service) to perform actions on this bucket and/or its
    * contents. Use `bucketArn` and `arnForObjects(keys)` to obtain ARNs for
@@ -1445,7 +1440,7 @@ export interface BucketProps {
    *   attendant cost implications of that).
    * - If enabled, S3 will use its own time-limited key instead.
    *
-   * Only relevant, when Encryption is set to `BucketEncryption.KMS` or `BucketEncryption.KMS_MANAGED`.
+   * Only relevant, when Encryption is not set to `BucketEncryption.UNENCRYPTED`.
    *
    * @default - false
    */
@@ -1475,6 +1470,11 @@ export interface BucketProps {
    * switching this to `false` in a CDK version *before* `1.126.0` will lead to
    * all objects in the bucket being deleted. Be sure to update your bucket resources
    * by deploying with CDK version `1.126.0` or later **before** switching this value to `false`.
+   *
+   * Setting `autoDeleteObjects` to true on a bucket will add `s3:PutBucketPolicy` to the
+   * bucket policy. This is because during bucket deletion, the custom resource provider
+   * needs to update the bucket policy by adding a deny policy for `s3:PutObject` to
+   * prevent race conditions with external bucket writers.
    *
    * @default false
    */
@@ -1759,7 +1759,6 @@ export class Bucket extends BucketBase {
       public readonly bucketWebsiteNewUrlFormat = attrs.bucketWebsiteNewUrlFormat ?? false;
       public readonly encryptionKey = attrs.encryptionKey;
       public readonly isWebsite = attrs.isWebsite ?? false;
-      public readonly account = attrs.account;
       public policy?: BucketPolicy = undefined;
       protected autoCreatePolicy = false;
       protected disallowPublicAccess = false;
@@ -1973,11 +1972,11 @@ export class Bucket extends BucketBase {
 
     if (props.serverAccessLogsBucket instanceof Bucket) {
       props.serverAccessLogsBucket.allowLogDelivery(this, props.serverAccessLogsPrefix);
-      // It is possible that `serverAccessLogsBucket` was specified but is some other `IBucket`
-      // that cannot have the ACLs or bucket policy applied. In that scenario, we should only
-      // setup log delivery permissions to `this` if a bucket was not specified at all, as documented.
-      // For example, we should not allow log delivery to `this` if given an imported bucket or
-      // another situation that causes `instanceof` to fail
+    // It is possible that `serverAccessLogsBucket` was specified but is some other `IBucket`
+    // that cannot have the ACLs or bucket policy applied. In that scenario, we should only
+    // setup log delivery permissions to `this` if a bucket was not specified at all, as documented.
+    // For example, we should not allow log delivery to `this` if given an imported bucket or
+    // another situation that causes `instanceof` to fail
     } else if (!props.serverAccessLogsBucket && props.serverAccessLogsPrefix) {
       this.allowLogDelivery(this, props.serverAccessLogsPrefix);
     } else if (props.serverAccessLogsBucket) {
@@ -2106,6 +2105,7 @@ export class Bucket extends BucketBase {
    * | KMS              | undefined           | e                      | SSE-KMS, bucketKeyEnabled = e   | new key                      |
    * | KMS_MANAGED      | undefined           | e                      | SSE-KMS, bucketKeyEnabled = e   | undefined                    |
    * | S3_MANAGED       | undefined           | false                  | SSE-S3                          | undefined                    |
+   * | S3_MANAGED       | undefined           | e                      | SSE-S3, bucketKeyEnabled = e    | undefined                    |
    * | UNENCRYPTED      | undefined           | true                   | ERROR!                          | ERROR!                       |
    * | UNENCRYPTED      | k                   | e                      | ERROR!                          | ERROR!                       |
    * | KMS_MANAGED      | k                   | e                      | ERROR!                          | ERROR!                       |
@@ -2128,12 +2128,9 @@ export class Bucket extends BucketBase {
       throw new Error(`encryptionKey is specified, so 'encryption' must be set to KMS or DSSE (value: ${encryptionType})`);
     }
 
-    // if bucketKeyEnabled is set, encryption must be set to KMS or DSSE.
-    if (
-      props.bucketKeyEnabled &&
-      ![BucketEncryption.KMS, BucketEncryption.KMS_MANAGED, BucketEncryption.DSSE, BucketEncryption.DSSE_MANAGED].includes(encryptionType)
-    ) {
-      throw new Error(`bucketKeyEnabled is specified, so 'encryption' must be set to KMS or DSSE (value: ${encryptionType})`);
+    // if bucketKeyEnabled is set, encryption can not be BucketEncryption.UNENCRYPTED
+    if (props.bucketKeyEnabled && encryptionType === BucketEncryption.UNENCRYPTED) {
+      throw new Error(`bucketKeyEnabled is specified, so 'encryption' must be set to KMS, DSSE or S3 (value: ${encryptionType})`);
     }
 
     if (encryptionType === BucketEncryption.UNENCRYPTED) {
@@ -2162,7 +2159,10 @@ export class Bucket extends BucketBase {
     if (encryptionType === BucketEncryption.S3_MANAGED) {
       const bucketEncryption = {
         serverSideEncryptionConfiguration: [
-          { serverSideEncryptionByDefault: { sseAlgorithm: 'AES256' } },
+          {
+            bucketKeyEnabled: props.bucketKeyEnabled,
+            serverSideEncryptionByDefault: { sseAlgorithm: 'AES256' },
+          },
         ],
       };
 
@@ -2231,7 +2231,7 @@ export class Bucket extends BucketBase {
     function parseLifecycleRule(rule: LifecycleRule): CfnBucket.RuleProperty {
       const enabled = rule.enabled ?? true;
       if ((rule.expiredObjectDeleteMarker)
-        && (rule.expiration || rule.expirationDate || self.parseTagFilters(rule.tagFilters))) {
+      && (rule.expiration || rule.expirationDate || self.parseTagFilters(rule.tagFilters))) {
         // ExpiredObjectDeleteMarker cannot be specified with ExpirationInDays, ExpirationDate, or TagFilters.
         throw new Error('ExpiredObjectDeleteMarker cannot be specified with expiration, ExpirationDate, or TagFilters.');
       }
@@ -2356,7 +2356,7 @@ export class Bucket extends BucketBase {
     }
 
     if (accessControlRequiresObjectOwnership && this.objectOwnership === ObjectOwnership.BUCKET_OWNER_ENFORCED) {
-      throw new Error(`objectOwnership must be set to "${ObjectOwnership.OBJECT_WRITER}" when accessControl is "${this.accessControl}"`);
+      throw new Error (`objectOwnership must be set to "${ObjectOwnership.OBJECT_WRITER}" when accessControl is "${this.accessControl}"`);
     }
 
     return {

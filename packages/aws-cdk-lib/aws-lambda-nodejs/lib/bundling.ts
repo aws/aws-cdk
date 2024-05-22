@@ -4,7 +4,7 @@ import { IConstruct } from 'constructs';
 import { PackageInstallation } from './package-installation';
 import { LockFile, PackageManager } from './package-manager';
 import { BundlingOptions, OutputFormat, SourceMapMode } from './types';
-import { exec, extractDependencies, findUp, getTsconfigCompilerOptions } from './util';
+import { exec, extractDependencies, findUp, getTsconfigCompilerOptions, isSdkV2Runtime } from './util';
 import { Architecture, AssetCode, Code, Runtime } from '../../aws-lambda';
 import * as cdk from '../../core';
 
@@ -133,7 +133,14 @@ export class Bundling implements cdk.BundlingOptions {
     // Don't automatically externalize aws sdk if `bundleAwsSDK` is true so it can be
     // include in the bundle asset
     const defaultExternals = props.runtime?.isVariable || props.bundleAwsSDK ? [] : versionedExternals;
+
     const externals = props.externalModules ?? defaultExternals;
+
+    // warn users if they are using a runtime that does not support sdk v2
+    // and the sdk is not explicitly bundled
+    if (externals.length && isV2Runtime) {
+      cdk.Annotations.of(scope).addWarningV2('aws-cdk-lib/aws-lambda-nodejs:runtimeUpdateSdkV2Breakage', 'Be aware that the NodeJS runtime of Node 16 will be deprecated by Lambda on June 12, 2024. Lambda runtimes Node 18 and higher include SDKv3 and not SDKv2. Updating your Lambda runtime will require bundling the SDK, or updating all SDK calls in your handler code to use SDKv3 (which is not a trivial update). Please account for this added complexity and update as soon as possible.');
+    }
 
     // Warn users if they are trying to rely on global versions of the SDK that aren't available in
     // their environment.
@@ -242,7 +249,7 @@ export class Bundling implements cdk.BundlingOptions {
       ...this.props.banner ? [`--banner:js=${JSON.stringify(this.props.banner)}`] : [],
       ...this.props.footer ? [`--footer:js=${JSON.stringify(this.props.footer)}`] : [],
       ...this.props.mainFields ? [`--main-fields=${this.props.mainFields.join(',')}`] : [],
-      ...this.props.inject ? this.props.inject.map(i => `--inject:${i}`) : [],
+      ...this.props.inject ? this.props.inject.map(i => `--inject:"${i}"`) : [],
       ...this.props.esbuildArgs ? [toCliArgs(this.props.esbuildArgs)] : [],
     ];
 
@@ -420,34 +427,19 @@ function toTarget(runtime: Runtime): string {
 
 function toCliArgs(esbuildArgs: { [key: string]: string | boolean }): string {
   const args = new Array<string>();
+  const reSpecifiedKeys = ['--alias', '--drop', '--pure', '--log-override', '--out-extension'];
 
   for (const [key, value] of Object.entries(esbuildArgs)) {
     if (value === true || value === '') {
       args.push(key);
+    } else if (reSpecifiedKeys.includes(key)) {
+      args.push(`${key}:"${value}"`);
     } else if (value) {
       args.push(`${key}="${value}"`);
     }
   }
 
   return args.join(' ');
-}
-
-/**
- * Detect if a given Node.js runtime uses SDKv2
- */
-function isSdkV2Runtime(runtime: Runtime): boolean {
-  const sdkV2RuntimeList = [
-    Runtime.NODEJS,
-    Runtime.NODEJS_4_3,
-    Runtime.NODEJS_6_10,
-    Runtime.NODEJS_8_10,
-    Runtime.NODEJS_10_X,
-    Runtime.NODEJS_12_X,
-    Runtime.NODEJS_14_X,
-    Runtime.NODEJS_16_X,
-  ];
-
-  return sdkV2RuntimeList.some((r) => {return r.family === runtime.family && r.name === runtime.name;});
 }
 
 /**

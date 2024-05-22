@@ -465,6 +465,11 @@ export abstract class DatabaseClusterBase extends Resource implements IDatabaseC
    */
   public abstract readonly connections: ec2.Connections;
 
+  /**
+   * The secret attached to this cluster
+   */
+  public abstract readonly secret?: secretsmanager.ISecret
+
   protected abstract enableDataApi?: boolean;
 
   /**
@@ -521,11 +526,14 @@ export abstract class DatabaseClusterBase extends Resource implements IDatabaseC
     }
 
     this.enableDataApi = true;
-    return iam.Grant.addToPrincipal({
-      actions: DATA_API_ACTIONS,
+    const ret = iam.Grant.addToPrincipal({
       grantee,
+      actions: DATA_API_ACTIONS,
       resourceArns: [this.clusterArn],
+      scope: this,
     });
+    this.secret?.grantRead(grantee);
+    return ret;
   }
 }
 
@@ -587,10 +595,8 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
   constructor(scope: Construct, id: string, props: DatabaseClusterBaseProps) {
     super(scope, id);
 
-    if ((props.vpc && props.instanceProps?.vpc)) {
+    if ((props.vpc && props.instanceProps?.vpc) || (!props.vpc && !props.instanceProps?.vpc)) {
       throw new Error('Provide either vpc or instanceProps.vpc, but not both');
-    } else if (!props.vpc && !props.instanceProps?.vpc) {
-      throw new Error('If instanceProps is not provided then `vpc` must be provided.');
     }
     if ((props.vpcSubnets && props.instanceProps?.vpcSubnets)) {
       throw new Error('Provide either vpcSubnets or instanceProps.vpcSubnets, but not both');
@@ -756,6 +762,7 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
       promotionTier: 0, // override the promotion tier so that writers are always 0
     });
     instanceIdentifiers.push(writer.instanceIdentifier);
+    instanceEndpoints.push(new Endpoint(writer.dbInstanceEndpointAddress, this.clusterEndpoint.port));
 
     (props.readers ?? []).forEach(instance => {
       const clusterInstance = instance.bind(this, this, {
@@ -963,6 +970,7 @@ class ImportedDatabaseCluster extends DatabaseClusterBase implements IDatabaseCl
   public readonly clusterIdentifier: string;
   public readonly connections: ec2.Connections;
   public readonly engine?: IClusterEngine;
+  public readonly secret?: secretsmanager.ISecret;
 
   private readonly _clusterResourceIdentifier?: string;
   private readonly _clusterEndpoint?: Endpoint;
@@ -984,6 +992,7 @@ class ImportedDatabaseCluster extends DatabaseClusterBase implements IDatabaseCl
       defaultPort,
     });
     this.engine = attrs.engine;
+    this.secret = attrs.secret;
 
     this._clusterEndpoint = (attrs.clusterEndpointAddress && attrs.port) ? new Endpoint(attrs.clusterEndpointAddress, attrs.port) : undefined;
     this._clusterReadEndpoint = (attrs.readerEndpointAddress && attrs.port) ? new Endpoint(attrs.readerEndpointAddress, attrs.port) : undefined;

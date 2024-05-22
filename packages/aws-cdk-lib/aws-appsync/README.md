@@ -1,6 +1,5 @@
 # AWS AppSync Construct Library
 
-
 The `aws-cdk-lib/aws-appsync` package contains constructs for building flexible
 APIs that use GraphQL.
 
@@ -86,13 +85,13 @@ demoDS.createResolver('QueryGetDemosConsistentResolver', {
 });
 ```
 
-
-
 ### Aurora Serverless
 
 AppSync provides a data source for executing SQL commands against Amazon Aurora
 Serverless clusters. You can use AppSync resolvers to execute SQL statements
 against the Data API with GraphQL queries, mutations, and subscriptions.
+
+#### Aurora Serverless V1 Cluster
 
 ```ts
 // Create username and password secret for DB Cluster
@@ -115,6 +114,74 @@ const cluster = new rds.ServerlessCluster(this, 'AuroraCluster', {
 // Build a data source for AppSync to access the database.
 declare const api: appsync.GraphqlApi;
 const rdsDS = api.addRdsDataSource('rds', cluster, secret, 'demos');
+
+// Set up a resolver for an RDS query.
+rdsDS.createResolver('QueryGetDemosRdsResolver', {
+  typeName: 'Query',
+  fieldName: 'getDemosRds',
+  requestMappingTemplate: appsync.MappingTemplate.fromString(`
+  {
+    "version": "2018-05-29",
+    "statements": [
+      "SELECT * FROM demos"
+    ]
+  }
+  `),
+  responseMappingTemplate: appsync.MappingTemplate.fromString(`
+    $utils.toJson($utils.rds.toJsonObject($ctx.result)[0])
+  `),
+});
+
+// Set up a resolver for an RDS mutation.
+rdsDS.createResolver('MutationAddDemoRdsResolver', {
+  typeName: 'Mutation',
+  fieldName: 'addDemoRds',
+  requestMappingTemplate: appsync.MappingTemplate.fromString(`
+  {
+    "version": "2018-05-29",
+    "statements": [
+      "INSERT INTO demos VALUES (:id, :version)",
+      "SELECT * WHERE id = :id"
+    ],
+    "variableMap": {
+      ":id": $util.toJson($util.autoId()),
+      ":version": $util.toJson($ctx.args.version)
+    }
+  }
+  `),
+  responseMappingTemplate: appsync.MappingTemplate.fromString(`
+    $utils.toJson($utils.rds.toJsonObject($ctx.result)[1][0])
+  `),
+});
+```
+
+#### Aurora Serverless V2 Cluster
+
+```ts
+// Create username and password secret for DB Cluster
+const secret = new rds.DatabaseSecret(this, 'AuroraSecret', {
+  username: 'clusteradmin',
+});
+
+// The VPC to place the cluster in
+const vpc = new ec2.Vpc(this, 'AuroraVpc');
+
+// Create the serverless cluster, provide all values needed to customise the database.
+const cluster = new rds.DatabaseCluster(this, 'AuroraClusterV2', {
+    engine: rds.DatabaseClusterEngine.auroraPostgres({ version: rds.AuroraPostgresEngineVersion.VER_15_5 }),
+    credentials: { username: 'clusteradmin' },
+    clusterIdentifier: 'db-endpoint-test',
+    writer: rds.ClusterInstance.serverlessV2('writer'),
+    serverlessV2MinCapacity: 2,
+    serverlessV2MaxCapacity: 10,
+    vpc,
+    defaultDatabaseName: 'demos',
+    enableDataApi: true,  // has to be set to true to enable Data API as not enable by default
+  });
+
+// Build a data source for AppSync to access the database.
+declare const api: appsync.GraphqlApi;
+const rdsDS = api.addRdsDataSourceV2('rds', cluster, secret, 'demos');
 
 // Set up a resolver for an RDS query.
 rdsDS.createResolver('QueryGetDemosRdsResolver', {
@@ -233,6 +300,7 @@ httpDs.createResolver('MutationCallStepFunctionResolver', {
 ```
 
 ### EventBridge
+
 Integrating AppSync with EventBridge enables developers to use EventBridge rules to route commands for GraphQL mutations
 that need to perform any one of a variety of asynchronous tasks. More broadly, it enables teams to expose an event bus
 as a part of a GraphQL schema.
@@ -367,6 +435,7 @@ ds.createResolver('QueryGetTestsResolver', {
 ```
 
 ## Merged APIs
+
 AppSync supports [Merged APIs](https://docs.aws.amazon.com/appsync/latest/devguide/merged-api.html) which can be used to merge multiple source APIs into a single API.
 
 ```ts
@@ -532,9 +601,9 @@ sources and resolvers, an `apiId` is sufficient.
 
 ## Private APIs
 
-By default all AppSync GraphQL APIs are public and can be accessed from the internet. 
-For customers that want to limit access to be from their VPC, the optional API `visibility` property can be set to `Visibility.PRIVATE` 
-at creation time. To explicitly create a public API, the `visibility` property should be set to `Visibility.GLOBAL`. 
+By default all AppSync GraphQL APIs are public and can be accessed from the internet.
+For customers that want to limit access to be from their VPC, the optional API `visibility` property can be set to `Visibility.PRIVATE`
+at creation time. To explicitly create a public API, the `visibility` property should be set to `Visibility.GLOBAL`.
 If visibility is not set, the service will default to `GLOBAL`.
 
 CDK stack file `app-stack.ts`:
@@ -547,8 +616,8 @@ const api = new appsync.GraphqlApi(this, 'api', {
 });
 ```
 
-See [documentation](https://docs.aws.amazon.com/appsync/latest/devguide/using-private-apis.html) 
-for more details about Private APIs 
+See [documentation](https://docs.aws.amazon.com/appsync/latest/devguide/using-private-apis.html)
+for more details about Private APIs
 
 ## Authorization
 
@@ -757,6 +826,33 @@ const api = new appsync.GraphqlApi(this, 'api', {
 });
 ```
 
+## Query Depth Limits
+
+By default, queries are able to process an unlimited amount of nested levels.
+Limiting queries to a specified amount of nested levels has potential implications for the performance and flexibility of your project.
+
+```ts
+const api = new appsync.GraphqlApi(this, 'api', {
+  name: 'LimitQueryDepths',
+  definition: appsync.Definition.fromFile(path.join(__dirname, 'appsync.schema.graphql')),
+  queryDepthLimit: 2,
+});
+```
+
+## Resolver Count Limits
+
+You can control how many resolvers each query can process.
+By default, each query can process up to 10000 resolvers.
+By setting a limit AppSync will not handle any resolvers past a certain number limit.
+
+```ts
+const api = new appsync.GraphqlApi(this, 'api', {
+  name: 'LimitResolverCount',
+  definition: appsync.Definition.fromFile(path.join(__dirname, 'appsync.schema.graphql')),
+  resolverCountLimit: 2,
+});
+```
+
 ## Environment Variables
 
 To use environment variables in resolvers, you can use the `environmentVariables` property and
@@ -772,4 +868,28 @@ const api = new appsync.GraphqlApi(this, 'api', {
 });
 
 api.addEnvironmentVariable('EnvKey2', 'non-empty-2');
+```
+
+## Configure an EventBridge target that invokes an AppSync GraphQL API
+
+Configuring the target relies on the `graphQLEndpointArn` property.
+
+Use the `AppSync` event target to trigger an AppSync GraphQL API. You need to
+create an `AppSync.GraphqlApi` configured with `AWS_IAM` authorization mode.
+
+The code snippet below creates a AppSync GraphQL API target that is invoked, calling the `publish` mutation.
+
+```ts
+import * as events from 'aws-cdk-lib/aws-events';
+import * as targets from 'aws-cdk-lib/aws-events-targets';
+
+declare const rule: events.Rule;
+declare const api: appsync.GraphqlApi;
+
+rule.addTarget(new targets.AppSync(api, {
+  graphQLOperation: 'mutation Publish($message: String!){ publish(message: $message) { message } }',
+  variables: events.RuleTargetInput.fromObject({
+    message: 'hello world',
+  }),
+}));
 ```

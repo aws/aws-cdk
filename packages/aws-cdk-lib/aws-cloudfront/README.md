@@ -537,6 +537,16 @@ It will auto-generate the name of the function and deploy it to the `live` stage
 
 Additionally, you can load the function's code from a file using the `FunctionCode.fromFile()` method.
 
+If you set `autoPublish` to false, the function will not be automatically published to the LIVE stage when it’s created.
+
+```ts
+new cloudfront.Function(this, 'Function', {
+  code: cloudfront.FunctionCode.fromInline('function handler(event) { return event.request }'),
+  runtime: cloudfront.FunctionRuntime.JS_2_0,
+  autoPublish: false
+});
+```
+
 ### Key Value Store
 
 A CloudFront Key Value Store can be created and optionally have data imported from a JSON file
@@ -548,13 +558,29 @@ To create an empty Key Value Store:
 const store = new cloudfront.KeyValueStore(this, 'KeyValueStore');
 ```
 
-To also include an initial set of value, the `source` property can be specified. For the
-structure of this file, see [Creating a file of key value pairs](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/kvs-with-functions-create-s3-kvp.html).
+To also include an initial set of values, the `source` property can be specified, either from a 
+local file or an inline string. For the structure of this file, see [Creating a file of key value pairs](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/kvs-with-functions-create-s3-kvp.html).
 
 ```ts
-const store = new cloudfront.KeyValueStore(this, 'KeyValueStore', {
-  keyValueStoreName: 'KeyValueStore',
+const storeAsset = new cloudfront.KeyValueStore(this, 'KeyValueStoreAsset', {
+  keyValueStoreName: 'KeyValueStoreAsset',
   source: cloudfront.ImportSource.fromAsset('path-to-data.json'),
+});
+
+const storeInline = new cloudfront.KeyValueStore(this, 'KeyValueStoreInline', {
+  keyValueStoreName: 'KeyValueStoreInline',
+  source: cloudfront.ImportSource.fromInline(JSON.stringify({
+    data: [
+      {
+        key: "key1",
+        value: "value1",
+      },
+      {
+        key: "key2",
+        value: "value2",
+      },
+    ],
+  })),
 });
 ```
 

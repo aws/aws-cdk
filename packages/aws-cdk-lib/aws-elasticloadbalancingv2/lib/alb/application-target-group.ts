@@ -60,7 +60,7 @@ export interface ApplicationTargetGroupProps extends BaseTargetGroupProps {
    * After this period, the cookie is considered stale. The minimum value is
    * 1 second and the maximum value is 7 days (604800 seconds).
    *
-   * @default Duration.days(1)
+   * @default - Stickiness is disabled
    */
   readonly stickinessCookieDuration?: Duration;
 
@@ -330,8 +330,9 @@ export class ApplicationTargetGroup extends TargetGroupBase implements IApplicat
 
     if (props) {
       if (props.slowStart !== undefined) {
-        if (props.slowStart.toSeconds() < 30 || props.slowStart.toSeconds() > 900) {
-          throw new Error('Slow start duration value must be between 30 and 900 seconds.');
+        // 0 is allowed and disables slow start
+        if ((props.slowStart.toSeconds() < 30 && props.slowStart.toSeconds() !== 0) || props.slowStart.toSeconds() > 900) {
+          throw new Error('Slow start duration value must be between 30 and 900 seconds, or 0 to disable slow start.');
         }
         this.setAttribute('slow_start.duration_seconds', props.slowStart.toSeconds().toString());
       }

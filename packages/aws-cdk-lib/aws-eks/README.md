@@ -187,7 +187,6 @@ cluster.addNodegroupCapacity('custom-node-group', {
   instanceTypes: [new ec2.InstanceType('m5.large')],
   minSize: 4,
   diskSize: 100,
-  amiType: eks.NodegroupAmiType.AL2_X86_64_GPU,
 });
 ```
 
@@ -204,6 +203,24 @@ cluster.addNodegroupCapacity('custom-node-group', {
       value: 'bar',
     },
   ],
+});
+```
+
+To define the type of the AMI for the node group, you may explicitly define `amiType` according to your requirements, supported amiType could be found [HERE](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_eks.NodegroupAmiType.html).
+
+```ts
+declare const cluster: eks.Cluster;
+
+// X86_64 based AMI managed node group
+cluster.addNodegroupCapacity('custom-node-group', {
+  instanceTypes: [new ec2.InstanceType('m5.large')], // NOTE: if amiType is x86_64-based image, the instance types here must be x86_64-based.
+  amiType: eks.NodegroupAmiType.AL2023_X86_64_STANDARD,
+});
+
+// ARM_64 based AMI managed node group
+cluster.addNodegroupCapacity('custom-node-group', {
+  instanceTypes: [new ec2.InstanceType('m6g.medium')], // NOTE: if amiType is ARM-based image, the instance types here must be ARM-based.
+  amiType: eks.NodegroupAmiType.AL2023_ARM_64_STANDARD,
 });
 ```
 
@@ -228,8 +245,8 @@ cluster.addNodegroupCapacity('custom-node-group', {
 });
 ```
 
-> **NOTE:** If you add instances with the inferentia (`inf1` or `inf2`) class the
-> [neuron plugin](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/containers/dlc-then-eks-devflow.html)
+> **NOTE:** If you add instances with the inferentia class (`inf1` or `inf2`) or trainium class (`trn1` or `trn1n`) 
+> the [neuron plugin](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/containers/dlc-then-eks-devflow.html)
 > will be automatically installed in the kubernetes cluster.
 
 #### Node Groups with IPv6 Support
@@ -383,7 +400,10 @@ const cluster = new eks.Cluster(this, 'cluster-to-rename', {
 
 // allow the cluster admin role to delete the cluster 'foo'
 cluster.adminRole.addToPolicy(new iam.PolicyStatement({
-  actions: ['eks:DeleteCluster'],
+  actions: [
+    'eks:DeleteCluster',
+    'eks:DescribeCluster',
+  ],
   resources: [ 
     Stack.of(this).formatArn({ service: 'eks', resource: 'cluster', resourceName: 'foo' }),
 ]

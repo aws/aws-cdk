@@ -239,12 +239,13 @@ test('esbuild bundling with esbuild options', () => {
       'process.env.STRING': JSON.stringify('this is a "test"'),
     },
     format: OutputFormat.ESM,
-    inject: ['./my-shim.js'],
+    inject: ['./my-shim.js', './path with space/second-shim.js'],
     esbuildArgs: {
       '--log-limit': '0',
       '--resolve-extensions': '.ts,.js',
       '--splitting': true,
       '--keep-names': '',
+      '--out-extension': '.js=.mjs',
     },
   });
 
@@ -263,8 +264,8 @@ test('esbuild bundling with esbuild options', () => {
           defineInstructions,
           '--log-level=silent --keep-names --tsconfig=/asset-input/lib/custom-tsconfig.ts',
           '--metafile=/asset-output/index.meta.json --banner:js="/* comments */" --footer:js="/* comments */"',
-          '--main-fields=module,main --inject:./my-shim.js',
-          '--log-limit="0" --resolve-extensions=".ts,.js" --splitting --keep-names',
+          '--main-fields=module,main --inject:"./my-shim.js" --inject:"./path with space/second-shim.js"',
+          '--log-limit="0" --resolve-extensions=".ts,.js" --splitting --keep-names --out-extension:".js=.mjs"',
         ].join(' '),
       ],
     }),
@@ -949,7 +950,7 @@ test('bundling with <= Node16 does not warn with default externalModules', () =>
   );
 });
 
-test('bundling with >= Node18 warns when sdk v3 is external', () => {
+test('bundling with >= Node18 warns when sdk v2 is external', () => {
   Bundling.bundle(stack, {
     entry,
     projectRoot,
@@ -994,6 +995,20 @@ test('bundling with NODEJS_LATEST warns when any dependencies are external', () 
 
   Annotations.fromStack(stack).hasWarning('*',
     'When using NODEJS_LATEST the runtime version may change as new runtimes are released, this may affect the availability of packages shipped with the environment. Ensure that any external dependencies are available through layers or specify a specific runtime version. [ack: @aws-cdk/aws-lambda-nodejs:variableRuntimeExternals]',
+  );
+});
+
+test('Node 16 runtimes warn about sdk v2 upgrades', () => {
+  Bundling.bundle(stack, {
+    entry,
+    projectRoot,
+    depsLockFilePath,
+    runtime: Runtime.NODEJS_16_X,
+    architecture: Architecture.X86_64,
+  });
+
+  Annotations.fromStack(stack).hasWarning('*',
+    'Be aware that the NodeJS runtime of Node 16 will be deprecated by Lambda on June 12, 2024. Lambda runtimes Node 18 and higher include SDKv3 and not SDKv2. Updating your Lambda runtime will require bundling the SDK, or updating all SDK calls in your handler code to use SDKv3 (which is not a trivial update). Please account for this added complexity and update as soon as possible. [ack: aws-cdk-lib/aws-lambda-nodejs:runtimeUpdateSdkV2Breakage]',
   );
 });
 

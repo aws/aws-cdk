@@ -67,7 +67,7 @@ describe('cluster new api', () => {
           iamAuthentication: true,
         });
         // THEN
-      }).toThrow(/If instanceProps is not provided then `vpc` must be provided./);
+      }).toThrow(/Provide either vpc or instanceProps.vpc, but not both/);
     });
 
     test('when both vpc and instanceProps.vpc are provided', () => {
@@ -224,6 +224,57 @@ describe('cluster new api', () => {
           vpc: vpc,
           preferredMaintenanceWindow: PREFERRED_MAINTENANCE_WINDOW,
         },
+      });
+
+      // THEN
+      const template = Template.fromStack(stack);
+      // maintenance window is set
+      template.hasResourceProperties('AWS::RDS::DBInstance', Match.objectLike({
+        PreferredMaintenanceWindow: PREFERRED_MAINTENANCE_WINDOW,
+      }));
+    });
+    test('preferredMaintenanceWindow provided in writer', () => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+
+      const PREFERRED_MAINTENANCE_WINDOW: string = 'Sun:12:00-Sun:13:00';
+
+      // WHEN
+      new DatabaseCluster(stack, 'Database', {
+        engine: DatabaseClusterEngine.AURORA,
+        vpc: vpc,
+        writer: ClusterInstance.provisioned('Instance1', {
+          preferredMaintenanceWindow: PREFERRED_MAINTENANCE_WINDOW,
+        }),
+      });
+
+      // THEN
+      const template = Template.fromStack(stack);
+      // maintenance window is set
+      template.hasResourceProperties('AWS::RDS::DBInstance', Match.objectLike({
+        PreferredMaintenanceWindow: PREFERRED_MAINTENANCE_WINDOW,
+      }));
+    });
+    test('preferredMaintenanceWindow provided in readers', () => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+
+      const PREFERRED_MAINTENANCE_WINDOW: string = 'Sun:12:00-Sun:13:00';
+
+      // WHEN
+      new DatabaseCluster(stack, 'Database', {
+        engine: DatabaseClusterEngine.AURORA,
+        vpc: vpc,
+        writer: ClusterInstance.provisioned('Instance1', {
+          // No preferredMaintenanceWindow set
+        }),
+        readers: [
+          ClusterInstance.provisioned('Instance2', {
+            preferredMaintenanceWindow: PREFERRED_MAINTENANCE_WINDOW,
+          }),
+        ],
       });
 
       // THEN
@@ -525,6 +576,103 @@ describe('cluster new api', () => {
       expect(stack.resolve(cluster.instanceIdentifiers[0])).toEqual({
         Ref: 'Databasewriter2462CC03',
       });
+    });
+  });
+
+  describe('instanceEndpoints', () => {
+    test('should contain writer and reader instance endpoints at DatabaseCluster', () => {
+      //GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+
+      //WHEN
+      const cluster = new DatabaseCluster(stack, 'Database', {
+        engine: DatabaseClusterEngine.AURORA,
+        vpc,
+        writer: ClusterInstance.serverlessV2('writer'),
+        readers: [ClusterInstance.serverlessV2('reader')],
+        iamAuthentication: true,
+      });
+
+      //THEN
+      expect(cluster.instanceEndpoints).toHaveLength(2);
+      expect(stack.resolve(cluster.instanceEndpoints)).toEqual([{
+        hostname: {
+          'Fn::GetAtt': ['Databasewriter2462CC03', 'Endpoint.Address'],
+        },
+        port: {
+          'Fn::GetAtt': ['DatabaseB269D8BB', 'Endpoint.Port'],
+        },
+        socketAddress: {
+          'Fn::Join': ['', [
+            { 'Fn::GetAtt': ['Databasewriter2462CC03', 'Endpoint.Address'] },
+            ':',
+            { 'Fn::GetAtt': ['DatabaseB269D8BB', 'Endpoint.Port'] },
+          ]],
+        },
+      }, {
+        hostname: {
+          'Fn::GetAtt': ['Databasereader13B43287', 'Endpoint.Address'],
+        },
+        port: {
+          'Fn::GetAtt': ['DatabaseB269D8BB', 'Endpoint.Port'],
+        },
+        socketAddress: {
+          'Fn::Join': ['', [
+            { 'Fn::GetAtt': ['Databasereader13B43287', 'Endpoint.Address'] },
+            ':',
+            { 'Fn::GetAtt': ['DatabaseB269D8BB', 'Endpoint.Port'] },
+          ]],
+        },
+      }]);
+    });
+
+    test('should contain writer and reader instance endpoints at DatabaseClusterFromSnapshot', () => {
+      //GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+
+      //WHEN
+      const cluster = new DatabaseClusterFromSnapshot(stack, 'Database', {
+        engine: DatabaseClusterEngine.AURORA,
+        vpc,
+        snapshotIdentifier: 'snapshot-identifier',
+        iamAuthentication: true,
+        writer: ClusterInstance.serverlessV2('writer'),
+        readers: [ClusterInstance.serverlessV2('reader')],
+      });
+
+      //THEN
+      expect(cluster.instanceEndpoints).toHaveLength(2);
+      expect(stack.resolve(cluster.instanceEndpoints)).toEqual([{
+        hostname: {
+          'Fn::GetAtt': ['Databasewriter2462CC03', 'Endpoint.Address'],
+        },
+        port: {
+          'Fn::GetAtt': ['DatabaseB269D8BB', 'Endpoint.Port'],
+        },
+        socketAddress: {
+          'Fn::Join': ['', [
+            { 'Fn::GetAtt': ['Databasewriter2462CC03', 'Endpoint.Address'] },
+            ':',
+            { 'Fn::GetAtt': ['DatabaseB269D8BB', 'Endpoint.Port'] },
+          ]],
+        },
+      }, {
+        hostname: {
+          'Fn::GetAtt': ['Databasereader13B43287', 'Endpoint.Address'],
+        },
+        port: {
+          'Fn::GetAtt': ['DatabaseB269D8BB', 'Endpoint.Port'],
+        },
+        socketAddress: {
+          'Fn::Join': ['', [
+            { 'Fn::GetAtt': ['Databasereader13B43287', 'Endpoint.Address'] },
+            ':',
+            { 'Fn::GetAtt': ['DatabaseB269D8BB', 'Endpoint.Port'] },
+          ]],
+        },
+      }]);
     });
   });
 
@@ -1006,11 +1154,11 @@ describe('cluster new api', () => {
         vpc,
         writer: ClusterInstance.provisioned('writer', {
           instanceType: ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.XLARGE24 ),
-          caCertificate: CaCertificate.RDS_CA_RDS4096_G1,
+          caCertificate: CaCertificate.RDS_CA_RSA4096_G1,
         }),
         readers: [
           ClusterInstance.serverlessV2('reader', {
-            caCertificate: CaCertificate.RDS_CA_RDS2048_G1,
+            caCertificate: CaCertificate.RDS_CA_RSA2048_G1,
           }),
           ClusterInstance.provisioned('reader2', {
             promotionTier: 1,
@@ -4171,6 +4319,16 @@ describe('cluster', () => {
                     { Ref: 'DatabaseB269D8BB' },
                   ],
                 ],
+              },
+            },
+            {
+              Action: [
+                'secretsmanager:GetSecretValue',
+                'secretsmanager:DescribeSecret',
+              ],
+              Effect: 'Allow',
+              Resource: {
+                Ref: 'DatabaseSecretAttachmentE5D1B020',
               },
             },
           ],

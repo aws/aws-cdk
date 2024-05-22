@@ -4,17 +4,17 @@
     "id": "App",
     "path": "",
     "children": {
-      "cluster-kerberos": {
-        "id": "cluster-kerberos",
-        "path": "cluster-kerberos",
+      "cluster-data-api": {
+        "id": "cluster-data-api",
+        "path": "cluster-data-api",
         "children": {
           "VPC": {
             "id": "VPC",
-            "path": "cluster-kerberos/VPC",
+            "path": "cluster-data-api/VPC",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "cluster-kerberos/VPC/Resource",
+                "path": "cluster-data-api/VPC/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EC2::VPC",
                   "aws:cdk:cloudformation:props": {
@@ -25,7 +25,7 @@
                     "tags": [
                       {
                         "key": "Name",
-                        "value": "cluster-kerberos/VPC"
+                        "value": "cluster-data-api/VPC"
                       }
                     ]
                   }
@@ -37,11 +37,11 @@
               },
               "PublicSubnet1": {
                 "id": "PublicSubnet1",
-                "path": "cluster-kerberos/VPC/PublicSubnet1",
+                "path": "cluster-data-api/VPC/PublicSubnet1",
                 "children": {
                   "Subnet": {
                     "id": "Subnet",
-                    "path": "cluster-kerberos/VPC/PublicSubnet1/Subnet",
+                    "path": "cluster-data-api/VPC/PublicSubnet1/Subnet",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
@@ -66,7 +66,7 @@
                           },
                           {
                             "key": "Name",
-                            "value": "cluster-kerberos/VPC/PublicSubnet1"
+                            "value": "cluster-data-api/VPC/PublicSubnet1"
                           }
                         ],
                         "vpcId": {
@@ -81,7 +81,7 @@
                   },
                   "Acl": {
                     "id": "Acl",
-                    "path": "cluster-kerberos/VPC/PublicSubnet1/Acl",
+                    "path": "cluster-data-api/VPC/PublicSubnet1/Acl",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
@@ -89,14 +89,14 @@
                   },
                   "RouteTable": {
                     "id": "RouteTable",
-                    "path": "cluster-kerberos/VPC/PublicSubnet1/RouteTable",
+                    "path": "cluster-data-api/VPC/PublicSubnet1/RouteTable",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "cluster-kerberos/VPC/PublicSubnet1"
+                            "value": "cluster-data-api/VPC/PublicSubnet1"
                           }
                         ],
                         "vpcId": {
@@ -111,7 +111,7 @@
                   },
                   "RouteTableAssociation": {
                     "id": "RouteTableAssociation",
-                    "path": "cluster-kerberos/VPC/PublicSubnet1/RouteTableAssociation",
+                    "path": "cluster-data-api/VPC/PublicSubnet1/RouteTableAssociation",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
                       "aws:cdk:cloudformation:props": {
@@ -130,7 +130,7 @@
                   },
                   "DefaultRoute": {
                     "id": "DefaultRoute",
-                    "path": "cluster-kerberos/VPC/PublicSubnet1/DefaultRoute",
+                    "path": "cluster-data-api/VPC/PublicSubnet1/DefaultRoute",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
@@ -150,7 +150,7 @@
                   },
                   "EIP": {
                     "id": "EIP",
-                    "path": "cluster-kerberos/VPC/PublicSubnet1/EIP",
+                    "path": "cluster-data-api/VPC/PublicSubnet1/EIP",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::EIP",
                       "aws:cdk:cloudformation:props": {
@@ -158,7 +158,7 @@
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "cluster-kerberos/VPC/PublicSubnet1"
+                            "value": "cluster-data-api/VPC/PublicSubnet1"
                           }
                         ]
                       }
@@ -170,7 +170,7 @@
                   },
                   "NATGateway": {
                     "id": "NATGateway",
-                    "path": "cluster-kerberos/VPC/PublicSubnet1/NATGateway",
+                    "path": "cluster-data-api/VPC/PublicSubnet1/NATGateway",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::NatGateway",
                       "aws:cdk:cloudformation:props": {
@@ -186,7 +186,7 @@
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "cluster-kerberos/VPC/PublicSubnet1"
+                            "value": "cluster-data-api/VPC/PublicSubnet1"
                           }
                         ]
                       }
@@ -204,11 +204,11 @@
               },
               "PublicSubnet2": {
                 "id": "PublicSubnet2",
-                "path": "cluster-kerberos/VPC/PublicSubnet2",
+                "path": "cluster-data-api/VPC/PublicSubnet2",
                 "children": {
                   "Subnet": {
                     "id": "Subnet",
-                    "path": "cluster-kerberos/VPC/PublicSubnet2/Subnet",
+                    "path": "cluster-data-api/VPC/PublicSubnet2/Subnet",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
@@ -233,7 +233,7 @@
                           },
                           {
                             "key": "Name",
-                            "value": "cluster-kerberos/VPC/PublicSubnet2"
+                            "value": "cluster-data-api/VPC/PublicSubnet2"
                           }
                         ],
                         "vpcId": {
@@ -248,7 +248,7 @@
                   },
                   "Acl": {
                     "id": "Acl",
-                    "path": "cluster-kerberos/VPC/PublicSubnet2/Acl",
+                    "path": "cluster-data-api/VPC/PublicSubnet2/Acl",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
@@ -256,14 +256,14 @@
                   },
                   "RouteTable": {
                     "id": "RouteTable",
-                    "path": "cluster-kerberos/VPC/PublicSubnet2/RouteTable",
+                    "path": "cluster-data-api/VPC/PublicSubnet2/RouteTable",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "cluster-kerberos/VPC/PublicSubnet2"
+                            "value": "cluster-data-api/VPC/PublicSubnet2"
                           }
                         ],
                         "vpcId": {
@@ -278,7 +278,7 @@
                   },
                   "RouteTableAssociation": {
                     "id": "RouteTableAssociation",
-                    "path": "cluster-kerberos/VPC/PublicSubnet2/RouteTableAssociation",
+                    "path": "cluster-data-api/VPC/PublicSubnet2/RouteTableAssociation",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
                       "aws:cdk:cloudformation:props": {
@@ -297,7 +297,7 @@
                   },
                   "DefaultRoute": {
                     "id": "DefaultRoute",
-                    "path": "cluster-kerberos/VPC/PublicSubnet2/DefaultRoute",
+                    "path": "cluster-data-api/VPC/PublicSubnet2/DefaultRoute",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
@@ -317,7 +317,7 @@
                   },
                   "EIP": {
                     "id": "EIP",
-                    "path": "cluster-kerberos/VPC/PublicSubnet2/EIP",
+                    "path": "cluster-data-api/VPC/PublicSubnet2/EIP",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::EIP",
                       "aws:cdk:cloudformation:props": {
@@ -325,7 +325,7 @@
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "cluster-kerberos/VPC/PublicSubnet2"
+                            "value": "cluster-data-api/VPC/PublicSubnet2"
                           }
                         ]
                       }
@@ -337,7 +337,7 @@
                   },
                   "NATGateway": {
                     "id": "NATGateway",
-                    "path": "cluster-kerberos/VPC/PublicSubnet2/NATGateway",
+                    "path": "cluster-data-api/VPC/PublicSubnet2/NATGateway",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::NatGateway",
                       "aws:cdk:cloudformation:props": {
@@ -353,7 +353,7 @@
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "cluster-kerberos/VPC/PublicSubnet2"
+                            "value": "cluster-data-api/VPC/PublicSubnet2"
                           }
                         ]
                       }
@@ -371,11 +371,11 @@
               },
               "PrivateSubnet1": {
                 "id": "PrivateSubnet1",
-                "path": "cluster-kerberos/VPC/PrivateSubnet1",
+                "path": "cluster-data-api/VPC/PrivateSubnet1",
                 "children": {
                   "Subnet": {
                     "id": "Subnet",
-                    "path": "cluster-kerberos/VPC/PrivateSubnet1/Subnet",
+                    "path": "cluster-data-api/VPC/PrivateSubnet1/Subnet",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
@@ -400,7 +400,7 @@
                           },
                           {
                             "key": "Name",
-                            "value": "cluster-kerberos/VPC/PrivateSubnet1"
+                            "value": "cluster-data-api/VPC/PrivateSubnet1"
                           }
                         ],
                         "vpcId": {
@@ -415,7 +415,7 @@
                   },
                   "Acl": {
                     "id": "Acl",
-                    "path": "cluster-kerberos/VPC/PrivateSubnet1/Acl",
+                    "path": "cluster-data-api/VPC/PrivateSubnet1/Acl",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
@@ -423,14 +423,14 @@
                   },
                   "RouteTable": {
                     "id": "RouteTable",
-                    "path": "cluster-kerberos/VPC/PrivateSubnet1/RouteTable",
+                    "path": "cluster-data-api/VPC/PrivateSubnet1/RouteTable",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "cluster-kerberos/VPC/PrivateSubnet1"
+                            "value": "cluster-data-api/VPC/PrivateSubnet1"
                           }
                         ],
                         "vpcId": {
@@ -445,7 +445,7 @@
                   },
                   "RouteTableAssociation": {
                     "id": "RouteTableAssociation",
-                    "path": "cluster-kerberos/VPC/PrivateSubnet1/RouteTableAssociation",
+                    "path": "cluster-data-api/VPC/PrivateSubnet1/RouteTableAssociation",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
                       "aws:cdk:cloudformation:props": {
@@ -464,7 +464,7 @@
                   },
                   "DefaultRoute": {
                     "id": "DefaultRoute",
-                    "path": "cluster-kerberos/VPC/PrivateSubnet1/DefaultRoute",
+                    "path": "cluster-data-api/VPC/PrivateSubnet1/DefaultRoute",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
@@ -490,11 +490,11 @@
               },
               "PrivateSubnet2": {
                 "id": "PrivateSubnet2",
-                "path": "cluster-kerberos/VPC/PrivateSubnet2",
+                "path": "cluster-data-api/VPC/PrivateSubnet2",
                 "children": {
                   "Subnet": {
                     "id": "Subnet",
-                    "path": "cluster-kerberos/VPC/PrivateSubnet2/Subnet",
+                    "path": "cluster-data-api/VPC/PrivateSubnet2/Subnet",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
@@ -519,7 +519,7 @@
                           },
                           {
                             "key": "Name",
-                            "value": "cluster-kerberos/VPC/PrivateSubnet2"
+                            "value": "cluster-data-api/VPC/PrivateSubnet2"
                           }
                         ],
                         "vpcId": {
@@ -534,7 +534,7 @@
                   },
                   "Acl": {
                     "id": "Acl",
-                    "path": "cluster-kerberos/VPC/PrivateSubnet2/Acl",
+                    "path": "cluster-data-api/VPC/PrivateSubnet2/Acl",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
@@ -542,14 +542,14 @@
                   },
                   "RouteTable": {
                     "id": "RouteTable",
-                    "path": "cluster-kerberos/VPC/PrivateSubnet2/RouteTable",
+                    "path": "cluster-data-api/VPC/PrivateSubnet2/RouteTable",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
                         "tags": [
                           {
                             "key": "Name",
-                            "value": "cluster-kerberos/VPC/PrivateSubnet2"
+                            "value": "cluster-data-api/VPC/PrivateSubnet2"
                           }
                         ],
                         "vpcId": {
@@ -564,7 +564,7 @@
                   },
                   "RouteTableAssociation": {
                     "id": "RouteTableAssociation",
-                    "path": "cluster-kerberos/VPC/PrivateSubnet2/RouteTableAssociation",
+                    "path": "cluster-data-api/VPC/PrivateSubnet2/RouteTableAssociation",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
                       "aws:cdk:cloudformation:props": {
@@ -583,7 +583,7 @@
                   },
                   "DefaultRoute": {
                     "id": "DefaultRoute",
-                    "path": "cluster-kerberos/VPC/PrivateSubnet2/DefaultRoute",
+                    "path": "cluster-data-api/VPC/PrivateSubnet2/DefaultRoute",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
@@ -609,14 +609,14 @@
               },
               "IGW": {
                 "id": "IGW",
-                "path": "cluster-kerberos/VPC/IGW",
+                "path": "cluster-data-api/VPC/IGW",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EC2::InternetGateway",
                   "aws:cdk:cloudformation:props": {
                     "tags": [
                       {
                         "key": "Name",
-                        "value": "cluster-kerberos/VPC"
+                        "value": "cluster-data-api/VPC"
                       }
                     ]
                   }
@@ -628,7 +628,7 @@
               },
               "VPCGW": {
                 "id": "VPCGW",
-                "path": "cluster-kerberos/VPC/VPCGW",
+                "path": "cluster-data-api/VPC/VPCGW",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EC2::VPCGatewayAttachment",
                   "aws:cdk:cloudformation:props": {
@@ -647,11 +647,11 @@
               },
               "RestrictDefaultSecurityGroupCustomResource": {
                 "id": "RestrictDefaultSecurityGroupCustomResource",
-                "path": "cluster-kerberos/VPC/RestrictDefaultSecurityGroupCustomResource",
+                "path": "cluster-data-api/VPC/RestrictDefaultSecurityGroupCustomResource",
                 "children": {
                   "Default": {
                     "id": "Default",
-                    "path": "cluster-kerberos/VPC/RestrictDefaultSecurityGroupCustomResource/Default",
+                    "path": "cluster-data-api/VPC/RestrictDefaultSecurityGroupCustomResource/Default",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.CfnResource",
                       "version": "0.0.0"
@@ -671,11 +671,11 @@
           },
           "Custom::VpcRestrictDefaultSGCustomResourceProvider": {
             "id": "Custom::VpcRestrictDefaultSGCustomResourceProvider",
-            "path": "cluster-kerberos/Custom::VpcRestrictDefaultSGCustomResourceProvider",
+            "path": "cluster-data-api/Custom::VpcRestrictDefaultSGCustomResourceProvider",
             "children": {
               "Staging": {
                 "id": "Staging",
-                "path": "cluster-kerberos/Custom::VpcRestrictDefaultSGCustomResourceProvider/Staging",
+                "path": "cluster-data-api/Custom::VpcRestrictDefaultSGCustomResourceProvider/Staging",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.AssetStaging",
                   "version": "0.0.0"
@@ -683,7 +683,7 @@
               },
               "Role": {
                 "id": "Role",
-                "path": "cluster-kerberos/Custom::VpcRestrictDefaultSGCustomResourceProvider/Role",
+                "path": "cluster-data-api/Custom::VpcRestrictDefaultSGCustomResourceProvider/Role",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.CfnResource",
                   "version": "0.0.0"
@@ -691,7 +691,7 @@
               },
               "Handler": {
                 "id": "Handler",
-                "path": "cluster-kerberos/Custom::VpcRestrictDefaultSGCustomResourceProvider/Handler",
+                "path": "cluster-data-api/Custom::VpcRestrictDefaultSGCustomResourceProvider/Handler",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.CfnResource",
                   "version": "0.0.0"
@@ -705,15 +705,15 @@
           },
           "Function": {
             "id": "Function",
-            "path": "cluster-kerberos/Function",
+            "path": "cluster-data-api/Function",
             "children": {
               "ServiceRole": {
                 "id": "ServiceRole",
-                "path": "cluster-kerberos/Function/ServiceRole",
+                "path": "cluster-data-api/Function/ServiceRole",
                 "children": {
                   "ImportServiceRole": {
                     "id": "ImportServiceRole",
-                    "path": "cluster-kerberos/Function/ServiceRole/ImportServiceRole",
+                    "path": "cluster-data-api/Function/ServiceRole/ImportServiceRole",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
@@ -721,7 +721,7 @@
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "cluster-kerberos/Function/ServiceRole/Resource",
+                    "path": "cluster-data-api/Function/ServiceRole/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::IAM::Role",
                       "aws:cdk:cloudformation:props": {
@@ -760,11 +760,11 @@
                   },
                   "DefaultPolicy": {
                     "id": "DefaultPolicy",
-                    "path": "cluster-kerberos/Function/ServiceRole/DefaultPolicy",
+                    "path": "cluster-data-api/Function/ServiceRole/DefaultPolicy",
                     "children": {
                       "Resource": {
                         "id": "Resource",
-                        "path": "cluster-kerberos/Function/ServiceRole/DefaultPolicy/Resource",
+                        "path": "cluster-data-api/Function/ServiceRole/DefaultPolicy/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
                           "aws:cdk:cloudformation:props": {
@@ -843,7 +843,7 @@
               },
               "Resource": {
                 "id": "Resource",
-                "path": "cluster-kerberos/Function/Resource",
+                "path": "cluster-data-api/Function/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
                   "aws:cdk:cloudformation:props": {
@@ -873,15 +873,15 @@
           },
           "Database": {
             "id": "Database",
-            "path": "cluster-kerberos/Database",
+            "path": "cluster-data-api/Database",
             "children": {
               "Subnets": {
                 "id": "Subnets",
-                "path": "cluster-kerberos/Database/Subnets",
+                "path": "cluster-data-api/Database/Subnets",
                 "children": {
                   "Default": {
                     "id": "Default",
-                    "path": "cluster-kerberos/Database/Subnets/Default",
+                    "path": "cluster-data-api/Database/Subnets/Default",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::RDS::DBSubnetGroup",
                       "aws:cdk:cloudformation:props": {
@@ -909,11 +909,11 @@
               },
               "SecurityGroup": {
                 "id": "SecurityGroup",
-                "path": "cluster-kerberos/Database/SecurityGroup",
+                "path": "cluster-data-api/Database/SecurityGroup",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "cluster-kerberos/Database/SecurityGroup/Resource",
+                    "path": "cluster-data-api/Database/SecurityGroup/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
                       "aws:cdk:cloudformation:props": {
@@ -943,7 +943,7 @@
               },
               "AuroraPostgreSqlDatabaseClusterEngineDefaultParameterGroup": {
                 "id": "AuroraPostgreSqlDatabaseClusterEngineDefaultParameterGroup",
-                "path": "cluster-kerberos/Database/AuroraPostgreSqlDatabaseClusterEngineDefaultParameterGroup",
+                "path": "cluster-data-api/Database/AuroraPostgreSqlDatabaseClusterEngineDefaultParameterGroup",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.Resource",
                   "version": "0.0.0"
@@ -951,11 +951,11 @@
               },
               "Secret": {
                 "id": "Secret",
-                "path": "cluster-kerberos/Database/Secret",
+                "path": "cluster-data-api/Database/Secret",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "cluster-kerberos/Database/Secret/Resource",
+                    "path": "cluster-data-api/Database/Secret/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::SecretsManager::Secret",
                       "aws:cdk:cloudformation:props": {
@@ -985,11 +985,11 @@
                   },
                   "Attachment": {
                     "id": "Attachment",
-                    "path": "cluster-kerberos/Database/Secret/Attachment",
+                    "path": "cluster-data-api/Database/Secret/Attachment",
                     "children": {
                       "Resource": {
                         "id": "Resource",
-                        "path": "cluster-kerberos/Database/Secret/Attachment/Resource",
+                        "path": "cluster-data-api/Database/Secret/Attachment/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::SecretsManager::SecretTargetAttachment",
                           "aws:cdk:cloudformation:props": {
@@ -1021,7 +1021,7 @@
               },
               "Resource": {
                 "id": "Resource",
-                "path": "cluster-kerberos/Database/Resource",
+                "path": "cluster-data-api/Database/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::RDS::DBCluster",
                   "aws:cdk:cloudformation:props": {
@@ -1079,11 +1079,11 @@
               },
               "writerInstance": {
                 "id": "writerInstance",
-                "path": "cluster-kerberos/Database/writerInstance",
+                "path": "cluster-data-api/Database/writerInstance",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "cluster-kerberos/Database/writerInstance/Resource",
+                    "path": "cluster-data-api/Database/writerInstance/Resource",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::RDS::DBInstance",
                       "aws:cdk:cloudformation:props": {
@@ -1114,7 +1114,7 @@
           },
           "BootstrapVersion": {
             "id": "BootstrapVersion",
-            "path": "cluster-kerberos/BootstrapVersion",
+            "path": "cluster-data-api/BootstrapVersion",
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnParameter",
               "version": "0.0.0"
@@ -1122,7 +1122,7 @@
           },
           "CheckBootstrapVersion": {
             "id": "CheckBootstrapVersion",
-            "path": "cluster-kerberos/CheckBootstrapVersion",
+            "path": "cluster-data-api/CheckBootstrapVersion",
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnRule",
               "version": "0.0.0"

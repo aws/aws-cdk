@@ -82,11 +82,11 @@ export async function generateCdkApp(stackName: string, stack: string, language:
  * @returns A string representation of a CDK stack file
  */
 export function generateStack(template: string, stackName: string, language: string) {
+  const formattedStackName = `${camelCase(decamelize(stackName), { pascalCase: true })}Stack`;
   try {
-    const formattedStackName = `${camelCase(decamelize(stackName), { pascalCase: true })}Stack`;
     return cdk_from_cfn.transmute(template, language, formattedStackName);
   } catch (e) {
-    throw new Error(`stack generation failed due to error '${(e as Error).message}'`);
+    throw new Error(`${formattedStackName} could not be generated because ${(e as Error).message}`);
   }
 }
 
@@ -827,7 +827,7 @@ export class CfnTemplateGeneratorProvider {
     }).promise();
 
     if (createTemplateOutput.GeneratedTemplateId === undefined) {
-      throw new Error('CreateGeneratedTemplate failed to retrun an Arn.');
+      throw new Error('CreateGeneratedTemplate failed to return an Arn.');
     }
     return createTemplateOutput;
   }

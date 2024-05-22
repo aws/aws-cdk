@@ -616,7 +616,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "37796da9adf5863c68c608fe0068001d55f6c1d1e364a13eeee6b17112bea3b5.zip"
+     "S3Key": "d77fcb7e4497ea7e1720518ba452504bdbe1a6a6de3a766745440129c8397e9e.zip"
     },
     "Handler": "index.onEventHandler",
     "Role": {
@@ -735,7 +735,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "37796da9adf5863c68c608fe0068001d55f6c1d1e364a13eeee6b17112bea3b5.zip"
+     "S3Key": "d77fcb7e4497ea7e1720518ba452504bdbe1a6a6de3a766745440129c8397e9e.zip"
     },
     "Handler": "index.isCompleteHandler",
     "Role": {
@@ -858,7 +858,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "0bf2fcabaf8a17312250c937e09a95d38644ae45e5a534f6e36b821826b3f295.zip"
+     "S3Key": "15197a5512179542fe2cff74af89bb047793c9c4e0b4395f114641a81cd52ae5.zip"
     },
     "Description": "AWS CDK resource provider framework - onEvent (cdk-integ-cluster-snapshot/Snapshoter/SnapshotProvider)",
     "Environment": {
@@ -995,7 +995,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "0bf2fcabaf8a17312250c937e09a95d38644ae45e5a534f6e36b821826b3f295.zip"
+     "S3Key": "15197a5512179542fe2cff74af89bb047793c9c4e0b4395f114641a81cd52ae5.zip"
     },
     "Description": "AWS CDK resource provider framework - isComplete (cdk-integ-cluster-snapshot/Snapshoter/SnapshotProvider)",
     "Environment": {
@@ -1129,7 +1129,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "0bf2fcabaf8a17312250c937e09a95d38644ae45e5a534f6e36b821826b3f295.zip"
+     "S3Key": "15197a5512179542fe2cff74af89bb047793c9c4e0b4395f114641a81cd52ae5.zip"
     },
     "Description": "AWS CDK resource provider framework - onTimeout (cdk-integ-cluster-snapshot/Snapshoter/SnapshotProvider)",
     "Environment": {
@@ -1230,6 +1230,22 @@
          ]
         }
        ]
+      },
+      {
+       "Action": [
+        "logs:CreateLogDelivery",
+        "logs:CreateLogStream",
+        "logs:DeleteLogDelivery",
+        "logs:DescribeLogGroups",
+        "logs:DescribeResourcePolicies",
+        "logs:GetLogDelivery",
+        "logs:ListLogDeliveries",
+        "logs:PutLogEvents",
+        "logs:PutResourcePolicy",
+        "logs:UpdateLogDelivery"
+       ],
+       "Effect": "Allow",
+       "Resource": "*"
       }
      ],
      "Version": "2012-10-17"
@@ -1241,6 +1257,26 @@
      }
     ]
    }
+  },
+  "SnapshoterSnapshotProviderwaiterstatemachineLogGroup5A64CAF9": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "LogGroupName": {
+     "Fn::Join": [
+      "",
+      [
+       "/aws/vendedlogs/states/waiter-state-machine-",
+       {
+        "Ref": "SnapshoterSnapshotProviderframeworkisComplete803B4F1B"
+       },
+       "-c8913d7ae55807b42206686ba5c74df4ca169c2f9e"
+      ]
+     ]
+    },
+    "RetentionInDays": 731
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
   },
   "SnapshoterSnapshotProviderwaiterstatemachineE1F05D1F": {
    "Type": "AWS::StepFunctions::StateMachine",
@@ -1266,6 +1302,22 @@
        "\"}}}"
       ]
      ]
+    },
+    "LoggingConfiguration": {
+     "Destinations": [
+      {
+       "CloudWatchLogsLogGroup": {
+        "LogGroupArn": {
+         "Fn::GetAtt": [
+          "SnapshoterSnapshotProviderwaiterstatemachineLogGroup5A64CAF9",
+          "Arn"
+         ]
+        }
+       }
+      }
+     ],
+     "IncludeExecutionData": false,
+     "Level": "ERROR"
     },
     "RoleArn": {
      "Fn::GetAtt": [
@@ -1619,7 +1671,7 @@
    },
    "aws-cn": {
     "applicationId": "arn:aws-cn:serverlessrepo:cn-north-1:193023089310:applications/SecretsManagerRDSMySQLRotationSingleUser",
-    "semanticVersion": "1.1.212"
+    "semanticVersion": "1.1.237"
    },
    "aws-us-gov": {
     "applicationId": "arn:aws-us-gov:serverlessrepo:us-gov-west-1:023102451235:applications/SecretsManagerRDSMySQLRotationSingleUser",

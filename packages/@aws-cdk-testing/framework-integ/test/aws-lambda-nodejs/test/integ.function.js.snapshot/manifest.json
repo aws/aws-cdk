@@ -1,5 +1,5 @@
 {
-  "version": "34.0.0",
+  "version": "36.0.0",
   "artifacts": {
     "cdk-integ-lambda-nodejs.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/07a365b98f3b3c282c678757a8e27ce272fd97f2401314bf098050da96ab09ca.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c2bf07d9d9241edb7452788dcd8e02bf195b939083c50e88c148b5cd2b29cab5.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -68,6 +68,18 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "jshandlerD8909241"
+          }
+        ],
+        "/cdk-integ-lambda-nodejs/js-handler-bundling-path/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "jshandlerbundlingpathServiceRole827F7127"
+          }
+        ],
+        "/cdk-integ-lambda-nodejs/js-handler-bundling-path/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "jshandlerbundlingpath4B2FEE93"
           }
         ],
         "/cdk-integ-lambda-nodejs/Vpc/Resource": [

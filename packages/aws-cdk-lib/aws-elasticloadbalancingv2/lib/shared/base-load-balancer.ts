@@ -1,4 +1,5 @@
 import { Construct } from 'constructs';
+import { IpAddressType } from './enums';
 import { Attributes, ifUndefined, mapTagMapToCxschema, renderAttributes } from './util';
 import * as ec2 from '../../../aws-ec2';
 import * as iam from '../../../aws-iam';
@@ -47,6 +48,22 @@ export interface BaseLoadBalancerProps {
    * @default false
    */
   readonly deletionProtection?: boolean;
+
+  /**
+   * Indicates whether cross-zone load balancing is enabled.
+   *
+   * @default - false for Network Load Balancers and true for Application Load Balancers.
+   * This can not be `false` for Application Load Balancers.
+   * @see - https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticloadbalancingv2-loadbalancer-loadbalancerattribute.html
+   */
+  readonly crossZoneEnabled?: boolean;
+
+  /**
+   * Indicates whether the load balancer blocks traffic through the Internet Gateway (IGW).
+   *
+   * @default - false for internet-facing load balancers and true for internal load balancers
+   */
+  readonly denyAllIgwTraffic?: boolean;
 }
 
 export interface ILoadBalancerV2 extends IResource {
@@ -229,6 +246,18 @@ export abstract class BaseLoadBalancer extends Resource {
     }
 
     this.setAttribute('deletion_protection.enabled', baseProps.deletionProtection ? 'true' : 'false');
+
+    if (baseProps.crossZoneEnabled !== undefined) {
+      this.setAttribute('load_balancing.cross_zone.enabled', baseProps.crossZoneEnabled === true ? 'true' : 'false');
+    }
+
+    if (baseProps.denyAllIgwTraffic !== undefined) {
+      if (additionalProps.ipAddressType === IpAddressType.DUAL_STACK) {
+        this.setAttribute('ipv6.deny_all_igw_traffic', baseProps.denyAllIgwTraffic.toString());
+      } else {
+        throw new Error(`'denyAllIgwTraffic' may only be set on load balancers with ${IpAddressType.DUAL_STACK} addressing.`);
+      }
+    }
 
     this.loadBalancerCanonicalHostedZoneId = resource.attrCanonicalHostedZoneId;
     this.loadBalancerDnsName = resource.attrDnsName;

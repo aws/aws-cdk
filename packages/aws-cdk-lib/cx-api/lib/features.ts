@@ -99,6 +99,12 @@ export const APPSYNC_ENABLE_USE_ARN_IDENTIFIER_SOURCE_API_ASSOCIATION = '@aws-cd
 export const CODECOMMIT_SOURCE_ACTION_DEFAULT_BRANCH_NAME = '@aws-cdk/aws-codepipeline-actions:useNewDefaultBranchForCodeCommitSource';
 export const LAMBDA_PERMISSION_LOGICAL_ID_FOR_LAMBDA_ACTION = '@aws-cdk/aws-cloudwatch-actions:changeLambdaPermissionLogicalIdForLambdaAction';
 export const CODEPIPELINE_CROSS_ACCOUNT_KEYS_DEFAULT_VALUE_TO_FALSE = '@aws-cdk/aws-codepipeline:crossAccountKeysDefaultValueToFalse';
+export const CODEPIPELINE_DEFAULT_PIPELINE_TYPE_TO_V2 = '@aws-cdk/aws-codepipeline:defaultPipelineTypeToV2';
+export const KMS_REDUCE_CROSS_ACCOUNT_REGION_POLICY_SCOPE = '@aws-cdk/aws-kms:reduceCrossAccountRegionPolicyScope';
+export const PIPELINE_REDUCE_ASSET_ROLE_TRUST_SCOPE = '@aws-cdk/pipelines:reduceAssetRoleTrustScope';
+export const EKS_NODEGROUP_NAME = '@aws-cdk/aws-eks:nodegroupNameAttribute';
+export const EBS_DEFAULT_GP3 = '@aws-cdk/aws-ec2:ebsDefaultGp3Volume';
+export const ECS_REMOVE_DEFAULT_DEPLOYMENT_ALARM = '@aws-cdk/aws-ecs:removeDefaultDeploymentAlarm';
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
@@ -1006,6 +1012,81 @@ export const FLAGS: Record<string, FlagInfo> = {
     introducedIn: { v2: '2.127.0' },
     recommendedValue: true,
     compatibilityWithOldBehaviorMd: 'Pass `crossAccountKeys: true` to `Pipeline` construct to restore the previous behavior.',
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [CODEPIPELINE_DEFAULT_PIPELINE_TYPE_TO_V2]: {
+    type: FlagType.ApiDefault,
+    summary: 'Enables Pipeline to set the default pipeline type to V2.',
+    detailsMd: `
+      When this feature flag is enabled, and the \`pipelineType\` property is not provided in a \`Pipeline\`
+      construct, the construct automatically defaults the value of this property to \`PipelineType.V2\`.
+    `,
+    introducedIn: { v2: '2.133.0' },
+    recommendedValue: true,
+    compatibilityWithOldBehaviorMd: 'Pass `pipelineType: PipelineType.V1` to `Pipeline` construct to restore the previous behavior.',
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [KMS_REDUCE_CROSS_ACCOUNT_REGION_POLICY_SCOPE]: {
+    type: FlagType.BugFix,
+    summary: 'When enabled, IAM Policy created from KMS key grant will reduce the resource scope to this key only.',
+    detailsMd: `
+      When this feature flag is enabled and calling KMS key grant method, the created IAM policy will reduce the resource scope from
+      '*' to this specific granting KMS key.
+    `,
+    introducedIn: { v2: '2.134.0' },
+    recommendedValue: true,
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [PIPELINE_REDUCE_ASSET_ROLE_TRUST_SCOPE]: {
+    type: FlagType.ApiDefault,
+    summary: 'Remove the root account principal from PipelineAssetsFileRole trust policy',
+    detailsMd: `
+      When this feature flag is enabled, the root account principal will not be added to the trust policy of asset role.
+      When this feature flag is disabled, it will keep the root account principal in the trust policy.
+    `,
+    introducedIn: { v2: '2.141.0' },
+    defaults: { v2: true },
+    recommendedValue: true,
+    compatibilityWithOldBehaviorMd: 'Disable the feature flag to add the root account principal back',
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [EKS_NODEGROUP_NAME]: {
+    type: FlagType.BugFix,
+    summary: 'When enabled, nodegroupName attribute of the provisioned EKS NodeGroup will not have the cluster name prefix.',
+    detailsMd: `
+      When this feature flag is enabled, the nodegroupName attribute will be exactly the name of the nodegroup without
+      any prefix.
+    `,
+    introducedIn: { v2: '2.139.0' },
+    recommendedValue: true,
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [EBS_DEFAULT_GP3]: {
+    type: FlagType.ApiDefault,
+    summary: 'When enabled, the default volume type of the EBS volume will be GP3',
+    detailsMd: `
+      When this featuer flag is enabled, the default volume type of the EBS volume will be \`EbsDeviceVolumeType.GENERAL_PURPOSE_SSD_GP3\`.
+    `,
+    introducedIn: { v2: '2.140.0' },
+    recommendedValue: true,
+    compatibilityWithOldBehaviorMd: 'Pass `volumeType: EbsDeviceVolumeType.GENERAL_PURPOSE_SSD` to `Volume` construct to restore the previous behavior.',
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [ECS_REMOVE_DEFAULT_DEPLOYMENT_ALARM]: {
+    type: FlagType.ApiDefault,
+    summary: 'When enabled, remove default deployment alarm settings',
+    detailsMd: `
+      When this featuer flag is enabled, remove the default deployment alarm settings when creating a AWS ECS service.
+    `,
+    introducedIn: { v2: 'V2NEXT' },
+    recommendedValue: true,
+    compatibilityWithOldBehaviorMd: 'Set AWS::ECS::Service \'DeploymentAlarms\' manually to restore the previous behavior.',
   },
 };
 

@@ -2,6 +2,71 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.142.1-alpha.0](https://github.com/aws/aws-cdk/compare/v2.142.0-alpha.0...v2.142.1-alpha.0) (2024-05-17)
+
+## [2.142.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.141.0-alpha.0...v2.142.0-alpha.0) (2024-05-15)
+
+
+### Features
+
+* **pipes-targets:** add step function target ([#29987](https://github.com/aws/aws-cdk/issues/29987)) ([b0975e4](https://github.com/aws/aws-cdk/commit/b0975e410a404d07952e01303af01224ccfad864)), closes [#29665](https://github.com/aws/aws-cdk/issues/29665) [#29665](https://github.com/aws/aws-cdk/issues/29665)
+* **redshift:** multi AZ cluster ([#29976](https://github.com/aws/aws-cdk/issues/29976)) ([a53517c](https://github.com/aws/aws-cdk/commit/a53517c6772332cc2a15c9b38e964a933e9c8355))
+
+## [2.141.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.140.0-alpha.0...v2.141.0-alpha.0) (2024-05-08)
+
+## [2.140.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.139.1-alpha.0...v2.140.0-alpha.0) (2024-05-02)
+
+## [2.139.1-alpha.0](https://github.com/aws/aws-cdk/compare/v2.139.0-alpha.0...v2.139.1-alpha.0) (2024-04-29)
+
+## [2.139.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.138.0-alpha.0...v2.139.0-alpha.0) (2024-04-24)
+
+## [2.138.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.137.0-alpha.0...v2.138.0-alpha.0) (2024-04-18)
+
+
+### ⚠ BREAKING CHANGES TO EXPERIMENTAL FEATURES
+
+* **cognito-identitypool-alpha:** The argument of `IdentityPoolProviderUrl.userPool()` has been changed from `url: string` to `userPool: UserPool, userPoolClient: UserPoolClient`. If you want to specify custom identifier string, use `IdentityPoolProviderUrl.custom()` instead.
+
+### Bug Fixes
+
+* **cognito-identitypool-alpha:** inconvenient IdentityPoolProviderUrl.userPool() ([#29025](https://github.com/aws/aws-cdk/issues/29025)) ([90a7734](https://github.com/aws/aws-cdk/commit/90a773407753b4ff868dede4442bf20243dfeaec))
+
+## [2.137.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.136.1-alpha.0...v2.137.0-alpha.0) (2024-04-10)
+
+
+### Bug Fixes
+
+* **integ-tests:** `httpApiCall.expect` with resolved URL ([#29705](https://github.com/aws/aws-cdk/issues/29705)) ([49b4aa1](https://github.com/aws/aws-cdk/commit/49b4aa1e22062a3183dce7092e740af49fa951bf)), closes [#29700](https://github.com/aws/aws-cdk/issues/29700) [#29701](https://github.com/aws/aws-cdk/issues/29701)
+
+## [2.136.1-alpha.0](https://github.com/aws/aws-cdk/compare/v2.136.0-alpha.0...v2.136.1-alpha.0) (2024-04-09)
+
+## [2.136.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.135.0-alpha.0...v2.136.0-alpha.0) (2024-04-06)
+
+## [2.135.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.134.0-alpha.0...v2.135.0-alpha.0) (2024-04-01)
+
+## [2.134.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.133.0-alpha.0...v2.134.0-alpha.0) (2024-03-26)
+
+
+### Features
+
+* **kinesisanalytics-flink:** add support for Flink 1.18 ([#29554](https://github.com/aws/aws-cdk/issues/29554)) ([8fd8ee8](https://github.com/aws/aws-cdk/commit/8fd8ee8e7e5a6e047e5110f084dff61906bde160)), closes [/docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-kinesisanalyticsv2-application.html#aws-resource-kinesisanalyticsv2](https://github.com/aws//docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-kinesisanalyticsv2-application.html/issues/aws-resource-kinesisanalyticsv2)
+
+
+### Bug Fixes
+
+* **glue:** s3 path specified in --spark-event-logs-path needs to end with slash ([#29357](https://github.com/aws/aws-cdk/issues/29357)) ([4ff3565](https://github.com/aws/aws-cdk/commit/4ff3565a9d7b0298bf884822fecabdd3cff643aa)), closes [#29356](https://github.com/aws/aws-cdk/issues/29356)
+
+## [2.133.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.132.1-alpha.0...v2.133.0-alpha.0) (2024-03-14)
+
+## [2.132.1-alpha.0](https://github.com/aws/aws-cdk/compare/v2.132.0-alpha.0...v2.132.1-alpha.0) (2024-03-12)
+
+## [2.132.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.131.0-alpha.0...v2.132.0-alpha.0) (2024-03-08)
+
+
+### Bug Fixes
+
+* **glue:** `PythonRayExecutableProps` has innaccurate properties ([#28625](https://github.com/aws/aws-cdk/issues/28625)) ([7994733](https://github.com/aws/aws-cdk/commit/79947337d59539a03a2d7d2849043aa9405268d8)), closes [#28570](https://github.com/aws/aws-cdk/issues/28570)
+
 ## [2.131.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.130.0-alpha.0...v2.131.0-alpha.0) (2024-03-01)
 
 ## [2.130.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.129.0-alpha.0...v2.130.0-alpha.0) (2024-02-23)

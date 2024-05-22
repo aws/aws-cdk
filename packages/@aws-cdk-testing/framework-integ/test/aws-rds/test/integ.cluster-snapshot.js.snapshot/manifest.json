@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/99f4ced27f200fe295af3ad362cf11e4f9147001a91d2f0d89391904cb0a6816.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/4632e24caf781ed222f4aba0b607ad16216fc589a24bf065ed96cd0588e10506.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -302,6 +302,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "SnapshoterSnapshotProviderwaiterstatemachineRoleDefaultPolicyCF7716B2"
+          }
+        ],
+        "/cdk-integ-cluster-snapshot/Snapshoter/SnapshotProvider/waiter-state-machine/LogGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SnapshoterSnapshotProviderwaiterstatemachineLogGroup5A64CAF9"
           }
         ],
         "/cdk-integ-cluster-snapshot/Snapshoter/SnapshotProvider/waiter-state-machine/Resource": [

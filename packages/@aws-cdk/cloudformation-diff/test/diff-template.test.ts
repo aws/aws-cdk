@@ -1104,7 +1104,7 @@ describe('changeset', () => {
             ResourceType: 'AWS::S3::Bucket',
             Replacement: 'True',
             Details: [{
-              Evaluation: 'Direct',
+              Evaluation: 'Static',
               Target: {
                 Attribute: 'Properties',
                 Name: 'BucketName',
@@ -1153,7 +1153,7 @@ describe('changeset', () => {
             ResourceType: 'AWS::Lambda::Function', // The SAM transform is applied before the changeset is created, so the changeset has a Lambda resource here!
             Replacement: 'False',
             Details: [{
-              Evaluation: 'Direct',
+              Evaluation: 'Static',
               Target: {
                 Attribute: 'Properties',
                 Name: 'Code',
