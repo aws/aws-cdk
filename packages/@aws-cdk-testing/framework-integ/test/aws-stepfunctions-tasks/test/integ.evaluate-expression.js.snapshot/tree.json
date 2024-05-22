@@ -286,15 +286,7 @@
                         "Arn"
                       ]
                     },
-                    "runtime": {
-                      "Fn::FindInMap": [
-                        "LatestNodeRuntimeMap",
-                        {
-                          "Ref": "AWS::Region"
-                        },
-                        "value"
-                      ]
-                    }
+                    "runtime": "nodejs18.x"
                   }
                 },
                 "constructInfo": {
