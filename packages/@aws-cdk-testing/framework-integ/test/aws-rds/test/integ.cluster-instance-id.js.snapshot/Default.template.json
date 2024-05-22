@@ -649,6 +649,7 @@
     "PromotionTier": 2
    },
    "DependsOn": [
+    "DatabaseInstanceAA8A5FDE",
     "VPCPrivateSubnet1DefaultRouteAE1D6490",
     "VPCPrivateSubnet1RouteTableAssociation347902D1",
     "VPCPrivateSubnet2DefaultRouteF4F5CFD2",
