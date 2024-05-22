@@ -1,0 +1,19 @@
+{
+  "version": "36.0.0",
+  "files": {
+    "3fd645cf4381f06f1adc0b43d55d8ef9348ba10f88e127f04d9dfe466db68fbe": {
+      "source": {
+        "path": "aws-cdk-mediaconvert-create-job-test-stack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "3fd645cf4381f06f1adc0b43d55d8ef9348ba10f88e127f04d9dfe466db68fbe.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
