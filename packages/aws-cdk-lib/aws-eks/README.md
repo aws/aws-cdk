@@ -1151,11 +1151,14 @@ to Kubernetes resources. See [Access Policy Permissions](https://docs.aws.amazon
 Use `AccessPolicy` to include predefined AWS managed policies:
 
 ```ts
-
 // AmazonEKSClusterAdminPolicy with `cluster` scope
-eks.AccessPolicy.fromAccessPolicyName('AmazonEKSClusterAdminPolicy');
+eks.AccessPolicy.fromAccessPolicyName('AmazonEKSClusterAdminPolicy', {
+  accessScopeType: eks.AccessScopeType.CLUSTER,
+});
 // AmazonEKSAdminPolicy with `namespace` scope
-eks.AccessPolicy.fromAccessPolicyName('AmazonEKSAdminPolicy', { namespaces: ['foo', 'bar'] } );
+eks.AccessPolicy.fromAccessPolicyName('AmazonEKSAdminPolicy', {
+  accessScopeType: eks.AccessScopeType.NAMESPACE,
+  namespaces: ['foo', 'bar'] } );
 ```
 
 Use `grantAccess()` to grant the AccessPolicy to an IAM principal:
@@ -1186,17 +1189,25 @@ const cluster = new eks.Cluster(this, 'Cluster', {
 
 // Cluster Admin role for this cluster
 cluster.grantAccess('clusterAdminAccess', clusterAdminRole.roleArn, [
-  eks.AccessPolicy.fromAccessPolicyName('AmazonEKSClusterAdminPolicy'),
+  eks.AccessPolicy.fromAccessPolicyName('AmazonEKSClusterAdminPolicy', {
+    accessScopeType: eks.AccessScopeType.CLUSTER,
+  }),
 ]);
 
 // EKS Admin role for specified namespaces of thie cluster
 cluster.grantAccess('eksAdminRoleAccess', eksAdminRole.roleArn, [
-  eks.AccessPolicy.fromAccessPolicyName('AmazonEKSAdminPolicy', { namespaces: ['foo', 'bar'] } ),
+  eks.AccessPolicy.fromAccessPolicyName('AmazonEKSAdminPolicy', { 
+    accessScopeType: eks.AccessScopeType.NAMESPACE,
+    namespaces: ['foo', 'bar'],
+  }),
 ]);
 
 // EKS Admin Viewer role for specified namespaces of thie cluster
 cluster.grantAccess('eksAdminViewRoleAccess', eksAdminViewRole.roleArn, [
-  eks.AccessPolicy.fromAccessPolicyName('AmazonEKSAdminViewPolicy', { namespaces: ['foo', 'bar'] } ),
+  eks.AccessPolicy.fromAccessPolicyName('AmazonEKSAdminViewPolicy', {
+    accessScopeType: eks.AccessScopeType.NAMESPACE,
+    namespaces: ['foo', 'bar'],
+  }),
 ]);
 ```
 

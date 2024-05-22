@@ -3,7 +3,7 @@ import * as path from 'path';
 import { Construct, Node } from 'constructs';
 import * as semver from 'semver';
 import * as YAML from 'yaml';
-import { IAccessPolicy, IAccessEntry, AccessEntry, AccessPolicy } from './access-entry';
+import { IAccessPolicy, IAccessEntry, AccessEntry, AccessPolicy, AccessScopeType } from './access-entry';
 import { AlbController, AlbControllerOptions } from './alb-controller';
 import { AwsAuth } from './aws-auth';
 import { ClusterResource, clusterArnComponents } from './cluster-resource';
@@ -1744,10 +1744,13 @@ export class Cluster extends ClusterBase {
     if (props.mastersRole) {
       const mastersRole = props.mastersRole;
 
-      // if we support authentication API we create access entry
+      // if we support authentication API we create an access entry for this mastersRole
+      // with cluster scope.
       if (supportAuthenticationApi) {
         this.grantAccess('mastersRoleAccess', props.mastersRole.roleArn, [
-          AccessPolicy.fromAccessPolicyName('AmazonEKSClusterAdminPolicy'),
+          AccessPolicy.fromAccessPolicyName('AmazonEKSClusterAdminPolicy', {
+            accessScopeType: AccessScopeType.CLUSTER,
+          }),
         ]);
       } else {
         // if we don't support authentication API we should fallback to configmap

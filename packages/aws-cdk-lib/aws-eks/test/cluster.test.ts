@@ -3352,7 +3352,9 @@ describe('cluster', () => {
         version: CLUSTER_VERSION,
       });
       cluster.grantAccess('mastersAccess', mastersRole.roleArn, [
-        eks.AccessPolicy.fromAccessPolicyName('AmazonEKSClusterAdminPolicy'),
+        eks.AccessPolicy.fromAccessPolicyName('AmazonEKSClusterAdminPolicy', {
+          accessScopeType: eks.AccessScopeType.CLUSTER,
+        }),
       ]);
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::EKS::AccessEntry', {

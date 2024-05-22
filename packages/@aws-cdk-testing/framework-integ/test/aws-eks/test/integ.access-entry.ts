@@ -23,6 +23,9 @@ export class ClusterStack extends Stack {
   public readonly viewerRole: iam.IRole;
   public readonly allPoliciesRole: iam.IRole;
   public readonly vpc: ec2.IVpc;
+  private readonly namespaceScopeOptions: eks.AccessPolicyNameOptions;
+  private readonly clusterScopeOptions: eks.AccessPolicyNameOptions;
+
   constructor(scope: Construct, id: string, props?: ClusterStackProps) {
     super(scope, id, props);
 
@@ -56,27 +59,37 @@ export class ClusterStack extends Stack {
       defaultCapacity: props?.defaultCapacity,
     });
 
+    // common options for namespaces access scope
+    this.namespaceScopeOptions = {
+      accessScopeType: eks.AccessScopeType.NAMESPACE,
+      namespaces: ['foo', 'bar'],
+    };
+    // common options for cluster access scope
+    this.clusterScopeOptions = {
+      accessScopeType: eks.AccessScopeType.CLUSTER,
+    };
+
   }
   public assertGrantToOtherClusterAdminRole() {
     // grantAccess to otherClusterAdminRole
     this.cluster.grantAccess('otherClusterAdminRoleAccess', this.otherClusterAdminRole.roleArn, [
-      eks.AccessPolicy.fromAccessPolicyName('AmazonEKSClusterAdminPolicy'),
+      eks.AccessPolicy.fromAccessPolicyName('AmazonEKSClusterAdminPolicy', { ...this.clusterScopeOptions }),
     ]);
   }
   public assertGrantToViewerRole() {
     // grantAccess to viewerRole
     this.cluster.grantAccess('viewerRoleAccess', this.viewerRole.roleArn, [
-      eks.AccessPolicy.fromAccessPolicyName('AmazonEKSAdminViewPolicy', { namespaces: ['foo', 'bar'] }),
+      eks.AccessPolicy.fromAccessPolicyName('AmazonEKSAdminViewPolicy', { ...this.namespaceScopeOptions }),
     ]);
   }
   public assertGrantToAllPoliciesRole() {
     // grantAccess to viewerRole
     this.cluster.grantAccess('allPoliciesRoleAccess', this.allPoliciesRole.roleArn, [
-      eks.AccessPolicy.fromAccessPolicyName('AmazonEKSClusterAdminPolicy'), // CLUSTER scope
-      eks.AccessPolicy.fromAccessPolicyName('AmazonEKSAdminPolicy', { namespaces: ['foo', 'bar'] } ), // NAMESPACE scope
-      eks.AccessPolicy.fromAccessPolicyName('AmazonEKSAdminViewPolicy', { namespaces: ['foo', 'bar'] } ), // NAMESPACE scope
-      eks.AccessPolicy.fromAccessPolicyName('AmazonEKSEditPolicy', { namespaces: ['foo', 'bar'] } ), // NAMESPACE scope
-      eks.AccessPolicy.fromAccessPolicyName('AmazonEKSViewPolicy', { namespaces: ['foo', 'bar'] } ), // NAMESPACE scope
+      eks.AccessPolicy.fromAccessPolicyName('AmazonEKSClusterAdminPolicy', { ...this.clusterScopeOptions }), // CLUSTER scope
+      eks.AccessPolicy.fromAccessPolicyName('AmazonEKSAdminPolicy', { ...this.namespaceScopeOptions }), // NAMESPACE scope
+      eks.AccessPolicy.fromAccessPolicyName('AmazonEKSAdminViewPolicy', { ...this.namespaceScopeOptions }), // NAMESPACE scope
+      eks.AccessPolicy.fromAccessPolicyName('AmazonEKSEditPolicy', { ...this.namespaceScopeOptions }), // NAMESPACE scope
+      eks.AccessPolicy.fromAccessPolicyName('AmazonEKSViewPolicy', { ...this.namespaceScopeOptions }), // NAMESPACE scope
     ]);
   }
 }

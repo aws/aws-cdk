@@ -75,7 +75,7 @@ export interface AccessScope {
    * A Kubernetes namespace that an access policy is scoped to. A value is required if you specified
    * namespace for Type.
    *
-   * @default - no namespaces required(cluster-level access).
+   * @default - no specific namespaces for this scope.
    */
   readonly namespaces?: string[];
   /**
@@ -185,20 +185,15 @@ export interface AccessPolicyProps {
 /**
  * Represents the options required to create an Amazon EKS AccessPolicy using the `fromAccessPolicyName()` method.
  *
- * @property {string[]} [namespaces] - The Kubernetes namespaces to which the access policy should be applied. If not provided, the access policy will apply to the entire cluster.
  * @property {AccessScope} [accessScope] - The scope of the access policy. If not provided, the scope will be automatically determined based on the policy name.
  */
 export interface AccessPolicyNameOptions {
-  /**
-   * The Kubernetes namespaces to which the access policy should be applied.
-   * @default - no namespaces (the access policy will apply to the entire cluster)
-   */
+  // /**
+  //  * The scope of the access policy.
+  //  */
+  // readonly accessScope: AccessScope;
+  readonly accessScopeType: AccessScopeType;
   readonly namespaces?: string[];
-  /**
-   * The scope of the access policy.
-   * @default - auto-determined by policyName
-   */
-  readonly accessScope?: AccessScope;
 }
 
 /**
@@ -210,13 +205,13 @@ export class AccessPolicy implements IAccessPolicy {
   /**
    * Import AccessPolicy by name.
    */
-  public static fromAccessPolicyName(policyName: string, options?: AccessPolicyNameOptions): IAccessPolicy {
+  public static fromAccessPolicyName(policyName: string, options: AccessPolicyNameOptions): IAccessPolicy {
     class Import implements IAccessPolicy {
-      public readonly policy = `arn:${Aws.PARTITION}:eks::aws:cluster-access-policy/${policyName}`
-      public readonly accessScope: AccessScope = options?.accessScope ?? {
-        type: policyName === 'AmazonEKSClusterAdminPolicy' ? AccessScopeType.CLUSTER : AccessScopeType.NAMESPACE,
-        namespaces: options?.namespaces,
-      };
+      public readonly policy = `arn:${Aws.PARTITION}:eks::aws:cluster-access-policy/${policyName}`;
+      public readonly accessScope: AccessScope = {
+        type: options.accessScopeType,
+        namespaces: options.namespaces,
+      }
     }
     return new Import();
   }
