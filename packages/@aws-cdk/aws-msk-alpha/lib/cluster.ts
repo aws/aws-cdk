@@ -681,20 +681,15 @@ export class Cluster extends ClusterBase {
     let clientAuthentication: any = {};
 
     if (props.clientAuthentication?.saslProps) {
-      clientAuthentication = {
-        sasl: {
-          ...(props.clientAuthentication?.saslProps?.iam ? { iam: { enabled: props.clientAuthentication.saslProps.iam } } : {}),
-          ...(props.clientAuthentication?.saslProps?.scram ? { scram: { enabled: props.clientAuthentication.saslProps.scram } } : {}),
-        },
+      clientAuthentication.sasl = {
+        ...(props.clientAuthentication?.saslProps?.iam ? { iam: { enabled: props.clientAuthentication.saslProps.iam } } : {}),
+        ...(props.clientAuthentication?.saslProps?.scram ? { scram: { enabled: props.clientAuthentication.saslProps.scram } } : {}),
       };
     }
 
     if (props.clientAuthentication?.tlsProps) {
-      clientAuthentication = {
-        ...clientAuthentication,
-        tls: {
-          certificateAuthorityArnList: props.clientAuthentication.tlsProps?.certificateAuthorities?.map((ca) => ca.certificateAuthorityArn),
-        },
+      clientAuthentication.tls = {
+        certificateAuthorityArnList: props.clientAuthentication.tlsProps?.certificateAuthorities?.map((ca) => ca.certificateAuthorityArn),
       };
     }
 
