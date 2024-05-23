@@ -298,7 +298,6 @@ async function waitFor<T>(valueProvider: () => Promise<T | null | undefined>, ti
  *
  * @returns       the CloudFormation description of the ChangeSet
  */
-// eslint-disable-next-line max-len
 export async function waitForChangeSet(
   cfn: CloudFormation,
   stackName: string,

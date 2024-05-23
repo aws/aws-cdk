@@ -58,11 +58,15 @@ export class TemplateAndChangeSetDiffMerger {
       }
 
       const propertyReplacementModes: types.PropertyReplacementModeMap = {};
+      const beforeContextBackup: types.PropertyNameMap = { Properties: {} }; // TODO: delete once IncludePropertyValues for DescribeChangeSets is available in all regions
+      const afterContextBackup: types.PropertyNameMap = { Properties: {} }; // TODO: delete once IncludePropertyValues for DescribeChangeSets is available in all regions
       for (const propertyChange of resourceChange.ResourceChange.Details ?? []) {
         if (propertyChange.Target?.Attribute === 'Properties' && propertyChange.Target.Name) {
           propertyReplacementModes[propertyChange.Target.Name] = {
             replacementMode: TemplateAndChangeSetDiffMerger.determineChangeSetReplacementMode(propertyChange),
           };
+          beforeContextBackup.Properties[propertyChange.Target.Name] = 'value_before_change_is_not_viewable';
+          afterContextBackup.Properties[propertyChange.Target.Name] = 'value_after_change_is_not_viewable';
         }
       }
 
@@ -71,7 +75,9 @@ export class TemplateAndChangeSetDiffMerger {
         resourceType: resourceChange.ResourceChange.ResourceType ?? TemplateAndChangeSetDiffMerger.UNKNOWN_RESOURCE_TYPE, // DescribeChangeSet doesn't promise to have the ResourceType...
         propertyReplacementModes: propertyReplacementModes,
         beforeContext: _maybeJsonParse(resourceChange.ResourceChange.BeforeContext),
+        beforeContextBackup: beforeContextBackup,
         afterContext: _maybeJsonParse(resourceChange.ResourceChange.AfterContext),
+        afterContextBackup: afterContextBackup,
       };
     }
 
@@ -100,11 +106,11 @@ export class TemplateAndChangeSetDiffMerger {
     for (const [logicalId, changeSetResource] of Object.entries(this.changeSetResources)) {
       const oldResource: types.Resource = {
         Type: changeSetResource.resourceType ?? TemplateAndChangeSetDiffMerger.UNKNOWN_RESOURCE_TYPE,
-        Properties: changeSetResource.beforeContext?.Properties ?? { ChangeSetPlaceHolder: 'BEFORE_DETAIL_NOT_VIEWABLE' },
+        Properties: changeSetResource.beforeContext?.Properties ?? changeSetResource.beforeContextBackup.Properties,
       };
       const newResource: types.Resource = {
         Type: changeSetResource.resourceType ?? TemplateAndChangeSetDiffMerger.UNKNOWN_RESOURCE_TYPE,
-        Properties: changeSetResource.afterContext?.Properties ?? { ChangeSetPlaceHolder: 'AFTER_DETAIL_NOT_VIEWABLE' },
+        Properties: changeSetResource.afterContext?.Properties ?? changeSetResource.afterContextBackup.Properties,
       };
 
       const resourceDiffFromChangeset = diffResource(oldResource, newResource);

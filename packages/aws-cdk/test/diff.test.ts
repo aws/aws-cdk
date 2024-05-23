@@ -9,7 +9,8 @@ import { CdkToolkit } from '../lib/cdk-toolkit';
 import * as cfn from '../lib/api/util/cloudformation';
 import { NestedStackTemplates } from '../lib/api/nested-stack-helpers';
 import * as fs from 'fs';
-// import * as AWS from 'aws-sdk';
+import { MockSdkProvider } from './util/mock-sdk';
+import { CloudFormation } from 'aws-sdk';
 
 let cloudExecutable: MockCloudExecutable;
 let cloudFormation: jest.Mocked<Deployments>;
@@ -100,18 +101,21 @@ describe('imports', () => {
             ResourceChange: {
               Action: 'Import',
               LogicalResourceId: 'Queue',
+              Details: [{ Target: { Attribute: 'Properties', Name: 'RandomPropertyField', RequiresRecreation: 'Never' } }],
             },
           },
           {
             ResourceChange: {
               Action: 'Import',
               LogicalResourceId: 'Bucket',
+              Details: [{ Target: { Attribute: 'Properties', Name: 'RandomPropertyField', RequiresRecreation: 'Never' } }],
             },
           },
           {
             ResourceChange: {
               Action: 'Import',
               LogicalResourceId: 'Queue2',
+              Details: [{ Target: { Attribute: 'Properties', Name: 'RandomPropertyField', RequiresRecreation: 'Never' } }],
             },
           },
         ],
@@ -211,9 +215,18 @@ Resources
     expect(plainTextOutput).toContain(`Stack A
 Parameters and rules created during migration do not affect resource configuration.
 Resources
-[←] AWS::SQS::Queue Queue import
-[←] AWS::SQS::Queue Queue2 import
-[←] AWS::S3::Bucket Bucket import
+[←] UNKNOWN_RESOURCE_TYPE Queue import
+ └─ [~] RandomPropertyField
+     ├─ [-] value_before_change_is_not_viewable
+     └─ [+] value_after_change_is_not_viewable
+[←] UNKNOWN_RESOURCE_TYPE Queue2 import
+ └─ [~] RandomPropertyField
+     ├─ [-] value_before_change_is_not_viewable
+     └─ [+] value_after_change_is_not_viewable
+[←] UNKNOWN_RESOURCE_TYPE Bucket import
+ └─ [~] RandomPropertyField
+     ├─ [-] value_before_change_is_not_viewable
+     └─ [+] value_after_change_is_not_viewable
 `);
 
     expect(buffer.data.trim()).toContain('✨  Number of stacks with differences: 1');
@@ -548,33 +561,139 @@ describe('stack exists checks', () => {
   });
 });
 
-// describe('DescribeChangeSet', () => {
+describe('DescribeChangeSet', () => {
+  let cfnClientMock: CloudFormation;
+  let describeChangeSetsMock: jest.Mock;
 
-//   test('DescribeChangeSet doesnt include IncludePropertyValue in request if no change context', async () => {
-//     // GIVEN
-//     const changeSetSpy = jest.spyOn(cfn, 'maybeGetChangeSetChangeContext');
-//     changeSetSpy.mockResolvedValue(undefined);
+  beforeEach(async () => {
+    const sdkProvider = new MockSdkProvider();
+    describeChangeSetsMock = jest.fn();
+    const cfnMocks = { describeChangeSet: describeChangeSetsMock };
+    sdkProvider.stubCloudFormation(cfnMocks as any);
+    cfnClientMock = (await sdkProvider.forEnvironment()).sdk.cloudFormation();
+  });
 
-//     jest.mock('aws-sdk', () => {
-//       const mockDescribeChangeSet = jest.fn().mockReturnValue({
-//         promise: jest.fn().mockRejectedValueOnce({ Changes: [], NextToken: 'hi' }),
-//       });
+  afterEach(() => {
+    jest.resetAllMocks();
+    jest.clearAllMocks();
+    jest.restoreAllMocks();
+  });
 
-//       return {
-//         CloudFormation: jest.fn(() => ({
-//           describeChangeSet: mockDescribeChangeSet,
-//         })),
-//       };
-//     });
+  // TODO -- remove this test once IncludePropertyValues is supported in all regions. The purpose of this test is to ensure that we only specify IncludePropertyValues on the appropriate call.
+  // If we were to use IncludePropertyValues on the wrong call to DescribeChangeSet, then we could break `cdk diff` in regions where IncludePropertyValues doesn't work.
+  test('DescribeChangeSet doesnt include IncludePropertyValue in request if first call with IncludePropertyValue throws error', async () => {
+    // GIVEN
+    const stackName = 'stack';
+    const changeSetName = 'changeSet';
+    const nextToken = 'next';
+    const changesWithoutBeforeAndAfterContext = [{
+      ResourceChange: {
+        Action: 'Import',
+        LogicalResourceId: 'Queue',
+        Details: [{ Target: { Attribute: 'Properties', Name: 'RandomPropertyField', RequiresRecreation: 'Never' } }],
+      },
+    }];
 
-//     // WHEN
-//     const cfnClient = new AWS.CloudFormation();
-//     await cfn.describeChangeSet(cfnClient, 'stack', 'changeSet', { fetchAll: true });
+    describeChangeSetsMock
+      .mockImplementationOnce(() => ({ Changes: changesWithoutBeforeAndAfterContext, NextToken: nextToken }))
+      .mockImplementationOnce(() => { throw new Error('IncludePropertyValues not supported in this region'); })
+      .mockImplementationOnce(() => ({ Changes: [], NextToken: undefined }));
 
-//     // THEN
-//   });
+    // WHEN
+    await cfn.describeChangeSet(cfnClientMock, stackName, changeSetName, { fetchAll: true });
+    const commonExpectedArgs = { StackName: stackName, ChangeSetName: changeSetName };
 
-// });
+    // THEN
+    expect(describeChangeSetsMock).toHaveBeenCalledTimes(3);
+    expect(describeChangeSetsMock).toHaveBeenNthCalledWith(1, commonExpectedArgs);
+    expect(describeChangeSetsMock).toHaveBeenNthCalledWith(2, {
+      ...commonExpectedArgs,
+      IncludePropertyValues: true,
+    });
+    expect(describeChangeSetsMock).toHaveBeenNthCalledWith(3, {
+      ...commonExpectedArgs,
+      NextToken: nextToken,
+    });
+  });
+
+  // TODO -- remove this test once IncludePropertyValues is supported in all regions. The purpose of this test is to ensure that we only specify IncludePropertyValues on the appropriate call.
+  // If we were to use IncludePropertyValues on the wrong call to DescribeChangeSet, then we could break `cdk diff` in regions where IncludePropertyValues doesn't work.
+  test('DescribeChangeSet doesnt include IncludePropertyValue in request if no change context', async () => {
+    // GIVEN
+    const stackName = 'stack';
+    const changeSetName = 'changeSet';
+    const nextToken = 'next';
+    const changesWithoutBeforeAndAfterContext = [{
+      ResourceChange: {
+        Action: 'Import',
+        LogicalResourceId: 'Queue',
+        Details: [{ Target: { Attribute: 'Properties', Name: 'RandomPropertyField', RequiresRecreation: 'Never' } }],
+      },
+    }];
+
+    describeChangeSetsMock
+      .mockImplementationOnce(() => ({ Changes: changesWithoutBeforeAndAfterContext, NextToken: nextToken }))
+      .mockImplementationOnce(() => ({ Changes: changesWithoutBeforeAndAfterContext, NextToken: undefined }))
+      .mockImplementationOnce(() => ({ Changes: [], NextToken: undefined }));
+
+    // WHEN
+    await cfn.describeChangeSet(cfnClientMock, stackName, changeSetName, { fetchAll: true });
+    const commonExpectedArgs = { StackName: stackName, ChangeSetName: changeSetName };
+
+    // THEN
+    expect(describeChangeSetsMock).toHaveBeenCalledTimes(3);
+    expect(describeChangeSetsMock).toHaveBeenNthCalledWith(1, commonExpectedArgs);
+    expect(describeChangeSetsMock).toHaveBeenNthCalledWith(2, {
+      ...commonExpectedArgs,
+      IncludePropertyValues: true,
+    });
+    expect(describeChangeSetsMock).toHaveBeenNthCalledWith(3, {
+      ...commonExpectedArgs,
+      NextToken: nextToken,
+    });
+  });
+
+  // TODO -- change this test once IncludePropertyValues is supported in all regions. The purpose of this test is to ensure that we only specify IncludePropertyValues on the appropriate call.
+  // If we were to use IncludePropertyValues on the wrong call to DescribeChangeSet, then we could break `cdk diff` in regions where IncludePropertyValues doesn't work.
+  test('DescribeChangeSet does include IncludePropertyValue in request if change context exists', async () => {
+    // GIVEN
+    const stackName = 'stack';
+    const changeSetName = 'changeSet';
+    const nextToken = 'next';
+    const changesWithBeforeContext = [{
+      ResourceChange: {
+        Action: 'Import',
+        LogicalResourceId: 'Queue',
+        BeforeContext: '{"hi": "hello"}',
+        Details: [{ Target: { Attribute: 'Properties', Name: 'RandomPropertyField', RequiresRecreation: 'Never' } }],
+      },
+    }];
+
+    describeChangeSetsMock
+      .mockImplementationOnce(() => ({ Changes: [], NextToken: nextToken }))
+      .mockImplementationOnce(() => ({ Changes: changesWithBeforeContext, NextToken: undefined }))
+      .mockImplementationOnce(() => ({ Changes: [], NextToken: undefined }));
+
+    // WHEN
+    const response = await cfn.describeChangeSet(cfnClientMock, stackName, changeSetName, { fetchAll: true });
+    expect(response.Changes).toEqual(changesWithBeforeContext);
+    const commonExpectedArgs = { StackName: stackName, ChangeSetName: changeSetName };
+
+    // THEN
+    expect(describeChangeSetsMock).toHaveBeenCalledTimes(3);
+    expect(describeChangeSetsMock).toHaveBeenNthCalledWith(1, commonExpectedArgs);
+    expect(describeChangeSetsMock).toHaveBeenNthCalledWith(2, {
+      ...commonExpectedArgs,
+      IncludePropertyValues: true,
+    });
+    expect(describeChangeSetsMock).toHaveBeenNthCalledWith(3, {
+      ...commonExpectedArgs,
+      NextToken: nextToken,
+      IncludePropertyValues: true,
+    });
+  });
+
+});
 
 describe('nested stacks', () => {
   beforeEach(() => {

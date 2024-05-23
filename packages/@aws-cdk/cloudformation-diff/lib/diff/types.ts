@@ -11,17 +11,23 @@ export type ChangeSetResources = { [logicalId: string]: ChangeSetResource };
 /**
  * @param beforeContext is the BeforeContext field from the ChangeSet.ResourceChange.BeforeContext. This is the part of the CloudFormation template
  * that defines what the resource is before the change is applied.
+ * @param beforeContextBackup this is a map of property names from the resource in the changeset. This should be used if the beforeContext is undefined.
+ * - TODO: This field can be removed once IncludePropertyValues is available in all regions.
  *
  * @param afterContext same as beforeContext but for after the change is made.
+ * @param beforeContextBackup this is a map of property names from the resource in the changeset. This should be used if the afterContext is undefined.
+ * - TODO: This field can be removed once IncludePropertyValues is available in all regions.
  */
 export interface ChangeSetResource {
   resourceWasReplaced: boolean;
   resourceType: string | undefined;
   propertyReplacementModes: PropertyReplacementModeMap | undefined;
   beforeContext: any | undefined;
+  beforeContextBackup: PropertyNameMap;
   afterContext: any | undefined;
+  afterContextBackup: PropertyNameMap;
 }
-
+export type PropertyNameMap = { Properties: {[propertyName: string]: string} };
 export type PropertyReplacementModeMap = {
   [propertyName: string]: {
     replacementMode: ReplacementModes | undefined;
