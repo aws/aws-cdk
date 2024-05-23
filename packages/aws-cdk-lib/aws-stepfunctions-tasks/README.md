@@ -771,7 +771,7 @@ new tasks.EmrAddStep(this, 'Task', {
 
 To specify a custom runtime role use the `executionRoleArn` property.
 
-**Note:** The EMR cluster must be created with a security configuration and the runtime role must have a specific trust policy. 
+**Note:** The EMR cluster must be created with a security configuration and the runtime role must have a specific trust policy.
 See this [blog post](https://aws.amazon.com/blogs/big-data/introducing-runtime-roles-for-amazon-emr-steps-use-iam-roles-and-aws-lake-formation-for-access-control-with-amazon-emr/) for more details.
 
 ```ts
@@ -784,7 +784,7 @@ const cfnSecurityConfiguration = new emr.CfnSecurityConfiguration(this, 'EmrSecu
       "AuthorizationConfiguration": {
           "IAMConfiguration": {
               "EnableApplicationScopedIAMRole": true,
-              "ApplicationScopedIAMRoleConfiguration": 
+              "ApplicationScopedIAMRoleConfiguration":
                   {
                       "PropagateSourceIdentity": true
                   }
@@ -1126,6 +1126,15 @@ new tasks.GlueStartJobRun(this, 'Task', {
   }),
   taskTimeout: sfn.Timeout.duration(Duration.minutes(30)),
   notifyDelayAfter: Duration.minutes(5),
+});
+```
+You can configure workers by setting the `workerType` and `numberOfWorkers` properties.
+
+```ts
+new tasks.GlueStartJobRun(this, 'Task', {
+  glueJobName: 'my-glue-job',
+  workerType: tasks.WorkerType.G_1X,  // Worker type
+  numberOfWorkers: 2,  // Number of Workers
 });
 ```
 

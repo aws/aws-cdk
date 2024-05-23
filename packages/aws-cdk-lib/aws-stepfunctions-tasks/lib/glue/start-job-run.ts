@@ -42,6 +42,21 @@ export interface GlueStartJobRunProps extends sfn.TaskStateBaseProps {
    * @default - Default delay set in the job definition
    */
   readonly notifyDelayAfter?: Duration;
+
+  /**
+   * The type of predefined worker that is allocated when a job runs.
+   * This must be set along with numberOfWorkers.
+   *
+   * @default - differs based on specific Glue version
+   */
+  readonly workerType?: WorkerType;
+
+  /**
+   * The number of workers of a defined `WorkerType` that are allocated when a job runs.
+   *
+   * @default - differs based on specific Glue version/worker type
+   */
+  readonly numberOfWorkers?: number;
 }
 
 /**
@@ -68,6 +83,10 @@ export class GlueStartJobRun extends sfn.TaskStateBase {
     this.integrationPattern = props.integrationPattern ?? sfn.IntegrationPattern.REQUEST_RESPONSE;
 
     validatePatternSupported(this.integrationPattern, GlueStartJobRun.SUPPORTED_INTEGRATION_PATTERNS);
+
+    if ((!props.workerType && props.numberOfWorkers !== undefined) || (props.workerType && props.numberOfWorkers === undefined)) {
+      throw new Error('Both workerType and numberOfWorkers must be set');
+    }
 
     this.taskPolicies = this.getPolicies();
 
@@ -101,6 +120,8 @@ export class GlueStartJobRun extends sfn.TaskStateBase {
         Timeout: timeout,
         SecurityConfiguration: this.props.securityConfiguration,
         NotificationProperty: notificationProperty,
+        WorkerType: this.props.workerType,
+        NumberOfWorkers: this.props.numberOfWorkers,
       }),
       TimeoutSeconds: undefined,
       TimeoutSecondsPath: undefined,
@@ -131,4 +152,47 @@ export class GlueStartJobRun extends sfn.TaskStateBase {
       actions: iamActions,
     })];
   }
+}
+
+/**
+ * The type of predefined worker that is allocated when a job runs.
+ *
+ * If you need to use a WorkerType that doesn't exist as a static member, you
+ * can instantiate a `WorkerType` object, e.g: `WorkerType.of('other type')`.
+ */
+export enum WorkerType {
+  /**
+   * Each worker provides 4 vCPU, 16 GB of memory and a 50GB disk, and 2 executors per worker.
+   */
+  STANDARD ='Standard',
+
+  /**
+   * Each worker maps to 1 DPU (4 vCPU, 16 GB of memory, 64 GB disk), and provides 1 executor per worker. Suitable for memory-intensive jobs.
+   */
+  G_1X ='G.1X',
+
+  /**
+   * Each worker maps to 2 DPU (8 vCPU, 32 GB of memory, 128 GB disk), and provides 1 executor per worker. Suitable for memory-intensive jobs.
+   */
+  G_2X ='G.2X',
+
+  /**
+   * Each worker maps to 4 DPU (16 vCPU, 64 GB of memory, 256 GB disk), and provides 1 executor per worker. We recommend this worker type for jobs whose workloads contain your most demanding transforms, aggregations, joins, and queries. This worker type is available only for AWS Glue version 3.0 or later jobs.
+   */
+  G_4X ='G.4X',
+
+  /**
+   * Each worker maps to 8 DPU (32 vCPU, 128 GB of memory, 512 GB disk), and provides 1 executor per worker. We recommend this worker type for jobs whose workloads contain your most demanding transforms, aggregations, joins, and queries. This worker type is available only for AWS Glue version 3.0 or later jobs.
+   */
+  G_8X ='G.8X',
+
+  /**
+   * Each worker maps to 0.25 DPU (2 vCPU, 4 GB of memory, 64 GB disk), and provides 1 executor per worker. Suitable for low volume streaming jobs.
+   */
+  G_025X ='G.025X',
+
+  /**
+   * Each worker maps to 2 high-memory DPU [M-DPU] (8 vCPU, 64 GB of memory, 128 GB disk). Supported in Ray jobs.
+   */
+  Z_2X ='Z.2X',
 }
