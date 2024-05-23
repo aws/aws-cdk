@@ -54,7 +54,7 @@ export function fullDiff(
 
   normalize(currentTemplate);
   normalize(newTemplate);
-  let theDiff = diffTemplate(currentTemplate, newTemplate); // I could remove this step and then run the integ tests and see what happens, assuming those tests use changeset
+  let theDiff = diffTemplate(currentTemplate, newTemplate);
   if (changeSet) {
     // These methods mutate the state of theDiff, using the changeSet.
     const changeSetDiff = new TemplateAndChangeSetDiffMerger({ changeSet });

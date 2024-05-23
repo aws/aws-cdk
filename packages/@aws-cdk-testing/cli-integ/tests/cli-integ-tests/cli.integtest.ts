@@ -958,7 +958,7 @@ integTest('cdk diff picks up security changes that are only in changeset', withD
     await fixture.cdkDeploy('iam-role-defined-by-ssm-param');
 
     // WHEN
-    // We want to change the ssm value. Then the CFN changeset will detect that the queue will be changed upon deploy.
+    // We want to change the ssm value. Then the CFN changeset will detect that the iam-role will be changed upon deploy.
     const newRoleName = randomString();
     await fixture.aws.ssm('putParameter', {
       Name: 'for-iam-role-defined-by-ssm-param',
