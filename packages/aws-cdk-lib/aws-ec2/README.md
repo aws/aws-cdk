@@ -1915,7 +1915,9 @@ new ec2.Vpc(this, 'VPC', {
 
 ### Enabling Nitro Enclaves
 
-You can enable [AWS Nitro Enclaves](https://docs.aws.amazon.com/enclaves/latest/user/nitro-enclave.html) for your EC2 instances by setting the `nitroEnclaveEnabled` property to `true`. Nitro Enclaves are a feature of AWS Nitro System that enables creating isolated and highly constrained CPU environments known as enclaves.
+You can enable [AWS Nitro Enclaves](https://docs.aws.amazon.com/enclaves/latest/user/nitro-enclave.html) for
+your EC2 instances by setting the `nitroEnclaveEnabled` property to `true`. Nitro Enclaves is a feature of
+AWS Nitro System that enables creating isolated and highly constrained CPU environments known as enclaves.
 
 ```ts
 declare const vpc: ec2.Vpc;
