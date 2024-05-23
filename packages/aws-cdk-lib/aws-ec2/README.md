@@ -1932,7 +1932,9 @@ const instance = new ec2.Instance(this, 'Instance', {
 
 ### Enabling Instance Hibernation
 
-You can enable [Instance Hibernation](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/Hibernate.html) for your EC2 instances by setting the `hibernationConfigured` property to `true`. Instance Hibernation saves the instance's in-memory (RAM) state when an instance is stopped, and restores that state when the instance is started.
+You can enable [Instance Hibernation](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/Hibernate.html) for
+your EC2 instances by setting the `hibernationConfigured` property to `true`. Instance Hibernation saves the
+instance's in-memory (RAM) state when an instance is stopped, and restores that state when the instance is started.
 
 ```ts
 declare const vpc: ec2.Vpc;
