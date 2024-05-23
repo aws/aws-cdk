@@ -1,5 +1,5 @@
 import { bockfs } from '@aws-cdk/cdk-build-tools';
-import { Template, Match } from '../../assertions';
+import { Annotations, Template, Match } from '../../assertions';
 import { Vpc } from '../../aws-ec2';
 import { CodeConfig, Runtime } from '../../aws-lambda';
 import { App, Stack } from '../../core';
@@ -303,19 +303,69 @@ test('defaults to NODEJS_16_X with feature flag disabled', () => {
   });
 });
 
-test('defaults to NODEJS_LATEST with feature flag enabled', () => {
-  // GIVEN
-  const appLocal = new App({
-    context: {
-      [LAMBDA_NODEJS_USE_LATEST_RUNTIME]: true,
-    },
+describe('Node 18+ runtimes', () => {
+  test('defaults to NODEJS_LATEST with feature flag enabled', () => {
+    // GIVEN
+    const appFF = new App({
+      context: {
+        [LAMBDA_NODEJS_USE_LATEST_RUNTIME]: true,
+      },
+    });
+
+    const stackFF = new Stack(appFF, 'TestStackFF');
+
+    // WHEN
+    new NodejsFunction(stackFF, 'handler1');
+
+    Template.fromStack(stackFF).hasResourceProperties('AWS::Lambda::Function', {
+      Runtime: 'nodejs18.x',
+    });
   });
-  const stackLocal = new Stack(appLocal, 'TestStackFF');
 
-  // WHEN
-  new NodejsFunction(stackLocal, 'handler1');
+  test('connection reuse for aws sdk v2 not set by default', () => {
+    // WHEN
+    new NodejsFunction(stack, 'handler1', {
+      runtime: Runtime.NODEJS_18_X,
+    });
 
-  Template.fromStack(stackLocal).hasResourceProperties('AWS::Lambda::Function', {
-    Runtime: 'nodejs18.x',
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+      Environment: Match.absent(),
+    });
+  });
+
+  test('connection reuse for aws sdk v2 can be explicitly not set', () => {
+    // WHEN
+    new NodejsFunction(stack, 'handler1', {
+      runtime: Runtime.NODEJS_18_X,
+      awsSdkConnectionReuse: false,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+      Environment: Match.absent(),
+    });
+  });
+
+  test('setting connection reuse for aws sdk v2 has warning', () => {
+    // WHEN
+    new NodejsFunction(stack, 'handler1', {
+      runtime: Runtime.NODEJS_18_X,
+      awsSdkConnectionReuse: true,
+    });
+
+    // THEN
+    Annotations.fromStack(stack).hasWarning('*',
+      'The AWS_NODEJS_CONNECTION_REUSE_ENABLED environment variable does not exist in SDK v3. You have explicitly set `awsSdkConnectionReuse`; please make sure this is intentional. [ack: aws-cdk-lib/aws-lambda-nodejs:unusedSdkEvironmentVariable]',
+    );
+    // AND
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+      Environment: {
+        Variables: {
+          AWS_NODEJS_CONNECTION_REUSE_ENABLED: '1',
+        },
+      },
+    });
   });
 });
+

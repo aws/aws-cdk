@@ -4,7 +4,7 @@ import { IConstruct } from 'constructs';
 import { PackageInstallation } from './package-installation';
 import { LockFile, PackageManager } from './package-manager';
 import { BundlingOptions, OutputFormat, SourceMapMode } from './types';
-import { exec, extractDependencies, findUp, getTsconfigCompilerOptions } from './util';
+import { exec, extractDependencies, findUp, getTsconfigCompilerOptions, isSdkV2Runtime } from './util';
 import { Architecture, AssetCode, Code, Runtime } from '../../aws-lambda';
 import * as cdk from '../../core';
 
@@ -440,24 +440,6 @@ function toCliArgs(esbuildArgs: { [key: string]: string | boolean }): string {
   }
 
   return args.join(' ');
-}
-
-/**
- * Detect if a given Node.js runtime uses SDKv2
- */
-function isSdkV2Runtime(runtime: Runtime): boolean {
-  const sdkV2RuntimeList = [
-    Runtime.NODEJS,
-    Runtime.NODEJS_4_3,
-    Runtime.NODEJS_6_10,
-    Runtime.NODEJS_8_10,
-    Runtime.NODEJS_10_X,
-    Runtime.NODEJS_12_X,
-    Runtime.NODEJS_14_X,
-    Runtime.NODEJS_16_X,
-  ];
-
-  return sdkV2RuntimeList.some((r) => {return r.family === runtime.family && r.name === runtime.name;});
 }
 
 /**

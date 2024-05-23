@@ -8,6 +8,7 @@ import { InstanceType } from './instance-types';
 import { IKeyPair } from './key-pair';
 import { CpuCredits } from './launch-template';
 import { IMachineImage, OperatingSystemType } from './machine-image';
+import { IPlacementGroup } from './placement-group';
 import { instanceBlockDeviceMappings } from './private/ebs-util';
 import { ISecurityGroup, SecurityGroup } from './security-group';
 import { UserData } from './user-data';
@@ -315,6 +316,13 @@ export interface InstanceProps {
    * @default false
    */
   readonly ebsOptimized?: boolean;
+
+  /**
+   * The placement group that you want to launch the instance into.
+   *
+   * @default - no placement group will be used for this instance.
+   */
+  readonly placementGroup?: IPlacementGroup;
 }
 
 /**
@@ -486,6 +494,7 @@ export class Instance extends Resource implements IInstance {
       monitoring: props.detailedMonitoring,
       creditSpecification: props.creditSpecification ? { cpuCredits: props.creditSpecification } : undefined,
       ebsOptimized: props.ebsOptimized,
+      placementGroupName: props.placementGroup?.placementGroupName,
     });
     this.instance.node.addDependency(this.role);
 

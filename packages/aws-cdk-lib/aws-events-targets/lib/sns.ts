@@ -17,6 +17,7 @@ export interface SnsTopicProps extends TargetBaseProps {
 
 /**
  * Use an SNS topic as a target for Amazon EventBridge rules.
+ * If the topic is imported the required permissions to publish to that topic need to be set manually.
  *
  * @example
  *   /// fixture=withRepoAndTopic

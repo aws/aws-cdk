@@ -119,5 +119,6 @@ function createEvalFn(runtime: lambda.Runtime | undefined, scope: Construct) {
   return new EvalNodejsSingletonFunction(scope, 'EvalFunction', {
     uuid,
     lambdaPurpose,
+    runtime,
   });
 }

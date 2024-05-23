@@ -1,0 +1,12 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "NlbIpv6Test/DefaultTest": {
+      "stacks": [
+        "NlbIpv6Stack"
+      ],
+      "assertionStack": "NlbIpv6Test/DefaultTest/DeployAssert",
+      "assertionStackName": "NlbIpv6TestDefaultTestDeployAssertFB8F1DF0"
+    }
+  }
+}
