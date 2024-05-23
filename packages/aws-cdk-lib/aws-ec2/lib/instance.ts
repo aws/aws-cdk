@@ -320,6 +320,8 @@ export interface InstanceProps {
    * Indicates whether an instance stops or terminates when you initiate shutdown from the instance
    * (using the operating system command for system shutdown).
    *
+   * @see https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/terminating-instances.html#Using_ChangingInstanceInitiatedShutdownBehavior
+   *
    * @default InstanceInitiatedShutdownBehavior.STOP
    */
   readonly instanceInitiatedShutdownBehavior?: InstanceInitiatedShutdownBehavior;
