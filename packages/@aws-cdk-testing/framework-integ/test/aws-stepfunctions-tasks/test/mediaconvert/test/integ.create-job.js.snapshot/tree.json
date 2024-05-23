@@ -78,10 +78,17 @@
                             "policyDocument": {
                               "Statement": [
                                 {
-                                  "Action": [
-                                    "iam:PassRole",
-                                    "mediaconvert:CreateJob"
-                                  ],
+                                  "Action": "iam:PassRole",
+                                  "Condition": {
+                                    "StringLike": {
+                                      "iam:PassedToService": "mediaconvert.amazonaws.com"
+                                    }
+                                  },
+                                  "Effect": "Allow",
+                                  "Resource": "arn:aws:iam::123456789012:role/MediaConvertRole"
+                                },
+                                {
+                                  "Action": "mediaconvert:CreateJob",
                                   "Effect": "Allow",
                                   "Resource": "*"
                                 }

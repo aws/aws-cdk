@@ -59,7 +59,10 @@ export class MediaConvertCreateJob extends sfn.TaskStateBase {
     const policyStatements = [
       new iam.PolicyStatement({
         actions: ['iam:PassRole'],
-        resources: ['*'],
+        resources: [this.props.createJobRequest.Role],
+        conditions: {
+          StringLike: { 'iam:PassedToService': 'mediaconvert.amazonaws.com' },
+        },
       }),
       new iam.PolicyStatement({
         actions: ['mediaconvert:CreateJob'],
