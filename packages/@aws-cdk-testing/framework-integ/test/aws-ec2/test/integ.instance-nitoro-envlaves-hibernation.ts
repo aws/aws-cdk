@@ -19,8 +19,8 @@ class TestStack extends cdk.Stack {
       securityGroup,
       instanceType: ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.XLARGE),
       machineImage: new ec2.AmazonLinuxImage({ generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2023 }),
-      nitroEnclaveEnabled: true,
-      hibernationConfigured: false,
+      enclaveEnabled: true,
+      hibernationEnabled: false,
     });
 
     new ec2.Instance(this, 'InstanceHibernationEnabled', {
@@ -28,8 +28,8 @@ class TestStack extends cdk.Stack {
       securityGroup,
       instanceType: ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.XLARGE),
       machineImage: new ec2.AmazonLinuxImage({ generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2023 }),
-      nitroEnclaveEnabled: false,
-      hibernationConfigured: true,
+      enclaveEnabled: false,
+      hibernationEnabled: true,
       blockDevices: [{
         deviceName: '/dev/xvda',
         volume: ec2.BlockDeviceVolume.ebs(30, {

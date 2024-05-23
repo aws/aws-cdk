@@ -1521,7 +1521,7 @@ const host = new ec2.BastionHostLinux(this, 'BastionHost', {
 });
 ```
 
-### Placement Group 
+### Placement Group
 
 Specify `placementGroup` to enable the placement group support:
 
@@ -1916,7 +1916,7 @@ new ec2.Vpc(this, 'VPC', {
 ### Enabling Nitro Enclaves
 
 You can enable [AWS Nitro Enclaves](https://docs.aws.amazon.com/enclaves/latest/user/nitro-enclave.html) for
-your EC2 instances by setting the `nitroEnclaveEnabled` property to `true`. Nitro Enclaves is a feature of
+your EC2 instances by setting the `enclaveEnabled` property to `true`. Nitro Enclaves is a feature of
 AWS Nitro System that enables creating isolated and highly constrained CPU environments known as enclaves.
 
 ```ts
@@ -1926,14 +1926,14 @@ const instance = new ec2.Instance(this, 'Instance', {
   instanceType: ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.XLARGE),
   machineImage: new ec2.AmazonLinuxImage(),
   vpc: vpc,
-  nitroEnclaveEnabled: true,
+  enclaveEnabled: true,
 });
 ```
 
 ### Enabling Instance Hibernation
 
 You can enable [Instance Hibernation](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/Hibernate.html) for
-your EC2 instances by setting the `hibernationConfigured` property to `true`. Instance Hibernation saves the
+your EC2 instances by setting the `hibernationEnabled` property to `true`. Instance Hibernation saves the
 instance's in-memory (RAM) state when an instance is stopped, and restores that state when the instance is started.
 
 ```ts
@@ -1943,7 +1943,7 @@ const instance = new ec2.Instance(this, 'Instance', {
   instanceType: ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.XLARGE),
   machineImage: new ec2.AmazonLinuxImage(),
   vpc: vpc,
-  hibernationConfigured: true,
+  hibernationEnabled: true,
   blockDevices: [{
     deviceName: '/dev/xvda',
     volume: ec2.BlockDeviceVolume.ebs(30, {

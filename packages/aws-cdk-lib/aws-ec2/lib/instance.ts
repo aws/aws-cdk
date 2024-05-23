@@ -323,24 +323,24 @@ export interface InstanceProps {
    * @default - no placement group will be used for this instance.
    */
   readonly placementGroup?: IPlacementGroup;
-  
+
   /**
    * Whether the instance is enabled for AWS Nitro Enclaves.
    *
-   * You can't set both `nitroEnclaveEnabled` and `hibernationConfigured` to true on the same instance.
+   * You can't set both `enclaveEnabled` and `hibernationEnabled` to true on the same instance.
    *
    * @default - false
    */
-  readonly nitroEnclaveEnabled?: boolean;
+  readonly enclaveEnabled?: boolean;
 
   /**
    * Whether the instance is enabled for hibernation.
    *
-   * You can't set both `nitroEnclaveEnabled` and `hibernationConfigured` to true on the same instance.
+   * You can't set both `enclaveEnabled` and `hibernationEnabled` to true on the same instance.
    *
    * @default - false
    */
-  readonly hibernationConfigured?: boolean;
+  readonly hibernationEnabled?: boolean;
 }
 
 /**
@@ -492,8 +492,8 @@ export class Instance extends Resource implements IInstance {
       throw new Error(`${props.keyPair.type} keys are not compatible with the chosen AMI`);
     }
 
-    if (props.nitroEnclaveEnabled && props.hibernationConfigured) {
-      throw new Error('You can\'t set both `nitroEnclaveEnabled` and `hibernationConfigured` to true on the same instance');
+    if (props.enclaveEnabled && props.hibernationEnabled) {
+      throw new Error('You can\'t set both `enclaveEnabled` and `hibernationEnabled` to true on the same instance');
     }
 
     // if network interfaces array is configured then subnetId, securityGroupIds,
@@ -517,8 +517,8 @@ export class Instance extends Resource implements IInstance {
       creditSpecification: props.creditSpecification ? { cpuCredits: props.creditSpecification } : undefined,
       ebsOptimized: props.ebsOptimized,
       placementGroupName: props.placementGroup?.placementGroupName,
-      enclaveOptions: props.nitroEnclaveEnabled !== undefined ? { enabled: props.nitroEnclaveEnabled } : undefined,
-      hibernationOptions: props.hibernationConfigured !== undefined ? { configured: props.hibernationConfigured } : undefined,
+      enclaveOptions: props.enclaveEnabled !== undefined ? { enabled: props.enclaveEnabled } : undefined,
+      hibernationOptions: props.hibernationEnabled !== undefined ? { configured: props.hibernationEnabled } : undefined,
     });
     this.instance.node.addDependency(this.role);
 

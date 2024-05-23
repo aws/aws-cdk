@@ -942,13 +942,13 @@ test('specify ebs optimized instance', () => {
 test.each([
   [true, true],
   [false, false],
-])('given nitroEnclaveEnabled %p', (given: boolean, expected: boolean) => {
+])('given enclaveEnabled %p', (given: boolean, expected: boolean) => {
   // WHEN
   new Instance(stack, 'Instance', {
     vpc,
     machineImage: new AmazonLinuxImage(),
     instanceType: InstanceType.of(InstanceClass.M5, InstanceSize.XLARGE),
-    nitroEnclaveEnabled: given,
+    enclaveEnabled: given,
   });
 
   // THEN
@@ -962,13 +962,13 @@ test.each([
 test.each([
   [true, true],
   [false, false],
-])('given hibernationConfigured %p', (given: boolean, expected: boolean) => {
+])('given hibernationEnabled %p', (given: boolean, expected: boolean) => {
   // WHEN
   new Instance(stack, 'Instance', {
     vpc,
     machineImage: new AmazonLinuxImage(),
     instanceType: InstanceType.of(InstanceClass.M5, InstanceSize.XLARGE),
-    hibernationConfigured: given,
+    hibernationEnabled: given,
     blockDevices: [{
       deviceName: '/dev/xvda',
       volume: BlockDeviceVolume.ebs(30, {
@@ -987,15 +987,15 @@ test.each([
   });
 });
 
-test('throw if AWS Nitro Enclaves and hibernation are enabled', () => {
+test('throw if both enclaveEnabled and hibernationEnabled are set to true', () => {
   // WHEN/THEN
   expect(() => {
     new Instance(stack, 'Instance', {
       vpc,
       machineImage: new AmazonLinuxImage(),
       instanceType: InstanceType.of(InstanceClass.M5, InstanceSize.LARGE),
-      nitroEnclaveEnabled: true,
-      hibernationConfigured: true,
+      enclaveEnabled: true,
+      hibernationEnabled: true,
       blockDevices: [{
         deviceName: '/dev/xvda',
         volume: BlockDeviceVolume.ebs(30, {
@@ -1005,5 +1005,5 @@ test('throw if AWS Nitro Enclaves and hibernation are enabled', () => {
         }),
       }],
     });
-  }).toThrow('You can\'t enable hibernation and AWS Nitro Enclaves on the same instance.');
+  }).toThrow('You can\'t set both `enclaveEnabled` and `hibernationEnabled` to true on the same instance');
 });
