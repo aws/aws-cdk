@@ -314,6 +314,12 @@ describe('LaunchTemplate', () => {
       }, {
         deviceName: 'ephemeral',
         volume: BlockDeviceVolume.ephemeral(0),
+      }, {
+        deviceName: 'gp3-with-throughput',
+        volume: BlockDeviceVolume.ebs(15, {
+          volumeType: EbsDeviceVolumeType.GP3,
+          throughput: 350,
+        }),
       },
     ];
 
@@ -366,9 +372,59 @@ describe('LaunchTemplate', () => {
             DeviceName: 'ephemeral',
             VirtualName: 'ephemeral0',
           },
+          {
+            DeviceName: 'gp3-with-throughput',
+            Ebs: {
+              VolumeSize: 15,
+              VolumeType: 'gp3',
+              Throughput: 350,
+            },
+          },
         ],
       },
     });
+  });
+  test.each([124, 1001])('throws if throughput is set less than 125 or more than 1000', (throughput) => {
+    expect(() => {
+      new LaunchTemplate(stack, 'LaunchTemplate', {
+        blockDevices: [{
+          deviceName: 'ebs',
+          volume: BlockDeviceVolume.ebs(15, {
+            volumeType: EbsDeviceVolumeType.GP3,
+            throughput,
+          }),
+        }],
+      });
+    }).toThrow(/throughput property takes a minimum of 125 and a maximum of 1000/);
+  });
+  test.each([
+    ...Object.values(EbsDeviceVolumeType).filter((v) => v !== 'gp3'),
+  ])('throws if throughput is set on any volume type other than GP3', (volumeType) => {
+    expect(() => {
+      new LaunchTemplate(stack, 'LaunchTemplate', {
+        blockDevices: [{
+          deviceName: 'ebs',
+          volume: BlockDeviceVolume.ebs(15, {
+            volumeType: volumeType,
+            throughput: 150,
+          }),
+        }],
+      });
+    }).toThrow(/throughput property requires volumeType: EbsDeviceVolumeType.GP3/);
+  });
+  test('throws if throughput / iops ratio is greater than 0.25', () => {
+    expect(() => {
+      new LaunchTemplate(stack, 'LaunchTemplate', {
+        blockDevices: [{
+          deviceName: 'ebs',
+          volume: BlockDeviceVolume.ebs(15, {
+            volumeType: EbsDeviceVolumeType.GP3,
+            throughput: 751,
+            iops: 3000,
+          }),
+        }],
+      });
+    }).toThrow('Throughput (MiBps) to iops ratio of 0.25033333333333335 is too high; maximum is 0.25 MiBps per iops');
   });
 
   test('Given instance profile', () => {
