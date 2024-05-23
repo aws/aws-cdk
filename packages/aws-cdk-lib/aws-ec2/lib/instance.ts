@@ -327,7 +327,7 @@ export interface InstanceProps {
   /**
    * If this parameter is set to true, the instance is enabled for AWS Nitro Enclaves; otherwise, it is not enabled for AWS Nitro Enclaves.
    *
-   * @default false.
+   * @default - false
    */
   readonly nitroEnclaveEnabled?: boolean;
 
