@@ -14,7 +14,7 @@
         }
       }
     },
-    "5be9dde4b4fb843a4e95e86482f511db8cb0df8997f3357f6c6753e6ec0cb1a1": {
+    "9040e8db6d570f8b25fb78a3b6a53bcd12ddf08ff3ac7134a6051c88111c2b68": {
       "source": {
         "path": "integ-aurora-serverlessv2-cluster.template.json",
         "packaging": "file"
@@ -22,7 +22,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "5be9dde4b4fb843a4e95e86482f511db8cb0df8997f3357f6c6753e6ec0cb1a1.json",
+          "objectKey": "9040e8db6d570f8b25fb78a3b6a53bcd12ddf08ff3ac7134a6051c88111c2b68.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
