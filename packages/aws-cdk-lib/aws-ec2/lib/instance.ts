@@ -8,6 +8,7 @@ import { InstanceType } from './instance-types';
 import { IKeyPair } from './key-pair';
 import { CpuCredits } from './launch-template';
 import { IMachineImage, OperatingSystemType } from './machine-image';
+import { IPlacementGroup } from './placement-group';
 import { instanceBlockDeviceMappings } from './private/ebs-util';
 import { ISecurityGroup, SecurityGroup } from './security-group';
 import { UserData } from './user-data';
@@ -317,6 +318,13 @@ export interface InstanceProps {
   readonly ebsOptimized?: boolean;
 
   /**
+   * The placement group that you want to launch the instance into.
+   *
+   * @default - no placement group will be used for this instance.
+   */
+  readonly placementGroup?: IPlacementGroup;
+  
+  /**
    * If this parameter is set to true, the instance is enabled for AWS Nitro Enclaves; otherwise, it is not enabled for AWS Nitro Enclaves.
    *
    * @default false.
@@ -330,7 +338,6 @@ export interface InstanceProps {
    * @default false
    */
   readonly hibernationConfigured?: boolean;
-
 }
 
 /**
@@ -506,6 +513,7 @@ export class Instance extends Resource implements IInstance {
       monitoring: props.detailedMonitoring,
       creditSpecification: props.creditSpecification ? { cpuCredits: props.creditSpecification } : undefined,
       ebsOptimized: props.ebsOptimized,
+      placementGroupName: props.placementGroup?.placementGroupName,
       enclaveOptions: props.nitroEnclaveEnabled !== undefined ? { enabled: props.nitroEnclaveEnabled } : undefined,
       hibernationOptions: props.hibernationConfigured !== undefined ? { configured: props.hibernationConfigured } : undefined,
     });

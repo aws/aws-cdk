@@ -772,6 +772,8 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
         subnetGroup: this.subnetGroup,
       });
       readers.push(clusterInstance);
+      // this makes sure the readers would always be created after the writer
+      clusterInstance.node.addDependency(writer);
 
       if (clusterInstance.tier < 2) {
         this.validateReaderInstance(writer, clusterInstance);
