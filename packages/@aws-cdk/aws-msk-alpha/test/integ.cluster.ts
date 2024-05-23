@@ -196,6 +196,28 @@ class FeatureFlagStack extends cdk.Stack {
     });
     new cdk.CfnOutput(this, 'BootstrapBrokers9', { value: cluster7.bootstrapBrokersTls });
 
+    // iam and scram authentication cluster
+    const cluster8 = new msk.Cluster(this, 'Cluster_SCRAM_IAM', {
+      clusterName: 'integ-test-sasl-scram-iam',
+      kafkaVersion: msk.KafkaVersion.V3_6_0,
+      vpc,
+      logging: {
+        s3: {
+          bucket: this.bucket,
+        },
+      },
+      encryptionInTransit: {
+        clientBroker: msk.ClientBrokerEncryption.TLS,
+      },
+      clientAuthentication: msk.ClientAuthentication.sasl({
+        scram: true,
+        iam: true,
+      }),
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+    });
+    // Test lazy instance of the AwsCustomResource
+    new cdk.CfnOutput(this, 'BootstrapBrokers10', { value: cluster8.bootstrapBrokersSaslIam });
+    new cdk.CfnOutput(this, 'BootstrapBrokers11', { value: cluster8.bootstrapBrokersSaslScram });
   }
 }
 

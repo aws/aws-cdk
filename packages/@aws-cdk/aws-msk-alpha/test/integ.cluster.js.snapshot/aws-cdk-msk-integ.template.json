@@ -604,7 +604,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "54e6f07bf3aea46d100719f3b21fe0fb45ae789ee372d42d8cdfb97e21aba96c.zip"
+     "S3Key": "96ea260348625427bb7f28ab3b379f62da6f428bcd155cb13f9261aa6a404b0d.zip"
     },
     "Timeout": 900,
     "MemorySize": 128,
@@ -705,7 +705,7 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "ClusterBootstrapBrokersBootstrapBrokerStringTls2E6167B7": {
+  "ClusterBootstrapBrokers9A081150": {
    "Type": "Custom::AWS",
    "Properties": {
     "ServiceToken": {
@@ -741,12 +741,12 @@
     "InstallLatestAwsSdk": false
    },
    "DependsOn": [
-    "ClusterBootstrapBrokersBootstrapBrokerStringTlsCustomResourcePolicy13FC2126"
+    "ClusterBootstrapBrokersCustomResourcePolicyD7FDABDF"
    ],
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "ClusterBootstrapBrokersBootstrapBrokerStringTlsCustomResourcePolicy13FC2126": {
+  "ClusterBootstrapBrokersCustomResourcePolicyD7FDABDF": {
    "Type": "AWS::IAM::Policy",
    "Properties": {
     "PolicyDocument": {
@@ -761,7 +761,7 @@
      ],
      "Version": "2012-10-17"
     },
-    "PolicyName": "ClusterBootstrapBrokersBootstrapBrokerStringTlsCustomResourcePolicy13FC2126",
+    "PolicyName": "ClusterBootstrapBrokersCustomResourcePolicyD7FDABDF",
     "Roles": [
      {
       "Ref": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
@@ -807,7 +807,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "6c34b6e864223e202d50bb862e2bf066393d4cdf36229f8e1646425a5224a10b.zip"
+     "S3Key": "746da84b10e215c552e68b6d2061024e4429f0386f43a35ef5e4d2940655692e.zip"
     },
     "Handler": "index.handler",
     "Role": {
@@ -902,7 +902,7 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "ClusterIAMBootstrapBrokersBootstrapBrokerStringSaslIamEB333452": {
+  "ClusterIAMBootstrapBrokers24DD42A9": {
    "Type": "Custom::AWS",
    "Properties": {
     "ServiceToken": {
@@ -938,12 +938,12 @@
     "InstallLatestAwsSdk": false
    },
    "DependsOn": [
-    "ClusterIAMBootstrapBrokersBootstrapBrokerStringSaslIamCustomResourcePolicy51509D99"
+    "ClusterIAMBootstrapBrokersCustomResourcePolicyA7BD2022"
    ],
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "ClusterIAMBootstrapBrokersBootstrapBrokerStringSaslIamCustomResourcePolicy51509D99": {
+  "ClusterIAMBootstrapBrokersCustomResourcePolicyA7BD2022": {
    "Type": "AWS::IAM::Policy",
    "Properties": {
     "PolicyDocument": {
@@ -958,7 +958,7 @@
      ],
      "Version": "2012-10-17"
     },
-    "PolicyName": "ClusterIAMBootstrapBrokersBootstrapBrokerStringSaslIamCustomResourcePolicy51509D99",
+    "PolicyName": "ClusterIAMBootstrapBrokersCustomResourcePolicyA7BD2022",
     "Roles": [
      {
       "Ref": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
@@ -1118,7 +1118,7 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "ClusterIAMTLSBootstrapBrokersBootstrapBrokerStringTlsB831721C": {
+  "ClusterIAMTLSBootstrapBrokersB06F1266": {
    "Type": "Custom::AWS",
    "Properties": {
     "ServiceToken": {
@@ -1155,12 +1155,12 @@
    },
    "DependsOn": [
     "CertificateActivation",
-    "ClusterIAMTLSBootstrapBrokersBootstrapBrokerStringTlsCustomResourcePolicy508CF9CC"
+    "ClusterIAMTLSBootstrapBrokersCustomResourcePolicy3164F2EF"
    ],
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "ClusterIAMTLSBootstrapBrokersBootstrapBrokerStringTlsCustomResourcePolicy508CF9CC": {
+  "ClusterIAMTLSBootstrapBrokersCustomResourcePolicy3164F2EF": {
    "Type": "AWS::IAM::Policy",
    "Properties": {
     "PolicyDocument": {
@@ -1175,7 +1175,7 @@
      ],
      "Version": "2012-10-17"
     },
-    "PolicyName": "ClusterIAMTLSBootstrapBrokersBootstrapBrokerStringTlsCustomResourcePolicy508CF9CC",
+    "PolicyName": "ClusterIAMTLSBootstrapBrokersCustomResourcePolicy3164F2EF",
     "Roles": [
      {
       "Ref": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
@@ -1258,7 +1258,7 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "ClusterV311BootstrapBrokersBootstrapBrokerStringTls2DE11AD7": {
+  "ClusterV311BootstrapBrokers67026E00": {
    "Type": "Custom::AWS",
    "Properties": {
     "ServiceToken": {
@@ -1294,12 +1294,12 @@
     "InstallLatestAwsSdk": false
    },
    "DependsOn": [
-    "ClusterV311BootstrapBrokersBootstrapBrokerStringTlsCustomResourcePolicy2F56212C"
+    "ClusterV311BootstrapBrokersCustomResourcePolicy032B0DC7"
    ],
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "ClusterV311BootstrapBrokersBootstrapBrokerStringTlsCustomResourcePolicy2F56212C": {
+  "ClusterV311BootstrapBrokersCustomResourcePolicy032B0DC7": {
    "Type": "AWS::IAM::Policy",
    "Properties": {
     "PolicyDocument": {
@@ -1314,7 +1314,7 @@
      ],
      "Version": "2012-10-17"
     },
-    "PolicyName": "ClusterV311BootstrapBrokersBootstrapBrokerStringTlsCustomResourcePolicy2F56212C",
+    "PolicyName": "ClusterV311BootstrapBrokersCustomResourcePolicy032B0DC7",
     "Roles": [
      {
       "Ref": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
@@ -1394,7 +1394,7 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "ClusterV320BootstrapBrokersBootstrapBrokerStringTlsDF31241F": {
+  "ClusterV320BootstrapBrokersD37B3ED0": {
    "Type": "Custom::AWS",
    "Properties": {
     "ServiceToken": {
@@ -1430,12 +1430,12 @@
     "InstallLatestAwsSdk": false
    },
    "DependsOn": [
-    "ClusterV320BootstrapBrokersBootstrapBrokerStringTlsCustomResourcePolicy8326D812"
+    "ClusterV320BootstrapBrokersCustomResourcePolicy5A5B9389"
    ],
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "ClusterV320BootstrapBrokersBootstrapBrokerStringTlsCustomResourcePolicy8326D812": {
+  "ClusterV320BootstrapBrokersCustomResourcePolicy5A5B9389": {
    "Type": "AWS::IAM::Policy",
    "Properties": {
     "PolicyDocument": {
@@ -1450,7 +1450,7 @@
      ],
      "Version": "2012-10-17"
     },
-    "PolicyName": "ClusterV320BootstrapBrokersBootstrapBrokerStringTlsCustomResourcePolicy8326D812",
+    "PolicyName": "ClusterV320BootstrapBrokersCustomResourcePolicy5A5B9389",
     "Roles": [
      {
       "Ref": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
@@ -1530,7 +1530,7 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "ClusterV331BootstrapBrokersBootstrapBrokerStringTls2574EE93": {
+  "ClusterV331BootstrapBrokers329A4357": {
    "Type": "Custom::AWS",
    "Properties": {
     "ServiceToken": {
@@ -1566,12 +1566,12 @@
     "InstallLatestAwsSdk": false
    },
    "DependsOn": [
-    "ClusterV331BootstrapBrokersBootstrapBrokerStringTlsCustomResourcePolicy30610F08"
+    "ClusterV331BootstrapBrokersCustomResourcePolicyCF33B847"
    ],
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "ClusterV331BootstrapBrokersBootstrapBrokerStringTlsCustomResourcePolicy30610F08": {
+  "ClusterV331BootstrapBrokersCustomResourcePolicyCF33B847": {
    "Type": "AWS::IAM::Policy",
    "Properties": {
     "PolicyDocument": {
@@ -1586,7 +1586,7 @@
      ],
      "Version": "2012-10-17"
     },
-    "PolicyName": "ClusterV331BootstrapBrokersBootstrapBrokerStringTlsCustomResourcePolicy30610F08",
+    "PolicyName": "ClusterV331BootstrapBrokersCustomResourcePolicyCF33B847",
     "Roles": [
      {
       "Ref": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
@@ -1666,7 +1666,7 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "ClusterV332BootstrapBrokersBootstrapBrokerStringTls06A03A3A": {
+  "ClusterV332BootstrapBrokersF331D12F": {
    "Type": "Custom::AWS",
    "Properties": {
     "ServiceToken": {
@@ -1702,12 +1702,12 @@
     "InstallLatestAwsSdk": false
    },
    "DependsOn": [
-    "ClusterV332BootstrapBrokersBootstrapBrokerStringTlsCustomResourcePolicy2EA79A00"
+    "ClusterV332BootstrapBrokersCustomResourcePolicy5924CCE5"
    ],
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "ClusterV332BootstrapBrokersBootstrapBrokerStringTlsCustomResourcePolicy2EA79A00": {
+  "ClusterV332BootstrapBrokersCustomResourcePolicy5924CCE5": {
    "Type": "AWS::IAM::Policy",
    "Properties": {
     "PolicyDocument": {
@@ -1722,7 +1722,236 @@
      ],
      "Version": "2012-10-17"
     },
-    "PolicyName": "ClusterV332BootstrapBrokersBootstrapBrokerStringTlsCustomResourcePolicy2EA79A00",
+    "PolicyName": "ClusterV332BootstrapBrokersCustomResourcePolicy5924CCE5",
+    "Roles": [
+     {
+      "Ref": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
+     }
+    ]
+   }
+  },
+  "ClusterSCRAMIAMSecurityGroupD318B909": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "MSK security group",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow all outbound traffic by default",
+      "IpProtocol": "-1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    }
+   }
+  },
+  "ClusterSCRAMIAMSASLKeyEED07692": {
+   "Type": "AWS::KMS::Key",
+   "Properties": {
+    "Description": "Used for encrypting MSK secrets for SASL/SCRAM authentication.",
+    "KeyPolicy": {
+     "Statement": [
+      {
+       "Action": "kms:*",
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":iam::",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":root"
+          ]
+         ]
+        }
+       },
+       "Resource": "*"
+      },
+      {
+       "Action": [
+        "kms:CreateGrant",
+        "kms:Decrypt",
+        "kms:DescribeKey",
+        "kms:Encrypt",
+        "kms:GenerateDataKey*",
+        "kms:ReEncrypt*"
+       ],
+       "Condition": {
+        "StringEquals": {
+         "kms:ViaService": {
+          "Fn::Join": [
+           "",
+           [
+            "secretsmanager.",
+            {
+             "Ref": "AWS::Region"
+            },
+            ".amazonaws.com"
+           ]
+          ]
+         },
+         "kms:CallerAccount": {
+          "Ref": "AWS::AccountId"
+         }
+        }
+       },
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": "*"
+       },
+       "Resource": "*",
+       "Sid": "Allow access through AWS Secrets Manager for all principals in the account that are authorized to use AWS Secrets Manager"
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "ClusterSCRAMIAMSASLKeyAlias131E4AEE": {
+   "Type": "AWS::KMS::Alias",
+   "Properties": {
+    "AliasName": "alias/msk/integ-test-sasl-scram-iam/sasl/scram",
+    "TargetKeyId": {
+     "Fn::GetAtt": [
+      "ClusterSCRAMIAMSASLKeyEED07692",
+      "Arn"
+     ]
+    }
+   }
+  },
+  "ClusterSCRAMIAM10462D09": {
+   "Type": "AWS::MSK::Cluster",
+   "Properties": {
+    "BrokerNodeGroupInfo": {
+     "ClientSubnets": [
+      {
+       "Ref": "VPCPrivateSubnet1Subnet8BCA10E0"
+      },
+      {
+       "Ref": "VPCPrivateSubnet2SubnetCFCDAA7A"
+      }
+     ],
+     "InstanceType": "kafka.m5.large",
+     "SecurityGroups": [
+      {
+       "Fn::GetAtt": [
+        "ClusterSCRAMIAMSecurityGroupD318B909",
+        "GroupId"
+       ]
+      }
+     ],
+     "StorageInfo": {
+      "EBSStorageInfo": {
+       "VolumeSize": 1000
+      }
+     }
+    },
+    "ClientAuthentication": {
+     "Sasl": {
+      "Iam": {
+       "Enabled": true
+      },
+      "Scram": {
+       "Enabled": true
+      }
+     }
+    },
+    "ClusterName": "integ-test-sasl-scram-iam",
+    "EncryptionInfo": {
+     "EncryptionInTransit": {
+      "ClientBroker": "TLS",
+      "InCluster": true
+     }
+    },
+    "KafkaVersion": "3.6.0",
+    "LoggingInfo": {
+     "BrokerLogs": {
+      "CloudWatchLogs": {
+       "Enabled": false
+      },
+      "Firehose": {
+       "Enabled": false
+      },
+      "S3": {
+       "Bucket": {
+        "Ref": "LoggingBucket1E5A6F3B"
+       },
+       "Enabled": true
+      }
+     }
+    },
+    "NumberOfBrokerNodes": 2
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "ClusterSCRAMIAMBootstrapBrokersBFB43142": {
+   "Type": "Custom::AWS",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "AWS679f53fac002430cb0da5b7982bd22872D164C4C",
+      "Arn"
+     ]
+    },
+    "Create": {
+     "Fn::Join": [
+      "",
+      [
+       "{\"service\":\"Kafka\",\"action\":\"getBootstrapBrokers\",\"parameters\":{\"ClusterArn\":\"",
+       {
+        "Ref": "ClusterSCRAMIAM10462D09"
+       },
+       "\"},\"physicalResourceId\":{\"id\":\"BootstrapBrokers\"},\"logApiResponseData\":true}"
+      ]
+     ]
+    },
+    "Update": {
+     "Fn::Join": [
+      "",
+      [
+       "{\"service\":\"Kafka\",\"action\":\"getBootstrapBrokers\",\"parameters\":{\"ClusterArn\":\"",
+       {
+        "Ref": "ClusterSCRAMIAM10462D09"
+       },
+       "\"},\"physicalResourceId\":{\"id\":\"BootstrapBrokers\"},\"logApiResponseData\":true}"
+      ]
+     ]
+    },
+    "InstallLatestAwsSdk": false
+   },
+   "DependsOn": [
+    "ClusterSCRAMIAMBootstrapBrokersCustomResourcePolicy1ECAC248"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "ClusterSCRAMIAMBootstrapBrokersCustomResourcePolicy1ECAC248": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "kafka:GetBootstrapBrokers",
+       "Effect": "Allow",
+       "Resource": {
+        "Ref": "ClusterSCRAMIAM10462D09"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "ClusterSCRAMIAMBootstrapBrokersCustomResourcePolicy1ECAC248",
     "Roles": [
      {
       "Ref": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
@@ -1754,7 +1983,7 @@
   "BootstrapBrokers": {
    "Value": {
     "Fn::GetAtt": [
-     "ClusterBootstrapBrokersBootstrapBrokerStringTls2E6167B7",
+     "ClusterBootstrapBrokers9A081150",
      "BootstrapBrokerStringTls"
     ]
    }
@@ -1762,7 +1991,7 @@
   "BootstrapBrokers2": {
    "Value": {
     "Fn::GetAtt": [
-     "ClusterBootstrapBrokersBootstrapBrokerStringTls2E6167B7",
+     "ClusterBootstrapBrokers9A081150",
      "BootstrapBrokerStringTls"
     ]
    }
@@ -1770,7 +1999,7 @@
   "BootstrapBrokers3": {
    "Value": {
     "Fn::GetAtt": [
-     "ClusterIAMBootstrapBrokersBootstrapBrokerStringSaslIamEB333452",
+     "ClusterIAMBootstrapBrokers24DD42A9",
      "BootstrapBrokerStringSaslIam"
     ]
    }
@@ -1778,7 +2007,7 @@
   "BootstrapBrokers4": {
    "Value": {
     "Fn::GetAtt": [
-     "ClusterIAMTLSBootstrapBrokersBootstrapBrokerStringTlsB831721C",
+     "ClusterIAMTLSBootstrapBrokersB06F1266",
      "BootstrapBrokerStringTls"
     ]
    }
@@ -1786,7 +2015,7 @@
   "BootstrapBrokers5": {
    "Value": {
     "Fn::GetAtt": [
-     "ClusterIAMTLSBootstrapBrokersBootstrapBrokerStringTlsB831721C",
+     "ClusterIAMTLSBootstrapBrokersB06F1266",
      "BootstrapBrokerStringSaslIam"
     ]
    }
@@ -1794,7 +2023,7 @@
   "BootstrapBrokers6": {
    "Value": {
     "Fn::GetAtt": [
-     "ClusterV311BootstrapBrokersBootstrapBrokerStringTls2DE11AD7",
+     "ClusterV311BootstrapBrokers67026E00",
      "BootstrapBrokerStringTls"
     ]
    }
@@ -1802,7 +2031,7 @@
   "BootstrapBrokers7": {
    "Value": {
     "Fn::GetAtt": [
-     "ClusterV320BootstrapBrokersBootstrapBrokerStringTlsDF31241F",
+     "ClusterV320BootstrapBrokersD37B3ED0",
      "BootstrapBrokerStringTls"
     ]
    }
@@ -1810,7 +2039,7 @@
   "BootstrapBrokers8": {
    "Value": {
     "Fn::GetAtt": [
-     "ClusterV331BootstrapBrokersBootstrapBrokerStringTls2574EE93",
+     "ClusterV331BootstrapBrokers329A4357",
      "BootstrapBrokerStringTls"
     ]
    }
@@ -1818,8 +2047,24 @@
   "BootstrapBrokers9": {
    "Value": {
     "Fn::GetAtt": [
-     "ClusterV332BootstrapBrokersBootstrapBrokerStringTls06A03A3A",
+     "ClusterV332BootstrapBrokersF331D12F",
      "BootstrapBrokerStringTls"
+    ]
+   }
+  },
+  "BootstrapBrokers10": {
+   "Value": {
+    "Fn::GetAtt": [
+     "ClusterSCRAMIAMBootstrapBrokersBFB43142",
+     "BootstrapBrokerStringSaslIam"
+    ]
+   }
+  },
+  "BootstrapBrokers11": {
+   "Value": {
+    "Fn::GetAtt": [
+     "ClusterSCRAMIAMBootstrapBrokersBFB43142",
+     "BootstrapBrokerStringSaslScram"
     ]
    }
   }
