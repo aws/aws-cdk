@@ -175,9 +175,9 @@ describe('framework', () => {
     const module = new HandlerFrameworkModule('cdk-testing/eval-nodejs-provider');
     const component: ComponentProps = {
       type: ComponentType.SINGLETON_FUNCTION, // eval-nodejs-provider is a singleton function
-      sourceCode,
+      sourceCode: sourceCodeTs,
     };
-    const outfile = calculateOutfile(sourceCode);
+    const outfile = calculateOutfile(sourceCodeTs);
     module.build(component, path.dirname(outfile).split('/').pop() ?? 'dist');
 
     // WHEN
