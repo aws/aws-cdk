@@ -1913,7 +1913,6 @@ new ec2.Vpc(this, 'VPC', {
 
 **Note**: `CpuCredits.UNLIMITED` mode is not supported for T3 instances that are launched on a Dedicated Host.
 
-
 ### Enabling Nitro Enclaves
 
 You can enable [AWS Nitro Enclaves](https://docs.aws.amazon.com/enclaves/latest/user/nitro-enclave.html) for your EC2 instances by setting the `nitroEnclaveEnabled` property to `true`. Nitro Enclaves are a feature of AWS Nitro System that enables creating isolated and highly constrained CPU environments known as enclaves.
