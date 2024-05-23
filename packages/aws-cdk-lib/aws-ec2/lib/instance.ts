@@ -334,8 +334,9 @@ export interface InstanceProps {
   readonly nitroEnclaveEnabled?: boolean;
 
   /**
-   * If you set this parameter to true, the instance is enabled for hibernation.
-   * You can't enable hibernation and AWS Nitro Enclaves on the same instance.
+   * Whether the instance is enabled for hibernation.
+   *
+   * You can't set both `nitroEnclaveEnabled` and `hibernationConfigured` to true on the same instance.
    *
    * @default - false
    */
