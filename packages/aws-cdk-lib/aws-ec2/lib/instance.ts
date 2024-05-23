@@ -325,7 +325,9 @@ export interface InstanceProps {
   readonly placementGroup?: IPlacementGroup;
   
   /**
-   * If this parameter is set to true, the instance is enabled for AWS Nitro Enclaves; otherwise, it is not enabled for AWS Nitro Enclaves.
+   * Whether the instance is enabled for AWS Nitro Enclaves.
+   *
+   * You can't set both `nitroEnclaveEnabled` and `hibernationConfigured` to true on the same instance.
    *
    * @default - false
    */
