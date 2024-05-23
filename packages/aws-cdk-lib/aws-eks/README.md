@@ -400,7 +400,10 @@ const cluster = new eks.Cluster(this, 'cluster-to-rename', {
 
 // allow the cluster admin role to delete the cluster 'foo'
 cluster.adminRole.addToPolicy(new iam.PolicyStatement({
-  actions: ['eks:DeleteCluster'],
+  actions: [
+    'eks:DeleteCluster',
+    'eks:DescribeCluster',
+  ],
   resources: [ 
     Stack.of(this).formatArn({ service: 'eks', resource: 'cluster', resourceName: 'foo' }),
 ]
