@@ -1954,6 +1954,7 @@ const instance = new ec2.Instance(this, 'Instance', {
   }],
 });
 ```
+
 ## VPC Flow Logs
 
 VPC Flow Logs is a feature that enables you to capture information about the IP traffic going to and from network interfaces in your VPC. Flow log data can be published to Amazon CloudWatch Logs and Amazon S3. After you've created a flow log, you can retrieve and view its data in the chosen destination. (<https://docs.aws.amazon.com/vpc/latest/userguide/flow-logs.html>).
