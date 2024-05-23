@@ -7,7 +7,7 @@ digraph G {
 "BEGIN Build" [shape="cds", style="filled", fillcolor="#b7deff"];
 "END Build" [shape="cds", style="filled", fillcolor="#b7deff"];
 "Build.Synth";
-"Source.jose-clickup/cdk-pipelines-demo" -> "Build.Synth";
+"Source.colifran/cdk-pipelines-demo" -> "Build.Synth";
 "BEGIN Build" -> "Build.Synth";
 "Build.Synth" -> "END Build";
 "BEGIN UpdatePipeline" [shape="cds", style="filled", fillcolor="#b7deff"];
@@ -49,7 +49,7 @@ digraph G {
 "END MultiRegion.us-west-2" -> "END MultiRegion";
 "BEGIN Source" [shape="cds", style="filled", fillcolor="#b7deff"];
 "END Source" [shape="cds", style="filled", fillcolor="#b7deff"];
-"Source.jose-clickup/cdk-pipelines-demo";
-"BEGIN Source" -> "Source.jose-clickup/cdk-pipelines-demo";
-"Source.jose-clickup/cdk-pipelines-demo" -> "END Source";
+"Source.colifran/cdk-pipelines-demo";
+"BEGIN Source" -> "Source.colifran/cdk-pipelines-demo";
+"Source.colifran/cdk-pipelines-demo" -> "END Source";
 }
