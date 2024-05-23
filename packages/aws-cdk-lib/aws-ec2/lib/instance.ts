@@ -492,7 +492,7 @@ export class Instance extends Resource implements IInstance {
     }
 
     if (props.nitroEnclaveEnabled && props.hibernationConfigured) {
-      throw new Error('You can\'t enable hibernation and AWS Nitro Enclaves on the same instance.');
+      throw new Error('You can\'t set both `nitroEnclaveEnabled` and `hibernationConfigured` to true on the same instance');
     }
 
     // if network interfaces array is configured then subnetId, securityGroupIds,
