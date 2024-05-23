@@ -19,6 +19,11 @@ export class HandlerFrameworkModule extends Module {
   public readonly isCoreInternal: boolean;
 
   /**
+   * Whether the module being generated will be part of an alpha module.
+   */
+  public readonly isAlphaModule: boolean;
+
+  /**
    * Whether the module contains provider framework components.
    */
   public get hasComponents() {
@@ -28,6 +33,7 @@ export class HandlerFrameworkModule extends Module {
   public constructor(fqn: string) {
     super(fqn);
     this.isCoreInternal = fqn.includes('core');
+    this.isAlphaModule = fqn.includes('alpha');
   }
 
   /**

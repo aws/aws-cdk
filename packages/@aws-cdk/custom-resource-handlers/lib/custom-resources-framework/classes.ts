@@ -100,7 +100,11 @@ export abstract class HandlerFrameworkClass extends ClassType {
           export: true,
         });
 
-        scope.registerImport(LAMBDA_MODULE);
+        if (scope.isAlphaModule) {
+          scope.registerImport(LAMBDA_MODULE, { fromLocation: 'aws-cdk-lib/aws-lambda' });
+        } else {
+          scope.registerImport(LAMBDA_MODULE);
+        }
 
         const superProps = new ObjectLiteral([
           new Splat(expr.ident('props')),
@@ -132,7 +136,11 @@ export abstract class HandlerFrameworkClass extends ClassType {
           export: true,
         });
 
-        scope.registerImport(LAMBDA_MODULE);
+        if (scope.isAlphaModule) {
+          scope.registerImport(LAMBDA_MODULE, { fromLocation: 'aws-cdk-lib/aws-lambda' });
+        } else {
+          scope.registerImport(LAMBDA_MODULE);
+        }
 
         const isEvalNodejsProvider = this.fqn.includes('eval-nodejs-provider');
 
