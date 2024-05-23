@@ -10,24 +10,20 @@ export type ChangeSetResources = { [logicalId: string]: ChangeSetResource };
 
 /**
  * @param beforeContext is the BeforeContext field from the ChangeSet.ResourceChange.BeforeContext. This is the part of the CloudFormation template
- * that defines what the resource is before the change is applied.
- * @param beforeContextBackup this is a map of property names from the resource in the changeset. This should be used if the beforeContext is undefined.
- * - TODO: This field can be removed once IncludePropertyValues is available in all regions.
+ * that defines what the resource is before the change is applied; that is, BeforeContext is CloudFormationTemplate.Resources[LogicalId] before the ChangeSet is executed.
  *
- * @param afterContext same as beforeContext but for after the change is made.
- * @param beforeContextBackup this is a map of property names from the resource in the changeset. This should be used if the afterContext is undefined.
- * - TODO: This field can be removed once IncludePropertyValues is available in all regions.
+ * @param afterContext same as beforeContext but for after the change is made; that is, AfterContext is CloudFormationTemplate.Resources[LogicalId] after the ChangeSet is executed.
+ *
+ *  * Here is an example of what a beforeContext/afterContext looks like:
+ *  '{"Properties":{"Value":"sdflkja","Type":"String","Name":"mySsmParameterFromStack"},"Metadata":{"aws:cdk:path":"cdk/mySsmParameter/Resource"}}'
  */
 export interface ChangeSetResource {
   resourceWasReplaced: boolean;
   resourceType: string | undefined;
   propertyReplacementModes: PropertyReplacementModeMap | undefined;
   beforeContext: any | undefined;
-  beforeContextBackup: PropertyNameMap;
   afterContext: any | undefined;
-  afterContextBackup: PropertyNameMap;
 }
-export type PropertyNameMap = { Properties: {[propertyName: string]: string} };
 export type PropertyReplacementModeMap = {
   [propertyName: string]: {
     replacementMode: ReplacementModes | undefined;
@@ -385,10 +381,8 @@ export class DifferenceCollection<V, T extends IDifference<V>> {
     return Object.values(this.changes).length;
   }
 
-  public get(logicalId: string): T {
-    const ret = this.diffs[logicalId];
-    if (!ret) { throw new Error(`No object with logical ID '${logicalId}'`); }
-    return ret;
+  public get(logicalId: string): T | undefined {
+    return this.diffs[logicalId];
   }
 
   public remove(logicalId: string): void {

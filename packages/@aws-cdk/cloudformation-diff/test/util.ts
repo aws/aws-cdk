@@ -86,7 +86,7 @@ export const ssmParam = {
   },
 };
 
-export function sqsQueueWithAargs(args: { waitTime: number; queueName?: string }) {
+export function sqsQueueWithArgs(args: { waitTime: number; queueName?: string }) {
   return {
     Type: 'AWS::SQS::Queue',
     Properties: {
@@ -226,7 +226,7 @@ copyOfQueueChange.ResourceChange.BeforeContext = beforeContext;
 
 export const changeSetWithPartiallyFilledChanges: DescribeChangeSetOutput = {
   Changes: [
-    ssmParamFromChangeset,
+    copyOfssmChange,
     copyOfQueueChange,
   ],
 };
