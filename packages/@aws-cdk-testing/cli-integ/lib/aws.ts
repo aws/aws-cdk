@@ -20,7 +20,6 @@ export class AwsClients {
   public readonly ecr: AwsCaller<AWS.ECR>;
   public readonly ecs: AwsCaller<AWS.ECS>;
   public readonly sso: AwsCaller<AWS.SSO>;
-  public readonly ssm: AwsCaller<AWS.SSM>;
   public readonly sns: AwsCaller<AWS.SNS>;
   public readonly iam: AwsCaller<AWS.IAM>;
   public readonly lambda: AwsCaller<AWS.Lambda>;
@@ -39,7 +38,6 @@ export class AwsClients {
     this.ecr = makeAwsCaller(AWS.ECR, this.config);
     this.ecs = makeAwsCaller(AWS.ECS, this.config);
     this.sso = makeAwsCaller(AWS.SSO, this.config);
-    this.ssm = makeAwsCaller(AWS.SSM, this.config);
     this.sns = makeAwsCaller(AWS.SNS, this.config);
     this.iam = makeAwsCaller(AWS.IAM, this.config);
     this.lambda = makeAwsCaller(AWS.Lambda, this.config);

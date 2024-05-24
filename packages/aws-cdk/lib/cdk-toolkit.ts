@@ -185,7 +185,6 @@ export class CdkToolkit {
               parameters: Object.assign({}, parameterMap['*'], parameterMap[stack.stackName]),
               resourcesToImport,
               stream,
-              callerType: 'DIFF',
             });
           } else {
             debug(`the stack '${stack.stackName}' has not been deployed to CloudFormation or describeStacks call failed, skipping changeset creation.`);

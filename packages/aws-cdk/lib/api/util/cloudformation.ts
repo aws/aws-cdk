@@ -191,37 +191,21 @@ export class CloudFormationStack {
  *
  * @returns       CloudFormation information about the ChangeSet
  */
-export async function describeChangeSet(
+async function describeChangeSet(
   cfn: CloudFormation,
   stackName: string,
   changeSetName: string,
   { fetchAll }: { fetchAll: boolean },
-  callerType?: CallerType,
 ): Promise<CloudFormation.DescribeChangeSetOutput> {
   const response = await cfn.describeChangeSet({ StackName: stackName, ChangeSetName: changeSetName }).promise();
 
-  let changeSetChangesWithContext = undefined;
-  if (callerType === 'DIFF') {
-    changeSetChangesWithContext = await maybeGetChangeSetChangeContext(cfn, stackName, changeSetName);
-    if (changeSetChangesWithContext) {
-      response.Changes = changeSetChangesWithContext.Changes;
-    }
-  }
-
   // If fetchAll is true, traverse all pages from the change set description.
   while (fetchAll && response.NextToken != null) {
-    const input: any = {
+    const nextPage = await cfn.describeChangeSet({
       StackName: stackName,
       ChangeSetName: response.ChangeSetId ?? changeSetName,
       NextToken: response.NextToken,
-    };
-
-    if (changeSetChangesWithContext) {
-      // The issue may actually be that nextTokens don't work with includePropertyValue, so I need to figure that out.
-      input.IncludePropertyValues = true;
-    }
-
-    const nextPage = await cfn.describeChangeSet(input).promise();
+    }).promise();
 
     // Consolidate the changes
     if (nextPage.Changes != null) {
@@ -235,40 +219,6 @@ export async function describeChangeSet(
   }
 
   return response;
-}
-
-/**
- * * As of now, describeChangeSet with IncludePropertyValues doesn't include the StatusReason for a ChangeSet with no changes. There is a fix that's in progress from CloudFormation.
- * * As of now, the IncludePropertyValues feature is not available in all AWS partitions.
- *     * TODO: Once the above are fixed, we can remove this function and make all describeChangeSet requests with IncludePropertValues set to true.
- */
-export async function maybeGetChangeSetChangeContext(
-  cfn: CloudFormation,
-  stackName: string,
-  changeSetName: string,
-): Promise<CloudFormation.DescribeChangeSetOutput | undefined> {
-  let changeContextIncludedInResponse = undefined;
-  try {
-    const changesWithPropertyValues = await cfn.describeChangeSet({
-      StackName: stackName,
-      ChangeSetName: changeSetName,
-      IncludePropertyValues: true,
-    }).promise();
-
-    changeContextIncludedInResponse = changesWithPropertyValues?.Changes?.find((change) =>
-      (change?.ResourceChange?.AfterContext !== undefined) || (change?.ResourceChange?.BeforeContext !== undefined),
-    );
-    if (changeContextIncludedInResponse) {
-      return changesWithPropertyValues;
-    }
-
-    // We don't want to assume that failure to use the new IncludePropertyValues field will result in an exception being thrown.
-    debug('describeChangeSet with IncludePropertyValues has no BeforeContext or AfterContext. Diff will not include property values from ChangeSet.');
-  } catch (e: any) {
-    debug('Failed to describeChangeSet with IncludePropertyValues. Diff will not include property values from ChangeSet. Error Message: %s', e?.message);
-  }
-
-  return undefined;
 }
 
 /**
@@ -304,6 +254,7 @@ async function waitFor<T>(valueProvider: () => Promise<T | null | undefined>, ti
  *
  * @returns       the CloudFormation description of the ChangeSet
  */
+// eslint-disable-next-line max-len
 export async function waitForChangeSet(
   cfn: CloudFormation,
   stackName: string,
@@ -335,8 +286,6 @@ export async function waitForChangeSet(
   return ret;
 }
 
-export type CallerType = 'DIFF';
-
 export type PrepareChangeSetOptions = {
   stack: cxapi.CloudFormationStackArtifact;
   deployments: Deployments;
@@ -346,7 +295,6 @@ export type PrepareChangeSetOptions = {
   stream: NodeJS.WritableStream;
   parameters: { [name: string]: string | undefined };
   resourcesToImport?: ResourcesToImport;
-  callerType?: CallerType;
 }
 
 export type CreateChangeSetOptions = {
@@ -360,7 +308,6 @@ export type CreateChangeSetOptions = {
   parameters: { [name: string]: string | undefined };
   resourcesToImport?: ResourcesToImport;
   role?: string;
-  callerType?: CallerType;
 }
 
 /**
@@ -372,6 +319,7 @@ export async function createDiffChangeSet(options: PrepareChangeSetOptions): Pro
   // This causes CreateChangeSet to fail with `Template Error: Fn::Equals cannot be partially collapsed`.
   for (const resource of Object.values((options.stack.template.Resources ?? {}))) {
     if ((resource as any).Type === 'AWS::CloudFormation::Stack') {
+      // eslint-disable-next-line no-console
       debug('This stack contains one or more nested stacks, falling back to template-only diff...');
 
       return undefined;
@@ -408,7 +356,6 @@ async function uploadBodyParameterAndCreateChangeSet(options: PrepareChangeSetOp
       parameters: options.parameters,
       resourcesToImport: options.resourcesToImport,
       role: executionRoleArn,
-      callerType: options.callerType,
     });
   } catch (e: any) {
     debug(e.message);
@@ -442,7 +389,7 @@ async function createChangeSet(options: CreateChangeSetOptions): Promise<Describ
 
   debug('Initiated creation of changeset: %s; waiting for it to finish creating...', changeSet.Id);
   // Fetching all pages if we'll execute, so we can have the correct change count when monitoring.
-  const createdChangeSet = await waitForChangeSet(options.cfn, options.stack.stackName, options.changeSetName, { fetchAll: options.willExecute || options.callerType === 'DIFF' });
+  const createdChangeSet = await waitForChangeSet(options.cfn, options.stack.stackName, options.changeSetName, { fetchAll: options.willExecute });
   await cleanupOldChangeset(options.changeSetName, options.stack.stackName, options.cfn);
 
   // TODO: Update this once we remove sdkv2 from the rest of this package

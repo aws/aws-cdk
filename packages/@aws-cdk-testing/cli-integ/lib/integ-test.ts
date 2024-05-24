@@ -79,13 +79,3 @@ export function randomString() {
   // Crazy
   return Math.random().toString(36).replace(/[^a-z0-9]+/g, '');
 }
-
-export function normalizeDiffOutput(s: string, removeFormatting: boolean = false): string {
-  if (removeFormatting) {
-    // remove all color and formatting (bolding, italic, etc)
-    s = s.replace(/\x1B\[[0-?]*[ -/]*[@-~]/g, '');
-  }
-
-  return s.replace(/ /g, '') // remove all spaces
-    .replace(/\n/g, ''); // remove all new lines
-}
