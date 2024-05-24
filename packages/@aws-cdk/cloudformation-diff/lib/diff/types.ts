@@ -385,8 +385,10 @@ export class DifferenceCollection<V, T extends IDifference<V>> {
     return Object.values(this.changes).length;
   }
 
-  public get(logicalId: string): T | undefined {
-    return this.diffs[logicalId];
+  public get(logicalId: string): T {
+    const ret = this.diffs[logicalId];
+    if (!ret) { throw new Error(`No object with logical ID '${logicalId}'`); }
+    return ret;
   }
 
   public remove(logicalId: string): void {

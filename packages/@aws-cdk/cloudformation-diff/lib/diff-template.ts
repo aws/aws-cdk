@@ -54,7 +54,7 @@ export function fullDiff(
 
   normalize(currentTemplate);
   normalize(newTemplate);
-  let theDiff = diffTemplate(currentTemplate, newTemplate);
+  const theDiff = diffTemplate(currentTemplate, newTemplate);
   if (changeSet) {
     // These methods mutate the state of theDiff, using the changeSet.
     const changeSetDiff = new TemplateAndChangeSetDiffMerger({ changeSet });
@@ -103,7 +103,6 @@ export function diffTemplate(
     .filter(r => isReplacement(r!.changeImpact))
     .forEachDifference((logicalId, downstreamReplacement) => {
       const resource = theDiff.resources.get(logicalId);
-      if (!resource) { throw new Error(`No object with logical ID '${logicalId}'`); }
 
       if (resource.changeImpact !== downstreamReplacement.changeImpact) {
         propagatePropertyReplacement(downstreamReplacement, resource);
