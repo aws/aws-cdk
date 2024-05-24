@@ -154,7 +154,12 @@ describe('MediaConvert Create Job', () => {
           {
             Action: 'iam:PassRole',
             Effect: 'Allow',
-            Resource: '*',
+            Resource: 'arn:aws:iam::123456789012:role/MediaConvertRole',
+            Condition: {
+              StringLike: {
+                'iam:PassedToService': 'mediaconvert.amazonaws.com',
+              },
+            },
           },
           {
             Action: 'mediaconvert:CreateJob',
@@ -190,7 +195,12 @@ describe('MediaConvert Create Job', () => {
           {
             Action: 'iam:PassRole',
             Effect: 'Allow',
-            Resource: '*',
+            Resource: 'arn:aws:iam::123456789012:role/MediaConvertRole',
+            Condition: {
+              StringLike: {
+                'iam:PassedToService': 'mediaconvert.amazonaws.com',
+              },
+            },
           },
           {
             Action: 'mediaconvert:CreateJob',
