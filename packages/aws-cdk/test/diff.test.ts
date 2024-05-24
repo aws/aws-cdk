@@ -94,26 +94,29 @@ describe('imports', () => {
 
     jest.spyOn(cfn, 'createDiffChangeSet').mockImplementationOnce(async () => {
       return {
-        Changes: [
-          {
-            ResourceChange: {
-              Action: 'Import',
-              LogicalResourceId: 'Queue',
+        describeChangeSetOutput: {
+          Changes: [
+            {
+              ResourceChange: {
+                Action: 'Import',
+                LogicalResourceId: 'Queue',
+              },
             },
-          },
-          {
-            ResourceChange: {
-              Action: 'Import',
-              LogicalResourceId: 'Bucket',
+            {
+              ResourceChange: {
+                Action: 'Import',
+                LogicalResourceId: 'Bucket',
+              },
             },
-          },
-          {
-            ResourceChange: {
-              Action: 'Import',
-              LogicalResourceId: 'Queue2',
+            {
+              ResourceChange: {
+                Action: 'Import',
+                LogicalResourceId: 'Queue2',
+              },
             },
-          },
-        ],
+          ],
+        },
+        templateAfterChangeSet: undefined,
       };
     });
     cloudExecutable = new MockCloudExecutable({
@@ -471,14 +474,17 @@ describe('stack exists checks', () => {
 
     jest.spyOn(cfn, 'createDiffChangeSet').mockImplementationOnce(async () => {
       return {
-        Changes: [
-          {
-            ResourceChange: {
-              Action: 'Add',
-              LogicalResourceId: 'Object',
+        describeChangeSetOutput: {
+          Changes: [
+            {
+              ResourceChange: {
+                Action: 'Add',
+                LogicalResourceId: 'Object',
+              },
             },
-          },
-        ],
+          ],
+        },
+        templateAfterChangeSet: undefined,
       };
     });
   });

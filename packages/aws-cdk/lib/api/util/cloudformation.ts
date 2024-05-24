@@ -3,6 +3,7 @@ import { DescribeChangeSetOutput } from '@aws-cdk/cloudformation-diff';
 import { SSMPARAM_NO_INVALIDATE } from '@aws-cdk/cx-api';
 import * as cxapi from '@aws-cdk/cx-api';
 import { CloudFormation } from 'aws-sdk';
+import * as yaml from 'js-yaml';
 import { StackStatus } from './cloudformation/stack-status';
 import { makeBodyParameterAndUpload, TemplateBodyParameter } from './template-body-parameter';
 import { debug } from '../../logging';
@@ -313,7 +314,7 @@ export type CreateChangeSetOptions = {
 /**
  * Create a changeset for a diff operation
  */
-export async function createDiffChangeSet(options: PrepareChangeSetOptions): Promise<DescribeChangeSetOutput | undefined> {
+export async function createDiffChangeSet(options: PrepareChangeSetOptions): Promise<ChangeSetResult | undefined> {
   // `options.stack` has been modified to include any nested stack templates directly inline with its own template, under a special `NestedTemplate` property.
   // Thus the parent template's Resources section contains the nested template's CDK metadata check, which uses Fn::Equals.
   // This causes CreateChangeSet to fail with `Template Error: Fn::Equals cannot be partially collapsed`.
@@ -329,7 +330,7 @@ export async function createDiffChangeSet(options: PrepareChangeSetOptions): Pro
   return uploadBodyParameterAndCreateChangeSet(options);
 }
 
-async function uploadBodyParameterAndCreateChangeSet(options: PrepareChangeSetOptions): Promise<DescribeChangeSetOutput | undefined> {
+async function uploadBodyParameterAndCreateChangeSet(options: PrepareChangeSetOptions): Promise<ChangeSetResult | undefined> {
   try {
     const preparedSdk = (await options.deployments.prepareSdkWithDeployRole(options.stack));
     const bodyParameter = await makeBodyParameterAndUpload(
@@ -365,7 +366,12 @@ async function uploadBodyParameterAndCreateChangeSet(options: PrepareChangeSetOp
   }
 }
 
-async function createChangeSet(options: CreateChangeSetOptions): Promise<DescribeChangeSetOutput> {
+export interface ChangeSetResult {
+  describeChangeSetOutput: DescribeChangeSetOutput;
+  templateAfterChangeSet: any;
+}
+
+async function createChangeSet(options: CreateChangeSetOptions): Promise<ChangeSetResult> {
   await cleanupOldChangeset(options.changeSetName, options.stack.stackName, options.cfn);
 
   debug(`Attempting to create ChangeSet with name ${options.changeSetName} for stack ${options.stack.stackName}`);
@@ -390,10 +396,24 @@ async function createChangeSet(options: CreateChangeSetOptions): Promise<Describ
   debug('Initiated creation of changeset: %s; waiting for it to finish creating...', changeSet.Id);
   // Fetching all pages if we'll execute, so we can have the correct change count when monitoring.
   const createdChangeSet = await waitForChangeSet(options.cfn, options.stack.stackName, options.changeSetName, { fetchAll: options.willExecute });
+
+  const templateAfterChangeSetApplied = yaml.load(
+    (
+      await options.cfn.getTemplate({
+        StackName: options.stack.stackName,
+        ChangeSetName: createdChangeSet.ChangeSetName,
+        TemplateStage: 'Processed',
+      }).promise()
+    ).TemplateBody ?? '',
+  );
+
   await cleanupOldChangeset(options.changeSetName, options.stack.stackName, options.cfn);
 
   // TODO: Update this once we remove sdkv2 from the rest of this package
-  return createdChangeSet as DescribeChangeSetOutput;
+  return {
+    describeChangeSetOutput: createdChangeSet as DescribeChangeSetOutput,
+    templateAfterChangeSet: templateAfterChangeSetApplied,
+  };
 }
 
 export async function cleanupOldChangeset(changeSetName: string, stackName: string, cfn: CloudFormation) {
