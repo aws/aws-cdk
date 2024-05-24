@@ -10,6 +10,7 @@ import { parseBucketArn, parseBucketName } from './util';
 import * as events from '../../aws-events';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
+import * as logs from '../../aws-logs/index';
 import {
   CustomResource,
   Duration,
@@ -1464,6 +1465,8 @@ export interface BucketProps {
    * Whether all objects should be automatically deleted when the bucket is
    * removed from the stack or when the stack is deleted.
    *
+   * A custom resource will be created when set to `true`.
+   *
    * Requires the `removalPolicy` to be set to `RemovalPolicy.DESTROY`.
    *
    * **Warning** if you have deployed a bucket with `autoDeleteObjects: true`,
@@ -1479,6 +1482,16 @@ export interface BucketProps {
    * @default false
    */
   readonly autoDeleteObjects?: boolean;
+
+  /**
+   * The log group to use for the custom resource lambda backing the `autoDeleteObjects` feature
+   *
+   * When `autoDeleteObjects` is set to true, a customer resource backed by a Lambda function
+   * is created. The lambda will use the log group passed in to this prop if defined.
+   *
+   * @default the default log group created by Lambda
+   */
+  readonly autoDeleteObjectsLogGroup?: logs.ILogGroup;
 
   /**
    * Whether this bucket should have versioning turned on or not.
@@ -2008,7 +2021,7 @@ export class Bucket extends BucketBase {
         throw new Error('Cannot use \'autoDeleteObjects\' property on a bucket without setting removal policy to \'DESTROY\'.');
       }
 
-      this.enableAutoDeleteObjects();
+      this.enableAutoDeleteObjects(props.autoDeleteObjectsLogGroup);
     }
 
     if (this.eventBridgeEnabled) {
@@ -2541,10 +2554,11 @@ export class Bucket extends BucketBase {
     });
   }
 
-  private enableAutoDeleteObjects() {
+  private enableAutoDeleteObjects(logGroup?: logs.ILogGroup) {
     const provider = AutoDeleteObjectsProvider.getOrCreateProvider(this, AUTO_DELETE_OBJECTS_RESOURCE_TYPE, {
       useCfnResponseWrapper: false,
       description: `Lambda function for auto-deleting objects in ${this.bucketName} S3 bucket.`,
+      logGroupName: logGroup?.logGroupName,
     });
 
     // Use a bucket policy to allow the custom resource to delete

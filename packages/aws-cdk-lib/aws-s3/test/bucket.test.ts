@@ -3,6 +3,7 @@ import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Annotations, Match, Template } from '../../assertions';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
+import { LogGroup } from '../../aws-logs';
 import * as cdk from '../../core';
 import * as s3 from '../lib';
 
@@ -3461,6 +3462,26 @@ describe('bucket', () => {
     });
 
     Template.fromStack(stack).resourceCountIs('AWS::Lambda::Function', 1);
+  });
+
+  test('with autoDeleteObjectsLogGroup', () => {
+    const stack = new cdk.Stack();
+
+    new s3.Bucket(stack, 'MyBucket', {
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+      autoDeleteObjects: true,
+      autoDeleteObjectsLogGroup: new LogGroup(stack, 'LogGroup1', {
+        logGroupName: 'MyLogGroup',
+      }),
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+      LoggingConfig: {
+        LogGroup: {
+          'Ref': 'LogGroup106AAD846',
+        },
+      },
+    });
   });
 
   test('autoDeleteObjects throws if RemovalPolicy is not DESTROY', () => {
