@@ -53,7 +53,7 @@ export class SecurityGroupContextProviderPlugin implements ContextProviderPlugin
     if (securityGroups.length === 0) {
       throw new Error(`No security groups found matching ${JSON.stringify(args)}`);
     }
-``
+    
     if (securityGroups.length > 1) {
       throw new Error(`More than one security groups found matching ${JSON.stringify(args)}`);
     }

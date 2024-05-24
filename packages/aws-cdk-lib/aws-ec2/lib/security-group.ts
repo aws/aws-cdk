@@ -800,7 +800,7 @@ function egressRulesEqual(a: CfnSecurityGroup.EgressProperty, b: CfnSecurityGrou
     && a.cidrIpv6 === b.cidrIpv6
     && a.fromPort === b.fromPort
     && a.toPort === b.toPort
-    && a.ipProtocol === b.ipProtocol``
+    && a.ipProtocol === b.ipProtocol
     && a.destinationPrefixListId === b.destinationPrefixListId
     && a.destinationSecurityGroupId === b.destinationSecurityGroupId;
 }
