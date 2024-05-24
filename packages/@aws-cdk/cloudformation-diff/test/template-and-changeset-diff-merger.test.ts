@@ -1579,6 +1579,7 @@ describe('method tests', () => {
             resourceType: 'AWS::SQS::Queue',
             beforeContext: undefined,
             afterContext: undefined,
+            changeAction: 'Dynamic',
           } as ChangeSetResource,
         },
       });

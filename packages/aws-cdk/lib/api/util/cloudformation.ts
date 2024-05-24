@@ -199,23 +199,12 @@ export async function describeChangeSet(
 ): Promise<CloudFormation.DescribeChangeSetOutput> {
   const response = await cfn.describeChangeSet({ StackName: stackName, ChangeSetName: changeSetName }).promise();
 
-  const changeSetChangesWithContext = await maybeGetChangeSetChangeContext(cfn, stackName, changeSetName);
-  if (changeSetChangesWithContext) {
-    response.Changes = changeSetChangesWithContext.Changes;
-  }
-
-  // If fetchAll is true, traverse all pages from the change set description.
   while (fetchAll && response.NextToken != null) {
-    const input: any = {
+    const nextPage = await cfn.describeChangeSet({
       StackName: stackName,
       ChangeSetName: response.ChangeSetId ?? changeSetName,
       NextToken: response.NextToken,
-    };
-    if (changeSetChangesWithContext) {
-      input.IncludePropertyValues = true;
-    }
-
-    const nextPage = await cfn.describeChangeSet(input).promise();
+    }).promise();
 
     // Consolidate the changes
     if (nextPage.Changes != null) {
@@ -229,40 +218,6 @@ export async function describeChangeSet(
   }
 
   return response;
-}
-
-/**
- * * As of now, describeChangeSet with IncludePropertyValues doesn't include the StatusReason for a ChangeSet with no changes. There is a fix that's in progress from CloudFormation.
- * * As of now, the IncludePropertyValues feature is not available in all AWS partitions.
- *     * TODO: Once the above are fixed, we can remove this function and make all describeChangeSet requests with IncludePropertValues set to true.
- */
-export async function maybeGetChangeSetChangeContext(
-  cfn: CloudFormation,
-  stackName: string,
-  changeSetName: string,
-): Promise<CloudFormation.DescribeChangeSetOutput | undefined> {
-  let changeContextIncludedInResponse = undefined;
-  try {
-    const changesWithPropertyValues = await cfn.describeChangeSet({
-      StackName: stackName,
-      ChangeSetName: changeSetName,
-      IncludePropertyValues: true,
-    }).promise();
-
-    changeContextIncludedInResponse = changesWithPropertyValues?.Changes?.find((change) =>
-      (change?.ResourceChange?.AfterContext !== undefined) || (change?.ResourceChange?.BeforeContext !== undefined),
-    );
-    if (changeContextIncludedInResponse) {
-      return changesWithPropertyValues;
-    }
-
-    // We don't want to assume that failure to use the new IncludePropertyValues field will result in an exception being thrown.
-    debug('describeChangeSet with IncludePropertyValues has no BeforeContext or AfterContext. Diff will not include property values from ChangeSet.');
-  } catch (e: any) {
-    debug('Failed to describeChangeSet with IncludePropertyValues. Diff will not include property values from ChangeSet. Error Message: %s', e?.message);
-  }
-
-  return undefined;
 }
 
 /**
@@ -432,7 +387,7 @@ async function createChangeSet(options: CreateChangeSetOptions): Promise<Describ
   debug('Initiated creation of changeset: %s; waiting for it to finish creating...', changeSet.Id);
   // Fetching all pages if we'll execute, so we can have the correct change count when monitoring.
   const createdChangeSet = await waitForChangeSet(options.cfn, options.stack.stackName, options.changeSetName, { fetchAll: options.willExecute });
-  await cleanupOldChangeset(options.changeSetName, options.stack.stackName, options.cfn);
+  // await cleanupOldChangeset(options.changeSetName, options.stack.stackName, options.cfn);
 
   // TODO: Update this once we remove sdkv2 from the rest of this package
   return createdChangeSet as DescribeChangeSetOutput;

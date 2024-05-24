@@ -64,7 +64,7 @@ export function printStackDiff(
     stackDiffCount++;
     formatDifferences(stream, diff, {
       ...logicalIdMapFromTemplate(oldTemplate),
-      ...buildLogicalToPathMap(newTemplate),
+      ...buildLogicalToPathMap(newTemplate), // idk what to do here for the new template
     }, context);
   } else if (!quiet) {
     print(chalk.green('There were no differences'));
