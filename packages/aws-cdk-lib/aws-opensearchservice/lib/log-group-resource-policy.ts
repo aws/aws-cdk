@@ -27,6 +27,7 @@ export class LogGroupResourcePolicy extends cr.AwsCustomResource {
 
     super(scope, id, {
       resourceType: 'Custom::CloudwatchLogResourcePolicy',
+      installLatestAwsSdk: false,
       onUpdate: {
         service: 'CloudWatchLogs',
         action: 'putResourcePolicy',
