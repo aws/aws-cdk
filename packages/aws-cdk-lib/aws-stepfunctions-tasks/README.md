@@ -1133,8 +1133,10 @@ You can configure workers by setting the `workerType` and `numberOfWorkers` prop
 ```ts
 new tasks.GlueStartJobRun(this, 'Task', {
   glueJobName: 'my-glue-job',
-  workerType: tasks.WorkerType.G_1X,  // Worker type
-  numberOfWorkers: 2,  // Number of Workers
+  workerConfiguration: {
+    workerType: WorkerType.G_1X, // Worker type
+    numberOfWorkers: 2, // Number of Workers
+  },
 });
 ```
 
