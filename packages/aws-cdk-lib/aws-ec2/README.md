@@ -837,7 +837,7 @@ const sg = ec2.SecurityGroup.fromSecurityGroupId(this, 'SecurityGroupImport', 's
 });
 ```
 
-Alternatively, use lookup methods to import security groups if you do not know the ID or the configuration details. Method `SecurityGroup.fromLookupByName` looks up a security group if the security group ID is unknown.
+Alternatively, use lookup methods to import security groups if you do not know the ID or the configuration details. Method `SecurityGroup.fromLookupByName` looks up a security group if the security group ID is unknown, and you can uniquely identify the security group by name or by name and owner.
 
 ```ts fixture=with-vpc
 const sg = ec2.SecurityGroup.fromLookupByName(this, 'SecurityGroupLookup', 'security-group-name', vpc);
