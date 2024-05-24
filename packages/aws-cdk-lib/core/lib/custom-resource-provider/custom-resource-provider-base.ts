@@ -140,6 +140,7 @@ export abstract class CustomResourceProviderBase extends Construct {
         Runtime: props.runtimeName,
         Environment: this.renderEnvironmentVariables(props.environment),
         Description: props.description ?? undefined,
+        LoggingConfig: props.logGroupName ? { LogGroup: props.logGroupName } : undefined,
       },
     });
 

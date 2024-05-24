@@ -391,7 +391,7 @@ describe('custom resource provider', () => {
     }]);
   });
 
-  test('memorySize, timeout and description', () => {
+  test('memorySize, timeout, description and logGroupName', () => {
     // GIVEN
     const stack = new Stack();
 
@@ -402,6 +402,7 @@ describe('custom resource provider', () => {
       memorySize: Size.gibibytes(2),
       timeout: Duration.minutes(5),
       description: 'veni vidi vici',
+      logGroupName: 'some log group name',
     });
 
     // THEN
@@ -410,7 +411,7 @@ describe('custom resource provider', () => {
     expect(lambda.Properties.MemorySize).toEqual(2048);
     expect(lambda.Properties.Timeout).toEqual(300);
     expect(lambda.Properties.Description).toEqual('veni vidi vici');
-
+    expect(lambda.Properties.LoggingConfig).toEqual({ LogGroup: 'some log group name' });
   });
 
   test('environment variables', () => {

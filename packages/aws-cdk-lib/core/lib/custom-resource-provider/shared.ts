@@ -69,4 +69,11 @@ export interface CustomResourceProviderOptions {
    * @default - No description.
    */
   readonly description?: string;
+
+  /**
+   * Name of the Cloudwatch log group to be used by the provider AWS Lambda function.
+   *
+   * @default - a default log group created by AWS Lambda.
+   */
+  readonly logGroupName?: string;
 }
