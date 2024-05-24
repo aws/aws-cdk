@@ -22,7 +22,8 @@ export class TemplateAndChangeSetDiffMerger {
    */
   public static convertContextlessChangeSetResourceToResource(
     changeSetResourceResourceType: string | undefined,
-    oldOrNewValueFromTemplateDiff: types.Resource | undefined,
+    oldOrNewValueFromTemplateDiff: types.Resource| undefined,
+    resourceDiff: types.ResourceDifference | undefined,
     args: {
       propertiesThatChanged: string[];
       beforeOrAfterChanges: 'BEFORE' | 'AFTER';
@@ -41,8 +42,9 @@ export class TemplateAndChangeSetDiffMerger {
       }
 
       // write properties from changeset that are missing from the template diff
+      const propertyUpdates = resourceDiff?.propertyUpdates ?? [];
       for (const propertyName of args.propertiesThatChanged) {
-        if (!(propertyName in oldOrNewValueFromTemplateDiff.Properties)) { // I am not actually sure if this can happen... but it's better to be safe. It seems that if the resource exists in the templateDiff, then so do all of its Properties.
+        if (!(propertyName in propertyUpdates)) {
           const propertyBeforeOrAfter = args.beforeOrAfterChanges === 'AFTER'
             ? 'value_after_change_is_not_viewable'
             : args.currentTemplateResource?.Properties?.[propertyName] ?? 'value_before_change_is_not_viewable';
@@ -111,7 +113,7 @@ export class TemplateAndChangeSetDiffMerger {
       }
 
       const propertyReplacementModes: types.PropertyReplacementModeMap = {};
-      for (const propertyChange of resourceChange.ResourceChange.Details ?? []) {
+      for (const propertyChange of resourceChange.ResourceChange.Details ?? []) { // Details is only included if resourceChange.Action === 'Modify'
         if (propertyChange.Target?.Attribute === 'Properties' && propertyChange.Target.Name) {
           propertyReplacementModes[propertyChange.Target.Name] = {
             replacementMode: TemplateAndChangeSetDiffMerger.determineChangeSetReplacementMode(propertyChange),
@@ -125,6 +127,7 @@ export class TemplateAndChangeSetDiffMerger {
         propertyReplacementModes: propertyReplacementModes,
         beforeContext: _maybeJsonParse(resourceChange.ResourceChange.BeforeContext),
         afterContext: _maybeJsonParse(resourceChange.ResourceChange.AfterContext),
+        changeAction: resourceChange.ResourceChange.Action ?? 'Dynamic',
       };
     }
 
@@ -154,18 +157,35 @@ export class TemplateAndChangeSetDiffMerger {
     currentTemplateResources: { [key: string]: any } | undefined,
   ) {
     for (const [logicalIdFromChangeSet, changeSetResource] of Object.entries(this.changeSetResources)) {
-      let oldResource: types.Resource;
+      let oldResource: types.Resource | undefined;
       const changeSetIncludedBeforeContext = changeSetResource.beforeContext !== undefined;
       if (changeSetIncludedBeforeContext) {
-        oldResource = {
-          Type: changeSetResource.resourceType ?? TemplateAndChangeSetDiffMerger.UNKNOWN_RESOURCE_TYPE,
-          ...changeSetResource.beforeContext, // This is what CfnTemplate.Resources[LogicalId] is before the change, with ssm params resolved.
-        };
+        if (resourceDiffs.changes.hasOwnProperty(logicalIdFromChangeSet)) {
+          oldResource = resourceDiffs?.get(logicalIdFromChangeSet)?.oldValue;
+          const propertyUpdates = resourceDiff?.propertyUpdates ?? [];
+          for (const propertyName of args.propertiesThatChanged) {
+            if (!(propertyName in propertyUpdates)) {
+              const propertyBeforeOrAfter = args.beforeOrAfterChanges === 'AFTER'
+                ? 'value_after_change_is_not_viewable'
+                : args.currentTemplateResource?.Properties?.[propertyName] ?? 'value_before_change_is_not_viewable';
+              oldOrNewValueFromTemplateDiff.Properties[propertyName] = propertyBeforeOrAfter;
+            }
+          }
+
+        } else {
+          oldResource = {
+            Type: changeSetResource.resourceType ?? TemplateAndChangeSetDiffMerger.UNKNOWN_RESOURCE_TYPE,
+            ...changeSetResource.beforeContext, // This is what CfnTemplate.Resources[LogicalId] is before the change, with ssm params resolved.
+          };
+        }
+      } else if (changeSetResource.changeAction === 'Add') {
+        oldResource = undefined;
       } else {
-        // TODO -- once IncludePropertyValues is supported in all regions for changesets, delete this else branch. Only above case will occur.
+        // TODO -- once IncludePropertyValues is supported in all regions for changesets, delete this else branch.
         oldResource = TemplateAndChangeSetDiffMerger.convertContextlessChangeSetResourceToResource(
           changeSetResource.resourceType,
           resourceDiffs.get(logicalIdFromChangeSet)?.oldValue,
+          resourceDiffs.get(logicalIdFromChangeSet),
           {
             propertiesThatChanged: Object.keys(changeSetResource.propertyReplacementModes || {}),
             beforeOrAfterChanges: 'BEFORE',
@@ -174,18 +194,21 @@ export class TemplateAndChangeSetDiffMerger {
         );
       }
 
-      let newResource: types.Resource;
+      let newResource: types.Resource | undefined;
       const changeSetIncludedAfterContext = changeSetResource.afterContext !== undefined;
       if (changeSetIncludedAfterContext) {
         newResource = {
           Type: changeSetResource.resourceType ?? TemplateAndChangeSetDiffMerger.UNKNOWN_RESOURCE_TYPE,
           ...changeSetResource.afterContext, // This is what CfnTemplate.Resources[LogicalId] is after the change, with ssm params resolved.
         };
+      } else if (changeSetResource.changeAction === 'Remove') {
+        newResource = undefined;
       } else {
-        // TODO -- once IncludePropertyValues is supported in all regions for changesets, delete this else branch. Only above case will occur.
+        // TODO -- once IncludePropertyValues is supported in all regions for changesets, delete this else branch.
         newResource = TemplateAndChangeSetDiffMerger.convertContextlessChangeSetResourceToResource(
           changeSetResource.resourceType,
           resourceDiffs.get(logicalIdFromChangeSet)?.newValue,
+          resourceDiffs.get(logicalIdFromChangeSet),
           {
             propertiesThatChanged: Object.keys(changeSetResource.propertyReplacementModes || {}),
             beforeOrAfterChanges: 'AFTER',
