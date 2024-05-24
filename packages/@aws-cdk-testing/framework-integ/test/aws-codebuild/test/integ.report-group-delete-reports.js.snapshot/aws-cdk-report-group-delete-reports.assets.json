@@ -1,15 +1,15 @@
 {
   "version": "36.0.0",
   "files": {
-    "21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22": {
+    "c6a2f102b98eb6b8b078b8c708c5ec49ac9fb7e611cd4a8bccfd504b93ab555c": {
       "source": {
-        "path": "integtestDefaultTestDeployAssert24D5C536.template.json",
+        "path": "aws-cdk-report-group-delete-reports.template.json",
         "packaging": "file"
       },
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+          "objectKey": "c6a2f102b98eb6b8b078b8c708c5ec49ac9fb7e611cd4a8bccfd504b93ab555c.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
