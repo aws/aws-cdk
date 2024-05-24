@@ -4,7 +4,6 @@ import * as cxapi from '@aws-cdk/cx-api';
 import * as chalk from 'chalk';
 import * as chokidar from 'chokidar';
 import * as fs from 'fs-extra';
-import * as yaml from 'js-yaml';
 import * as promptly from 'promptly';
 import * as uuid from 'uuid';
 import { DeploymentMethod } from './api';
@@ -160,7 +159,6 @@ export class CdkToolkit {
         }
 
         let changeSet = undefined;
-        let newTemplate = undefined;
 
         if (options.changeSet) {
 
@@ -188,25 +186,6 @@ export class CdkToolkit {
               resourcesToImport,
               stream,
             });
-
-            // eslint-disable-next-line no-console
-            console.log('a');
-            const z = (await this.props.deployments.prepareSdkWithDeployRole(stack)).stackSdk.cloudFormation();
-
-            // eslint-disable-next-line no-console
-            console.log('b');
-
-            newTemplate = await z.getTemplate({
-              StackName: stack.stackName,
-              ChangeSetName: changeSet?.ChangeSetId ?? changeSet?.ChangeSetName,
-              TemplateStage: 'Processed',
-            }).promise();
-
-            newTemplate = yaml.load(newTemplate.TemplateBody ?? '');
-
-            // eslint-disable-next-line no-console
-            console.log(newTemplate);
-
           } else {
             debug(`the stack '${stack.stackName}' has not been deployed to CloudFormation or describeStacks call failed, skipping changeset creation.`);
           }

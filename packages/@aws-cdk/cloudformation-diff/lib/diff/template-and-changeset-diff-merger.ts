@@ -111,7 +111,7 @@ export class TemplateAndChangeSetDiffMerger {
       }
 
       const propertyReplacementModes: types.PropertyReplacementModeMap = {};
-      for (const propertyChange of resourceChange.ResourceChange.Details ?? []) { // Details is only included if resourceChange.Action === 'Modify'
+      for (const propertyChange of resourceChange.ResourceChange.Details ?? []) {
         if (propertyChange.Target?.Attribute === 'Properties' && propertyChange.Target.Name) {
           propertyReplacementModes[propertyChange.Target.Name] = {
             replacementMode: TemplateAndChangeSetDiffMerger.determineChangeSetReplacementMode(propertyChange),
@@ -125,7 +125,6 @@ export class TemplateAndChangeSetDiffMerger {
         propertyReplacementModes: propertyReplacementModes,
         beforeContext: _maybeJsonParse(resourceChange.ResourceChange.BeforeContext),
         afterContext: _maybeJsonParse(resourceChange.ResourceChange.AfterContext),
-        changeAction: resourceChange.ResourceChange.Action ?? 'Dynamic',
       };
     }
 
@@ -155,17 +154,15 @@ export class TemplateAndChangeSetDiffMerger {
     currentTemplateResources: { [key: string]: any } | undefined,
   ) {
     for (const [logicalIdFromChangeSet, changeSetResource] of Object.entries(this.changeSetResources)) {
-      let oldResource: types.Resource | undefined;
+      let oldResource: types.Resource;
       const changeSetIncludedBeforeContext = changeSetResource.beforeContext !== undefined;
       if (changeSetIncludedBeforeContext) {
         oldResource = {
           Type: changeSetResource.resourceType ?? TemplateAndChangeSetDiffMerger.UNKNOWN_RESOURCE_TYPE,
           ...changeSetResource.beforeContext, // This is what CfnTemplate.Resources[LogicalId] is before the change, with ssm params resolved.
         };
-      } else if (changeSetResource.changeAction === 'Add') {
-        oldResource = undefined;
       } else {
-        // TODO -- once IncludePropertyValues is supported in all regions for changesets, delete this else branch.
+        // TODO -- once IncludePropertyValues is supported in all regions for changesets, delete this else branch. Only above case will occur.
         oldResource = TemplateAndChangeSetDiffMerger.convertContextlessChangeSetResourceToResource(
           changeSetResource.resourceType,
           resourceDiffs.get(logicalIdFromChangeSet)?.oldValue,
@@ -177,17 +174,15 @@ export class TemplateAndChangeSetDiffMerger {
         );
       }
 
-      let newResource: types.Resource | undefined;
+      let newResource: types.Resource;
       const changeSetIncludedAfterContext = changeSetResource.afterContext !== undefined;
       if (changeSetIncludedAfterContext) {
         newResource = {
           Type: changeSetResource.resourceType ?? TemplateAndChangeSetDiffMerger.UNKNOWN_RESOURCE_TYPE,
           ...changeSetResource.afterContext, // This is what CfnTemplate.Resources[LogicalId] is after the change, with ssm params resolved.
         };
-      } else if (changeSetResource.changeAction === 'Remove') {
-        newResource = undefined;
       } else {
-        // TODO -- once IncludePropertyValues is supported in all regions for changesets, delete this else branch.
+        // TODO -- once IncludePropertyValues is supported in all regions for changesets, delete this else branch. Only above case will occur.
         newResource = TemplateAndChangeSetDiffMerger.convertContextlessChangeSetResourceToResource(
           changeSetResource.resourceType,
           resourceDiffs.get(logicalIdFromChangeSet)?.newValue,

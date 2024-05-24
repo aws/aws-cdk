@@ -2,6 +2,7 @@
 // The SDK should not make network calls here
 import type { DescribeChangeSetOutput as DescribeChangeSet } from '@aws-sdk/client-cloudformation';
 import * as impl from './diff';
+import { TemplateAndChangeSetDiffMerger } from './diff/template-and-changeset-diff-merger';
 import * as types from './diff/types';
 import { deepEqual, diffKeyedEntities, unionOf } from './diff/util';
 
@@ -47,32 +48,23 @@ const DIFF_HANDLERS: HandlerRegistry = {
 export function fullDiff(
   currentTemplate: { [key: string]: any },
   newTemplate: { [key: string]: any },
-  newTemplateFromChangeSet?: { [key: string]: any },
+  changeSet?: DescribeChangeSetOutput,
   isImport?: boolean,
 ): types.TemplateDiff {
 
   normalize(currentTemplate);
   normalize(newTemplate);
-
-  let theDiff = undefined;
-  if (newTemplateFromChangeSet) {
-    theDiff = diffTemplate(currentTemplate, newTemplateFromChangeSet);
-  } else {
-    theDiff = diffTemplate(currentTemplate, newTemplate);
-  }
-
-  // if (changeSet) {
-  //   // These methods mutate the state of theDiff, using the changeSet.
-  //   const changeSetDiff = new TemplateAndChangeSetDiffMerger({ changeSet });
-  //   changeSetDiff.overrideDiffResourcesWithChangeSetResources(theDiff.resources, currentTemplate.Resources);
-  //   theDiff.resources.forEachDifference((logicalId: string, change: types.ResourceDifference) =>
-  //     changeSetDiff.overrideDiffResourceChangeImpactWithChangeSetChangeImpact(logicalId, change),
-  //   );
-  //   changeSetDiff.addImportInformationFromChangeset(theDiff.resources);
-  //   theDiff = new types.TemplateDiff(theDiff); // do this to propagate security changes.
-  // }
-
-  if (isImport) {
+  let theDiff = diffTemplate(currentTemplate, newTemplate);
+  if (changeSet) {
+    // These methods mutate the state of theDiff, using the changeSet.
+    const changeSetDiff = new TemplateAndChangeSetDiffMerger({ changeSet });
+    changeSetDiff.overrideDiffResourcesWithChangeSetResources(theDiff.resources, currentTemplate.Resources);
+    theDiff.resources.forEachDifference((logicalId: string, change: types.ResourceDifference) =>
+      changeSetDiff.overrideDiffResourceChangeImpactWithChangeSetChangeImpact(logicalId, change),
+    );
+    changeSetDiff.addImportInformationFromChangeset(theDiff.resources);
+    theDiff = new types.TemplateDiff(theDiff); // do this to propagate security changes.
+  } else if (isImport) {
     makeAllResourceChangesImports(theDiff);
   }
 

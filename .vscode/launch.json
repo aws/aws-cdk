@@ -3,29 +3,21 @@
   // Hover to view descriptions of existing attributes.
   // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
   "version": "0.2.0",
-	"folders": [
-		{
-			"path": "/Users/bergjak/workplace/CDK/aws-cdk"
-		},
-		{
-			"path": "/Users/bergjak/workplace/CDK/cdk_test"
-		}
-	],
   "configurations": [
-			{
-				"type": "node",
-				"request": "launch",
-				"args": ["diff", "SqsStack"],
-				"name": "debug CLI",
-				"program": "/Users/bergjak/workplace/CDK/aws-cdk/packages/aws-cdk/bin/cdk.js",
-				"cwd": "${workspaceFolder:cdk_test}",
-				"console": "integratedTerminal",
-				"sourceMaps": true,
-				"skipFiles": [ "<node_internals>/**/*" ],
-				"outFiles": [
-					"${workspaceFolder:aws-cdk}/**/*.js",
-					"${workspaceFolder:cdk_test}/**/*.js",
-				],
-			}
+    {
+      // Has convenient settings for attaching to a NodeJS process for debugging purposes
+      // that are NOT the default and otherwise every developers has to configure for
+      // themselves again and again.
+      "type": "node",
+      "request": "attach",
+      "name": "Attach to NodeJS",
+      // If we don't do this, every step-into into an async function call will go into
+      // NodeJS internals which are hard to step out of.
+      "skipFiles": [
+        "<node_internals>/**"
+      ],
+      // Saves some button-pressing latency on attaching
+      "stopOnEntry": false
+    }
   ]
 }
