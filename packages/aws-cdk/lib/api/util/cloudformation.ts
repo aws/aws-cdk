@@ -196,12 +196,16 @@ export async function describeChangeSet(
   stackName: string,
   changeSetName: string,
   { fetchAll }: { fetchAll: boolean },
+  callerType?: CallerType,
 ): Promise<CloudFormation.DescribeChangeSetOutput> {
   const response = await cfn.describeChangeSet({ StackName: stackName, ChangeSetName: changeSetName }).promise();
 
-  const changeSetChangesWithContext = await maybeGetChangeSetChangeContext(cfn, stackName, changeSetName);
-  if (changeSetChangesWithContext) {
-    response.Changes = changeSetChangesWithContext.Changes;
+  let changeSetChangesWithContext = undefined;
+  if (callerType === 'DIFF') {
+    changeSetChangesWithContext = await maybeGetChangeSetChangeContext(cfn, stackName, changeSetName);
+    if (changeSetChangesWithContext) {
+      response.Changes = changeSetChangesWithContext.Changes;
+    }
   }
 
   // If fetchAll is true, traverse all pages from the change set description.
@@ -211,7 +215,9 @@ export async function describeChangeSet(
       ChangeSetName: response.ChangeSetId ?? changeSetName,
       NextToken: response.NextToken,
     };
+
     if (changeSetChangesWithContext) {
+      // The issue may actually be that nextTokens don't work with includePropertyValue, so I need to figure that out.
       input.IncludePropertyValues = true;
     }
 
@@ -329,6 +335,8 @@ export async function waitForChangeSet(
   return ret;
 }
 
+export type CallerType = 'DIFF';
+
 export type PrepareChangeSetOptions = {
   stack: cxapi.CloudFormationStackArtifact;
   deployments: Deployments;
@@ -338,6 +346,7 @@ export type PrepareChangeSetOptions = {
   stream: NodeJS.WritableStream;
   parameters: { [name: string]: string | undefined };
   resourcesToImport?: ResourcesToImport;
+  callerType?: CallerType;
 }
 
 export type CreateChangeSetOptions = {
@@ -351,6 +360,7 @@ export type CreateChangeSetOptions = {
   parameters: { [name: string]: string | undefined };
   resourcesToImport?: ResourcesToImport;
   role?: string;
+  callerType?: CallerType;
 }
 
 /**
@@ -398,6 +408,7 @@ async function uploadBodyParameterAndCreateChangeSet(options: PrepareChangeSetOp
       parameters: options.parameters,
       resourcesToImport: options.resourcesToImport,
       role: executionRoleArn,
+      callerType: options.callerType,
     });
   } catch (e: any) {
     debug(e.message);
@@ -431,7 +442,7 @@ async function createChangeSet(options: CreateChangeSetOptions): Promise<Describ
 
   debug('Initiated creation of changeset: %s; waiting for it to finish creating...', changeSet.Id);
   // Fetching all pages if we'll execute, so we can have the correct change count when monitoring.
-  const createdChangeSet = await waitForChangeSet(options.cfn, options.stack.stackName, options.changeSetName, { fetchAll: options.willExecute });
+  const createdChangeSet = await waitForChangeSet(options.cfn, options.stack.stackName, options.changeSetName, { fetchAll: options.willExecute || options.callerType === 'DIFF' });
   await cleanupOldChangeset(options.changeSetName, options.stack.stackName, options.cfn);
 
   // TODO: Update this once we remove sdkv2 from the rest of this package
