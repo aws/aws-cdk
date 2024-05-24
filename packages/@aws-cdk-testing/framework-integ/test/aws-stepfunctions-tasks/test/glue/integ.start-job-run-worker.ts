@@ -44,8 +44,10 @@ class GlueStartJobRunWorkerStack extends cdk.Stack {
       arguments: sfn.TaskInput.fromObject({
         '--enable-metrics': 'true',
       }),
-      workerType: WorkerType.G_1X,
-      numberOfWorkers: 2,
+      workerConfiguration: {
+        workerType: WorkerType.G_1X,
+        numberOfWorkers: 2,
+      },
     });
 
     const startTask = new sfn.Pass(this, 'Start Task');

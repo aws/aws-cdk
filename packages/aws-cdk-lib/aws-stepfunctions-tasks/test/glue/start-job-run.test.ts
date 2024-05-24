@@ -205,8 +205,10 @@ test('Task throws if WAIT_FOR_TASK_TOKEN is supplied as service integration patt
 test('Invoke glue job with WorkerType and NumberOfWorkers', () => {
   const task = new GlueStartJobRun(stack, 'Task', {
     glueJobName,
-    workerType: WorkerType.G_1X,
-    numberOfWorkers: 2,
+    workerConfiguration: {
+      workerType: WorkerType.G_1X,
+      numberOfWorkers: 2,
+    },
   });
   new sfn.StateMachine(stack, 'SM', {
     definitionBody: sfn.DefinitionBody.fromChainable(task),
@@ -233,13 +235,4 @@ test('Invoke glue job with WorkerType and NumberOfWorkers', () => {
       NumberOfWorkers: 2,
     },
   });
-});
-
-test('Task throws if either workerType or num is defined', () => {
-  expect(() => {
-    new tasks.GlueStartJobRun(stack, 'GlueJob', {
-      glueJobName,
-      workerType: WorkerType.G_1X,
-    });
-  }).toThrow('');
 });

@@ -44,19 +44,26 @@ export interface GlueStartJobRunProps extends sfn.TaskStateBaseProps {
   readonly notifyDelayAfter?: Duration;
 
   /**
-   * The type of predefined worker that is allocated when a job runs.
-   * This must be set along with numberOfWorkers.
+   * The worker configuration for this run.
    *
-   * @default - differs based on specific Glue version
+   * @default - Default worker configuration in the job definition
    */
-  readonly workerType?: WorkerType;
+  readonly workerConfiguration?: WorkerConfigurationProperty;
+}
+
+/**
+ * Properties for the worker configuration.
+ */
+export interface WorkerConfigurationProperty {
+  /**
+   * The type of predefined worker that is allocated when a job runs.
+   */
+  readonly workerType: WorkerType;
 
   /**
    * The number of workers of a defined `WorkerType` that are allocated when a job runs.
-   *
-   * @default - differs based on specific Glue version/worker type
    */
-  readonly numberOfWorkers?: number;
+  readonly numberOfWorkers: number;
 }
 
 /**
@@ -83,10 +90,6 @@ export class GlueStartJobRun extends sfn.TaskStateBase {
     this.integrationPattern = props.integrationPattern ?? sfn.IntegrationPattern.REQUEST_RESPONSE;
 
     validatePatternSupported(this.integrationPattern, GlueStartJobRun.SUPPORTED_INTEGRATION_PATTERNS);
-
-    if ((!props.workerType && props.numberOfWorkers !== undefined) || (props.workerType && props.numberOfWorkers === undefined)) {
-      throw new Error('Both workerType and numberOfWorkers must be set');
-    }
 
     this.taskPolicies = this.getPolicies();
 
@@ -120,8 +123,8 @@ export class GlueStartJobRun extends sfn.TaskStateBase {
         Timeout: timeout,
         SecurityConfiguration: this.props.securityConfiguration,
         NotificationProperty: notificationProperty,
-        WorkerType: this.props.workerType,
-        NumberOfWorkers: this.props.numberOfWorkers,
+        WorkerType: this.props.workerConfiguration?.workerType,
+        NumberOfWorkers: this.props.workerConfiguration?.numberOfWorkers,
       }),
       TimeoutSeconds: undefined,
       TimeoutSecondsPath: undefined,
