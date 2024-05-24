@@ -11,7 +11,7 @@ import * as kms from '../../aws-kms';
 import * as logs from '../../aws-logs';
 import * as s3 from '../../aws-s3';
 import * as cloudmap from '../../aws-servicediscovery';
-import { Duration, IResource, Resource, Stack, Aspects, ArnFormat, IAspect, Token, Names } from '../../core';
+import { Duration, IResource, Resource, Stack, Aspects, ArnFormat, IAspect, Token, Names, Annotations } from '../../core';
 
 const CLUSTER_SYMBOL = Symbol.for('@aws-cdk/aws-ecs/lib/cluster.Cluster');
 
@@ -474,6 +474,9 @@ export class Cluster extends Resource implements ICluster {
   }
 
   private configureAutoScalingGroup(autoScalingGroup: autoscaling.AutoScalingGroup, options: AddAutoScalingGroupCapacityOptions = {}) {
+    if (!(autoScalingGroup instanceof autoscaling.AutoScalingGroup)) {
+      throw new Error('Cannot configure the AutoScalingGroup because it is an imported resource.');
+    }
     if (autoScalingGroup.osType === ec2.OperatingSystemType.WINDOWS) {
       this.configureWindowsAutoScalingGroup(autoScalingGroup, options);
     } else {
@@ -1177,6 +1180,10 @@ export interface AsgCapacityProviderProps extends AddAutoScalingGroupCapacityOpt
 
   /**
    * The autoscaling group to add as a Capacity Provider.
+   *
+   * Warning: When passing an imported resource using `AutoScalingGroup.fromAutoScalingGroupName`,
+   * the AsgCapacityProvider construct will not be able to enforce the option `newInstancesProtectedFromScaleIn` of the AutoScalingGroup will be enabled.
+   * If this property is not enable in the AutoScalingGroup, the CFN stack execution will fail.
    */
   readonly autoScalingGroup: autoscaling.IAutoScalingGroup;
 
@@ -1306,7 +1313,11 @@ export class AsgCapacityProvider extends Construct {
       throw new Error('Cannot enable Managed Termination Protection on a Capacity Provider when Managed Scaling is disabled. Either enable Managed Scaling or disable Managed Termination Protection.');
     }
     if (this.enableManagedTerminationProtection) {
-      this.autoScalingGroup.protectNewInstancesFromScaleIn();
+      if (this.autoScalingGroup instanceof autoscaling.AutoScalingGroup) {
+        this.autoScalingGroup.protectNewInstancesFromScaleIn();
+      } else {
+        Annotations.of(this).addWarningV2('@aws-cdk/aws-ecs:cannotEnforceNewInstancesProtectedFromScaleIn', 'Cannot enforce `newInstancesProtectedFromScaleIn: true` on the AutoScalingGroup. This will have no effect if the AutoScalingGroup was created in this CDK app.');
+      }
     }
 
     const capacityProviderNameRegex = /^(?!aws|ecs|fargate).+/gm;
