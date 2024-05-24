@@ -118,6 +118,14 @@ export const config: HandlerFrameworkConfig = {
       },
     ],
   },
+  'aws-cloudfront-origins': {
+    's3-origin-access-control-policy-provider': [
+      {
+        type: ComponentType.CUSTOM_RESOURCE_PROVIDER,
+        sourceCode: path.resolve(__dirname, '..', 'aws-cloudfront-origins', 's3-origin-access-control-policy-handler', 'index.ts'),
+      },
+    ],
+  },
   'aws-dynamodb': {
     'replica-provider': [
       {
