@@ -16,6 +16,9 @@ export class TemplateAndChangeSetDiffMerger {
 
   /**
    * TODO: Once IncludePropertyValues is supported in all regions, this function can be deleted
+   *
+   * @param args.currentTemplateResource resources and their properties only exist in the templateDiff if they are DIFFERENT. Therefore,
+   * in the case that a resource is in the changeset, but not in the templateDiff, we should still present the before changes value. Hence, this argument.
    */
   public static convertContextlessChangeSetResourceToResource(
     changeSetResourceResourceType: string | undefined,
@@ -23,9 +26,9 @@ export class TemplateAndChangeSetDiffMerger {
     args: {
       propertiesThatChanged: string[];
       beforeOrAfterChanges: 'BEFORE' | 'AFTER';
+      currentTemplateResource?: types.Resource;
     },
   ): types.Resource {
-    const backupMessage = args.beforeOrAfterChanges === 'AFTER' ? 'value_after_change_is_not_viewable' : 'value_before_change_is_not_viewable';
     const resourceExistsInTemplateDiff = oldOrNewValueFromTemplateDiff !== undefined;
     if (resourceExistsInTemplateDiff) {
       // if resourceExistsInTemplateDiff, then we don't want to erase the details of property changes that are in the template diff -- but we want
@@ -39,15 +42,24 @@ export class TemplateAndChangeSetDiffMerger {
 
       // write properties from changeset that are missing from the template diff
       for (const propertyName of args.propertiesThatChanged) {
-        if (!(propertyName in oldOrNewValueFromTemplateDiff.Properties)) {
-          oldOrNewValueFromTemplateDiff.Properties[propertyName] = backupMessage;
+        if (!(propertyName in oldOrNewValueFromTemplateDiff.Properties)) { // I am not actually sure if this can happen... but it's better to be safe. It seems that if the resource exists in the templateDiff, then so do all of its Properties.
+          const propertyBeforeOrAfter = args.beforeOrAfterChanges === 'AFTER'
+            ? 'value_after_change_is_not_viewable'
+            : args.currentTemplateResource?.Properties?.[propertyName] ?? 'value_before_change_is_not_viewable';
+          oldOrNewValueFromTemplateDiff.Properties[propertyName] = propertyBeforeOrAfter;
         }
       }
+
       return oldOrNewValueFromTemplateDiff;
     } else {
       // The resource didn't change in the templateDiff but is mentioned in the changeset. E.g., perhaps because an ssm parameter, that defined a property, changed value.
       const propsWithBackUpMessage: { [propertyName: string]: string } = {};
-      for (const propName of args.propertiesThatChanged) { propsWithBackUpMessage[propName] = backupMessage; }
+      for (const propertyName of args.propertiesThatChanged) {
+        const propertyBeforeOrAfter = args.beforeOrAfterChanges === 'AFTER'
+          ? 'value_after_change_is_not_viewable'
+          : args.currentTemplateResource?.Properties?.[propertyName] ?? 'value_before_change_is_not_viewable';
+        propsWithBackUpMessage[propertyName] = propertyBeforeOrAfter;
+      }
       return {
         Type: changeSetResourceResourceType ?? TemplateAndChangeSetDiffMerger.UNKNOWN_RESOURCE_TYPE,
         Properties: propsWithBackUpMessage,
@@ -137,7 +149,10 @@ export class TemplateAndChangeSetDiffMerger {
   * Overwrites the resource diff that was computed between the new and old template with the diff of the resources from the ChangeSet.
   * This is a more accurate way of computing the resource differences, since now cdk diff is reporting directly what the ChangeSet will apply.
   */
-  public overrideDiffResourcesWithChangeSetResources(resourceDiffs: types.DifferenceCollection<types.Resource, types.ResourceDifference>) {
+  public overrideDiffResourcesWithChangeSetResources(
+    resourceDiffs: types.DifferenceCollection<types.Resource, types.ResourceDifference>,
+    currentTemplateResources: { [key: string]: any } | undefined,
+  ) {
     for (const [logicalIdFromChangeSet, changeSetResource] of Object.entries(this.changeSetResources)) {
       let oldResource: types.Resource;
       const changeSetIncludedBeforeContext = changeSetResource.beforeContext !== undefined;
@@ -154,6 +169,7 @@ export class TemplateAndChangeSetDiffMerger {
           {
             propertiesThatChanged: Object.keys(changeSetResource.propertyReplacementModes || {}),
             beforeOrAfterChanges: 'BEFORE',
+            currentTemplateResource: currentTemplateResources?.[logicalIdFromChangeSet],
           },
         );
       }

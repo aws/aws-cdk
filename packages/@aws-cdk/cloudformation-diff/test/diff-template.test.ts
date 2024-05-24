@@ -11,14 +11,6 @@ const BUCKET_POLICY_RESOURCE = {
   },
 };
 
-describe('diffResource', () => {
-
-  test('properties that are not different are not added to the diffs', () => {
-
-  });
-
-});
-
 test('when there is no difference', () => {
   const bucketName = 'ShineyBucketName';
   const currentTemplate = {

@@ -1006,6 +1006,79 @@ describe('fullDiff tests that include changeset', () => {
 
   });
 
+  test('works with values defined before but not after (coming from changeset)', async () => {
+    // GIVEN
+    const currentTemplate = {
+      Resources: {
+        Queue: {
+          Type: 'AWS::SQS::Queue',
+          Properties: {
+            QueueName: 'nice',
+            DelaySeconds: '10',
+          },
+        },
+      },
+    };
+
+    const changeSet = {
+      Changes: [
+        {
+          Type: 'Resource',
+          ResourceChange: {
+            Action: 'Modify',
+            LogicalResourceId: 'Queue',
+            ResourceType: 'AWS::SQS::Queue',
+            Replacement: 'False',
+            Scope: ['Properties'],
+            Details: [
+              { Target: { Attribute: 'Properties', Name: 'DelaySeconds', RequiresRecreation: 'Never' } },
+            ],
+          },
+        },
+      ],
+    };
+
+    // WHEN
+    const diff = fullDiff(currentTemplate, currentTemplate, changeSet as any);
+    expect(diff.resources.changes.Queue).toEqual({
+      oldValue: {
+        Type: 'AWS::SQS::Queue',
+        Properties: {
+          DelaySeconds: '10',
+        },
+      },
+      newValue: {
+        Type: 'AWS::SQS::Queue',
+        Properties: {
+          DelaySeconds: 'value_after_change_is_not_viewable',
+        },
+      },
+      resourceTypes: {
+        oldType: 'AWS::SQS::Queue',
+        newType: 'AWS::SQS::Queue',
+      },
+      propertyDiffs: {
+        DelaySeconds: {
+          oldValue: '10',
+          newValue: 'value_after_change_is_not_viewable',
+          isDifferent: true,
+          changeImpact: 'WILL_UPDATE',
+        },
+      },
+      otherDiffs: {
+        Type: {
+          oldValue: 'AWS::SQS::Queue',
+          newValue: 'AWS::SQS::Queue',
+          isDifferent: false,
+        },
+      },
+      isAddition: false,
+      isRemoval: false,
+      isImport: undefined,
+    });
+
+  });
+
 });
 
 describe('method tests', () => {
@@ -1268,7 +1341,7 @@ describe('method tests', () => {
       const templateAndChangeSetDiffMerger = new TemplateAndChangeSetDiffMerger({ changeSet: utils.changeSet });
 
       //WHEN
-      templateAndChangeSetDiffMerger.overrideDiffResourcesWithChangeSetResources(resources);
+      templateAndChangeSetDiffMerger.overrideDiffResourcesWithChangeSetResources(resources, {});
 
       // THEN
       expect(resources.differenceCount).toBe(2);
@@ -1423,7 +1496,7 @@ describe('method tests', () => {
       const templateAndChangeSetDiffMerger = new TemplateAndChangeSetDiffMerger({ changeSet: utils.changeSetWithMissingChanges });
 
       //WHEN
-      templateAndChangeSetDiffMerger.overrideDiffResourcesWithChangeSetResources(resources);
+      templateAndChangeSetDiffMerger.overrideDiffResourcesWithChangeSetResources(resources, {});
 
       // THEN
       expect(resources.differenceCount).toBe(0);
@@ -1448,7 +1521,7 @@ describe('method tests', () => {
       });
 
       //WHEN
-      templateAndChangeSetDiffMerger.overrideDiffResourcesWithChangeSetResources(resources);
+      templateAndChangeSetDiffMerger.overrideDiffResourcesWithChangeSetResources(resources, {});
 
       // THEN
       expect(resources.differenceCount).toBe(1);
@@ -1511,7 +1584,7 @@ describe('method tests', () => {
       });
 
       //WHEN
-      templateAndChangeSetDiffMerger.overrideDiffResourcesWithChangeSetResources(resources);
+      templateAndChangeSetDiffMerger.overrideDiffResourcesWithChangeSetResources(resources, {});
 
       // THEN
       expect(resources.differenceCount).toBe(1);
