@@ -556,6 +556,58 @@ Resources:
           - PermissionsBoundarySet
           - Fn::Sub: 'arn:${AWS::Partition}:iam::${AWS::AccountId}:policy/${InputPermissionsBoundary}'
           - Ref: AWS::NoValue
+  CloudFormationChangeSetReviewRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Action: sts:AssumeRole
+            Effect: Allow
+            Principal:
+              AWS:
+                Ref: AWS::AccountId
+          - Fn::If:
+              - HasTrustedAccounts
+              - Action: sts:AssumeRole
+                Effect: Allow
+                Principal:
+                  AWS:
+                    Ref: TrustedAccounts
+              - Ref: AWS::NoValue
+        Version: '2012-10-17'
+      Policies:
+        - PolicyDocument:
+            Statement:
+              - Sid: CloudFormationPermissions
+                Effect: Allow
+                Action:
+                  - cloudformation:CreateChangeSet
+                  - cloudformation:DeleteChangeSet
+                  - cloudformation:DescribeChangeSet
+                  - cloudformation:DescribeStacks
+                Resource: "*"
+              - Sid: UploadAssets
+                Effect: Allow
+                Action:
+                  - s3:PutObject*
+                  - s3:GetObject* # cfn needs to download the template from the bucket
+                Resource:
+                  - Fn::Sub: "${StagingBucket.Arn}/cdk/*" # upload assets to the cdk folder
+              - Sid: KmsPermission
+                Effect: Allow
+                Action:
+                  - kms:GenerateDataKey*
+                Resource:
+                  Fn::If:
+                    - CreateNewKey
+                    - Fn::Sub: "${FileAssetsBucketEncryptionKey.Arn}"
+                    - Fn::Sub: arn:${AWS::Partition}:kms:${AWS::Region}:${AWS::AccountId}:key/${FileAssetsBucketKmsKeyId}
+          PolicyName: default
+      RoleName:
+        Fn::Sub: cdk-${Qualifier}-cfn-changeset-review-role-${AWS::AccountId}-${AWS::Region}
+      Tags:
+        - Key: aws-cdk:bootstrap-role
+          Value: changeset
   CdkBoostrapPermissionsBoundaryPolicy:
     # Edit the template prior to boostrap in order to have this example policy created
     Condition: ShouldCreatePermissionsBoundary
@@ -619,7 +671,7 @@ Resources:
       Type: String
       Name:
         Fn::Sub: '/cdk-bootstrap/${Qualifier}/version'
-      Value: '20'
+      Value: '21'
 Outputs:
   BucketName:
     Description: The name of the S3 bucket owned by the CDK toolkit stack

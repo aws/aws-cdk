@@ -136,6 +136,124 @@
               "version": "0.0.0"
             }
           },
+          "lambda-ecr-1": {
+            "id": "lambda-ecr-1",
+            "path": "synthesize-default-resources/lambda-ecr-1",
+            "children": {
+              "ServiceRole": {
+                "id": "ServiceRole",
+                "path": "synthesize-default-resources/lambda-ecr-1/ServiceRole",
+                "children": {
+                  "ImportServiceRole": {
+                    "id": "ImportServiceRole",
+                    "path": "synthesize-default-resources/lambda-ecr-1/ServiceRole/ImportServiceRole",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "synthesize-default-resources/lambda-ecr-1/ServiceRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "lambda.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "managedPolicyArns": [
+                          {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+                              ]
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
+                  "version": "0.0.0"
+                }
+              },
+              "AssetImage": {
+                "id": "AssetImage",
+                "path": "synthesize-default-resources/lambda-ecr-1/AssetImage",
+                "children": {
+                  "Staging": {
+                    "id": "Staging",
+                    "path": "synthesize-default-resources/lambda-ecr-1/AssetImage/Staging",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.AssetStaging",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Repository": {
+                    "id": "Repository",
+                    "path": "synthesize-default-resources/lambda-ecr-1/AssetImage/Repository",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_ecr.RepositoryBase",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_ecr_assets.DockerImageAsset",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "synthesize-default-resources/lambda-ecr-1/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
+                  "aws:cdk:cloudformation:props": {
+                    "code": {
+                      "imageUri": {
+                        "Fn::Sub": "${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/default-resourcesmax/ecr-asset/1:16624c2a162b07c5cc0e2c59c484f638bac238ca558ccbdc2aa0e0535df3e622"
+                      }
+                    },
+                    "packageType": "Image",
+                    "role": {
+                      "Fn::GetAtt": [
+                        "lambdaecr1ServiceRoleA6BBC49F",
+                        "Arn"
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_lambda.Function",
+              "version": "0.0.0"
+            }
+          },
           "lambda-ecr-1-copy": {
             "id": "lambda-ecr-1-copy",
             "path": "synthesize-default-resources/lambda-ecr-1-copy",
@@ -1134,6 +1252,14 @@
         },
         "constructInfo": {
           "fqn": "@aws-cdk/app-staging-synthesizer-alpha.DefaultStagingStack",
+          "version": "0.0.0"
+        }
+      },
+      "synthesize-custom-roles": {
+        "id": "synthesize-custom-roles",
+        "path": "synthesize-custom-roles",
+        "constructInfo": {
+          "fqn": "aws-cdk-lib.Stack",
           "version": "0.0.0"
         }
       },

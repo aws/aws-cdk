@@ -1,5 +1,5 @@
 {
-  "version": "36.0.0",
+  "version": "37.0.0",
   "artifacts": {
     "synthesize-default-resources.assets": {
       "type": "cdk:asset-manifest",
@@ -21,8 +21,11 @@
         "additionalDependencies": [
           "synthesize-default-resources.assets"
         ],
-        "stackTemplateAssetObjectUrl": "s3://cdk-default-resourcesmax-staging-${AWS::AccountId}-${AWS::Region}/deploy-time/60f7c2dac879a9de34a1b00340c5ad12c3ffd444e6c91049832d893f3631b8c4.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-default-resourcesmax-staging-${AWS::AccountId}-${AWS::Region}/deploy-time/f8f281289f79da2c3a0b6831ce6cb7c7f701b0083d846e3820a1847793b668d1.json",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "changesetRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-changeset-review-role-${AWS::AccountId}-${AWS::Region}"
+        },
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}"
         }
@@ -42,6 +45,18 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "lambdas342CE2BBD"
+          }
+        ],
+        "/synthesize-default-resources/lambda-ecr-1/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "lambdaecr1ServiceRoleA6BBC49F"
+          }
+        ],
+        "/synthesize-default-resources/lambda-ecr-1/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "lambdaecr1B33A3D15"
           }
         ],
         "/synthesize-default-resources/lambda-ecr-1-copy/ServiceRole/Resource": [
@@ -164,6 +179,41 @@
       },
       "displayName": "StagingStack-default-resourcesmax-ACCOUNT-REGION"
     },
+    "synthesize-custom-roles.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "synthesize-custom-roles.assets.json"
+      },
+      "dependencies": [
+        "StagingStack-default-resourcesmax-ACCOUNT-REGION"
+      ]
+    },
+    "synthesize-custom-roles": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "synthesize-custom-roles.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:aws:iam::123456789012:role/Execute",
+        "additionalDependencies": [
+          "synthesize-custom-roles.assets"
+        ],
+        "stackTemplateAssetObjectUrl": "s3://cdk-default-resourcesmax-staging-${AWS::AccountId}-${AWS::Region}/deploy-time/44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a.json",
+        "cloudFormationExecutionRoleArn": "arn:aws:iam::123456789012:role/Execute",
+        "changesetRole": {
+          "arn": "arn:aws:iam::123456789012:role/Execute"
+        },
+        "lookupRole": {
+          "arn": "arn:aws:iam::123456789012:role/Execute"
+        }
+      },
+      "dependencies": [
+        "StagingStack-default-resourcesmax-ACCOUNT-REGION",
+        "synthesize-custom-roles.assets"
+      ],
+      "displayName": "synthesize-custom-roles"
+    },
     "integtestsDefaultTestDeployAssert44C8D370.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
@@ -190,6 +240,11 @@
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
           "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        },
+        "changesetRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-changeset-review-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 21,
           "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
         }
       },

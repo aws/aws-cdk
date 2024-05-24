@@ -712,6 +712,26 @@ integTest('cdk diff', withDefaultFixture(async (fixture) => {
     .rejects.toThrow('exited with error');
 }));
 
+integTest('cdk diff with a large template', withDefaultFixture(async (fixture) => {
+  // In this test, we confirm that the changeset role can upload assets to the bucket and create a changeset
+  await fixture.cdkDeploy('iam-roles', {
+    modEnv: {
+      NUMBER_OF_ROLES: '1',
+    },
+  });
+  const diff = await fixture.cdk(['diff', fixture.fullStackName('iam-roles')], {
+    modEnv: {
+      NUMBER_OF_ROLES: '200',
+    },
+  });
+  expect(diff).not.toContain('changeset role does not exist, hence was not assumed');
+  expect(diff).not.toContain('Could not create a change set');
+  expect(diff).not.toContain('deploy-role');
+  expect(diff).toContain('cfn-changeset-review-role');
+  expect(diff).toContain('success: Published');
+  expect(diff).toContain('Number of stacks with differences');
+}));
+
 integTest('enableDiffNoFail', withDefaultFixture(async (fixture) => {
   await diffShouldSucceedWith({ fail: false, enableDiffNoFail: false });
   await diffShouldSucceedWith({ fail: false, enableDiffNoFail: true });

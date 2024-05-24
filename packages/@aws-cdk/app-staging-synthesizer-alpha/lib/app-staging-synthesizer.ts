@@ -119,6 +119,11 @@ export class AppStagingSynthesizer extends StackSynthesizer implements IReusable
   public static readonly DEFAULT_LOOKUP_ROLE_ARN = 'arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-${Qualifier}-lookup-role-${AWS::AccountId}-${AWS::Region}';
 
   /**
+   * Default changeset role ARN for missing values.
+   */
+  public static readonly DEFAULT_CHANGESET_ROLE_ARN = 'arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-${Qualifier}-cfn-changeset-review-role-${AWS::AccountId}-${AWS::Region}';
+
+  /**
    * Use the Default Staging Resources, creating a single stack per environment this app is deployed in
    */
   public static defaultResources(options: DefaultResourcesOptions) {
@@ -177,7 +182,8 @@ export class AppStagingSynthesizer extends StackSynthesizer implements IReusable
     this.roles = {
       deploymentRole: identities.deploymentRole ?? defaultIdentities.deploymentRole!,
       cloudFormationExecutionRole: identities.cloudFormationExecutionRole ?? defaultIdentities.cloudFormationExecutionRole!,
-      lookupRole: identities.lookupRole ?? identities.lookupRole!,
+      lookupRole: identities.lookupRole ?? defaultIdentities.lookupRole!,
+      changesetRole: identities.changesetRole ?? defaultIdentities.changesetRole!,
     };
   }
 
@@ -207,6 +213,7 @@ export class AppStagingSynthesizer extends StackSynthesizer implements IReusable
       deployRole,
       cloudFormationExecutionRole: this.roles.cloudFormationExecutionRole._specialize(spec),
       lookupRole: this.roles.lookupRole._specialize(spec),
+      changesetRole: this.roles.changesetRole._specialize(spec),
       qualifier,
     });
   }
@@ -292,6 +299,11 @@ interface BoundAppStagingSynthesizerProps {
    * Lookup Role
    */
   readonly lookupRole: BootstrapRole;
+
+  /**
+   * Changeset Role
+   */
+  readonly changesetRole: BootstrapRole;
 }
 
 class BoundAppStagingSynthesizer extends StackSynthesizer implements IBoundAppStagingSynthesizer {
@@ -323,12 +335,14 @@ class BoundAppStagingSynthesizer extends StackSynthesizer implements IBoundAppSt
     const assetManifestId = this.assetManifest.emitManifest(this.boundStack, session, {}, dependencies);
 
     const lookupRoleArn = this.props.lookupRole?._arnForCloudAssembly();
+    const changesetRoleArn = this.props.changesetRole?._arnForCloudAssembly();
 
     this.emitArtifact(session, {
       assumeRoleArn: this.props.deployRole?._arnForCloudAssembly(),
       additionalDependencies: [assetManifestId],
       stackTemplateAssetObjectUrl: templateAsset.s3ObjectUrlWithPlaceholders,
       cloudFormationExecutionRoleArn: this.props.cloudFormationExecutionRole?._arnForCloudAssembly(),
+      changesetRole: changesetRoleArn ? { arn: changesetRoleArn } : undefined,
       lookupRole: lookupRoleArn ? { arn: lookupRoleArn } : undefined,
     });
   }

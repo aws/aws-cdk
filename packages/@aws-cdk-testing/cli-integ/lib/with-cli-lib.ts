@@ -113,7 +113,6 @@ export class CliLibIntegrationTestFixture extends TestFixture {
     if (action === 'deploy') {
       cliOpts.requireApproval = options.neverRequireApproval ? 'never' : 'broadening';
     }
-
     return this.shell(['node', '--input-type=module', `<<__EOS__
       import { AwsCdkCli } from '@aws-cdk/cli-lib-alpha';
       const cli = AwsCdkCli.fromCdkAppDirectory();

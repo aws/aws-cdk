@@ -499,6 +499,7 @@ describe('stack exists checks', () => {
     // THEN
     expect(exitCode).toBe(0);
     expect(cloudFormation.stackExists).not.toHaveBeenCalled();
+    expect(cfn.createDiffChangeSet).not.toHaveBeenCalled();
   });
 
   test('diff falls back to classic diff when stack does not exist', async () => {

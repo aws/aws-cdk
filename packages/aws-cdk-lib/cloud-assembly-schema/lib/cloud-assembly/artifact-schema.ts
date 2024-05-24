@@ -97,6 +97,13 @@ export interface AwsCloudFormationStackProperties {
   readonly lookupRole?: BootstrapRole;
 
   /**
+   * The role that needs to be assumed to perform operations on the changeset other than execution
+   *
+   * @default - No role is assumed (current credentials are used)
+   */
+  readonly changesetRole?: BootstrapRole;
+
+  /**
    * If the stack template has already been included in the asset manifest, its asset URL
    *
    * @default - Not uploaded yet, upload just before deploying
