@@ -226,6 +226,63 @@ describe('security group context provider plugin', () => {
     expect(res.allowAllOutbound).toEqual(true);
   });
 
+  test('looks up by security group name, vpc id, and owner', async () => {
+    // GIVEN
+    const provider = new SecurityGroupContextProviderPlugin(mockSDK);
+
+    AWS.mock('EC2', 'describeSecurityGroups', (_params: aws.EC2.DescribeSecurityGroupsRequest, cb: AwsCallback<aws.EC2.DescribeSecurityGroupsResult>) => {
+      expect(_params).toEqual({
+        Filters: [
+          {
+            Name: 'vpc-id',
+            Values: ['vpc-1234567'],
+          },
+          {
+            Name: 'group-name',
+            Values: ['my-security-group'],
+          },
+          {
+            Name: 'owner-id',
+            Values: ['1234'], 
+          },
+        ],
+      });
+      cb(null, {
+        SecurityGroups: [
+          {
+            GroupId: 'sg-1234',
+            IpPermissionsEgress: [
+              {
+                IpProtocol: '-1',
+                IpRanges: [
+                  { CidrIp: '0.0.0.0/0' },
+                ],
+              },
+              {
+                IpProtocol: '-1',
+                Ipv6Ranges: [
+                  { CidrIpv6: '::/0' },
+                ],
+              },
+            ],
+          }
+        ],
+      });
+    });
+
+    // WHEN
+    const res = await provider.getValue({
+      account: '1234',
+      region: 'us-east-1',
+      securityGroupName: 'my-security-group',
+      vpcId: 'vpc-1234567',
+    });
+
+    // THEN
+    expect(res.securityGroupId).toEqual('sg-1234');
+    expect(res.allowAllOutbound).toEqual(true);
+  });
+
   test('detects non all-outbound egress', async () => {
     // GIVEN
     const provider = new SecurityGroupContextProviderPlugin(mockSDK);
