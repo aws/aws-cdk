@@ -215,18 +215,9 @@ Resources
     expect(plainTextOutput).toContain(`Stack A
 Parameters and rules created during migration do not affect resource configuration.
 Resources
-[←] UNKNOWN_RESOURCE_TYPE Queue import
- └─ [~] RandomPropertyField
-     ├─ [-] value_before_change_is_not_viewable
-     └─ [+] value_after_change_is_not_viewable
-[←] UNKNOWN_RESOURCE_TYPE Queue2 import
- └─ [~] RandomPropertyField
-     ├─ [-] value_before_change_is_not_viewable
-     └─ [+] value_after_change_is_not_viewable
-[←] UNKNOWN_RESOURCE_TYPE Bucket import
- └─ [~] RandomPropertyField
-     ├─ [-] value_before_change_is_not_viewable
-     └─ [+] value_after_change_is_not_viewable
+[←] AWS::SQS::Queue Queue import
+[←] AWS::SQS::Queue Queue2 import
+[←] AWS::S3::Bucket Bucket import
 `);
 
     expect(buffer.data.trim()).toContain('✨  Number of stacks with differences: 1');
