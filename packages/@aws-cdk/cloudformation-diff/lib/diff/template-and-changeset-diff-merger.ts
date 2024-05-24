@@ -14,6 +14,47 @@ export class TemplateAndChangeSetDiffMerger {
   // If we somehow cannot find the resourceType, then we'll mark it as UNKNOWN, so that can be seen in the diff.
   static UNKNOWN_RESOURCE_TYPE = 'UNKNOWN_RESOURCE_TYPE';
 
+  /**
+   * TODO: Once IncludePropertyValues is supported in all regions, this function can be deleted
+   */
+  public static convertContextlessChangeSetResourceToResource(
+    changeSetResourceResourceType: string | undefined,
+    oldOrNewValueFromTemplateDiff: types.Resource | undefined,
+    args: {
+      propertiesThatChanged: string[];
+      beforeOrAfterChanges: 'BEFORE' | 'AFTER';
+    },
+  ): types.Resource {
+    const backupMessage = args.beforeOrAfterChanges === 'AFTER' ? 'value_after_change_is_not_viewable' : 'value_before_change_is_not_viewable';
+    const resourceExistsInTemplateDiff = oldOrNewValueFromTemplateDiff !== undefined;
+    if (resourceExistsInTemplateDiff) {
+      // if resourceExistsInTemplateDiff, then we don't want to erase the details of property changes that are in the template diff -- but we want
+      // to make sure all changes from the ChangeSet are mentioned. At this point, since BeforeContext and AfterContext were not available from the
+      // ChangeSet, we can't get the before and after values of the properties from the changeset.
+      // So, the best we can do for the properties that aren't in the template diff is mention that they'll be changing.
+
+      if (oldOrNewValueFromTemplateDiff?.Properties === undefined) {
+        oldOrNewValueFromTemplateDiff.Properties = {};
+      }
+
+      // write properties from changeset that are missing from the template diff
+      for (const propertyName of args.propertiesThatChanged) {
+        if (!(propertyName in oldOrNewValueFromTemplateDiff.Properties)) {
+          oldOrNewValueFromTemplateDiff.Properties[propertyName] = backupMessage;
+        }
+      }
+      return oldOrNewValueFromTemplateDiff;
+    } else {
+      // The resource didn't change in the templateDiff but is mentioned in the changeset. E.g., perhaps because an ssm parameter, that defined a property, changed value.
+      const propsWithBackUpMessage: { [propertyName: string]: string } = {};
+      for (const propName of args.propertiesThatChanged) { propsWithBackUpMessage[propName] = backupMessage; }
+      return {
+        Type: changeSetResourceResourceType ?? TemplateAndChangeSetDiffMerger.UNKNOWN_RESOURCE_TYPE,
+        Properties: propsWithBackUpMessage,
+      };
+    }
+  }
+
   public static determineChangeSetReplacementMode(propertyChange: ChangeSetResourceChangeDetail): types.ReplacementModes {
     if (propertyChange.Target?.RequiresRecreation === undefined) {
       // We can't determine if the resource will be replaced or not. That's what conditionally means.
@@ -107,12 +148,12 @@ export class TemplateAndChangeSetDiffMerger {
         };
       } else {
         // TODO -- once IncludePropertyValues is supported in all regions for changesets, delete this else branch. Only above case will occur.
-        oldResource = this.convertContextlessChangeSetResourceToResource(
+        oldResource = TemplateAndChangeSetDiffMerger.convertContextlessChangeSetResourceToResource(
           changeSetResource.resourceType,
           resourceDiffs.get(logicalIdFromChangeSet)?.oldValue,
           {
             propertiesThatChanged: Object.keys(changeSetResource.propertyReplacementModes || {}),
-            oldOrNew: 'OLD',
+            beforeOrAfterChanges: 'BEFORE',
           },
         );
       }
@@ -126,59 +167,18 @@ export class TemplateAndChangeSetDiffMerger {
         };
       } else {
         // TODO -- once IncludePropertyValues is supported in all regions for changesets, delete this else branch. Only above case will occur.
-        newResource = this.convertContextlessChangeSetResourceToResource(
+        newResource = TemplateAndChangeSetDiffMerger.convertContextlessChangeSetResourceToResource(
           changeSetResource.resourceType,
           resourceDiffs.get(logicalIdFromChangeSet)?.newValue,
           {
             propertiesThatChanged: Object.keys(changeSetResource.propertyReplacementModes || {}),
-            oldOrNew: 'NEW',
+            beforeOrAfterChanges: 'AFTER',
           },
         );
       }
 
       const resourceDiffFromChangeset = diffResource(oldResource, newResource);
       resourceDiffs.set(logicalIdFromChangeSet, resourceDiffFromChangeset);
-    }
-  }
-
-  /**
-   * TODO: Once IncludePropertyValues is supported in all regions, this function can be deleted
-   */
-  public convertContextlessChangeSetResourceToResource(
-    changeSetResourceResourceType: string | undefined,
-    oldOrNewValueFromTemplateDiff: types.Resource | undefined,
-    args: {
-      propertiesThatChanged: string[];
-      oldOrNew: 'OLD' | 'NEW';
-    },
-  ): types.Resource {
-    const backupMessage = args.oldOrNew === 'NEW' ? 'value_after_change_is_not_viewable' : 'value_before_change_is_not_viewable';
-    const resourceExistsInTemplateDiff = oldOrNewValueFromTemplateDiff !== undefined;
-    if (resourceExistsInTemplateDiff) {
-      // if resourceExistsInTemplateDiff, then we don't want to erase the details of property changes that are in the template diff -- but we want
-      // to make sure all changes from the ChangeSet are mentioned. At this point, since BeforeContext and AfterContext were not available from the
-      // ChangeSet, we can't get the before and after values of the properties from the changeset.
-      // So, the best we can do for the properties that aren't in the template diff is mention that they'll be changing.
-
-      if (oldOrNewValueFromTemplateDiff?.Properties === undefined) {
-        oldOrNewValueFromTemplateDiff.Properties = {};
-      }
-
-      // write properties from changeset that are missing from the template diff
-      for (const propertyName of args.propertiesThatChanged) {
-        if (!(propertyName in oldOrNewValueFromTemplateDiff.Properties)) {
-          oldOrNewValueFromTemplateDiff.Properties[propertyName] = backupMessage;
-        }
-      }
-      return oldOrNewValueFromTemplateDiff;
-    } else {
-      // The resource didn't change in the templateDiff but is mentioned in the changeset. E.g., perhaps because an ssm parameter, that defined a property, changed value.
-      const propsWithBackUpMessage: { [propertyName: string]: string } = {};
-      for (const propName of args.propertiesThatChanged) { propsWithBackUpMessage[propName] = backupMessage; }
-      return {
-        Type: changeSetResourceResourceType ?? TemplateAndChangeSetDiffMerger.UNKNOWN_RESOURCE_TYPE,
-        Properties: propsWithBackUpMessage,
-      };
     }
   }
 
