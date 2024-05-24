@@ -3,8 +3,11 @@ import { HttpOrigin } from './http-origin';
 import * as cloudfront from '../../aws-cloudfront';
 import * as iam from '../../aws-iam';
 import * as s3 from '../../aws-s3';
-import { Stack, Names, FeatureFlags, Aws, Lazy } from '../../core';
+import { Stack, Names, FeatureFlags, Aws, Lazy, CustomResource } from '../../core';
+import { S3OriginAccessControlPolicyProvider } from '../../custom-resource-handlers/dist/aws-cloudfront-origins/s3-origin-access-control-policy-provider.generated';
 import * as cxapi from '../../cx-api';
+
+const S3_ORIGIN_ACCESS_CONTROL_RESOURCE_TYPE = 'Custom::S3OriginAccessControlPolicy';
 
 /**
  * Properties to use to customize an S3 Origin.
@@ -99,45 +102,75 @@ class S3BucketOrigin extends cloudfront.OriginBase {
     this.originAccessIdentity = props.originAccessIdentity;
   }
 
-  public bind(scope: Construct, options: cloudfront.OriginBindOptions): cloudfront.OriginBindConfig {
-    if (FeatureFlags.of(scope).isEnabled(cxapi.CLOUDFRONT_USE_ORIGIN_ACCESS_CONTROL)) {
-      if (!this.originAccessControl) {
-        // Create a new origin access control if not specified
-        this.originAccessControl = new cloudfront.OriginAccessControl(scope, 'S3OriginAccessControl');
-      }
-      const distribution = scope.node.scope as cloudfront.Distribution;
-      const distributionId = Lazy.string({ produce: () => distribution.distributionId });
-      const oacReadOnlyBucketPolicyStatement = new iam.PolicyStatement(
-        {
-          sid: 'AllowS3OACAccess',
-          effect: iam.Effect.ALLOW,
-          principals: [new iam.ServicePrincipal('cloudfront.amazonaws.com')],
-          actions: ['s3:GetObject'],
-          resources: [this.bucket.arnForObjects('*')],
-          conditions: {
-            StringEquals: {
-              // eslint-disable-next-line @aws-cdk/no-literal-partition
-              'AWS:SourceArn': `arn:aws:cloudfront::${Aws.ACCOUNT_ID}:distribution/${distributionId}`,
-            },
+  private bindOAC(scope: Construct, options: cloudfront.OriginBindOptions): cloudfront.OriginBindConfig {
+    if (!this.originAccessControl) {
+      // Create a new origin access control if not specified
+      this.originAccessControl = new cloudfront.OriginAccessControl(scope, 'S3OriginAccessControl');
+    }
+    const distribution = scope.node.scope as cloudfront.Distribution;
+    const distributionId = Lazy.string({ produce: () => distribution.distributionId });
+    const oacReadOnlyBucketPolicyStatement = new iam.PolicyStatement(
+      {
+        sid: 'AllowS3OACAccess',
+        effect: iam.Effect.ALLOW,
+        principals: [new iam.ServicePrincipal('cloudfront.amazonaws.com')],
+        actions: ['s3:GetObject'],
+        resources: [this.bucket.arnForObjects('*')],
+        conditions: {
+          StringEquals: {
+            'AWS:SourceArn': `arn:${Aws.PARTITION}:cloudfront::${Aws.ACCOUNT_ID}:distribution/${distributionId}`,
           },
         },
-      );
-      const result = this.bucket.addToResourcePolicy(oacReadOnlyBucketPolicyStatement);
+      },
+    );
+    const result = this.bucket.addToResourcePolicy(oacReadOnlyBucketPolicyStatement);
 
-      if (!result.statementAdded) {
-        throw new Error('Policy statement was not added to bucket policy');
-      }
+    if (!result.statementAdded) {
+      throw new Error('Policy statement was not added to bucket policy');
+    }
 
-      const originBindConfig = super.bind(scope, options);
+    if (this.bucket.encryptionKey) {
+      const provider = S3OriginAccessControlPolicyProvider.getOrCreateProvider(scope, S3_ORIGIN_ACCESS_CONTROL_RESOURCE_TYPE,
+        {
+          description: 'Lambda function that updates SSE-KMS key policy to allow CloudFront distribution access.',
+        });
+      provider.addToRolePolicy({
+        Action: ['kms:PutKeyPolicy', 'kms:GetKeyPolicy', 'kms:DescribeKey'],
+        Effect: 'Allow',
+        Resource: [this.bucket.encryptionKey.keyArn],
+      });
 
-      // Update configuration to set OriginControlAccessId property
-      return {
-        ...originBindConfig,
-        originProperty: {
-          ...originBindConfig.originProperty!,
-          originAccessControlId: this.originAccessControl.originAccessControlId,
+      new CustomResource(scope, 'S3OriginKMSKeyPolicyCustomResource', {
+        resourceType: S3_ORIGIN_ACCESS_CONTROL_RESOURCE_TYPE,
+        serviceToken: provider.serviceToken,
+        properties: {
+          DistributionId: distributionId,
+          KmsKeyId: this.bucket.encryptionKey.keyId,
+          AccountId: this.bucket.env.account,
+          Partition: Stack.of(scope).partition,
         },
-      };
+      });
+    }
+
+    const originBindConfig = super.bind(scope, options);
+
+    // Update configuration to set OriginControlAccessId property
+    return {
+      ...originBindConfig,
+      originProperty: {
+        ...originBindConfig.originProperty!,
+        originAccessControlId: this.originAccessControl.originAccessControlId,
+      },
+    };
+  }
+
+  // private giveOACPermissions() {
+  //   const resourceType = 'Custom::S3OriginOACPolicyConfiguration';
+  // }
+
+  public bind(scope: Construct, options: cloudfront.OriginBindOptions): cloudfront.OriginBindConfig {
+    if (this.originAccessControl || FeatureFlags.of(scope).isEnabled(cxapi.CLOUDFRONT_USE_ORIGIN_ACCESS_CONTROL)) {
+      return this.bindOAC(scope, options);
     } else if (!this.originAccessIdentity && !(FeatureFlags.of(scope).isEnabled(cxapi.CLOUDFRONT_USE_ORIGIN_ACCESS_CONTROL))) {
       // Using a bucket from another stack creates a cyclic reference with
       // the bucket taking a dependency on the generated S3CanonicalUserId for the grant principal,
@@ -161,7 +194,7 @@ class S3BucketOrigin extends cloudfront.OriginBase {
         actions: ['s3:GetObject'],
         principals: [this.originAccessIdentity.grantPrincipal],
       }));
-    } 
+    };
 
     return super.bind(scope, options);
   }
