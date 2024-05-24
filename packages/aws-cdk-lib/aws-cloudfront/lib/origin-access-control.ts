@@ -11,17 +11,10 @@ export interface IOriginAccessControl extends IResource {
    * @attribute
    */
   readonly originAccessControlId: string;
-
-  /**
-   * The name of the origin access control.
-   * @attribute
-   */
-  readonly originAccessControlName: string;
 }
 
 abstract class OriginAccessControlBase extends Resource implements IOriginAccessControl {
   public abstract readonly originAccessControlId: string;
-  public abstract readonly originAccessControlName: string;
 }
 
 /**
@@ -122,12 +115,10 @@ export class OriginAccessControl extends OriginAccessControlBase {
   public static fromOriginAccessControlId(scope: Construct, id: string, originAccessControlId: string): IOriginAccessControl {
     class Import extends OriginAccessControlBase {
       public readonly originAccessControlId = originAccessControlId;
-      public readonly originAccessControlName = originAccessControlId;
       constructor(s: Construct, i: string) {
         super(s, i);
 
         this.originAccessControlId = originAccessControlId;
-        this.originAccessControlName = originAccessControlId;
       }
     }
     return new Import(scope, id);
@@ -177,8 +168,6 @@ export class OriginAccessControl extends OriginAccessControlBase {
   }
 
   public readonly originAccessControlId: string;
-  public readonly originAccessControlName: string;
-
   constructor(scope: Construct, id: string, props: OriginAccessControlProps = {}) {
     super(scope, id);
 
@@ -193,7 +182,6 @@ export class OriginAccessControl extends OriginAccessControlBase {
     });
 
     this.originAccessControlId = resource.attrId;
-    this.originAccessControlName = resource.ref;
   }
 
   private generateName(): string {
