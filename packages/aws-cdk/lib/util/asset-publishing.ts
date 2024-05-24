@@ -1,6 +1,5 @@
 import * as cxapi from '@aws-cdk/cx-api';
-import * as AWS from 'aws-sdk';
-import * as cdk_assets from 'cdk-assets';
+import { Account, AssetManifest, AssetPublishing, ClientOptions, ECR, EventType, IAws, IPublishProgress, IPublishProgressListener, S3, SecretsManager } from 'cdk-assets';
 import { Mode } from '../api/aws-auth/credentials';
 import { ISDK } from '../api/aws-auth/sdk';
 import { SdkProvider } from '../api/aws-auth/sdk-provider';
@@ -31,7 +30,7 @@ export interface PublishAssetsOptions {
  * Use cdk-assets to publish all assets in the given manifest.
  */
 export async function publishAssets(
-  manifest: cdk_assets.AssetManifest,
+  manifest: AssetManifest,
   sdk: SdkProvider,
   targetEnv: cxapi.Environment,
   options: PublishAssetsOptions = {},
@@ -47,7 +46,7 @@ export async function publishAssets(
     throw new Error(`Asset publishing requires resolved account and region, got ${JSON.stringify(targetEnv)}`);
   }
 
-  const publisher = new cdk_assets.AssetPublishing(manifest, {
+  const publisher = new AssetPublishing(manifest, {
     aws: new PublishingAws(sdk, targetEnv),
     progressListener: new PublishingProgressListener(options.quiet ?? false),
     throwOnError: false,
@@ -80,7 +79,7 @@ export interface BuildAssetsOptions {
  * Use cdk-assets to build all assets in the given manifest.
  */
 export async function buildAssets(
-  manifest: cdk_assets.AssetManifest,
+  manifest: AssetManifest,
   sdk: SdkProvider,
   targetEnv: cxapi.Environment,
   options: BuildAssetsOptions = {},
@@ -96,7 +95,7 @@ export async function buildAssets(
     throw new Error(`Asset building requires resolved account and region, got ${JSON.stringify(targetEnv)}`);
   }
 
-  const publisher = new cdk_assets.AssetPublishing(manifest, {
+  const publisher = new AssetPublishing(manifest, {
     aws: new PublishingAws(sdk, targetEnv),
     progressListener: new PublishingProgressListener(options.quiet ?? false),
     throwOnError: false,
@@ -110,7 +109,7 @@ export async function buildAssets(
   }
 }
 
-export class PublishingAws implements cdk_assets.IAws {
+export class PublishingAws implements IAws {
   private sdkCache: Map<String, ISDK> = new Map();
 
   constructor(
@@ -133,7 +132,7 @@ export class PublishingAws implements cdk_assets.IAws {
     return this.targetEnv.region;
   }
 
-  public async discoverCurrentAccount(): Promise<cdk_assets.Account> {
+  public async discoverCurrentAccount(): Promise<Account> {
     const account = await this.aws.defaultAccount();
     return account ?? {
       accountId: '<unknown account>',
@@ -141,26 +140,26 @@ export class PublishingAws implements cdk_assets.IAws {
     };
   }
 
-  public async discoverTargetAccount(options: cdk_assets.ClientOptions): Promise<cdk_assets.Account> {
+  public async discoverTargetAccount(options: ClientOptions): Promise<Account> {
     return (await this.sdk(options)).currentAccount();
   }
 
-  public async s3Client(options: cdk_assets.ClientOptions): Promise<AWS.S3> {
+  public async s3Client(options: ClientOptions): Promise<S3> {
     return (await this.sdk(options)).s3();
   }
 
-  public async ecrClient(options: cdk_assets.ClientOptions): Promise<AWS.ECR> {
+  public async ecrClient(options: ClientOptions): Promise<ECR> {
     return (await this.sdk(options)).ecr();
   }
 
-  public async secretsManagerClient(options: cdk_assets.ClientOptions): Promise<AWS.SecretsManager> {
+  public async secretsManagerClient(options: ClientOptions): Promise<SecretsManager> {
     return (await this.sdk(options)).secretsManager();
   }
 
   /**
    * Get an SDK appropriate for the given client options
    */
-  private async sdk(options: cdk_assets.ClientOptions): Promise<ISDK> {
+  private async sdk(options: ClientOptions): Promise<ISDK> {
     const env = {
       ...this.targetEnv,
       region: options.region ?? this.targetEnv.region, // Default: same region as the stack
@@ -188,7 +187,7 @@ export class PublishingAws implements cdk_assets.IAws {
   }
 }
 
-export const EVENT_TO_LOGGER: Record<cdk_assets.EventType, (x: string) => void> = {
+export const EVENT_TO_LOGGER: Record<EventType, (x: string) => void> = {
   build: debug,
   cached: debug,
   check: debug,
@@ -200,11 +199,11 @@ export const EVENT_TO_LOGGER: Record<cdk_assets.EventType, (x: string) => void> 
   upload: debug,
 };
 
-class PublishingProgressListener implements cdk_assets.IPublishProgressListener {
+class PublishingProgressListener implements IPublishProgressListener {
   constructor(private readonly quiet: boolean) {
   }
 
-  public onPublishEvent(type: cdk_assets.EventType, event: cdk_assets.IPublishProgress): void {
+  public onPublishEvent(type: EventType, event: IPublishProgress): void {
     const handler = this.quiet && type !== 'fail' ? debug : EVENT_TO_LOGGER[type];
     handler(`[${event.percentComplete}%] ${type}: ${event.message}`);
   }

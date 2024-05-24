@@ -68,19 +68,19 @@ export async function isHotswappableAppSyncChange(
 
         // resolve s3 location files as SDK doesn't take in s3 location but inline code
         if (sdkRequestObject.requestMappingTemplateS3Location) {
-          sdkRequestObject.requestMappingTemplate = (await fetchFileFromS3(sdkRequestObject.requestMappingTemplateS3Location, sdk))?.toString('utf8');
+          sdkRequestObject.requestMappingTemplate = await fetchFileFromS3(sdkRequestObject.requestMappingTemplateS3Location, sdk);
           delete sdkRequestObject.requestMappingTemplateS3Location;
         }
         if (sdkRequestObject.responseMappingTemplateS3Location) {
-          sdkRequestObject.responseMappingTemplate = (await fetchFileFromS3(sdkRequestObject.responseMappingTemplateS3Location, sdk))?.toString('utf8');
+          sdkRequestObject.responseMappingTemplate = await fetchFileFromS3(sdkRequestObject.responseMappingTemplateS3Location, sdk);
           delete sdkRequestObject.responseMappingTemplateS3Location;
         }
         if (sdkRequestObject.definitionS3Location) {
-          sdkRequestObject.definition = (await fetchFileFromS3(sdkRequestObject.definitionS3Location, sdk))?.toString('utf8');
+          sdkRequestObject.definition = await fetchFileFromS3(sdkRequestObject.definitionS3Location, sdk);
           delete sdkRequestObject.definitionS3Location;
         }
         if (sdkRequestObject.codeS3Location) {
-          sdkRequestObject.code = (await fetchFileFromS3(sdkRequestObject.codeS3Location, sdk))?.toString('utf8');
+          sdkRequestObject.code = await fetchFileFromS3(sdkRequestObject.codeS3Location, sdk);
           delete sdkRequestObject.codeS3Location;
         }
 
@@ -136,7 +136,7 @@ async function fetchFileFromS3(s3Url: string, sdk: ISDK) {
   const s3PathParts = s3Url.split('/');
   const s3Bucket = s3PathParts[2]; // first two are "s3:" and "" due to s3://
   const s3Key = s3PathParts.splice(3).join('/'); // after removing first three we reconstruct the key
-  return (await sdk.s3().getObject({ Bucket: s3Bucket, Key: s3Key }).promise()).Body;
+  return (await sdk.s3().getObject({ Bucket: s3Bucket, Key: s3Key })).Body?.transformToString('utf-8');
 }
 
 async function simpleRetry(fn: () => Promise<any>, numOfRetries: number, errorCodeToRetry: string) {

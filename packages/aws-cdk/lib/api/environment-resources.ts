@@ -147,7 +147,7 @@ export class EnvironmentResources {
     // check if repo already exists
     try {
       debug(`${repositoryName}: checking if ECR repository already exists`);
-      const describeResponse = await ecr.describeRepositories({ repositoryNames: [repositoryName] }).promise();
+      const describeResponse = await ecr.describeRepositories({ repositoryNames: [repositoryName] });
       const existingRepositoryUri = describeResponse.repositories![0]?.repositoryUri;
       if (existingRepositoryUri) {
         return { repositoryUri: existingRepositoryUri };
@@ -159,7 +159,7 @@ export class EnvironmentResources {
     // create the repo (tag it so it will be easier to garbage collect in the future)
     debug(`${repositoryName}: creating ECR repository`);
     const assetTag = { Key: 'awscdk:asset', Value: 'true' };
-    const response = await ecr.createRepository({ repositoryName, tags: [assetTag] }).promise();
+    const response = await ecr.createRepository({ repositoryName, tags: [assetTag] });
     const repositoryUri = response.repository?.repositoryUri;
     if (!repositoryUri) {
       throw new Error(`CreateRepository did not return a repository URI for ${repositoryUri}`);
@@ -167,7 +167,7 @@ export class EnvironmentResources {
 
     // configure image scanning on push (helps in identifying software vulnerabilities, no additional charge)
     debug(`${repositoryName}: enable image scanning`);
-    await ecr.putImageScanningConfiguration({ repositoryName, imageScanningConfiguration: { scanOnPush: true } }).promise();
+    await ecr.putImageScanningConfiguration({ repositoryName, imageScanningConfiguration: { scanOnPush: true } });
 
     return { repositoryUri };
   }

@@ -1,6 +1,5 @@
 import * as cxapi from '@aws-cdk/cx-api';
-import * as cdk_assets from 'cdk-assets';
-import { AssetManifest, IManifestEntry } from 'cdk-assets';
+import { AssetManifest, AssetPublishing, EventType, IManifestEntry, IPublishProgress, IPublishProgressListener } from 'cdk-assets';
 import { Mode } from './aws-auth/credentials';
 import { ISDK } from './aws-auth/sdk';
 import { CredentialsOptions, SdkForEnvironment, SdkProvider } from './aws-auth/sdk-provider';
@@ -310,7 +309,7 @@ export interface PreparedSdkForEnvironment {
 export class Deployments {
   private readonly sdkProvider: SdkProvider;
   private readonly sdkCache = new Map<string, SdkForEnvironment>();
-  private readonly publisherCache = new Map<AssetManifest, cdk_assets.AssetPublishing>();
+  private readonly publisherCache = new Map<AssetManifest, AssetPublishing>();
   private readonly environmentResources: EnvironmentResourcesRegistry;
 
   constructor(private readonly props: DeploymentsProps) {
@@ -687,13 +686,13 @@ export class Deployments {
     return ret;
   }
 
-  private cachedPublisher(assetManifest: cdk_assets.AssetManifest, env: cxapi.Environment, stackName?: string) {
+  private cachedPublisher(assetManifest: AssetManifest, env: cxapi.Environment, stackName?: string) {
     const existing = this.publisherCache.get(assetManifest);
     if (existing) {
       return existing;
     }
     const prefix = stackName ? `${stackName}: ` : '';
-    const publisher = new cdk_assets.AssetPublishing(assetManifest, {
+    const publisher = new AssetPublishing(assetManifest, {
       aws: new PublishingAws(this.sdkProvider, env),
       progressListener: new ParallelSafeAssetProgress(prefix, this.props.quiet ?? false),
     });
@@ -705,11 +704,11 @@ export class Deployments {
 /**
  * Asset progress that doesn't do anything with percentages (currently)
  */
-class ParallelSafeAssetProgress implements cdk_assets.IPublishProgressListener {
+class ParallelSafeAssetProgress implements IPublishProgressListener {
   constructor(private readonly prefix: string, private readonly quiet: boolean) {
   }
 
-  public onPublishEvent(type: cdk_assets.EventType, event: cdk_assets.IPublishProgress): void {
+  public onPublishEvent(type: EventType, event: IPublishProgress): void {
     const handler = this.quiet && type !== 'fail' ? debug : EVENT_TO_LOGGER[type];
     handler(`${this.prefix} ${type}: ${event.message}`);
   }

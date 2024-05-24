@@ -1,5 +1,6 @@
 import * as AWS from 'aws-sdk';
 import type { ConfigurationOptions } from 'aws-sdk/lib/config-base';
+import { ECR, S3, SecretsManager } from 'cdk-assets';
 import { debug, trace } from './_env';
 import { AccountAccessKeyCache } from './account-cache';
 import { cached } from './cached';
@@ -56,12 +57,12 @@ export interface ISDK {
   ec2(): AWS.EC2;
   iam(): AWS.IAM;
   ssm(): AWS.SSM;
-  s3(): AWS.S3;
+  s3(): S3;
   route53(): AWS.Route53;
-  ecr(): AWS.ECR;
+  ecr(): ECR;
   ecs(): AWS.ECS;
   elbv2(): AWS.ELBv2;
-  secretsManager(): AWS.SecretsManager;
+  secretsManager(): SecretsManager;
   kms(): AWS.KMS;
   stepFunctions(): AWS.StepFunctions;
   codeBuild(): AWS.CodeBuild;
@@ -173,16 +174,16 @@ export class SDK implements ISDK {
     return this.wrapServiceErrorHandling(new AWS.SSM(this.config));
   }
 
-  public s3(): AWS.S3 {
-    return this.wrapServiceErrorHandling(new AWS.S3(this.config));
+  public s3(): S3 {
+    return this.wrapServiceErrorHandling(new AWS.S3(this.config)) as unknown as S3;
   }
 
   public route53(): AWS.Route53 {
     return this.wrapServiceErrorHandling(new AWS.Route53(this.config));
   }
 
-  public ecr(): AWS.ECR {
-    return this.wrapServiceErrorHandling(new AWS.ECR(this.config));
+  public ecr(): ECR {
+    return this.wrapServiceErrorHandling(new AWS.ECR(this.config)) as unknown as ECR;
   }
 
   public ecs(): AWS.ECS {
@@ -193,8 +194,8 @@ export class SDK implements ISDK {
     return this.wrapServiceErrorHandling(new AWS.ELBv2(this.config));
   }
 
-  public secretsManager(): AWS.SecretsManager {
-    return this.wrapServiceErrorHandling(new AWS.SecretsManager(this.config));
+  public secretsManager(): SecretsManager {
+    return this.wrapServiceErrorHandling(new AWS.SecretsManager(this.config)) as unknown as SecretsManager;
   }
 
   public kms(): AWS.KMS {
