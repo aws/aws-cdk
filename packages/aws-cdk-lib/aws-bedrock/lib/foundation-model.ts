@@ -80,7 +80,7 @@ export class FoundationModelIdentifier {
   /** Base model "anthropic.claude-v2". */
   public static readonly ANTHROPIC_CLAUDE_V2 = new FoundationModelIdentifier('anthropic.claude-v2');
 
-  /** Base model "anthropiClaude Instant.claude-v2:0:18k". */
+  /** Base model "anthropic.claude-v2:0:18k". */
   public static readonly ANTHROPIC_CLAUDE_V2_0_18K = new FoundationModelIdentifier('anthropic.claude-v2:0:18k');
 
   /** Base model "anthropic.claude-v2:0:100k". */
