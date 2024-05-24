@@ -1,7 +1,7 @@
 import { Manifest } from '@aws-cdk/cloud-assembly-schema';
-import * as mockfs from 'mock-fs';
 import { FakeListener } from './fake-listener';
-import { mockAws, mockedApiResult, mockUpload } from './mock-aws';
+import { mockAws, mockedApiResult, mockS3Upload } from './mock-aws';
+import * as mockfs from './mock-fs';
 import { AssetManifest, AssetPublishing } from '../lib';
 
 let aws: ReturnType<typeof mockAws>;
@@ -39,7 +39,7 @@ beforeEach(() => {
   // Accept all S3 uploads as new
   aws.mockS3.getBucketLocation = mockedApiResult({});
   aws.mockS3.listObjectsV2 = mockedApiResult({ Contents: undefined });
-  aws.mockS3.upload = mockUpload();
+  aws.mockS3.upload = mockS3Upload();
 });
 
 afterEach(() => {
@@ -49,7 +49,7 @@ afterEach(() => {
 test('test listener', async () => {
   const progressListener = new FakeListener();
 
-  const pub = new AssetPublishing(AssetManifest.fromPath('/simple/cdk.out'), { aws, progressListener });
+  const pub = new AssetPublishing(AssetManifest.fromPath(mockfs.path('/simple/cdk.out')), { aws, progressListener });
   await pub.publish();
 
   const allMessages = progressListener.messages.join('\n');
@@ -62,7 +62,7 @@ test('test listener', async () => {
 test('test publishing in parallel', async () => {
   const progressListener = new FakeListener();
 
-  const pub = new AssetPublishing(AssetManifest.fromPath('/simple/cdk.out'), { aws, progressListener, publishInParallel: true });
+  const pub = new AssetPublishing(AssetManifest.fromPath(mockfs.path('/simple/cdk.out')), { aws, progressListener, publishInParallel: true });
   await pub.publish();
 
   const allMessages = progressListener.messages.join('\n');
@@ -75,7 +75,7 @@ test('test publishing in parallel', async () => {
 test('test abort', async () => {
   const progressListener = new FakeListener(true);
 
-  const pub = new AssetPublishing(AssetManifest.fromPath('/simple/cdk.out'), { aws, progressListener });
+  const pub = new AssetPublishing(AssetManifest.fromPath(mockfs.path('/simple/cdk.out')), { aws, progressListener });
   await pub.publish();
 
   const allMessages = progressListener.messages.join('\n');

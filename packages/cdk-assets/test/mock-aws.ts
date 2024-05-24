@@ -1,14 +1,21 @@
-jest.mock('aws-sdk');
-import * as AWS from 'aws-sdk';
+jest.mock('@aws-sdk/client-ecr');
+jest.mock('@aws-sdk/client-s3');
+jest.mock('@aws-sdk/client-secrets-manager');
+
+import { ECR as ecr } from '@aws-sdk/client-ecr';
+import { S3 as s3 } from '@aws-sdk/client-s3';
+import { SecretsManager as SM } from '@aws-sdk/client-secrets-manager';
+import { ECR, S3, SecretsManager } from '../lib/aws';
 
 export function mockAws() {
-  const mockEcr = new AWS.ECR();
-  const mockS3 = new AWS.S3();
-  const mockSecretsManager = new AWS.SecretsManager();
+  const mockEcr = new ecr() as ECR;
+  const mockS3 = new s3() as S3;
+  const mockSecretsManager = new SM() as SecretsManager;
 
   // Sane defaults which can be overridden
   mockS3.getBucketLocation = mockedApiResult({});
   mockS3.getBucketEncryption = mockedApiResult({});
+  mockS3.upload = mockS3Upload();
   mockEcr.describeRepositories = mockedApiResult({
     repositories: [
       {
@@ -39,36 +46,34 @@ export function errorWithCode(code: string, message: string) {
 }
 
 export function mockedApiResult(returnValue: any) {
-  return jest.fn().mockReturnValue({
-    promise: jest.fn().mockResolvedValue(returnValue),
-  });
+  return jest.fn().mockResolvedValue(returnValue);
 }
 
 export function mockedApiFailure(code: string, message: string) {
-  return jest.fn().mockReturnValue({
-    promise: jest.fn().mockRejectedValue(errorWithCode(code, message)),
-  });
+  return jest.fn().mockRejectedValue(errorWithCode(code, message));
 }
 
 /**
  * Mock upload, draining the stream that we get before returning
- * so no race conditions happen with the uninstallation of mock-fs.
+ * so no race conditions happen with the restore() function in mock-fs.
  */
-export function mockUpload(expectContent?: string) {
-  return jest.fn().mockImplementation(request => ({
-    promise: () => new Promise<void>((ok, ko) => {
-      const didRead = new Array<string>();
+export function mockS3Upload(expectedContent?: string) {
+  return jest.fn().mockImplementation(request => {
+    return new Promise<void>((resolve, reject) => {
+      const completedReading = new Array<string>();
 
-      const bodyStream: NodeJS.ReadableStream = request.Body;
-      bodyStream.on('data', (chunk) => { didRead.push(chunk.toString()); }); // This listener must exist
-      bodyStream.on('error', ko);
-      bodyStream.on('close', () => {
-        const actualContent = didRead.join('');
-        if (expectContent !== undefined && expectContent !== actualContent) {
-          throw new Error(`Expected to read '${expectContent}' but read: '${actualContent}'`);
-        }
-        ok();
+      const stream: NodeJS.ReadableStream = request.Body;
+      stream.on('data', (chonk) => {
+        completedReading.push(chonk.toString());
       });
-    }),
-  }));
+      stream.on('error', reject);
+      stream.on('close', () => {
+        const receivedContent = completedReading.join('');
+        if (expectedContent !== undefined && expectedContent !== receivedContent) {
+          throw new Error(`Expected to read '${expectedContent}' but read: '${receivedContent}'`);
+        }
+        resolve();
+      });
+    });
+  });
 }

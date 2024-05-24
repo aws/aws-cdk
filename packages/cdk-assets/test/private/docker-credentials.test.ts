@@ -1,8 +1,8 @@
 import * as os from 'os';
 import * as path from 'path';
-import * as mockfs from 'mock-fs';
 import { cdkCredentialsConfig, cdkCredentialsConfigFile, DockerCredentialsConfig, fetchDockerLoginCredentials } from '../../lib/private/docker-credentials';
 import { mockAws, mockedApiFailure, mockedApiResult } from '../mock-aws';
+import * as mockfs from '../mock-fs';
 
 const _ENV = process.env;
 
@@ -36,7 +36,7 @@ describe('cdkCredentialsConfigFile', () => {
 
 describe('cdkCredentialsConfig', () => {
   const credsFile = '/tmp/foo/bar/does/not/exist/config.json';
-  beforeEach(() => { process.env.CDK_DOCKER_CREDS_FILE = credsFile; });
+  beforeEach(() => { process.env.CDK_DOCKER_CREDS_FILE = mockfs.path(credsFile); });
 
   test('returns undefined if no config exists', () => {
     expect(cdkCredentialsConfig()).toBeUndefined();

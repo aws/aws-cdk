@@ -2,14 +2,14 @@ jest.mock('child_process');
 
 import * as fs from 'fs';
 import { Manifest } from '@aws-cdk/cloud-assembly-schema';
-import * as mockfs from 'mock-fs';
 import { mockAws, mockedApiFailure, mockedApiResult } from './mock-aws';
 import { mockSpawn } from './mock-child_process';
+import * as mockfs from './mock-fs';
 import { AssetManifest, AssetPublishing } from '../lib';
 import * as dockercreds from '../lib/private/docker-credentials';
 
 let aws: ReturnType<typeof mockAws>;
-const absoluteDockerPath = '/simple/cdk.out/dockerdir';
+const absoluteDockerPath = mockfs.path('/simple/cdk.out/dockerdir');
 beforeEach(() => {
   jest.resetAllMocks();
   delete(process.env.CDK_DOCKER);
@@ -235,7 +235,7 @@ afterEach(() => {
 });
 
 test('pass destination properties to AWS client', async () => {
-  const pub = new AssetPublishing(AssetManifest.fromPath('/simple/cdk.out'), { aws, throwOnError: false });
+  const pub = new AssetPublishing(AssetManifest.fromPath(mockfs.path('/simple/cdk.out')), { aws, throwOnError: false });
 
   await pub.publish();
 
@@ -248,7 +248,7 @@ test('pass destination properties to AWS client', async () => {
 describe('with a complete manifest', () => {
   let pub: AssetPublishing;
   beforeEach(() => {
-    pub = new AssetPublishing(AssetManifest.fromPath('/simple/cdk.out'), { aws });
+    pub = new AssetPublishing(AssetManifest.fromPath(mockfs.path('/simple/cdk.out')), { aws });
   });
 
   test('Do nothing if docker image already exists', async () => {
@@ -318,7 +318,7 @@ describe('with a complete manifest', () => {
   });
 
   test('build with networkMode option', async () => {
-    pub = new AssetPublishing(AssetManifest.fromPath('/default-network/cdk.out'), { aws });
+    pub = new AssetPublishing(AssetManifest.fromPath(mockfs.path('/default-network/cdk.out')), { aws });
     const defaultNetworkDockerpath = '/default-network/cdk.out/dockerdir';
     aws.mockEcr.describeImages = mockedApiFailure('ImageNotFoundException', 'File does not exist');
     aws.mockEcr.getAuthorizationToken = mockedApiResult({
@@ -342,7 +342,7 @@ describe('with a complete manifest', () => {
   });
 
   test('build with platform option', async () => {
-    pub = new AssetPublishing(AssetManifest.fromPath('/platform-arm64/cdk.out'), { aws });
+    pub = new AssetPublishing(AssetManifest.fromPath(mockfs.path('/platform-arm64/cdk.out')), { aws });
     const defaultNetworkDockerpath = '/platform-arm64/cdk.out/dockerdir';
     aws.mockEcr.describeImages = mockedApiFailure('ImageNotFoundException', 'File does not exist');
     aws.mockEcr.getAuthorizationToken = mockedApiResult({
@@ -366,7 +366,7 @@ describe('with a complete manifest', () => {
   });
 
   test('build with cache option', async () => {
-    pub = new AssetPublishing(AssetManifest.fromPath('/cache/cdk.out'), { aws });
+    pub = new AssetPublishing(AssetManifest.fromPath(mockfs.path('/cache/cdk.out')), { aws });
     const defaultNetworkDockerpath = '/cache/cdk.out/dockerdir';
     aws.mockEcr.describeImages = mockedApiFailure('ImageNotFoundException', 'File does not exist');
     aws.mockEcr.getAuthorizationToken = mockedApiResult({
@@ -390,7 +390,7 @@ describe('with a complete manifest', () => {
   });
 
   test('build with cache disabled', async () => {
-    pub = new AssetPublishing(AssetManifest.fromPath('/nocache/cdk.out'), { aws });
+    pub = new AssetPublishing(AssetManifest.fromPath(mockfs.path('/nocache/cdk.out')), { aws });
     const defaultNetworkDockerpath = '/nocache/cdk.out/dockerdir';
     aws.mockEcr.describeImages = mockedApiFailure('ImageNotFoundException', 'File does not exist');
     aws.mockEcr.getAuthorizationToken = mockedApiResult({
@@ -414,7 +414,7 @@ describe('with a complete manifest', () => {
   });
 
   test('build with multiple cache from option', async () => {
-    pub = new AssetPublishing(AssetManifest.fromPath('/cache-from-multiple/cdk.out'), { aws });
+    pub = new AssetPublishing(AssetManifest.fromPath(mockfs.path('/cache-from-multiple/cdk.out')), { aws });
     const defaultNetworkDockerpath = '/cache-from-multiple/cdk.out/dockerdir';
     aws.mockEcr.describeImages = mockedApiFailure('ImageNotFoundException', 'File does not exist');
     aws.mockEcr.getAuthorizationToken = mockedApiResult({
@@ -443,7 +443,7 @@ describe('with a complete manifest', () => {
   });
 
   test('build with cache to complex option', async () => {
-    pub = new AssetPublishing(AssetManifest.fromPath('/cache-to-complex/cdk.out'), { aws });
+    pub = new AssetPublishing(AssetManifest.fromPath(mockfs.path('/cache-to-complex/cdk.out')), { aws });
     const defaultNetworkDockerpath = '/cache-to-complex/cdk.out/dockerdir';
     aws.mockEcr.describeImages = mockedApiFailure('ImageNotFoundException', 'File does not exist');
     aws.mockEcr.getAuthorizationToken = mockedApiResult({
@@ -471,7 +471,7 @@ describe('external assets', () => {
   let pub: AssetPublishing;
   const externalTag = 'external:tag';
   beforeEach(() => {
-    pub = new AssetPublishing(AssetManifest.fromPath('/external/cdk.out'), { aws });
+    pub = new AssetPublishing(AssetManifest.fromPath(mockfs.path('/external/cdk.out')), { aws });
   });
 
   test('upload externally generated Docker image', async () => {
@@ -500,7 +500,7 @@ describe('external assets', () => {
 });
 
 test('correctly identify Docker directory if path is absolute', async () => {
-  const pub = new AssetPublishing(AssetManifest.fromPath('/abs/cdk.out'), { aws });
+  const pub = new AssetPublishing(AssetManifest.fromPath(mockfs.path('/abs/cdk.out')), { aws });
 
   aws.mockEcr.describeImages = mockedApiFailure('ImageNotFoundException', 'File does not exist');
   aws.mockEcr.getAuthorizationToken = mockedApiResult({
@@ -530,7 +530,7 @@ test('when external credentials are present, explicit Docker config directories 
   jest.spyOn(fs, 'mkdtempSync').mockImplementationOnce(() => '/tmp/mockedTempDir');
   jest.spyOn(fs, 'writeFileSync').mockImplementation(jest.fn());
 
-  let pub = new AssetPublishing(AssetManifest.fromPath('/simple/cdk.out'), { aws });
+  let pub = new AssetPublishing(AssetManifest.fromPath(mockfs.path('/simple/cdk.out')), { aws });
   aws.mockEcr.describeImages = mockedApiFailure('ImageNotFoundException', 'File does not exist');
   aws.mockEcr.getAuthorizationToken = mockedApiResult({
     authorizationData: [
@@ -554,7 +554,7 @@ test('when external credentials are present, explicit Docker config directories 
 });
 
 test('logging in only once for two assets', async () => {
-  const pub = new AssetPublishing(AssetManifest.fromPath('/multi/cdk.out'), { aws, throwOnError: false });
+  const pub = new AssetPublishing(AssetManifest.fromPath(mockfs.path('/multi/cdk.out')), { aws, throwOnError: false });
   aws.mockEcr.describeImages = mockedApiFailure('ImageNotFoundException', 'File does not exist');
   aws.mockEcr.getAuthorizationToken = mockedApiResult({
     authorizationData: [
@@ -581,27 +581,23 @@ test('logging in only once for two assets', async () => {
 });
 
 test('logging in twice for two repository domains (containing account id & region)', async () => {
-  const pub = new AssetPublishing(AssetManifest.fromPath('/multi/cdk.out'), { aws, throwOnError: false });
+  const pub = new AssetPublishing(AssetManifest.fromPath(mockfs.path('/multi/cdk.out')), { aws, throwOnError: false });
   aws.mockEcr.describeImages = mockedApiFailure('ImageNotFoundException', 'File does not exist');
 
   let repoIdx = 12345;
-  aws.mockEcr.describeRepositories = jest.fn().mockReturnValue({
-    promise: jest.fn().mockImplementation(() => Promise.resolve({
-      repositories: [
-        // Usually looks like: 012345678910.dkr.ecr.us-west-2.amazonaws.com/aws-cdk/assets
-        { repositoryUri: `${repoIdx++}.amazonaws.com/aws-cdk/assets` },
-      ],
-    })),
-  });
+  aws.mockEcr.describeRepositories = jest.fn().mockImplementation(() => Promise.resolve({
+    repositories: [
+      // Usually looks like: 012345678910.dkr.ecr.us-west-2.amazonaws.com/aws-cdk/assets
+      { repositoryUri: `${repoIdx++}.amazonaws.com/aws-cdk/assets` },
+    ],
+  }));
 
   let proxyIdx = 12345;
-  aws.mockEcr.getAuthorizationToken = jest.fn().mockReturnValue({
-    promise: jest.fn().mockImplementation(() => Promise.resolve({
-      authorizationData: [
-        { authorizationToken: 'dXNlcjpwYXNz', proxyEndpoint: `https://${proxyIdx++}.proxy.com/` },
-      ],
-    })),
-  });
+  aws.mockEcr.getAuthorizationToken = jest.fn().mockImplementation(() => Promise.resolve({
+    authorizationData: [
+      { authorizationToken: 'dXNlcjpwYXNz', proxyEndpoint: `https://${proxyIdx++}.proxy.com/` },
+    ],
+  }));
 
   const expectAllSpawns = mockSpawn(
     { commandLine: ['docker', 'login', '--username', 'user', '--password-stdin', 'https://12345.proxy.com/'] },
@@ -623,7 +619,7 @@ test('logging in twice for two repository domains (containing account id & regio
 });
 
 test('building only', async () => {
-  const pub = new AssetPublishing(AssetManifest.fromPath('/multi/cdk.out'), {
+  const pub = new AssetPublishing(AssetManifest.fromPath(mockfs.path('/multi/cdk.out')), {
     aws,
     throwOnError: false,
     buildAssets: true,
@@ -654,7 +650,7 @@ test('building only', async () => {
 });
 
 test('publishing only', async () => {
-  const pub = new AssetPublishing(AssetManifest.fromPath('/multi/cdk.out'), {
+  const pub = new AssetPublishing(AssetManifest.fromPath(mockfs.path('/multi/cdk.out')), {
     aws,
     throwOnError: false,
     buildAssets: false,
@@ -683,7 +679,7 @@ test('publishing only', async () => {
 test('overriding the docker command', async () => {
   process.env.CDK_DOCKER = 'custom';
 
-  const pub = new AssetPublishing(AssetManifest.fromPath('/simple/cdk.out'), { aws, throwOnError: false });
+  const pub = new AssetPublishing(AssetManifest.fromPath(mockfs.path('/simple/cdk.out')), { aws, throwOnError: false });
 
   aws.mockEcr.describeImages = mockedApiFailure('ImageNotFoundException', 'File does not exist');
   aws.mockEcr.getAuthorizationToken = mockedApiResult({

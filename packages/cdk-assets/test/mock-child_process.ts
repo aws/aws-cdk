@@ -30,8 +30,9 @@ export function mockSpawn(...invocations: Invocation[]): () => void {
         expect([binary, ...args]).toEqual(invocation.commandLine);
       }
 
+      // Prune the temp directory off here
       if (invocation.cwd != null) {
-        expect(options.cwd).toBe(invocation.cwd);
+        expect(invocation.cwd).toEqual((options.cwd as string).slice(-invocation.cwd.length));
       }
 
       const child: any = new events.EventEmitter();

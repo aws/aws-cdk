@@ -1,6 +1,6 @@
 import { Manifest } from '@aws-cdk/cloud-assembly-schema';
-import * as mockfs from 'mock-fs';
 import { mockAws, mockedApiResult } from './mock-aws';
+import * as mockfs from './mock-fs';
 import { AssetManifest, AssetPublishing } from '../lib';
 
 let aws: ReturnType<typeof mockAws>;
@@ -53,7 +53,7 @@ afterEach(() => {
 });
 
 test('check that placeholders are replaced', async () => {
-  const pub = new AssetPublishing(AssetManifest.fromPath('/simple/cdk.out'), { aws });
+  const pub = new AssetPublishing(AssetManifest.fromPath(mockfs.path('/simple/cdk.out')), { aws });
   aws.mockS3.getBucketLocation = mockedApiResult({});
   aws.mockS3.listObjectsV2 = mockedApiResult({ Contents: [{ Key: 'some_key-current_account-current_region' }] });
   aws.mockEcr.describeImages = mockedApiResult({ /* No error == image exists */ });
