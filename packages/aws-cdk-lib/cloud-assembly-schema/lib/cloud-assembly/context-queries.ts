@@ -449,6 +449,13 @@ export interface SecurityGroupContextQuery {
    * @default - None
    */
   readonly vpcId?: string;
+
+  /**
+   * Owner
+   * 
+   * @default - None
+   */
+  readonly owner?: string;
 }
 
 /**

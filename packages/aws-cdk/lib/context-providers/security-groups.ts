@@ -37,6 +37,12 @@ export class SecurityGroupContextProviderPlugin implements ContextProviderPlugin
         Values: [args.securityGroupName],
       });
     }
+    if (args.owner) {
+      filters.push({
+        Name: 'owner-id',
+        Values: [args.owner],
+      })
+    }
 
     const response = await ec2.describeSecurityGroups({
       GroupIds: args.securityGroupId ? [args.securityGroupId] : undefined,
@@ -47,7 +53,7 @@ export class SecurityGroupContextProviderPlugin implements ContextProviderPlugin
     if (securityGroups.length === 0) {
       throw new Error(`No security groups found matching ${JSON.stringify(args)}`);
     }
-
+``
     if (securityGroups.length > 1) {
       throw new Error(`More than one security groups found matching ${JSON.stringify(args)}`);
     }

@@ -383,8 +383,8 @@ export class SecurityGroup extends SecurityGroupBase {
   /**
    * Look up a security group by name.
    */
-  public static fromLookupByName(scope: Construct, id: string, securityGroupName: string, vpc: IVpc) {
-    return this.fromLookupAttributes(scope, id, { securityGroupName, vpc });
+  public static fromLookupByName(scope: Construct, id: string, securityGroupName: string, vpc: IVpc, owner?: string) {
+    return this.fromLookupAttributes(scope, id, { securityGroupName, vpc, owner });
   }
 
   /**
@@ -444,6 +444,7 @@ export class SecurityGroup extends SecurityGroupBase {
         securityGroupId: options.securityGroupId,
         securityGroupName: options.securityGroupName,
         vpcId: options.vpc?.vpcId,
+        owner: options.owner,
       },
       dummyValue: {
         securityGroupId: 'sg-12345678',
@@ -799,7 +800,7 @@ function egressRulesEqual(a: CfnSecurityGroup.EgressProperty, b: CfnSecurityGrou
     && a.cidrIpv6 === b.cidrIpv6
     && a.fromPort === b.fromPort
     && a.toPort === b.toPort
-    && a.ipProtocol === b.ipProtocol
+    && a.ipProtocol === b.ipProtocol``
     && a.destinationPrefixListId === b.destinationPrefixListId
     && a.destinationSecurityGroupId === b.destinationSecurityGroupId;
 }
@@ -843,4 +844,13 @@ interface SecurityGroupLookupOptions {
    * @default Don't filter on VPC
    */
   readonly vpc?: IVpc;
+
+  /**
+   * The Owner of the security group
+   * 
+   * If given, will filter the SecurityGroup based on the Owner.
+   * 
+   * @default Don't filter on Owner
+   */
+  readonly owner?: string;
 }

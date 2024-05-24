@@ -870,6 +870,10 @@
                 "vpcId": {
                     "description": "VPC ID (Default - None)",
                     "type": "string"
+                },
+                "owner": {
+                    "description": "Owner (Default - None)",
+                    "type": "string"
                 }
             },
             "required": [
