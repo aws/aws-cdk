@@ -2,7 +2,7 @@ import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
 import { Logger } from './shell';
-import { IAws } from '../aws';
+import { ECR, IAws } from '../aws';
 
 export interface DockerCredentials {
   readonly Username: string;
@@ -53,7 +53,7 @@ export async function fetchDockerLoginCredentials(aws: IAws, config: DockerCrede
 
   if (domainConfig.secretsManagerSecretId) {
     const sm = await aws.secretsManagerClient({ assumeRoleArn: domainConfig.assumeRoleArn });
-    const secretValue = await sm.getSecretValue({ SecretId: domainConfig.secretsManagerSecretId }).promise();
+    const secretValue = await sm.getSecretValue({ SecretId: domainConfig.secretsManagerSecretId });
     if (!secretValue.SecretString) { throw new Error(`unable to fetch SecretString from secret: ${domainConfig.secretsManagerSecretId}`); };
 
     const secret = JSON.parse(secretValue.SecretString);
@@ -75,9 +75,9 @@ export async function fetchDockerLoginCredentials(aws: IAws, config: DockerCrede
   }
 }
 
-export async function obtainEcrCredentials(ecr: AWS.ECR, logger?: Logger) {
+export async function obtainEcrCredentials(ecr: ECR, logger?: Logger) {
   if (logger) { logger('Fetching ECR authorization token'); }
-  const authData = (await ecr.getAuthorizationToken({ }).promise()).authorizationData || [];
+  const authData = (await ecr.getAuthorizationToken({ })).authorizationData || [];
   if (authData.length === 0) {
     throw new Error('No authorization data received from ECR');
   }

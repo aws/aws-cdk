@@ -3,6 +3,7 @@ import * as path from 'path';
 import { FileAssetPackaging, FileSource } from '@aws-cdk/cloud-assembly-schema';
 import * as mime from 'mime';
 import { FileManifestEntry } from '../../asset-manifest';
+import { S3 } from '../../aws';
 import { EventType } from '../../progress';
 import { zipDirectory } from '../archive';
 import { IAssetHandler, IHandlerHost } from '../asset-handler';
@@ -113,7 +114,7 @@ export class FileAssetHandler implements IAssetHandler {
     },
     paramsEncryption);
 
-    await s3.upload(params).promise();
+    await s3.upload(params);
   }
 
   private async packageFile(source: FileSource): Promise<PackagedFileAsset> {
@@ -167,7 +168,7 @@ type BucketEncryption =
   | { readonly type: 'does_not_exist' }
   ;
 
-async function objectExists(s3: AWS.S3, bucket: string, key: string) {
+async function objectExists(s3: S3, bucket: string, key: string) {
   /*
    * The object existence check here refrains from using the `headObject` operation because this
    * would create a negative cache entry, making GET-after-PUT eventually consistent. This has been
@@ -184,7 +185,7 @@ async function objectExists(s3: AWS.S3, bucket: string, key: string) {
    * never retry building those assets without users having to manually clear
    * their bucket, which is a bad experience.
    */
-  const response = await s3.listObjectsV2({ Bucket: bucket, Prefix: key, MaxKeys: 1 }).promise();
+  const response = await s3.listObjectsV2({ Bucket: bucket, Prefix: key, MaxKeys: 1 });
   return (
     response.Contents != null &&
     response.Contents.some(
@@ -235,17 +236,17 @@ class BucketInformation {
   private constructor() {
   }
 
-  public async bucketOwnership(s3: AWS.S3, bucket: string): Promise<BucketOwnership> {
+  public async bucketOwnership(s3: S3, bucket: string): Promise<BucketOwnership> {
     return cached(this.ownerships, bucket, () => this._bucketOwnership(s3, bucket));
   }
 
-  public async bucketEncryption(s3: AWS.S3, bucket: string): Promise<BucketEncryption> {
+  public async bucketEncryption(s3: S3, bucket: string): Promise<BucketEncryption> {
     return cached(this.encryptions, bucket, () => this._bucketEncryption(s3, bucket));
   }
 
-  private async _bucketOwnership(s3: AWS.S3, bucket: string): Promise<BucketOwnership> {
+  private async _bucketOwnership(s3: S3, bucket: string): Promise<BucketOwnership> {
     try {
-      await s3.getBucketLocation({ Bucket: bucket }).promise();
+      await s3.getBucketLocation({ Bucket: bucket });
       return BucketOwnership.MINE;
     } catch (e: any) {
       if (e.code === 'NoSuchBucket') { return BucketOwnership.DOES_NOT_EXIST; }
@@ -254,12 +255,12 @@ class BucketInformation {
     }
   }
 
-  private async _bucketEncryption(s3: AWS.S3, bucket: string): Promise<BucketEncryption> {
+  private async _bucketEncryption(s3: S3, bucket: string): Promise<BucketEncryption> {
     try {
-      const encryption = await s3.getBucketEncryption({ Bucket: bucket }).promise();
+      const encryption = await s3.getBucketEncryption({ Bucket: bucket });
       const l = encryption?.ServerSideEncryptionConfiguration?.Rules?.length ?? 0;
       if (l > 0) {
-        const apply = encryption?.ServerSideEncryptionConfiguration?.Rules[0]?.ApplyServerSideEncryptionByDefault;
+        const apply = encryption?.ServerSideEncryptionConfiguration?.Rules![0]?.ApplyServerSideEncryptionByDefault;
         let ssealgo = apply?.SSEAlgorithm;
         if (ssealgo === 'AES256') return { type: 'aes256' };
         if (ssealgo === 'aws:kms') return { type: 'kms', kmsKeyId: apply?.KMSMasterKeyID };

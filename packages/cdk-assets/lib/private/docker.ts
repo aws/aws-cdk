@@ -4,6 +4,7 @@ import * as path from 'path';
 import { cdkCredentialsConfig, obtainEcrCredentials } from './docker-credentials';
 import { Logger, shell, ShellOptions, ProcessFailedError } from './shell';
 import { createCriticalSection } from './util';
+import { ECR } from '../aws';
 
 interface BuildOptions {
   readonly directory: string;
@@ -120,7 +121,7 @@ export class Docker {
   /**
    * Get credentials from ECR and run docker login
    */
-  public async login(ecr: AWS.ECR) {
+  public async login(ecr: ECR) {
     const credentials = await obtainEcrCredentials(ecr);
 
     // Use --password-stdin otherwise docker will complain. Loudly.
@@ -213,7 +214,7 @@ export class Docker {
 
 export interface DockerFactoryOptions {
   readonly repoUri: string;
-  readonly ecr: AWS.ECR;
+  readonly ecr: ECR;
   readonly logger: (m: string) => void;
 }
 

@@ -1,7 +1,7 @@
 import * as path from 'path';
 import { DockerImageDestination } from '@aws-cdk/cloud-assembly-schema';
-import type * as AWS from 'aws-sdk';
 import { DockerImageManifestEntry } from '../../asset-manifest';
+import { ECR } from '../../aws';
 import { EventType } from '../../progress';
 import { IAssetHandler, IHandlerHost, IHandlerOptions } from '../asset-handler';
 import { Docker } from '../docker';
@@ -9,7 +9,7 @@ import { replaceAwsPlaceholders } from '../placeholders';
 import { shell } from '../shell';
 
 interface ContainerImageAssetHandlerInit {
-  readonly ecr: AWS.ECR;
+  readonly ecr: ECR;
   readonly repoUri: string;
   readonly imageUri: string;
   readonly destinationAlreadyExists: boolean;
@@ -112,7 +112,7 @@ export class ContainerImageAssetHandler implements IAssetHandler {
    * should correspond to that, but is only used to print Docker image location
    * for user benefit (the format is slightly different).
    */
-  private async destinationAlreadyExists(ecr: AWS.ECR, destination: DockerImageDestination, imageUri: string): Promise<boolean> {
+  private async destinationAlreadyExists(ecr: ECR, destination: DockerImageDestination, imageUri: string): Promise<boolean> {
     this.host.emitMessage(EventType.CHECK, `Check ${imageUri}`);
     if (await imageExists(ecr, destination.repositoryName, destination.imageTag)) {
       this.host.emitMessage(EventType.FOUND, `Found ${imageUri}`);
@@ -212,9 +212,9 @@ class ContainerImageBuilder {
   }
 }
 
-async function imageExists(ecr: AWS.ECR, repositoryName: string, imageTag: string) {
+async function imageExists(ecr: ECR, repositoryName: string, imageTag: string) {
   try {
-    await ecr.describeImages({ repositoryName, imageIds: [{ imageTag }] }).promise();
+    await ecr.describeImages({ repositoryName, imageIds: [{ imageTag }] });
     return true;
   } catch (e: any) {
     if (e.code !== 'ImageNotFoundException') { throw e; }
@@ -227,9 +227,9 @@ async function imageExists(ecr: AWS.ECR, repositoryName: string, imageTag: strin
  *
  * Returns undefined if the repository does not exist.
  */
-async function repositoryUri(ecr: AWS.ECR, repositoryName: string): Promise<string | undefined> {
+async function repositoryUri(ecr: ECR, repositoryName: string): Promise<string | undefined> {
   try {
-    const response = await ecr.describeRepositories({ repositoryNames: [repositoryName] }).promise();
+    const response = await ecr.describeRepositories({ repositoryNames: [repositoryName] });
     return (response.repositories || [])[0]?.repositoryUri;
   } catch (e: any) {
     if (e.code !== 'RepositoryNotFoundException') { throw e; }
