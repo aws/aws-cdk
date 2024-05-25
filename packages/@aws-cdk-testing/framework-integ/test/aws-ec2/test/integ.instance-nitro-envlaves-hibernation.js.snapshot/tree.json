@@ -827,6 +827,12 @@
                         }
                       ]
                     },
+                    "enclaveOptions": {
+                      "enabled": true
+                    },
+                    "hibernationOptions": {
+                      "configured": false
+                    },
                     "iamInstanceProfile": {
                       "Ref": "InstanceNitroEnclavesEnabledInstanceProfile9E95679C"
                     },
@@ -979,6 +985,12 @@
                         }
                       }
                     ],
+                    "enclaveOptions": {
+                      "enabled": false
+                    },
+                    "hibernationOptions": {
+                      "configured": true
+                    },
                     "iamInstanceProfile": {
                       "Ref": "InstanceHibernationEnabledInstanceProfile2F0E93E0"
                     },
