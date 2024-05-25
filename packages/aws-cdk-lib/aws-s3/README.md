@@ -627,15 +627,14 @@ When `autoDeleteObjects` is enabled, `s3:PutBucketPolicy` is added to the bucket
 Pass a custom log group via the `autoDeleteObjectsLogGroup` option, which will be used by the custom resource lambda.
 
 ```ts
-import { LogGroup, RetentionDays } from 'aws-cdk-lib/aws-logs';
+import { ILogGroup } from 'aws-cdk-lib/aws-logs';
+
+declare const logGroup: ILogGroup;
 
 const bucket = new s3.Bucket(this, 'MyTempFileBucket', {
   removalPolicy: cdk.RemovalPolicy.DESTROY,
   autoDeleteObjects: true,
-  autoDeleteObjectsLogGroup: new LogGroup(this, 'LogGroup', {
-    logGroupName: 'MyLogGroup',
-    retention: RetentionDays.TWO_YEARS
-  })
+  autoDeleteObjectsLogGroup: logGroup
 });
 ```
 

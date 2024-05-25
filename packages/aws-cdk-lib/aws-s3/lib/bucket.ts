@@ -10,7 +10,7 @@ import { parseBucketArn, parseBucketName } from './util';
 import * as events from '../../aws-events';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
-import * as logs from '../../aws-logs/index';
+import * as logs from '../../aws-logs';
 import {
   CustomResource,
   Duration,
