@@ -3,6 +3,8 @@ import { App, CustomResource, CustomResourceProvider, RemovalPolicy, Stack, Stac
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { Construct } from 'constructs';
 import * as s3 from 'aws-cdk-lib/aws-s3';
+import * as logs from 'aws-cdk-lib/aws-logs';
+import { RetentionDays } from 'aws-cdk-lib/aws-logs';
 import { AwsCustomResource, AwsCustomResourcePolicy, PhysicalResourceId } from 'aws-cdk-lib/custom-resources';
 import { STANDARD_CUSTOM_RESOURCE_PROVIDER_RUNTIME } from '../../config';
 
@@ -38,6 +40,10 @@ class TestStack extends Stack {
     const bucketThatWillBeRemoved = new s3.Bucket(this, 'RemovedBucket', {
       removalPolicy: RemovalPolicy.DESTROY,
       autoDeleteObjects: true,
+      autoDeleteObjectsLogGroup: new logs.LogGroup(this, 'LogGroup', {
+        logGroupName: 'AutoDeleteObjectsLambdaLogs',
+        retention: RetentionDays.THREE_DAYS,
+      }),
     });
 
     // Remove this bucket immediately

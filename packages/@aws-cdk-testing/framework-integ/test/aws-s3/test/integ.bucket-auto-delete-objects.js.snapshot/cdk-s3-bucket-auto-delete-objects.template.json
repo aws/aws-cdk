@@ -232,6 +232,15 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
+  "LogGroupF5B46931": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "LogGroupName": "AutoDeleteObjectsLambdaLogs",
+    "RetentionInDays": 3
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
   "RemovedBucket4FCCEBAD": {
    "Type": "AWS::S3::Bucket",
    "Properties": {

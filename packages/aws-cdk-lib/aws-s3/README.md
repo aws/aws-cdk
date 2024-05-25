@@ -630,7 +630,7 @@ Pass a custom log group via the `autoDeleteObjectsLogGroup` option, which will b
 const bucket = new s3.Bucket(this, 'MyTempFileBucket', {
   removalPolicy: cdk.RemovalPolicy.DESTROY,
   autoDeleteObjects: true,
-  autoDeleteObjectsLogGroup: new LogGroup(stack, 'LogGroup', {
+  autoDeleteObjectsLogGroup: new logs.LogGroup(stack, 'LogGroup', {
     logGroupName: 'MyLogGroup',
     retention: RetentionDays.TWO_YEARS
   })

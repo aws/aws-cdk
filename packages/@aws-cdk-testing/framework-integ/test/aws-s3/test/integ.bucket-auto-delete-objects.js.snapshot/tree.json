@@ -211,6 +211,31 @@
               "version": "0.0.0"
             }
           },
+          "LogGroup": {
+            "id": "LogGroup",
+            "path": "cdk-s3-bucket-auto-delete-objects/LogGroup",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "cdk-s3-bucket-auto-delete-objects/LogGroup/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Logs::LogGroup",
+                  "aws:cdk:cloudformation:props": {
+                    "logGroupName": "AutoDeleteObjectsLambdaLogs",
+                    "retentionInDays": 3
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_logs.CfnLogGroup",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_logs.LogGroup",
+              "version": "0.0.0"
+            }
+          },
           "RemovedBucket": {
             "id": "RemovedBucket",
             "path": "cdk-s3-bucket-auto-delete-objects/RemovedBucket",
