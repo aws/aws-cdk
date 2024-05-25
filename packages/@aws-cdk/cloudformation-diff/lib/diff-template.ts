@@ -5,6 +5,7 @@ import * as impl from './diff';
 import { TemplateAndChangeSetDiffMerger } from './diff/template-and-changeset-diff-merger';
 import * as types from './diff/types';
 import { deepEqual, diffKeyedEntities, unionOf } from './diff/util';
+import { deepCopy } from './util';
 
 export * from './diff/types';
 
@@ -58,8 +59,8 @@ export function fullDiff(
 
   if (changeSet) {
     // These methods mutate the state of theDiff, using the changeSet.
-    addMissingPropertiesAndResourcesToDiff(changeSet, theDiff.resources, currentTemplate, newTemplate);
     const changeSetDiff = new TemplateAndChangeSetDiffMerger({ changeSet });
+    changeSetDiff.addMissingPropertiesAndResourcesToDiff(theDiff.resources, currentTemplate, newTemplate);
     theDiff.resources.forEachDifference((logicalId: string, change: types.ResourceDifference) =>
       changeSetDiff.overrideDiffResourceChangeImpactWithChangeSetChangeImpact(logicalId, change),
     );
@@ -198,22 +199,6 @@ function propagateReplacedReferences(template: object, logicalId: string): boole
   return ret;
 }
 
-function deepCopy(x: any): any {
-  if (Array.isArray(x)) {
-    return x.map(deepCopy);
-  }
-
-  if (typeof x === 'object' && x !== null) {
-    const ret: any = {};
-    for (const key of Object.keys(x)) {
-      ret[key] = deepCopy(x[key]);
-    }
-    return ret;
-  }
-
-  return x;
-}
-
 function makeAllResourceChangesImports(diff: types.TemplateDiff) {
   diff.resources.forEachDifference((_logicalId: string, change: types.ResourceDifference) => {
     change.isImport = true;
@@ -241,62 +226,6 @@ function normalize(template: any) {
         }
       } else {
         normalize(template[key]);
-      }
-    }
-  }
-}
-
-function addMissingPropertiesAndResourcesToDiff(
-  changeSet: DescribeChangeSetOutput,
-  theDiffResources: types.DifferenceCollection<types.Resource, types.ResourceDifference>,
-  currentTemplateResources: { [key: string]: any },
-  newTemplateResources: { [key: string]: any },
-) {
-  for (const change of changeSet.Changes ?? []) {
-    for (const detail of (change.ResourceChange?.Details ?? [])) {
-      if (detail.Target?.Attribute !== 'Properties' || !change.ResourceChange?.LogicalResourceId || !detail.Target.Name || !change.ResourceChange?.ResourceType) {
-        continue;
-      }
-
-      const changedResourceLogicalId = change.ResourceChange?.LogicalResourceId;
-      const resourceInDiff = theDiffResources?.changes?.hasOwnProperty(changedResourceLogicalId);
-      const nameOfChangedProperty = detail.Target.Name;
-
-      if (resourceInDiff) {
-        // Need to add the changed property IF it's not in the diff
-        const changedResource = theDiffResources?.get(changedResourceLogicalId);
-        if (!(changedResource.propertyUpdates.hasOwnProperty(nameOfChangedProperty))) {
-          const existingProperty = currentTemplateResources[changedResourceLogicalId]?.Properties?.[nameOfChangedProperty];
-
-          if (existingProperty) {
-            newTemplateResources[changedResourceLogicalId].Properties[nameOfChangedProperty] = 'ChangeSet detected difference. Create and DescribeChangeSet with --include-property-values for details.';
-          }
-
-          changedResource.setPropertyChange(nameOfChangedProperty, new types.PropertyDifference(
-            existingProperty,
-            newTemplateResources[changedResourceLogicalId].Properties[nameOfChangedProperty],
-            {}, // ChangeImpact will be filled later.
-          ));
-        }
-      } else {
-        // Need to add the resource to the diff with the changed property
-        const oldResource = {
-          Type: change.ResourceChange?.ResourceType,
-          Properties: currentTemplateResources[changedResourceLogicalId]?.Properties,
-        };
-
-        const existingProperty = newTemplateResources[changedResourceLogicalId]?.Properties?.[nameOfChangedProperty];
-        if (existingProperty) {
-          newTemplateResources[changedResourceLogicalId].Properties[nameOfChangedProperty] = 'DescribeChangeSet detected difference. CreateChangeSet and DescribeChangeSet with --include-property-values for details.';
-        }
-
-        const newResource = {
-          Type: change.ResourceChange?.ResourceType,
-          Properties: newTemplateResources[changedResourceLogicalId]?.Properties,
-        };
-
-        const resourceDiff = impl.diffResource(oldResource, newResource);
-        theDiffResources.set(changedResourceLogicalId, resourceDiff);
       }
     }
   }
