@@ -522,6 +522,9 @@
   "aws-panorama": [
     "AWS::Panorama"
   ],
+  "aws-paymentcryptography": [
+    "AWS::PaymentCryptography"
+  ],
   "aws-pcaconnectorad": [
     "AWS::PCAConnectorAD"
   ],
@@ -539,6 +542,9 @@
   ],
   "aws-proton": [
     "AWS::Proton"
+  ],
+  "aws-qbusiness": [
+    "AWS::QBusiness"
   ],
   "aws-qldb": [
     "AWS::QLDB"
@@ -581,6 +587,9 @@
   ],
   "aws-route53": [
     "AWS::Route53"
+  ],
+  "aws-route53profiles": [
+    "AWS::Route53Profiles"
   ],
   "aws-route53recoverycontrol": [
     "AWS::Route53RecoveryControl"

@@ -9,6 +9,7 @@ import { IKeyPair } from './key-pair';
 import { CpuCredits } from './launch-template';
 import { IMachineImage, OperatingSystemType } from './machine-image';
 import { INetworkInterface } from './network-interface';
+import { IPlacementGroup } from './placement-group';
 import { instanceBlockDeviceMappings } from './private/ebs-util';
 import { ISecurityGroup, SecurityGroup } from './security-group';
 import { UserData } from './user-data';
@@ -305,6 +306,24 @@ export interface InstanceProps {
    * @default - T2 instances are standard, while T3, T4g, and T3a instances are unlimited.
    */
   readonly creditSpecification?: CpuCredits;
+
+  /**
+   * Indicates whether the instance is optimized for Amazon EBS I/O.
+   *
+   * This optimization provides dedicated throughput to Amazon EBS and an optimized configuration stack to provide optimal Amazon EBS I/O performance.
+   * This optimization isn't available with all instance types.
+   * Additional usage charges apply when using an EBS-optimized instance.
+   *
+   * @default false
+   */
+  readonly ebsOptimized?: boolean;
+
+  /**
+   * The placement group that you want to launch the instance into.
+   *
+   * @default - no placement group will be used for this instance.
+   */
+  readonly placementGroup?: IPlacementGroup;
 }
 
 /**
@@ -483,6 +502,8 @@ export class Instance extends Resource implements IInstance {
       propagateTagsToVolumeOnCreation: props.propagateTagsToVolumeOnCreation,
       monitoring: props.detailedMonitoring,
       creditSpecification: props.creditSpecification ? { cpuCredits: props.creditSpecification } : undefined,
+      ebsOptimized: props.ebsOptimized,
+      placementGroupName: props.placementGroup?.placementGroupName,
     });
     this.instance.node.addDependency(this.role);
 
