@@ -2,6 +2,36 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.143.0](https://github.com/aws/aws-cdk/compare/v2.142.1...v2.143.0) (2024-05-23)
+
+
+### Features
+
+* **codebuild:** add deleteReports property to the ReportGroup Construct ([#30141](https://github.com/aws/aws-cdk/issues/30141)) ([c3003ab](https://github.com/aws/aws-cdk/commit/c3003ab41f0efc763f39eb2cab490c8a005e146b))
+* update L1 CloudFormation resource definitions ([#30182](https://github.com/aws/aws-cdk/issues/30182)) ([555d1c7](https://github.com/aws/aws-cdk/commit/555d1c7f3d355ff98501539a7ec6e34fac1feb09))
+* **batch:** jobStateTimeLimitActions property added ([#30158](https://github.com/aws/aws-cdk/issues/30158)) ([411a58c](https://github.com/aws/aws-cdk/commit/411a58cb427c2794dad889127a613d0999b707bb)), closes [#30142](https://github.com/aws/aws-cdk/issues/30142)
+* **cognito:** add enablePropagateAdditionalUserContextData to UserClient Construct ([#30178](https://github.com/aws/aws-cdk/issues/30178)) ([e00c0ca](https://github.com/aws/aws-cdk/commit/e00c0ca6f98b6137a9f14deaef123c9daefe95e7))
+* **ec2:** support placementGroup for ec2.Instance ([#30293](https://github.com/aws/aws-cdk/issues/30293)) ([f4b1d5a](https://github.com/aws/aws-cdk/commit/f4b1d5a94f49bd8dd607a11a94ff27895c8417ec)), closes [#30292](https://github.com/aws/aws-cdk/issues/30292)
+* **ecs-patterns:** dualstack NLB ([#30069](https://github.com/aws/aws-cdk/issues/30069)) ([623cedb](https://github.com/aws/aws-cdk/commit/623cedb429fba5bcf6ecdf2bb8277fcc2b88eba4)), closes [#29614](https://github.com/aws/aws-cdk/issues/29614)
+
+
+### Bug Fixes
+
+* **ecs:** add feature flag and remove ecs default deployment alarm settings ([#30217](https://github.com/aws/aws-cdk/issues/30217)) ([1e94267](https://github.com/aws/aws-cdk/commit/1e942675b2971a45be7a537183ee04296fd4ee67))
+* **elbv2:** unable to deploy template with IPv4 load balancer when denyAllIgwTraffic set ([#29956](https://github.com/aws/aws-cdk/issues/29956)) ([42d424e](https://github.com/aws/aws-cdk/commit/42d424ed0d931f312c5ee69c6aef634e80e83065)), closes [#30247](https://github.com/aws/aws-cdk/issues/30247)
+* **events_targets:** kinesisfirehosestream not accepting ideliverystream for imported deliverystream ([#30189](https://github.com/aws/aws-cdk/issues/30189)) ([d7e6a10](https://github.com/aws/aws-cdk/commit/d7e6a10a618074cf0db7412a4525e28fc47cd7f7))
+* **rds:** readers not always be created after the writer ([#30277](https://github.com/aws/aws-cdk/issues/30277)) ([e8676cb](https://github.com/aws/aws-cdk/commit/e8676cbed76905c879bdb0981a6464b683074632)), closes [#30260](https://github.com/aws/aws-cdk/issues/30260)
+* **s3:** bucketKey does not support SSE-S3 ([#30184](https://github.com/aws/aws-cdk/issues/30184)) ([c7c75f8](https://github.com/aws/aws-cdk/commit/c7c75f8069ea10006853c32bd95ea9d3f70f8a05)), closes [#30183](https://github.com/aws/aws-cdk/issues/30183)
+* **stepfunctions-tasks:** runtime language used to evaluate expressions is ignored ([#30302](https://github.com/aws/aws-cdk/issues/30302)) ([dfea721](https://github.com/aws/aws-cdk/commit/dfea72118790ea591d9de720f337c1e14eb11411))
+
+
+## [2.142.1](https://github.com/aws/aws-cdk/compare/v2.142.0...v2.142.1) (2024-05-17)
+
+
+### Reverts
+
+* fix(diff): properties from ChangeSet diff were ignored ([#30243](https://github.com/aws/aws-cdk/issues/30243)) ([3748472](https://github.com/aws/aws-cdk/commit/37484726f235013ec0e71cefb9e1fc35caf12e74))
+
 ## [2.142.0](https://github.com/aws/aws-cdk/compare/v2.141.0...v2.142.0) (2024-05-15)
 
 
@@ -22,7 +52,6 @@ All notable changes to this project will be documented in this file. See [standa
 * **cli:** cdk bootstrap --help does not show some options ([#30113](https://github.com/aws/aws-cdk/issues/30113)) ([8debd20](https://github.com/aws/aws-cdk/commit/8debd205b1f52e172de844f349d4e76e39df269d))
 * **cli:** handle attributes of AWS::KMS::Key when hotswapping ([#30112](https://github.com/aws/aws-cdk/issues/30112)) ([a1dcaa6](https://github.com/aws/aws-cdk/commit/a1dcaa6c4a3db245d1becf0e9ace1d488b6d528d)), closes [#25418](https://github.com/aws/aws-cdk/issues/25418)
 * **cli:** template created during import should be written to assets folder ([#29830](https://github.com/aws/aws-cdk/issues/29830)) ([a96cf55](https://github.com/aws/aws-cdk/commit/a96cf5500242890cddbbaa46af7f7228c7126d98)), closes [#22928](https://github.com/aws/aws-cdk/issues/22928) [#22530](https://github.com/aws/aws-cdk/issues/22530)
-* **diff:** properties from ChangeSet diff were ignored ([#30093](https://github.com/aws/aws-cdk/issues/30093)) ([9c3f3f5](https://github.com/aws/aws-cdk/commit/9c3f3f5dbb9b4b9f86911d9cd7c056a9fc0432b3)), closes [#29731](https://github.com/aws/aws-cdk/issues/29731)
 * **ecs:** require task pidMode for Linux-based Fargate tasks, not host ([#30020](https://github.com/aws/aws-cdk/issues/30020)) ([3e9e0a8](https://github.com/aws/aws-cdk/commit/3e9e0a8696630c9368adf012aff1fb919e398164)), closes [#29995](https://github.com/aws/aws-cdk/issues/29995)
 * **eks:** in place updates for EKS security group and Subnets ([#30114](https://github.com/aws/aws-cdk/issues/30114)) ([eb39d9e](https://github.com/aws/aws-cdk/commit/eb39d9e1924240d433dc91b7f8d98ebcf5cd87c8)), closes [#28584](https://github.com/aws/aws-cdk/issues/28584)
 * **iam:** fromUserArn returns incorrect principalAccount ([#30023](https://github.com/aws/aws-cdk/issues/30023)) ([f9f3681](https://github.com/aws/aws-cdk/commit/f9f3681be9fc6a0c998cd26119053c5832ef9806)), closes [/github.com/aws/aws-cdk/issues/29999#issuecomment-2087672380](https://github.com/aws//github.com/aws/aws-cdk/issues/29999/issues/issuecomment-2087672380)
