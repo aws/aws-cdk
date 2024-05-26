@@ -1,9 +1,10 @@
 import { Construct } from 'constructs';
+import { DailyAutomaticBackupStartTime } from './daily-automatic-backup-start-time';
 import { FileSystemAttributes, FileSystemBase, FileSystemProps, IFileSystem } from './file-system';
 import { CfnFileSystem } from './fsx.generated';
 import { LustreMaintenanceTime } from './maintenance-time';
 import { Connections, ISecurityGroup, ISubnet, Port, SecurityGroup } from '../../aws-ec2';
-import { Aws, Token } from '../../core';
+import { Aws, Duration, Token } from '../../core';
 
 /**
  * The different kinds of file system deployments used by Lustre.
@@ -143,6 +144,32 @@ export interface LustreConfiguration {
    * @default - no preference
    */
   readonly weeklyMaintenanceStartTime?: LustreMaintenanceTime;
+
+  /**
+   * The number of days to retain automatic backups.
+   * Setting this property to 0 disables automatic backups.
+   * You can retain automatic backups for a maximum of 90 days.
+   *
+   * Automatic Backups is not supported on scratch file systems.
+   *
+   * @default Duration.days(0)
+   */
+  readonly automaticBackupRetention?: Duration;
+
+  /**
+   * A boolean flag indicating whether tags for the file system should be copied to backups.
+   *
+   * @default - false
+   */
+  readonly copyTagsToBackups?: boolean;
+
+  /**
+   * Start time for 30-minute daily automatic backup window in Coordinated Universal Time (UTC).
+   *
+   * @default - no backup window
+   */
+  readonly dailyAutomaticBackupStartTime?: DailyAutomaticBackupStartTime;
+
 }
 
 /**
@@ -241,6 +268,8 @@ export class LustreFileSystem extends FileSystemBase {
     const updatedLustureProps = {
       importedFileChunkSize: props.lustreConfiguration.importedFileChunkSizeMiB,
       weeklyMaintenanceStartTime: props.lustreConfiguration.weeklyMaintenanceStartTime?.toTimestamp(),
+      automaticBackupRetentionDays: props.lustreConfiguration.automaticBackupRetention?.toDays(),
+      dailyAutomaticBackupStartTime: props.lustreConfiguration.dailyAutomaticBackupStartTime?.toTimestamp(),
     };
     const lustreConfiguration = Object.assign({}, props.lustreConfiguration, updatedLustureProps);
 
@@ -283,6 +312,10 @@ export class LustreFileSystem extends FileSystemBase {
     this.validateAutoImportPolicy(deploymentType, lustreConfiguration.importPath, lustreConfiguration.autoImportPolicy);
     this.validatePerUnitStorageThroughput(deploymentType, lustreConfiguration.perUnitStorageThroughput);
     this.validateStorageCapacity(deploymentType, props.storageCapacityGiB);
+
+    this.validateAutomaticBackupRetention(deploymentType, lustreConfiguration.automaticBackupRetention);
+
+    this.validateDailyAutomaticBackupStartTime(lustreConfiguration.automaticBackupRetention, lustreConfiguration.dailyAutomaticBackupStartTime);
   }
 
   /**
@@ -384,5 +417,37 @@ export class LustreFileSystem extends FileSystemBase {
         throw new Error('storageCapacity must be 1,200, 2,400, or a multiple of 2,400');
       }
     }
+  }
+
+  /**
+   * Validates the automaticBackupRetention with a non-scratch deployment class and an acceptable day value.
+   */
+  private validateAutomaticBackupRetention(deploymentType: LustreDeploymentType, automaticBackupRetention?: Duration): void {
+    if (automaticBackupRetention) {
+      const automaticBackupRetentionDays = automaticBackupRetention.toDays();
+
+      if ([LustreDeploymentType.SCRATCH_1, LustreDeploymentType.SCRATCH_2].includes(deploymentType) && automaticBackupRetentionDays > 0) {
+        throw new Error('automatic backups is not supported on scratch file systems');
+      }
+
+      if (automaticBackupRetentionDays > 90) {
+        throw new Error(`automaticBackupRetention period must be between 0 and 90 days. received: ${automaticBackupRetentionDays}`);
+      }
+    }
+  }
+
+  /**
+   * Validates the dailyAutomaticBackupStartTime is set with a non-zero day automaticBackupRetention.
+   */
+  private validateDailyAutomaticBackupStartTime(automaticBackupRetention?: Duration,
+    dailyAutomaticBackupStartTime?: DailyAutomaticBackupStartTime): void {
+    if (!dailyAutomaticBackupStartTime) return;
+
+    const automaticBackupDisabled = !automaticBackupRetention || automaticBackupRetention?.toDays() === Duration.days(0).toDays();
+
+    if (dailyAutomaticBackupStartTime && automaticBackupDisabled) {
+      throw new Error('automaticBackupRetention period must be set a non-zero day when dailyAutomaticBackupStartTime is set');
+    }
+
   }
 }
