@@ -119,6 +119,43 @@ describe('IAM user', () => {
     });
   });
 
+  test('user imported by user ARN has a principalAccount', () => {
+    // GIVEN
+    const stack = new Stack();
+    const accountId = 'account-id';
+
+    // WHEN
+    const user = User.fromUserArn(stack, 'import', `arn:aws:iam::${accountId}:user/mockuser`);
+
+    // THEN
+    expect(stack.resolve(user.principalAccount)).toStrictEqual(accountId);
+  });
+
+  test('user imported by tokenized user ARN has a principalAccount', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    const user = User.fromUserArn(stack, 'import', Token.asString({ Ref: 'ARN' }));
+
+    // THEN
+    expect(stack.resolve(user.principalAccount)).toStrictEqual({
+      'Fn::Select': [4, { 'Fn::Split': [':', { Ref: 'ARN' }] }],
+    });
+  });
+  test('user imported by a new User cosntruct has a principalAccount', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    const user = User.fromUserArn(stack, 'import', new User(stack, 'LocalUser').userArn);
+
+    // THEN
+    expect(stack.resolve(user.principalAccount)).toStrictEqual(
+      { 'Fn::Select': [4, { 'Fn::Split': [':', { 'Fn::GetAtt': ['LocalUser87F70DDF', 'Arn'] }] }] },
+    );
+  });
+
   test('user imported by user ARN with path', () => {
     // GIVEN
     const stack = new Stack();

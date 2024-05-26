@@ -79,7 +79,9 @@ All properties of `lambda.Function` can be used to customize the underlying `lam
 See also the [AWS Lambda construct library](https://github.com/aws/aws-cdk/tree/main/packages/aws-cdk-lib/aws-lambda).
 
 The `NodejsFunction` construct automatically [reuses existing connections](https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/node-reusing-connections.html)
-when working with the AWS SDK for JavaScript. Set the `awsSdkConnectionReuse` prop to `false` to disable it.
+when working with the AWS SDK v2 for JavaScript. Set the `awsSdkConnectionReuse` prop to `false` to disable it.
+
+The AWS SDK v3 for JavaScript does not include the environment variable set by `awsSdkConnectionReuse`. See [this guide](https://docs.aws.amazon.com/sdk-for-javascript/v3/developer-guide/node-reusing-connections.html) for information about reusing connections. Therefore, for runtimes >= Node 18, which include SDK v3, the prop defaults to `false`, and must be explicitly set to `true` in order for the environment variable to be set.
 
 ## Runtime
 
@@ -155,6 +157,11 @@ environment.
 
 When passing a runtime that is known to include a version of the aws sdk, it will be excluded by default. For example, when
 passing `NODEJS_16_X`, `aws-sdk` is excluded. When passing `NODEJS_18_X`,  all `@aws-sdk/*` packages are excluded.
+
+> [!WARNING]
+> The NodeJS runtime of Node 16 will be deprecated by Lambda on June 12, 2024. Lambda runtimes Node 18 and higher include SDKv3 and not SDKv2. Updating your Lambda runtime from <=Node 16 to any newer version will require bundling the SDK with your handler code, or updating all SDK calls in your handler code to use SDKv3 (which is not a trivial update). Please account for this added complexity and update as soon as possible.
+
+
 
 This can be configured by specifying `bundling.externalModules`:
 
