@@ -203,6 +203,8 @@ You can take daily automatic backups by setting `automaticBackupRetention` to a 
 Additionally, you can set the backup window by specifying the `dailyAutomaticBackupStartTime`.
 
 ```ts
+import * as cdk from 'aws-cdk-lib';
+
 const lustreConfiguration = {
   // ...
   automaticBackupRetention: cdk.Duration.days(3), // backup retention
