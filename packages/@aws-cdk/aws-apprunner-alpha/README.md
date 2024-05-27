@@ -217,6 +217,7 @@ service.addSecret('LATER_SECRET', apprunner.Secret.fromSecretsManager(secret, 'f
 ```
 
 ## Use a customer managed key
+
 To use a customer managed key for your source encryption, use the `kmsKey` attribute.
 
 ```ts
