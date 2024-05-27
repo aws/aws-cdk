@@ -52,17 +52,15 @@ export async function isCompleteHandler(event: IsCompleteRequest): Promise<IsCom
   const targetPartitionIndex = partitionIndexes.find(partitionIndex => partitionIndex.IndexName === indexName);
   const partitionIndexActive = targetPartitionIndex?.IndexStatus === 'ACTIVE';
 
-  // switch (event.RequestType) {
-  //   case 'Create':
-  //   case 'Update':
-  //     // complete when partition index is ACTIVE
-  //     return { IsComplete: partitionIndexActive };
-  //   case 'Delete':
-  //     break;
-  // }
-
-  // complete when partition index is ACTIVE
-  return { IsComplete: partitionIndexActive };
+  switch (event.RequestType) {
+    case 'Create':
+    case 'Update':
+      // complete when partition index is ACTIVE
+      return { IsComplete: partitionIndexActive };
+    case 'Delete':
+      // complete when target partition index is gone
+      return { IsComplete: targetPartitionIndex === undefined };
+  }
 }
 
 async function onUpdate(event: OnEventRequest) {

@@ -268,45 +268,6 @@ export abstract class TableBase extends Resource implements ITable {
    *
    * @see https://docs.aws.amazon.com/glue/latest/dg/partition-indexes.html
    */
-  // public addPartitionIndex(index: PartitionIndex) {
-  //   const numPartitions = this.partitionIndexCustomResources.length;
-  //   if (numPartitions >= 3) {
-  //     throw new Error('Maximum number of partition indexes allowed is 3');
-  //   }
-  //   this.validatePartitionIndex(index);
-
-  //   const indexName = index.indexName ?? this.generateIndexName(index.keyNames);
-  //   const partitionIndexCustomResource = new cr.AwsCustomResource(this, `partition-index-${indexName}`, {
-  //     onCreate: {
-  //       service: 'Glue',
-  //       action: 'createPartitionIndex',
-  //       parameters: {
-  //         DatabaseName: this.database.databaseName,
-  //         TableName: this.tableName,
-  //         PartitionIndex: {
-  //           IndexName: indexName,
-  //           Keys: index.keyNames,
-  //         },
-  //       },
-  //       physicalResourceId: cr.PhysicalResourceId.of(
-  //         indexName,
-  //       ),
-  //     },
-  //     policy: cr.AwsCustomResourcePolicy.fromSdkCalls({
-  //       resources: cr.AwsCustomResourcePolicy.ANY_RESOURCE,
-  //     }),
-  //     // APIs are available in 2.1055.0
-  //     installLatestAwsSdk: false,
-  //   });
-  //   this.grantToUnderlyingResources(partitionIndexCustomResource, ['glue:UpdateTable']);
-
-  //   // Depend on previous partition index if possible, to avoid race condition
-  //   if (numPartitions > 0) {
-  //     this.partitionIndexCustomResources[numPartitions-1].node.addDependency(partitionIndexCustomResource);
-  //   }
-  //   this.partitionIndexCustomResources.push(partitionIndexCustomResource);
-  // }
-
   public addPartitionIndex(index: PartitionIndex) {
     const numPartitionIndexes = this.partitionIndexCustomResources.length;
     if (numPartitionIndexes >= 3) {
@@ -314,10 +275,7 @@ export abstract class TableBase extends Resource implements ITable {
     }
     this.validatePartitionIndex(index);
 
-    const partitionIndexProvider = PartitionIndexProvider.getOrCreate(this, {
-      table: this,
-      database: this.database,
-    });
+    const partitionIndexProvider = PartitionIndexProvider.getOrCreate(this, { table: this });
 
     const indexName = index.indexName ?? this.generateIndexName(index.keyNames);
     const parititonIndexCustomResource = new CustomResource(this, `${indexName}CustomResource`, {
@@ -325,7 +283,7 @@ export abstract class TableBase extends Resource implements ITable {
       properties: {
         DatabaseName: this.database.databaseName,
         TableName: this.tableName,
-        IndexName: indexName,
+        IndexName: indexName.toLowerCase(),
         Keys: index.keyNames,
       },
     });

@@ -4,15 +4,28 @@ import { Duration, Stack } from 'aws-cdk-lib/core';
 import { Code, Function, IFunction, Runtime } from 'aws-cdk-lib/aws-lambda';
 import { Provider } from 'aws-cdk-lib/custom-resources';
 import { PolicyStatement } from 'aws-cdk-lib/aws-iam';
-import { IDatabase } from './database';
 import { ITable } from './table-base';
+
+/**
+ * Options used to initialize a PartitionIndexProvider
+ */
+interface PartitionIndexOptions {
+  /**
+   * The total timeout for the partition index operation.
+   *
+   * @default Duration.minutes(30)
+   */
+  readonly totalTimeout?: Duration;
+}
 
 /**
  * Properties used to initialize a PartitionIndexProvider.
  */
-export interface PartitionIndexProviderProps {
+export interface PartitionIndexProviderProps extends PartitionIndexOptions {
+  /**
+   * The Glue table that the partition index operation will take place on.
+   */
   readonly table: ITable;
-  readonly database: IDatabase;
 }
 
 /**
@@ -34,8 +47,14 @@ export class PartitionIndexProvider extends Construct {
    */
   public readonly provider: Provider;
 
+  /**
+   * The handler the provider uses to handler stack events.
+   */
   public readonly onEventHandler: IFunction;
 
+  /**
+   * The handler the provider uses to determine if partition index operation has completed.
+   */
   public readonly isCompleteHandler: IFunction;
 
   private constructor(scope: Construct, id: string, props: PartitionIndexProviderProps) {
@@ -48,11 +67,7 @@ export class PartitionIndexProvider extends Construct {
     });
     this.onEventHandler.addToRolePolicy(new PolicyStatement({
       actions: ['glue:UpdateTable'],
-      resources: [
-        props.table.tableArn,
-        props.database.databaseArn,
-        props.database.catalogArn,
-      ],
+      resources: [props.table.tableArn],
     }));
 
     this.isCompleteHandler = new Function(this, 'IsCompleteHandler', {
@@ -62,18 +77,14 @@ export class PartitionIndexProvider extends Construct {
     });
     this.isCompleteHandler.addToRolePolicy(new PolicyStatement({
       actions: ['glue:GetTable'],
-      resources: [
-        props.table.tableArn,
-        props.database.databaseArn,
-        props.database.catalogArn,
-      ],
+      resources: [props.table.tableArn],
     }));
 
     this.provider = new Provider(this, 'Provider', {
       onEventHandler: this.onEventHandler,
       isCompleteHandler: this.isCompleteHandler,
       queryInterval: Duration.seconds(10),
-      totalTimeout: Duration.minutes(10),
+      totalTimeout: props.totalTimeout,
     });
   }
 }
