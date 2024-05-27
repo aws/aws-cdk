@@ -888,6 +888,22 @@ const applicationLoadBalancedFargateService = new ecsPatterns.ApplicationLoadBal
 });
 ```
 
+### Customize Container Name for ScheduledFargateTask
+
+```ts
+declare const cluster: ecs.Cluster;
+const scheduledFargateTask = new ecsPatterns.ScheduledFargateTask(this, 'ScheduledFargateTask', {
+  cluster,
+  scheduledFargateTaskImageOptions: {
+    image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+    containerName: 'customContainerName',  
+    memoryLimitMiB: 512,
+  },
+  schedule: appscaling.Schedule.expression('rate(1 minute)'),
+  platformVersion: ecs.FargatePlatformVersion.LATEST,
+});
+```
+
 ### Set PlatformVersion for ScheduledFargateTask
 
 ```ts
