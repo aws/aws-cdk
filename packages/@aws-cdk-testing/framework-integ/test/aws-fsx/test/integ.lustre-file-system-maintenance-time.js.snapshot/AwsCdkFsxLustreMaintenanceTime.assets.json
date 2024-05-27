@@ -1,0 +1,19 @@
+{
+  "version": "36.0.0",
+  "files": {
+    "9e0df6b9f447ec37675b5a331a09f328a95a6e31a2493e81c1f8dd06721acfaf": {
+      "source": {
+        "path": "AwsCdkFsxLustreMaintenanceTime.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "9e0df6b9f447ec37675b5a331a09f328a95a6e31a2493e81c1f8dd06721acfaf.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
