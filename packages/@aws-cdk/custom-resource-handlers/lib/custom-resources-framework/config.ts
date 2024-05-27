@@ -207,6 +207,14 @@ export const config: HandlerFrameworkConfig = {
       },
     ],
   },
+  'aws-glue-alpha': {
+    'partition-index-provider': [
+      {
+        type: ComponentType.NO_OP,
+        sourceCode: path.resolve(__dirname, '..', 'aws-glue-alpha', 'partition-index-handler', 'index.ts'),
+      },
+    ],
+  },
   'aws-iam': {
     'oidc-provider': [
       {

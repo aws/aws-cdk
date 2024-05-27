@@ -1,13 +1,13 @@
 import { CfnTable } from 'aws-cdk-lib/aws-glue';
 import * as iam from 'aws-cdk-lib/aws-iam';
-import { ArnFormat, Fn, IResource, Lazy, Names, Resource, Stack } from 'aws-cdk-lib/core';
-import * as cr from 'aws-cdk-lib/custom-resources';
-import { AwsCustomResource } from 'aws-cdk-lib/custom-resources';
+import { ArnFormat, CustomResource, Fn, IResource, Lazy, Names, Resource, Stack } from 'aws-cdk-lib/core';
+// import * as cr from 'aws-cdk-lib/custom-resources';
 import { Construct } from 'constructs';
 import { DataFormat } from './data-format';
 import { IDatabase } from './database';
 import { Column } from './schema';
 import { StorageParameter } from './storage-parameter';
+import { PartitionIndexProvider } from './partition-index-provider';
 
 /**
  * Properties of a Partition Index.
@@ -235,7 +235,7 @@ export abstract class TableBase extends Resource implements ITable {
    * race conditions, we store the resource and add dependencies
    * each time a new partition index is created.
    */
-  private partitionIndexCustomResources: AwsCustomResource[] = [];
+  private partitionIndexCustomResources: CustomResource[] = [];
 
   constructor(scope: Construct, id: string, props: TableBaseProps) {
     super(scope, id, {
@@ -268,43 +268,75 @@ export abstract class TableBase extends Resource implements ITable {
    *
    * @see https://docs.aws.amazon.com/glue/latest/dg/partition-indexes.html
    */
+  // public addPartitionIndex(index: PartitionIndex) {
+  //   const numPartitions = this.partitionIndexCustomResources.length;
+  //   if (numPartitions >= 3) {
+  //     throw new Error('Maximum number of partition indexes allowed is 3');
+  //   }
+  //   this.validatePartitionIndex(index);
+
+  //   const indexName = index.indexName ?? this.generateIndexName(index.keyNames);
+  //   const partitionIndexCustomResource = new cr.AwsCustomResource(this, `partition-index-${indexName}`, {
+  //     onCreate: {
+  //       service: 'Glue',
+  //       action: 'createPartitionIndex',
+  //       parameters: {
+  //         DatabaseName: this.database.databaseName,
+  //         TableName: this.tableName,
+  //         PartitionIndex: {
+  //           IndexName: indexName,
+  //           Keys: index.keyNames,
+  //         },
+  //       },
+  //       physicalResourceId: cr.PhysicalResourceId.of(
+  //         indexName,
+  //       ),
+  //     },
+  //     policy: cr.AwsCustomResourcePolicy.fromSdkCalls({
+  //       resources: cr.AwsCustomResourcePolicy.ANY_RESOURCE,
+  //     }),
+  //     // APIs are available in 2.1055.0
+  //     installLatestAwsSdk: false,
+  //   });
+  //   this.grantToUnderlyingResources(partitionIndexCustomResource, ['glue:UpdateTable']);
+
+  //   // Depend on previous partition index if possible, to avoid race condition
+  //   if (numPartitions > 0) {
+  //     this.partitionIndexCustomResources[numPartitions-1].node.addDependency(partitionIndexCustomResource);
+  //   }
+  //   this.partitionIndexCustomResources.push(partitionIndexCustomResource);
+  // }
+
   public addPartitionIndex(index: PartitionIndex) {
-    const numPartitions = this.partitionIndexCustomResources.length;
-    if (numPartitions >= 3) {
+    const numPartitionIndexes = this.partitionIndexCustomResources.length;
+    if (numPartitionIndexes >= 3) {
       throw new Error('Maximum number of partition indexes allowed is 3');
     }
     this.validatePartitionIndex(index);
 
-    const indexName = index.indexName ?? this.generateIndexName(index.keyNames);
-    const partitionIndexCustomResource = new cr.AwsCustomResource(this, `partition-index-${indexName}`, {
-      onCreate: {
-        service: 'Glue',
-        action: 'createPartitionIndex',
-        parameters: {
-          DatabaseName: this.database.databaseName,
-          TableName: this.tableName,
-          PartitionIndex: {
-            IndexName: indexName,
-            Keys: index.keyNames,
-          },
-        },
-        physicalResourceId: cr.PhysicalResourceId.of(
-          indexName,
-        ),
-      },
-      policy: cr.AwsCustomResourcePolicy.fromSdkCalls({
-        resources: cr.AwsCustomResourcePolicy.ANY_RESOURCE,
-      }),
-      // APIs are available in 2.1055.0
-      installLatestAwsSdk: false,
+    const partitionIndexProvider = PartitionIndexProvider.getOrCreate(this, {
+      table: this,
+      database: this.database,
     });
-    this.grantToUnderlyingResources(partitionIndexCustomResource, ['glue:UpdateTable']);
 
-    // Depend on previous partition index if possible, to avoid race condition
-    if (numPartitions > 0) {
-      this.partitionIndexCustomResources[numPartitions-1].node.addDependency(partitionIndexCustomResource);
+    const indexName = index.indexName ?? this.generateIndexName(index.keyNames);
+    const parititonIndexCustomResource = new CustomResource(this, `${indexName}CustomResource`, {
+      serviceToken: partitionIndexProvider.provider.serviceToken,
+      properties: {
+        DatabaseName: this.database.databaseName,
+        TableName: this.tableName,
+        IndexName: indexName,
+        Keys: index.keyNames,
+      },
+    });
+    this.grantToUnderlyingResources(partitionIndexProvider.onEventHandler, ['glue:UpdateTable']);
+    this.grantToUnderlyingResources(partitionIndexProvider.isCompleteHandler, ['glue:GetTable']);
+
+    if (numPartitionIndexes > 0) {
+      this.partitionIndexCustomResources[numPartitionIndexes - 1].node.addDependency(parititonIndexCustomResource);
     }
-    this.partitionIndexCustomResources.push(partitionIndexCustomResource);
+
+    this.partitionIndexCustomResources.push(parititonIndexCustomResource);
   }
 
   private generateIndexName(keys: string[]): string {
