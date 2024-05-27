@@ -30,7 +30,7 @@ const activeDirectory = new ds.CfnMicrosoftAD(stack, 'AD', {
 });
 
 new rds.DatabaseCluster(stack, 'Database', {
-  engine: rds.DatabaseClusterEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_3_05_1 }),
+  engine: rds.DatabaseClusterEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_3_06_0 }),
   writer: rds.ClusterInstance.provisioned('Instance', {
     instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.MEDIUM),
   }),
