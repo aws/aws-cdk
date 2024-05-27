@@ -1967,6 +1967,7 @@ const instance = new ec2.Instance(this, 'Instance', {
       deleteOnTermination: true,
     }),
   }],
+});
 ```
 
 ## VPC Flow Logs
