@@ -1580,3 +1580,24 @@ test('timeout must be less than or equal to 20 in healthCheck', () => {
     });
   }).toThrow('timeout must be between 1 and 20 seconds, got 21');
 });
+
+test.each([apprunner.IpAddressType.IPV4, apprunner.IpAddressType.DUAL_STACK])('ipAddressType is set %s', (ipAddressType: apprunner.IpAddressType) => {
+  // GIVEN
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app, 'demo-stack');
+  // WHEN
+  new apprunner.Service(stack, 'DemoService', {
+    source: apprunner.Source.fromEcrPublic({
+      imageConfiguration: { port: 8000 },
+      imageIdentifier: 'public.ecr.aws/aws-containers/hello-app-runner:latest',
+    }),
+    ipAddressType,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::AppRunner::Service', {
+    NetworkConfiguration: {
+      IpAddressType: ipAddressType,
+    },
+  });
+});

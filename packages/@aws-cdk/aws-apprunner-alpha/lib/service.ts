@@ -79,7 +79,7 @@ export class Cpu {
    *
    * @param unit The unit of CPU.
    */
-  private constructor(public readonly unit: string) {}
+  private constructor(public readonly unit: string) { }
 }
 
 /**
@@ -715,6 +715,13 @@ export interface ServiceProps {
    * @default - no health check configuration
    */
   readonly healthCheck?: HealthCheck;
+
+  /**
+   * The IP address type for your incoming public network configuration.
+   *
+   * @default - IPV4
+   */
+  readonly ipAddressType?: IpAddressType;
 }
 
 /**
@@ -997,6 +1004,21 @@ export class HealthCheck {
 }
 
 /**
+ * The IP address type for your incoming public network configuration.
+ */
+export enum IpAddressType {
+  /**
+   * IPV4
+   */
+  IPV4 = 'IPV4',
+
+  /**
+   * DUAL_STACK
+   */
+  DUAL_STACK = 'DUAL_STACK',
+}
+
+/**
  * Attributes for the App Runner Service
  */
 export interface ServiceAttributes {
@@ -1244,6 +1266,7 @@ export class Service extends cdk.Resource implements iam.IGrantable {
           egressType: this.props.vpcConnector ? 'VPC' : 'DEFAULT',
           vpcConnectorArn: this.props.vpcConnector?.vpcConnectorArn,
         },
+        ipAddressType: this.props.ipAddressType,
       },
       healthCheckConfiguration: this.props.healthCheck ?
         this.props.healthCheck.bind() :
