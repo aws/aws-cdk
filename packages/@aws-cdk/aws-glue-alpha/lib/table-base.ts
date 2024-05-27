@@ -1,7 +1,6 @@
 import { CfnTable } from 'aws-cdk-lib/aws-glue';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { ArnFormat, CustomResource, Fn, IResource, Lazy, Names, Resource, Stack } from 'aws-cdk-lib/core';
-// import * as cr from 'aws-cdk-lib/custom-resources';
 import { Construct } from 'constructs';
 import { DataFormat } from './data-format';
 import { IDatabase } from './database';
@@ -283,6 +282,7 @@ export abstract class TableBase extends Resource implements ITable {
       properties: {
         DatabaseName: this.database.databaseName,
         TableName: this.tableName,
+        // glue converts index names to lower case - doing it here so we're using the correct index name in our handler API calls
         IndexName: indexName.toLowerCase(),
         Keys: index.keyNames,
       },
