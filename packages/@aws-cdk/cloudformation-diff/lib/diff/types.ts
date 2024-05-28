@@ -21,9 +21,6 @@ export interface ChangeSetResource {
   resourceWasReplaced: boolean;
   resourceType: string | undefined;
   propertyReplacementModes: PropertyReplacementModeMap | undefined;
-  beforeContext: any | undefined;
-  afterContext: any | undefined;
-  changeAction: ChangeSetActions;
 }
 
 export type PropertyReplacementModeMap = {
@@ -31,8 +28,6 @@ export type PropertyReplacementModeMap = {
     replacementMode: ReplacementModes | undefined;
   };
 }
-
-export type ChangeSetActions = 'Add' | 'Dynamic' | 'Import' | 'Modify' | 'Remove';
 
 /**
  * 'Always' means that changing the corresponding property will always cause a resource replacement. Never means never. Conditionally means maybe.
@@ -393,10 +388,6 @@ export class DifferenceCollection<V, T extends IDifference<V>> {
 
   public remove(logicalId: string): void {
     delete this.diffs[logicalId];
-  }
-
-  public set(logicalId: string, diff: T): void {
-    this.diffs[logicalId] = diff;
   }
 
   public get logicalIds(): string[] {

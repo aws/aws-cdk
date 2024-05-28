@@ -69,27 +69,10 @@ export class TemplateAndChangeSetDiffMerger {
         resourceWasReplaced: resourceChange.ResourceChange.Replacement === 'True',
         resourceType: resourceChange.ResourceChange.ResourceType ?? TemplateAndChangeSetDiffMerger.UNKNOWN_RESOURCE_TYPE, // DescribeChangeSet doesn't promise to have the ResourceType...
         propertyReplacementModes: propertyReplacementModes,
-        beforeContext: _maybeJsonParse(resourceChange.ResourceChange.BeforeContext),
-        afterContext: _maybeJsonParse(resourceChange.ResourceChange.AfterContext),
-        changeAction: resourceChange.ResourceChange.Action ?? 'Dynamic',
       };
     }
 
     return changeSetResources;
-
-    /**
-     *  we will try to parse the BeforeContext and AfterContext so that downstream processing of the diff can access object properties.
-     *
-     *  This should always succeed. But CFN says they truncate the beforeValue and afterValue if they're too long, and since the afterValue and beforeValue
-     *  are a subset of the BeforeContext and AfterContext, it seems safer to assume that BeforeContext and AfterContext also may truncate.
-     */
-    function _maybeJsonParse(value: string | undefined): any | undefined {
-      try {
-        return JSON.parse(value ?? '');
-      } catch (e) {
-        return value;
-      }
-    }
   }
 
   public overrideDiffResourceChangeImpactWithChangeSetChangeImpact(logicalId: string, change: types.ResourceDifference) {
