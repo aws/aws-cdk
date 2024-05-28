@@ -50,6 +50,13 @@ describe('code', () => {
         ['is', 'a', 'great', 'command,', 'wow'],
       );
     });
+    test('command of length 1 does not cause crash', () => {
+      // WHEN
+      lambda.Code.fromCustomCommand('', ['node']);
+
+      // THEN
+      expect(spawnSyncMock).toHaveBeenCalledWith('node', []);
+    });
     test('properly splices arguments when commandOptions are included', () => {
       // GIVEN
       const command = 'node is a great command, wow'.split(' ');
