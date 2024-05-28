@@ -1,0 +1,32 @@
+{
+  "version": "36.0.0",
+  "files": {
+    "e305655b966b957f91fcec580e3f8703573eb6b69528c5d52190d72579c91602": {
+      "source": {
+        "path": "asset.e305655b966b957f91fcec580e3f8703573eb6b69528c5d52190d72579c91602.jar",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "e305655b966b957f91fcec580e3f8703573eb6b69528c5d52190d72579c91602.jar",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "cd441b1457833c6e143bf2319249b20c17a6d32d800107d402d4128c52139d87": {
+      "source": {
+        "path": "aws-glue-job-scalaspark-etl.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "cd441b1457833c6e143bf2319249b20c17a6d32d800107d402d4128c52139d87.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
