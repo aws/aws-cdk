@@ -1,7 +1,8 @@
+/* eslint-disable no-console */
 /* eslint-disable import/no-extraneous-dependencies */
 import { KMS, KeyManagerType } from '@aws-sdk/client-kms';
 
-const kmsClient = new KMS({});
+const kms = new KMS({});
 
 export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent) {
 
@@ -13,7 +14,7 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
     const partition = props.Partition;
     const region = process.env.AWS_REGION;
 
-    const describeKeyCommandResponse = await kmsClient.describeKey({
+    const describeKeyCommandResponse = await kms.describeKey({
       KeyId: kmsKeyId,
     });
 
@@ -25,7 +26,7 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
     // The PolicyName is specified as "default" below because that is the only valid name as
     // written in the documentation for @aws-sdk/client-kms.GetKeyPolicyCommandInput:
     // https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/Package/-aws-sdk-client-kms/Interface/GetKeyPolicyCommandInput/
-    const getKeyPolicyCommandResponse = await kmsClient.getKeyPolicy({
+    const getKeyPolicyCommandResponse = await kms.getKeyPolicy({
       KeyId: kmsKeyId,
       PolicyName: 'default',
     });
@@ -56,8 +57,8 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
         },
       },
     };
-    const updatedKeyPolicy = updateKeyPolicy(keyPolicy, kmsKeyPolicyStatement);
-    await kmsClient.putKeyPolicy({
+    const updatedKeyPolicy = updatePolicy(keyPolicy, kmsKeyPolicyStatement);
+    await kms.putKeyPolicy({
       KeyId: kmsKeyId,
       Policy: JSON.stringify(updatedKeyPolicy),
       PolicyName: 'default',
@@ -66,30 +67,30 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
     return {
       IsComplete: true,
     };
-  } else if (event.RequestType === 'Delete') {
+  } else {
     return;
   }
 }
 
 /**
- * Updates a provided key policy with a provided key policy statement. First checks whether the provided key policy statement
- * already exists. If an existing key policy is found with a matching sid, the provided key policy will overwrite the existing
- * key policy. If no matching key policy is found, the provided key policy will be appended onto the array of policy statements.
- * @param keyPolicy - the JSON.parse'd result of the otherwise stringified key policy.
- * @param keyPolicyStatement - the key policy statement to be added to the key policy.
- * @returns keyPolicy - the updated key policy.
+ * Updates a provided policy with a provided policy statement. First checks whether the provided policy statement
+ * already exists. If an existing policy is found with a matching sid, the provided policy will overwrite the existing
+ * policy. If no matching policy is found, the provided policy will be appended onto the array of policy statements.
+ * @param currentPolicy - the JSON.parse'd result of the otherwise stringified policy.
+ * @param policyStatementToAdd - the policy statement to be added to the policy.
+ * @returns currentPolicy - the updated policy.
  */
-export const updateKeyPolicy = (keyPolicy: any, keyPolicyStatement: any) => {
+export const updatePolicy = (currentPolicy: any, policyStatementToAdd: any) => {
   // Check to see if a duplicate key policy exists by matching on the sid. This is to prevent duplicate key policies
   // from being added/updated in response to a stack being updated one or more times after initial creation.
-  const existingKeyPolicyIndex = keyPolicy.Statement.findIndex((statement: any) => statement.Sid === keyPolicyStatement.Sid);
+  const existingPolicyIndex = currentPolicy.Statement.findIndex((statement: any) => statement.Sid === policyStatementToAdd.Sid);
   // If a match is found, overwrite the key policy statement...
   // Otherwise, push the new key policy to the array of statements
-  if (existingKeyPolicyIndex > -1) {
-    keyPolicy.Statement[existingKeyPolicyIndex] = keyPolicyStatement;
+  if (existingPolicyIndex > -1) {
+    currentPolicy.Statement[existingPolicyIndex] = policyStatementToAdd;
   } else {
-    keyPolicy.Statement.push(keyPolicyStatement);
+    currentPolicy.Statement.push(policyStatementToAdd);
   }
   // Return the result
-  return keyPolicy;
+  return currentPolicy;
 };
