@@ -12,7 +12,6 @@ export interface ChangeSetResource {
   resourceWasReplaced: boolean;
   resourceType: string | undefined;
   propertyReplacementModes: PropertyReplacementModeMap | undefined;
-  changeAction: ChangeSetActions;
 }
 
 export type PropertyReplacementModeMap = {
@@ -20,8 +19,6 @@ export type PropertyReplacementModeMap = {
     replacementMode: ReplacementModes | undefined;
   };
 }
-
-export type ChangeSetActions = 'Add' | 'Dynamic' | 'Import' | 'Modify' | 'Remove';
 
 /**
  * 'Always' means that changing the corresponding property will always cause a resource replacement. Never means never. Conditionally means maybe.

@@ -584,29 +584,6 @@ describe('method tests', () => {
             replacementMode: 'Always',
           },
         },
-        beforeContext: {
-          Properties: {
-            QueueName: 'newValuechangedddd',
-            ReceiveMessageWaitTimeSeconds: '20',
-          },
-          Metadata: {
-            'aws:cdk:path': 'cdkbugreport/Queue/Resource',
-          },
-          UpdateReplacePolicy: 'Delete',
-          DeletionPolicy: 'Delete',
-        },
-        afterContext: {
-          Properties: {
-            QueueName: 'newValuesdflkja',
-            ReceiveMessageWaitTimeSeconds: '20',
-          },
-          Metadata: {
-            'aws:cdk:path': 'cdkbugreport/Queue/Resource',
-          },
-          UpdateReplacePolicy: 'Delete',
-          DeletionPolicy: 'Delete',
-        },
-        changeAction: 'Modify',
       });
       expect((templateAndChangeSetDiffMerger.changeSetResources ?? {}).mySsmParameter).toEqual({
         resourceWasReplaced: false,
@@ -616,27 +593,6 @@ describe('method tests', () => {
             replacementMode: 'Never',
           },
         },
-        beforeContext: {
-          Properties: {
-            Value: 'changedddd',
-            Type: 'String',
-            Name: 'mySsmParameterFromStack',
-          },
-          Metadata: {
-            'aws:cdk:path': 'cdkbugreport/mySsmParameter/Resource',
-          },
-        },
-        afterContext: {
-          Properties: {
-            Value: 'sdflkja',
-            Type: 'String',
-            Name: 'mySsmParameterFromStack',
-          },
-          Metadata: {
-            'aws:cdk:path': 'cdkbugreport/mySsmParameter/Resource',
-          },
-        },
-        changeAction: 'Modify',
       });
     });
 
@@ -673,27 +629,6 @@ describe('method tests', () => {
             replacementMode: 'Never',
           },
         },
-        beforeContext: {
-          Properties: {
-            Value: 'changedddd',
-            Type: 'String',
-            Name: 'mySsmParameterFromStack',
-          },
-          Metadata: {
-            'aws:cdk:path': 'cdkbugreport/mySsmParameter/Resource',
-          },
-        },
-        afterContext: {
-          Properties: {
-            Value: 'sdflkja',
-            Type: 'String',
-            Name: 'mySsmParameterFromStack',
-          },
-          Metadata: {
-            'aws:cdk:path': 'cdkbugreport/mySsmParameter/Resource',
-          },
-        },
-        changeAction: 'Modify',
       });
       expect((templateAndChangeSetDiffMerger.changeSetResources ?? {}).Queue).toEqual({
         resourceWasReplaced: true,
@@ -703,30 +638,6 @@ describe('method tests', () => {
             replacementMode: 'Always',
           },
         },
-        beforeContext: {
-          Properties: {
-            QueueName: undefined,
-            ReceiveMessageWaitTimeSeconds: '20',
-            Random: 'nice',
-          },
-          Metadata: {
-            'aws:cdk:path': 'cdkbugreport/Queue/Resource',
-          },
-          UpdateReplacePolicy: 'Delete',
-          DeletionPolicy: 'Delete',
-        },
-        afterContext: {
-          Properties: {
-            QueueName: undefined,
-            ReceiveMessageWaitTimeSeconds: '20',
-          },
-          Metadata: {
-            'aws:cdk:path': 'cdkbugreport/Queue/Resource',
-          },
-          UpdateReplacePolicy: 'Delete',
-          DeletionPolicy: 'Delete',
-        },
-        changeAction: 'Modify',
       });
     });
 
@@ -741,9 +652,6 @@ describe('method tests', () => {
         resourceWasReplaced: true,
         resourceType: 'UNKNOWN_RESOURCE_TYPE',
         propertyReplacementModes: {},
-        beforeContext: undefined,
-        afterContext: undefined,
-        changeAction: 'Modify',
       });
     });
 

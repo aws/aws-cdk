@@ -133,7 +133,6 @@ export class TemplateAndChangeSetDiffMerger {
         resourceWasReplaced: resourceChange.ResourceChange.Replacement === 'True',
         resourceType: resourceChange.ResourceChange.ResourceType ?? TemplateAndChangeSetDiffMerger.UNKNOWN_RESOURCE_TYPE, // DescribeChangeSet doesn't promise to have the ResourceType...
         propertyReplacementModes: propertyReplacementModes,
-        changeAction: resourceChange.ResourceChange.Action ?? 'Dynamic',
       };
     }
 
