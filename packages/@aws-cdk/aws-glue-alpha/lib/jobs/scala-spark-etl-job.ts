@@ -18,7 +18,7 @@ import { Bucket } from 'aws-cdk-lib/aws-s3';
 import { CfnJob } from 'aws-cdk-lib/aws-glue';
 import { Job, JobProperties } from './job';
 import { Construct } from 'constructs';
-import { JobType, GlueVersion, JobLanguage, PythonVersion, WorkerType } from '../constants';
+import { JobType, GlueVersion, JobLanguage, WorkerType } from '../constants';
 import { SparkUIProps, SparkUILoggingLocation, validateSparkUiPrefix, cleanSparkUiPrefixForGrant } from './spark-ui-utils';
 
 
