@@ -104,7 +104,7 @@ export class CloudFormationStackArtifact extends CloudArtifact {
    *
    * @default - No role is assumed (current credentials are used)
    */
-  readonly changesetRole?: cxschema.BootstrapRole;;
+  readonly changesetRole?: cxschema.BootstrapRole;
 
   /**
    * The role to use to look up values from the target AWS account
