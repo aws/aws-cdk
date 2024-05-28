@@ -60,7 +60,7 @@ describe('code', () => {
       expect(spawnSyncMock).toHaveBeenCalledWith(
         'node',
         ['is', 'a', 'great', 'command,', 'wow'],
-        commandOptions,
+        commandOptions.commandOptions,
       );
     });
     test('throws custom error message when spawnSync errors', () => {
