@@ -1,0 +1,157 @@
+import * as cdk from 'aws-cdk-lib/core';
+import { Construct } from 'constructs';
+import { CfnAutoScalingConfiguration } from 'aws-cdk-lib/aws-apprunner';
+
+/**
+ * Properties of the App Runner Auto Scaling Configuration.
+ */
+export interface AutoScalingConfigurationProps {
+  /**
+   * The name for the Auto Scaling Configuration.
+   */
+  readonly autoScalingConfigurationName?: string;
+
+  /**
+   * The maximum number of concurrent requests that an instance processes.
+   * If the number of concurrent requests exceeds this limit, App Runner scales the service up.
+   *
+   * Must be between 1 and 25.
+   *
+   * @default 100
+   */
+  readonly maxConcurrency?: number;
+
+  /**
+   * The maximum number of instances that a service scales up to.
+   * At most maxSize instances actively serve traffic for your service.
+   *
+   * Must be between 1 and 25.
+   *
+   * @default 1
+   */
+  readonly maxSize?: number;
+
+  /**
+   * The minimum number of instances that App Runner provisions for a service.
+   * The service always has at least minSize provisioned instances.
+   *
+   * @default 25
+   */
+  readonly minSize?: number;
+}
+
+/**
+ * Attributes for the App Runner Auto Scaling Configuration.
+ */
+export interface AutoScalingConfigurationAttributes {
+  /**
+   * The name of the Auto Scaling Configuration.
+   */
+  readonly autoScalingConfigurationName: string;
+
+  /**
+   * The ARN of the Auto Scaling Configuration.
+   */
+  readonly autoScalingConfigurationArn: string;
+
+  /**
+   * The revision of the Auto Scaling Configuration.
+   */
+  readonly autoScalingConfigurationRevision: number;
+}
+
+/**
+ * Represents the App Runner Auto Scaling Configuration.
+ */
+export interface IAutoScalingConfiguration extends cdk.IResource {
+  /**
+   * The ARN of the Auto Scaling Configuration.
+   * @attribute
+   */
+  readonly autoScalingConfigurationArn: string;
+
+  /**
+   * The Name of the Auto Scaling Configuration.
+   * @attribute
+   */
+  readonly autoScalingConfigurationName: string;
+
+  /**
+   * The revision of the Auto Scaling Configuration.
+   * @attribute
+   */
+  readonly autoScalingConfigurationRevision: number;
+}
+
+/**
+ * The App Runner Auto Scaling Configuration.
+ *
+ * @resource AWS::AppRunner::AutoScalingConfiguration
+ */
+export class AutoScalingConfiguration extends cdk.Resource implements IAutoScalingConfiguration {
+  /**
+   * Import from Auto Scaling Configuration attributes.
+   */
+  public static fromAutoScalingConfigurationAttributes(scope: Construct, id: string,
+    attrs: AutoScalingConfigurationAttributes): IAutoScalingConfiguration {
+    const autoScalingConfigurationArn = attrs.autoScalingConfigurationArn;
+    const autoScalingConfigurationName = attrs.autoScalingConfigurationName;
+    const autoScalingConfigurationRevision = attrs.autoScalingConfigurationRevision;
+
+    class Import extends cdk.Resource {
+      public readonly autoScalingConfigurationArn = autoScalingConfigurationArn
+      public readonly autoScalingConfigurationName = autoScalingConfigurationName
+      public readonly autoScalingConfigurationRevision = autoScalingConfigurationRevision
+    }
+
+    return new Import(scope, id);
+  }
+
+  /**
+    * The ARN of the Auto Scaling Configuration.
+    * @attribute
+    */
+  readonly autoScalingConfigurationArn: string;
+
+  /**
+    * The name of the Auto Scaling Configuration.
+    * @attribute
+    */
+  readonly autoScalingConfigurationName: string;
+
+  /**
+   * The revision of the Auto Scaling Configuration.
+   * @attribute
+   */
+  readonly autoScalingConfigurationRevision: number;
+
+  public constructor(scope: Construct, id: string, props: AutoScalingConfigurationProps = {}) {
+    super(scope, id, {
+      physicalName: props.autoScalingConfigurationName,
+    });
+
+    if (props.minSize !== undefined && (props.minSize < 1 || props.minSize > 25)) {
+      throw new Error(`minSize must be between 1 and 25, got ${props.minSize}`);
+    }
+    if (props.maxSize !== undefined && (props.maxSize < 1 || props.maxSize > 25)) {
+      throw new Error(`maxSize must be between 1 and 25, got ${props.maxSize}`);
+    }
+    if (props.minSize !== undefined && props.maxSize !== undefined && !(props.minSize < props.maxSize)) {
+      throw new Error('maxSize must be greater than minSize');
+    }
+    if (props.maxConcurrency !== undefined && (props.maxConcurrency < 1 || props.maxConcurrency > 200)) {
+      throw new Error(`maxConcurrency must be between 1 and 200, got ${props.maxConcurrency}`);
+    }
+
+    const resource = new CfnAutoScalingConfiguration(this, 'Resource', {
+      autoScalingConfigurationName: props.autoScalingConfigurationName,
+      maxConcurrency: props.maxConcurrency,
+      maxSize: props.maxSize,
+      minSize: props.minSize,
+    });
+
+    this.autoScalingConfigurationArn = resource.attrAutoScalingConfigurationArn;
+    this.autoScalingConfigurationRevision = resource.attrAutoScalingConfigurationRevision;
+    this.autoScalingConfigurationName = resource.ref;
+  }
+}

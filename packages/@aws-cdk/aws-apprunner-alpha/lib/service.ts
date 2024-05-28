@@ -8,6 +8,7 @@ import { Lazy } from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import { CfnService } from 'aws-cdk-lib/aws-apprunner';
 import { IVpcConnector } from './vpc-connector';
+import { IAutoScalingConfiguration } from './auto-scaling-configuration';
 
 /**
  * The image repository types
@@ -79,7 +80,7 @@ export class Cpu {
    *
    * @param unit The unit of CPU.
    */
-  private constructor(public readonly unit: string) {}
+  private constructor(public readonly unit: string) { }
 }
 
 /**
@@ -654,6 +655,18 @@ export interface ServiceProps {
    * @default - no value will be passed.
    */
   readonly autoDeploymentsEnabled?: boolean;
+
+  /**
+   * Specifies an App Runner Auto Scaling Configuration.
+   *
+   * A default configuration is either the AWS recommended configuration,
+   * or the configuration you set as the default.
+   *
+   * @see https://docs.aws.amazon.com/apprunner/latest/dg/manage-autoscaling.html
+   *
+   * @default - use a default Auto Scaling Configuration.
+   */
+  readonly autoScalingConfiguration?: IAutoScalingConfiguration;
 
   /**
    * The number of CPU units reserved for each instance of your App Runner service.
@@ -1239,6 +1252,7 @@ export class Service extends cdk.Resource implements iam.IGrantable {
           this.renderCodeConfiguration(this.source.codeRepository!.codeConfiguration.configurationValues!) :
           undefined,
       },
+      autoScalingConfigurationArn: this.props.autoScalingConfiguration?.autoScalingConfigurationArn,
       networkConfiguration: {
         egressConfiguration: {
           egressType: this.props.vpcConnector ? 'VPC' : 'DEFAULT',

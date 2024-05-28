@@ -1,0 +1,176 @@
+{
+  "version": "36.0.0",
+  "artifacts": {
+    "integ-apprunner-auto-scaling-configuration.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "integ-apprunner-auto-scaling-configuration.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "integ-apprunner-auto-scaling-configuration": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "integ-apprunner-auto-scaling-configuration.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/363fcfee21919c2d1b81b2bce2345af9e946429f13cfaa0093b8342d674b6ae0.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "integ-apprunner-auto-scaling-configuration.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "integ-apprunner-auto-scaling-configuration.assets"
+      ],
+      "metadata": {
+        "/integ-apprunner-auto-scaling-configuration/AutoScalingConfiguration/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AutoScalingConfigurationB226C248"
+          }
+        ],
+        "/integ-apprunner-auto-scaling-configuration/Service/InstanceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ServiceInstanceRoleDFA90CEC"
+          }
+        ],
+        "/integ-apprunner-auto-scaling-configuration/Service/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ServiceDBC79909"
+          }
+        ],
+        "/integ-apprunner-auto-scaling-configuration/URL": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "URL"
+          }
+        ],
+        "/integ-apprunner-auto-scaling-configuration/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/integ-apprunner-auto-scaling-configuration/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ],
+        "ASG1CF037CF4": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ASG1CF037CF4",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "ASG2409F2238": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ASG2409F2238",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "ASG3D4584027": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ASG3D4584027",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "ASG4C27FF86D": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ASG4C27FF86D",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "ASG5B28C3BE5": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ASG5B28C3BE5",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ]
+      },
+      "displayName": "integ-apprunner-auto-scaling-configuration"
+    },
+    "AppRunnerAutoScalingConfigurationDefaultTestDeployAssert4AFB3BF1.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "AppRunnerAutoScalingConfigurationDefaultTestDeployAssert4AFB3BF1.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "AppRunnerAutoScalingConfigurationDefaultTestDeployAssert4AFB3BF1": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "AppRunnerAutoScalingConfigurationDefaultTestDeployAssert4AFB3BF1.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "AppRunnerAutoScalingConfigurationDefaultTestDeployAssert4AFB3BF1.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "AppRunnerAutoScalingConfigurationDefaultTestDeployAssert4AFB3BF1.assets"
+      ],
+      "metadata": {
+        "/AppRunnerAutoScalingConfiguration/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/AppRunnerAutoScalingConfiguration/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "AppRunnerAutoScalingConfiguration/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}
