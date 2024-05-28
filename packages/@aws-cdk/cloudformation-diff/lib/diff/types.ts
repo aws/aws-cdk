@@ -26,6 +26,9 @@ export interface ChangeSetResource {
   afterContext: any | undefined;
 }
 
+/**
+ * Contains all the properties of a given resource that changed, and if the change in that property will cause the resource to replace or not (or maybe).
+ */
 export type PropertyReplacementModeMap = {
   [propertyName: string]: {
     replacementMode: ReplacementModes | undefined;

@@ -30,15 +30,17 @@ export interface TemplateAndChangeSetDiffMergerProps extends TemplateAndChangeSe
  */
 export class TemplateAndChangeSetDiffMerger {
 
-  // TODO(bergjaak) -- in the future, we can use the DescribeChangeSet IncludePropertyValues feature to resolve the values of these missing differences.
-  // However, as of writing, that feature is not supported in all regions and is very new.
-  static MESSAGE_WHEN_CHANGE_VALUE_UNKNOWN = 'DescribeChangeSet detected difference, but the value is not resolved.';
+  /**
+   * We try our best to provide the information -- but if we can't, we fall back to this message, so at least the existence of the difference is reported.
+   */
+  public static VALUE_UNKNOWN_MESSAGE = 'DescribeChangeSet detected difference, but the value is not resolved.';
 
   public static addChangeSetResourceToDiff(args: {
     changedResourceLogicalId: string;
     propertiesThatChanged: string[];
     theDiffResources: types.DifferenceCollection<types.Resource, types.ResourceDifference>;
     resourceType: string;
+    afterContext: any;
     propertiesOfResourceFromCurrentTemplate: { [key: string]: any } | undefined;
     propertiesOfResourceFromNewTemplate: { [key: string]: any } | undefined;
   }) {
@@ -46,16 +48,19 @@ export class TemplateAndChangeSetDiffMerger {
       Type: args.resourceType,
       Properties: deepCopy(args.propertiesOfResourceFromCurrentTemplate ?? {}),
     };
+
+    for (const nameOfChangedProperty of args.propertiesThatChanged) {
+      if (args.propertiesOfResourceFromNewTemplate?.[nameOfChangedProperty]) {
+        // We try our best to include as much info as possible, but if the afterContext fails, we will just notify the existence of the diff.
+        const newPropertyValue = args.afterContext?.Properties?.[nameOfChangedProperty] ?? TemplateAndChangeSetDiffMerger.VALUE_UNKNOWN_MESSAGE;
+        args.propertiesOfResourceFromNewTemplate[nameOfChangedProperty] = newPropertyValue;
+      }
+    }
+
     const newResource = {
       Type: args.resourceType,
       Properties: args.propertiesOfResourceFromNewTemplate,
     };
-
-    for (const nameOfChangedProperty of args.propertiesThatChanged) {
-      if (args.propertiesOfResourceFromNewTemplate?.[nameOfChangedProperty]) {
-        args.propertiesOfResourceFromNewTemplate[nameOfChangedProperty] = TemplateAndChangeSetDiffMerger.MESSAGE_WHEN_CHANGE_VALUE_UNKNOWN;
-      }
-    }
 
     const resourceDiff = diffResource(oldResource, newResource);
     args.theDiffResources.set(args.changedResourceLogicalId, resourceDiff);
@@ -66,6 +71,7 @@ export class TemplateAndChangeSetDiffMerger {
    */
   public static maybeAddChangeSetPropertiesToResourceInDiff(args: {
     propertiesThatChanged: string[];
+    afterContext: any;
     changedResource: types.ResourceDifference | undefined;
     propertiesOfResourceFromCurrentTemplate: { [key: string]: any } | undefined;
     propertiesOfResourceFromNewTemplate: { [key: string]: any } | undefined;
@@ -80,8 +86,12 @@ export class TemplateAndChangeSetDiffMerger {
       }
 
       const oldValue = deepCopy(args.propertiesOfResourceFromCurrentTemplate?.[nameOfChangedProperty] ?? {});
-      args.propertiesOfResourceFromCurrentTemplate![nameOfChangedProperty] = TemplateAndChangeSetDiffMerger.MESSAGE_WHEN_CHANGE_VALUE_UNKNOWN;
+
+      // We try our best to include as much info as possible, but if the afterContext fails, we will just notify the existence of the diff.
+      const newPropertyValue = args.afterContext?.Properties?.[nameOfChangedProperty] ?? TemplateAndChangeSetDiffMerger.VALUE_UNKNOWN_MESSAGE;
+      args.propertiesOfResourceFromCurrentTemplate![nameOfChangedProperty] = newPropertyValue;
       const newValue = args.propertiesOfResourceFromNewTemplate?.[nameOfChangedProperty];
+
       const emptyChangeImpact = {};
 
       args.changedResource!.setPropertyChange(nameOfChangedProperty, new types.PropertyDifference(
@@ -215,10 +225,6 @@ export class TemplateAndChangeSetDiffMerger {
     });
   }
 
-  /**
-   * In the future, this function can be improved by adding the IncludePropertyValues to the DescribeChangeSet call that's made before diffing the templates.
-   * However, as of writing, that feature is very new and is being smoothed out and is not available in all regions. Therefore, waiting to make that change.
-   */
   public addMissingResourceInformationToDiff(
     theDiffResources: types.DifferenceCollection<types.Resource, types.ResourceDifference>,
     currentTemplateResources: { [key: string]: any } | undefined,
@@ -232,6 +238,7 @@ export class TemplateAndChangeSetDiffMerger {
       if (resourceIsInTemplateDiff) {
         TemplateAndChangeSetDiffMerger.maybeAddChangeSetPropertiesToResourceInDiff({
           propertiesThatChanged,
+          afterContext: change.afterContext,
           changedResource: theDiffResources?.get(changedResourceLogicalId),
           propertiesOfResourceFromCurrentTemplate: currentTemplateResources?.[changedResourceLogicalId]?.Properties,
           propertiesOfResourceFromNewTemplate: newTemplateResources?.[changedResourceLogicalId]?.Properties,
@@ -241,6 +248,7 @@ export class TemplateAndChangeSetDiffMerger {
           changedResourceLogicalId,
           propertiesThatChanged,
           theDiffResources,
+          afterContext: change.afterContext,
           resourceType: change.resourceType ?? TemplateAndChangeSetDiffMerger.UNKNOWN_RESOURCE_TYPE,
           propertiesOfResourceFromCurrentTemplate: currentTemplateResources?.[changedResourceLogicalId]?.Properties,
           propertiesOfResourceFromNewTemplate: newTemplateResources?.[changedResourceLogicalId]?.Properties,
