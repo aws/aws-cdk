@@ -1440,7 +1440,7 @@ export interface BucketProps {
    *   attendant cost implications of that).
    * - If enabled, S3 will use its own time-limited key instead.
    *
-   * Only relevant, when Encryption is set to `BucketEncryption.KMS` or `BucketEncryption.KMS_MANAGED`.
+   * Only relevant, when Encryption is not set to `BucketEncryption.UNENCRYPTED`.
    *
    * @default - false
    */
@@ -2109,6 +2109,7 @@ export class Bucket extends BucketBase {
    * | KMS              | undefined           | e                      | SSE-KMS, bucketKeyEnabled = e   | new key                      |
    * | KMS_MANAGED      | undefined           | e                      | SSE-KMS, bucketKeyEnabled = e   | undefined                    |
    * | S3_MANAGED       | undefined           | false                  | SSE-S3                          | undefined                    |
+   * | S3_MANAGED       | undefined           | e                      | SSE-S3, bucketKeyEnabled = e    | undefined                    |
    * | UNENCRYPTED      | undefined           | true                   | ERROR!                          | ERROR!                       |
    * | UNENCRYPTED      | k                   | e                      | ERROR!                          | ERROR!                       |
    * | KMS_MANAGED      | k                   | e                      | ERROR!                          | ERROR!                       |
@@ -2131,12 +2132,9 @@ export class Bucket extends BucketBase {
       throw new Error(`encryptionKey is specified, so 'encryption' must be set to KMS or DSSE (value: ${encryptionType})`);
     }
 
-    // if bucketKeyEnabled is set, encryption must be set to KMS or DSSE.
-    if (
-      props.bucketKeyEnabled &&
-      ![BucketEncryption.KMS, BucketEncryption.KMS_MANAGED, BucketEncryption.DSSE, BucketEncryption.DSSE_MANAGED].includes(encryptionType)
-    ) {
-      throw new Error(`bucketKeyEnabled is specified, so 'encryption' must be set to KMS or DSSE (value: ${encryptionType})`);
+    // if bucketKeyEnabled is set, encryption can not be BucketEncryption.UNENCRYPTED
+    if (props.bucketKeyEnabled && encryptionType === BucketEncryption.UNENCRYPTED) {
+      throw new Error(`bucketKeyEnabled is specified, so 'encryption' must be set to KMS, DSSE or S3 (value: ${encryptionType})`);
     }
 
     if (encryptionType === BucketEncryption.UNENCRYPTED) {
@@ -2165,7 +2163,10 @@ export class Bucket extends BucketBase {
     if (encryptionType === BucketEncryption.S3_MANAGED) {
       const bucketEncryption = {
         serverSideEncryptionConfiguration: [
-          { serverSideEncryptionByDefault: { sseAlgorithm: 'AES256' } },
+          {
+            bucketKeyEnabled: props.bucketKeyEnabled,
+            serverSideEncryptionByDefault: { sseAlgorithm: 'AES256' },
+          },
         ],
       };
 
