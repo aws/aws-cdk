@@ -10,7 +10,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "integ-ec2-instance/VPC"
+      "Value": "AwsCdkFsxLustreMaintenanceTime/VPC"
      }
     ]
    }
@@ -39,7 +39,7 @@
      },
      {
       "Key": "Name",
-      "Value": "integ-ec2-instance/VPC/PublicSubnet1"
+      "Value": "AwsCdkFsxLustreMaintenanceTime/VPC/PublicSubnet1"
      }
     ],
     "VpcId": {
@@ -53,7 +53,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "integ-ec2-instance/VPC/PublicSubnet1"
+      "Value": "AwsCdkFsxLustreMaintenanceTime/VPC/PublicSubnet1"
      }
     ],
     "VpcId": {
@@ -94,7 +94,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "integ-ec2-instance/VPC/PublicSubnet1"
+      "Value": "AwsCdkFsxLustreMaintenanceTime/VPC/PublicSubnet1"
      }
     ]
    }
@@ -114,7 +114,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "integ-ec2-instance/VPC/PublicSubnet1"
+      "Value": "AwsCdkFsxLustreMaintenanceTime/VPC/PublicSubnet1"
      }
     ]
    },
@@ -147,7 +147,7 @@
      },
      {
       "Key": "Name",
-      "Value": "integ-ec2-instance/VPC/PublicSubnet2"
+      "Value": "AwsCdkFsxLustreMaintenanceTime/VPC/PublicSubnet2"
      }
     ],
     "VpcId": {
@@ -161,7 +161,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "integ-ec2-instance/VPC/PublicSubnet2"
+      "Value": "AwsCdkFsxLustreMaintenanceTime/VPC/PublicSubnet2"
      }
     ],
     "VpcId": {
@@ -202,7 +202,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "integ-ec2-instance/VPC/PublicSubnet2"
+      "Value": "AwsCdkFsxLustreMaintenanceTime/VPC/PublicSubnet2"
      }
     ]
    }
@@ -222,7 +222,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "integ-ec2-instance/VPC/PublicSubnet2"
+      "Value": "AwsCdkFsxLustreMaintenanceTime/VPC/PublicSubnet2"
      }
     ]
    },
@@ -255,7 +255,7 @@
      },
      {
       "Key": "Name",
-      "Value": "integ-ec2-instance/VPC/PrivateSubnet1"
+      "Value": "AwsCdkFsxLustreMaintenanceTime/VPC/PrivateSubnet1"
      }
     ],
     "VpcId": {
@@ -269,7 +269,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "integ-ec2-instance/VPC/PrivateSubnet1"
+      "Value": "AwsCdkFsxLustreMaintenanceTime/VPC/PrivateSubnet1"
      }
     ],
     "VpcId": {
@@ -324,7 +324,7 @@
      },
      {
       "Key": "Name",
-      "Value": "integ-ec2-instance/VPC/PrivateSubnet2"
+      "Value": "AwsCdkFsxLustreMaintenanceTime/VPC/PrivateSubnet2"
      }
     ],
     "VpcId": {
@@ -338,7 +338,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "integ-ec2-instance/VPC/PrivateSubnet2"
+      "Value": "AwsCdkFsxLustreMaintenanceTime/VPC/PrivateSubnet2"
      }
     ],
     "VpcId": {
@@ -375,7 +375,7 @@
     "Tags": [
      {
       "Key": "Name",
-      "Value": "integ-ec2-instance/VPC"
+      "Value": "AwsCdkFsxLustreMaintenanceTime/VPC"
      }
     ]
    }
@@ -391,29 +391,15 @@
     }
    }
   },
-  "IntegSg68DC2C7E": {
+  "FsxLustreFileSystemFsxLustreSecurityGroup1C661EA7": {
    "Type": "AWS::EC2::SecurityGroup",
    "Properties": {
-    "GroupDescription": "integ-ec2-instance/IntegSg",
+    "GroupDescription": "AwsCdkFsxLustreMaintenanceTime/FsxLustreFileSystem/FsxLustreSecurityGroup",
     "SecurityGroupEgress": [
      {
       "CidrIp": "0.0.0.0/0",
       "Description": "Allow all outbound traffic by default",
       "IpProtocol": "-1"
-     },
-     {
-      "CidrIpv6": "::/0",
-      "Description": "Allow all outbound ipv6 traffic by default",
-      "IpProtocol": "-1"
-     }
-    ],
-    "SecurityGroupIngress": [
-     {
-      "CidrIp": "0.0.0.0/0",
-      "Description": "from 0.0.0.0/0:ICMP Type 8",
-      "FromPort": 8,
-      "IpProtocol": "icmp",
-      "ToPort": -1
      }
     ],
     "VpcId": {
@@ -421,112 +407,56 @@
     }
    }
   },
-  "InstanceInstanceRoleE9785DE5": {
-   "Type": "AWS::IAM::Role",
+  "FsxLustreFileSystemFsxLustreSecurityGroupfromAwsCdkFsxLustreMaintenanceTimeFsxLustreFileSystemFsxLustreSecurityGroup4BBE108E9881023AF49C737": {
+   "Type": "AWS::EC2::SecurityGroupIngress",
    "Properties": {
-    "AssumeRolePolicyDocument": {
-     "Statement": [
-      {
-       "Action": "sts:AssumeRole",
-       "Effect": "Allow",
-       "Principal": {
-        "Service": "ec2.amazonaws.com"
-       }
-      }
-     ],
-     "Version": "2012-10-17"
-    },
-    "Tags": [
-     {
-      "Key": "Name",
-      "Value": "integ-ec2-instance/Instance"
-     }
-    ]
-   }
-  },
-  "InstanceInstanceRoleDefaultPolicy4ACE9290": {
-   "Type": "AWS::IAM::Policy",
-   "Properties": {
-    "PolicyDocument": {
-     "Statement": [
-      {
-       "Action": "ssm:*",
-       "Effect": "Allow",
-       "Resource": "*"
-      }
-     ],
-     "Version": "2012-10-17"
-    },
-    "PolicyName": "InstanceInstanceRoleDefaultPolicy4ACE9290",
-    "Roles": [
-     {
-      "Ref": "InstanceInstanceRoleE9785DE5"
-     }
-    ]
-   }
-  },
-  "InstanceInstanceProfileAB5AEF02": {
-   "Type": "AWS::IAM::InstanceProfile",
-   "Properties": {
-    "Roles": [
-     {
-      "Ref": "InstanceInstanceRoleE9785DE5"
-     }
-    ]
-   }
-  },
-  "InstanceC1063A87": {
-   "Type": "AWS::EC2::Instance",
-   "Properties": {
-    "AvailabilityZone": {
-     "Fn::Select": [
-      0,
-      {
-       "Fn::GetAZs": ""
-      }
+    "Description": "from AwsCdkFsxLustreMaintenanceTimeFsxLustreFileSystemFsxLustreSecurityGroup4BBE108E:988-1023",
+    "FromPort": 988,
+    "GroupId": {
+     "Fn::GetAtt": [
+      "FsxLustreFileSystemFsxLustreSecurityGroup1C661EA7",
+      "GroupId"
      ]
     },
-    "IamInstanceProfile": {
-     "Ref": "InstanceInstanceProfileAB5AEF02"
+    "IpProtocol": "tcp",
+    "SourceSecurityGroupId": {
+     "Fn::GetAtt": [
+      "FsxLustreFileSystemFsxLustreSecurityGroup1C661EA7",
+      "GroupId"
+     ]
     },
-    "ImageId": {
-     "Ref": "SsmParameterValueawsserviceamiamazonlinuxlatestamzn2amihvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter"
+    "ToPort": 1023
+   }
+  },
+  "FsxLustreFileSystem1F786378": {
+   "Type": "AWS::FSx::FileSystem",
+   "Properties": {
+    "FileSystemType": "LUSTRE",
+    "LustreConfiguration": {
+     "DataCompressionType": "LZ4",
+     "DeploymentType": "SCRATCH_2",
+     "WeeklyMaintenanceStartTime": "2:23:59"
     },
-    "InstanceInitiatedShutdownBehavior": "terminate",
-    "InstanceType": "t3.nano",
-    "Monitoring": true,
     "SecurityGroupIds": [
      {
       "Fn::GetAtt": [
-       "IntegSg68DC2C7E",
+       "FsxLustreFileSystemFsxLustreSecurityGroup1C661EA7",
        "GroupId"
       ]
      }
     ],
-    "SubnetId": {
-     "Ref": "VPCPrivateSubnet1Subnet8BCA10E0"
-    },
-    "Tags": [
+    "StorageCapacity": 1200,
+    "SubnetIds": [
      {
-      "Key": "Name",
-      "Value": "integ-ec2-instance/Instance"
+      "Ref": "VPCPrivateSubnet1Subnet8BCA10E0"
      }
-    ],
-    "UserData": {
-     "Fn::Base64": "#!/bin/bash\nyum install -y"
-    }
+    ]
    },
-   "DependsOn": [
-    "InstanceInstanceRoleDefaultPolicy4ACE9290",
-    "InstanceInstanceRoleE9785DE5"
-   ]
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   }
  },
  "Parameters": {
-  "SsmParameterValueawsserviceamiamazonlinuxlatestamzn2amihvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter": {
-   "Type": "AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>",
-   "Default": "/aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2"
-  },
   "BootstrapVersion": {
    "Type": "AWS::SSM::Parameter::Value<String>",
    "Default": "/cdk-bootstrap/hnb659fds/version",
