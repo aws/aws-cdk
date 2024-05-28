@@ -6,12 +6,27 @@ import * as types from '../diff/types';
 export type DescribeChangeSetOutput = DescribeChangeSet;
 type ChangeSetResourceChangeDetail = RCD;
 
+interface TemplateAndChangeSetDiffMergerOptions {
+  /*
+   * Only specifiable for testing. Otherwise, this is the datastructure that the changeSet is converted into so
+   * that we only pay attention to the subset of changeSet properties that are relevant for computing the diff.
+   *
+   * @default - the changeSet is converted into this datastructure.
+  */
+  readonly changeSetResources?: types.ChangeSetResources;
+}
+
+export interface TemplateAndChangeSetDiffMergerProps extends TemplateAndChangeSetDiffMergerOptions {
+  /*
+   * The changeset that will be read and merged into the template diff.
+  */
+  readonly changeSet: DescribeChangeSetOutput;
+}
+
 /**
  * The purpose of this class is to include differences from the ChangeSet to differences in the TemplateDiff.
  */
 export class TemplateAndChangeSetDiffMerger {
-  // If we somehow cannot find the resourceType, then we'll mark it as UNKNOWN, so that can be seen in the diff.
-  static UNKNOWN_RESOURCE_TYPE = 'UNKNOWN_RESOURCE_TYPE';
 
   public static determineChangeSetReplacementMode(propertyChange: ChangeSetResourceChangeDetail): types.ReplacementModes {
     if (propertyChange.Target?.RequiresRecreation === undefined) {
@@ -33,17 +48,15 @@ export class TemplateAndChangeSetDiffMerger {
     return propertyChange.Target.RequiresRecreation as types.ReplacementModes;
   }
 
-  changeSet: DescribeChangeSetOutput | undefined;
-  changeSetResources: types.ChangeSetResources;
+  // If we somehow cannot find the resourceType, then we'll mark it as UNKNOWN, so that can be seen in the diff.
+  private static UNKNOWN_RESOURCE_TYPE = 'UNKNOWN_RESOURCE_TYPE';
 
-  constructor(
-    args: {
-      changeSet: DescribeChangeSetOutput;
-      changeSetResources?: types.ChangeSetResources; // used for testing -- otherwise, don't populate
-    },
-  ) {
-    this.changeSet = args.changeSet;
-    this.changeSetResources = args.changeSetResources ?? this.convertDescribeChangeSetOutputToChangeSetResources(this.changeSet);
+  public changeSet: DescribeChangeSetOutput | undefined;
+  public changeSetResources: types.ChangeSetResources;
+
+  constructor(props: TemplateAndChangeSetDiffMergerProps) {
+    this.changeSet = props.changeSet;
+    this.changeSetResources = props.changeSetResources ?? this.convertDescribeChangeSetOutputToChangeSetResources(this.changeSet);
   }
 
   /**
@@ -126,11 +139,11 @@ export class TemplateAndChangeSetDiffMerger {
     });
   }
 
-  public findResourceImports(): string[] {
+  public findResourceImports(): (string | undefined)[] {
     const importedResourceLogicalIds = [];
     for (const resourceChange of this.changeSet?.Changes ?? []) {
       if (resourceChange.ResourceChange?.Action === 'Import') {
-        importedResourceLogicalIds.push(resourceChange.ResourceChange.LogicalResourceId!);
+        importedResourceLogicalIds.push(resourceChange.ResourceChange.LogicalResourceId);
       }
     }
 
