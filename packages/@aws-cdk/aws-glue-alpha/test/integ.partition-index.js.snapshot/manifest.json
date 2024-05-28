@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/0d471d5707a3f24513191f61c2680a861359e3a0f9f9cb844789e776a8038609.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/ed77174b996a7b4ff83ec0c82aaeb389de2851d77d9cb3781ad269bd795ec400.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -58,10 +58,10 @@
             "data": "CSVTableindex1CustomResource71DFCC31"
           }
         ],
-        "/aws-cdk-glue/CSVTable/index3CustomResource/Default": [
+        "/aws-cdk-glue/CSVTable/index2CustomResource/Default": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "CSVTableindex3CustomResource1373446B"
+            "data": "CSVTableindex2CustomResource7E62999D"
           }
         ],
         "/aws-cdk-glue/d247c53f-ce3e-4a07-ada9-bab1690fd3c4/OnEventHandler/ServiceRole/Resource": [
@@ -206,6 +206,15 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
+          }
+        ],
+        "CSVTableindex3CustomResource1373446B": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CSVTableindex3CustomResource1373446B",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },

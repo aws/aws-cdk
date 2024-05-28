@@ -154,13 +154,13 @@
                   "version": "0.0.0"
                 }
               },
-              "index3CustomResource": {
-                "id": "index3CustomResource",
-                "path": "aws-cdk-glue/CSVTable/index3CustomResource",
+              "index2CustomResource": {
+                "id": "index2CustomResource",
+                "path": "aws-cdk-glue/CSVTable/index2CustomResource",
                 "children": {
                   "Default": {
                     "id": "Default",
-                    "path": "aws-cdk-glue/CSVTable/index3CustomResource/Default",
+                    "path": "aws-cdk-glue/CSVTable/index2CustomResource/Default",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.CfnResource",
                       "version": "0.0.0"

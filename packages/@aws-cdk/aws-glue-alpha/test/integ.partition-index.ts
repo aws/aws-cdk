@@ -52,7 +52,7 @@ const csvTable = new glue.S3Table(stack, 'CSVTable', {
 });
 
 csvTable.addPartitionIndex({
-  indexName: 'index3',
+  indexName: 'index2',
   keyNames: ['year'],
 });
 

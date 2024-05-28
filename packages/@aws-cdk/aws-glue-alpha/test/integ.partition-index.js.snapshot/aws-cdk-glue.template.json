@@ -102,12 +102,12 @@
     ]
    },
    "DependsOn": [
-    "CSVTableindex3CustomResource1373446B"
+    "CSVTableindex2CustomResource7E62999D"
    ],
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "CSVTableindex3CustomResource1373446B": {
+  "CSVTableindex2CustomResource7E62999D": {
    "Type": "AWS::CloudFormation::CustomResource",
    "Properties": {
     "ServiceToken": {
@@ -122,7 +122,7 @@
     "TableName": {
      "Ref": "CSVTableE499CABA"
     },
-    "IndexName": "index3",
+    "IndexName": "index2",
     "Keys": [
      "year"
     ]
