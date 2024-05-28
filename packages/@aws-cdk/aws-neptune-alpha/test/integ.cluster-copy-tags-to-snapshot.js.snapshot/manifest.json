@@ -1,28 +1,28 @@
 {
   "version": "36.0.0",
   "artifacts": {
-    "integ-ec2-instance.assets": {
+    "aws-cdk-neptune-integ-copy-tags-to-snapshot.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "integ-ec2-instance.assets.json",
+        "file": "aws-cdk-neptune-integ-copy-tags-to-snapshot.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "integ-ec2-instance": {
+    "aws-cdk-neptune-integ-copy-tags-to-snapshot": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "integ-ec2-instance.template.json",
+        "templateFile": "aws-cdk-neptune-integ-copy-tags-to-snapshot.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/cb03c6899a8823875e8b081656c0dde340d8f60dd4e695b4e21b07240e6ff4be.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a57522de53101cd95696abb302681e2a1002f0ea0beffe8e2acdf6df1fd35852.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "integ-ec2-instance.assets"
+          "aws-cdk-neptune-integ-copy-tags-to-snapshot.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -31,211 +31,223 @@
         }
       },
       "dependencies": [
-        "integ-ec2-instance.assets"
+        "aws-cdk-neptune-integ-copy-tags-to-snapshot.assets"
       ],
       "metadata": {
-        "/integ-ec2-instance/VPC/Resource": [
+        "/aws-cdk-neptune-integ-copy-tags-to-snapshot/VPC/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCB9E5F0B4"
           }
         ],
-        "/integ-ec2-instance/VPC/PublicSubnet1/Subnet": [
+        "/aws-cdk-neptune-integ-copy-tags-to-snapshot/VPC/PublicSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPublicSubnet1SubnetB4246D30"
           }
         ],
-        "/integ-ec2-instance/VPC/PublicSubnet1/RouteTable": [
+        "/aws-cdk-neptune-integ-copy-tags-to-snapshot/VPC/PublicSubnet1/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPublicSubnet1RouteTableFEE4B781"
           }
         ],
-        "/integ-ec2-instance/VPC/PublicSubnet1/RouteTableAssociation": [
+        "/aws-cdk-neptune-integ-copy-tags-to-snapshot/VPC/PublicSubnet1/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPublicSubnet1RouteTableAssociation0B0896DC"
           }
         ],
-        "/integ-ec2-instance/VPC/PublicSubnet1/DefaultRoute": [
+        "/aws-cdk-neptune-integ-copy-tags-to-snapshot/VPC/PublicSubnet1/DefaultRoute": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPublicSubnet1DefaultRoute91CEF279"
           }
         ],
-        "/integ-ec2-instance/VPC/PublicSubnet1/EIP": [
+        "/aws-cdk-neptune-integ-copy-tags-to-snapshot/VPC/PublicSubnet1/EIP": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPublicSubnet1EIP6AD938E8"
           }
         ],
-        "/integ-ec2-instance/VPC/PublicSubnet1/NATGateway": [
+        "/aws-cdk-neptune-integ-copy-tags-to-snapshot/VPC/PublicSubnet1/NATGateway": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPublicSubnet1NATGatewayE0556630"
           }
         ],
-        "/integ-ec2-instance/VPC/PublicSubnet2/Subnet": [
+        "/aws-cdk-neptune-integ-copy-tags-to-snapshot/VPC/PublicSubnet2/Subnet": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPublicSubnet2Subnet74179F39"
           }
         ],
-        "/integ-ec2-instance/VPC/PublicSubnet2/RouteTable": [
+        "/aws-cdk-neptune-integ-copy-tags-to-snapshot/VPC/PublicSubnet2/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPublicSubnet2RouteTable6F1A15F1"
           }
         ],
-        "/integ-ec2-instance/VPC/PublicSubnet2/RouteTableAssociation": [
+        "/aws-cdk-neptune-integ-copy-tags-to-snapshot/VPC/PublicSubnet2/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPublicSubnet2RouteTableAssociation5A808732"
           }
         ],
-        "/integ-ec2-instance/VPC/PublicSubnet2/DefaultRoute": [
+        "/aws-cdk-neptune-integ-copy-tags-to-snapshot/VPC/PublicSubnet2/DefaultRoute": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPublicSubnet2DefaultRouteB7481BBA"
           }
         ],
-        "/integ-ec2-instance/VPC/PublicSubnet2/EIP": [
+        "/aws-cdk-neptune-integ-copy-tags-to-snapshot/VPC/PublicSubnet2/EIP": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPublicSubnet2EIP4947BC00"
           }
         ],
-        "/integ-ec2-instance/VPC/PublicSubnet2/NATGateway": [
+        "/aws-cdk-neptune-integ-copy-tags-to-snapshot/VPC/PublicSubnet2/NATGateway": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPublicSubnet2NATGateway3C070193"
           }
         ],
-        "/integ-ec2-instance/VPC/PrivateSubnet1/Subnet": [
+        "/aws-cdk-neptune-integ-copy-tags-to-snapshot/VPC/PrivateSubnet1/Subnet": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPrivateSubnet1Subnet8BCA10E0"
           }
         ],
-        "/integ-ec2-instance/VPC/PrivateSubnet1/RouteTable": [
+        "/aws-cdk-neptune-integ-copy-tags-to-snapshot/VPC/PrivateSubnet1/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPrivateSubnet1RouteTableBE8A6027"
           }
         ],
-        "/integ-ec2-instance/VPC/PrivateSubnet1/RouteTableAssociation": [
+        "/aws-cdk-neptune-integ-copy-tags-to-snapshot/VPC/PrivateSubnet1/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPrivateSubnet1RouteTableAssociation347902D1"
           }
         ],
-        "/integ-ec2-instance/VPC/PrivateSubnet1/DefaultRoute": [
+        "/aws-cdk-neptune-integ-copy-tags-to-snapshot/VPC/PrivateSubnet1/DefaultRoute": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPrivateSubnet1DefaultRouteAE1D6490"
           }
         ],
-        "/integ-ec2-instance/VPC/PrivateSubnet2/Subnet": [
+        "/aws-cdk-neptune-integ-copy-tags-to-snapshot/VPC/PrivateSubnet2/Subnet": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPrivateSubnet2SubnetCFCDAA7A"
           }
         ],
-        "/integ-ec2-instance/VPC/PrivateSubnet2/RouteTable": [
+        "/aws-cdk-neptune-integ-copy-tags-to-snapshot/VPC/PrivateSubnet2/RouteTable": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPrivateSubnet2RouteTable0A19E10E"
           }
         ],
-        "/integ-ec2-instance/VPC/PrivateSubnet2/RouteTableAssociation": [
+        "/aws-cdk-neptune-integ-copy-tags-to-snapshot/VPC/PrivateSubnet2/RouteTableAssociation": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPrivateSubnet2RouteTableAssociation0C73D413"
           }
         ],
-        "/integ-ec2-instance/VPC/PrivateSubnet2/DefaultRoute": [
+        "/aws-cdk-neptune-integ-copy-tags-to-snapshot/VPC/PrivateSubnet2/DefaultRoute": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCPrivateSubnet2DefaultRouteF4F5CFD2"
           }
         ],
-        "/integ-ec2-instance/VPC/IGW": [
+        "/aws-cdk-neptune-integ-copy-tags-to-snapshot/VPC/IGW": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCIGWB7E252D3"
           }
         ],
-        "/integ-ec2-instance/VPC/VPCGW": [
+        "/aws-cdk-neptune-integ-copy-tags-to-snapshot/VPC/VPCGW": [
           {
             "type": "aws:cdk:logicalId",
             "data": "VPCVPCGW99B986DC"
           }
         ],
-        "/integ-ec2-instance/IntegSg/Resource": [
+        "/aws-cdk-neptune-integ-copy-tags-to-snapshot/DatabaseCopyTagsToSnapshotDisabled/Subnets/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "IntegSg68DC2C7E"
+            "data": "DatabaseCopyTagsToSnapshotDisabledSubnetsD6191D0D"
           }
         ],
-        "/integ-ec2-instance/Instance/InstanceRole/Resource": [
+        "/aws-cdk-neptune-integ-copy-tags-to-snapshot/DatabaseCopyTagsToSnapshotDisabled/SecurityGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "InstanceInstanceRoleE9785DE5"
+            "data": "DatabaseCopyTagsToSnapshotDisabledSecurityGroupDA546735"
           }
         ],
-        "/integ-ec2-instance/Instance/InstanceRole/DefaultPolicy/Resource": [
+        "/aws-cdk-neptune-integ-copy-tags-to-snapshot/DatabaseCopyTagsToSnapshotDisabled/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "InstanceInstanceRoleDefaultPolicy4ACE9290"
+            "data": "DatabaseCopyTagsToSnapshotDisabled06721937"
           }
         ],
-        "/integ-ec2-instance/Instance/InstanceProfile": [
+        "/aws-cdk-neptune-integ-copy-tags-to-snapshot/DatabaseCopyTagsToSnapshotDisabled/Instance1": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "InstanceInstanceProfileAB5AEF02"
+            "data": "DatabaseCopyTagsToSnapshotDisabledInstance1437B1FA7"
           }
         ],
-        "/integ-ec2-instance/Instance/Resource": [
+        "/aws-cdk-neptune-integ-copy-tags-to-snapshot/DatabaseCopyTagsToSnapshotEnabled/Subnets/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "InstanceC1063A87"
+            "data": "DatabaseCopyTagsToSnapshotEnabledSubnets3CE045F1"
           }
         ],
-        "/integ-ec2-instance/SsmParameterValue:--aws--service--ami-amazon-linux-latest--amzn2-ami-hvm-x86_64-gp2:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": [
+        "/aws-cdk-neptune-integ-copy-tags-to-snapshot/DatabaseCopyTagsToSnapshotEnabled/SecurityGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "SsmParameterValueawsserviceamiamazonlinuxlatestamzn2amihvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter"
+            "data": "DatabaseCopyTagsToSnapshotEnabledSecurityGroup227F101E"
           }
         ],
-        "/integ-ec2-instance/BootstrapVersion": [
+        "/aws-cdk-neptune-integ-copy-tags-to-snapshot/DatabaseCopyTagsToSnapshotEnabled/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DatabaseCopyTagsToSnapshotEnabled84786E21"
+          }
+        ],
+        "/aws-cdk-neptune-integ-copy-tags-to-snapshot/DatabaseCopyTagsToSnapshotEnabled/Instance1": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DatabaseCopyTagsToSnapshotEnabledInstance15DFB3914"
+          }
+        ],
+        "/aws-cdk-neptune-integ-copy-tags-to-snapshot/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/integ-ec2-instance/CheckBootstrapVersion": [
+        "/aws-cdk-neptune-integ-copy-tags-to-snapshot/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "integ-ec2-instance"
+      "displayName": "aws-cdk-neptune-integ-copy-tags-to-snapshot"
     },
-    "instancetestDefaultTestDeployAssert5516EAF1.assets": {
+    "ClusterTestDefaultTestDeployAssert6A1BBA9D.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "instancetestDefaultTestDeployAssert5516EAF1.assets.json",
+        "file": "ClusterTestDefaultTestDeployAssert6A1BBA9D.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "instancetestDefaultTestDeployAssert5516EAF1": {
+    "ClusterTestDefaultTestDeployAssert6A1BBA9D": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "instancetestDefaultTestDeployAssert5516EAF1.template.json",
+        "templateFile": "ClusterTestDefaultTestDeployAssert6A1BBA9D.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
@@ -244,7 +256,7 @@
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "instancetestDefaultTestDeployAssert5516EAF1.assets"
+          "ClusterTestDefaultTestDeployAssert6A1BBA9D.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -253,23 +265,23 @@
         }
       },
       "dependencies": [
-        "instancetestDefaultTestDeployAssert5516EAF1.assets"
+        "ClusterTestDefaultTestDeployAssert6A1BBA9D.assets"
       ],
       "metadata": {
-        "/instance-test/DefaultTest/DeployAssert/BootstrapVersion": [
+        "/ClusterTest/DefaultTest/DeployAssert/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/instance-test/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+        "/ClusterTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "instance-test/DefaultTest/DeployAssert"
+      "displayName": "ClusterTest/DefaultTest/DeployAssert"
     },
     "Tree": {
       "type": "cdk:tree",
