@@ -6,14 +6,34 @@ import { SecurityGroupChanges } from '../network/security-group-changes';
 
 export type PropertyMap = {[key: string]: any };
 
-export type ResourceReplacements = { [logicalId: string]: ResourceReplacement };
+export type ChangeSetResources = { [logicalId: string]: ChangeSetResource };
 
-export interface ResourceReplacement {
-  resourceReplaced: boolean;
-  propertiesReplaced: { [propertyName: string]: ChangeSetReplacement };
+/**
+ * @param beforeContext is the BeforeContext field from the ChangeSet.ResourceChange.BeforeContext. This is the part of the CloudFormation template
+ * that defines what the resource is before the change is applied; that is, BeforeContext is CloudFormationTemplate.Resources[LogicalId] before the ChangeSet is executed.
+ *
+ * @param afterContext same as beforeContext but for after the change is made; that is, AfterContext is CloudFormationTemplate.Resources[LogicalId] after the ChangeSet is executed.
+ *
+ *  * Here is an example of what a beforeContext/afterContext looks like:
+ *  '{"Properties":{"Value":"sdflkja","Type":"String","Name":"mySsmParameterFromStack"},"Metadata":{"aws:cdk:path":"cdk/mySsmParameter/Resource"}}'
+ */
+export interface ChangeSetResource {
+  resourceWasReplaced: boolean;
+  resourceType: string | undefined;
+  propertyReplacementModes: PropertyReplacementModeMap | undefined;
+  beforeContext: any | undefined;
+  afterContext: any | undefined;
+}
+export type PropertyReplacementModeMap = {
+  [propertyName: string]: {
+    replacementMode: ReplacementModes | undefined;
+  };
 }
 
-export type ChangeSetReplacement = 'Always' | 'Never' | 'Conditionally';
+/**
+ * 'Always' means that changing the corresponding property will always cause a resource replacement. Never means never. Conditionally means maybe.
+ */
+export type ReplacementModes = 'Always' | 'Never' | 'Conditionally';
 
 /** Semantic differences between two CloudFormation templates. */
 export class TemplateDiff implements ITemplateDiff {
@@ -198,6 +218,10 @@ export class TemplateDiff implements ITemplateDiff {
           }
         }
       } else {
+        if (!resourceChange.resourceType) {
+          continue;
+        }
+
         const resourceModel = loadResourceModel(resourceChange.resourceType);
         if (resourceModel && this.resourceIsScrutinizable(resourceModel, scrutinyTypes)) {
           ret.push({
@@ -357,14 +381,16 @@ export class DifferenceCollection<V, T extends IDifference<V>> {
     return Object.values(this.changes).length;
   }
 
-  public get(logicalId: string): T {
-    const ret = this.diffs[logicalId];
-    if (!ret) { throw new Error(`No object with logical ID '${logicalId}'`); }
-    return ret;
+  public get(logicalId: string): T | undefined {
+    return this.diffs[logicalId];
   }
 
   public remove(logicalId: string): void {
     delete this.diffs[logicalId];
+  }
+
+  public set(logicalId: string, diff: T): void {
+    this.diffs[logicalId] = diff;
   }
 
   public get logicalIds(): string[] {
@@ -626,11 +652,11 @@ export class ResourceDifference implements IDifference<Resource> {
    *
    * If the resource type was changed, it's an error to call this.
    */
-  public get resourceType(): string {
+  public get resourceType(): string | undefined {
     if (this.resourceTypeChanged) {
       throw new Error('Cannot get .resourceType, because the type was changed');
     }
-    return this.resourceTypes.oldType || this.resourceTypes.newType!;
+    return this.resourceTypes.oldType || this.resourceTypes.newType;
   }
 
   /**
