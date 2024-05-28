@@ -33,7 +33,7 @@ export interface PartitionIndexProviderProps extends PartitionIndexOptions {
  */
 export class PartitionIndexProvider extends Construct {
   /**
-   * Creates a Stack singleton partition index provider.
+   * Creates a Stack singleton PartitionIndexProvider.
    */
   public static getOrCreate(scope: Construct, props: PartitionIndexProviderProps) {
     const stack = Stack.of(scope);
@@ -43,17 +43,17 @@ export class PartitionIndexProvider extends Construct {
   }
 
   /**
-   * The underlying CloudFormation custom resource provider.
+   * The underlying AWS CloudFormation custom resource provider.
    */
   public readonly provider: Provider;
 
   /**
-   * The handler the provider uses to handler stack events.
+   * The AWS Lambda function to invoke for all resource lifecycle operations (CREATE/UPDATE/DELETE).
    */
   public readonly onEventHandler: IFunction;
 
   /**
-   * The handler the provider uses to determine if partition index operation has completed.
+   * The AWS Lambda function to invoke in order to determine if the partition index operation is complete.
    */
   public readonly isCompleteHandler: IFunction;
 
@@ -63,7 +63,7 @@ export class PartitionIndexProvider extends Construct {
     this.onEventHandler = new Function(this, 'OnEventHandler', {
       handler: 'index.onEventHandler',
       code: Code.fromAsset(path.join(__dirname, '..', 'custom-resource-handlers', 'dist', 'aws-glue-alpha', 'partition-index-handler')),
-      runtime: Runtime.NODEJS_20_X,
+      runtime: Runtime.NODEJS_18_X,
     });
     this.onEventHandler.addToRolePolicy(new PolicyStatement({
       actions: ['glue:UpdateTable'],
@@ -73,7 +73,7 @@ export class PartitionIndexProvider extends Construct {
     this.isCompleteHandler = new Function(this, 'IsCompleteHandler', {
       handler: 'index.isCompleteHandler',
       code: Code.fromAsset(path.join(__dirname, '..', 'custom-resource-handlers', 'dist', 'aws-glue-alpha', 'partition-index-handler')),
-      runtime: Runtime.NODEJS_20_X,
+      runtime: Runtime.NODEJS_18_X,
     });
     this.isCompleteHandler.addToRolePolicy(new PolicyStatement({
       actions: ['glue:GetTable'],
