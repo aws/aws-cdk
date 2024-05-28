@@ -81,7 +81,7 @@ export interface IObservabilityConfiguration extends cdk.IResource {
  */
 export class ObservabilityConfiguration extends cdk.Resource implements IObservabilityConfiguration {
   /**
-   * Import from Observability configuration attributes.
+   * Imports an App Runner Observability Configuration from attributes.
    */
   public static fromObservabilityConfigurationAttributes(scope: Construct, id: string,
     attrs: ObservabilityConfigurationAttributes): IObservabilityConfiguration {
@@ -96,6 +96,28 @@ export class ObservabilityConfiguration extends cdk.Resource implements IObserva
     }
 
     return new Import(scope, id);
+  }
+
+  /**
+   * Imports an App Runner Observability Configuration from its ARN
+   */
+  public static fromArn(scope: Construct, id: string, observabilityConfigurationArn: string): IObservabilityConfiguration {
+    const arn = cdk.Stack.of(scope).splitArn(observabilityConfigurationArn, cdk.ArnFormat.SLASH_RESOURCE_NAME);
+
+    const resourceParts = arn.resourceName?.split('/');
+
+    if (!resourceParts || resourceParts.length < 3) {
+      throw new Error(`Unexpected ARN format: ${observabilityConfigurationArn}`);
+    }
+
+    const observabilityConfigurationName = resourceParts[0];
+    const observabilityConfigurationRevision = parseInt(resourceParts[1]);
+
+    return ObservabilityConfiguration.fromObservabilityConfigurationAttributes(scope, id, {
+      observabilityConfigurationArn,
+      observabilityConfigurationName,
+      observabilityConfigurationRevision,
+    });
   }
 
   /**
