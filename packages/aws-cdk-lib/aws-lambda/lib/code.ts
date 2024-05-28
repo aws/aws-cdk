@@ -62,15 +62,12 @@ export abstract class Code {
    * * For example, if you use the command to run a build script (e.g., [ 'node', 'bundle_code.js' ]), and the build script generates a directory `/my/lambda/code`
    * containing code that should be ran in a Lambda function, then output should be set to `/my/lambda/code`
    * @param command The command which will be executed to generate the output, for example, [ 'node', 'bundle_code.js' ]
-   * @param assetOptions The same options that are available for `Code.fromAsset` -- but bundling options are not allowed
-   * @param commandOptions Options that are passed to the spawned process, which determine the characteristics of the spawned process.
-   * * See `child_process.SpawnSyncOptions` for possible inputs and defaults (https://nodejs.org/api/child_process.html#child_processspawnsynccommand-args-options).
+   * @param options options for the custom command, and other asset options -- but bundling options are not allowed.
    */
   public static fromCustomCommand(
     output: string,
     command: string[],
-    commandOptions?: {[option: string]: any}, // jsii build fails if the type is SpawnSyncOptions... so best we can do is point user to those options.
-    assetOptions?: s3_assets.AssetOptions,
+    options?: CustomCommandOptions,
   ): AssetCode {
     if (command.length === 0) {
       throw new Error('command must contain at least one argument. For example, ["node", "buildFile.js"].');
@@ -79,9 +76,9 @@ export abstract class Code {
     const cmd = command[0];
     const commandArguments = command.splice(1);
 
-    const proc = commandOptions === undefined
+    const proc = options?.commandOptions === undefined
       ? spawnSync(cmd, commandArguments) // use the default spawnSyncOptions
-      : spawnSync(cmd, commandArguments, commandOptions);
+      : spawnSync(cmd, commandArguments, options.commandOptions);
 
     if (proc.error) {
       throw new Error(`Failed to execute custom command: ${proc.error}`);
@@ -90,7 +87,7 @@ export abstract class Code {
       throw new Error(`${command.join(' ')} exited with status: ${proc.status}\n\nstdout: ${proc.stdout?.toString().trim()}\n\nstderr: ${proc.stderr?.toString().trim()}`);
     }
 
-    return new AssetCode(output, assetOptions);
+    return new AssetCode(output, options);
   }
 
   /**
@@ -617,4 +614,16 @@ export interface DockerBuildAssetOptions extends cdk.DockerBuildOptions {
    * @default - a unique temporary directory in the system temp directory
    */
   readonly outputPath?: string;
+}
+
+/**
+ * Options for creating `AssetCode` with a custom command, such as running a buildfile.
+ */
+export interface CustomCommandOptions extends s3_assets.AssetOptions {
+  /**
+   * options that are passed to the spawned process, which determine the characteristics of the spawned process.
+   *
+   * @default: see `child_process.SpawnSyncOptions` (https://nodejs.org/api/child_process.html#child_processspawnsynccommand-args-options).
+   */
+  readonly commandOptions?: { [options: string]: any };
 }

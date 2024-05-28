@@ -107,11 +107,6 @@
                       },
                       "s3Key": "c12bcea99402579807f652afcfc96ca3da8544cdb4d02ba9cad57e2cca16c5ea.zip"
                     },
-                    "environment": {
-                      "variables": {
-                        "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1"
-                      }
-                    },
                     "handler": "mylambdafile.handler",
                     "role": {
                       "Fn::GetAtt": [

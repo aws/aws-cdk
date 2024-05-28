@@ -53,7 +53,7 @@ describe('code', () => {
     test('properly splices arguments when commandOptions are included', () => {
       // GIVEN
       const command = 'node is a great command, wow'.split(' ');
-      const commandOptions = { cwd: '/tmp', env: { SOME_KEY: 'SOME_VALUE' } };
+      const commandOptions = { commandOptions: { cwd: '/tmp', env: { SOME_KEY: 'SOME_VALUE' } } };
       lambda.Code.fromCustomCommand('', command, commandOptions);
 
       // THEN
