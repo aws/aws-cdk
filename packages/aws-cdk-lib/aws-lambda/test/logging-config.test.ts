@@ -150,7 +150,7 @@ describe('logging Config', () => {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
       runtime: lambda.Runtime.NODEJS_18_X,
-      logFormat: lambda.LogFormat.JSON,
+      loggingFormat: lambda.LoggingFormat.JSON,
       systemLogLevelV2: lambda.SystemLogLevel.INFO,
       applicationLogLevelV2: lambda.ApplicationLogLevel.INFO,
     });
@@ -265,48 +265,74 @@ describe('logging Config', () => {
       });
     }).toThrow(/To use ApplicationLogLevel and\/or SystemLogLevel you must set LogFormat to 'JSON', got 'undefined'./);
   });
-});
 
-test('Throws when loggingFormat and logFormat are both specified', () => {
-  const app = new cdk.App();
-  const stack = new cdk.Stack(app, 'stack');
-  expect(() => {
-    new lambda.Function(stack, 'Lambda', {
-      code: new lambda.InlineCode('foo'),
-      handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_18_X,
-      loggingFormat: lambda.LoggingFormat.JSON,
-      logFormat: lambda.LogFormat.TEXT,
-    });
-  }).toThrow(/Only define LogFormat or LoggingFormat, not both./);
-});
+  test('Throws when loggingFormat and logFormat are both specified', () => {
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'stack');
+    expect(() => {
+      new lambda.Function(stack, 'Lambda', {
+        code: new lambda.InlineCode('foo'),
+        handler: 'index.handler',
+        runtime: lambda.Runtime.NODEJS_18_X,
+        loggingFormat: lambda.LoggingFormat.JSON,
+        logFormat: lambda.LogFormat.TEXT,
+      });
+    }).toThrow(/Only define LogFormat or LoggingFormat, not both./);
+  });
 
-test('Throws when applicationLogLevel and applicationLogLevelV2 are both specified', () => {
-  const app = new cdk.App();
-  const stack = new cdk.Stack(app, 'stack');
-  expect(() => {
-    new lambda.Function(stack, 'Lambda', {
-      code: new lambda.InlineCode('foo'),
-      handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_18_X,
-      loggingFormat: lambda.LoggingFormat.JSON,
-      applicationLogLevel: lambda.ApplicationLogLevel.INFO,
-      applicationLogLevelV2: lambda.ApplicationLogLevel.WARN,
-    });
-  }).toThrow(/Only define applicationLogLevel or applicationLogLevelV2, not both./);
-});
+  test('Throws when applicationLogLevel and applicationLogLevelV2 are both specified', () => {
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'stack');
+    expect(() => {
+      new lambda.Function(stack, 'Lambda', {
+        code: new lambda.InlineCode('foo'),
+        handler: 'index.handler',
+        runtime: lambda.Runtime.NODEJS_18_X,
+        loggingFormat: lambda.LoggingFormat.JSON,
+        applicationLogLevel: lambda.ApplicationLogLevel.INFO,
+        applicationLogLevelV2: lambda.ApplicationLogLevel.WARN,
+      });
+    }).toThrow(/Only define applicationLogLevel or applicationLogLevelV2, not both./);
+  });
 
-test('Throws when systemLogLevel and systemLogLevelV2 are both specified', () => {
-  const app = new cdk.App();
-  const stack = new cdk.Stack(app, 'stack');
-  expect(() => {
-    new lambda.Function(stack, 'Lambda', {
-      code: new lambda.InlineCode('foo'),
-      handler: 'index.handler',
-      runtime: lambda.Runtime.NODEJS_18_X,
-      loggingFormat: lambda.LoggingFormat.JSON,
-      systemLogLevel: lambda.SystemLogLevel.INFO,
-      systemLogLevelV2: lambda.SystemLogLevel.WARN,
-    });
-  }).toThrow(/Only define systemLogLevel or systemLogLevelV2, not both./);
+  test('Throws when systemLogLevel and systemLogLevelV2 are both specified', () => {
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'stack');
+    expect(() => {
+      new lambda.Function(stack, 'Lambda', {
+        code: new lambda.InlineCode('foo'),
+        handler: 'index.handler',
+        runtime: lambda.Runtime.NODEJS_18_X,
+        loggingFormat: lambda.LoggingFormat.JSON,
+        systemLogLevel: lambda.SystemLogLevel.INFO,
+        systemLogLevelV2: lambda.SystemLogLevel.WARN,
+      });
+    }).toThrow(/Only define systemLogLevel or systemLogLevelV2, not both./);
+  });
+
+  test('Throws when systemLogLevelV2 is specified if loggingFormat is undefined', () => {
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'stack');
+    expect(() => {
+      new lambda.Function(stack, 'Lambda', {
+        code: new lambda.InlineCode('foo'),
+        handler: 'index.handler',
+        runtime: lambda.Runtime.NODEJS_18_X,
+        systemLogLevelV2: lambda.SystemLogLevel.INFO,
+      });
+    }).toThrow(/To use ApplicationLogLevel and\/or SystemLogLevel you must set LogFormat to 'JSON', got 'undefined'./);
+  });
+
+  test('Throws when applicationLogLevelV2 is specified if loggingFormat is undefined', () => {
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'stack');
+    expect(() => {
+      new lambda.Function(stack, 'Lambda', {
+        code: new lambda.InlineCode('foo'),
+        handler: 'index.handler',
+        runtime: lambda.Runtime.NODEJS_18_X,
+        applicationLogLevelV2: lambda.ApplicationLogLevel.INFO,
+      });
+    }).toThrow(/To use ApplicationLogLevel and\/or SystemLogLevel you must set LogFormat to 'JSON', got 'undefined'./);
+  });
 });
