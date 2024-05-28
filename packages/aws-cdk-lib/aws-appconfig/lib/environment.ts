@@ -569,7 +569,7 @@ export interface IEnvironment extends IResource {
   grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant;
 
   /**
-   * Permits an IAM principal a configuration read operations on this environment.
+   * Permits an IAM principal to perform read operations on this environment's configuration.
    *
    * Actions: GetLatestConfiguration, StartConfigurationSession.
    *
