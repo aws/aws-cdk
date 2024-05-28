@@ -1601,6 +1601,432 @@
               "version": "0.0.0"
             }
           },
+          "ScheduledEc2Task2": {
+            "id": "ScheduledEc2Task2",
+            "path": "aws-ecs-integ-ecs/ScheduledEc2Task2",
+            "children": {
+              "ScheduledEventRule": {
+                "id": "ScheduledEventRule",
+                "path": "aws-ecs-integ-ecs/ScheduledEc2Task2/ScheduledEventRule",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-ecs-integ-ecs/ScheduledEc2Task2/ScheduledEventRule/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::Events::Rule",
+                      "aws:cdk:cloudformation:props": {
+                        "scheduleExpression": "rate(1 minute)",
+                        "state": "ENABLED",
+                        "targets": [
+                          {
+                            "id": "Target0",
+                            "arn": {
+                              "Fn::GetAtt": [
+                                "EcsCluster97242B84",
+                                "Arn"
+                              ]
+                            },
+                            "roleArn": {
+                              "Fn::GetAtt": [
+                                "ScheduledEc2Task2ScheduledTaskDefEventsRoleE4A47A7F",
+                                "Arn"
+                              ]
+                            },
+                            "ecsParameters": {
+                              "taskCount": 2,
+                              "taskDefinitionArn": {
+                                "Ref": "ScheduledEc2Task2ScheduledTaskDef5A1A589E"
+                              },
+                              "propagateTags": "TASK_DEFINITION",
+                              "tagList": [
+                                {
+                                  "key": "my-tag",
+                                  "value": "my-tag-value"
+                                }
+                              ]
+                            },
+                            "input": "{}"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_events.CfnRule",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_events.Rule",
+                  "version": "0.0.0"
+                }
+              },
+              "ScheduledTaskDef": {
+                "id": "ScheduledTaskDef",
+                "path": "aws-ecs-integ-ecs/ScheduledEc2Task2/ScheduledTaskDef",
+                "children": {
+                  "TaskRole": {
+                    "id": "TaskRole",
+                    "path": "aws-ecs-integ-ecs/ScheduledEc2Task2/ScheduledTaskDef/TaskRole",
+                    "children": {
+                      "ImportTaskRole": {
+                        "id": "ImportTaskRole",
+                        "path": "aws-ecs-integ-ecs/ScheduledEc2Task2/ScheduledTaskDef/TaskRole/ImportTaskRole",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.Resource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "aws-ecs-integ-ecs/ScheduledEc2Task2/ScheduledTaskDef/TaskRole/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                          "aws:cdk:cloudformation:props": {
+                            "assumeRolePolicyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": "sts:AssumeRole",
+                                  "Effect": "Allow",
+                                  "Principal": {
+                                    "Service": "ecs-tasks.amazonaws.com"
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.Role",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "aws-ecs-integ-ecs/ScheduledEc2Task2/ScheduledTaskDef/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::ECS::TaskDefinition",
+                      "aws:cdk:cloudformation:props": {
+                        "containerDefinitions": [
+                          {
+                            "cpu": 1,
+                            "essential": true,
+                            "image": "amazon/amazon-ecs-sample",
+                            "memory": 512,
+                            "name": "differentName",
+                            "logConfiguration": {
+                              "logDriver": "awslogs",
+                              "options": {
+                                "awslogs-group": {
+                                  "Ref": "ScheduledEc2Task2ScheduledTaskDefdifferentNameLogGroup576E34BD"
+                                },
+                                "awslogs-stream-prefix": "ScheduledEc2Task2",
+                                "awslogs-region": {
+                                  "Ref": "AWS::Region"
+                                }
+                              }
+                            },
+                            "environment": [
+                              {
+                                "name": "TRIGGER",
+                                "value": "CloudWatch Events"
+                              }
+                            ]
+                          }
+                        ],
+                        "executionRoleArn": {
+                          "Fn::GetAtt": [
+                            "ScheduledEc2Task2ScheduledTaskDefExecutionRoleC4A2CB80",
+                            "Arn"
+                          ]
+                        },
+                        "family": "awsecsintegecsScheduledEc2Task2ScheduledTaskDef4390684D",
+                        "networkMode": "bridge",
+                        "requiresCompatibilities": [
+                          "EC2"
+                        ],
+                        "taskRoleArn": {
+                          "Fn::GetAtt": [
+                            "ScheduledEc2Task2ScheduledTaskDefTaskRoleF24CD72E",
+                            "Arn"
+                          ]
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_ecs.CfnTaskDefinition",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "differentName": {
+                    "id": "differentName",
+                    "path": "aws-ecs-integ-ecs/ScheduledEc2Task2/ScheduledTaskDef/differentName",
+                    "children": {
+                      "LogGroup": {
+                        "id": "LogGroup",
+                        "path": "aws-ecs-integ-ecs/ScheduledEc2Task2/ScheduledTaskDef/differentName/LogGroup",
+                        "children": {
+                          "Resource": {
+                            "id": "Resource",
+                            "path": "aws-ecs-integ-ecs/ScheduledEc2Task2/ScheduledTaskDef/differentName/LogGroup/Resource",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::Logs::LogGroup",
+                              "aws:cdk:cloudformation:props": {}
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_logs.CfnLogGroup",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_logs.LogGroup",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_ecs.ContainerDefinition",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "ExecutionRole": {
+                    "id": "ExecutionRole",
+                    "path": "aws-ecs-integ-ecs/ScheduledEc2Task2/ScheduledTaskDef/ExecutionRole",
+                    "children": {
+                      "ImportExecutionRole": {
+                        "id": "ImportExecutionRole",
+                        "path": "aws-ecs-integ-ecs/ScheduledEc2Task2/ScheduledTaskDef/ExecutionRole/ImportExecutionRole",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.Resource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "aws-ecs-integ-ecs/ScheduledEc2Task2/ScheduledTaskDef/ExecutionRole/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                          "aws:cdk:cloudformation:props": {
+                            "assumeRolePolicyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": "sts:AssumeRole",
+                                  "Effect": "Allow",
+                                  "Principal": {
+                                    "Service": "ecs-tasks.amazonaws.com"
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "DefaultPolicy": {
+                        "id": "DefaultPolicy",
+                        "path": "aws-ecs-integ-ecs/ScheduledEc2Task2/ScheduledTaskDef/ExecutionRole/DefaultPolicy",
+                        "children": {
+                          "Resource": {
+                            "id": "Resource",
+                            "path": "aws-ecs-integ-ecs/ScheduledEc2Task2/ScheduledTaskDef/ExecutionRole/DefaultPolicy/Resource",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                              "aws:cdk:cloudformation:props": {
+                                "policyDocument": {
+                                  "Statement": [
+                                    {
+                                      "Action": [
+                                        "logs:CreateLogStream",
+                                        "logs:PutLogEvents"
+                                      ],
+                                      "Effect": "Allow",
+                                      "Resource": {
+                                        "Fn::GetAtt": [
+                                          "ScheduledEc2Task2ScheduledTaskDefdifferentNameLogGroup576E34BD",
+                                          "Arn"
+                                        ]
+                                      }
+                                    }
+                                  ],
+                                  "Version": "2012-10-17"
+                                },
+                                "policyName": "ScheduledEc2Task2ScheduledTaskDefExecutionRoleDefaultPolicy70781945",
+                                "roles": [
+                                  {
+                                    "Ref": "ScheduledEc2Task2ScheduledTaskDefExecutionRoleC4A2CB80"
+                                  }
+                                ]
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.Policy",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.Role",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "EventsRole": {
+                    "id": "EventsRole",
+                    "path": "aws-ecs-integ-ecs/ScheduledEc2Task2/ScheduledTaskDef/EventsRole",
+                    "children": {
+                      "ImportEventsRole": {
+                        "id": "ImportEventsRole",
+                        "path": "aws-ecs-integ-ecs/ScheduledEc2Task2/ScheduledTaskDef/EventsRole/ImportEventsRole",
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.Resource",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "aws-ecs-integ-ecs/ScheduledEc2Task2/ScheduledTaskDef/EventsRole/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                          "aws:cdk:cloudformation:props": {
+                            "assumeRolePolicyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": "sts:AssumeRole",
+                                  "Effect": "Allow",
+                                  "Principal": {
+                                    "Service": "events.amazonaws.com"
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                          "version": "0.0.0"
+                        }
+                      },
+                      "DefaultPolicy": {
+                        "id": "DefaultPolicy",
+                        "path": "aws-ecs-integ-ecs/ScheduledEc2Task2/ScheduledTaskDef/EventsRole/DefaultPolicy",
+                        "children": {
+                          "Resource": {
+                            "id": "Resource",
+                            "path": "aws-ecs-integ-ecs/ScheduledEc2Task2/ScheduledTaskDef/EventsRole/DefaultPolicy/Resource",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                              "aws:cdk:cloudformation:props": {
+                                "policyDocument": {
+                                  "Statement": [
+                                    {
+                                      "Action": "ecs:RunTask",
+                                      "Condition": {
+                                        "ArnEquals": {
+                                          "ecs:cluster": {
+                                            "Fn::GetAtt": [
+                                              "EcsCluster97242B84",
+                                              "Arn"
+                                            ]
+                                          }
+                                        }
+                                      },
+                                      "Effect": "Allow",
+                                      "Resource": {
+                                        "Ref": "ScheduledEc2Task2ScheduledTaskDef5A1A589E"
+                                      }
+                                    },
+                                    {
+                                      "Action": "ecs:TagResource",
+                                      "Effect": "Allow",
+                                      "Resource": {
+                                        "Fn::Join": [
+                                          "",
+                                          [
+                                            "arn:",
+                                            {
+                                              "Ref": "AWS::Partition"
+                                            },
+                                            ":ecs:",
+                                            {
+                                              "Ref": "AWS::Region"
+                                            },
+                                            ":*:task/",
+                                            {
+                                              "Ref": "EcsCluster97242B84"
+                                            },
+                                            "/*"
+                                          ]
+                                        ]
+                                      }
+                                    },
+                                    {
+                                      "Action": "iam:PassRole",
+                                      "Effect": "Allow",
+                                      "Resource": {
+                                        "Fn::GetAtt": [
+                                          "ScheduledEc2Task2ScheduledTaskDefExecutionRoleC4A2CB80",
+                                          "Arn"
+                                        ]
+                                      }
+                                    }
+                                  ],
+                                  "Version": "2012-10-17"
+                                },
+                                "policyName": "ScheduledEc2Task2ScheduledTaskDefEventsRoleDefaultPolicyF5EB7640",
+                                "roles": [
+                                  {
+                                    "Ref": "ScheduledEc2Task2ScheduledTaskDefEventsRoleE4A47A7F"
+                                  }
+                                ]
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                              "version": "0.0.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.Policy",
+                          "version": "0.0.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.Role",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_ecs.Ec2TaskDefinition",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_ecs_patterns.ScheduledEc2Task",
+              "version": "0.0.0"
+            }
+          },
           "BootstrapVersion": {
             "id": "BootstrapVersion",
             "path": "aws-ecs-integ-ecs/BootstrapVersion",

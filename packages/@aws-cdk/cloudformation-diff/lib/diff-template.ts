@@ -2,6 +2,7 @@
 // The SDK should not make network calls here
 import type { DescribeChangeSetOutput as DescribeChangeSet } from '@aws-sdk/client-cloudformation';
 import * as impl from './diff';
+import { TemplateAndChangeSetDiffMerger } from './diff/template-and-changeset-diff-merger';
 import * as types from './diff/types';
 import { deepEqual, diffKeyedEntities, unionOf } from './diff/util';
 
@@ -55,8 +56,12 @@ export function fullDiff(
   normalize(newTemplate);
   const theDiff = diffTemplate(currentTemplate, newTemplate);
   if (changeSet) {
-    filterFalsePositives(theDiff, changeSet);
-    addImportInformation(theDiff, changeSet);
+    // These methods mutate the state of theDiff, using the changeSet.
+    const changeSetDiff = new TemplateAndChangeSetDiffMerger({ changeSet });
+    theDiff.resources.forEachDifference((logicalId: string, change: types.ResourceDifference) =>
+      changeSetDiff.overrideDiffResourceChangeImpactWithChangeSetChangeImpact(logicalId, change),
+    );
+    changeSetDiff.addImportInformationFromChangeset(theDiff.resources);
   } else if (isImport) {
     makeAllResourceChangesImports(theDiff);
   }
@@ -144,13 +149,6 @@ function calculateTemplateDiff(currentTemplate: { [key: string]: any }, newTempl
 }
 
 /**
- * Compare two CloudFormation resources and return semantic differences between them
- */
-export function diffResource(oldValue: types.Resource, newValue: types.Resource): types.ResourceDifference {
-  return impl.diffResource(oldValue, newValue);
-}
-
-/**
  * Replace all references to the given logicalID on the given template, in-place
  *
  * Returns true iff any references were replaced.
@@ -214,98 +212,10 @@ function deepCopy(x: any): any {
   return x;
 }
 
-function addImportInformation(diff: types.TemplateDiff, changeSet: DescribeChangeSetOutput) {
-  const imports = findResourceImports(changeSet);
-  diff.resources.forEachDifference((logicalId: string, change: types.ResourceDifference) => {
-    if (imports.includes(logicalId)) {
-      change.isImport = true;
-    }
-  });
-}
-
 function makeAllResourceChangesImports(diff: types.TemplateDiff) {
   diff.resources.forEachDifference((_logicalId: string, change: types.ResourceDifference) => {
     change.isImport = true;
   });
-}
-
-function filterFalsePositives(diff: types.TemplateDiff, changeSet: DescribeChangeSetOutput) {
-  const replacements = findResourceReplacements(changeSet);
-  diff.resources.forEachDifference((logicalId: string, change: types.ResourceDifference) => {
-    if (change.resourceType.includes('AWS::Serverless')) {
-      // CFN applies the SAM transform before creating the changeset, so the changeset contains no information about SAM resources
-      return;
-    }
-    change.forEachDifference((type: 'Property' | 'Other', name: string, value: types.Difference<any> | types.PropertyDifference<any>) => {
-      if (type === 'Property') {
-        if (!replacements[logicalId]) {
-          (value as types.PropertyDifference<any>).changeImpact = types.ResourceImpact.NO_CHANGE;
-          (value as types.PropertyDifference<any>).isDifferent = false;
-          return;
-        }
-        switch (replacements[logicalId].propertiesReplaced[name]) {
-          case 'Always':
-            (value as types.PropertyDifference<any>).changeImpact = types.ResourceImpact.WILL_REPLACE;
-            break;
-          case 'Never':
-            (value as types.PropertyDifference<any>).changeImpact = types.ResourceImpact.WILL_UPDATE;
-            break;
-          case 'Conditionally':
-            (value as types.PropertyDifference<any>).changeImpact = types.ResourceImpact.MAY_REPLACE;
-            break;
-          case undefined:
-            (value as types.PropertyDifference<any>).changeImpact = types.ResourceImpact.NO_CHANGE;
-            (value as types.PropertyDifference<any>).isDifferent = false;
-            break;
-          // otherwise, defer to the changeImpact from `diffTemplate`
-        }
-      } else if (type === 'Other') {
-        switch (name) {
-          case 'Metadata':
-            change.setOtherChange('Metadata', new types.Difference<string>(value.newValue, value.newValue));
-            break;
-        }
-      }
-    });
-  });
-}
-
-function findResourceImports(changeSet: DescribeChangeSetOutput): string[] {
-  const importedResourceLogicalIds = [];
-  for (const resourceChange of changeSet.Changes ?? []) {
-    if (resourceChange.ResourceChange?.Action === 'Import') {
-      importedResourceLogicalIds.push(resourceChange.ResourceChange.LogicalResourceId!);
-    }
-  }
-
-  return importedResourceLogicalIds;
-}
-
-function findResourceReplacements(changeSet: DescribeChangeSetOutput): types.ResourceReplacements {
-  const replacements: types.ResourceReplacements = {};
-  for (const resourceChange of changeSet.Changes ?? []) {
-    const propertiesReplaced: { [propName: string]: types.ChangeSetReplacement } = {};
-    for (const propertyChange of resourceChange.ResourceChange?.Details ?? []) {
-      if (propertyChange.Target?.Attribute === 'Properties') {
-        const requiresReplacement = propertyChange.Target.RequiresRecreation === 'Always';
-        if (requiresReplacement && propertyChange.Evaluation === 'Static') {
-          propertiesReplaced[propertyChange.Target.Name!] = 'Always';
-        } else if (requiresReplacement && propertyChange.Evaluation === 'Dynamic') {
-          // If Evaluation is 'Dynamic', then this may cause replacement, or it may not.
-          // see 'Replacement': https://docs.aws.amazon.com/AWSCloudFormation/latest/APIReference/API_ResourceChange.html
-          propertiesReplaced[propertyChange.Target.Name!] = 'Conditionally';
-        } else {
-          propertiesReplaced[propertyChange.Target.Name!] = propertyChange.Target.RequiresRecreation as types.ChangeSetReplacement;
-        }
-      }
-    }
-    replacements[resourceChange.ResourceChange?.LogicalResourceId!] = {
-      resourceReplaced: resourceChange.ResourceChange?.Replacement === 'True',
-      propertiesReplaced,
-    };
-  }
-
-  return replacements;
 }
 
 function normalize(template: any) {
