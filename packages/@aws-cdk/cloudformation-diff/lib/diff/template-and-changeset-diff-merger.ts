@@ -146,10 +146,26 @@ export class TemplateAndChangeSetDiffMerger {
         resourceWasReplaced: resourceChange.ResourceChange.Replacement === 'True',
         resourceType: resourceChange.ResourceChange.ResourceType ?? TemplateAndChangeSetDiffMerger.UNKNOWN_RESOURCE_TYPE, // DescribeChangeSet doesn't promise to have the ResourceType...
         propertyReplacementModes: propertyReplacementModes,
+        beforeContext: _maybeJsonParse(resourceChange.ResourceChange.BeforeContext),
+        afterContext: _maybeJsonParse(resourceChange.ResourceChange.AfterContext),
       };
     }
 
     return changeSetResources;
+
+    /**
+     *  we will try to parse the BeforeContext and AfterContext so that downstream processing of the diff can access object properties.
+     *
+     *  This should always succeed. But CFN says they truncate the beforeValue and afterValue if they're too long, and since the afterValue and beforeValue
+     *  are a subset of the BeforeContext and AfterContext, it seems safer to assume that BeforeContext and AfterContext also may truncate.
+     */
+    function _maybeJsonParse(value: string | undefined): any | undefined {
+      try {
+        return JSON.parse(value ?? '');
+      } catch (e) {
+        return value;
+      }
+    }
   }
 
   /**
@@ -203,10 +219,10 @@ export class TemplateAndChangeSetDiffMerger {
    * In the future, this function can be improved by adding the IncludePropertyValues to the DescribeChangeSet call that's made before diffing the templates.
    * However, as of writing, that feature is very new and is being smoothed out and is not available in all regions. Therefore, waiting to make that change.
    */
-  public addMissingPropertiesAndResourcesToDiff(
+  public addMissingResourceInformationToDiff(
     theDiffResources: types.DifferenceCollection<types.Resource, types.ResourceDifference>,
-    currentTemplateResources: { [key: string]: any },
-    newTemplateResources: { [key: string]: any },
+    currentTemplateResources: { [key: string]: any } | undefined,
+    newTemplateResources: { [key: string]: any } | undefined,
   ) {
     const resourceChangesFromDiff = theDiffResources?.changes;
     for (const [changedResourceLogicalId, change] of Object.entries(this.changeSetResources ?? [])) {
@@ -226,8 +242,8 @@ export class TemplateAndChangeSetDiffMerger {
           propertiesThatChanged,
           theDiffResources,
           resourceType: change.resourceType ?? TemplateAndChangeSetDiffMerger.UNKNOWN_RESOURCE_TYPE,
-          propertiesOfResourceFromCurrentTemplate: currentTemplateResources[changedResourceLogicalId]?.Properties,
-          propertiesOfResourceFromNewTemplate: newTemplateResources[changedResourceLogicalId]?.Properties,
+          propertiesOfResourceFromCurrentTemplate: currentTemplateResources?.[changedResourceLogicalId]?.Properties,
+          propertiesOfResourceFromNewTemplate: newTemplateResources?.[changedResourceLogicalId]?.Properties,
         });
       }
     }

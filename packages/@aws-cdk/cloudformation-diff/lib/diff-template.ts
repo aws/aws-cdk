@@ -59,7 +59,7 @@ export function fullDiff(
   if (changeSet) {
     // These methods mutate the state of theDiff, using the changeSet.
     const changeSetDiff = new TemplateAndChangeSetDiffMerger({ changeSet });
-    changeSetDiff.addMissingPropertiesAndResourcesToDiff(theDiff.resources, currentTemplate?.Resources, newTemplate?.Resources); // MAKE SURE THERE'S A UNIT TEST THAT HAS UNDEFINED RESOURCES
+    changeSetDiff.addMissingResourceInformationToDiff(theDiff.resources, currentTemplate?.Resources, newTemplate?.Resources); // MAKE SURE THERE'S A UNIT TEST THAT HAS UNDEFINED RESOURCES FIELD
     theDiff.resources.forEachDifference((logicalId: string, change: types.ResourceDifference) =>
       changeSetDiff.overrideDiffResourceChangeImpactWithChangeSetChangeImpact(logicalId, change),
     );

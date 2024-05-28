@@ -8,10 +8,22 @@ export type PropertyMap = {[key: string]: any };
 
 export type ChangeSetResources = { [logicalId: string]: ChangeSetResource };
 
+/**
+ * @param beforeContext is the BeforeContext field from the ChangeSet.ResourceChange.BeforeContext. This is the part of the CloudFormation template
+  propertiesReplaced: { [propertyName: string]: ChangeSetReplacement };
+ * that defines what the resource is before the change is applied; that is, BeforeContext is CloudFormationTemplate.Resources[LogicalId] before the ChangeSet is executed.
+ *
+ * @param afterContext same as beforeContext but for after the change is made; that is, AfterContext is CloudFormationTemplate.Resources[LogicalId] after the ChangeSet is executed.
+ *
+ *  * Here is an example of what a beforeContext/afterContext looks like:
+ *  '{"Properties":{"Value":"sdflkja","Type":"String","Name":"mySsmParameterFromStack"},"Metadata":{"aws:cdk:path":"cdk/mySsmParameter/Resource"}}'
+ */
 export interface ChangeSetResource {
   resourceWasReplaced: boolean;
   resourceType: string | undefined;
   propertyReplacementModes: PropertyReplacementModeMap | undefined;
+  beforeContext: any | undefined;
+  afterContext: any | undefined;
 }
 
 export type PropertyReplacementModeMap = {
