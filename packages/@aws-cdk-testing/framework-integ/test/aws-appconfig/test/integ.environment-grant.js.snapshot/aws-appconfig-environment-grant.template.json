@@ -53,7 +53,7 @@
           {
            "Ref": "MyEnvironment465E4DEA"
           },
-          "/*"
+          "/configuration/*"
          ]
         ]
        }

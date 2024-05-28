@@ -861,7 +861,7 @@ describe('environment', () => {
                 { Ref: 'MyAppConfigB4B63E75' },
                 '/environment/',
                 { Ref: 'MyEnvironment465E4DEA' },
-                '/*',
+                '/configuration/*',
               ]],
             },
           },

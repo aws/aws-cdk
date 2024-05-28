@@ -121,17 +121,20 @@ abstract class EnvironmentBase extends Resource implements IEnvironment, IExtens
     return iam.Grant.addToPrincipal({
       grantee,
       actions,
-      resourceArns: [`${this.environmentArn}/*`],
+      resourceArns: [this.environmentArn],
     });
   }
 
-  public grantReadConfig(grantee: iam.IGrantable) {
-    return this.grant(grantee,
-      'appconfig:GetLatestConfiguration',
-      'appconfig:StartConfigurationSession',
-    );
+  public grantReadConfig(identity: iam.IGrantable): iam.Grant {
+    return iam.Grant.addToPrincipal({
+      grantee: identity,
+      actions: [
+        'appconfig:GetLatestConfiguration',
+        'appconfig:StartConfigurationSession',
+      ],
+      resourceArns: [`${this.environmentArn}/configuration/*`],
+    });
   }
-
 }
 
 /**
@@ -569,7 +572,7 @@ export interface IEnvironment extends IResource {
   grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant;
 
   /**
-   * Permits an IAM principal to perform read operations on this environment's configuration.
+   * Permits an IAM principal to perform read operations on this environment's configurations.
    *
    * Actions: GetLatestConfiguration, StartConfigurationSession.
    *

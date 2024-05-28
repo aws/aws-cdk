@@ -82,7 +82,8 @@ See [About the AWS AppConfig data plane service](https://docs.aws.amazon.com/app
 
 ### Permissions
 
-You can grant permissions to read a configuration to an Environment with the grantReadConfig method as follows:
+You can grant read permission on the environment's configurations with the grantReadConfig method as follows:
+
 ```ts
 import * as iam from 'aws-cdk-lib/aws-iam';
 
@@ -92,7 +93,7 @@ const env = new appconfig.Environment(this, 'MyEnvironment', {
 });
 
 const user = new iam.User(this, 'MyUser');
-env.grantReadConfig(user); // Grant read permission on the environment to the user
+env.grantReadConfig(user);
 ```
 
 
