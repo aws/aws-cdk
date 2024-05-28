@@ -4,10 +4,10 @@ import { Construct } from 'constructs';
 import { Bundling } from './bundling';
 import { LockFile } from './package-manager';
 import { BundlingOptions } from './types';
-import { callsites, findUpMultiple } from './util';
+import { callsites, findUpMultiple, isSdkV2Runtime } from './util';
 import { Architecture } from '../../aws-lambda';
 import * as lambda from '../../aws-lambda';
-import { FeatureFlags } from '../../core';
+import { Annotations, FeatureFlags } from '../../core';
 import { LAMBDA_NODEJS_USE_LATEST_RUNTIME } from '../../cx-api';
 
 /**
@@ -47,15 +47,22 @@ export interface NodejsFunctionProps extends lambda.FunctionOptions {
   readonly runtime?: lambda.Runtime;
 
   /**
+   * The `AWS_NODEJS_CONNECTION_REUSE_ENABLED` environment variable does not exist in the AWS SDK for JavaScript v3.
+   *
+   * This prop will be deprecated when the Lambda Node16 runtime is deprecated on June 12, 2024.
+   * See https://docs.aws.amazon.com/lambda/latest/dg/lambda-runtimes.html#runtime-support-policy
+   *
+   * Info for Node 16 runtimes / SDK v2 users:
+   *
    * Whether to automatically reuse TCP connections when working with the AWS
-   * SDK for JavaScript.
+   * SDK for JavaScript v2.
    *
    * This sets the `AWS_NODEJS_CONNECTION_REUSE_ENABLED` environment variable
    * to `1`.
    *
-   * @see https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/node-reusing-connections.html
+   * @see https://docs.aws.amazon.com/sdk-for-javascript/v3/developer-guide/node-reusing-connections.html
    *
-   * @default true
+   * @default - false (obsolete) for runtimes >= Node 18, true for runtimes <= Node 16.
    */
   readonly awsSdkConnectionReuse?: boolean;
 
@@ -149,9 +156,16 @@ export class NodejsFunction extends lambda.Function {
       });
     }
 
-    // Enable connection reuse for aws-sdk
-    if (props.awsSdkConnectionReuse ?? true) {
-      this.addEnvironment('AWS_NODEJS_CONNECTION_REUSE_ENABLED', '1', { removeInEdge: true });
+    // Enable connection reuse for aws-sdk v2, do not set for sdk v3
+    if (isSdkV2Runtime(runtime)) {
+      if (props.awsSdkConnectionReuse ?? true) {
+        this.addEnvironment('AWS_NODEJS_CONNECTION_REUSE_ENABLED', '1', { removeInEdge: true });
+      }
+    } else {
+      if (props.awsSdkConnectionReuse) {
+        Annotations.of(scope).addWarningV2('aws-cdk-lib/aws-lambda-nodejs:unusedSdkEvironmentVariable', 'The AWS_NODEJS_CONNECTION_REUSE_ENABLED environment variable does not exist in SDK v3. You have explicitly set `awsSdkConnectionReuse`; please make sure this is intentional.');
+        this.addEnvironment('AWS_NODEJS_CONNECTION_REUSE_ENABLED', '1', { removeInEdge: true });
+      }
     }
   }
 

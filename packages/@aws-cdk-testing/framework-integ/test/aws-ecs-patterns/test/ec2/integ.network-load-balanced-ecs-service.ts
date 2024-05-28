@@ -4,6 +4,7 @@ import { Cluster, ContainerImage, AsgCapacityProvider, EcsOptimizedImage } from 
 import { App, Stack } from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import { NetworkLoadBalancedEc2Service } from 'aws-cdk-lib/aws-ecs-patterns';
+import { IpAddressType } from 'aws-cdk-lib/aws-elasticloadbalancingv2';
 
 const app = new App();
 const stack = new Stack(app, 'aws-ecs-integ-nlb');
@@ -56,6 +57,7 @@ new NetworkLoadBalancedEc2Service(stack, 'myService', {
       weight: 2,
     },
   ],
+  ipAddressType: IpAddressType.IPV4,
 });
 
 new integ.IntegTest(app, 'networkLoadBalancedEc2ServiceTest', {
