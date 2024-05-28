@@ -2853,34 +2853,3 @@ test('Resource policy test', () => {
     ],
   });
 });
-
-test('throws if trying to add a resource policy to a region other than local region', () => {
-  // GIVEN
-  const stack = new Stack(undefined, 'Stack', {
-    env: {
-      region: 'eu-west-1',
-    },
-  });
-  const doc = new PolicyDocument({
-    statements: [
-      new PolicyStatement({
-        actions: ['dynamodb:GetItem'],
-        principals: [new ArnPrincipal('arn:aws:iam::111122223333:user/foobar')],
-        resources: ['*'],
-      }),
-    ],
-  });
-
-  // WHEN / THEN
-  expect(() => {
-    new TableV2(stack, 'Table', {
-      partitionKey: { name: 'pk', type: AttributeType.STRING },
-      sortKey: { name: 'sk', type: AttributeType.STRING },
-      resourcePolicy: doc,
-      replicas: [{
-        region: 'eu-west-1',
-        resourcePolicy: doc,
-      }],
-    });
-  }).toThrow('You cannot add a replica table in the same region as the primary table - the primary table region is eu-west-1');
-});

@@ -671,7 +671,7 @@ Using `resourcePolicy` you can add a [resource policy](https://docs.aws.amazon.c
     });
 ```
 
-TableV2 doesn’t support creating a replica and adding a resource-based policy to that replica in the same stack update in Regions other than the Region where you deploy the stack update.
+TableV2 doesn’t support creating a replica and adding a resource-based policy to that replica in the same stack update in Regions other than the Region where you deploy the stack update. To incorporate a resource-based policy into a replica, you'll need to initially deploy the replica without the policy, followed by a subsequent update to include the desired policy.
 
 ## Grants
 

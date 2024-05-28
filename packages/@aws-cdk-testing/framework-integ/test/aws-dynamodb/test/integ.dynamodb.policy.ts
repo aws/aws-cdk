@@ -48,12 +48,4 @@ const stack = new TestStack(app, 'resource-policy-stack', {});
 
 new IntegTest(app, 'resource-policy-integ-test', {
   testCases: [stack],
-  regions: ['us-east-1'],
-  cdkCommandOptions: {
-    deploy: {
-      args: {
-        rollback: true,
-      },
-    },
-  },
 });

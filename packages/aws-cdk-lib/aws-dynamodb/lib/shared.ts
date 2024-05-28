@@ -281,13 +281,6 @@ export interface ITable extends IResource {
    */
   readonly encryptionKey?: kms.IKey;
 
-  // /**
-  //  * Resource policy to assign to DynamoDB Table.
-  //  *
-  //  * @default - No resource policy statements are added to the created table.
-  //  */
-  // readonly resourcePolicy?: iam.PolicyDocument;
-
   /**
    * Adds an IAM policy statement associated with this table to an IAM
    * principal's policy.

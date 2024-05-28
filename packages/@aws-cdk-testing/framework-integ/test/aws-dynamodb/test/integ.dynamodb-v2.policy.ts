@@ -21,7 +21,7 @@ class TestStack extends Stack {
     });
 
     // table with resource policy
-    new dynamodb.TableV2(this, 'TableTestV2-1', {
+    const table = new dynamodb.TableV2(this, 'TableTestV2-1', {
       partitionKey: {
         name: 'id',
         type: dynamodb.AttributeType.STRING,
@@ -29,6 +29,8 @@ class TestStack extends Stack {
       removalPolicy: RemovalPolicy.DESTROY,
       resourcePolicy: docu,
     });
+
+    table.grantReadData(new iam.AccountPrincipal('123456789012'));
   }
 }
 
@@ -36,12 +38,4 @@ const stack = new TestStack(app, 'ResourcePolicyTest-v2', { env: { region: 'eu-w
 
 new IntegTest(app, 'table-v2-resource-policy-integ-test', {
   testCases: [stack],
-  regions: ['us-east-1'],
-  cdkCommandOptions: {
-    deploy: {
-      args: {
-        rollback: true,
-      },
-    },
-  },
 });

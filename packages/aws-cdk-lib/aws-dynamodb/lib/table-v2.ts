@@ -420,11 +420,6 @@ export class TableV2 extends TableBaseV2 {
   /**
    * @attribute
    */
-  public resourcePolicy?: PolicyDocument;
-
-  /**
-   * @attribute
-   */
   public readonly tableArn: string;
 
   /**
@@ -443,6 +438,11 @@ export class TableV2 extends TableBaseV2 {
   public readonly tableId?: string;
 
   public readonly encryptionKey?: IKey;
+
+  /**
+   * @attribute
+   */
+  public resourcePolicy?: PolicyDocument;
 
   protected readonly region: string;
 
