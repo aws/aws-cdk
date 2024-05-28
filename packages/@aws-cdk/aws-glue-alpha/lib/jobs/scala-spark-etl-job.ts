@@ -20,6 +20,7 @@ import { Job, JobProperties } from './job';
 import { Construct } from 'constructs';
 import { JobType, GlueVersion, JobLanguage, WorkerType } from '../constants';
 import { SparkUIProps, SparkUILoggingLocation, validateSparkUiPrefix, cleanSparkUiPrefixForGrant } from './spark-ui-utils';
+import { Code } from '../code';
 
 /**
  * Properties for creating a Scala Spark ETL job
@@ -48,7 +49,7 @@ export interface ScalaSparkEtlJobProps extends JobProperties {
    * S3 URL where additional jar dependencies are located
    * @default - no extra jar files
   */
-  readonly extraJars?: string[];
+  readonly extraJars?: Code[];
 }
 
 /**
