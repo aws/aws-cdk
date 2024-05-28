@@ -119,10 +119,16 @@ export const config: HandlerFrameworkConfig = {
     ],
   },
   'aws-cloudfront-origins': {
-    's3-origin-access-control-policy-provider': [
+    's3-origin-access-control-key-policy-provider': [
       {
         type: ComponentType.CUSTOM_RESOURCE_PROVIDER,
-        sourceCode: path.resolve(__dirname, '..', 'aws-cloudfront-origins', 's3-origin-access-control-policy-handler', 'index.ts'),
+        sourceCode: path.resolve(__dirname, '..', 'aws-cloudfront-origins', 's3-origin-access-control-key-policy-handler', 'index.ts'),
+      },
+    ],
+    's3-origin-access-control-bucket-policy-provider': [
+      {
+        type: ComponentType.CUSTOM_RESOURCE_PROVIDER,
+        sourceCode: path.resolve(__dirname, '..', 'aws-cloudfront-origins', 's3-origin-access-control-bucket-policy-handler', 'index.ts'),
       },
     ],
   },
