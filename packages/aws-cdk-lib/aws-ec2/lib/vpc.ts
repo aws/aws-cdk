@@ -2,6 +2,7 @@ import { Construct, Dependable, DependencyGroup, IConstruct, IDependable, Node }
 import { ClientVpnEndpoint, ClientVpnEndpointOptions } from './client-vpn-endpoint';
 import {
   CfnEIP, CfnEgressOnlyInternetGateway, CfnInternetGateway, CfnNatGateway, CfnRoute, CfnRouteTable, CfnSubnet,
+  CfnSubnetProps,
   CfnSubnetRouteTableAssociation, CfnVPC, CfnVPCCidrBlock, CfnVPCGatewayAttachment, CfnVPNGatewayRoutePropagation,
 } from './ec2.generated';
 import { AllocatedSubnet, IIpAddresses, RequestedSubnet, IpAddresses, IIpv6Addresses, Ipv6Addresses } from './ip-addresses';
@@ -1997,6 +1998,13 @@ export interface SubnetProps {
    * @default false
    */
   readonly assignIpv6AddressOnCreation?: boolean;
+
+  /**
+   * Indicates whether the provided availabilityZone is the id value (ie: use2-az2 for us-east-2b).
+   *
+   * @default false
+   */
+  readonly availabilityZoneAsId?: boolean;
 }
 
 /**
@@ -2088,14 +2096,25 @@ export class Subnet extends Resource implements ISubnet {
 
     this.availabilityZone = props.availabilityZone;
     this.ipv4CidrBlock = props.cidrBlock;
-    const subnet = new CfnSubnet(this, 'Subnet', {
+    let subnetProps: CfnSubnetProps = {
       vpcId: props.vpcId,
       cidrBlock: props.cidrBlock,
-      availabilityZone: props.availabilityZone,
       mapPublicIpOnLaunch: props.mapPublicIpOnLaunch,
       ipv6CidrBlock: props.ipv6CidrBlock,
       assignIpv6AddressOnCreation: props.assignIpv6AddressOnCreation,
-    });
+    };
+    if (props.availabilityZoneAsId === true) {
+      subnetProps = {
+        ...subnetProps,
+        availabilityZoneId: props.availabilityZone,
+      };
+    } else {
+      subnetProps = {
+        ...subnetProps,
+        availabilityZone: props.availabilityZone,
+      };
+    }
+    const subnet = new CfnSubnet(this, 'Subnet', subnetProps);
     this.subnetId = subnet.ref;
     this.subnetVpcId = subnet.attrVpcId;
     this.subnetAvailabilityZone = subnet.attrAvailabilityZone;
