@@ -64,17 +64,16 @@ async function updateBucketPolicy(props: updateBucketPolicyProps) {
       Bucket: props.bucketName,
       Policy: JSON.stringify(updatedBucketPolicy),
     });
-    console.log('AFTER FIRST: Put bucket policy');
 
     // Check if policy has OAI principal and remove
     updatedBucketPolicy.Statement = updatedBucketPolicy.Statement.filter((statement: any) => !isOaiPrincipal(statement));
-    console.log('Updated bucket policy AGAIN:', JSON.stringify(updatedBucketPolicy, undefined, 2));
+
     await s3.putBucketPolicy({
       Bucket: props.bucketName,
       Policy: JSON.stringify(updatedBucketPolicy),
     });
 
-    console.log('success!');
+    console.log('Updated bucket policy to remove OAI principal policy statement:', JSON.stringify(updatedBucketPolicy, undefined, 2));
   } catch (error: any) {
     console.log(error);
     if (error.name === 'NoSuchBucket') {
