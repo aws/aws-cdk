@@ -56,6 +56,21 @@ httpApi.addRoutes({
     })),
 });
 
+httpApi.addRoutes({
+  path: '/echo/{echo}',
+  methods: [apigwv2.HttpMethod.GET],
+  integration: new integrations.HttpLambdaIntegration('EchoIntegration',
+    new lambda.Function(stack, 'EchoHandler', {
+      runtime: lambda.Runtime.NODEJS_20_X,
+      handler: 'index.handler',
+      code: new lambda.InlineCode(`
+        exports.handler = async ({ pathParameters: { echo } }) => ({
+          statusCode: 200,
+          body: echo,
+        });`),
+    })),
+});
+
 const stage = new apigwv2.HttpStage(stack, 'Stage', {
   httpApi,
   stageName: 'dev',
@@ -93,6 +108,22 @@ integ.assertions.httpApiCall(
   ExpectedResult.objectLike({
     status: 403,
     ok: false,
+  }),
+);
+
+// FIXME expectations broken by flattenResult?
+const echoCall = integ.assertions.httpApiCall(
+  `${stage.url}/echo/HelloWorld`,
+);
+const echo = echoCall.getAttString('body');
+
+integ.assertions.httpApiCall(
+  `${stage.url}/echo/${echo}`,
+).expect(
+  ExpectedResult.objectLike({
+    status: 200,
+    ok: true,
+    body: echo,
   }),
 );
 
@@ -136,5 +167,28 @@ integ.assertions.httpApiCall(
   ExpectedResult.objectLike({
     status: 403,
     ok: false,
+  }),
+);
+
+// FIXME expectations broken by flattenResult?
+const uuidCall = integ.assertions.httpApiCall(
+  'https://httpbin.org/uuid',
+)/* .expect(
+  ExpectedResult.objectLike({
+    status: 200,
+    ok: true,
+  }),
+) */;
+const uuid = uuidCall.getAttString('body.uuid');
+
+integ.assertions.httpApiCall(
+  `https://httpbin.org/anything/${uuid}`,
+).expect(
+  ExpectedResult.objectLike({
+    status: 200,
+    ok: true,
+    body: {
+      url: `https://httpbin.org/anything/${uuid}`,
+    },
   }),
 );
