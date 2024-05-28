@@ -3,7 +3,6 @@ import { DescribeChangeSetOutput } from '@aws-cdk/cloudformation-diff';
 import { SSMPARAM_NO_INVALIDATE } from '@aws-cdk/cx-api';
 import * as cxapi from '@aws-cdk/cx-api';
 import { CloudFormation } from 'aws-sdk';
-import * as yaml from 'js-yaml';
 import { StackStatus } from './cloudformation/stack-status';
 import { makeBodyParameterAndUpload, TemplateBodyParameter } from './template-body-parameter';
 import { debug } from '../../logging';
@@ -183,6 +182,41 @@ export class CloudFormationStack {
 }
 
 /**
+ * * As of now, describeChangeSet with IncludePropertyValues doesn't include the StatusReason for a ChangeSet with no changes. There is a fix that's in progress from CloudFormation.
+ * * As of now, the IncludePropertyValues feature is not available in all AWS partitions.
+ * * As of now, including a nextToken with IncludePropertyValues can acuse DescribeChangeSet to error.
+ *     * TODO: Once the above are fixed, we can remove this function and make all describeChangeSet requests with IncludePropertValues set to true.
+ */
+export async function maybeGetChangeSetChangeContext(
+  cfn: CloudFormation,
+  stackName: string,
+  changeSetName: string,
+): Promise<CloudFormation.DescribeChangeSetOutput | undefined> {
+  let changeContextIncludedInResponse = undefined;
+  try {
+    const changesWithPropertyValues = await cfn.describeChangeSet({
+      StackName: stackName,
+      ChangeSetName: changeSetName,
+      IncludePropertyValues: true,
+    }).promise();
+
+    changeContextIncludedInResponse = changesWithPropertyValues?.Changes?.find((change) =>
+      (change?.ResourceChange?.AfterContext !== undefined) || (change?.ResourceChange?.BeforeContext !== undefined),
+    );
+    if (changeContextIncludedInResponse) {
+      return changesWithPropertyValues;
+    }
+
+    // We don't want to assume that failure to use the new IncludePropertyValues field will result in an exception being thrown.
+    debug('describeChangeSet with IncludePropertyValues has no BeforeContext or AfterContext. Diff will not include property values from ChangeSet.');
+  } catch (e: any) {
+    debug('Failed to describeChangeSet with IncludePropertyValues. Diff will not include property values from ChangeSet. Error Message: %s', e?.message);
+  }
+
+  return undefined;
+}
+
+/**
  * Describe a changeset in CloudFormation, regardless of its current state.
  *
  * @param cfn           a CloudFormation client
@@ -192,13 +226,18 @@ export class CloudFormationStack {
  *
  * @returns       CloudFormation information about the ChangeSet
  */
-async function describeChangeSet(
+export async function describeChangeSet(
   cfn: CloudFormation,
   stackName: string,
   changeSetName: string,
   { fetchAll }: { fetchAll: boolean },
 ): Promise<CloudFormation.DescribeChangeSetOutput> {
   const response = await cfn.describeChangeSet({ StackName: stackName, ChangeSetName: changeSetName }).promise();
+
+  const changeSetChangesWithContext = await maybeGetChangeSetChangeContext(cfn, stackName, changeSetName);
+  if (changeSetChangesWithContext) {
+    response.Changes = changeSetChangesWithContext.Changes;
+  }
 
   // If fetchAll is true, traverse all pages from the change set description.
   while (fetchAll && response.NextToken != null) {
@@ -314,7 +353,7 @@ export type CreateChangeSetOptions = {
 /**
  * Create a changeset for a diff operation
  */
-export async function createDiffChangeSet(options: PrepareChangeSetOptions): Promise<ChangeSetResult | undefined> {
+export async function createDiffChangeSet(options: PrepareChangeSetOptions): Promise<DescribeChangeSetOutput | undefined> {
   // `options.stack` has been modified to include any nested stack templates directly inline with its own template, under a special `NestedTemplate` property.
   // Thus the parent template's Resources section contains the nested template's CDK metadata check, which uses Fn::Equals.
   // This causes CreateChangeSet to fail with `Template Error: Fn::Equals cannot be partially collapsed`.
@@ -330,7 +369,7 @@ export async function createDiffChangeSet(options: PrepareChangeSetOptions): Pro
   return uploadBodyParameterAndCreateChangeSet(options);
 }
 
-async function uploadBodyParameterAndCreateChangeSet(options: PrepareChangeSetOptions): Promise<ChangeSetResult | undefined> {
+async function uploadBodyParameterAndCreateChangeSet(options: PrepareChangeSetOptions): Promise<DescribeChangeSetOutput | undefined> {
   try {
     const preparedSdk = (await options.deployments.prepareSdkWithDeployRole(options.stack));
     const bodyParameter = await makeBodyParameterAndUpload(
@@ -366,12 +405,7 @@ async function uploadBodyParameterAndCreateChangeSet(options: PrepareChangeSetOp
   }
 }
 
-export interface ChangeSetResult {
-  describeChangeSetOutput: DescribeChangeSetOutput;
-  templateAfterChangeSet: any;
-}
-
-async function createChangeSet(options: CreateChangeSetOptions): Promise<ChangeSetResult> {
+async function createChangeSet(options: CreateChangeSetOptions): Promise<DescribeChangeSetOutput> {
   await cleanupOldChangeset(options.changeSetName, options.stack.stackName, options.cfn);
 
   debug(`Attempting to create ChangeSet with name ${options.changeSetName} for stack ${options.stack.stackName}`);
@@ -396,24 +430,10 @@ async function createChangeSet(options: CreateChangeSetOptions): Promise<ChangeS
   debug('Initiated creation of changeset: %s; waiting for it to finish creating...', changeSet.Id);
   // Fetching all pages if we'll execute, so we can have the correct change count when monitoring.
   const createdChangeSet = await waitForChangeSet(options.cfn, options.stack.stackName, options.changeSetName, { fetchAll: options.willExecute });
-
-  const templateAfterChangeSetApplied = yaml.load(
-    (
-      await options.cfn.getTemplate({
-        StackName: options.stack.stackName,
-        ChangeSetName: createdChangeSet.ChangeSetName,
-        TemplateStage: 'Processed',
-      }).promise()
-    ).TemplateBody ?? '',
-  );
-
   await cleanupOldChangeset(options.changeSetName, options.stack.stackName, options.cfn);
 
   // TODO: Update this once we remove sdkv2 from the rest of this package
-  return {
-    describeChangeSetOutput: createdChangeSet as DescribeChangeSetOutput,
-    templateAfterChangeSet: templateAfterChangeSetApplied,
-  };
+  return createdChangeSet as DescribeChangeSetOutput;
 }
 
 export async function cleanupOldChangeset(changeSetName: string, stackName: string, cfn: CloudFormation) {

@@ -15,7 +15,7 @@ import { Deployments } from './api/deployments';
 import { HotswapMode } from './api/hotswap/common';
 import { findCloudWatchLogGroups } from './api/logs/find-cloudwatch-logs';
 import { CloudWatchLogEventMonitor } from './api/logs/logs-monitor';
-import { ChangeSetResult, createDiffChangeSet, ResourcesToImport } from './api/util/cloudformation';
+import { createDiffChangeSet, ResourcesToImport } from './api/util/cloudformation';
 import { StackActivityProgress } from './api/util/cloudformation/stack-activity-monitor';
 import { generateCdkApp, generateStack, readFromPath, readFromStack, setEnvironment, parseSourceOptions, generateTemplate, FromScan, TemplateSourceOptions, GenerateTemplateOutput, CfnTemplateGeneratorProvider, writeMigrateJsonFile, buildGenertedTemplateOutput, buildCfnClient, appendWarningsToReadme, isThereAWarning } from './commands/migrate';
 import { printSecurityDiff, printStackDiff, RequireApproval } from './diff';
@@ -158,7 +158,7 @@ export class CdkToolkit {
           removeNonImportResources(stack);
         }
 
-        let changeSetResult: ChangeSetResult | undefined = undefined;
+        let changeSet = undefined;
 
         if (options.changeSet) {
 
@@ -176,7 +176,7 @@ export class CdkToolkit {
           }
 
           if (stackExists) {
-            changeSetResult = await createDiffChangeSet({
+            changeSet = await createDiffChangeSet({
               stack,
               uuid: uuid.v4(),
               deployments: this.props.deployments,
@@ -186,11 +186,6 @@ export class CdkToolkit {
               resourcesToImport,
               stream,
             });
-
-            stack.templateFromGetTemplate = changeSetResult?.templateAfterChangeSet;
-            // eslint-disable-next-line no-console
-            console.log(stack.templateFromGetTemplate);
-
           } else {
             debug(`the stack '${stack.stackName}' has not been deployed to CloudFormation or describeStacks call failed, skipping changeset creation.`);
           }
@@ -202,9 +197,8 @@ export class CdkToolkit {
 
         const stackCount =
         options.securityOnly
-          ? (numberFromBool(printSecurityDiff(currentTemplate, stack, RequireApproval.Broadening, changeSetResult?.describeChangeSetOutput)))
-          : (printStackDiff(currentTemplate, stack, strict, contextLines, quiet,
-            changeSetResult?.describeChangeSetOutput, !!resourcesToImport, stream, nestedStacks));
+          ? (numberFromBool(printSecurityDiff(currentTemplate, stack, RequireApproval.Broadening, changeSet)))
+          : (printStackDiff(currentTemplate, stack, strict, contextLines, quiet, changeSet, !!resourcesToImport, stream, nestedStacks));
 
         diffs += stackCount;
       }
@@ -302,7 +296,7 @@ export class CdkToolkit {
 
       if (requireApproval !== RequireApproval.Never) {
         const currentTemplate = await this.props.deployments.readCurrentTemplate(stack);
-        if (printSecurityDiff(currentTemplate, stack, requireApproval)) { // TODO -- make this use new template
+        if (printSecurityDiff(currentTemplate, stack, requireApproval)) {
           await withCorkedLogging(async () => {
             // only talk to user if STDIN is a terminal (otherwise, fail)
             if (!process.stdin.isTTY) {

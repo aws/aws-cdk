@@ -531,6 +531,46 @@ class DockerStackWithCustomFile extends cdk.Stack {
   }
 }
 
+class SecurityDiffFromChangeSetStack extends Stack {
+  constructor(scope, id) {
+    super(scope, id);
+
+    const iamResourceName = ssm.StringParameter.valueForStringParameter(this, 'for-iam-role-defined-by-ssm-param');
+
+    new iam.Role(this, 'changeSetDiffIamRole', {
+      assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
+      inlinePolicies: {
+        fun: new iam.PolicyDocument({
+          statements: [
+            new iam.PolicyStatement({
+              effect: iam.Effect.DENY,
+              actions: ['sqs:*'],
+              resources: [`arn:aws:sqs:us-east-1:444455556666:${iamResourceName}`],
+            }),
+          ],
+        }),
+      },
+    });
+
+  }
+}
+
+class DiffFromChangeSetStack extends Stack {
+  constructor(scope, id) {
+    super(scope, id);
+
+    const queueNameFromParameter = ssm.StringParameter.valueForStringParameter(this, 'for-queue-name-defined-by-ssm-param');
+    new sqs.Queue(this, "DiffFromChangeSetQueue", {
+      queueName: queueNameFromParameter,
+    })
+
+    new ssm.StringParameter(this, 'DiffFromChangeSetSSMParam', {
+      parameterName: 'DiffFromChangeSetSSMParamName',
+      stringValue: queueNameFromParameter,
+    });
+  }
+}
+
 /**
  * A stack that will never succeed deploying (done in a way that CDK cannot detect but CFN will complain about)
  */
@@ -676,6 +716,9 @@ switch (stackSet) {
     new EcsHotswapStack(app, `${stackPrefix}-ecs-hotswap`);
     new DockerStack(app, `${stackPrefix}-docker`);
     new DockerStackWithCustomFile(app, `${stackPrefix}-docker-with-custom-file`);
+
+    new DiffFromChangeSetStack(app, `${stackPrefix}-queue-name-defined-by-ssm-param`)
+    new SecurityDiffFromChangeSetStack(app, `${stackPrefix}-iam-role-defined-by-ssm-param`)
 
     // SSO stacks
     new SsoInstanceAccessControlConfig(app, `${stackPrefix}-sso-access-control`);

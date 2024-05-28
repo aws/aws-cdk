@@ -199,8 +199,8 @@ export class TemplateAndChangeSetDiffMerger {
         TemplateAndChangeSetDiffMerger.maybeAddChangeSetPropertiesToResourceInDiff({
           propertiesThatChanged,
           changedResource: theDiffResources?.get(changedResourceLogicalId),
-          propertiesOfResourceFromCurrentTemplate: currentTemplateResources[changedResourceLogicalId]?.Properties,
-          propertiesOfResourceFromNewTemplate: newTemplateResources[changedResourceLogicalId]?.Properties,
+          propertiesOfResourceFromCurrentTemplate: currentTemplateResources?.[changedResourceLogicalId]?.Properties,
+          propertiesOfResourceFromNewTemplate: newTemplateResources?.[changedResourceLogicalId]?.Properties,
         });
       } else {
         TemplateAndChangeSetDiffMerger.addChangeSetResourceToDiff({

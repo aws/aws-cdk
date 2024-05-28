@@ -55,16 +55,16 @@ export function fullDiff(
 
   normalize(currentTemplate);
   normalize(newTemplate);
-  const theDiff = diffTemplate(currentTemplate, newTemplate);
-
+  let theDiff = diffTemplate(currentTemplate, newTemplate);
   if (changeSet) {
     // These methods mutate the state of theDiff, using the changeSet.
     const changeSetDiff = new TemplateAndChangeSetDiffMerger({ changeSet });
-    changeSetDiff.addMissingPropertiesAndResourcesToDiff(theDiff.resources, currentTemplate, newTemplate);
+    changeSetDiff.addMissingPropertiesAndResourcesToDiff(theDiff.resources, currentTemplate?.Resources, newTemplate?.Resources); // MAKE SURE THERE'S A UNIT TEST THAT HAS UNDEFINED RESOURCES
     theDiff.resources.forEachDifference((logicalId: string, change: types.ResourceDifference) =>
       changeSetDiff.overrideDiffResourceChangeImpactWithChangeSetChangeImpact(logicalId, change),
     );
     changeSetDiff.addImportInformationFromChangeset(theDiff.resources);
+    theDiff = new types.TemplateDiff(theDiff); // do this to propagate security changes.
   } else if (isImport) {
     makeAllResourceChangesImports(theDiff);
   }
