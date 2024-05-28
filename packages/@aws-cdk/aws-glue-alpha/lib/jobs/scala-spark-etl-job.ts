@@ -8,7 +8,7 @@
  *  —enable-metrics, —enable-spark-ui, —enable-continuous-cloudwatch-log.
  *  You can find more details about version, worker type and other features
  *  in Glue's public documentation.
- * 
+ *
  *  RFC: https://github.com/aws/aws-cdk-rfcs/blob/main/text/0497-glue-l2-construct.md
  *
  */
@@ -20,7 +20,6 @@ import { Job, JobProperties } from './job';
 import { Construct } from 'constructs';
 import { JobType, GlueVersion, JobLanguage, WorkerType } from '../constants';
 import { SparkUIProps, SparkUILoggingLocation, validateSparkUiPrefix, cleanSparkUiPrefixForGrant } from './spark-ui-utils';
-
 
 /**
  * Properties for creating a Scala Spark ETL job
@@ -103,7 +102,7 @@ export class ScalaSparkEtlJob extends Job {
 
     // Mandatory className argument
     if (props.className === undefined) {
-        throw new Error('className must be set for Scala ETL Jobs');
+      throw new Error('className must be set for Scala ETL Jobs');
     }
 
     // Conbine command line arguments into a single line item
@@ -153,16 +152,11 @@ export class ScalaSparkEtlJob extends Job {
   private executableArguments(props: ScalaSparkEtlJobProps) {
     const args: { [key: string]: string } = {};
     args['--job-language'] = JobLanguage.SCALA;
+    args['--class'] = props.className!;
 
-    // if (props.extraJars && props.extraJars?.length > 0) {
-    //   args['--extra-jars'] = props.extraJars.map(code => this.codeS3ObjectUrl(code)).join(',');
-    // }
-    // if (props.extraFiles && props.extraFiles.length > 0) {
-    //   args['--extra-files'] = props.extraFiles.map(code => this.codeS3ObjectUrl(code)).join(',');
-    // }
-    // if (props.extraJarsFirst) {
-    //   args['--user-jars-first'] = 'true';
-    // }
+    if (props.extraJars && props.extraJars?.length > 0) {
+      args['--extra-jars'] = props.extraJars.map(code => this.codeS3ObjectUrl(code)).join(',');
+    }
 
     return args;
   }
