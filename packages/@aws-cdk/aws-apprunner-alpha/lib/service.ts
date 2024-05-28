@@ -8,6 +8,7 @@ import { Lazy } from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import { CfnService } from 'aws-cdk-lib/aws-apprunner';
 import { IVpcConnector } from './vpc-connector';
+import { IObservabilityConfiguration } from './observability-configuration';
 
 /**
  * The image repository types
@@ -79,7 +80,7 @@ export class Cpu {
    *
    * @param unit The unit of CPU.
    */
-  private constructor(public readonly unit: string) {}
+  private constructor(public readonly unit: string) { }
 }
 
 /**
@@ -715,6 +716,13 @@ export interface ServiceProps {
    * @default - no health check configuration
    */
   readonly healthCheck?: HealthCheck;
+
+  /**
+   * Settings for an App Runner tracing feature.
+   *
+   * @default - Not enable tracing
+   */
+  readonly observabilityConfiguration?: IObservabilityConfiguration;
 }
 
 /**
@@ -1248,6 +1256,10 @@ export class Service extends cdk.Resource implements iam.IGrantable {
       healthCheckConfiguration: this.props.healthCheck ?
         this.props.healthCheck.bind() :
         undefined,
+      observabilityConfiguration: props.observabilityConfiguration ? {
+        observabilityEnabled: true,
+        observabilityConfigurationArn: props.observabilityConfiguration?.observabilityConfigurationArn,
+      } : undefined,
     });
 
     // grant required privileges for the role
