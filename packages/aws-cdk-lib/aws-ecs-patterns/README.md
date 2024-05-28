@@ -888,6 +888,40 @@ const applicationLoadBalancedFargateService = new ecsPatterns.ApplicationLoadBal
 });
 ```
 
+### Customize Container Name for ScheduledFargateTask
+
+```ts
+declare const cluster: ecs.Cluster;
+const scheduledFargateTask = new ecsPatterns.ScheduledFargateTask(this, 'ScheduledFargateTask', {
+  cluster,
+  scheduledFargateTaskImageOptions: {
+    image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+    containerName: 'customContainerName',  
+    memoryLimitMiB: 512,
+  },
+  schedule: appscaling.Schedule.expression('rate(1 minute)'),
+  platformVersion: ecs.FargatePlatformVersion.LATEST,
+});
+```
+
+### Customize Container Name for ScheduledEc2Task
+
+```ts
+declare const cluster: ecs.Cluster;
+const ecsScheduledTask = new ecsPatterns.ScheduledEc2Task(this, 'ScheduledTask', {
+    cluster,
+    scheduledEc2TaskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+        containerName: 'customContainerName',
+        memoryLimitMiB: 256,
+        environment: { name: 'TRIGGER', value: 'CloudWatch Events' },
+    },
+    schedule: appscaling.Schedule.expression('rate(1 minute)'),
+    enabled: true,
+    ruleName: 'sample-scheduled-task-rule',
+});
+```
+
 ### Set PlatformVersion for ScheduledFargateTask
 
 ```ts
