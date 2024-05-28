@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e5cb42cc85fa33247fce2f77994956d0141cf81e49f2dcca1a598d3225d84a53.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/de04b9df3a372c29acbe87af39fce37afa9e36fe30c2dc3a3cf1c3e49ff319bb.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -170,6 +170,60 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "ScheduledFargateTaskScheduledTaskDefSecurityGroupE075BC19"
+          }
+        ],
+        "/aws-fargate-integ/ScheduledFargateTask2/ScheduledEventRule/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ScheduledFargateTask2ScheduledEventRuleB28B6E89"
+          }
+        ],
+        "/aws-fargate-integ/ScheduledFargateTask2/ScheduledTaskDef/TaskRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ScheduledFargateTask2ScheduledTaskDefTaskRole98EC45BD"
+          }
+        ],
+        "/aws-fargate-integ/ScheduledFargateTask2/ScheduledTaskDef/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ScheduledFargateTask2ScheduledTaskDef7C71FC91"
+          }
+        ],
+        "/aws-fargate-integ/ScheduledFargateTask2/ScheduledTaskDef/differentName/LogGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ScheduledFargateTask2ScheduledTaskDefdifferentNameLogGroup68793F8C"
+          }
+        ],
+        "/aws-fargate-integ/ScheduledFargateTask2/ScheduledTaskDef/ExecutionRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ScheduledFargateTask2ScheduledTaskDefExecutionRole03B3A539"
+          }
+        ],
+        "/aws-fargate-integ/ScheduledFargateTask2/ScheduledTaskDef/ExecutionRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ScheduledFargateTask2ScheduledTaskDefExecutionRoleDefaultPolicyA3F7D935"
+          }
+        ],
+        "/aws-fargate-integ/ScheduledFargateTask2/ScheduledTaskDef/EventsRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ScheduledFargateTask2ScheduledTaskDefEventsRoleDCCAD052"
+          }
+        ],
+        "/aws-fargate-integ/ScheduledFargateTask2/ScheduledTaskDef/EventsRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ScheduledFargateTask2ScheduledTaskDefEventsRoleDefaultPolicyC878DEC4"
+          }
+        ],
+        "/aws-fargate-integ/ScheduledFargateTask2/ScheduledTaskDef/SecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ScheduledFargateTask2ScheduledTaskDefSecurityGroup164B2B50"
           }
         ],
         "/aws-fargate-integ/BootstrapVersion": [
