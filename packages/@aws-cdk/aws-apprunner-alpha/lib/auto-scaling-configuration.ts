@@ -92,7 +92,7 @@ export interface IAutoScalingConfiguration extends cdk.IResource {
  */
 export class AutoScalingConfiguration extends cdk.Resource implements IAutoScalingConfiguration {
   /**
-   * Import from Auto Scaling Configuration attributes.
+   * Imports an App Runner Auto Scaling Configuration from attributes
    */
   public static fromAutoScalingConfigurationAttributes(scope: Construct, id: string,
     attrs: AutoScalingConfigurationAttributes): IAutoScalingConfiguration {
@@ -107,6 +107,28 @@ export class AutoScalingConfiguration extends cdk.Resource implements IAutoScali
     }
 
     return new Import(scope, id);
+  }
+
+  /**
+   * Imports an App Runner Auto Scaling Configuration from its ARN
+   */
+  public static fromArn(scope: Construct, id: string, autoScalingConfigurationArn: string): IAutoScalingConfiguration {
+    const arn = cdk.Stack.of(scope).splitArn(autoScalingConfigurationArn, cdk.ArnFormat.SLASH_RESOURCE_NAME);
+
+    const resourceParts = arn.resourceName?.split('/');
+
+    if (!resourceParts || resourceParts.length < 3) {
+      throw new Error(`Unexpected ARN format: ${autoScalingConfigurationArn}`);
+    }
+
+    const autoScalingConfigurationName = resourceParts[0];
+    const autoScalingConfigurationRevision = parseInt(resourceParts[1]);
+
+    return AutoScalingConfiguration.fromAutoScalingConfigurationAttributes(scope, id, {
+      autoScalingConfigurationArn,
+      autoScalingConfigurationName,
+      autoScalingConfigurationRevision,
+    });
   }
 
   /**
