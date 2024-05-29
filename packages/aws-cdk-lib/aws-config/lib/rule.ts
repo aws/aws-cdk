@@ -2829,6 +2829,50 @@ export class ResourceType {
   public static readonly APP_STREAM_STACK = new ResourceType('AWS::AppStream::Stack');
   /** Amazon Inspector Filter */
   public static readonly INSPECTORV2_FILTER = new ResourceType('AWS::InspectorV2::Filter');
+  /** Amazon AppStream Fleet */
+  public static readonly APP_STREAM_FLEET = new ResourceType('AWS::AppStream::Fleet');
+  /** Amazon Managed Grafana Workspace */
+  public static readonly GRAFANA_WORKSPACE = new ResourceType('AWS::Grafana::Workspace');
+  /** AWS KMS Alias */
+  public static readonly KMS_ALIAS = new ResourceType('AWS::KMS::Alias');
+  /** Amazon RDS OptionGroup */
+  public static readonly RDS_OPTION_GROUP = new ResourceType('AWS::RDS::OptionGroup');
+  /** AWS Route53 Resolver FirewallRuleGroup */
+  public static readonly ROUTE53_RESOLVER_FIREWALL_RULE_GROUP = new ResourceType('AWS::Route53Resolver::FirewallRuleGroup');
+  /** AWS IAM InstanceProfile */
+  public static readonly IAM_INSTANCE_PROFILE = new ResourceType('AWS::IAM::InstanceProfile');
+  /** AWS NetworkManager ConnectPeer */
+  public static readonly NETWORK_MANAGER_CONNECT_PEER = new ResourceType('AWS::NetworkManager::ConnectPeer');
+  /** AWS Private Certificate Authority CertificateAuthorityActivation */
+  public static readonly ACMPCA_CERTIFICATE_AUTHORITY_ACTIVATION = new ResourceType('AWS::ACMPCA::CertificateAuthorityActivation');
+  /** AWS AppMesh GatewayRoute */
+  public static readonly APP_MESH_GATEWAY_ROUTE = new ResourceType('AWS::AppMesh::GatewayRoute');
+  /** AWS AppMesh Mesh */
+  public static readonly APP_MESH_MESH = new ResourceType('AWS::AppMesh::Mesh');
+  /** Amazon Connect QuickConnect */
+  public static readonly CONNECT_QUICK_CONNECT = new ResourceType('AWS::Connect::QuickConnect');
+  /** EC2 CarrierGateway */
+  public static readonly EC2_CARRIER_GATEWAY = new ResourceType('AWS::EC2::CarrierGateway');
+  /** EC2 TransitGatewayConnect */
+  public static readonly EC2_TRANSIT_GATEWAY_CONNECT = new ResourceType('AWS::EC2::TransitGatewayConnect');
+  /** Amazon ECS CapacityProvider */
+  public static readonly ECS_CAPACITY_PROVIDER = new ResourceType('AWS::ECS::CapacityProvider');
+  /** AWS IoT CACertificate */
+  public static readonly IOT_CA_CERTIFICATE = new ResourceType('AWS::IoT::CACertificate');
+  /** AWS IoT TwinMaker SyncJob */
+  public static readonly IOT_TWIN_MAKER_SYNC_JOB = new ResourceType('AWS::IoTTwinMaker::SyncJob');
+  /** Amazon Managed Streaming for Apache Kafka Connect Connector */
+  public static readonly KAFKA_CONNECT_CONNECTOR = new ResourceType('AWS::KafkaConnect::Connector');
+  /** AWS Lambda CodeSigningConfig */
+  public static readonly LAMBDA_CODE_SIGNING_CONFIG = new ResourceType('AWS::Lambda::CodeSigningConfig');
+  /** AWS Resource Explorer Index */
+  public static readonly RESOURCE_EXPLORER2_INDEX = new ResourceType('AWS::ResourceExplorer2::Index');
+  /** Amazon Connect Instance */
+  public static readonly CONNECT_INSTANCE = new ResourceType('AWS::Connect::Instance');
+  /** EC2 IPAMPool */
+  public static readonly EC2_IPAM_POOL = new ResourceType('AWS::EC2::IPAMPool');
+  /** EC2 TransitGatewayMulticastDomain */
+  public static readonly EC2_TRANSIT_GATEWAY_MULTICAST_DOMAIN = new ResourceType('AWS::EC2::TransitGatewayMulticastDomain');
 
   /** A custom resource type to support future cases. */
   public static of(type: string): ResourceType {
