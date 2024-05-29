@@ -81,7 +81,7 @@ const UPDATE = chalk.yellow('[~]');
 const REMOVAL = chalk.red('[-]');
 const IMPORT = chalk.blue('[←]');
 
-class Formatter {
+export class Formatter {
   constructor(
     private readonly stream: FormatStream,
     private readonly logicalToPathMap: { [logicalId: string]: string },
