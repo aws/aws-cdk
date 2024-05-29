@@ -123,49 +123,6 @@ export class OriginAccessControl extends OriginAccessControlBase {
     }
     return new Import(scope, id);
   }
-  /**
-   * docstring
-   */
-  public static s3OriginAccessControl(scope: Construct, id: string, props?: OriginAccessControlProps): IOriginAccessControl {
-    return new OriginAccessControl(scope, id, {
-      description: props?.description,
-      originAccessControlName: props?.originAccessControlName,
-      originAccessControlOriginType: OriginAccessControlOriginType.S3,
-    });
-  }
-
-  /**
-   * docstring
-   */
-  public static mediastoreOriginAccessControl(scope: Construct, id: string, props?: OriginAccessControlProps): IOriginAccessControl {
-    return new OriginAccessControl(scope, id, {
-      description: props?.description,
-      originAccessControlName: props?.originAccessControlName,
-      originAccessControlOriginType: OriginAccessControlOriginType.MEDIASTORE,
-    });
-  }
-
-  /**
-   * docstring
-   */
-  public static lambdaOriginAccessControl(scope: Construct, id: string, props?: OriginAccessControlProps): IOriginAccessControl {
-    return new OriginAccessControl(scope, id, {
-      description: props?.description,
-      originAccessControlName: props?.originAccessControlName,
-      originAccessControlOriginType: OriginAccessControlOriginType.LAMBDA,
-    });
-  }
-
-  /**
-   * docstring
-   */
-  public static mediapackageOriginAccessControl(scope: Construct, id: string, props?: OriginAccessControlProps): IOriginAccessControl {
-    return new OriginAccessControl(scope, id, {
-      description: props?.description,
-      originAccessControlName: props?.originAccessControlName,
-      originAccessControlOriginType: OriginAccessControlOriginType.MEDIAPACKAGEV2,
-    });
-  }
 
   public readonly originAccessControlId: string;
   constructor(scope: Construct, id: string, props: OriginAccessControlProps = {}) {
