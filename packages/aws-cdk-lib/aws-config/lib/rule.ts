@@ -2679,6 +2679,48 @@ export class ResourceType {
   public static readonly NETWORK_MANAGER_LINK = new ResourceType('AWS::NetworkManager::Link');
   /** AWS NetworkFirewall TLSInspectionConfiguration */
   public static readonly NETWORK_FIREWALL_TLS_INSPECTION_CONFIGURATION = new ResourceType('AWS::NetworkFirewall::TLSInspectionConfiguration');
+  /** AWS Amplify App */
+  public static readonly AMPLIFY_APP = new ResourceType('AWS::Amplify::App');
+  /** AWS AppMesh VirtualNode */
+  public static readonly APP_MESH_VIRTUAL_NODE = new ResourceType('AWS::AppMesh::VirtualNode');
+  /** AWS AppMesh VirtualService */
+  public static readonly APP_MESH_VIRTUAL_SERVICE = new ResourceType('AWS::AppMesh::VirtualService');
+  /** AWS AppRunner VpcConnector */
+  public static readonly APP_RUNNER_VPC_CONNECTOR = new ResourceType('AWS::AppRunner::VpcConnector');
+  /** Amazon AppStream Application */
+  public static readonly APP_STREAM_APPLICATION = new ResourceType('AWS::AppStream::Application');
+  /** Amazon KeySpaces Cassandra Keyspace */
+  public static readonly CASSANDRA_KEYSPACE = new ResourceType('AWS::Cassandra::Keyspace');
+  /** AWS CodeArtifact Repository */
+  public static readonly CODE_ARTIFACT_REPOSITORY = new ResourceType('AWS::CodeArtifact::Repository');
+  /** EC2 PrefixList */
+  public static readonly EC2_PREFIX_LIST = new ResourceType('AWS::EC2::PrefixList');
+  /** EC2 SpotFleet */
+  public static readonly EC2_SPOT_FLEET = new ResourceType('AWS::EC2::SpotFleet');
+  /** Amazon ECS TaskSet */
+  public static readonly ECS_TASK_SET = new ResourceType('AWS::ECS::TaskSet');
+  /** Amazon CloudWatch Evidently Project */
+  public static readonly EVIDENTLY_PROJECT = new ResourceType('AWS::Evidently::Project');
+  /** Amazon Forecast Dataset */
+  public static readonly FORECAST_DATASET = new ResourceType('AWS::Forecast::Dataset');
+  /** AWS IAM SAMLProvider */
+  public static readonly IAM_SAML_PROVIDER = new ResourceType('AWS::IAM::SAMLProvider');
+  /** AWS IAM ServerCertificate */
+  public static readonly IAM_SERVER_CERTIFICATE = new ResourceType('AWS::IAM::ServerCertificate');
+  /** Amazon Kinesis Firehose DeliveryStream */
+  public static readonly KINESIS_FIREHOSE_DELIVERY_STREAM = new ResourceType('AWS::KinesisFirehose::DeliveryStream');
+  /** Amazon Pinpoint Campaign */
+  public static readonly PINPOINT_CAMPAIGN = new ResourceType('AWS::Pinpoint::Campaign');
+  /** Amazon Pinpoint InAppTemplate */
+  public static readonly PINPOINT_IN_APP_TEMPLATE = new ResourceType('AWS::Pinpoint::InAppTemplate');
+  /** AWS Signer SigningProfile */
+  public static readonly SIGNER_SIGNING_PROFILE = new ResourceType('AWS::Signer::SigningProfile');
+  /** Amazon SageMaker Domain */
+  public static readonly SAGEMAKER_DOMAIN = new ResourceType('AWS::SageMaker::Domain');
+  /** AWS Transfer Agreement */
+  public static readonly TRANSFER_AGREEMENT = new ResourceType('AWS::Transfer::Agreement');
+  /** AWS Transfer Connector */
+  public static readonly TRANSFER_CONNECTOR = new ResourceType('AWS::Transfer::Connector');
 
   /** A custom resource type to support future cases. */
   public static of(type: string): ResourceType {
