@@ -179,7 +179,7 @@ export class Ec2Service extends BaseService implements IEc2Service {
     {
       cluster: props.cluster.clusterName,
       taskDefinition: props.deploymentController?.type === DeploymentControllerType.EXTERNAL ? undefined : props.taskDefinition.taskDefinitionArn,
-      placementConstraints: Lazy.any({ produce: () => this.constraints }, { omitEmptyArray: true }),
+      placementConstraints: Lazy.any({ produce: () => this.constraints }),
       placementStrategies: Lazy.any({ produce: () => this.strategies }, { omitEmptyArray: true }),
       schedulingStrategy: props.daemon ? 'DAEMON' : 'REPLICA',
     }, props.taskDefinition);
