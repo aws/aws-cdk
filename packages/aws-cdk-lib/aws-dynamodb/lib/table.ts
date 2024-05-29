@@ -1008,7 +1008,7 @@ export class Table extends TableBase {
       public readonly tableArn: string;
       public readonly tableStreamArn?: string;
       public readonly encryptionKey?: kms.IKey;
-      public resourcePolicy?: iam.PolicyDocument | undefined;
+      public resourcePolicy?: iam.PolicyDocument;
       protected readonly hasIndex = (attrs.grantIndexPermissions ?? false) ||
         (attrs.globalIndexes ?? []).length > 0 ||
         (attrs.localIndexes ?? []).length > 0;
