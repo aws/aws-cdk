@@ -2585,6 +2585,52 @@ export class ResourceType {
   public static readonly EVENT_SCHEMAS_SCHEMA = new ResourceType('AWS::EventSchemas::Schema');
   /** AWS Elemental MediaPackage Packaging Configuration */
   public static readonly MEDIA_PACKAGE_PACKAGING_CONFIGURATION = new ResourceType('AWS::MediaPackage::PackagingConfiguration');
+  /** Amazon AppStream Directory Config */
+  public static readonly APP_STREAM_DIRECTORY_CONFIG = new ResourceType('AWS::AppStream::DirectoryConfig');
+  /** EC2 Auto Scaling Warm Pool */
+  public static readonly AUTO_SCALING_WARM_POOL = new ResourceType('AWS::AutoScaling::WarmPool');
+  /** Amazon Connect Phone Number */
+  public static readonly CONNECT_PHONE_NUMBER = new ResourceType('AWS::Connect::PhoneNumber');
+  /** Amazon Connect Customer Profiles Domain */
+  public static readonly CUSTOMER_PROFILES_DOMAIN = new ResourceType('AWS::CustomerProfiles::Domain');
+  /** EC2 DHCP Options */
+  public static readonly EC2_DHCP_OPTIONS = new ResourceType('AWS::EC2::DHCPOptions');
+  /** EC2 IPAM */
+  public static readonly EC2_IPAM = new ResourceType('AWS::EC2::IPAM');
+  /** EC2 Network Insights Path */
+  public static readonly EC2_NETWORK_INSIGHTS_PATH = new ResourceType('AWS::EC2::NetworkInsightsPath');
+  /** EC2 Traffic Mirror Filter */
+  public static readonly EC2_TRAFFIC_MIRROR_FILTER = new ResourceType('AWS::EC2::TrafficMirrorFilter');
+  /** Amazon EventBridge Events Rule */
+  public static readonly EVENTS_RULE = new ResourceType('AWS::Events::Rule');
+  /** AWS HealthLake FHIR Datastore */
+  public static readonly HEALTH_LAKE_FHIR_DATASTORE = new ResourceType('AWS::HealthLake::FHIRDatastore');
+  /** AWS IoT Twin Maker Scene */
+  public static readonly IOT_TWIN_MAKER_SCENE = new ResourceType('AWS::IoTTwinMaker::Scene');
+  /** Amazon Kinesis Video Streams Signaling Channel */
+  public static readonly KINESIS_VIDEO_SIGNALING_CHANNEL = new ResourceType('AWS::KinesisVideo::SignalingChannel');
+  /** Amazon Lookout Vision Project */
+  public static readonly LOOKOUT_VISION_PROJECT = new ResourceType('AWS::LookoutVision::Project');
+  /** AWS Network Manager Transit Gateway Registration */
+  public static readonly NETWORK_MANAGER_TRANSIT_GATEWAY_REGISTRATION = new ResourceType('AWS::NetworkManager::TransitGatewayRegistration');
+  /** Amazon Pinpoint Application Settings */
+  public static readonly PINPOINT_APPLICATION_SETTINGS = new ResourceType('AWS::Pinpoint::ApplicationSettings');
+  /** Amazon Pinpoint Segment */
+  public static readonly PINPOINT_SEGMENT = new ResourceType('AWS::Pinpoint::Segment');
+  /** AWS RoboMaker Robot Application */
+  public static readonly ROBO_MAKER_ROBOT_APPLICATION = new ResourceType('AWS::RoboMaker::RobotApplication');
+  /** AWS RoboMaker Simulation Application */
+  public static readonly ROBO_MAKER_SIMULATION_APPLICATION = new ResourceType('AWS::RoboMaker::SimulationApplication');
+  /** Amazon Route53 Recovery Control Cluster */
+  public static readonly ROUTE53_RECOVERY_CONTROL_CLUSTER = new ResourceType('AWS::Route53RecoveryControl::Cluster');
+  /** Amazon Route53 Recovery Control Control Panel */
+  public static readonly ROUTE53_RECOVERY_CONTROL_CONTROL_PANEL = new ResourceType('AWS::Route53RecoveryControl::ControlPanel');
+  /** Amazon Route53 Recovery Control Routing Control */
+  public static readonly ROUTE53_RECOVERY_CONTROL_ROUTING_CONTROL = new ResourceType('AWS::Route53RecoveryControl::RoutingControl');
+  /** Amazon Route53 Recovery Control Safety Rule */
+  public static readonly ROUTE53_RECOVERY_CONTROL_SAFETY_RULE = new ResourceType('AWS::Route53RecoveryControl::SafetyRule');
+  /** Amazon Route53 Recovery Readiness Resource Set */
+  public static readonly ROUTE53_RECOVERY_READINESS_RESOURCE_SET = new ResourceType('AWS::Route53RecoveryReadiness::ResourceSet');
 
   /** A custom resource type to support future cases. */
   public static of(type: string): ResourceType {
