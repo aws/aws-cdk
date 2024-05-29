@@ -1132,7 +1132,9 @@ export class Table extends TableBase {
       kinesisStreamSpecification: props.kinesisStream ? { streamArn: props.kinesisStream.streamArn } : undefined,
       deletionProtectionEnabled: props.deletionProtection,
       importSourceSpecification: this.renderImportSourceSpecification(props.importSource),
-      resourcePolicy: props.resourcePolicy? { policyDocument: props.resourcePolicy } : undefined,
+      resourcePolicy: props.resourcePolicy
+        ? { policyDocument: props.resourcePolicy }
+        : undefined,
     });
     this.table.applyRemovalPolicy(props.removalPolicy);
 
