@@ -116,6 +116,25 @@ abstract class EnvironmentBase extends Resource implements IEnvironment, IExtens
   public addExtension(extension: IExtension) {
     this.extensible.addExtension(extension);
   }
+
+  public grant(grantee: iam.IGrantable, ...actions: string[]) {
+    return iam.Grant.addToPrincipal({
+      grantee,
+      actions,
+      resourceArns: [this.environmentArn],
+    });
+  }
+
+  public grantReadConfig(identity: iam.IGrantable): iam.Grant {
+    return iam.Grant.addToPrincipal({
+      grantee: identity,
+      actions: [
+        'appconfig:GetLatestConfiguration',
+        'appconfig:StartConfigurationSession',
+      ],
+      resourceArns: [`${this.environmentArn}/configuration/*`],
+    });
+  }
 }
 
 /**
@@ -543,4 +562,21 @@ export interface IEnvironment extends IResource {
    * @param extension The extension to create an association for
    */
   addExtension(extension: IExtension): void;
+
+  /**
+   * Adds an IAM policy statement associated with this environment to an IAM principal's policy.
+   *
+   * @param grantee the principal (no-op if undefined)
+   * @param actions the set of actions to allow (i.e., 'appconfig:GetLatestConfiguration', 'appconfig:StartConfigurationSession', etc.)
+   */
+  grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant;
+
+  /**
+   * Permits an IAM principal to perform read operations on this environment's configurations.
+   *
+   * Actions: GetLatestConfiguration, StartConfigurationSession.
+   *
+   * @param grantee Principal to grant read rights to
+   */
+  grantReadConfig(grantee: iam.IGrantable): iam.Grant;
 }
