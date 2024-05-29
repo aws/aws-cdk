@@ -242,4 +242,29 @@ describe('Test Reports Groups', () => {
       },
     });
   });
+
+  test('report group with deleteReports enabled', () => {
+    const stack = new cdk.Stack();
+
+    new codebuild.ReportGroup(stack, 'ReportGroup', {
+      deleteReports: true,
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::ReportGroup', {
+      "DeleteReports": true,
+    });
+  });
+
+  test('deleteReports requires \'RemovalPolicy.DESTROY\'', () => {
+    const stack = new cdk.Stack();
+
+    expect(() => {
+      new codebuild.ReportGroup(stack, 'ReportGroup', {
+        deleteReports: true,
+      });
+    },
+    ).toThrow('Cannot use \'deleteReports\' property on a report group without setting removal policy to \'DESTROY\'.');
+  });
+
 });

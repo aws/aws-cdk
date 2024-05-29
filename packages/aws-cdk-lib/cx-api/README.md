@@ -342,3 +342,19 @@ _cdk.json_
   }
 }
 ```
+
+* `@aws-cdk/aws-ecs:removeDefaultDeploymentAlarm`
+
+When enabled, remove default deployment alarm settings.
+
+When this featuer flag is enabled, remove the default deployment alarm settings when creating a AWS ECS service.
+
+_cdk.json_
+
+```json
+{
+  "context": {
+    "@aws-cdk/aws-ec2:ebsDefaultGp3Volume": true
+  }
+}
+```
