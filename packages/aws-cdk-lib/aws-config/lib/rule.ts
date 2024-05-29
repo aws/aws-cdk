@@ -2791,7 +2791,44 @@ export class ResourceType {
   public static readonly PINPOINT_EVENT_STREAM = new ResourceType('AWS::Pinpoint::EventStream');
   /** AWS ResilienceHub App */
   public static readonly RESILIENCEHUB_APP = new ResourceType('AWS::ResilienceHub::App');
-
+  /** Amazon CodeGuruP rofiler ProfilingGroup */
+  public static readonly CODE_GURU_PROFILER_PROFILING_GROUP = new ResourceType('AWS::CodeGuruProfiler::ProfilingGroup');
+  /** AWS Elemental MediaConnect FlowSource */
+  public static readonly MEDIA_CONNECT_FLOW_SOURCE = new ResourceType('AWS::MediaConnect::FlowSource');
+  /** AWS Transfer Family Certificate */
+  public static readonly TRANSFER_CERTIFICATE = new ResourceType('AWS::Transfer::Certificate');
+  /** Amazon Managed Service for Prometheus RuleGroupsNamespace */
+  public static readonly APS_RULE_GROUPS_NAMESPACE = new ResourceType('AWS::APS::RuleGroupsNamespace');
+  /** AWS Batch SchedulingPolicy */
+  public static readonly BATCH_SCHEDULING_POLICY = new ResourceType('AWS::Batch::SchedulingPolicy');
+  /** AWS Cloud Map Instance */
+  public static readonly SERVICE_DISCOVERY_INSTANCE = new ResourceType('AWS::ServiceDiscovery::Instance');
+  /** Amazon Route53 Resolver ResolverQueryLoggingConfig */
+  public static readonly ROUTE53_RESOLVER_QUERY_LOGGING_CONFIG = new ResourceType('AWS::Route53Resolver::ResolverQueryLoggingConfig');
+  /** Amazon Route53 Resolver ResolverQueryLoggingConfigAssociation */
+  public static readonly ROUTE53_RESOLVER_QUERY_LOGGING_CONFIG_ASSOCIATION = new ResourceType('AWS::Route53Resolver::ResolverQueryLoggingConfigAssociation');
+  /** AWS IoT JobTemplate */
+  public static readonly IOT_JOB_TEMPLATE = new ResourceType('AWS::IoT::JobTemplate');
+  /** AWS IoT TwinMaker ComponentType */
+  public static readonly IOT_TWIN_MAKER_COMPONENT_TYPE = new ResourceType('AWS::IoTTwinMaker::ComponentType');
+  /** AWS IoT Wireless MulticastGroup */
+  public static readonly IOT_WIRELESS_MULTICAST_GROUP = new ResourceType('AWS::IoTWireless::MulticastGroup');
+  /** Amazon Personalize DatasetGroup */
+  public static readonly PERSONALIZE_DATASET_GROUP = new ResourceType('AWS::Personalize::DatasetGroup');
+  /** AWS IoT ProvisioningTemplate */
+  public static readonly IOT_PROVISIONING_TEMPLATE = new ResourceType('AWS::IoT::ProvisioningTemplate');
+  /** AWS IoT Wireless FuotaTask */
+  public static readonly IOT_WIRELESS_FUOTA_TASK = new ResourceType('AWS::IoTWireless::FuotaTask');
+  /** Amazon MSK BatchScramSecret */
+  public static readonly MSK_BATCH_SCRAM_SECRET = new ResourceType('AWS::MSK::BatchScramSecret');
+  /** Amazon SageMaker FeatureGroup */
+  public static readonly SAGEMAKER_FEATURE_GROUP = new ResourceType('AWS::SageMaker::FeatureGroup');
+  /** AWS CodeBuild ReportGroup */
+  public static readonly CODE_BUILD_REPORT_GROUP = new ResourceType('AWS::CodeBuild::ReportGroup');
+  /** Amazon AppStream Stack */
+  public static readonly APP_STREAM_STACK = new ResourceType('AWS::AppStream::Stack');
+  /** Amazon Inspector Filter */
+  public static readonly INSPECTORV2_FILTER = new ResourceType('AWS::InspectorV2::Filter');
 
   /** A custom resource type to support future cases. */
   public static of(type: string): ResourceType {
