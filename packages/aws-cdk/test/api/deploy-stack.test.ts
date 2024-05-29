@@ -1,5 +1,5 @@
 /* eslint-disable import/order */
-import { deployStack, DeployStackOptions } from '../../lib/api';
+import { deployStack, DeployStackOptions, destroyStack } from '../../lib/api';
 import { HotswapMode } from '../../lib/api/hotswap/common';
 import { tryHotswapDeployment } from '../../lib/api/hotswap-deployments';
 import { setCI } from '../../lib/logging';
@@ -628,6 +628,16 @@ test('deploy is not skipped if stack is in a _FAILED state', async () => {
 
   // THEN
   expect(cfnMocks.createChangeSet).toHaveBeenCalled();
+});
+
+test('destroy stack throws error if stack is not deployed', async () => {
+  await expect(destroyStack({
+    stack: FAKE_STACK,
+    sdk: sdk,
+    deployName: FAKE_STACK.stackName,
+  })).rejects.toThrow(`Failed to destroy ${FAKE_STACK.stackName}. The stack is not deployed.`);
+
+  expect(cfnMocks.deleteStack).not.toHaveBeenCalled();
 });
 
 test('existing stack in UPDATE_ROLLBACK_COMPLETE state can be updated', async () => {

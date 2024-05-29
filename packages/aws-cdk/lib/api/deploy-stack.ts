@@ -578,7 +578,7 @@ export async function destroyStack(options: DestroyStackOptions) {
 
   const currentStack = await CloudFormationStack.lookup(cfn, deployName);
   if (!currentStack.exists) {
-    return;
+    throw new StackNotFoundError(`Failed to destroy ${deployName}. The stack is not deployed.`);
   }
   const monitor = options.quiet ? undefined : StackActivityMonitor.withDefaultPrinter(cfn, deployName, options.stack, {
     ci: options.ci,
@@ -693,4 +693,10 @@ function suffixWithErrors(msg: string, errors?: string[]) {
   return errors && errors.length > 0
     ? `${msg}: ${errors.join(', ')}`
     : msg;
+}
+
+export class StackNotFoundError extends Error {
+  constructor(message: string) {
+    super(message);
+  }
 }
