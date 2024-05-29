@@ -2753,6 +2753,44 @@ export class ResourceType {
   public static readonly PINPOINT_EMAIL_CHANNEL = new ResourceType('AWS::Pinpoint::EmailChannel');
   /** Amazon S3 AccessPoint */
   public static readonly S3_ACCESS_POINT = new ResourceType('AWS::S3::AccessPoint');
+  /** AWS Amplify Branch */
+  public static readonly AMPLIFY_BRANCH = new ResourceType('AWS::Amplify::Branch');
+  /** Amazon AppIntegrations EventIntegration */
+  public static readonly APP_INTEGRATIONS_EVENT_INTEGRATION = new ResourceType('AWS::AppIntegrations::EventIntegration');
+  /** AWS AppMesh Route */
+  public static readonly APP_MESH_ROUTE = new ResourceType('AWS::AppMesh::Route');
+  /** Amazon Athena PreparedStatement */
+  public static readonly ATHENA_PREPARED_STATEMENT = new ResourceType('AWS::Athena::PreparedStatement');
+  /** EC2 IPAMScope */
+  public static readonly EC2_IPAM_SCOPE = new ResourceType('AWS::EC2::IPAMScope');
+  /** Amazon CloudWatch Evidently Launch */
+  public static readonly EVIDENTLY_LAUNCH = new ResourceType('AWS::Evidently::Launch');
+  /** Amazon Forecast DatasetGroup */
+  public static readonly FORECAST_DATASET_GROUP = new ResourceType('AWS::Forecast::DatasetGroup');
+  /** AWS IoT Greengrass Version2 ComponentVersion */
+  public static readonly GREENGRASSV2_COMPONENT_VERSION = new ResourceType('AWS::GreengrassV2::ComponentVersion');
+  /** AWS GroundStation MissionProfile */
+  public static readonly GROUNDSTATION_MISSION_PROFILE = new ResourceType('AWS::GroundStation::MissionProfile');
+  /** AWS Elemental MediaConnect FlowEntitlement */
+  public static readonly MEDIACONNECT_FLOW_ENTITLEMENT = new ResourceType('AWS::MediaConnect::FlowEntitlement');
+  /** AWS Elemental MediaConnect FlowVpcInterface */
+  public static readonly MEDIACONNECT_FLOW_VPC_INTERFACE = new ResourceType('AWS::MediaConnect::FlowVpcInterface');
+  /** AWS Elemental MediaTailor PlaybackConfiguration */
+  public static readonly MEDIATAILOR_PLAYBACK_CONFIGURATION = new ResourceType('AWS::MediaTailor::PlaybackConfiguration');
+  /** Amazon MSK Configuration */
+  public static readonly MSK_CONFIGURATION = new ResourceType('AWS::MSK::Configuration');
+  /** Amazon Personalize Dataset */
+  public static readonly PERSONALIZE_DATASET = new ResourceType('AWS::Personalize::Dataset');
+  /** Amazon Personalize Schema */
+  public static readonly PERSONALIZE_SCHEMA = new ResourceType('AWS::Personalize::Schema');
+  /** Amazon Personalize Solution */
+  public static readonly PERSONALIZE_SOLUTION = new ResourceType('AWS::Personalize::Solution');
+  /** Amazon Pinpoint EmailTemplate */
+  public static readonly PINPOINT_EMAIL_TEMPLATE = new ResourceType('AWS::Pinpoint::EmailTemplate');
+  /** Amazon Pinpoint EventStream */
+  public static readonly PINPOINT_EVENT_STREAM = new ResourceType('AWS::Pinpoint::EventStream');
+  /** AWS ResilienceHub App */
+  public static readonly RESILIENCEHUB_APP = new ResourceType('AWS::ResilienceHub::App');
 
 
   /** A custom resource type to support future cases. */
