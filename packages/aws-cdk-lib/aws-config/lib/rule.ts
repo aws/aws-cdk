@@ -2631,6 +2631,54 @@ export class ResourceType {
   public static readonly ROUTE53_RECOVERY_CONTROL_SAFETY_RULE = new ResourceType('AWS::Route53RecoveryControl::SafetyRule');
   /** Amazon Route53 Recovery Readiness Resource Set */
   public static readonly ROUTE53_RECOVERY_READINESS_RESOURCE_SET = new ResourceType('AWS::Route53RecoveryReadiness::ResourceSet');
+  /** Amazon Route53 Resolver Firewall Rule Group Association */
+  public static readonly ROUTE53_RESOLVER_FIREWALL_RULE_GROUP_ASSOCIATION = new ResourceType('AWS::Route53Resolver::FirewallRuleGroupAssociation');
+  /** EC2 EC2 Fleet */
+  public static readonly EC2_EC2_FLEET = new ResourceType('AWS::EC2::EC2Fleet');
+  /** AWS IoTWireless Service Profile */
+  public static readonly IOT_WIRELESS_SERVICE_PROFILE = new ResourceType('AWS::IoTWireless::ServiceProfile');
+  /** EC2 Subnet Route Table Association */
+  public static readonly EC2_SUBNET_ROUTE_TABLE_ASSOCIATION = new ResourceType('AWS::EC2::SubnetRouteTableAssociation');
+  /** AWS Network Manager Global Network */
+  public static readonly NETWORK_MANAGER_GLOBAL_NETWORK = new ResourceType('AWS::NetworkManager::GlobalNetwork');
+  /** AWS DeviceFarm Instance Profile */
+  public static readonly DEVICE_FARM_INSTANCE_PROFILE = new ResourceType('AWS::DeviceFarm::InstanceProfile');
+  /** AWS GroundStation Config */
+  public static readonly GROUND_STATION_CONFIG = new ResourceType('AWS::GroundStation::Config');
+  /** Amazon AppFlow Flow */
+  public static readonly APP_FLOW_FLOW = new ResourceType('AWS::AppFlow::Flow');
+  /** Amazon Redshift Scheduled Action */
+  public static readonly REDSHIFT_SCHEDULED_ACTION = new ResourceType('AWS::Redshift::ScheduledAction');
+  /** Amazon Pinpoint App */
+  public static readonly PINPOINT_APP = new ResourceType('AWS::Pinpoint::App');
+  /** AWS IoT Fleet Metric */
+  public static readonly IOT_FLEET_METRIC = new ResourceType('AWS::IoT::FleetMetric');
+  /** AWS AppConfig Deployment Strategy */
+  public static readonly APP_CONFIG_DEPLOYMENT_STRATEGY = new ResourceType('AWS::AppConfig::DeploymentStrategy');
+  /** AWS Network Manager Device */
+  public static readonly NETWORK_MANAGER_DEVICE = new ResourceType('AWS::NetworkManager::Device');
+  /** EC2 Image Builder Image Pipeline */
+  public static readonly IMAGE_BUILDER_IMAGE_PIPELINE = new ResourceType('AWS::ImageBuilder::ImagePipeline');
+  /** Amazon CloudWatch Metric Stream */
+  public static readonly CLOUD_WATCH_METRIC_STREAM = new ResourceType('AWS::CloudWatch::MetricStream');
+  /** AWS Panorama Package */
+  public static readonly PANORAMA_PACKAGE = new ResourceType('AWS::Panorama::Package');
+  /** Amazon SageMaker Image */
+  public static readonly SAGE_MAKER_IMAGE = new ResourceType('AWS::SageMaker::Image');
+  /** Amazon ECR PullThrough Cache Rule */
+  public static readonly ECR_PULL_THROUGH_CACHE_RULE = new ResourceType('AWS::ECR::PullThroughCacheRule');
+  /** AWS AuditManager Assessment */
+  public static readonly AUDIT_MANAGER_ASSESSMENT = new ResourceType('AWS::AuditManager::Assessment');
+  /** AWS NetworkManager Site */
+  public static readonly NETWORK_MANAGER_SITE = new ResourceType('AWS::NetworkManager::Site');
+  /** Amazon SageMaker AppImageConfig */
+  public static readonly SAGE_MAKER_APP_IMAGE_CONFIG = new ResourceType('AWS::SageMaker::AppImageConfig');
+  /** AWS DeviceFarm Project */
+  public static readonly DEVICE_FARM_PROJECT = new ResourceType('AWS::DeviceFarm::Project');
+  /** AWS NetworkManager Link */
+  public static readonly NETWORK_MANAGER_LINK = new ResourceType('AWS::NetworkManager::Link');
+  /** AWS NetworkFirewall TLSInspectionConfiguration */
+  public static readonly NETWORK_FIREWALL_TLS_INSPECTION_CONFIGURATION = new ResourceType('AWS::NetworkFirewall::TLSInspectionConfiguration');
 
   /** A custom resource type to support future cases. */
   public static of(type: string): ResourceType {
