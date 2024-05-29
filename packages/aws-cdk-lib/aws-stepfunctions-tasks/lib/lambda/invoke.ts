@@ -63,8 +63,9 @@ export interface LambdaInvokeProps extends sfn.TaskStateBaseProps {
   /**
    * Whether to retry on Lambda service exceptions.
    *
-   * This handles `Lambda.ServiceException`, `Lambda.AWSLambdaException` and
-   * `Lambda.SdkClientException` with an interval of 2 seconds, a back-off rate
+   * This handles `Lambda.ServiceException`, `Lambda.AWSLambdaException`,
+   * `Lambda.SdkClientException`, and `Lambda.ClientExecutionTimeoutException`
+   * with an interval of 2 seconds, a back-off rate
    * of 2 and 6 maximum attempts.
    *
    * @see https://docs.aws.amazon.com/step-functions/latest/dg/bp-lambda-serviceexception.html
