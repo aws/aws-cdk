@@ -1052,7 +1052,7 @@ export class Table extends TableBase {
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dynamodb-table-resourcepolicy.html
    * @default - No resource policy statements are added to the created table.
    */
-  public resourcePolicy?: iam.PolicyDocument | undefined;
+  public resourcePolicy?: iam.PolicyDocument;
 
   /**
    * @attribute
