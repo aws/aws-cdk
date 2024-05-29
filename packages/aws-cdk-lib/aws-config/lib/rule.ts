@@ -500,7 +500,7 @@ export class CustomPolicy extends RuleNew {
     if (!props.policyText || [...props.policyText].length === 0) {
       throw new Error('Policy Text cannot be empty.');
     }
-    if ( [...props.policyText].length > 10000 ) {
+    if ([...props.policyText].length > 10000) {
       throw new Error('Policy Text is limited to 10,000 characters or less.');
     }
 
@@ -1908,7 +1908,7 @@ export class ManagedRuleIdentifiers {
    * Checks whether S3 buckets have policies that require requests to use Secure Socket Layer (SSL).
    * @see https://docs.aws.amazon.com/config/latest/developerguide/s3-bucket-ssl-requests-only.html
    */
-  public static readonly S3_BUCKET_SSL_REQUESTS_ONLY= 'S3_BUCKET_SSL_REQUESTS_ONLY';
+  public static readonly S3_BUCKET_SSL_REQUESTS_ONLY = 'S3_BUCKET_SSL_REQUESTS_ONLY';
   /**
    * Checks whether versioning is enabled for your S3 buckets.
    * @see https://docs.aws.amazon.com/config/latest/developerguide/s3-bucket-versioning-enabled.html
@@ -2263,7 +2263,7 @@ export class ResourceType {
   /** Amazon RDS global cluster */
   public static readonly RDS_GLOBAL_CLUSTER = new ResourceType('AWS::RDS::GlobalCluster');
   /** Amazon Route53 Hosted Zone */
-  public static readonly ROUTE53_HOSTED_ZONE= new ResourceType('AWS::Route53::HostedZone');
+  public static readonly ROUTE53_HOSTED_ZONE = new ResourceType('AWS::Route53::HostedZone');
   /** Amazon Route53 Health Check */
   public static readonly ROUTE53_HEALTH_CHECK = new ResourceType('AWS::Route53::HealthCheck');
   /** Amazon Route53 resolver resolver endpoint */
@@ -2549,6 +2549,42 @@ export class ResourceType {
   public static readonly ELBV2_LISTENER = new ResourceType('AWS::ElasticLoadBalancingV2::Listener');
   /** AWS Elemental MediaPackage packaging group */
   public static readonly MEDIAPACKAGE_PACKAGING_GROUP = new ResourceType('AWS::MediaPackage::PackagingGroup');
+  /** AWS Device Farm Test Grid Project */
+  public static readonly DEVICE_FARM_TEST_GRID_PROJECT = new ResourceType('AWS::DeviceFarm::TestGridProject');
+  /** AWS Budgets Budgets Action */
+  public static readonly BUDGETS_BUDGETS_ACTION = new ResourceType('AWS::Budgets::BudgetsAction');
+  /** Amazon Lex Bot */
+  public static readonly LEX_BOT = new ResourceType('AWS::Lex::Bot');
+  /** Amazon Lex Bot Alias */
+  public static readonly LEX_BOT_ALIAS = new ResourceType('AWS::Lex::BotAlias');
+  /** Amazon CodeGuru Reviewer Repository Association */
+  public static readonly CODE_GURU_REVIEWER_REPOSITORY_ASSOCIATION = new ResourceType('AWS::CodeGuruReviewer::RepositoryAssociation');
+  /** AWS IoT Custom Metric */
+  public static readonly IOT_CUSTOM_METRIC = new ResourceType('AWS::IoT::CustomMetric');
+  /** AWS IoT Account Audit Configuration */
+  public static readonly IOT_ACCOUNT_AUDIT_CONFIGURATION = new ResourceType('AWS::IoT::AccountAuditConfiguration');
+  /** AWS IoT Scheduled Audit */
+  public static readonly IOT_SCHEDULED_AUDIT = new ResourceType('AWS::IoT::ScheduledAudit');
+  /** Amazon Route53 Resolver Firewall Domain List */
+  public static readonly ROUTE53_RESOLVER_FIREWALL_DOMAIN_LIST = new ResourceType('AWS::Route53Resolver::FirewallDomainList');
+  /** AWS RoboMaker Robot Application Version */
+  public static readonly ROBO_MAKER_ROBOT_APPLICATION_VERSION = new ResourceType('AWS::RoboMaker::RobotApplicationVersion');
+  /** EC2 Traffic Mirror Session */
+  public static readonly EC2_TRAFFIC_MIRROR_SESSION = new ResourceType('AWS::EC2::TrafficMirrorSession');
+  /** EC2 Traffic Mirror Target */
+  public static readonly EC2_TRAFFIC_MIRROR_TARGET = new ResourceType('AWS::EC2::TrafficMirrorTarget');
+  /** AWS IoT SiteWise Gateway */
+  public static readonly IOT_SITEWISE_GATEWAY = new ResourceType('AWS::IoTSiteWise::Gateway');
+  /** AWS Lookout Metrics Alert */
+  public static readonly LOOKOUT_METRICS_ALERT = new ResourceType('AWS::LookoutMetrics::Alert');
+  /** Amazon S3 Storage Lens */
+  public static readonly S3_STORAGE_LENS = new ResourceType('AWS::S3::StorageLens');
+  /** Amazon EventBridge Connection */
+  public static readonly EVENTS_CONNECTION = new ResourceType('AWS::Events::Connection');
+  /** Amazon EventBridge Schemas Schema */
+  public static readonly EVENT_SCHEMAS_SCHEMA = new ResourceType('AWS::EventSchemas::Schema');
+  /** AWS Elemental MediaPackage Packaging Configuration */
+  public static readonly MEDIA_PACKAGE_PACKAGING_CONFIGURATION = new ResourceType('AWS::MediaPackage::PackagingConfiguration');
 
   /** A custom resource type to support future cases. */
   public static of(type: string): ResourceType {
