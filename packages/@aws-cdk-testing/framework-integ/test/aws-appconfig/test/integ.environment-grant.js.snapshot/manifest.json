@@ -1,28 +1,28 @@
 {
   "version": "36.0.0",
   "artifacts": {
-    "cloudfront-custom-s3-stack.assets": {
+    "aws-appconfig-environment-grant.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "cloudfront-custom-s3-stack.assets.json",
+        "file": "aws-appconfig-environment-grant.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "cloudfront-custom-s3-stack": {
+    "aws-appconfig-environment-grant": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "cloudfront-custom-s3-stack.template.json",
+        "templateFile": "aws-appconfig-environment-grant.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/b5b660b9764fa165a21fc38b0182b62bbb6a5e8c6afbb4a804e8cdcb99be28b1.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/2e2c29bc346bf7f1c2e5d10d1331a4f8ce28d4a11b0bd98b45ec6b7ca1d084f4.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "cloudfront-custom-s3-stack.assets"
+          "aws-appconfig-environment-grant.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -31,55 +31,61 @@
         }
       },
       "dependencies": [
-        "cloudfront-custom-s3-stack.assets"
+        "aws-appconfig-environment-grant.assets"
       ],
       "metadata": {
-        "/cloudfront-custom-s3-stack/Bucket/Resource": [
+        "/aws-appconfig-environment-grant/MyApplicationForEnv/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "Bucket83908E77"
+            "data": "MyApplicationForEnv1F597ED9"
           }
         ],
-        "/cloudfront-custom-s3-stack/Bucket/Policy/Resource": [
+        "/aws-appconfig-environment-grant/MyEnvironment/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "BucketPolicyE9A3008A"
+            "data": "MyEnvironment465E4DEA"
           }
         ],
-        "/cloudfront-custom-s3-stack/Distribution/CFDistribution": [
+        "/aws-appconfig-environment-grant/MyUser/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DistributionCFDistribution882A7313"
+            "data": "MyUserDC45028B"
           }
         ],
-        "/cloudfront-custom-s3-stack/BootstrapVersion": [
+        "/aws-appconfig-environment-grant/MyUser/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "MyUserDefaultPolicy7B897426"
+          }
+        ],
+        "/aws-appconfig-environment-grant/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/cloudfront-custom-s3-stack/CheckBootstrapVersion": [
+        "/aws-appconfig-environment-grant/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "cloudfront-custom-s3-stack"
+      "displayName": "aws-appconfig-environment-grant"
     },
-    "integcloudfrontcustoms3DefaultTestDeployAssert2E08B1DA.assets": {
+    "appconfigenvironmentDefaultTestDeployAssert75BD28E7.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "integcloudfrontcustoms3DefaultTestDeployAssert2E08B1DA.assets.json",
+        "file": "appconfigenvironmentDefaultTestDeployAssert75BD28E7.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "integcloudfrontcustoms3DefaultTestDeployAssert2E08B1DA": {
+    "appconfigenvironmentDefaultTestDeployAssert75BD28E7": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "integcloudfrontcustoms3DefaultTestDeployAssert2E08B1DA.template.json",
+        "templateFile": "appconfigenvironmentDefaultTestDeployAssert75BD28E7.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
@@ -88,7 +94,7 @@
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "integcloudfrontcustoms3DefaultTestDeployAssert2E08B1DA.assets"
+          "appconfigenvironmentDefaultTestDeployAssert75BD28E7.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -97,23 +103,23 @@
         }
       },
       "dependencies": [
-        "integcloudfrontcustoms3DefaultTestDeployAssert2E08B1DA.assets"
+        "appconfigenvironmentDefaultTestDeployAssert75BD28E7.assets"
       ],
       "metadata": {
-        "/integ-cloudfront-custom-s3/DefaultTest/DeployAssert/BootstrapVersion": [
+        "/appconfig-environment/DefaultTest/DeployAssert/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/integ-cloudfront-custom-s3/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+        "/appconfig-environment/DefaultTest/DeployAssert/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "integ-cloudfront-custom-s3/DefaultTest/DeployAssert"
+      "displayName": "appconfig-environment/DefaultTest/DeployAssert"
     },
     "Tree": {
       "type": "cdk:tree",

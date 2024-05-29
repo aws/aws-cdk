@@ -1,15 +1,15 @@
 {
   "version": "36.0.0",
   "files": {
-    "879d43bd7fa593d0da48ddd22d54a1ec2eab5a43a0ec95fb9933166ec27ea119": {
+    "b5b660b9764fa165a21fc38b0182b62bbb6a5e8c6afbb4a804e8cdcb99be28b1": {
       "source": {
-        "path": "aws-ecs-integ-ecs.template.json",
+        "path": "cloudfront-custom-s3-stack.template.json",
         "packaging": "file"
       },
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "879d43bd7fa593d0da48ddd22d54a1ec2eab5a43a0ec95fb9933166ec27ea119.json",
+          "objectKey": "b5b660b9764fa165a21fc38b0182b62bbb6a5e8c6afbb4a804e8cdcb99be28b1.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
