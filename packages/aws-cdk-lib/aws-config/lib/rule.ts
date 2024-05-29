@@ -2721,6 +2721,39 @@ export class ResourceType {
   public static readonly TRANSFER_AGREEMENT = new ResourceType('AWS::Transfer::Agreement');
   /** AWS Transfer Connector */
   public static readonly TRANSFER_CONNECTOR = new ResourceType('AWS::Transfer::Connector');
+  /** AWS Private Certificate Authority CertificateAuthority */
+  public static readonly ACMPCA_CERTIFICATE_AUTHORITY = new ResourceType('AWS::ACMPCA::CertificateAuthority');
+  /** AWS AppConfig HostedConfigurationVersion */
+  public static readonly APP_CONFIG_HOSTED_CONFIGURATION_VERSION = new ResourceType('AWS::AppConfig::HostedConfigurationVersion');
+  /** AWS AppMesh VirtualGateway */
+  public static readonly APP_MESH_VIRTUAL_GATEWAY = new ResourceType('AWS::AppMesh::VirtualGateway');
+  /** AWS AppMesh VirtualRouter */
+  public static readonly APP_MESH_VIRTUAL_ROUTER = new ResourceType('AWS::AppMesh::VirtualRouter');
+  /** AWS AppRunner Service */
+  public static readonly APP_RUNNER_SERVICE = new ResourceType('AWS::AppRunner::Service');
+  /** Amazon Connect CustomerProfiles ObjectType */
+  public static readonly CUSTOMER_PROFILES_OBJECT_TYPE = new ResourceType('AWS::CustomerProfiles::ObjectType');
+  /** AWS DMS Endpoint */
+  public static readonly DMS_ENDPOINT = new ResourceType('AWS::DMS::Endpoint');
+  /** EC2 CapacityReservation */
+  public static readonly EC2_CAPACITY_RESERVATION = new ResourceType('AWS::EC2::CapacityReservation');
+  /** EC2 ClientVpnEndpoint */
+  public static readonly EC2_CLIENT_VPN_ENDPOINT = new ResourceType('AWS::EC2::ClientVpnEndpoint');
+  /** Amazon Kendra Index */
+  public static readonly KENDRA_INDEX = new ResourceType('AWS::Kendra::Index');
+  /** Amazon Kinesis Video Stream */
+  public static readonly KINESIS_VIDEO_STREAM = new ResourceType('AWS::KinesisVideo::Stream');
+  /** Amazon CloudWatch Logs Destination */
+  public static readonly LOGS_DESTINATION = new ResourceType('AWS::Logs::Destination');
+  /** AWS NetworkManager CustomerGatewayAssociation */
+  public static readonly NETWORK_MANAGER_CUSTOMER_GATEWAY_ASSOCIATION = new ResourceType('AWS::NetworkManager::CustomerGatewayAssociation');
+  /** AWS NetworkManager LinkAssociation */
+  public static readonly NETWORK_MANAGER_LINK_ASSOCIATION = new ResourceType('AWS::NetworkManager::LinkAssociation');
+  /** Amazon Pinpoint EmailChannel */
+  public static readonly PINPOINT_EMAIL_CHANNEL = new ResourceType('AWS::Pinpoint::EmailChannel');
+  /** Amazon S3 AccessPoint */
+  public static readonly S3_ACCESS_POINT = new ResourceType('AWS::S3::AccessPoint');
+
 
   /** A custom resource type to support future cases. */
   public static of(type: string): ResourceType {
