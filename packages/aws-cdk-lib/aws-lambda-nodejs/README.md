@@ -397,7 +397,7 @@ In situtations where this does not work, like Docker-in-Docker setups or when us
 
 If you need more control over bundling -- or the build process in general -- then we include the ability to invoke your own build script. For example, if you have the following `build.mjs` file:
 
-```ts
+```
 import * as path from 'path';
 import { fileURLToPath } from 'url';
 import esbuild from "esbuild";
@@ -427,7 +427,7 @@ await esbuild
 
 then you could use `build.mjs` in a cdk construct as follows:
 
-```ts
+```
 export class ExampleStack extends Stack {
   public constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
