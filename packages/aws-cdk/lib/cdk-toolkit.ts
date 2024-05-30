@@ -138,8 +138,8 @@ export class CdkToolkit {
 
       const template = deserializeStructure(await fs.readFile(options.templatePath, { encoding: 'UTF-8' }));
       diffs = options.securityOnly
-        ? numberFromBool(printSecurityDiff(template, stacks.firstStack, RequireApproval.Broadening, undefined))
-        : printStackDiff(template, stacks.firstStack, strict, contextLines, quiet, undefined, false, stream);
+        ? numberFromBool(printSecurityDiff(template, stacks.firstStack, RequireApproval.Broadening, false, undefined))
+        : printStackDiff(template, stacks.firstStack, strict, contextLines, quiet, false, undefined, false, stream);
     } else {
       // Compare N stacks against deployed templates
       for (const stack of stacks.stackArtifacts) {
@@ -197,8 +197,10 @@ export class CdkToolkit {
 
         const stackCount =
         options.securityOnly
-          ? (numberFromBool(printSecurityDiff(currentTemplate, stack, RequireApproval.Broadening, changeSet)))
-          : (printStackDiff(currentTemplate, stack, strict, contextLines, quiet, changeSet, !!resourcesToImport, stream, nestedStacks));
+          ? (numberFromBool(printSecurityDiff(currentTemplate, stack, RequireApproval.Broadening,
+            options.useChangeSetPropertyValuesByDefault, changeSet)))
+          : (printStackDiff(currentTemplate, stack, strict, contextLines, quiet,
+            options.useChangeSetPropertyValuesByDefault, changeSet, !!resourcesToImport, stream, nestedStacks));
 
         diffs += stackCount;
       }
@@ -1127,6 +1129,13 @@ export interface DiffOptions {
    * @default true
    */
   changeSet?: boolean;
+
+  /**
+   * Whether or not to use changeset property values by default (rather than only when necessary) to describe resource differences.
+   *
+   * @default true
+   */
+  useChangeSetPropertyValuesByDefault: boolean;
 }
 
 interface CfnDeployOptions {

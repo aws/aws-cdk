@@ -30,6 +30,7 @@ export interface TemplateAndChangeSetDiffMergerProps extends TemplateAndChangeSe
 export class TemplateAndChangeSetDiffMerger {
 
   public static createResourceDiffWithChangeSet(args: {
+    useChangeSetPropertyValuesByDefault: boolean;
     change: types.ChangeSetResource;
     resourceType: string;
     propertiesOfResourceFromCurrentTemplate: { [key: string]: any } | undefined;
@@ -46,18 +47,16 @@ export class TemplateAndChangeSetDiffMerger {
     };
 
     // If the feature flag is enabled, then we should overwrite the properties with the change context.
-    const featureFlagIsEnabled = true;
-
     switch (args.change.changeAction) {
       case 'Import':
       case 'Add':
         oldResource = undefined;
-        if (featureFlagIsEnabled && args.change.afterContext?.Properties) {
+        if (args.useChangeSetPropertyValuesByDefault && args.change.afterContext?.Properties) {
           newResource.Properties = args.change.afterContext?.Properties;
         }
         break;
       case 'Remove':
-        if (featureFlagIsEnabled && args.change.beforeContext?.Properties) {
+        if (args.useChangeSetPropertyValuesByDefault && args.change.beforeContext?.Properties) {
           oldResource.Properties = args.change.beforeContext?.Properties;
         }
         newResource = undefined;
@@ -70,7 +69,7 @@ export class TemplateAndChangeSetDiffMerger {
         for (const propertyName of propertiesThatChanged) {
           const changeIsAlreadyInDiff = propertyUpdates?.hasOwnProperty(propertyName);
 
-          if (featureFlagIsEnabled || !changeIsAlreadyInDiff) {
+          if (args.useChangeSetPropertyValuesByDefault || !changeIsAlreadyInDiff) {
             // Just because the change is already in diff, doesn't imply that the change has all the information.
             // For example, if an IAM policy points to a resource given by an ssm parameter, and the ssm param changes
             // but the actual template diff added a new permission to the policy, then we'd miss the ssm change if we just
@@ -217,6 +216,7 @@ export class TemplateAndChangeSetDiffMerger {
     theDiffResources: types.DifferenceCollection<types.Resource, types.ResourceDifference>,
     currentTemplateResources: { [key: string]: any } | undefined,
     newTemplateResources: { [key: string]: any } | undefined,
+    useChangeSetPropertyValuesByDefault: boolean,
   ) {
     for (const [changedResourceLogicalId, changeSetChanges] of Object.entries(this.changeSetResources ?? [])) {
       let changedResource: types.ResourceDifference | undefined;
@@ -227,6 +227,7 @@ export class TemplateAndChangeSetDiffMerger {
       }
 
       const resourceDiff = TemplateAndChangeSetDiffMerger.createResourceDiffWithChangeSet({
+        useChangeSetPropertyValuesByDefault,
         changedResource,
         change: changeSetChanges,
         resourceType: changeSetChanges.resourceType ?? TemplateAndChangeSetDiffMerger.UNKNOWN_RESOURCE_TYPE,

@@ -31,18 +31,20 @@ export function printStackDiff(
   strict: boolean,
   context: number,
   quiet: boolean,
+  useChangeSetPropertyValuesByDefault?: boolean,
   changeSet?: DescribeChangeSetOutput,
   isImport?: boolean,
   stream: FormatStream = process.stderr,
-  nestedStackTemplates?: { [nestedStackLogicalId: string]: NestedStackTemplates }): number {
+  nestedStackTemplates?: { [nestedStackLogicalId: string]: NestedStackTemplates },
+): number {
 
-  let diff = fullDiff(oldTemplate, newTemplate.template, changeSet, isImport);
+  let diff = fullDiff(oldTemplate, newTemplate.template, useChangeSetPropertyValuesByDefault, changeSet, isImport);
 
   // detect and filter out mangled characters from the diff
   let filteredChangesCount = 0;
   if (diff.differenceCount && !strict) {
     const mangledNewTemplate = JSON.parse(mangleLikeCloudFormation(JSON.stringify(newTemplate.template)));
-    const mangledDiff = fullDiff(oldTemplate, mangledNewTemplate, changeSet);
+    const mangledDiff = fullDiff(oldTemplate, mangledNewTemplate, useChangeSetPropertyValuesByDefault, changeSet);
     filteredChangesCount = Math.max(0, diff.differenceCount - mangledDiff.differenceCount);
     if (filteredChangesCount > 0) {
       diff = mangledDiff;
@@ -89,6 +91,7 @@ export function printStackDiff(
       strict,
       context,
       quiet,
+      false,
       undefined,
       isImport,
       stream,
@@ -116,9 +119,10 @@ export function printSecurityDiff(
   oldTemplate: any,
   newTemplate: cxapi.CloudFormationStackArtifact,
   requireApproval: RequireApproval,
+  useChangeSetPropertyValuesByDefault?: boolean,
   changeSet?: DescribeChangeSetOutput,
 ): boolean {
-  const diff = fullDiff(oldTemplate, newTemplate.template, changeSet);
+  const diff = fullDiff(oldTemplate, newTemplate.template, useChangeSetPropertyValuesByDefault, changeSet);
 
   if (difRequiresApproval(diff, requireApproval)) {
     // eslint-disable-next-line max-len

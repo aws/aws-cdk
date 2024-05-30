@@ -105,7 +105,7 @@ export const PIPELINE_REDUCE_ASSET_ROLE_TRUST_SCOPE = '@aws-cdk/pipelines:reduce
 export const EKS_NODEGROUP_NAME = '@aws-cdk/aws-eks:nodegroupNameAttribute';
 export const EBS_DEFAULT_GP3 = '@aws-cdk/aws-ec2:ebsDefaultGp3Volume';
 export const ECS_REMOVE_DEFAULT_DEPLOYMENT_ALARM = '@aws-cdk/aws-ecs:removeDefaultDeploymentAlarm';
-export const CDK_DIFF_USE_CHANGESET_PROPERTY_VALUES_BY_DEFAULT = 'aws-cdk/core:cdkDiffUseChangeSetPropertyValuesByDefault';
+export const CDK_DIFF_USE_CHANGESET_PROPERTY_VALUES_BY_DEFAULT = '@aws-cdk/core:cdkDiffUseChangeSetPropertyValuesByDefault';
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////

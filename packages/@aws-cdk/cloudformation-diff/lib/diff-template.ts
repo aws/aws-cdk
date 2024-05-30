@@ -49,6 +49,7 @@ const DIFF_HANDLERS: HandlerRegistry = {
 export function fullDiff(
   currentTemplate: { [key: string]: any },
   newTemplate: { [key: string]: any },
+  useChangeSetPropertyValuesByDefault?: boolean,
   changeSet?: DescribeChangeSetOutput,
   isImport?: boolean,
 ): types.TemplateDiff {
@@ -59,7 +60,12 @@ export function fullDiff(
   if (changeSet) {
     // These methods mutate the state of theDiff, using the changeSet.
     const changeSetDiff = new TemplateAndChangeSetDiffMerger({ changeSet });
-    changeSetDiff.addMissingResourceInformationToDiff(theDiff.resources, currentTemplate?.Resources, newTemplate?.Resources); // MAKE SURE THERE'S A UNIT TEST THAT HAS UNDEFINED RESOURCES FIELD
+    changeSetDiff.addMissingResourceInformationToDiff(
+      theDiff.resources,
+      currentTemplate?.Resources,
+      newTemplate?.Resources,
+      useChangeSetPropertyValuesByDefault ?? false,
+    ); // MAKE SURE THERE'S A UNIT TEST THAT HAS UNDEFINED RESOURCES FIELD
     theDiff.resources.forEachDifference((logicalId: string, change: types.ResourceDifference) =>
       changeSetDiff.overrideDiffResourceChangeImpactWithChangeSetChangeImpact(logicalId, change),
     );
