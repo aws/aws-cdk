@@ -188,6 +188,7 @@ describe('CachePolicy', () => {
 });
 
 test('managed policies are provided', () => {
+  expect(CachePolicy.AMPLIFY.cachePolicyId).toEqual('2e54312d-136d-493c-8eb9-b001f22f67d2');
   expect(CachePolicy.CACHING_OPTIMIZED.cachePolicyId).toEqual('658327ea-f89d-4fab-a63d-7e88639e58f6');
   expect(CachePolicy.CACHING_OPTIMIZED_FOR_UNCOMPRESSED_OBJECTS.cachePolicyId).toEqual('b2884449-e4de-46a7-ac36-70bc7f1ddd6d');
   expect(CachePolicy.CACHING_DISABLED.cachePolicyId).toEqual('4135ea2d-6df8-44a3-9df3-4b5a84be39ad');
