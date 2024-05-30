@@ -97,8 +97,7 @@ export interface NodejsFunctionProps extends lambda.FunctionOptions {
 
   /**
    * The code that will be deployed to the Lambda Handler. If included, then properties related to
-   * bundling of the code are ignored. In the constructor of NodeJsFunction, where the Super is called,
-   * you can see which bundling properties are ignored.
+   * bundling of the code are ignored.
    *
    * * If the `code` field is specified, then you must include the `handler` property.
    *
@@ -131,7 +130,7 @@ export class NodejsFunction extends lambda.Function {
         ...props,
         runtime,
         code: props.code,
-        handler: props.handler!,
+        handler: props.handler,
       });
     } else {
       // Entry and defaults

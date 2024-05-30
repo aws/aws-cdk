@@ -392,3 +392,58 @@ In situtations where this does not work, like Docker-in-Docker setups or when us
   },
 });
 ```
+
+## Running a custom build script as part of cdk synthesis
+
+If you need more control over bundling -- or the build process in general -- then we include the ability to invoke your own build script. For example, if you have the following `build.mjs` file:
+
+```ts
+import * as path from 'path';
+import { fileURLToPath } from 'url';
+import esbuild from "esbuild";
+import { cache } from "esbuild-plugin-cache";
+import time from "esbuild-plugin-time";
+
+const __filename = fileURLToPath(import.meta.url); // get the resolved path to the file
+const __dirname = path.dirname(__filename); // get the name of the directory
+
+await esbuild
+  .build({
+    entryPoints: [path.join(__dirname, 'handler', 'index.ts')],
+    outfile: path.join(__dirname, 'build-output', 'index.js'),
+    external: ['@aws-sdk/*', 'aws-sdk'],
+    format: 'cjs',
+    platform: 'node',
+    target: 'node18',
+    bundle: true,
+    minify: true,
+    plugins: [time(), cache({ directory: ".cache" })],
+  })
+  .catch((error) => {
+    console.log(error);
+    process.exit(1)
+  });
+```
+
+then you could use `build.mjs` in a cdk construct as follows:
+
+```ts
+export class ExampleStack extends Stack {
+  public constructor(scope: Construct, id: string, props?: StackProps) {
+    super(scope, id, props);
+
+    const pathToBuildFile = path.join(__dirname, 'build.mjs');
+    const pathToOutputFile = path.join(__dirname, 'build-output');
+
+    const code = Code.fromCustomCommand(
+      pathToOutputFile,
+      ['node', pathToBuildFile],
+    );
+
+    new NodejsFunction(this, 'NodejsFunctionBuild', {
+      code,
+      handler: 'index.handler',
+    });
+  }
+}
+```
