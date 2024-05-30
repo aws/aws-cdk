@@ -489,7 +489,8 @@ new cdk.CfnOutput(this, 'ObjectKey', {
 ## Development
 
 The custom resource is implemented in Python 3.9 in order to be able to leverage
-the AWS CLI for "aws s3 sync". The code is under [`/lib/aws-s3-deployment/bucket-deployment-handler`](https://github.com/aws/aws-cdk/tree/main/packages/@aws-cdk/custom-resource-handlers/lib/aws-s3-deployment/bucket-deployment-handler/) and
+the AWS CLI for "aws s3 sync".
+The code is now in the `@aws-cdk/custom-resource-handlers` package under [`lib/aws-s3-deployment/bucket-deployment-handler`](https://github.com/aws/aws-cdk/tree/main/packages/@aws-cdk/custom-resource-handlers/lib/aws-s3-deployment/bucket-deployment-handler/) and
 unit tests are under [`/lib/aws-s3-deployment/bucket-deployment-handler/test`](https://github.com/aws/aws-cdk/tree/main/packages/@aws-cdk/custom-resource-handlers/test/aws-s3-deployment/bucket-deployment-handler/).
 
 This package requires Python 3.9 during build time in order to create the custom
