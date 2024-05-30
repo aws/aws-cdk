@@ -434,10 +434,11 @@ export class ExampleStack extends Stack {
 
     const pathToBuildFile = path.join(__dirname, 'build.mjs');
     const pathToOutputFile = path.join(__dirname, 'build-output');
+    const commandThatIsRanDuringCdkSynth = ['node', pathToBuildFile];
 
     const code = Code.fromCustomCommand(
       pathToOutputFile,
-      ['node', pathToBuildFile],
+      commandThatIsRanDuringCdkSynth,
     );
 
     new NodejsFunction(this, 'NodejsFunctionBuild', {
