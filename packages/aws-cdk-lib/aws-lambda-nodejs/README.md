@@ -445,7 +445,7 @@ export class ExampleStack extends Stack {
       commandThatIsRanDuringCdkSynth,
     );
 
-    new nodejs.NodeJsFunction(this, 'NodejsFunctionBuild', {
+    new nodejs.NodejsFunction(this, 'NodejsFunctionBuild', {
       code,
       handler,
     });
