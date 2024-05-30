@@ -162,6 +162,7 @@ describe('State Machine Resources', () => {
     'States.ArrayLength($.inputArray)',
     'States.JsonMerge($.json1, $.json2, false)',
     'States.StringToJson($.escapedJsonString)',
+    'plainString',
   ])('fails in synthesis if specifying invalid intrinsic functions in the causePath and errorPath (%s)', (intrinsic) => {
     // GIVEN
     const app = new cdk.App();
