@@ -21,6 +21,7 @@ export interface ChangeSetResource {
   resourceWasReplaced: boolean;
   resourceType: string | undefined;
   propertyReplacementModes: PropertyReplacementModeMap | undefined;
+  changeAction: ResourceChangeAction;
   beforeContext: any | undefined;
   afterContext: any | undefined;
 }
@@ -38,6 +39,13 @@ export type PropertyReplacementModeMap = {
  * 'Always' means that changing the corresponding property will always cause a resource replacement. Never means never. Conditionally means maybe.
  */
 export type ReplacementModes = 'Always' | 'Never' | 'Conditionally';
+
+/**
+ * This is how the changeset will act on the resource -- either add the resource, remove it, import, modify (update) it, or dynamic (changeset isn't sure).
+ *
+ * - https://docs.aws.amazon.com/AWSCloudFormation/latest/APIReference/API_ResourceChange.html Action
+ */
+export type ResourceChangeAction = 'Add' | 'Dynamic' | 'Import' | 'Modify' | 'Remove';
 
 /** Semantic differences between two CloudFormation templates. */
 export class TemplateDiff implements ITemplateDiff {

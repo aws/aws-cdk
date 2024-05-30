@@ -3,7 +3,6 @@
 import type { DescribeChangeSetOutput as DescribeChangeSet, ResourceChangeDetail as RCD } from '@aws-sdk/client-cloudformation';
 import { diffResource } from '.';
 import * as types from '../diff/types';
-import { deepCopy } from '../util';
 
 export type DescribeChangeSetOutput = DescribeChangeSet;
 type ChangeSetResourceChangeDetail = RCD;
@@ -30,76 +29,64 @@ export interface TemplateAndChangeSetDiffMergerProps extends TemplateAndChangeSe
  */
 export class TemplateAndChangeSetDiffMerger {
 
-  /**
-   * We try our best to provide the information -- but if we can't, we fall back to this message, so at least the existence of the difference is reported.
-   */
-  public static VALUE_UNKNOWN_MESSAGE = 'DescribeChangeSet detected difference, but the value is not resolved.';
-
-  public static addChangeSetResourceToDiff(args: {
-    changedResourceLogicalId: string;
-    propertiesThatChanged: string[];
-    theDiffResources: types.DifferenceCollection<types.Resource, types.ResourceDifference>;
+  public static createResourceDiffWithChangeSet(args: {
+    change: types.ChangeSetResource;
     resourceType: string;
-    afterContext: any;
     propertiesOfResourceFromCurrentTemplate: { [key: string]: any } | undefined;
     propertiesOfResourceFromNewTemplate: { [key: string]: any } | undefined;
-  }) {
-    const oldResource = {
-      Type: args.resourceType,
-      Properties: deepCopy(args.propertiesOfResourceFromCurrentTemplate ?? {}),
-    };
-
-    for (const nameOfChangedProperty of args.propertiesThatChanged) {
-      if (args.propertiesOfResourceFromNewTemplate?.[nameOfChangedProperty]) {
-        // We try our best to include as much info as possible, but if the afterContext fails, we will just notify the existence of the diff.
-        const newPropertyValue = args.afterContext?.Properties?.[nameOfChangedProperty] ?? TemplateAndChangeSetDiffMerger.VALUE_UNKNOWN_MESSAGE;
-        args.propertiesOfResourceFromNewTemplate[nameOfChangedProperty] = newPropertyValue;
-      }
-    }
-
-    const newResource = {
-      Type: args.resourceType,
-      Properties: args.propertiesOfResourceFromNewTemplate,
-    };
-
-    const resourceDiff = diffResource(oldResource, newResource);
-    args.theDiffResources.set(args.changedResourceLogicalId, resourceDiff);
-  }
-
-  /**
-   * The title says maybe because nothing is added if all the properties are already in the diff.
-   */
-  public static maybeAddChangeSetPropertiesToResourceInDiff(args: {
-    propertiesThatChanged: string[];
-    afterContext: any;
     changedResource: types.ResourceDifference | undefined;
-    propertiesOfResourceFromCurrentTemplate: { [key: string]: any } | undefined;
-    propertiesOfResourceFromNewTemplate: { [key: string]: any } | undefined;
-  }) {
-    const propertyUpdates = args.changedResource?.propertyUpdates;
-    for (const nameOfChangedProperty of args.propertiesThatChanged) {
-      const changeIsAlreadyInDiff = propertyUpdates?.hasOwnProperty(nameOfChangedProperty);
-      const changedPropertyExists = args.propertiesOfResourceFromCurrentTemplate?.[nameOfChangedProperty];
+  }): types.ResourceDifference {
+    let oldResource: types.Resource | undefined = args.changedResource?.oldValue ?? {
+      Type: args.resourceType,
+      Properties: args.propertiesOfResourceFromCurrentTemplate ?? {},
+    };
+    let newResource: types.Resource | undefined = args.changedResource?.newValue ?? {
+      Type: args.resourceType,
+      Properties: args.propertiesOfResourceFromNewTemplate ?? {},
+    };
 
-      if (changeIsAlreadyInDiff || !changedPropertyExists) {
-        continue;
-      }
+    // If the feature flag is enabled, then we should overwrite the properties with the change context.
+    const featureFlagIsEnabled = true;
 
-      const oldValue = deepCopy(args.propertiesOfResourceFromCurrentTemplate?.[nameOfChangedProperty] ?? {});
+    switch (args.change.changeAction) {
+      case 'Import':
+      case 'Add':
+        oldResource = undefined;
+        if (featureFlagIsEnabled && args.change.afterContext?.Properties) {
+          newResource.Properties = args.change.afterContext?.Properties;
+        }
+        break;
+      case 'Remove':
+        if (featureFlagIsEnabled && args.change.beforeContext?.Properties) {
+          oldResource.Properties = args.change.beforeContext?.Properties;
+        }
+        newResource = undefined;
+        break;
+      case 'Dynamic':
+      case 'Modify':
+      default:
+        const propertiesThatChanged = Object.keys(args.change.propertyReplacementModes ?? {});
+        const propertyUpdates = args.changedResource?.propertyUpdates;
+        for (const propertyName of propertiesThatChanged) {
+          const changeIsAlreadyInDiff = propertyUpdates?.hasOwnProperty(propertyName);
 
-      // We try our best to include as much info as possible, but if the afterContext fails, we will just notify the existence of the diff.
-      const newPropertyValue = args.afterContext?.Properties?.[nameOfChangedProperty] ?? TemplateAndChangeSetDiffMerger.VALUE_UNKNOWN_MESSAGE;
-      args.propertiesOfResourceFromCurrentTemplate![nameOfChangedProperty] = newPropertyValue;
-      const newValue = args.propertiesOfResourceFromNewTemplate?.[nameOfChangedProperty];
+          if (featureFlagIsEnabled || !changeIsAlreadyInDiff) {
+            // Just because the change is already in diff, doesn't imply that the change has all the information.
+            // For example, if an IAM policy points to a resource given by an ssm parameter, and the ssm param changes
+            // but the actual template diff added a new permission to the policy, then we'd miss the ssm change if we just
+            // looked at the templateDiff (that is, if we ignored the ChangeSet).
 
-      const emptyChangeImpact = {};
-
-      args.changedResource!.setPropertyChange(nameOfChangedProperty, new types.PropertyDifference(
-        oldValue,
-        newValue,
-        emptyChangeImpact, // ChangeImpact will be filled later.
-      ));
+            if (oldResource?.Properties && args.change.beforeContext?.Properties?.[propertyName]) {
+              oldResource.Properties[propertyName] = args.change.beforeContext?.Properties?.[propertyName];
+            }
+            if (newResource?.Properties && args.change.afterContext?.Properties?.[propertyName]) {
+              newResource.Properties[propertyName] = args.change.afterContext?.Properties?.[propertyName];
+            }
+          }
+        }
     }
+
+    return diffResource(oldResource, newResource);
   }
 
   public static determineChangeSetReplacementMode(propertyChange: ChangeSetResourceChangeDetail): types.ReplacementModes {
@@ -156,6 +143,7 @@ export class TemplateAndChangeSetDiffMerger {
         resourceWasReplaced: resourceChange.ResourceChange.Replacement === 'True',
         resourceType: resourceChange.ResourceChange.ResourceType ?? TemplateAndChangeSetDiffMerger.UNKNOWN_RESOURCE_TYPE, // DescribeChangeSet doesn't promise to have the ResourceType...
         propertyReplacementModes: propertyReplacementModes,
+        changeAction: resourceChange.ResourceChange.Action ?? 'Dynamic', // Dynamic means we're not sure what the change action is...
         beforeContext: _maybeJsonParse(resourceChange.ResourceChange.BeforeContext),
         afterContext: _maybeJsonParse(resourceChange.ResourceChange.AfterContext),
       };
@@ -218,7 +206,7 @@ export class TemplateAndChangeSetDiffMerger {
         switch (name) {
           case 'Metadata':
             // we want to ignore metadata changes in the diff, so compare newValue against newValue.
-            change.setOtherChange('Metadata', new types.Difference<string>(value.newValue, value.newValue));
+            change.setOtherChange('Metadata', new types.Difference<string>({} as any, {} as any));
             break;
         }
       }
@@ -230,30 +218,23 @@ export class TemplateAndChangeSetDiffMerger {
     currentTemplateResources: { [key: string]: any } | undefined,
     newTemplateResources: { [key: string]: any } | undefined,
   ) {
-    const resourceChangesFromDiff = theDiffResources?.changes;
-    for (const [changedResourceLogicalId, change] of Object.entries(this.changeSetResources ?? [])) {
-      const resourceIsInTemplateDiff = resourceChangesFromDiff?.hasOwnProperty(changedResourceLogicalId);
-      const propertiesThatChanged = Object.keys(change.propertyReplacementModes ?? {});
-
-      if (resourceIsInTemplateDiff) {
-        TemplateAndChangeSetDiffMerger.maybeAddChangeSetPropertiesToResourceInDiff({
-          propertiesThatChanged,
-          afterContext: change.afterContext,
-          changedResource: theDiffResources?.get(changedResourceLogicalId),
-          propertiesOfResourceFromCurrentTemplate: currentTemplateResources?.[changedResourceLogicalId]?.Properties,
-          propertiesOfResourceFromNewTemplate: newTemplateResources?.[changedResourceLogicalId]?.Properties,
-        });
-      } else {
-        TemplateAndChangeSetDiffMerger.addChangeSetResourceToDiff({
-          changedResourceLogicalId,
-          propertiesThatChanged,
-          theDiffResources,
-          afterContext: change.afterContext,
-          resourceType: change.resourceType ?? TemplateAndChangeSetDiffMerger.UNKNOWN_RESOURCE_TYPE,
-          propertiesOfResourceFromCurrentTemplate: currentTemplateResources?.[changedResourceLogicalId]?.Properties,
-          propertiesOfResourceFromNewTemplate: newTemplateResources?.[changedResourceLogicalId]?.Properties,
-        });
+    for (const [changedResourceLogicalId, changeSetChanges] of Object.entries(this.changeSetResources ?? [])) {
+      let changedResource: types.ResourceDifference | undefined;
+      try {
+        changedResource = theDiffResources?.get(changedResourceLogicalId);
+      } catch (e) {
+        changedResource = undefined;
       }
+
+      const resourceDiff = TemplateAndChangeSetDiffMerger.createResourceDiffWithChangeSet({
+        changedResource,
+        change: changeSetChanges,
+        resourceType: changeSetChanges.resourceType ?? TemplateAndChangeSetDiffMerger.UNKNOWN_RESOURCE_TYPE,
+        propertiesOfResourceFromCurrentTemplate: currentTemplateResources?.[changedResourceLogicalId]?.Properties,
+        propertiesOfResourceFromNewTemplate: newTemplateResources?.[changedResourceLogicalId]?.Properties,
+      });
+
+      theDiffResources.set(changedResourceLogicalId, resourceDiff);
     }
   }
 

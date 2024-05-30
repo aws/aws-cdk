@@ -44,7 +44,7 @@
     {
       "type": "node",
       "request": "launch",
-      "args": ["diff", "OneThousand"],
+      "args": ["diff", "cdkbugreport2"],
       "name": "debug CLI",
       "program": "/Users/bergjak/workplace/CDK/aws-cdk/packages/aws-cdk/bin/cdk.js",
       "cwd": "${workspaceFolder:cdk_test}",
