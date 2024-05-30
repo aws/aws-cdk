@@ -64,6 +64,10 @@ export class TemplateAndChangeSetDiffMerger {
       case 'Dynamic':
       case 'Modify':
       default:
+        // in the Modify case, we know the resource is being updated. So there should always be a Properties field, before and after.
+        oldResource.Properties = oldResource.Properties ?? {};
+        newResource.Properties = newResource.Properties ?? {};
+
         const propertiesThatChanged = Object.keys(args.change.propertyReplacementModes ?? {});
         const propertyUpdates = args.changedResource?.propertyUpdates;
         for (const propertyName of propertiesThatChanged) {
@@ -75,12 +79,12 @@ export class TemplateAndChangeSetDiffMerger {
             // but the actual template diff added a new permission to the policy, then we'd miss the ssm change if we just
             // looked at the templateDiff (that is, if we ignored the ChangeSet).
 
-            if (oldResource?.Properties && args.change.beforeContext?.Properties?.[propertyName]) {
-              oldResource.Properties[propertyName] = args.change.beforeContext?.Properties?.[propertyName] ?? this.UNKNOWN_VALUE_BEFORE_CHANGE;
-            }
-            if (newResource?.Properties && args.change.afterContext?.Properties?.[propertyName]) {
-              newResource.Properties[propertyName] = args.change.afterContext?.Properties?.[propertyName] ?? this.UNKNOWN_VALUE_AFTER_CHANGE;
-            }
+            oldResource.Properties[propertyName] = args.change.beforeContext?.Properties?.[propertyName]
+              ?? oldResource.Properties[propertyName]
+              ?? this.UNKNOWN_VALUE_BEFORE_CHANGE;
+            newResource.Properties[propertyName] = args.change.afterContext?.Properties?.[propertyName]
+              ?? newResource.Properties[propertyName]
+              ?? this.UNKNOWN_VALUE_AFTER_CHANGE;
           }
         }
     }
