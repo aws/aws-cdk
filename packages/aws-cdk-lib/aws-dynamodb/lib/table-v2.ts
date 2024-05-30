@@ -9,6 +9,7 @@ import {
   SecondaryIndexProps, BillingMode, ProjectionType,
 } from './shared';
 import { TableBaseV2, ITableV2 } from './table-v2-base';
+import { PolicyDocument } from '../../aws-iam';
 import { IStream } from '../../aws-kinesis';
 import { IKey, Key } from '../../aws-kms';
 import { ArnFormat, CfnTag, Lazy, PhysicalName, RemovalPolicy, Stack, Token } from '../../core';
@@ -121,6 +122,13 @@ export interface TableOptionsV2 {
    * @default - no tags
    */
   readonly tags?: CfnTag[];
+
+  /**
+   * Resource policy to assign to DynamoDB Table.
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dynamodb-globaltable-replicaspecification.html#cfn-dynamodb-globaltable-replicaspecification-resourcepolicy
+   * @default - No resource policy statements are added to the created table.
+   */
+  readonly resourcePolicy?: PolicyDocument;
 }
 
 /**
@@ -354,13 +362,14 @@ export class TableV2 extends TableBaseV2 {
       public readonly tableId?: string;
       public readonly tableStreamArn?: string;
       public readonly encryptionKey?: IKey;
+      public readonly resourcePolicy?: PolicyDocument;
 
       protected readonly region: string;
       protected readonly hasIndex = (attrs.grantIndexPermissions ?? false) ||
         (attrs.globalIndexes ?? []).length > 0 ||
         (attrs.localIndexes ?? []).length > 0;
 
-      public constructor(tableArn: string, tableName: string, tableId?: string, tableStreamArn?: string) {
+      public constructor(tableArn: string, tableName: string, tableId?: string, tableStreamArn?: string, resourcePolicy?: PolicyDocument) {
         super(scope, id, { environmentFromArn: tableArn });
 
         const resourceRegion = stack.splitArn(tableArn, ArnFormat.SLASH_RESOURCE_NAME).region;
@@ -374,6 +383,7 @@ export class TableV2 extends TableBaseV2 {
         this.tableId = tableId;
         this.tableStreamArn = tableStreamArn;
         this.encryptionKey = attrs.encryptionKey;
+        this.resourcePolicy = resourcePolicy;
       }
     }
 
@@ -428,6 +438,11 @@ export class TableV2 extends TableBaseV2 {
   public readonly tableId?: string;
 
   public readonly encryptionKey?: IKey;
+
+  /**
+   * @attribute
+   */
+  public resourcePolicy?: PolicyDocument;
 
   protected readonly region: string;
 
@@ -600,6 +615,7 @@ export class TableV2 extends TableBaseV2 {
   private configureReplicaTable(props: ReplicaTableProps): CfnGlobalTable.ReplicaSpecificationProperty {
     const pointInTimeRecovery = props.pointInTimeRecovery ?? this.tableOptions.pointInTimeRecovery;
     const contributorInsights = props.contributorInsights ?? this.tableOptions.contributorInsights;
+    const resourcePolicy = props.resourcePolicy ?? this.tableOptions.resourcePolicy;
 
     return {
       region: props.region,
@@ -620,6 +636,9 @@ export class TableV2 extends TableBaseV2 {
         ? props.readCapacity._renderReadCapacity()
         : this.readProvisioning,
       tags: props.tags,
+      resourcePolicy: resourcePolicy
+        ? { policyDocument: resourcePolicy }
+        : undefined,
     };
   }
 

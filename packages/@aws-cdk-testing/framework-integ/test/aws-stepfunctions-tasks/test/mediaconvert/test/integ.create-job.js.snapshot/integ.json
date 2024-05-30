@@ -1,0 +1,12 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "MediaConvertCreateJobTest/DefaultTest": {
+      "stacks": [
+        "aws-cdk-mediaconvert-create-job-test-stack"
+      ],
+      "assertionStack": "MediaConvertCreateJobTest/DefaultTest/DeployAssert",
+      "assertionStackName": "MediaConvertCreateJobTestDefaultTestDeployAssertA293ABFD"
+    }
+  }
+}

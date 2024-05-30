@@ -518,7 +518,7 @@ export abstract class BaseService extends Resource
     const arn = stack.splitArn(serviceArn, ArnFormat.SLASH_RESOURCE_NAME);
     const resourceName = arn.resourceName;
     if (!resourceName) {
-      throw new Error('Missing resource Name from service ARN: ${serviceArn}');
+      throw new Error(`Missing resource Name from service ARN: ${serviceArn}`);
     }
     const resourceNameParts = resourceName.split('/');
     if (resourceNameParts.length !== 2) {
