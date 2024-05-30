@@ -63,6 +63,16 @@ export interface FailProps {
  * Reaching a Fail state terminates the state execution in failure.
  */
 export class Fail extends State {
+  private static allowedIntrinsics = [
+    'States.Format',
+    'States.JsonToString',
+    'States.ArrayGetItem',
+    'States.Base64Encode',
+    'States.Base64Decode',
+    'States.Hash',
+    'States.UUID',
+  ];
+
   public readonly endStates: INextable[] = [];
 
   private readonly error?: string;
@@ -99,6 +109,14 @@ export class Fail extends State {
   protected validateState(): string[] {
     const errors = super.validateState();
 
+    if (this.errorPath && this.isIntrinsicString(this.errorPath) && !this.isAllowedIntrinsic(this.errorPath)) {
+      errors.push(`You must specify a valid intrinsic function in errorPath. Must be one of ${Fail.allowedIntrinsics.join(', ')}`);
+    }
+
+    if (this.causePath && this.isIntrinsicString(this.causePath) && !this.isAllowedIntrinsic(this.causePath)) {
+      errors.push(`You must specify a valid intrinsic function in causePath. Must be one of ${Fail.allowedIntrinsics.join(', ')}`);
+    }
+
     if (this.error && this.errorPath) {
       errors.push('Fail state cannot have both error and errorPath');
     }
@@ -112,5 +130,9 @@ export class Fail extends State {
 
   private isIntrinsicString(jsonPath?: string): boolean {
     return !Token.isUnresolved(jsonPath) && !jsonPath?.startsWith('$');
+  }
+
+  private isAllowedIntrinsic(intrinsic: string): boolean {
+    return Fail.allowedIntrinsics.some(allowed => intrinsic.startsWith(allowed));
   }
 }

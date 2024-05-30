@@ -107,7 +107,8 @@ describe('State Machine Resources', () => {
     ],
   ])('Fail should render ErrorPath / CausePath correctly when specifying ErrorPath / CausePath using intrinsics', (errorPath, causePath) => {
     // GIVEN
-    const stack = new cdk.Stack();
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app);
     const fail = new stepfunctions.Fail(stack, 'Fail', {
       errorPath,
       causePath,
@@ -122,6 +123,7 @@ describe('State Machine Resources', () => {
       ErrorPath: "States.Format('error: {}.', $.error)",
       Type: 'Fail',
     });
+    expect(() => app.synth()).not.toThrow();
   }),
 
   test('fails in synthesis if error and errorPath are defined in Fail state', () => {
@@ -150,6 +152,29 @@ describe('State Machine Resources', () => {
     });
 
     expect(() => app.synth()).toThrow(/Fail state cannot have both cause and causePath/);
+  }),
+
+  test.each([
+    'States.Array($.Id)',
+    'States.ArrayPartition($.inputArray, 4)',
+    'States.ArrayContains($.inputArray, $.lookingFor)',
+    'States.ArrayRange(1, 9, 2)',
+    'States.ArrayLength($.inputArray)',
+    'States.JsonMerge($.json1, $.json2, false)',
+    'States.StringToJson($.escapedJsonString)',
+  ])('fails in synthesis if specifying invalid intrinsic functions in the causePath and errorPath (%s)', (intrinsic) => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app);
+
+    // WHEN
+    new stepfunctions.Fail(stack, 'Fail', {
+      causePath: intrinsic,
+      errorPath: intrinsic,
+    });
+
+    expect(() => app.synth()).toThrow(/You must specify a valid intrinsic function in causePath. Must be one of States.Format, States.JsonToString, States.ArrayGetItem, States.Base64Encode, States.Base64Decode, States.Hash, States.UUID/);
+    expect(() => app.synth()).toThrow(/You must specify a valid intrinsic function in errorPath. Must be one of States.Format, States.JsonToString, States.ArrayGetItem, States.Base64Encode, States.Base64Decode, States.Hash, States.UUID/);
   }),
 
   testDeprecated('Task should render InputPath / Parameters / OutputPath correctly', () => {
