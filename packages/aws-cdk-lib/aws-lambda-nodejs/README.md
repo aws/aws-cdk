@@ -433,9 +433,13 @@ export class ExampleStack extends Stack {
     super(scope, id, props);
 
     const pathToBuildFile = path.join(__dirname, 'build.mjs');
-    const pathToOutputFile = path.join(__dirname, 'build-output'); // assuming `handler` is specified as index.handler (as in this example), then this build-output directory must contain the index.js file with an exported `handler` function.
-    const commandThatIsRanDuringCdkSynth = ['node', pathToBuildFile];
 
+    // assuming the `handler` property is specified as 'index.handler' (as in this example), then 
+    // this 'build-output' directory must contain an index.js file with an exported `handler` function.
+    const pathToOutputFile = path.join(__dirname, 'build-output'); 
+    const handler = 'index.handler';
+
+    const commandThatIsRanDuringCdkSynth = ['node', pathToBuildFile];
     const code = Code.fromCustomCommand(
       pathToOutputFile,
       commandThatIsRanDuringCdkSynth,
@@ -443,7 +447,7 @@ export class ExampleStack extends Stack {
 
     new NodejsFunction(this, 'NodejsFunctionBuild', {
       code,
-      handler: 'index.handler',
+      handler,
     });
   }
 }
