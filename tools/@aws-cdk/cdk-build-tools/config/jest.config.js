@@ -22,11 +22,8 @@ module.exports = {
       },
     ],
   },
-
-  // Limit workers to a reasonable fixed number. If we scale in the number of available CPUs, we will explode
-  // our memory limit on the CodeBuild instance that has 72 CPUs.
-  maxWorkers: Math.min(8, cpus().length - 1),
-
+  // Jest is resource greedy so this shouldn't be more than 50%
+  maxWorkers: '50%',
   testEnvironment: 'node',
   coverageThreshold: {
     global: {
