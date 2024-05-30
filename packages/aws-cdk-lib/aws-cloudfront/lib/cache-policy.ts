@@ -107,12 +107,12 @@ export class CachePolicy extends Resource implements ICachePolicy {
   public static readonly CACHING_DISABLED = CachePolicy.fromManagedCachePolicy('4135ea2d-6df8-44a3-9df3-4b5a84be39ad');
   /** Designed for use with an origin that is an AWS Elemental MediaPackage endpoint. */
   public static readonly ELEMENTAL_MEDIA_PACKAGE = CachePolicy.fromManagedCachePolicy('08627262-05a9-4f76-9ded-b50ca2e3a84f');
-  /** 
+  /**
    * Designed for use with an origin that returns Cache-Control HTTP response headers.
-   * Does not serve different content based on values present in the query string. 
+   * Does not serve different content based on values present in the query string.
    */
   public static readonly USE_ORIGIN_CACHE_CONTROL_HEADERS = CachePolicy.fromManagedCachePolicy('83da9c7e-98b4-4e11-a168-04f0df8e2c65');
-  /** 
+  /**
    * Designed for use with an origin that returns Cache-Control HTTP response headers.
    * Serves different content based on values present in the query string.
    */
