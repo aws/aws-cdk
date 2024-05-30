@@ -209,23 +209,23 @@ describe('CloudFront Function', () => {
     const stack = new Stack(app, 'CdkTestWithALongNameStack');
 
     new Function(stack, 'MyCloudFrontFunction', {
-      code: FunctionCode.fromInline('')
+      code: FunctionCode.fromInline(''),
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Function', {
-      'Name': {
+      Name: {
         'Fn::Join': [
           '',
           [
             {
-              'Ref': 'AWS::Region'
+              Ref: 'AWS::Region',
             },
-            'CdkTestWitackMyCloudFrontFunction302260D0'
-          ]
-        ]
-      }
+            'CdkTestWitackMyCloudFrontFunction302260D0',
+          ],
+        ],
+      },
     });
-  })
+  });
 
   describe('key value store association', () => {
     test('minimal example', () => {
