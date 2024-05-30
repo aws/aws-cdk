@@ -3,6 +3,7 @@ import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Annotations, Match, Template } from '../../assertions';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
+import * as logs from '../../aws-logs';
 import * as cdk from '../../core';
 import * as s3 from '../lib';
 
@@ -3491,6 +3492,67 @@ describe('bucket', () => {
     expect(() => new s3.Bucket(stack, 'MyBucket', {
       autoDeleteObjects: true,
     })).toThrow(/Cannot use \'autoDeleteObjects\' property on a bucket without setting removal policy to \'DESTROY\'/);
+  });
+
+  test('setAutoDeleteObjectsLogGroup throws if no bucket has autoDeleteObjects: true in stack', () => {
+    const stack = new cdk.Stack();
+
+    new s3.Bucket(stack, 'MyBucket', { });
+
+    expect(() => s3.Bucket.setAutoDeleteObjectsLogGroup(stack, new logs.LogGroup(stack, 'MyLogGroup', {})))
+      .toThrow(/Requires at least one bucket with 'autoDeleteObjects: true'. None is found./);
+  });
+
+  test('setAutoDeleteObjectsLogGroup to update AutoDeleteObjectsProvider LoggingConfig', () => {
+    const stack = new cdk.Stack();
+
+    new s3.Bucket(stack, 'MyBucket', {
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+      autoDeleteObjects: true,
+    });
+    s3.Bucket.setAutoDeleteObjectsLogGroup(stack, new logs.LogGroup(stack, 'FirstLogGroup', {
+      logGroupName: 'MyFirstLogGroup',
+    }));
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Logs::LogGroup', {
+      LogGroupName: 'MyFirstLogGroup',
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+      LoggingConfig: {
+        LogGroup: {
+          'Ref': 'FirstLogGroupFF5C2AA0',
+        },
+      },
+    });
+  });
+
+  test('setAutoDeleteObjectsLogGroup multiple times should take the latest Log Group', () => {
+    const stack = new cdk.Stack();
+
+    new s3.Bucket(stack, 'MyBucket', {
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+      autoDeleteObjects: true,
+    });
+    s3.Bucket.setAutoDeleteObjectsLogGroup(stack, new logs.LogGroup(stack, 'FirstLogGroup', {
+      logGroupName: 'MyFirstLogGroup',
+    }));
+    s3.Bucket.setAutoDeleteObjectsLogGroup(stack, new logs.LogGroup(stack, 'SecondLogGroup', {
+      logGroupName: 'MySecondLogGroup',
+    }));
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Logs::LogGroup', {
+      LogGroupName: 'MyFirstLogGroup',
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::Logs::LogGroup', {
+      LogGroupName: 'MySecondLogGroup',
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+      LoggingConfig: {
+        LogGroup: {
+          'Ref': 'SecondLogGroup8CDA9B9E',
+        },
+      },
+    });
   });
 
   test('bucket with transfer acceleration turned on', () => {

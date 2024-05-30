@@ -10,6 +10,7 @@ import { parseBucketArn, parseBucketName } from './util';
 import * as events from '../../aws-events';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
+import * as logs from '../../aws-logs';
 import {
   CustomResource,
   Duration,
@@ -1466,6 +1467,9 @@ export interface BucketProps {
    *
    * Requires the `removalPolicy` to be set to `RemovalPolicy.DESTROY`.
    *
+   * A custom resource along with a provider lambda will be created for
+   * emptying the bucket.
+   *
    * **Warning** if you have deployed a bucket with `autoDeleteObjects: true`,
    * switching this to `false` in a CDK version *before* `1.126.0` will lead to
    * all objects in the bucket being deleted. Be sure to update your bucket resources
@@ -1880,6 +1884,26 @@ export class Bucket extends BucketBase {
     if (errors.length > 0) {
       throw new Error(`Invalid S3 bucket name (value: ${bucketName})${EOL}${errors.join(EOL)}`);
     }
+  }
+
+  /**
+   * Set the log group on the singleton AutoDeleteObjects provider lambda.
+   * Note: Calling this multiple times will override the previously set log group
+   *
+   * In the case of no buckets with `autoDeleteObjects: true` exist in the stack,
+   * this will throw an exception as no AutoDeleteObjects provider lambda will exist
+   * in the stack.
+   *
+   * @param scope the stack with bucket(s) with `autoDeleteObjects: true`.
+   * @param logGroup the log group to use on the lambda.
+   */
+  public static setAutoDeleteObjectsLogGroup(scope: Construct, logGroup: logs.ILogGroup): void {
+    const provider = AutoDeleteObjectsProvider.getProvider(scope, AUTO_DELETE_OBJECTS_RESOURCE_TYPE);
+
+    if (provider === undefined) {
+      throw new Error('Requires at least one bucket with \'autoDeleteObjects: true\'. None is found.');
+    }
+    provider.configureLambdaLogGroup(logGroup.logGroupName);
   }
 
   public readonly bucketArn: string;
