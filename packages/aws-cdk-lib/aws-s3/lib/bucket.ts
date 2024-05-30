@@ -2000,6 +2000,10 @@ export class Bucket extends BucketBase {
     (props.lifecycleRules || []).forEach(this.addLifecycleRule.bind(this));
 
     if (props.publicReadAccess) {
+      if (props.blockPublicAccess === undefined) {
+        throw new Error('Cannot use \'publicReadAccess\' property on a bucket without allowing bucket-level public access through \'blockPublicAceess\' property.');
+      }
+
       this.grantPublicAccess();
     }
 
