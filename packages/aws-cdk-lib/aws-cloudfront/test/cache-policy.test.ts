@@ -192,6 +192,8 @@ test('managed policies are provided', () => {
   expect(CachePolicy.CACHING_OPTIMIZED_FOR_UNCOMPRESSED_OBJECTS.cachePolicyId).toEqual('b2884449-e4de-46a7-ac36-70bc7f1ddd6d');
   expect(CachePolicy.CACHING_DISABLED.cachePolicyId).toEqual('4135ea2d-6df8-44a3-9df3-4b5a84be39ad');
   expect(CachePolicy.ELEMENTAL_MEDIA_PACKAGE.cachePolicyId).toEqual('08627262-05a9-4f76-9ded-b50ca2e3a84f');
+  expect(CachePolicy.USE_ORIGIN_CACHE_CONTROL_HEADERS.cachePolicyId).toEqual('83da9c7e-98b4-4e11-a168-04f0df8e2c65');
+  expect(CachePolicy.USE_ORIGIN_CACHE_CONTROL_HEADERS_QUERY_STRINGS.cachePolicyId).toEqual('4cc15a8a-d715-48a4-82b8-cc0b614638fe');
 });
 
 // CookieBehavior and QueryStringBehavior have identical behavior
