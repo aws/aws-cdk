@@ -49,9 +49,9 @@ const DIFF_HANDLERS: HandlerRegistry = {
 export function fullDiff(
   currentTemplate: { [key: string]: any },
   newTemplate: { [key: string]: any },
-  useChangeSetPropertyValuesByDefault?: boolean,
   changeSet?: DescribeChangeSetOutput,
   isImport?: boolean,
+  useChangeSetPropertyValuesByDefault?: boolean,
 ): types.TemplateDiff {
 
   normalize(currentTemplate);

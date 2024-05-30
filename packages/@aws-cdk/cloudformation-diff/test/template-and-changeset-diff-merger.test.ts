@@ -1,6 +1,6 @@
 import { ResourceChangeDetail } from '@aws-sdk/client-cloudformation';
 import * as utils from './util';
-import { PropertyDifference, ResourceDifference, ResourceImpact, fullDiff } from '../lib';
+import { ChangeSetResources, PropertyDifference, ResourceDifference, ResourceImpact, fullDiff } from '../lib';
 import { TemplateAndChangeSetDiffMerger } from '../lib/diff/template-and-changeset-diff-merger';
 
 describe('fullDiff tests that include changeset', () => {
@@ -694,6 +694,7 @@ describe('method tests', () => {
             replacementMode: 'Always',
           },
         },
+        changeAction: 'Modify',
         beforeContext: {
           Properties: {
             QueueName: 'newValuechangedddd',
@@ -716,8 +717,7 @@ describe('method tests', () => {
           UpdateReplacePolicy: 'Delete',
           DeletionPolicy: 'Delete',
         },
-      },
-      );
+      });
       expect((templateAndChangeSetDiffMerger.changeSetResources ?? {}).mySsmParameter).toEqual({
         resourceWasReplaced: false,
         resourceType: 'AWS::SSM::Parameter',
@@ -726,6 +726,7 @@ describe('method tests', () => {
             replacementMode: 'Never',
           },
         },
+        changeAction: 'Modify',
         beforeContext: {
           Properties: {
             Value: 'changedddd',
@@ -782,6 +783,7 @@ describe('method tests', () => {
             replacementMode: 'Never',
           },
         },
+        changeAction: 'Modify',
         beforeContext: {
           Properties: {
             Value: 'changedddd',
@@ -811,6 +813,7 @@ describe('method tests', () => {
             replacementMode: 'Always',
           },
         },
+        changeAction: 'Modify',
         beforeContext: {
           Properties: {
             QueueName: undefined,
@@ -845,9 +848,13 @@ describe('method tests', () => {
       expect(templateAndChangeSetDiffMerger.changeSet).toEqual(utils.changeSetWithUndefinedDetails);
       expect(Object.keys(templateAndChangeSetDiffMerger.changeSetResources ?? {}).length).toBe(1);
       expect((templateAndChangeSetDiffMerger.changeSetResources ?? {}).Queue).toEqual({
-        resourceWasReplaced: true,
+        resourceWasReplaced: false,
         resourceType: 'UNKNOWN_RESOURCE_TYPE',
-        propertyReplacementModes: {},
+        propertyReplacementModes: {
+        },
+        changeAction: 'Remove',
+        beforeContext: undefined,
+        afterContext: undefined,
       });
     });
 
@@ -1209,18 +1216,28 @@ describe('method tests', () => {
         changeSet: {},
         changeSetResources: {
           Queue: {
+            resourceWasReplaced: false,
+            afterContext: undefined,
+            beforeContext: undefined,
+            changeAction: 'Modify',
             resourceType: 'AWS::SQS::Queue',
             propertyReplacementModes: {
               QueueName: {
                 replacementMode: 'Always',
               },
             },
-          } as any,
-        },
+          },
+        } as ChangeSetResources,
       });
 
       // WHEN
-      templateAndChangeSetDiffMerger.addMissingResourceInformationToDiff(emptyDiffCollection.resources, currentResources, currentResources);
+      const useChangeSetPropertyValuesByDefault = true;
+      templateAndChangeSetDiffMerger.addMissingResourceInformationToDiff(
+        emptyDiffCollection.resources,
+        currentResources,
+        currentResources,
+        useChangeSetPropertyValuesByDefault,
+      );
 
       // THEN
       expect(emptyDiffCollection.resources.changes.Queue).toEqual({
@@ -1285,7 +1302,13 @@ describe('method tests', () => {
       });
 
       // WHEN
-      templateAndChangeSetDiffMerger.addMissingResourceInformationToDiff(emptyDiffCollection.resources, currentResources, currentResources);
+      const useChangeSetPropertyValuesByDefault = true;
+      templateAndChangeSetDiffMerger.addMissingResourceInformationToDiff(
+        emptyDiffCollection.resources,
+        currentResources,
+        currentResources,
+        useChangeSetPropertyValuesByDefault,
+      );
 
       // THEN
       expect(emptyDiffCollection.resources.changes.Queue).toEqual({
@@ -1364,7 +1387,13 @@ describe('method tests', () => {
       });
 
       // WHEN
-      templateAndChangeSetDiffMerger.addMissingResourceInformationToDiff(diffCollection.resources, currentTemplate.Resources, newTemplate.Resources);
+      const useChangeSetPropertyValuesByDefault = true;
+      templateAndChangeSetDiffMerger.addMissingResourceInformationToDiff(
+        diffCollection.resources,
+        currentTemplate.Resources,
+        newTemplate.Resources,
+        useChangeSetPropertyValuesByDefault,
+      );
 
       // THEN
       expect(diffCollection.resources.changes.Queue).toEqual({

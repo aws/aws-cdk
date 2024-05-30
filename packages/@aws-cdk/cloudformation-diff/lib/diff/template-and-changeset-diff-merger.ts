@@ -76,10 +76,10 @@ export class TemplateAndChangeSetDiffMerger {
             // looked at the templateDiff (that is, if we ignored the ChangeSet).
 
             if (oldResource?.Properties && args.change.beforeContext?.Properties?.[propertyName]) {
-              oldResource.Properties[propertyName] = args.change.beforeContext?.Properties?.[propertyName];
+              oldResource.Properties[propertyName] = args.change.beforeContext?.Properties?.[propertyName] ?? this.UNKNOWN_VALUE_BEFORE_CHANGE;
             }
             if (newResource?.Properties && args.change.afterContext?.Properties?.[propertyName]) {
-              newResource.Properties[propertyName] = args.change.afterContext?.Properties?.[propertyName];
+              newResource.Properties[propertyName] = args.change.afterContext?.Properties?.[propertyName] ?? this.UNKNOWN_VALUE_AFTER_CHANGE;
             }
           }
         }
@@ -110,6 +110,10 @@ export class TemplateAndChangeSetDiffMerger {
 
   // If we somehow cannot find the resourceType, then we'll mark it as UNKNOWN, so that can be seen in the diff.
   private static UNKNOWN_RESOURCE_TYPE = 'UNKNOWN_RESOURCE_TYPE';
+
+  // If we somehow cannot find the value of the change, then we will just state that the diff exists.
+  private static UNKNOWN_VALUE_BEFORE_CHANGE = 'DescribeChangeSet detected difference, but the value is not resolved.';
+  private static UNKNOWN_VALUE_AFTER_CHANGE = 'DescribeChangeSet detected difference, but the value is not resolved.';
 
   public changeSet: DescribeChangeSetOutput | undefined;
   public changeSetResources: types.ChangeSetResources;

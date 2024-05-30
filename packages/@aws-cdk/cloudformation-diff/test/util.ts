@@ -237,11 +237,10 @@ export const changeSetWithUndefinedDetails: DescribeChangeSetOutput = {
       Type: 'Resource',
       ResourceChange: {
         PolicyAction: 'ReplaceAndDelete',
-        Action: 'Modify',
+        Action: 'Remove',
         LogicalResourceId: 'Queue',
         PhysicalResourceId: 'https://sqs.us-east-1.amazonaws.com/012345678901/newValuechangedddd',
         ResourceType: undefined,
-        Replacement: 'True',
         Scope: [
           'Properties',
         ],

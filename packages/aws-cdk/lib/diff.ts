@@ -38,13 +38,13 @@ export function printStackDiff(
   nestedStackTemplates?: { [nestedStackLogicalId: string]: NestedStackTemplates },
 ): number {
 
-  let diff = fullDiff(oldTemplate, newTemplate.template, useChangeSetPropertyValuesByDefault, changeSet, isImport);
+  let diff = fullDiff(oldTemplate, newTemplate.template, changeSet, isImport, useChangeSetPropertyValuesByDefault);
 
   // detect and filter out mangled characters from the diff
   let filteredChangesCount = 0;
   if (diff.differenceCount && !strict) {
     const mangledNewTemplate = JSON.parse(mangleLikeCloudFormation(JSON.stringify(newTemplate.template)));
-    const mangledDiff = fullDiff(oldTemplate, mangledNewTemplate, useChangeSetPropertyValuesByDefault, changeSet);
+    const mangledDiff = fullDiff(oldTemplate, mangledNewTemplate, changeSet, isImport, useChangeSetPropertyValuesByDefault);
     filteredChangesCount = Math.max(0, diff.differenceCount - mangledDiff.differenceCount);
     if (filteredChangesCount > 0) {
       diff = mangledDiff;
@@ -122,7 +122,7 @@ export function printSecurityDiff(
   useChangeSetPropertyValuesByDefault?: boolean,
   changeSet?: DescribeChangeSetOutput,
 ): boolean {
-  const diff = fullDiff(oldTemplate, newTemplate.template, useChangeSetPropertyValuesByDefault, changeSet);
+  const diff = fullDiff(oldTemplate, newTemplate.template, changeSet, false, useChangeSetPropertyValuesByDefault);
 
   if (difRequiresApproval(diff, requireApproval)) {
     // eslint-disable-next-line max-len
