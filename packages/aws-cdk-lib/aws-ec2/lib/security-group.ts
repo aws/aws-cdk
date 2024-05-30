@@ -434,7 +434,12 @@ export class SecurityGroup extends SecurityGroupBase {
    * Look up a security group.
    */
   private static fromLookupAttributes(scope: Construct, id: string, options: SecurityGroupLookupOptions) {
-    if (Token.isUnresolved(options.securityGroupId) || Token.isUnresolved(options.securityGroupName) || Token.isUnresolved(options.vpc?.vpcId)) {
+    if (
+      Token.isUnresolved(options.securityGroupId) ||
+      Token.isUnresolved(options.securityGroupName) ||
+      Token.isUnresolved(options.vpc?.vpcId) ||
+      Token.isUnresolved(options.owner)
+    ) {
       throw new Error('All arguments to look up a security group must be concrete (no Tokens)');
     }
 
@@ -516,8 +521,8 @@ export class SecurityGroup extends SecurityGroupBase {
     this.securityGroup = new CfnSecurityGroup(this, 'Resource', {
       groupName: this.physicalName,
       groupDescription,
-      securityGroupIngress: Lazy.any({ produce: () => this.directIngressRules }, { omitEmptyArray: true } ),
-      securityGroupEgress: Lazy.any({ produce: () => this.directEgressRules }, { omitEmptyArray: true } ),
+      securityGroupIngress: Lazy.any({ produce: () => this.directIngressRules }, { omitEmptyArray: true }),
+      securityGroupEgress: Lazy.any({ produce: () => this.directEgressRules }, { omitEmptyArray: true }),
       vpcId: props.vpc.vpcId,
     });
 
@@ -654,7 +659,7 @@ export class SecurityGroup extends SecurityGroupBase {
       const description = this.allowAllOutbound ? ALLOW_ALL_RULE.description : MATCH_NO_TRAFFIC.description;
       super.addEgressRule(peer, port, description, false);
     } else {
-      const rule = this.allowAllOutbound? ALLOW_ALL_RULE : MATCH_NO_TRAFFIC;
+      const rule = this.allowAllOutbound ? ALLOW_ALL_RULE : MATCH_NO_TRAFFIC;
       this.directEgressRules.push(rule);
     }
   }

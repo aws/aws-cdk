@@ -17,7 +17,7 @@ export class SecurityGroupContextProviderPlugin implements ContextProviderPlugin
       throw new Error('\'securityGroupId\' and \'securityGroupName\' can not be specified both when looking up a security group');
     }
 
-    if (!args.securityGroupId && !args.securityGroupName) {
+    if (!args.securityGroupId && !args.securityGroupName) {
       throw new Error('\'securityGroupId\' or \'securityGroupName\' must be specified to look up a security group');
     }
 
@@ -41,7 +41,7 @@ export class SecurityGroupContextProviderPlugin implements ContextProviderPlugin
       filters.push({
         Name: 'owner-id',
         Values: [args.owner],
-      })
+      });
     }
 
     const response = await ec2.describeSecurityGroups({
@@ -53,7 +53,7 @@ export class SecurityGroupContextProviderPlugin implements ContextProviderPlugin
     if (securityGroups.length === 0) {
       throw new Error(`No security groups found matching ${JSON.stringify(args)}`);
     }
-    
+
     if (securityGroups.length > 1) {
       throw new Error(`More than one security groups found matching ${JSON.stringify(args)}`);
     }
