@@ -243,7 +243,7 @@ describe('security group context provider plugin', () => {
           },
           {
             Name: 'owner-id',
-            Values: ['1234'], 
+            Values: ['1234'],
           },
         ],
       });
@@ -265,7 +265,7 @@ describe('security group context provider plugin', () => {
                 ],
               },
             ],
-          }
+          },
         ],
       });
     });
