@@ -2,11 +2,11 @@ import { CfnIPAMPool, CfnVPC, CfnVPCCidrBlock } from 'aws-cdk-lib/aws-ec2/lib';
 import { NetworkBuilder } from 'aws-cdk-lib/aws-ec2/lib/network-util';
 import { Resource } from 'aws-cdk-lib/core/lib/resource';
 import { Construct } from 'constructs';
-import { IpamIpv4 } from './ipam';
+import { IpamIpv4, IpamIpv6 } from './ipam';
 import { Arn } from 'aws-cdk-lib/core/lib/arn';
 import { Token } from 'aws-cdk-lib/core';
 
-export interface IIpv4IpamOptions{
+export interface IIpIpamOptions{
   readonly ipv4IpamPoolId: any;
   readonly netmaskLength: number;
 }
@@ -24,14 +24,15 @@ export class IpAddresses {
     return new ipv4CidrAllocation(ipv4Cidr);
   }
 
-  public static ipv4Ipam(ipv4IpamOptions: IIpv4IpamOptions) {
+  public static ipv4Ipam(ipv4IpamOptions: IIpIpamOptions) {
     return new IpamIpv4(ipv4IpamOptions);
   }
   public static ipv6(ipv6CidrOptions: IIpv6AddressesOptions): IIpAddresses {
     return new ipv6CidrAllocation(ipv6CidrOptions);
   }
-  // ipv6Ipam(props: VpcV2IpamOptions),
-  // amazonProvidedIpv6(),
+  public static ipv6Ipam(ipv6IpamOptions: IIpIpamOptions): IIpAddresses {
+    return new IpamIpv6(ipv6IpamOptions);
+  }
 
 }
 

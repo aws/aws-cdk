@@ -1,18 +1,26 @@
-import { CfnIPAMPoolProps } from 'aws-cdk-lib/aws-ec2/lib';
+import { CfnIPAM, CfnIPAMPool, CfnIPAMScope } from 'aws-cdk-lib/aws-ec2/lib';
 import { IIpAddresses, Ipv6AddressesOptions, VpcV2Options } from './vpc-v2';
+import { Construct } from 'constructs';
+import { IResolvable, Resource } from 'aws-cdk-lib';
 
-// enum AddressFamily {
-//   IP_V4,
-//   IP_V6,
-// }
-
-export interface PoolOptions extends CfnIPAMPoolProps{
+enum AddressFamily {
+  IP_V4,
+  IP_V6,
 }
 
-// interface Pool {
-//   addressFamily: AddressFamily;
-//   provisionedCidrs: string[];
-// }
+export interface PoolOptions{
+  addressFamily: AddressFamily;
+  provisionedCidrs: IResolvable | (IResolvable | CfnIPAMPool.ProvisionedCidrProperty)[];
+}
+
+export enum ScopeType {
+  PUBLIC,
+  PRIVATE,
+}
+
+export interface IpamScopeOptions {
+  scopeType: ScopeType;
+}
 
 export interface IpamOptions {
 
@@ -32,27 +40,6 @@ export interface IpamOptions {
 
 }
 
-// class Ipam {
-//     private pools: Pool[] = [];
-
-//     publicScope = {
-//         addPool: (options: PoolOptions): Pool => {
-//             const { addressFamily, provisionedCidrs } = options;
-//             const newPool: Pool = {
-//                 addressFamily,
-//                 provisionedCidrs
-//             };
-//             this.pools.push(newPool);
-//             return newPool;
-//         }
-//     };
-// }
-
-// const pool = ipam.publicScope.addPool({
-//     addressFamily: AddressFamily.IP_V4,
-//     provisionedCidrs: ['10.2.0.0/16']
-// });
-
 export class IpamIpv4 implements IIpAddresses {
 
   constructor(private readonly props: IpamOptions) {
@@ -69,17 +56,93 @@ export class IpamIpv4 implements IIpAddresses {
   }
 }
 
+class IpamScope extends Resource {
+
+  readonly scopeType: ScopeType;
+  readonly ipam: CfnIPAM;
+  public readonly ipamScope: CfnIPAMScope;
+  public readonly ipamScopeId: string;
+  constructor(scope: Construct, id: string, props: IpamScopeOptions) {
+    super(scope, id);
+    this.scopeType = props.scopeType;
+    this.ipam = new CfnIPAM(scope, 'Ipam', {});
+    this.ipamScope = new CfnIPAMScope(scope, 'IpamScope', {
+      ipamId: this.ipam.attrIpamId,
+    });
+    this.ipamScopeId = this.ipamScope.attrIpamScopeId;
+  }
+}
+
+export class Ipam extends Resource {
+  public readonly publicScope: IpamPublicScope;
+
+  constructor(scope: Construct, id: string) {
+    super(scope, id);
+    this.publicScope = new IpamPublicScope(this);
+  }
+}
+
+class IpamPublicScope {
+  private readonly ipam: Ipam;
+
+  constructor(ipam: Ipam) {
+    this.ipam = ipam;
+  }
+
+  addPool(options: PoolOptions): CfnIPAMPool {
+    const scope = new IpamScope(this.ipam, 'PublicScope', {
+      scopeType: ScopeType.PUBLIC,
+    });
+
+    return new CfnIPAMPool(this.ipam, '', {
+      addressFamily: options.addressFamily.toString(),
+      provisionedCidrs: options.provisionedCidrs,
+      ipamScopeId: scope.ipamScopeId,
+    });
+  }
+}
+
+//Customer Implementation Example
+const ipam = new Ipam(this, 'Ipam');
+ipam.publicScope.addPool({
+  addressFamily: AddressFamily.IP_V4,
+  provisionedCidrs: [{ cidr: '10.0.0.0/24' }],
+});
+
 // export class IpamPool extends Resource {
 
-//   constructor(stack: Construct, id: string, IpamOptions= {}) {
-//     super(stack, id, IpamOptions);
-//   }
+//   static publicScope: any;
 
-//   // eslint-disable-next-line @typescript-eslint/member-ordering
 //   publicScope = {
 //     addPool: (options: PoolOptions) => {
-//       return new CfnIPAMPool(this, '', options);
-//     },
-
+//       const scope = new IpamScope(this, 'PublicScope', {
+//         scopeType: ScopeType.PUBLIC,
+//       });
+//       return new CfnIPAMPool(this, '', {
+//         addressFamily: options.addressFamily.toString(),
+//         provisionedCidrs: options.provisionedCidrs,
+//         ipamScopeId: scope.ipamScopeId;
+//     });
+//   },
 //   }
+//   constructor(stack: Construct, id: string) {
+//     super(stack, id);
+//   }
+
 // }
+
+export class IpamIpv6 implements IIpAddresses {
+
+  constructor(private readonly props: IpamOptions) {
+  }
+  allocateVpcV6Cidr(_options: Ipv6AddressesOptions): VpcV2Options {
+    throw new Error('Method not implemented.');
+  }
+
+  allocateVpcCidr(): VpcV2Options {
+    return {
+      ipv4NetmaskLength: this.props.ipv4NetmaskLength,
+      ipv4IpamPoolId: this.props.ipv4IpamPoolId,
+    };
+  }
+}
