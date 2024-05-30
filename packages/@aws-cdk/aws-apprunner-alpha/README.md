@@ -216,6 +216,24 @@ const service = new apprunner.Service(stack, 'Service', {
 service.addSecret('LATER_SECRET', apprunner.Secret.fromSecretsManager(secret, 'field'));
 ```
 
+## Use a customer managed key
+
+To use a customer managed key for your source encryption, use the `kmsKey` attribute.
+
+```ts
+import * as kms from 'aws-cdk-lib/aws-kms';
+
+declare const kmsKey: kms.IKey;
+
+new apprunner.Service(this, 'Service', {
+  source: apprunner.Source.fromEcrPublic({
+    imageConfiguration: { port: 8000 },
+    imageIdentifier: 'public.ecr.aws/aws-containers/hello-app-runner:latest',
+  }),
+  kmsKey,
+});
+```
+
 ## HealthCheck
 
 To configure the health check for the service, use the `healthCheck` attribute.
