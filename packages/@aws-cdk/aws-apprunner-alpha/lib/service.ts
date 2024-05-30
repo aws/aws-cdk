@@ -723,7 +723,7 @@ export interface ServiceProps {
    * @default - Use an AWS managed key
    */
   readonly kmsKey?: kms.IKey;
-  
+
   /**
    * The IP address type for your incoming public network configuration.
    *
