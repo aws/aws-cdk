@@ -224,7 +224,12 @@ export class Function extends Resource implements IFunction {
   private generateName(): string {
     const name = Stack.of(this).region + Names.uniqueId(this);
     if (name.length > 64) {
-      return name.substring(0, 32) + name.substring(name.length - 32);
+      if (name.startsWith('${Token[AWS.Region.') && name.indexOf('}') == 21) {
+        // Ensure consistency when region number is one digit or two
+        return name.substring(0, 31) + name.substring(name.length - 32);
+      } else {
+        return name.substring(0, 32) + name.substring(name.length - 32);
+      }
     }
     return name;
   }
