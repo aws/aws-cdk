@@ -440,12 +440,12 @@ export class ExampleStack extends Stack {
     const handler = 'index.handler';
 
     const commandThatIsRanDuringCdkSynth = ['node', pathToBuildFile];
-    const code = Code.fromCustomCommand(
+    const code = lambda.Code.fromCustomCommand(
       pathToOutputFile,
       commandThatIsRanDuringCdkSynth,
     );
 
-    new NodejsFunction(this, 'NodejsFunctionBuild', {
+    new nodejs.NodeJsFunction(this, 'NodejsFunctionBuild', {
       code,
       handler,
     });
