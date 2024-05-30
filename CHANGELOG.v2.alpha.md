@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.143.1-alpha.0](https://github.com/aws/aws-cdk/compare/v2.143.0-alpha.0...v2.143.1-alpha.0) (2024-05-30)
+
+## [2.143.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.142.1-alpha.0...v2.143.0-alpha.0) (2024-05-23)
+
+## [2.142.1-alpha.0](https://github.com/aws/aws-cdk/compare/v2.142.0-alpha.0...v2.142.1-alpha.0) (2024-05-17)
+
+## [2.142.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.141.0-alpha.0...v2.142.0-alpha.0) (2024-05-15)
+
+
+### Features
+
+* **pipes-targets:** add step function target ([#29987](https://github.com/aws/aws-cdk/issues/29987)) ([b0975e4](https://github.com/aws/aws-cdk/commit/b0975e410a404d07952e01303af01224ccfad864)), closes [#29665](https://github.com/aws/aws-cdk/issues/29665) [#29665](https://github.com/aws/aws-cdk/issues/29665)
+* **redshift:** multi AZ cluster ([#29976](https://github.com/aws/aws-cdk/issues/29976)) ([a53517c](https://github.com/aws/aws-cdk/commit/a53517c6772332cc2a15c9b38e964a933e9c8355))
+
 ## [2.141.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.140.0-alpha.0...v2.141.0-alpha.0) (2024-05-08)
 
 ## [2.140.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.139.1-alpha.0...v2.140.0-alpha.0) (2024-05-02)

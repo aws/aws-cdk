@@ -212,8 +212,7 @@
                       "variables": {
                         "TABLE_NAME": {
                           "Ref": "SdkCallee1DA14178"
-                        },
-                        "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1"
+                        }
                       }
                     },
                     "handler": "index.handler",
@@ -485,8 +484,7 @@
                       "variables": {
                         "TABLE_NAME": {
                           "Ref": "SdkCallee1DA14178"
-                        },
-                        "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1"
+                        }
                       }
                     },
                     "handler": "index.handler",
