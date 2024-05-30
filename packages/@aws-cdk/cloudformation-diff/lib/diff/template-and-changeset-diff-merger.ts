@@ -82,9 +82,14 @@ export class TemplateAndChangeSetDiffMerger {
             oldResource.Properties[propertyName] = args.change.beforeContext?.Properties?.[propertyName]
               ?? oldResource.Properties[propertyName]
               ?? this.UNKNOWN_VALUE_BEFORE_CHANGE;
-            newResource.Properties[propertyName] = args.change.afterContext?.Properties?.[propertyName]
-              ?? newResource.Properties[propertyName]
-              ?? this.UNKNOWN_VALUE_AFTER_CHANGE;
+
+            if (changeIsAlreadyInDiff) { // Then we know that we at least have the newResource.Properties[propertyName] to fallback to if the context is not available.
+              newResource.Properties[propertyName] = args.change.afterContext?.Properties?.[propertyName]
+                ?? newResource.Properties[propertyName];
+            } else {
+              newResource.Properties[propertyName] = args.change.afterContext?.Properties?.[propertyName]
+                ?? this.UNKNOWN_VALUE_AFTER_CHANGE;
+            }
           }
         }
     }
