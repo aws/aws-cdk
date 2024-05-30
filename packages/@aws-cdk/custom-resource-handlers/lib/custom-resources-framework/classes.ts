@@ -274,6 +274,30 @@ export abstract class HandlerFrameworkClass extends ClassType {
           stmt.ret(expr.directCode('this.getOrCreateProvider(scope, uniqueid, props).serviceToken')),
         );
 
+        const idStatement = stmt.constVar(expr.ident('id'), expr.directCode('`${uniqueid}CustomResourceProvider`'));
+        const stackFromScopeStatement = stmt.constVar(expr.ident('stack'), expr.directCode('Stack.of(scope)'));
+        const getProviderMethod = this.addMethod({
+          name: 'getProvider',
+          static: true,
+          returnType: this.type,
+          docs: {
+            summary: 'Returns the stack-level singleton provider or undefined',
+          },
+        });
+        getProviderMethod.addParameter({
+          name: 'scope',
+          type: CONSTRUCTS_MODULE.Construct,
+        });
+        getProviderMethod.addParameter({
+          name: 'uniqueid',
+          type: Type.STRING,
+        });
+        getProviderMethod.addBody(
+          idStatement,
+          stackFromScopeStatement,
+          stmt.ret(expr.directCode(`stack.node.tryFindChild(id) as ${this.type}`)),
+        );
+
         const getOrCreateProviderMethod = this.addMethod({
           name: 'getOrCreateProvider',
           static: true,
@@ -282,7 +306,7 @@ export abstract class HandlerFrameworkClass extends ClassType {
             summary: 'Returns a stack-level singleton for the custom resource provider.',
           },
         });
-        const _scope = getOrCreateProviderMethod.addParameter({
+        getOrCreateProviderMethod.addParameter({
           name: 'scope',
           type: CONSTRUCTS_MODULE.Construct,
         });
@@ -296,9 +320,9 @@ export abstract class HandlerFrameworkClass extends ClassType {
           optional: true,
         });
         getOrCreateProviderMethod.addBody(
-          stmt.constVar(expr.ident('id'), expr.directCode('`${uniqueid}CustomResourceProvider`')),
-          stmt.constVar(expr.ident('stack'), $T(CORE_MODULE.Stack).of(expr.directCode(_scope.spec.name))),
-          stmt.constVar(expr.ident('existing'), expr.directCode(`stack.node.tryFindChild(id) as ${this.type}`)),
+          idStatement,
+          stmt.constVar(expr.ident('existing'), expr.directCode('this.getProvider(scope, uniqueid)')),
+          stackFromScopeStatement,
           stmt.ret(expr.directCode(`existing ?? new ${this.name}(stack, id, props)`)),
         );
 
