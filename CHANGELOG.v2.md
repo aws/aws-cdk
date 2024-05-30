@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.143.1](https://github.com/aws/aws-cdk/compare/v2.143.0...v2.143.1) (2024-05-30)
+
+
+### Reverts
+
+* fix(ses-actions): permissions too wide for S3 action ([#30375](https://github.com/aws/aws-cdk/issues/30375)) ([6c716c6](https://github.com/aws/aws-cdk/commit/6c716c68ec2a222a1262577942ffde42002d2f44))
+
 ## [2.143.0](https://github.com/aws/aws-cdk/compare/v2.142.1...v2.143.0) (2024-05-23)
 
 
