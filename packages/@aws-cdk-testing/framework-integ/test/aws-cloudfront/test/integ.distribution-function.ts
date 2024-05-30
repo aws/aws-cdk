@@ -1,6 +1,7 @@
 import * as cdk from 'aws-cdk-lib';
 import { TestOrigin } from './test-origin';
 import * as cloudfront from 'aws-cdk-lib/aws-cloudfront';
+import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'integ-distribution-function', { env: { region: 'eu-west-1' } });
@@ -22,5 +23,9 @@ new cloudfront.Distribution(stack, 'Dist', {
 
 new cdk.CfnOutput(stack, 'FunctionArn', { value: cfFunction.functionArn });
 new cdk.CfnOutput(stack, 'FunctionStage', { value: cfFunction.functionStage });
+
+new IntegTest(app, 'DistributionFunction', {
+  testCases: [stack],
+});
 
 app.synth();
