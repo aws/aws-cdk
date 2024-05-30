@@ -2,6 +2,7 @@
 import { Construct } from 'constructs';
 import { DockerImage, Stack, BundlingFileAccess } from 'aws-cdk-lib';
 import * as nodejs from 'aws-cdk-lib/aws-lambda-nodejs';
+import * as path from 'path';
 
 class Fixture extends Stack {
   constructor(scope: Construct, id: string) {

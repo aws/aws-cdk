@@ -427,7 +427,7 @@ await esbuild
 
 then you could use `build.mjs` in a cdk construct as follows:
 
-```
+```ts
 export class ExampleStack extends Stack {
   public constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
