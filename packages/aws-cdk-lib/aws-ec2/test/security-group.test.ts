@@ -604,7 +604,7 @@ describe('security group lookup', () => {
       env: {
         account: account,
         region: 'us-east-1',
-      }
+      },
     });
 
     const vpc = Vpc.fromVpcAttributes(stack, 'VPC', {
@@ -720,7 +720,7 @@ describe('security group lookup', () => {
     expect(() => {
       SecurityGroup.fromLookupByName(stack, 'stack', 'my-security-group', vpc, Lazy.string({ produce: () => '1234' }));
     }).toThrow('All arguments to look up a security group must be concrete (no Tokens)');
-  })
+  });
 
 });
 

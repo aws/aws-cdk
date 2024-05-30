@@ -452,7 +452,7 @@ export interface SecurityGroupContextQuery {
 
   /**
    * Owner
-   * 
+   *
    * @default - None
    */
   readonly owner?: string;

@@ -847,9 +847,9 @@ interface SecurityGroupLookupOptions {
 
   /**
    * The Owner of the security group
-   * 
+   *
    * If given, will filter the SecurityGroup based on the Owner.
-   * 
+   *
    * @default Don't filter on Owner
    */
   readonly owner?: string;
