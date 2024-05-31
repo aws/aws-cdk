@@ -2,7 +2,7 @@ import { DynamoDBMetrics } from './dynamodb-canned-metrics.generated';
 import * as perms from './perms';
 import { Operation, SystemErrorsForOperationsMetricOptions, OperationsMetricOptions, ITable } from './shared';
 import { IMetric, MathExpression, Metric, MetricOptions, MetricProps } from '../../aws-cloudwatch';
-import { Grant, IGrantable } from '../../aws-iam';
+import { AddToResourcePolicyResult, Grant, IGrantable, IResourceWithPolicy, PolicyDocument, PolicyStatement } from '../../aws-iam';
 import { IKey } from '../../aws-kms';
 import { Resource } from '../../core';
 
@@ -21,7 +21,7 @@ export interface ITableV2 extends ITable {
 /**
  * Base class for a DynamoDB table.
  */
-export abstract class TableBaseV2 extends Resource implements ITableV2 {
+export abstract class TableBaseV2 extends Resource implements ITableV2, IResourceWithPolicy {
   /**
    * The ARN of the table.
    *
@@ -55,6 +55,11 @@ export abstract class TableBaseV2 extends Resource implements ITableV2 {
    */
   public abstract readonly encryptionKey?: IKey;
 
+  /**
+   * The resource policy for the table
+   */
+  public abstract resourcePolicy?: PolicyDocument;
+
   protected abstract readonly region: string;
 
   protected abstract get hasIndex(): boolean;
@@ -71,11 +76,11 @@ export abstract class TableBaseV2 extends Resource implements ITableV2 {
   public grant(grantee: IGrantable, ...actions: string[]): Grant {
     const resourceArns = [this.tableArn];
     this.hasIndex && resourceArns.push(`${this.tableArn}/index/*`);
-    return Grant.addToPrincipal({
+    return Grant.addToPrincipalOrResource({
       grantee,
       actions,
       resourceArns,
-      scope: this,
+      resource: this,
     });
   }
 
@@ -426,11 +431,11 @@ export abstract class TableBaseV2 extends Resource implements ITableV2 {
     if (options.tableActions) {
       const resourceArns = [this.tableArn];
       this.hasIndex && resourceArns.push(`${this.tableArn}/index/*`);
-      return Grant.addToPrincipal({
+      return Grant.addToPrincipalOrResource({
         grantee,
         actions: options.tableActions,
         resourceArns,
-        scope: this,
+        resource: this,
       });
     }
 
@@ -456,5 +461,23 @@ export abstract class TableBaseV2 extends Resource implements ITableV2 {
       region: props?.region ?? this.region,
       account: props?.account ?? this.stack.account,
     });
+  }
+
+  /**
+   * Adds a statement to the resource policy associated with this file system.
+   * A resource policy will be automatically created upon the first call to `addToResourcePolicy`.
+   *
+   * Note that this does not work with imported file systems.
+   *
+   * @param statement The policy statement to add
+   */
+  public addToResourcePolicy(statement: PolicyStatement): AddToResourcePolicyResult {
+
+    this.resourcePolicy = this.resourcePolicy ?? new PolicyDocument({ statements: [] });
+    this.resourcePolicy.addStatements(statement);
+    return {
+      statementAdded: true,
+      policyDependable: this,
+    };
   }
 }

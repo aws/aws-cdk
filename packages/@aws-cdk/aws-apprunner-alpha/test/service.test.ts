@@ -3,6 +3,7 @@ import { Match, Template } from 'aws-cdk-lib/assertions';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as ecr from 'aws-cdk-lib/aws-ecr';
 import * as ecr_assets from 'aws-cdk-lib/aws-ecr-assets';
+import * as kms from 'aws-cdk-lib/aws-kms';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
 import * as ssm from 'aws-cdk-lib/aws-ssm';
@@ -1579,4 +1580,28 @@ test('timeout must be less than or equal to 20 in healthCheck', () => {
       }),
     });
   }).toThrow('timeout must be between 1 and 20 seconds, got 21');
+});
+
+test('create a service with a customer managed key)', () => {
+  // GIVEN
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app, 'demo-stack');
+  const key = new kms.Key(stack, 'Key');
+
+  // WHEN
+  new apprunner.Service(stack, 'DemoService', {
+    source: apprunner.Source.fromEcrPublic({
+      imageConfiguration: { port: 8000 },
+      imageIdentifier: 'public.ecr.aws/aws-containers/hello-app-runner:latest',
+    }),
+    kmsKey: key,
+  });
+
+  // THEN
+  // we should have the service
+  Template.fromStack(stack).hasResourceProperties('AWS::AppRunner::Service', {
+    EncryptionConfiguration: {
+      KmsKey: stack.resolve(key.keyArn),
+    },
+  });
 });

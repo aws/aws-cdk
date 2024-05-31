@@ -1,4 +1,5 @@
 import { Match, Template } from '../../assertions';
+import { ArnPrincipal, PolicyDocument, PolicyStatement } from '../../aws-iam';
 import { Stream } from '../../aws-kinesis';
 import { Key } from '../../aws-kms';
 import { CfnDeletionPolicy, Lazy, RemovalPolicy, Stack } from '../../core';
@@ -2803,5 +2804,52 @@ describe('imports', () => {
         tableArn: 'arn:aws:dynamodb:us-east-2:123456789012:table/',
       });
     }).toThrow('Table ARN must be of the form: arn:<partition>:dynamodb:<region>:<account>:table/<table-name>');
+  });
+});
+
+test('Resource policy test', () => {
+  // GIVEN
+  const stack = new Stack(undefined, 'Stack');
+
+  const doc = new PolicyDocument({
+    statements: [
+      new PolicyStatement({
+        actions: ['dynamodb:GetItem'],
+        principals: [new ArnPrincipal('arn:aws:iam::111122223333:user/foobar')],
+        resources: ['*'],
+      }),
+    ],
+  });
+
+  // WHEN
+  const table = new TableV2(stack, 'Table', {
+    partitionKey: { name: 'metric', type: AttributeType.STRING },
+    resourcePolicy: doc,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
+    Replicas: [
+      {
+        Region: {
+          Ref: 'AWS::Region',
+        },
+        ResourcePolicy: {
+          PolicyDocument: {
+            Statement: [
+              {
+                Action: 'dynamodb:GetItem',
+                Effect: 'Allow',
+                Principal: {
+                  AWS: 'arn:aws:iam::111122223333:user/foobar',
+                },
+                Resource: '*',
+              },
+            ],
+            Version: '2012-10-17',
+          },
+        },
+      },
+    ],
   });
 });
