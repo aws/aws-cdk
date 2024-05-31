@@ -1945,6 +1945,9 @@ const instance = new ec2.Instance(this, 'Instance', {
 });
 ```
 
+> NOTE: You must use an instance type and operating system that support Nitro Enclaves.
+> For more information, see [Requirements](https://docs.aws.amazon.com/enclaves/latest/user/nitro-enclave.html#nitro-enclave-reqs).
+
 ### Enabling Instance Hibernation
 
 You can enable [Instance Hibernation](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/Hibernate.html) for
@@ -1969,6 +1972,10 @@ const instance = new ec2.Instance(this, 'Instance', {
   }],
 });
 ```
+
+> NOTE: You must use an instance and a volume that meet the requirements for hibernation.
+> For more information, see [Prerequisites for Amazon EC2 instance hibernation](https://docs.aws.amazon.com/enclaves/latest/user/nitro-enclave.html#nitro-enclave-reqs).
+
 
 ## VPC Flow Logs
 
