@@ -138,15 +138,11 @@ export class CdkToolkit {
 
       const template = deserializeStructure(await fs.readFile(options.templatePath, { encoding: 'UTF-8' }));
       diffs = options.securityOnly
-        ? numberFromBool(printSecurityDiff(template, stacks.firstStack, RequireApproval.Broadening, undefined))
-        : printStackDiff(template, stacks.firstStack, strict, contextLines, quiet, undefined, false, stream);
+        ? numberFromBool(printSecurityDiff(template, stacks.firstStack, RequireApproval.Broadening, quiet))
+        : printStackDiff(template, stacks.firstStack, strict, contextLines, quiet, undefined, undefined, false, stream);
     } else {
       // Compare N stacks against deployed templates
       for (const stack of stacks.stackArtifacts) {
-        if (!quiet) {
-          stream.write(format('Stack %s\n', chalk.bold(stack.displayName)));
-        }
-
         const templateWithNestedStacks = await this.props.deployments.readCurrentTemplateWithNestedStacks(
           stack, options.compareAgainstProcessedTemplate,
         );
@@ -171,7 +167,7 @@ export class CdkToolkit {
             });
           } catch (e: any) {
             debug(e.message);
-            stream.write('Checking if the stack exists before creating the changeset has failed, will base the diff on template differences (run again with -v to see the reason)\n');
+            stream.write(`Checking if the stack ${stack.stackName} exists before creating the changeset has failed, will base the diff on template differences (run again with -v to see the reason)\n`);
             stackExists = false;
           }
 
@@ -191,14 +187,12 @@ export class CdkToolkit {
           }
         }
 
-        if (resourcesToImport) {
-          stream.write('Parameters and rules created during migration do not affect resource configuration.\n');
-        }
-
         const stackCount =
         options.securityOnly
-          ? (numberFromBool(printSecurityDiff(currentTemplate, stack, RequireApproval.Broadening, changeSet)))
-          : (printStackDiff(currentTemplate, stack, strict, contextLines, quiet, changeSet, !!resourcesToImport, stream, nestedStacks));
+          ? (numberFromBool(printSecurityDiff(currentTemplate, stack, RequireApproval.Broadening, quiet, stack.displayName, changeSet)))
+          : (printStackDiff(
+            currentTemplate, stack, strict, contextLines, quiet, stack.displayName, changeSet, !!resourcesToImport, stream, nestedStacks,
+          ));
 
         diffs += stackCount;
       }
