@@ -1135,7 +1135,7 @@ export interface DiffOptions {
    *
    * @default true
    */
-  useChangeSetPropertyValuesByDefault: boolean;
+  useChangeSetPropertyValuesByDefault?: boolean;
 }
 
 interface CfnDeployOptions {

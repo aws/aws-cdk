@@ -503,7 +503,7 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
 
       case 'diff':
         const enableDiffNoFail = isFeatureEnabled(configuration, cxapi.ENABLE_DIFF_NO_FAIL_CONTEXT);
-        const enableUsingChangesetPropertyValuesByDefault = isFeatureEnabled(configuration, cxapi.CDK_DIFF_USE_CHANGESET_PROPERTY_VALUES_BY_DEFAULT);
+        const enableUsingChangesetPropertyValuesByDefault = isFeatureEnabled(configuration, '@aws-cdk/core:cdkDiffUseChangeSetPropertyValuesByDefault'); // cxapi.CDK_DIFF_USE_CHANGESET_PROPERTY_VALUES_BY_DEFAULT);
         return cli.diff({
           stackNames: args.STACKS,
           exclusively: args.exclusively,
