@@ -272,6 +272,23 @@ Resources:
             Condition:
               StringLike:
                 "aws:sourceArn": { "Fn::Sub": "arn:${AWS::Partition}:lambda:${AWS::Region}:${AWS::AccountId}:function:*" }
+          - Fn::If:
+            - HasTrustedAccounts
+            - Effect: Allow
+              Action:
+                - ecr:PutImage
+                - ecr:InitiateLayerUpload
+                - ecr:UploadLayerPart
+                - ecr:CompleteLayerUpload
+                - ecr:BatchCheckLayerAvailability
+                - ecr:DescribeRepositories
+                - ecr:DescribeImages
+                - ecr:BatchGetImage
+                - ecr:GetDownloadUrlForLayer
+              Principal:
+                AWS:
+                  Ref: TrustedAccounts
+            - Ref: AWS::NoValue
   FilePublishingRole:
     Type: AWS::IAM::Role
     Properties:
