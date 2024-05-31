@@ -46,7 +46,7 @@ export abstract class Logging {
   private logApiResponseData?: boolean;
 
   protected constructor(props: LoggingProps = {}) {
-    this.logApiResponseData = props.logApiResponseData ?? true;
+    this.logApiResponseData = props.logApiResponseData;
   }
 
   /**
