@@ -28,7 +28,7 @@ export interface TemplateAndChangeSetDiffMergerProps extends TemplateAndChangeSe
  */
 export class TemplateAndChangeSetDiffMerger {
 
-  public static replaceProperties(
+  public static replaceResourceTemplateWithChangeContext(
     resources: { [key: string]: types.Resource | undefined },
     logicalId: string,
     resourceType: string | undefined,
@@ -44,45 +44,46 @@ export class TemplateAndChangeSetDiffMerger {
 
     const resource = resources[logicalId]!;
 
-    const paths = TemplateAndChangeSetDiffMerger.getAllPathsToKnownAfterApply(changeContext.Properties);
-    for (const path of paths) {
-      TemplateAndChangeSetDiffMerger.replaceUnknown(path, resource.Properties, changeContext.Properties);
+    // This is an attempt at an aesthetic approvement for the diff. We want to replace the {{changeSet:KNOWN_AFTER_APPLY}}
+    // with the values that our `diffTemplate` method produced. But everything is okay if we fail.
+    const pathsToKnownAfterApply = TemplateAndChangeSetDiffMerger.getAllPathsToKnownAfterApply(changeContext.Properties);
+    for (const path of pathsToKnownAfterApply) {
+      TemplateAndChangeSetDiffMerger.attemptToReplaceLeafWithOtherLeaf(path, resource.Properties, changeContext.Properties);
     }
+
     resource.Properties = changeContext.Properties;
   }
 
-  /**
-  * The goal here is to find all the property values that resolve to {{changeSet:KNOWN_AFTER_APPLY}}
-  * and to replace those values with what was computed in the templateDiff, if possible.
-  *
-  * so, we will find the leaves, see if the leaves are KNOWN_AFTER_APPLY, and replace
-  */
   public static getAllPathsToKnownAfterApply(root: any): any[][] {
     let paths: any[][] = [];
 
-    replaceProperties(root, [root]);
+    _findPaths(root, [root]);
 
-    function replaceProperties(node: any, path: any[]) {
+    // Defining the function in the scope of another function so paths can be added to the paths array.
+    function _findPaths(node: any, path: any[]) {
       if (typeof node === 'object') {
-      // we are on a node that has children
+        // we are on a node that has children
 
         const children = Object.keys(node ?? {});
 
         for (const key of children) {
-          replaceProperties(node[key], [...path, key]);
+          _findPaths(node[key], [...path, key]);
         }
 
       } else if (Array.isArray(node)) {
+        // TODO | consider just giving up if it's an array since that introduces indeterminancy in the path
+        // TODO | which could possibly lead to replacing '{{changeSet:KNOWN_AFTER_APPLY}}' with the incorrect node.
+
         node.sort(); // sort the array so we always go in the same order.
 
         for (let i = 0; i < node.length; i++) {
-          replaceProperties(node[i], [...path, i]);
+          _findPaths(node[i], [...path, i]);
         }
 
       } else {
-      // We are on a leaf
+        // We are on a leaf
         if (typeof node === 'string' && node === '{{changeSet:KNOWN_AFTER_APPLY}}') {
-        // this is what we want to replace
+          // this is what we want to replace
           paths.push(path);
         }
       }
@@ -91,12 +92,19 @@ export class TemplateAndChangeSetDiffMerger {
     return paths;
   }
 
-  public static replaceUnknown(path: any[], templateProps: any, contextProps: any) {
-    for (const node of path) { // what happens with oob index? what happens if one is undefined?
-      templateProps = templateProps[node];
-      contextProps = contextProps[node];
+  public static attemptToReplaceLeafWithOtherLeaf(pathToLeaf: any[], pathWithNewLeaf: any, leafWillBeReplaced: any) {
+    try {
+      for (const node of pathToLeaf) {
+        pathWithNewLeaf = pathWithNewLeaf[node];
+        leafWillBeReplaced = leafWillBeReplaced[node];
+      }
+      leafWillBeReplaced = pathWithNewLeaf;
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.log(`Failed to traverse path ${pathToLeaf}, path: ${pathWithNewLeaf}, otherPath: ${leafWillBeReplaced}`);
+      // eslint-disable-next-line no-console
+      console.log(`Error: ${e}`);
     }
-    contextProps = templateProps;
   }
 
   public static determineChangeSetReplacementMode(propertyChange: ChangeSetResourceChangeDetail): types.ReplacementModes {
@@ -222,19 +230,21 @@ export class TemplateAndChangeSetDiffMerger {
     });
   }
 
-  // happens immediately before normalizing
-  public replaceTemplateResources(
-    beforeOrAfter: 'before' | 'after',
+  public replaceTemplateResourcesWithChangeContext(
+    beforeOrAfterChanges: 'before' | 'after',
     resources: { [key: string]: types.Resource | undefined },
   ) {
-
     for (const [logicalId, changeSetResource] of Object.entries(this.changeSetResources)) {
       if (changeSetResource === undefined) { continue; } // shouldn't happen, but just to be safe.
 
-      if (beforeOrAfter === 'before') {
-        TemplateAndChangeSetDiffMerger.replaceProperties(resources, logicalId, changeSetResource.resourceType, changeSetResource.beforeContext);
-      } else {
-        TemplateAndChangeSetDiffMerger.replaceProperties(resources, logicalId, changeSetResource.resourceType, changeSetResource.afterContext);
+      if (beforeOrAfterChanges === 'before' && changeSetResource.beforeContext) {
+        TemplateAndChangeSetDiffMerger.replaceResourceTemplateWithChangeContext(
+          resources, logicalId, changeSetResource.resourceType, changeSetResource.beforeContext,
+        );
+      } else if (beforeOrAfterChanges === 'after' && changeSetResource.afterContext) {
+        TemplateAndChangeSetDiffMerger.replaceResourceTemplateWithChangeContext(
+          resources, logicalId, changeSetResource.resourceType, changeSetResource.afterContext,
+        );
       }
     }
   }
