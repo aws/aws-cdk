@@ -28,55 +28,27 @@ export interface TemplateAndChangeSetDiffMergerProps extends TemplateAndChangeSe
  */
 export class TemplateAndChangeSetDiffMerger {
 
-  // happens immediately before normalizing
-  public static replaceTemplateResources(
-    beforeOrAfter: 'before' | 'after',
+  public static replaceProperties(
     resources: { [key: string]: types.Resource | undefined },
-    changeSetResources: types.ChangeSetResources,
+    logicalId: string,
+    resourceType: string | undefined,
+    changeContext: any,
   ) {
-
-    for (const [logicalId, changeSetResource] of Object.entries(changeSetResources)) {
-      if (changeSetResource === undefined) { continue; }
-      if (resources[logicalId] === undefined) {
-      // if this is the case, then we need to add the changeSetResource
-        if (beforeOrAfter === 'after') {
-          resources[logicalId] = { // verify this is good, because Q did this!
-            Type: changeSetResource.resourceType ?? 'UNKNOWN_RESOURCE_TYPE',
-            DependsOn: changeSetResource.afterContext?.DependsOn,
-            DeletionPolicy: changeSetResource.afterContext?.DeletionPolicy,
-            UpdateReplacePolicy: changeSetResource.afterContext?.UpdateReplacePolicy,
-            CreationPolicy: changeSetResource.afterContext?.CreationPolicy,
-          };
-        } else {
-          resources[logicalId] = {
-            Type: changeSetResource.resourceType ?? 'UNKNOWN_RESOURCE_TYPE',
-            DependsOn: changeSetResource.beforeContext?.DependsOn,
-            DeletionPolicy: changeSetResource.beforeContext?.DeletionPolicy,
-            UpdateReplacePolicy: changeSetResource.beforeContext?.UpdateReplacePolicy,
-            CreationPolicy: changeSetResource.beforeContext?.CreationPolicy,
-          };
-        }
-      }
-
-      const resource = resources[logicalId]!;
-
-      if (beforeOrAfter === 'before' && changeSetResource?.beforeContext?.Properties) {
-        const paths = TemplateAndChangeSetDiffMerger.getAllPathsToKnownAfterApply(changeSetResource.beforeContext.Properties);
-        for (const path of paths) {
-          TemplateAndChangeSetDiffMerger.replaceUnknown(path, resource.Properties, changeSetResource.beforeContext.Properties);
-        }
-        resource.Properties = changeSetResource.beforeContext.Properties;
-      // find all the paths
-      // iterate over the paths, following them in parallel in the template properties and the context properties
-      // replace the KNOWN_AFTER with the actual value
-      } else if (beforeOrAfter === 'after' && changeSetResource?.afterContext?.Properties) {
-        const paths = TemplateAndChangeSetDiffMerger.getAllPathsToKnownAfterApply(changeSetResource.afterContext.Properties);
-        for (const path of paths) {
-          TemplateAndChangeSetDiffMerger.replaceUnknown(path, resource.Properties, changeSetResource.afterContext.Properties);
-        }
-        resource.Properties = changeSetResource.afterContext.Properties;
-      }
+    // If the changeset includes a resource not in the template, then we have to add that resource
+    if (resources[logicalId] === undefined) {
+      resources[logicalId] = {
+        Type: resourceType ?? 'UNKNOWN_RESOURCE_TYPE',
+        ...changeContext,
+      };
     }
+
+    const resource = resources[logicalId]!;
+
+    const paths = TemplateAndChangeSetDiffMerger.getAllPathsToKnownAfterApply(changeContext.Properties);
+    for (const path of paths) {
+      TemplateAndChangeSetDiffMerger.replaceUnknown(path, resource.Properties, changeContext.Properties);
+    }
+    resource.Properties = changeContext.Properties;
   }
 
   /**
@@ -250,6 +222,23 @@ export class TemplateAndChangeSetDiffMerger {
     });
   }
 
+  // happens immediately before normalizing
+  public replaceTemplateResources(
+    beforeOrAfter: 'before' | 'after',
+    resources: { [key: string]: types.Resource | undefined },
+  ) {
+
+    for (const [logicalId, changeSetResource] of Object.entries(this.changeSetResources)) {
+      if (changeSetResource === undefined) { continue; } // shouldn't happen, but just to be safe.
+
+      if (beforeOrAfter === 'before') {
+        TemplateAndChangeSetDiffMerger.replaceProperties(resources, logicalId, changeSetResource.resourceType, changeSetResource.beforeContext);
+      } else {
+        TemplateAndChangeSetDiffMerger.replaceProperties(resources, logicalId, changeSetResource.resourceType, changeSetResource.afterContext);
+      }
+    }
+  }
+
   public addImportInformationFromChangeset(resourceDiffs: types.DifferenceCollection<types.Resource, types.ResourceDifference>) {
     const imports = this.findResourceImports();
     resourceDiffs.forEachDifference((logicalId: string, change: types.ResourceDifference) => {
@@ -270,3 +259,4 @@ export class TemplateAndChangeSetDiffMerger {
     return importedResourceLogicalIds;
   }
 }
+

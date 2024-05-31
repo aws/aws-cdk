@@ -54,19 +54,11 @@ export function fullDiff(
 
   let theDiff: types.TemplateDiff;
 
-  if (!changeSet) {
-    normalize(currentTemplate);
-    normalize(newTemplate);
-    theDiff = diffTemplate(currentTemplate, newTemplate);
-  } else if (changeSet) {
+  if (changeSet) {
     // These methods mutate the state of theDiff, using the changeSet.
-
     const changeSetDiff = new TemplateAndChangeSetDiffMerger({ changeSet });
-    TemplateAndChangeSetDiffMerger.replaceTemplateResources('before', currentTemplate.Resources, changeSetDiff.changeSetResources);
-    TemplateAndChangeSetDiffMerger.replaceTemplateResources('after', newTemplate.Resources, changeSetDiff.changeSetResources);
-
-    normalize(currentTemplate);
-    normalize(newTemplate);
+    changeSetDiff.replaceTemplateResources('before', currentTemplate.Resources);
+    changeSetDiff.replaceTemplateResources('after', newTemplate.Resources);
 
     theDiff = diffTemplate(currentTemplate, newTemplate);
 
@@ -75,19 +67,21 @@ export function fullDiff(
     );
     changeSetDiff.addImportInformationFromChangeset(theDiff.resources);
   } else if (isImport) {
-    normalize(currentTemplate);
-    normalize(newTemplate);
     theDiff = diffTemplate(currentTemplate, newTemplate);
     makeAllResourceChangesImports(theDiff);
+  } else {
+    theDiff = diffTemplate(currentTemplate, newTemplate);
   }
 
-  return theDiff!;
+  return theDiff;
 }
 
 export function diffTemplate(
   currentTemplate: { [key: string]: any },
   newTemplate: { [key: string]: any },
 ): types.TemplateDiff {
+  normalize(currentTemplate);
+  normalize(newTemplate);
 
   // Base diff
   const theDiff = calculateTemplateDiff(currentTemplate, newTemplate);
