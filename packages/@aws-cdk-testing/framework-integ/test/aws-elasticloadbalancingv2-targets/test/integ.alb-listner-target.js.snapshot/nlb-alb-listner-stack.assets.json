@@ -1,0 +1,19 @@
+{
+  "version": "36.0.0",
+  "files": {
+    "24394092400f6a02c210490a7acaf10236a1fa2c0101836651065d233e2d2c44": {
+      "source": {
+        "path": "nlb-alb-listner-stack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "24394092400f6a02c210490a7acaf10236a1fa2c0101836651065d233e2d2c44.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
