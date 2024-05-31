@@ -28,6 +28,105 @@ export interface TemplateAndChangeSetDiffMergerProps extends TemplateAndChangeSe
  */
 export class TemplateAndChangeSetDiffMerger {
 
+  // happens immediately before normalizing
+  public static replaceTemplateResources(
+    beforeOrAfter: 'before' | 'after',
+    resources: { [key: string]: types.Resource | undefined },
+    changeSetResources: types.ChangeSetResources,
+  ) {
+
+    for (const [logicalId, changeSetResource] of Object.entries(changeSetResources)) {
+      if (changeSetResource === undefined) { continue; }
+      if (resources[logicalId] === undefined) {
+      // if this is the case, then we need to add the changeSetResource
+        if (beforeOrAfter === 'after') {
+          resources[logicalId] = { // verify this is good, because Q did this!
+            Type: changeSetResource.resourceType ?? 'UNKNOWN_RESOURCE_TYPE',
+            DependsOn: changeSetResource.afterContext?.DependsOn,
+            DeletionPolicy: changeSetResource.afterContext?.DeletionPolicy,
+            UpdateReplacePolicy: changeSetResource.afterContext?.UpdateReplacePolicy,
+            CreationPolicy: changeSetResource.afterContext?.CreationPolicy,
+          };
+        } else {
+          resources[logicalId] = {
+            Type: changeSetResource.resourceType ?? 'UNKNOWN_RESOURCE_TYPE',
+            DependsOn: changeSetResource.beforeContext?.DependsOn,
+            DeletionPolicy: changeSetResource.beforeContext?.DeletionPolicy,
+            UpdateReplacePolicy: changeSetResource.beforeContext?.UpdateReplacePolicy,
+            CreationPolicy: changeSetResource.beforeContext?.CreationPolicy,
+          };
+        }
+      }
+
+      const resource = resources[logicalId]!;
+
+      if (beforeOrAfter === 'before' && changeSetResource?.beforeContext?.Properties) {
+        const paths = TemplateAndChangeSetDiffMerger.getAllPathsToKnownAfterApply(changeSetResource.beforeContext.Properties);
+        for (const path of paths) {
+          TemplateAndChangeSetDiffMerger.replaceUnknown(path, resource.Properties, changeSetResource.beforeContext.Properties);
+        }
+        resource.Properties = changeSetResource.beforeContext.Properties;
+      // find all the paths
+      // iterate over the paths, following them in parallel in the template properties and the context properties
+      // replace the KNOWN_AFTER with the actual value
+      } else if (beforeOrAfter === 'after' && changeSetResource?.afterContext?.Properties) {
+        const paths = TemplateAndChangeSetDiffMerger.getAllPathsToKnownAfterApply(changeSetResource.afterContext.Properties);
+        for (const path of paths) {
+          TemplateAndChangeSetDiffMerger.replaceUnknown(path, resource.Properties, changeSetResource.afterContext.Properties);
+        }
+        resource.Properties = changeSetResource.afterContext.Properties;
+      }
+    }
+  }
+
+  /**
+  * The goal here is to find all the property values that resolve to {{changeSet:KNOWN_AFTER_APPLY}}
+  * and to replace those values with what was computed in the templateDiff, if possible.
+  *
+  * so, we will find the leaves, see if the leaves are KNOWN_AFTER_APPLY, and replace
+  */
+  public static getAllPathsToKnownAfterApply(root: any): any[][] {
+    let paths: any[][] = [];
+
+    replaceProperties(root, [root]);
+
+    function replaceProperties(node: any, path: any[]) {
+      if (typeof node === 'object') {
+      // we are on a node that has children
+
+        const children = Object.keys(node ?? {});
+
+        for (const key of children) {
+          replaceProperties(node[key], [...path, key]);
+        }
+
+      } else if (Array.isArray(node)) {
+        node.sort(); // sort the array so we always go in the same order.
+
+        for (let i = 0; i < node.length; i++) {
+          replaceProperties(node[i], [...path, i]);
+        }
+
+      } else {
+      // We are on a leaf
+        if (typeof node === 'string' && node === '{{changeSet:KNOWN_AFTER_APPLY}}') {
+        // this is what we want to replace
+          paths.push(path);
+        }
+      }
+    }
+
+    return paths;
+  }
+
+  public static replaceUnknown(path: any[], templateProps: any, contextProps: any) {
+    for (const node of path) { // what happens with oob index? what happens if one is undefined?
+      templateProps = templateProps[node];
+      contextProps = contextProps[node];
+    }
+    contextProps = templateProps;
+  }
+
   public static determineChangeSetReplacementMode(propertyChange: ChangeSetResourceChangeDetail): types.ReplacementModes {
     if (propertyChange.Target?.RequiresRecreation === undefined) {
       // We can't determine if the resource will be replaced or not. That's what conditionally means.
@@ -82,10 +181,26 @@ export class TemplateAndChangeSetDiffMerger {
         resourceWasReplaced: resourceChange.ResourceChange.Replacement === 'True',
         resourceType: resourceChange.ResourceChange.ResourceType ?? TemplateAndChangeSetDiffMerger.UNKNOWN_RESOURCE_TYPE, // DescribeChangeSet doesn't promise to have the ResourceType...
         propertyReplacementModes: propertyReplacementModes,
+        beforeContext: _maybeJsonParse(resourceChange.ResourceChange.BeforeContext),
+        afterContext: _maybeJsonParse(resourceChange.ResourceChange.AfterContext),
       };
     }
 
     return changeSetResources;
+
+    /**
+     *  we will try to parse the BeforeContext and AfterContext so that downstream processing of the diff can access object properties.
+     *
+     *  This should always succeed. But CFN says they truncate the beforeValue and afterValue if they're too long, and since the afterValue and beforeValue
+     *  are a subset of the BeforeContext and AfterContext, it seems safer to assume that BeforeContext and AfterContext also may truncate.
+     */
+    function _maybeJsonParse(value: string | undefined): any | undefined {
+      try {
+        return JSON.parse(value ?? '');
+      } catch (e) {
+        return value;
+      }
+    }
   }
 
   /**
