@@ -8,7 +8,7 @@ import * as cxapi from '../../../cx-api';
 import { NetworkELBMetrics } from '../elasticloadbalancingv2-canned-metrics.generated';
 import { BaseLoadBalancer, BaseLoadBalancerLookupOptions, BaseLoadBalancerProps, ILoadBalancerV2 } from '../shared/base-load-balancer';
 import { IpAddressType } from '../shared/enums';
-import { ifUndefined, parseLoadBalancerFullName } from '../shared/util';
+import { parseLoadBalancerFullName } from '../shared/util';
 
 /**
  * Indicates how traffic is distributed among the load balancer Availability Zones.
@@ -66,16 +66,6 @@ export interface NetworkLoadBalancerProps extends BaseLoadBalancerProps {
    * @default true
    */
   readonly enforceSecurityGroupInboundRulesOnPrivateLinkTraffic?: boolean;
-
-  /**
-   * Indicates whether to specify static IPv4 address.
-   * When enabled, a static IP address is assigned in every Availability Zone where the NLB is deployed.
-   *
-   * This parameter is valid for only internal NLB.
-   *
-   * @default false
-   */
-  readonly staticIpv4?: boolean;
 }
 
 /**
