@@ -32,6 +32,18 @@ export class ConnectionType {
   public static readonly NETWORK = new ConnectionType('NETWORK');
 
   /**
+   * Uses configuration settings contained in a connector purchased from AWS Marketplace
+   * to read from and write to data stores that are not natively supported by AWS Glue.
+   */
+  public static readonly MARKETPLACE = new ConnectionType('MARKETPLACE');
+
+  /**
+   * Uses configuration settings contained in a custom connector to read from and write to data stores
+   * that are not natively supported by AWS Glue.
+   */
+  public static readonly CUSTOM = new ConnectionType('CUSTOM');
+
+  /**
    * The name of this ConnectionType, as expected by Connection resource.
    */
   public readonly name: string;
