@@ -1,0 +1,115 @@
+{
+ "Resources": {
+  "StateMachineRoleB840431D": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "states.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "StateMachineRoleDefaultPolicyDF1E6607": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "iam:PassRole",
+       "Condition": {
+        "StringLike": {
+         "iam:PassedToService": "mediaconvert.amazonaws.com"
+        }
+       },
+       "Effect": "Allow",
+       "Resource": "arn:aws:iam::123456789012:role/MediaConvertRole"
+      },
+      {
+       "Action": "mediaconvert:CreateJob",
+       "Effect": "Allow",
+       "Resource": "*"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "StateMachineRoleDefaultPolicyDF1E6607",
+    "Roles": [
+     {
+      "Ref": "StateMachineRoleB840431D"
+     }
+    ]
+   }
+  },
+  "StateMachine2E01A3A5": {
+   "Type": "AWS::StepFunctions::StateMachine",
+   "Properties": {
+    "DefinitionString": {
+     "Fn::Join": [
+      "",
+      [
+       "{\"StartAt\":\"MediaConvertCreateJob\",\"States\":{\"MediaConvertCreateJob\":{\"End\":true,\"Type\":\"Task\",\"Resource\":\"arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":states:::mediaconvert:createJob\",\"Parameters\":{\"Role\":\"arn:aws:iam::123456789012:role/MediaConvertRole\",\"Settings\":{\"OutputGroups\":[{\"Outputs\":[{\"ContainerSettings\":{\"Container\":\"MP4\"},\"VideoDescription\":{\"CodecSettings\":{\"Codec\":\"H_264\",\"H264Settings\":{\"MaxBitrate\":1000,\"RateControlMode\":\"QVBR\",\"SceneChangeDetect\":\"TRANSITION_DETECTION\"}}},\"AudioDescriptions\":[{\"CodecSettings\":{\"Codec\":\"AAC\",\"AacSettings\":{\"Bitrate\":96000,\"CodingMode\":\"CODING_MODE_2_0\",\"SampleRate\":48000}}}]}],\"OutputGroupSettings\":{\"Type\":\"FILE_GROUP_SETTINGS\",\"FileGroupSettings\":{\"Destination\":\"s3://EXAMPLE-DESTINATION-BUCKET/\"}}}],\"Inputs\":[{\"AudioSelectors\":{\"Audio Selector 1\":{\"DefaultSelection\":\"DEFAULT\"}},\"FileInput\":\"s3://EXAMPLE-SOURCE-BUCKET/EXAMPLE-SOURCE_FILE\"}]}}}}}"
+      ]
+     ]
+    },
+    "RoleArn": {
+     "Fn::GetAtt": [
+      "StateMachineRoleB840431D",
+      "Arn"
+     ]
+    }
+   },
+   "DependsOn": [
+    "StateMachineRoleDefaultPolicyDF1E6607",
+    "StateMachineRoleB840431D"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}
