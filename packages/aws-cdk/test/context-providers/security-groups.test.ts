@@ -276,6 +276,7 @@ describe('security group context provider plugin', () => {
       region: 'us-east-1',
       securityGroupName: 'my-security-group',
       vpcId: 'vpc-1234567',
+      owner: '1234',
     });
 
     // THEN
