@@ -732,6 +732,102 @@ describe('cluster resource provider', () => {
           expect(resp).toEqual({ EksUpdateId: 'MockEksUpdateStatusId' });
         });
       });
+      describe('tag updates', () => {
+        test('updates are in-place', async () => {
+          const handler = new ClusterResourceHandler(mocks.client, mocks.newRequest('Update', {
+            // this is the new props
+            ...mocks.MOCK_PROPS,
+            tags: {
+              foo: 'bar',
+              hello: 'world',
+            },
+          }, {
+            // this is the old props
+            ...mocks.MOCK_PROPS,
+            tags: {
+              foo: 'bar',
+            },
+          }));
+          const resp = await handler.onEvent();
+          expect(mocks.actualRequest.createClusterRequest).toEqual(undefined);
+          expect(mocks.actualRequest.tagResourceRequest).toEqual({
+            resourceArn: 'arn:cluster-arn',
+            tags: {
+              hello: 'world',
+            },
+          });
+          expect(mocks.actualRequest.untagResourceRequest).toEqual(undefined);
+        });
+        test('update a tag along with a removal', async () => {
+          const handler = new ClusterResourceHandler(mocks.client, mocks.newRequest('Update', {
+            // this is the new props
+            ...mocks.MOCK_PROPS,
+            tags: {
+              foo: 'world',
+            },
+          }, {
+            // this is the old props
+            ...mocks.MOCK_PROPS,
+            tags: {
+              foo: 'bar',
+              hello: 'world',
+            },
+          }));
+          const resp = await handler.onEvent();
+          expect(mocks.actualRequest.tagResourceRequest).toEqual({
+            resourceArn: 'arn:cluster-arn',
+            tags: {
+              foo: 'world',
+            },
+          });
+          expect(mocks.actualRequest.untagResourceRequest).toEqual({
+            resourceArn: 'arn:cluster-arn',
+            tagKeys: ['hello'],
+          });
+        });
+        test('remove all tags', async () => {
+          const handler = new ClusterResourceHandler(mocks.client, mocks.newRequest('Update', {
+            // this is the new props
+            ...mocks.MOCK_PROPS,
+          }, {
+            // this is the old props
+            ...mocks.MOCK_PROPS,
+            tags: {
+              foo: 'bar',
+              hello: 'world',
+            },
+          }));
+          const resp = await handler.onEvent();
+          expect(mocks.actualRequest.tagResourceRequest).toEqual(undefined);
+          expect(mocks.actualRequest.untagResourceRequest).toEqual({
+            resourceArn: 'arn:cluster-arn',
+            tagKeys: ['foo', 'hello'],
+          });
+        });
+        test('add tags after creation of cluster', async () => {
+          const handler = new ClusterResourceHandler(mocks.client, mocks.newRequest('Update', {
+            // this is the new props
+            ...mocks.MOCK_PROPS,
+            tags: {
+              foo: 'bar',
+              hello: 'world',
+            },
+          }, {
+            // this is the old props
+            ...mocks.MOCK_PROPS,
+          }));
+          const resp = await handler.onEvent();
+          expect(mocks.actualRequest.createClusterRequest).toEqual(undefined);
+          expect(mocks.actualRequest.tagResourceRequest).toEqual({
+            resourceArn: 'arn:cluster-arn',
+            tags: {
+              foo: 'bar',
+              hello: 'world',
+            },
+          });
+          expect(mocks.actualRequest.untagResourceRequest).toEqual(undefined);
+        });
+      });
     });
   });
 });
