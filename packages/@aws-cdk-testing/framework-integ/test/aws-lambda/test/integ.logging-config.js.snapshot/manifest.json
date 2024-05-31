@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/04a0e9e899cf60a12349bd536e5e4764854e9e0c2e4bf28caf29641d28a1aabc.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/ca1d6ec19cef9e3b887e11f0ef107dd32ef686db5e138eee03b83852d2fe7db5.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -128,6 +128,18 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "LambdaWithLogLevelCBBBEFFC"
+          }
+        ],
+        "/aws-cdk-lambda-logging-config/LambdaWithLogLevelV2/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaWithLogLevelV2ServiceRoleD184382A"
+          }
+        ],
+        "/aws-cdk-lambda-logging-config/LambdaWithLogLevelV2/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LambdaWithLogLevelV2D4FB10AC"
           }
         ],
         "/aws-cdk-lambda-logging-config/BootstrapVersion": [

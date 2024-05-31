@@ -62,6 +62,15 @@ new Function(stack, 'LambdaWithLogLevel', {
   applicationLogLevel: ApplicationLogLevel.INFO,
 });
 
+new Function(stack, 'LambdaWithLogLevelV2', {
+  code: new InlineCode('foo'),
+  handler: 'index.handler',
+  runtime: Runtime.NODEJS_18_X,
+  loggingFormat: LoggingFormat.JSON,
+  systemLogLevelV2: SystemLogLevel.INFO,
+  applicationLogLevelV2: ApplicationLogLevel.INFO,
+});
+
 new integ.IntegTest(app, 'lambda-logging-config', {
   testCases: [stack],
 });
