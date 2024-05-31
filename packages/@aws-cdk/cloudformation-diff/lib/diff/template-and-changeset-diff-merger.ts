@@ -48,7 +48,13 @@ export class TemplateAndChangeSetDiffMerger {
     // with the values that our `diffTemplate` method produced. But everything is okay if we fail.
     const pathsToKnownAfterApply = TemplateAndChangeSetDiffMerger.getAllPathsToKnownAfterApply(changeContext.Properties);
     for (const path of pathsToKnownAfterApply) {
-      TemplateAndChangeSetDiffMerger.attemptToReplaceLeafWithOtherLeaf(path, resource.Properties, changeContext.Properties);
+      const result = TemplateAndChangeSetDiffMerger.attemptToReplaceLeafWithOtherLeaf(
+        path, resource.Properties, changeContext.Properties,
+      );
+
+      if (result) {
+        changeContext.Properties = result;
+      }
     }
 
     resource.Properties = changeContext.Properties;
@@ -57,11 +63,11 @@ export class TemplateAndChangeSetDiffMerger {
   public static getAllPathsToKnownAfterApply(root: any): any[][] {
     let paths: any[][] = [];
 
-    _findPaths(root, [root]);
+    _findPaths(root, []);
 
     // Defining the function in the scope of another function so paths can be added to the paths array.
     function _findPaths(node: any, path: any[]) {
-      if (typeof node === 'object') {
+      if (typeof node === 'object' && !Array.isArray(node)) {
         // we are on a node that has children
 
         const children = Object.keys(node ?? {});
@@ -84,6 +90,7 @@ export class TemplateAndChangeSetDiffMerger {
         // We are on a leaf
         if (typeof node === 'string' && node === '{{changeSet:KNOWN_AFTER_APPLY}}') {
           // this is what we want to replace
+          path.pop();
           paths.push(path);
         }
       }
@@ -92,13 +99,41 @@ export class TemplateAndChangeSetDiffMerger {
     return paths;
   }
 
+  public static replaceBranch(obj: any, path: (string | number)[], newBranch: any): any {
+    if (path.length === 0) {
+      // If the path is empty, return the new branch
+      return newBranch;
+    }
+
+    const [currentKey, ...restPath] = path;
+
+    if (Array.isArray(obj)) {
+      // If the current object is an array
+      const index = typeof currentKey === 'number' ? currentKey : parseInt(currentKey, 10);
+      return [
+        ...obj.slice(0, index),
+        this.replaceBranch(obj[index], restPath, newBranch),
+        ...obj.slice(index + 1),
+      ];
+    } else if (typeof obj === 'object' && obj !== null) {
+      // If the current object is an object
+      return {
+        ...obj,
+        [currentKey]: this.replaceBranch(obj[currentKey], restPath, newBranch),
+      };
+    } else {
+      // Return the object as-is if it's neither an object nor an array
+      return obj;
+    }
+  }
+
   public static attemptToReplaceLeafWithOtherLeaf(pathToLeaf: any[], pathWithNewLeaf: any, leafWillBeReplaced: any) {
     try {
       for (const node of pathToLeaf) {
         pathWithNewLeaf = pathWithNewLeaf[node];
-        leafWillBeReplaced = leafWillBeReplaced[node];
       }
-      leafWillBeReplaced = pathWithNewLeaf;
+
+      return this.replaceBranch(leafWillBeReplaced, pathToLeaf, pathWithNewLeaf);
     } catch (e) {
       // eslint-disable-next-line no-console
       console.log(`Failed to traverse path ${pathToLeaf}, path: ${pathWithNewLeaf}, otherPath: ${leafWillBeReplaced}`);
