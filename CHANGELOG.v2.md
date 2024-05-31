@@ -26,11 +26,6 @@ All notable changes to this project will be documented in this file. See [standa
 * **s3:** publicReadAccess causes deployment failure due to access denied 403 ([#29632](https://github.com/aws/aws-cdk/issues/29632)) ([4bf6fad](https://github.com/aws/aws-cdk/commit/4bf6fad3aa3fe1dc95ede8c11bacae4fac3096f4))
 * **stepfunctions:** cannot use intrinsic functions in Fail state ([#30210](https://github.com/aws/aws-cdk/issues/30210)) ([81a558f](https://github.com/aws/aws-cdk/commit/81a558feeb8309c221e85b5ad9a17340035620f9)), closes [#30063](https://github.com/aws/aws-cdk/issues/30063)
 
-
-### Reverts
-
-* "fix(ses-actions): permissions too wide for S3 action" ([#30375](https://github.com/aws/aws-cdk/issues/30375)) ([5f229ce](https://github.com/aws/aws-cdk/commit/5f229ce8281a777ea596764b9bbc09b62dc6c95f))
-
 ## [2.143.1](https://github.com/aws/aws-cdk/compare/v2.143.0...v2.143.1) (2024-05-30)
 
 
