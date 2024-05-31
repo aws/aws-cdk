@@ -144,7 +144,7 @@
                     "encryptionAtRestOptions": {
                       "enabled": false
                     },
-                    "engineVersion": "OpenSearch_2.11",
+                    "engineVersion": "OpenSearch_2.13",
                     "logPublishingOptions": {
                       "ES_APPLICATION_LOGS": {
                         "enabled": true,

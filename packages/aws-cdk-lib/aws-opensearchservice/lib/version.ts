@@ -90,14 +90,17 @@ export class EngineVersion {
   /** AWS OpenSearch 2.9 */
   public static readonly OPENSEARCH_2_9 = EngineVersion.openSearch('2.9');
 
-  /**
-   * AWS OpenSearch 2.10
-   * @deprecated use latest version of the OpenSearch engine
-   **/
+  /** AWS OpenSearch 2.10 */
   public static readonly OPENSEARCH_2_10 = EngineVersion.openSearch('2.10');
 
-  /** AWS OpenSearch 2.11 */
+  /**
+   * AWS OpenSearch 2.11
+   * @deprecated use latest version of the OpenSearch engine
+   **/
   public static readonly OPENSEARCH_2_11 = EngineVersion.openSearch('2.11');
+
+  /** AWS OpenSearch 2.13 */
+  public static readonly OPENSEARCH_2_13 = EngineVersion.openSearch('2.13');
 
   /**
    * Custom ElasticSearch version
