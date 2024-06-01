@@ -20,6 +20,8 @@ export interface DistributedMapProps extends MapBaseProps {
    *
    * The execution type of the distributed map state
    *
+   * This property overwrites ProcessorConfig.executionType
+   *
    * @default StateMachineType.STANDARD
    */
   readonly mapExecutionType?: StateMachineType;

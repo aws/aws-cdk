@@ -595,6 +595,23 @@ const distributedMap = new sfn.DistributedMap(this, 'Distributed Map State', {
 distributedMap.itemProcessor(new sfn.Pass(this, 'Pass State'));
 ```
 
+When using the `DistributedMap` class, the `ProcessorConfig.executionType` property is ignored.
+
+If you want to specify the execution type, you must set the `mapExecutionType` property in the `DistributedMap` class instead.
+
+In the following example, the execution type for the  DistributedMap is `EXPRESS` based on the value specified for `mapExecutionType`.
+
+```ts
+const distributedMap = new sfn.DistributedMap(this, 'DistributedMap', {
+  mapExecutionType: sfn.StateMachineType.EXPRESS, // mapExecutionType property is applied.
+});
+
+distributedMap.itemProcessor(new sfn.Pass(this, 'Pass'), {
+  mode: sfn.ProcessorMode.DISTRIBUTED,
+  executionType: sfn.ProcessorType.STANDARD, // ProcessorConfig.executionType is ignored
+});
+```
+
 ### Custom State
 
 It's possible that the high-level constructs for the states or `stepfunctions-tasks` do not have
