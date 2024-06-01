@@ -211,7 +211,10 @@
         "/integ-ec2-instance-nitro-enclaves-hibernation/InstanceNitroEnclavesEnabled/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "InstanceNitroEnclavesEnabledB4F56EB8"
+            "data": "InstanceNitroEnclavesEnabledB4F56EB8",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/integ-ec2-instance-nitro-enclaves-hibernation/SsmParameterValue:--aws--service--ami-amazon-linux-latest--al2023-ami-kernel-6.1-x86_64:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": [
@@ -235,7 +238,10 @@
         "/integ-ec2-instance-nitro-enclaves-hibernation/InstanceHibernationEnabled/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "InstanceHibernationEnabledF668067C"
+            "data": "InstanceHibernationEnabledF668067C",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
+            ]
           }
         ],
         "/integ-ec2-instance-nitro-enclaves-hibernation/BootstrapVersion": [
