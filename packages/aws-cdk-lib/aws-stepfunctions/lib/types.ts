@@ -229,7 +229,7 @@ export interface ProcessorConfig {
    *
    * If you use the `Map` class, you must provide this field if you specified `DISTRIBUTED` for the `mode` sub-field.
    *
-   * If you use the `DistributedMap` class, this property ig ignored.
+   * If you use the `DistributedMap` class, this property is ignored.
    * Use the `mapExecutionType` in the `DistributedMap` class instead.
    *
    * @default - no execution type
