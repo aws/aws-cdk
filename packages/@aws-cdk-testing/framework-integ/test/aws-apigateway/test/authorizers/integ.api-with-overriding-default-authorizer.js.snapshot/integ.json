@@ -1,0 +1,12 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "apigateway-with-overriding-default-authorizer/DefaultTest": {
+      "stacks": [
+        "integtest-restapi-with-overriding-default-authorizer"
+      ],
+      "assertionStack": "apigateway-with-overriding-default-authorizer/DefaultTest/DeployAssert",
+      "assertionStackName": "apigatewaywithoverridingdefaultauthorizerDefaultTestDeployAssert5491B2D1"
+    }
+  }
+}
