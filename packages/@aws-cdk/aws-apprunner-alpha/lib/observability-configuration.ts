@@ -121,9 +121,9 @@ export class ObservabilityConfiguration extends cdk.Resource implements IObserva
   }
 
   /**
-    * The ARN of the Observability configuration.
-    * @attribute
-    */
+   * The ARN of the Observability configuration.
+   * @attribute
+   */
   readonly observabilityConfigurationArn: string;
 
   /**
