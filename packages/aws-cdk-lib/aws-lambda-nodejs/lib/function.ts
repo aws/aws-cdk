@@ -27,8 +27,12 @@ export interface NodejsFunctionProps extends lambda.FunctionOptions {
   /**
    * The name of the exported handler in the entry file.
    *
-   * The handler is prefixed with `index.` unless the specified handler value contains a `.`,
-   * in which case it is used as-is.
+   * * If the `code` property is supplied, then you must include the `handler` property. The handler should be the name of the file
+   * that contains the exported handler and the function that should be called when the AWS Lambda is invoked. For example, if
+   * you had a file called `myLambda.js` and the function to be invoked was `myHandler`, then you should input `handler` property as `myLambda.myHandler`.
+   *
+   * * If the `code` property is not supplied and the handler input does not contain a `.`, then the handler is prefixed with `index.` (index period). Otherwise,
+   * the handler property is not modified.
    *
    * @default handler
    */
@@ -90,6 +94,16 @@ export interface NodejsFunctionProps extends lambda.FunctionOptions {
    * @default - the directory containing the `depsLockFilePath`
    */
   readonly projectRoot?: string;
+
+  /**
+   * The code that will be deployed to the Lambda Handler. If included, then properties related to
+   * bundling of the code are ignored.
+   *
+   * * If the `code` field is specified, then you must include the `handler` property.
+   *
+   * @default - the code is bundled by esbuild
+   */
+  readonly code?: lambda.Code;
 }
 
 /**
@@ -101,27 +115,45 @@ export class NodejsFunction extends lambda.Function {
       throw new Error('Only `NODEJS` runtimes are supported.');
     }
 
-    // Entry and defaults
-    const entry = path.resolve(findEntry(id, props.entry));
-    const handler = props.handler ?? 'handler';
-    const architecture = props.architecture ?? Architecture.X86_64;
-    const depsLockFilePath = findLockFile(props.depsLockFilePath);
-    const projectRoot = props.projectRoot ?? path.dirname(depsLockFilePath);
     const runtime = getRuntime(scope, props);
 
-    super(scope, id, {
-      ...props,
-      runtime,
-      code: Bundling.bundle(scope, {
-        ...props.bundling ?? {},
-        entry,
+    if (props.code !== undefined) {
+      if (props.handler === undefined) {
+        throw new Error(
+          'Cannot determine handler when `code` property is specified. Use `handler` property to specify a handler.\n'
+          + 'The handler should be the name of the exported function to be invoked and the file containing that function.\n'
+          + 'For example, handler should be specified in the form `myFile.myFunction`',
+        );
+      }
+
+      super(scope, id, {
+        ...props,
         runtime,
-        architecture,
-        depsLockFilePath,
-        projectRoot,
-      }),
-      handler: handler.indexOf('.') !== -1 ? `${handler}` : `index.${handler}`,
-    });
+        code: props.code,
+        handler: props.handler,
+      });
+    } else {
+      // Entry and defaults
+      const entry = path.resolve(findEntry(id, props.entry));
+      const architecture = props.architecture ?? Architecture.X86_64;
+      const depsLockFilePath = findLockFile(props.depsLockFilePath);
+      const projectRoot = props.projectRoot ?? path.dirname(depsLockFilePath);
+      const handler = props.handler ?? 'handler';
+
+      super(scope, id, {
+        ...props,
+        runtime,
+        code: Bundling.bundle(scope, {
+          ...props.bundling ?? {},
+          entry,
+          runtime,
+          architecture,
+          depsLockFilePath,
+          projectRoot,
+        }),
+        handler: handler.indexOf('.') !== -1 ? `${handler}` : `index.${handler}`,
+      });
+    }
 
     // Enable connection reuse for aws-sdk v2, do not set for sdk v3
     if (isSdkV2Runtime(runtime)) {

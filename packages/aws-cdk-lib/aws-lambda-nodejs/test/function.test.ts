@@ -1,7 +1,8 @@
+import * as child_process from 'child_process';
 import { bockfs } from '@aws-cdk/cdk-build-tools';
 import { Annotations, Template, Match } from '../../assertions';
 import { Vpc } from '../../aws-ec2';
-import { CodeConfig, Runtime } from '../../aws-lambda';
+import { Code, CodeConfig, Runtime } from '../../aws-lambda';
 import { App, Stack } from '../../core';
 import { LAMBDA_NODEJS_USE_LATEST_RUNTIME } from '../../cx-api';
 import { NodejsFunction } from '../lib';
@@ -50,6 +51,7 @@ bockfs({
   '/home/project/function.test.handler4.mts': '// nothing',
   '/home/project/function.test.handler5.cts': '// nothing',
   '/home/project/function.test.handler6.cjs': '// nothing',
+  '/home/project/function.test.handler7.zip': '// nothing',
   '/home/project/aws-lambda-nodejs/lib/index.ts': '// nothing',
 });
 const bockPath = bockfs.workingDirectory('/home/project');
@@ -75,6 +77,51 @@ test('NodejsFunction with .ts handler', () => {
   Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
     Handler: 'index.handler',
     Runtime: Match.stringLikeRegexp('nodejs'),
+  });
+});
+
+describe('lambda.Code.fromCustomCommand', () => {
+  // GIVEN
+  beforeEach(() => {
+    jest.spyOn(child_process, 'spawnSync').mockReturnValue({
+      status: 0,
+      stderr: Buffer.from('stderr'),
+      stdout: Buffer.from('stdout'),
+      pid: 123,
+      output: ['stdout', 'stderr'],
+      signal: null,
+    });
+  });
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
+  test('if code property is included without handler property, then error is thrown', () => {
+    // WHEN
+    const handlerName = undefined;
+
+    // THEN
+    expect(() => new NodejsFunction(stack, 'handler1', {
+      handler: handlerName,
+      code: Code.fromCustomCommand('function.test.handler7.zip', ['node'], undefined),
+    })).toThrow('Cannot determine handler when `code` property is specified. Use `handler` property to specify a handler.\n'
+     + 'The handler should be the name of the exported function to be invoked and the file containing that function.\n'
+     + 'For example, handler should be specified in the form `myFile.myFunction`');
+  });
+
+  test('if code and handler properties are included, the template can be synthesized', () => {
+    // WHEN
+    new NodejsFunction(stack, 'handler1', {
+      handler: 'Random.Name',
+      runtime: Runtime.NODEJS_18_X,
+      code: Code.fromCustomCommand('function.test.handler7.zip', ['node'], undefined),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+      Handler: 'Random.Name',
+      Runtime: 'nodejs18.x',
+    });
   });
 });
 
