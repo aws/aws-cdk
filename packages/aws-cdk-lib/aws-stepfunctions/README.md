@@ -595,11 +595,9 @@ const distributedMap = new sfn.DistributedMap(this, 'Distributed Map State', {
 distributedMap.itemProcessor(new sfn.Pass(this, 'Pass State'));
 ```
 
-When using the `DistributedMap` class, the `ProcessorConfig.executionType` property is ignored.
+If you want to specify the execution type for the DistributedMap, you must set the `mapExecutionType` property in the `DistributedMap` class. When using the `DistributedMap` class, the `ProcessorConfig.executionType` property is ignored.
 
-If you want to specify the execution type, you must set the `mapExecutionType` property in the `DistributedMap` class instead.
-
-In the following example, the execution type for the  DistributedMap is `EXPRESS` based on the value specified for `mapExecutionType`.
+In the following example, the execution type for the DistributedMap is set to `EXPRESS` based on the value specified for `mapExecutionType`.
 
 ```ts
 const distributedMap = new sfn.DistributedMap(this, 'DistributedMap', {
