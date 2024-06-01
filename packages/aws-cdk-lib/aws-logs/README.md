@@ -125,6 +125,7 @@ distribute log data to the destination by setting the `Distribution` property.
 
 ```ts
 import * as destinations from 'aws-cdk-lib/aws-logs-destinations';
+import * as kinesis from 'aws-cdk-lib/aws-kinesis';
 
 declare const stream: kinesis.Stream;
 declare const logGroup: logs.LogGroup;
@@ -134,7 +135,7 @@ new logs.SubscriptionFilter(this, 'Subscription', {
   destination: new destinations.KinesisDestination(stream),
   filterPattern: logs.FilterPattern.allTerms("ERROR", "MainThread"),
   filterName: 'ErrorInMainThread',
-  distribution: Distribution.RANDOM, // distribution
+  distribution: logs.Distribution.RANDOM, // distribution
 });
 ```
 
