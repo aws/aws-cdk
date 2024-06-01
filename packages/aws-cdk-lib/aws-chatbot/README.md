@@ -52,7 +52,7 @@ The `guardrailPolicies` property can be used to set a different set of managed p
 
 Administrators can [require user roles](https://docs.aws.amazon.com/chatbot/latest/adminguide/understanding-permissions.html#user-role-requirement) for all current channel members and channels and all channels created in the future by enabling a user role requirement.
 
-You can configure this feature by set `userRoleRequired` property.
+You can configure this feature by setting the `userRoleRequired` property.
 
 ```ts
 import * as chatbot from 'aws-cdk-lib/aws-chatbot';
