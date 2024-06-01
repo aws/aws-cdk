@@ -727,7 +727,7 @@ export interface ServiceProps {
   /**
    * The IP address type for your incoming public network configuration.
    *
-   * @default - IPV4
+   * @default - IpAddressType.IPV4
    */
   readonly ipAddressType?: IpAddressType;
 }
