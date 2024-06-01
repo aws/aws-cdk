@@ -194,6 +194,12 @@ new apprunner.Service(this, 'Service', {
 });
 ```
 
+**Note**: Currently, App Runner supports dual stack for only Public endpoint.
+Only IPv4 is supported for Private endpoint.
+If you update a service that's using dual-stack Public endpoint to a Private endpoint,
+your App Runner service will default to support only IPv4 for Private endpoint and fail
+to receive traffic originating from IPv6 endpoint.
+
 ## Secrets Manager
 
 To include environment variables integrated with AWS Secrets Manager, use the `environmentSecrets` attribute.
