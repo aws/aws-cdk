@@ -8,6 +8,8 @@ import { CfnConnection } from 'aws-cdk-lib/aws-glue';
  *
  * If you need to use a connection type that doesn't exist as a static member, you
  * can instantiate a `ConnectionType` object, e.g: `new ConnectionType('NEW_TYPE')`.
+ *
+ * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-glue-connection-connectioninput.html#cfn-glue-connection-connectioninput-connectiontype
  */
 export class ConnectionType {
 
