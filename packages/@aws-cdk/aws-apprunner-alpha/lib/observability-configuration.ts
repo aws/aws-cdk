@@ -133,9 +133,9 @@ export class ObservabilityConfiguration extends cdk.Resource implements IObserva
   readonly observabilityConfigurationRevision: number;
 
   /**
-    * The name of the Observability configuration.
-    * @attribute
-    */
+   * The name of the Observability configuration.
+   * @attribute
+   */
   readonly observabilityConfigurationName: string;
 
   public constructor(scope: Construct, id: string, props: ObservabilityConfigurationProps = {}) {
