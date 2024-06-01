@@ -6,9 +6,7 @@ describe('render logging', () => {
     const logging = Logging.all();
 
     // WHEN/THEN
-    expect(logging._render()).toEqual({
-      logApiResponseData: true,
-    });
+    expect(logging._render()).toEqual({});
   });
 
   test('with data hidden', () => {

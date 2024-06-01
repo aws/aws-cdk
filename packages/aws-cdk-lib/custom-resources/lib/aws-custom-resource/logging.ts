@@ -53,6 +53,8 @@ export abstract class Logging {
    * @internal
    */
   public _render() {
-    return { logApiResponseData: this.logApiResponseData };
+    return this.logApiResponseData !== undefined
+      ? { logApiResponseData: this.logApiResponseData }
+      : {};
   }
 }
