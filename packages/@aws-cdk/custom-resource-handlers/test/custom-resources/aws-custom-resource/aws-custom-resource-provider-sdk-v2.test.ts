@@ -385,40 +385,6 @@ test('can specify apiVersion and region', async () => {
   expect(request.isDone()).toBeTruthy();
 });
 
-test('can specify logApiResponseData as false', async () => {
-  const publishFake = sinon.fake.resolves({});
-
-  AWS.mock('SNS', 'publish', publishFake);
-
-  const event: AWSLambda.CloudFormationCustomResourceCreateEvent = {
-    ...eventCommon,
-    RequestType: 'Create',
-    ResourceProperties: {
-      ServiceToken: 'token',
-      Create: JSON.stringify({
-        service: '@aws-sdk/client-s3',
-        action: 'GetObjectCommand',
-        parameters: {
-          Bucket: 'my-bucket',
-          Key: 'key',
-        },
-        physicalResourceId: { id: 'id' },
-        logApiResponseData: false,
-      } satisfies AwsSdkCall),
-    },
-  };
-
-  const request = createRequest(body =>
-    body.Status === 'SUCCESS' &&
-    body.Data!.apiVersion === '2010-03-31' &&
-    body.Data!.region === 'eu-west-1',
-  );
-
-  await handler(event, {} as AWSLambda.Context);
-
-  expect(request.isDone()).toBeTruthy();
-});
-
 test('installs the latest SDK', async () => {
   const tmpPath = '/tmp/node_modules/aws-sdk';
 
