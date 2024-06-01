@@ -2,6 +2,7 @@ import { Construct } from 'constructs';
 import { ILogGroup, SubscriptionFilterOptions } from './log-group';
 import { CfnSubscriptionFilter } from './logs.generated';
 import * as iam from '../../aws-iam';
+import { KinesisDestination } from '../../aws-logs-destinations';
 import { Resource } from '../../core';
 
 /**
@@ -57,6 +58,10 @@ export class SubscriptionFilter extends Resource {
       physicalName: props.filterName,
     });
 
+    if (props.distribution && !(props.destination instanceof KinesisDestination)) {
+      throw new Error('distribution property can only be used with KinesisDestination.');
+    }
+
     const destProps = props.destination.bind(this, props.logGroup);
 
     new CfnSubscriptionFilter(this, 'Resource', {
@@ -65,6 +70,7 @@ export class SubscriptionFilter extends Resource {
       roleArn: destProps.role && destProps.role.roleArn,
       filterPattern: props.filterPattern.logPatternString,
       filterName: this.physicalName,
+      distribution: props.distribution,
     });
   }
 }
