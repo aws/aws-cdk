@@ -540,6 +540,31 @@ export enum AdvancedSecurityMode {
 }
 
 /**
+ * Attributes required to import an existing user pool into the Stack.
+ * Either userPoolId or userPoolArn must be provided.
+ */
+export interface UserPoolAttributes {
+  /**
+   * The id of the user pool.
+   *
+   * @default - either this or userPoolArn is required
+   */
+  readonly userPoolId?: string;
+
+  /**
+   * The ARN of the user pool.
+   *
+   * @default - either this or userPoolId is required
+   */
+  readonly userPoolArn?: string;
+
+  /**
+   * The provider name of the user pool.
+   */
+  readonly userPoolProviderName: string;
+}
+
+/**
  * Props for the UserPool construct
  */
 export interface UserPoolProps {
@@ -768,6 +793,12 @@ export interface IUserPool extends IResource {
   readonly userPoolArn: string;
 
   /**
+   * User pool provider name
+   * @attribute
+   */
+  readonly userPoolProviderName: string;
+
+  /**
    * Get all identity providers registered with this user pool.
    */
   readonly identityProviders: IUserPoolIdentityProvider[];
@@ -805,6 +836,7 @@ export interface IUserPool extends IResource {
 abstract class UserPoolBase extends Resource implements IUserPool {
   public abstract readonly userPoolId: string;
   public abstract readonly userPoolArn: string;
+  public abstract readonly userPoolProviderName: string;
   public readonly identityProviders: IUserPoolIdentityProvider[] = [];
 
   public addClient(id: string, options?: UserPoolClientOptions): UserPoolClient {
@@ -874,6 +906,48 @@ export class UserPool extends UserPoolBase {
     class ImportedUserPool extends UserPoolBase {
       public readonly userPoolArn = userPoolArn;
       public readonly userPoolId = userPoolId;
+
+      // In the UserPool construct, the userPoolProviderName is a required property but it is constructed from the arn and id of the user pool.
+      // So we throw an error if it is referenced by a user pool imported using the fromUserPoolId or fromUserPoolArn methods.
+      public get userPoolProviderName(): string {
+        throw new Error('to reference userPoolProviderName, use the `fromUserPoolAttributes`.');
+      }
+
+      constructor() {
+        super(scope, id, {
+          account: arnParts.account,
+          region: arnParts.region,
+        });
+      }
+    }
+
+    return new ImportedUserPool();
+  }
+
+  /**
+   * Import an existing user pool into the stack.
+   */
+  public static fromUserPoolAttributes(scope: Construct, id: string, attrs: UserPoolAttributes): IUserPool {
+    if (!attrs.userPoolArn && !attrs.userPoolId) {
+      throw new Error('must specify either userPoolArn or userPoolId');
+    }
+
+    const userPoolArn = attrs.userPoolArn ?? Stack.of(scope).formatArn({
+      service: 'cognito-idp',
+      resource: 'userpool',
+      resourceName: attrs.userPoolId,
+    });
+    const arnParts = Stack.of(scope).splitArn(userPoolArn, ArnFormat.SLASH_RESOURCE_NAME);
+    if (!arnParts.resourceName) {
+      throw new Error('invalid user pool ARN');
+    }
+    const userPoolId = arnParts.resourceName;
+
+    class ImportedUserPool extends UserPoolBase {
+      public readonly userPoolArn = userPoolArn;
+      public readonly userPoolId = userPoolId;
+      public readonly userPoolProviderName = attrs.userPoolProviderName;
+
       constructor() {
         super(scope, id, {
           account: arnParts.account,
