@@ -1,0 +1,173 @@
+{
+  "version": "36.0.0",
+  "artifacts": {
+    "integtest-restapi-with-overriding-default-authorizer.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "integtest-restapi-with-overriding-default-authorizer.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "integtest-restapi-with-overriding-default-authorizer": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "integtest-restapi-with-overriding-default-authorizer.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/d1b9f5b2f5a16dd3d551be97ea2814cf6d8f574c561523bdf07541d86d27934c.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "integtest-restapi-with-overriding-default-authorizer.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "integtest-restapi-with-overriding-default-authorizer.assets"
+      ],
+      "metadata": {
+        "/integtest-restapi-with-overriding-default-authorizer/UserPool/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "UserPool6BA7E5F2"
+          }
+        ],
+        "/integtest-restapi-with-overriding-default-authorizer/Authorizer/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AuthorizerBD825682"
+          }
+        ],
+        "/integtest-restapi-with-overriding-default-authorizer/Actions-ApiGateway/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ActionsApiGatewayF80386B7"
+          }
+        ],
+        "/integtest-restapi-with-overriding-default-authorizer/Actions-ApiGateway/Deployment/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ActionsApiGatewayDeployment50B6E6A66403e42852ae63ad13a2b7635300f8a9"
+          }
+        ],
+        "/integtest-restapi-with-overriding-default-authorizer/Actions-ApiGateway/DeploymentStage.prod/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ActionsApiGatewayDeploymentStageprod812022BF"
+          }
+        ],
+        "/integtest-restapi-with-overriding-default-authorizer/Actions-ApiGateway/Endpoint": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ActionsApiGatewayEndpoint261B645B"
+          }
+        ],
+        "/integtest-restapi-with-overriding-default-authorizer/Actions-ApiGateway/Default/OPTIONS": [
+          {
+            "type": "aws:cdk:warning",
+            "data": "'AuthorizationScopes' can only be set when 'AuthorizationType' sets 'COGNITO_USER_POOLS'. Default to ignore the values set in 'AuthorizationScopes'. [ack: @aws-cdk/aws-apigateway:invalidAuthScope]"
+          }
+        ],
+        "/integtest-restapi-with-overriding-default-authorizer/Actions-ApiGateway/Default/OPTIONS/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ActionsApiGatewayOPTIONS8EA1F997"
+          }
+        ],
+        "/integtest-restapi-with-overriding-default-authorizer/Actions-ApiGateway/Default/ANY": [
+          {
+            "type": "aws:cdk:warning",
+            "data": "'AuthorizationScopes' can only be set when 'AuthorizationType' sets 'COGNITO_USER_POOLS'. Default to ignore the values set in 'AuthorizationScopes'. [ack: @aws-cdk/aws-apigateway:invalidAuthScope]"
+          }
+        ],
+        "/integtest-restapi-with-overriding-default-authorizer/Actions-ApiGateway/Default/ANY/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ActionsApiGatewayANY11FE5E47"
+          }
+        ],
+        "/integtest-restapi-with-overriding-default-authorizer/Actions-ApiGateway/Default/GET/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ActionsApiGatewayGET12E87C75"
+          }
+        ],
+        "/integtest-restapi-with-overriding-default-authorizer/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/integtest-restapi-with-overriding-default-authorizer/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "integtest-restapi-with-overriding-default-authorizer"
+    },
+    "apigatewaywithoverridingdefaultauthorizerDefaultTestDeployAssert5491B2D1.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "apigatewaywithoverridingdefaultauthorizerDefaultTestDeployAssert5491B2D1.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "apigatewaywithoverridingdefaultauthorizerDefaultTestDeployAssert5491B2D1": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "apigatewaywithoverridingdefaultauthorizerDefaultTestDeployAssert5491B2D1.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "apigatewaywithoverridingdefaultauthorizerDefaultTestDeployAssert5491B2D1.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "apigatewaywithoverridingdefaultauthorizerDefaultTestDeployAssert5491B2D1.assets"
+      ],
+      "metadata": {
+        "/apigateway-with-overriding-default-authorizer/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/apigateway-with-overriding-default-authorizer/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "apigateway-with-overriding-default-authorizer/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}
