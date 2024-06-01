@@ -1606,7 +1606,7 @@ test('create a service with a customer managed key)', () => {
   });
 });
 
-test('create a service with a Observability Configuration)', () => {
+test('create a service with a Observability Configuration', () => {
   // GIVEN
   const app = new cdk.App();
   const stack = new cdk.Stack(app, 'demo-stack');
