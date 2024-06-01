@@ -726,9 +726,9 @@ export interface ServiceProps {
   readonly kmsKey?: kms.IKey;
 
   /**
-   * Settings for an App Runner tracing feature.
+   * Settings for an App Runner observability configuration.
    *
-   * @default - Not enable tracing
+   * @default - no observability configuration resource is associated with the service.
    */
   readonly observabilityConfiguration?: IObservabilityConfiguration;
 }
