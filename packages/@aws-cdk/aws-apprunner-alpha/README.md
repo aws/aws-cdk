@@ -258,7 +258,7 @@ new apprunner.Service(this, 'Service', {
 
 ## Observability Configuration
 
-To associate an App Runner service with a custom Observability Configuration, define `observabilityConfiguration` for the service.
+To associate an App Runner service with a custom observability configuration, use the `observabilityConfiguration` property.
 
 ```ts
 const observabilityConfiguration = new apprunner.ObservabilityConfiguration(this, 'ObservabilityConfiguration', {
