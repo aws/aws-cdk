@@ -698,9 +698,9 @@ describe('method', () => {
 
     expect(() => {
       restApi.root.addMethod('ANY', undefined, {
-        authorizationType: apigw.AuthorizationType.NONE,
+        authorizationType: apigw.AuthorizationType.IAM,
       });
-    }).toThrow(/Authorization type is set to NONE which is different from what is required by the authorizer/);
+    }).toThrow(/Authorization type is set to AWS_IAM which is different from what is required by the authorizer/);
 
   });
 
