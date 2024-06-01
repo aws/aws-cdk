@@ -1269,7 +1269,7 @@ export class Service extends cdk.Resource implements iam.IGrantable {
         undefined,
       observabilityConfiguration: props.observabilityConfiguration ? {
         observabilityEnabled: true,
-        observabilityConfigurationArn: props.observabilityConfiguration?.observabilityConfigurationArn,
+        observabilityConfigurationArn: props.observabilityConfiguration.observabilityConfigurationArn,
       } : undefined,
     });
 
