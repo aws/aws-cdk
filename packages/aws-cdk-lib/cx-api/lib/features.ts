@@ -105,6 +105,7 @@ export const PIPELINE_REDUCE_ASSET_ROLE_TRUST_SCOPE = '@aws-cdk/pipelines:reduce
 export const EKS_NODEGROUP_NAME = '@aws-cdk/aws-eks:nodegroupNameAttribute';
 export const EBS_DEFAULT_GP3 = '@aws-cdk/aws-ec2:ebsDefaultGp3Volume';
 export const ECS_REMOVE_DEFAULT_DEPLOYMENT_ALARM = '@aws-cdk/aws-ecs:removeDefaultDeploymentAlarm';
+export const LOG_API_RESPONSE_DATA_PROPERTY_TRUE_DEFAULT = '@aws-cdk/custom-resources:logApiResponseDataPropertyTrueDefault';
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
@@ -1087,6 +1088,20 @@ export const FLAGS: Record<string, FlagInfo> = {
     introducedIn: { v2: '2.143.0' },
     recommendedValue: true,
     compatibilityWithOldBehaviorMd: 'Set AWS::ECS::Service \'DeploymentAlarms\' manually to restore the previous behavior.',
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [LOG_API_RESPONSE_DATA_PROPERTY_TRUE_DEFAULT]: {
+    type: FlagType.BugFix,
+    summary: 'When enabled, the custom resource used for AwsCustomResource will configure the logApiResponseData property as true by default',
+    detailsMd: `
+      When this feature flag is enabled, the custom resource used for AwsCustomResource will configure the logApiResponseData property as true by default. This
+      results in logApiResponseData being passed as true to the custom resource provider. Unlike most feature flags, we don't recommend setting this feature flag
+      to true unless you're using the AwsCustomResource construct with logApiResponseData set to true as a custom resource event property by default and do not
+      want to trigger an update by letting the default logApiResponseData value go back to undefined.
+    `,
+    introducedIn: { v2: 'V2NEXT' },
+    recommendedValue: false,
   },
 };
 

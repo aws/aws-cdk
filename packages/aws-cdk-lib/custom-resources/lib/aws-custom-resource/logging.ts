@@ -1,3 +1,7 @@
+import { Construct } from 'constructs';
+import { FeatureFlags } from '../../../core';
+import { LOG_API_RESPONSE_DATA_PROPERTY_TRUE_DEFAULT } from '../../../cx-api';
+
 /**
  * Properties used to initialize Logging.
  */
@@ -52,7 +56,11 @@ export abstract class Logging {
   /**
    * @internal
    */
-  public _render() {
+  public _render(scope: Construct) {
+    const isLogApiResponseDataFeatureFlagSet = FeatureFlags.of(scope).isEnabled(LOG_API_RESPONSE_DATA_PROPERTY_TRUE_DEFAULT);
+    if (isLogApiResponseDataFeatureFlagSet && this.logApiResponseData === undefined) {
+      this.logApiResponseData = true;
+    }
     return this.logApiResponseData !== undefined
       ? { logApiResponseData: this.logApiResponseData }
       : {};
