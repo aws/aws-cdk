@@ -27,12 +27,8 @@ export interface ObservabilityConfigurationProps {
 
   /**
    * The implementation provider chosen for tracing App Runner services.
-   *
-   * You can not attach ObservabilityConfiguration with no vendor to the App Runner Service.
-   *
-   * @default - tracing is not enabled for the service
    */
-  readonly vendor?: Vendor;
+  readonly traceConfigurationVendor: TraceConfigurationVendor;
 }
 
 /**
