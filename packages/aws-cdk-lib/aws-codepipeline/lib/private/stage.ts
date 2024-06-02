@@ -7,7 +7,7 @@ import { Token } from '../../../core';
 import { IAction, IPipeline, IStage } from '../action';
 import { Artifact } from '../artifact';
 import { CfnPipeline } from '../codepipeline.generated';
-import { FailureConditions, Pipeline, StageProps } from '../pipeline';
+import { FailureConditions, FailureConditionsResult, Pipeline, StageProps } from '../pipeline';
 
 /**
  * A Stage in a Pipeline.
@@ -84,7 +84,7 @@ export class Stage implements IStage {
       name: this.stageName,
       actions: this._actions.map(action => this.renderAction(action)),
       onFailure: this._onFailure ? {
-        result: this._onFailure?.result,
+        result: this._onFailure?.result ?? FailureConditionsResult.ROLLBACK,
       } : undefined,
     };
   }
