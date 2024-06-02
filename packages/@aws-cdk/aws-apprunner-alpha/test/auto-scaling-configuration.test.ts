@@ -27,8 +27,7 @@ test('create an Auto scaling Configuration with all properties', () => {
 
 test('create an Auto scaling Configuration without all properties', () => {
   // WHEN
-  new AutoScalingConfiguration(stack, 'AutoScalingConfiguration', {
-  });
+  new AutoScalingConfiguration(stack, 'AutoScalingConfiguration');
 
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::AppRunner::AutoScalingConfiguration', {
