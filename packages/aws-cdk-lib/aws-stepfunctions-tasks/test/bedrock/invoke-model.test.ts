@@ -2,7 +2,7 @@ import { Template, Match } from '../../../assertions';
 import * as bedrock from '../../../aws-bedrock';
 import * as sfn from '../../../aws-stepfunctions';
 import * as cdk from '../../../core';
-import { BedrockInvokeModel } from '../../lib/bedrock/invoke-model';
+import { BedrockInvokeModel, Trace } from '../../lib/bedrock/invoke-model';
 
 describe('Invoke Model', () => {
 
@@ -359,5 +359,117 @@ describe('Invoke Model', () => {
       });
       // THEN
     }).toThrow(/Output S3 object version is not supported./);
+  });
+
+  test('guardrail configuration', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const model = bedrock.ProvisionedModel.fromProvisionedModelArn(stack, 'Imported', 'arn:aws:bedrock:us-turbo-2:123456789012:provisioned-model/abc-123');
+
+    // WHEN
+    const task = new BedrockInvokeModel(stack, 'Invoke', {
+      model,
+      body: sfn.TaskInput.fromObject(
+        {
+          prompt: 'Hello world',
+        },
+      ),
+      guardrailConfiguration: {
+        guardrailIdentifier: 'abcdef',
+        guardrailVersion: 'DRAFT',
+      },
+    });
+
+    // THEN
+    expect(stack.resolve(task.toStateJson())).toEqual({
+      Type: 'Task',
+      Resource: {
+        'Fn::Join': [
+          '',
+          [
+            'arn:',
+            {
+              Ref: 'AWS::Partition',
+            },
+            ':states:::bedrock:invokeModel',
+          ],
+        ],
+      },
+      End: true,
+      Parameters: {
+        ModelId: 'arn:aws:bedrock:us-turbo-2:123456789012:provisioned-model/abc-123',
+        Body: {
+          prompt: 'Hello world',
+        },
+        GuardrailIdentifier: 'abcdef',
+        GuardrailVersion: 'DRAFT',
+      },
+    });
+  });
+
+  test('guardrail configuration fails when contentType is not \'application/json\'', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const model = bedrock.ProvisionedModel.fromProvisionedModelArn(stack, 'Imported', 'arn:aws:bedrock:us-turbo-2:123456789012:provisioned-model/abc-123');
+
+    expect(() => {
+      // WHEN
+      const task = new BedrockInvokeModel(stack, 'Invoke', {
+        model,
+        contentType: 'text/plain',
+        body: sfn.TaskInput.fromObject(
+          {
+            prompt: 'Hello world',
+          },
+        ),
+        guardrailConfiguration: {
+          guardrailIdentifier: 'abcdef',
+          guardrailVersion: 'DRAFT',
+        },
+      });
+      // THEN
+    }).toThrow('You must set contentType to \'application/json\' when use guardrailConfiguration');
+  });
+
+  test('trace configuration', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const model = bedrock.ProvisionedModel.fromProvisionedModelArn(stack, 'Imported', 'arn:aws:bedrock:us-turbo-2:123456789012:provisioned-model/abc-123');
+
+    // WHEN
+    const task = new BedrockInvokeModel(stack, 'Invoke', {
+      model,
+      body: sfn.TaskInput.fromObject(
+        {
+          prompt: 'Hello world',
+        },
+      ),
+      trace: Trace.ENABLED,
+    });
+
+    // THEN
+    expect(stack.resolve(task.toStateJson())).toEqual({
+      Type: 'Task',
+      Resource: {
+        'Fn::Join': [
+          '',
+          [
+            'arn:',
+            {
+              Ref: 'AWS::Partition',
+            },
+            ':states:::bedrock:invokeModel',
+          ],
+        ],
+      },
+      End: true,
+      Parameters: {
+        ModelId: 'arn:aws:bedrock:us-turbo-2:123456789012:provisioned-model/abc-123',
+        Body: {
+          prompt: 'Hello world',
+        },
+        Trace: 'ENABLED',
+      },
+    });
   });
 });

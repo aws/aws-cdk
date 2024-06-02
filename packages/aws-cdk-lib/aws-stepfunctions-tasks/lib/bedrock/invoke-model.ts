@@ -18,7 +18,7 @@ export interface BedrockInvokeModelInputProps {
    *
    * If the S3 location is not set, then the Body must be set.
    *
-   * @default Input data is retrieved from the `body` field
+   * @default - Input data is retrieved from the `body` field
    */
   readonly s3Location?: s3.Location;
 }
@@ -36,9 +36,39 @@ export interface BedrockInvokeModelOutputProps {
    * If you specify this field, the API response body is replaced with
    * a reference to the Amazon S3 location of the original output.
    *
-   * @default Response body is returned in the task result
+   * @default - Response body is returned in the task result
    */
   readonly s3Location?: s3.Location;
+}
+
+/**
+ * Properties for the guardrail configuration.
+ */
+export interface GuardrailConfiguration {
+  /**
+   * The unique identifier of the guardrail that you want to use.
+   */
+  readonly guardrailIdentifier: string;
+
+  /**
+   * The version number for the guardrail.
+   */
+  readonly guardrailVersion: string;
+}
+
+/**
+ * Specifies whether to enable or disable the Bedrock trace.
+ */
+export enum Trace {
+  /**
+   * Enable the Bedrock trace
+   */
+  ENABLED = 'ENABLED',
+
+  /**
+   * Disable the Bedrock trace
+   */
+  DISABLED = 'DISABLED',
 }
 
 /**
@@ -69,7 +99,7 @@ export interface BedrockInvokeModelProps extends sfn.TaskStateBaseProps {
    *
    * @see https://docs.aws.amazon.com/bedrock/latest/userguide/model-parameters.html
    *
-   * @default Input data is retrieved from the location specified in the `input` field
+   * @default - Input data is retrieved from the location specified in the `input` field
    */
   readonly body?: sfn.TaskInput;
 
@@ -92,7 +122,7 @@ export interface BedrockInvokeModelProps extends sfn.TaskStateBaseProps {
   /**
    * The source location to retrieve the input data from.
    *
-   * @default Input data is retrieved from the `body` field
+   * @default - Input data is retrieved from the `body` field
    */
   readonly input?: BedrockInvokeModelInputProps;
 
@@ -102,9 +132,23 @@ export interface BedrockInvokeModelProps extends sfn.TaskStateBaseProps {
    * If you specify this field, the API response body is replaced with a reference to the
    * output location.
    *
-   * @default The API response body is returned in the result.
+   * @default - The API response body is returned in the result.
    */
   readonly output?: BedrockInvokeModelOutputProps;
+
+  /**
+   * The guardrail is applied to the invocation
+   *
+   * @default - No guardrail is applied to the invocation.
+   */
+  readonly guardrailConfiguration?: GuardrailConfiguration;
+
+  /**
+   * Specifies whether to enable or disable the Bedrock trace.
+   *
+   * @default - Trace is not enabled for the invocation.
+   */
+  readonly trace?: Trace;
 }
 
 /**
@@ -142,6 +186,10 @@ export class BedrockInvokeModel extends sfn.TaskStateBase {
     }
     if (props.output?.s3Location?.objectVersion !== undefined) {
       throw new Error('Output S3 object version is not supported.');
+    }
+
+    if (props.guardrailConfiguration && props.contentType && (props.contentType !== 'application/json')) {
+      throw new Error('You must set contentType to \'application/json\' when use guardrailConfiguration');
     }
 
     this.taskPolicies = this.renderPolicyStatements();
@@ -189,6 +237,21 @@ export class BedrockInvokeModel extends sfn.TaskStateBase {
       );
     }
 
+    if (this.props.guardrailConfiguration !== undefined) {
+      policyStatements.push(
+        new iam.PolicyStatement({
+          actions: ['bedrock:ApplyGuardrail'],
+          resources: [
+            Stack.of(this).formatArn({
+              service: 'bedrock',
+              resource: 'guardrail',
+              resourceName: this.props.guardrailConfiguration.guardrailIdentifier,
+            }),
+          ],
+        }),
+      );
+    }
+
     return policyStatements;
   }
 
@@ -211,6 +274,9 @@ export class BedrockInvokeModel extends sfn.TaskStateBase {
         Output: this.props.output?.s3Location ? {
           S3Uri: `s3://${this.props.output.s3Location.bucketName}/${this.props.output.s3Location.objectKey}`,
         } : undefined,
+        GuardrailIdentifier: this.props.guardrailConfiguration?.guardrailIdentifier,
+        GuardrailVersion: this.props.guardrailConfiguration?.guardrailVersion,
+        Trace: this.props.trace,
       }),
     };
   }

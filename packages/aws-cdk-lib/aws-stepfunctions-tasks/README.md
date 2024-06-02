@@ -357,6 +357,33 @@ const task = new tasks.BedrockInvokeModel(this, 'Prompt Model', {
 });
 ```
 
+You can apply a guardrail to the invocation by setting `guardrailConfiguration`.
+
+```ts
+import * as bedrock from 'aws-cdk-lib/aws-bedrock';
+declare const myGuardrail: bedrock.CfnGuardrail;
+
+const task = new tasks.BedrockInvokeModel(this, 'Prompt Model with guardrail', {
+  model,
+  body: sfn.TaskInput.fromObject(
+    {
+      inputText: 'Generate a list of five first names.',
+      textGenerationConfig: {
+        maxTokenCount: 100,
+        temperature: 1,
+      },
+    },
+  ),
+  guardrailConfiguration: {
+    guardrailIdentifier: myGuardrail.attrGuardrailId,
+    guardrailVersion: myGuardrail.attrVersion,
+  },
+  resultSelector: {
+    names: sfn.JsonPath.stringAt('$.Body.results[0].outputText'),
+  },
+});
+```
+
 ## CodeBuild
 
 Step Functions supports [CodeBuild](https://docs.aws.amazon.com/step-functions/latest/dg/connect-codebuild.html) through the service integration pattern.
@@ -1309,13 +1336,13 @@ Step Functions supports [AWS MediaConvert](https://docs.aws.amazon.com/step-func
 
 ### CreateJob
 
-The [CreateJob](https://docs.aws.amazon.com/mediaconvert/latest/apireference/jobs.html#jobspost) API creates a new transcoding job. 
+The [CreateJob](https://docs.aws.amazon.com/mediaconvert/latest/apireference/jobs.html#jobspost) API creates a new transcoding job.
 For information about jobs and job settings, see the User Guide at http://docs.aws.amazon.com/mediaconvert/latest/ug/what-is.html
 
-You can call the `CreateJob` API from a `Task` state. Optionally you can specify the `integrationPattern`. 
+You can call the `CreateJob` API from a `Task` state. Optionally you can specify the `integrationPattern`.
 
-Make sure you update the required fields - [Role](https://docs.aws.amazon.com/mediaconvert/latest/apireference/jobs.html#jobs-prop-createjobrequest-role) & 
-[Settings](https://docs.aws.amazon.com/mediaconvert/latest/apireference/jobs.html#jobs-prop-createjobrequest-settings) and refer 
+Make sure you update the required fields - [Role](https://docs.aws.amazon.com/mediaconvert/latest/apireference/jobs.html#jobs-prop-createjobrequest-role) &
+[Settings](https://docs.aws.amazon.com/mediaconvert/latest/apireference/jobs.html#jobs-prop-createjobrequest-settings) and refer
 [CreateJobRequest](https://docs.aws.amazon.com/mediaconvert/latest/apireference/jobs.html#jobs-model-createjobrequest) for all other optional parameters.
 
 ```ts
