@@ -77,6 +77,8 @@ export interface FailureConditions {
   /**
    * The specified result for when the failure conditions are met,
    * such as rolling back the stage.
+   *
+   * @default ROLLBACK
    */
   readonly result?: FailureConditionsResult;
 }
