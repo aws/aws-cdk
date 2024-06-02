@@ -21,7 +21,6 @@ import {
   Token,
 } from '../../../core';
 import * as cxapi from '../../../cx-api';
-
 import { RegionInfo } from '../../../region-info';
 import {
   LoadBalancerTargetOptions,
@@ -519,7 +518,7 @@ export abstract class BaseService extends Resource
     const arn = stack.splitArn(serviceArn, ArnFormat.SLASH_RESOURCE_NAME);
     const resourceName = arn.resourceName;
     if (!resourceName) {
-      throw new Error('Missing resource Name from service ARN: ${serviceArn}');
+      throw new Error(`Missing resource Name from service ARN: ${serviceArn}`);
     }
     const resourceNameParts = resourceName.split('/');
     if (resourceNameParts.length !== 2) {
@@ -763,11 +762,14 @@ export abstract class BaseService extends Resource
     // CloudWatch alarms is only supported for Amazon ECS services that use the rolling update (ECS) deployment controller.
     } else if ((!props.deploymentController ||
       props.deploymentController?.type === DeploymentControllerType.ECS) && this.deploymentAlarmsAvailableInRegion()) {
-      this.deploymentAlarms = {
-        alarmNames: [],
-        enable: false,
-        rollback: false,
-      };
+      // Only set default deployment alarms settings when feature flag is not enabled.
+      if (!FeatureFlags.of(this).isEnabled(cxapi.ECS_REMOVE_DEFAULT_DEPLOYMENT_ALARM)) {
+        this.deploymentAlarms = {
+          alarmNames: [],
+          enable: false,
+          rollback: false,
+        };
+      }
     }
 
     this.node.defaultChild = this.resource;

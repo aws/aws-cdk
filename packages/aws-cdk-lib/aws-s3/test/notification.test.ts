@@ -1,4 +1,4 @@
-import { Template } from '../../assertions';
+import { Match, Template } from '../../assertions';
 import * as iam from '../../aws-iam';
 import * as cdk from '../../core';
 import * as s3 from '../lib';
@@ -118,6 +118,68 @@ describe('notification', () => {
       },
       DependsOn: ['BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleDefaultPolicy2CF63D36',
         'BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleB6FB88EC'],
+    });
+  });
+
+  test('custom resource must not depend on bucket policy if it bucket policy does not exists', () => {
+    const stack = new cdk.Stack();
+
+    const bucket = new s3.Bucket(stack, 'MyBucket');
+
+    bucket.addEventNotification(s3.EventType.OBJECT_CREATED, {
+      bind: () => ({
+        arn: 'ARN',
+        type: s3.BucketNotificationDestinationType.TOPIC,
+      }),
+    });
+
+    Template.fromStack(stack).hasResource('Custom::S3BucketNotifications', {
+      Type: 'Custom::S3BucketNotifications',
+      DependsOn: Match.absent(),
+    });
+  });
+
+  test('custom resource must depend on bucket policy to prevent executing too early', () => {
+    const stack = new cdk.Stack();
+
+    const bucket = new s3.Bucket(stack, 'MyBucket', {
+      enforceSSL: true, // adds bucket policy for test
+    });
+
+    bucket.addEventNotification(s3.EventType.OBJECT_CREATED, {
+      bind: () => ({
+        arn: 'ARN',
+        type: s3.BucketNotificationDestinationType.TOPIC,
+      }),
+    });
+
+    Template.fromStack(stack).hasResource('Custom::S3BucketNotifications', {
+      Type: 'Custom::S3BucketNotifications',
+      DependsOn: ['MyBucketPolicyE7FBAC7B'],
+    });
+  });
+
+  test('custom resource must depend on bucket policy even if bucket policy is added after notification', () => {
+    const stack = new cdk.Stack();
+
+    const bucket = new s3.Bucket(stack, 'MyBucket');
+
+    bucket.addEventNotification(s3.EventType.OBJECT_CREATED, {
+      bind: () => ({
+        arn: 'ARN',
+        type: s3.BucketNotificationDestinationType.TOPIC,
+      }),
+    });
+
+    bucket.addToResourcePolicy(new iam.PolicyStatement({
+      resources: [bucket.bucketArn],
+      actions: ['s3:GetBucketAcl'],
+      principals: [new iam.AnyPrincipal()],
+    }));
+
+    Template.fromStack(stack).hasResource('Custom::S3BucketNotifications', {
+      Type: 'Custom::S3BucketNotifications',
+      DependsOn: ['MyBucketPolicyE7FBAC7B'],
     });
   });
 
