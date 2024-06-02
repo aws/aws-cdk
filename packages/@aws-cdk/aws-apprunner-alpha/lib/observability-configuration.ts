@@ -7,7 +7,7 @@ import { CfnObservabilityConfiguration } from 'aws-cdk-lib/aws-apprunner';
  *
  * @see https://docs.aws.amazon.com/apprunner/latest/dg/monitor.html
  */
-export enum Vendor {
+export enum TraceConfigurationVendor {
   /**
    * Tracing (X-Ray)
    */
@@ -138,7 +138,7 @@ export class ObservabilityConfiguration extends cdk.Resource implements IObserva
    */
   readonly observabilityConfigurationName: string;
 
-  public constructor(scope: Construct, id: string, props: ObservabilityConfigurationProps = {}) {
+  public constructor(scope: Construct, id: string, props: ObservabilityConfigurationProps) {
     super(scope, id, {
       physicalName: props.observabilityConfigurationName,
     });
@@ -153,8 +153,8 @@ export class ObservabilityConfiguration extends cdk.Resource implements IObserva
 
     const resource = new CfnObservabilityConfiguration(this, 'Resource', {
       observabilityConfigurationName: props.observabilityConfigurationName,
-      traceConfiguration: props.vendor ? {
-        vendor: props.vendor,
+      traceConfiguration: props.traceConfigurationVendor ? {
+        vendor: props.traceConfigurationVendor,
       } : undefined,
     });
 

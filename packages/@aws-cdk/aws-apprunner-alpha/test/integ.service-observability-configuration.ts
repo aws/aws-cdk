@@ -1,5 +1,5 @@
 import * as cdk from 'aws-cdk-lib';
-import { Service, Source, ObservabilityConfiguration, Vendor } from '../lib';
+import { Service, Source, ObservabilityConfiguration, TraceConfigurationVendor } from '../lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 
 const app = new cdk.App();
@@ -7,7 +7,7 @@ const app = new cdk.App();
 const stack = new cdk.Stack(app, 'integ-apprunner-observability-configuration');
 
 const observabilityConfiguration = new ObservabilityConfiguration(stack, 'ObservabilityConfiguration', {
-  vendor: Vendor.AWSXRAY,
+  traceConfigurationVendor: TraceConfigurationVendor.AWSXRAY,
 });
 
 const service = new Service(stack, 'Service', {

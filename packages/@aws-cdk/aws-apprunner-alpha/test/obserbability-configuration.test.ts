@@ -1,6 +1,6 @@
-import { Match, Template } from 'aws-cdk-lib/assertions';
+import { Template } from 'aws-cdk-lib/assertions';
 import * as cdk from 'aws-cdk-lib';
-import { ObservabilityConfiguration, Vendor } from '../lib';
+import { ObservabilityConfiguration, TraceConfigurationVendor } from '../lib';
 
 let stack: cdk.Stack;
 beforeEach(() => {
@@ -14,7 +14,7 @@ test.each([
   // WHEN
   new ObservabilityConfiguration(stack, 'ObservabilityConfiguration', {
     observabilityConfigurationName,
-    vendor: Vendor.AWSXRAY,
+    traceConfigurationVendor: TraceConfigurationVendor.AWSXRAY,
   });
 
   // THEN
@@ -26,48 +26,16 @@ test.each([
   });
 });
 
-test('create a ObservabilityConfiguration without all properties', () => {
-  // WHEN
-  new ObservabilityConfiguration(stack, 'ObservabilityConfiguration', {
-  });
-
-  // THEN
-  Template.fromStack(stack).hasResourceProperties('AWS::AppRunner::ObservabilityConfiguration', {
-    ObservabilityConfigurationName: Match.absent(),
-    TraceConfiguration: Match.absent(),
-  });
-});
-
-test('create a Observability Configuration without all properties', () => {
-  // WHEN
-  new ObservabilityConfiguration(stack, 'ObservabilityConfiguration', {
-  });
-
-  // THEN
-  Template.fromStack(stack).hasResourceProperties('AWS::AppRunner::ObservabilityConfiguration', {
-    ObservabilityConfigurationName: Match.absent(),
-    TraceConfiguration: Match.absent(),
-  });
-});
-
 test.each([
   ['tes'],
   ['test-observability-configuration-name-over-limitation'],
+  ['-test'],
+  ['test-?'],
 ])('observabilityConfigurationName over length limitation (name: %s)', (observabilityConfigurationName: string) => {
   expect(() => {
     new ObservabilityConfiguration(stack, 'ObservabilityConfiguration', {
       observabilityConfigurationName,
+      traceConfigurationVendor: TraceConfigurationVendor.AWSXRAY,
     });
-  }).toThrow(`observabilityConfigurationName must be between 4 and 32 characters long, but it has ${observabilityConfigurationName.length} characters.`);
-});
-
-test.each([
-  ['-test'],
-  ['test-?'],
-])('invalid observabilityConfigurationName (name: %s)', (observabilityConfigurationName: string) => {
-  expect(() => {
-    new ObservabilityConfiguration(stack, 'ObservabilityConfiguration', {
-      observabilityConfigurationName,
-    });
-  }).toThrow(`observabilityConfigurationName ${observabilityConfigurationName} must start with a letter or number, and can contain only letters, numbers, hyphens, and underscores.`);
+  }).toThrow(`observabilityConfigurationName must match the \`^[A-Za-z0-9][A-Za-z0-9\-_]{3,31}$\` pattern, got ${observabilityConfigurationName}`);
 });

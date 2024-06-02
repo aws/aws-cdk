@@ -263,7 +263,7 @@ To associate an App Runner service with a custom observability configuration, us
 ```ts
 const observabilityConfiguration = new apprunner.ObservabilityConfiguration(this, 'ObservabilityConfiguration', {
   observabilityConfigurationName: 'MyObservabilityConfiguration',
-  vendor: apprunner.Vendor.AWSXRAY,
+  traceConfigurationVendor: apprunner.TraceConfigurationVendor.AWSXRAY,
 });
 
 new apprunner.Service(this, 'DemoService', {

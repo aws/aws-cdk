@@ -1612,7 +1612,7 @@ test('create a service with a Observability Configuration', () => {
   const stack = new cdk.Stack(app, 'demo-stack');
   const observabilityConfiguration = new apprunner.ObservabilityConfiguration(stack, 'ObservabilityConfiguration', {
     observabilityConfigurationName: 'MyObservabilityConfiguration',
-    vendor: apprunner.Vendor.AWSXRAY,
+    traceConfigurationVendor: apprunner.TraceConfigurationVendor.AWSXRAY,
   });
 
   // WHEN
