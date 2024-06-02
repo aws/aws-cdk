@@ -157,6 +157,16 @@ export class AutoScalingConfiguration extends cdk.Resource implements IAutoScali
       physicalName: props.autoScalingConfigurationName,
     });
 
+    if (props.autoScalingConfigurationName !== undefined) {
+      if (props.autoScalingConfigurationName.length < 4 || props.autoScalingConfigurationName.length > 32) {
+        throw new Error(`autoScalingConfigurationName must be between 4 and 32 characters long, but it has ${props.autoScalingConfigurationName.length} characters.`);
+      }
+
+      if (!/^[A-Za-z0-9][A-Za-z0-9\-_]{3,31}$/.test(props.autoScalingConfigurationName)) {
+        throw new Error(`autoScalingConfigurationName ${props.autoScalingConfigurationName} must start with a letter or number, and can contain only letters, numbers, hyphens, and underscores.`);
+      }
+    }
+
     if (props.minSize !== undefined && !cdk.Token.isUnresolved(props.minSize) && (props.minSize < 1 || props.minSize > 25)) {
       throw new Error(`minSize must be between 1 and 25, got ${props.minSize}`);
     }

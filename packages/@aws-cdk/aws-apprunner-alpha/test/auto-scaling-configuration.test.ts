@@ -7,10 +7,13 @@ beforeEach(() => {
   stack = new cdk.Stack();
 });
 
-test('create an Auto scaling Configuration with all properties', () => {
+test.each([
+  ['MyAutoScalingConfiguration'],
+  ['my-autoscaling-configuration_1'],
+])('create an Auto scaling Configuration with all properties (name: %s)', (autoScalingConfigurationName: string) => {
   // WHEN
   new AutoScalingConfiguration(stack, 'AutoScalingConfiguration', {
-    autoScalingConfigurationName: 'MyAutoScalingConfiguration',
+    autoScalingConfigurationName,
     maxConcurrency: 150,
     maxSize: 20,
     minSize: 5,
@@ -18,7 +21,7 @@ test('create an Auto scaling Configuration with all properties', () => {
 
   // THEN
   Template.fromStack(stack).hasResourceProperties('AWS::AppRunner::AutoScalingConfiguration', {
-    AutoScalingConfigurationName: 'MyAutoScalingConfiguration',
+    AutoScalingConfigurationName: autoScalingConfigurationName,
     MaxConcurrency: 150,
     MaxSize: 20,
     MinSize: 5,
@@ -69,4 +72,26 @@ test.each([0, 201])('invalid maxConcurrency', (maxConcurrency: number) => {
       maxConcurrency,
     });
   }).toThrow(`maxConcurrency must be between 1 and 200, got ${maxConcurrency}`);
+});
+
+test.each([
+  ['tes'],
+  ['test-autoscaling-configuration-name-over-limitation'],
+])('autoScalingConfigurationName over length limitation (name: %s)', (autoScalingConfigurationName: string) => {
+  expect(() => {
+    new AutoScalingConfiguration(stack, 'AutoScalingConfiguration', {
+      autoScalingConfigurationName,
+    });
+  }).toThrow(`autoScalingConfigurationName must be between 4 and 32 characters long, but it has ${autoScalingConfigurationName.length} characters.`);
+});
+
+test.each([
+  ['-test'],
+  ['test-?'],
+])('invalid autoScalingConfigurationName (name: %s)', (autoScalingConfigurationName: string) => {
+  expect(() => {
+    new AutoScalingConfiguration(stack, 'AutoScalingConfiguration', {
+      autoScalingConfigurationName,
+    });
+  }).toThrow(`autoScalingConfigurationName ${autoScalingConfigurationName} must start with a letter or number, and can contain only letters, numbers, hyphens, and underscores.`);
 });
