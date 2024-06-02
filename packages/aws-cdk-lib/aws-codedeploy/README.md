@@ -218,11 +218,13 @@ CodeDeploy can deploy your application to one Availability Zone at a time, withi
 To create a new zonal configuration:
 
 ```ts
+import { Duration } from 'aws-cdk-lib';
+
 const deploymentConfig = new codedeploy.ServerDeploymentConfig(this, 'DeploymentConfiguration', {
   minimumHealthyHosts: codedeploy.MinimumHealthyHosts.count(2),
   zonalConfig: {
-    monitorDuration: cdk.Duration.minutes(20),
-    firstZoneMonitorDuration: cdk.Duration.minutes(60),
+    monitorDuration: Duration.minutes(20),
+    firstZoneMonitorDuration: Duration.minutes(60),
     minimumHealthyHostsPerZone: codedeploy.MinimumHealthyHostsPerZone.count(1),
   },
 });
