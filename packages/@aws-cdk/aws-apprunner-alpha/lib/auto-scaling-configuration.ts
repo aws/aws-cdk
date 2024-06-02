@@ -17,7 +17,7 @@ export interface AutoScalingConfigurationProps {
    * The maximum number of concurrent requests that an instance processes.
    * If the number of concurrent requests exceeds this limit, App Runner scales the service up.
    *
-   * Must be between 1 and 25.
+   * Must be between 1 and 200.
    *
    * @default 100
    */
