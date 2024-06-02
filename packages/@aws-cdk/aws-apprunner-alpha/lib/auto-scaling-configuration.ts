@@ -165,16 +165,22 @@ export class AutoScalingConfiguration extends cdk.Resource implements IAutoScali
       throw new Error(`autoScalingConfigurationName must match the ^[A-Za-z0-9][A-Za-z0-9\-_]{3,31}$ pattern, got ${props.autoScalingConfigurationName}`);
     }
 
-    if (props.minSize !== undefined && !cdk.Token.isUnresolved(props.minSize) && (props.minSize < 1 || props.minSize > 25)) {
+    const isMinSizeDefined = props.minSize !== undefined && !cdk.Token.isUnresolved(props.minSize)
+    const isMaxSizeDefined = props.maxSize !== undefined && !cdk.Token.isUnresolved(props.maxSize)
+    if (isMinSizeDefined && (props.minSize < 1 || props.minSize > 25)) {
       throw new Error(`minSize must be between 1 and 25, got ${props.minSize}`);
     }
-    if (props.maxSize !== undefined && (props.maxSize < 1 || props.maxSize > 25)) {
+    if (isMaxSizeDefined && (props.maxSize < 1 || props.maxSize > 25)) {
       throw new Error(`maxSize must be between 1 and 25, got ${props.maxSize}`);
     }
-    if (props.minSize !== undefined && props.maxSize !== undefined && !(props.minSize < props.maxSize)) {
+    if (isMinSizeDefined && isMaxSizeDefined && !(props.minSize < props.maxSize)) {
       throw new Error('maxSize must be greater than minSize');
     }
-    if (props.maxConcurrency !== undefined && (props.maxConcurrency < 1 || props.maxConcurrency > 200)) {
+    if (
+      props.maxConcurrency !== undefined && 
+      !cdk.Token.isUnresolved(props.maxConcurrency) &&
+      (props.maxConcurrency < 1 || props.maxConcurrency > 200)
+    ) {
       throw new Error(`maxConcurrency must be between 1 and 200, got ${props.maxConcurrency}`);
     }
 
