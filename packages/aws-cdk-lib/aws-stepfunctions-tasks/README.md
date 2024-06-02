@@ -363,6 +363,12 @@ You can apply a guardrail to the invocation by setting `guardrailConfiguration`.
 import * as bedrock from 'aws-cdk-lib/aws-bedrock';
 declare const myGuardrail: bedrock.CfnGuardrail;
 
+const model = bedrock.FoundationModel.fromFoundationModelId(
+  this,
+  'Model',
+  bedrock.FoundationModelIdentifier.AMAZON_TITAN_TEXT_G1_EXPRESS_V1,
+);
+
 const task = new tasks.BedrockInvokeModel(this, 'Prompt Model with guardrail', {
   model,
   body: sfn.TaskInput.fromObject(
