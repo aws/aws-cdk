@@ -3,7 +3,7 @@ import { ILogGroup, SubscriptionFilterOptions } from './log-group';
 import { CfnSubscriptionFilter } from './logs.generated';
 import * as iam from '../../aws-iam';
 import { KinesisDestination } from '../../aws-logs-destinations';
-import { Resource } from '../../core';
+import { Resource, Token } from '../../core';
 
 /**
  * Interface for classes that can be the destination of a log Subscription
@@ -60,8 +60,8 @@ export class SubscriptionFilter extends Resource {
 
     if (
       props.distribution &&
-      !Token.isUnresolved(props.distribution) && 
-      !Token.isUnresolved(props.destination) && 
+      !Token.isUnresolved(props.distribution) &&
+      !Token.isUnresolved(props.destination) &&
       !(props.destination instanceof KinesisDestination)
     ) {
       throw new Error('distribution property can only be used with KinesisDestination.');
