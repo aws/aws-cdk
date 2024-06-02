@@ -26,7 +26,9 @@ export interface ObservabilityConfigurationProps {
   /**
    * The implementation provider chosen for tracing App Runner services.
    *
-   * @default Vendor.AWSXRAY
+   * You can not attach ObservabilityConfiguration with no vendor to the App Runner Service.
+   *
+   * @default - tracing is not enabled for the service
    */
   readonly vendor?: Vendor;
 }
@@ -143,11 +145,21 @@ export class ObservabilityConfiguration extends cdk.Resource implements IObserva
       physicalName: props.observabilityConfigurationName,
     });
 
+    if (props.observabilityConfigurationName !== undefined) {
+      if (props.observabilityConfigurationName.length < 4 || props.observabilityConfigurationName.length > 32) {
+        throw new Error(`observabilityConfigurationName must be between 4 and 32 characters long, but it has ${props.observabilityConfigurationName.length} characters.`);
+      }
+
+      if (!/^[A-Za-z0-9][A-Za-z0-9\-_]{3,31}$/.test(props.observabilityConfigurationName)) {
+        throw new Error(`observabilityConfigurationName ${props.observabilityConfigurationName} must start with a letter or number, and can contain only letters, numbers, hyphens, and underscores.`);
+      }
+    }
+
     const resource = new CfnObservabilityConfiguration(this, 'Resource', {
       observabilityConfigurationName: props.observabilityConfigurationName,
-      traceConfiguration: {
-        vendor: props.vendor ?? Vendor.AWSXRAY,
-      },
+      traceConfiguration: props.vendor ? {
+        vendor: props.vendor,
+      } : undefined,
     });
 
     this.observabilityConfigurationArn = resource.attrObservabilityConfigurationArn;
