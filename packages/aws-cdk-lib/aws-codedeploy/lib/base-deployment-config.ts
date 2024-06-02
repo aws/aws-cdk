@@ -175,7 +175,7 @@ export abstract class BaseDeploymentConfig extends Resource implements IBaseDepl
     }
 
     if (props?.zonalConfig && props?.computePlatform && props?.computePlatform !== ComputePlatform.SERVER) {
-      throw new Error('Zonal config must only be specified for a EC2/on-premise deployment configuration');
+      throw new Error('Zonal config must only be specified for a Server-base deployment configuration');
     }
 
     const resource = new CfnDeploymentConfig(this, 'Resource', {
