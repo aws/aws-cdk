@@ -157,7 +157,7 @@ export class AutoScalingConfiguration extends cdk.Resource implements IAutoScali
       physicalName: props.autoScalingConfigurationName,
     });
 
-    if (props.minSize !== undefined && (props.minSize < 1 || props.minSize > 25)) {
+    if (props.minSize !== undefined && !cdk.Token.isUnresolved(props.minSize) && (props.minSize < 1 || props.minSize > 25)) {
       throw new Error(`minSize must be between 1 and 25, got ${props.minSize}`);
     }
     if (props.maxSize !== undefined && (props.maxSize < 1 || props.maxSize > 25)) {
