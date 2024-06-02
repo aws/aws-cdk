@@ -4,6 +4,8 @@ import { CfnObservabilityConfiguration } from 'aws-cdk-lib/aws-apprunner';
 
 /**
  * The implementation provider chosen for tracing App Runner services
+ *
+ * @see https://docs.aws.amazon.com/apprunner/latest/dg/monitor.html
  */
 export enum Vendor {
   /**
