@@ -1,9 +1,9 @@
 import { Construct } from 'constructs';
 import { CfnDeploymentConfig } from './codedeploy.generated';
-import { MinimumHealthyHosts } from './host-health-config';
+import { MinimumHealthyHosts, MinimumHealthyHostsPerZone } from './host-health-config';
 import { arnForDeploymentConfig, validateName } from './private/utils';
 import { TrafficRouting } from './traffic-routing-config';
-import { ArnFormat, Resource, Stack } from '../../core';
+import { ArnFormat, Duration, Resource, Stack } from '../../core';
 
 /**
  * The base class for ServerDeploymentConfig, EcsDeploymentConfig,
@@ -55,6 +55,35 @@ export enum ComputePlatform {
 }
 
 /**
+ * Configuration for CodeDeploy to deploy your application to one Availability Zone at a time within an AWS Region.
+ */
+export interface ZonalConfig {
+  /**
+   * The period of time that CodeDeploy must wait after completing a deployment to an Availability Zone.
+   *
+   * @default - CodeDeploy starts deploying to the next Availability Zone immediately
+   */
+  readonly monitorDuration?: Duration;
+
+  /**
+   * The period of time that CodeDeploy must wait after completing a deployment to the first Availability Zone.
+   *
+   * @default - the same value as `monitorDuration`
+   */
+  readonly firstZoneMonitorDuration?: Duration;
+
+  /**
+   * The number or percentage of instances that must remain available per Availability Zone during a deployment.
+   * This option works in conjunction with the `minimumHealthyHosts` option.
+   *
+   * @see https://docs.aws.amazon.com/codedeploy/latest/userguide/instances-health.html#minimum-healthy-hosts-az
+   *
+   * @default - 0 percent
+   */
+  readonly minimumHealthyHostsPerZone?: MinimumHealthyHostsPerZone;
+}
+
+/**
  * Complete base deployment config properties that are required to be supplied by the implementation
  * of the BaseDeploymentConfig class.
  */
@@ -78,6 +107,15 @@ export interface BaseDeploymentConfigProps extends BaseDeploymentConfigOptions {
    * @default None
    */
   readonly minimumHealthyHosts?: MinimumHealthyHosts;
+
+  /**
+   * Configure CodeDeploy to deploy your application to one Availability Zone at a time within an AWS Region.
+   *
+   * @see https://docs.aws.amazon.com/codedeploy/latest/userguide/deployment-configurations-create.html#zonal-config
+   *
+   * @default - deploy your application to a random selection of hosts across a Region
+   */
+  readonly zonalConfig?: ZonalConfig;
 }
 
 /**
@@ -141,6 +179,11 @@ export abstract class BaseDeploymentConfig extends Resource implements IBaseDepl
       computePlatform: props?.computePlatform,
       trafficRoutingConfig: props?.trafficRouting?.bind(this),
       minimumHealthyHosts: props?.minimumHealthyHosts?._json,
+      zonalConfig: props?.zonalConfig ? {
+        monitorDurationInSeconds: props.zonalConfig.monitorDuration?.toSeconds(),
+        firstZoneMonitorDurationInSeconds: props.zonalConfig.firstZoneMonitorDuration?.toSeconds(),
+        minimumHealthyHostsPerZone: props.zonalConfig.minimumHealthyHostsPerZone?._json,
+      } : undefined,
     });
 
     this.deploymentConfigName = this.getResourceNameAttribute(resource.ref);
