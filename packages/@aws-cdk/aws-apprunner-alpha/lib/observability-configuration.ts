@@ -9,7 +9,7 @@ import { CfnObservabilityConfiguration } from 'aws-cdk-lib/aws-apprunner';
  */
 export enum Vendor {
   /**
-   * AWS X-RAY
+   * Tracing (X-Ray)
    */
   AWSXRAY = 'AWSXRAY',
 }
