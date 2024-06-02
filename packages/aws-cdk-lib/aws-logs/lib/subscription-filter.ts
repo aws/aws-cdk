@@ -58,7 +58,12 @@ export class SubscriptionFilter extends Resource {
       physicalName: props.filterName,
     });
 
-    if (props.distribution && !(props.destination instanceof KinesisDestination)) {
+    if (
+      props.distribution &&
+      !Token.isUnresolved(props.distribution) && 
+      !Token.isUnresolved(props.destination) && 
+      !(props.destination instanceof KinesisDestination)
+    ) {
       throw new Error('distribution property can only be used with KinesisDestination.');
     }
 
