@@ -1,0 +1,12 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "integ-user-pool-client-enable-propagate-additional-data-test/DefaultTest": {
+      "stacks": [
+        "integ-user-pool-client-enable-propagate-additional-data"
+      ],
+      "assertionStack": "integ-user-pool-client-enable-propagate-additional-data-test/DefaultTest/DeployAssert",
+      "assertionStackName": "integuserpoolclientenablepropagateadditionaldatatestDefaultTestDeployAssertE48CC71B"
+    }
+  }
+}
