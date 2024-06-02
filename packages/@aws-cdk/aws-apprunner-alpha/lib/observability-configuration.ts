@@ -145,14 +145,12 @@ export class ObservabilityConfiguration extends cdk.Resource implements IObserva
       physicalName: props.observabilityConfigurationName,
     });
 
-    if (props.observabilityConfigurationName !== undefined) {
-      if (props.observabilityConfigurationName.length < 4 || props.observabilityConfigurationName.length > 32) {
-        throw new Error(`observabilityConfigurationName must be between 4 and 32 characters long, but it has ${props.observabilityConfigurationName.length} characters.`);
-      }
-
-      if (!/^[A-Za-z0-9][A-Za-z0-9\-_]{3,31}$/.test(props.observabilityConfigurationName)) {
-        throw new Error(`observabilityConfigurationName ${props.observabilityConfigurationName} must start with a letter or number, and can contain only letters, numbers, hyphens, and underscores.`);
-      }
+    if (
+      props.observabilityConfigurationName !== undefined &&
+      !cdk.Token.isUnresolved(props.observabilityConfigurationName) &&
+      !/^[A-Za-z0-9][A-Za-z0-9\-_]{3,31}$/.test(props.observabilityConfigurationName)
+    ) {
+      throw new Error(`observabilityConfigurationName must match the \`^[A-Za-z0-9][A-Za-z0-9\-_]{3,31}$\` pattern, got ${props.observabilityConfigurationName}`);
     }
 
     const resource = new CfnObservabilityConfiguration(this, 'Resource', {
