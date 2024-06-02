@@ -121,7 +121,7 @@ new logs.SubscriptionFilter(this, 'Subscription', {
 ```
 
 When you use `KinesisDestination`, you can choose the method used to
-distribute log data to the destination by setting the `Distribution` property.
+distribute log data to the destination by setting the `distribution` property.
 
 ```ts
 import * as destinations from 'aws-cdk-lib/aws-logs-destinations';
