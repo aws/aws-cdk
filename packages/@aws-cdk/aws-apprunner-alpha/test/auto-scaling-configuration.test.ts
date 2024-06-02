@@ -77,15 +77,6 @@ test.each([0, 201])('invalid maxConcurrency', (maxConcurrency: number) => {
 test.each([
   ['tes'],
   ['test-autoscaling-configuration-name-over-limitation'],
-])('autoScalingConfigurationName over length limitation (name: %s)', (autoScalingConfigurationName: string) => {
-  expect(() => {
-    new AutoScalingConfiguration(stack, 'AutoScalingConfiguration', {
-      autoScalingConfigurationName,
-    });
-  }).toThrow(`autoScalingConfigurationName must be between 4 and 32 characters long, but it has ${autoScalingConfigurationName.length} characters.`);
-});
-
-test.each([
   ['-test'],
   ['test-?'],
 ])('invalid autoScalingConfigurationName (name: %s)', (autoScalingConfigurationName: string) => {
@@ -93,5 +84,5 @@ test.each([
     new AutoScalingConfiguration(stack, 'AutoScalingConfiguration', {
       autoScalingConfigurationName,
     });
-  }).toThrow(`autoScalingConfigurationName ${autoScalingConfigurationName} must start with a letter or number, and can contain only letters, numbers, hyphens, and underscores.`);
+  }).toThrow(`autoScalingConfigurationName must match the ^[A-Za-z0-9][A-Za-z0-9\-_]{3,31}$ pattern, got ${autoScalingConfigurationName}`);
 });
