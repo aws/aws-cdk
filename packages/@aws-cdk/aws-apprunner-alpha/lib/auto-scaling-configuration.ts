@@ -37,7 +37,10 @@ export interface AutoScalingConfigurationProps {
    * The minimum number of instances that App Runner provisions for a service.
    * The service always has at least minSize provisioned instances.
    *
-   * @default 25
+   *
+   * Must be between 1 and 25.
+   *
+   * @default 1
    */
   readonly minSize?: number;
 }
