@@ -76,9 +76,6 @@ export class ServerDeploymentConfig extends BaseDeploymentConfig implements ISer
   }
 
   constructor(scope: Construct, id: string, props: ServerDeploymentConfigProps) {
-    super(scope, id, {
-      ...props,
-      zonalConfig: props.zonalConfig,
-    });
+    super(scope, id, props);
   }
 }
