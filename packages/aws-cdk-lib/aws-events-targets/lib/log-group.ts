@@ -1,4 +1,3 @@
-import { LogGroupResourcePolicy } from './log-group-resource-policy';
 import { TargetBaseProps, bindBaseTargetConfig } from './util';
 import * as events from '../../aws-events';
 import { RuleTargetInputProperties, RuleTargetInput, EventField, IRule } from '../../aws-events';
@@ -78,14 +77,6 @@ export interface LogGroupProps extends TargetBaseProps {
    * @default - the entire EventBridge event
    */
   readonly logEvent?: LogGroupTargetInput;
-
-  /**
-   * Whether the custom resource created wll default to
-   * install latest AWS SDK
-   *
-   * @default - install latest AWS SDK
-   */
-  readonly installLatestAwsSdk?: boolean;
 }
 
 /**
@@ -93,15 +84,12 @@ export interface LogGroupProps extends TargetBaseProps {
  */
 export class CloudWatchLogGroup implements events.IRuleTarget {
   private target?: RuleTargetInputProperties;
-  constructor(private readonly logGroup: logs.ILogGroup, private readonly props: LogGroupProps = {}) {}
+  constructor(public readonly logGroup: logs.ILogGroup, private readonly props: LogGroupProps = {}) {}
 
   /**
    * Returns a RuleTarget that can be used to log an event into a CloudWatch LogGroup
    */
   public bind(_rule: events.IRule, _id?: string): events.RuleTargetConfig {
-    // Use a custom resource to set the log group resource policy since it is not supported by CDK and cfn.
-    const resourcePolicyId = `EventsLogGroupPolicy${cdk.Names.nodeUniqueId(_rule.node)}`;
-
     const logGroupStack = cdk.Stack.of(this.logGroup);
 
     if (this.props.event && this.props.logEvent) {
@@ -115,17 +103,7 @@ export class CloudWatchLogGroup implements events.IRuleTarget {
 
     _rule.node.addValidation({ validate: () => this.validateInputTemplate() });
 
-    if (!this.logGroup.node.tryFindChild(resourcePolicyId)) {
-      new LogGroupResourcePolicy(logGroupStack, resourcePolicyId, {
-        installLatestAwsSdk: this.props.installLatestAwsSdk,
-        policyStatements: [new iam.PolicyStatement({
-          effect: iam.Effect.ALLOW,
-          actions: ['logs:PutLogEvents', 'logs:CreateLogStream'],
-          resources: [this.logGroup.logGroupArn],
-          principals: [new iam.ServicePrincipal('events.amazonaws.com')],
-        })],
-      });
-    }
+    this.logGroup.grantWrite(new iam.ServicePrincipal('events.amazonaws.com'));
 
     return {
       ...bindBaseTargetConfig(this.props),

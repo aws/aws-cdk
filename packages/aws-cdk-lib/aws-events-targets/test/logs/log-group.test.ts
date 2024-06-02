@@ -158,46 +158,6 @@ test('logEvent with defaults', () => {
   });
 });
 
-test('can set install latest AWS SDK value to false', () => {
-  // GIVEN
-  const stack = new cdk.Stack();
-  const logGroup = new logs.LogGroup(stack, 'MyLogGroup', {
-    logGroupName: '/aws/events/MyLogGroup',
-  });
-  const rule1 = new events.Rule(stack, 'Rule', {
-    schedule: events.Schedule.rate(cdk.Duration.minutes(1)),
-  });
-
-  // WHEN
-  rule1.addTarget(new targets.CloudWatchLogGroup(logGroup, {
-    installLatestAwsSdk: false,
-  }));
-
-  // THEN
-  Template.fromStack(stack).hasResourceProperties('Custom::CloudwatchLogResourcePolicy', {
-    InstallLatestAwsSdk: false,
-  });
-});
-
-test('default install latest AWS SDK is true', () => {
-  // GIVEN
-  const stack = new cdk.Stack();
-  const logGroup = new logs.LogGroup(stack, 'MyLogGroup', {
-    logGroupName: '/aws/events/MyLogGroup',
-  });
-  const rule1 = new events.Rule(stack, 'Rule', {
-    schedule: events.Schedule.rate(cdk.Duration.minutes(1)),
-  });
-
-  // WHEN
-  rule1.addTarget(new targets.CloudWatchLogGroup(logGroup));
-
-  // THEN
-  Template.fromStack(stack).hasResourceProperties('Custom::CloudwatchLogResourcePolicy', {
-    InstallLatestAwsSdk: true,
-  });
-});
-
 test('can use logEvent', () => {
   // GIVEN
   const stack = new cdk.Stack();
@@ -396,5 +356,33 @@ testDeprecated('specifying retry policy with 0 retryAttempts', () => {
         },
       },
     ],
+  });
+});
+
+test('grant write permissions to log group', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const logGroup = new logs.LogGroup(stack, 'MyLogGroup', {
+    logGroupName: '/aws/events/MyLogGroup',
+  });
+  const rule1 = new events.Rule(stack, 'Rule', {
+    schedule: events.Schedule.rate(cdk.Duration.minutes(1)),
+  });
+
+  // WHEN
+  rule1.addTarget(new targets.CloudWatchLogGroup(logGroup));
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Logs::ResourcePolicy', {
+    PolicyDocument: {
+      Statement: [
+        {
+          Action: ['logs:CreateLogStream', 'logs:PutLogEvents'],
+          Effect: 'Allow',
+          Principal: { Service: 'events.amazonaws.com' },
+          Resource: { 'Fn::GetAtt': ['MyLogGroup5C0DAD85', 'Arn'] },
+        },
+      ],
+    },
   });
 });
