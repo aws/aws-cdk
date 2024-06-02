@@ -665,7 +665,7 @@ export interface ServiceProps {
    *
    * @see https://docs.aws.amazon.com/apprunner/latest/dg/manage-autoscaling.html
    *
-   * @default - use a default Auto Scaling Configuration.
+   * @default - the latest revision of a default auto scaling configuration is used.
    */
   readonly autoScalingConfiguration?: IAutoScalingConfiguration;
 
