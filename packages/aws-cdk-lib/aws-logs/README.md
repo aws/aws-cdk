@@ -135,7 +135,7 @@ new logs.SubscriptionFilter(this, 'Subscription', {
   destination: new destinations.KinesisDestination(stream),
   filterPattern: logs.FilterPattern.allTerms("ERROR", "MainThread"),
   filterName: 'ErrorInMainThread',
-  distribution: logs.Distribution.RANDOM, // distribution
+  distribution: logs.Distribution.RANDOM,
 });
 ```
 
