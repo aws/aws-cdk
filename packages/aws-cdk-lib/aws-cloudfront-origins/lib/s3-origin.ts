@@ -3,7 +3,7 @@ import { HttpOrigin } from './http-origin';
 import * as cloudfront from '../../aws-cloudfront';
 import * as iam from '../../aws-iam';
 import * as s3 from '../../aws-s3';
-import { Stack, Names, FeatureFlags, Aws, CustomResource, Annotations } from '../../core';
+import { Stack, Names, FeatureFlags, Aws, CustomResource, Annotations, Lazy } from '../../core';
 import { S3OriginAccessControlBucketPolicyProvider } from '../../custom-resource-handlers/dist/aws-cloudfront-origins/s3-origin-access-control-bucket-policy-provider.generated';
 import { S3OriginAccessControlKeyPolicyProvider } from '../../custom-resource-handlers/dist/aws-cloudfront-origins/s3-origin-access-control-key-policy-provider.generated';
 import * as cxapi from '../../cx-api';
@@ -80,7 +80,8 @@ class S3BucketOacOrigin extends cloudfront.OriginBase {
       // Create a new origin access control if not specified
       this.originAccessControl = new cloudfront.OriginAccessControl(scope, 'S3OriginAccessControl');
     }
-    const distributionId = options.distributionId;
+    const distribution = scope.node.scope as cloudfront.Distribution;
+    const distributionId = Lazy.string({ produce: () => distribution.distributionId });
     const oacReadOnlyBucketPolicyStatement = new iam.PolicyStatement(
       {
         sid: 'AllowS3OACAccess',
