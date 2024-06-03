@@ -29,7 +29,7 @@ export interface AutoScalingConfigurationProps {
    *
    * Must be between 1 and 25.
    *
-   * @default 1
+   * @default 25
    */
   readonly maxSize?: number;
 
