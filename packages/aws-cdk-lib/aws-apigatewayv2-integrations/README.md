@@ -6,6 +6,7 @@
   - [Lambda Integration](#lambda)
   - [HTTP Proxy Integration](#http-proxy)
   - [StepFunctions Integration](#stepfunctions-integration)
+  - [SQS Integration](#sqs-integration)
   - [Private Integration](#private-integration)
   - [Request Parameters](#request-parameters)
 - [WebSocket APIs](#websocket-apis)
@@ -187,8 +188,10 @@ The default parameter mapping settings for each subtype are as follows:
 `SQS_SEND_MESSAGE`:
 
 ```ts
+declare const queue: sqs.IQueue;
+
 new apigwv2.ParameterMapping()
-  .custom('QueueUrl', this.props.queue.queueUrl)
+  .custom('QueueUrl', queue.queueUrl)
   // The `MessageBody` is expected to be in the request body.
   .custom('MessageBody', '$request.body.MessageBody');
 ```
@@ -196,15 +199,19 @@ new apigwv2.ParameterMapping()
 `SQS_RECEIVE_MESSAGE`:
 
 ```ts
+declare const queue: sqs.IQueue;
+
 new apigwv2.ParameterMapping()
-  .custom('QueueUrl', this.props.queue.queueUrl).
+  .custom('QueueUrl', queue.queueUrl).
 ```
 
 `SQS_DELETE_MESSAGE`:
 
 ```ts
+declare const queue: sqs.IQueue;
+
 new apigwv2.ParameterMapping()
-  .custom('QueueUrl', this.props.queue.queueUrl)
+  .custom('QueueUrl', queue.queueUrl)
   // The `ReceiptHandle` is expected to be in the request body.
   .custom('ReceiptHandle', '$request.body.ReceiptHandle');
 ```
@@ -212,8 +219,10 @@ new apigwv2.ParameterMapping()
 `SQS_PURGE_QUEUE`:
 
 ```ts
+declare const queue: sqs.IQueue;
+
 new apigwv2.ParameterMapping()
-  .custom('QueueUrl', this.props.queue.queueUrl);
+  .custom('QueueUrl', queue.queueUrl);
 ```
 
 ### Private Integration
