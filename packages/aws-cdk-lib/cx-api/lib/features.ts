@@ -104,6 +104,7 @@ export const KMS_REDUCE_CROSS_ACCOUNT_REGION_POLICY_SCOPE = '@aws-cdk/aws-kms:re
 export const PIPELINE_REDUCE_ASSET_ROLE_TRUST_SCOPE = '@aws-cdk/pipelines:reduceAssetRoleTrustScope';
 export const EKS_NODEGROUP_NAME = '@aws-cdk/aws-eks:nodegroupNameAttribute';
 export const EBS_DEFAULT_GP3 = '@aws-cdk/aws-ec2:ebsDefaultGp3Volume';
+export const ECS_REMOVE_DEFAULT_DEPLOYMENT_ALARM = '@aws-cdk/aws-ecs:removeDefaultDeploymentAlarm';
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
@@ -1046,7 +1047,7 @@ export const FLAGS: Record<string, FlagInfo> = {
       When this feature flag is enabled, the root account principal will not be added to the trust policy of asset role.
       When this feature flag is disabled, it will keep the root account principal in the trust policy.
     `,
-    introducedIn: { v2: 'V2NEXT' },
+    introducedIn: { v2: '2.141.0' },
     defaults: { v2: true },
     recommendedValue: true,
     compatibilityWithOldBehaviorMd: 'Disable the feature flag to add the root account principal back',
@@ -1074,6 +1075,18 @@ export const FLAGS: Record<string, FlagInfo> = {
     introducedIn: { v2: '2.140.0' },
     recommendedValue: true,
     compatibilityWithOldBehaviorMd: 'Pass `volumeType: EbsDeviceVolumeType.GENERAL_PURPOSE_SSD` to `Volume` construct to restore the previous behavior.',
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [ECS_REMOVE_DEFAULT_DEPLOYMENT_ALARM]: {
+    type: FlagType.ApiDefault,
+    summary: 'When enabled, remove default deployment alarm settings',
+    detailsMd: `
+      When this featuer flag is enabled, remove the default deployment alarm settings when creating a AWS ECS service.
+    `,
+    introducedIn: { v2: '2.143.0' },
+    recommendedValue: true,
+    compatibilityWithOldBehaviorMd: 'Set AWS::ECS::Service \'DeploymentAlarms\' manually to restore the previous behavior.',
   },
 };
 

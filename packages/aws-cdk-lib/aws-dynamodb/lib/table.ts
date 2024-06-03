@@ -389,6 +389,13 @@ export interface TableOptions extends SchemaOptions {
    * @default - no data import from the S3 bucket
    */
   readonly importSource?: ImportSourceSpecification;
+
+  /**
+   * Resource policy to assign to table.
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-dynamodb-table.html#cfn-dynamodb-table-resourcepolicy
+   * @default - No resource policy statement
+   */
+  readonly resourcePolicy?: iam.PolicyDocument;
 }
 
 /**
@@ -516,7 +523,7 @@ export interface TableAttributes {
   readonly grantIndexPermissions?: boolean;
 }
 
-export abstract class TableBase extends Resource implements ITable {
+export abstract class TableBase extends Resource implements ITable, iam.IResourceWithPolicy {
   /**
    * @attribute
    */
@@ -537,6 +544,12 @@ export abstract class TableBase extends Resource implements ITable {
    */
   public abstract readonly encryptionKey?: kms.IKey;
 
+  /**
+   * Resource policy to assign to table.
+   * @attribute
+   */
+  public abstract resourcePolicy?: iam.PolicyDocument;
+
   protected readonly regionalArns = new Array<string>();
 
   /**
@@ -550,7 +563,7 @@ export abstract class TableBase extends Resource implements ITable {
    * @param actions The set of actions to allow (i.e. "dynamodb:PutItem", "dynamodb:GetItem", ...)
    */
   public grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
-    return iam.Grant.addToPrincipal({
+    return iam.Grant.addToPrincipalOrResource({
       grantee,
       actions,
       resourceArns: [
@@ -561,10 +574,9 @@ export abstract class TableBase extends Resource implements ITable {
           produce: () => this.hasIndex ? `${arn}/index/*` : Aws.NO_VALUE,
         })),
       ],
-      scope: this,
+      resource: this,
     });
   }
-
   /**
    * Adds an IAM policy statement associated with this table's stream to an
    * IAM principal's policy.
@@ -676,6 +688,23 @@ export abstract class TableBase extends Resource implements ITable {
   public grantFullAccess(grantee: iam.IGrantable) {
     const keyActions = perms.KEY_READ_ACTIONS.concat(perms.KEY_WRITE_ACTIONS);
     return this.combinedGrant(grantee, { keyActions, tableActions: ['dynamodb:*'] });
+  }
+
+  /**
+   * Adds a statement to the resource policy associated with this file system.
+   * A resource policy will be automatically created upon the first call to `addToResourcePolicy`.
+   *
+   * Note that this does not work with imported file systems.
+   *
+   * @param statement The policy statement to add
+   */
+  public addToResourcePolicy(statement: iam.PolicyStatement): iam.AddToResourcePolicyResult {
+    this.resourcePolicy = this.resourcePolicy ?? new iam.PolicyDocument({ statements: [] });
+    this.resourcePolicy.addStatements(statement);
+    return {
+      statementAdded: true,
+      policyDependable: this,
+    };
   }
 
   /**
@@ -928,11 +957,11 @@ export abstract class TableBase extends Resource implements ITable {
           produce: () => this.hasIndex ? `${arn}/index/*` : Aws.NO_VALUE,
         })),
       ];
-      const ret = iam.Grant.addToPrincipal({
+      const ret = iam.Grant.addToPrincipalOrResource({
         grantee,
         actions: opts.tableActions,
         resourceArns: resources,
-        scope: this,
+        resource: this,
       });
       return ret;
     }
@@ -941,11 +970,11 @@ export abstract class TableBase extends Resource implements ITable {
         throw new Error(`DynamoDB Streams must be enabled on the table ${this.node.path}`);
       }
       const resources = [this.tableStreamArn];
-      const ret = iam.Grant.addToPrincipal({
+      const ret = iam.Grant.addToPrincipalOrResource({
         grantee,
         actions: opts.streamActions,
         resourceArns: resources,
-        scope: this,
+        resource: this,
       });
       return ret;
     }
@@ -1016,6 +1045,7 @@ export class Table extends TableBase {
       public readonly tableArn: string;
       public readonly tableStreamArn?: string;
       public readonly encryptionKey?: kms.IKey;
+      public resourcePolicy?: iam.PolicyDocument;
       protected readonly hasIndex = (attrs.grantIndexPermissions ?? false) ||
         (attrs.globalIndexes ?? []).length > 0 ||
         (attrs.localIndexes ?? []).length > 0;
@@ -1053,6 +1083,13 @@ export class Table extends TableBase {
   }
 
   public readonly encryptionKey?: kms.IKey;
+
+  /**
+   * Resource policy to assign to DynamoDB Table.
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dynamodb-table-resourcepolicy.html
+   * @default - No resource policy statements are added to the created table.
+   */
+  public resourcePolicy?: iam.PolicyDocument;
 
   /**
    * @attribute
@@ -1139,6 +1176,9 @@ export class Table extends TableBase {
       kinesisStreamSpecification: props.kinesisStream ? { streamArn: props.kinesisStream.streamArn } : undefined,
       deletionProtectionEnabled: props.deletionProtection,
       importSourceSpecification: this.renderImportSourceSpecification(props.importSource),
+      resourcePolicy: props.resourcePolicy
+        ? { policyDocument: props.resourcePolicy }
+        : undefined,
     });
     this.table.applyRemovalPolicy(props.removalPolicy);
 
