@@ -174,10 +174,6 @@ export abstract class BaseDeploymentConfig extends Resource implements IBaseDepl
       throw new Error('Minimum healthy hosts config must only be specified for a Server-base deployment configuration');
     }
 
-    if (props?.zonalConfig && props?.computePlatform && props?.computePlatform !== ComputePlatform.SERVER) {
-      throw new Error('Zonal config must only be specified for a Server-base deployment configuration');
-    }
-
     const resource = new CfnDeploymentConfig(this, 'Resource', {
       deploymentConfigName: this.physicalName,
       computePlatform: props?.computePlatform,
