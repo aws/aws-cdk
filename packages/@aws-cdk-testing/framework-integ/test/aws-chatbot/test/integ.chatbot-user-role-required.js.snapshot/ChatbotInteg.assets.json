@@ -1,0 +1,19 @@
+{
+  "version": "36.0.0",
+  "files": {
+    "fab2d1b84ca3a56733f8cdf46ed2ca79b240b8663982bb6ff00b438be185bc41": {
+      "source": {
+        "path": "ChatbotInteg.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "fab2d1b84ca3a56733f8cdf46ed2ca79b240b8663982bb6ff00b438be185bc41.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
