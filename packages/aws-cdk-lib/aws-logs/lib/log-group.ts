@@ -441,6 +441,21 @@ export interface LogGroupProps {
 }
 
 /**
+ * The method used to distribute log data to the destination.
+ */
+export enum Distribution {
+  /**
+   * Log events from the same log stream are kept together and sent to the same destination.
+   */
+  BY_LOG_STREAM = 'ByLogStream',
+
+  /**
+   * Log events are distributed across the log destinations randomly.
+   */
+  RANDOM = 'Random',
+}
+
+/**
  * Define a CloudWatch Log Group
  */
 export class LogGroup extends LogGroupBase {
@@ -573,6 +588,14 @@ export interface SubscriptionFilterOptions {
    * @default Automatically generated
    */
   readonly filterName?: string;
+
+  /**
+   * The method used to distribute log data to the destination.
+   * This property can only be used with KinesisDestination.
+   *
+   * @default Distribution.BY_LOG_STREAM
+   */
+  readonly distribution?: Distribution;
 }
 
 /**
