@@ -4,7 +4,6 @@ import { IResource, Resource, Stack, Names } from '../../core';
 /**
  * Interface for CloudFront origin access controls
  */
-// extends iam.IGrantable??
 export interface IOriginAccessControl extends IResource {
   /**
    * The unique identifier of the origin access control.
@@ -14,6 +13,9 @@ export interface IOriginAccessControl extends IResource {
 }
 
 abstract class OriginAccessControlBase extends Resource implements IOriginAccessControl {
+  /**
+   * The unique identifier of the origin access control.
+   */
   public abstract readonly originAccessControlId: string;
 }
 
