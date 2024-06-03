@@ -215,7 +215,7 @@ const deploymentConfig = codedeploy.ServerDeploymentConfig.fromServerDeploymentC
 
 CodeDeploy can deploy your application to one Availability Zone at a time, within an AWS Region by configuring [zonal configuration](https://docs.aws.amazon.com/codedeploy/latest/userguide/deployment-configurations-create.html#zonal-config).
 
-To create a new zonal configuration:
+To create a new deployment configuration with zonal configuration:
 
 ```ts
 const deploymentConfig = new codedeploy.ServerDeploymentConfig(this, 'DeploymentConfiguration', {
