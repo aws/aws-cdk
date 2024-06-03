@@ -2,7 +2,7 @@ import * as fs from 'fs';
 import { Construct } from 'constructs';
 import { CfnFunction } from './cloudfront.generated';
 import { IKeyValueStore } from './key-value-store';
-import { IResource, Names, Resource, Stack } from '../../core';
+import { IResource, Lazy, Names, Resource, Stack } from '../../core';
 
 /**
  * Represents the function's source code
@@ -224,12 +224,10 @@ export class Function extends Resource implements IFunction {
   private generateName(): string {
     const name = Stack.of(this).region + Names.uniqueId(this);
     if (name.length > 64) {
-      if (name.startsWith('${Token[AWS.Region.') && name.indexOf('}') == 21) {
-        // Ensure consistency when region number is one digit or two
-        return name.substring(0, 31) + name.substring(name.length - 32);
-      } else {
-        return name.substring(0, 32) + name.substring(name.length - 32);
-      }
+      const trimmedName = Lazy.string({
+        produce: () => Names.uniqueResourceName(this, { maxLength: 40, allowedSpecialCharacters: '-_' }),
+      });
+      return Stack.of(this).region + trimmedName;
     }
     return name;
   }
