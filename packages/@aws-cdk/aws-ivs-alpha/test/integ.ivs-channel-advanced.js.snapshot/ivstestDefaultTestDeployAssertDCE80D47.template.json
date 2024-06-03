@@ -1,0 +1,239 @@
+{
+ "Resources": {
+  "AwsApiCallIVSGetChannel6f08daab7fca1958c2a421f6607444b6": {
+   "Type": "Custom::DeployAssert@SdkCallIVSGetChannel",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "IVS",
+    "api": "GetChannel",
+    "expected": "{\"$ObjectLike\":{\"channel\":{\"preset\":\"HIGHER_BANDWIDTH_DELIVERY\",\"type\":\"ADVANCED_SD\"}}}",
+    "parameters": {
+     "arn": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "aws-cdk-ivs:ExportsOutputFnGetAttAdvancedChannelWithoutPresetSetting56CDB01BArnDCD4734C"
+        },
+        "\""
+       ]
+      ]
+     }
+    },
+    "flattenResponse": "false",
+    "salt": "1716338199347"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+     }
+    ],
+    "Policies": [
+     {
+      "PolicyName": "Inline",
+      "PolicyDocument": {
+       "Version": "2012-10-17",
+       "Statement": [
+        {
+         "Action": [
+          "ivs:GetChannel"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "ivs:GetChannel"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "ivs:GetChannel"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Runtime": "nodejs18.x",
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "cfdb46b4f2c6702b4a1cc8e23ca426e8de43d13567e73a8453d01c1176393814.zip"
+    },
+    "Timeout": 120,
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73",
+      "Arn"
+     ]
+    }
+   }
+  },
+  "AwsApiCallIVSGetChannel66d0ded52919471afc55195f445a6cf5": {
+   "Type": "Custom::DeployAssert@SdkCallIVSGetChannel",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "IVS",
+    "api": "GetChannel",
+    "expected": "{\"$ObjectLike\":{\"channel\":{\"preset\":\"CONSTRAINED_BANDWIDTH_DELIVERY\",\"type\":\"ADVANCED_HD\"}}}",
+    "parameters": {
+     "arn": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "aws-cdk-ivs:ExportsOutputFnGetAttAdvancedChannelWithPresetSetting5981FCA9Arn6ED27899"
+        },
+        "\""
+       ]
+      ]
+     }
+    },
+    "flattenResponse": "false",
+    "salt": "1716338199348"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallIVSGetChannel46937e5f3afa2026ecd5f7aaa4670019": {
+   "Type": "Custom::DeployAssert@SdkCallIVSGetChannel",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "IVS",
+    "api": "GetChannel",
+    "expected": "{\"$ObjectLike\":{\"channel\":{\"preset\":\"\",\"type\":\"STANDARD\"}}}",
+    "parameters": {
+     "arn": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "aws-cdk-ivs:ExportsOutputFnGetAttStandardChannelWithPresetSetting45FDEBBBArn94DAE976"
+        },
+        "\""
+       ]
+      ]
+     }
+    },
+    "flattenResponse": "false",
+    "salt": "1716338199348"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  }
+ },
+ "Outputs": {
+  "AssertionResultsAwsApiCallIVSGetChannel6f08daab7fca1958c2a421f6607444b6": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallIVSGetChannel6f08daab7fca1958c2a421f6607444b6",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallIVSGetChannel66d0ded52919471afc55195f445a6cf5": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallIVSGetChannel66d0ded52919471afc55195f445a6cf5",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallIVSGetChannel46937e5f3afa2026ecd5f7aaa4670019": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallIVSGetChannel46937e5f3afa2026ecd5f7aaa4670019",
+     "assertion"
+    ]
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

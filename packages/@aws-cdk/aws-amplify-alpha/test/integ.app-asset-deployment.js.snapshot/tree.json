@@ -308,11 +308,6 @@
                           },
                           "s3Key": "85f7bb0ac0b4da3571afd49c891d631f4f07c0ef710a02046d3a9abd8d9d4604.zip"
                         },
-                        "environment": {
-                          "variables": {
-                            "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1"
-                          }
-                        },
                         "handler": "index.onEvent",
                         "role": {
                           "Fn::GetAtt": [
@@ -471,11 +466,6 @@
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
                           "s3Key": "85f7bb0ac0b4da3571afd49c891d631f4f07c0ef710a02046d3a9abd8d9d4604.zip"
-                        },
-                        "environment": {
-                          "variables": {
-                            "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1"
-                          }
                         },
                         "handler": "index.isComplete",
                         "role": {
@@ -1454,7 +1444,7 @@
                           {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "/3ea022ac58d7f67ccd56c9ddd9be48a0d9be2996806b64c9f400cdf29e1182c3.json"
+                          "/ea51603796f8e9e5d91362ea56304e6b7896bafa22867dad26d968c241e1e93e.json"
                         ]
                       ]
                     }

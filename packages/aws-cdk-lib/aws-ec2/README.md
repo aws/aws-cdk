@@ -1521,6 +1521,25 @@ const host = new ec2.BastionHostLinux(this, 'BastionHost', {
 });
 ```
 
+### Placement Group 
+
+Specify `placementGroup` to enable the placement group support:
+
+```ts fixture=with-vpc
+declare const instanceType: ec2.InstanceType;
+
+const pg = new ec2.PlacementGroup(this, 'test-pg', {
+  strategy: ec2.PlacementGroupStrategy.SPREAD,
+});
+
+new ec2.Instance(this, 'Instance', {
+  vpc,
+  instanceType,
+  machineImage: ec2.MachineImage.latestAmazonLinux2023(),
+  placementGroup: pg,
+});
+```
+
 ### Block Devices
 
 To add EBS block device mappings, specify the `blockDevices` property. The following example sets the EBS-backed
@@ -1893,6 +1912,21 @@ new ec2.Vpc(this, 'VPC', {
 ```
 
 **Note**: `CpuCredits.UNLIMITED` mode is not supported for T3 instances that are launched on a Dedicated Host.
+
+### Shutdown behavior
+
+You can specify the behavior of the instance when you initiate shutdown from the instance (using the operating system command for system shutdown).
+
+```ts
+declare const vpc: ec2.Vpc;
+
+new ec2.Instance(this, 'Instance', {
+  vpc,
+  instanceType: ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.NANO),
+  machineImage: new ec2.AmazonLinuxImage({ generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2 }),
+  instanceInitiatedShutdownBehavior: ec2.InstanceInitiatedShutdownBehavior.TERMINATE, // default is STOP
+});
+```
 
 ## VPC Flow Logs
 
