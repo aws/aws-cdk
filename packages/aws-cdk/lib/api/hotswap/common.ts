@@ -162,6 +162,14 @@ export class EcsHotswapProperties {
     this.minimumHealthyPercent = minimumHealthyPercent;
     this.maximumHealthyPercent = maximumHealthyPercent;
   }
+
+  /**
+   * Check if any hotswap properties are defined
+   * @returns true if all properties are undefined, false otherwise
+   */
+  public isEmpty(): boolean {
+    return this.minimumHealthyPercent === undefined && this.maximumHealthyPercent === undefined;
+  }
 }
 
 export class ClassifiedChanges {

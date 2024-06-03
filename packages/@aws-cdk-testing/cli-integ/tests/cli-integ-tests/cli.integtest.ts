@@ -1849,6 +1849,40 @@ integTest('hotswap deployment for ecs service waits for deployment to complete',
 
 }));
 
+integTest('hotswap ECS deployment respects properties override', withDefaultFixture(async (fixture) => {
+  // GIVEN
+  const stackArn = await fixture.cdkDeploy('ecs-hotswap', {
+    captureStderr: false,
+  });
+
+  // WHEN
+  await fixture.cdkDeploy('ecs-hotswap', {
+    options: [
+      '--hotswap',
+      '--hotswap-ecs-minimum-healthy-percent 50',
+      '--hotswap-ecs-maximum-healthy-percent 100',
+    ],
+    modEnv: {
+      DYNAMIC_ECS_PROPERTY_VALUE: 'new value',
+    },
+  });
+
+  const describeStacksResponse = await fixture.aws.cloudFormation('describeStacks', {
+    StackName: stackArn,
+  });
+  const clusterName = describeStacksResponse.Stacks?.[0].Outputs?.find(output => output.OutputKey == 'ClusterName')?.OutputValue!;
+  const serviceName = describeStacksResponse.Stacks?.[0].Outputs?.find(output => output.OutputKey == 'ServiceName')?.OutputValue!;
+
+  // THEN
+
+  const describeServicesResponse = await fixture.aws.ecs('describeServices', {
+    cluster: clusterName,
+    services: [serviceName],
+  });
+  expect(describeServicesResponse.services?.[0].deployments).toHaveLength(2);
+
+}));
+
 integTest('hotswap deployment for ecs service detects failed deployment and errors', withDefaultFixture(async (fixture) => {
   // GIVEN
   await fixture.cdkDeploy('ecs-hotswap');

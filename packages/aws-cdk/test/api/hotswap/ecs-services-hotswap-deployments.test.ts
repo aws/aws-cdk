@@ -711,7 +711,8 @@ describe.each([
       cluster: 'my-cluster',
       taskDefinition: 'arn:aws:ecs:region:account:task-definition/my-task-def:3',
       deploymentConfiguration: {
-        minimumHealthyPercent: hotswapProperties.ecsHotswapProperties?.minimumHealthyPercent == undefined ? 0 :hotswapProperties.ecsHotswapProperties?.minimumHealthyPercent,
+        minimumHealthyPercent: hotswapProperties.ecsHotswapProperties?.minimumHealthyPercent == undefined ?
+          0 : hotswapProperties.ecsHotswapProperties?.minimumHealthyPercent,
         maximumPercent: hotswapProperties.ecsHotswapProperties?.maximumHealthyPercent,
       },
       forceNewDeployment: true,

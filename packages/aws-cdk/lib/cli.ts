@@ -608,7 +608,6 @@ export async function exec(args: string[], synthesizer?: Synthesizer): Promise<n
           progress: configuration.settings.get(['progress']),
           ci: args.ci,
           rollback: configuration.settings.get(['rollback']),
-          // TODO: Add min/max checks with boolean hotswap flag usage.
           hotswap: determineHotswapMode(args.hotswap, args.hotswapFallback),
           hotswapEcsMinimumHealthyPercent: args.hotswapMinimumHealthyPercent,
           hotswapEcsMaximumHealthyPercent: args.hotswapMaximumHealthyPercent,

@@ -246,6 +246,9 @@ export class CdkToolkit {
     }
 
     let ecsHotswapProperties = new EcsHotswapProperties(options.hotswapEcsMinimumHealthyPercent, options.hotswapEcsMaximumHealthyPercent);
+    if (!ecsHotswapProperties.isEmpty() && options.hotswap !== HotswapMode.FULL_DEPLOYMENT) {
+      warning('⚠️ Hotswap properties defined while not in hotswap mode will be ignored.');
+    }
 
     let hotswapProperties = new HotswapProperties();
     hotswapProperties.ecsHotswapProperties = ecsHotswapProperties;

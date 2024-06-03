@@ -430,6 +430,13 @@ For that reason, make sure that your credentials are for the same AWS account th
 you are performing the hotswap deployment for belong to,
 and that you have the necessary IAM permissions to update the resources that are being deployed.
 
+You can optionally pass additional parameters to configure the behavior of your hotswap deployments. A list of the currently available configuration options can be found below.
+
+| Service | Parameter |
+| ------- | --------- |
+| ECS | hotswap-ecs-minimum-healthy-percent |
+| ECS | hotswap-ecs-maximum-healthy-percent |
+
 Hotswapping is currently supported for the following changes
 (additional changes will be supported in the future):
 
