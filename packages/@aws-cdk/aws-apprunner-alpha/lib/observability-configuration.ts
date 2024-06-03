@@ -153,9 +153,9 @@ export class ObservabilityConfiguration extends cdk.Resource implements IObserva
 
     const resource = new CfnObservabilityConfiguration(this, 'Resource', {
       observabilityConfigurationName: props.observabilityConfigurationName,
-      traceConfiguration: props.traceConfigurationVendor ? {
+      traceConfiguration: {
         vendor: props.traceConfigurationVendor,
-      } : undefined,
+      },
     });
 
     this.observabilityConfigurationArn = resource.attrObservabilityConfigurationArn;
