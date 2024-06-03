@@ -897,7 +897,7 @@ describe('record set', () => {
     // GIVEN
     const stack = new Stack();
     const parentZone = new route53.PublicHostedZone(stack, 'ParentHostedZone', {
-      zoneName: 'myzone.com'
+      zoneName: 'myzone.com',
     });
 
     // WHEN
