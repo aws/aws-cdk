@@ -104,6 +104,20 @@ new route53.ARecord(this, 'ARecord', {
 });
 ```
 
+To create an A record of type alias with target set to another record created outside CDK:
+### This function registers the given input i.e. DNS Name(string) of an existing record as an AliasTarget to the new ARecord. To register a target that is created as part of CDK use this instead https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_route53_targets-readme.html
+
+```ts
+
+declare const myZone: route53.HostedZone;
+const targetRecord = 'existing.record.cdk.local';
+const record = route53.ARecord.fromARecordAttributes(this, 'A', {
+  zone: myZone,
+  recordName: 'test',
+  targetDNS: targetRecord,
+});
+```
+
 To add an AAAA record pointing to a CloudFront distribution:
 
 ```ts
@@ -299,7 +313,7 @@ const delegationRole = iam.Role.fromRoleArn(this, 'DelegationRole', delegationRo
 
 // create the record
 new route53.CrossAccountZoneDelegationRecord(this, 'delegate', {
-  delegatedZone: subZone,
+  delegatedZone: subZone, // Note that an imported HostedZone is not supported as Name Servers info will not be available
   parentHostedZoneName: 'someexample.com', // or you can use parentHostedZoneId
   delegationRole,
 });
