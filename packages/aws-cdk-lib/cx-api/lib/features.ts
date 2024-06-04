@@ -1093,12 +1093,16 @@ export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
   [LOG_API_RESPONSE_DATA_PROPERTY_TRUE_DEFAULT]: {
     type: FlagType.BugFix,
-    summary: 'When enabled, the custom resource used for AwsCustomResource will configure the logApiResponseData property as true by default',
+    summary: 'When enabled, the custom resource used for `AwsCustomResource` will configure the `logApiResponseData` property as true by default',
     detailsMd: `
-      When this feature flag is enabled, the custom resource used for AwsCustomResource will configure the logApiResponseData property as true by default. This
-      results in logApiResponseData being passed as true to the custom resource provider. Unlike most feature flags, we don't recommend setting this feature flag
-      to true unless you're using the AwsCustomResource construct with logApiResponseData set to true as a custom resource event property by default and do not
-      want to trigger an update by letting the default logApiResponseData value go back to undefined.
+      This results in 'logApiResponseData' being passed as true to the custom resource provider. This will cause the custom resource handler to receive an 'Update' event. If you don't
+      have an SDK call configured for the 'Update' event and you're dependent on specific SDK call response data, you will see this error from CFN:
+
+      CustomResource attribute error: Vendor response doesn't contain <attribute-name> attribute in object. See https://github.com/aws/aws-cdk/issues/29949) for more details.
+
+      Unlike most feature flags, we don't recommend setting this feature flag to true. However, if you're using the 'AwsCustomResource' construct with 'logApiResponseData' as true in
+      the event object, then setting this feature flag will keep this behavior. Otherwise, setting this feature flag to false will trigger an 'Update' event by removing the 'logApiResponseData'
+      property from the event object.
     `,
     introducedIn: { v2: 'V2NEXT' },
     recommendedValue: false,
