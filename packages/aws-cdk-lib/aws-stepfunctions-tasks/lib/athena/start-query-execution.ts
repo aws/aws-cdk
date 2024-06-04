@@ -52,6 +52,32 @@ export interface AthenaStartQueryExecutionProps extends sfn.TaskStateBaseProps {
    * @default - No parameters
    */
   readonly executionParameters?: string[];
+
+  /**
+   * Specifies the query result reuse behavior for the query.
+   *
+   * @default - Query results are not reused
+   */
+  readonly resultReuseConfiguration?: ResultReuseConfiguration;
+}
+
+/**
+ * Specifies the query result reuse behavior for the query.
+ */
+export interface ResultReuseConfiguration {
+  /**
+   * Whether the query results should be reused or not.
+   *
+   * @default - Query results are not reused
+   */
+  readonly enabled: boolean;
+
+  /**
+   * Specifies, in minutes, the maximum age of a previous query result that Athena should consider for reuse.
+   *
+   * @default 60
+   */
+  readonly maxAgeInMinutes?: number;
 }
 
 /**
@@ -77,6 +103,7 @@ export class AthenaStartQueryExecution extends sfn.TaskStateBase {
 
     validatePatternSupported(this.integrationPattern, AthenaStartQueryExecution.SUPPORTED_INTEGRATION_PATTERNS);
     this.validateExecutionParameters(props.executionParameters);
+    this.validateMaxAgeInMinutes(props.resultReuseConfiguration?.maxAgeInMinutes);
 
     this.taskPolicies = this.createPolicyStatements();
   }
@@ -90,6 +117,13 @@ export class AthenaStartQueryExecution extends sfn.TaskStateBase {
     if (invalidExecutionParameters) {
       throw new Error('\'executionParameters\' items\'s length must be between 1 and 1024 characters');
     }
+  }
+
+  private validateMaxAgeInMinutes(maxAgeInMinutes?: number) {
+    if (maxAgeInMinutes === undefined || cdk.Token.isUnresolved(maxAgeInMinutes)) return;
+    if (maxAgeInMinutes < 0 || maxAgeInMinutes > 10080) {
+      throw new Error(`maxAgeInMinutes must be between 0 and 10080, got ${maxAgeInMinutes}`);
+    };
   }
 
   private createPolicyStatements(): iam.PolicyStatement[] {
@@ -232,6 +266,12 @@ export class AthenaStartQueryExecution extends sfn.TaskStateBase {
         },
         WorkGroup: this.props.workGroup,
         ExecutionParameters: this.props.executionParameters,
+        ResultReuseConfiguration: this.props.resultReuseConfiguration ? {
+          ResultReuseByAgeConfiguration: {
+            Enabled: this.props.resultReuseConfiguration?.enabled,
+            MaxAgeInMinutes: this.props.resultReuseConfiguration?.maxAgeInMinutes,
+          },
+        } : undefined,
       }),
     };
   }

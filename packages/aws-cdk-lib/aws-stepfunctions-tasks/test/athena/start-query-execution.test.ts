@@ -410,4 +410,120 @@ describe('Start Query Execution', () => {
       // THEN
     }).toThrow(/must be a non-empty list/);
   });
+
+  test('resultReuseConfiguration', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const task = new AthenaStartQueryExecution(stack, 'Query', {
+      queryString: 'SELECT 1',
+      workGroup: 'primary',
+      resultConfiguration: {
+        encryptionConfiguration: { encryptionOption: EncryptionOption.S3_MANAGED },
+      },
+      resultReuseConfiguration: {
+        enabled: true,
+        maxAgeInMinutes: 60,
+      },
+    });
+
+    // THEN
+    expect(stack.resolve(task.toStateJson())).toEqual({
+      Type: 'Task',
+      Resource: {
+        'Fn::Join': [
+          '',
+          [
+            'arn:',
+            {
+              Ref: 'AWS::Partition',
+            },
+            ':states:::athena:startQueryExecution',
+          ],
+        ],
+      },
+      End: true,
+      Parameters: {
+        QueryString: 'SELECT 1',
+        WorkGroup: 'primary',
+        ResultConfiguration: {
+          EncryptionConfiguration: { EncryptionOption: EncryptionOption.S3_MANAGED },
+        },
+        ResultReuseConfiguration: {
+          ResultReuseByAgeConfiguration: {
+            Enabled: true,
+            MaxAgeInMinutes: 60,
+          },
+        },
+      },
+    });
+  });
+
+  test('resultReuseConfiguration without maxAgeInMinutes', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    const task = new AthenaStartQueryExecution(stack, 'Query', {
+      queryString: 'SELECT 1',
+      workGroup: 'primary',
+      resultConfiguration: {
+        encryptionConfiguration: { encryptionOption: EncryptionOption.S3_MANAGED },
+      },
+      resultReuseConfiguration: {
+        enabled: true,
+      },
+    });
+
+    // THEN
+    expect(stack.resolve(task.toStateJson())).toEqual({
+      Type: 'Task',
+      Resource: {
+        'Fn::Join': [
+          '',
+          [
+            'arn:',
+            {
+              Ref: 'AWS::Partition',
+            },
+            ':states:::athena:startQueryExecution',
+          ],
+        ],
+      },
+      End: true,
+      Parameters: {
+        QueryString: 'SELECT 1',
+        WorkGroup: 'primary',
+        ResultConfiguration: {
+          EncryptionConfiguration: { EncryptionOption: EncryptionOption.S3_MANAGED },
+        },
+        ResultReuseConfiguration: {
+          ResultReuseByAgeConfiguration: {
+            Enabled: true,
+          },
+        },
+      },
+    });
+  });
+
+  test.each([-1, 10090])('resultReuseConfiguration with invalid maxAgeInMinutes %d', (maxAgeInMinutes) => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    expect(() => {
+      new AthenaStartQueryExecution(stack, 'Query', {
+        queryString: 'SELECT 1',
+        workGroup: 'primary',
+        resultConfiguration: {
+          encryptionConfiguration: { encryptionOption: EncryptionOption.S3_MANAGED },
+        },
+        resultReuseConfiguration: {
+          enabled: true,
+          maxAgeInMinutes,
+        },
+      });
+    }).toThrow(`maxAgeInMinutes must be between 0 and 10080, got ${maxAgeInMinutes}`);
+  });
 });

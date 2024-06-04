@@ -269,6 +269,31 @@ const startQueryExecutionJob = new tasks.AthenaStartQueryExecution(this, 'Start 
 });
 ```
 
+By setting `resultReuseConfiguration` property, you can reuse the query results.
+
+```ts
+const startQueryExecutionJob = new tasks.AthenaStartQueryExecution(this, 'Start Athena Query', {
+  queryString: sfn.JsonPath.stringAt('$.queryString'),
+  queryExecutionContext: {
+    databaseName: 'mydatabase',
+  },
+  resultConfiguration: {
+    encryptionConfiguration: {
+      encryptionOption: tasks.EncryptionOption.S3_MANAGED,
+    },
+    outputLocation: {
+      bucketName: 'query-results-bucket',
+      objectKey: 'folder',
+    },
+  },
+  executionParameters: ['param1', 'param2'],
+  resultReuseConfiguration: {
+    enabled: true,
+    maxAgeInMinutes: 100,
+  },
+});
+```
+
 ### GetQueryExecution
 
 The [GetQueryExecution](https://docs.aws.amazon.com/athena/latest/APIReference/API_GetQueryExecution.html) API gets information about a single execution of a query.
@@ -771,7 +796,7 @@ new tasks.EmrAddStep(this, 'Task', {
 
 To specify a custom runtime role use the `executionRoleArn` property.
 
-**Note:** The EMR cluster must be created with a security configuration and the runtime role must have a specific trust policy. 
+**Note:** The EMR cluster must be created with a security configuration and the runtime role must have a specific trust policy.
 See this [blog post](https://aws.amazon.com/blogs/big-data/introducing-runtime-roles-for-amazon-emr-steps-use-iam-roles-and-aws-lake-formation-for-access-control-with-amazon-emr/) for more details.
 
 ```ts
@@ -784,7 +809,7 @@ const cfnSecurityConfiguration = new emr.CfnSecurityConfiguration(this, 'EmrSecu
       "AuthorizationConfiguration": {
           "IAMConfiguration": {
               "EnableApplicationScopedIAMRole": true,
-              "ApplicationScopedIAMRoleConfiguration": 
+              "ApplicationScopedIAMRoleConfiguration":
                   {
                       "PropagateSourceIdentity": true
                   }
