@@ -5,53 +5,6 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "MyEventBridgeBucketPolicy8F5346E3": {
-   "Type": "AWS::S3::BucketPolicy",
-   "Properties": {
-    "Bucket": {
-     "Ref": "MyEventBridgeBucket1ABD5C2A"
-    },
-    "PolicyDocument": {
-     "Statement": [
-      {
-       "Action": "s3:*",
-       "Condition": {
-        "Bool": {
-         "aws:SecureTransport": "false"
-        }
-       },
-       "Effect": "Deny",
-       "Principal": {
-        "AWS": "*"
-       },
-       "Resource": [
-        {
-         "Fn::GetAtt": [
-          "MyEventBridgeBucket1ABD5C2A",
-          "Arn"
-         ]
-        },
-        {
-         "Fn::Join": [
-          "",
-          [
-           {
-            "Fn::GetAtt": [
-             "MyEventBridgeBucket1ABD5C2A",
-             "Arn"
-            ]
-           },
-           "/*"
-          ]
-         ]
-        }
-       ]
-      }
-     ],
-     "Version": "2012-10-17"
-    }
-   }
-  },
   "MyEventBridgeBucketNotifications19C0453F": {
    "Type": "Custom::S3BucketNotifications",
    "Properties": {
@@ -68,10 +21,7 @@
      "EventBridgeConfiguration": {}
     },
     "Managed": true
-   },
-   "DependsOn": [
-    "MyEventBridgeBucketPolicy8F5346E3"
-   ]
+   }
   },
   "BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleB6FB88EC": {
    "Type": "AWS::IAM::Role",

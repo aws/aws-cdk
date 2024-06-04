@@ -1,7 +1,7 @@
 {
   "version": "36.0.0",
   "files": {
-    "e3e578f98cbc7f7fc1055d0b89782e48d0f52714ad995dd3b2569b747ed90a41": {
+    "f969266fc98e4ea80177528a60b03f94efd6aa36a24e24843423ddafda146cad": {
       "source": {
         "path": "ResourcePolicyTest-v2.template.json",
         "packaging": "file"
@@ -9,7 +9,7 @@
       "destinations": {
         "current_account-eu-west-1": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-eu-west-1",
-          "objectKey": "e3e578f98cbc7f7fc1055d0b89782e48d0f52714ad995dd3b2569b747ed90a41.json",
+          "objectKey": "f969266fc98e4ea80177528a60b03f94efd6aa36a24e24843423ddafda146cad.json",
           "region": "eu-west-1",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-eu-west-1"
         }

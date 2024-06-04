@@ -957,7 +957,7 @@
                       "Ref": "Role1ABCC5F0"
                     },
                     "engine": "aurora-mysql",
-                    "engineVersion": "8.0.mysql_aurora.3.06.0",
+                    "engineVersion": "8.0.mysql_aurora.3.05.1",
                     "masterUsername": {
                       "Fn::Join": [
                         "",
