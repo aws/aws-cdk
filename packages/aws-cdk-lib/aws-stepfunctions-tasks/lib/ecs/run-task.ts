@@ -327,7 +327,7 @@ export class EcsRunTask extends sfn.TaskStateBase implements ec2.IConnectable {
         Overrides: {
           Cpu: this.props.cpu,
           Memory: this.props.memoryMiB,
-          ...renderOverrides(this.props.containerOverrides),
+          ContainerOverrides: renderOverrides(this.props.containerOverrides),
         },
         PropagateTags: this.props.propagatedTagSource,
         ...this.props.launchTarget.bind(this, { taskDefinition: this.props.taskDefinition, cluster: this.props.cluster }).parameters,
@@ -459,5 +459,5 @@ function renderOverrides(containerOverrides?: ContainerOverride[]) {
     });
   }
 
-  return { ContainerOverrides: ret };
+  return ret;
 }
