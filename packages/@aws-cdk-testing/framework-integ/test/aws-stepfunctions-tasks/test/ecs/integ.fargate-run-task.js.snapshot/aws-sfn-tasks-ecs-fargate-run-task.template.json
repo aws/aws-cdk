@@ -941,7 +941,7 @@
          "GroupId"
         ]
        },
-       "\"]}},\"Overrides\":{\"ContainerOverrides\":[{\"Name\":\"TheContainer\",\"Environment\":[{\"Name\":\"SOME_KEY\",\"Value.$\":\"$.SomeKey\"}]}]},\"LaunchType\":\"FARGATE\",\"PlatformVersion\":\"1.4.0\"}},\"FargateTaskSetRevisionNumber\":{\"Next\":\"FargateTaskWithPropagatedTag\",\"Type\":\"Task\",\"Resource\":\"arn:",
+       "\"]}},\"Overrides\":{\"Cpu\":\"1024\",\"Memory\":\"2048\",\"ContainerOverrides\":[{\"Name\":\"TheContainer\",\"Environment\":[{\"Name\":\"SOME_KEY\",\"Value.$\":\"$.SomeKey\"}]}]},\"LaunchType\":\"FARGATE\",\"PlatformVersion\":\"1.4.0\"}},\"FargateTaskSetRevisionNumber\":{\"Next\":\"FargateTaskWithPropagatedTag\",\"Type\":\"Task\",\"Resource\":\"arn:",
        {
         "Ref": "AWS::Partition"
        },
@@ -967,7 +967,7 @@
          "GroupId"
         ]
        },
-       "\"]}},\"LaunchType\":\"FARGATE\",\"PlatformVersion\":\"1.4.0\"}},\"FargateTaskWithPropagatedTag\":{\"End\":true,\"Type\":\"Task\",\"Resource\":\"arn:",
+       "\"]}},\"Overrides\":{},\"LaunchType\":\"FARGATE\",\"PlatformVersion\":\"1.4.0\"}},\"FargateTaskWithPropagatedTag\":{\"End\":true,\"Type\":\"Task\",\"Resource\":\"arn:",
        {
         "Ref": "AWS::Partition"
        },
@@ -993,7 +993,7 @@
          "GroupId"
         ]
        },
-       "\"]}},\"PropagateTags\":\"TASK_DEFINITION\",\"LaunchType\":\"FARGATE\",\"PlatformVersion\":\"1.4.0\"}}}}"
+       "\"]}},\"Overrides\":{},\"PropagateTags\":\"TASK_DEFINITION\",\"LaunchType\":\"FARGATE\",\"PlatformVersion\":\"1.4.0\"}}}}"
       ]
      ]
     },
