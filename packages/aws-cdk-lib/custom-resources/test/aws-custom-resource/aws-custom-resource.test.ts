@@ -1533,7 +1533,7 @@ describe('logging configuration', () => {
   test('with Logging.all() configured and feature flag enabled', () => {
     // GIVEN
     const app = new App({ postCliContext: { [LOG_API_RESPONSE_DATA_PROPERTY_TRUE_DEFAULT]: true } });
-    const stack = new Stack();
+    const stack = new Stack(app);
 
     // WHEN
     new AwsCustomResource(stack, 'AwsSdk', {
