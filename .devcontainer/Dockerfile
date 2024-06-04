@@ -1,4 +1,4 @@
-FROM jsii/superchain:1-buster-slim-node18
+FROM jsii/superchain:1-bookworm-slim-node20
 
 USER root
 
