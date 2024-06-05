@@ -1214,6 +1214,25 @@ cluster.grantAccess('eksAdminViewRoleAccess', eksAdminViewRole.roleArn, [
 ]);
 ```
 
+### Migrating from ConfigMap to Access Entry
+
+If the cluster is created with `authenticationMode` undefined, it implifies `API_AND_CONFIG_MAP` by default. The update path
+would only allow the two paths below:
+
+If the cluster is created with the `authenticationMode` property left undefined,
+it will default to `API_AND_CONFIG_MAP`. 
+
+The possible update paths in this case are:
+
+1. `undefined` ->  `API_AND_CONFIG_MAP` -> `API`
+2. `undefined` -> `API` (as `undefined` is equivalent `API_AND_CONFIG_MAP`)
+
+If you have explicitly declared `AwsAuth` resources and then try to switch to the `API` mode, which no longer supports the
+`ConfigMap`, AWS CDK will throw an error as a protective measure to prevent you from losing all the access entries in the `ConfigMap`. In this case, you will need to remove all the declared `AwsAuth` resources explicitly before you are allowed to transition to the
+`API` mode.
+
+> **Note** - This is a one-way transition. Once you switch to the `API` mode,
+you will not be able to switch back. Therefore, it is crucial to ensure that you have defined all the necessary access entries before making the switch to the `API` mode.
 
 ### Cluster Security Group
 
