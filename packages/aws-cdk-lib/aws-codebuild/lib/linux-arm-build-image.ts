@@ -1,5 +1,6 @@
 import { BuildSpec } from './build-spec';
 import { ComputeType } from './compute-type';
+import { EnvironmentType } from './environment-type';
 import { runScriptLinuxBuildSpec } from './private/run-script-linux-build-spec';
 import { BuildEnvironment, IBuildImage, ImagePullPrincipalType, DockerImageOptions } from './project';
 import * as ecr from '../../aws-ecr';
@@ -32,12 +33,12 @@ interface LinuxArmBuildImageProps {
 export class LinuxArmBuildImage implements IBuildImage {
   /**
    * Image "aws/codebuild/amazonlinux2-aarch64-standard:1.0".
-   * @deprecated Use LinuxArmBuildImage.AMAZON_LINUX_2_STANDARD_3_0 instead.
+   * @deprecated Use {@link LinuxArmBuildImage.AMAZON_LINUX_2_STANDARD_3_0} instead.
    * */
   public static readonly AMAZON_LINUX_2_STANDARD_1_0 = LinuxArmBuildImage.fromCodeBuildImageId('aws/codebuild/amazonlinux2-aarch64-standard:1.0');
-  /** Image "aws/codebuild/amazonlinux2-aarch64-standard:2.0". */
+  /** Image "aws/codebuild/amazonlinux2-aarch64-standard:2.0" based on Amazon Linux 2. */
   public static readonly AMAZON_LINUX_2_STANDARD_2_0 = LinuxArmBuildImage.fromCodeBuildImageId('aws/codebuild/amazonlinux2-aarch64-standard:2.0');
-  /** Image "aws/codebuild/amazonlinux2-aarch64-standard:3.0". */
+  /** Image "aws/codebuild/amazonlinux2-aarch64-standard:3.0" based on Amazon Linux 2023. */
   public static readonly AMAZON_LINUX_2_STANDARD_3_0 = LinuxArmBuildImage.fromCodeBuildImageId('aws/codebuild/amazonlinux2-aarch64-standard:3.0');
 
   /**
@@ -87,7 +88,7 @@ export class LinuxArmBuildImage implements IBuildImage {
     });
   }
 
-  public readonly type = 'ARM_CONTAINER';
+  public readonly type = EnvironmentType.ARM_CONTAINER as string;
   public readonly defaultComputeType = ComputeType.LARGE;
   public readonly imageId: string;
   public readonly imagePullPrincipalType?: ImagePullPrincipalType;
