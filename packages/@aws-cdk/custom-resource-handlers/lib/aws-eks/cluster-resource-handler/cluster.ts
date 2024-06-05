@@ -128,6 +128,53 @@ export class ClusterResourceHandler extends ResourceHandler {
       return this.onCreate();
     }
 
+    // Update tags
+    if (updates.updateTags) {
+      try {
+        // Describe the cluster to get the ARN for tagging APIs and to make sure Cluster exists
+        const cluster = (await this.eks.describeCluster({ name: this.clusterName })).cluster;
+        if (this.oldProps.tags) {
+          if (this.newProps.tags) {
+            // This means there are old tags as well as new tags so get the difference
+            // Update existing tag keys and add newly added tags
+            const tagsToAdd = getTagsToUpdate(this.oldProps.tags, this.newProps.tags);
+            if (tagsToAdd) {
+              const tagConfig: EKS.TagResourceCommandInput = {
+                resourceArn: cluster?.arn,
+                tags: tagsToAdd,
+              };
+              await this.eks.tagResource(tagConfig);
+            }
+            // Remove the tags that were removed in newProps
+            const tagsToRemove = getTagsToRemove(this.oldProps.tags, this.newProps.tags);
+            if (tagsToRemove.length > 0 ) {
+              const config: EKS.UntagResourceCommandInput = {
+                resourceArn: cluster?.arn,
+                tagKeys: tagsToRemove,
+              };
+              await this.eks.untagResource(config);
+            }
+          } else {
+            // This means newProps.tags is empty hence remove all tags
+            const config: EKS.UntagResourceCommandInput = {
+              resourceArn: cluster?.arn,
+              tagKeys: Object.keys(this.oldProps.tags),
+            };
+            await this.eks.untagResource(config);
+          }
+        } else {
+          // This means oldProps.tags was empty hence add all tags from newProps.tags
+          const config: EKS.TagResourceCommandInput = {
+            resourceArn: cluster?.arn,
+            tags: this.newProps.tags,
+          };
+          await this.eks.tagResource(config);
+        }
+      } catch (e: any) {
+        throw e;
+      }
+    }
+
     // if a version update is required, issue the version update
     if (updates.updateVersion) {
       if (!this.newProps.version) {
@@ -337,6 +384,7 @@ interface UpdateMap {
   updateAuthMode: boolean; // accessConfig.authenticationMode
   updateBootstrapClusterCreatorAdminPermissions: boolean; // accessConfig.bootstrapClusterCreatorAdminPermissions
   updateVpc: boolean; // resourcesVpcConfig.subnetIds and securityGroupIds
+  updateTags: boolean; // tags
 }
 
 function analyzeUpdate(oldProps: Partial<EKS.CreateClusterCommandInput>, newProps: EKS.CreateClusterCommandInput): UpdateMap {
@@ -369,9 +417,38 @@ function analyzeUpdate(oldProps: Partial<EKS.CreateClusterCommandInput>, newProp
     updateAuthMode: JSON.stringify(newAccessConfig.authenticationMode) !== JSON.stringify(oldAccessConfig.authenticationMode),
     updateBootstrapClusterCreatorAdminPermissions: JSON.stringify(newAccessConfig.bootstrapClusterCreatorAdminPermissions) !==
       JSON.stringify(oldAccessConfig.bootstrapClusterCreatorAdminPermissions),
+    updateTags: JSON.stringify(newProps.tags) !== JSON.stringify(oldProps.tags),
   };
 }
 
 function setsEqual(first: Set<string>, second: Set<string>) {
   return first.size === second.size && [...first].every((e: string) => second.has(e));
+}
+
+function getTagsToUpdate<T extends Record<string, string>>(oldTags: T, newTags: T): T {
+  const diff: T = {} as T;
+  // Get all tag keys that are newly added and keys whose value have changed
+  for (const key in newTags) {
+    if (newTags.hasOwnProperty(key)) {
+      if (!oldTags.hasOwnProperty(key)) {
+        diff[key] = newTags[key];
+      } else if (oldTags[key] !== newTags[key]) {
+        diff[key] = newTags[key];
+      }
+    }
+  }
+
+  return diff;
+}
+
+function getTagsToRemove<T extends Record<string, string>>(oldTags: T, newTags: T): string[] {
+  const missingKeys: string[] = [];
+  //Get all tag keys to remove
+  for (const key in oldTags) {
+    if (oldTags.hasOwnProperty(key) && !newTags.hasOwnProperty(key)) {
+      missingKeys.push(key);
+    }
+  }
+
+  return missingKeys;
 }

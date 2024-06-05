@@ -80,12 +80,16 @@ export class EngineVersion {
    * Neptune engine version 1.3.0.0
    */
   public static readonly V1_3_0_0 = new EngineVersion('1.3.0.0');
+  /**
+   * Neptune engine version 1.3.1.0
+   */
+  public static readonly V1_3_1_0 = new EngineVersion('1.3.1.0');
 
   /**
    * Constructor for specifying a custom engine version
    * @param version the engine version of Neptune
    */
-  public constructor(public readonly version: string) {}
+  public constructor(public readonly version: string) { }
 }
 
 /**
@@ -105,7 +109,7 @@ export class LogType {
    * Constructor for specifying a custom log type
    * @param value the log type
    */
-  public constructor(public readonly value: string) {}
+  public constructor(public readonly value: string) { }
 }
 
 export interface ServerlessScalingConfiguration {
@@ -321,6 +325,13 @@ export interface DatabaseClusterProps {
    * @default - required if instanceType is db.serverless
    */
   readonly serverlessScalingConfiguration?: ServerlessScalingConfiguration;
+
+  /**
+   * Whether to copy tags to the snapshot when a snapshot is created.
+   *
+   * @default - false
+   */
+  readonly copyTagsToSnapshot?: boolean;
 }
 
 /**
@@ -616,6 +627,8 @@ export class DatabaseCluster extends DatabaseClusterBase implements IDatabaseClu
       enableCloudwatchLogsExports: props.cloudwatchLogsExports?.map(logType => logType.value),
       storageEncrypted,
       serverlessScalingConfiguration: props.serverlessScalingConfiguration,
+      // Tags
+      copyTagsToSnapshot: props.copyTagsToSnapshot,
     });
 
     cluster.applyRemovalPolicy(props.removalPolicy, {
