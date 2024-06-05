@@ -54,11 +54,11 @@ export interface AthenaStartQueryExecutionProps extends sfn.TaskStateBaseProps {
   readonly executionParameters?: string[];
 
   /**
-   * Specifies the query result reuse behavior for the query.
+   * Specifies, in minutes, the maximum age of a previous query result that Athena should consider for reuse.
    *
    * @default - Query results are not reused
    */
-  readonly resultReuseConfiguration?: ResultReuseConfiguration;
+  readonly resultReuseConfigurationMaxAge?: Duration;
 }
 
 /**
