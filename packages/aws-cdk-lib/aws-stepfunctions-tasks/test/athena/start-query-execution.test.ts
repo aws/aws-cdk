@@ -411,7 +411,7 @@ describe('Start Query Execution', () => {
     }).toThrow(/must be a non-empty list/);
   });
 
-  test('resultReuseConfiguration', () => {
+  test('task with valid resultReuseConfigurationMaxAge', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -422,10 +422,7 @@ describe('Start Query Execution', () => {
       resultConfiguration: {
         encryptionConfiguration: { encryptionOption: EncryptionOption.S3_MANAGED },
       },
-      resultReuseConfiguration: {
-        enabled: true,
-        maxAgeInMinutes: 60,
-      },
+      resultReuseConfigurationMaxAge: cdk.Duration.minutes(60),
     });
 
     // THEN
@@ -460,54 +457,7 @@ describe('Start Query Execution', () => {
     });
   });
 
-  test('resultReuseConfiguration without maxAgeInMinutes', () => {
-    // GIVEN
-    const stack = new cdk.Stack();
-
-    // WHEN
-    const task = new AthenaStartQueryExecution(stack, 'Query', {
-      queryString: 'SELECT 1',
-      workGroup: 'primary',
-      resultConfiguration: {
-        encryptionConfiguration: { encryptionOption: EncryptionOption.S3_MANAGED },
-      },
-      resultReuseConfiguration: {
-        enabled: true,
-      },
-    });
-
-    // THEN
-    expect(stack.resolve(task.toStateJson())).toEqual({
-      Type: 'Task',
-      Resource: {
-        'Fn::Join': [
-          '',
-          [
-            'arn:',
-            {
-              Ref: 'AWS::Partition',
-            },
-            ':states:::athena:startQueryExecution',
-          ],
-        ],
-      },
-      End: true,
-      Parameters: {
-        QueryString: 'SELECT 1',
-        WorkGroup: 'primary',
-        ResultConfiguration: {
-          EncryptionConfiguration: { EncryptionOption: EncryptionOption.S3_MANAGED },
-        },
-        ResultReuseConfiguration: {
-          ResultReuseByAgeConfiguration: {
-            Enabled: true,
-          },
-        },
-      },
-    });
-  });
-
-  test.each([-1, 10090])('resultReuseConfiguration with invalid maxAgeInMinutes %d', (maxAgeInMinutes) => {
+  test('task with invalid resultReuseConfigurationMaxAge', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
@@ -519,11 +469,9 @@ describe('Start Query Execution', () => {
         resultConfiguration: {
           encryptionConfiguration: { encryptionOption: EncryptionOption.S3_MANAGED },
         },
-        resultReuseConfiguration: {
-          enabled: true,
-          maxAgeInMinutes,
-        },
+        resultReuseConfigurationMaxAge: cdk.Duration.minutes(10090),
       });
-    }).toThrow(`maxAgeInMinutes must be between 0 and 10080, got ${maxAgeInMinutes}`);
+    }).toThrow('resultReuseConfigurationMaxAge must be between 0 and 10080 minutes, got 10090',
+    );
   });
 });

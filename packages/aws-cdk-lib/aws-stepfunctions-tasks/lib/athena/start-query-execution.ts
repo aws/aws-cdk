@@ -58,26 +58,7 @@ export interface AthenaStartQueryExecutionProps extends sfn.TaskStateBaseProps {
    *
    * @default - Query results are not reused
    */
-  readonly resultReuseConfigurationMaxAge?: Duration;
-}
-
-/**
- * Specifies the query result reuse behavior for the query.
- */
-export interface ResultReuseConfiguration {
-  /**
-   * Whether the query results should be reused or not.
-   *
-   * @default - Query results are not reused
-   */
-  readonly enabled: boolean;
-
-  /**
-   * Specifies, in minutes, the maximum age of a previous query result that Athena should consider for reuse.
-   *
-   * @default 60
-   */
-  readonly maxAgeInMinutes?: number;
+  readonly resultReuseConfigurationMaxAge?: cdk.Duration;
 }
 
 /**
@@ -103,7 +84,7 @@ export class AthenaStartQueryExecution extends sfn.TaskStateBase {
 
     validatePatternSupported(this.integrationPattern, AthenaStartQueryExecution.SUPPORTED_INTEGRATION_PATTERNS);
     this.validateExecutionParameters(props.executionParameters);
-    this.validateMaxAgeInMinutes(props.resultReuseConfiguration?.maxAgeInMinutes);
+    this.validateMaxAgeInMinutes(props.resultReuseConfigurationMaxAge);
 
     this.taskPolicies = this.createPolicyStatements();
   }
@@ -119,10 +100,11 @@ export class AthenaStartQueryExecution extends sfn.TaskStateBase {
     }
   }
 
-  private validateMaxAgeInMinutes(maxAgeInMinutes?: number) {
-    if (maxAgeInMinutes === undefined || cdk.Token.isUnresolved(maxAgeInMinutes)) return;
-    if (maxAgeInMinutes < 0 || maxAgeInMinutes > 10080) {
-      throw new Error(`maxAgeInMinutes must be between 0 and 10080, got ${maxAgeInMinutes}`);
+  private validateMaxAgeInMinutes(resultReuseConfigurationMaxAge?: cdk.Duration) {
+    if (resultReuseConfigurationMaxAge === undefined || cdk.Token.isUnresolved(resultReuseConfigurationMaxAge)) return;
+    const maxAgeInMinutes = resultReuseConfigurationMaxAge.toMinutes();
+    if (maxAgeInMinutes > 10080) {
+      throw new Error(`resultReuseConfigurationMaxAge must be between 0 and 10080 minutes, got ${maxAgeInMinutes}`);
     };
   }
 
@@ -266,10 +248,10 @@ export class AthenaStartQueryExecution extends sfn.TaskStateBase {
         },
         WorkGroup: this.props.workGroup,
         ExecutionParameters: this.props.executionParameters,
-        ResultReuseConfiguration: this.props.resultReuseConfiguration ? {
+        ResultReuseConfiguration: this.props.resultReuseConfigurationMaxAge ? {
           ResultReuseByAgeConfiguration: {
-            Enabled: this.props.resultReuseConfiguration?.enabled,
-            MaxAgeInMinutes: this.props.resultReuseConfiguration?.maxAgeInMinutes,
+            Enabled: true,
+            MaxAgeInMinutes: this.props.resultReuseConfigurationMaxAge.toMinutes(),
           },
         } : undefined,
       }),

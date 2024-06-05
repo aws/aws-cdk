@@ -24,10 +24,7 @@ const task = new AthenaStartQueryExecution(stack, 'Query', {
       objectKey: 'folder',
     },
   },
-  resultReuseConfiguration: {
-    enabled: true,
-    maxAgeInMinutes: 100,
-  },
+  resultReuseConfigurationMaxAge: cdk.Duration.minutes(100),
 });
 
 const chain = sfn.Chain.start(task);
