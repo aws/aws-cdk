@@ -53,7 +53,7 @@ const csvTable = new glue.S3Table(stack, 'CSVTable', {
 
 csvTable.addPartitionIndex({
   indexName: 'index2',
-  keyNames: ['month', 'year'],
+  keyNames: ['year'],
 });
 
 const jsonTable = new glue.S3Table(stack, 'JSONTable', {
