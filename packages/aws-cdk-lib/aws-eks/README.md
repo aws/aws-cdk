@@ -1197,7 +1197,7 @@ cluster.grantAccess('clusterAdminAccess', clusterAdminRole.roleArn, [
   }),
 ]);
 
-// EKS Admin role for specified namespaces of thie cluster
+// EKS Admin role for specified namespaces of this cluster
 cluster.grantAccess('eksAdminRoleAccess', eksAdminRole.roleArn, [
   eks.AccessPolicy.fromAccessPolicyName('AmazonEKSAdminPolicy', { 
     accessScopeType: eks.AccessScopeType.NAMESPACE,
@@ -1205,7 +1205,7 @@ cluster.grantAccess('eksAdminRoleAccess', eksAdminRole.roleArn, [
   }),
 ]);
 
-// EKS Admin Viewer role for specified namespaces of thie cluster
+// EKS Admin Viewer role for specified namespaces of this cluster
 cluster.grantAccess('eksAdminViewRoleAccess', eksAdminViewRole.roleArn, [
   eks.AccessPolicy.fromAccessPolicyName('AmazonEKSAdminViewPolicy', {
     accessScopeType: eks.AccessScopeType.NAMESPACE,

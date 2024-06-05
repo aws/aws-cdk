@@ -150,8 +150,6 @@ export class AccessPolicyArn {
  * Represents an access policy that defines the permissions and scope for a user or role to access an Amazon EKS cluster.
  *
  * @interface IAccessPolicy
- * @property {AccessScope} accessScope - The scope of the access policy, which determines the level of access granted.
- * @property {AccessPolicy} policy - The access policy itself, which defines the specific permissions.
  */
 export interface IAccessPolicy {
   /**
@@ -166,10 +164,6 @@ export interface IAccessPolicy {
 
 /**
  * Properties for configuring an Amazon EKS Access Policy.
- *
- * @interface AccessPolicyProps
- * @property {AccessScope} accessScope - The scope of the access policy, which determines the level of access granted.
- * @property {AccessPolicyArn} policy - The access policy itself, which defines the specific permissions.
  */
 export interface AccessPolicyProps {
   /**
@@ -183,16 +177,17 @@ export interface AccessPolicyProps {
 }
 
 /**
- * Represents the options required to create an Amazon EKS AccessPolicy using the `fromAccessPolicyName()` method.
- *
- * @property {AccessScope} [accessScope] - The scope of the access policy. If not provided, the scope will be automatically determined based on the policy name.
+ * Represents the options required to create an Amazon EKS Access Policy using the `fromAccessPolicyName()` method.
  */
 export interface AccessPolicyNameOptions {
-  // /**
-  //  * The scope of the access policy.
-  //  */
-  // readonly accessScope: AccessScope;
+  /**
+   * The scope of the access policy. This determines the level of access granted by the policy.
+   */
   readonly accessScopeType: AccessScopeType;
+  /**
+   * An optional array of Kubernetes namespaces to which the access policy applies.
+   * @default - no specific namespaces for this scope
+   */
   readonly namespaces?: string[];
 }
 
