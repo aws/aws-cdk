@@ -1,7 +1,7 @@
 {
   "version": "36.0.0",
   "files": {
-    "68cfb13b61f63b8b06d827713275d51857676f58a08cd9722ab137892dea1bc2": {
+    "80a54d8c7f56e664f4dbff928faa93a09bd15a203312478dc18ecf9fd8dcd7cf": {
       "source": {
         "path": "aws-sfn-tasks-ecs-fargate-run-task.template.json",
         "packaging": "file"
@@ -9,7 +9,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "68cfb13b61f63b8b06d827713275d51857676f58a08cd9722ab137892dea1bc2.json",
+          "objectKey": "80a54d8c7f56e664f4dbff928faa93a09bd15a203312478dc18ecf9fd8dcd7cf.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

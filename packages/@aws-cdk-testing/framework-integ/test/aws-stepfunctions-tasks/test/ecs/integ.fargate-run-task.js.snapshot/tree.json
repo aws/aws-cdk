@@ -1530,7 +1530,7 @@
                               "GroupId"
                             ]
                           },
-                          "\"]}},\"Overrides\":{},\"LaunchType\":\"FARGATE\",\"PlatformVersion\":\"1.4.0\"}},\"FargateTaskWithPropagatedTag\":{\"End\":true,\"Type\":\"Task\",\"Resource\":\"arn:",
+                          "\"]}},\"LaunchType\":\"FARGATE\",\"PlatformVersion\":\"1.4.0\"}},\"FargateTaskWithPropagatedTag\":{\"End\":true,\"Type\":\"Task\",\"Resource\":\"arn:",
                           {
                             "Ref": "AWS::Partition"
                           },
@@ -1556,7 +1556,7 @@
                               "GroupId"
                             ]
                           },
-                          "\"]}},\"Overrides\":{},\"PropagateTags\":\"TASK_DEFINITION\",\"LaunchType\":\"FARGATE\",\"PlatformVersion\":\"1.4.0\"}}}}"
+                          "\"]}},\"PropagateTags\":\"TASK_DEFINITION\",\"LaunchType\":\"FARGATE\",\"PlatformVersion\":\"1.4.0\"}}}}"
                         ]
                       ]
                     },
