@@ -287,7 +287,7 @@ const startQueryExecutionJob = new tasks.AthenaStartQueryExecution(this, 'Start 
     },
   },
   executionParameters: ['param1', 'param2'],
-  resultReuseConfigurationMaxAge: cdk.Duration.minutes(100),
+  resultReuseConfigurationMaxAge: Duration.minutes(100),
 });
 ```
 
