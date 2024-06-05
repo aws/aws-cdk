@@ -47,3 +47,19 @@ export function flatMap<T, U>(xs: T[], f: (x: T) => U[]): U[] {
   }
   return ret;
 }
+
+export function deepCopy(x: any): any {
+  if (Array.isArray(x)) {
+    return x.map(deepCopy);
+  }
+
+  if (typeof x === 'object' && x !== null) {
+    const ret: any = {};
+    for (const key of Object.keys(x)) {
+      ret[key] = deepCopy(x[key]);
+    }
+    return ret;
+  }
+
+  return x;
+}

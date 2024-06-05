@@ -1,6 +1,6 @@
 import { ResourceChangeDetail } from '@aws-sdk/client-cloudformation';
 import * as utils from './util';
-import { PropertyDifference, ResourceDifference, ResourceImpact, fullDiff } from '../lib';
+import { ChangeSetResources, PropertyDifference, ResourceDifference, ResourceImpact, fullDiff } from '../lib';
 import { TemplateAndChangeSetDiffMerger } from '../lib/diff/template-and-changeset-diff-merger';
 
 describe('fullDiff tests that include changeset', () => {
@@ -561,6 +561,116 @@ describe('fullDiff tests that include changeset', () => {
     expect(differences.resources.get('BucketResource')?.changeImpact === ResourceImpact.WILL_IMPORT);
   });
 
+  test('FullDiff adds missing property from changeset to resource that is already in diff', () => {
+    // GIVEN
+    const currentTemplate = {
+      Resources: {
+        Queue: {
+          Type: 'AWS::SQS::Queue',
+          Properties: { QueueName: 'first' },
+        },
+      },
+    };
+    const newTemplate = {
+      Resources: {
+        Queue: {
+          Type: 'AWS::SQS::Queue',
+          Properties: { QueueName: 'second' },
+        },
+      },
+    };
+
+    const changeSet = {
+      Changes: [
+        {
+          Type: 'Resource',
+          ResourceChange: {
+            PolicyAction: 'ReplaceAndDelete',
+            Action: 'Modify',
+            LogicalResourceId: 'Queue',
+            ResourceType: 'AWS::SQS::Queue',
+            Replacement: 'True',
+            Scope: [
+              'Properties',
+            ],
+            Details: [
+              {
+                Target: {
+                  Attribute: 'Properties',
+                  Name: 'QueueName',
+                  RequiresRecreation: 'Always',
+                },
+                Evaluation: 'Static',
+                ChangeSource: 'DirectModification',
+              },
+              {
+                Target: {
+                  Attribute: 'Properties',
+                  Name: 'ReceiveMessageWaitTimeSeconds',
+                  RequiresRecreation: 'Never',
+                },
+                Evaluation: 'Static',
+                ChangeSource: 'DirectModification',
+              },
+            ],
+            BeforeContext: '{"Properties":{"QueueName":"newValuesdflkja","ReceiveMessageWaitTimeSeconds":"10"},"Metadata":{"aws:cdk:path":"cdkbugreport2/Queue/Resource"},"UpdateReplacePolicy":"Delete","DeletionPolicy":"Delete"}',
+            AfterContext: '{"Properties":{"QueueName":"newValuenewAndDifferent","ReceiveMessageWaitTimeSeconds":"20"},"Metadata":{"aws:cdk:path":"cdkbugreport2/Queue/Resource"},"UpdateReplacePolicy":"Delete","DeletionPolicy":"Delete"}',
+          },
+        },
+      ],
+      ChangeSetName: 'whatever',
+    };
+
+    // WHEN
+    const diffCollectionWithChangeSet = fullDiff(currentTemplate, newTemplate, changeSet as any);
+
+    // THEN
+    expect(diffCollectionWithChangeSet.resources.changes.Queue).toEqual({
+      oldValue: {
+        Type: 'AWS::SQS::Queue',
+        Properties: {
+          QueueName: 'first',
+          ReceiveMessageWaitTimeSeconds: '10',
+        },
+      },
+      newValue: {
+        Type: 'AWS::SQS::Queue',
+        Properties: {
+          QueueName: 'second',
+          ReceiveMessageWaitTimeSeconds: '20',
+        },
+      },
+      resourceTypes: {
+        oldType: 'AWS::SQS::Queue',
+        newType: 'AWS::SQS::Queue',
+      },
+      propertyDiffs: {
+        QueueName: {
+          oldValue: 'first',
+          newValue: 'second',
+          isDifferent: true,
+          changeImpact: 'WILL_REPLACE',
+        },
+        ReceiveMessageWaitTimeSeconds: {
+          oldValue: '10',
+          newValue: '20',
+          isDifferent: true,
+          changeImpact: 'WILL_UPDATE',
+        },
+      },
+      otherDiffs: {
+        Type: {
+          oldValue: 'AWS::SQS::Queue',
+          newValue: 'AWS::SQS::Queue',
+          isDifferent: false,
+        },
+      },
+      isAddition: false,
+      isRemoval: false,
+      isImport: undefined,
+    });
+  });
+
 });
 
 describe('method tests', () => {
@@ -584,6 +694,29 @@ describe('method tests', () => {
             replacementMode: 'Always',
           },
         },
+        changeAction: 'Modify',
+        beforeContext: {
+          Properties: {
+            QueueName: 'newValuechangedddd',
+            ReceiveMessageWaitTimeSeconds: '20',
+          },
+          Metadata: {
+            'aws:cdk:path': 'cdkbugreport/Queue/Resource',
+          },
+          UpdateReplacePolicy: 'Delete',
+          DeletionPolicy: 'Delete',
+        },
+        afterContext: {
+          Properties: {
+            QueueName: 'newValuesdflkja',
+            ReceiveMessageWaitTimeSeconds: '20',
+          },
+          Metadata: {
+            'aws:cdk:path': 'cdkbugreport/Queue/Resource',
+          },
+          UpdateReplacePolicy: 'Delete',
+          DeletionPolicy: 'Delete',
+        },
       });
       expect((templateAndChangeSetDiffMerger.changeSetResources ?? {}).mySsmParameter).toEqual({
         resourceWasReplaced: false,
@@ -591,6 +724,27 @@ describe('method tests', () => {
         propertyReplacementModes: {
           Value: {
             replacementMode: 'Never',
+          },
+        },
+        changeAction: 'Modify',
+        beforeContext: {
+          Properties: {
+            Value: 'changedddd',
+            Type: 'String',
+            Name: 'mySsmParameterFromStack',
+          },
+          Metadata: {
+            'aws:cdk:path': 'cdkbugreport/mySsmParameter/Resource',
+          },
+        },
+        afterContext: {
+          Properties: {
+            Value: 'sdflkja',
+            Type: 'String',
+            Name: 'mySsmParameterFromStack',
+          },
+          Metadata: {
+            'aws:cdk:path': 'cdkbugreport/mySsmParameter/Resource',
           },
         },
       });
@@ -629,6 +783,27 @@ describe('method tests', () => {
             replacementMode: 'Never',
           },
         },
+        changeAction: 'Modify',
+        beforeContext: {
+          Properties: {
+            Value: 'changedddd',
+            Type: 'String',
+            Name: 'mySsmParameterFromStack',
+          },
+          Metadata: {
+            'aws:cdk:path': 'cdkbugreport/mySsmParameter/Resource',
+          },
+        },
+        afterContext: {
+          Properties: {
+            Value: 'sdflkja',
+            Type: 'String',
+            Name: 'mySsmParameterFromStack',
+          },
+          Metadata: {
+            'aws:cdk:path': 'cdkbugreport/mySsmParameter/Resource',
+          },
+        },
       });
       expect((templateAndChangeSetDiffMerger.changeSetResources ?? {}).Queue).toEqual({
         resourceWasReplaced: true,
@@ -637,6 +812,30 @@ describe('method tests', () => {
           QueueName: {
             replacementMode: 'Always',
           },
+        },
+        changeAction: 'Modify',
+        beforeContext: {
+          Properties: {
+            QueueName: undefined,
+            ReceiveMessageWaitTimeSeconds: '20',
+            Random: 'nice',
+          },
+          Metadata: {
+            'aws:cdk:path': 'cdkbugreport/Queue/Resource',
+          },
+          UpdateReplacePolicy: 'Delete',
+          DeletionPolicy: 'Delete',
+        },
+        afterContext: {
+          Properties: {
+            QueueName: undefined,
+            ReceiveMessageWaitTimeSeconds: '20',
+          },
+          Metadata: {
+            'aws:cdk:path': 'cdkbugreport/Queue/Resource',
+          },
+          UpdateReplacePolicy: 'Delete',
+          DeletionPolicy: 'Delete',
         },
       });
     });
@@ -649,9 +848,13 @@ describe('method tests', () => {
       expect(templateAndChangeSetDiffMerger.changeSet).toEqual(utils.changeSetWithUndefinedDetails);
       expect(Object.keys(templateAndChangeSetDiffMerger.changeSetResources ?? {}).length).toBe(1);
       expect((templateAndChangeSetDiffMerger.changeSetResources ?? {}).Queue).toEqual({
-        resourceWasReplaced: true,
+        resourceWasReplaced: false,
         resourceType: 'UNKNOWN_RESOURCE_TYPE',
-        propertyReplacementModes: {},
+        propertyReplacementModes: {
+        },
+        changeAction: 'Remove',
+        beforeContext: undefined,
+        afterContext: undefined,
       });
     });
 
@@ -995,6 +1198,251 @@ describe('method tests', () => {
       // THEN
       expect(queue.changeImpact).toBe('WILL_ORPHAN');
       expect(queue.isDifferent).toBe(true);
+    });
+
+  });
+
+  describe('addMissingResourceInformationToDiff', () => {
+    test('if theDiffResources does not contain the changed resource, then resource is added to diff', () => {
+      // GIVEN
+      const currentResources = {
+        Queue: {
+          Type: 'AWS::SQS::Queue',
+          Properties: { QueueName: 'first' },
+        },
+      };
+      const emptyDiffCollection = fullDiff(currentResources, currentResources);
+      const templateAndChangeSetDiffMerger = new TemplateAndChangeSetDiffMerger({
+        changeSet: {},
+        changeSetResources: {
+          Queue: {
+            resourceWasReplaced: false,
+            afterContext: undefined,
+            beforeContext: undefined,
+            changeAction: 'Modify',
+            resourceType: 'AWS::SQS::Queue',
+            propertyReplacementModes: {
+              QueueName: {
+                replacementMode: 'Always',
+              },
+            },
+          },
+        } as ChangeSetResources,
+      });
+
+      // WHEN
+      const useChangeSetPropertyValuesByDefault = true;
+      templateAndChangeSetDiffMerger.addMissingResourceInformationToDiff(
+        emptyDiffCollection.resources,
+        currentResources,
+        currentResources,
+        useChangeSetPropertyValuesByDefault,
+      );
+
+      // THEN
+      expect(emptyDiffCollection.resources.changes.Queue).toEqual({
+        oldValue: {
+          Type: 'AWS::SQS::Queue',
+          Properties: {
+            QueueName: 'first',
+          },
+        },
+        newValue: {
+          Type: 'AWS::SQS::Queue',
+          Properties: {
+            QueueName: 'DescribeChangeSet detected difference, but the value is not resolved.',
+          },
+        },
+        resourceTypes: {
+          oldType: 'AWS::SQS::Queue',
+          newType: 'AWS::SQS::Queue',
+        },
+        propertyDiffs: {
+          QueueName: {
+            oldValue: 'first',
+            newValue: 'DescribeChangeSet detected difference, but the value is not resolved.',
+            isDifferent: true,
+            changeImpact: 'WILL_REPLACE',
+          },
+        },
+        otherDiffs: {
+          Type: {
+            oldValue: 'AWS::SQS::Queue',
+            newValue: 'AWS::SQS::Queue',
+            isDifferent: false,
+          },
+        },
+        isAddition: false,
+        isRemoval: false,
+        isImport: undefined,
+      });
+
+    });
+
+    test('if theDiffResources does not contain the changed resource and the type is not known, we say UNKNOWN TYPE', () => {
+      // GIVEN
+      const currentResources = {
+        Queue: {
+          Type: 'AWS::SQS::Queue',
+          Properties: { QueueName: 'first' },
+        },
+      };
+      const emptyDiffCollection = fullDiff(currentResources, currentResources);
+      const templateAndChangeSetDiffMerger = new TemplateAndChangeSetDiffMerger({
+        changeSet: {},
+        changeSetResources: {
+          Queue: {
+            propertyReplacementModes: {
+              QueueName: {
+                replacementMode: 'Always',
+              },
+            },
+          } as any,
+        },
+      });
+
+      // WHEN
+      const useChangeSetPropertyValuesByDefault = true;
+      templateAndChangeSetDiffMerger.addMissingResourceInformationToDiff(
+        emptyDiffCollection.resources,
+        currentResources,
+        currentResources,
+        useChangeSetPropertyValuesByDefault,
+      );
+
+      // THEN
+      expect(emptyDiffCollection.resources.changes.Queue).toEqual({
+        oldValue: {
+          Type: 'UNKNOWN_RESOURCE_TYPE',
+          Properties: {
+            QueueName: 'first',
+          },
+        },
+        newValue: {
+          Type: 'UNKNOWN_RESOURCE_TYPE',
+          Properties: {
+            QueueName: 'DescribeChangeSet detected difference, but the value is not resolved.',
+          },
+        },
+        resourceTypes: {
+          oldType: 'UNKNOWN_RESOURCE_TYPE',
+          newType: 'UNKNOWN_RESOURCE_TYPE',
+        },
+        propertyDiffs: {
+          QueueName: {
+            oldValue: 'first',
+            newValue: 'DescribeChangeSet detected difference, but the value is not resolved.',
+            isDifferent: true,
+            changeImpact: 'NO_CHANGE',
+          },
+        },
+        otherDiffs: {
+          Type: {
+            oldValue: 'UNKNOWN_RESOURCE_TYPE',
+            newValue: 'UNKNOWN_RESOURCE_TYPE',
+            isDifferent: false,
+          },
+        },
+        isAddition: false,
+        isRemoval: false,
+        isImport: undefined,
+      });
+
+    });
+
+    test('if theDiffResources does contain the changed resource, then we try to add missing properties', () => {
+      // GIVEN
+      const currentTemplate = {
+        Resources: {
+          Queue: {
+            Type: 'AWS::SQS::Queue',
+            Properties: { QueueName: 'first' },
+          },
+        },
+      };
+      const newTemplate = {
+        Resources: {
+          Queue: {
+            Type: 'AWS::SQS::Queue',
+            Properties: { QueueName: 'second' },
+          },
+        },
+      };
+
+      const diffCollection = fullDiff(currentTemplate, newTemplate);
+      const templateAndChangeSetDiffMerger = new TemplateAndChangeSetDiffMerger({
+        changeSet: {},
+        changeSetResources: {
+          Queue: {
+            propertyReplacementModes: {
+              QueueName: {
+                replacementMode: 'Always',
+              },
+              DelaySeconds: {
+                replacementMode: 'Never',
+              },
+            },
+          } as any,
+        },
+      });
+
+      // WHEN
+      const useChangeSetPropertyValuesByDefault = true;
+      templateAndChangeSetDiffMerger.addMissingResourceInformationToDiff(
+        diffCollection.resources,
+        currentTemplate.Resources,
+        newTemplate.Resources,
+        useChangeSetPropertyValuesByDefault,
+      );
+
+      // THEN
+      expect(diffCollection.resources.changes.Queue).toEqual({
+        oldValue: {
+          Type: 'AWS::SQS::Queue',
+          Properties: {
+            QueueName: 'first',
+            DelaySeconds: {
+            },
+          },
+        },
+        newValue: {
+          Type: 'AWS::SQS::Queue',
+          Properties: {
+            QueueName: 'second',
+            DelaySeconds: 'DescribeChangeSet detected difference, but the value is not resolved.',
+          },
+        },
+        resourceTypes: {
+          oldType: 'AWS::SQS::Queue',
+          newType: 'AWS::SQS::Queue',
+        },
+        propertyDiffs: {
+          QueueName: {
+            oldValue: 'first',
+            newValue: 'second',
+            isDifferent: true,
+            changeImpact: 'WILL_REPLACE',
+          },
+          DelaySeconds: {
+            oldValue: {
+            },
+            newValue: 'DescribeChangeSet detected difference, but the value is not resolved.',
+            isDifferent: true,
+            changeImpact: 'WILL_UPDATE',
+          },
+        },
+        otherDiffs: {
+          Type: {
+            oldValue: 'AWS::SQS::Queue',
+            newValue: 'AWS::SQS::Queue',
+            isDifferent: false,
+          },
+        },
+        isAddition: false,
+        isRemoval: false,
+        isImport: undefined,
+      });
+
     });
 
   });

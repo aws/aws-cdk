@@ -3,6 +3,14 @@
   // Hover to view descriptions of existing attributes.
   // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
   "version": "0.2.0",
+	"folders": [
+		{
+			"path": "/Users/bergjak/workplace/CDK/aws-cdk"
+		},
+		{
+			"path": "/Users/bergjak/workplace/CDK/cdk_test"
+		}
+	],
   "configurations": [
     {
       // Has convenient settings for attaching to a NodeJS process for debugging purposes
@@ -18,6 +26,35 @@
       ],
       // Saves some button-pressing latency on attaching
       "stopOnEntry": false
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Debug cdk_test",
+      "program": "${workspaceFolder:cdk_test}/bin/cdk_test.js",
+      "cwd": "${workspaceFolder:cdk_test}",
+      "console": "internalConsole",
+      "sourceMaps": true,
+      "skipFiles": [ "<node_internals>/**/*" ],
+      "outFiles": [
+        "${workspaceFolder:aws-cdk}/**/*.js",
+        "${workspaceFolder:cdk_test}/**/*.js",
+      ],
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "args": ["diff", "cdkbugreport2"],
+      "name": "debug CLI",
+      "program": "/Users/bergjak/workplace/CDK/aws-cdk/packages/aws-cdk/bin/cdk.js",
+      "cwd": "${workspaceFolder:cdk_test}",
+      "console": "integratedTerminal",
+      "sourceMaps": true,
+      "skipFiles": [ "<node_internals>/**/*" ],
+      "outFiles": [
+        "${workspaceFolder:aws-cdk}/**/*.js",
+        "${workspaceFolder:cdk_test}/**/*.js",
+      ],
     }
   ]
 }

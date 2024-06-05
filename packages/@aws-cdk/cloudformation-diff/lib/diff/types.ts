@@ -21,8 +21,14 @@ export interface ChangeSetResource {
   resourceWasReplaced: boolean;
   resourceType: string | undefined;
   propertyReplacementModes: PropertyReplacementModeMap | undefined;
+  changeAction: ResourceChangeAction;
+  beforeContext: any | undefined;
+  afterContext: any | undefined;
 }
 
+/**
+ * Contains all the properties of a given resource that changed, and if the change in that property will cause the resource to replace or not (or maybe).
+ */
 export type PropertyReplacementModeMap = {
   [propertyName: string]: {
     replacementMode: ReplacementModes | undefined;
@@ -33,6 +39,13 @@ export type PropertyReplacementModeMap = {
  * 'Always' means that changing the corresponding property will always cause a resource replacement. Never means never. Conditionally means maybe.
  */
 export type ReplacementModes = 'Always' | 'Never' | 'Conditionally';
+
+/**
+ * This is how the changeset will act on the resource -- either add the resource, remove it, import, modify (update) it, or dynamic (changeset isn't sure).
+ *
+ * - https://docs.aws.amazon.com/AWSCloudFormation/latest/APIReference/API_ResourceChange.html Action
+ */
+export type ResourceChangeAction = 'Add' | 'Dynamic' | 'Import' | 'Modify' | 'Remove';
 
 /** Semantic differences between two CloudFormation templates. */
 export class TemplateDiff implements ITemplateDiff {
@@ -378,6 +391,10 @@ export class DifferenceCollection<V, T extends IDifference<V>> {
 
   public get differenceCount(): number {
     return Object.values(this.changes).length;
+  }
+
+  public set(logicalId: string, change: T) {
+    this.diffs[logicalId] = change;
   }
 
   public get(logicalId: string): T {

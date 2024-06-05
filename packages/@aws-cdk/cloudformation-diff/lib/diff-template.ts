@@ -5,6 +5,7 @@ import * as impl from './diff';
 import { TemplateAndChangeSetDiffMerger } from './diff/template-and-changeset-diff-merger';
 import * as types from './diff/types';
 import { deepEqual, diffKeyedEntities, unionOf } from './diff/util';
+import { deepCopy } from './util';
 
 export * from './diff/types';
 
@@ -50,18 +51,26 @@ export function fullDiff(
   newTemplate: { [key: string]: any },
   changeSet?: DescribeChangeSetOutput,
   isImport?: boolean,
+  useChangeSetPropertyValuesByDefault?: boolean,
 ): types.TemplateDiff {
 
   normalize(currentTemplate);
   normalize(newTemplate);
-  const theDiff = diffTemplate(currentTemplate, newTemplate);
+  let theDiff = diffTemplate(currentTemplate, newTemplate);
   if (changeSet) {
     // These methods mutate the state of theDiff, using the changeSet.
     const changeSetDiff = new TemplateAndChangeSetDiffMerger({ changeSet });
+    changeSetDiff.addMissingResourceInformationToDiff(
+      theDiff.resources,
+      currentTemplate?.Resources,
+      newTemplate?.Resources,
+      useChangeSetPropertyValuesByDefault ?? false,
+    ); // MAKE SURE THERE'S A UNIT TEST THAT HAS UNDEFINED RESOURCES FIELD
     theDiff.resources.forEachDifference((logicalId: string, change: types.ResourceDifference) =>
       changeSetDiff.overrideDiffResourceChangeImpactWithChangeSetChangeImpact(logicalId, change),
     );
     changeSetDiff.addImportInformationFromChangeset(theDiff.resources);
+    theDiff = new types.TemplateDiff(theDiff); // do this to propagate security changes.
   } else if (isImport) {
     makeAllResourceChangesImports(theDiff);
   }
@@ -194,22 +203,6 @@ function propagateReplacedReferences(template: object, logicalId: string): boole
 
   recurse(template);
   return ret;
-}
-
-function deepCopy(x: any): any {
-  if (Array.isArray(x)) {
-    return x.map(deepCopy);
-  }
-
-  if (typeof x === 'object' && x !== null) {
-    const ret: any = {};
-    for (const key of Object.keys(x)) {
-      ret[key] = deepCopy(x[key]);
-    }
-    return ret;
-  }
-
-  return x;
 }
 
 function makeAllResourceChangesImports(diff: types.TemplateDiff) {
