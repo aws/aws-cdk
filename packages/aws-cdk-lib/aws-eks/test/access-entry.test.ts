@@ -61,7 +61,9 @@ describe('AccessEntry', () => {
   test('adds new access policies with addAccessPolicies()', () => {
     // GIVEN
     const accessEntry = new AccessEntry(stack, 'AccessEntry', mockProps);
-    const newAccessPolicy = AccessPolicy.fromAccessPolicyName('AmazonEKSClusterAdminPolicy');
+    const newAccessPolicy = AccessPolicy.fromAccessPolicyName('AmazonEKSClusterAdminPolicy', {
+      accessScopeType: AccessScopeType.CLUSTER,
+    });
     // WHEN
     accessEntry.addAccessPolicies([newAccessPolicy]);
 

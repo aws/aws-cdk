@@ -4,7 +4,9 @@ import { AccessPolicy, AccessPolicyArn, AccessPolicyNameOptions, AccessScopeType
 describe('AccessPolicy', () => {
   describe('fromAccessPolicyName', () => {
     test('creates an AccessPolicy with cluster scope', () => {
-      const accessPolicy = AccessPolicy.fromAccessPolicyName('AmazonEKSClusterAdminPolicy');
+      const accessPolicy = AccessPolicy.fromAccessPolicyName('AmazonEKSClusterAdminPolicy', {
+        accessScopeType: AccessScopeType.CLUSTER,
+      });
 
       expect(accessPolicy.accessScope).toEqual({
         type: AccessScopeType.CLUSTER,
@@ -14,7 +16,9 @@ describe('AccessPolicy', () => {
     });
 
     test('creates an AccessPolicy with namespace scope', () => {
-      const accessPolicy = AccessPolicy.fromAccessPolicyName('AmazonEKSAdminPolicy');
+      const accessPolicy = AccessPolicy.fromAccessPolicyName('AmazonEKSAdminPolicy', {
+        accessScopeType: AccessScopeType.NAMESPACE,
+      });
 
       expect(accessPolicy.accessScope).toEqual({
         type: AccessScopeType.NAMESPACE,
@@ -26,10 +30,7 @@ describe('AccessPolicy', () => {
     test('creates an AccessPolicy with custom scope', () => {
       const options: AccessPolicyNameOptions = {
         namespaces: ['custom-namespace'],
-        accessScope: {
-          type: AccessScopeType.NAMESPACE,
-          namespaces: ['custom-namespace'],
-        },
+        accessScopeType: AccessScopeType.NAMESPACE,
       };
 
       const accessPolicy = AccessPolicy.fromAccessPolicyName('AmazonEKSAdminPolicy', options);
