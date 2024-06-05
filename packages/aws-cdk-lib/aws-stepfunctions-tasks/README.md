@@ -269,7 +269,7 @@ const startQueryExecutionJob = new tasks.AthenaStartQueryExecution(this, 'Start 
 });
 ```
 
-By setting `resultReuseConfigurationMaxAge` property, you can reuse the query results.
+You can reuse the query results by setting the `resultReuseConfigurationMaxAge` property.
 
 ```ts
 const startQueryExecutionJob = new tasks.AthenaStartQueryExecution(this, 'Start Athena Query', {
