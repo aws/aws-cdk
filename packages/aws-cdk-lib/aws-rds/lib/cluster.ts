@@ -258,6 +258,7 @@ interface DatabaseClusterBaseProps {
    * @see https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/AuroraMySQL.Integrating.LoadFromS3.html
    *
    * For PostgreSQL:
+   * This feature needs to be enabled when creating the DatabaseClusterEngine
    * @see https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/AuroraPostgreSQL.Migrating.html
    *
    * @default - New role is created if `s3ImportBuckets` is set, no role is defined otherwise
@@ -289,6 +290,7 @@ interface DatabaseClusterBaseProps {
    * @see https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/AuroraMySQL.Integrating.SaveIntoS3.html
    *
    * For PostgreSQL:
+   * This feature needs to be enabled when creating the DatabaseClusterEngine
    * @see https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/postgresql-s3-export.html
    *
    * @default - New role is created if `s3ExportBuckets` is set, no role is defined otherwise
