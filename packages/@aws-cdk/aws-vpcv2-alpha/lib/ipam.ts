@@ -1,5 +1,5 @@
 import { CfnIPAM, CfnIPAMPool, CfnIPAMScope } from 'aws-cdk-lib/aws-ec2/lib';
-import { IIpAddresses, Ipv6AddressesOptions, VpcV2Options } from './vpc-v2';
+import { IIpAddresses, VpcV2Options } from './vpc-v2';
 import { Construct } from 'constructs';
 import { IResolvable, Resource } from 'aws-cdk-lib';
 
@@ -38,17 +38,27 @@ export interface IpamOptions {
    */
   readonly ipv4IpamPoolId?: string;
 
+  /**
+   * CIDR Mask for Vpc
+   *
+   * @default - Only required when using AWS Ipam
+   */
+  readonly ipv6NetmaskLength?: number;
+
+  /**
+   * ipv4 IPAM Pool Id
+   *
+   * @default - Only required when using AWS Ipam
+   */
+  readonly ipv6IpamPoolId?: string;
 }
 
 export class IpamIpv4 implements IIpAddresses {
 
   constructor(private readonly props: IpamOptions) {
   }
-  allocateVpcV6Cidr(_options: Ipv6AddressesOptions): VpcV2Options {
-    throw new Error('Method not implemented.');
-  }
-
   allocateVpcCidr(): VpcV2Options {
+
     return {
       ipv4NetmaskLength: this.props.ipv4NetmaskLength,
       ipv4IpamPoolId: this.props.ipv4IpamPoolId,
@@ -103,11 +113,11 @@ class IpamPublicScope {
 }
 
 //Customer Implementation Example
-const ipam = new Ipam(this, 'Ipam');
-ipam.publicScope.addPool({
-  addressFamily: AddressFamily.IP_V4,
-  provisionedCidrs: [{ cidr: '10.0.0.0/24' }],
-});
+// const ipam = new Ipam(this, 'Ipam');
+// ipam.publicScope.addPool({
+//   addressFamily: AddressFamily.IP_V4,
+//   provisionedCidrs: [{ cidr: '10.0.0.0/24' }],
+// });
 
 // export class IpamPool extends Resource {
 
@@ -135,14 +145,11 @@ export class IpamIpv6 implements IIpAddresses {
 
   constructor(private readonly props: IpamOptions) {
   }
-  allocateVpcV6Cidr(_options: Ipv6AddressesOptions): VpcV2Options {
-    throw new Error('Method not implemented.');
-  }
 
   allocateVpcCidr(): VpcV2Options {
     return {
-      ipv4NetmaskLength: this.props.ipv4NetmaskLength,
-      ipv4IpamPoolId: this.props.ipv4IpamPoolId,
+      ipv6NetmaskLength: this.props.ipv6NetmaskLength,
+      ipv6IpamPoolId: this.props.ipv6IpamPoolId,
     };
   }
 }

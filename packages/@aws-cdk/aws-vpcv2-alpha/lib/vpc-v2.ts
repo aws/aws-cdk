@@ -12,26 +12,32 @@ export interface IIpIpamOptions{
 }
 
 export interface Ipv6AddressesOptions {
-  readonly scope: Construct;
-  readonly vpcId: string;
-
+  readonly scope?: Construct;
+  readonly vpcId?: string;
+  readonly ipv4options?: IIpv6AddressesOptions;
+  readonly ipv6CidrBlock?: string;
 }
 
 export class IpAddresses {
 
   public static ipv4(ipv4Cidr: string): IIpAddresses {
-
     return new ipv4CidrAllocation(ipv4Cidr);
   }
 
   public static ipv4Ipam(ipv4IpamOptions: IIpIpamOptions) {
     return new IpamIpv4(ipv4IpamOptions);
   }
+
   public static ipv6(ipv6CidrOptions: IIpv6AddressesOptions): IIpAddresses {
     return new ipv6CidrAllocation(ipv6CidrOptions);
   }
+
   public static ipv6Ipam(ipv6IpamOptions: IIpIpamOptions): IIpAddresses {
     return new IpamIpv6(ipv6IpamOptions);
+  }
+
+  public static amazonProvidedIpv6() {
+    return new AmazonProvided();
   }
 
 }
@@ -60,12 +66,32 @@ export interface VpcV2Options {
   /**
    * Implementing ipv6
    */
-  readonly ipv6CidrBlock?: CfnVPCCidrBlock;
+  readonly ipv6CidrBlock?: string;
 
   /*
   */
   readonly ipv4IpamPoolId?: string;
 
+  /**
+   * CIDR Mask for Vpc
+   *
+   * @default - Only required when using AWS Ipam
+   */
+  readonly ipv6NetmaskLength?: number;
+
+  /*
+  */
+  readonly ipv6IpamPoolId?: string;
+
+  /**
+   * required with cidr block for BYOL IP
+   */
+  readonly ipv6Pool?: string;
+
+  /**
+   * required with cidr block for BYOL IP
+   */
+  readonly amazonProvided?: boolean;
 }
 
 export interface IVpcV2 {
@@ -79,7 +105,7 @@ export interface IVpcV2 {
 }
 
 export interface IIpv6AddressesOptions {
-  readonly ipv6CidrBlock: string;
+  readonly ipv6CidrBlock?: string;
   readonly ipv6PoolId?: string;
 }
 
@@ -87,7 +113,7 @@ export interface IIpAddresses {
 
   allocateVpcCidr() : VpcV2Options;
 
-  allocateVpcV6Cidr(options: Ipv6AddressesOptions): VpcV2Options;
+  // allocateVpcV6Cidr(options: Ipv6AddressesOptions): VpcV2Options;
 }
 
 export interface IpAddressesCidrConfig {
@@ -95,7 +121,13 @@ export interface IpAddressesCidrConfig {
 }
 
 export interface VpcV2Props {
+
+  /** A must IPv4 CIDR block for the VPC
+   * https://docs.aws.amazon.com/vpc/latest/userguide/vpc-cidr-blocks.html
+  */
   readonly primaryAddressBlock?: IIpAddresses;
+
+  /**Can be  IPv4 or IPv6 */
   readonly secondaryAddressBlocks?: IIpAddresses[];
   readonly enableDnsHostnames?: boolean;
   readonly enableDnsSupport?: boolean;
@@ -158,13 +190,14 @@ export class VpcV2 extends Resource implements IVpcV2 {
     this.ipAddresses = props.primaryAddressBlock ?? IpAddresses.ipv4('10.0.0.0/16');
     const vpcOptions = this.ipAddresses.allocateVpcCidr();
 
-    //const secondaryAddressBlocks = props.secondaryAddressBlocks;
     this.dnsHostnamesEnabled = props.enableDnsHostnames == null ? true : props.enableDnsHostnames;
     this.dnsSupportEnabled = props.enableDnsSupport == null ? true : props.enableDnsSupport;
     this.resource = new CfnVPC(this, 'Resource', {
-      cidrBlock: vpcOptions.ipv4CidrBlock, //for Ipv4 addresses
+      cidrBlock: vpcOptions.ipv4CidrBlock, //for Ipv4 addresses CIDR block
       enableDnsHostnames: this.dnsHostnamesEnabled,
       enableDnsSupport: this.dnsSupportEnabled,
+      ipv4IpamPoolId: vpcOptions.ipv4IpamPoolId, // for Ipv4 ipam option
+      ipv4NetmaskLength: vpcOptions.ipv4NetmaskLength, // for Ipv4 ipam option
     });
 
     this.vpcCidrBlock = this.resource.attrCidrBlock;
@@ -175,15 +208,26 @@ export class VpcV2 extends Resource implements IVpcV2 {
       resourceName: this.vpcId,
     }, this.stack);
 
-    if (props.useIpv6) {
-      this.ipAddresses = props.primaryAddressBlock ?? IpAddresses.ipv6({
-        ipv6CidrBlock: '::/0',
-      });
-      const vpcOptionsV6 = this.ipAddresses.allocateVpcV6Cidr({
-        scope: this,
-        vpcId: this.vpcId,
-      });
-      this.ipv6CidrBlock = vpcOptionsV6.ipv6CidrBlock;
+    if (props.secondaryAddressBlocks) {
+
+      const secondaryAddressBlocks: IIpAddresses[] = props.secondaryAddressBlocks;
+
+      for (const secondaryAddressBlock of secondaryAddressBlocks) {
+        const vpcoptions: VpcV2Options = secondaryAddressBlock.allocateVpcCidr();
+        //Create secondary blocks for Ipv4 and Ipv6
+        new CfnVPCCidrBlock(this, `Secondary${vpcoptions.ipv4CidrBlock}`, {
+          vpcId: this.vpcId,
+          cidrBlock: vpcoptions.ipv4CidrBlock,
+          ipv4IpamPoolId: vpcoptions.ipv4IpamPoolId,
+          ipv4NetmaskLength: vpcoptions.ipv4NetmaskLength,
+          //IPv6 Options
+          ipv6CidrBlock: vpcoptions.ipv6CidrBlock,
+          ipv6Pool: vpcoptions.ipv6Pool,
+          ipv6NetmaskLength: vpcoptions.ipv6NetmaskLength,
+          ipv6IpamPoolId: vpcoptions.ipv6IpamPoolId,
+          amazonProvidedIpv6CidrBlock: vpcoptions.amazonProvided,
+        });
+      }
     }
   }
 }
@@ -199,9 +243,6 @@ class ipv4CidrAllocation implements IIpAddresses {
 
     this.networkBuilder = new NetworkBuilder(this.cidrBlock);
   }
-  allocateVpcV6Cidr(_options: Ipv6AddressesOptions): VpcV2Options {
-    throw new Error('Method not implemented.');
-  }
 
   allocateVpcCidr(): VpcV2Options {
     return {
@@ -212,24 +253,32 @@ class ipv4CidrAllocation implements IIpAddresses {
 
 class ipv6CidrAllocation implements IIpAddresses {
 
-  public ipv6CidrBlock: CfnVPCCidrBlock | undefined;
-  constructor(_props: IIpv6AddressesOptions) {}allocateVpcCidr(): VpcV2Options {
-    throw new Error('Method not implemented.');
+  private readonly ipv6cidrBlock : string;
+  private readonly ipv6poolId: string;
+  constructor(private readonly props: IIpv6AddressesOptions) {
+    this.ipv6cidrBlock = this.props.ipv6CidrBlock ?? '';
+    this.ipv6poolId = this.props.ipv6PoolId ?? '';
   }
-  ;
 
-  allocateVpcV6Cidr(options: Ipv6AddressesOptions): VpcV2Options {
-    this.ipv6CidrBlock = AllocateIpv6CidrRequest(options);
+  allocateVpcCidr(): VpcV2Options {
     return {
-      ipv6CidrBlock: this.ipv6CidrBlock,
+      ipv6CidrBlock: this.ipv6cidrBlock,
+      ipv6Pool: this.ipv6poolId,
     };
   }
-
 }
 
-function AllocateIpv6CidrRequest(options: Ipv6AddressesOptions): CfnVPCCidrBlock {
-  return new CfnVPCCidrBlock(options.scope, 'Ipv6CidrBlock', {
-    vpcId: options.vpcId,
-  });
+class AmazonProvided implements IIpAddresses {
+
+  amazonProvided: boolean;
+  constructor() {
+    this.amazonProvided = true;
+  };
+
+  allocateVpcCidr(): VpcV2Options {
+    return {
+      amazonProvided: this.amazonProvided,
+    };
+  }
 
 }
