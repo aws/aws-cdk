@@ -758,7 +758,7 @@
      ]
     },
     "Config": {
-     "version": "1.30",
+     "version": "1.29",
      "roleArn": {
       "Fn::GetAtt": [
        "integrationtesteksclusterRole03F70AF0",
@@ -1053,7 +1053,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/a76cbc0a633f84496aa2d4dc5b1476fdce465cd3755d0667dce5ed8b69d50e34.json"
+       "/22a50ada26142d649962dd4c5a512cf5a208405e65476a3459d2fbdde08f2edd.json"
       ]
      ]
     }
@@ -1217,7 +1217,7 @@
          "Id"
         ]
        },
-       "\"},\"outputPaths\":[\"virtualCluster.containerProvider.info.eksInfo.namespace\",\"virtualCluster.containerProvider.id\"],\"physicalResourceId\":{\"id\":\"id\"},\"logApiResponseData\":true}"
+       "\"},\"outputPaths\":[\"virtualCluster.containerProvider.info.eksInfo.namespace\",\"virtualCluster.containerProvider.id\"],\"physicalResourceId\":{\"id\":\"id\"}}"
       ]
      ]
     },
