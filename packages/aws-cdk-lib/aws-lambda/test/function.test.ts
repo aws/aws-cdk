@@ -4152,9 +4152,47 @@ describe('latest Lambda node runtime', () => {
     });
   });
 
-  test('with stack in govcloud region', () => {
+  test('with stack in adc region', () => {
     // GIVEN
     const stack = new cdk.Stack(undefined, 'Stack', { env: { region: 'us-iso-east-1' } });
+
+    // WHEN
+    new lambda.Function(stack, 'Lambda', {
+      code: lambda.Code.fromInline('foo'),
+      handler: 'index.handler',
+      runtime: lambda.determineLatestNodeRuntime(stack),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
+      Properties: {
+        Runtime: 'nodejs18.x',
+      },
+    });
+  });
+
+  test('with stack in govcloud region', () => {
+    // GIVEN
+    const stack = new cdk.Stack(undefined, 'Stack', { env: { region: 'us-gov-east-1' } });
+
+    // WHEN
+    new lambda.Function(stack, 'Lambda', {
+      code: lambda.Code.fromInline('foo'),
+      handler: 'index.handler',
+      runtime: lambda.determineLatestNodeRuntime(stack),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
+      Properties: {
+        Runtime: 'nodejs18.x',
+      },
+    });
+  });
+
+  test('with stack in unsupported region', () => {
+    // GIVEN
+    const stack = new cdk.Stack(undefined, 'Stack', { env: { region: 'us-fake-1' } });
 
     // WHEN
     new lambda.Function(stack, 'Lambda', {

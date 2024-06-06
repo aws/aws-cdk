@@ -626,7 +626,37 @@ describe('latest Lambda node runtime', () => {
 
   test('with stack in govcloud region', () => {
     // GIVEN
+    const stack = new Stack(undefined, 'Stack', { env: { region: 'us-gov-east-1' } });
+
+    // WHEN
+    TestCustomResourceProvider.getOrCreateProvider(stack, 'TestCrProvider');
+
+    // THEN
+    Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
+      Properties: {
+        Runtime: 'nodejs18.x',
+      },
+    });
+  });
+
+  test('with stack in adc region', () => {
+    // GIVEN
     const stack = new Stack(undefined, 'Stack', { env: { region: 'us-iso-east-1' } });
+
+    // WHEN
+    TestCustomResourceProvider.getOrCreateProvider(stack, 'TestCrProvider');
+
+    // THEN
+    Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
+      Properties: {
+        Runtime: 'nodejs18.x',
+      },
+    });
+  });
+
+  test('with stack in unsupported region', () => {
+    // GIVEN
+    const stack = new Stack(undefined, 'Stack', { env: { region: 'us-fake-1' } });
 
     // WHEN
     TestCustomResourceProvider.getOrCreateProvider(stack, 'TestCrProvider');
