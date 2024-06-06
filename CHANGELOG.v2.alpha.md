@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.144.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.143.1-alpha.0...v2.144.0-alpha.0) (2024-05-31)
+
+
+### Features
+
+* **apprunner:** add kmsKey property for the AppRunner Service class ([#30352](https://github.com/aws/aws-cdk/issues/30352)) ([0c1aeb6](https://github.com/aws/aws-cdk/commit/0c1aeb6d6d9b9d72624a394fff45e65dfb94b733)), closes [#30365](https://github.com/aws/aws-cdk/issues/30365)
+* **ivs-alpha:** support advanced channel type ([#30086](https://github.com/aws/aws-cdk/issues/30086)) ([544e54a](https://github.com/aws/aws-cdk/commit/544e54abb0985e69bb615fd3c9c47e4067bb17d8)), closes [#30075](https://github.com/aws/aws-cdk/issues/30075)
+* **neptune:** add copyTagsToSnapshot property to the DatabaseCluster Construct ([#30092](https://github.com/aws/aws-cdk/issues/30092)) ([ba8edb3](https://github.com/aws/aws-cdk/commit/ba8edb3e16e3b7c72bb2a38bb3318969e0e9f054)), closes [#30087](https://github.com/aws/aws-cdk/issues/30087)
+
+## [2.143.1-alpha.0](https://github.com/aws/aws-cdk/compare/v2.143.0-alpha.0...v2.143.1-alpha.0) (2024-05-30)
+
+## [2.143.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.142.1-alpha.0...v2.143.0-alpha.0) (2024-05-23)
+
+## [2.142.1-alpha.0](https://github.com/aws/aws-cdk/compare/v2.142.0-alpha.0...v2.142.1-alpha.0) (2024-05-17)
+
 ## [2.142.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.141.0-alpha.0...v2.142.0-alpha.0) (2024-05-15)
 
 
