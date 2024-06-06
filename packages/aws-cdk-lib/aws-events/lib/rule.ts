@@ -314,14 +314,16 @@ export class Rule extends Resource implements IRule {
       errors.push('Either \'eventPattern\' or \'schedule\' must be defined');
     }
 
+    if (this.targets.length > 5) {
+      errors.push('Event rule cannot have more than 5 targets.');
+    }
+
     return errors;
   }
 
   private renderTargets() {
     if (this.targets.length === 0) {
       return undefined;
-    } else if (this.targets.length > 5) {
-      throw new Error('Event rule cannot have more than 5 targets.');
     }
 
     return this.targets;
