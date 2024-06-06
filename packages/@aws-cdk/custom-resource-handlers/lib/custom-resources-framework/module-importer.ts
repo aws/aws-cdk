@@ -41,10 +41,11 @@ export class ModuleImporter {
     const registeredTargets = this.imports[fqn]?.targets ?? new Set();
 
     if (this.imports.hasOwnProperty(fqn)) {
-      if (registeredTargets.size > 0 && targets.length > 0) {
-        this.imports[fqn].targets = new Set([...registeredTargets, ...targets]);
-        return;
-      }
+      const _targets = registeredTargets.size > 0 && targets.length > 0
+        ? [...registeredTargets, ...targets]
+        : [];
+      this.imports[fqn].targets = new Set(_targets);
+      return;
     }
     this.imports[fqn] = {
       module,
