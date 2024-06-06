@@ -67,6 +67,8 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
     - [Start Job Run](#start-job-run-1)
   - [Lambda](#lambda)
     - [Invoke](#invoke)
+  - [MediaConvert](#mediaconvert)
+    - [Create Job](#create-job)
   - [SageMaker](#sagemaker)
     - [Create Training Job](#create-training-job)
     - [Create Transform Job](#create-transform-job)
@@ -792,7 +794,7 @@ new tasks.EmrAddStep(this, 'Task', {
 
 To specify a custom runtime role use the `executionRoleArn` property.
 
-**Note:** The EMR cluster must be created with a security configuration and the runtime role must have a specific trust policy. 
+**Note:** The EMR cluster must be created with a security configuration and the runtime role must have a specific trust policy.
 See this [blog post](https://aws.amazon.com/blogs/big-data/introducing-runtime-roles-for-amazon-emr-steps-use-iam-roles-and-aws-lake-formation-for-access-control-with-amazon-emr/) for more details.
 
 ```ts
@@ -805,7 +807,7 @@ const cfnSecurityConfiguration = new emr.CfnSecurityConfiguration(this, 'EmrSecu
       "AuthorizationConfiguration": {
           "IAMConfiguration": {
               "EnableApplicationScopedIAMRole": true,
-              "ApplicationScopedIAMRoleConfiguration": 
+              "ApplicationScopedIAMRoleConfiguration":
                   {
                       "PropagateSourceIdentity": true
                   }
@@ -1149,6 +1151,17 @@ new tasks.GlueStartJobRun(this, 'Task', {
   notifyDelayAfter: Duration.minutes(5),
 });
 ```
+You can configure workers by setting the `workerType` and `numberOfWorkers` properties.
+
+```ts
+new tasks.GlueStartJobRun(this, 'Task', {
+  glueJobName: 'my-glue-job',
+  workerConfiguration: {
+    workerType: tasks.WorkerType.G_1X, // Worker type
+    numberOfWorkers: 2, // Number of Workers
+  },
+});
+```
 
 ### StartCrawlerRun
 
@@ -1310,6 +1323,81 @@ results in a 500 error, such as `ClientExecutionTimeoutException`, `ServiceExcep
 As a best practice, the `LambdaInvoke` task will retry on those errors with an interval of 2 seconds,
 a back-off rate of 2 and 6 maximum attempts. Set the `retryOnServiceExceptions` prop to `false` to
 disable this behavior.
+
+## MediaConvert
+
+Step Functions supports [AWS MediaConvert](https://docs.aws.amazon.com/step-functions/latest/dg/connect-mediaconvert.html) through the Optimized integration pattern.
+
+### CreateJob
+
+The [CreateJob](https://docs.aws.amazon.com/mediaconvert/latest/apireference/jobs.html#jobspost) API creates a new transcoding job. 
+For information about jobs and job settings, see the User Guide at http://docs.aws.amazon.com/mediaconvert/latest/ug/what-is.html
+
+You can call the `CreateJob` API from a `Task` state. Optionally you can specify the `integrationPattern`. 
+
+Make sure you update the required fields - [Role](https://docs.aws.amazon.com/mediaconvert/latest/apireference/jobs.html#jobs-prop-createjobrequest-role) & 
+[Settings](https://docs.aws.amazon.com/mediaconvert/latest/apireference/jobs.html#jobs-prop-createjobrequest-settings) and refer 
+[CreateJobRequest](https://docs.aws.amazon.com/mediaconvert/latest/apireference/jobs.html#jobs-model-createjobrequest) for all other optional parameters.
+
+```ts
+new tasks.MediaConvertCreateJob(this, 'CreateJob', {
+  createJobRequest: {
+    "Role": "arn:aws:iam::123456789012:role/MediaConvertRole",
+    "Settings": {
+      "OutputGroups": [
+        {
+          "Outputs": [
+            {
+              "ContainerSettings": {
+                "Container": "MP4"
+              },
+              "VideoDescription": {
+                "CodecSettings": {
+                  "Codec": "H_264",
+                  "H264Settings": {
+                    "MaxBitrate": 1000,
+                    "RateControlMode": "QVBR",
+                    "SceneChangeDetect": "TRANSITION_DETECTION"
+                  }
+                }
+              },
+              "AudioDescriptions": [
+                {
+                  "CodecSettings": {
+                    "Codec": "AAC",
+                    "AacSettings": {
+                      "Bitrate": 96000,
+                      "CodingMode": "CODING_MODE_2_0",
+                      "SampleRate": 48000
+                    }
+                  }
+                }
+              ]
+            }
+          ],
+          "OutputGroupSettings": {
+            "Type": "FILE_GROUP_SETTINGS",
+            "FileGroupSettings": {
+              "Destination": "s3://EXAMPLE-DESTINATION-BUCKET/"
+            }
+          }
+        }
+      ],
+      "Inputs": [
+        {
+          "AudioSelectors": {
+            "Audio Selector 1": {
+              "DefaultSelection": "DEFAULT"
+            }
+          },
+          "FileInput": "s3://EXAMPLE-SOURCE-BUCKET/EXAMPLE-SOURCE_FILE"
+        }
+      ]
+    }
+  },
+  integrationPattern: sfn.IntegrationPattern.RUN_JOB,
+});
+```
 
 ## SageMaker
 

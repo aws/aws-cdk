@@ -70,7 +70,8 @@ Flags come in three types:
 | [@aws-cdk/aws-eks:nodegroupNameAttribute](#aws-cdkaws-eksnodegroupnameattribute) | When enabled, nodegroupName attribute of the provisioned EKS NodeGroup will not have the cluster name prefix. | 2.139.0 | (fix) |
 | [@aws-cdk/aws-ec2:ebsDefaultGp3Volume](#aws-cdkaws-ec2ebsdefaultgp3volume) | When enabled, the default volume type of the EBS volume will be GP3 | 2.140.0 | (default) |
 | [@aws-cdk/pipelines:reduceAssetRoleTrustScope](#aws-cdkpipelinesreduceassetroletrustscope) | Remove the root account principal from PipelineAssetsFileRole trust policy | 2.141.0 | (default) |
-| [@aws-cdk/aws-ecs:removeDefaultDeploymentAlarm](#aws-cdkaws-ecsremovedefaultdeploymentalarm) | When enabled, remove default deployment alarm settings | V2NEXT | (default) |
+| [@aws-cdk/aws-ecs:removeDefaultDeploymentAlarm](#aws-cdkaws-ecsremovedefaultdeploymentalarm) | When enabled, remove default deployment alarm settings | 2.143.0 | (default) |
+| [@aws-cdk/custom-resources:logApiResponseDataPropertyTrueDefault](#aws-cdkcustom-resourceslogapiresponsedatapropertytruedefault) | When enabled, the custom resource used for AwsCustomResource will configure the logApiResponseData property as true by default | V2NEXT | (fix) |
 
 <!-- END table -->
 
@@ -131,7 +132,8 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/aws-kms:reduceCrossAccountRegionPolicyScope": true,
     "@aws-cdk/aws-eks:nodegroupNameAttribute": true,
     "@aws-cdk/aws-ec2:ebsDefaultGp3Volume": true,
-    "@aws-cdk/aws-ecs:removeDefaultDeploymentAlarm": true
+    "@aws-cdk/aws-ecs:removeDefaultDeploymentAlarm": true,
+    "@aws-cdk/custom-resources:logApiResponseDataPropertyTrueDefault": false
   }
 }
 ```
@@ -1329,9 +1331,25 @@ When this featuer flag is enabled, remove the default deployment alarm settings 
 | Since | Default | Recommended |
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
-| V2NEXT | `false` | `true` |
+| 2.143.0 | `false` | `true` |
 
 **Compatibility with old behavior:** Set AWS::ECS::Service 'DeploymentAlarms' manually to restore the previous behavior.
+
+
+### @aws-cdk/custom-resources:logApiResponseDataPropertyTrueDefault
+
+*When enabled, the custom resource used for AwsCustomResource will configure the logApiResponseData property as true by default* (fix)
+
+When this feature flag is enabled, the custom resource used for AwsCustomResource will configure the logApiResponseData property as true by default. This
+results in logApiResponseData being passed as true to the custom resource provider. Unlike most feature flags, we don't recommend setting this feature flag
+to true unless you're using the AwsCustomResource construct with logApiResponseData set to true as a custom resource event property by default and do not
+want to trigger an update by letting the default logApiResponseData value go back to undefined.
+
+
+| Since | Default | Recommended |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| V2NEXT | `false` | `false` |
 
 
 <!-- END details -->

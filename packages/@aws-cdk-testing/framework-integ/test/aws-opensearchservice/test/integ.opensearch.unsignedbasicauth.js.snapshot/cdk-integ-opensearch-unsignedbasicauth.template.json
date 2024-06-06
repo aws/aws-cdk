@@ -90,7 +90,7 @@
        {
         "Ref": "Domain66AC69E0"
        },
-       "AccessPolicy\"},\"logApiResponseData\":true}"
+       "AccessPolicy\"}}"
       ]
      ]
     },
@@ -113,7 +113,7 @@
        {
         "Ref": "Domain66AC69E0"
        },
-       "AccessPolicy\"},\"logApiResponseData\":true}"
+       "AccessPolicy\"}}"
       ]
      ]
     },

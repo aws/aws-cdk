@@ -12,7 +12,7 @@ export interface EksUpdateId {
    * initiated an EKS update that should be monitored using eks:DescribeUpdate
    * instead of just looking at the cluster status.
    */
-  EksUpdateId?: string
+  EksUpdateId?: string;
 }
 
 export type ResourceEvent = AWSLambda.CloudFormationCustomResourceEvent & EksUpdateId;
@@ -86,4 +86,6 @@ export interface EksClient {
   createFargateProfile(request: _eks.CreateFargateProfileCommandInput): Promise<_eks.CreateFargateProfileCommandOutput>;
   describeFargateProfile(request: _eks.DescribeFargateProfileCommandInput): Promise<_eks.DescribeFargateProfileCommandOutput>;
   deleteFargateProfile(request: _eks.DeleteFargateProfileCommandInput): Promise<_eks.DeleteFargateProfileCommandOutput>;
+  tagResource(request: _eks.TagResourceCommandInput): Promise<_eks.TagResourceCommandOutput>;
+  untagResource(request: _eks.UntagResourceCommandInput): Promise<_eks.UntagResourceCommandOutput>;
 }
