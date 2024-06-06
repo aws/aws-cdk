@@ -218,7 +218,10 @@ export class ClusterResourceHandler extends ResourceHandler {
       };
 
       if (updates.updateAuthMode) {
-        // old value is API - cannot fallback from API to any other mode
+        // the update path must be
+        // `undefined or CONFIG_MAP` -> `API_AND_CONFIG_MAP` -> `API`
+        // and it's one way path.
+        // old value is API - cannot fallback backwards
         if (this.oldProps.accessConfig?.authenticationMode === 'API' &&
           this.newProps.accessConfig?.authenticationMode !== 'API') {
           throw new Error(`Cannot fallback authenticationMode from API to ${this.newProps.accessConfig?.authenticationMode}`);
@@ -232,6 +235,17 @@ export class ClusterResourceHandler extends ResourceHandler {
         if (this.oldProps.accessConfig?.authenticationMode !== undefined &&
           this.newProps.accessConfig?.authenticationMode === undefined) {
           throw new Error('Cannot fallback authenticationMode from defined to undefined');
+        }
+        // cannot update from undefined to API because undefined defaults CONFIG_MAP which
+        // can only change to API_AND_CONFIG_MAP
+        if (this.oldProps.accessConfig?.authenticationMode === undefined &&
+          this.newProps.accessConfig?.authenticationMode === 'API') {
+          throw new Error('Cannot update from undefined(CONFIG_MAP) to API');
+        }
+        // cannot update from CONFIG_MAP to API
+        if (this.oldProps.accessConfig?.authenticationMode === 'CONFIG_MAP' &&
+          this.newProps.accessConfig?.authenticationMode === 'API') {
+          throw new Error('Cannot update from CONFIG_MAP to API');
         }
         config.accessConfig = this.newProps.accessConfig;
       };
