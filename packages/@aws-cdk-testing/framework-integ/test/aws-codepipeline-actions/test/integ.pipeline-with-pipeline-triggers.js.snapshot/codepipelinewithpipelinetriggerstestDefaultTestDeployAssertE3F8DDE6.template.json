@@ -20,7 +20,7 @@
     "outputPaths": [
      "pipeline.name"
     ],
-    "salt": "1715663354442"
+    "salt": "1708619218938"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -68,15 +68,6 @@
          "Resource": [
           "*"
          ]
-        },
-        {
-         "Action": [
-          "codepipeline:GetPipeline"
-         ],
-         "Effect": "Allow",
-         "Resource": [
-          "*"
-         ]
         }
        ]
       }
@@ -92,7 +83,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "cfdb46b4f2c6702b4a1cc8e23ca426e8de43d13567e73a8453d01c1176393814.zip"
+     "S3Key": "310f432b946edeef3316f39f32b344b6bdc401a3b438433db42adadab1bf5e17.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
@@ -124,32 +115,7 @@
     "outputPaths": [
      "pipeline.name"
     ],
-    "salt": "1715663354443"
-   },
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
-  },
-  "AwsApiCallCodePipelinegetPipeline245578407adb1bf3216e3a82d6267322": {
-   "Type": "Custom::DeployAssert@SdkCallCodePipelinegetPipeline",
-   "Properties": {
-    "ServiceToken": {
-     "Fn::GetAtt": [
-      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
-      "Arn"
-     ]
-    },
-    "service": "CodePipeline",
-    "api": "getPipeline",
-    "expected": "{\"$StringLike\":\"my-pipeline3\"}",
-    "actualPath": "pipeline.name",
-    "parameters": {
-     "name": "\"my-pipeline3\""
-    },
-    "flattenResponse": "true",
-    "outputPaths": [
-     "pipeline.name"
-    ],
-    "salt": "1715663354443"
+    "salt": "1708619218938"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -168,14 +134,6 @@
    "Value": {
     "Fn::GetAtt": [
      "AwsApiCallCodePipelinegetPipeline1c275ca65933c3cecd335e67fe9182e2",
-     "assertion"
-    ]
-   }
-  },
-  "AssertionResultsAwsApiCallCodePipelinegetPipeline245578407adb1bf3216e3a82d6267322": {
-   "Value": {
-    "Fn::GetAtt": [
-     "AwsApiCallCodePipelinegetPipeline245578407adb1bf3216e3a82d6267322",
      "assertion"
     ]
    }
