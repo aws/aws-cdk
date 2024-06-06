@@ -210,10 +210,6 @@
      {
       "Key": "deletion_protection.enabled",
       "Value": "false"
-     },
-     {
-      "Key": "ipv6.deny_all_igw_traffic",
-      "Value": "true"
      }
     ],
     "Scheme": "internal",

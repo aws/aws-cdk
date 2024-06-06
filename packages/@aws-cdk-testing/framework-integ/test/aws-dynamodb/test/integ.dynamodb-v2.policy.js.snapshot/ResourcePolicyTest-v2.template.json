@@ -18,6 +18,7 @@
     ],
     "Replicas": [
      {
+      "ReadOnDemandThroughputSettings": {},
       "Region": "eu-west-1",
       "ResourcePolicy": {
        "PolicyDocument": {

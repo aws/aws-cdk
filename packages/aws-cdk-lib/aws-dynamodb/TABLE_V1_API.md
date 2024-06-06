@@ -46,6 +46,17 @@ const table = new dynamodb.Table(this, 'Table', {
 });
 ```
 
+You can specify a maximum read or write request units when using PAY_PER_REQUEST billing mode:
+
+```ts
+const table = new dynamodb.Table(this, 'Table', {
+  partitionKey: { name: 'id', type: dynamodb.AttributeType.STRING },
+  billingMode: dynamodb.BillingMode.PAY_PER_REQUEST,
+  maxReadRequestUnits: 100,
+  maxWriteRequestUnits: 200,
+});
+```
+
 Further reading:
 https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.ReadWriteCapacityMode.
 

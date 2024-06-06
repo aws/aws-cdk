@@ -114,12 +114,15 @@
     ],
     "Replicas": [
      {
+      "ReadOnDemandThroughputSettings": {},
       "Region": "us-west-1"
      },
      {
+      "ReadOnDemandThroughputSettings": {},
       "Region": "us-east-2"
      },
      {
+      "ReadOnDemandThroughputSettings": {},
       "Region": "us-east-1"
      }
     ],

@@ -835,7 +835,7 @@
                     },
                     "enableIamDatabaseAuthentication": true,
                     "engine": "postgres",
-                    "EngineVersion": "16.3",
+                    "engineVersion": "16.2",
                     "masterUsername": {
                       "Fn::Join": [
                         "",

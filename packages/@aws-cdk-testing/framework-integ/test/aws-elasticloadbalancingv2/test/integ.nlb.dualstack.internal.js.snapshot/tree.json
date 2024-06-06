@@ -317,10 +317,6 @@
                       {
                         "key": "deletion_protection.enabled",
                         "value": "false"
-                      },
-                      {
-                        "key": "ipv6.deny_all_igw_traffic",
-                        "value": "true"
                       }
                     ],
                     "scheme": "internal",

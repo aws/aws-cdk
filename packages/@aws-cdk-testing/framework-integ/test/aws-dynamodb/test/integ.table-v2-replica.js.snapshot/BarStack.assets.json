@@ -1,5 +1,5 @@
 {
-  "version": "34.0.0",
+  "version": "36.0.0",
   "files": {
     "7605c78d81246ac4a63b646e0f39ae3e697626ced7d652a031ea3f9dba4c613e": {
       "source": {
@@ -15,7 +15,7 @@
         }
       }
     },
-    "1df2a063637431950933d7ccf8615a083531eab4220b10ff7fd125499eef355e": {
+    "2c2713a8cbdaad64469fbd421d38d57a0a72e8e4cc06ad1635642ba8b28eb32c": {
       "source": {
         "path": "BarStack.template.json",
         "packaging": "file"
@@ -23,7 +23,7 @@
       "destinations": {
         "current_account-us-east-1": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1",
-          "objectKey": "1df2a063637431950933d7ccf8615a083531eab4220b10ff7fd125499eef355e.json",
+          "objectKey": "2c2713a8cbdaad64469fbd421d38d57a0a72e8e4cc06ad1635642ba8b28eb32c.json",
           "region": "us-east-1",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-us-east-1"
         }
