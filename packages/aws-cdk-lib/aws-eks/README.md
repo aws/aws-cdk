@@ -1116,13 +1116,13 @@ AWS IAM principals from both Amazon EKS access entry APIs and the aws-auth confi
 To specify the `authenticationMode`:
 
 ```ts
-import { KubectlV29Layer } from '@aws-cdk/lambda-layer-kubectl-v29';
+import { KubectlV30Layer } from '@aws-cdk/lambda-layer-kubectl-v30';
 declare const vpc: ec2.Vpc;
 
 new eks.Cluster(this, 'Cluster', {
   vpc,
-  version: eks.KubernetesVersion.V1_29,
-  kubectlLayer: new KubectlV29Layer(this, 'KubectlLayer'),
+  version: eks.KubernetesVersion.V1_30,
+  kubectlLayer: new KubectlV30Layer(this, 'KubectlLayer'),
   authenticationMode: eks.AuthenticationMode.API_AND_CONFIG_MAP,
 });
 ```
@@ -1167,7 +1167,7 @@ eks.AccessPolicy.fromAccessPolicyName('AmazonEKSAdminPolicy', {
 Use `grantAccess()` to grant the AccessPolicy to an IAM principal:
 
 ```ts
-import { KubectlV29Layer } from '@aws-cdk/lambda-layer-kubectl-v29';
+import { KubectlV30Layer } from '@aws-cdk/lambda-layer-kubectl-v30';
 declare const vpc: ec2.Vpc;
 
 const clusterAdminRole = new iam.Role(this, 'ClusterAdminRole', {
@@ -1185,8 +1185,8 @@ const eksAdminViewRole = new iam.Role(this, 'EKSAdminViewRole', {
 const cluster = new eks.Cluster(this, 'Cluster', {
   vpc,
   mastersRole: clusterAdminRole,
-  version: eks.KubernetesVersion.V1_29,
-  kubectlLayer: new KubectlV29Layer(this, 'KubectlLayer'),
+  version: eks.KubernetesVersion.V1_30,
+  kubectlLayer: new KubectlV30Layer(this, 'KubectlLayer'),
   authenticationMode: eks.AuthenticationMode.API_AND_CONFIG_MAP,
 });
 
