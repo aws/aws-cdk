@@ -222,14 +222,9 @@ export class Function extends Resource implements IFunction {
   }
 
   private generateName(): string {
-    const name = Stack.of(this).region + Names.uniqueId(this);
-    if (name.length > 64) {
-      const trimmedName = Lazy.string({
-        produce: () => Names.uniqueResourceName(this, { maxLength: 40, allowedSpecialCharacters: '-_' }),
-      });
-      return Stack.of(this).region + trimmedName;
-    }
-    return name;
+    return Stack.of(this).region + Lazy.string({
+      produce: () => Names.uniqueResourceName(this, { maxLength: 40, allowedSpecialCharacters: '-_'})
+    });
   }
 }
 
