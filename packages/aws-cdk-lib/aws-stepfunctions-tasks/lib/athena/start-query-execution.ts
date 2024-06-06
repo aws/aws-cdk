@@ -104,7 +104,7 @@ export class AthenaStartQueryExecution extends sfn.TaskStateBase {
     if (resultReuseConfigurationMaxAge === undefined || cdk.Token.isUnresolved(resultReuseConfigurationMaxAge)) return;
     const maxAgeInMillis = resultReuseConfigurationMaxAge.toMilliseconds();
     if (maxAgeInMillis > 0 && maxAgeInMillis < cdk.Duration.minutes(1).toMilliseconds()) {
-      throw new Error(`resultReuseConfigurationMaxAge must be between greater than or equal to 1 minute or 0, got ${maxAgeInMillis}ms`);
+      throw new Error(`resultReuseConfigurationMaxAge must be between greater than or equal to 1 minute or 0, got ${maxAgeInMillis} ms`);
     }
     const maxAgeInMinutes = resultReuseConfigurationMaxAge.toMinutes();
     if (maxAgeInMinutes > 10080) {

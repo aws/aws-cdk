@@ -457,7 +457,24 @@ describe('Start Query Execution', () => {
     });
   });
 
-  test('task with invalid resultReuseConfigurationMaxAge', () => {
+  test('invalid resultReuseConfigurationMaxAge', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    expect(() => {
+      new AthenaStartQueryExecution(stack, 'Query', {
+        queryString: 'SELECT 1',
+        workGroup: 'primary',
+        resultConfiguration: {
+          encryptionConfiguration: { encryptionOption: EncryptionOption.S3_MANAGED },
+        },
+        resultReuseConfigurationMaxAge: cdk.Duration.millis(200),
+      });
+    }).toThrow('resultReuseConfigurationMaxAge must be between greater than or equal to 1 minute or 0, got 200 ms');
+  });
+
+  test('resultReuseConfigurationMaxAge exceeds max 10080 minutes', () => {
     // GIVEN
     const stack = new cdk.Stack();
 
