@@ -198,7 +198,7 @@ export interface DeadLetterQueue {
   readonly queue: IQueue;
 
   /**
-   * The number of times a message can be unsuccesfully dequeued before being moved to the dead-letter queue.
+   * The number of times a message can be unsuccessfully dequeued before being moved to the dead-letter queue.
    */
   readonly maxReceiveCount: number;
 }
