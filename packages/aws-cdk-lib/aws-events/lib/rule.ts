@@ -320,6 +320,8 @@ export class Rule extends Resource implements IRule {
   private renderTargets() {
     if (this.targets.length === 0) {
       return undefined;
+    } else if (this.targets.length > 5) {
+      throw new Error('Event rule cannot have more than 5 targets.');
     }
 
     return this.targets;
