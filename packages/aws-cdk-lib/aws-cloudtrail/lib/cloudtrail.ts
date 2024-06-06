@@ -7,7 +7,7 @@ import * as lambda from '../../aws-lambda';
 import * as logs from '../../aws-logs';
 import * as s3 from '../../aws-s3';
 import * as sns from '../../aws-sns';
-import { Resource, Stack } from '../../core';
+import { Annotations, Resource, Stack } from '../../core';
 
 /**
  * Properties for an AWS CloudTrail trail
@@ -271,19 +271,24 @@ export class Trail extends Resource {
     }));
 
     if (props.isOrganizationTrail) {
-      this.s3bucket.addToResourcePolicy(new iam.PolicyStatement({
-        resources: [this.s3bucket.arnForObjects(
-          `AWSLogs/${props.orgId}/*`,
-        )],
-        actions: ['s3:PutObject'],
-        principals: [cloudTrailPrincipal],
-        conditions: {
-          StringEquals: {
-            's3:x-amz-acl': 'bucket-owner-full-control',
-            'aws:SourceArn': `arn:${this.stack.partition}:cloudtrail:${this.s3bucket.stack.region}:${this.s3bucket.stack.account}:trail/${props.trailName}`,
+      if (props.orgId !== undefined) {
+        this.s3bucket.addToResourcePolicy(new iam.PolicyStatement({
+          resources: [this.s3bucket.arnForObjects(
+            `AWSLogs/${props.orgId}/*`,
+          )],
+          actions: ['s3:PutObject'],
+          principals: [cloudTrailPrincipal],
+          conditions: {
+            StringEquals: {
+              's3:x-amz-acl': 'bucket-owner-full-control',
+              'aws:SourceArn': `arn:${this.stack.partition}:cloudtrail:${this.s3bucket.stack.region}:${this.s3bucket.stack.account}:trail/${props.trailName}`,
+            },
           },
-        },
-      }));
+        }));
+      } else {
+        Annotations.of(this).addWarningV2('@aws-cdk/aws-cloudtrail:missingOrgIdForOrganizationTrail', 'Skipped attaching a policy to the bucket to allow organization trail to write logs to it because this is an organization trail but orgId is not specified. Consider specifying orgId to attach missing permissions');
+      }
+
     }
 
     this.topic = props.snsTopic;
