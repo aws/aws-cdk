@@ -232,6 +232,33 @@ export class AccessPolicy implements IAccessPolicy {
 }
 
 /**
+ * Represents the different types of access entries that can be used in an Amazon EKS cluster.
+ *
+ * @enum {string}
+ */
+export enum AccessEntryType {
+  /**
+   * Represents a standard access entry.
+   */
+  STANDARD = 'Standard',
+
+  /**
+   * Represents a Fargate Linux access entry.
+   */
+  FARGATE_LINUX = 'FARGATE_LINUX',
+
+  /**
+   * Represents an EC2 Linux access entry.
+   */
+  EC2_LINUX = 'EC2_LINUX',
+
+  /**
+   * Represents an EC2 Windows access entry.
+   */
+  EC2_WINDOWS = 'EC2_WINDOWS',
+}
+
+/**
  * Represents the properties required to create an Amazon EKS access entry.
  */
 export interface AccessEntryProps {
@@ -241,6 +268,12 @@ export interface AccessEntryProps {
    * @default - No access entry name is provided
    */
   readonly accessEntryName?: string;
+  /**
+   * The type of the AccessEntry.
+   *
+   * @default STANDARD
+   */
+  readonly accessEntryType?: AccessEntryType;
   /**
    * The Amazon EKS cluster to which the access entry applies.
    */
@@ -301,6 +334,7 @@ export class AccessEntry extends Resource implements IAccessEntry {
     const resource = new CfnAccessEntry(this, 'Resource', {
       clusterName: this.cluster.clusterName,
       principalArn: this.principal,
+      type: props.accessEntryType,
       accessPolicies: Lazy.any({
         produce: () => this.accessPolicies.map(p => ({
           accessScope: {
