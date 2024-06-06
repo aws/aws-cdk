@@ -223,7 +223,7 @@ export class Function extends Resource implements IFunction {
 
   private generateName(): string {
     return Stack.of(this).region + Lazy.string({
-      produce: () => Names.uniqueResourceName(this, { maxLength: 40, allowedSpecialCharacters: '-_'})
+      produce: () => Names.uniqueResourceName(this, { maxLength: 40, allowedSpecialCharacters: '-_' }),
     });
   }
 }
