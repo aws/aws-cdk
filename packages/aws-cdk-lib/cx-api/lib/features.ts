@@ -105,6 +105,7 @@ export const PIPELINE_REDUCE_ASSET_ROLE_TRUST_SCOPE = '@aws-cdk/pipelines:reduce
 export const EKS_NODEGROUP_NAME = '@aws-cdk/aws-eks:nodegroupNameAttribute';
 export const EBS_DEFAULT_GP3 = '@aws-cdk/aws-ec2:ebsDefaultGp3Volume';
 export const ECS_REMOVE_DEFAULT_DEPLOYMENT_ALARM = '@aws-cdk/aws-ecs:removeDefaultDeploymentAlarm';
+export const LOG_API_RESPONSE_DATA_PROPERTY_TRUE_DEFAULT = '@aws-cdk/custom-resources:logApiResponseDataPropertyTrueDefault';
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
@@ -1087,6 +1088,24 @@ export const FLAGS: Record<string, FlagInfo> = {
     introducedIn: { v2: '2.143.0' },
     recommendedValue: true,
     compatibilityWithOldBehaviorMd: 'Set AWS::ECS::Service \'DeploymentAlarms\' manually to restore the previous behavior.',
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [LOG_API_RESPONSE_DATA_PROPERTY_TRUE_DEFAULT]: {
+    type: FlagType.BugFix,
+    summary: 'When enabled, the custom resource used for `AwsCustomResource` will configure the `logApiResponseData` property as true by default',
+    detailsMd: `
+      This results in 'logApiResponseData' being passed as true to the custom resource provider. This will cause the custom resource handler to receive an 'Update' event. If you don't
+      have an SDK call configured for the 'Update' event and you're dependent on specific SDK call response data, you will see this error from CFN:
+
+      CustomResource attribute error: Vendor response doesn't contain <attribute-name> attribute in object. See https://github.com/aws/aws-cdk/issues/29949) for more details.
+
+      Unlike most feature flags, we don't recommend setting this feature flag to true. However, if you're using the 'AwsCustomResource' construct with 'logApiResponseData' as true in
+      the event object, then setting this feature flag will keep this behavior. Otherwise, setting this feature flag to false will trigger an 'Update' event by removing the 'logApiResponseData'
+      property from the event object.
+    `,
+    introducedIn: { v2: 'V2NEXT' },
+    recommendedValue: false,
   },
 };
 
