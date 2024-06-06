@@ -1,0 +1,362 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "ConfigRuleEvaluationMode": {
+        "id": "ConfigRuleEvaluationMode",
+        "path": "ConfigRuleEvaluationMode",
+        "children": {
+          "CustomFunction": {
+            "id": "CustomFunction",
+            "path": "ConfigRuleEvaluationMode/CustomFunction",
+            "children": {
+              "ServiceRole": {
+                "id": "ServiceRole",
+                "path": "ConfigRuleEvaluationMode/CustomFunction/ServiceRole",
+                "children": {
+                  "ImportServiceRole": {
+                    "id": "ImportServiceRole",
+                    "path": "ConfigRuleEvaluationMode/CustomFunction/ServiceRole/ImportServiceRole",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "ConfigRuleEvaluationMode/CustomFunction/ServiceRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "lambda.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "managedPolicyArns": [
+                          {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+                              ]
+                            ]
+                          },
+                          {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":iam::aws:policy/service-role/AWSConfigRulesExecutionRole"
+                              ]
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
+                  "version": "0.0.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "ConfigRuleEvaluationMode/CustomFunction/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
+                  "aws:cdk:cloudformation:props": {
+                    "code": {
+                      "zipFile": "exports.handler = (event) => console.log(event);"
+                    },
+                    "handler": "index.handler",
+                    "role": {
+                      "Fn::GetAtt": [
+                        "CustomFunctionServiceRoleD3F73B79",
+                        "Arn"
+                      ]
+                    },
+                    "runtime": "nodejs18.x"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
+                  "version": "0.0.0"
+                }
+              },
+              "CustomRulePermissionbM1jVaicvRO9SDCiAbsQcYrOlESEtMwrrF9ZQQRvd5Q=": {
+                "id": "CustomRulePermissionbM1jVaicvRO9SDCiAbsQcYrOlESEtMwrrF9ZQQRvd5Q=",
+                "path": "ConfigRuleEvaluationMode/CustomFunction/CustomRulePermissionbM1jVaicvRO9SDCiAbsQcYrOlESEtMwrrF9ZQQRvd5Q=",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
+                  "aws:cdk:cloudformation:props": {
+                    "action": "lambda:InvokeFunction",
+                    "functionName": {
+                      "Fn::GetAtt": [
+                        "CustomFunctionBADD59E7",
+                        "Arn"
+                      ]
+                    },
+                    "principal": "config.amazonaws.com",
+                    "sourceAccount": {
+                      "Ref": "AWS::AccountId"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_lambda.CfnPermission",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_lambda.Function",
+              "version": "0.0.0"
+            }
+          },
+          "CustomRule": {
+            "id": "CustomRule",
+            "path": "ConfigRuleEvaluationMode/CustomRule",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "ConfigRuleEvaluationMode/CustomRule/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Config::ConfigRule",
+                  "aws:cdk:cloudformation:props": {
+                    "evaluationModes": [
+                      {
+                        "mode": "PROACTIVE"
+                      }
+                    ],
+                    "scope": {
+                      "complianceResourceTypes": [
+                        "AWS::EC2::Instance"
+                      ]
+                    },
+                    "source": {
+                      "owner": "CUSTOM_LAMBDA",
+                      "sourceDetails": [
+                        {
+                          "eventSource": "aws.config",
+                          "messageType": "ScheduledNotification"
+                        }
+                      ],
+                      "sourceIdentifier": {
+                        "Fn::GetAtt": [
+                          "CustomFunctionBADD59E7",
+                          "Arn"
+                        ]
+                      }
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_config.CfnConfigRule",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_config.CustomRule",
+              "version": "0.0.0"
+            }
+          },
+          "ManagedRule": {
+            "id": "ManagedRule",
+            "path": "ConfigRuleEvaluationMode/ManagedRule",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "ConfigRuleEvaluationMode/ManagedRule/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Config::ConfigRule",
+                  "aws:cdk:cloudformation:props": {
+                    "evaluationModes": [
+                      {
+                        "mode": "DETECTIVE"
+                      },
+                      {
+                        "mode": "PROACTIVE"
+                      }
+                    ],
+                    "source": {
+                      "owner": "AWS",
+                      "sourceIdentifier": "API_GW_XRAY_ENABLED"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_config.CfnConfigRule",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_config.ManagedRule",
+              "version": "0.0.0"
+            }
+          },
+          "CustomPolicy": {
+            "id": "CustomPolicy",
+            "path": "ConfigRuleEvaluationMode/CustomPolicy",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "ConfigRuleEvaluationMode/CustomPolicy/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Config::ConfigRule",
+                  "aws:cdk:cloudformation:props": {
+                    "evaluationModes": [
+                      {
+                        "mode": "DETECTIVE"
+                      }
+                    ],
+                    "scope": {
+                      "complianceResourceTypes": [
+                        "AWS::DynamoDB::Table"
+                      ]
+                    },
+                    "source": {
+                      "owner": "CUSTOM_POLICY",
+                      "sourceDetails": [
+                        {
+                          "eventSource": "aws.config",
+                          "messageType": "ConfigurationItemChangeNotification"
+                        },
+                        {
+                          "eventSource": "aws.config",
+                          "messageType": "OversizedConfigurationItemChangeNotification"
+                        }
+                      ],
+                      "customPolicyDetails": {
+                        "enableDebugLogDelivery": true,
+                        "policyRuntime": "guard-2.x.x",
+                        "policyText": "\n# This rule checks if point in time recovery (PITR) is enabled on active Amazon DynamoDB tables\nlet status = ['ACTIVE']\n\nrule tableisactive when\n    resourceType == \"AWS::DynamoDB::Table\" {\n    configuration.tableStatus == %status\n}\n\nrule checkcompliance when\n    resourceType == \"AWS::DynamoDB::Table\"\n    tableisactive {\n        let pitr = supplementaryConfiguration.ContinuousBackupsDescription.pointInTimeRecoveryDescription.pointInTimeRecoveryStatus\n        %pitr == \"ENABLED\"\n}\n"
+                      }
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_config.CfnConfigRule",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_config.CustomPolicy",
+              "version": "0.0.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "ConfigRuleEvaluationMode/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "ConfigRuleEvaluationMode/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnRule",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "ConfigRuleEvaluationModeTest": {
+        "id": "ConfigRuleEvaluationModeTest",
+        "path": "ConfigRuleEvaluationModeTest",
+        "children": {
+          "DefaultTest": {
+            "id": "DefaultTest",
+            "path": "ConfigRuleEvaluationModeTest/DefaultTest",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "ConfigRuleEvaluationModeTest/DefaultTest/Default",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              },
+              "DeployAssert": {
+                "id": "DeployAssert",
+                "path": "ConfigRuleEvaluationModeTest/DefaultTest/DeployAssert",
+                "children": {
+                  "BootstrapVersion": {
+                    "id": "BootstrapVersion",
+                    "path": "ConfigRuleEvaluationModeTest/DefaultTest/DeployAssert/BootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnParameter",
+                      "version": "0.0.0"
+                    }
+                  },
+                  "CheckBootstrapVersion": {
+                    "id": "CheckBootstrapVersion",
+                    "path": "ConfigRuleEvaluationModeTest/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnRule",
+                      "version": "0.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Stack",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "@aws-cdk/integ-tests-alpha.IntegTestCase",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "@aws-cdk/integ-tests-alpha.IntegTest",
+          "version": "0.0.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.3.0"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "aws-cdk-lib.App",
+      "version": "0.0.0"
+    }
+  }
+}
