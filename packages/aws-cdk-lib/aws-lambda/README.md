@@ -26,6 +26,10 @@ runtime code.
  * `lambda.Code.fromDockerBuild(path, options)` - use the result of a Docker
    build as code. The runtime code is expected to be located at `/asset` in the
    image and will be zipped and uploaded to S3 as an asset.
+ * `lambda.Code.fromCustomCommand(output, command, customCommandOptions)` - 
+   supply a command that is invoked during cdk synth. That command is meant to direct
+   the generated code to output (a zip file or a directory), which is then used as the 
+   code for the created AWS Lambda.
 
 The following example shows how to define a Python function and deploy the code
 from the local directory `my-lambda-handler` to it:
@@ -160,20 +164,20 @@ as choosing the log group:
 ```ts
 import { ILogGroup } from 'aws-cdk-lib/aws-logs';
 
-declare const logGroup: ILogGroup;  
+declare const logGroup: ILogGroup;
 
 new lambda.Function(this, 'Lambda', {
   code: new lambda.InlineCode('foo'),
   handler: 'index.handler',
   runtime: lambda.Runtime.NODEJS_18_X,
   loggingFormat: lambda.LoggingFormat.JSON,
-  systemLogLevel: lambda.SystemLogLevel.INFO,
-  applicationLogLevel: lambda.ApplicationLogLevel.INFO,
+  systemLogLevelV2: lambda.SystemLogLevel.INFO,
+  applicationLogLevelV2: lambda.ApplicationLogLevel.INFO,
   logGroup: logGroup,
 });
 ```
 
-To use `applicationLogLevel` and/or `systemLogLevel` you must set `loggingFormat` to `LoggingFormat.JSON`.
+To use `applicationLogLevelV2` and/or `systemLogLevelV2` you must set `loggingFormat` to `LoggingFormat.JSON`.
 
 ## Resource-based Policies
 
@@ -1077,8 +1081,8 @@ const fn = new lambda.Function(this, 'MyLambda', {
 
 ## IPv6 support
 
-You can configure IPv6 connectivity for lambda function by setting `Ipv6AllowedForDualStack` to true. 
-It allows Lambda functions to specify whether the IPv6 traffic should be allowed when using dual-stack VPCs. 
+You can configure IPv6 connectivity for lambda function by setting `Ipv6AllowedForDualStack` to true.
+It allows Lambda functions to specify whether the IPv6 traffic should be allowed when using dual-stack VPCs.
 To access IPv6 network using Lambda, Dual-stack VPC is required. Using dual-stack VPC a function communicates with subnet over either of IPv4 or IPv6.
 
 ```ts
