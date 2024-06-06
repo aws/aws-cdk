@@ -758,7 +758,7 @@
      ]
     },
     "Config": {
-     "version": "1.29",
+     "version": "1.30",
      "roleArn": {
       "Fn::GetAtt": [
        "integrationtesteksclusterRole03F70AF0",
@@ -1053,7 +1053,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/22a50ada26142d649962dd4c5a512cf5a208405e65476a3459d2fbdde08f2edd.json"
+       "/f8ac1cc9624f52a843eb23a8cf99f3288a46cb446ff7f6bb5ffcc53d5e0bc374.json"
       ]
      ]
     }
