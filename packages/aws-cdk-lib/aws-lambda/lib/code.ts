@@ -1,3 +1,4 @@
+import { spawnSync } from 'child_process';
 import { Construct } from 'constructs';
 import * as ecr from '../../aws-ecr';
 import * as ecr_assets from '../../aws-ecr-assets';
@@ -52,6 +53,41 @@ export abstract class Code {
    */
   public static fromAsset(path: string, options?: s3_assets.AssetOptions): AssetCode {
     return new AssetCode(path, options);
+  }
+
+  /**
+   * Runs a command to build the code asset that will be used.
+   *
+   * @param output Where the output of the command will be directed, either a directory or a .zip file with the output Lambda code bundle
+   * * For example, if you use the command to run a build script (e.g., [ 'node', 'bundle_code.js' ]), and the build script generates a directory `/my/lambda/code`
+   * containing code that should be ran in a Lambda function, then output should be set to `/my/lambda/code`
+   * @param command The command which will be executed to generate the output, for example, [ 'node', 'bundle_code.js' ]
+   * @param options options for the custom command, and other asset options -- but bundling options are not allowed.
+   */
+  public static fromCustomCommand(
+    output: string,
+    command: string[],
+    options?: CustomCommandOptions,
+  ): AssetCode {
+    if (command.length === 0) {
+      throw new Error('command must contain at least one argument. For example, ["node", "buildFile.js"].');
+    }
+
+    const cmd = command[0];
+    const commandArguments = command.splice(1);
+
+    const proc = options?.commandOptions === undefined
+      ? spawnSync(cmd, commandArguments) // use the default spawnSyncOptions
+      : spawnSync(cmd, commandArguments, options.commandOptions);
+
+    if (proc.error) {
+      throw new Error(`Failed to execute custom command: ${proc.error}`);
+    }
+    if (proc.status !== 0) {
+      throw new Error(`${command.join(' ')} exited with status: ${proc.status}\n\nstdout: ${proc.stdout?.toString().trim()}\n\nstderr: ${proc.stderr?.toString().trim()}`);
+    }
+
+    return new AssetCode(output, options);
   }
 
   /**
@@ -578,4 +614,16 @@ export interface DockerBuildAssetOptions extends cdk.DockerBuildOptions {
    * @default - a unique temporary directory in the system temp directory
    */
   readonly outputPath?: string;
+}
+
+/**
+ * Options for creating `AssetCode` with a custom command, such as running a buildfile.
+ */
+export interface CustomCommandOptions extends s3_assets.AssetOptions {
+  /**
+   * options that are passed to the spawned process, which determine the characteristics of the spawned process.
+   *
+   * @default: see `child_process.SpawnSyncOptions` (https://nodejs.org/api/child_process.html#child_processspawnsynccommand-args-options).
+   */
+  readonly commandOptions?: { [options: string]: any };
 }

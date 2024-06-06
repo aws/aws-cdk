@@ -34,6 +34,27 @@ class EventStack extends cdk.Stack {
         },
       ],
     });
+
+    // Create the scheduled task with container name
+    new ScheduledFargateTask(this, 'ScheduledFargateTask2', {
+      cluster,
+      scheduledFargateTaskImageOptions: {
+        image: new ecs.AssetImage(path.join(__dirname, '..', 'demo-image')),
+        containerName: 'differentName',
+        memoryLimitMiB: 512,
+        cpu: 256,
+        environment: { TRIGGER: 'CloudWatch Events' },
+      },
+      desiredTaskCount: 2,
+      schedule: events.Schedule.rate(cdk.Duration.minutes(2)),
+      propagateTags: ecs.PropagatedTagSource.TASK_DEFINITION,
+      tags: [
+        {
+          key: 'my-tag',
+          value: 'my-tag-value',
+        },
+      ],
+    });
   }
 }
 

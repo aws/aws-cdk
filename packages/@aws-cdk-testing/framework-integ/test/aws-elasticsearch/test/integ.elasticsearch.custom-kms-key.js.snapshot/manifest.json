@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/0c9b2669d43f75540da46866b569afcde3a62d3e98aa00422933f69c265114b4.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/d785a87096d9b1a4a44f55a3b1a8e523daa4a5a9e14ff91d31ac20bc55be1849.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -138,7 +138,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/664366034ca97e6d1853182275c6aaa8d190b5aecb30a576f53de893a24edf42.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -154,30 +154,6 @@
         "ElasticsearchCustomKmsIntegDefaultTestDeployAssertFEEBA45B.assets"
       ],
       "metadata": {
-        "/ElasticsearchCustomKmsInteg/DefaultTest/DeployAssert/AwsApiCallCloudWatchLogsdescribeResourcePolicies/Default/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AwsApiCallCloudWatchLogsdescribeResourcePolicies"
-          }
-        ],
-        "/ElasticsearchCustomKmsInteg/DefaultTest/DeployAssert/AwsApiCallCloudWatchLogsdescribeResourcePolicies/AssertionResults": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssertionResultsAwsApiCallCloudWatchLogsdescribeResourcePolicies"
-          }
-        ],
-        "/ElasticsearchCustomKmsInteg/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
-          }
-        ],
-        "/ElasticsearchCustomKmsInteg/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
-          }
-        ],
         "/ElasticsearchCustomKmsInteg/DefaultTest/DeployAssert/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",

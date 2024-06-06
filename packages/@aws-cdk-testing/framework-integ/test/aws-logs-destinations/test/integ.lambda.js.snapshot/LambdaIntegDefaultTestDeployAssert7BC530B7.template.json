@@ -15,7 +15,7 @@
      "Entries": "[{\"Detail\":\"{\\\"foo\\\":\\\"bar\\\"}\",\"DetailType\":\"cdk-integ-custom-rule\",\"Source\":\"cdk-lambda-integ\"}]"
     },
     "flattenResponse": "false",
-    "salt": "1716915983759"
+    "salt": "1717244015562"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -127,7 +127,7 @@
      "WaitTimeSeconds": "20"
     },
     "flattenResponse": "false",
-    "salt": "1716915983760"
+    "salt": "1717244015563"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"

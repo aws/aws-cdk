@@ -579,11 +579,16 @@ const rule = pipeline.notifyOnExecutionStateChange('NotifyOnExecutionStateChange
 
 ## Trigger
 
-To trigger a pipeline with Git tags, specify the `triggers` property. When a Git tag is pushed,
-your pipeline starts. You can filter with glob patterns. The `tagsExcludes` takes priority over
-the `tagsIncludes`.
-
+To trigger a pipeline with Git tags or branches, specify the `triggers` property.
 The triggers can only be used with pipeline type V2.
+
+### Push filter
+
+Pipelines can be started based on push events. You can specify the `pushFilter` property to
+filter the push events. The `pushFilter` can specify Git tags.
+
+In the case of Git tags, your pipeline starts when a Git tag is pushed.
+You can filter with glob patterns. The `tagsExcludes` takes priority over the `tagsIncludes`.
 
 ```ts
 declare const sourceAction: codepipeline_actions.CodeStarConnectionsSourceAction;
@@ -614,7 +619,115 @@ new codepipeline.Pipeline(this, 'Pipeline', {
 });
 ```
 
-Or append a trigger to an existing pipeline:
+### Pull request filter
+
+Pipelines can be started based on pull request events. You can specify the `pullRequestFilter` property to
+filter the pull request events. The `pullRequestFilter` can specify branches, file paths, and event types.
+
+In the case of branches, your pipeline starts when a pull request event occurs on the specified branches.
+You can filter with glob patterns. The `branchesExcludes` takes priority over the `branchesIncludes`.
+
+```ts
+declare const sourceAction: codepipeline_actions.CodeStarConnectionsSourceAction;
+declare const buildAction: codepipeline_actions.CodeBuildAction;
+
+new codepipeline.Pipeline(this, 'Pipeline', {
+  pipelineType: codepipeline.PipelineType.V2,
+  stages: [
+    {
+      stageName: 'Source',
+      actions: [sourceAction],
+    },
+    {
+      stageName: 'Build',
+      actions: [buildAction],
+    },
+  ],
+  triggers: [{
+    providerType: codepipeline.ProviderType.CODE_STAR_SOURCE_CONNECTION,
+    gitConfiguration: {
+      sourceAction,
+      pullRequestFilter: [{
+        branchesExcludes: ['exclude1', 'exclude2'],
+        branchesIncludes: ['include*'],
+      }],
+    },
+  }],
+});
+```
+
+File paths can also be specified along with the branches to start the pipeline.
+You can filter with glob patterns. The `filePathsExcludes` takes priority over the `filePathsIncludes`.
+
+```ts
+declare const sourceAction: codepipeline_actions.CodeStarConnectionsSourceAction;
+declare const buildAction: codepipeline_actions.CodeBuildAction;
+
+new codepipeline.Pipeline(this, 'Pipeline', {
+  pipelineType: codepipeline.PipelineType.V2,
+  stages: [
+    {
+      stageName: 'Source',
+      actions: [sourceAction],
+    },
+    {
+      stageName: 'Build',
+      actions: [buildAction],
+    },
+  ],
+  triggers: [{
+    providerType: codepipeline.ProviderType.CODE_STAR_SOURCE_CONNECTION,
+    gitConfiguration: {
+      sourceAction,
+      pullRequestFilter: [{
+        branchesExcludes: ['exclude1', 'exclude2'],
+        branchesIncludes: ['include1', 'include2'],
+        filePathsExcludes: ['/path/to/exclude1', '/path/to/exclude2'],
+        filePathsIncludes: ['/path/to/include1', '/path/to/include1'],
+      }],
+    },
+  }],
+});
+```
+
+To filter types of pull request events for triggers, you can specify the `events` property.
+
+```ts
+declare const sourceAction: codepipeline_actions.CodeStarConnectionsSourceAction;
+declare const buildAction: codepipeline_actions.CodeBuildAction;
+
+new codepipeline.Pipeline(this, 'Pipeline', {
+  pipelineType: codepipeline.PipelineType.V2,
+  stages: [
+    {
+      stageName: 'Source',
+      actions: [sourceAction],
+    },
+    {
+      stageName: 'Build',
+      actions: [buildAction],
+    },
+  ],
+  triggers: [{
+    providerType: codepipeline.ProviderType.CODE_STAR_SOURCE_CONNECTION,
+    gitConfiguration: {
+      sourceAction,
+      pullRequestFilter: [{
+        branchesExcludes: ['exclude1', 'exclude2'],
+        branchesIncludes: ['include1', 'include2'],
+        events: [
+          codepipeline.GitPullRequestEvent.OPEN,
+          codepipeline.GitPullRequestEvent.CLOSED,
+        ],
+      }],
+    },
+  }],
+});
+```
+
+### Append a trigger to an existing pipeline
+
+You can append a trigger to an existing pipeline:
 
 ```ts
 declare const pipeline: codepipeline.Pipeline;

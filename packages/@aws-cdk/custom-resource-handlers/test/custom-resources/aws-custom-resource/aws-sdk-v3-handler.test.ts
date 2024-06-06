@@ -107,7 +107,6 @@ test('create event with physical resource id path', async () => {
           Bucket: 'my-bucket',
         },
         physicalResourceId: { responsePath: 'Contents.1.ETag' },
-        logApiResponseData: true,
       } satisfies AwsSdkCall),
     },
   };
@@ -145,7 +144,6 @@ test('update event with physical resource id', async () => {
           Key: 'key',
         },
         physicalResourceId: { id: 'key' },
-        logApiResponseData: true,
       } satisfies AwsSdkCall),
     },
   };
@@ -176,7 +174,6 @@ test('delete event', async () => {
           Bucket: 'my-bucket',
         },
         physicalResourceId: { responsePath: 'Contents.1.ETag' },
-        logApiResponseData: true,
       } satisfies AwsSdkCall),
     },
   };
@@ -211,7 +208,6 @@ test('delete event with Delete call and no physical resource id in call', async 
           Bucket: 'my-bucket',
           Key: 'my-object',
         },
-        logApiResponseData: true,
       } satisfies AwsSdkCall),
     },
   };
@@ -247,7 +243,6 @@ test('create event with Delete call only', async () => {
           Bucket: 'my-bucket',
           Key: 'my-object',
         },
-        logApiResponseData: true,
       } satisfies AwsSdkCall),
     },
   };
@@ -283,7 +278,6 @@ test('catch errors - name property', async () => {
         },
         physicalResourceId: { id: 'physicalResourceId' },
         ignoreErrorCodesMatching: 'NoSuchBucket',
-        logApiResponseData: true,
       } satisfies AwsSdkCall),
     },
   };
@@ -321,7 +315,6 @@ test('catch errors - constructor name', async () => {
         },
         physicalResourceId: { id: 'physicalResourceId' },
         ignoreErrorCodesMatching: 'S3ServiceException',
-        logApiResponseData: true,
       } satisfies AwsSdkCall),
     },
   };
@@ -364,7 +357,6 @@ test('restrict output path', async () => {
         },
         physicalResourceId: { id: 'id' },
         outputPath: 'Contents.0',
-        logApiResponseData: true,
       } satisfies AwsSdkCall),
     },
   };
@@ -408,7 +400,6 @@ test('restrict output paths', async () => {
         },
         physicalResourceId: { id: 'id' },
         outputPaths: ['Contents.0.Key', 'Contents.1.Key'],
-        logApiResponseData: true,
       } satisfies AwsSdkCall),
     },
   };
@@ -445,7 +436,6 @@ test('can specify apiVersion and region', async () => {
         apiVersion: '2010-03-31',
         region: 'eu-west-1',
         physicalResourceId: { id: 'id' },
-        logApiResponseData: true,
       } satisfies AwsSdkCall),
     },
   };
@@ -455,6 +445,34 @@ test('can specify apiVersion and region', async () => {
     body.Data!.apiVersion === '2010-03-31' &&
     body.Data!.region === 'eu-west-1',
   );
+
+  await handler(event, {} as AWSLambda.Context);
+
+  expect(request.isDone()).toBeTruthy();
+});
+
+test('logApiResponseData can be false', async () => {
+  s3MockClient.on(S3.GetObjectCommand).resolves({});
+
+  const event: AWSLambda.CloudFormationCustomResourceCreateEvent = {
+    ...eventCommon,
+    RequestType: 'Create',
+    ResourceProperties: {
+      ServiceToken: 'token',
+      Create: JSON.stringify({
+        service: '@aws-sdk/client-s3',
+        action: 'GetObjectCommand',
+        parameters: {
+          Bucket: 'my-bucket',
+          Key: 'key',
+        },
+        logApiResponseData: false,
+        physicalResourceId: { id: 'id' },
+      } satisfies AwsSdkCall),
+    },
+  };
+
+  const request = createRequest(body => body.Status === 'SUCCESS');
 
   await handler(event, {} as AWSLambda.Context);
 
@@ -492,7 +510,6 @@ test('installs the latest SDK', async () => {
           Key: 'key',
         },
         physicalResourceId: { id: 'id' },
-        logApiResponseData: true,
       } satisfies AwsSdkCall),
       InstallLatestAwsSdk: 'true',
     },
@@ -537,7 +554,6 @@ test('falls back to installed sdk if installation fails', async () => {
           Key: 'key',
         },
         physicalResourceId: { id: 'id' },
-        logApiResponseData: true,
       } satisfies AwsSdkCall),
       InstallLatestAwsSdk: 'true',
     },
@@ -714,7 +730,6 @@ test('Being able to call the AWS SDK v2 format', async () => {
           Bucket: 'foo',
           Key: 'bar',
         },
-        logApiResponseData: true,
       } satisfies AwsSdkCall),
     },
   };
@@ -749,7 +764,6 @@ test('invalid v3 package name throws explicit error', async () => {
           Key: 'key',
         },
         physicalResourceId: { id: 'id' },
-        logApiResponseData: true,
       } satisfies AwsSdkCall),
     },
   };
@@ -780,7 +794,6 @@ test('invalid v2 service name throws explicit error', async () => {
           Key: 'key',
         },
         physicalResourceId: { id: 'id' },
-        logApiResponseData: true,
       } satisfies AwsSdkCall),
     },
   };
@@ -815,7 +828,6 @@ test('automatic Uint8Array conversion when necessary', async () => {
           KeyId: 'key-id',
           Plaintext: 'dummy-data',
         },
-        logApiResponseData: true,
       } satisfies AwsSdkCall),
     },
   }, {} as AWSLambda.Context);
@@ -875,7 +887,6 @@ test('automatic Date conversion when necessary', async () => {
           StartTime: new Date('2023-01-01'),
           EndTime: new Date('2023-01-02'),
         },
-        logApiResponseData: true,
       } satisfies AwsSdkCall),
     },
   }, {} as AWSLambda.Context);
