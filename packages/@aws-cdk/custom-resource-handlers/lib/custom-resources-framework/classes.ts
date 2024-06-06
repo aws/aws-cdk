@@ -25,6 +25,10 @@ import {
 } from './modules';
 import { toLambdaRuntime } from './utils/framework-utils';
 
+const CORE_INTERNAL_STACK_IMPORT_PATH = '../../stack';
+const CORE_INTERNAL_CUSTOM_RESOURCE_PROVIDER_IMPORT_PATH = '../../custom-resource-provider';
+const ALPHA_MODULE_LAMBDA_IMPORT_PATH = 'aws-cdk-lib/aws-lambda';
+
 /**
  * Initialization properties for a class constructor.
  */
@@ -101,7 +105,7 @@ export abstract class HandlerFrameworkClass extends ClassType {
         });
 
         if (scope.isAlphaModule) {
-          scope.registerImport(LAMBDA_MODULE, { fromLocation: 'aws-cdk-lib/aws-lambda' });
+          scope.registerImport(LAMBDA_MODULE, { fromLocation: ALPHA_MODULE_LAMBDA_IMPORT_PATH });
         } else {
           scope.registerImport(LAMBDA_MODULE);
         }
@@ -137,7 +141,7 @@ export abstract class HandlerFrameworkClass extends ClassType {
         });
 
         if (scope.isAlphaModule) {
-          scope.registerImport(LAMBDA_MODULE, { fromLocation: 'aws-cdk-lib/aws-lambda' });
+          scope.registerImport(LAMBDA_MODULE, { fromLocation: ALPHA_MODULE_LAMBDA_IMPORT_PATH });
         } else {
           scope.registerImport(LAMBDA_MODULE);
         }
@@ -226,14 +230,14 @@ export abstract class HandlerFrameworkClass extends ClassType {
         if (scope.isCoreInternal) {
           scope.registerImport(CORE_MODULE, {
             targets: [CORE_MODULE.Stack],
-            fromLocation: '../../stack',
+            fromLocation: CORE_INTERNAL_STACK_IMPORT_PATH,
           });
           scope.registerImport(CORE_MODULE, {
             targets: [
               CORE_MODULE.CustomResourceProviderBase,
               CORE_MODULE.CustomResourceProviderOptions,
             ],
-            fromLocation: '../../custom-resource-provider',
+            fromLocation: CORE_INTERNAL_CUSTOM_RESOURCE_PROVIDER_IMPORT_PATH,
           });
         } else {
           scope.registerImport(CORE_MODULE, {
@@ -368,8 +372,8 @@ export abstract class HandlerFrameworkClass extends ClassType {
       scope.registerImport(CORE_MODULE, {
         targets: [CORE_MODULE.determineLatestNodeRuntimeName],
         fromLocation: scope.isCoreInternal
-          ? '../../custom-resource-provider'
-          : '../../../core',
+          ? CORE_INTERNAL_CUSTOM_RESOURCE_PROVIDER_IMPORT_PATH
+          : CORE_MODULE.fqn,
       });
     }
 
