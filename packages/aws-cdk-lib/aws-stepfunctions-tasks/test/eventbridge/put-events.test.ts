@@ -161,6 +161,30 @@ describe('Put Events', () => {
     }).toThrowError('Unsupported service integration pattern');
   });
 
+  test('event source cannot start with "aws."', () => {
+    expect(() => {
+      new EventBridgePutEvents(stack, 'PutEvents', {
+        entries: [{
+          detail: sfn.TaskInput.fromText('MyDetail'),
+          detailType: 'MyDetailType',
+          source: 'aws.source',
+        }],
+      });
+    }).toThrow(/Event source cannot start with "aws."/);
+  });
+
+  test('event source can start with "aws" without trailing dot', () => {
+    expect(() => {
+      new EventBridgePutEvents(stack, 'PutEvents', {
+        entries: [{
+          detail: sfn.TaskInput.fromText('MyDetail'),
+          detailType: 'MyDetailType',
+          source: 'awssource',
+        }],
+      });
+    }).not.toThrow(/Event source cannot start with "aws."/);
+  });
+
   test('provided EventBus', () => {
     // GIVEN
     const eventBus = new events.EventBus(stack, 'EventBus');
