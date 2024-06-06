@@ -85,10 +85,12 @@ class IpamScope extends Resource {
 
 export class Ipam extends Resource {
   public readonly publicScope: IpamPublicScope;
+  public readonly privateScope: IpamPrivateScope;
 
   constructor(scope: Construct, id: string) {
     super(scope, id);
     this.publicScope = new IpamPublicScope(this);
+    this.privateScope = new IpamPrivateScope(this);
   }
 }
 
@@ -102,6 +104,26 @@ class IpamPublicScope {
   addPool(options: PoolOptions): CfnIPAMPool {
     const scope = new IpamScope(this.ipam, 'PublicScope', {
       scopeType: ScopeType.PUBLIC,
+    });
+
+    return new CfnIPAMPool(this.ipam, '', {
+      addressFamily: options.addressFamily.toString(),
+      provisionedCidrs: options.provisionedCidrs,
+      ipamScopeId: scope.ipamScopeId,
+    });
+  }
+}
+
+class IpamPrivateScope {
+  private readonly ipam: Ipam;
+
+  constructor(ipam: Ipam) {
+    this.ipam = ipam;
+  }
+
+  addPool(options: PoolOptions): CfnIPAMPool {
+    const scope = new IpamScope(this.ipam, 'PrivateScope', {
+      scopeType: ScopeType.PRIVATE,
     });
 
     return new CfnIPAMPool(this.ipam, '', {

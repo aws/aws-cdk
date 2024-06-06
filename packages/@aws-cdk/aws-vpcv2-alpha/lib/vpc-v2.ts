@@ -1,4 +1,4 @@
-import { CfnIPAMPool, CfnVPC, CfnVPCCidrBlock } from 'aws-cdk-lib/aws-ec2/lib';
+import { CfnIPAMPool, CfnVPC, CfnVPCCidrBlock, IVpc } from 'aws-cdk-lib/aws-ec2/lib';
 import { NetworkBuilder } from 'aws-cdk-lib/aws-ec2/lib/network-util';
 import { Resource } from 'aws-cdk-lib/core/lib/resource';
 import { Construct } from 'constructs';
@@ -18,7 +18,7 @@ export interface Ipv6AddressesOptions {
   readonly ipv6CidrBlock?: string;
 }
 
-export class IpAddresses {
+abstract class IpAddresses {
 
   public static ipv4(ipv4Cidr: string): IIpAddresses {
     return new ipv4CidrAllocation(ipv4Cidr);
@@ -214,6 +214,11 @@ export class VpcV2 extends Resource implements IVpcV2 {
 
       for (const secondaryAddressBlock of secondaryAddressBlocks) {
         const vpcoptions: VpcV2Options = secondaryAddressBlock.allocateVpcCidr();
+
+        // validate CIDR ranges per RFC 1918
+        if (vpcOptions.ipv4CidrBlock!) {
+          validateIpv4address(vpcoptions.ipv4CidrBlock);
+        }
         //Create secondary blocks for Ipv4 and Ipv6
         new CfnVPCCidrBlock(this, `Secondary${vpcoptions.ipv4CidrBlock}`, {
           vpcId: this.vpcId,
@@ -281,4 +286,8 @@ class AmazonProvided implements IIpAddresses {
     };
   }
 
+}
+
+function validateIpv4address(cidr?: string) {
+  
 }
