@@ -3,21 +3,21 @@ import * as path from "path";
 import { Construct } from "constructs";
 import * as lambda from "../../../aws-lambda";
 
-export class EvalNodejsSingletonFunction extends lambda.SingletonFunction {
-  public constructor(scope: Construct, id: string, props: EvalNodejsSingletonFunctionProps) {
+export class TestSingletonFunction extends lambda.SingletonFunction {
+  public constructor(scope: Construct, id: string, props: TestSingletonFunctionProps) {
     super(scope, id, {
       ...props,
       "code": lambda.Code.fromAsset(path.join(__dirname, 'my-handler')),
       "handler": "index.handler",
-      "runtime": (props.runtime ? props.runtime : lambda.determineLatestNodeRuntime(scope))
+      "runtime": lambda.Runtime.PYTHON_3_10
     });
   }
 }
 
 /**
- * Initialization properties for EvalNodejsSingletonFunction
+ * Initialization properties for TestSingletonFunction
  */
-export interface EvalNodejsSingletonFunctionProps extends lambda.FunctionOptions {
+export interface TestSingletonFunctionProps extends lambda.FunctionOptions {
   /**
    * A unique identifier to identify this Lambda.
    *
@@ -36,11 +36,4 @@ export interface EvalNodejsSingletonFunctionProps extends lambda.FunctionOptions
    * @default SingletonLambda
    */
   readonly lambdaPurpose?: string;
-
-  /**
-   * The runtime that this Lambda will use.
-   *
-   * @default lambda.Runtime.NODEJS_18_X
-   */
-  readonly runtime?: lambda.Runtime;
 }

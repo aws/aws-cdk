@@ -1,8 +1,7 @@
 /* eslint-disable prettier/prettier,max-len */
 import * as path from "path";
 import { Construct } from "constructs";
-import { Stack } from "../../stack";
-import { CustomResourceProviderBase, CustomResourceProviderOptions } from "../../custom-resource-provider";
+import { Stack, CustomResourceProviderBase, CustomResourceProviderOptions } from "../../../core";
 
 export class TestProvider extends CustomResourceProviderBase {
   /**
@@ -26,7 +25,7 @@ export class TestProvider extends CustomResourceProviderBase {
     super(scope, id, {
       ...props,
       "codeDirectory": path.join(__dirname, 'my-handler'),
-      "runtimeName": "nodejs18.x"
+      "runtimeName": "python3.10"
     });
   }
 }
