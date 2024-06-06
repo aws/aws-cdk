@@ -62,6 +62,80 @@ describe('triggers', () => {
     });
   });
 
+  test('can specify triggers with branches in pushFilter', () => {
+    const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
+      pipelineType: codepipeline.PipelineType.V2,
+      triggers: [{
+        providerType: codepipeline.ProviderType.CODE_STAR_SOURCE_CONNECTION,
+        gitConfiguration: {
+          sourceAction,
+          pushFilter: [{
+            branchesExcludes: ['exclude1', 'exclude2'],
+            branchesIncludes: ['include1', 'include2'],
+          }],
+        },
+      }],
+    });
+
+    testPipelineSetup(pipeline, [sourceAction], [buildAction]);
+
+    Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
+      PipelineType: 'V2',
+      Triggers: [{
+        GitConfiguration: {
+          SourceActionName: 'CodeStarConnectionsSourceAction',
+          Push: [{
+            Branches: {
+              Excludes: ['exclude1', 'exclude2'],
+              Includes: ['include1', 'include2'],
+            },
+          }],
+        },
+        ProviderType: 'CodeStarSourceConnection',
+      }],
+    });
+  });
+
+  test('can specify triggers with branches and file paths in pushFilter', () => {
+    const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
+      pipelineType: codepipeline.PipelineType.V2,
+      triggers: [{
+        providerType: codepipeline.ProviderType.CODE_STAR_SOURCE_CONNECTION,
+        gitConfiguration: {
+          sourceAction,
+          pushFilter: [{
+            branchesExcludes: ['exclude1', 'exclude2'],
+            branchesIncludes: ['include1', 'include2'],
+            filePathsExcludes: ['exclude1', 'exclude2'],
+            filePathsIncludes: ['include1', 'include2'],
+          }],
+        },
+      }],
+    });
+
+    testPipelineSetup(pipeline, [sourceAction], [buildAction]);
+
+    Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
+      PipelineType: 'V2',
+      Triggers: [{
+        GitConfiguration: {
+          SourceActionName: 'CodeStarConnectionsSourceAction',
+          Push: [{
+            Branches: {
+              Excludes: ['exclude1', 'exclude2'],
+              Includes: ['include1', 'include2'],
+            },
+            FilePaths: {
+              Excludes: ['exclude1', 'exclude2'],
+              Includes: ['include1', 'include2'],
+            },
+          }],
+        },
+        ProviderType: 'CodeStarSourceConnection',
+      }],
+    });
+  });
+
   test('can specify triggers with branches in pullRequestFilter', () => {
     const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
       pipelineType: codepipeline.PipelineType.V2,
@@ -346,6 +420,154 @@ describe('triggers', () => {
     });
   });
 
+  test('empty branchesExcludes in pushFilter for trigger is set to undefined', () => {
+    const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
+      pipelineType: codepipeline.PipelineType.V2,
+      triggers: [{
+        providerType: codepipeline.ProviderType.CODE_STAR_SOURCE_CONNECTION,
+        gitConfiguration: {
+          sourceAction,
+          pushFilter: [{
+            branchesExcludes: [],
+            branchesIncludes: ['include1', 'include2'],
+          }],
+        },
+      }],
+    });
+
+    testPipelineSetup(pipeline, [sourceAction], [buildAction]);
+
+    Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
+      PipelineType: 'V2',
+      Triggers: [{
+        GitConfiguration: {
+          SourceActionName: 'CodeStarConnectionsSourceAction',
+          Push: [{
+            Branches: {
+              Excludes: Match.absent(),
+              Includes: ['include1', 'include2'],
+            },
+          }],
+        },
+        ProviderType: 'CodeStarSourceConnection',
+      }],
+    });
+  });
+
+  test('empty branchesIncludes in pushFilter for trigger is set to undefined', () => {
+    const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
+      pipelineType: codepipeline.PipelineType.V2,
+      triggers: [{
+        providerType: codepipeline.ProviderType.CODE_STAR_SOURCE_CONNECTION,
+        gitConfiguration: {
+          sourceAction,
+          pushFilter: [{
+            branchesExcludes: ['excluded1', 'excluded2'],
+            branchesIncludes: [],
+          }],
+        },
+      }],
+    });
+
+    testPipelineSetup(pipeline, [sourceAction], [buildAction]);
+
+    Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
+      PipelineType: 'V2',
+      Triggers: [{
+        GitConfiguration: {
+          SourceActionName: 'CodeStarConnectionsSourceAction',
+          Push: [{
+            Branches: {
+              Excludes: ['excluded1', 'excluded2'],
+              Includes: Match.absent(),
+            },
+          }],
+        },
+        ProviderType: 'CodeStarSourceConnection',
+      }],
+    });
+  });
+
+  test('empty filePathsExcludes in pushFilter for trigger is set to undefined', () => {
+    const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
+      pipelineType: codepipeline.PipelineType.V2,
+      triggers: [{
+        providerType: codepipeline.ProviderType.CODE_STAR_SOURCE_CONNECTION,
+        gitConfiguration: {
+          sourceAction,
+          pushFilter: [{
+            branchesExcludes: ['exclude1', 'exclude2'],
+            branchesIncludes: ['include1', 'include2'],
+            filePathsExcludes: [],
+            filePathsIncludes: ['include1', 'include2'],
+          }],
+        },
+      }],
+    });
+
+    testPipelineSetup(pipeline, [sourceAction], [buildAction]);
+
+    Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
+      PipelineType: 'V2',
+      Triggers: [{
+        GitConfiguration: {
+          SourceActionName: 'CodeStarConnectionsSourceAction',
+          Push: [{
+            Branches: {
+              Excludes: ['exclude1', 'exclude2'],
+              Includes: ['include1', 'include2'],
+            },
+            FilePaths: {
+              Excludes: Match.absent(),
+              Includes: ['include1', 'include2'],
+            },
+          }],
+        },
+        ProviderType: 'CodeStarSourceConnection',
+      }],
+    });
+  });
+
+  test('empty filePathsIncludes in pushFilter for trigger is set to undefined', () => {
+    const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
+      pipelineType: codepipeline.PipelineType.V2,
+      triggers: [{
+        providerType: codepipeline.ProviderType.CODE_STAR_SOURCE_CONNECTION,
+        gitConfiguration: {
+          sourceAction,
+          pushFilter: [{
+            branchesExcludes: ['exclude1', 'exclude2'],
+            branchesIncludes: ['include1', 'include2'],
+            filePathsExcludes: ['exclude1', 'exclude2'],
+            filePathsIncludes: [],
+          }],
+        },
+      }],
+    });
+
+    testPipelineSetup(pipeline, [sourceAction], [buildAction]);
+
+    Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
+      PipelineType: 'V2',
+      Triggers: [{
+        GitConfiguration: {
+          SourceActionName: 'CodeStarConnectionsSourceAction',
+          Push: [{
+            Branches: {
+              Excludes: ['exclude1', 'exclude2'],
+              Includes: ['include1', 'include2'],
+            },
+            FilePaths: {
+              Excludes: ['exclude1', 'exclude2'],
+              Includes: Match.absent(),
+            },
+          }],
+        },
+        ProviderType: 'CodeStarSourceConnection',
+      }],
+    });
+  });
+
   test('empty branchesExcludes in pullRequestFilter for trigger is set to undefined', () => {
     const pipeline = new codepipeline.Pipeline(stack, 'Pipeline', {
       pipelineType: codepipeline.PipelineType.V2,
@@ -599,6 +821,132 @@ describe('triggers', () => {
         }],
       });
     }).toThrow(/maximum length of tagsIncludes in pushFilter for sourceAction with name 'CodeStarConnectionsSourceAction' is 8, got 9/);
+  });
+
+  test('throw if length of branchesExcludes in pushFilter is greater than 8', () => {
+    expect(() => {
+      new codepipeline.Pipeline(stack, 'Pipeline', {
+        pipelineType: codepipeline.PipelineType.V2,
+        triggers: [{
+          providerType: codepipeline.ProviderType.CODE_STAR_SOURCE_CONNECTION,
+          gitConfiguration: {
+            sourceAction,
+            pushFilter: [{
+              branchesExcludes: ['exclude1', 'exclude2', 'exclude3', 'exclude4', 'exclude5', 'exclude6', 'exclude7', 'exclude8', 'exclude9'],
+              branchesIncludes: ['include1', 'include2'],
+            }],
+          },
+        }],
+      });
+    }).toThrow(/maximum length of branchesExcludes in pushFilter for sourceAction with name 'CodeStarConnectionsSourceAction' is 8, got 9/);
+  });
+
+  test('throw if length of branchesIncludes in pushFilter is greater than 8', () => {
+    expect(() => {
+      new codepipeline.Pipeline(stack, 'Pipeline', {
+        pipelineType: codepipeline.PipelineType.V2,
+        triggers: [{
+          providerType: codepipeline.ProviderType.CODE_STAR_SOURCE_CONNECTION,
+          gitConfiguration: {
+            sourceAction,
+            pushFilter: [{
+              branchesExcludes: ['exclude1', 'exclude2'],
+              branchesIncludes: ['include1', 'include2', 'include3', 'include4', 'include5', 'include6', 'include7', 'include8', 'include9'],
+            }],
+          },
+        }],
+      });
+    }).toThrow(/maximum length of branchesIncludes in pushFilter for sourceAction with name 'CodeStarConnectionsSourceAction' is 8, got 9/);
+  });
+
+  test('throw if length of filePathsExcludes in pushFilter is greater than 8', () => {
+    expect(() => {
+      new codepipeline.Pipeline(stack, 'Pipeline', {
+        pipelineType: codepipeline.PipelineType.V2,
+        triggers: [{
+          providerType: codepipeline.ProviderType.CODE_STAR_SOURCE_CONNECTION,
+          gitConfiguration: {
+            sourceAction,
+            pushFilter: [{
+              branchesExcludes: ['exclude1', 'exclude2'],
+              branchesIncludes: ['include1', 'include2'],
+              filePathsExcludes: ['exclude1', 'exclude2', 'exclude3', 'exclude4', 'exclude5', 'exclude6', 'exclude7', 'exclude8', 'exclude9'],
+              filePathsIncludes: ['include1', 'include2'],
+            }],
+          },
+        }],
+      });
+    }).toThrow(/maximum length of filePathsExcludes in pushFilter for sourceAction with name 'CodeStarConnectionsSourceAction' is 8, got 9/);
+  });
+
+  test('throw if length of filePathsIncludes in pushFilter is greater than 8', () => {
+    expect(() => {
+      new codepipeline.Pipeline(stack, 'Pipeline', {
+        pipelineType: codepipeline.PipelineType.V2,
+        triggers: [{
+          providerType: codepipeline.ProviderType.CODE_STAR_SOURCE_CONNECTION,
+          gitConfiguration: {
+            sourceAction,
+            pushFilter: [{
+              branchesExcludes: ['exclude1', 'exclude2'],
+              branchesIncludes: ['include1', 'include2'],
+              filePathsExcludes: ['exclude1', 'exclude2'],
+              filePathsIncludes: ['include1', 'include2', 'include3', 'include4', 'include5', 'include6', 'include7', 'include8', 'include9'],
+            }],
+          },
+        }],
+      });
+    }).toThrow(/maximum length of filePathsIncludes in pushFilter for sourceAction with name 'CodeStarConnectionsSourceAction' is 8, got 9/);
+  });
+
+  test('throw if filePaths without branches is specified in pushFilter', () => {
+    expect(() => {
+      new codepipeline.Pipeline(stack, 'Pipeline', {
+        pipelineType: codepipeline.PipelineType.V2,
+        triggers: [{
+          providerType: codepipeline.ProviderType.CODE_STAR_SOURCE_CONNECTION,
+          gitConfiguration: {
+            sourceAction,
+            pushFilter: [{
+              filePathsExcludes: ['exclude1', 'exclude2'],
+            }],
+          },
+        }],
+      });
+    }).toThrow(/cannot specify filePaths without branches in pushFilter for sourceAction with name 'CodeStarConnectionsSourceAction'/);
+  });
+
+  test('throw if tags and branches are specified in pushFilter', () => {
+    expect(() => {
+      new codepipeline.Pipeline(stack, 'Pipeline', {
+        pipelineType: codepipeline.PipelineType.V2,
+        triggers: [{
+          providerType: codepipeline.ProviderType.CODE_STAR_SOURCE_CONNECTION,
+          gitConfiguration: {
+            sourceAction,
+            pushFilter: [{
+              tagsExcludes: ['exclude1', 'exclude2'],
+              branchesExcludes: ['exclude1', 'exclude2'],
+            }],
+          },
+        }],
+      });
+    }).toThrow(/cannot specify both tags and branches in pushFilter for sourceAction with name 'CodeStarConnectionsSourceAction'/);
+  });
+
+  test('throw if neither tags nor branches are specified in pushFilter', () => {
+    expect(() => {
+      new codepipeline.Pipeline(stack, 'Pipeline', {
+        pipelineType: codepipeline.PipelineType.V2,
+        triggers: [{
+          providerType: codepipeline.ProviderType.CODE_STAR_SOURCE_CONNECTION,
+          gitConfiguration: {
+            sourceAction,
+            pushFilter: [{}],
+          },
+        }],
+      });
+    }).toThrow(/must specify either tags or branches in pushFilter for sourceAction with name 'CodeStarConnectionsSourceAction'/);
   });
 
   test('throw if length of branchesExcludes in pullRequestFilter is greater than 8', () => {
