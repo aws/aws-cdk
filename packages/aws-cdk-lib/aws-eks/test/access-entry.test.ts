@@ -1,6 +1,9 @@
 import { Template } from '../../assertions';
 import { App, Stack } from '../../core';
-import { AccessEntry, AccessEntryProps, AccessScopeType, IAccessPolicy, Cluster, AccessPolicy, KubernetesVersion, AuthenticationMode } from '../lib';
+import {
+  AccessEntry, AccessEntryProps, AccessEntryType,
+  AccessScopeType, IAccessPolicy, Cluster, AccessPolicy, KubernetesVersion, AuthenticationMode,
+} from '../lib';
 
 describe('AccessEntry', () => {
   let app: App;
@@ -57,6 +60,26 @@ describe('AccessEntry', () => {
       ],
     });
   });
+
+  test.each(Object.values(AccessEntryType))(
+    'creates a new AccessEntry for AccessEntryType %s',
+    (accessEntryType) => {
+      // WHEN
+      new AccessEntry(stack, `AccessEntry-${accessEntryType}`, {
+        cluster,
+        accessPolicies: mockAccessPolicies,
+        principal: 'mock-principal-arn',
+        accessEntryType,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::EKS::AccessEntry', {
+        ClusterName: { Ref: 'Cluster9EE0221C' },
+        PrincipalArn: 'mock-principal-arn',
+        Type: accessEntryType,
+      });
+    },
+  );
 
   test('adds new access policies with addAccessPolicies()', () => {
     // GIVEN
