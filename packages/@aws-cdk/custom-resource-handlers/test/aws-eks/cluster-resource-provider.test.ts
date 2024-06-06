@@ -651,6 +651,97 @@ describe('cluster resource provider', () => {
 
           expect(error.message).toEqual('Cannot fallback authenticationMode from API to CONFIG_MAP');
         });
+        test('from undefined to both logging and authenticationMode enabled', async () => {
+          const handler = new ClusterResourceHandler(mocks.client, mocks.newRequest('Update', {
+            logging: {
+              clusterLogging: [
+                {
+                  types: ['api', 'audit', 'authenticator', 'controllerManager', 'scheduler'],
+                  enabled: true,
+                },
+              ],
+            },
+            accessConfig: { authenticationMode: 'API' },
+          }, {
+            logging: undefined,
+            accessConfig: undefined,
+          }));
+          let error: any;
+          try {
+            await handler.onEvent();
+          } catch (e) {
+            error = e;
+          }
+          expect(error.message).toEqual('Only one type of update - VpcConfigUpdate, LoggingUpdate, EndpointAccessUpdate, or AuthModeUpdate can be allowed');
+        });
+        test('from undefined to both access and authenticationMode enabled', async () => {
+          const handler = new ClusterResourceHandler(mocks.client, mocks.newRequest('Update', {
+            resourcesVpcConfig: {
+              endpointPrivateAccess: true,
+              endpointPublicAccess: true,
+              publicAccessCidrs: ['0.0.0.0/0'],
+            },
+            accessConfig: { authenticationMode: 'API' },
+          }, {
+            resourcesVpcConfig: undefined,
+            accessConfig: undefined,
+          }));
+          let error: any;
+          try {
+            await handler.onEvent();
+          } catch (e) {
+            error = e;
+          }
+          expect(error.message).toEqual('Only one type of update - VpcConfigUpdate, LoggingUpdate, EndpointAccessUpdate, or AuthModeUpdate can be allowed');
+        });
+        test('update both EndpointAccessUpdate and AuthModeUpdate with accessConfig undefined', async () => {
+          const handler = new ClusterResourceHandler(mocks.client, mocks.newRequest('Update', {
+            resourcesVpcConfig: {
+              endpointPrivateAccess: false,
+              endpointPublicAccess: true,
+              publicAccessCidrs: ['0.0.0.0/0'],
+            },
+            accessConfig: { authenticationMode: 'API' },
+          }, {
+            resourcesVpcConfig: {
+              endpointPrivateAccess: true,
+              endpointPublicAccess: true,
+              publicAccessCidrs: ['0.0.0.0/0'],
+            },
+            accessConfig: undefined,
+          }));
+          let error: any;
+          try {
+            await handler.onEvent();
+          } catch (e) {
+            error = e;
+          }
+          expect(error.message).toEqual('Only one type of update - VpcConfigUpdate, LoggingUpdate, EndpointAccessUpdate, or AuthModeUpdate can be allowed');
+        });
+        test('update both EndpointAccessUpdate and AuthModeUpdate with accessConfig defined', async () => {
+          const handler = new ClusterResourceHandler(mocks.client, mocks.newRequest('Update', {
+            resourcesVpcConfig: {
+              endpointPrivateAccess: false,
+              endpointPublicAccess: true,
+              publicAccessCidrs: ['0.0.0.0/0'],
+            },
+            accessConfig: { authenticationMode: 'API' },
+          }, {
+            resourcesVpcConfig: {
+              endpointPrivateAccess: true,
+              endpointPublicAccess: true,
+              publicAccessCidrs: ['0.0.0.0/0'],
+            },
+            accessConfig: { authenticationMode: 'API_AND_CONFIG_MAP' },
+          }));
+          let error: any;
+          try {
+            await handler.onEvent();
+          } catch (e) {
+            error = e;
+          }
+          expect(error.message).toEqual('Only one type of update - VpcConfigUpdate, LoggingUpdate, EndpointAccessUpdate, or AuthModeUpdate can be allowed');
+        });
 
       });
 
@@ -734,7 +825,7 @@ describe('cluster resource provider', () => {
           } catch (e) {
             error = e;
           }
-          expect(error.message).toEqual('Only one type of update - VpcConfigUpdate, LoggingUpdate or EndpointAccessUpdate can be allowed');
+          expect(error.message).toEqual('Only one type of update - VpcConfigUpdate, LoggingUpdate, EndpointAccessUpdate, or AuthModeUpdate can be allowed');
         });
         test('both logging and access defined and modify both of them', async () => {
           const handler = new ClusterResourceHandler(mocks.client, mocks.newRequest('Update', {
@@ -772,7 +863,7 @@ describe('cluster resource provider', () => {
           } catch (e) {
             error = e;
           }
-          expect(error.message).toEqual('Only one type of update - VpcConfigUpdate, LoggingUpdate or EndpointAccessUpdate can be allowed');
+          expect(error.message).toEqual('Only one type of update - VpcConfigUpdate, LoggingUpdate, EndpointAccessUpdate, or AuthModeUpdate can be allowed');
         });
         test('Given logging enabled and unchanged, updating the only publicAccessCidrs is allowed ', async () => {
           const handler = new ClusterResourceHandler(mocks.client, mocks.newRequest('Update', {
