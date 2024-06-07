@@ -39,7 +39,7 @@ export interface StreamSourceParameters {
   readonly maximumBatchingWindow?: Duration;
 
   /**
-   * (Streams only) Discard records older than the specified age. The default value is -1, which sets the maximum age to infinite. When the value is set to infinite, EventBridge never discards old records.
+   * Discard records older than the specified age. The default value is -1, which sets the maximum age to infinite. When the value is set to infinite, EventBridge never discards old records.
    *
    * Minumum: Duration.seconds(60) (leave undefined to set the maximum age to -1)
    * Maxiumum: Duration.seconds(604800)
@@ -50,7 +50,7 @@ export interface StreamSourceParameters {
   readonly maximumRecordAge?: Duration;
 
   /**
-   * (Streams only) Discard records after the specified number of retries. The default value is -1, which sets the maximum number of retries to infinite. When MaximumRetryAttempts is infinite, EventBridge retries failed records until the record expires in the event source.
+   * Discard records after the specified number of retries. The default value is -1, which sets the maximum number of retries to infinite. When MaximumRetryAttempts is infinite, EventBridge retries failed records until the record expires in the event source.
    *
    * Minumum: -1
    * Maxiumum: 10000
@@ -61,7 +61,7 @@ export interface StreamSourceParameters {
   readonly maximumRetryAttempts?: number;
 
   /**
-   * (Streams only) Define how to handle item process failures. {@link OnPartialBatchItemFailure.AUTOMATIC_BISECT} halves each batch and will retry each half until all the records are processed or there is one failed message left in the batch.
+   * Define how to handle item process failures. {@link OnPartialBatchItemFailure.AUTOMATIC_BISECT} halves each batch and will retry each half until all the records are processed or there is one failed message left in the batch.
    *
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-pipes-pipe-pipesourcekinesisstreamparameters.html#cfn-pipes-pipe-pipesourcekinesisstreamparameters-onpartialbatchitemfailure
    * @default off - EventBridge will retry the entire batch
@@ -69,7 +69,7 @@ export interface StreamSourceParameters {
   readonly onPartialBatchItemFailure?: OnPartialBatchItemFailure;
 
   /**
-   * (Streams only) The number of batches to process concurrently from each shard.
+   * The number of batches to process concurrently from each shard.
    *
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-pipes-pipe-pipesourcekinesisstreamparameters.html#cfn-pipes-pipe-pipesourcekinesisstreamparameters-parallelizationfactor
    * @default 1

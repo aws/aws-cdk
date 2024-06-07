@@ -9,7 +9,7 @@ import { StreamSource, StreamSourceParameters } from './streamSource';
  */
 export interface KinesisSourceParameters extends StreamSourceParameters {
   /**
-   * (Streams only) The position in a stream from which to start reading.
+   * The position in a stream from which to start reading.
    *
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-pipes-pipe-pipesourcekinesisstreamparameters.html#cfn-pipes-pipe-pipesourcekinesisstreamparameters-startingposition
    */
