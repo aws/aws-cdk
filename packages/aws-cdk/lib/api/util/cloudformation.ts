@@ -3,7 +3,7 @@ import { DescribeChangeSetOutput } from '@aws-cdk/cloudformation-diff';
 import { SSMPARAM_NO_INVALIDATE } from '@aws-cdk/cx-api';
 import * as cxapi from '@aws-cdk/cx-api';
 import { CloudFormation } from 'aws-sdk';
-import { StackStatus, StackDetailedStatus } from './cloudformation/stack-status';
+import { StackStatus } from './cloudformation/stack-status';
 import { makeBodyParameterAndUpload, TemplateBodyParameter } from './template-body-parameter';
 import { debug } from '../../logging';
 import { deserializeStructure } from '../../serialize';
@@ -133,16 +133,6 @@ export class CloudFormationStack {
       return new StackStatus('NOT_FOUND', 'Stack not found during lookup');
     }
     return StackStatus.fromStackDescription(this.stack!);
-  }
-
-  /**
-   * The stack's detailed status
-   */
-  public get stackDetailedStatus(): StackDetailedStatus {
-    if (!this.exists) {
-      return new StackDetailedStatus('NOT_FOUND', 'Stack not found during lookup');
-    }
-    return StackDetailedStatus.fromStackDescription(this.stack!);
   }
 
   /**
@@ -483,7 +473,6 @@ export async function waitForStackDeploy(
   if (!stack) { return undefined; }
 
   const status = stack.stackStatus;
-  const detailedStatus = stack.stackDetailedStatus;
 
   if (status.isCreationFailure) {
     throw new Error(`The stack named ${stackName} failed creation, it may need to be manually deleted from the AWS console: ${status}`);
@@ -510,10 +499,9 @@ export async function stabilizeStack(cfn: CloudFormation, stackName: string, exi
       return null;
     }
     const status = stack.stackStatus;
-    const detailedStatus = stack.stackDetailedStatus;
     if (status.isInProgress) {
       // stack in CONFIGURATION_COMPLETE detailed status
-      if (exitOnConfigComplete && detailedStatus.isConfigurationComplete) {
+      if (exitOnConfigComplete && status.isConfigurationComplete) {
         debug('Stack %s in CONFIGURATION_COMPLETE detailed status. Considering this in a stable status (%s)', stackName, status);
         return stack;
       }
