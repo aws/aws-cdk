@@ -717,6 +717,24 @@ pool.addClient('app-client', {
 });
 ```
 
+Also you can set the default redirct URI by setting `defaultRedirectUri` propety.
+Its value must be in the `callbackUrls`.
+
+```ts
+const pool = new cognito.UserPool(this, 'Pool');
+pool.addClient('app-client', {
+  oAuth: {
+    flows: {
+      authorizationCodeGrant: true,
+    },
+    scopes: [ cognito.OAuthScope.OPENID ],
+    defaultRedirectUri: 'https://my-app-domain.com/welcome',
+    callbackUrls: [ 'https://my-app-domain.com/welcome', 'https://my-app-domain.com/hello' ],
+    logoutUrls: [ 'https://my-app-domain.com/signin' ],
+  },
+});
+```
+
 An app client can be configured to prevent user existence errors. This
 instructs the Cognito authentication API to return generic authentication
 failure responses instead of an UserNotFoundException. By default, the flag

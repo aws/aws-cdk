@@ -66,6 +66,14 @@ export interface OAuthSettings {
    * @default [OAuthScope.PHONE,OAuthScope.EMAIL,OAuthScope.OPENID,OAuthScope.PROFILE,OAuthScope.COGNITO_ADMIN]
    */
   readonly scopes?: OAuthScope[];
+
+  /**
+   * The default redirect URI.
+   * Must be in the callbackUrls.
+   *
+   * @default - no default redirect URI
+   */
+  readonly defaultRedirectUri?: string;
 }
 
 /**
@@ -407,6 +415,14 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
       }
     }
 
+    if (props.oAuth?.defaultRedirectUri && callbackUrls && !callbackUrls.includes(props.oAuth?.defaultRedirectUri)) {
+      throw new Error('defaultRedirectUri must be included in callbackUrls.');
+    }
+
+    if (props.oAuth?.defaultRedirectUri && !/^(?=.{1,1024}$)[\p{L}\p{M}\p{S}\p{N}\p{P}]+$/u.test(props.oAuth?.defaultRedirectUri)) {
+      throw new Error(`defaultRedirectUri must match the /^(?=.{1,1024}$)[\p{L}\p{M}\p{S}\p{N}\p{P}]+$/u pattern, got ${props.oAuth?.defaultRedirectUri}`);
+    }
+
     if (!props.generateSecret && props.enablePropagateAdditionalUserContextData) {
       throw new Error('Cannot activate enablePropagateAdditionalUserContextData in an app client without a client secret.');
     }
@@ -421,6 +437,7 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
       explicitAuthFlows: this.configureAuthFlows(props),
       allowedOAuthFlows: props.disableOAuth ? undefined : this.configureOAuthFlows(),
       allowedOAuthScopes: props.disableOAuth ? undefined : this.configureOAuthScopes(props.oAuth),
+      defaultRedirectUri: props.oAuth?.defaultRedirectUri,
       callbackUrLs: callbackUrls && callbackUrls.length > 0 && !props.disableOAuth ? callbackUrls : undefined,
       logoutUrLs: props.oAuth?.logoutUrls,
       allowedOAuthFlowsUserPoolClient: !props.disableOAuth,
