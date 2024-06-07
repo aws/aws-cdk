@@ -98,7 +98,9 @@ export interface TrailProps {
   readonly snsTopic?: sns.ITopic;
 
   /**
-   * The name of the trail. We recommend customers do not set an explicit name.
+   * The name of the trail.
+   *
+   * Required when `isOrganizationTrail` is set to true to attach the necessary permissions.
    *
    * @default - AWS CloudFormation generated name.
    */
@@ -272,6 +274,10 @@ export class Trail extends Resource {
 
     if (props.isOrganizationTrail) {
       if (props.orgId !== undefined) {
+        if (props.trailName === undefined) {
+          throw new Error('trailName is required for organization trail');
+        }
+
         this.s3bucket.addToResourcePolicy(new iam.PolicyStatement({
           resources: [this.s3bucket.arnForObjects(
             `AWSLogs/${props.orgId}/*`,

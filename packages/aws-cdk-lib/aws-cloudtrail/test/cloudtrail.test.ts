@@ -470,6 +470,17 @@ describe('cloudtrail', () => {
       Annotations.fromStack(stack).hasWarning('/TestStack/Trail', 'Skipped attaching a policy to the bucket to allow organization trail to write logs to it because this is an organization trail but orgId is not specified. Consider specifying orgId to attach missing permissions [ack: @aws-cdk/aws-cloudtrail:missingOrgIdForOrganizationTrail]');
     });
 
+    test('organizationTrail with orgId but without trailName fails', () => {
+      // GIVEN
+      const stack = getTestStack();
+
+      // WHEN
+      expect(() => new Trail(stack, 'ErrorTrail', {
+        isOrganizationTrail: true,
+        orgId: 'o-xxxxxxxxx',
+      })).toThrow('trailName is required for organization trail');
+    });
+
     test('encryption keys', () => {
       const stack = new Stack();
       const key = new kms.Key(stack, 'key');
