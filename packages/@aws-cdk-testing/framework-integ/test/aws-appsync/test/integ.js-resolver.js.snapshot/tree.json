@@ -132,14 +132,6 @@
                   "version": "0.0.0"
                 }
               },
-              "LogGroup": {
-                "id": "LogGroup",
-                "path": "AppSyncJsResolverTestStack/JsResolverApi/LogGroup",
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.Resource",
-                  "version": "0.0.0"
-                }
-              },
               "LogRetention": {
                 "id": "LogRetention",
                 "path": "AppSyncJsResolverTestStack/JsResolverApi/LogRetention",
@@ -155,6 +147,14 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.aws_logs.LogRetention",
+                  "version": "0.0.0"
+                }
+              },
+              "LogGroup": {
+                "id": "LogGroup",
+                "path": "AppSyncJsResolverTestStack/JsResolverApi/LogGroup",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Resource",
                   "version": "0.0.0"
                 }
               },
@@ -519,7 +519,15 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.2.70"
+              "version": "10.3.0"
+            }
+          },
+          "LatestNodeRuntimeMap": {
+            "id": "LatestNodeRuntimeMap",
+            "path": "AppSyncJsResolverTestStack/LatestNodeRuntimeMap",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnMapping",
+              "version": "0.0.0"
             }
           },
           "DynamoTable": {
@@ -803,7 +811,7 @@
             },
             "constructInfo": {
               "fqn": "constructs.Construct",
-              "version": "10.2.70"
+              "version": "10.3.0"
             }
           },
           "BootstrapVersion": {
@@ -841,7 +849,7 @@
                 "path": "JsResolverIntegTest/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.2.70"
+                  "version": "10.3.0"
                 }
               },
               "DeployAssert": {
@@ -861,7 +869,7 @@
                             "path": "JsResolverIntegTest/DefaultTest/DeployAssert/LambdaInvokeb55e453397dded0a19101717f7183064/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.2.70"
+                              "version": "10.3.0"
                             }
                           }
                         },
@@ -941,7 +949,15 @@
                     },
                     "constructInfo": {
                       "fqn": "constructs.Construct",
-                      "version": "10.2.70"
+                      "version": "10.3.0"
+                    }
+                  },
+                  "LatestNodeRuntimeMap": {
+                    "id": "LatestNodeRuntimeMap",
+                    "path": "JsResolverIntegTest/DefaultTest/DeployAssert/LatestNodeRuntimeMap",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnMapping",
+                      "version": "0.0.0"
                     }
                   },
                   "AwsApiCallDynamoDBgetItem3bcce89c3400f7c98ac0aa1a95192cda": {
@@ -957,7 +973,7 @@
                             "path": "JsResolverIntegTest/DefaultTest/DeployAssert/AwsApiCallDynamoDBgetItem3bcce89c3400f7c98ac0aa1a95192cda/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
-                              "version": "10.2.70"
+                              "version": "10.3.0"
                             }
                           }
                         },
@@ -1037,7 +1053,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.2.70"
+          "version": "10.3.0"
         }
       }
     },

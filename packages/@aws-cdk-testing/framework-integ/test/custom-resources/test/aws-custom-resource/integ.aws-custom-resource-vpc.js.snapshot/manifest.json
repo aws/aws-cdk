@@ -190,6 +190,12 @@
             "data": "DescribeVpcAttributeCustomResourcePolicyAF7C66C1"
           }
         ],
+        "/aws-cdk-customresources-vpc/LatestNodeRuntimeMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatestNodeRuntimeMap"
+          }
+        ],
         "/aws-cdk-customresources-vpc/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",

@@ -58,6 +58,12 @@
             "data": "DomainAccessPolicyCustomResourcePolicyE61F1845"
           }
         ],
+        "/aws-iot-opensearch-integ-stack/LatestNodeRuntimeMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatestNodeRuntimeMap"
+          }
+        ],
         "/aws-iot-opensearch-integ-stack/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",

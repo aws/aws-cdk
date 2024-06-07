@@ -805,10 +805,10 @@
                             "name": "Source",
                             "actions": [
                               {
-                                "name": "jose-clickup_cdk-pipelines-demo",
+                                "name": "colifran_cdk-pipelines-demo",
                                 "outputArtifacts": [
                                   {
-                                    "name": "jose_clickup_cdk_pipelines_demo_Source"
+                                    "name": "colifran_cdk_pipelines_demo_Source"
                                   }
                                 ],
                                 "actionTypeId": {
@@ -818,7 +818,7 @@
                                   "provider": "GitHub"
                                 },
                                 "configuration": {
-                                  "Owner": "jose-clickup",
+                                  "Owner": "colifran",
                                   "Repo": "cdk-pipelines-demo",
                                   "Branch": "main",
                                   "OAuthToken": "{{resolve:secretsmanager:github-token:SecretString:::}}",
@@ -835,7 +835,7 @@
                                 "name": "Synth",
                                 "inputArtifacts": [
                                   {
-                                    "name": "jose_clickup_cdk_pipelines_demo_Source"
+                                    "name": "colifran_cdk_pipelines_demo_Source"
                                   }
                                 ],
                                 "outputArtifacts": [
@@ -1110,13 +1110,13 @@
                     "id": "Source",
                     "path": "PipelineStack/Pipeline/Pipeline/Source",
                     "children": {
-                      "jose-clickup_cdk-pipelines-demo": {
-                        "id": "jose-clickup_cdk-pipelines-demo",
-                        "path": "PipelineStack/Pipeline/Pipeline/Source/jose-clickup_cdk-pipelines-demo",
+                      "colifran_cdk-pipelines-demo": {
+                        "id": "colifran_cdk-pipelines-demo",
+                        "path": "PipelineStack/Pipeline/Pipeline/Source/colifran_cdk-pipelines-demo",
                         "children": {
                           "WebhookResource": {
                             "id": "WebhookResource",
-                            "path": "PipelineStack/Pipeline/Pipeline/Source/jose-clickup_cdk-pipelines-demo/WebhookResource",
+                            "path": "PipelineStack/Pipeline/Pipeline/Source/colifran_cdk-pipelines-demo/WebhookResource",
                             "attributes": {
                               "aws:cdk:cloudformation:type": "AWS::CodePipeline::Webhook",
                               "aws:cdk:cloudformation:props": {
@@ -1131,7 +1131,7 @@
                                   }
                                 ],
                                 "registerWithThirdParty": true,
-                                "targetAction": "jose-clickup_cdk-pipelines-demo",
+                                "targetAction": "colifran_cdk-pipelines-demo",
                                 "targetPipeline": {
                                   "Ref": "Pipeline9850B417"
                                 },

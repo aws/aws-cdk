@@ -196,6 +196,12 @@
             "data": "ClusterZookeeperZookeeperConnectCustomResourcePolicy762D4B4E"
           }
         ],
+        "/KafkaZookeeperTestStack/LatestNodeRuntimeMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatestNodeRuntimeMap"
+          }
+        ],
         "/KafkaZookeeperTestStack/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",

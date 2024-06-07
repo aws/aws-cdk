@@ -58,6 +58,12 @@
             "data": "poolclientDescribeCognitoUserPoolClientCustomResourcePolicy5C0049D2"
           }
         ],
+        "/integ-user-pool-client-secret/LatestNodeRuntimeMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatestNodeRuntimeMap"
+          }
+        ],
         "/integ-user-pool-client-secret/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",

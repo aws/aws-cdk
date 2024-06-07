@@ -178,6 +178,12 @@
             "data": "VPCRestrictDefaultSecurityGroupCustomResource59474679"
           }
         ],
+        "/cluster-kerberos/LatestNodeRuntimeMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatestNodeRuntimeMap"
+          }
+        ],
         "/cluster-kerberos/Custom::VpcRestrictDefaultSGCustomResourceProvider/Role": [
           {
             "type": "aws:cdk:logicalId",

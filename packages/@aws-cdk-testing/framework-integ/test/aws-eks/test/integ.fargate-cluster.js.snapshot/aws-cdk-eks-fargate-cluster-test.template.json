@@ -707,7 +707,48 @@
         "eks:UpdateClusterVersion"
        ],
        "Effect": "Allow",
-       "Resource": "*"
+       "Resource": [
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":eks:",
+           {
+            "Ref": "AWS::Region"
+           },
+           ":",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":cluster/updated-cluster"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":eks:",
+           {
+            "Ref": "AWS::Region"
+           },
+           ":",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":cluster/updated-cluster/*"
+          ]
+         ]
+        }
+       ]
       },
       {
        "Action": [
@@ -715,7 +756,26 @@
         "eks:DescribeFargateProfile"
        ],
        "Effect": "Allow",
-       "Resource": "*"
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:",
+          {
+           "Ref": "AWS::Partition"
+          },
+          ":eks:",
+          {
+           "Ref": "AWS::Region"
+          },
+          ":",
+          {
+           "Ref": "AWS::AccountId"
+          },
+          ":fargateprofile/updated-cluster/*"
+         ]
+        ]
+       }
       },
       {
        "Action": [
@@ -779,6 +839,7 @@
      ]
     },
     "Config": {
+     "name": "updated-cluster",
      "version": "1.24",
      "roleArn": {
       "Fn::GetAtt": [
@@ -1027,7 +1088,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/6f3aaae36a855068a68043719a26b4b9916d262491bab332c673539cdb627aa9.json"
+       "/c7f6f5e963b89a18b0e1e8c79d49db73c40068bb820a38ec28e2ee972c298fdd.json"
       ]
      ]
     }
@@ -1077,7 +1138,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/cc88ab128f699c958e20d9baa9381908f3bd8ef78f3ac98e97bdf465a49f652d.json"
+       "/0287fc14fe4dde5e26c3780def138f8ca531a954043f8d1cc3f8d667201eddfd.json"
       ]
      ]
     }

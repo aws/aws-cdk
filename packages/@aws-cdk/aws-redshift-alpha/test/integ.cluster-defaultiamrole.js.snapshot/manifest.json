@@ -220,6 +220,12 @@
             "data": "Cluster1defaultroleCustomResourcePolicy6ECBAB35"
           }
         ],
+        "/redshift-defaultiamrole-integ/LatestNodeRuntimeMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatestNodeRuntimeMap"
+          }
+        ],
         "/redshift-defaultiamrole-integ/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
