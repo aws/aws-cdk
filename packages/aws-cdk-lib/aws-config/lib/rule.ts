@@ -35,6 +35,29 @@ export interface IRule extends IResource {
 }
 
 /**
+ * The mode of evaluation for the rule.
+ */
+export class EvaluationMode {
+  /**
+   * Evaluate resources that have already been deployed
+   */
+  public static readonly DETECTIVE = new EvaluationMode(['DETECTIVE']);
+  /**
+   * Evaluate resources before they have been deployed
+   */
+  public static readonly PROACTIVE = new EvaluationMode(['PROACTIVE']);
+  /**
+   * Evaluate resources that have already been deployed and before they have been deployed
+   */
+  public static readonly DETECTIVE_AND_PROACTIVE = new EvaluationMode(['DETECTIVE', 'PROACTIVE']);
+
+  /**
+   * @param modes The modes of evaluation for the rule
+   */
+  protected constructor(public readonly modes: string[]) {}
+}
+
+/**
  * A new or imported rule.
  */
 abstract class RuleBase extends Resource implements IRule {
@@ -222,6 +245,13 @@ export interface RuleProps {
    * @default - evaluations for the rule are triggered when any resource in the recording group changes.
    */
   readonly ruleScope?: RuleScope;
+
+  /**
+   * The modes the AWS Config rule can be evaluated in. The valid values are distinct objects.
+   *
+   * @default - Detective evaluation mode only
+   */
+  readonly evaluationModes?: EvaluationMode;
 }
 
 /**
@@ -271,6 +301,9 @@ export class ManagedRule extends RuleNew {
         owner: 'AWS',
         sourceIdentifier: props.identifier,
       },
+      evaluationModes: props.evaluationModes?.modes.map((mode) => ({
+        mode,
+      })),
     });
 
     this.configRuleName = rule.ref;
@@ -444,6 +477,9 @@ export class CustomRule extends RuleNew {
         sourceDetails,
         sourceIdentifier: props.lambdaFunction.functionArn,
       },
+      evaluationModes: props.evaluationModes?.modes.map((mode) => ({
+        mode,
+      })),
     });
 
     this.configRuleName = rule.ref;
@@ -529,6 +565,9 @@ export class CustomPolicy extends RuleNew {
           policyText: props.policyText,
         },
       },
+      evaluationModes: props.evaluationModes?.modes.map((mode) => ({
+        mode,
+      })),
     });
 
     this.configRuleName = rule.ref;
