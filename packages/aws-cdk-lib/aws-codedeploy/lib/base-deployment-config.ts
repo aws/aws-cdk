@@ -3,7 +3,7 @@ import { CfnDeploymentConfig } from './codedeploy.generated';
 import { MinimumHealthyHosts, MinimumHealthyHostsPerZone } from './host-health-config';
 import { arnForDeploymentConfig, validateName } from './private/utils';
 import { TrafficRouting } from './traffic-routing-config';
-import { ArnFormat, Duration, Resource, Stack, Token } from '../../core';
+import { ArnFormat, Duration, Resource, Stack } from '../../core';
 
 /**
  * The base class for ServerDeploymentConfig, EcsDeploymentConfig,
