@@ -206,6 +206,34 @@ const tagRule = new config.CustomRule(this, 'CostCenterTagRule', {
 });
 ```
 
+### Evaluation Mode
+
+You can specify the [evaluation mode](https://docs.aws.amazon.com/config/latest/developerguide/evaluate-config-rules.html) for a rule to determine when AWS Config runs evaluations.
+
+Use the `evaluationModes` property to specify the evaluation mode:
+
+```ts
+declare const fn: lambda.Function;
+declare const samplePolicyText: string;
+
+new config.ManagedRule(this, 'ManagedRule', {
+  identifier: config.ManagedRuleIdentifiers.API_GW_XRAY_ENABLED,
+  evaluationModes: config.EvaluationMode.DETECTIVE_AND_PROACTIVE,
+});
+
+new config.CustomRule(this, 'CustomRule', {
+  lambdaFunction: fn,
+  evaluationModes: config.EvaluationMode.PROACTIVE,
+});
+
+new config.CustomPolicy(this, 'CustomPolicy', {
+  policyText: samplePolicyText,
+  evaluationModes: config.EvaluationMode.DETECTIVE,
+});
+```
+
+**Note**: Proactive evaluation mode is not supported for all rules. See [AWS Config documentation](https://docs.aws.amazon.com/config/latest/developerguide/evaluate-config-rules.html#aws-config-rules-evaluation-modes) for more information.
+
 ### Events
 
 You can define Amazon EventBridge event rules which trigger when a compliance check fails

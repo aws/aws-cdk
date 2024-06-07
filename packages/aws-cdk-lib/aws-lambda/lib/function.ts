@@ -1179,7 +1179,7 @@ export class Function extends FunctionBase {
     }
 
     if (props.applicationLogLevel || props.applicationLogLevelV2 || props.systemLogLevel || props.systemLogLevelV2) {
-      if (props.logFormat !== LoggingFormat.JSON && props.loggingFormat === undefined) {
+      if (props.logFormat !== LogFormat.JSON && props.loggingFormat === undefined) {
         throw new Error(`To use ApplicationLogLevel and/or SystemLogLevel you must set LogFormat to '${LogFormat.JSON}', got '${props.logFormat}'.`);
       }
 

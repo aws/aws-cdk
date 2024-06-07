@@ -3,7 +3,7 @@ github:
     pullRequestsFromForks: true
     addComment: true
 
-image: public.ecr.aws/jsii/superchain:1-buster-slim-node18
+image: public.ecr.aws/jsii/superchain:1-bookworm-slim-node20
 
 tasks:
   - init: |

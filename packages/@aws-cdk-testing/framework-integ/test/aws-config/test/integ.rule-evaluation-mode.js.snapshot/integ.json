@@ -1,0 +1,12 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "ConfigRuleEvaluationModeTest/DefaultTest": {
+      "stacks": [
+        "ConfigRuleEvaluationMode"
+      ],
+      "assertionStack": "ConfigRuleEvaluationModeTest/DefaultTest/DeployAssert",
+      "assertionStackName": "ConfigRuleEvaluationModeTestDefaultTestDeployAssert7587D529"
+    }
+  }
+}

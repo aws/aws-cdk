@@ -41,7 +41,6 @@ test('minimal example renders correctly', () => {
       physicalResourceId: {
         id: 'LogGroupResourcePolicy',
       },
-      logApiResponseData: true,
     }),
     Update: JSON.stringify({
       service: 'CloudWatchLogs',
@@ -53,7 +52,6 @@ test('minimal example renders correctly', () => {
       physicalResourceId: {
         id: 'LogGroupResourcePolicy',
       },
-      logApiResponseData: true,
     }),
     Delete: JSON.stringify({
       service: 'CloudWatchLogs',
@@ -62,7 +60,6 @@ test('minimal example renders correctly', () => {
         policyName: 'TestPolicy',
       },
       ignoreErrorCodesMatching: 'ResourceNotFoundException',
-      logApiResponseData: true,
     }),
   });
 });

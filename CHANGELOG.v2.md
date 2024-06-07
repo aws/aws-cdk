@@ -2,6 +2,26 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.145.0](https://github.com/aws/aws-cdk/compare/v2.144.0...v2.145.0) (2024-06-07)
+
+
+### Features
+
+* **config:** proactive evaluation mode ([#30174](https://github.com/aws/aws-cdk/issues/30174)) ([516ecef](https://github.com/aws/aws-cdk/commit/516ecef9a5504c19558367c360a2791559b929eb)), closes [#30172](https://github.com/aws/aws-cdk/issues/30172)
+* **eks:** support for Kubernetes version 1.30 ([#30454](https://github.com/aws/aws-cdk/issues/30454)) ([d2ea280](https://github.com/aws/aws-cdk/commit/d2ea2809cd3024052b8cfa76a990cbc9e9224688))
+* update L1 CloudFormation resource definitions ([#30438](https://github.com/aws/aws-cdk/issues/30438)) ([3ee5ce0](https://github.com/aws/aws-cdk/commit/3ee5ce03905e5d12d569bcc58b8134c81a97d7c7))
+* **chatbot:** configure `userRoleRequired` for the `SlackChannelConfiguration` ([#30420](https://github.com/aws/aws-cdk/issues/30420)) ([5b84ca6](https://github.com/aws/aws-cdk/commit/5b84ca6f41bd4417654ff8f0b3a4602524037894)), closes [#30403](https://github.com/aws/aws-cdk/issues/30403)
+* **codebuild:** `Fleet` L2 ([#29754](https://github.com/aws/aws-cdk/issues/29754)) ([940e799](https://github.com/aws/aws-cdk/commit/940e7990e1f6750f55f7e2bf95d936d8ec90cd36)), closes [#29617](https://github.com/aws/aws-cdk/issues/29617) [#29616](https://github.com/aws/aws-cdk/issues/29616)
+* **logs:** add distribution property to the Subscription class ([#30423](https://github.com/aws/aws-cdk/issues/30423)) ([0e95bf0](https://github.com/aws/aws-cdk/commit/0e95bf0032f1beada8a1806724ef241613c3b41d)), closes [#30422](https://github.com/aws/aws-cdk/issues/30422)
+
+
+### Bug Fixes
+
+* **custom-resources:** `logApiResponseData` is added to custom resource event properties by default ([#30418](https://github.com/aws/aws-cdk/issues/30418)) ([a899ac6](https://github.com/aws/aws-cdk/commit/a899ac6692b1f36b4fe2cefb3268c4be10313ffa)), closes [#30121](https://github.com/aws/aws-cdk/issues/30121) [#29949](https://github.com/aws/aws-cdk/issues/29949) [#29648](https://github.com/aws/aws-cdk/issues/29648)
+* route53 CrossAccountZoneDelegationRecord fails at deployment time with imported `delegatedZone` ([#30440](https://github.com/aws/aws-cdk/issues/30440)) ([a3d9b10](https://github.com/aws/aws-cdk/commit/a3d9b10ad9036486961f74e852493aa9684cfdb4)), closes [#28581](https://github.com/aws/aws-cdk/issues/28581)
+* **apigateway:** allow overriding authorizer on methods ([#30415](https://github.com/aws/aws-cdk/issues/30415)) ([1b8d73c](https://github.com/aws/aws-cdk/commit/1b8d73cb33ca62dd035ca339d3f1b5acc251338c)), closes [#8827](https://github.com/aws/aws-cdk/issues/8827)
+
+
 ## [2.144.0](https://github.com/aws/aws-cdk/compare/v2.143.1...v2.144.0) (2024-05-31)
 
 

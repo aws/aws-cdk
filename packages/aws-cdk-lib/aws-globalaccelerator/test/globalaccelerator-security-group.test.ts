@@ -38,7 +38,7 @@ test('custom resource exists', () => {
             {
               Ref: 'VPCB9E5F0B4',
             },
-            '"]}]},"physicalResourceId":{"responsePath":"SecurityGroups.0.GroupId"},"logApiResponseData":true}',
+            '"]}]},"physicalResourceId":{"responsePath":"SecurityGroups.0.GroupId"}}',
           ],
         ],
       },

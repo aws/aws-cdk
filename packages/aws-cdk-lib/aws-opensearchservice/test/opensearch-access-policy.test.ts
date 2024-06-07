@@ -44,7 +44,6 @@ test('minimal example renders correctly', () => {
       },
       outputPaths: ['DomainConfig.AccessPolicies'],
       physicalResourceId: { id: 'TestDomainAccessPolicy' },
-      logApiResponseData: true,
     }),
     Update: JSON.stringify({
       action: 'updateDomainConfig',
@@ -55,7 +54,6 @@ test('minimal example renders correctly', () => {
       },
       outputPaths: ['DomainConfig.AccessPolicies'],
       physicalResourceId: { id: 'TestDomainAccessPolicy' },
-      logApiResponseData: true,
     }),
   });
   Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
@@ -107,7 +105,6 @@ test('support access policy added inline and later', () => {
       },
       outputPaths: ['DomainConfig.AccessPolicies'],
       physicalResourceId: { id: 'TestDomainAccessPolicy' },
-      logApiResponseData: true,
     }),
     Update: JSON.stringify({
       action: 'updateDomainConfig',
@@ -118,7 +115,6 @@ test('support access policy added inline and later', () => {
       },
       outputPaths: ['DomainConfig.AccessPolicies'],
       physicalResourceId: { id: 'TestDomainAccessPolicy' },
-      logApiResponseData: true,
     }),
   });
 });

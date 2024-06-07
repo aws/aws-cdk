@@ -22,7 +22,7 @@ const stack = new cdk.Stack(app, 'aws-stepfunctions-tasks-emr-containers-start-j
 stack.node.setContext(EC2_RESTRICT_DEFAULT_SECURITY_GROUP, false);
 
 const eksCluster = new eks.Cluster(stack, 'integration-test-eks-cluster', {
-  version: eks.KubernetesVersion.V1_29,
+  version: eks.KubernetesVersion.V1_30,
   defaultCapacity: 3,
   defaultCapacityInstance: ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.XLARGE),
 });
