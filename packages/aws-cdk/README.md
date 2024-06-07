@@ -482,7 +482,7 @@ For more details on this, you can refer to the blog post at
 
 The `--exit-on-config-complete` flag is supported by `cdk deploy` only.
 
-**⚠ Note **: This command is considered experimental,
+**Note**: This command is considered experimental,
 and might have breaking changes in the future.
 
 ### `cdk watch`
