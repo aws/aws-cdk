@@ -14,7 +14,6 @@ export class StackStatus {
     );
   }
 
-  // constructor(public readonly name: string, public readonly reason?: string) {}
   constructor(
     public readonly name: string,
     public readonly reason?: string,

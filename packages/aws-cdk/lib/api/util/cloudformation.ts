@@ -476,7 +476,7 @@ export async function waitForStackDeploy(
 
   if (status.isCreationFailure) {
     throw new Error(`The stack named ${stackName} failed creation, it may need to be manually deleted from the AWS console: ${status}`);
-  } else if (exitOnConfigComplete && detailedStatus.isConfigurationComplete) {
+  } else if (exitOnConfigComplete && status.isConfigurationComplete) {
     // Considering this in a stable status with exitOnConfigComplete is provided.
     // When this happens, status.isDeploySuccess would be false but we consider it a successful deployment.
     return stack;
