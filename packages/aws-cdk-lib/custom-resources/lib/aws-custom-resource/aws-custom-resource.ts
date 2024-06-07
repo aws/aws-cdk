@@ -606,7 +606,7 @@ export class AwsCustomResource extends Construct implements iam.IGrantable {
 
   private formatSdkCall(sdkCall: AwsSdkCall) {
     const { logging, ...call } = sdkCall;
-    const renderedLogging = (logging ?? Logging.all())._render();
+    const renderedLogging = (logging ?? Logging.all())._render(this);
     return this.encodeJson({
       ...call,
       ...renderedLogging,

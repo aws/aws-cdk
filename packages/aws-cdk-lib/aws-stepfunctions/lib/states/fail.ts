@@ -1,6 +1,7 @@
 import { Construct } from 'constructs';
 import { StateType } from './private/state-type';
 import { renderJsonPath, State } from './state';
+import { Token } from '../../../core';
 import { INextable } from '../types';
 
 /**
@@ -31,6 +32,9 @@ export interface FailProps {
   /**
    * JsonPath expression to select part of the state to be the error to this state.
    *
+   * You can also use an intrinsic function that returns a string to specify this property.
+   * The allowed functions include States.Format, States.JsonToString, States.ArrayGetItem, States.Base64Encode, States.Base64Decode, States.Hash, and States.UUID.
+   *
    * @default - No error path
    */
   readonly errorPath?: string;
@@ -45,6 +49,9 @@ export interface FailProps {
   /**
    * JsonPath expression to select part of the state to be the cause to this state.
    *
+   * You can also use an intrinsic function that returns a string to specify this property.
+   * The allowed functions include States.Format, States.JsonToString, States.ArrayGetItem, States.Base64Encode, States.Base64Decode, States.Hash, and States.UUID.
+   *
    * @default - No cause path
    */
   readonly causePath?: string;
@@ -56,6 +63,16 @@ export interface FailProps {
  * Reaching a Fail state terminates the state execution in failure.
  */
 export class Fail extends State {
+  private static allowedIntrinsics = [
+    'States.Format',
+    'States.JsonToString',
+    'States.ArrayGetItem',
+    'States.Base64Encode',
+    'States.Base64Decode',
+    'States.Hash',
+    'States.UUID',
+  ];
+
   public readonly endStates: INextable[] = [];
 
   private readonly error?: string;
@@ -80,9 +97,42 @@ export class Fail extends State {
       Type: StateType.FAIL,
       Comment: this.comment,
       Error: this.error,
-      ErrorPath: renderJsonPath(this.errorPath),
+      ErrorPath: this.isIntrinsicString(this.errorPath) ? this.errorPath : renderJsonPath(this.errorPath),
       Cause: this.cause,
-      CausePath: renderJsonPath(this.causePath),
+      CausePath: this.isIntrinsicString(this.causePath) ? this.causePath : renderJsonPath(this.causePath),
     };
+  }
+
+  /**
+   * Validate this state
+   */
+  protected validateState(): string[] {
+    const errors = super.validateState();
+
+    if (this.errorPath && this.isIntrinsicString(this.errorPath) && !this.isAllowedIntrinsic(this.errorPath)) {
+      errors.push(`You must specify a valid intrinsic function in errorPath. Must be one of ${Fail.allowedIntrinsics.join(', ')}`);
+    }
+
+    if (this.causePath && this.isIntrinsicString(this.causePath) && !this.isAllowedIntrinsic(this.causePath)) {
+      errors.push(`You must specify a valid intrinsic function in causePath. Must be one of ${Fail.allowedIntrinsics.join(', ')}`);
+    }
+
+    if (this.error && this.errorPath) {
+      errors.push('Fail state cannot have both error and errorPath');
+    }
+
+    if (this.cause && this.causePath) {
+      errors.push('Fail state cannot have both cause and causePath');
+    }
+
+    return errors;
+  }
+
+  private isIntrinsicString(jsonPath?: string): boolean {
+    return !Token.isUnresolved(jsonPath) && !jsonPath?.startsWith('$');
+  }
+
+  private isAllowedIntrinsic(intrinsic: string): boolean {
+    return Fail.allowedIntrinsics.some(allowed => intrinsic.startsWith(allowed));
   }
 }
