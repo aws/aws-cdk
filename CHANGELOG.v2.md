@@ -12,7 +12,6 @@ All notable changes to this project will be documented in this file. See [standa
 * update L1 CloudFormation resource definitions ([#30438](https://github.com/aws/aws-cdk/issues/30438)) ([3ee5ce0](https://github.com/aws/aws-cdk/commit/3ee5ce03905e5d12d569bcc58b8134c81a97d7c7))
 * **chatbot:** configure `userRoleRequired` for the `SlackChannelConfiguration` ([#30420](https://github.com/aws/aws-cdk/issues/30420)) ([5b84ca6](https://github.com/aws/aws-cdk/commit/5b84ca6f41bd4417654ff8f0b3a4602524037894)), closes [#30403](https://github.com/aws/aws-cdk/issues/30403)
 * **codebuild:** `Fleet` L2 ([#29754](https://github.com/aws/aws-cdk/issues/29754)) ([940e799](https://github.com/aws/aws-cdk/commit/940e7990e1f6750f55f7e2bf95d936d8ec90cd36)), closes [#29617](https://github.com/aws/aws-cdk/issues/29617) [#29616](https://github.com/aws/aws-cdk/issues/29616)
-* **codepipeline:** `GitPushFilter` with branches and file paths for trigger ([#29127](https://github.com/aws/aws-cdk/issues/29127)) ([ddbbd00](https://github.com/aws/aws-cdk/commit/ddbbd002da6298679500d4dd6b6c5b1487bd5f5d)), closes [#29124](https://github.com/aws/aws-cdk/issues/29124)
 * **logs:** add distribution property to the Subscription class ([#30423](https://github.com/aws/aws-cdk/issues/30423)) ([0e95bf0](https://github.com/aws/aws-cdk/commit/0e95bf0032f1beada8a1806724ef241613c3b41d)), closes [#30422](https://github.com/aws/aws-cdk/issues/30422)
 
 
@@ -22,10 +21,6 @@ All notable changes to this project will be documented in this file. See [standa
 * route53 CrossAccountZoneDelegationRecord fails at deployment time with imported `delegatedZone` ([#30440](https://github.com/aws/aws-cdk/issues/30440)) ([a3d9b10](https://github.com/aws/aws-cdk/commit/a3d9b10ad9036486961f74e852493aa9684cfdb4)), closes [#28581](https://github.com/aws/aws-cdk/issues/28581)
 * **apigateway:** allow overriding authorizer on methods ([#30415](https://github.com/aws/aws-cdk/issues/30415)) ([1b8d73c](https://github.com/aws/aws-cdk/commit/1b8d73cb33ca62dd035ca339d3f1b5acc251338c)), closes [#8827](https://github.com/aws/aws-cdk/issues/8827)
 
-
-### Reverts
-
-* "feat(codepipeline): `GitPushFilter` with branches and file paths for trigger" ([#30462](https://github.com/aws/aws-cdk/issues/30462)) ([0fa3b1e](https://github.com/aws/aws-cdk/commit/0fa3b1efe94692859de9e7dff63a14edaa415fd0)), closes [aws/aws-cdk#29127](https://github.com/aws/aws-cdk/issues/29127)
 
 ## [2.144.0](https://github.com/aws/aws-cdk/compare/v2.143.1...v2.144.0) (2024-05-31)
 
