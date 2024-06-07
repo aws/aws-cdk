@@ -1,7 +1,7 @@
-import { CfnIPAMPool, CfnVPC, CfnVPCCidrBlock, IVpc } from 'aws-cdk-lib/aws-ec2/lib';
+import { CfnIPAMPool, CfnRoute, CfnRouteTable, CfnVPC, CfnVPCCidrBlock, INetworkAcl, IRouteTable, RouterType, SubnetSelection } from 'aws-cdk-lib/aws-ec2/lib';
 import { NetworkBuilder } from 'aws-cdk-lib/aws-ec2/lib/network-util';
 import { Resource } from 'aws-cdk-lib/core/lib/resource';
-import { Construct } from 'constructs';
+import { Construct, IDependable } from 'constructs';
 import { IpamIpv4, IpamIpv6 } from './ipam';
 import { Arn } from 'aws-cdk-lib/core/lib/arn';
 import { Token } from 'aws-cdk-lib/core';
@@ -236,6 +236,132 @@ export class VpcV2 extends Resource implements IVpcV2 {
     }
   }
 }
+
+
+export interface ISubnetV2 {
+  /**
+   * The Availability Zone the subnet is located in
+   */
+  readonly availabilityZone: string;
+
+  /**
+   * The subnetId for this particular subnet
+   * @attribute
+   */
+  readonly subnetId: string;
+
+  /**
+   * Dependable that can be depended upon to force internet connectivity established on the VPC
+   */
+  readonly internetConnectivityEstablished: IDependable;
+
+  /**
+   * The IPv4 CIDR block for this subnet
+   */
+  readonly ipv4CidrBlock: string;
+
+  /**
+   * The route table for this subnet
+   */
+  readonly routeTable: IRouteTable;
+
+  /**
+   * Associate a Network ACL with this subnet
+   *
+   * @param acl The Network ACL to associate
+   */
+  associateNetworkAcl(id: string, acl: INetworkAcl): void;
+}
+
+
+export interface IRouteV2 {
+  readonly destination: IIpAddresses;
+  readonly target: IRouter;
+  readonly routeTableId: string;
+}
+
+
+export interface IRouter {
+  readonly subnets: SubnetSelection[];
+  readonly routerType: RouterType;
+}
+
+
+export interface RouterProps {
+  readonly subnets?: SubnetSelection[];
+}
+
+export class GatewayV2 extends Resource implements IRouter {
+  public readonly subnets: SubnetSelection[];
+  public readonly routerType: RouterType;
+  
+  constructor(scope: Construct, id: string, props: RouterProps = {}) {
+    super(scope, id);
+
+    this.subnets = props.subnets ?? [];
+    this.routerType = RouterType.GATEWAY;
+  }
+}
+
+
+export class Route extends Resource implements IRouteV2 {
+  public readonly destination: IIpAddresses;
+  public readonly target: IRouter;
+  public readonly routeTableId: string;
+
+  public readonly targetRouterType: RouterType
+
+  public readonly resource: CfnRoute;
+
+  constructor(scope: Construct, id: string, props: RouteProps = {}) {
+    super(scope, id);
+
+    this.destination = props.destination ?? IpAddresses.ipv4('10.0.0.0/16');
+    this.target = props.target ?? new GatewayV2(this, 'gw');
+    this.routeTableId = props.routeTableId ?? '';
+
+    this.targetRouterType = this.target.routerType;
+
+    this.resource = new CfnRoute(this, 'Route', {
+      routeTableId: this.routeTableId,
+    });
+  }
+
+}
+
+
+export interface RouteProps {
+  readonly destination?: IIpAddresses;
+  readonly target?: IRouter;
+  readonly routeTableId?: string;
+}
+
+
+export class RouteTable extends Resource implements IRouteTable {
+  public readonly routeTableId: string;
+  public readonly routes: IRouteV2[];
+
+  public readonly resource: CfnRouteTable;
+
+  constructor(scope: Construct, id: string, props: RouteTableProps = {vpcId: 'default'}) {
+    super(scope, id);
+
+    this.routeTableId = props.routeTableId ?? 'placeholder';
+    this.routes = props.routes ?? Array<Route>();
+
+    this.resource = new CfnRouteTable(this, 'RouteTable', {
+      vpcId: props.vpcId,
+    });
+  }
+}
+
+
+export interface RouteTableProps {
+  readonly vpcId: string
+  readonly routeTableId?: string;
+  readonly routes?: IRouteV2[];
+}
+
 
 class ipv4CidrAllocation implements IIpAddresses {
 
