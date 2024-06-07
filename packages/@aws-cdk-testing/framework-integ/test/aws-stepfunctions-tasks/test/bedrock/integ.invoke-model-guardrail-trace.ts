@@ -2,7 +2,7 @@ import * as bedrock from 'aws-cdk-lib/aws-bedrock';
 import * as sfn from 'aws-cdk-lib/aws-stepfunctions';
 import * as cdk from 'aws-cdk-lib';
 import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
-import { BedrockInvokeModel, Trace } from 'aws-cdk-lib/aws-stepfunctions-tasks';
+import { BedrockInvokeModel } from 'aws-cdk-lib/aws-stepfunctions-tasks';
 
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-stepfunctions-tasks-bedrock-invoke-model-guardrail-trace-integ');
@@ -42,7 +42,7 @@ const prompt = new BedrockInvokeModel(stack, 'Prompt', {
     guardrailIdentifier: guardrail.attrGuardrailId,
     guardrailVersion: guardrail.attrVersion,
   },
-  trace: Trace.ENABLED,
+  traceEnabled: true,
   resultSelector: {
     output: sfn.JsonPath.stringAt('$.Body.results[0].outputText'),
   },

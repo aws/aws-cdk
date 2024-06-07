@@ -2,7 +2,7 @@ import { Template, Match } from '../../../assertions';
 import * as bedrock from '../../../aws-bedrock';
 import * as sfn from '../../../aws-stepfunctions';
 import * as cdk from '../../../core';
-import { BedrockInvokeModel, Trace } from '../../lib/bedrock/invoke-model';
+import { BedrockInvokeModel } from '../../lib/bedrock/invoke-model';
 
 describe('Invoke Model', () => {
 
@@ -369,13 +369,14 @@ describe('Invoke Model', () => {
     // WHEN
     const task = new BedrockInvokeModel(stack, 'Invoke', {
       model,
+      contentType: 'application/json',
       body: sfn.TaskInput.fromObject(
         {
           prompt: 'Hello world',
         },
       ),
       guardrailConfiguration: {
-        guardrailIdentifier: 'abcdef',
+        guardrailIdentifier: 'arn:aws:bedrock:us-turbo-2:123456789012:guardrail/testid',
         guardrailVersion: 'DRAFT',
       },
     });
@@ -401,10 +402,59 @@ describe('Invoke Model', () => {
         Body: {
           prompt: 'Hello world',
         },
-        GuardrailIdentifier: 'abcdef',
+        ContentType: 'application/json',
+        GuardrailIdentifier: 'arn:aws:bedrock:us-turbo-2:123456789012:guardrail/testid',
         GuardrailVersion: 'DRAFT',
       },
     });
+  });
+
+  test('guardrail configuration fails when invalid guardrailIdentifier is set', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const model = bedrock.ProvisionedModel.fromProvisionedModelArn(stack, 'Imported', 'arn:aws:bedrock:us-turbo-2:123456789012:provisioned-model/abc-123');
+
+    expect(() => {
+      // WHEN
+      const task = new BedrockInvokeModel(stack, 'Invoke', {
+        model,
+        contentType: 'application/json',
+        body: sfn.TaskInput.fromObject(
+          {
+            prompt: 'Hello world',
+          },
+        ),
+        guardrailConfiguration: {
+          guardrailIdentifier: 'invalid-id',
+          guardrailVersion: 'DRAFT',
+        },
+      });
+      // THEN
+    }).toThrow('guardrailIdentifier must match the ^(([a-z0-9]+)|(arn:aws(-[^:]+)?:bedrock:[a-z0-9-]{1,20}:[0-9]{12}:guardrail/[a-z0-9]+))$ pattern, got invalid-id');
+  });
+
+  test('guardrail configuration fails when invalid guardrailVersion is set', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const model = bedrock.ProvisionedModel.fromProvisionedModelArn(stack, 'Imported', 'arn:aws:bedrock:us-turbo-2:123456789012:provisioned-model/abc-123');
+
+    expect(() => {
+      // WHEN
+      const task = new BedrockInvokeModel(stack, 'Invoke', {
+        model,
+        contentType: 'application/json',
+        body: sfn.TaskInput.fromObject(
+          {
+            prompt: 'Hello world',
+          },
+        ),
+        guardrailConfiguration: {
+          guardrailIdentifier: 'abcdef',
+          guardrailVersion: 'test',
+        },
+      });
+      // THEN
+    }).toThrow('guardrailVersion must match the ^(([1-9][0-9]{0,7})|(DRAFT))$ pattern, got test');
   });
 
   test('guardrail configuration fails when contentType is not \'application/json\'', () => {
@@ -444,7 +494,7 @@ describe('Invoke Model', () => {
           prompt: 'Hello world',
         },
       ),
-      trace: Trace.ENABLED,
+      traceEnabled: true,
     });
 
     // THEN
