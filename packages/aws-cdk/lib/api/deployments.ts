@@ -436,7 +436,6 @@ export class Deployments {
       deployName: options.deployName,
       quiet: options.quiet,
       ci: options.ci,
-      exitOnConfigComplete: options.exitOnConfigComplete,
     });
   }
 
