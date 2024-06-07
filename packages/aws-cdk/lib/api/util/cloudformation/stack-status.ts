@@ -7,10 +7,19 @@ import * as AWS from 'aws-sdk';
  */
 export class StackStatus {
   public static fromStackDescription(description: AWS.CloudFormation.Stack) {
-    return new StackStatus(description.StackStatus, description.StackStatusReason);
+    return new StackStatus(
+      description.StackStatus,
+      description.StackStatusReason,
+      description.DetailedStatus,
+    );
   }
 
-  constructor(public readonly name: string, public readonly reason?: string) {}
+  // constructor(public readonly name: string, public readonly reason?: string) {}
+  constructor(
+    public readonly name: string,
+    public readonly reason?: string,
+    public readonly detailedName?: string,
+  ) {}
 
   get isCreationFailure(): boolean {
     return this.name === 'ROLLBACK_COMPLETE'
@@ -46,8 +55,20 @@ export class StackStatus {
       || this.name === 'UPDATE_ROLLBACK_COMPLETE';
   }
 
+  get isConfigurationComplete(): boolean {
+    return this.detailedName === 'CONFIGURATION_COMPLETE';
+  }
+
+  get isValidationFailed(): boolean {
+    return this.detailedName === 'VALIDATION_FAILED';
+  }
+
   public toString(): string {
-    return this.name + (this.reason ? ` (${this.reason})` : '');
+    const statusString = this.name + (this.reason ? ` (${this.reason})` : '');
+    const detailedStatusString = this.detailedName
+      ? ` - ${this.detailedName}`
+      : '';
+    return statusString + detailedStatusString;
   }
 }
 
