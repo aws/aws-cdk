@@ -471,7 +471,7 @@ describe('Start Query Execution', () => {
         },
         resultReuseConfigurationMaxAge: cdk.Duration.millis(200),
       });
-    }).toThrow('resultReuseConfigurationMaxAge must be between greater than or equal to 1 minute or 0, got 200 ms');
+    }).toThrow('resultReuseConfigurationMaxAge must be greater than or equal to 1 minute or 0, got 200 ms');
   });
 
   test('resultReuseConfigurationMaxAge exceeds max 10080 minutes', () => {
