@@ -132,23 +132,23 @@ export class EventBridgePutEvents extends sfn.TaskStateBase {
   }
 
   private renderEntries(): Object[] {
+    // we should have validated all entries in validateEntries()
     return this.props.entries.map(entry => {
-      if (entry.source?.startsWith('aws')) {
-        throw new Error('Event source cannot start with "aws."');
-      } else {
-        return {
-          Detail: entry.detail?.value,
-          DetailType: entry.detailType,
-          EventBusName: entry.eventBus?.eventBusArn,
-          Source: entry.source,
-        };
-      }
+      return {
+        Detail: entry.detail?.value,
+        DetailType: entry.detailType,
+        EventBusName: entry.eventBus?.eventBusArn,
+        Source: entry.source,
+      };
     });
   }
 
   private validateEntries(): void {
     if (this.props.entries.length <= 0) {
       throw new Error('Value for property `entries` must be a non-empty array.');
+    }
+    if (this.props.entries.some(e => e.source.startsWith('aws.'))) {
+      throw new Error('Event source cannot start with "aws."');
     }
   }
 }
