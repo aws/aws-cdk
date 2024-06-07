@@ -106,5 +106,31 @@ describe('CodeDeploy DeploymentConfig', () => {
         },
       );
     });
+
+    test('throw error for invalid monitorDuration', () => {
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app);
+      expect(() => {
+        new codedeploy.ServerDeploymentConfig(stack, 'DeploymentConfig', {
+          minimumHealthyHosts: codedeploy.MinimumHealthyHosts.count(1),
+          zonalConfig: {
+            monitorDuration: cdk.Duration.millis(500),
+          },
+        });
+      }).toThrow('monitorDuration must be greater than or equal to 1 second or 0, got 500ms');
+    });
+
+    test('throw error for invalid firstZoneMonitorDuration', () => {
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app);
+      expect(() => {
+        new codedeploy.ServerDeploymentConfig(stack, 'DeploymentConfig', {
+          minimumHealthyHosts: codedeploy.MinimumHealthyHosts.count(1),
+          zonalConfig: {
+            firstZoneMonitorDuration: cdk.Duration.millis(500),
+          },
+        });
+      }).toThrow('firstZoneMonitorDuration must be greater than or equal to 1 second or 0, got 500ms');
+    });
   });
 });

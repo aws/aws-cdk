@@ -3,7 +3,7 @@ import { CfnDeploymentConfig } from './codedeploy.generated';
 import { MinimumHealthyHosts, MinimumHealthyHostsPerZone } from './host-health-config';
 import { arnForDeploymentConfig, validateName } from './private/utils';
 import { TrafficRouting } from './traffic-routing-config';
-import { ArnFormat, Duration, Resource, Stack } from '../../core';
+import { ArnFormat, Duration, Resource, Stack, Token } from '../../core';
 
 /**
  * The base class for ServerDeploymentConfig, EcsDeploymentConfig,
@@ -178,6 +178,15 @@ export abstract class BaseDeploymentConfig extends Resource implements IBaseDepl
       throw new Error('Minimum healthy hosts config must only be specified for a Server-base deployment configuration');
     }
 
+    if (props?.zonalConfig) {
+      if (props.zonalConfig.monitorDuration) {
+        this.validateDurationLessThanOneSecond(props.zonalConfig.monitorDuration, 'monitorDuration');
+      }
+      if (props.zonalConfig.firstZoneMonitorDuration) {
+        this.validateDurationLessThanOneSecond(props.zonalConfig.firstZoneMonitorDuration, 'firstZoneMonitorDuration');
+      }
+    }
+
     const resource = new CfnDeploymentConfig(this, 'Resource', {
       deploymentConfigName: this.physicalName,
       computePlatform: props?.computePlatform,
@@ -199,6 +208,13 @@ export abstract class BaseDeploymentConfig extends Resource implements IBaseDepl
     });
 
     this.node.addValidation({ validate: () => validateName('Deployment config', this.physicalName) });
+  }
+
+  private validateDurationLessThanOneSecond(duration: Duration, name: string) {
+    const milliseconds = duration.toMilliseconds();
+    if (milliseconds > 0 && milliseconds < 1000) {
+      throw new Error(`${name} must be greater than or equal to 1 second or 0, got ${milliseconds}ms`);
+    }
   }
 }
 
