@@ -6,7 +6,7 @@ import { CfnDeploymentConfig } from './codedeploy.generated';
 export class MinimumHealthyHosts {
 
   /**
-   * The minimum healhty hosts threshold expressed as an absolute number.
+   * The minimum healthy hosts threshold expressed as an absolute number.
    */
   public static count(value: number): MinimumHealthyHosts {
     return new MinimumHealthyHosts({
@@ -16,7 +16,7 @@ export class MinimumHealthyHosts {
   }
 
   /**
-   * The minmum healhty hosts threshold expressed as a percentage of the fleet.
+   * The minimum healthy hosts threshold expressed as a percentage of the fleet.
    */
   public static percentage(value: number): MinimumHealthyHosts {
     return new MinimumHealthyHosts({
@@ -41,7 +41,7 @@ export class MinimumHealthyHosts {
 export class MinimumHealthyHostsPerZone {
 
   /**
-   * The minimum healhty hosts threshold expressed as an absolute number.
+   * The minimum healthy hosts threshold expressed as an absolute number.
    */
   public static count(value: number): MinimumHealthyHostsPerZone {
     return new MinimumHealthyHostsPerZone({
@@ -51,7 +51,7 @@ export class MinimumHealthyHostsPerZone {
   }
 
   /**
-   * The minmum healhty hosts threshold expressed as a percentage of the fleet.
+   * The minimum healthy hosts threshold expressed as a percentage of the fleet.
    */
   public static percentage(value: number): MinimumHealthyHostsPerZone {
     return new MinimumHealthyHostsPerZone({
