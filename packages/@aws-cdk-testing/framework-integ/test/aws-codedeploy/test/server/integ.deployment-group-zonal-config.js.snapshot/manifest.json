@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c42862b3f17a28cbbcd8ff7ee7bd4b095381dd1f511fc27ce9fcda265260432e.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/fd112716aa52a9166f052dd389ae9236f72ff647e9cb485dcac55c28260e3538.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -313,19 +313,19 @@
       },
       "displayName": "Stack"
     },
-    "ServerDeploymentGroupMultipleLBDefaultTestDeployAssertC00E0E7C.assets": {
+    "ServerDeploymentGroupZonalConfigDefaultTestDeployAssertEA00EA72.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "ServerDeploymentGroupMultipleLBDefaultTestDeployAssertC00E0E7C.assets.json",
+        "file": "ServerDeploymentGroupZonalConfigDefaultTestDeployAssertEA00EA72.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "ServerDeploymentGroupMultipleLBDefaultTestDeployAssertC00E0E7C": {
+    "ServerDeploymentGroupZonalConfigDefaultTestDeployAssertEA00EA72": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "ServerDeploymentGroupMultipleLBDefaultTestDeployAssertC00E0E7C.template.json",
+        "templateFile": "ServerDeploymentGroupZonalConfigDefaultTestDeployAssertEA00EA72.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
@@ -334,7 +334,7 @@
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "ServerDeploymentGroupMultipleLBDefaultTestDeployAssertC00E0E7C.assets"
+          "ServerDeploymentGroupZonalConfigDefaultTestDeployAssertEA00EA72.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -343,23 +343,23 @@
         }
       },
       "dependencies": [
-        "ServerDeploymentGroupMultipleLBDefaultTestDeployAssertC00E0E7C.assets"
+        "ServerDeploymentGroupZonalConfigDefaultTestDeployAssertEA00EA72.assets"
       ],
       "metadata": {
-        "/ServerDeploymentGroupMultipleLB/DefaultTest/DeployAssert/BootstrapVersion": [
+        "/ServerDeploymentGroupZonalConfig/DefaultTest/DeployAssert/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/ServerDeploymentGroupMultipleLB/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+        "/ServerDeploymentGroupZonalConfig/DefaultTest/DeployAssert/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "ServerDeploymentGroupMultipleLB/DefaultTest/DeployAssert"
+      "displayName": "ServerDeploymentGroupZonalConfig/DefaultTest/DeployAssert"
     },
     "Tree": {
       "type": "cdk:tree",

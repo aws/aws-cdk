@@ -1289,8 +1289,8 @@
                       "value": 1
                     },
                     "zonalConfig": {
-                      "monitorDurationInSeconds": 20,
-                      "firstZoneMonitorDurationInSeconds": 60,
+                      "monitorDurationInSeconds": 0,
+                      "firstZoneMonitorDurationInSeconds": 0,
                       "minimumHealthyHostsPerZone": {
                         "type": "HOST_COUNT",
                         "value": 1
@@ -1518,17 +1518,17 @@
           "version": "0.0.0"
         }
       },
-      "ServerDeploymentGroupMultipleLB": {
-        "id": "ServerDeploymentGroupMultipleLB",
-        "path": "ServerDeploymentGroupMultipleLB",
+      "ServerDeploymentGroupZonalConfig": {
+        "id": "ServerDeploymentGroupZonalConfig",
+        "path": "ServerDeploymentGroupZonalConfig",
         "children": {
           "DefaultTest": {
             "id": "DefaultTest",
-            "path": "ServerDeploymentGroupMultipleLB/DefaultTest",
+            "path": "ServerDeploymentGroupZonalConfig/DefaultTest",
             "children": {
               "Default": {
                 "id": "Default",
-                "path": "ServerDeploymentGroupMultipleLB/DefaultTest/Default",
+                "path": "ServerDeploymentGroupZonalConfig/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
                   "version": "10.3.0"
@@ -1536,11 +1536,11 @@
               },
               "DeployAssert": {
                 "id": "DeployAssert",
-                "path": "ServerDeploymentGroupMultipleLB/DefaultTest/DeployAssert",
+                "path": "ServerDeploymentGroupZonalConfig/DefaultTest/DeployAssert",
                 "children": {
                   "BootstrapVersion": {
                     "id": "BootstrapVersion",
-                    "path": "ServerDeploymentGroupMultipleLB/DefaultTest/DeployAssert/BootstrapVersion",
+                    "path": "ServerDeploymentGroupZonalConfig/DefaultTest/DeployAssert/BootstrapVersion",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.CfnParameter",
                       "version": "0.0.0"
@@ -1548,7 +1548,7 @@
                   },
                   "CheckBootstrapVersion": {
                     "id": "CheckBootstrapVersion",
-                    "path": "ServerDeploymentGroupMultipleLB/DefaultTest/DeployAssert/CheckBootstrapVersion",
+                    "path": "ServerDeploymentGroupZonalConfig/DefaultTest/DeployAssert/CheckBootstrapVersion",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.CfnRule",
                       "version": "0.0.0"

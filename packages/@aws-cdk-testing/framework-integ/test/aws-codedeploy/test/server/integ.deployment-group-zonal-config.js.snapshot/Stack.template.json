@@ -877,12 +877,12 @@
      "Value": 1
     },
     "ZonalConfig": {
-     "FirstZoneMonitorDurationInSeconds": 60,
+     "FirstZoneMonitorDurationInSeconds": 0,
      "MinimumHealthyHostsPerZone": {
       "Type": "HOST_COUNT",
       "Value": 1
      },
-     "MonitorDurationInSeconds": 20
+     "MonitorDurationInSeconds": 0
     }
    }
   },

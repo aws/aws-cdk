@@ -32,8 +32,8 @@ new codedeploy.ServerDeploymentGroup(stack, 'CodeDeployGroup', {
   deploymentConfig: new codedeploy.ServerDeploymentConfig(stack, 'DeploymentConfig', {
     minimumHealthyHosts: codedeploy.MinimumHealthyHosts.count(1),
     zonalConfig: {
-      monitorDuration: cdk.Duration.seconds(20),
-      firstZoneMonitorDuration: cdk.Duration.minutes(1),
+      monitorDuration: cdk.Duration.seconds(0),
+      firstZoneMonitorDuration: cdk.Duration.minutes(0),
       minimumHealthyHostsPerZone: codedeploy.MinimumHealthyHostsPerZone.count(1),
     },
   }),
@@ -57,6 +57,6 @@ new codedeploy.ServerDeploymentGroup(stack, 'CodeDeployGroup', {
   },
 });
 
-new integ.IntegTest(app, 'ServerDeploymentGroupMultipleLB', {
+new integ.IntegTest(app, 'ServerDeploymentGroupZonalConfig', {
   testCases: [stack],
 });
