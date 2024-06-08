@@ -656,18 +656,18 @@ describe('event bus', () => {
                   [
                     'arn:',
                     {
-                      Ref: 'AWS::Partition'
+                      Ref: 'AWS::Partition',
                     },
                     ':iam::',
                     {
-                      Ref: 'AWS::AccountId'
+                      Ref: 'AWS::AccountId',
                     },
-                    ':root'
-                  ]
-                ]
-              }
+                    ':root',
+                  ],
+                ],
+              },
             },
-            Resource: '*'
+            Resource: '*',
           },
           {
             Action: [
