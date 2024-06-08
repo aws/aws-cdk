@@ -717,8 +717,8 @@ pool.addClient('app-client', {
 });
 ```
 
-Also you can set the default redirct URI by setting `defaultRedirectUri` propety.
-Its value must be in the `callbackUrls`.
+To set a default redirect URI, use the `defaultRedirectUri` property.
+Its value must be present in the `callbackUrls` list.
 
 ```ts
 const pool = new cognito.UserPool(this, 'Pool');
