@@ -47,7 +47,9 @@ export interface BaseAppsyncFunctionProps {
   readonly code?: Code;
   /**
    * The maximum number of resolver request inputs that will be sent to a single AWS Lambda function
-   * in a BatchInvoke operation. You can only set when using LambdaDataSource.
+   * in a BatchInvoke operation. 
+   * 
+   * Can only be set when using LambdaDataSource.
    *
    * @default - No max batch size
    */
