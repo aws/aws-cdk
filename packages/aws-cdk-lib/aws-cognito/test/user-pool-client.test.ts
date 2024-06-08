@@ -1336,7 +1336,7 @@ describe('User Pool Client', () => {
         callbackUrls: [invalidUrl, 'https://bbb.example.com', 'https://ccc.example.com'],
       },
     }),
-    ).toThrow(`defaultRedirectUri must match the /^(?=.{1,1024}$)[\p{L}\p{M}\p{S}\p{N}\p{P}]+$/u pattern, got ${invalidUrl}`);
+    ).toThrow(`defaultRedirectUri must match the \`^(?=.{1,1024}$)[\p{L}\p{M}\p{S}\p{N}\p{P}]+$\` pattern, got ${invalidUrl}`);
   });
 
 });

@@ -3,7 +3,7 @@ import { CfnUserPoolClient } from './cognito.generated';
 import { IUserPool } from './user-pool';
 import { ClientAttributes } from './user-pool-attr';
 import { IUserPoolResourceServer, ResourceServerScope } from './user-pool-resource-server';
-import { IResource, Resource, Duration, Stack, SecretValue } from '../../core';
+import { IResource, Resource, Duration, Stack, SecretValue, Token } from '../../core';
 import { AwsCustomResource, AwsCustomResourcePolicy, PhysicalResourceId } from '../../custom-resources';
 
 /**
@@ -430,11 +430,11 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
       if (callbackUrls && !callbackUrls.includes(props.oAuth.defaultRedirectUri)) {
         throw new Error('defaultRedirectUri must be included in callbackUrls.');
       }
-    } 
 
-    const defaultRedirectUriPattern = /^(?=.{1,1024}$)[\p{L}\p{M}\p{S}\p{N}\p{P}]+$/u
-    if (!defaultRedirectUriPattern.test(props.oAuth.defaultRedirectUri)) {
-      throw new Error(`defaultRedirectUri must match the \`${defaultRedirectUriPattern}\` pattern, got ${props.oAuth.defaultRedirectUri}`);
+      const defaultRedirectUriPattern = /^(?=.{1,1024}$)[\p{L}\p{M}\p{S}\p{N}\p{P}]+$/u;
+      if (!defaultRedirectUriPattern.test(props.oAuth.defaultRedirectUri)) {
+        throw new Error(`defaultRedirectUri must match the \`^(?=.{1,1024}$)[\p{L}\p{M}\p{S}\p{N}\p{P}]+$\` pattern, got ${props.oAuth.defaultRedirectUri}`);
+      }
     }
 
     if (!props.generateSecret && props.enablePropagateAdditionalUserContextData) {
