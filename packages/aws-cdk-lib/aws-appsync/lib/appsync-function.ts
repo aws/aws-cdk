@@ -159,7 +159,7 @@ export class AppsyncFunction extends Resource implements IAppsyncFunction {
       throw new Error('Mapping templates cannot be used alongside code');
     }
 
-    if (!(props.dataSource instanceof LambdaDataSource) && props.maxBatchSize) {
+    if (props.maxBatchSize && !(props.dataSource instanceof LambdaDataSource)) {
       throw new Error('Cannot set maxBatchSize when the data source is not LambdaDataSource');
     }
 
