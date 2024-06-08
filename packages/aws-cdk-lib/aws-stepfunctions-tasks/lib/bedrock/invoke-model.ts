@@ -220,7 +220,7 @@ export class BedrockInvokeModel extends sfn.TaskStateBase {
       );
     }
 
-    if (this.props.guardrailConfiguration !== undefined) {
+    if (!this.props.guardrailConfiguration) {
       policyStatements.push(
         new iam.PolicyStatement({
           actions: ['bedrock:ApplyGuardrail'],
