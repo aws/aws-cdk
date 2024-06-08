@@ -220,7 +220,7 @@ export class BedrockInvokeModel extends sfn.TaskStateBase {
       );
     }
 
-    if (!this.props.guardrailConfiguration) {
+    if (this.props.guardrailConfiguration) {
       policyStatements.push(
         new iam.PolicyStatement({
           actions: ['bedrock:ApplyGuardrail'],
@@ -276,18 +276,17 @@ export class BedrockInvokeModel extends sfn.TaskStateBase {
     if (!Token.isUnresolved(guardrailIdentifier)) {
       const guardrailConfigurationPattern = /^(([a-z0-9]+)|(arn:aws(-[^:]+)?:bedrock:[a-z0-9-]{1,20}:[0-9]{12}:guardrail\/[a-z0-9]+))$/;
       if (!guardrailConfigurationPattern.test(guardrailIdentifier)) {
-        throw new Error(`guardrailIdentifier must match the \`${guardrailConfigurationPattern}\` pattern, got ${guardrailIdentifier}`);
+        throw new Error(`guardrailIdentifier must match the ^(([a-z0-9]+)|(arn:aws(-[^:]+)?:bedrock:[a-z0-9-]{1,20}:[0-9]{12}:guardrail\/[a-z0-9]+))$ pattern, got ${guardrailIdentifier}`);
       }
       if (props.contentType !== 'application/json') {
-        throw new Error(`You must set contentType to \'application/json\' when using guardrailConfiguration, got ${props.contentType}.`);
+        throw new Error(`You must set contentType to \'application/json\' when using guardrailConfiguration, got '${props.contentType}'.`);
       }
     }
 
     const guardrailVersionPattern = /^(([1-9][0-9]{0,7})|(DRAFT))$/;
     if (!Token.isUnresolved(guardrailVersion) && !guardrailVersionPattern.test(guardrailVersion)) {
-      throw new Error(`guardrailVersion must match the \`${guardrailVersionPattern}\` pattern, got ${guardrailVersion}`);
+      throw new Error(`guardrailVersion must match the ^(([1-9][0-9]{0,7})|(DRAFT))$ pattern, got ${guardrailVersion}`);
     }
-  }
 
   }
 }

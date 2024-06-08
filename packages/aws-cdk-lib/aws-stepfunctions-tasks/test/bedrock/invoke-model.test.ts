@@ -478,7 +478,7 @@ describe('Invoke Model', () => {
         },
       });
       // THEN
-    }).toThrow('You must set contentType to \'application/json\' when use guardrailConfiguration');
+    }).toThrow('You must set contentType to \'application/json\' when using guardrailConfiguration, got \'text/plain\'.');
   });
 
   test('trace configuration', () => {
