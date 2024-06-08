@@ -634,7 +634,7 @@ describe('event bus', () => {
     const key = new kms.Key(stack, 'Key');
 
     // WHEN
-    new EventBus(stack, 'Bus', {
+    const eventBus = new EventBus(stack, 'Bus', {
       kmsKey: key,
     });
 
@@ -642,5 +642,96 @@ describe('event bus', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::Events::EventBus', {
       KmsKeyIdentifier: stack.resolve(key.keyArn),
     });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
+      KeyPolicy: {
+        Statement: [
+          {
+            Action: 'kms:*',
+            Effect: 'Allow',
+            Principal: {
+              AWS: {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    {
+                      Ref: 'AWS::Partition'
+                    },
+                    ':iam::',
+                    {
+                      Ref: 'AWS::AccountId'
+                    },
+                    ':root'
+                  ]
+                ]
+              }
+            },
+            Resource: '*'
+          },
+          {
+            Action: [
+              'kms:Decrypt',
+              'kms:GenerateDataKey',
+              'kms:DescribeKey',
+            ],
+            Condition: {
+              StringEquals: {
+                'aws:SourceAccount': {
+                  Ref: 'AWS::AccountId',
+                },
+                'aws:SourceArn': {
+                  'Fn::Join': [
+                    '',
+                    [
+                      'arn:',
+                      {
+                        Ref: 'AWS::Partition',
+                      },
+                      ':events:',
+                      {
+                        Ref: 'AWS::Region',
+                      },
+                      ':',
+                      {
+                        Ref: 'AWS::AccountId',
+                      },
+                      ':event-bus/StackBusAA0A1E4B',
+                    ],
+                  ],
+                },
+                'kms:EncryptionContext:aws:events:event-bus:arn': {
+                  'Fn::Join': [
+                    '',
+                    [
+                      'arn:',
+                      {
+                        Ref: 'AWS::Partition',
+                      },
+                      ':events:',
+                      {
+                        Ref: 'AWS::Region',
+                      },
+                      ':',
+                      {
+                        Ref: 'AWS::AccountId',
+                      },
+                      ':event-bus/StackBusAA0A1E4B',
+                    ],
+                  ],
+                },
+              },
+            },
+            Effect: 'Allow',
+            Principal: {
+              Service: 'events.amazonaws.com',
+            },
+            Resource: '*',
+          },
+        ],
+        Version: '2012-10-17',
+      },
+    });
   });
+
 });
