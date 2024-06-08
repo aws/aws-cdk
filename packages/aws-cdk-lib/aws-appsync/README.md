@@ -757,7 +757,7 @@ const appsyncFunction = new appsync.AppsyncFunction(this, 'function', {
 
 When using the `LambdaDataSource`, you can control the maximum number of resolver request
 inputs that will be sent to a single AWS Lambda function in a BatchInvoke operation
-by setting the maxBatchSize property.
+by setting the `maxBatchSize` property.
 
 ```ts
 declare const api: appsync.GraphqlApi;
