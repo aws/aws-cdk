@@ -2,6 +2,7 @@ import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Template } from '../../assertions';
 import * as iam from '../../aws-iam';
 import { Effect } from '../../aws-iam';
+import * as kms from '../../aws-kms';
 import { Aws, CfnResource, Stack, Arn, App, PhysicalName, CfnOutput } from '../../core';
 import { EventBus } from '../lib';
 
@@ -624,5 +625,22 @@ describe('event bus', () => {
       principals: [new iam.ArnPrincipal('arn')],
       actions: ['events:PutEvents'],
     }))).toThrow('Event Bus policy statements must have a sid');
+  });
+
+  test('Event Bus with a customer managed key', () => {
+    // GIVEN
+    const app = new App();
+    const stack = new Stack(app, 'Stack');
+    const key = new kms.Key(stack, 'Key');
+
+    // WHEN
+    new EventBus(stack, 'Bus', {
+      kmsKey: key,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Events::EventBus', {
+      KmsKeyIdentifier: stack.resolve(key.keyArn),
+    });
   });
 });
