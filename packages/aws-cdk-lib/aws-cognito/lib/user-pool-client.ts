@@ -69,7 +69,18 @@ export interface OAuthSettings {
 
   /**
    * The default redirect URI.
-   * Must be in the callbackUrls.
+   * Must be in the `callbackUrls` list.
+   *
+   * A redirect URI must:
+   * * Be an absolute URI
+   * * Be registered with the authorization server.
+   * * Not include a fragment component.
+   *
+   * @see https://tools.ietf.org/html/rfc6749#section-3.1.2
+   *
+   * Amazon Cognito requires HTTPS over HTTP except for http://localhost for testing purposes only.
+   *
+   * App callback URLs such as myapp://example are also supported.
    *
    * @default - no default redirect URI
    */
