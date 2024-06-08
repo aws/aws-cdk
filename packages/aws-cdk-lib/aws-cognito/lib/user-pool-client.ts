@@ -426,12 +426,15 @@ export class UserPoolClient extends Resource implements IUserPoolClient {
       }
     }
 
-    if (props.oAuth?.defaultRedirectUri && callbackUrls && !callbackUrls.includes(props.oAuth?.defaultRedirectUri)) {
-      throw new Error('defaultRedirectUri must be included in callbackUrls.');
-    }
+    if (props.oAuth?.defaultRedirectUri && !Token.isUnresolved(props.oAuth.defaultRedirectUri)) {
+      if (callbackUrls && !callbackUrls.includes(props.oAuth.defaultRedirectUri)) {
+        throw new Error('defaultRedirectUri must be included in callbackUrls.');
+      }
+    } 
 
-    if (props.oAuth?.defaultRedirectUri && !/^(?=.{1,1024}$)[\p{L}\p{M}\p{S}\p{N}\p{P}]+$/u.test(props.oAuth?.defaultRedirectUri)) {
-      throw new Error(`defaultRedirectUri must match the /^(?=.{1,1024}$)[\p{L}\p{M}\p{S}\p{N}\p{P}]+$/u pattern, got ${props.oAuth?.defaultRedirectUri}`);
+    const defaultRedirectUriPattern = /^(?=.{1,1024}$)[\p{L}\p{M}\p{S}\p{N}\p{P}]+$/u
+    if (!defaultRedirectUriPattern.test(props.oAuth.defaultRedirectUri)) {
+      throw new Error(`defaultRedirectUri must match the \`${defaultRedirectUriPattern}\` pattern, got ${props.oAuth.defaultRedirectUri}`);
     }
 
     if (!props.generateSecret && props.enablePropagateAdditionalUserContextData) {
