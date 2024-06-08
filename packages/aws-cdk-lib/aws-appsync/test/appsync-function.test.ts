@@ -37,7 +37,7 @@ test('maxBatchSize property can be set in AppSync Function with Lambda DataSourc
   });
 });
 
-test('maxBatchSize property cannot be set in AppSync Function with none LambdaDataSource.', () => {
+test('maxBatchSize property cannot be set in AppSync Function if data source is not Lambda.', () => {
   const dataSource = api.addNoneDataSource('none');
 
   expect(() => {
