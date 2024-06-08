@@ -257,7 +257,7 @@ import * as kms from 'aws-cdk-lib/aws-kms';
 
 declare const kmsKey: kms.IKey;
 
-new EventBus(this, 'Bus', {
-  kmsKey: key,
+new events.EventBus(this, 'Bus', {
+  kmsKey,
 });
 ```
