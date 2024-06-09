@@ -30,7 +30,7 @@
   "EnrichmentStateMachine8BED6C4E": {
    "Type": "AWS::StepFunctions::StateMachine",
    "Properties": {
-    "DefinitionString": "{\"StartAt\":\"EnrichmentTask\",\"States\":{\"EnrichmentTask\":{\"Type\":\"Pass\",\"Parameters\":{\"body.$\":\"States.Format('{}{}', $[0].body, '-enriched')\"},\"End\":true}}}",
+    "DefinitionString": "{\"StartAt\":\"EnrichmentTask\",\"States\":{\"EnrichmentTask\":{\"Type\":\"Pass\",\"Parameters\":{\"body.$\":\"States.Format('{}{}',$[0].body,'-enriched')\"},\"End\":true}}}",
     "RoleArn": {
      "Fn::GetAtt": [
       "EnrichmentStateMachineRoleDE810FCA",

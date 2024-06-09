@@ -11,15 +11,12 @@ describe('stepfunctions', () => {
   beforeEach(() => {
     const app = new App();
     stack = new Stack(app, 'TestStack');
-
     const enrichmentTask = new sfn.Pass(stack, 'EnrichmentTask', {
       parameters: {
-        body: sfn.JsonPath.format('{}{}', sfn.JsonPath.stringAt('$[0].body'), '-enriched'),
+        body: sfn.JsonPath.stringAt('States.Format(\'{}{}\',$[0].body,\'-enriched\')'),
       },
     });
-
     const definition = enrichmentTask;
-
     stateMachine = new sfn.StateMachine(stack, 'EnrichmentStateMachine', {
       definitionBody: sfn.DefinitionBody.fromChainable(definition),
       stateMachineType: sfn.StateMachineType.EXPRESS,
@@ -97,7 +94,7 @@ test('cannot use STANDARD StateMachine', () => {
   const stack = new Stack();
   const enrichmentTask = new sfn.Pass(stack, 'EnrichmentTask', {
     parameters: {
-      body: sfn.JsonPath.format('{}{}', sfn.JsonPath.stringAt('$[0].body'), '-enriched'),
+      body: sfn.JsonPath.stringAt('States.Format(\'{}{}\',$[0].body,\'-enriched\')'),
     },
   });
 

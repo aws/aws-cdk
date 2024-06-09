@@ -113,7 +113,7 @@
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::StepFunctions::StateMachine",
                   "aws:cdk:cloudformation:props": {
-                    "definitionString": "{\"StartAt\":\"EnrichmentTask\",\"States\":{\"EnrichmentTask\":{\"Type\":\"Pass\",\"Parameters\":{\"body.$\":\"States.Format('{}{}', $[0].body, '-enriched')\"},\"End\":true}}}",
+                    "definitionString": "{\"StartAt\":\"EnrichmentTask\",\"States\":{\"EnrichmentTask\":{\"Type\":\"Pass\",\"Parameters\":{\"body.$\":\"States.Format('{}{}',$[0].body,'-enriched')\"},\"End\":true}}}",
                     "roleArn": {
                       "Fn::GetAtt": [
                         "EnrichmentStateMachineRoleDE810FCA",
@@ -365,17 +365,17 @@
                 "id": "DeployAssert",
                 "path": "integtest-pipe-enrichments-stepfunctions/DefaultTest/DeployAssert",
                 "children": {
-                  "AwsApiCallSQSsendMessage2f6a5743e29d027301024b7e717f500c": {
-                    "id": "AwsApiCallSQSsendMessage2f6a5743e29d027301024b7e717f500c",
-                    "path": "integtest-pipe-enrichments-stepfunctions/DefaultTest/DeployAssert/AwsApiCallSQSsendMessage2f6a5743e29d027301024b7e717f500c",
+                  "AwsApiCallSQSsendMessagea736bb7b24f6913cbbe6af47d6da6594": {
+                    "id": "AwsApiCallSQSsendMessagea736bb7b24f6913cbbe6af47d6da6594",
+                    "path": "integtest-pipe-enrichments-stepfunctions/DefaultTest/DeployAssert/AwsApiCallSQSsendMessagea736bb7b24f6913cbbe6af47d6da6594",
                     "children": {
                       "SdkProvider": {
                         "id": "SdkProvider",
-                        "path": "integtest-pipe-enrichments-stepfunctions/DefaultTest/DeployAssert/AwsApiCallSQSsendMessage2f6a5743e29d027301024b7e717f500c/SdkProvider",
+                        "path": "integtest-pipe-enrichments-stepfunctions/DefaultTest/DeployAssert/AwsApiCallSQSsendMessagea736bb7b24f6913cbbe6af47d6da6594/SdkProvider",
                         "children": {
                           "AssertionsProvider": {
                             "id": "AssertionsProvider",
-                            "path": "integtest-pipe-enrichments-stepfunctions/DefaultTest/DeployAssert/AwsApiCallSQSsendMessage2f6a5743e29d027301024b7e717f500c/SdkProvider/AssertionsProvider",
+                            "path": "integtest-pipe-enrichments-stepfunctions/DefaultTest/DeployAssert/AwsApiCallSQSsendMessagea736bb7b24f6913cbbe6af47d6da6594/SdkProvider/AssertionsProvider",
                             "constructInfo": {
                               "fqn": "constructs.Construct",
                               "version": "10.3.0"
@@ -389,11 +389,11 @@
                       },
                       "Default": {
                         "id": "Default",
-                        "path": "integtest-pipe-enrichments-stepfunctions/DefaultTest/DeployAssert/AwsApiCallSQSsendMessage2f6a5743e29d027301024b7e717f500c/Default",
+                        "path": "integtest-pipe-enrichments-stepfunctions/DefaultTest/DeployAssert/AwsApiCallSQSsendMessagea736bb7b24f6913cbbe6af47d6da6594/Default",
                         "children": {
                           "Default": {
                             "id": "Default",
-                            "path": "integtest-pipe-enrichments-stepfunctions/DefaultTest/DeployAssert/AwsApiCallSQSsendMessage2f6a5743e29d027301024b7e717f500c/Default/Default",
+                            "path": "integtest-pipe-enrichments-stepfunctions/DefaultTest/DeployAssert/AwsApiCallSQSsendMessagea736bb7b24f6913cbbe6af47d6da6594/Default/Default",
                             "constructInfo": {
                               "fqn": "aws-cdk-lib.CfnResource",
                               "version": "0.0.0"
