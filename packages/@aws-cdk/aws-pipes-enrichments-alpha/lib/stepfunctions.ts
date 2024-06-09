@@ -21,10 +21,7 @@ export class StepFunctionsEnrichment implements IEnrichment {
   public readonly enrichmentArn: string;
 
   private readonly inputTransformation?: InputTransformation;
-  private readonly stateMachine: IStateMachine;
-
-  constructor(stateMachine: IStateMachine, props?: StepFunctionsEnrichmentProps) {
-    this.stateMachine=stateMachine;
+  constructor(private readonly stateMachine: IStateMachine, props?: StepFunctionsEnrichmentProps) {
     if (this.stateMachine instanceof StateMachine
       && (this.stateMachine.stateMachineType === StateMachineType.STANDARD)
     ) {
