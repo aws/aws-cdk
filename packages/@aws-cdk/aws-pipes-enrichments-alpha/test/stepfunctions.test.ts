@@ -107,5 +107,5 @@ test('cannot use STANDARD StateMachine', () => {
 
   // WHEN
   expect(() => new StepFunctionsEnrichment(stateMachine),
-  ).toThrow('Enrichiment does not support STANDARD state machine workflows. Use EXPRESS instead.');
+  ).toThrow('EventBridge pipes only support EXPRESS workflows as enrichment, got STANDARD');
 });

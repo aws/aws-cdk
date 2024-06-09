@@ -22,10 +22,10 @@ export class StepFunctionsEnrichment implements IEnrichment {
 
   private readonly inputTransformation?: InputTransformation;
   constructor(private readonly stateMachine: IStateMachine, props?: StepFunctionsEnrichmentProps) {
-    if (this.stateMachine instanceof StateMachine
-      && (this.stateMachine.stateMachineType !== StateMachineType.EXPRESS)
+    if (stateMachine instanceof StateMachine
+      && (stateMachine.stateMachineType !== StateMachineType.EXPRESS)
     ) {
-      throw new Error(`EventBridge pipes only support EXPRESS workflows as enrichment, got ${this.stateMachine.stateMachineType}`);
+      throw new Error(`EventBridge pipes only support EXPRESS workflows as enrichment, got ${stateMachine.stateMachineType}`);
     }
     this.enrichmentArn = stateMachine.stateMachineArn;
     this.inputTransformation = props?.inputTransformation;
