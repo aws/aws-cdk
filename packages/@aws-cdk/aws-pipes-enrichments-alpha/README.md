@@ -46,3 +46,24 @@ const pipe = new pipes.Pipe(this, 'Pipe', {
   target: new SomeTarget(targetQueue),
 });
 ```
+
+### Step Functions statemachine
+
+A Step Functions statemachine can be used to enrich events of a pipe.
+Express workflows are only supported and can only be invoked synchronously.
+For more information, see [Amazon EventBridge Pipes event enrichment](https://docs.aws.amazon.com/eventbridge/latest/userguide/pipes-enrichment.html).
+
+```ts
+declare const sourceQueue: sqs.Queue;
+declare const targetQueue: sqs.Queue;
+
+declare const enrichmentStateMachine: stepfunctions.StateMachine;
+
+const enrichment = new enrichments.StepFunctionsEnrichment(enrichmentStateMachine);
+
+const pipe = new pipes.Pipe(this, 'Pipe', {
+  source: new SomeSource(sourceQueue),
+  enrichment,
+  target: new SomeTarget(targetQueue),
+});
+```
