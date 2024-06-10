@@ -179,24 +179,6 @@ export interface DeployStackOptions {
   */
   readonly hotswapProperties?: HotswapProperties;
 
-  // /*
-  //  * The minimum healthy percentage of the hotswapped task.
-  //  * A 'hotswap' deployment will attempt to short-circuit CloudFormation
-  //  * and update the affected resources like Lambda functions directly.
-  //  *
-  //  * @default - 0
-  //  */
-  // readonly hotswapMinimumHealthyPercent?: Number;
-
-  // /*
-  //  *The minimum healthy percentage of the hotswapped task.
-  //  * A 'hotswap' deployment will attempt to short-circuit CloudFormation
-  //  * and update the affected resources like Lambda functions directly.
-  //  *
-  //  * @default - `HotswapMode.FULL_DEPLOYMENT` for regular deployments, `HotswapMode.HOTSWAP_ONLY` for 'watch' deployments
-  //  */
-  // readonly hotswapMaximumHealthyPercent?: Number;
-
   /**
    * The extra string to append to the User-Agent header when performing AWS SDK calls.
    *
