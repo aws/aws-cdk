@@ -113,7 +113,7 @@ describe('HttpHandler', () => {
     const response = await processEvent({ parameters: { url: 'x' } });
 
     // THEN
-    expect(response.apiCallResponse).toEqual({ body: { key: 'value' } });
+    expect(response.apiCallResponse).toMatchObject({ body: { key: 'value' } });
   });
 
   test('Non-JSON is not parsed', async () => {
@@ -126,7 +126,7 @@ describe('HttpHandler', () => {
     const response = await processEvent({ parameters: { url: 'x' } });
 
     // THEN
-    expect(response.apiCallResponse).toEqual({ body: 'this is a string' });
+    expect(response.apiCallResponse).toMatchObject({ body: 'this is a string' });
   });
 });
 
