@@ -14,7 +14,7 @@
         }
       }
     },
-    "9efa25b5007dd8d94947402a1aa958acd8767b0a7ce1a3098d84aac5afb3954c": {
+    "0536cd12e8cfdfea64001273f7449c385daf640740786ca1ff5cc6a1db1364cf": {
       "source": {
         "path": "aws-cdk-codedeploy-lambda-config.template.json",
         "packaging": "file"
@@ -22,7 +22,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "9efa25b5007dd8d94947402a1aa958acd8767b0a7ce1a3098d84aac5afb3954c.json",
+          "objectKey": "0536cd12e8cfdfea64001273f7449c385daf640740786ca1ff5cc6a1db1364cf.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
