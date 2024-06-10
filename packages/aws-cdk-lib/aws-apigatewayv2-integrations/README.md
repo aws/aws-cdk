@@ -314,7 +314,7 @@ See [Working with binary media types for WebSocket APIs](https://docs.aws.amazon
 
 You can set up your integrations to send responses to your WebSocket client using the [`returnResponse`](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_apigatewayv2.WebSocketRouteOptions.html#returnresponse) field.
 
-Additionally, some integrations allow you to manipulate and customize your responses, mapped by HTTP response code. This can be done via the `responses` field, or the `addResponse` method.
+Additionally, some integrations allow you to manipulate and customize your responses, mapped by HTTP response code. This can be done via the `responses` field or the `addResponse` method.
 See [Setting up a WebSocket API integration responses in API Gateway](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-websocket-api-integration-responses.html).
 
 Similar to `requestTemplates`, `responseTemplates` can use context or response dependant variables. In the case of an integration response, `$input` will be replaced by the response contents. See [API Gateway WebSocket API mapping template reference](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-websocket-api-mapping-template-reference.html)
