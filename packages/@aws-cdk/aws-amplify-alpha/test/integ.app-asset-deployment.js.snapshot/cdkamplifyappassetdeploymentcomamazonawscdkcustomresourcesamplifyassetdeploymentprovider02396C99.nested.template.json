@@ -66,11 +66,6 @@
      },
      "S3Key": "85f7bb0ac0b4da3571afd49c891d631f4f07c0ef710a02046d3a9abd8d9d4604.zip"
     },
-    "Environment": {
-     "Variables": {
-      "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1"
-     }
-    },
     "Handler": "index.onEvent",
     "Role": {
      "Fn::GetAtt": [
@@ -145,11 +140,6 @@
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
      "S3Key": "85f7bb0ac0b4da3571afd49c891d631f4f07c0ef710a02046d3a9abd8d9d4604.zip"
-    },
-    "Environment": {
-     "Variables": {
-      "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1"
-     }
     },
     "Handler": "index.isComplete",
     "Role": {
@@ -644,6 +634,22 @@
          ]
         }
        ]
+      },
+      {
+       "Action": [
+        "logs:CreateLogDelivery",
+        "logs:CreateLogStream",
+        "logs:DeleteLogDelivery",
+        "logs:DescribeLogGroups",
+        "logs:DescribeResourcePolicies",
+        "logs:GetLogDelivery",
+        "logs:ListLogDeliveries",
+        "logs:PutLogEvents",
+        "logs:PutResourcePolicy",
+        "logs:UpdateLogDelivery"
+       ],
+       "Effect": "Allow",
+       "Resource": "*"
       }
      ],
      "Version": "2012-10-17"
@@ -655,6 +661,26 @@
      }
     ]
    }
+  },
+  "amplifyassetdeploymenthandlerproviderwaiterstatemachineLogGroupC4BDAC97": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "LogGroupName": {
+     "Fn::Join": [
+      "",
+      [
+       "/aws/vendedlogs/states/waiter-state-machine-",
+       {
+        "Ref": "amplifyassetdeploymenthandlerproviderframeworkisComplete2A696873"
+       },
+       "-c8a1a2319ce23755893c80671b62fe53abf53d6f98"
+      ]
+     ]
+    },
+    "RetentionInDays": 731
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
   },
   "amplifyassetdeploymenthandlerproviderwaiterstatemachineB3C2FCBE": {
    "Type": "AWS::StepFunctions::StateMachine",
@@ -680,6 +706,22 @@
        "\"}}}"
       ]
      ]
+    },
+    "LoggingConfiguration": {
+     "Destinations": [
+      {
+       "CloudWatchLogsLogGroup": {
+        "LogGroupArn": {
+         "Fn::GetAtt": [
+          "amplifyassetdeploymenthandlerproviderwaiterstatemachineLogGroupC4BDAC97",
+          "Arn"
+         ]
+        }
+       }
+      }
+     ],
+     "IncludeExecutionData": false,
+     "Level": "ERROR"
     },
     "RoleArn": {
      "Fn::GetAtt": [

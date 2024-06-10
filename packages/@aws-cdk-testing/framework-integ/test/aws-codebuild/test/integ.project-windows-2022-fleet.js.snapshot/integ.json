@@ -1,0 +1,12 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "Windows2022FleetIntegTest/DefaultTest": {
+      "stacks": [
+        "aws-cdk-project-windows-2022-fleet"
+      ],
+      "assertionStack": "Windows2022FleetIntegTest/DefaultTest/DeployAssert",
+      "assertionStackName": "Windows2022FleetIntegTestDefaultTestDeployAssert28F28C3E"
+    }
+  }
+}

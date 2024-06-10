@@ -104,6 +104,20 @@ new route53.ARecord(this, 'ARecord', {
 });
 ```
 
+To create an A record of type alias with target set to another record created outside CDK:
+### This function registers the given input i.e. DNS Name(string) of an existing record as an AliasTarget to the new ARecord. To register a target that is created as part of CDK use this instead https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_route53_targets-readme.html
+
+```ts
+
+declare const myZone: route53.HostedZone;
+const targetRecord = 'existing.record.cdk.local';
+const record = route53.ARecord.fromARecordAttributes(this, 'A', {
+  zone: myZone,
+  recordName: 'test',
+  targetDNS: targetRecord,
+});
+```
+
 To add an AAAA record pointing to a CloudFront distribution:
 
 ```ts
@@ -299,7 +313,7 @@ const delegationRole = iam.Role.fromRoleArn(this, 'DelegationRole', delegationRo
 
 // create the record
 new route53.CrossAccountZoneDelegationRecord(this, 'delegate', {
-  delegatedZone: subZone,
+  delegatedZone: subZone, // Note that an imported HostedZone is not supported as Name Servers info will not be available
   parentHostedZoneName: 'someexample.com', // or you can use parentHostedZoneId
   delegationRole,
 });
@@ -344,6 +358,45 @@ new route53.PublicHostedZone(this, 'HostedZone', {
   addTrailingDot: false,
 });
 ```
+
+## Enabling DNSSEC
+
+DNSSEC can be enabled for Hosted Zones. For detailed information, see
+[Configuring DNSSEC signing in Amazon Route 53](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/dns-configuring-dnssec.html).
+
+Enabling DNSSEC requires an asymmetric KMS Customer-Managed Key using the `ECC_NIST_P256` key spec.
+Additionally, that KMS key must be in `us-east-1`.
+
+```ts
+const kmsKey = new kms.Key(this, 'KmsCMK', {
+  keySpec: kms.KeySpec.ECC_NIST_P256,
+  keyUsage: kms.KeyUsage.SIGN_VERIFY,
+});
+const hostedZone = new route53.HostedZone(this, 'HostedZone', {
+  zoneName: 'example.com',
+});
+// Enable DNSSEC signing for the zone
+hostedZone.enableDnssec({ kmsKey });
+```
+
+The necessary permissions for Route 53 to use the key will automatically be added when using
+this configuration. If it is necessary to create a key signing key manually, that can be done
+using the `KeySigningKey` construct:
+
+```ts
+declare const hostedZone: route53.HostedZone;
+declare const kmsKey: kms.Key;
+new route53.KeySigningKey(this, 'KeySigningKey', {
+  hostedZone,
+  kmsKey,
+  keySigningKeyName: 'ksk',
+  status: route53.KeySigningKeyStatus.ACTIVE,
+});
+```
+
+When directly constructing the `KeySigningKey` resource, enabling DNSSEC signing for the hosted
+zone will be need to be done explicitly (either using the `CfnDNSSEC` construct or via another
+means).
 
 ## Imports
 

@@ -5,12 +5,16 @@
 - [HTTP APIs](#http-apis)
   - [Lambda Integration](#lambda)
   - [HTTP Proxy Integration](#http-proxy)
+  - [StepFunctions Integration](#stepfunctions-integration)
   - [Private Integration](#private-integration)
   - [Request Parameters](#request-parameters)
 - [WebSocket APIs](#websocket-apis)
   - [Lambda WebSocket Integration](#lambda-websocket-integration)
   - [AWS WebSocket Integration](#aws-websocket-integration)
   - [Integration Responses](#integration-responses)
+- [Import Issues](#import-issues)
+  - [DotNet Namespace](#dotnet-namespace)
+  - [Java Package](#java-package)
 
 ## HTTP APIs
 
@@ -309,7 +313,6 @@ webSocketApi.addRoute('$connect', {
 You can also set additional properties to change the behavior of your integration, such as `contentHandling`.
 See [Working with binary media types for WebSocket APIs](https://docs.aws.amazon.com/apigateway/latest/developerguide/websocket-api-develop-binary-media-types.html).
 
-
 ### Integration Responses
 
 You can set up your integrations to send responses to your WebSocket client using the [`returnResponse`](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_apigatewayv2.WebSocketRouteOptions.html#returnresponse) field.
@@ -354,4 +357,27 @@ integration.addResponse({
 });
 
 webSocketApi.addRoute('putItem', { integration, returnResponse: true });
+```
+
+## Import Issues
+
+`jsiirc.json` file is missing during the stablization process of this module, which caused import issues for DotNet and Java users who attempt to use this module. Unfortunately, to guarantee backward compatibility, we cannot simply correct the namespace for DotNet or package for Java. The following outlines the workaround.
+
+### DotNet Namespace
+
+Instead of the conventional namespace `Amazon.CDK.AWS.Apigatewayv2.Integrations`, you would need to use the following namespace:
+
+```cs
+using Amazon.CDK.AwsApigatewayv2Integrations;
+```
+
+### Java Package
+
+Instead of conventional package `import software.amazon.awscdk.services.apigatewayv2_integrations.*`, you would need to use the following package:
+
+```java
+import software.amazon.awscdk.aws_apigatewayv2_integrations.*;
+
+// If you want to import a specific construct
+import software.amazon.awscdk.aws_apigatewayv2_integrations.WebSocketAwsIntegration;
 ```

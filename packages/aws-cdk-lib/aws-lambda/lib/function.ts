@@ -524,6 +524,7 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
 
   /**
    * Sets the logFormat for the function.
+   * @deprecated Use `loggingFormat` as a property instead.
    * @default "Text"
    */
   readonly logFormat?: string;
@@ -536,15 +537,29 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
 
   /**
    * Sets the application log level for the function.
+   * @deprecated Use `applicationLogLevelV2` as a property instead.
    * @default "INFO"
    */
   readonly applicationLogLevel?: string;
 
   /**
+   * Sets the application log level for the function.
+   * @default ApplicationLogLevel.INFO
+   */
+  readonly applicationLogLevelV2?: ApplicationLogLevel;
+
+  /**
    * Sets the system log level for the function.
+   * @deprecated Use `systemLogLevelV2` as a property instead.
    * @default "INFO"
    */
   readonly systemLogLevel?: string;
+
+  /**
+   * Sets the system log level for the function.
+   * @default SystemLogLevel.INFO
+   */
+  readonly systemLogLevelV2?: SystemLogLevel;
 }
 
 export interface FunctionProps extends FunctionOptions {
@@ -671,18 +686,7 @@ export class Function extends FunctionBase {
    * in the same account and region as the stack you are importing it into.
    */
   public static fromFunctionArn(scope: Construct, id: string, functionArn: string): IFunction {
-    /**
-     * If the functionArn has a trailing version or alias (more than 7 parts when split by ":",
-     * we trim off the trailing version/alias to retrieve the real functionArn.
-     * See lambda resource ARN format here: https://docs.aws.amazon.com/lambda/latest/dg/lambda-api-permissions-ref.html
-     */
-    const parts = functionArn.split(':');
-    if (parts.length > 7) {
-      const _functionArn = parts.slice(0, 7).join(':');
-      return Function.fromFunctionAttributes(scope, id, { functionArn: _functionArn });
-    } else {
-      return Function.fromFunctionAttributes(scope, id, { functionArn });
-    }
+    return Function.fromFunctionAttributes(scope, id, { functionArn });
   }
 
   /**
@@ -1162,25 +1166,34 @@ export class Function extends FunctionBase {
    * function and undefined if not.
    */
   private getLoggingConfig(props: FunctionProps): CfnFunction.LoggingConfigProperty | undefined {
-    if ((props.applicationLogLevel || props.systemLogLevel) && props.logFormat !== LogFormat.JSON
-    && props.loggingFormat === undefined) {
-      throw new Error(`To use ApplicationLogLevel and/or SystemLogLevel you must set LogFormat to '${LogFormat.JSON}', got '${props.logFormat}'.`);
-    }
-
-    if ((props.applicationLogLevel || props.systemLogLevel) && props.loggingFormat !== LoggingFormat.JSON && props.logFormat === undefined) {
-      throw new Error(`To use ApplicationLogLevel and/or SystemLogLevel you must set LoggingFormat to '${LoggingFormat.JSON}', got '${props.loggingFormat}'.`);
-    }
-
     if (props.logFormat && props.loggingFormat) {
       throw new Error('Only define LogFormat or LoggingFormat, not both.');
+    }
+
+    if (props.applicationLogLevel && props.applicationLogLevelV2) {
+      throw new Error('Only define applicationLogLevel or applicationLogLevelV2, not both.');
+    }
+
+    if (props.systemLogLevel && props.systemLogLevelV2) {
+      throw new Error('Only define systemLogLevel or systemLogLevelV2, not both.');
+    }
+
+    if (props.applicationLogLevel || props.applicationLogLevelV2 || props.systemLogLevel || props.systemLogLevelV2) {
+      if (props.logFormat !== LogFormat.JSON && props.loggingFormat === undefined) {
+        throw new Error(`To use ApplicationLogLevel and/or SystemLogLevel you must set LogFormat to '${LogFormat.JSON}', got '${props.logFormat}'.`);
+      }
+
+      if (props.loggingFormat !== LoggingFormat.JSON && props.logFormat === undefined) {
+        throw new Error(`To use ApplicationLogLevel and/or SystemLogLevel you must set LoggingFormat to '${LoggingFormat.JSON}', got '${props.loggingFormat}'.`);
+      }
     }
 
     let loggingConfig: CfnFunction.LoggingConfigProperty;
     if (props.logFormat || props.logGroup || props.loggingFormat) {
       loggingConfig = {
         logFormat: props.logFormat || props.loggingFormat,
-        systemLogLevel: props.systemLogLevel,
-        applicationLogLevel: props.applicationLogLevel,
+        systemLogLevel: props.systemLogLevel || props.systemLogLevelV2,
+        applicationLogLevel: props.applicationLogLevel || props.applicationLogLevelV2,
         logGroup: props.logGroup?.logGroupName,
       };
       return loggingConfig;

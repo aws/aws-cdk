@@ -67,7 +67,7 @@ describe('cluster new api', () => {
           iamAuthentication: true,
         });
         // THEN
-      }).toThrow(/If instanceProps is not provided then `vpc` must be provided./);
+      }).toThrow(/Provide either vpc or instanceProps.vpc, but not both/);
     });
 
     test('when both vpc and instanceProps.vpc are provided', () => {
@@ -552,6 +552,41 @@ describe('cluster new api', () => {
         Engine: 'aurora',
         PerformanceInsightsRetentionPeriod: 7,
         PromotionTier: 0,
+      });
+    });
+
+    test('readers always to be created after the writer', () => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+
+      // WHEN
+      new DatabaseCluster(stack, 'Database', {
+        engine: DatabaseClusterEngine.AURORA,
+        vpc,
+        vpcSubnets: vpc.selectSubnets({ subnetType: ec2.SubnetType.PUBLIC }),
+        writer: ClusterInstance.serverlessV2('writer'),
+        readers: [
+          ClusterInstance.serverlessV2('reader1', { instanceIdentifier: 'reader1' }),
+          ClusterInstance.serverlessV2('reader2', { instanceIdentifier: 'reader2' }),
+        ],
+      });
+
+      // THEN
+      const template = Template.fromStack(stack);
+      // reader1 should depend on the writer
+      template.hasResource('AWS::RDS::DBInstance', {
+        Properties: {
+          DBInstanceIdentifier: 'reader1',
+        },
+        DependsOn: Match.arrayWith(['Databasewriter2462CC03']),
+      });
+      // reader2 should depend on the writer
+      template.hasResource('AWS::RDS::DBInstance', {
+        Properties: {
+          DBInstanceIdentifier: 'reader2',
+        },
+        DependsOn: Match.arrayWith(['Databasewriter2462CC03']),
       });
     });
   });
@@ -1154,11 +1189,11 @@ describe('cluster new api', () => {
         vpc,
         writer: ClusterInstance.provisioned('writer', {
           instanceType: ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.XLARGE24 ),
-          caCertificate: CaCertificate.RDS_CA_RDS4096_G1,
+          caCertificate: CaCertificate.RDS_CA_RSA4096_G1,
         }),
         readers: [
           ClusterInstance.serverlessV2('reader', {
-            caCertificate: CaCertificate.RDS_CA_RDS2048_G1,
+            caCertificate: CaCertificate.RDS_CA_RSA2048_G1,
           }),
           ClusterInstance.provisioned('reader2', {
             promotionTier: 1,

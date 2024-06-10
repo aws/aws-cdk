@@ -342,6 +342,13 @@ export interface AwsCustomResourceProps {
   readonly timeout?: cdk.Duration;
 
   /**
+   * The memory size for the singleton Lambda function implementing this custom resource.
+   *
+   * @default 512 mega in case if installLatestAwsSdk is false.
+   */
+  readonly memorySize?: number;
+
+  /**
    * The number of days log events of the singleton Lambda function implementing
    * this custom resource are kept in CloudWatch Logs.
    *
@@ -474,9 +481,16 @@ export class AwsCustomResource extends Construct implements iam.IGrantable {
 
     this.props = props;
 
+    let memorySize = props.memorySize;
+
+    if (props.installLatestAwsSdk) {
+      memorySize ??= 512;
+    }
+
     const provider = new AwsCustomResourceSingletonFunction(this, 'Provider', {
       uuid: AwsCustomResource.PROVIDER_FUNCTION_UUID,
       lambdaPurpose: 'AWS',
+      memorySize: memorySize,
       timeout: props.timeout || cdk.Duration.minutes(2),
       role: props.role,
       // props.logRetention is deprecated, make sure we only set it if it is actually provided
@@ -592,7 +606,7 @@ export class AwsCustomResource extends Construct implements iam.IGrantable {
 
   private formatSdkCall(sdkCall: AwsSdkCall) {
     const { logging, ...call } = sdkCall;
-    const renderedLogging = (logging ?? Logging.all())._render();
+    const renderedLogging = (logging ?? Logging.all())._render(this);
     return this.encodeJson({
       ...call,
       ...renderedLogging,

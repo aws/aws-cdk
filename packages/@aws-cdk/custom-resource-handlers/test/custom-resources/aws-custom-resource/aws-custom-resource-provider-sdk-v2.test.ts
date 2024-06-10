@@ -385,6 +385,36 @@ test('can specify apiVersion and region', async () => {
   expect(request.isDone()).toBeTruthy();
 });
 
+test('logApiResponseData can be false', async () => {
+  const publishFake = sinon.fake.resolves({});
+
+  AWS.mock('SNS', 'publish', publishFake);
+
+  const event: AWSLambda.CloudFormationCustomResourceCreateEvent = {
+    ...eventCommon,
+    RequestType: 'Create',
+    ResourceProperties: {
+      ServiceToken: 'token',
+      Create: JSON.stringify({
+        service: 'SNS',
+        action: 'publish',
+        parameters: {
+          Message: 'message',
+          TopicArn: 'topic',
+        },
+        logApiResponseData: false,
+        physicalResourceId: { id: 'id' },
+      } satisfies AwsSdkCall),
+    },
+  };
+
+  const request = createRequest(body => body.Status === 'SUCCESS');
+
+  await handler(event, {} as AWSLambda.Context);
+
+  expect(request.isDone()).toBeTruthy();
+});
+
 test('installs the latest SDK', async () => {
   const tmpPath = '/tmp/node_modules/aws-sdk';
 

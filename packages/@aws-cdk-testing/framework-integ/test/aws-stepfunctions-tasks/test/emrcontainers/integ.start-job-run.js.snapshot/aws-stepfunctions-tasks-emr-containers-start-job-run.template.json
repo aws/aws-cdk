@@ -758,7 +758,7 @@
      ]
     },
     "Config": {
-     "version": "1.29",
+     "version": "1.30",
      "roleArn": {
       "Fn::GetAtt": [
        "integrationtesteksclusterRole03F70AF0",
@@ -1052,7 +1052,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/56d32a23a20460722b6c4ddfe19a3fca824e35b790713d105a0b63a3e0be4153.json"
+       "/3617382b4c6ae32ded66a307deb8be9a9feb9e3749d00e0d85105e27d5f30bd8.json"
       ]
      ]
     }
@@ -1099,7 +1099,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/b3bdd9ffa84737119f0788af28e60331e7e8fd3c237d05e9ce650b4e57295a7f.json"
+       "/b62155c236c3047e54d8c09d000f5d74a31e21ce4862d71a0a05949bb6188073.json"
       ]
      ]
     }
@@ -1216,7 +1216,7 @@
          "Id"
         ]
        },
-       "\"},\"outputPaths\":[\"virtualCluster.containerProvider.info.eksInfo.namespace\",\"virtualCluster.containerProvider.id\"],\"physicalResourceId\":{\"id\":\"id\"},\"logApiResponseData\":true}"
+       "\"},\"outputPaths\":[\"virtualCluster.containerProvider.info.eksInfo.namespace\",\"virtualCluster.containerProvider.id\"],\"physicalResourceId\":{\"id\":\"id\"}}"
       ]
      ]
     },
@@ -1435,7 +1435,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "6c34b6e864223e202d50bb862e2bf066393d4cdf36229f8e1646425a5224a10b.zip"
+     "S3Key": "746da84b10e215c552e68b6d2061024e4429f0386f43a35ef5e4d2940655692e.zip"
     },
     "Handler": "index.handler",
     "Role": {

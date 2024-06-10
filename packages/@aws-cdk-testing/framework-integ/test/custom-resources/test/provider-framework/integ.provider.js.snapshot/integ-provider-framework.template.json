@@ -89,7 +89,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "8fa9d83f2bd4f331f203edd87812df96f2179d4be5b245a891f504596b0517b1.zip"
+     "S3Key": "c66233dc0804d5658a2ea2fdf2189b3486234224411bf91660f53f72f6165480.zip"
     },
     "Handler": "index.onEvent",
     "Role": {
@@ -885,6 +885,22 @@
          ]
         }
        ]
+      },
+      {
+       "Action": [
+        "logs:CreateLogDelivery",
+        "logs:CreateLogStream",
+        "logs:DeleteLogDelivery",
+        "logs:DescribeLogGroups",
+        "logs:DescribeResourcePolicies",
+        "logs:GetLogDelivery",
+        "logs:ListLogDeliveries",
+        "logs:PutLogEvents",
+        "logs:PutResourcePolicy",
+        "logs:UpdateLogDelivery"
+       ],
+       "Effect": "Allow",
+       "Resource": "*"
       }
      ],
      "Version": "2012-10-17"
@@ -896,6 +912,26 @@
      }
     ]
    }
+  },
+  "comamazonawscdkcustomresourcess3assertproviderwaiterstatemachineLogGroup7F17330A": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "LogGroupName": {
+     "Fn::Join": [
+      "",
+      [
+       "/aws/vendedlogs/states/waiter-state-machine-",
+       {
+        "Ref": "comamazonawscdkcustomresourcess3assertproviderframeworkisComplete63829575"
+       },
+       "-c8f5fa432b7394919f18e8df23f7b79ef142420db6"
+      ]
+     ]
+    },
+    "RetentionInDays": 731
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
   },
   "comamazonawscdkcustomresourcess3assertproviderwaiterstatemachineAC25148E": {
    "Type": "AWS::StepFunctions::StateMachine",
@@ -921,6 +957,22 @@
        "\"}}}"
       ]
      ]
+    },
+    "LoggingConfiguration": {
+     "Destinations": [
+      {
+       "CloudWatchLogsLogGroup": {
+        "LogGroupArn": {
+         "Fn::GetAtt": [
+          "comamazonawscdkcustomresourcess3assertproviderwaiterstatemachineLogGroup7F17330A",
+          "Arn"
+         ]
+        }
+       }
+      }
+     ],
+     "IncludeExecutionData": false,
+     "Level": "ERROR"
     },
     "RoleArn": {
      "Fn::GetAtt": [

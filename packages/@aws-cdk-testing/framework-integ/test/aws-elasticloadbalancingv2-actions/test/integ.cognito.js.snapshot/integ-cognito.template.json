@@ -683,7 +683,7 @@
        {
         "Ref": "UserPool6BA7E5F2"
        },
-       "\",\"Username\":\"test-user@example.com\",\"UserAttributes\":[{\"Name\":\"email\",\"Value\":\"test-user@example.com\"},{\"Name\":\"email_verified\",\"Value\":\"true\"}],\"MessageAction\":\"SUPPRESS\"},\"physicalResourceId\":{\"id\":\"User\"},\"logApiResponseData\":true}"
+       "\",\"Username\":\"test-user@example.com\",\"UserAttributes\":[{\"Name\":\"email\",\"Value\":\"test-user@example.com\"},{\"Name\":\"email_verified\",\"Value\":\"true\"}],\"MessageAction\":\"SUPPRESS\"},\"physicalResourceId\":{\"id\":\"User\"}}"
       ]
      ]
     },
@@ -745,7 +745,7 @@
          "User.Username"
         ]
        },
-       "\",\"Password\":\"TestUser@123\",\"Permanent\":true},\"physicalResourceId\":{\"id\":\"SetUserPassword\"},\"logApiResponseData\":true}"
+       "\",\"Password\":\"TestUser@123\",\"Permanent\":true},\"physicalResourceId\":{\"id\":\"SetUserPassword\"}}"
       ]
      ]
     },
@@ -881,7 +881,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "1832f4c7bb54fe8f4eb5677dc53ae4204e4b27b12077ddd397a6755206864302.zip"
+     "S3Key": "5630dddea01df446e7bfb15f6c335c43060ac31110774634ff6bf3f50d0fbad5.zip"
     },
     "Environment": {
      "Variables": {
@@ -917,6 +917,14 @@
    },
    "Export": {
     "Name": "integ-cognito:ExportsOutputRefSignin352C80E64BA58F71"
+   }
+  },
+  "ExportsOutputRefUserPool6BA7E5F296FD7236": {
+   "Value": {
+    "Ref": "UserPool6BA7E5F2"
+   },
+   "Export": {
+    "Name": "integ-cognito:ExportsOutputRefUserPool6BA7E5F296FD7236"
    }
   }
  },

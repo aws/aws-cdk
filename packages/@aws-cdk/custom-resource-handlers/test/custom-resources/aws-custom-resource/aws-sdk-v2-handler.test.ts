@@ -1,3 +1,4 @@
+/* eslint-disable import/no-extraneous-dependencies */
 import * as AWS from 'aws-sdk';
 import { v2handler as handler } from '../../../lib/custom-resources/aws-custom-resource-handler';
 import { AwsSdkCall } from '../../../lib/custom-resources/aws-custom-resource-handler/construct-types';

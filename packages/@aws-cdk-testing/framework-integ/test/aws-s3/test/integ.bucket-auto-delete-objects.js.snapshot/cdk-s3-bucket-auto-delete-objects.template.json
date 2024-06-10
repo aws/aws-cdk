@@ -113,7 +113,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "54e6f07bf3aea46d100719f3b21fe0fb45ae789ee372d42d8cdfb97e21aba96c.zip"
+     "S3Key": "96ea260348625427bb7f28ab3b379f62da6f428bcd155cb13f9261aa6a404b0d.zip"
     },
     "Timeout": 900,
     "MemorySize": 128,
@@ -199,7 +199,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "57171370cb04c4f6fc71a6a7fa50064cfcb5338a6e07cdc58744827fb03fc749.zip"
+     "S3Key": "b7d31b3e5cb81e5cf3f6285131a5709e3e7b9c7035d913c97ceb010d32249dc7.zip"
     },
     "Timeout": 900,
     "MemorySize": 128,
@@ -340,7 +340,7 @@
        {
         "Ref": "RemovedBucket4FCCEBAD"
        },
-       "\"},\"logApiResponseData\":true}"
+       "\"}}"
       ]
      ]
     },

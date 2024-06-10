@@ -11,7 +11,7 @@ import * as AWSLambda from 'aws-lambda';
 import { AwsSdkCall } from './construct-types';
 import { decodeCall, decodeSpecialValues, filterKeys, respond, startsWithOneOf } from './shared';
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { flatten } from '@aws-cdk/sdk-v2-to-v3-adapter';
+import { flatten } from '@aws-cdk/aws-custom-resource-sdk-adapter';
 
 let latestSdkInstalled = false;
 
@@ -108,8 +108,7 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
     let flatData: { [key: string]: string } = {};
     let data: { [key: string]: string } = {};
     const call: AwsSdkCall | undefined = event.ResourceProperties[event.RequestType];
-    // if there is a call there will always be logging configured -- otherwise, in the event of no call, logging
-    // wasn't configured so just default to existing behavior
+    // in the event of no call, logging wasn't configured so just default to existing behavior
     const logApiResponseData = call?.logApiResponseData ?? true;
 
     if (call) {

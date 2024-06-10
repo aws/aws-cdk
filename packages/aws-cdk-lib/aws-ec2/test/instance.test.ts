@@ -26,6 +26,8 @@ import {
   KeyPair,
   KeyPairType,
   CpuCredits,
+  InstanceInitiatedShutdownBehavior,
+  PlacementGroup,
 } from '../lib';
 
 let stack: Stack;
@@ -208,6 +210,38 @@ describe('instance', () => {
     // THEN
     Template.fromStack(stack).hasResourceProperties('AWS::EC2::Instance', {
       PropagateTagsToVolumeOnCreation: true,
+    });
+  });
+  // placementGroup
+  describe('placementGroup', () => {
+    test('can set placementGroup', () => {
+      // WHEN
+      // create a new placementgroup
+      const pg1 = new PlacementGroup(stack, 'myPlacementGroup1');
+      new PlacementGroup(stack, 'myPlacementGroup2');
+      new Instance(stack, 'Instance1', {
+        vpc,
+        machineImage: new AmazonLinuxImage(),
+        instanceType: InstanceType.of(InstanceClass.T3, InstanceSize.LARGE),
+        placementGroup: pg1,
+      });
+      new Instance(stack, 'Instance2', {
+        vpc,
+        machineImage: new AmazonLinuxImage(),
+        instanceType: InstanceType.of(InstanceClass.T3, InstanceSize.LARGE),
+        placementGroup: PlacementGroup.fromPlacementGroupName(stack, 'importedPlacementGroup', 'myPlacementGroup2'),
+      });
+
+      const t = Template.fromStack(stack);
+      // THEN
+      t.hasResourceProperties('AWS::EC2::Instance', {
+        PlacementGroupName: {
+          'Fn::GetAtt': ['myPlacementGroup180969E8B', 'GroupName'],
+        },
+      });
+      t.hasResourceProperties('AWS::EC2::Instance', {
+        PlacementGroupName: 'myPlacementGroup2',
+      });
     });
   });
   describe('blockDeviceMappings', () => {
@@ -643,6 +677,22 @@ describe('instance', () => {
       });
     }).toThrow('creditSpecification is supported only for T4g, T3a, T3, T2 instance type, got: m5.large');
   });
+
+  test('set instanceInitiatedShutdownBehavior', () => {
+    // WHEN
+    new Instance(stack, 'Instance', {
+      vpc,
+      machineImage: new AmazonLinuxImage(),
+      instanceType: new InstanceType('t2.micro'),
+      instanceInitiatedShutdownBehavior: InstanceInitiatedShutdownBehavior.TERMINATE,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::Instance', {
+      InstanceType: 't2.micro',
+      InstanceInitiatedShutdownBehavior: 'terminate',
+    });
+  });
 });
 
 test('add CloudFormation Init to instance', () => {
@@ -888,4 +938,20 @@ test('associate public IP address with instance and no public subnet', () => {
       associatePublicIpAddress: true,
     });
   }).toThrow("To set 'associatePublicIpAddress: true' you must select Public subnets (vpcSubnets: { subnetType: SubnetType.PUBLIC })");
+});
+
+test('specify ebs optimized instance', () => {
+  // WHEN
+  new Instance(stack, 'Instance', {
+    vpc,
+    machineImage: new AmazonLinuxImage(),
+    instanceType: new InstanceType('t3.large'),
+    ebsOptimized: true,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::EC2::Instance', {
+    InstanceType: 't3.large',
+    EbsOptimized: true,
+  });
 });

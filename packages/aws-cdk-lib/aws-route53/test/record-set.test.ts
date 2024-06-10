@@ -188,6 +188,34 @@ describe('record set', () => {
     });
   });
 
+  test('A record with imported alias', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    const zone = new route53.HostedZone(stack, 'HostedZone', {
+      zoneName: 'myzone',
+    });
+
+    // WHEN
+    route53.ARecord.fromARecordAttributes(zone, 'Alias', {
+      zone,
+      targetDNS: 'foo1.example.com',
+      recordName: '_foo',
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Route53::RecordSet', {
+      Name: '_foo.myzone.',
+      Type: 'A',
+      AliasTarget: {
+        DNSName: 'foo1.example.com',
+        HostedZoneId: {
+          Ref: 'HostedZoneDB99F866',
+        },
+      },
+    });
+  });
+
   test('AAAA record with ip addresses', () => {
     // GIVEN
     const stack = new Stack();
@@ -863,6 +891,27 @@ describe('record set', () => {
       DeletionPolicy: 'Retain',
       UpdateReplacePolicy: 'Retain',
     });
+  });
+
+  test('CrossAccountZoneDelegationRecord should throw if delegatedZone is imported', () => {
+    // GIVEN
+    const stack = new Stack();
+    const parentZone = new route53.PublicHostedZone(stack, 'ParentHostedZone', {
+      zoneName: 'myzone.com',
+    });
+
+    // WHEN
+    const childZone = route53.PublicHostedZone.fromPublicHostedZoneAttributes(stack, 'ChildHostedZone', {
+      hostedZoneId: 'fake-id',
+      zoneName: 'fake-name',
+    });
+
+    //THEN
+    expect(() => new route53.CrossAccountZoneDelegationRecord(stack, 'Delegation', {
+      delegatedZone: childZone,
+      parentHostedZoneId: parentZone.hostedZoneId,
+      delegationRole: parentZone.crossAccountZoneDelegationRole!,
+    })).toThrow(/Not able to retrieve Name Servers for fake-name due to it being imported./);
   });
 
   testDeprecated('Cross account zone delegation record with parentHostedZoneName', () => {

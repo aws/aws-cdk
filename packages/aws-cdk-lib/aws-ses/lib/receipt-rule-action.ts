@@ -8,6 +8,7 @@ export interface IReceiptRuleAction {
    * Returns the receipt rule action specification
    */
   bind(receiptRule: IReceiptRule): ReceiptRuleActionConfig;
+
 }
 
 /**
