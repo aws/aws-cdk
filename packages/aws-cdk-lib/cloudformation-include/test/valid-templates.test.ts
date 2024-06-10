@@ -1121,6 +1121,14 @@ describe('CDK Include', () => {
       loadTestFileToJsObject('fn-select-with-novalue.json'),
     );
   });
+
+  test('Fn::If can be used in Tags', () => {
+    includeTestTemplate(stack, 'tags-with-fn-if.json');
+
+    Template.fromStack(stack).templateMatches(
+      loadTestFileToJsObject('tags-with-fn-if.json'),
+    );
+  });
 });
 
 interface IncludeTestTemplateProps {

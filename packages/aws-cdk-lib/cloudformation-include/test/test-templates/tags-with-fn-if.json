@@ -1,0 +1,29 @@
+{
+  "Conditions": {
+    "ShouldIncludeTag": {
+      "Fn::Equals": [ 2, 2 ]
+    }
+  },
+  "Resources": {
+    "Bucket": {
+      "Type": "AWS::S3::Bucket",
+      "Properties": {
+        "BucketName": "bucket2",
+        "Tags": [
+          {
+            "Fn::If": [
+              "ShouldIncludeTag",
+              {
+                "Key": "TagName",
+                "Value": "TagValue"
+              },
+              {
+                "Ref": "AWS::NoValue"
+              }
+            ]
+          }
+        ]
+      }
+    }
+  }
+}

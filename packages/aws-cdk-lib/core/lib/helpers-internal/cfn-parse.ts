@@ -216,7 +216,8 @@ export class FromCloudFormation {
     };
   }
 
-  public static getCfnTag(tag: any): FromCloudFormationResult<CfnTag> {
+  public static getCfnTag(tag: any): FromCloudFormationResult<CfnTag | IResolvable> {
+    if (isResolvableObject(tag)) { return new FromCloudFormationResult(tag); }
     return tag == null
       ? new FromCloudFormationResult({ } as any) // break the type system - this should be detected at runtime by a tag validator
       : new FromCloudFormationResult({
