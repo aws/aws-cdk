@@ -99,6 +99,41 @@ export class HotswappableChangeCandidate {
 type Exclude = { [key: string]: Exclude | true }
 
 /**
+ * Represents configuration properties for hotswap deployments
+ */
+export class HotswapProperties {
+  // Each supported resource type will have its own properties. Currently this is ECS
+  ecsHotswapProperties?: EcsHotswapProperties;
+
+  public constructor (ecsHotswapProperties?: EcsHotswapProperties) {
+    this.ecsHotswapProperties = ecsHotswapProperties;
+  }
+}
+
+/**
+ * Represents configuration properties for ECS hotswap deployments
+ */
+export class EcsHotswapProperties {
+  // The lower limit on the number of your service's tasks that must remain in the RUNNING state during a deployment, as a percentage of the desiredCount
+  readonly minimumHealthyPercent?: number;
+  // The upper limit on the number of your service's tasks that are allowed in the RUNNING or PENDING state during a deployment, as a percentage of the desiredCount
+  readonly maximumHealthyPercent?: number;
+
+  public constructor (minimumHealthyPercent?: number, maximumHealthyPercent?: number) {
+    this.minimumHealthyPercent = minimumHealthyPercent;
+    this.maximumHealthyPercent = maximumHealthyPercent;
+  }
+
+  /**
+   * Check if any hotswap properties are defined
+   * @returns true if all properties are undefined, false otherwise
+  */
+  public isEmpty(): boolean {
+    return this.minimumHealthyPercent === undefined && this.maximumHealthyPercent === undefined;
+  }
+}
+
+/**
  * This function transforms all keys (recursively) in the provided `val` object.
  *
  * @param val The object whose keys need to be transformed.
