@@ -220,7 +220,7 @@ describe('CloudFront Function', () => {
             {
               Ref: 'AWS::Region',
             },
-            'CdkTestWithALongoudFrontFunction302260D0',
+            'CdkTestWithALongNamerontFunction302260D0',
           ],
         ],
       },
