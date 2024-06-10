@@ -37,7 +37,7 @@
         "/aws-stepfunctions-tasks-emr-containers-start-job-run/integration-test-eks-cluster": [
           {
             "type": "aws:cdk:warning",
-            "data": "You created a cluster with Kubernetes Version 1.29 without specifying the kubectlLayer property. This may cause failures as the kubectl version provided with aws-cdk-lib is 1.20, which is only guaranteed to be compatible with Kubernetes versions 1.19-1.21. Please provide a kubectlLayer from @aws-cdk/lambda-layer-kubectl-v29. [ack: @aws-cdk/aws-eks:clusterKubectlLayerNotSpecified]"
+            "data": "You created a cluster with Kubernetes Version 1.30 without specifying the kubectlLayer property. This may cause failures as the kubectl version provided with aws-cdk-lib is 1.20, which is only guaranteed to be compatible with Kubernetes versions 1.19-1.21. Please provide a kubectlLayer from @aws-cdk/lambda-layer-kubectl-v30. [ack: @aws-cdk/aws-eks:clusterKubectlLayerNotSpecified]"
           }
         ],
         "/aws-stepfunctions-tasks-emr-containers-start-job-run/integration-test-eks-cluster/DefaultVpc/Resource": [

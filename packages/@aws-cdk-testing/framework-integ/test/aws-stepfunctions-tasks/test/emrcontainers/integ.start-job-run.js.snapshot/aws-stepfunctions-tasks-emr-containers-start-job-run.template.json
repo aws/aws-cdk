@@ -758,7 +758,7 @@
      ]
     },
     "Config": {
-     "version": "1.29",
+     "version": "1.30",
      "roleArn": {
       "Fn::GetAtt": [
        "integrationtesteksclusterRole03F70AF0",

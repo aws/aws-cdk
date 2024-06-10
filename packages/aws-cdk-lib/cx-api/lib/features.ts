@@ -1104,7 +1104,7 @@ export const FLAGS: Record<string, FlagInfo> = {
       the event object, then setting this feature flag will keep this behavior. Otherwise, setting this feature flag to false will trigger an 'Update' event by removing the 'logApiResponseData'
       property from the event object.
     `,
-    introducedIn: { v2: 'V2NEXT' },
+    introducedIn: { v2: '2.145.0' },
     recommendedValue: false,
   },
 };
