@@ -6,10 +6,10 @@
     "AutoPublish": false,
     "FunctionCode": "function handler(event) { return event.request }",
     "FunctionConfig": {
-     "Comment": "eu-west-1integ-distribution-functionEBF560BA",
+     "Comment": "eu-west-1integdistributionfunctionEBF560BA",
      "Runtime": "cloudfront-js-1.0"
     },
-    "Name": "eu-west-1integ-distribution-functionEBF560BA"
+    "Name": "eu-west-1integdistributionfunctionEBF560BA"
    }
   }
  },
