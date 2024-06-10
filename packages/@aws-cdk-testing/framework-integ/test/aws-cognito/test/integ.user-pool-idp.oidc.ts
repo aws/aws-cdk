@@ -1,5 +1,9 @@
 import { App, CfnOutput, RemovalPolicy, Stack } from 'aws-cdk-lib';
-import { ProviderAttribute, UserPool, UserPoolIdentityProviderOidc } from 'aws-cdk-lib/aws-cognito';
+import {
+  ProviderAttribute,
+  UserPool,
+  UserPoolIdentityProviderOidc,
+} from 'aws-cdk-lib/aws-cognito';
 
 /*
  * Stack verification steps
@@ -27,6 +31,7 @@ new UserPoolIdentityProviderOidc(stack, 'cdk', {
   scopes: ['openid', 'phone'],
   attributeMapping: {
     phoneNumber: ProviderAttribute.other('phone_number'),
+    emailVerified: ProviderAttribute.other('email_verified'),
   },
 });
 
