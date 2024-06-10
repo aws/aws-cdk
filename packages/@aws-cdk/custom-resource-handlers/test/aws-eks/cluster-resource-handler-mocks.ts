@@ -18,6 +18,8 @@ export let actualRequest: {
   createFargateProfile?: eks.CreateFargateProfileCommandInput;
   describeFargateProfile?: eks.DescribeFargateProfileCommandInput;
   deleteFargateProfile?: eks.DeleteFargateProfileCommandInput;
+  tagResourceRequest?: eks.TagResourceCommandInput;
+  untagResourceRequest?: eks.UntagResourceCommandInput;
 } = { };
 
 /**
@@ -138,6 +140,16 @@ export const client: EksClient = {
 
   deleteFargateProfile: async req => {
     actualRequest.deleteFargateProfile = req;
+    return { $metadata: {} };
+  },
+
+  tagResource: async req => {
+    actualRequest.tagResourceRequest = req;
+    return { $metadata: {} };
+  },
+
+  untagResource: async req => {
+    actualRequest.untagResourceRequest = req;
     return { $metadata: {} };
   },
 };
