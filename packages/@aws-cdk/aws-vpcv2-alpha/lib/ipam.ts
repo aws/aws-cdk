@@ -1,16 +1,16 @@
-import { CfnIPAM, CfnIPAMPool, CfnIPAMScope } from 'aws-cdk-lib/aws-ec2/lib';
+import { CfnIPAM, CfnIPAMPool, CfnIPAMScope } from 'aws-cdk-lib/aws-ec2';
 import { IIpAddresses, VpcV2Options } from './vpc-v2';
 import { Construct } from 'constructs';
-import { IResolvable, Resource } from 'aws-cdk-lib';
+import { Resource } from 'aws-cdk-lib';
 
-enum AddressFamily {
+export enum AddressFamily {
   IP_V4,
   IP_V6,
 }
 
 export interface PoolOptions{
-  addressFamily: AddressFamily;
-  provisionedCidrs: IResolvable | (IResolvable | CfnIPAMPool.ProvisionedCidrProperty)[];
+  readonly addressFamily: AddressFamily;
+  readonly provisionedCidrs: CfnIPAMPool.ProvisionedCidrProperty[];
 }
 
 export enum ScopeType {
@@ -19,7 +19,7 @@ export enum ScopeType {
 }
 
 export interface IpamScopeOptions {
-  scopeType: ScopeType;
+  readonly scopeType: ScopeType;
 }
 
 export interface IpamOptions {
@@ -94,7 +94,7 @@ export class Ipam extends Resource {
   }
 }
 
-class IpamPublicScope {
+export class IpamPublicScope {
   private readonly ipam: Ipam;
 
   constructor(ipam: Ipam) {
@@ -106,7 +106,7 @@ class IpamPublicScope {
       scopeType: ScopeType.PUBLIC,
     });
 
-    return new CfnIPAMPool(this.ipam, '', {
+    return new CfnIPAMPool(this.ipam, 'TestPool', {
       addressFamily: options.addressFamily.toString(),
       provisionedCidrs: options.provisionedCidrs,
       ipamScopeId: scope.ipamScopeId,
@@ -114,7 +114,7 @@ class IpamPublicScope {
   }
 }
 
-class IpamPrivateScope {
+export class IpamPrivateScope {
   private readonly ipam: Ipam;
 
   constructor(ipam: Ipam) {

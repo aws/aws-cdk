@@ -1,10 +1,9 @@
-import { CfnIPAMPool, CfnVPC, CfnVPCCidrBlock, IVpc } from 'aws-cdk-lib/aws-ec2/lib';
-import { NetworkBuilder } from 'aws-cdk-lib/aws-ec2/lib/network-util';
-import { Resource } from 'aws-cdk-lib/core/lib/resource';
+import { CfnIPAMPool, CfnVPC, CfnVPCCidrBlock } from 'aws-cdk-lib/aws-ec2';
+import { Resource } from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import { IpamIpv4, IpamIpv6 } from './ipam';
-import { Arn } from 'aws-cdk-lib/core/lib/arn';
-import { Token } from 'aws-cdk-lib/core';
+// eslint-disable-next-line no-duplicate-imports
+import { Arn } from 'aws-cdk-lib/core';
 
 export interface IIpIpamOptions{
   readonly ipv4IpamPoolId: any;
@@ -18,7 +17,7 @@ export interface Ipv6AddressesOptions {
   readonly ipv6CidrBlock?: string;
 }
 
-abstract class IpAddresses {
+export class IpAddresses {
 
   public static ipv4(ipv4Cidr: string): IIpAddresses {
     return new ipv4CidrAllocation(ipv4Cidr);
@@ -216,9 +215,12 @@ export class VpcV2 extends Resource implements IVpcV2 {
         const vpcoptions: VpcV2Options = secondaryAddressBlock.allocateVpcCidr();
 
         // validate CIDR ranges per RFC 1918
-        if (vpcOptions.ipv4CidrBlock!) {
-          validateIpv4address(vpcoptions.ipv4CidrBlock);
-        }
+        // if (vpcOptions.ipv4CidrBlock!) {
+        //   const ret = validateIpv4address(vpcoptions.ipv4CidrBlock, this.vpcCidrBlock);
+        //   if ( !ret) {
+        //     throw new Error('CIDR blocks must be as per RFC#1918 range');
+        //   }
+        // }
         //Create secondary blocks for Ipv4 and Ipv6
         new CfnVPCCidrBlock(this, `Secondary${vpcoptions.ipv4CidrBlock}`, {
           vpcId: this.vpcId,
@@ -239,19 +241,19 @@ export class VpcV2 extends Resource implements IVpcV2 {
 
 class ipv4CidrAllocation implements IIpAddresses {
 
-  private readonly networkBuilder: NetworkBuilder;
+  //private readonly networkBuilder: NetworkBuilder;
 
   constructor(private readonly cidrBlock: string) {
-    if (Token.isUnresolved(cidrBlock)) {
-      throw new Error('\'cidr\' property must be a concrete CIDR string, got a Token (we need to parse it for automatic subdivision)');
-    }
+    // if (Token.isUnresolved(cidrBlock)) {
+    //   throw new Error('\'cidr\' property must be a concrete CIDR string, got a Token (we need to parse it for automatic subdivision)');
+    // }
 
-    this.networkBuilder = new NetworkBuilder(this.cidrBlock);
+    //this.networkBuilder = new NetworkBuilder(this.cidrBlock);
   }
 
   allocateVpcCidr(): VpcV2Options {
     return {
-      ipv4CidrBlock: this.networkBuilder.networkCidr.cidr,
+      ipv4CidrBlock: this.cidrBlock,
     };
   }
 }
@@ -273,9 +275,9 @@ class ipv6CidrAllocation implements IIpAddresses {
   }
 }
 
-class AmazonProvided implements IIpAddresses {
+export class AmazonProvided implements IIpAddresses {
 
-  amazonProvided: boolean;
+  private readonly amazonProvided: boolean;
   constructor() {
     this.amazonProvided = true;
   };
@@ -288,6 +290,33 @@ class AmazonProvided implements IIpAddresses {
 
 }
 
-function validateIpv4address(cidr?: string) {
-  
-}
+//Default Config
+// type IPaddressConfig = {
+//   octet1: number;
+//   octect2: number;
+// };
+
+// function validateIpv4address(cidr1?: string, cidr2?: string) : Boolean {
+
+//   if (cidr1! && cidr2!) {
+//     const octets1: number[] = cidr1?.split('.').map(octet => parseInt(octet, 10));
+//     const octets2: number[] = cidr2?.split('.').map(octet => parseInt(octet, 10));
+
+//     const ip1 : IPaddressConfig = {
+//       octet1: octets1[0],
+//       octect2: octets1[1],
+//     };
+//     const ip2 : IPaddressConfig = {
+//       octet1: octets2[0],
+//       octect2: octets2[1],
+//     };
+//     if (octets2?.length !== 4) {
+//       throw new Error(`Invalid IPv4 CIDR: ${cidr1}`);
+//     } else {
+//       if ( ip1.octet1 === ip2.octet1) {
+//         return true;
+//       }
+//     }
+//   }
+//   return false;
+// }

@@ -6,5 +6,6 @@
 // obviously, the ExampleResource L2 should be exported
 export * from './vpc-v2';
 export * from './ipam';
+//export * from './subnet-v2';
 
 // notice that private/example-resource-common.ts is not exported!
