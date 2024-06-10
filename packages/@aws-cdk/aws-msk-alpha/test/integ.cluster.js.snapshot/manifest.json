@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/37bbc69c22fd96f24f9a5bb653352c5375f1b27bd03bc1c04881257881a886ff.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/cf36971f25ed08004666ccc6878ff4dd7fe700add769981a603cb0c1f129a54a.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -214,16 +214,16 @@
             "data": "ClusterEB0386A7"
           }
         ],
-        "/aws-cdk-msk-integ/Cluster/BootstrapBrokers/Resource/Default": [
+        "/aws-cdk-msk-integ/Cluster/BootstrapBrokersBootstrapBrokerStringTls/Resource/Default": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterBootstrapBrokers9A081150"
+            "data": "ClusterBootstrapBrokersBootstrapBrokerStringTls2E6167B7"
           }
         ],
-        "/aws-cdk-msk-integ/Cluster/BootstrapBrokers/CustomResourcePolicy/Resource": [
+        "/aws-cdk-msk-integ/Cluster/BootstrapBrokersBootstrapBrokerStringTls/CustomResourcePolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterBootstrapBrokersCustomResourcePolicyD7FDABDF"
+            "data": "ClusterBootstrapBrokersBootstrapBrokerStringTlsCustomResourcePolicy13FC2126"
           }
         ],
         "/aws-cdk-msk-integ/Exports/Output{\"Fn::GetAtt\":[\"LoggingBucket1E5A6F3B\",\"Arn\"]}": [
@@ -274,16 +274,16 @@
             "data": "ClusterIAMC4B15B57"
           }
         ],
-        "/aws-cdk-msk-integ/ClusterIAM/BootstrapBrokers/Resource/Default": [
+        "/aws-cdk-msk-integ/ClusterIAM/BootstrapBrokersBootstrapBrokerStringSaslIam/Resource/Default": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterIAMBootstrapBrokers24DD42A9"
+            "data": "ClusterIAMBootstrapBrokersBootstrapBrokerStringSaslIamEB333452"
           }
         ],
-        "/aws-cdk-msk-integ/ClusterIAM/BootstrapBrokers/CustomResourcePolicy/Resource": [
+        "/aws-cdk-msk-integ/ClusterIAM/BootstrapBrokersBootstrapBrokerStringSaslIam/CustomResourcePolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterIAMBootstrapBrokersCustomResourcePolicyA7BD2022"
+            "data": "ClusterIAMBootstrapBrokersBootstrapBrokerStringSaslIamCustomResourcePolicy51509D99"
           }
         ],
         "/aws-cdk-msk-integ/BootstrapBrokers3": [
@@ -330,16 +330,16 @@
             "data": "ClusterIAMTLS84D04AEF"
           }
         ],
-        "/aws-cdk-msk-integ/ClusterIAMTLS/BootstrapBrokers/Resource/Default": [
+        "/aws-cdk-msk-integ/ClusterIAMTLS/BootstrapBrokersBootstrapBrokerStringTls/Resource/Default": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterIAMTLSBootstrapBrokersB06F1266"
+            "data": "ClusterIAMTLSBootstrapBrokersBootstrapBrokerStringTlsB831721C"
           }
         ],
-        "/aws-cdk-msk-integ/ClusterIAMTLS/BootstrapBrokers/CustomResourcePolicy/Resource": [
+        "/aws-cdk-msk-integ/ClusterIAMTLS/BootstrapBrokersBootstrapBrokerStringTls/CustomResourcePolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterIAMTLSBootstrapBrokersCustomResourcePolicy3164F2EF"
+            "data": "ClusterIAMTLSBootstrapBrokersBootstrapBrokerStringTlsCustomResourcePolicy508CF9CC"
           }
         ],
         "/aws-cdk-msk-integ/BootstrapBrokers4": [
@@ -366,16 +366,16 @@
             "data": "ClusterV311F7E1C843"
           }
         ],
-        "/aws-cdk-msk-integ/Cluster_V3_1_1/BootstrapBrokers/Resource/Default": [
+        "/aws-cdk-msk-integ/Cluster_V3_1_1/BootstrapBrokersBootstrapBrokerStringTls/Resource/Default": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterV311BootstrapBrokers67026E00"
+            "data": "ClusterV311BootstrapBrokersBootstrapBrokerStringTls2DE11AD7"
           }
         ],
-        "/aws-cdk-msk-integ/Cluster_V3_1_1/BootstrapBrokers/CustomResourcePolicy/Resource": [
+        "/aws-cdk-msk-integ/Cluster_V3_1_1/BootstrapBrokersBootstrapBrokerStringTls/CustomResourcePolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterV311BootstrapBrokersCustomResourcePolicy032B0DC7"
+            "data": "ClusterV311BootstrapBrokersBootstrapBrokerStringTlsCustomResourcePolicy2F56212C"
           }
         ],
         "/aws-cdk-msk-integ/BootstrapBrokers6": [
@@ -396,16 +396,16 @@
             "data": "ClusterV320997D57C6"
           }
         ],
-        "/aws-cdk-msk-integ/Cluster_V3_2_0/BootstrapBrokers/Resource/Default": [
+        "/aws-cdk-msk-integ/Cluster_V3_2_0/BootstrapBrokersBootstrapBrokerStringTls/Resource/Default": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterV320BootstrapBrokersD37B3ED0"
+            "data": "ClusterV320BootstrapBrokersBootstrapBrokerStringTlsDF31241F"
           }
         ],
-        "/aws-cdk-msk-integ/Cluster_V3_2_0/BootstrapBrokers/CustomResourcePolicy/Resource": [
+        "/aws-cdk-msk-integ/Cluster_V3_2_0/BootstrapBrokersBootstrapBrokerStringTls/CustomResourcePolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterV320BootstrapBrokersCustomResourcePolicy5A5B9389"
+            "data": "ClusterV320BootstrapBrokersBootstrapBrokerStringTlsCustomResourcePolicy8326D812"
           }
         ],
         "/aws-cdk-msk-integ/BootstrapBrokers7": [
@@ -426,16 +426,16 @@
             "data": "ClusterV33111A3F7AB"
           }
         ],
-        "/aws-cdk-msk-integ/Cluster_V3_3_1/BootstrapBrokers/Resource/Default": [
+        "/aws-cdk-msk-integ/Cluster_V3_3_1/BootstrapBrokersBootstrapBrokerStringTls/Resource/Default": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterV331BootstrapBrokers329A4357"
+            "data": "ClusterV331BootstrapBrokersBootstrapBrokerStringTls2574EE93"
           }
         ],
-        "/aws-cdk-msk-integ/Cluster_V3_3_1/BootstrapBrokers/CustomResourcePolicy/Resource": [
+        "/aws-cdk-msk-integ/Cluster_V3_3_1/BootstrapBrokersBootstrapBrokerStringTls/CustomResourcePolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterV331BootstrapBrokersCustomResourcePolicyCF33B847"
+            "data": "ClusterV331BootstrapBrokersBootstrapBrokerStringTlsCustomResourcePolicy30610F08"
           }
         ],
         "/aws-cdk-msk-integ/BootstrapBrokers8": [
@@ -456,70 +456,22 @@
             "data": "ClusterV332929A761F"
           }
         ],
-        "/aws-cdk-msk-integ/Cluster_V3_3_2/BootstrapBrokers/Resource/Default": [
+        "/aws-cdk-msk-integ/Cluster_V3_3_2/BootstrapBrokersBootstrapBrokerStringTls/Resource/Default": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterV332BootstrapBrokersF331D12F"
+            "data": "ClusterV332BootstrapBrokersBootstrapBrokerStringTls06A03A3A"
           }
         ],
-        "/aws-cdk-msk-integ/Cluster_V3_3_2/BootstrapBrokers/CustomResourcePolicy/Resource": [
+        "/aws-cdk-msk-integ/Cluster_V3_3_2/BootstrapBrokersBootstrapBrokerStringTls/CustomResourcePolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ClusterV332BootstrapBrokersCustomResourcePolicy5924CCE5"
+            "data": "ClusterV332BootstrapBrokersBootstrapBrokerStringTlsCustomResourcePolicy2EA79A00"
           }
         ],
         "/aws-cdk-msk-integ/BootstrapBrokers9": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapBrokers9"
-          }
-        ],
-        "/aws-cdk-msk-integ/Cluster_SCRAM_IAM/SecurityGroup/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClusterSCRAMIAMSecurityGroupD318B909"
-          }
-        ],
-        "/aws-cdk-msk-integ/Cluster_SCRAM_IAM/SASLKey/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClusterSCRAMIAMSASLKeyEED07692"
-          }
-        ],
-        "/aws-cdk-msk-integ/Cluster_SCRAM_IAM/SASLKey/Alias/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClusterSCRAMIAMSASLKeyAlias131E4AEE"
-          }
-        ],
-        "/aws-cdk-msk-integ/Cluster_SCRAM_IAM/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClusterSCRAMIAM10462D09"
-          }
-        ],
-        "/aws-cdk-msk-integ/Cluster_SCRAM_IAM/BootstrapBrokers/Resource/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClusterSCRAMIAMBootstrapBrokersBFB43142"
-          }
-        ],
-        "/aws-cdk-msk-integ/Cluster_SCRAM_IAM/BootstrapBrokers/CustomResourcePolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClusterSCRAMIAMBootstrapBrokersCustomResourcePolicy1ECAC248"
-          }
-        ],
-        "/aws-cdk-msk-integ/BootstrapBrokers10": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "BootstrapBrokers10"
-          }
-        ],
-        "/aws-cdk-msk-integ/BootstrapBrokers11": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "BootstrapBrokers11"
           }
         ],
         "/aws-cdk-msk-integ/BootstrapVersion": [
@@ -532,132 +484,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
-          }
-        ],
-        "ClusterBootstrapBrokersBootstrapBrokerStringTls2E6167B7": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClusterBootstrapBrokersBootstrapBrokerStringTls2E6167B7",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "ClusterBootstrapBrokersBootstrapBrokerStringTlsCustomResourcePolicy13FC2126": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClusterBootstrapBrokersBootstrapBrokerStringTlsCustomResourcePolicy13FC2126",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "ClusterIAMBootstrapBrokersBootstrapBrokerStringSaslIamEB333452": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClusterIAMBootstrapBrokersBootstrapBrokerStringSaslIamEB333452",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "ClusterIAMBootstrapBrokersBootstrapBrokerStringSaslIamCustomResourcePolicy51509D99": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClusterIAMBootstrapBrokersBootstrapBrokerStringSaslIamCustomResourcePolicy51509D99",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "ClusterIAMTLSBootstrapBrokersBootstrapBrokerStringTlsB831721C": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClusterIAMTLSBootstrapBrokersBootstrapBrokerStringTlsB831721C",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "ClusterIAMTLSBootstrapBrokersBootstrapBrokerStringTlsCustomResourcePolicy508CF9CC": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClusterIAMTLSBootstrapBrokersBootstrapBrokerStringTlsCustomResourcePolicy508CF9CC",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "ClusterV311BootstrapBrokersBootstrapBrokerStringTls2DE11AD7": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClusterV311BootstrapBrokersBootstrapBrokerStringTls2DE11AD7",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "ClusterV311BootstrapBrokersBootstrapBrokerStringTlsCustomResourcePolicy2F56212C": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClusterV311BootstrapBrokersBootstrapBrokerStringTlsCustomResourcePolicy2F56212C",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "ClusterV320BootstrapBrokersBootstrapBrokerStringTlsDF31241F": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClusterV320BootstrapBrokersBootstrapBrokerStringTlsDF31241F",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "ClusterV320BootstrapBrokersBootstrapBrokerStringTlsCustomResourcePolicy8326D812": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClusterV320BootstrapBrokersBootstrapBrokerStringTlsCustomResourcePolicy8326D812",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "ClusterV331BootstrapBrokersBootstrapBrokerStringTls2574EE93": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClusterV331BootstrapBrokersBootstrapBrokerStringTls2574EE93",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "ClusterV331BootstrapBrokersBootstrapBrokerStringTlsCustomResourcePolicy30610F08": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClusterV331BootstrapBrokersBootstrapBrokerStringTlsCustomResourcePolicy30610F08",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "ClusterV332BootstrapBrokersBootstrapBrokerStringTls06A03A3A": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClusterV332BootstrapBrokersBootstrapBrokerStringTls06A03A3A",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
-          }
-        ],
-        "ClusterV332BootstrapBrokersBootstrapBrokerStringTlsCustomResourcePolicy2EA79A00": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClusterV332BootstrapBrokersBootstrapBrokerStringTlsCustomResourcePolicy2EA79A00",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
-            ]
           }
         ]
       },
@@ -680,7 +506,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/82b94f1ae78a901703c004bf8187d5dc883ce96d1c38b9da326b703d8c0b60fb.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/451286814c7104c1141bc0914a30d59e65ed9a16920dcc68d2dfc44ab884a079.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [

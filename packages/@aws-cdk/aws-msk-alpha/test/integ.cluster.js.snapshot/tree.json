@@ -1002,13 +1002,13 @@
                   "version": "0.0.0"
                 }
               },
-              "BootstrapBrokers": {
-                "id": "BootstrapBrokers",
-                "path": "aws-cdk-msk-integ/Cluster/BootstrapBrokers",
+              "BootstrapBrokersBootstrapBrokerStringTls": {
+                "id": "BootstrapBrokersBootstrapBrokerStringTls",
+                "path": "aws-cdk-msk-integ/Cluster/BootstrapBrokersBootstrapBrokerStringTls",
                 "children": {
                   "Provider": {
                     "id": "Provider",
-                    "path": "aws-cdk-msk-integ/Cluster/BootstrapBrokers/Provider",
+                    "path": "aws-cdk-msk-integ/Cluster/BootstrapBrokersBootstrapBrokerStringTls/Provider",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_lambda.SingletonFunction",
                       "version": "0.0.0"
@@ -1016,11 +1016,11 @@
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "aws-cdk-msk-integ/Cluster/BootstrapBrokers/Resource",
+                    "path": "aws-cdk-msk-integ/Cluster/BootstrapBrokersBootstrapBrokerStringTls/Resource",
                     "children": {
                       "Default": {
                         "id": "Default",
-                        "path": "aws-cdk-msk-integ/Cluster/BootstrapBrokers/Resource/Default",
+                        "path": "aws-cdk-msk-integ/Cluster/BootstrapBrokersBootstrapBrokerStringTls/Resource/Default",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.CfnResource",
                           "version": "0.0.0"
@@ -1034,11 +1034,11 @@
                   },
                   "CustomResourcePolicy": {
                     "id": "CustomResourcePolicy",
-                    "path": "aws-cdk-msk-integ/Cluster/BootstrapBrokers/CustomResourcePolicy",
+                    "path": "aws-cdk-msk-integ/Cluster/BootstrapBrokersBootstrapBrokerStringTls/CustomResourcePolicy",
                     "children": {
                       "Resource": {
                         "id": "Resource",
-                        "path": "aws-cdk-msk-integ/Cluster/BootstrapBrokers/CustomResourcePolicy/Resource",
+                        "path": "aws-cdk-msk-integ/Cluster/BootstrapBrokersBootstrapBrokerStringTls/CustomResourcePolicy/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
                           "aws:cdk:cloudformation:props": {
@@ -1054,7 +1054,7 @@
                               ],
                               "Version": "2012-10-17"
                             },
-                            "policyName": "ClusterBootstrapBrokersCustomResourcePolicyD7FDABDF",
+                            "policyName": "ClusterBootstrapBrokersBootstrapBrokerStringTlsCustomResourcePolicy13FC2126",
                             "roles": [
                               {
                                 "Ref": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
@@ -1208,7 +1208,7 @@
                       "s3Bucket": {
                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "s3Key": "746da84b10e215c552e68b6d2061024e4429f0386f43a35ef5e4d2940655692e.zip"
+                      "s3Key": "6c34b6e864223e202d50bb862e2bf066393d4cdf36229f8e1646425a5224a10b.zip"
                     },
                     "handler": "index.handler",
                     "role": {
@@ -1355,13 +1355,13 @@
                   "version": "0.0.0"
                 }
               },
-              "BootstrapBrokers": {
-                "id": "BootstrapBrokers",
-                "path": "aws-cdk-msk-integ/ClusterIAM/BootstrapBrokers",
+              "BootstrapBrokersBootstrapBrokerStringSaslIam": {
+                "id": "BootstrapBrokersBootstrapBrokerStringSaslIam",
+                "path": "aws-cdk-msk-integ/ClusterIAM/BootstrapBrokersBootstrapBrokerStringSaslIam",
                 "children": {
                   "Provider": {
                     "id": "Provider",
-                    "path": "aws-cdk-msk-integ/ClusterIAM/BootstrapBrokers/Provider",
+                    "path": "aws-cdk-msk-integ/ClusterIAM/BootstrapBrokersBootstrapBrokerStringSaslIam/Provider",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_lambda.SingletonFunction",
                       "version": "0.0.0"
@@ -1369,11 +1369,11 @@
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "aws-cdk-msk-integ/ClusterIAM/BootstrapBrokers/Resource",
+                    "path": "aws-cdk-msk-integ/ClusterIAM/BootstrapBrokersBootstrapBrokerStringSaslIam/Resource",
                     "children": {
                       "Default": {
                         "id": "Default",
-                        "path": "aws-cdk-msk-integ/ClusterIAM/BootstrapBrokers/Resource/Default",
+                        "path": "aws-cdk-msk-integ/ClusterIAM/BootstrapBrokersBootstrapBrokerStringSaslIam/Resource/Default",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.CfnResource",
                           "version": "0.0.0"
@@ -1387,11 +1387,11 @@
                   },
                   "CustomResourcePolicy": {
                     "id": "CustomResourcePolicy",
-                    "path": "aws-cdk-msk-integ/ClusterIAM/BootstrapBrokers/CustomResourcePolicy",
+                    "path": "aws-cdk-msk-integ/ClusterIAM/BootstrapBrokersBootstrapBrokerStringSaslIam/CustomResourcePolicy",
                     "children": {
                       "Resource": {
                         "id": "Resource",
-                        "path": "aws-cdk-msk-integ/ClusterIAM/BootstrapBrokers/CustomResourcePolicy/Resource",
+                        "path": "aws-cdk-msk-integ/ClusterIAM/BootstrapBrokersBootstrapBrokerStringSaslIam/CustomResourcePolicy/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
                           "aws:cdk:cloudformation:props": {
@@ -1407,7 +1407,7 @@
                               ],
                               "Version": "2012-10-17"
                             },
-                            "policyName": "ClusterIAMBootstrapBrokersCustomResourcePolicyA7BD2022",
+                            "policyName": "ClusterIAMBootstrapBrokersBootstrapBrokerStringSaslIamCustomResourcePolicy51509D99",
                             "roles": [
                               {
                                 "Ref": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
@@ -1652,13 +1652,13 @@
                   "version": "0.0.0"
                 }
               },
-              "BootstrapBrokers": {
-                "id": "BootstrapBrokers",
-                "path": "aws-cdk-msk-integ/ClusterIAMTLS/BootstrapBrokers",
+              "BootstrapBrokersBootstrapBrokerStringTls": {
+                "id": "BootstrapBrokersBootstrapBrokerStringTls",
+                "path": "aws-cdk-msk-integ/ClusterIAMTLS/BootstrapBrokersBootstrapBrokerStringTls",
                 "children": {
                   "Provider": {
                     "id": "Provider",
-                    "path": "aws-cdk-msk-integ/ClusterIAMTLS/BootstrapBrokers/Provider",
+                    "path": "aws-cdk-msk-integ/ClusterIAMTLS/BootstrapBrokersBootstrapBrokerStringTls/Provider",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_lambda.SingletonFunction",
                       "version": "0.0.0"
@@ -1666,11 +1666,11 @@
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "aws-cdk-msk-integ/ClusterIAMTLS/BootstrapBrokers/Resource",
+                    "path": "aws-cdk-msk-integ/ClusterIAMTLS/BootstrapBrokersBootstrapBrokerStringTls/Resource",
                     "children": {
                       "Default": {
                         "id": "Default",
-                        "path": "aws-cdk-msk-integ/ClusterIAMTLS/BootstrapBrokers/Resource/Default",
+                        "path": "aws-cdk-msk-integ/ClusterIAMTLS/BootstrapBrokersBootstrapBrokerStringTls/Resource/Default",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.CfnResource",
                           "version": "0.0.0"
@@ -1684,11 +1684,11 @@
                   },
                   "CustomResourcePolicy": {
                     "id": "CustomResourcePolicy",
-                    "path": "aws-cdk-msk-integ/ClusterIAMTLS/BootstrapBrokers/CustomResourcePolicy",
+                    "path": "aws-cdk-msk-integ/ClusterIAMTLS/BootstrapBrokersBootstrapBrokerStringTls/CustomResourcePolicy",
                     "children": {
                       "Resource": {
                         "id": "Resource",
-                        "path": "aws-cdk-msk-integ/ClusterIAMTLS/BootstrapBrokers/CustomResourcePolicy/Resource",
+                        "path": "aws-cdk-msk-integ/ClusterIAMTLS/BootstrapBrokersBootstrapBrokerStringTls/CustomResourcePolicy/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
                           "aws:cdk:cloudformation:props": {
@@ -1704,7 +1704,7 @@
                               ],
                               "Version": "2012-10-17"
                             },
-                            "policyName": "ClusterIAMTLSBootstrapBrokersCustomResourcePolicy3164F2EF",
+                            "policyName": "ClusterIAMTLSBootstrapBrokersBootstrapBrokerStringTlsCustomResourcePolicy508CF9CC",
                             "roles": [
                               {
                                 "Ref": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
@@ -1851,13 +1851,13 @@
                   "version": "0.0.0"
                 }
               },
-              "BootstrapBrokers": {
-                "id": "BootstrapBrokers",
-                "path": "aws-cdk-msk-integ/Cluster_V3_1_1/BootstrapBrokers",
+              "BootstrapBrokersBootstrapBrokerStringTls": {
+                "id": "BootstrapBrokersBootstrapBrokerStringTls",
+                "path": "aws-cdk-msk-integ/Cluster_V3_1_1/BootstrapBrokersBootstrapBrokerStringTls",
                 "children": {
                   "Provider": {
                     "id": "Provider",
-                    "path": "aws-cdk-msk-integ/Cluster_V3_1_1/BootstrapBrokers/Provider",
+                    "path": "aws-cdk-msk-integ/Cluster_V3_1_1/BootstrapBrokersBootstrapBrokerStringTls/Provider",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_lambda.SingletonFunction",
                       "version": "0.0.0"
@@ -1865,11 +1865,11 @@
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "aws-cdk-msk-integ/Cluster_V3_1_1/BootstrapBrokers/Resource",
+                    "path": "aws-cdk-msk-integ/Cluster_V3_1_1/BootstrapBrokersBootstrapBrokerStringTls/Resource",
                     "children": {
                       "Default": {
                         "id": "Default",
-                        "path": "aws-cdk-msk-integ/Cluster_V3_1_1/BootstrapBrokers/Resource/Default",
+                        "path": "aws-cdk-msk-integ/Cluster_V3_1_1/BootstrapBrokersBootstrapBrokerStringTls/Resource/Default",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.CfnResource",
                           "version": "0.0.0"
@@ -1883,11 +1883,11 @@
                   },
                   "CustomResourcePolicy": {
                     "id": "CustomResourcePolicy",
-                    "path": "aws-cdk-msk-integ/Cluster_V3_1_1/BootstrapBrokers/CustomResourcePolicy",
+                    "path": "aws-cdk-msk-integ/Cluster_V3_1_1/BootstrapBrokersBootstrapBrokerStringTls/CustomResourcePolicy",
                     "children": {
                       "Resource": {
                         "id": "Resource",
-                        "path": "aws-cdk-msk-integ/Cluster_V3_1_1/BootstrapBrokers/CustomResourcePolicy/Resource",
+                        "path": "aws-cdk-msk-integ/Cluster_V3_1_1/BootstrapBrokersBootstrapBrokerStringTls/CustomResourcePolicy/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
                           "aws:cdk:cloudformation:props": {
@@ -1903,7 +1903,7 @@
                               ],
                               "Version": "2012-10-17"
                             },
-                            "policyName": "ClusterV311BootstrapBrokersCustomResourcePolicy032B0DC7",
+                            "policyName": "ClusterV311BootstrapBrokersBootstrapBrokerStringTlsCustomResourcePolicy2F56212C",
                             "roles": [
                               {
                                 "Ref": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
@@ -2042,13 +2042,13 @@
                   "version": "0.0.0"
                 }
               },
-              "BootstrapBrokers": {
-                "id": "BootstrapBrokers",
-                "path": "aws-cdk-msk-integ/Cluster_V3_2_0/BootstrapBrokers",
+              "BootstrapBrokersBootstrapBrokerStringTls": {
+                "id": "BootstrapBrokersBootstrapBrokerStringTls",
+                "path": "aws-cdk-msk-integ/Cluster_V3_2_0/BootstrapBrokersBootstrapBrokerStringTls",
                 "children": {
                   "Provider": {
                     "id": "Provider",
-                    "path": "aws-cdk-msk-integ/Cluster_V3_2_0/BootstrapBrokers/Provider",
+                    "path": "aws-cdk-msk-integ/Cluster_V3_2_0/BootstrapBrokersBootstrapBrokerStringTls/Provider",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_lambda.SingletonFunction",
                       "version": "0.0.0"
@@ -2056,11 +2056,11 @@
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "aws-cdk-msk-integ/Cluster_V3_2_0/BootstrapBrokers/Resource",
+                    "path": "aws-cdk-msk-integ/Cluster_V3_2_0/BootstrapBrokersBootstrapBrokerStringTls/Resource",
                     "children": {
                       "Default": {
                         "id": "Default",
-                        "path": "aws-cdk-msk-integ/Cluster_V3_2_0/BootstrapBrokers/Resource/Default",
+                        "path": "aws-cdk-msk-integ/Cluster_V3_2_0/BootstrapBrokersBootstrapBrokerStringTls/Resource/Default",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.CfnResource",
                           "version": "0.0.0"
@@ -2074,11 +2074,11 @@
                   },
                   "CustomResourcePolicy": {
                     "id": "CustomResourcePolicy",
-                    "path": "aws-cdk-msk-integ/Cluster_V3_2_0/BootstrapBrokers/CustomResourcePolicy",
+                    "path": "aws-cdk-msk-integ/Cluster_V3_2_0/BootstrapBrokersBootstrapBrokerStringTls/CustomResourcePolicy",
                     "children": {
                       "Resource": {
                         "id": "Resource",
-                        "path": "aws-cdk-msk-integ/Cluster_V3_2_0/BootstrapBrokers/CustomResourcePolicy/Resource",
+                        "path": "aws-cdk-msk-integ/Cluster_V3_2_0/BootstrapBrokersBootstrapBrokerStringTls/CustomResourcePolicy/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
                           "aws:cdk:cloudformation:props": {
@@ -2094,7 +2094,7 @@
                               ],
                               "Version": "2012-10-17"
                             },
-                            "policyName": "ClusterV320BootstrapBrokersCustomResourcePolicy5A5B9389",
+                            "policyName": "ClusterV320BootstrapBrokersBootstrapBrokerStringTlsCustomResourcePolicy8326D812",
                             "roles": [
                               {
                                 "Ref": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
@@ -2233,13 +2233,13 @@
                   "version": "0.0.0"
                 }
               },
-              "BootstrapBrokers": {
-                "id": "BootstrapBrokers",
-                "path": "aws-cdk-msk-integ/Cluster_V3_3_1/BootstrapBrokers",
+              "BootstrapBrokersBootstrapBrokerStringTls": {
+                "id": "BootstrapBrokersBootstrapBrokerStringTls",
+                "path": "aws-cdk-msk-integ/Cluster_V3_3_1/BootstrapBrokersBootstrapBrokerStringTls",
                 "children": {
                   "Provider": {
                     "id": "Provider",
-                    "path": "aws-cdk-msk-integ/Cluster_V3_3_1/BootstrapBrokers/Provider",
+                    "path": "aws-cdk-msk-integ/Cluster_V3_3_1/BootstrapBrokersBootstrapBrokerStringTls/Provider",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_lambda.SingletonFunction",
                       "version": "0.0.0"
@@ -2247,11 +2247,11 @@
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "aws-cdk-msk-integ/Cluster_V3_3_1/BootstrapBrokers/Resource",
+                    "path": "aws-cdk-msk-integ/Cluster_V3_3_1/BootstrapBrokersBootstrapBrokerStringTls/Resource",
                     "children": {
                       "Default": {
                         "id": "Default",
-                        "path": "aws-cdk-msk-integ/Cluster_V3_3_1/BootstrapBrokers/Resource/Default",
+                        "path": "aws-cdk-msk-integ/Cluster_V3_3_1/BootstrapBrokersBootstrapBrokerStringTls/Resource/Default",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.CfnResource",
                           "version": "0.0.0"
@@ -2265,11 +2265,11 @@
                   },
                   "CustomResourcePolicy": {
                     "id": "CustomResourcePolicy",
-                    "path": "aws-cdk-msk-integ/Cluster_V3_3_1/BootstrapBrokers/CustomResourcePolicy",
+                    "path": "aws-cdk-msk-integ/Cluster_V3_3_1/BootstrapBrokersBootstrapBrokerStringTls/CustomResourcePolicy",
                     "children": {
                       "Resource": {
                         "id": "Resource",
-                        "path": "aws-cdk-msk-integ/Cluster_V3_3_1/BootstrapBrokers/CustomResourcePolicy/Resource",
+                        "path": "aws-cdk-msk-integ/Cluster_V3_3_1/BootstrapBrokersBootstrapBrokerStringTls/CustomResourcePolicy/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
                           "aws:cdk:cloudformation:props": {
@@ -2285,7 +2285,7 @@
                               ],
                               "Version": "2012-10-17"
                             },
-                            "policyName": "ClusterV331BootstrapBrokersCustomResourcePolicyCF33B847",
+                            "policyName": "ClusterV331BootstrapBrokersBootstrapBrokerStringTlsCustomResourcePolicy30610F08",
                             "roles": [
                               {
                                 "Ref": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
@@ -2424,13 +2424,13 @@
                   "version": "0.0.0"
                 }
               },
-              "BootstrapBrokers": {
-                "id": "BootstrapBrokers",
-                "path": "aws-cdk-msk-integ/Cluster_V3_3_2/BootstrapBrokers",
+              "BootstrapBrokersBootstrapBrokerStringTls": {
+                "id": "BootstrapBrokersBootstrapBrokerStringTls",
+                "path": "aws-cdk-msk-integ/Cluster_V3_3_2/BootstrapBrokersBootstrapBrokerStringTls",
                 "children": {
                   "Provider": {
                     "id": "Provider",
-                    "path": "aws-cdk-msk-integ/Cluster_V3_3_2/BootstrapBrokers/Provider",
+                    "path": "aws-cdk-msk-integ/Cluster_V3_3_2/BootstrapBrokersBootstrapBrokerStringTls/Provider",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.aws_lambda.SingletonFunction",
                       "version": "0.0.0"
@@ -2438,11 +2438,11 @@
                   },
                   "Resource": {
                     "id": "Resource",
-                    "path": "aws-cdk-msk-integ/Cluster_V3_3_2/BootstrapBrokers/Resource",
+                    "path": "aws-cdk-msk-integ/Cluster_V3_3_2/BootstrapBrokersBootstrapBrokerStringTls/Resource",
                     "children": {
                       "Default": {
                         "id": "Default",
-                        "path": "aws-cdk-msk-integ/Cluster_V3_3_2/BootstrapBrokers/Resource/Default",
+                        "path": "aws-cdk-msk-integ/Cluster_V3_3_2/BootstrapBrokersBootstrapBrokerStringTls/Resource/Default",
                         "constructInfo": {
                           "fqn": "aws-cdk-lib.CfnResource",
                           "version": "0.0.0"
@@ -2456,11 +2456,11 @@
                   },
                   "CustomResourcePolicy": {
                     "id": "CustomResourcePolicy",
-                    "path": "aws-cdk-msk-integ/Cluster_V3_3_2/BootstrapBrokers/CustomResourcePolicy",
+                    "path": "aws-cdk-msk-integ/Cluster_V3_3_2/BootstrapBrokersBootstrapBrokerStringTls/CustomResourcePolicy",
                     "children": {
                       "Resource": {
                         "id": "Resource",
-                        "path": "aws-cdk-msk-integ/Cluster_V3_3_2/BootstrapBrokers/CustomResourcePolicy/Resource",
+                        "path": "aws-cdk-msk-integ/Cluster_V3_3_2/BootstrapBrokersBootstrapBrokerStringTls/CustomResourcePolicy/Resource",
                         "attributes": {
                           "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
                           "aws:cdk:cloudformation:props": {
@@ -2476,7 +2476,7 @@
                               ],
                               "Version": "2012-10-17"
                             },
-                            "policyName": "ClusterV332BootstrapBrokersCustomResourcePolicy5924CCE5",
+                            "policyName": "ClusterV332BootstrapBrokersBootstrapBrokerStringTlsCustomResourcePolicy2EA79A00",
                             "roles": [
                               {
                                 "Ref": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
@@ -2510,332 +2510,6 @@
           "BootstrapBrokers9": {
             "id": "BootstrapBrokers9",
             "path": "aws-cdk-msk-integ/BootstrapBrokers9",
-            "constructInfo": {
-              "fqn": "aws-cdk-lib.CfnOutput",
-              "version": "0.0.0"
-            }
-          },
-          "Cluster_SCRAM_IAM": {
-            "id": "Cluster_SCRAM_IAM",
-            "path": "aws-cdk-msk-integ/Cluster_SCRAM_IAM",
-            "children": {
-              "SecurityGroup": {
-                "id": "SecurityGroup",
-                "path": "aws-cdk-msk-integ/Cluster_SCRAM_IAM/SecurityGroup",
-                "children": {
-                  "Resource": {
-                    "id": "Resource",
-                    "path": "aws-cdk-msk-integ/Cluster_SCRAM_IAM/SecurityGroup/Resource",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
-                      "aws:cdk:cloudformation:props": {
-                        "groupDescription": "MSK security group",
-                        "securityGroupEgress": [
-                          {
-                            "cidrIp": "0.0.0.0/0",
-                            "description": "Allow all outbound traffic by default",
-                            "ipProtocol": "-1"
-                          }
-                        ],
-                        "vpcId": {
-                          "Ref": "VPCB9E5F0B4"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_ec2.CfnSecurityGroup",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_ec2.SecurityGroup",
-                  "version": "0.0.0"
-                }
-              },
-              "SASLKey": {
-                "id": "SASLKey",
-                "path": "aws-cdk-msk-integ/Cluster_SCRAM_IAM/SASLKey",
-                "children": {
-                  "Resource": {
-                    "id": "Resource",
-                    "path": "aws-cdk-msk-integ/Cluster_SCRAM_IAM/SASLKey/Resource",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::KMS::Key",
-                      "aws:cdk:cloudformation:props": {
-                        "description": "Used for encrypting MSK secrets for SASL/SCRAM authentication.",
-                        "keyPolicy": {
-                          "Statement": [
-                            {
-                              "Action": "kms:*",
-                              "Effect": "Allow",
-                              "Principal": {
-                                "AWS": {
-                                  "Fn::Join": [
-                                    "",
-                                    [
-                                      "arn:",
-                                      {
-                                        "Ref": "AWS::Partition"
-                                      },
-                                      ":iam::",
-                                      {
-                                        "Ref": "AWS::AccountId"
-                                      },
-                                      ":root"
-                                    ]
-                                  ]
-                                }
-                              },
-                              "Resource": "*"
-                            },
-                            {
-                              "Action": [
-                                "kms:CreateGrant",
-                                "kms:Decrypt",
-                                "kms:DescribeKey",
-                                "kms:Encrypt",
-                                "kms:GenerateDataKey*",
-                                "kms:ReEncrypt*"
-                              ],
-                              "Condition": {
-                                "StringEquals": {
-                                  "kms:ViaService": {
-                                    "Fn::Join": [
-                                      "",
-                                      [
-                                        "secretsmanager.",
-                                        {
-                                          "Ref": "AWS::Region"
-                                        },
-                                        ".amazonaws.com"
-                                      ]
-                                    ]
-                                  },
-                                  "kms:CallerAccount": {
-                                    "Ref": "AWS::AccountId"
-                                  }
-                                }
-                              },
-                              "Effect": "Allow",
-                              "Principal": {
-                                "AWS": "*"
-                              },
-                              "Resource": "*",
-                              "Sid": "Allow access through AWS Secrets Manager for all principals in the account that are authorized to use AWS Secrets Manager"
-                            }
-                          ],
-                          "Version": "2012-10-17"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_kms.CfnKey",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "Alias": {
-                    "id": "Alias",
-                    "path": "aws-cdk-msk-integ/Cluster_SCRAM_IAM/SASLKey/Alias",
-                    "children": {
-                      "Resource": {
-                        "id": "Resource",
-                        "path": "aws-cdk-msk-integ/Cluster_SCRAM_IAM/SASLKey/Alias/Resource",
-                        "attributes": {
-                          "aws:cdk:cloudformation:type": "AWS::KMS::Alias",
-                          "aws:cdk:cloudformation:props": {
-                            "aliasName": "alias/msk/integ-test-sasl-scram-iam/sasl/scram",
-                            "targetKeyId": {
-                              "Fn::GetAtt": [
-                                "ClusterSCRAMIAMSASLKeyEED07692",
-                                "Arn"
-                              ]
-                            }
-                          }
-                        },
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_kms.CfnAlias",
-                          "version": "0.0.0"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_kms.Alias",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_kms.Key",
-                  "version": "0.0.0"
-                }
-              },
-              "Resource": {
-                "id": "Resource",
-                "path": "aws-cdk-msk-integ/Cluster_SCRAM_IAM/Resource",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::MSK::Cluster",
-                  "aws:cdk:cloudformation:props": {
-                    "brokerNodeGroupInfo": {
-                      "instanceType": "kafka.m5.large",
-                      "clientSubnets": [
-                        {
-                          "Ref": "VPCPrivateSubnet1Subnet8BCA10E0"
-                        },
-                        {
-                          "Ref": "VPCPrivateSubnet2SubnetCFCDAA7A"
-                        }
-                      ],
-                      "securityGroups": [
-                        {
-                          "Fn::GetAtt": [
-                            "ClusterSCRAMIAMSecurityGroupD318B909",
-                            "GroupId"
-                          ]
-                        }
-                      ],
-                      "storageInfo": {
-                        "ebsStorageInfo": {
-                          "volumeSize": 1000
-                        }
-                      }
-                    },
-                    "clientAuthentication": {
-                      "sasl": {
-                        "iam": {
-                          "enabled": true
-                        },
-                        "scram": {
-                          "enabled": true
-                        }
-                      }
-                    },
-                    "clusterName": "integ-test-sasl-scram-iam",
-                    "encryptionInfo": {
-                      "encryptionInTransit": {
-                        "clientBroker": "TLS",
-                        "inCluster": true
-                      }
-                    },
-                    "kafkaVersion": "3.6.0",
-                    "loggingInfo": {
-                      "brokerLogs": {
-                        "cloudWatchLogs": {
-                          "enabled": false
-                        },
-                        "firehose": {
-                          "enabled": false
-                        },
-                        "s3": {
-                          "enabled": true,
-                          "bucket": {
-                            "Ref": "LoggingBucket1E5A6F3B"
-                          }
-                        }
-                      }
-                    },
-                    "numberOfBrokerNodes": 2
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_msk.CfnCluster",
-                  "version": "0.0.0"
-                }
-              },
-              "BootstrapBrokers": {
-                "id": "BootstrapBrokers",
-                "path": "aws-cdk-msk-integ/Cluster_SCRAM_IAM/BootstrapBrokers",
-                "children": {
-                  "Provider": {
-                    "id": "Provider",
-                    "path": "aws-cdk-msk-integ/Cluster_SCRAM_IAM/BootstrapBrokers/Provider",
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_lambda.SingletonFunction",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "Resource": {
-                    "id": "Resource",
-                    "path": "aws-cdk-msk-integ/Cluster_SCRAM_IAM/BootstrapBrokers/Resource",
-                    "children": {
-                      "Default": {
-                        "id": "Default",
-                        "path": "aws-cdk-msk-integ/Cluster_SCRAM_IAM/BootstrapBrokers/Resource/Default",
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.CfnResource",
-                          "version": "0.0.0"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.CustomResource",
-                      "version": "0.0.0"
-                    }
-                  },
-                  "CustomResourcePolicy": {
-                    "id": "CustomResourcePolicy",
-                    "path": "aws-cdk-msk-integ/Cluster_SCRAM_IAM/BootstrapBrokers/CustomResourcePolicy",
-                    "children": {
-                      "Resource": {
-                        "id": "Resource",
-                        "path": "aws-cdk-msk-integ/Cluster_SCRAM_IAM/BootstrapBrokers/CustomResourcePolicy/Resource",
-                        "attributes": {
-                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
-                          "aws:cdk:cloudformation:props": {
-                            "policyDocument": {
-                              "Statement": [
-                                {
-                                  "Action": "kafka:GetBootstrapBrokers",
-                                  "Effect": "Allow",
-                                  "Resource": {
-                                    "Ref": "ClusterSCRAMIAM10462D09"
-                                  }
-                                }
-                              ],
-                              "Version": "2012-10-17"
-                            },
-                            "policyName": "ClusterSCRAMIAMBootstrapBrokersCustomResourcePolicy1ECAC248",
-                            "roles": [
-                              {
-                                "Ref": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
-                              }
-                            ]
-                          }
-                        },
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
-                          "version": "0.0.0"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_iam.Policy",
-                      "version": "0.0.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.custom_resources.AwsCustomResource",
-                  "version": "0.0.0"
-                }
-              }
-            },
-            "constructInfo": {
-              "fqn": "@aws-cdk/aws-msk-alpha.Cluster",
-              "version": "0.0.0"
-            }
-          },
-          "BootstrapBrokers10": {
-            "id": "BootstrapBrokers10",
-            "path": "aws-cdk-msk-integ/BootstrapBrokers10",
-            "constructInfo": {
-              "fqn": "aws-cdk-lib.CfnOutput",
-              "version": "0.0.0"
-            }
-          },
-          "BootstrapBrokers11": {
-            "id": "BootstrapBrokers11",
-            "path": "aws-cdk-msk-integ/BootstrapBrokers11",
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnOutput",
               "version": "0.0.0"
