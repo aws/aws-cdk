@@ -45,11 +45,12 @@ export class WebSocketIntegrationResponseKey {
    * Generate an integration response key from a regular expression matching HTTP status codes
    *
    * @example
-   * // Match all 20x status codes
-   * apigwv2.WebSocketIntegrationResponseKey.fromStatusRegExp('20\\d')
+   * // Match all HTTP client and server error status codes
+   * apigwv2.WebSocketIntegrationResponseKey.fromStatusRegExp('4\\d{2}|5\\d{2}')
    *
-   * // Match all 4xx status codes, using RegExp
-   * apigwv2.WebSocketIntegrationResponseKey.fromStatusRegExp(/4\d{2}/.source)
+   * // Match all HTTP client and server error status codes,
+   * // using the RegExp built-in object
+   * apigwv2.WebSocketIntegrationResponseKey.fromStatusRegExp(/4\d{2}|5\d{2}/.source)
    *
    * @param httpStatusRegExpStr HTTP status code regular expression string representation
    * @see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp
