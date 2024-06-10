@@ -1,9 +1,5 @@
 import { App, CfnOutput, RemovalPolicy, Stack } from 'aws-cdk-lib';
-import {
-  ProviderAttribute,
-  UserPool,
-  UserPoolIdentityProviderOidc,
-} from 'aws-cdk-lib/aws-cognito';
+import { ProviderAttribute, UserPool, UserPoolIdentityProviderOidc } from 'aws-cdk-lib/aws-cognito';
 
 /*
  * Stack verification steps
