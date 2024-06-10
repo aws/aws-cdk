@@ -21,13 +21,27 @@ export class TestProvider extends CustomResourceProviderBase {
   }
 
   /**
+   * Set the log group to be used by the singleton provider
+   */
+  public static useLogGroup(scope: Construct, uniqueid: string, logGroupName: string): void {
+    const stack = Stack.of(scope);
+    const key = `${uniqueid}CustomResourceLogGroup`;
+    stack.node.addMetadata(key, logGroupName);
+    const existing = this.getProvider(scope, uniqueid);
+    if (existing) existing.configureLambdaLogGroup(logGroupName);
+  }
+
+  /**
    * Returns a stack-level singleton for the custom resource provider.
    */
   public static getOrCreateProvider(scope: Construct, uniqueid: string, props?: CustomResourceProviderOptions): TestProvider {
     const id = `${uniqueid}CustomResourceProvider`;
-    const existing = this.getProvider(scope, uniqueid);
     const stack = Stack.of(scope);
-    return existing ?? new TestProvider(stack, id, props);
+    const provider = this.getProvider(scope, uniqueid) ?? new TestProvider(stack, id, props);
+    const key = `${uniqueid}CustomResourceLogGroup`;
+    const logGroupMetadata = stack.node.metadata.find(m => m.type === key);
+    if (logGroupMetadata?.data) provider.configureLambdaLogGroup(logGroupMetadata.data);
+    return provider;
   }
 
   public constructor(scope: Construct, id: string, props?: CustomResourceProviderOptions) {

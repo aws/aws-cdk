@@ -276,6 +276,7 @@ export abstract class HandlerFrameworkClass extends ClassType {
 
         const idStatement = stmt.constVar(expr.ident('id'), expr.directCode('`${uniqueid}CustomResourceProvider`'));
         const stackFromScopeStatement = stmt.constVar(expr.ident('stack'), expr.directCode('Stack.of(scope)'));
+        const logContextKeyStatement = stmt.constVar(expr.ident('key'), expr.directCode('`${uniqueid}CustomResourceLogGroup`'));
         const getProviderMethod = this.addMethod({
           name: 'getProvider',
           static: true,
@@ -296,6 +297,34 @@ export abstract class HandlerFrameworkClass extends ClassType {
           idStatement,
           stackFromScopeStatement,
           stmt.ret(expr.directCode(`stack.node.tryFindChild(id) as ${this.type}`)),
+        );
+
+        const useLogGroupMethod = this.addMethod({
+          name: 'useLogGroup',
+          static: true,
+          docs: {
+            summary: 'Set the log group to be used by the singleton provider',
+          },
+        });
+        useLogGroupMethod.addParameter({
+          name: 'scope',
+          type: CONSTRUCTS_MODULE.Construct,
+        });
+        useLogGroupMethod.addParameter({
+          name: 'uniqueid',
+          type: Type.STRING,
+        });
+        useLogGroupMethod.addParameter({
+          name: 'logGroupName',
+          type: Type.STRING,
+        });
+        useLogGroupMethod.addBody(
+          stackFromScopeStatement,
+          logContextKeyStatement,
+          expr.directCode('stack.node.addMetadata(key, logGroupName)'),
+          stmt.constVar(expr.ident('existing'), expr.directCode('this.getProvider(scope, uniqueid)')),
+          stmt.if_(expr.directCode('existing'))
+            .then(expr.directCode('existing.configureLambdaLogGroup(logGroupName)')),
         );
 
         const getOrCreateProviderMethod = this.addMethod({
@@ -321,9 +350,14 @@ export abstract class HandlerFrameworkClass extends ClassType {
         });
         getOrCreateProviderMethod.addBody(
           idStatement,
-          stmt.constVar(expr.ident('existing'), expr.directCode('this.getProvider(scope, uniqueid)')),
           stackFromScopeStatement,
-          stmt.ret(expr.directCode(`existing ?? new ${this.name}(stack, id, props)`)),
+          stmt.constVar(expr.ident('provider'), expr.directCode(`this.getProvider(scope, uniqueid) ?? new ${this.name}(stack, id, props)`)),
+          logContextKeyStatement,
+          stmt.constVar(expr.ident('logGroupMetadata'),
+            expr.directCode('stack.node.metadata.find(m => m.type === key)')),
+          stmt.if_(expr.directCode('logGroupMetadata?.data'))
+            .then(expr.directCode('provider.configureLambdaLogGroup(logGroupMetadata.data)')),
+          stmt.ret(expr.directCode('provider')),
         );
 
         const superProps = new ObjectLiteral([
