@@ -3494,22 +3494,14 @@ describe('bucket', () => {
     })).toThrow(/Cannot use \'autoDeleteObjects\' property on a bucket without setting removal policy to \'DESTROY\'/);
   });
 
-  test('setAutoDeleteObjectsLogGroup throws if no bucket has autoDeleteObjects: true in stack', () => {
-    const stack = new cdk.Stack();
-
-    new s3.Bucket(stack, 'MyBucket', { });
-
-    expect(() => s3.Bucket.setAutoDeleteObjectsLogGroup(stack, new logs.LogGroup(stack, 'MyLogGroup', {})))
-      .toThrow(/Requires at least one bucket with 'autoDeleteObjects: true'. None is found./);
-  });
-
-  test('setAutoDeleteObjectsLogGroup to update AutoDeleteObjectsProvider LoggingConfig', () => {
+  test('setAutoDeleteObjectsLogGroup to update AutoDeleteObjectsProvider LoggingConfig after Bucket creation', () => {
     const stack = new cdk.Stack();
 
     new s3.Bucket(stack, 'MyBucket', {
       removalPolicy: cdk.RemovalPolicy.DESTROY,
       autoDeleteObjects: true,
     });
+
     s3.Bucket.setAutoDeleteObjectsLogGroup(stack, new logs.LogGroup(stack, 'FirstLogGroup', {
       logGroupName: 'MyFirstLogGroup',
     }));
@@ -3526,16 +3518,39 @@ describe('bucket', () => {
     });
   });
 
-  test('setAutoDeleteObjectsLogGroup multiple times should take the latest Log Group', () => {
+  test('setAutoDeleteObjectsLogGroup before Bucket creation', () => {
     const stack = new cdk.Stack();
 
+    s3.Bucket.setAutoDeleteObjectsLogGroup(stack, new logs.LogGroup(stack, 'FirstLogGroup', {
+      logGroupName: 'MyFirstLogGroup',
+    }));
     new s3.Bucket(stack, 'MyBucket', {
       removalPolicy: cdk.RemovalPolicy.DESTROY,
       autoDeleteObjects: true,
     });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Logs::LogGroup', {
+      LogGroupName: 'MyFirstLogGroup',
+    });
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+      LoggingConfig: {
+        LogGroup: {
+          'Ref': 'FirstLogGroupFF5C2AA0',
+        },
+      },
+    });
+  });
+
+  test('setAutoDeleteObjectsLogGroup multiple times should take the latest Log Group', () => {
+    const stack = new cdk.Stack();
+
     s3.Bucket.setAutoDeleteObjectsLogGroup(stack, new logs.LogGroup(stack, 'FirstLogGroup', {
       logGroupName: 'MyFirstLogGroup',
     }));
+    new s3.Bucket(stack, 'MyBucket', {
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+      autoDeleteObjects: true,
+    });
     s3.Bucket.setAutoDeleteObjectsLogGroup(stack, new logs.LogGroup(stack, 'SecondLogGroup', {
       logGroupName: 'MySecondLogGroup',
     }));

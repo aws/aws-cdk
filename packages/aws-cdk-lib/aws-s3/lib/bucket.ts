@@ -1898,12 +1898,7 @@ export class Bucket extends BucketBase {
    * @param logGroup the log group to use on the lambda.
    */
   public static setAutoDeleteObjectsLogGroup(scope: Construct, logGroup: logs.ILogGroup): void {
-    const provider = AutoDeleteObjectsProvider.getProvider(scope, AUTO_DELETE_OBJECTS_RESOURCE_TYPE);
-
-    if (provider === undefined) {
-      throw new Error('Requires at least one bucket with \'autoDeleteObjects: true\'. None is found.');
-    }
-    provider.configureLambdaLogGroup(logGroup.logGroupName);
+    AutoDeleteObjectsProvider.useLogGroup(scope, AUTO_DELETE_OBJECTS_RESOURCE_TYPE, logGroup.logGroupName);
   }
 
   public readonly bucketArn: string;
