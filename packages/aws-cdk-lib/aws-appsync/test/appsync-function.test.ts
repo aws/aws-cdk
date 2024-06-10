@@ -45,6 +45,6 @@ test('maxBatchSize property cannot be set in AppSync Function if data source is 
       name: 'test',
       maxBatchSize: 10,
     });
-  }).toThrow('Cannot set maxBatchSize when the data source is not LambdaDataSource');
+  }).toThrow('maxBatchSize can only be set for the data source of type \LambdaDataSource\'');
 });
 

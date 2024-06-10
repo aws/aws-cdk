@@ -168,7 +168,7 @@ export class AppsyncFunction extends Resource implements IAppsyncFunction {
     }
 
     if (props.maxBatchSize && !(props.dataSource instanceof LambdaDataSource)) {
-      throw new Error('Cannot set maxBatchSize when the data source is not LambdaDataSource');
+      throw new Error('maxBatchSize can only be set for the data source of type \LambdaDataSource\'');
     }
 
     const code = props.code?.bind(this);
