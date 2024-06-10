@@ -31,8 +31,8 @@ test('minimal example renders correctly', () => {
         'Arn',
       ],
     },
-    Create: '{"service":"CloudWatchLogs","action":"putResourcePolicy","parameters":{"policyName":"TestPolicy","policyDocument":"{\\"Statement\\":[{\\"Action\\":[\\"logs:PutLogEvents\\",\\"logs:CreateLogStream\\"],\\"Effect\\":\\"Allow\\",\\"Principal\\":{\\"Service\\":\\"es.amazonaws.com\\"},\\"Resource\\":\\"*\\"}],\\"Version\\":\\"2012-10-17\\"}"},"physicalResourceId":{"id":"LogGroupResourcePolicy"},"logApiResponseData":true}',
-    Update: '{"service":"CloudWatchLogs","action":"putResourcePolicy","parameters":{"policyName":"TestPolicy","policyDocument":"{\\"Statement\\":[{\\"Action\\":[\\"logs:PutLogEvents\\",\\"logs:CreateLogStream\\"],\\"Effect\\":\\"Allow\\",\\"Principal\\":{\\"Service\\":\\"es.amazonaws.com\\"},\\"Resource\\":\\"*\\"}],\\"Version\\":\\"2012-10-17\\"}"},"physicalResourceId":{"id":"LogGroupResourcePolicy"},"logApiResponseData":true}',
-    Delete: '{"service":"CloudWatchLogs","action":"deleteResourcePolicy","parameters":{"policyName":"TestPolicy"},"ignoreErrorCodesMatching":"ResourceNotFoundException","logApiResponseData":true}',
+    Create: '{"service":"CloudWatchLogs","action":"putResourcePolicy","parameters":{"policyName":"TestPolicy","policyDocument":"{\\"Statement\\":[{\\"Action\\":[\\"logs:PutLogEvents\\",\\"logs:CreateLogStream\\"],\\"Effect\\":\\"Allow\\",\\"Principal\\":{\\"Service\\":\\"es.amazonaws.com\\"},\\"Resource\\":\\"*\\"}],\\"Version\\":\\"2012-10-17\\"}"},"physicalResourceId":{"id":"LogGroupResourcePolicy"}}',
+    Update: '{"service":"CloudWatchLogs","action":"putResourcePolicy","parameters":{"policyName":"TestPolicy","policyDocument":"{\\"Statement\\":[{\\"Action\\":[\\"logs:PutLogEvents\\",\\"logs:CreateLogStream\\"],\\"Effect\\":\\"Allow\\",\\"Principal\\":{\\"Service\\":\\"es.amazonaws.com\\"},\\"Resource\\":\\"*\\"}],\\"Version\\":\\"2012-10-17\\"}"},"physicalResourceId":{"id":"LogGroupResourcePolicy"}}',
+    Delete: '{"service":"CloudWatchLogs","action":"deleteResourcePolicy","parameters":{"policyName":"TestPolicy"},"ignoreErrorCodesMatching":"ResourceNotFoundException"}',
   });
 });

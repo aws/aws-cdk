@@ -466,7 +466,7 @@ test('fails if encryption key is used with AWS managed CMK', () => {
     partitionKey: TABLE_PARTITION_KEY,
     encryption: TableEncryption.AWS_MANAGED,
     encryptionKey,
-  })).toThrow('`encryptionKey cannot be specified unless encryption is set to TableEncryption.CUSTOMER_MANAGED (it was set to ${encryptionType})`');
+  })).toThrow(`encryptionKey cannot be specified unless encryption is set to TableEncryption.CUSTOMER_MANAGED (it was set to ${TableEncryption.AWS_MANAGED})`);
 });
 
 test('fails if encryption key is used with default encryption', () => {
@@ -479,7 +479,7 @@ test('fails if encryption key is used with default encryption', () => {
     partitionKey: TABLE_PARTITION_KEY,
     encryption: TableEncryption.DEFAULT,
     encryptionKey,
-  })).toThrow('`encryptionKey cannot be specified unless encryption is set to TableEncryption.CUSTOMER_MANAGED (it was set to ${encryptionType})`');
+  })).toThrow(`encryptionKey cannot be specified unless encryption is set to TableEncryption.CUSTOMER_MANAGED (it was set to ${TableEncryption.DEFAULT})`);
 });
 
 testDeprecated('fails if encryption key is used with serverSideEncryption', () => {
