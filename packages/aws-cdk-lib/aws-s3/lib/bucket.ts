@@ -1887,18 +1887,17 @@ export class Bucket extends BucketBase {
   }
 
   /**
-   * Set the log group on the singleton AutoDeleteObjects provider lambda.
-   * Note: Calling this multiple times will override the previously set log group
+   * Set the log group on the stack wide singleton AutoDeleteObjects provider lambda.
    *
    * In the case of no buckets with `autoDeleteObjects: true` exist in the stack,
    * this will throw an exception as no AutoDeleteObjects provider lambda will exist
    * in the stack.
    *
-   * @param scope the stack with bucket(s) with `autoDeleteObjects: true`.
+   * @param stack the stack with the singleton AutoDeleteObjects provider lambda.
    * @param logGroup the log group to use on the lambda.
    */
-  public static setAutoDeleteObjectsLogGroup(scope: Construct, logGroup: logs.ILogGroup): void {
-    AutoDeleteObjectsProvider.useLogGroup(scope, AUTO_DELETE_OBJECTS_RESOURCE_TYPE, logGroup.logGroupName);
+  public static setAutoDeleteObjectsLogGroup(stack: Stack, logGroup: logs.ILogGroup): void {
+    AutoDeleteObjectsProvider.useLogGroup(stack, AUTO_DELETE_OBJECTS_RESOURCE_TYPE, logGroup.logGroupName);
   }
 
   public readonly bucketArn: string;
