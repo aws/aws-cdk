@@ -69,7 +69,9 @@ Flags come in three types:
 | [@aws-cdk/aws-kms:reduceCrossAccountRegionPolicyScope](#aws-cdkaws-kmsreducecrossaccountregionpolicyscope) | When enabled, IAM Policy created from KMS key grant will reduce the resource scope to this key only. | 2.134.0 | (fix) |
 | [@aws-cdk/aws-eks:nodegroupNameAttribute](#aws-cdkaws-eksnodegroupnameattribute) | When enabled, nodegroupName attribute of the provisioned EKS NodeGroup will not have the cluster name prefix. | 2.139.0 | (fix) |
 | [@aws-cdk/aws-ec2:ebsDefaultGp3Volume](#aws-cdkaws-ec2ebsdefaultgp3volume) | When enabled, the default volume type of the EBS volume will be GP3 | 2.140.0 | (default) |
-| [@aws-cdk/pipelines:reduceAssetRoleTrustScope](#aws-cdkpipelinesreduceassetroletrustscope) | Remove the root account principal from PipelineAssetsFileRole trust policy | V2NEXT | (default) |
+| [@aws-cdk/pipelines:reduceAssetRoleTrustScope](#aws-cdkpipelinesreduceassetroletrustscope) | Remove the root account principal from PipelineAssetsFileRole trust policy | 2.141.0 | (default) |
+| [@aws-cdk/aws-ecs:removeDefaultDeploymentAlarm](#aws-cdkaws-ecsremovedefaultdeploymentalarm) | When enabled, remove default deployment alarm settings | 2.143.0 | (default) |
+| [@aws-cdk/custom-resources:logApiResponseDataPropertyTrueDefault](#aws-cdkcustom-resourceslogapiresponsedatapropertytruedefault) | When enabled, the custom resource used for `AwsCustomResource` will configure the `logApiResponseData` property as true by default | 2.145.0 | (fix) |
 
 <!-- END table -->
 
@@ -129,7 +131,9 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/aws-codepipeline:defaultPipelineTypeToV2": true,
     "@aws-cdk/aws-kms:reduceCrossAccountRegionPolicyScope": true,
     "@aws-cdk/aws-eks:nodegroupNameAttribute": true,
-    "@aws-cdk/aws-ec2:ebsDefaultGp3Volume": true
+    "@aws-cdk/aws-ec2:ebsDefaultGp3Volume": true,
+    "@aws-cdk/aws-ecs:removeDefaultDeploymentAlarm": true,
+    "@aws-cdk/custom-resources:logApiResponseDataPropertyTrueDefault": false
   }
 }
 ```
@@ -1312,9 +1316,44 @@ When this feature flag is disabled, it will keep the root account principal in t
 | Since | Default | Recommended |
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
-| V2NEXT | `true` | `true` |
+| 2.141.0 | `true` | `true` |
 
 **Compatibility with old behavior:** Disable the feature flag to add the root account principal back
+
+
+### @aws-cdk/aws-ecs:removeDefaultDeploymentAlarm
+
+*When enabled, remove default deployment alarm settings* (default)
+
+When this featuer flag is enabled, remove the default deployment alarm settings when creating a AWS ECS service.
+
+
+| Since | Default | Recommended |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| 2.143.0 | `false` | `true` |
+
+**Compatibility with old behavior:** Set AWS::ECS::Service 'DeploymentAlarms' manually to restore the previous behavior.
+
+
+### @aws-cdk/custom-resources:logApiResponseDataPropertyTrueDefault
+
+*When enabled, the custom resource used for `AwsCustomResource` will configure the `logApiResponseData` property as true by default* (fix)
+
+This results in 'logApiResponseData' being passed as true to the custom resource provider. This will cause the custom resource handler to receive an 'Update' event. If you don't
+have an SDK call configured for the 'Update' event and you're dependent on specific SDK call response data, you will see this error from CFN:
+
+CustomResource attribute error: Vendor response doesn't contain <attribute-name> attribute in object. See https://github.com/aws/aws-cdk/issues/29949) for more details.
+
+Unlike most feature flags, we don't recommend setting this feature flag to true. However, if you're using the 'AwsCustomResource' construct with 'logApiResponseData' as true in
+the event object, then setting this feature flag will keep this behavior. Otherwise, setting this feature flag to false will trigger an 'Update' event by removing the 'logApiResponseData'
+property from the event object.
+
+
+| Since | Default | Recommended |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| 2.145.0 | `false` | `false` |
 
 
 <!-- END details -->

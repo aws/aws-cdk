@@ -298,11 +298,14 @@ can use the `environment` property to customize the build environment:
 * `environmentVariables` can be set at this level (and also at the project
   level).
 
+Finally, you can also set the build environment `fleet` property to create
+a reserved capacity project. See [Fleet](#fleet) for more information.
+
 ## Images
 
 The CodeBuild library supports both Linux and Windows images via the
 `LinuxBuildImage` (or `LinuxArmBuildImage`), and `WindowsBuildImage` classes, respectively.
-With the introduction of Lambda compute support, the `LinuxLambdaBuildImage ` (or `LinuxArmLambdaBuildImage`) class 
+With the introduction of Lambda compute support, the `LinuxLambdaBuildImage ` (or `LinuxArmLambdaBuildImage`) class
 is available for specifying Lambda-compatible images.
 
 You can specify one of the predefined Windows/Linux images by using one
@@ -416,6 +419,53 @@ new codebuild.Project(this, 'Project', {
 ```
 
 > Visit [AWS Lambda compute in AWS CodeBuild](https://docs.aws.amazon.com/codebuild/latest/userguide/lambda.html) for more details.
+
+## Fleet
+
+By default, a CodeBuild project will request on-demand compute resources
+to process your build requests. While being able to scale and handle high load,
+on-demand resources can also be slow to provision.
+
+Reserved capacity fleets are an alternative to on-demand.
+Dedicated instances, maintained by CodeBuild,
+will be ready to fulfill your build requests immediately.
+Skipping the provisioning step in your project will reduce your build time,
+at the cost of paying for these reserved instances, even when idling, until they are released.
+
+For more information, see [Working with reserved capacity in AWS CodeBuild](https://docs.aws.amazon.com/codebuild/latest/userguide/fleets.html) in the CodeBuild documentation.
+
+```ts
+const fleet = new codebuild.Fleet(this, 'Fleet', {
+    computeType: codebuild.FleetComputeType.MEDIUM,
+    environmentType: codebuild.EnvironmentType.LINUX_CONTAINER,
+    baseCapacity: 1,
+});
+
+new codebuild.Project(this, 'Project', {
+  environment: {
+    fleet,
+    buildImage: codebuild.LinuxBuildImage.STANDARD_7_0,
+  },
+  // ...
+})
+```
+
+You can also import an existing fleet to share its resources
+among several projects across multiple stacks:
+
+```ts
+new codebuild.Project(this, 'Project', {
+  environment: {
+    fleet: codebuild.Fleet.fromFleetArn(
+      this, 'SharedFleet',
+      'arn:aws:codebuild:us-east-1:123456789012:fleet/MyFleet:ed0d0823-e38a-4c10-90a1-1bf25f50fa76', 
+    ),
+    buildImage: codebuild.LinuxBuildImage.STANDARD_7_0,
+  },
+  // ...
+})
+```
+
 
 ## Logs
 
@@ -618,6 +668,27 @@ The created policy will adjust to the report group type. If no type is specified
 
 For more information on the test reports feature,
 see the [AWS CodeBuild documentation](https://docs.aws.amazon.com/codebuild/latest/userguide/test-reporting.html).
+
+### Report group deletion
+
+When a report group is removed from a stack (or the stack is deleted), the report
+group will be removed according to its removal policy (which by default will
+simply orphan the report group and leave it in your AWS account). If the removal
+policy is set to `RemovalPolicy.DESTROY`, the report group will be deleted as long
+as it does not contain any reports.
+
+To override this and force all reports to get deleted during report group deletion,
+enable the `deleteReports` option as well as setting the removal policy to
+`RemovalPolicy.DESTROY`.
+
+```ts
+import * as cdk from 'aws-cdk-lib';
+
+const reportGroup = new codebuild.ReportGroup(this, 'ReportGroup', {
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+      deleteReports: true,
+});
+```
 
 ## Events
 

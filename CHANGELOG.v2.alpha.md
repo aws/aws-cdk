@@ -2,6 +2,33 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.145.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.144.0-alpha.0...v2.145.0-alpha.0) (2024-06-07)
+
+## [2.144.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.143.1-alpha.0...v2.144.0-alpha.0) (2024-05-31)
+
+
+### Features
+
+* **apprunner:** add kmsKey property for the AppRunner Service class ([#30352](https://github.com/aws/aws-cdk/issues/30352)) ([0c1aeb6](https://github.com/aws/aws-cdk/commit/0c1aeb6d6d9b9d72624a394fff45e65dfb94b733)), closes [#30365](https://github.com/aws/aws-cdk/issues/30365)
+* **ivs-alpha:** support advanced channel type ([#30086](https://github.com/aws/aws-cdk/issues/30086)) ([544e54a](https://github.com/aws/aws-cdk/commit/544e54abb0985e69bb615fd3c9c47e4067bb17d8)), closes [#30075](https://github.com/aws/aws-cdk/issues/30075)
+* **neptune:** add copyTagsToSnapshot property to the DatabaseCluster Construct ([#30092](https://github.com/aws/aws-cdk/issues/30092)) ([ba8edb3](https://github.com/aws/aws-cdk/commit/ba8edb3e16e3b7c72bb2a38bb3318969e0e9f054)), closes [#30087](https://github.com/aws/aws-cdk/issues/30087)
+
+## [2.143.1-alpha.0](https://github.com/aws/aws-cdk/compare/v2.143.0-alpha.0...v2.143.1-alpha.0) (2024-05-30)
+
+## [2.143.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.142.1-alpha.0...v2.143.0-alpha.0) (2024-05-23)
+
+## [2.142.1-alpha.0](https://github.com/aws/aws-cdk/compare/v2.142.0-alpha.0...v2.142.1-alpha.0) (2024-05-17)
+
+## [2.142.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.141.0-alpha.0...v2.142.0-alpha.0) (2024-05-15)
+
+
+### Features
+
+* **pipes-targets:** add step function target ([#29987](https://github.com/aws/aws-cdk/issues/29987)) ([b0975e4](https://github.com/aws/aws-cdk/commit/b0975e410a404d07952e01303af01224ccfad864)), closes [#29665](https://github.com/aws/aws-cdk/issues/29665) [#29665](https://github.com/aws/aws-cdk/issues/29665)
+* **redshift:** multi AZ cluster ([#29976](https://github.com/aws/aws-cdk/issues/29976)) ([a53517c](https://github.com/aws/aws-cdk/commit/a53517c6772332cc2a15c9b38e964a933e9c8355))
+
+## [2.141.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.140.0-alpha.0...v2.141.0-alpha.0) (2024-05-08)
+
 ## [2.140.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.139.1-alpha.0...v2.140.0-alpha.0) (2024-05-02)
 
 ## [2.139.1-alpha.0](https://github.com/aws/aws-cdk/compare/v2.139.0-alpha.0...v2.139.1-alpha.0) (2024-04-29)
