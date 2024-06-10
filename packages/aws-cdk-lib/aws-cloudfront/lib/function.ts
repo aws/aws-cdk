@@ -222,9 +222,14 @@ export class Function extends Resource implements IFunction {
   }
 
   private generateName(): string {
-    return Stack.of(this).region + Lazy.string({
-      produce: () => Names.uniqueResourceName(this, { maxLength: 40, allowedSpecialCharacters: '-_' }),
-    });
+    // const name = Stack.of(this).region + Names.uniqueId(this);
+    const maxNameLength = 64 - '${Token[AWS.Region.00]}'.length;
+    const nameId = Names.uniqueId(this);
+    if (nameId.length > maxNameLength) {
+      const splicePoint = Math.floor(maxNameLength / 2);
+      return Stack.of(this).region + nameId.substring(0, splicePoint) + nameId.substring(nameId.length - splicePoint);
+    }
+    return Stack.of(this).region + nameId;
   }
 }
 
