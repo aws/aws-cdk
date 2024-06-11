@@ -40,18 +40,13 @@
      },
      "S3Key": "3df927e5941c39836eafe07496dc13c1c6935e59b0490249af5b05a1becfb7ab.zip"
     },
+    "Handler": "index.handler",
     "Role": {
      "Fn::GetAtt": [
       "ctsentryServiceRole93F225D5",
       "Arn"
      ]
     },
-    "Environment": {
-     "Variables": {
-      "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1"
-     }
-    },
-    "Handler": "index.handler",
     "Runtime": "nodejs18.x"
    },
    "DependsOn": [

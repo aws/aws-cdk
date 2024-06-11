@@ -40,18 +40,13 @@
      },
      "S3Key": "28de77e42ea798836445f0dd73c84320861bfe911d58e603bee8767c2d6e9e8a.zip"
     },
+    "Handler": "index.handler",
     "Role": {
      "Fn::GetAtt": [
       "cjsentryServiceRole2A625525",
       "Arn"
      ]
     },
-    "Environment": {
-     "Variables": {
-      "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1"
-     }
-    },
-    "Handler": "index.handler",
     "Runtime": "nodejs18.x"
    },
    "DependsOn": [

@@ -38,7 +38,7 @@ test('feature flag defaults may not be changed anymore', () => {
     [feats.LAMBDA_RECOGNIZE_VERSION_PROPS]: true,
     [feats.CLOUDFRONT_DEFAULT_SECURITY_POLICY_TLS_V1_2_2021]: true,
     // Add new disabling feature flags below this line
-    // ...
+    [feats.PIPELINE_REDUCE_ASSET_ROLE_TRUST_SCOPE]: true,
 
   });
 });
