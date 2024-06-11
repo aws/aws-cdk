@@ -1,10 +1,9 @@
 import { CfnIPAMPool, CfnRoute, CfnRouteTable, CfnVPC, CfnVPCCidrBlock, INetworkAcl, IRouteTable, RouterType, SubnetSelection } from 'aws-cdk-lib/aws-ec2';
 //import { NetworkBuilder } from 'aws-cdk-lib/aws-ec2/lib/network-util';
-import { Resource } from 'aws-cdk-lib/core';
+import { Resource, Token } from 'aws-cdk-lib/core';
 import { Construct, IDependable } from 'constructs';
 import { IpamIpv4, IpamIpv6 } from './ipam';
 import { Arn } from 'aws-cdk-lib/core/lib/arn';
-import { Token } from 'aws-cdk-lib/core';
 import { NetworkBuilder } from 'aws-cdk-lib/aws-ec2/lib/network-util';
 
 export interface IIpIpamOptions{
@@ -217,9 +216,9 @@ export class VpcV2 extends Resource implements IVpcV2 {
         const vpcoptions: VpcV2Options = secondaryAddressBlock.allocateVpcCidr();
 
         // validate CIDR ranges per RFC 1918
-        if (vpcOptions.ipv4CidrBlock!) {
-          validateIpv4address(vpcoptions.ipv4CidrBlock);
-        }
+        // if (vpcOptions.ipv4CidrBlock!) {
+        //   validateIpv4address(vpcoptions.ipv4CidrBlock);
+        // }
         //Create secondary blocks for Ipv4 and Ipv6
         new CfnVPCCidrBlock(this, `Secondary${vpcoptions.ipv4CidrBlock}`, {
           vpcId: this.vpcId,
@@ -273,32 +272,29 @@ export interface ISubnetV2 {
   associateNetworkAcl(id: string, acl: INetworkAcl): void;
 }
 
-
 export interface IRouter {
   readonly subnets: SubnetSelection[];
   readonly routerType: RouterType;
   readonly routerId: string;
 }
-  
-  
-  // export interface RouterProps {
-    //   readonly subnets?: SubnetSelection[];
-    // }
-    
-    // export class GatewayV2 extends Resource implements IRouter {
-      //   public readonly subnets: SubnetSelection[];
-      //   public readonly routerType: RouterType;
-      //   public readonly routerId: string;
-      
-      //   constructor(scope: Construct, id: string, props: RouterProps) {
-        //     super(scope, id);
-        
-        //     this.subnets = props.subnets ?? [];
-        //     this.routerType = RouterType.GATEWAY;
-        //   }
-        // }
-        
-        
+
+// export interface RouterProps {
+//   readonly subnets?: SubnetSelection[];
+// }
+
+// export class GatewayV2 extends Resource implements IRouter {
+//   public readonly subnets: SubnetSelection[];
+//   public readonly routerType: RouterType;
+//   public readonly routerId: string;
+
+//   constructor(scope: Construct, id: string, props: RouterProps) {
+//     super(scope, id);
+
+//     this.subnets = props.subnets ?? [];
+//     this.routerType = RouterType.GATEWAY;
+//   }
+// }
+
 export interface IRouteV2 {
   readonly destination: IIpAddresses;
   readonly target: IRouter;
@@ -411,9 +407,9 @@ class ipv6CidrAllocation implements IIpAddresses {
   }
 }
 
-class AmazonProvided implements IIpAddresses {
+export class AmazonProvided implements IIpAddresses {
 
-  amazonProvided: boolean;
+  private readonly amazonProvided: boolean;
   constructor() {
     this.amazonProvided = true;
   };
@@ -424,10 +420,6 @@ class AmazonProvided implements IIpAddresses {
     };
   }
 
-}
-
-function validateIpv4address(cidr?: string) {
-  
 }
 
 function routerTypeToPropName(routerType: RouterType) {
@@ -444,3 +436,34 @@ function routerTypeToPropName(routerType: RouterType) {
     [RouterType.VPC_ENDPOINT]: 'vpcEndpointId',
   })[routerType];
 }
+
+//Default Config
+// type IPaddressConfig = {
+//   octet1: number;
+//   octect2: number;
+// };
+
+// function validateIpv4address(cidr1?: string, cidr2?: string) : Boolean {
+
+//   if (cidr1! && cidr2!) {
+//     const octets1: number[] = cidr1?.split('.').map(octet => parseInt(octet, 10));
+//     const octets2: number[] = cidr2?.split('.').map(octet => parseInt(octet, 10));
+
+//     const ip1 : IPaddressConfig = {
+//       octet1: octets1[0],
+//       octect2: octets1[1],
+//     };
+//     const ip2 : IPaddressConfig = {
+//       octet1: octets2[0],
+//       octect2: octets2[1],
+//     };
+//     if (octets2?.length !== 4) {
+//       throw new Error(`Invalid IPv4 CIDR: ${cidr1}`);
+//     } else {
+//       if ( ip1.octet1 === ip2.octet1) {
+//         return true;
+//       }
+//     }
+//   }
+//   return false;
+// }
