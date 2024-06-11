@@ -3,8 +3,9 @@ import { CfnIPAMPool, CfnRoute, CfnRouteTable, CfnVPC, CfnVPCCidrBlock, INetwork
 import { Resource } from 'aws-cdk-lib/core';
 import { Construct, IDependable } from 'constructs';
 import { IpamIpv4, IpamIpv6 } from './ipam';
-// eslint-disable-next-line no-duplicate-imports
-import { Arn } from 'aws-cdk-lib/core';
+import { Arn } from 'aws-cdk-lib/core/lib/arn';
+import { Token } from 'aws-cdk-lib/core';
+import { NetworkBuilder } from 'aws-cdk-lib/aws-ec2/lib/network-util';
 
 export interface IIpIpamOptions{
   readonly ipv4IpamPoolId: any;
@@ -216,12 +217,9 @@ export class VpcV2 extends Resource implements IVpcV2 {
         const vpcoptions: VpcV2Options = secondaryAddressBlock.allocateVpcCidr();
 
         // validate CIDR ranges per RFC 1918
-        // if (vpcOptions.ipv4CidrBlock!) {
-        //   const ret = validateIpv4address(vpcoptions.ipv4CidrBlock, this.vpcCidrBlock);
-        //   if ( !ret) {
-        //     throw new Error('CIDR blocks must be as per RFC#1918 range');
-        //   }
-        // }
+        if (vpcOptions.ipv4CidrBlock!) {
+          validateIpv4address(vpcoptions.ipv4CidrBlock);
+        }
         //Create secondary blocks for Ipv4 and Ipv6
         new CfnVPCCidrBlock(this, `Secondary${vpcoptions.ipv4CidrBlock}`, {
           vpcId: this.vpcId,
@@ -275,103 +273,123 @@ export interface ISubnetV2 {
   associateNetworkAcl(id: string, acl: INetworkAcl): void;
 }
 
-export interface IRouteV2 {
-  readonly destination: IIpAddresses;
-  readonly target: IRouter;
-  readonly routeTableId: string;
-}
 
 export interface IRouter {
   readonly subnets: SubnetSelection[];
   readonly routerType: RouterType;
+  readonly routerId: string;
 }
-
-export interface RouterProps {
-  readonly subnets?: SubnetSelection[];
-}
-
-export class GatewayV2 extends Resource implements IRouter {
-  public readonly subnets: SubnetSelection[];
-  public readonly routerType: RouterType;
-
-  constructor(scope: Construct, id: string, props: RouterProps = {}) {
-    super(scope, id);
-
-    this.subnets = props.subnets ?? [];
-    this.routerType = RouterType.GATEWAY;
-  }
+  
+  
+  // export interface RouterProps {
+    //   readonly subnets?: SubnetSelection[];
+    // }
+    
+    // export class GatewayV2 extends Resource implements IRouter {
+      //   public readonly subnets: SubnetSelection[];
+      //   public readonly routerType: RouterType;
+      //   public readonly routerId: string;
+      
+      //   constructor(scope: Construct, id: string, props: RouterProps) {
+        //     super(scope, id);
+        
+        //     this.subnets = props.subnets ?? [];
+        //     this.routerType = RouterType.GATEWAY;
+        //   }
+        // }
+        
+        
+export interface IRouteV2 {
+  readonly destination: IIpAddresses;
+  readonly target: IRouter;
+  readonly routeTable: IRouteTable;
 }
 
 export class Route extends Resource implements IRouteV2 {
   public readonly destination: IIpAddresses;
   public readonly target: IRouter;
-  public readonly routeTableId: string;
+  // public readonly routeTableId: string;
+  public readonly routeTable: IRouteTable;
 
   public readonly targetRouterType: RouterType
 
   public readonly resource: CfnRoute;
 
-  constructor(scope: Construct, id: string, props: RouteProps = {}) {
+  constructor(scope: Construct, id: string, props: RouteProps) {
     super(scope, id);
 
     this.destination = props.destination ?? IpAddresses.ipv4('10.0.0.0/16');
-    this.target = props.target ?? new GatewayV2(this, 'gw');
-    this.routeTableId = props.routeTableId ?? '';
+    this.target = props.target;
+    // this.routeTableId = props.routeTableId ?? '';
+    this.routeTable = props.routeTable;
 
     this.targetRouterType = this.target.routerType;
 
     this.resource = new CfnRoute(this, 'Route', {
-      routeTableId: this.routeTableId,
+      routeTableId: this.routeTable.routeTableId,
+      destinationCidrBlock: this.destination.allocateVpcCidr().ipv4CidrBlock,
+      destinationIpv6CidrBlock: this.destination.allocateVpcCidr().ipv6CidrBlock,
+      [routerTypeToPropName(this.targetRouterType)]: this.target.routerId,
     });
+
+    // this.routeTable.addRoute(this.resource.ref);
   }
 
 }
 
 export interface RouteProps {
-  readonly destination?: IIpAddresses;
-  readonly target?: IRouter;
-  readonly routeTableId?: string;
+  readonly routeTable: IRouteTable;
+  readonly destination: IIpAddresses;
+  readonly target: IRouter;
 }
 
 export class RouteTable extends Resource implements IRouteTable {
   public readonly routeTableId: string;
-  public readonly routes: IRouteV2[];
+  // public readonly routes: string[];
 
   public readonly resource: CfnRouteTable;
 
-  constructor(scope: Construct, id: string, props: RouteTableProps = { vpcId: 'default' }) {
+  constructor(scope: Construct, id: string, props: RouteTableProps) {
     super(scope, id);
 
-    this.routeTableId = props.routeTableId ?? 'placeholder';
-    this.routes = props.routes ?? Array<Route>();
+    // this.routes = Array<string>();
 
     this.resource = new CfnRouteTable(this, 'RouteTable', {
       vpcId: props.vpcId,
     });
+
+    this.routeTableId = this.resource.attrRouteTableId;
   }
+
+  // function addRoute() {
+  //   return;
+  // }
+
+  // function getRoute(routeId: string) {
+  //   return;
+  // }
 }
 
 export interface RouteTableProps {
   readonly vpcId: string;
-  readonly routeTableId?: string;
-  readonly routes?: IRouteV2[];
+  // readonly routes?: IRouteV2[];
 }
 
 class ipv4CidrAllocation implements IIpAddresses {
 
-  //private readonly networkBuilder: NetworkBuilder;
+  private readonly networkBuilder: NetworkBuilder;
 
   constructor(private readonly cidrBlock: string) {
-    // if (Token.isUnresolved(cidrBlock)) {
-    //   throw new Error('\'cidr\' property must be a concrete CIDR string, got a Token (we need to parse it for automatic subdivision)');
-    // }
+    if (Token.isUnresolved(cidrBlock)) {
+      throw new Error('\'cidr\' property must be a concrete CIDR string, got a Token (we need to parse it for automatic subdivision)');
+    }
 
-    //this.networkBuilder = new NetworkBuilder(this.cidrBlock);
+    this.networkBuilder = new NetworkBuilder(this.cidrBlock);
   }
 
   allocateVpcCidr(): VpcV2Options {
     return {
-      ipv4CidrBlock: this.cidrBlock,
+      ipv4CidrBlock: this.networkBuilder.networkCidr.cidr,
     };
   }
 }
@@ -393,9 +411,9 @@ class ipv6CidrAllocation implements IIpAddresses {
   }
 }
 
-export class AmazonProvided implements IIpAddresses {
+class AmazonProvided implements IIpAddresses {
 
-  private readonly amazonProvided: boolean;
+  amazonProvided: boolean;
   constructor() {
     this.amazonProvided = true;
   };
@@ -408,33 +426,21 @@ export class AmazonProvided implements IIpAddresses {
 
 }
 
-//Default Config
-// type IPaddressConfig = {
-//   octet1: number;
-//   octect2: number;
-// };
+function validateIpv4address(cidr?: string) {
+  
+}
 
-// function validateIpv4address(cidr1?: string, cidr2?: string) : Boolean {
-
-//   if (cidr1! && cidr2!) {
-//     const octets1: number[] = cidr1?.split('.').map(octet => parseInt(octet, 10));
-//     const octets2: number[] = cidr2?.split('.').map(octet => parseInt(octet, 10));
-
-//     const ip1 : IPaddressConfig = {
-//       octet1: octets1[0],
-//       octect2: octets1[1],
-//     };
-//     const ip2 : IPaddressConfig = {
-//       octet1: octets2[0],
-//       octect2: octets2[1],
-//     };
-//     if (octets2?.length !== 4) {
-//       throw new Error(`Invalid IPv4 CIDR: ${cidr1}`);
-//     } else {
-//       if ( ip1.octet1 === ip2.octet1) {
-//         return true;
-//       }
-//     }
-//   }
-//   return false;
-// }
+function routerTypeToPropName(routerType: RouterType) {
+  return ({
+    [RouterType.CARRIER_GATEWAY]: 'carrierGatewayId',
+    [RouterType.EGRESS_ONLY_INTERNET_GATEWAY]: 'egressOnlyInternetGatewayId',
+    [RouterType.GATEWAY]: 'gatewayId',
+    [RouterType.INSTANCE]: 'instanceId',
+    [RouterType.LOCAL_GATEWAY]: 'localGatewayId',
+    [RouterType.NAT_GATEWAY]: 'natGatewayId',
+    [RouterType.NETWORK_INTERFACE]: 'networkInterfaceId',
+    [RouterType.TRANSIT_GATEWAY]: 'transitGatewayId',
+    [RouterType.VPC_PEERING_CONNECTION]: 'vpcPeeringConnectionId',
+    [RouterType.VPC_ENDPOINT]: 'vpcEndpointId',
+  })[routerType];
+}
