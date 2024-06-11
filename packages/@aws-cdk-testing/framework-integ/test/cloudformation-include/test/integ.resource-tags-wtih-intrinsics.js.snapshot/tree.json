@@ -20,6 +20,14 @@
                   "version": "10.3.0"
                 }
               },
+              "Param": {
+                "id": "Param",
+                "path": "Stack/Stack/Param",
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
+                }
+              },
               "$Conditions": {
                 "id": "$Conditions",
                 "path": "Stack/Stack/$Conditions",
@@ -28,8 +36,8 @@
                     "id": "ShouldIncludeTag",
                     "path": "Stack/Stack/$Conditions/ShouldIncludeTag",
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.CfnCondition",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
                     }
                   }
                 },
@@ -58,7 +66,14 @@
                         "Fn::If": [
                           "ShouldIncludeTag",
                           {
-                            "Key": "TagName",
+                            "Key": {
+                              "Fn::Select": [
+                                0,
+                                {
+                                  "Ref": "Param"
+                                }
+                              ]
+                            },
                             "Value": "TagValue"
                           },
                           {
@@ -70,8 +85,8 @@
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_s3.CfnBucket",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
                 }
               },
               "$Hooks": {
@@ -92,30 +107,30 @@
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.cloudformation_include.CfnInclude",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
             }
           },
           "BootstrapVersion": {
             "id": "BootstrapVersion",
             "path": "Stack/BootstrapVersion",
             "constructInfo": {
-              "fqn": "aws-cdk-lib.CfnParameter",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
             }
           },
           "CheckBootstrapVersion": {
             "id": "CheckBootstrapVersion",
             "path": "Stack/CheckBootstrapVersion",
             "constructInfo": {
-              "fqn": "aws-cdk-lib.CfnRule",
-              "version": "0.0.0"
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
             }
           }
         },
         "constructInfo": {
-          "fqn": "aws-cdk-lib.Stack",
-          "version": "0.0.0"
+          "fqn": "constructs.Construct",
+          "version": "10.3.0"
         }
       },
       "ResourceTagIntrinsicStack": {
@@ -142,22 +157,22 @@
                     "id": "BootstrapVersion",
                     "path": "ResourceTagIntrinsicStack/DefaultTest/DeployAssert/BootstrapVersion",
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.CfnParameter",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
                     }
                   },
                   "CheckBootstrapVersion": {
                     "id": "CheckBootstrapVersion",
                     "path": "ResourceTagIntrinsicStack/DefaultTest/DeployAssert/CheckBootstrapVersion",
                     "constructInfo": {
-                      "fqn": "aws-cdk-lib.CfnRule",
-                      "version": "0.0.0"
+                      "fqn": "constructs.Construct",
+                      "version": "10.3.0"
                     }
                   }
                 },
                 "constructInfo": {
-                  "fqn": "aws-cdk-lib.Stack",
-                  "version": "0.0.0"
+                  "fqn": "constructs.Construct",
+                  "version": "10.3.0"
                 }
               }
             },
@@ -182,8 +197,8 @@
       }
     },
     "constructInfo": {
-      "fqn": "aws-cdk-lib.App",
-      "version": "0.0.0"
+      "fqn": "constructs.Construct",
+      "version": "10.3.0"
     }
   }
 }

@@ -1123,10 +1123,21 @@ describe('CDK Include', () => {
   });
 
   test('Fn::If can be used in Tags', () => {
-    includeTestTemplate(stack, 'tags-with-fn-if.json');
+    includeTestTemplate(stack, 'tags-with-intrinsics.json');
 
     Template.fromStack(stack).templateMatches(
-      loadTestFileToJsObject('tags-with-fn-if.json'),
+      loadTestFileToJsObject('tags-with-intrinsics.json'),
+      /*Resources: {
+        "Bucket": {
+          "Type": "AWS::S3::Bucket",
+          "Properties": {
+            "BucketName": "cdk-integ-cfn-include-bucket2",
+            "Tags": [
+            ],
+          },
+        },
+      },
+      */
     );
   });
 });

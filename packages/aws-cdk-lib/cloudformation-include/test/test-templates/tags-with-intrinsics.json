@@ -1,7 +1,13 @@
 {
+  "Parameters": {
+    "Param": {
+      "Type": "CommaDelimitedList",
+      "Default": "key,value"
+    }
+  },
   "Conditions": {
     "ShouldIncludeTag": {
-      "Fn::Equals": [ 2, 2 ]
+      "Fn::Equals": [2, 2]
     }
   },
   "Resources": {
@@ -14,7 +20,14 @@
             "Fn::If": [
               "ShouldIncludeTag",
               {
-                "Key": "TagName",
+                "Key": {
+                  "Fn::Select": [
+                    0,
+                    {
+                      "Ref": "Param"
+                    }
+                  ]
+                },
                 "Value": "TagValue"
               },
               {

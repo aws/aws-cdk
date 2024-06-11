@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/b533462d7b7ac7cdc460e96a0e3f7e7b589268c4549ee25ad4cab16f3be4c9c1.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/65183510cc1fe133ea25e9f8b474aa5adca1ac83c5e18072e74a62c2bb570cc2.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -38,6 +38,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "Stack"
+          }
+        ],
+        "/Stack/Stack/Param": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Param"
           }
         ],
         "/Stack/Stack/$Conditions/ShouldIncludeTag": [

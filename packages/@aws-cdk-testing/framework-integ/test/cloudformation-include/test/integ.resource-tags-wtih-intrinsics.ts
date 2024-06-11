@@ -7,7 +7,7 @@ const app = new core.App();
 const stack = new core.Stack(app, 'Stack');
 
 new inc.CfnInclude(stack, 'Stack', {
-  templateFile: 'test-templates/tags-with-fn-if.json',
+  templateFile: 'test-templates/tags-with-intrinsics.json',
 });
 
 new integ.IntegTest(app, 'ResourceTagIntrinsicStack', {

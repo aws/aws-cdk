@@ -1,4 +1,15 @@
 {
+ "Parameters": {
+  "Param": {
+   "Type": "CommaDelimitedList",
+   "Default": "key,value"
+  },
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
  "Conditions": {
   "ShouldIncludeTag": {
    "Fn::Equals": [
@@ -17,7 +28,14 @@
       "Fn::If": [
        "ShouldIncludeTag",
        {
-        "Key": "TagName",
+        "Key": {
+         "Fn::Select": [
+          0,
+          {
+           "Ref": "Param"
+          }
+         ]
+        },
         "Value": "TagValue"
        },
        {
@@ -27,13 +45,6 @@
      }
     ]
    }
-  }
- },
- "Parameters": {
-  "BootstrapVersion": {
-   "Type": "AWS::SSM::Parameter::Value<String>",
-   "Default": "/cdk-bootstrap/hnb659fds/version",
-   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
   }
  },
  "Rules": {
