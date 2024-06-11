@@ -4160,12 +4160,27 @@
     chalk "^4.1.2"
     semver "^7.5.4"
 
+"@jsii/check-node@1.99.0":
+  version "1.99.0"
+  resolved "https://registry.npmjs.org/@jsii/check-node/-/check-node-1.99.0.tgz#fdf1d030bc9c456727ebb2f53a60af1d7712641f"
+  integrity sha512-RJeVopU3U+/ZxGj//KKJgXmDM8N7uP5QIqypb0QFVJPtIcQMM9nuEQWp4hOB3ajhk4VNaXGrG6PwlqFtFsqbbQ==
+  dependencies:
+    chalk "^4.1.2"
+    semver "^7.6.0"
+
 "@jsii/spec@1.98.0", "@jsii/spec@^1.97.0", "@jsii/spec@^1.98.0":
   version "1.98.0"
   resolved "https://registry.npmjs.org/@jsii/spec/-/spec-1.98.0.tgz#7495f2d123b95b67ba0da4d3a18cac763d401da2"
   integrity sha512-5FCJedjFrxKt0wrcSnXetHHTXQV6OQM2NlE/WJNvjwqlk+RYfw+BwZOBYHsoaQx1Qh0pTwN7ZM9WmEusN3GdNw==
   dependencies:
     ajv "^8.12.0"
+
+"@jsii/spec@^1.99.0":
+  version "1.99.0"
+  resolved "https://registry.npmjs.org/@jsii/spec/-/spec-1.99.0.tgz#f71bfcf83e2e48d7894821cc8b52c320f52cbbf4"
+  integrity sha512-R4E0lFj+C2PpLt2tnexIlQA7Ovy52tL9PRcDy6sUcnJto4iZufexudIm4pjIJPN+bfwimQX5aMjALloRwDixtQ==
+  dependencies:
+    ajv "^8.13.0"
 
 "@lerna/create@8.1.2":
   version "8.1.2"
@@ -6385,6 +6400,16 @@ ajv@^8.0.1, ajv@^8.12.0:
   version "8.13.0"
   resolved "https://registry.npmjs.org/ajv/-/ajv-8.13.0.tgz#a3939eaec9fb80d217ddf0c3376948c023f28c91"
   integrity sha512-PRA911Blj99jR5RMeTunVbNXMF6Lp4vZXnk5GQjcnUWUTsrXtekg/pnmFFI2u/I36Y/2bITGS30GZCXei6uNkA==
+  dependencies:
+    fast-deep-equal "^3.1.3"
+    json-schema-traverse "^1.0.0"
+    require-from-string "^2.0.2"
+    uri-js "^4.4.1"
+
+ajv@^8.13.0:
+  version "8.16.0"
+  resolved "https://registry.npmjs.org/ajv/-/ajv-8.16.0.tgz#22e2a92b94f005f7e0f9c9d39652ef0b8f6f0cb4"
+  integrity sha512-F0twR8U1ZU67JIEtekUcLkXkoO5mMMmgGD8sK/xUFzJ805jxHQl92hImFAqqXMyMYjSPOyUPAwHYhB72g5sTXw==
   dependencies:
     fast-deep-equal "^3.1.3"
     json-schema-traverse "^1.0.0"
@@ -11225,19 +11250,19 @@ jsii-rosetta@~5.4.10:
     workerpool "^6.5.1"
     yargs "^17.7.2"
 
-jsii@~5.4.0, jsii@~5.4.9:
-  version "5.4.9"
-  resolved "https://registry.npmjs.org/jsii/-/jsii-5.4.9.tgz#8a45ab4747536779aed8fcf5930ce697cc939b23"
-  integrity sha512-FnDNf93NnY3+4fwbKMGsfK+T0ojDzo5JSoEDYHa6YIgQNcAIsag+eUJyIsCsjND0y5dkdMPmnGjlq0U+DrF9QQ==
+jsii@~5.4.0, jsii@~5.4.21:
+  version "5.4.21"
+  resolved "https://registry.npmjs.org/jsii/-/jsii-5.4.21.tgz#be94a5a9d292409e0f626145c2f1a98cdbb625ad"
+  integrity sha512-uCruIDzEEFHBwZRT5PiRSd2/KdsZWwHq8VWS5o8p5tngUGpz4BYdEG/jmOKYyjVz+ScVx+Ur/eN2zieTP6Ge2Q==
   dependencies:
-    "@jsii/check-node" "1.97.0"
-    "@jsii/spec" "^1.97.0"
+    "@jsii/check-node" "1.99.0"
+    "@jsii/spec" "^1.99.0"
     case "^1.6.3"
     chalk "^4"
     downlevel-dts "^0.11.0"
     fast-deep-equal "^3.1.3"
     log4js "^6.9.1"
-    semver "^7.6.0"
+    semver "^7.6.2"
     semver-intersect "^1.5.0"
     sort-json "^2.0.1"
     spdx-license-list "^6.9.0"
@@ -14631,6 +14656,11 @@ semver@^7.0.0, semver@^7.1.1, semver@^7.2.1, semver@^7.3.2, semver@^7.3.4, semve
   integrity sha512-EnwXhrlwXMk9gKu5/flx5sv/an57AkRplG3hTK68W7FRDN+k+OWBj65M7719OkA82XLBxrcX0KSHj+X5COhOVg==
   dependencies:
     lru-cache "^6.0.0"
+
+semver@^7.6.2:
+  version "7.6.2"
+  resolved "https://registry.npmjs.org/semver/-/semver-7.6.2.tgz#1e3b34759f896e8f14d6134732ce798aeb0c6e13"
+  integrity sha512-FNAIBWCx9qcRhoHcgcJ0gvU7SN1lYU2ZXuSfl04bSC5OpvDHFyJCjdNHomPXxjQlCBU67YW64PzY7/VIEH7F2w==
 
 sentence-case@^3.0.4:
   version "3.0.4"
