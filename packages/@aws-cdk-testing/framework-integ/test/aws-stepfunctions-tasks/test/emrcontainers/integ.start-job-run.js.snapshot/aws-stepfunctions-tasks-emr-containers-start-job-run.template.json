@@ -1216,7 +1216,7 @@
          "Id"
         ]
        },
-       "\"},\"outputPaths\":[\"virtualCluster.containerProvider.info.eksInfo.namespace\",\"virtualCluster.containerProvider.id\"],\"physicalResourceId\":{\"id\":\"id\"},\"logApiResponseData\":true}"
+       "\"},\"outputPaths\":[\"virtualCluster.containerProvider.info.eksInfo.namespace\",\"virtualCluster.containerProvider.id\"],\"physicalResourceId\":{\"id\":\"id\"}}"
       ]
      ]
     },
