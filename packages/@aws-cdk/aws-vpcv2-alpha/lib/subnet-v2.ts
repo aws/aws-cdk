@@ -47,10 +47,9 @@ export interface SubnetPropsV2 {
   availabilityZone: string;
 
   /**
-   * Isolated subnet or not
-   * @default true
+   * Custom Route for subnet
    */
-  isIsolated?: Boolean;
+  routeTable?: IRouteTable;
 
 }
 
@@ -92,6 +91,12 @@ export class SubnetV2 extends Resource implements ISubnet {
    */
   private _networkAcl: INetworkAcl;
 
+  /**
+   * Isolated subnet or not
+   * @default true
+   */
+  private isIsolated?: Boolean;
+
   constructor(scope: Construct, id: string, props: SubnetPropsV2) {
     super(scope, id);
 
@@ -119,6 +124,18 @@ export class SubnetV2 extends Resource implements ISubnet {
     this._internetConnectivityEstablished.add(routeAssoc);
 
     this.internetConnectivityEstablished = this._internetConnectivityEstablished;
+
+    if (props.routeTable) {
+      this.isIsolated = false;
+      new CfnSubnetRouteTableAssociation(this, 'CustomRouteTableAssociation', {
+        subnetId: this.subnetId,
+        routeTableId: props.routeTable.routeTableId,
+      });
+    }
+
+    if (!this.isIsolated) {
+      pushIsolatedSubnet(props.vpc, this);
+    } //isolated by default
   }
   /**
    * Associate a Network ACL with this subnet
@@ -140,4 +157,8 @@ export class SubnetV2 extends Resource implements ISubnet {
     return this._networkAcl;
   }
 
+}
+
+function pushIsolatedSubnet(vpc: IVpcV2, subnet: SubnetV2) {
+  vpc.isolatedSubnets.push(subnet);
 }

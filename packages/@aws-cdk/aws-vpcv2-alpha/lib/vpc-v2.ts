@@ -1,7 +1,7 @@
-import { CfnIPAMPool, CfnRoute, CfnRouteTable, CfnVPC, CfnVPCCidrBlock, INetworkAcl, IRouteTable, RouterType, SubnetSelection } from 'aws-cdk-lib/aws-ec2';
+import { CfnIPAMPool, CfnRoute, CfnRouteTable, CfnVPC, CfnVPCCidrBlock, IRouteTable, ISubnet, RouterType, SubnetSelection } from 'aws-cdk-lib/aws-ec2';
 //import { NetworkBuilder } from 'aws-cdk-lib/aws-ec2/lib/network-util';
 import { Resource, Token } from 'aws-cdk-lib/core';
-import { Construct, IDependable } from 'constructs';
+import { Construct } from 'constructs';
 import { IpamIpv4, IpamIpv6 } from './ipam';
 import { Arn } from 'aws-cdk-lib/core/lib/arn';
 import { NetworkBuilder } from 'aws-cdk-lib/aws-ec2/lib/network-util';
@@ -102,6 +102,21 @@ export interface IVpcV2 {
 
   readonly vpcCidrBlock: string;
 
+  /**
+   * List of public subnets in this VPC
+   */
+  readonly publicSubnets?: ISubnet[];
+
+  /**
+     * List of private subnets in this VPC
+     */
+  readonly privateSubnets?: ISubnet[];
+
+  /**
+     * List of isolated subnets in this VPC
+     */
+  readonly isolatedSubnets: ISubnet[];
+
 }
 
 export interface IIpv6AddressesOptions {
@@ -154,10 +169,6 @@ export class VpcV2 extends Resource implements IVpcV2 {
      * @attribute
      */
   public readonly vpcCidrBlock: string;
-
-  /**
-   *
-   */
   /**
    * The IPv6 CIDR block CFN resource.
    *
@@ -183,6 +194,8 @@ export class VpcV2 extends Resource implements IVpcV2 {
      * Indicates if DNS support is enabled for this VPC.
      */
   public readonly dnsSupportEnabled: boolean;
+
+  public readonly isolatedSubnets: ISubnet[];
 
   constructor(scope: Construct, id: string, props: VpcV2Props = {}) {
     super(scope, id);
@@ -234,42 +247,12 @@ export class VpcV2 extends Resource implements IVpcV2 {
         });
       }
     }
+
+    /**
+     * Empty array for isolated subnets
+     */
+    this.isolatedSubnets = new Array<ISubnet>;
   }
-}
-
-export interface ISubnetV2 {
-  /**
-   * The Availability Zone the subnet is located in
-   */
-  readonly availabilityZone: string;
-
-  /**
-   * The subnetId for this particular subnet
-   * @attribute
-   */
-  readonly subnetId: string;
-
-  /**
-   * Dependable that can be depended upon to force internet connectivity established on the VPC
-   */
-  readonly internetConnectivityEstablished: IDependable;
-
-  /**
-   * The IPv4 CIDR block for this subnet
-   */
-  readonly ipv4CidrBlock: string;
-
-  /**
-   * The route table for this subnet
-   */
-  readonly routeTable: IRouteTable;
-
-  /**
-   * Associate a Network ACL with this subnet
-   *
-   * @param acl The Network ACL to associate
-   */
-  associateNetworkAcl(id: string, acl: INetworkAcl): void;
 }
 
 export interface IRouter {
