@@ -40,7 +40,7 @@ export interface EvalNodejsSingletonFunctionProps extends lambda.FunctionOptions
   /**
    * The runtime that this Lambda will use.
    *
-   * @default lambda.Runtime.NODEJS_18_X
+   * @default - the latest Lambda node runtime available in your region.
    */
   readonly runtime?: lambda.Runtime;
 }

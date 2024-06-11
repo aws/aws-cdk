@@ -562,11 +562,11 @@
        {
         "Ref": "CanaryRemoved24AD6309"
        },
-       "\"},\"logApiResponseData\":true}"
+       "\"}}"
       ]
      ]
     },
-    "InstallLatestAwsSdk": "false"
+    "InstallLatestAwsSdk": false
    },
    "DependsOn": [
     "DeleteCanaryCustomResourcePolicy98D0C78F"

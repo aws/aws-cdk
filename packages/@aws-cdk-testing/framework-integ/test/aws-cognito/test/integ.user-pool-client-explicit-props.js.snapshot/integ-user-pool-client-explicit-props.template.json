@@ -128,7 +128,7 @@
        {
         "Ref": "myuserpoolmyuserpoolclientAFB2274E"
        },
-       "\"},\"logApiResponseData\":true}"
+       "\"}}"
       ]
      ]
     },
@@ -152,7 +152,7 @@
        {
         "Ref": "myuserpoolmyuserpoolclientAFB2274E"
        },
-       "\"},\"logApiResponseData\":true}"
+       "\"}}"
       ]
      ]
     },

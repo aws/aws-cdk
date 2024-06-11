@@ -182,7 +182,7 @@ export abstract class HandlerFrameworkClass extends ClassType {
             docs: {
               summary: 'The runtime that this Lambda will use.',
               docTags: {
-                default: 'the latest Lambda node runtime available in your region.',
+                default: '- the latest Lambda node runtime available in your region.',
               },
             },
           };

@@ -583,7 +583,7 @@
        {
         "Ref": "Vpc8378EB38"
        },
-       "\"]}]},\"physicalResourceId\":{\"responsePath\":\"SecurityGroups.0.GroupId\"},\"logApiResponseData\":true}"
+       "\"]}]},\"physicalResourceId\":{\"responsePath\":\"SecurityGroups.0.GroupId\"}}"
       ]
      ]
     },
@@ -595,7 +595,7 @@
        {
         "Ref": "Vpc8378EB38"
        },
-       "\"]}]},\"physicalResourceId\":{\"responsePath\":\"SecurityGroups.0.GroupId\"},\"logApiResponseData\":true}"
+       "\"]}]},\"physicalResourceId\":{\"responsePath\":\"SecurityGroups.0.GroupId\"}}"
       ]
      ]
     },
