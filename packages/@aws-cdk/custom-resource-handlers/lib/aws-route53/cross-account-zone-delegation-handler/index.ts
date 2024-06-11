@@ -77,7 +77,12 @@ async function cfnEventHandler(props: ResourceProperties, isDeleteEvent: boolean
 
 async function getHostedZoneIdByName(name: string, route53: Route53): Promise<string> {
   const zones = await route53.listHostedZonesByName({ DNSName: name });
-  const matchedZones = zones.HostedZones?.filter(zone => zone.Name === `${name}.`) ?? [];
+  const matchedZones = zones.HostedZones?.filter(zone => {
+    const matchZoneName = zone.Name === `${name}.`;
+    const isPublic = zone.Config?.PrivateZone !== true;
+
+    return matchZoneName && isPublic;
+  }) ?? [];
 
   if (matchedZones && matchedZones.length !== 1) {
     throw Error(`Expected one hosted zone to match the given name but found ${matchedZones.length}`);
