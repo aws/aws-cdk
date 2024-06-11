@@ -75,6 +75,12 @@
             "data": "CdkStagingBucketAutoDeleteObjectsCustomResource800E998D"
           }
         ],
+        "/StagingStack-default-resourcesmax-ACCOUNT-REGION/LatestNodeRuntimeMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatestNodeRuntimeMap"
+          }
+        ],
         "/StagingStack-default-resourcesmax-ACCOUNT-REGION/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role": [
           {
             "type": "aws:cdk:logicalId",
