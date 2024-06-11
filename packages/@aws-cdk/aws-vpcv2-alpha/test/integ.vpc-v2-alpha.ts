@@ -31,8 +31,8 @@ const pool = ipam.publicScope.addPool({
 new vpc_v2.VpcV2(stack, 'VPCTest', {
   primaryAddressBlock: vpc_v2.IpAddresses.ipv4('10.0.0.0/16'),
   secondaryAddressBlocks: [vpc_v2.IpAddresses.ipv4Ipam({
-    ipv4IpamPoolId: pool,
-    netmaskLength: 20,
+    ipv4IpamPoolId: pool.attrIpamPoolId,
+    ipv4NetmaskLength: 20,
   })],
   enableDnsHostnames: true,
   enableDnsSupport: true,

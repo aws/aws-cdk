@@ -1,6 +1,6 @@
-import { CfnIPAMPool, CfnRoute, CfnRouteTable, CfnVPC, CfnVPCCidrBlock, INetworkAcl, IRouteTable, RouterType, SubnetSelection } from 'aws-cdk-lib/aws-ec2/lib';
-import { NetworkBuilder } from 'aws-cdk-lib/aws-ec2/lib/network-util';
-import { Resource } from 'aws-cdk-lib/core/lib/resource';
+import { CfnIPAMPool, CfnRoute, CfnRouteTable, CfnVPC, CfnVPCCidrBlock, INetworkAcl, IRouteTable, RouterType, SubnetSelection } from 'aws-cdk-lib/aws-ec2';
+//import { NetworkBuilder } from 'aws-cdk-lib/aws-ec2/lib/network-util';
+import { Resource } from 'aws-cdk-lib/core';
 import { Construct, IDependable } from 'constructs';
 import { IpamIpv4, IpamIpv6 } from './ipam';
 // eslint-disable-next-line no-duplicate-imports
@@ -8,7 +8,7 @@ import { Arn } from 'aws-cdk-lib/core';
 
 export interface IIpIpamOptions{
   readonly ipv4IpamPoolId: any;
-  readonly netmaskLength: number;
+  readonly ipv4NetmaskLength: number;
 }
 
 export interface Ipv6AddressesOptions {
@@ -201,7 +201,7 @@ export class VpcV2 extends Resource implements IVpcV2 {
     });
 
     this.vpcCidrBlock = this.resource.attrCidrBlock;
-    this.vpcId = this.resource.ref;
+    this.vpcId = this.resource.attrVpcId;
     this.vpcArn = Arn.format({
       service: 'ec2',
       resource: 'vpc',
@@ -240,7 +240,6 @@ export class VpcV2 extends Resource implements IVpcV2 {
   }
 }
 
-
 export interface ISubnetV2 {
   /**
    * The Availability Zone the subnet is located in
@@ -276,19 +275,16 @@ export interface ISubnetV2 {
   associateNetworkAcl(id: string, acl: INetworkAcl): void;
 }
 
-
 export interface IRouteV2 {
   readonly destination: IIpAddresses;
   readonly target: IRouter;
   readonly routeTableId: string;
 }
 
-
 export interface IRouter {
   readonly subnets: SubnetSelection[];
   readonly routerType: RouterType;
 }
-
 
 export interface RouterProps {
   readonly subnets?: SubnetSelection[];
@@ -297,7 +293,7 @@ export interface RouterProps {
 export class GatewayV2 extends Resource implements IRouter {
   public readonly subnets: SubnetSelection[];
   public readonly routerType: RouterType;
-  
+
   constructor(scope: Construct, id: string, props: RouterProps = {}) {
     super(scope, id);
 
@@ -305,7 +301,6 @@ export class GatewayV2 extends Resource implements IRouter {
     this.routerType = RouterType.GATEWAY;
   }
 }
-
 
 export class Route extends Resource implements IRouteV2 {
   public readonly destination: IIpAddresses;
@@ -332,13 +327,11 @@ export class Route extends Resource implements IRouteV2 {
 
 }
 
-
 export interface RouteProps {
   readonly destination?: IIpAddresses;
   readonly target?: IRouter;
   readonly routeTableId?: string;
 }
-
 
 export class RouteTable extends Resource implements IRouteTable {
   public readonly routeTableId: string;
@@ -346,7 +339,7 @@ export class RouteTable extends Resource implements IRouteTable {
 
   public readonly resource: CfnRouteTable;
 
-  constructor(scope: Construct, id: string, props: RouteTableProps = {vpcId: 'default'}) {
+  constructor(scope: Construct, id: string, props: RouteTableProps = { vpcId: 'default' }) {
     super(scope, id);
 
     this.routeTableId = props.routeTableId ?? 'placeholder';
@@ -358,13 +351,11 @@ export class RouteTable extends Resource implements IRouteTable {
   }
 }
 
-
 export interface RouteTableProps {
-  readonly vpcId: string
+  readonly vpcId: string;
   readonly routeTableId?: string;
   readonly routes?: IRouteV2[];
 }
-
 
 class ipv4CidrAllocation implements IIpAddresses {
 
