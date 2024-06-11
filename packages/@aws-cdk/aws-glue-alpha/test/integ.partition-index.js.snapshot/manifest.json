@@ -76,6 +76,12 @@
             "data": "CSVTablepartitionindexindex2CustomResourcePolicy4FF1AF9F"
           }
         ],
+        "/aws-cdk-glue/LatestNodeRuntimeMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatestNodeRuntimeMap"
+          }
+        ],
         "/aws-cdk-glue/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",

@@ -52,6 +52,12 @@
             "data": "myCRCustomResourcePolicy05AD5A90"
           }
         ],
+        "/aws-cdk-sdk-dynamodb/LatestNodeRuntimeMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatestNodeRuntimeMap"
+          }
+        ],
         "/aws-cdk-sdk-dynamodb/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",

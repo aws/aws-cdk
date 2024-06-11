@@ -58,6 +58,12 @@
             "data": "DomainESAccessPolicyCustomResourcePolicy9747FC42"
           }
         ],
+        "/cdk-integ-elasticsearch-unsignedbasicauth/LatestNodeRuntimeMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatestNodeRuntimeMap"
+          }
+        ],
         "/cdk-integ-elasticsearch-unsignedbasicauth/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",

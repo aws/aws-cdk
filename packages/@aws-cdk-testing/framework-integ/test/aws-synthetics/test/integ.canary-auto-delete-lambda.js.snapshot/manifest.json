@@ -64,6 +64,12 @@
             "data": "CanaryAutoDeleteUnderlyingResourcesCustomResource76464216"
           }
         ],
+        "/cdk-synthetics-canary-auto-delete/LatestNodeRuntimeMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatestNodeRuntimeMap"
+          }
+        ],
         "/cdk-synthetics-canary-auto-delete/Custom::SyntheticsAutoDeleteUnderlyingResourcesCustomResourceProvider/Role": [
           {
             "type": "aws:cdk:logicalId",

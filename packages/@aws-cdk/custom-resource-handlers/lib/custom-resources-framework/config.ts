@@ -88,10 +88,16 @@ export type HandlerFrameworkConfig = { [module: string]: { [identifier: string]:
 
 export const config: HandlerFrameworkConfig = {
   'aws-amplify-alpha': {
-    'asset-deployment-handler': [
+    'asset-deployment-provider': [
       {
-        type: ComponentType.NO_OP,
+        type: ComponentType.FUNCTION,
         sourceCode: path.resolve(__dirname, '..', 'aws-amplify-alpha', 'asset-deployment-handler', 'index.ts'),
+        handler: 'index.onEvent',
+      },
+      {
+        type: ComponentType.FUNCTION,
+        sourceCode: path.resolve(__dirname, '..', 'aws-amplify-alpha', 'asset-deployment-handler', 'index.ts'),
+        handler: 'index.isComplete',
       },
     ],
   },

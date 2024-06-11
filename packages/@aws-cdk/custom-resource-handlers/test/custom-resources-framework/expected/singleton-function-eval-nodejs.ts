@@ -9,7 +9,7 @@ export class EvalNodejsSingletonFunction extends lambda.SingletonFunction {
       ...props,
       "code": lambda.Code.fromAsset(path.join(__dirname, 'my-handler')),
       "handler": "index.handler",
-      "runtime": props.runtime ?? lambda.Runtime.NODEJS_18_X
+      "runtime": (props.runtime ? props.runtime : lambda.determineLatestNodeRuntime(scope))
     });
   }
 }

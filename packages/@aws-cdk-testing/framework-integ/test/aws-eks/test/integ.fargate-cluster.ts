@@ -14,6 +14,7 @@ class EksFargateClusterStack extends Stack {
     new eks.FargateCluster(this, 'FargateCluster', {
       ...getClusterVersionConfig(this),
       prune: false,
+      clusterName: 'updated-cluster',
     });
   }
 }

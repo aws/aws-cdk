@@ -52,6 +52,12 @@
             "data": "CustomConfigDeploymentConfigCustomResourcePolicy0426B684"
           }
         ],
+        "/aws-cdk-codedeploy-lambda-config/LatestNodeRuntimeMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatestNodeRuntimeMap"
+          }
+        ],
         "/aws-cdk-codedeploy-lambda-config/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
