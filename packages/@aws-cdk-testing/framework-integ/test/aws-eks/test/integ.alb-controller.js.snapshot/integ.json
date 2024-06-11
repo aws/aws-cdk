@@ -3,7 +3,8 @@
   "testCases": {
     "aws-cdk-cluster-alb-controller-integ/DefaultTest": {
       "stacks": [
-        "aws-cdk-eks-cluster-alb-controller"
+        "aws-cdk-eks-cluster-alb-controller",
+        "aws-cdk-eks-cluster-alb-controller-values"
       ],
       "diffAssets": false,
       "assertionStack": "aws-cdk-cluster-alb-controller-integ/DefaultTest/DeployAssert",
