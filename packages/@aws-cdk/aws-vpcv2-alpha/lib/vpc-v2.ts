@@ -1,14 +1,15 @@
-import { CfnIPAMPool, CfnRoute, CfnRouteTable, CfnVPC, CfnVPCCidrBlock, INetworkAcl, IRouteTable, RouterType, SubnetSelection } from 'aws-cdk-lib/aws-ec2/lib';
-import { NetworkBuilder } from 'aws-cdk-lib/aws-ec2/lib/network-util';
-import { Resource } from 'aws-cdk-lib/core/lib/resource';
+import { CfnIPAMPool, CfnRoute, CfnRouteTable, CfnVPC, CfnVPCCidrBlock, INetworkAcl, IRouteTable, RouterType, SubnetSelection } from 'aws-cdk-lib/aws-ec2';
+//import { NetworkBuilder } from 'aws-cdk-lib/aws-ec2/lib/network-util';
+import { Resource } from 'aws-cdk-lib/core';
 import { Construct, IDependable } from 'constructs';
 import { IpamIpv4, IpamIpv6 } from './ipam';
 import { Arn } from 'aws-cdk-lib/core/lib/arn';
 import { Token } from 'aws-cdk-lib/core';
+import { NetworkBuilder } from 'aws-cdk-lib/aws-ec2/lib/network-util';
 
 export interface IIpIpamOptions{
   readonly ipv4IpamPoolId: any;
-  readonly netmaskLength: number;
+  readonly ipv4NetmaskLength: number;
 }
 
 export interface Ipv6AddressesOptions {
@@ -201,7 +202,7 @@ export class VpcV2 extends Resource implements IVpcV2 {
     });
 
     this.vpcCidrBlock = this.resource.attrCidrBlock;
-    this.vpcId = this.resource.ref;
+    this.vpcId = this.resource.attrVpcId;
     this.vpcArn = Arn.format({
       service: 'ec2',
       resource: 'vpc',
@@ -236,7 +237,6 @@ export class VpcV2 extends Resource implements IVpcV2 {
     }
   }
 }
-
 
 export interface ISubnetV2 {
   /**
@@ -305,7 +305,6 @@ export interface IRouteV2 {
   readonly routeTable: IRouteTable;
 }
 
-
 export class Route extends Resource implements IRouteV2 {
   public readonly destination: IIpAddresses;
   public readonly target: IRouter;
@@ -338,13 +337,11 @@ export class Route extends Resource implements IRouteV2 {
 
 }
 
-
 export interface RouteProps {
   readonly routeTable: IRouteTable;
   readonly destination: IIpAddresses;
   readonly target: IRouter;
 }
-
 
 export class RouteTable extends Resource implements IRouteTable {
   public readonly routeTableId: string;
@@ -373,12 +370,10 @@ export class RouteTable extends Resource implements IRouteTable {
   // }
 }
 
-
 export interface RouteTableProps {
   readonly vpcId: string;
   // readonly routes?: IRouteV2[];
 }
-
 
 class ipv4CidrAllocation implements IIpAddresses {
 

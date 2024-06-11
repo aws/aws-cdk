@@ -8,6 +8,17 @@ export enum AddressFamily {
   IP_V6,
 }
 
+function getAddressFamilyString(addressFamily: AddressFamily): string {
+  switch (addressFamily) {
+    case AddressFamily.IP_V4:
+      return 'ipv4';
+    case AddressFamily.IP_V6:
+      return 'ipv6';
+    default:
+      throw new Error(`Unsupported AddressFamily: ${addressFamily}`);
+  }
+}
+
 export interface PoolOptions{
   readonly addressFamily: AddressFamily;
   readonly provisionedCidrs: CfnIPAMPool.ProvisionedCidrProperty[];
@@ -107,9 +118,10 @@ export class IpamPublicScope {
     });
 
     return new CfnIPAMPool(this.ipam, 'TestPool', {
-      addressFamily: options.addressFamily.toString(),
+      addressFamily: getAddressFamilyString(options.addressFamily),
       provisionedCidrs: options.provisionedCidrs,
       ipamScopeId: scope.ipamScopeId,
+      locale: 'us-west-2',
     });
   }
 }
