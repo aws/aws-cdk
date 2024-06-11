@@ -144,9 +144,7 @@
       }
      ]
     }
-   },
-   "UpdateReplacePolicy": "Retain",
-   "DeletionPolicy": "Retain"
+   }
   },
   "Q63C6E3AB": {
    "Type": "AWS::SQS::Queue",

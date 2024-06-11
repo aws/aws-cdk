@@ -133,6 +133,7 @@ export class BucketNotifications extends Construct {
           BucketName: this.bucket.bucketName,
           NotificationConfiguration: cdk.Lazy.any({ produce: () => this.renderNotificationConfiguration() }),
           Managed: managed,
+          S3NotificationsDeleteFeatureFlagEnabled: true
         },
       });
 
