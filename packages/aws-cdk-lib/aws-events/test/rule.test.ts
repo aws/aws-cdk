@@ -72,6 +72,25 @@ describe('rule', () => {
     });
   });
 
+  test('rule cannot have more than 5 targets', () => {
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app);
+    const resource = new Construct(stack, 'Resource');
+    const rule = new Rule(stack, 'MyRule', {
+      schedule: Schedule.rate(cdk.Duration.minutes(10)),
+      targets: [
+        new SomeTarget('T1', resource),
+        new SomeTarget('T2', resource),
+        new SomeTarget('T3', resource),
+        new SomeTarget('T4', resource),
+        new SomeTarget('T5', resource),
+        new SomeTarget('T6', resource),
+      ],
+    });
+
+    expect(() => app.synth()).toThrow(/Event rule cannot have more than 5 targets./);
+  });
+
   test('get rate as token', () => {
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'MyScheduledStack');
