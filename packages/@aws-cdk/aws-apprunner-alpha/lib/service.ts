@@ -726,11 +726,19 @@ export interface ServiceProps {
   readonly kmsKey?: kms.IKey;
 
   /**
+   * The IP address type for your incoming public network configuration.
+   *
+   * @default - IpAddressType.IPV4
+   */
+  readonly ipAddressType?: IpAddressType;
+
+  /**
    * Settings for an App Runner observability configuration.
    *
    * @default - no observability configuration resource is associated with the service.
    */
   readonly observabilityConfiguration?: IObservabilityConfiguration;
+
 }
 
 /**
@@ -1013,6 +1021,21 @@ export class HealthCheck {
 }
 
 /**
+ * The IP address type for your incoming public network configuration.
+ */
+export enum IpAddressType {
+  /**
+   * IPV4
+   */
+  IPV4 = 'IPV4',
+
+  /**
+   * DUAL_STACK
+   */
+  DUAL_STACK = 'DUAL_STACK',
+}
+
+/**
  * Attributes for the App Runner Service
  */
 export interface ServiceAttributes {
@@ -1263,6 +1286,7 @@ export class Service extends cdk.Resource implements iam.IGrantable {
           egressType: this.props.vpcConnector ? 'VPC' : 'DEFAULT',
           vpcConnectorArn: this.props.vpcConnector?.vpcConnectorArn,
         },
+        ipAddressType: this.props.ipAddressType,
       },
       healthCheckConfiguration: this.props.healthCheck ?
         this.props.healthCheck.bind() :

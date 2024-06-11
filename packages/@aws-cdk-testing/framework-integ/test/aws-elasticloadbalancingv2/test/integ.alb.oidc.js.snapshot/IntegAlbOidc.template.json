@@ -627,7 +627,7 @@
        {
         "Ref": "UserPoolUserPoolClient40176907"
        },
-       "\"},\"logApiResponseData\":true}"
+       "\"}}"
       ]
      ]
     },
@@ -651,7 +651,7 @@
        {
         "Ref": "UserPoolUserPoolClient40176907"
        },
-       "\"},\"logApiResponseData\":true}"
+       "\"}}"
       ]
      ]
     },
@@ -958,11 +958,11 @@
        {
         "Ref": "UserPool6BA7E5F2"
        },
-       "\",\"Username\":\"test-user@example.com\",\"UserAttributes\":[{\"Name\":\"email\",\"Value\":\"test-user@example.com\"},{\"Name\":\"email_verified\",\"Value\":\"true\"}],\"MessageAction\":\"SUPPRESS\"},\"physicalResourceId\":{\"id\":\"User\"},\"logApiResponseData\":true}"
+       "\",\"Username\":\"test-user@example.com\",\"UserAttributes\":[{\"Name\":\"email\",\"Value\":\"test-user@example.com\"},{\"Name\":\"email_verified\",\"Value\":\"true\"}],\"MessageAction\":\"SUPPRESS\"},\"physicalResourceId\":{\"id\":\"User\"}}"
       ]
      ]
     },
-    "InstallLatestAwsSdk": "false"
+    "InstallLatestAwsSdk": false
    },
    "DependsOn": [
     "UserCustomResourcePolicyC2EB5139"
@@ -1020,11 +1020,11 @@
          "User.Username"
         ]
        },
-       "\",\"Password\":\"TestUser@123\",\"Permanent\":true},\"physicalResourceId\":{\"id\":\"SetUserPassword\"},\"logApiResponseData\":true}"
+       "\",\"Password\":\"TestUser@123\",\"Permanent\":true},\"physicalResourceId\":{\"id\":\"SetUserPassword\"}}"
       ]
      ]
     },
-    "InstallLatestAwsSdk": "false"
+    "InstallLatestAwsSdk": false
    },
    "DependsOn": [
     "UserCustomResourcePolicyC2EB5139",
