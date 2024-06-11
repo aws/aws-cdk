@@ -179,6 +179,11 @@ export enum EventAction {
   PULL_REQUEST_UPDATED = 'PULL_REQUEST_UPDATED',
 
   /**
+   * Closing a Pull Request.
+   */
+  PULL_REQUEST_CLOSED = 'PULL_REQUEST_CLOSED',
+
+  /**
    * Merging a Pull Request.
    */
   PULL_REQUEST_MERGED = 'PULL_REQUEST_MERGED',
@@ -188,6 +193,24 @@ export enum EventAction {
    * Note that this event is only supported for GitHub and GitHubEnterprise sources.
    */
   PULL_REQUEST_REOPENED = 'PULL_REQUEST_REOPENED',
+
+  /**
+   * A release is created in the repository.
+   * Works with GitHub only.
+   */
+  RELEASED = 'RELEASED',
+
+  /**
+   * A prerelease is created in the repository.
+   * Works with GitHub only.
+   */
+  PRERELEASED = 'PRERELEASED',
+
+  /**
+   * A workflow job is queued in the repository.
+   * Works with GitHub only.
+   */
+  WORKFLOW_JOB_QUEUED = 'WORKFLOW_JOB_QUEUED',
 }
 
 enum WebhookFilterTypes {
