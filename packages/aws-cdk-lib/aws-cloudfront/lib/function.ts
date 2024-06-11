@@ -222,8 +222,12 @@ export class Function extends Resource implements IFunction {
   }
 
   private generateName(): string {
-    const maxNameLength = 64 - '${Token[AWS.Region.00]}'.length;
-    if (Names.uniqueId(this).length < maxNameLength) {
+    /**
+     * Since token string can be single- or double-digit region name, it may
+     * lead to non-deterministic behaviour.
+     */
+    const idLength = 64 - '${Token[AWS.Region.00]}'.length;
+    if (Names.uniqueId(this).length <= idLength) {
       return Stack.of(this).region + Names.uniqueId(this);
     }
     return Stack.of(this).region + Lazy.string({
