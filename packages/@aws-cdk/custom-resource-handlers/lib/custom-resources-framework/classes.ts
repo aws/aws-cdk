@@ -127,6 +127,8 @@ export abstract class HandlerFrameworkClass extends ClassType {
           export: true,
         });
 
+        const isEvalNodejsProvider = this.fqn.includes('eval-nodejs-provider');
+
         this.importExternalModulesInto(scope);
 
         const uuid: PropertySpec = {
@@ -149,11 +151,29 @@ export abstract class HandlerFrameworkClass extends ClassType {
             },
           },
         };
+        const properties = [uuid, lambdaPurpose];
+        // eval nodejs provider is a one off scenario where the provider makes its runtime property configurable - to maintain this
+        // functionality we need to expose it as well
+        if (isEvalNodejsProvider) {
+          const runtime: PropertySpec = {
+            name: 'runtime',
+            type: LAMBDA_MODULE.Runtime,
+            immutable: true,
+            optional: true,
+            docs: {
+              summary: 'The runtime that this Lambda will use.',
+              docTags: {
+                default: 'lambda.Runtime.NODEJS_18_X',
+              },
+            },
+          };
+          properties.push(runtime);
+        }
         const _interface = this.getOrCreateInterface(scope, {
           name: `${this.name}Props`,
           export: true,
           extends: [LAMBDA_MODULE.FunctionOptions],
-          properties: [uuid, lambdaPurpose],
+          properties,
           docs: {
             summary: `Initialization properties for ${this.name}`,
           },
@@ -163,7 +183,7 @@ export abstract class HandlerFrameworkClass extends ClassType {
           new Splat(expr.ident('props')),
           ['code', expr.directCode(`lambda.Code.fromAsset(path.join(__dirname, '${props.codeDirectory}'))`)],
           ['handler', expr.lit(props.handler)],
-          ['runtime', expr.directCode(toLambdaRuntime(props.runtime))],
+          ['runtime', expr.directCode(`${isEvalNodejsProvider ? 'props.runtime ?? ' : ''}${toLambdaRuntime(props.runtime)}`)],
         ]);
         this.buildConstructor({
           constructorPropsType: _interface.type,
