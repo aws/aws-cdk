@@ -102,7 +102,7 @@
        {
         "Ref": "CSVTableE499CABA"
        },
-       "\",\"PartitionIndex\":{\"IndexName\":\"index1\",\"Keys\":[\"month\"]}},\"physicalResourceId\":{\"id\":\"index1\"},\"logApiResponseData\":true}"
+       "\",\"PartitionIndex\":{\"IndexName\":\"index1\",\"Keys\":[\"month\"]}},\"physicalResourceId\":{\"id\":\"index1\"}}"
       ]
      ]
     },
@@ -162,7 +162,7 @@
        {
         "Ref": "CSVTableE499CABA"
        },
-       "\",\"PartitionIndex\":{\"IndexName\":\"index2\",\"Keys\":[\"month\",\"year\"]}},\"physicalResourceId\":{\"id\":\"index2\"},\"logApiResponseData\":true}"
+       "\",\"PartitionIndex\":{\"IndexName\":\"index2\",\"Keys\":[\"month\",\"year\"]}},\"physicalResourceId\":{\"id\":\"index2\"}}"
       ]
      ]
     },
@@ -352,7 +352,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "6c34b6e864223e202d50bb862e2bf066393d4cdf36229f8e1646425a5224a10b.zip"
+     "S3Key": "746da84b10e215c552e68b6d2061024e4429f0386f43a35ef5e4d2940655692e.zip"
     },
     "Handler": "index.handler",
     "Role": {
@@ -455,7 +455,7 @@
        {
         "Ref": "JSONTable00348F1D"
        },
-       "\",\"PartitionIndex\":{\"IndexName\":\"year-month-awscdkglueJSONTable937C116B\",\"Keys\":[\"year\",\"month\"]}},\"physicalResourceId\":{\"id\":\"year-month-awscdkglueJSONTable937C116B\"},\"logApiResponseData\":true}"
+       "\",\"PartitionIndex\":{\"IndexName\":\"year-month-awscdkglueJSONTable937C116B\",\"Keys\":[\"year\",\"month\"]}},\"physicalResourceId\":{\"id\":\"year-month-awscdkglueJSONTable937C116B\"}}"
       ]
      ]
     },

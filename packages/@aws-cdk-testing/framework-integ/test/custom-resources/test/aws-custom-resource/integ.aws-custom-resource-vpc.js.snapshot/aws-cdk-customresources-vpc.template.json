@@ -412,7 +412,7 @@
        {
         "Ref": "Vpc8378EB38"
        },
-       "\"},\"logApiResponseData\":true}"
+       "\"}}"
       ]
      ]
     },
@@ -428,7 +428,7 @@
        {
         "Ref": "Vpc8378EB38"
        },
-       "\"},\"logApiResponseData\":true}"
+       "\"}}"
       ]
      ]
     },
