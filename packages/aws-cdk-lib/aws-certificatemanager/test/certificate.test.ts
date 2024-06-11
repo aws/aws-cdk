@@ -88,7 +88,7 @@ test('throws when domain name is longer than 64 characters', () => {
     new Certificate(stack, 'Certificate', {
       domainName: 'example.com'.repeat(7),
     });
-  }).toThrow(/Domain name must be 64 characters or less/);
+  }).toThrow(/Domain name must be 64 characters or less, got 77: example.comexample.comexample.comexample.comexample.comexample.comexample.com/);
 });
 
 test('does not throw when domain name is longer than 64 characters with tokens', () => {

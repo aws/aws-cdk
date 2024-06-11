@@ -284,7 +284,7 @@ export class Certificate extends CertificateBase implements ICertificate {
 
     // check if domain name is 64 characters or less
     if (!Token.isUnresolved(props.domainName) && props.domainName.length > 64) {
-      throw new Error('Domain name must be 64 characters or less');
+      throw new Error(`Domain name must be 64 characters or less, got ${props.domainName.length}: ${props.domainName}`);
     }
 
     const allDomainNames = [props.domainName].concat(props.subjectAlternativeNames || []);
