@@ -19,7 +19,7 @@ export interface Ipv6AddressesOptions {
   readonly ipv6CidrBlock?: string;
 }
 
-abstract class IpAddresses {
+export class IpAddresses {
 
   public static ipv4(ipv4Cidr: string): IIpAddresses {
     return new ipv4CidrAllocation(ipv4Cidr);
