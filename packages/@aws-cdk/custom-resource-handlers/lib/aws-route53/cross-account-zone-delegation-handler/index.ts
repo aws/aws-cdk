@@ -79,7 +79,7 @@ async function getHostedZoneIdByName(name: string, route53: Route53): Promise<st
   const zones = await route53.listHostedZonesByName({ DNSName: name });
   const matchedZones = zones.HostedZones?.filter(zone => {
     const matchZoneName = zone.Name === `${name}.`;
-    const isPublic = zone.Config?.PrivateZone === false || zone.Config?.PrivateZone === undefined;
+    const isPublic = zone.Config?.PrivateZone !== true;
 
     return matchZoneName && isPublic;
   }) ?? [];
