@@ -128,6 +128,13 @@ export interface StackProps {
   readonly tags?: { [key: string]: string };
 
   /**
+   * foofoo
+   *
+   * @default wowowowowo
+   */
+  readonly notificationArns?: string[];
+
+  /**
    * Synthesis method to use while deploying this stack
    *
    * The Stack Synthesizer controls aspects of synthesis and deployment,
@@ -383,6 +390,8 @@ export class Stack extends Construct implements ITaggable {
 
   private readonly _stackName: string;
 
+  private readonly _notificationArns: string[];
+
   /**
    * Enable this flag to suppress indentation in generated
    * CloudFormation templates.
@@ -450,6 +459,7 @@ export class Stack extends Construct implements ITaggable {
       throw new Error(`Stack name must be <= 128 characters. Stack name: '${this._stackName}'`);
     }
     this.tags = new TagManager(TagType.KEY_VALUE, 'aws:cdk:stack', props.tags);
+    this._notificationArns = props.notificationArns ?? [];
 
     if (!VALID_STACK_NAME_REGEX.test(this.stackName)) {
       throw new Error(`Stack name must match the regular expression: ${VALID_STACK_NAME_REGEX.toString()}, got '${this.stackName}'`);
@@ -716,7 +726,8 @@ export class Stack extends Construct implements ITaggable {
    * Returns the list of notification Amazon Resource Names (ARNs) for the current stack.
    */
   public get notificationArns(): string[] {
-    return new ScopedAws(this).notificationArns;
+    //return (new ScopedAws(this).notificationArns).concat(this._notificationArns); // .join(this._notificationArns)
+    return this._notificationArns;
   }
 
   /**

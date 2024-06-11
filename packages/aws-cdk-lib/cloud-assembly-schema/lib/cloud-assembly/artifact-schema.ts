@@ -56,6 +56,13 @@ export interface AwsCloudFormationStackProperties {
   readonly tags?: { [id: string]: string };
 
   /**
+   * Values for CloudFormation stack tags that should be passed when the stack is deployed.
+   *
+   * @default - No tags
+   */
+  readonly notificationArns?: string[];
+
+  /**
    * The name to use for the CloudFormation stack.
    * @default - name derived from artifact ID
    */

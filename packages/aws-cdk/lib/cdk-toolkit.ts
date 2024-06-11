@@ -327,6 +327,10 @@ export class CdkToolkit {
         tags = tagsForStack(stack);
       }
 
+      const notificationArns: string[] = [];
+      notificationArns.concat(options.notificationArns ?? []);
+      notificationArns.concat(stack.notificationArns);
+
       let elapsedDeployTime = 0;
       try {
         const result = await this.props.deployments.deployStack({
@@ -335,7 +339,7 @@ export class CdkToolkit {
           roleArn: options.roleArn,
           toolkitStackName: options.toolkitStackName,
           reuseAssets: options.reuseAssets,
-          notificationArns: options.notificationArns,
+          notificationArns,
           tags,
           execute: options.execute,
           changeSetName: options.changeSetName,
