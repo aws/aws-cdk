@@ -846,8 +846,7 @@
         ]
        }
       ]
-     },
-     "accessConfig": {}
+     }
     },
     "AssumeRoleArn": {
      "Fn::GetAtt": [
@@ -855,7 +854,7 @@
       "Arn"
      ]
     },
-    "AttributesRevision": 3
+    "AttributesRevision": 2
    },
    "DependsOn": [
     "ClusterCreationRoleDefaultPolicyE8BDFC7B",
@@ -1133,6 +1132,38 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
+  "ClustercharttestskipcrdinstallationB8323954": {
+   "Type": "Custom::AWSCDK-EKS-HelmChart",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "awscdkawseksKubectlProviderNestedStackawscdkawseksKubectlProviderNestedStackResourceA7AEBA6B",
+      "Outputs.awscdkekshelmtestawscdkawseksKubectlProviderframeworkonEvent9D93C644Arn"
+     ]
+    },
+    "ClusterName": {
+     "Ref": "Cluster9EE0221C"
+    },
+    "RoleArn": {
+     "Fn::GetAtt": [
+      "ClusterCreationRole360249B6",
+      "Arn"
+     ]
+    },
+    "Release": "rds-chart-release",
+    "Chart": "rds-chart",
+    "Version": "v1.1.2",
+    "Namespace": "ack-system",
+    "Repository": "oci://public.ecr.aws/aws-controllers-k8s/rds-chart",
+    "CreateNamespace": true,
+    "SkipCrds": true
+   },
+   "DependsOn": [
+    "ClusterKubectlReadyBarrier200052AF"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
   "ClustercharttestatomicinstallationB879263E": {
    "Type": "Custom::AWSCDK-EKS-HelmChart",
    "Properties": {
@@ -1216,7 +1247,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/458bc924cb3a9044b35c88316d411bcadc037d8b536c7b3992a3b251658b3ebc.json"
+       "/e1ea9e6acaa49cdc89ba7f9e96ba7a3d51363f0c12ddac34eacf47eb404d2efa.json"
       ]
      ]
     }
@@ -1266,7 +1297,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/7858174fb3f83ec5d585f3547d419e579c41c90299078da11cb3b3b3cd379d1d.json"
+       "/eadfa4a7fdc8e49a4bbdd3db11996e47d869756ff1bd2f2ffcd8b53e2924ef40.json"
       ]
      ]
     }

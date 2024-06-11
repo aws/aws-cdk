@@ -1700,6 +1700,14 @@
                   "version": "0.0.0"
                 }
               },
+              "LatestNodeRuntimeMap": {
+                "id": "LatestNodeRuntimeMap",
+                "path": "aws-cdk-eks-cluster-inference-nodegroup/@aws-cdk--aws-eks.ClusterResourceProvider/LatestNodeRuntimeMap",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnMapping",
+                  "version": "0.0.0"
+                }
+              },
               "OnEventHandler": {
                 "id": "OnEventHandler",
                 "path": "aws-cdk-eks-cluster-inference-nodegroup/@aws-cdk--aws-eks.ClusterResourceProvider/OnEventHandler",
@@ -1797,7 +1805,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "7c16569d3667ca37a867335c3d871f599a57e6af8a49a913272f2d350282adc6.zip"
+                          "s3Key": "98b432f1b1df9de4026df7e718c23783d833d67973da5291085b4dc7be1a568a.zip"
                         },
                         "description": "onEvent handler for EKS cluster resource provider",
                         "environment": {
@@ -1817,7 +1825,15 @@
                             "Arn"
                           ]
                         },
-                        "runtime": "nodejs18.x",
+                        "runtime": {
+                          "Fn::FindInMap": [
+                            "LatestNodeRuntimeMap",
+                            {
+                              "Ref": "AWS::Region"
+                            },
+                            "value"
+                          ]
+                        },
                         "timeout": 60
                       }
                     },
@@ -1929,7 +1945,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "7c16569d3667ca37a867335c3d871f599a57e6af8a49a913272f2d350282adc6.zip"
+                          "s3Key": "98b432f1b1df9de4026df7e718c23783d833d67973da5291085b4dc7be1a568a.zip"
                         },
                         "description": "isComplete handler for EKS cluster resource provider",
                         "environment": {
@@ -1949,7 +1965,15 @@
                             "Arn"
                           ]
                         },
-                        "runtime": "nodejs18.x",
+                        "runtime": {
+                          "Fn::FindInMap": [
+                            "LatestNodeRuntimeMap",
+                            {
+                              "Ref": "AWS::Region"
+                            },
+                            "value"
+                          ]
+                        },
                         "timeout": 60
                       }
                     },
@@ -2181,7 +2205,15 @@
                                 "Arn"
                               ]
                             },
-                            "runtime": "nodejs18.x",
+                            "runtime": {
+                              "Fn::FindInMap": [
+                                "LatestNodeRuntimeMap",
+                                {
+                                  "Ref": "AWS::Region"
+                                },
+                                "value"
+                              ]
+                            },
                             "timeout": 900
                           }
                         },
@@ -2399,7 +2431,15 @@
                                 "Arn"
                               ]
                             },
-                            "runtime": "nodejs18.x",
+                            "runtime": {
+                              "Fn::FindInMap": [
+                                "LatestNodeRuntimeMap",
+                                {
+                                  "Ref": "AWS::Region"
+                                },
+                                "value"
+                              ]
+                            },
                             "timeout": 900
                           }
                         },
@@ -2617,7 +2657,15 @@
                                 "Arn"
                               ]
                             },
-                            "runtime": "nodejs18.x",
+                            "runtime": {
+                              "Fn::FindInMap": [
+                                "LatestNodeRuntimeMap",
+                                {
+                                  "Ref": "AWS::Region"
+                                },
+                                "value"
+                              ]
+                            },
                             "timeout": 900
                           }
                         },
@@ -2936,7 +2984,7 @@
                           {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "/f4a060e127d6a8a545ac35c228c5f634dacbb9bce62dfcfab00ec7d030faa63c.json"
+                          "/3d9f2b0b1486900860109225923de8221a96677e48349cf7dc856090a0190157.json"
                         ]
                       ]
                     }
@@ -3308,7 +3356,15 @@
                                 "Arn"
                               ]
                             },
-                            "runtime": "nodejs18.x",
+                            "runtime": {
+                              "Fn::FindInMap": [
+                                "LatestNodeRuntimeMap",
+                                {
+                                  "Ref": "AWS::Region"
+                                },
+                                "value"
+                              ]
+                            },
                             "timeout": 900,
                             "vpcConfig": {
                               "subnetIds": [
@@ -3341,6 +3397,14 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.custom_resources.Provider",
+                  "version": "0.0.0"
+                }
+              },
+              "LatestNodeRuntimeMap": {
+                "id": "LatestNodeRuntimeMap",
+                "path": "aws-cdk-eks-cluster-inference-nodegroup/@aws-cdk--aws-eks.KubectlProvider/LatestNodeRuntimeMap",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnMapping",
                   "version": "0.0.0"
                 }
               },
@@ -3447,7 +3511,7 @@
                           {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "/af6eabdf2d91c55c1b133a5a5de4071e5349ba564ccfc1b934c916841e222a65.json"
+                          "/49ad23016ebb5d31b353a53f7c88d0536185305c0fc5384deb4db24f9f6832c6.json"
                         ]
                       ]
                     }
@@ -3984,6 +4048,14 @@
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_eks.AlbController",
+              "version": "0.0.0"
+            }
+          },
+          "LatestNodeRuntimeMap": {
+            "id": "LatestNodeRuntimeMap",
+            "path": "aws-cdk-eks-cluster-inference-nodegroup/LatestNodeRuntimeMap",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnMapping",
               "version": "0.0.0"
             }
           },

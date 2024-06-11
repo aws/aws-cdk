@@ -1008,8 +1008,7 @@
         ]
        }
       ]
-     },
-     "accessConfig": {}
+     }
     },
     "AssumeRoleArn": {
      "Fn::GetAtt": [
@@ -1017,7 +1016,7 @@
       "Arn"
      ]
     },
-    "AttributesRevision": 3
+    "AttributesRevision": 2
    },
    "DependsOn": [
     "ClusterCreationRoleDefaultPolicyE8BDFC7B",
@@ -4185,7 +4184,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
        },
-       "/7f839817e7fed5642f0c8782b03e9fc03d3ef6c1e55945b3e80f541065e73976.json"
+       "/10f5ded2bcaf431b1b53dee93b4f8f2ff792fa05be7c645b168d95f1ea2af945.json"
       ]
      ]
     }
@@ -4231,7 +4230,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
        },
-       "/0907f66a7062c792a9377dd112e898b75de420e53e4fc7543956e9c9bf65032b.json"
+       "/74c025d7a98c8ff2cf1a80b67704a0682d85de6687f3db0cc3e038b2dbb3623a.json"
       ]
      ]
     }
@@ -4360,7 +4359,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs18.x"
+    "Runtime": "nodejs20.x"
    },
    "DependsOn": [
     "CustomAWSCDKOpenIdConnectProviderCustomResourceProviderRole517FED65"
@@ -4406,7 +4405,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs18.x"
+    "Runtime": "nodejs20.x"
    },
    "DependsOn": [
     "AWSCDKCfnUtilsProviderCustomResourceProviderRoleFE0EE867"

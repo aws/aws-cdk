@@ -5968,7 +5968,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
                           },
-                          "s3Key": "7c16569d3667ca37a867335c3d871f599a57e6af8a49a913272f2d350282adc6.zip"
+                          "s3Key": "98b432f1b1df9de4026df7e718c23783d833d67973da5291085b4dc7be1a568a.zip"
                         },
                         "description": "onEvent handler for EKS cluster resource provider",
                         "environment": {
@@ -5988,7 +5988,7 @@
                             "Arn"
                           ]
                         },
-                        "runtime": "nodejs18.x",
+                        "runtime": "nodejs20.x",
                         "timeout": 60
                       }
                     },
@@ -6100,7 +6100,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
                           },
-                          "s3Key": "7c16569d3667ca37a867335c3d871f599a57e6af8a49a913272f2d350282adc6.zip"
+                          "s3Key": "98b432f1b1df9de4026df7e718c23783d833d67973da5291085b4dc7be1a568a.zip"
                         },
                         "description": "isComplete handler for EKS cluster resource provider",
                         "environment": {
@@ -6120,7 +6120,7 @@
                             "Arn"
                           ]
                         },
-                        "runtime": "nodejs18.x",
+                        "runtime": "nodejs20.x",
                         "timeout": 60
                       }
                     },
@@ -6352,7 +6352,7 @@
                                 "Arn"
                               ]
                             },
-                            "runtime": "nodejs18.x",
+                            "runtime": "nodejs20.x",
                             "timeout": 900
                           }
                         },
@@ -6570,7 +6570,7 @@
                                 "Arn"
                               ]
                             },
-                            "runtime": "nodejs18.x",
+                            "runtime": "nodejs20.x",
                             "timeout": 900
                           }
                         },
@@ -6788,7 +6788,7 @@
                                 "Arn"
                               ]
                             },
-                            "runtime": "nodejs18.x",
+                            "runtime": "nodejs20.x",
                             "timeout": 900
                           }
                         },
@@ -7103,7 +7103,7 @@
                           {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
                           },
-                          "/d8c0c85335dbe2af70a26094029a8f06bbdd6c7a2676c46c84d1e1c14246a91f.json"
+                          "/3a1b587a4d0ca4b42fa41abc01fc25e3b006d0a74b6b6728436e72988c2666bd.json"
                         ]
                       ]
                     }
@@ -7475,7 +7475,7 @@
                                 "Arn"
                               ]
                             },
-                            "runtime": "nodejs18.x",
+                            "runtime": "nodejs20.x",
                             "timeout": 900,
                             "vpcConfig": {
                               "subnetIds": [
@@ -7610,7 +7610,7 @@
                           {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
                           },
-                          "/72bbd867c21221c764c7d83a9612201a93608ad920692aacabdebc89ea453411.json"
+                          "/1d560c71ea4393c70f6df1f6036b9e8aacc33d88bf496d908ed627e7804fe4c9.json"
                         ]
                       ]
                     }

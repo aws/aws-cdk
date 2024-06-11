@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e4def453699a5d13ed9e8009cef42a62b555596b575abcf72383d9330f46a637.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f1c23e575160feea1e2a1246a165b8326ba55e52183dc24e3c5db2469339ea83.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -229,6 +229,12 @@
             "data": "NodeProxyAgentLayer924C1971"
           }
         ],
+        "/EKSTagStack/@aws-cdk--aws-eks.ClusterResourceProvider/LatestNodeRuntimeMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatestNodeRuntimeMap"
+          }
+        ],
         "/EKSTagStack/@aws-cdk--aws-eks.ClusterResourceProvider/OnEventHandler/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -383,6 +389,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "ProviderframeworkonEvent83C1D0A7"
+          }
+        ],
+        "/EKSTagStack/@aws-cdk--aws-eks.KubectlProvider/LatestNodeRuntimeMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatestNodeRuntimeMap"
           }
         ],
         "/EKSTagStack/@aws-cdk--aws-eks.KubectlProvider/reference-to-EKSTagStackKubectlLayer5F46D4D2Ref": [
