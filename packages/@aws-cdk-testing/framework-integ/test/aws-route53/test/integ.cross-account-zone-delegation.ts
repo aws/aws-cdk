@@ -1,6 +1,7 @@
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as cdk from 'aws-cdk-lib';
 import * as route53 from 'aws-cdk-lib/aws-route53';
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import { Construct } from 'constructs';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
@@ -46,6 +47,12 @@ class ParentStack extends cdk.Stack {
 
     const parentZone = new route53.PublicHostedZone(this, 'HostedZone', {
       zoneName: parentZoneName,
+    });
+    new route53.PrivateHostedZone(this, 'PrivateHostedZone', {
+      zoneName: parentZoneName,
+      vpc: new ec2.Vpc(this, 'TheVPC', {
+        ipAddresses: ec2.IpAddresses.cidr('10.0.0.0/16'),
+      }),
     });
     const crossAccountRole = new iam.Role(this, 'CrossAccountRole', {
       roleName: delegationRoleName,
