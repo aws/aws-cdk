@@ -146,6 +146,242 @@ describe('CodeStar Connections source Action', () => {
         },
       ],
     });
+  });
+
+  test('setting trigger enabled reflected in the configuration and is fine for v1', () => {
+    const stack = new Stack();
+
+    createBitBucketAndCodeBuildPipeline(stack, {
+      trigger: cpactions.Trigger.ENABLED,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
+      'Triggers': Match.absent(),
+      'Stages': [
+        {
+          'Name': 'Source',
+          'Actions': [
+            {
+              'Name': 'BitBucket',
+              'ActionTypeId': {
+                'Owner': 'AWS',
+                'Provider': 'CodeStarSourceConnection',
+              },
+              'Configuration': {
+                'ConnectionArn': 'arn:aws:codestar-connections:us-east-1:123456789012:connection/12345678-abcd-12ab-34cdef5678gh',
+                'FullRepositoryId': 'aws/aws-cdk',
+                'BranchName': 'master',
+                'DetectChanges': true,
+              },
+            },
+          ],
+        },
+        {
+          'Name': 'Build',
+          'Actions': [
+            {
+              'Name': 'CodeBuild',
+            },
+          ],
+        },
+      ],
+    });
+  });
+
+  test('setting trigger enabled reflected in the configuration for v2', () => {
+    const stack = new Stack();
+
+    createBitBucketAndCodeBuildPipeline(stack, {
+      trigger: cpactions.Trigger.ENABLED,
+      pipelineType: codepipeline.PipelineType.V2,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
+      'Stages': [
+        {
+          'Name': 'Source',
+          'Actions': [
+            {
+              'Name': 'BitBucket',
+              'ActionTypeId': {
+                'Owner': 'AWS',
+                'Provider': 'CodeStarSourceConnection',
+              },
+              'Configuration': {
+                'ConnectionArn': 'arn:aws:codestar-connections:us-east-1:123456789012:connection/12345678-abcd-12ab-34cdef5678gh',
+                'FullRepositoryId': 'aws/aws-cdk',
+                'BranchName': 'master',
+                'DetectChanges': true,
+              },
+            },
+          ],
+        },
+        {
+          'Name': 'Build',
+          'Actions': [
+            {
+              'Name': 'CodeBuild',
+            },
+          ],
+        },
+      ],
+      'Triggers': [
+        {
+          'ProviderType': 'CodeStarSourceConnection',
+          'GitConfiguration': {
+            'SourceActionName': 'BitBucket',
+          },
+        },
+      ],
+    });
+  });
+
+  test('setting trigger disabled reflects in the configuration for v1', () => {
+    const stack = new Stack();
+
+    createBitBucketAndCodeBuildPipeline(stack, {
+      trigger: cpactions.Trigger.DISABLED,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
+      'Stages': [
+        {
+          'Name': 'Source',
+          'Actions': [
+            {
+              'Name': 'BitBucket',
+              'ActionTypeId': {
+                'Owner': 'AWS',
+                'Provider': 'CodeStarSourceConnection',
+              },
+              'Configuration': {
+                'ConnectionArn': 'arn:aws:codestar-connections:us-east-1:123456789012:connection/12345678-abcd-12ab-34cdef5678gh',
+                'FullRepositoryId': 'aws/aws-cdk',
+                'BranchName': 'master',
+                'DetectChanges': false,
+              },
+            },
+          ],
+        },
+        {
+          'Name': 'Build',
+          'Actions': [
+            {
+              'Name': 'CodeBuild',
+            },
+          ],
+        },
+      ],
+      'Triggers': Match.absent(),
+    });
+  });
+
+  test('setting trigger disabled reflects in the configuration for v2', () => {
+    const stack = new Stack();
+
+    createBitBucketAndCodeBuildPipeline(stack, {
+      trigger: cpactions.Trigger.DISABLED,
+      pipelineType: codepipeline.PipelineType.V2,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
+      'Stages': [
+        {
+          'Name': 'Source',
+          'Actions': [
+            {
+              'Name': 'BitBucket',
+              'ActionTypeId': {
+                'Owner': 'AWS',
+                'Provider': 'CodeStarSourceConnection',
+              },
+              'Configuration': {
+                'ConnectionArn': 'arn:aws:codestar-connections:us-east-1:123456789012:connection/12345678-abcd-12ab-34cdef5678gh',
+                'FullRepositoryId': 'aws/aws-cdk',
+                'BranchName': 'master',
+                'DetectChanges': false,
+              },
+            },
+          ],
+        },
+        {
+          'Name': 'Build',
+          'Actions': [
+            {
+              'Name': 'CodeBuild',
+            },
+          ],
+        },
+      ],
+      'Triggers': Match.absent(),
+    });
+  });
+
+  test('setting trigger with filters reflects in the configuration', () => {
+    const stack = new Stack();
+
+    createBitBucketAndCodeBuildPipeline(stack, {
+      trigger: cpactions.Trigger.withFilters(cpactions.Filter.pullRequestClosed({ branches: { includes: ['main'] } })),
+      pipelineType: codepipeline.PipelineType.V2,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
+      'Stages': [
+        {
+          'Name': 'Source',
+          'Actions': [
+            {
+              'Name': 'BitBucket',
+              'ActionTypeId': {
+                'Owner': 'AWS',
+                'Provider': 'CodeStarSourceConnection',
+              },
+              'Configuration': {
+                'ConnectionArn': 'arn:aws:codestar-connections:us-east-1:123456789012:connection/12345678-abcd-12ab-34cdef5678gh',
+                'FullRepositoryId': 'aws/aws-cdk',
+                'BranchName': 'master',
+                'DetectChanges': true,
+              },
+            },
+          ],
+        },
+        {
+          'Name': 'Build',
+          'Actions': [
+            {
+              'Name': 'CodeBuild',
+            },
+          ],
+        },
+      ],
+      'Triggers': [
+        {
+          'ProviderType': 'CodeStarSourceConnection',
+          'GitConfiguration': {
+            'SourceActionName': 'BitBucket',
+            'PullRequest': [
+              {
+                'Branches': {
+                  'Includes': ['main'],
+                },
+                'Events': ['CLOSED'],
+              },
+            ],
+          },
+        },
+      ],
+    });
+  });
+
+  test('v1 pipeline throws error when triggers are included with filters', () => {
+    const stack = new Stack();
+
+    expect(() =>
+      createBitBucketAndCodeBuildPipeline(stack, {
+        trigger: cpactions.Trigger.withFilters(cpactions.Filter.pullRequestClosed({ branches: { includes: ['main'] } })),
+        pipelineName: 'FailedV1Pipeline',
+      }),
+    ).toThrow('Invalid configuration for FailedV1Pipeline. Filters may only be set if PipelineType is set to V2.');
 
   });
 
@@ -264,8 +500,13 @@ describe('CodeStar Connections source Action', () => {
   });
 });
 
+interface TestPipelineProps extends Partial<cpactions.CodeStarConnectionsSourceActionProps> {
+  pipelineType?: codepipeline.PipelineType;
+  pipelineName?: string;
+}
+
 function createBitBucketAndCodeBuildPipeline(
-  stack: Stack, props: Partial<cpactions.CodeStarConnectionsSourceActionProps> = {},
+  stack: Stack, props: TestPipelineProps = {}, pipelineType?: codepipeline.PipelineType,
 ): codepipeline.Pipeline {
   const sourceOutput = new codepipeline.Artifact();
   const sourceAction = new cpactions.CodeStarConnectionsSourceAction({
@@ -278,6 +519,8 @@ function createBitBucketAndCodeBuildPipeline(
   });
 
   return new codepipeline.Pipeline(stack, 'Pipeline', {
+    pipelineType: props.pipelineType,
+    pipelineName: props.pipelineName,
     stages: [
       {
         stageName: 'Source',

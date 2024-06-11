@@ -1,6 +1,5 @@
 # AWS CodePipeline Construct Library
 
-
 ## Pipeline
 
 To construct an empty Pipeline:
@@ -73,7 +72,8 @@ Or append a Stage to an existing Pipeline:
 declare const pipeline: codepipeline.Pipeline;
 const sourceStage = pipeline.addStage({
   stageName: 'Source',
-  actions: [ // optional property
+  actions: [
+    // optional property
     // see below...
   ],
 });
@@ -93,7 +93,7 @@ const someStage = pipeline.addStage({
     // note: you can only specify one of the below properties
     rightBefore: anotherStage,
     justAfter: yetAnotherStage,
-  }
+  },
 });
 ```
 
@@ -107,7 +107,7 @@ const someStage = pipeline.addStage({
   stageName: 'SomeStage',
   transitionToEnabled: false,
   transitionDisabledReason: 'Manual transition only', // optional reason
-})
+});
 ```
 
 This is useful if you don't want every executions of the pipeline to flow into
@@ -134,46 +134,57 @@ To make your own custom CodePipeline Action requires registering the action prov
 
 ```ts
 // Make a custom CodePipeline Action
-new codepipeline.CustomActionRegistration(this, 'GenericGitSourceProviderResource', {
-  category: codepipeline.ActionCategory.SOURCE,
-  artifactBounds: { minInputs: 0, maxInputs: 0, minOutputs: 1, maxOutputs: 1 },
-  provider: 'GenericGitSource',
-  version: '1',
-  entityUrl: 'https://docs.aws.amazon.com/codepipeline/latest/userguide/actions-create-custom-action.html',
-  executionUrl: 'https://docs.aws.amazon.com/codepipeline/latest/userguide/actions-create-custom-action.html',
-  actionProperties: [
-    {
-      name: 'Branch',
-      required: true,
-      key: false,
-      secret: false,
-      queryable: false,
-      description: 'Git branch to pull',
-      type: 'String',
+new codepipeline.CustomActionRegistration(
+  this,
+  'GenericGitSourceProviderResource',
+  {
+    category: codepipeline.ActionCategory.SOURCE,
+    artifactBounds: {
+      minInputs: 0,
+      maxInputs: 0,
+      minOutputs: 1,
+      maxOutputs: 1,
     },
-    {
-      name: 'GitUrl',
-      required: true,
-      key: false,
-      secret: false,
-      queryable: false,
-      description: 'SSH git clone URL',
-      type: 'String',
-    },
-  ],
-});
+    provider: 'GenericGitSource',
+    version: '1',
+    entityUrl:
+      'https://docs.aws.amazon.com/codepipeline/latest/userguide/actions-create-custom-action.html',
+    executionUrl:
+      'https://docs.aws.amazon.com/codepipeline/latest/userguide/actions-create-custom-action.html',
+    actionProperties: [
+      {
+        name: 'Branch',
+        required: true,
+        key: false,
+        secret: false,
+        queryable: false,
+        description: 'Git branch to pull',
+        type: 'String',
+      },
+      {
+        name: 'GitUrl',
+        required: true,
+        key: false,
+        secret: false,
+        queryable: false,
+        description: 'SSH git clone URL',
+        type: 'String',
+      },
+    ],
+  }
+);
 ```
 
 ## Cross-account CodePipelines
 
-> Cross-account Pipeline actions require that the Pipeline has *not* been
+> Cross-account Pipeline actions require that the Pipeline has _not_ been
 > created with `crossAccountKeys: false`.
 
 Most pipeline Actions accept an AWS resource object to operate on. For example:
 
-* `S3DeployAction` accepts an `s3.IBucket`.
-* `CodeBuildAction` accepts a `codebuild.IProject`.
-* etc.
+- `S3DeployAction` accepts an `s3.IBucket`.
+- `CodeBuildAction` accepts a `codebuild.IProject`.
+- etc.
 
 These resources can be either newly defined (`new s3.Bucket(...)`) or imported
 (`s3.Bucket.fromBucketAttributes(...)`) and identify the resource that should
@@ -187,15 +198,17 @@ different account:
 // Deploy an imported S3 bucket from a different account
 declare const stage: codepipeline.IStage;
 declare const input: codepipeline.Artifact;
-stage.addAction(new codepipeline_actions.S3DeployAction({
-  bucket: s3.Bucket.fromBucketAttributes(this, 'Bucket', {
-    account: '123456789012',
+stage.addAction(
+  new codepipeline_actions.S3DeployAction({
+    bucket: s3.Bucket.fromBucketAttributes(this, 'Bucket', {
+      account: '123456789012',
+      // ...
+    }),
+    input: input,
+    actionName: 's3-deploy-action',
     // ...
-  }),
-  input: input,
-  actionName: 's3-deploy-action',
-  // ...
-}));
+  })
+);
 ```
 
 Actions that don't accept a resource object accept an explicit `account` parameter:
@@ -204,14 +217,16 @@ Actions that don't accept a resource object accept an explicit `account` paramet
 // Actions that don't accept a resource objet accept an explicit `account` parameter
 declare const stage: codepipeline.IStage;
 declare const templatePath: codepipeline.ArtifactPath;
-stage.addAction(new codepipeline_actions.CloudFormationCreateUpdateStackAction({
-  account: '123456789012',
-  templatePath,
-  adminPermissions: false,
-  stackName: Stack.of(this).stackName,
-  actionName: 'cloudformation-create-update',
-  // ...
-}));
+stage.addAction(
+  new codepipeline_actions.CloudFormationCreateUpdateStackAction({
+    account: '123456789012',
+    templatePath,
+    adminPermissions: false,
+    stackName: Stack.of(this).stackName,
+    actionName: 'cloudformation-create-update',
+    // ...
+  })
+);
 ```
 
 The `Pipeline` construct automatically defines an **IAM Role** for you in the
@@ -228,35 +243,39 @@ account the role belongs to:
 // Explicitly pass in a `role` when creating an action.
 declare const stage: codepipeline.IStage;
 declare const templatePath: codepipeline.ArtifactPath;
-stage.addAction(new codepipeline_actions.CloudFormationCreateUpdateStackAction({
-  templatePath,
-  adminPermissions: false,
-  stackName: Stack.of(this).stackName,
-  actionName: 'cloudformation-create-update',
-  // ...
-  role: iam.Role.fromRoleArn(this, 'ActionRole', '...'),
-}));
+stage.addAction(
+  new codepipeline_actions.CloudFormationCreateUpdateStackAction({
+    templatePath,
+    adminPermissions: false,
+    stackName: Stack.of(this).stackName,
+    actionName: 'cloudformation-create-update',
+    // ...
+    role: iam.Role.fromRoleArn(this, 'ActionRole', '...'),
+  })
+);
 ```
 
 ## Cross-region CodePipelines
 
 Similar to how you set up a cross-account Action, the AWS resource object you
-pass to actions can also be in different *Regions*. For example, the
+pass to actions can also be in different _Regions_. For example, the
 following Action deploys to an imported S3 bucket from a different Region:
 
 ```ts
 // Deploy to an imported S3 bucket from a different Region.
 declare const stage: codepipeline.IStage;
 declare const input: codepipeline.Artifact;
-stage.addAction(new codepipeline_actions.S3DeployAction({
-  bucket: s3.Bucket.fromBucketAttributes(this, 'Bucket', {
-    region: 'us-west-1',
+stage.addAction(
+  new codepipeline_actions.S3DeployAction({
+    bucket: s3.Bucket.fromBucketAttributes(this, 'Bucket', {
+      region: 'us-west-1',
+      // ...
+    }),
+    input: input,
+    actionName: 's3-deploy-action',
     // ...
-  }),
-  input: input,
-  actionName: 's3-deploy-action',
-  // ...
-}));
+  })
+);
 ```
 
 Actions that don't take an AWS resource will accept an explicit `region`
@@ -266,14 +285,16 @@ parameter:
 // Actions that don't take an AWS resource will accept an explicit `region` parameter.
 declare const stage: codepipeline.IStage;
 declare const templatePath: codepipeline.ArtifactPath;
-stage.addAction(new codepipeline_actions.CloudFormationCreateUpdateStackAction({
-  templatePath,
-  adminPermissions: false,
-  stackName: Stack.of(this).stackName,
-  actionName: 'cloudformation-create-update',
-  // ...
-  region: 'us-west-1',
-}));
+stage.addAction(
+  new codepipeline_actions.CloudFormationCreateUpdateStackAction({
+    templatePath,
+    adminPermissions: false,
+    stackName: Stack.of(this).stackName,
+    actionName: 'cloudformation-create-update',
+    // ...
+    region: 'us-west-1',
+  })
+);
 ```
 
 The `Pipeline` construct automatically defines a **replication bucket** for
@@ -293,13 +314,19 @@ const pipeline = new codepipeline.Pipeline(this, 'MyFirstPipeline', {
 
   crossRegionReplicationBuckets: {
     // note that a physical name of the replication Bucket must be known at synthesis time
-    'us-west-1': s3.Bucket.fromBucketAttributes(this, 'UsWest1ReplicationBucket', {
-      bucketName: 'my-us-west-1-replication-bucket',
-      // optional KMS key
-      encryptionKey: kms.Key.fromKeyArn(this, 'UsWest1ReplicationKey',
-        'arn:aws:kms:us-west-1:123456789012:key/1234-5678-9012'
-      ),
-    }),
+    'us-west-1': s3.Bucket.fromBucketAttributes(
+      this,
+      'UsWest1ReplicationBucket',
+      {
+        bucketName: 'my-us-west-1-replication-bucket',
+        // optional KMS key
+        encryptionKey: kms.Key.fromKeyArn(
+          this,
+          'UsWest1ReplicationKey',
+          'arn:aws:kms:us-west-1:123456789012:key/1234-5678-9012'
+        ),
+      }
+    ),
   },
 });
 ```
@@ -337,7 +364,7 @@ new codepipeline.Pipeline(replicationStack, 'Pipeline', {
 
 When trying to encrypt it
 (and note that if any of the cross-region actions happen to be cross-account as well,
-the bucket *has to* be encrypted - otherwise the pipeline will fail at runtime),
+the bucket _has to_ be encrypted - otherwise the pipeline will fail at runtime),
 you cannot use a key directly - KMS keys don't have physical names,
 and so you can't reference them across environments.
 
@@ -554,7 +581,7 @@ declare const myPipeline: codepipeline.Pipeline;
 declare const myStage: codepipeline.IStage;
 declare const myAction: codepipeline.Action;
 declare const target: events.IRuleTarget;
-myPipeline.onStateChange('MyPipelineStateChange', { target: target } );
+myPipeline.onStateChange('MyPipelineStateChange', { target: target });
 myStage.onStateChange('MyStageStateChange', target);
 myAction.onStateChange('MyActionStateChange', target);
 ```
@@ -574,176 +601,16 @@ const target = new chatbot.SlackChannelConfiguration(this, 'MySlackChannel', {
 });
 
 declare const pipeline: codepipeline.Pipeline;
-const rule = pipeline.notifyOnExecutionStateChange('NotifyOnExecutionStateChange', target);
+const rule = pipeline.notifyOnExecutionStateChange(
+  'NotifyOnExecutionStateChange',
+  target
+);
 ```
 
 ## Trigger
 
 To trigger a pipeline with Git tags or branches, specify the `triggers` property.
 The triggers can only be used with pipeline type V2.
-
-### Push filter
-
-Pipelines can be started based on push events. You can specify the `pushFilter` property to
-filter the push events. The `pushFilter` can specify Git tags.
-
-In the case of Git tags, your pipeline starts when a Git tag is pushed.
-You can filter with glob patterns. The `tagsExcludes` takes priority over the `tagsIncludes`.
-
-```ts
-declare const sourceAction: codepipeline_actions.CodeStarConnectionsSourceAction;
-declare const buildAction: codepipeline_actions.CodeBuildAction;
-
-new codepipeline.Pipeline(this, 'Pipeline', {
-  pipelineType: codepipeline.PipelineType.V2,
-  stages: [
-    {
-      stageName: 'Source',
-      actions: [sourceAction],
-    },
-    {
-      stageName: 'Build',
-      actions: [buildAction],
-    },
-  ],
-  triggers: [{
-    providerType: codepipeline.ProviderType.CODE_STAR_SOURCE_CONNECTION,
-    gitConfiguration: {
-      sourceAction,
-      pushFilter: [{
-        tagsExcludes: ['exclude1', 'exclude2'],
-        tagsIncludes: ['include*'],
-      }],
-    },
-  }],
-});
-```
-
-### Pull request filter
-
-Pipelines can be started based on pull request events. You can specify the `pullRequestFilter` property to
-filter the pull request events. The `pullRequestFilter` can specify branches, file paths, and event types.
-
-In the case of branches, your pipeline starts when a pull request event occurs on the specified branches.
-You can filter with glob patterns. The `branchesExcludes` takes priority over the `branchesIncludes`.
-
-```ts
-declare const sourceAction: codepipeline_actions.CodeStarConnectionsSourceAction;
-declare const buildAction: codepipeline_actions.CodeBuildAction;
-
-new codepipeline.Pipeline(this, 'Pipeline', {
-  pipelineType: codepipeline.PipelineType.V2,
-  stages: [
-    {
-      stageName: 'Source',
-      actions: [sourceAction],
-    },
-    {
-      stageName: 'Build',
-      actions: [buildAction],
-    },
-  ],
-  triggers: [{
-    providerType: codepipeline.ProviderType.CODE_STAR_SOURCE_CONNECTION,
-    gitConfiguration: {
-      sourceAction,
-      pullRequestFilter: [{
-        branchesExcludes: ['exclude1', 'exclude2'],
-        branchesIncludes: ['include*'],
-      }],
-    },
-  }],
-});
-```
-
-File paths can also be specified along with the branches to start the pipeline.
-You can filter with glob patterns. The `filePathsExcludes` takes priority over the `filePathsIncludes`.
-
-```ts
-declare const sourceAction: codepipeline_actions.CodeStarConnectionsSourceAction;
-declare const buildAction: codepipeline_actions.CodeBuildAction;
-
-new codepipeline.Pipeline(this, 'Pipeline', {
-  pipelineType: codepipeline.PipelineType.V2,
-  stages: [
-    {
-      stageName: 'Source',
-      actions: [sourceAction],
-    },
-    {
-      stageName: 'Build',
-      actions: [buildAction],
-    },
-  ],
-  triggers: [{
-    providerType: codepipeline.ProviderType.CODE_STAR_SOURCE_CONNECTION,
-    gitConfiguration: {
-      sourceAction,
-      pullRequestFilter: [{
-        branchesExcludes: ['exclude1', 'exclude2'],
-        branchesIncludes: ['include1', 'include2'],
-        filePathsExcludes: ['/path/to/exclude1', '/path/to/exclude2'],
-        filePathsIncludes: ['/path/to/include1', '/path/to/include1'],
-      }],
-    },
-  }],
-});
-```
-
-To filter types of pull request events for triggers, you can specify the `events` property.
-
-```ts
-declare const sourceAction: codepipeline_actions.CodeStarConnectionsSourceAction;
-declare const buildAction: codepipeline_actions.CodeBuildAction;
-
-new codepipeline.Pipeline(this, 'Pipeline', {
-  pipelineType: codepipeline.PipelineType.V2,
-  stages: [
-    {
-      stageName: 'Source',
-      actions: [sourceAction],
-    },
-    {
-      stageName: 'Build',
-      actions: [buildAction],
-    },
-  ],
-  triggers: [{
-    providerType: codepipeline.ProviderType.CODE_STAR_SOURCE_CONNECTION,
-    gitConfiguration: {
-      sourceAction,
-      pullRequestFilter: [{
-        branchesExcludes: ['exclude1', 'exclude2'],
-        branchesIncludes: ['include1', 'include2'],
-        events: [
-          codepipeline.GitPullRequestEvent.OPEN,
-          codepipeline.GitPullRequestEvent.CLOSED,
-        ],
-      }],
-    },
-  }],
-});
-```
-
-### Append a trigger to an existing pipeline
-
-You can append a trigger to an existing pipeline:
-
-```ts
-declare const pipeline: codepipeline.Pipeline;
-declare const sourceAction: codepipeline_actions.CodeStarConnectionsSourceAction;
-
-pipeline.addTrigger({
-  providerType: codepipeline.ProviderType.CODE_STAR_SOURCE_CONNECTION,
-  gitConfiguration: {
-    sourceAction,
-    pushFilter: [{
-      tagsExcludes: ['exclude1', 'exclude2'],
-      tagsIncludes: ['include*'],
-    }],
-  },
-});
-```
 
 ## Execution mode
 
