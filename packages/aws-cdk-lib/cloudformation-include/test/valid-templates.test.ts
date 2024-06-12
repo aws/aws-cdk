@@ -1127,17 +1127,6 @@ describe('CDK Include', () => {
 
     Template.fromStack(stack).templateMatches(
       loadTestFileToJsObject('tags-with-intrinsics.json'),
-      /*Resources: {
-        "Bucket": {
-          "Type": "AWS::S3::Bucket",
-          "Properties": {
-            "BucketName": "cdk-integ-cfn-include-bucket2",
-            "Tags": [
-            ],
-          },
-        },
-      },
-      */
     );
   });
 });
