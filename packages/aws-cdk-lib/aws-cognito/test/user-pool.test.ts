@@ -293,13 +293,16 @@ describe('User Pool', () => {
 
   test('import using arn', () => {
     // GIVEN
-    const stack = new Stack();
+    const stack = new Stack(undefined, undefined, {
+      env: { region: 'us-east-1', account: '0123456789012' },
+    });
     const userPoolArn = 'arn:aws:cognito-idp:us-east-1:0123456789012:userpool/test-user-pool';
 
     // WHEN
     const pool = UserPool.fromUserPoolArn(stack, 'userpool', userPoolArn);
     expect(pool.userPoolId).toEqual('test-user-pool');
     expect(stack.resolve(pool.userPoolArn)).toEqual('arn:aws:cognito-idp:us-east-1:0123456789012:userpool/test-user-pool');
+    expect(stack.resolve(pool.userPoolProviderName)).toEqual('cognito-idp.us-east-1.amazonaws.com/test-user-pool');
   });
 
   test('import using arn without resourceName fails', () => {
@@ -329,70 +332,6 @@ describe('User Pool', () => {
     expect(pool.env.account).toEqual('0123456789012');
     expect(pool.env.region).toEqual('us-east-1');
     expect(pool.userPoolArn).toEqual('arn:aws:cognito-idp:us-east-1:0123456789012:userpool/test-user-pool');
-  });
-
-  test('reference userPoolProviderName fails when using arn and id to import', () => {
-    // GIVEN
-    const stack = new Stack();
-    const userPoolArn = 'arn:aws:cognito-idp:us-east-1:0123456789012:userpool/test-user-pool';
-    const userPoolId = 'test-user-pool';
-
-    // WHEN
-    const poolWithArn = UserPool.fromUserPoolArn(stack, 'userpool', userPoolArn);
-    const poolWithId = UserPool.fromUserPoolId(stack, 'userpool2', userPoolId);
-    expect(() => {
-      poolWithArn.userPoolProviderName;
-    }).toThrow(/to reference userPoolProviderName, use the `fromUserPoolAttributes`./);
-    expect(() => {
-      poolWithId.userPoolProviderName;
-    }).toThrow(/to reference userPoolProviderName, use the `fromUserPoolAttributes`./);
-  });
-
-  test('import using arn and userPoolProviderName', () => {
-    // GIVEN
-    const stack = new Stack();
-    const userPoolArn = 'arn:aws:cognito-idp:us-east-1:0123456789012:userpool/test-user-pool';
-    const userPoolProviderName = 'test-user-pool';
-
-    // WHEN
-    const pool = UserPool.fromUserPoolAttributes(stack, 'userpool', {
-      userPoolArn,
-      userPoolProviderName,
-    });
-    expect(pool.userPoolId).toEqual('test-user-pool');
-    expect(stack.resolve(pool.userPoolArn)).toEqual('arn:aws:cognito-idp:us-east-1:0123456789012:userpool/test-user-pool');
-    expect(pool.userPoolProviderName).toEqual('test-user-pool');
-  });
-
-  test('import using id and userPoolProviderName', () => {
-    // GIVEN
-    const stack = new Stack(undefined, undefined, {
-      env: { region: 'some-region-1', account: '0123456789012' },
-    });
-    const userPoolId = 'test-user-pool';
-    const userPoolProviderName = 'test-user-pool';
-
-    // WHEN
-    const pool = UserPool.fromUserPoolAttributes(stack, 'userpool', {
-      userPoolId,
-      userPoolProviderName,
-    });
-    expect(pool.userPoolId).toEqual('test-user-pool');
-    expect(pool.userPoolArn).toMatch(/cognito-idp:some-region-1:0123456789012:userpool\/test-user-pool/);
-    expect(pool.userPoolProviderName).toEqual('test-user-pool');
-  });
-
-  test('import fails when userPoolArn and userPoolId are not specified', () => {
-    // GIVEN
-    const stack = new Stack();
-    const userPoolProviderName = 'test-user-pool';
-
-    // WHEN
-    expect(() => {
-      UserPool.fromUserPoolAttributes(stack, 'userpool', {
-        userPoolProviderName,
-      });
-    }).toThrow(/must specify either userPoolArn or userPoolId/);
   });
 
   test('support tags', () => {

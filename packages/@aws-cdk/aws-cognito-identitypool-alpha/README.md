@@ -353,18 +353,13 @@ cannot be references. For example:
 import { UserPool, UserPoolClient } from 'aws-cdk-lib/aws-cognito';
 import { IdentityPoolProviderUrl } from '@aws-cdk/aws-cognito-identitypool-alpha';
 
-// If you use a previously defined Cognito User Pool, use the `fromUserPoolAttributes` method instead of `fromUserPoolId` or `fromUserPoolArn`.
-const importedPool = UserPool.fromUserPoolAttributes(this, 'ImportedPool', {
-  userPoolId: 'pool-id',
-  userPoolProviderName: 'pool-provider',
-});
-const importedClient = UserPoolClient.fromUserPoolClientId(this, 'ImportedPoolClient', 'client-id');
-
+declare const userPool: UserPool;
+declare const userPoolClient: UserPoolClient;
 new IdentityPool(this, 'myidentitypool', {
   identityPoolName: 'myidentitypool',
   roleMappings: [{
     mappingKey: 'cognito',
-    providerUrl: IdentityPoolProviderUrl.userPool(importedPool, importedClient),
+    providerUrl: IdentityPoolProviderUrl.userPool(userPool, userPoolClient),
     useToken: true,
   }],
 });

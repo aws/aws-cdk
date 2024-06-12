@@ -268,7 +268,30 @@
          },
          "/",
          {
-          "Ref": "UserPoolToImport1A7C21D3"
+          "Fn::Select": [
+           1,
+           {
+            "Fn::Split": [
+             "/",
+             {
+              "Fn::Select": [
+               5,
+               {
+                "Fn::Split": [
+                 ":",
+                 {
+                  "Fn::GetAtt": [
+                   "UserPoolToImport1A7C21D3",
+                   "Arn"
+                  ]
+                 }
+                ]
+               }
+              ]
+             }
+            ]
+           }
+          ]
          }
         ]
        ]
@@ -496,10 +519,35 @@
        "Fn::Join": [
         "",
         [
+         "cognito-idp.",
          {
-          "Fn::GetAtt": [
-           "UserPoolToImport1A7C21D3",
-           "ProviderName"
+          "Ref": "AWS::Region"
+         },
+         ".amazonaws.com/",
+         {
+          "Fn::Select": [
+           1,
+           {
+            "Fn::Split": [
+             "/",
+             {
+              "Fn::Select": [
+               5,
+               {
+                "Fn::Split": [
+                 ":",
+                 {
+                  "Fn::GetAtt": [
+                   "UserPoolToImport1A7C21D3",
+                   "Arn"
+                  ]
+                 }
+                ]
+               }
+              ]
+             }
+            ]
+           }
           ]
          },
          ":",

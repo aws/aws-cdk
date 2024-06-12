@@ -717,10 +717,7 @@ describe('role mappings', () => {
 
   test('role mapping with a imported user pool and client', () => {
     const stack = new Stack();
-    const importedPool = UserPool.fromUserPoolAttributes(stack, 'ImportedPool', {
-      userPoolId: 'pool-id',
-      userPoolProviderName: 'pool-provider',
-    });
+    const importedPool = UserPool.fromUserPoolArn(stack, 'ImportedPool', 'arn:aws:cognito-idp:us-east-1:0123456789012:userpool/test-user-pool');
     const importedClient = UserPoolClient.fromUserPoolClientId(stack, 'ImportedPoolClient', 'client-id');
     new IdentityPool(stack, 'TestIdentityPoolRoleMappingRules', {
       roleMappings: [{
@@ -737,26 +734,21 @@ describe('role mappings', () => {
       },
       RoleMappings: {
         cognito: {
-          IdentityProvider: 'pool-provider:client-id',
+          IdentityProvider: {
+            'Fn::Join': [
+              '',
+              [
+                'cognito-idp.',
+                {
+                  Ref: 'AWS::Region',
+                },
+                '.amazonaws.com/test-user-pool:client-id',
+              ],
+            ],
+          },
           Type: 'Token',
         },
       },
     });
-  });
-
-  test('role mapping fails when specifying a imported user pool by arn', () => {
-    const stack = new Stack();
-    const pool = UserPool.fromUserPoolArn(stack, 'ImportedPool', 'arn:aws:cognito-idp:us-east-1:0123456789012:userpool/test-user-pool');
-    const client = pool.addClient('Client');
-
-    expect(() => {
-      new IdentityPool(stack, 'TestIdentityPoolRoleMappingRules', {
-        roleMappings: [{
-          mappingKey: 'cognito',
-          providerUrl: IdentityPoolProviderUrl.userPool(pool, client),
-          useToken: true,
-        }],
-      });
-    }).toThrow(/to reference userPoolProviderName, use the `fromUserPoolAttributes`./);
   });
 });

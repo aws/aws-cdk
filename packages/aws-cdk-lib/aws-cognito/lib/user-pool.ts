@@ -540,31 +540,6 @@ export enum AdvancedSecurityMode {
 }
 
 /**
- * Attributes required to import an existing user pool into the Stack.
- * Either userPoolId or userPoolArn must be provided.
- */
-export interface UserPoolAttributes {
-  /**
-   * The id of the user pool.
-   *
-   * @default - either this or userPoolArn is required
-   */
-  readonly userPoolId?: string;
-
-  /**
-   * The ARN of the user pool.
-   *
-   * @default - either this or userPoolId is required
-   */
-  readonly userPoolArn?: string;
-
-  /**
-   * The provider name of the user pool.
-   */
-  readonly userPoolProviderName: string;
-}
-
-/**
  * Props for the UserPool construct
  */
 export interface UserPoolProps {
@@ -902,51 +877,13 @@ export class UserPool extends UserPoolBase {
     }
 
     const userPoolId = arnParts.resourceName;
+    // ex) cognito-idp.us-east-1.amazonaws.com/us-east-1_abcdefghi
+    const providerName = `cognito-idp.${Stack.of(scope).region}.amazonaws.com/${userPoolId}`;
 
     class ImportedUserPool extends UserPoolBase {
       public readonly userPoolArn = userPoolArn;
       public readonly userPoolId = userPoolId;
-
-      // In the UserPool construct, the userPoolProviderName is a required property but it is constructed from the arn and id of the user pool.
-      // So we throw an error if it is referenced by a user pool imported using the fromUserPoolId or fromUserPoolArn methods.
-      public get userPoolProviderName(): string {
-        throw new Error('to reference userPoolProviderName, use the `fromUserPoolAttributes`.');
-      }
-
-      constructor() {
-        super(scope, id, {
-          account: arnParts.account,
-          region: arnParts.region,
-        });
-      }
-    }
-
-    return new ImportedUserPool();
-  }
-
-  /**
-   * Import an existing user pool into the stack.
-   */
-  public static fromUserPoolAttributes(scope: Construct, id: string, attrs: UserPoolAttributes): IUserPool {
-    if (!attrs.userPoolArn && !attrs.userPoolId) {
-      throw new Error('must specify either userPoolArn or userPoolId');
-    }
-
-    const userPoolArn = attrs.userPoolArn ?? Stack.of(scope).formatArn({
-      service: 'cognito-idp',
-      resource: 'userpool',
-      resourceName: attrs.userPoolId,
-    });
-    const arnParts = Stack.of(scope).splitArn(userPoolArn, ArnFormat.SLASH_RESOURCE_NAME);
-    if (!arnParts.resourceName) {
-      throw new Error('invalid user pool ARN');
-    }
-    const userPoolId = arnParts.resourceName;
-
-    class ImportedUserPool extends UserPoolBase {
-      public readonly userPoolArn = userPoolArn;
-      public readonly userPoolId = userPoolId;
-      public readonly userPoolProviderName = attrs.userPoolProviderName;
+      public readonly userPoolProviderName = providerName;
 
       constructor() {
         super(scope, id, {
