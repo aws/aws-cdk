@@ -390,7 +390,12 @@ export class Stack extends Construct implements ITaggable {
 
   private readonly _stackName: string;
 
-  private readonly _notificationArns: string[];
+  /**
+   * notification arns passed through stack props.
+   *
+   * @internal
+   */
+  public readonly _notificationArns: string[];
 
   /**
    * Enable this flag to suppress indentation in generated
@@ -726,8 +731,7 @@ export class Stack extends Construct implements ITaggable {
    * Returns the list of notification Amazon Resource Names (ARNs) for the current stack.
    */
   public get notificationArns(): string[] {
-    //return (new ScopedAws(this).notificationArns).concat(this._notificationArns); // .join(this._notificationArns)
-    return this._notificationArns;
+    return (new ScopedAws(this).notificationArns);
   }
 
   /**

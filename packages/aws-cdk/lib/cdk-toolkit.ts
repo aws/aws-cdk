@@ -327,9 +327,9 @@ export class CdkToolkit {
         tags = tagsForStack(stack);
       }
 
-      const notificationArns: string[] = [];
-      notificationArns.concat(options.notificationArns ?? []);
-      notificationArns.concat(stack.notificationArns);
+      let notificationArns: string[] = [];
+      notificationArns = notificationArns.concat(options.notificationArns ?? []);
+      notificationArns = notificationArns.concat(stack.notificationArns);
 
       let elapsedDeployTime = 0;
       try {
