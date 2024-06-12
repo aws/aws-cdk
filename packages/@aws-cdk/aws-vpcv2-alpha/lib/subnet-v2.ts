@@ -16,8 +16,8 @@ export interface cidrBlockProps {
 export class Ipv4Cidr implements ICidr {
 
   public readonly cidr: string;
-  constructor(props: cidrBlockProps ) {
-    this.cidr = props.cidrBlock;
+  constructor(props: string ) {
+    this.cidr = props;
   }
 }
 
@@ -79,6 +79,11 @@ export class SubnetV2 extends Resource implements ISubnet {
   public readonly ipv4CidrBlock: string;
 
   /**
+   * The IPv6 CIDR Block for this subnet
+   */
+  public readonly ipv6CidrBlock: string[];
+
+  /**
    * The route table for this subnet
    */
   public readonly routeTable: IRouteTable;
@@ -100,14 +105,23 @@ export class SubnetV2 extends Resource implements ISubnet {
   constructor(scope: Construct, id: string, props: SubnetPropsV2) {
     super(scope, id);
 
+    let ipv4cidr: string = '';
+    //let ipv6cidr: string = '';
+    if (props.cidrBlock instanceof Ipv4Cidr) {
+      ipv4cidr = props.cidrBlock.cidr;
+    }
+    // } else if (props.cidrBlock instanceof Ipv6Cidr) {
+    //   ipv6cidr = props.cidrBlock.cidr;
+    // }
     const subnet = new CfnSubnet(this, 'Subnet', {
       vpcId: props.vpc.vpcId,
-      cidrBlock: props.cidrBlock.cidr,
-      ipv6CidrBlock: props.cidrBlock.cidr,
+      cidrBlock: ipv4cidr,
+      //ipv6CidrBlock: ipv6cidr,
       availabilityZone: props.availabilityZone,
     });
 
-    this.ipv4CidrBlock = subnet.cidrBlock?? '';
+    this.ipv4CidrBlock = subnet.attrCidrBlock;
+    this.ipv6CidrBlock = subnet.attrIpv6CidrBlocks;
     this.subnetId = subnet.ref;
     const table = new CfnRouteTable(this, 'RouteTable', {
       vpcId: props.vpc.vpcId,

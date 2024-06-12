@@ -1,10 +1,8 @@
 import { CfnIPAMPool, CfnRoute, CfnRouteTable, CfnVPC, CfnVPCCidrBlock, IRouteTable, ISubnet, RouterType, SubnetSelection } from 'aws-cdk-lib/aws-ec2';
 //import { NetworkBuilder } from 'aws-cdk-lib/aws-ec2/lib/network-util';
-import { Resource, Token } from 'aws-cdk-lib/core';
+import { Resource, Arn } from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import { IpamIpv4, IpamIpv6 } from './ipam';
-import { Arn } from 'aws-cdk-lib/core/lib/arn';
-import { NetworkBuilder } from 'aws-cdk-lib/aws-ec2/lib/network-util';
 
 export interface IIpIpamOptions{
   readonly ipv4IpamPoolId: any;
@@ -233,6 +231,7 @@ export class VpcV2 extends Resource implements IVpcV2 {
         //   validateIpv4address(vpcoptions.ipv4CidrBlock);
         // }
         //Create secondary blocks for Ipv4 and Ipv6
+        //TODO: Add unique has for each secondary ip address
         new CfnVPCCidrBlock(this, `Secondary${vpcoptions.ipv4CidrBlock}`, {
           vpcId: this.vpcId,
           cidrBlock: vpcoptions.ipv4CidrBlock,
@@ -356,19 +355,13 @@ export interface RouteTableProps {
 
 class ipv4CidrAllocation implements IIpAddresses {
 
-  private readonly networkBuilder: NetworkBuilder;
-
   constructor(private readonly cidrBlock: string) {
-    if (Token.isUnresolved(cidrBlock)) {
-      throw new Error('\'cidr\' property must be a concrete CIDR string, got a Token (we need to parse it for automatic subdivision)');
-    }
 
-    this.networkBuilder = new NetworkBuilder(this.cidrBlock);
   }
 
   allocateVpcCidr(): VpcV2Options {
     return {
-      ipv4CidrBlock: this.networkBuilder.networkCidr.cidr,
+      ipv4CidrBlock: this.cidrBlock,
     };
   }
 }
