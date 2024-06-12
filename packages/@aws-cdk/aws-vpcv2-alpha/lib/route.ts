@@ -17,7 +17,7 @@ export interface EgressOnlyInternetGatewayProps {
 }
 
 export interface InternetGatewayProps {
-  
+
 }
 
 export interface VirtualPrivateGatewayProps {
@@ -219,15 +219,13 @@ export interface IRouteV2 {
   readonly routeTable: IRouteTable;
   readonly destination: IIpAddresses;
   readonly target: IRouter;
-  }
-
+}
 
 export interface RouteProps {
   readonly routeTable: IRouteTable;
   readonly destination: IIpAddresses;
   readonly target: IRouter;
 }
-  
 
 export class Route extends Resource implements IRouteV2 {
   public readonly destination: IIpAddresses;
@@ -260,7 +258,6 @@ export class Route extends Resource implements IRouteV2 {
   }
 
 }
-
 
 export class RouteTable extends Resource implements IRouteTable {
   public readonly routeTableId: string;

@@ -1,4 +1,4 @@
-import { CfnIPAMPool, CfnVPC, CfnVPCCidrBlock, ISubnet, RouterType, SubnetSelection } from 'aws-cdk-lib/aws-ec2';
+import { CfnIPAMPool, CfnVPC, CfnVPCCidrBlock, ISubnet } from 'aws-cdk-lib/aws-ec2';
 //import { NetworkBuilder } from 'aws-cdk-lib/aws-ec2/lib/network-util';
 import { Resource, Arn } from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
@@ -253,29 +253,6 @@ export class VpcV2 extends Resource implements IVpcV2 {
     this.isolatedSubnets = new Array<ISubnet>;
   }
 }
-
-export interface IRouter {
-  readonly subnets: SubnetSelection[];
-  readonly routerType: RouterType;
-  readonly routerId: string;
-}
-
-// export interface RouterProps {
-//   readonly subnets?: SubnetSelection[];
-// }
-
-// export class GatewayV2 extends Resource implements IRouter {
-//   public readonly subnets: SubnetSelection[];
-//   public readonly routerType: RouterType;
-//   public readonly routerId: string;
-
-//   constructor(scope: Construct, id: string, props: RouterProps) {
-//     super(scope, id);
-
-//     this.subnets = props.subnets ?? [];
-//     this.routerType = RouterType.GATEWAY;
-//   }
-// }
 
 class ipv4CidrAllocation implements IIpAddresses {
 
