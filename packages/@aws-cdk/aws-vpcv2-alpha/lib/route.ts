@@ -1,36 +1,233 @@
-import { CfnRoute, CfnRouteTable, IRouteTable, RouterType, SubnetSelection } from 'aws-cdk-lib/aws-ec2';
+import { CfnCarrierGateway, CfnEgressOnlyInternetGateway, CfnInternetGateway, CfnNatGateway, CfnNetworkInterface, CfnRoute, CfnRouteTable, CfnTransitGateway, CfnVPCEndpoint, CfnVPCPeeringConnection, CfnVPNGateway, IRouteTable, RouterType } from 'aws-cdk-lib/aws-ec2';
 import { IIpAddresses, IpAddresses } from './vpc-v2';
 import { Construct } from 'constructs';
 import { Resource } from 'aws-cdk-lib/core';
 
 export interface IRouter {
-  readonly subnets: SubnetSelection[];
   readonly routerType: RouterType;
   readonly routerId: string;
 }
 
-// export interface RouterProps {
-//   readonly subnets?: SubnetSelection[];
-// }
+export interface CarrierGatewayProps {
+  readonly vpcId: string;
+}
 
-// export class GatewayV2 extends Resource implements IRouter {
-//   public readonly subnets: SubnetSelection[];
-//   public readonly routerType: RouterType;
-//   public readonly routerId: string;
+export interface EgressOnlyInternetGatewayProps {
+  readonly vpcId: string;
+}
 
-//   constructor(scope: Construct, id: string, props: RouterProps) {
-//     super(scope, id);
+export interface InternetGatewayProps {
+  
+}
 
-//     this.subnets = props.subnets ?? [];
-//     this.routerType = RouterType.GATEWAY;
-//   }
-// }
+export interface VirtualPrivateGatewayProps {
+  readonly type: string;
+}
+
+export interface NatGatewayProps {
+  readonly subnetId: string;
+}
+
+export interface NetworkInterfaceProps {
+  readonly subnetId: string;
+}
+
+export interface TransitGatewayProps {
+
+}
+
+export interface VpcEndpointProps {
+  readonly serviceName: string;
+  readonly vpcId: string;
+}
+
+export interface VpcPeeringConnectionProps {
+  readonly vpcId: string;
+  readonly peerVpcId: string;
+}
+
+export class CarrierGateway extends Resource implements IRouter {
+  public readonly routerId: string;
+  public readonly routerType: RouterType;
+
+  public readonly resource: CfnCarrierGateway;
+
+  constructor(scope: Construct, id: string, props: CarrierGatewayProps) {
+    super(scope, id);
+
+    this.routerType = RouterType.CARRIER_GATEWAY;
+
+    this.resource = new CfnCarrierGateway(this, 'CarrierGateway', {
+      vpcId: props.vpcId,
+    });
+
+    this.routerId = this.resource.attrCarrierGatewayId;
+  }
+}
+
+export class EgressOnlyInternetGateway extends Resource implements IRouter {
+  public readonly routerId: string;
+  public readonly routerType: RouterType;
+
+  public readonly resource: CfnEgressOnlyInternetGateway;
+
+  constructor(scope: Construct, id: string, props: EgressOnlyInternetGatewayProps) {
+    super(scope, id);
+
+    this.routerType = RouterType.EGRESS_ONLY_INTERNET_GATEWAY;
+
+    this.resource = new CfnEgressOnlyInternetGateway(this, 'EIGW', {
+      vpcId: props.vpcId,
+    });
+
+    this.routerId = this.resource.attrId;
+  }
+}
+
+export class InternetGateway extends Resource implements IRouter {
+  public readonly routerId: string;
+  public readonly routerType: RouterType;
+
+  public readonly resource: CfnInternetGateway;
+
+  constructor(scope: Construct, id: string/*, props: InternetGatewayProps*/) {
+    super(scope, id);
+
+    this.routerType = RouterType.GATEWAY;
+
+    this.resource = new CfnInternetGateway(this, 'IGW', {});
+
+    this.routerId = this.resource.attrInternetGatewayId;
+  }
+}
+
+export class VirtualPrivateGateway extends Resource implements IRouter {
+  public readonly routerId: string;
+  public readonly routerType: RouterType;
+
+  public readonly resource: CfnVPNGateway;
+
+  constructor(scope: Construct, id: string, props: VirtualPrivateGatewayProps) {
+    super(scope, id);
+
+    this.routerType = RouterType.GATEWAY;
+
+    this.resource = new CfnVPNGateway(this, 'IGW', {
+      type: props.type,
+    });
+
+    this.routerId = this.resource.attrVpnGatewayId;
+  }
+}
+
+export class NatGateway extends Resource implements IRouter {
+  public readonly routerId: string;
+  public readonly routerType: RouterType;
+
+  public readonly resource: CfnNatGateway;
+
+  constructor(scope: Construct, id: string, props: NatGatewayProps) {
+    super(scope, id);
+
+    this.routerType = RouterType.NAT_GATEWAY;
+
+    this.resource = new CfnNatGateway(this, 'NATGateway', {
+      subnetId: props.subnetId,
+    });
+
+    this.routerId = this.resource.attrNatGatewayId;
+  }
+}
+
+export class NetworkInterface extends Resource implements IRouter {
+  public readonly routerId: string;
+  public readonly routerType: RouterType;
+
+  public readonly resource: CfnNetworkInterface;
+
+  constructor(scope: Construct, id: string, props: NetworkInterfaceProps) {
+    super(scope, id);
+
+    this.routerType = RouterType.NETWORK_INTERFACE;
+
+    this.resource = new CfnNetworkInterface(this, 'NetworkInterface', {
+      subnetId: props.subnetId,
+    });
+
+    this.routerId = this.resource.attrId;
+  }
+}
+
+export class TransitGateway extends Resource implements IRouter {
+  public readonly routerId: string;
+  public readonly routerType: RouterType;
+
+  public readonly resource: CfnTransitGateway;
+
+  constructor(scope: Construct, id: string/*, props: TransitGatewayProps*/) {
+    super(scope, id);
+
+    this.routerType = RouterType.TRANSIT_GATEWAY;
+
+    this.resource = new CfnTransitGateway(this, 'TGW', {});
+
+    this.routerId = this.resource.attrId;
+  }
+}
+
+export class VpcEndpoint extends Resource implements IRouter {
+  public readonly routerId: string;
+  public readonly routerType: RouterType;
+
+  public readonly resource: CfnVPCEndpoint;
+
+  constructor(scope: Construct, id: string, props: VpcEndpointProps) {
+    super(scope, id);
+
+    this.routerType = RouterType.VPC_ENDPOINT;
+
+    this.resource = new CfnVPCEndpoint(this, 'VPCEndpoint', {
+      serviceName: props.serviceName,
+      vpcId: props.vpcId,
+    });
+
+    this.routerId = this.resource.attrId;
+  }
+}
+
+export class VpcPeeringConnection extends Resource implements IRouter {
+  public readonly routerId: string;
+  public readonly routerType: RouterType;
+
+  public readonly resource: CfnVPCPeeringConnection;
+
+  constructor(scope: Construct, id: string, props: VpcPeeringConnectionProps) {
+    super(scope, id);
+
+    this.routerType = RouterType.VPC_PEERING_CONNECTION;
+
+    this.resource = new CfnVPCPeeringConnection(this, 'VPCPeerConnection', {
+      peerVpcId: props.peerVpcId,
+      vpcId: props.vpcId,
+    });
+
+    this.routerId = this.resource.attrId;
+  }
+}
 
 export interface IRouteV2 {
+  readonly routeTable: IRouteTable;
   readonly destination: IIpAddresses;
   readonly target: IRouter;
+  }
+
+
+export interface RouteProps {
   readonly routeTable: IRouteTable;
+  readonly destination: IIpAddresses;
+  readonly target: IRouter;
 }
+  
 
 export class Route extends Resource implements IRouteV2 {
   public readonly destination: IIpAddresses;
@@ -64,11 +261,6 @@ export class Route extends Resource implements IRouteV2 {
 
 }
 
-export interface RouteProps {
-  readonly routeTable: IRouteTable;
-  readonly destination: IIpAddresses;
-  readonly target: IRouter;
-}
 
 export class RouteTable extends Resource implements IRouteTable {
   public readonly routeTableId: string;
