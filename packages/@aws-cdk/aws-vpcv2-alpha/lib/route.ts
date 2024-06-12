@@ -1,14 +1,14 @@
-import { CfnRoute, CfnRouteTable, IRouteTable, RouterType, SubnetSelection } from "aws-cdk-lib/aws-ec2";
-import { IIpAddresses, IpAddresses } from "./vpc-v2";
-import { Construct } from "constructs";
-import { Resource } from "aws-cdk-lib/core";
+import { CfnRoute, CfnRouteTable, IRouteTable, RouterType, SubnetSelection } from 'aws-cdk-lib/aws-ec2';
+import { IIpAddresses, IpAddresses } from './vpc-v2';
+import { Construct } from 'constructs';
+import { Resource } from 'aws-cdk-lib/core';
 
 export interface IRouter {
   readonly subnets: SubnetSelection[];
   readonly routerType: RouterType;
   readonly routerId: string;
 }
-  
+
 // export interface RouterProps {
 //   readonly subnets?: SubnetSelection[];
 // }
@@ -25,13 +25,13 @@ export interface IRouter {
 //     this.routerType = RouterType.GATEWAY;
 //   }
 // }
-  
+
 export interface IRouteV2 {
   readonly destination: IIpAddresses;
   readonly target: IRouter;
   readonly routeTable: IRouteTable;
 }
-  
+
 export class Route extends Resource implements IRouteV2 {
   public readonly destination: IIpAddresses;
   public readonly target: IRouter;
@@ -61,15 +61,15 @@ export class Route extends Resource implements IRouteV2 {
 
     // this.routeTable.addRoute(this.resource.ref);
   }
-  
+
 }
-  
+
 export interface RouteProps {
   readonly routeTable: IRouteTable;
   readonly destination: IIpAddresses;
   readonly target: IRouter;
 }
-  
+
 export class RouteTable extends Resource implements IRouteTable {
   public readonly routeTableId: string;
   // public readonly routes: string[];
@@ -96,12 +96,11 @@ export class RouteTable extends Resource implements IRouteTable {
   //   return;
   // }
 }
-  
+
 export interface RouteTableProps {
   readonly vpcId: string;
   // readonly routes?: IRouteV2[];
 }
-
 
 function routerTypeToPropName(routerType: RouterType) {
   return ({

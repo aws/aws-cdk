@@ -1,4 +1,4 @@
-import { CfnIPAMPool, CfnRoute, CfnRouteTable, CfnVPC, CfnVPCCidrBlock, IRouteTable, ISubnet, RouterType, SubnetSelection } from 'aws-cdk-lib/aws-ec2';
+import { CfnIPAMPool, CfnVPC, CfnVPCCidrBlock, ISubnet, RouterType, SubnetSelection } from 'aws-cdk-lib/aws-ec2';
 //import { NetworkBuilder } from 'aws-cdk-lib/aws-ec2/lib/network-util';
 import { Resource, Arn } from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
@@ -277,82 +277,6 @@ export interface IRouter {
 //   }
 // }
 
-export interface IRouteV2 {
-  readonly destination: IIpAddresses;
-  readonly target: IRouter;
-  readonly routeTable: IRouteTable;
-}
-
-export class Route extends Resource implements IRouteV2 {
-  public readonly destination: IIpAddresses;
-  public readonly target: IRouter;
-  // public readonly routeTableId: string;
-  public readonly routeTable: IRouteTable;
-
-  public readonly targetRouterType: RouterType
-
-  public readonly resource: CfnRoute;
-
-  constructor(scope: Construct, id: string, props: RouteProps) {
-    super(scope, id);
-
-    this.destination = props.destination ?? IpAddresses.ipv4('10.0.0.0/16');
-    this.target = props.target;
-    // this.routeTableId = props.routeTableId ?? '';
-    this.routeTable = props.routeTable;
-
-    this.targetRouterType = this.target.routerType;
-
-    this.resource = new CfnRoute(this, 'Route', {
-      routeTableId: this.routeTable.routeTableId,
-      destinationCidrBlock: this.destination.allocateVpcCidr().ipv4CidrBlock,
-      destinationIpv6CidrBlock: this.destination.allocateVpcCidr().ipv6CidrBlock,
-      [routerTypeToPropName(this.targetRouterType)]: this.target.routerId,
-    });
-
-    // this.routeTable.addRoute(this.resource.ref);
-  }
-
-}
-
-export interface RouteProps {
-  readonly routeTable: IRouteTable;
-  readonly destination: IIpAddresses;
-  readonly target: IRouter;
-}
-
-export class RouteTable extends Resource implements IRouteTable {
-  public readonly routeTableId: string;
-  // public readonly routes: string[];
-
-  public readonly resource: CfnRouteTable;
-
-  constructor(scope: Construct, id: string, props: RouteTableProps) {
-    super(scope, id);
-
-    // this.routes = Array<string>();
-
-    this.resource = new CfnRouteTable(this, 'RouteTable', {
-      vpcId: props.vpcId,
-    });
-
-    this.routeTableId = this.resource.attrRouteTableId;
-  }
-
-  // function addRoute() {
-  //   return;
-  // }
-
-  // function getRoute(routeId: string) {
-  //   return;
-  // }
-}
-
-export interface RouteTableProps {
-  readonly vpcId: string;
-  // readonly routes?: IRouteV2[];
-}
-
 class ipv4CidrAllocation implements IIpAddresses {
 
   constructor(private readonly cidrBlock: string) {
@@ -397,8 +321,6 @@ export class AmazonProvided implements IIpAddresses {
   }
 
 }
-
-
 //Default Config
 // type IPaddressConfig = {
 //   octet1: number;
