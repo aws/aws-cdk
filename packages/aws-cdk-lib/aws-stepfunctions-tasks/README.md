@@ -1147,7 +1147,7 @@ Also you can choose execution class by settint the `executionClass` property.
 ```ts
 new tasks.GlueStartJobRun(this, 'Task', {
   glueJobName: 'my-glue-job',
-  executionClass: ExecutionClass.FLEX,
+  executionClass: tasks.ExecutionClass.FLEX,
 });
 ```
 
