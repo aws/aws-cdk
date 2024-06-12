@@ -26,6 +26,14 @@
               "version": "0.0.0"
             }
           },
+          "LatestNodeRuntimeMap": {
+            "id": "LatestNodeRuntimeMap",
+            "path": "cdk-sfn-evaluate-expression-default-runtime-integ/LatestNodeRuntimeMap",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnMapping",
+              "version": "0.0.0"
+            }
+          },
           "Eval41256dc5445742738ed917bc818694e5": {
             "id": "Eval41256dc5445742738ed917bc818694e5",
             "path": "cdk-sfn-evaluate-expression-default-runtime-integ/Eval41256dc5445742738ed917bc818694e5",
@@ -132,7 +140,15 @@
                         "Arn"
                       ]
                     },
-                    "runtime": "nodejs18.x"
+                    "runtime": {
+                      "Fn::FindInMap": [
+                        "LatestNodeRuntimeMap",
+                        {
+                          "Ref": "AWS::Region"
+                        },
+                        "value"
+                      ]
+                    }
                   }
                 },
                 "constructInfo": {
