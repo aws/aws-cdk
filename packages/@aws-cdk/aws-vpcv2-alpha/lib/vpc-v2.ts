@@ -398,20 +398,6 @@ export class AmazonProvided implements IIpAddresses {
 
 }
 
-function routerTypeToPropName(routerType: RouterType) {
-  return ({
-    [RouterType.CARRIER_GATEWAY]: 'carrierGatewayId',
-    [RouterType.EGRESS_ONLY_INTERNET_GATEWAY]: 'egressOnlyInternetGatewayId',
-    [RouterType.GATEWAY]: 'gatewayId',
-    [RouterType.INSTANCE]: 'instanceId',
-    [RouterType.LOCAL_GATEWAY]: 'localGatewayId',
-    [RouterType.NAT_GATEWAY]: 'natGatewayId',
-    [RouterType.NETWORK_INTERFACE]: 'networkInterfaceId',
-    [RouterType.TRANSIT_GATEWAY]: 'transitGatewayId',
-    [RouterType.VPC_PEERING_CONNECTION]: 'vpcPeeringConnectionId',
-    [RouterType.VPC_ENDPOINT]: 'vpcEndpointId',
-  })[routerType];
-}
 
 //Default Config
 // type IPaddressConfig = {
