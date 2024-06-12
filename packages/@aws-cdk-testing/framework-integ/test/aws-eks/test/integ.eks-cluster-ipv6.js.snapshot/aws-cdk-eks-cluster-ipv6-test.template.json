@@ -1227,7 +1227,8 @@
         ]
        }
       ]
-     }
+     },
+     "accessConfig": {}
     },
     "AssumeRoleArn": {
      "Fn::GetAtt": [
@@ -1235,7 +1236,7 @@
       "Arn"
      ]
     },
-    "AttributesRevision": 2
+    "AttributesRevision": 3
    },
    "DependsOn": [
     "CIDR6",
@@ -4824,7 +4825,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
        },
-       "/3a1b587a4d0ca4b42fa41abc01fc25e3b006d0a74b6b6728436e72988c2666bd.json"
+       "/11a2bd12fa6d45212222ba2271d6767946a3c42b6d3c82bfb511b34b266bc43d.json"
       ]
      ]
     }

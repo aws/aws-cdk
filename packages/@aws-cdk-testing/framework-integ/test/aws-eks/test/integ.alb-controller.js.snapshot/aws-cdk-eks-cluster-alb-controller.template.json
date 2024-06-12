@@ -758,7 +758,8 @@
       ],
       "endpointPublicAccess": true,
       "endpointPrivateAccess": true
-     }
+     },
+     "accessConfig": {}
     },
     "AssumeRoleArn": {
      "Fn::GetAtt": [
@@ -766,7 +767,7 @@
       "Arn"
      ]
     },
-    "AttributesRevision": 2
+    "AttributesRevision": 3
    },
    "DependsOn": [
     "ClusterCreationRoleDefaultPolicyE8BDFC7B",
@@ -1055,7 +1056,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/e9d9890827c645c3a2c82d768d4693e81fa2931a46a36cde032d4250757beab0.json"
+       "/12013bd7d8559f6883e853e9624275cf3f32d86c166243ab85c46269c009b249.json"
       ]
      ]
     }

@@ -761,7 +761,8 @@
      },
      "tags": {
       "foo": "bar"
-     }
+     },
+     "accessConfig": {}
     },
     "AssumeRoleArn": {
      "Fn::GetAtt": [
@@ -769,7 +770,7 @@
       "Arn"
      ]
     },
-    "AttributesRevision": 2
+    "AttributesRevision": 3
    },
    "DependsOn": [
     "ClusterCreationRoleDefaultPolicyE8BDFC7B",
@@ -830,7 +831,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/850f4a40841b605fcf6360d17c20b8e56079851e33b1ad796edf374bcab0c2a8.json"
+       "/e646ac15fd5854cdd07610dd1833ebee5203c341eaba81c05e6dbaea50a3002d.json"
       ]
      ]
     }

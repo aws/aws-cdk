@@ -1,5 +1,5 @@
 import { Construct, Node } from 'constructs';
-import { Cluster, ICluster, IpFamily } from './cluster';
+import { Cluster, ICluster, IpFamily, AuthenticationMode } from './cluster';
 import { CfnNodegroup } from './eks.generated';
 import { InstanceType, ISecurityGroup, SubnetSelection, InstanceArchitecture, InstanceClass, InstanceSize } from '../../aws-ec2';
 import { IRole, ManagedPolicy, PolicyStatement, Role, ServicePrincipal } from '../../aws-iam';
@@ -518,14 +518,17 @@ export class Nodegroup extends Resource implements INodegroup {
     // its state for consistency.
     if (this.cluster instanceof Cluster) {
       // see https://docs.aws.amazon.com/en_us/eks/latest/userguide/add-user-role.html
-      this.cluster.awsAuth.addRoleMapping(this.role, {
-        username: 'system:node:{{EC2PrivateDNSName}}',
-        groups: [
-          'system:bootstrappers',
-          'system:nodes',
-        ],
-      });
-
+      // only when ConfigMap is supported
+      const supportConfigMap = props.cluster.authenticationMode !== AuthenticationMode.API ? true : false;
+      if (supportConfigMap) {
+        this.cluster.awsAuth.addRoleMapping(this.role, {
+          username: 'system:node:{{EC2PrivateDNSName}}',
+          groups: [
+            'system:bootstrappers',
+            'system:nodes',
+          ],
+        });
+      }
       // the controller runs on the worker nodes so they cannot
       // be deleted before the controller.
       if (this.cluster.albController) {
