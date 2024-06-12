@@ -460,10 +460,9 @@ test('deploy is not skipped if parameters are different', async () => {
   }));
 });
 
-/*
 test('deploy is skipped if notificationArns are the same', async () => {
   // GIVEN
-  givenTemplateIs(FAKE_STACK_WITH_PARAMETERS.template);
+  givenTemplateIs(FAKE_STACK.template);
   givenStackExists({
     NotificationARNs: ['arn:aws:sns:bermuda-triangle-1337:123456789012:TestTopic'],
   });
@@ -471,9 +470,8 @@ test('deploy is skipped if notificationArns are the same', async () => {
   // WHEN
   await deployStack({
     ...standardDeployStackArguments(),
-    stack: FAKE_STACK_WITH_PARAMETERS,
-    parameters: {},
-    usePreviousParameters: true,
+    stack: FAKE_STACK,
+    notificationArns: ['arn:aws:sns:bermuda-triangle-1337:123456789012:TestTopic'],
   });
 
   // THEN
@@ -482,36 +480,21 @@ test('deploy is skipped if notificationArns are the same', async () => {
 
 test('deploy is not skipped if notificationArns are different', async () => {
   // GIVEN
-  givenTemplateIs(FAKE_STACK_WITH_PARAMETERS.template);
+  givenTemplateIs(FAKE_STACK.template);
   givenStackExists({
-    Parameters: [
-      { ParameterKey: 'HasValue', ParameterValue: 'HasValue' },
-      { ParameterKey: 'HasDefault', ParameterValue: 'HasDefault' },
-      { ParameterKey: 'OtherParameter', ParameterValue: 'OtherParameter' },
-    ],
+    NotificationARNs: ['arn:aws:sns:bermuda-triangle-1337:123456789012:TestTopic'],
   });
 
   // WHEN
   await deployStack({
     ...standardDeployStackArguments(),
-    stack: FAKE_STACK_WITH_PARAMETERS,
-    parameters: {
-      HasValue: 'NewValue',
-    },
-    usePreviousParameters: true,
+    stack: FAKE_STACK,
+    notificationArns: ['arn:aws:sns:bermuda-triangle-1337:123456789012:MagicTopic'],
   });
 
   // THEN
-  expect(cfnMocks.createChangeSet).toHaveBeenCalledWith(expect.objectContaining({
-    Parameters: [
-      { ParameterKey: 'HasValue', ParameterValue: 'NewValue' },
-      { ParameterKey: 'HasDefault', UsePreviousValue: true },
-      { ParameterKey: 'OtherParameter', UsePreviousValue: true },
-    ],
-  }));
+  expect(cfnMocks.createChangeSet).toHaveBeenCalled();
 });
-
-*/
 
 test('if existing stack failed to create, it is deleted and recreated', async () => {
   // GIVEN
@@ -677,7 +660,7 @@ test('deploy is not skipped if stack is in a _FAILED state', async () => {
   await deployStack({
     ...standardDeployStackArguments(),
     usePreviousParameters: true,
-  }).catch(() => {});
+  }).catch(() => { });
 
   // THEN
   expect(cfnMocks.createChangeSet).toHaveBeenCalled();

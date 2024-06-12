@@ -161,7 +161,6 @@ export class CdkToolkit {
         let changeSet = undefined;
 
         if (options.changeSet) {
-
           let stackExists = false;
           try {
             stackExists = await this.props.deployments.stackExists({

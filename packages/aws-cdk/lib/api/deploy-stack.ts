@@ -644,7 +644,7 @@ async function canSkipDeploy(
     return false;
   }
 
-  function arrayEquals(a: any[], b: any[]) {
+  function arrayEquals(a: any[], b: any[]): boolean {
     return a.every(item => b.includes(item)) && b.every(item => a.includes(item));
   }
 
