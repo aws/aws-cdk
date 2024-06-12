@@ -214,14 +214,6 @@ export class CdkToolkit {
       return this.watch(options);
     }
 
-    if (options.notificationArns) {
-      options.notificationArns.map( arn => {
-        if (!validateSnsTopicArn(arn)) {
-          throw new Error(`Notification arn ${arn} is not a valid arn for an SNS topic`);
-        }
-      });
-    }
-
     const startSynthTime = new Date().getTime();
     const stackCollection = await this.selectStacksForDeploy(options.selector, options.exclusively,
       options.cacheCloudAssembly, options.ignoreNoStacks);
@@ -318,7 +310,17 @@ export class CdkToolkit {
         }
       }
 
-      const stackIndex = stacks.indexOf(stack)+1;
+      let notificationArns: string[] = [];
+      notificationArns = notificationArns.concat(options.notificationArns ?? []);
+      notificationArns = notificationArns.concat(stack.notificationArns);
+
+      notificationArns.map(arn => {
+        if (!validateSnsTopicArn(arn)) {
+          throw new Error(`Notification arn ${arn} is not a valid arn for an SNS topic`);
+        }
+      });
+
+      const stackIndex = stacks.indexOf(stack) + 1;
       print('%s: deploying... [%s/%s]', chalk.bold(stack.displayName), stackIndex, stackCollection.stackCount);
       const startDeployTime = new Date().getTime();
 
@@ -326,10 +328,6 @@ export class CdkToolkit {
       if (!tags || tags.length === 0) {
         tags = tagsForStack(stack);
       }
-
-      let notificationArns: string[] = [];
-      notificationArns = notificationArns.concat(options.notificationArns ?? []);
-      notificationArns = notificationArns.concat(stack.notificationArns);
 
       let elapsedDeployTime = 0;
       try {

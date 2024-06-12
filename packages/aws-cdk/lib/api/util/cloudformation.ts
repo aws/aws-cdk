@@ -138,10 +138,19 @@ export class CloudFormationStack {
   /**
    * The stack's current tags
    *
-   * Empty list of the stack does not exist
+   * Empty list if the stack does not exist
    */
   public get tags(): CloudFormation.Tags {
     return this.stack?.Tags || [];
+  }
+
+  /**
+   * The stack's current notification ARNs.
+   *
+   * Empty list if the stack does not exist
+   */
+  public get notificationArns(): CloudFormation.NotificationARNs {
+    return this.stack?.NotificationARNs ?? [];
   }
 
   /**

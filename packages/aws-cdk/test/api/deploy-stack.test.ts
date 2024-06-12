@@ -460,6 +460,59 @@ test('deploy is not skipped if parameters are different', async () => {
   }));
 });
 
+/*
+test('deploy is skipped if notificationArns are the same', async () => {
+  // GIVEN
+  givenTemplateIs(FAKE_STACK_WITH_PARAMETERS.template);
+  givenStackExists({
+    NotificationARNs: ['arn:aws:sns:bermuda-triangle-1337:123456789012:TestTopic'],
+  });
+
+  // WHEN
+  await deployStack({
+    ...standardDeployStackArguments(),
+    stack: FAKE_STACK_WITH_PARAMETERS,
+    parameters: {},
+    usePreviousParameters: true,
+  });
+
+  // THEN
+  expect(cfnMocks.createChangeSet).not.toHaveBeenCalled();
+});
+
+test('deploy is not skipped if notificationArns are different', async () => {
+  // GIVEN
+  givenTemplateIs(FAKE_STACK_WITH_PARAMETERS.template);
+  givenStackExists({
+    Parameters: [
+      { ParameterKey: 'HasValue', ParameterValue: 'HasValue' },
+      { ParameterKey: 'HasDefault', ParameterValue: 'HasDefault' },
+      { ParameterKey: 'OtherParameter', ParameterValue: 'OtherParameter' },
+    ],
+  });
+
+  // WHEN
+  await deployStack({
+    ...standardDeployStackArguments(),
+    stack: FAKE_STACK_WITH_PARAMETERS,
+    parameters: {
+      HasValue: 'NewValue',
+    },
+    usePreviousParameters: true,
+  });
+
+  // THEN
+  expect(cfnMocks.createChangeSet).toHaveBeenCalledWith(expect.objectContaining({
+    Parameters: [
+      { ParameterKey: 'HasValue', ParameterValue: 'NewValue' },
+      { ParameterKey: 'HasDefault', UsePreviousValue: true },
+      { ParameterKey: 'OtherParameter', UsePreviousValue: true },
+    ],
+  }));
+});
+
+*/
+
 test('if existing stack failed to create, it is deleted and recreated', async () => {
   // GIVEN
   givenStackExists(

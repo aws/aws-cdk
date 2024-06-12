@@ -644,6 +644,16 @@ async function canSkipDeploy(
     return false;
   }
 
+  function arrayEquals(a: any[], b: any[]) {
+    return a.every(item => b.includes(item)) && b.every(item => a.includes(item));
+  }
+
+  // Notification arns have changed
+  if (!arrayEquals(cloudFormationStack.notificationArns, deployStackOptions.notificationArns ?? [])) {
+    debug(`${deployName}: notification arns have changed`);
+    return false;
+  }
+
   // Termination protection has been updated
   if (!!deployStackOptions.stack.terminationProtection !== !!cloudFormationStack.terminationProtection) {
     debug(`${deployName}: termination protection has been updated`);

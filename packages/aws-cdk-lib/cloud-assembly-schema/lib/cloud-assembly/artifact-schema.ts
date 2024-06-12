@@ -56,9 +56,9 @@ export interface AwsCloudFormationStackProperties {
   readonly tags?: { [id: string]: string };
 
   /**
-   * Values for CloudFormation stack tags that should be passed when the stack is deployed.
+   * SNS Notification ARNs that should receive CloudFormation Stack Events.
    *
-   * @default - No tags
+   * @default - No notification arns
    */
   readonly notificationArns?: string[];
 
