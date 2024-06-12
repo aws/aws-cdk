@@ -1,8 +1,9 @@
 import { CfnIPAMPool, CfnVPC, CfnVPCCidrBlock, ISubnet } from 'aws-cdk-lib/aws-ec2';
 //import { NetworkBuilder } from 'aws-cdk-lib/aws-ec2/lib/network-util';
-import { Resource, Arn } from 'aws-cdk-lib/core';
-import { Construct } from 'constructs';
+import { Arn } from 'aws-cdk-lib/core';
+import { Construct, DependencyGroup, IDependable } from 'constructs';
 import { IpamIpv4, IpamIpv6 } from './ipam';
+import { VpcV2Base } from './vpc-v2-base';
 
 export interface IIpIpamOptions{
   readonly ipv4IpamPoolId: any;
@@ -92,30 +93,30 @@ export interface VpcV2Options {
   readonly amazonProvided?: boolean;
 }
 
-export interface IVpcV2 {
+// export interface IVpcV2 {
 
-  readonly vpcId: string;
+//   readonly vpcId: string;
 
-  readonly vpcArn: string;
+//   readonly vpcArn: string;
 
-  readonly vpcCidrBlock: string;
+//   readonly vpcCidrBlock: string;
 
-  /**
-   * List of public subnets in this VPC
-   */
-  readonly publicSubnets?: ISubnet[];
+//   /**
+//    * List of public subnets in this VPC
+//    */
+//   readonly publicSubnets?: ISubnet[];
 
-  /**
-     * List of private subnets in this VPC
-     */
-  readonly privateSubnets?: ISubnet[];
+//   /**
+//      * List of private subnets in this VPC
+//      */
+//   readonly privateSubnets?: ISubnet[];
 
-  /**
-     * List of isolated subnets in this VPC
-     */
-  readonly isolatedSubnets: ISubnet[];
+//   /**
+//      * List of isolated subnets in this VPC
+//      */
+//   readonly isolatedSubnets: ISubnet[];
 
-}
+// }
 
 export interface IIpv6AddressesOptions {
   readonly ipv6CidrBlock?: string;
@@ -126,7 +127,6 @@ export interface IIpAddresses {
 
   allocateVpcCidr() : VpcV2Options;
 
-  // allocateVpcV6Cidr(options: Ipv6AddressesOptions): VpcV2Options;
 }
 
 export interface IpAddressesCidrConfig {
@@ -151,7 +151,7 @@ export interface VpcV2Props {
  * Creates new VPC with added functionalities
  * @resource AWS::EC2::VPC
  */
-export class VpcV2 extends Resource implements IVpcV2 {
+export class VpcV2 extends VpcV2Base {
 
   /**
    * Identifier for this VPC
@@ -194,6 +194,10 @@ export class VpcV2 extends Resource implements IVpcV2 {
   public readonly dnsSupportEnabled: boolean;
 
   public readonly isolatedSubnets: ISubnet[];
+
+  public readonly internetConnectivityEstablished: IDependable;
+
+  private readonly _internetConnectivityEstablished = new DependencyGroup();
 
   constructor(scope: Construct, id: string, props: VpcV2Props = {}) {
     super(scope, id);
@@ -251,6 +255,11 @@ export class VpcV2 extends Resource implements IVpcV2 {
      * Empty array for isolated subnets
      */
     this.isolatedSubnets = new Array<ISubnet>;
+
+    /**
+     * Add igw to this if its a public subnet
+     */
+    this.internetConnectivityEstablished = this._internetConnectivityEstablished;
   }
 }
 

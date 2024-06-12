@@ -1,9 +1,8 @@
 /* eslint-disable @typescript-eslint/member-ordering */
 // /* eslint-disable @typescript-eslint/member-ordering */
 import { Resource, Names } from 'aws-cdk-lib';
-import { CfnRouteTable, CfnSubnet, CfnSubnetRouteTableAssociation, INetworkAcl, IRouteTable, ISubnet, NetworkAcl, SubnetNetworkAclAssociation } from 'aws-cdk-lib/aws-ec2';
+import { CfnRouteTable, CfnSubnet, CfnSubnetRouteTableAssociation, INetworkAcl, IRouteTable, ISubnet, IVpc, NetworkAcl, SubnetNetworkAclAssociation } from 'aws-cdk-lib/aws-ec2';
 import { Construct, DependencyGroup, IDependable } from 'constructs';
-import { IVpcV2 } from './vpc-v2';
 
 export interface ICidr {
   readonly cidr: string;
@@ -33,7 +32,7 @@ export interface SubnetPropsV2 {
 /**
  * VPC Prop
  */
-  vpc: IVpcV2;
+  vpc: IVpc;
 
   /**
    * custom CIDR range
@@ -173,6 +172,6 @@ export class SubnetV2 extends Resource implements ISubnet {
 
 }
 
-function pushIsolatedSubnet(vpc: IVpcV2, subnet: SubnetV2) {
+function pushIsolatedSubnet(vpc: IVpc, subnet: SubnetV2) {
   vpc.isolatedSubnets.push(subnet);
 }
