@@ -731,7 +731,7 @@ export class Stack extends Construct implements ITaggable {
    * Returns the list of notification Amazon Resource Names (ARNs) for the current stack.
    */
   public get notificationArns(): string[] {
-    return (new ScopedAws(this).notificationArns);
+    return new ScopedAws(this).notificationArns;
   }
 
   /**
