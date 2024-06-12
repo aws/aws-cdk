@@ -33,10 +33,10 @@
      ],
      "SubnetIds": [
       {
-       "Ref": "referencetointegeksstack1VpcPrivateSubnet1Subnet53D986C1Ref"
+       "Fn::ImportValue": "integ-eks-stack-vpc:ExportsOutputRefVpcPrivateSubnet1Subnet536B997AFD4CC940"
       },
       {
-       "Ref": "referencetointegeksstack1VpcPrivateSubnet2Subnet59B5D26ARef"
+       "Fn::ImportValue": "integ-eks-stack-vpc:ExportsOutputRefVpcPrivateSubnet2Subnet3788AAA1380949A3"
       }
      ]
     }
@@ -166,7 +166,15 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs18.x",
+    "Runtime": {
+     "Fn::FindInMap": [
+      "LatestNodeRuntimeMap",
+      {
+       "Ref": "AWS::Region"
+      },
+      "value"
+     ]
+    },
     "Timeout": 900,
     "VpcConfig": {
      "SecurityGroupIds": [
@@ -176,10 +184,10 @@
      ],
      "SubnetIds": [
       {
-       "Ref": "referencetointegeksstack1VpcPrivateSubnet1Subnet53D986C1Ref"
+       "Fn::ImportValue": "integ-eks-stack-vpc:ExportsOutputRefVpcPrivateSubnet1Subnet536B997AFD4CC940"
       },
       {
-       "Ref": "referencetointegeksstack1VpcPrivateSubnet2Subnet59B5D26ARef"
+       "Fn::ImportValue": "integ-eks-stack-vpc:ExportsOutputRefVpcPrivateSubnet2Subnet3788AAA1380949A3"
       }
      ]
     }
@@ -190,17 +198,120 @@
    ]
   }
  },
+ "Mappings": {
+  "LatestNodeRuntimeMap": {
+   "af-south-1": {
+    "value": "nodejs20.x"
+   },
+   "ap-east-1": {
+    "value": "nodejs20.x"
+   },
+   "ap-northeast-1": {
+    "value": "nodejs20.x"
+   },
+   "ap-northeast-2": {
+    "value": "nodejs20.x"
+   },
+   "ap-northeast-3": {
+    "value": "nodejs20.x"
+   },
+   "ap-south-1": {
+    "value": "nodejs20.x"
+   },
+   "ap-south-2": {
+    "value": "nodejs20.x"
+   },
+   "ap-southeast-1": {
+    "value": "nodejs20.x"
+   },
+   "ap-southeast-2": {
+    "value": "nodejs20.x"
+   },
+   "ap-southeast-3": {
+    "value": "nodejs20.x"
+   },
+   "ap-southeast-4": {
+    "value": "nodejs20.x"
+   },
+   "ca-central-1": {
+    "value": "nodejs20.x"
+   },
+   "cn-north-1": {
+    "value": "nodejs18.x"
+   },
+   "cn-northwest-1": {
+    "value": "nodejs18.x"
+   },
+   "eu-central-1": {
+    "value": "nodejs20.x"
+   },
+   "eu-central-2": {
+    "value": "nodejs20.x"
+   },
+   "eu-north-1": {
+    "value": "nodejs20.x"
+   },
+   "eu-south-1": {
+    "value": "nodejs20.x"
+   },
+   "eu-south-2": {
+    "value": "nodejs20.x"
+   },
+   "eu-west-1": {
+    "value": "nodejs20.x"
+   },
+   "eu-west-2": {
+    "value": "nodejs20.x"
+   },
+   "eu-west-3": {
+    "value": "nodejs20.x"
+   },
+   "il-central-1": {
+    "value": "nodejs20.x"
+   },
+   "me-central-1": {
+    "value": "nodejs20.x"
+   },
+   "me-south-1": {
+    "value": "nodejs20.x"
+   },
+   "sa-east-1": {
+    "value": "nodejs20.x"
+   },
+   "us-east-1": {
+    "value": "nodejs20.x"
+   },
+   "us-east-2": {
+    "value": "nodejs20.x"
+   },
+   "us-gov-east-1": {
+    "value": "nodejs18.x"
+   },
+   "us-gov-west-1": {
+    "value": "nodejs18.x"
+   },
+   "us-iso-east-1": {
+    "value": "nodejs18.x"
+   },
+   "us-iso-west-1": {
+    "value": "nodejs18.x"
+   },
+   "us-isob-east-1": {
+    "value": "nodejs18.x"
+   },
+   "us-west-1": {
+    "value": "nodejs20.x"
+   },
+   "us-west-2": {
+    "value": "nodejs20.x"
+   }
+  }
+ },
  "Parameters": {
   "referencetointegeksstack1KubectlLayer4D7C5E59Ref": {
    "Type": "String"
   },
   "referencetointegeksstack1ClusterKubectlHandlerRoleA7FAB880Arn": {
-   "Type": "String"
-  },
-  "referencetointegeksstack1VpcPrivateSubnet1Subnet53D986C1Ref": {
-   "Type": "String"
-  },
-  "referencetointegeksstack1VpcPrivateSubnet2Subnet59B5D26ARef": {
    "Type": "String"
   },
   "referencetointegeksstack1Cluster9000724EClusterSecurityGroupId": {

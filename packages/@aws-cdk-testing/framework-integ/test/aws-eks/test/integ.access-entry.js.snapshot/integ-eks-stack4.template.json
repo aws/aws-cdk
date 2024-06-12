@@ -135,9 +135,9 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "b5925bba477fd1ac27c3a695a9f6ece293bd0ae6940bc65a5b99008ab54f60f7.zip"
+     "S3Key": "bfbdea4d45250c8162c204fe0687cb775e24d61c895ad89e4ca6e9a7fc90b0f0.zip"
     },
-    "Description": "/opt/kubectl/kubectl 1.29; /opt/helm/helm 3.14",
+    "Description": "/opt/kubectl/kubectl 1.30; /opt/helm/helm 3.15",
     "LicenseInfo": "Apache-2.0"
    }
   },
@@ -295,7 +295,7 @@
      }
     ],
     "VpcId": {
-     "Fn::ImportValue": "integ-eks-stack1:ExportsOutputRefVpc8378EB38272D6E3A"
+     "Fn::ImportValue": "integ-eks-stack-vpc:ExportsOutputRefVpc8378EB38272D6E3A"
     }
    }
   },
@@ -410,7 +410,7 @@
      ]
     },
     "Config": {
-     "version": "1.29",
+     "version": "1.30",
      "roleArn": {
       "Fn::GetAtt": [
        "ClusterRoleFA261979",
@@ -423,16 +423,16 @@
      "resourcesVpcConfig": {
       "subnetIds": [
        {
-        "Fn::ImportValue": "integ-eks-stack1:ExportsOutputRefVpcPublicSubnet1Subnet5C2D37C4FFA2B456"
+        "Fn::ImportValue": "integ-eks-stack-vpc:ExportsOutputRefVpcPublicSubnet1Subnet5C2D37C4FFA2B456"
        },
        {
-        "Fn::ImportValue": "integ-eks-stack1:ExportsOutputRefVpcPublicSubnet2Subnet691E08A351552740"
+        "Fn::ImportValue": "integ-eks-stack-vpc:ExportsOutputRefVpcPublicSubnet2Subnet691E08A351552740"
        },
        {
-        "Fn::ImportValue": "integ-eks-stack1:ExportsOutputRefVpcPrivateSubnet1Subnet536B997AFD4CC940"
+        "Fn::ImportValue": "integ-eks-stack-vpc:ExportsOutputRefVpcPrivateSubnet1Subnet536B997AFD4CC940"
        },
        {
-        "Fn::ImportValue": "integ-eks-stack1:ExportsOutputRefVpcPrivateSubnet2Subnet3788AAA1380949A3"
+        "Fn::ImportValue": "integ-eks-stack-vpc:ExportsOutputRefVpcPrivateSubnet2Subnet3788AAA1380949A3"
        }
       ],
       "securityGroupIds": [
@@ -610,10 +610,10 @@
     },
     "Subnets": [
      {
-      "Fn::ImportValue": "integ-eks-stack1:ExportsOutputRefVpcPrivateSubnet1Subnet536B997AFD4CC940"
+      "Fn::ImportValue": "integ-eks-stack-vpc:ExportsOutputRefVpcPrivateSubnet1Subnet536B997AFD4CC940"
      },
      {
-      "Fn::ImportValue": "integ-eks-stack1:ExportsOutputRefVpcPrivateSubnet2Subnet3788AAA1380949A3"
+      "Fn::ImportValue": "integ-eks-stack-vpc:ExportsOutputRefVpcPrivateSubnet2Subnet3788AAA1380949A3"
      }
     ]
    }
@@ -637,7 +637,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/df206724d54db1b377b343b693e6d3cbeb3e0db51bd7ef3032769df16781b6c2.json"
+       "/3470d5013a143953fc8c1e9fb84c00c7510d412dd99e25e659850a6db48c7eeb.json"
       ]
      ]
     }
@@ -681,7 +681,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/0dd02a74b352a99b291af57d22f6e733e233679f4ee9d8b5f229a81b963c13c6.json"
+       "/30f6875a5255c3f7e38bae9b7945b0b46febe1fb1c3d8a3721aa65018da16f71.json"
       ]
      ]
     }

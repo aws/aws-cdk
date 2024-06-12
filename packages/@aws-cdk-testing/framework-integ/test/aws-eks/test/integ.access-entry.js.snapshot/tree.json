@@ -4,17 +4,17 @@
     "id": "App",
     "path": "",
     "children": {
-      "integ-eks-stack1": {
-        "id": "integ-eks-stack1",
-        "path": "integ-eks-stack1",
+      "integ-eks-stack-vpc": {
+        "id": "integ-eks-stack-vpc",
+        "path": "integ-eks-stack-vpc",
         "children": {
           "Vpc": {
             "id": "Vpc",
-            "path": "integ-eks-stack1/Vpc",
+            "path": "integ-eks-stack-vpc/Vpc",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "integ-eks-stack1/Vpc/Resource",
+                "path": "integ-eks-stack-vpc/Vpc/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EC2::VPC",
                   "aws:cdk:cloudformation:props": {
@@ -25,7 +25,7 @@
                     "tags": [
                       {
                         "key": "Name",
-                        "value": "integ-eks-stack1/Vpc"
+                        "value": "integ-eks-stack-vpc/Vpc"
                       }
                     ]
                   }
@@ -37,11 +37,11 @@
               },
               "PublicSubnet1": {
                 "id": "PublicSubnet1",
-                "path": "integ-eks-stack1/Vpc/PublicSubnet1",
+                "path": "integ-eks-stack-vpc/Vpc/PublicSubnet1",
                 "children": {
                   "Subnet": {
                     "id": "Subnet",
-                    "path": "integ-eks-stack1/Vpc/PublicSubnet1/Subnet",
+                    "path": "integ-eks-stack-vpc/Vpc/PublicSubnet1/Subnet",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
@@ -70,7 +70,7 @@
                           },
                           {
                             "key": "Name",
-                            "value": "integ-eks-stack1/Vpc/PublicSubnet1"
+                            "value": "integ-eks-stack-vpc/Vpc/PublicSubnet1"
                           }
                         ],
                         "vpcId": {
@@ -85,7 +85,7 @@
                   },
                   "Acl": {
                     "id": "Acl",
-                    "path": "integ-eks-stack1/Vpc/PublicSubnet1/Acl",
+                    "path": "integ-eks-stack-vpc/Vpc/PublicSubnet1/Acl",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
@@ -93,7 +93,7 @@
                   },
                   "RouteTable": {
                     "id": "RouteTable",
-                    "path": "integ-eks-stack1/Vpc/PublicSubnet1/RouteTable",
+                    "path": "integ-eks-stack-vpc/Vpc/PublicSubnet1/RouteTable",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
@@ -104,7 +104,7 @@
                           },
                           {
                             "key": "Name",
-                            "value": "integ-eks-stack1/Vpc/PublicSubnet1"
+                            "value": "integ-eks-stack-vpc/Vpc/PublicSubnet1"
                           }
                         ],
                         "vpcId": {
@@ -119,7 +119,7 @@
                   },
                   "RouteTableAssociation": {
                     "id": "RouteTableAssociation",
-                    "path": "integ-eks-stack1/Vpc/PublicSubnet1/RouteTableAssociation",
+                    "path": "integ-eks-stack-vpc/Vpc/PublicSubnet1/RouteTableAssociation",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
                       "aws:cdk:cloudformation:props": {
@@ -138,7 +138,7 @@
                   },
                   "DefaultRoute": {
                     "id": "DefaultRoute",
-                    "path": "integ-eks-stack1/Vpc/PublicSubnet1/DefaultRoute",
+                    "path": "integ-eks-stack-vpc/Vpc/PublicSubnet1/DefaultRoute",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
@@ -158,7 +158,7 @@
                   },
                   "EIP": {
                     "id": "EIP",
-                    "path": "integ-eks-stack1/Vpc/PublicSubnet1/EIP",
+                    "path": "integ-eks-stack-vpc/Vpc/PublicSubnet1/EIP",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::EIP",
                       "aws:cdk:cloudformation:props": {
@@ -170,7 +170,7 @@
                           },
                           {
                             "key": "Name",
-                            "value": "integ-eks-stack1/Vpc/PublicSubnet1"
+                            "value": "integ-eks-stack-vpc/Vpc/PublicSubnet1"
                           }
                         ]
                       }
@@ -182,7 +182,7 @@
                   },
                   "NATGateway": {
                     "id": "NATGateway",
-                    "path": "integ-eks-stack1/Vpc/PublicSubnet1/NATGateway",
+                    "path": "integ-eks-stack-vpc/Vpc/PublicSubnet1/NATGateway",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::NatGateway",
                       "aws:cdk:cloudformation:props": {
@@ -202,7 +202,7 @@
                           },
                           {
                             "key": "Name",
-                            "value": "integ-eks-stack1/Vpc/PublicSubnet1"
+                            "value": "integ-eks-stack-vpc/Vpc/PublicSubnet1"
                           }
                         ]
                       }
@@ -220,11 +220,11 @@
               },
               "PublicSubnet2": {
                 "id": "PublicSubnet2",
-                "path": "integ-eks-stack1/Vpc/PublicSubnet2",
+                "path": "integ-eks-stack-vpc/Vpc/PublicSubnet2",
                 "children": {
                   "Subnet": {
                     "id": "Subnet",
-                    "path": "integ-eks-stack1/Vpc/PublicSubnet2/Subnet",
+                    "path": "integ-eks-stack-vpc/Vpc/PublicSubnet2/Subnet",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
@@ -253,7 +253,7 @@
                           },
                           {
                             "key": "Name",
-                            "value": "integ-eks-stack1/Vpc/PublicSubnet2"
+                            "value": "integ-eks-stack-vpc/Vpc/PublicSubnet2"
                           }
                         ],
                         "vpcId": {
@@ -268,7 +268,7 @@
                   },
                   "Acl": {
                     "id": "Acl",
-                    "path": "integ-eks-stack1/Vpc/PublicSubnet2/Acl",
+                    "path": "integ-eks-stack-vpc/Vpc/PublicSubnet2/Acl",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
@@ -276,7 +276,7 @@
                   },
                   "RouteTable": {
                     "id": "RouteTable",
-                    "path": "integ-eks-stack1/Vpc/PublicSubnet2/RouteTable",
+                    "path": "integ-eks-stack-vpc/Vpc/PublicSubnet2/RouteTable",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
@@ -287,7 +287,7 @@
                           },
                           {
                             "key": "Name",
-                            "value": "integ-eks-stack1/Vpc/PublicSubnet2"
+                            "value": "integ-eks-stack-vpc/Vpc/PublicSubnet2"
                           }
                         ],
                         "vpcId": {
@@ -302,7 +302,7 @@
                   },
                   "RouteTableAssociation": {
                     "id": "RouteTableAssociation",
-                    "path": "integ-eks-stack1/Vpc/PublicSubnet2/RouteTableAssociation",
+                    "path": "integ-eks-stack-vpc/Vpc/PublicSubnet2/RouteTableAssociation",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
                       "aws:cdk:cloudformation:props": {
@@ -321,7 +321,7 @@
                   },
                   "DefaultRoute": {
                     "id": "DefaultRoute",
-                    "path": "integ-eks-stack1/Vpc/PublicSubnet2/DefaultRoute",
+                    "path": "integ-eks-stack-vpc/Vpc/PublicSubnet2/DefaultRoute",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
@@ -347,11 +347,11 @@
               },
               "PrivateSubnet1": {
                 "id": "PrivateSubnet1",
-                "path": "integ-eks-stack1/Vpc/PrivateSubnet1",
+                "path": "integ-eks-stack-vpc/Vpc/PrivateSubnet1",
                 "children": {
                   "Subnet": {
                     "id": "Subnet",
-                    "path": "integ-eks-stack1/Vpc/PrivateSubnet1/Subnet",
+                    "path": "integ-eks-stack-vpc/Vpc/PrivateSubnet1/Subnet",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
@@ -380,7 +380,7 @@
                           },
                           {
                             "key": "Name",
-                            "value": "integ-eks-stack1/Vpc/PrivateSubnet1"
+                            "value": "integ-eks-stack-vpc/Vpc/PrivateSubnet1"
                           }
                         ],
                         "vpcId": {
@@ -395,7 +395,7 @@
                   },
                   "Acl": {
                     "id": "Acl",
-                    "path": "integ-eks-stack1/Vpc/PrivateSubnet1/Acl",
+                    "path": "integ-eks-stack-vpc/Vpc/PrivateSubnet1/Acl",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
@@ -403,7 +403,7 @@
                   },
                   "RouteTable": {
                     "id": "RouteTable",
-                    "path": "integ-eks-stack1/Vpc/PrivateSubnet1/RouteTable",
+                    "path": "integ-eks-stack-vpc/Vpc/PrivateSubnet1/RouteTable",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
@@ -414,7 +414,7 @@
                           },
                           {
                             "key": "Name",
-                            "value": "integ-eks-stack1/Vpc/PrivateSubnet1"
+                            "value": "integ-eks-stack-vpc/Vpc/PrivateSubnet1"
                           }
                         ],
                         "vpcId": {
@@ -429,7 +429,7 @@
                   },
                   "RouteTableAssociation": {
                     "id": "RouteTableAssociation",
-                    "path": "integ-eks-stack1/Vpc/PrivateSubnet1/RouteTableAssociation",
+                    "path": "integ-eks-stack-vpc/Vpc/PrivateSubnet1/RouteTableAssociation",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
                       "aws:cdk:cloudformation:props": {
@@ -448,7 +448,7 @@
                   },
                   "DefaultRoute": {
                     "id": "DefaultRoute",
-                    "path": "integ-eks-stack1/Vpc/PrivateSubnet1/DefaultRoute",
+                    "path": "integ-eks-stack-vpc/Vpc/PrivateSubnet1/DefaultRoute",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
@@ -474,11 +474,11 @@
               },
               "PrivateSubnet2": {
                 "id": "PrivateSubnet2",
-                "path": "integ-eks-stack1/Vpc/PrivateSubnet2",
+                "path": "integ-eks-stack-vpc/Vpc/PrivateSubnet2",
                 "children": {
                   "Subnet": {
                     "id": "Subnet",
-                    "path": "integ-eks-stack1/Vpc/PrivateSubnet2/Subnet",
+                    "path": "integ-eks-stack-vpc/Vpc/PrivateSubnet2/Subnet",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
                       "aws:cdk:cloudformation:props": {
@@ -507,7 +507,7 @@
                           },
                           {
                             "key": "Name",
-                            "value": "integ-eks-stack1/Vpc/PrivateSubnet2"
+                            "value": "integ-eks-stack-vpc/Vpc/PrivateSubnet2"
                           }
                         ],
                         "vpcId": {
@@ -522,7 +522,7 @@
                   },
                   "Acl": {
                     "id": "Acl",
-                    "path": "integ-eks-stack1/Vpc/PrivateSubnet2/Acl",
+                    "path": "integ-eks-stack-vpc/Vpc/PrivateSubnet2/Acl",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.Resource",
                       "version": "0.0.0"
@@ -530,7 +530,7 @@
                   },
                   "RouteTable": {
                     "id": "RouteTable",
-                    "path": "integ-eks-stack1/Vpc/PrivateSubnet2/RouteTable",
+                    "path": "integ-eks-stack-vpc/Vpc/PrivateSubnet2/RouteTable",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
                       "aws:cdk:cloudformation:props": {
@@ -541,7 +541,7 @@
                           },
                           {
                             "key": "Name",
-                            "value": "integ-eks-stack1/Vpc/PrivateSubnet2"
+                            "value": "integ-eks-stack-vpc/Vpc/PrivateSubnet2"
                           }
                         ],
                         "vpcId": {
@@ -556,7 +556,7 @@
                   },
                   "RouteTableAssociation": {
                     "id": "RouteTableAssociation",
-                    "path": "integ-eks-stack1/Vpc/PrivateSubnet2/RouteTableAssociation",
+                    "path": "integ-eks-stack-vpc/Vpc/PrivateSubnet2/RouteTableAssociation",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
                       "aws:cdk:cloudformation:props": {
@@ -575,7 +575,7 @@
                   },
                   "DefaultRoute": {
                     "id": "DefaultRoute",
-                    "path": "integ-eks-stack1/Vpc/PrivateSubnet2/DefaultRoute",
+                    "path": "integ-eks-stack-vpc/Vpc/PrivateSubnet2/DefaultRoute",
                     "attributes": {
                       "aws:cdk:cloudformation:type": "AWS::EC2::Route",
                       "aws:cdk:cloudformation:props": {
@@ -601,14 +601,14 @@
               },
               "IGW": {
                 "id": "IGW",
-                "path": "integ-eks-stack1/Vpc/IGW",
+                "path": "integ-eks-stack-vpc/Vpc/IGW",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EC2::InternetGateway",
                   "aws:cdk:cloudformation:props": {
                     "tags": [
                       {
                         "key": "Name",
-                        "value": "integ-eks-stack1/Vpc"
+                        "value": "integ-eks-stack-vpc/Vpc"
                       }
                     ]
                   }
@@ -620,7 +620,7 @@
               },
               "VPCGW": {
                 "id": "VPCGW",
-                "path": "integ-eks-stack1/Vpc/VPCGW",
+                "path": "integ-eks-stack-vpc/Vpc/VPCGW",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::EC2::VPCGatewayAttachment",
                   "aws:cdk:cloudformation:props": {
@@ -639,11 +639,11 @@
               },
               "RestrictDefaultSecurityGroupCustomResource": {
                 "id": "RestrictDefaultSecurityGroupCustomResource",
-                "path": "integ-eks-stack1/Vpc/RestrictDefaultSecurityGroupCustomResource",
+                "path": "integ-eks-stack-vpc/Vpc/RestrictDefaultSecurityGroupCustomResource",
                 "children": {
                   "Default": {
                     "id": "Default",
-                    "path": "integ-eks-stack1/Vpc/RestrictDefaultSecurityGroupCustomResource/Default",
+                    "path": "integ-eks-stack-vpc/Vpc/RestrictDefaultSecurityGroupCustomResource/Default",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.CfnResource",
                       "version": "0.0.0"
@@ -661,13 +661,21 @@
               "version": "0.0.0"
             }
           },
+          "LatestNodeRuntimeMap": {
+            "id": "LatestNodeRuntimeMap",
+            "path": "integ-eks-stack-vpc/LatestNodeRuntimeMap",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnMapping",
+              "version": "0.0.0"
+            }
+          },
           "Custom::VpcRestrictDefaultSGCustomResourceProvider": {
             "id": "Custom::VpcRestrictDefaultSGCustomResourceProvider",
-            "path": "integ-eks-stack1/Custom::VpcRestrictDefaultSGCustomResourceProvider",
+            "path": "integ-eks-stack-vpc/Custom::VpcRestrictDefaultSGCustomResourceProvider",
             "children": {
               "Staging": {
                 "id": "Staging",
-                "path": "integ-eks-stack1/Custom::VpcRestrictDefaultSGCustomResourceProvider/Staging",
+                "path": "integ-eks-stack-vpc/Custom::VpcRestrictDefaultSGCustomResourceProvider/Staging",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.AssetStaging",
                   "version": "0.0.0"
@@ -675,7 +683,7 @@
               },
               "Role": {
                 "id": "Role",
-                "path": "integ-eks-stack1/Custom::VpcRestrictDefaultSGCustomResourceProvider/Role",
+                "path": "integ-eks-stack-vpc/Custom::VpcRestrictDefaultSGCustomResourceProvider/Role",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.CfnResource",
                   "version": "0.0.0"
@@ -683,7 +691,7 @@
               },
               "Handler": {
                 "id": "Handler",
-                "path": "integ-eks-stack1/Custom::VpcRestrictDefaultSGCustomResourceProvider/Handler",
+                "path": "integ-eks-stack-vpc/Custom::VpcRestrictDefaultSGCustomResourceProvider/Handler",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.CfnResource",
                   "version": "0.0.0"
@@ -695,6 +703,82 @@
               "version": "0.0.0"
             }
           },
+          "Exports": {
+            "id": "Exports",
+            "path": "integ-eks-stack-vpc/Exports",
+            "children": {
+              "Output{\"Ref\":\"Vpc8378EB38\"}": {
+                "id": "Output{\"Ref\":\"Vpc8378EB38\"}",
+                "path": "integ-eks-stack-vpc/Exports/Output{\"Ref\":\"Vpc8378EB38\"}",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnOutput",
+                  "version": "0.0.0"
+                }
+              },
+              "Output{\"Ref\":\"VpcPublicSubnet1Subnet5C2D37C4\"}": {
+                "id": "Output{\"Ref\":\"VpcPublicSubnet1Subnet5C2D37C4\"}",
+                "path": "integ-eks-stack-vpc/Exports/Output{\"Ref\":\"VpcPublicSubnet1Subnet5C2D37C4\"}",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnOutput",
+                  "version": "0.0.0"
+                }
+              },
+              "Output{\"Ref\":\"VpcPublicSubnet2Subnet691E08A3\"}": {
+                "id": "Output{\"Ref\":\"VpcPublicSubnet2Subnet691E08A3\"}",
+                "path": "integ-eks-stack-vpc/Exports/Output{\"Ref\":\"VpcPublicSubnet2Subnet691E08A3\"}",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnOutput",
+                  "version": "0.0.0"
+                }
+              },
+              "Output{\"Ref\":\"VpcPrivateSubnet1Subnet536B997A\"}": {
+                "id": "Output{\"Ref\":\"VpcPrivateSubnet1Subnet536B997A\"}",
+                "path": "integ-eks-stack-vpc/Exports/Output{\"Ref\":\"VpcPrivateSubnet1Subnet536B997A\"}",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnOutput",
+                  "version": "0.0.0"
+                }
+              },
+              "Output{\"Ref\":\"VpcPrivateSubnet2Subnet3788AAA1\"}": {
+                "id": "Output{\"Ref\":\"VpcPrivateSubnet2Subnet3788AAA1\"}",
+                "path": "integ-eks-stack-vpc/Exports/Output{\"Ref\":\"VpcPrivateSubnet2Subnet3788AAA1\"}",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnOutput",
+                  "version": "0.0.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.3.0"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "integ-eks-stack-vpc/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "0.0.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "integ-eks-stack-vpc/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnRule",
+              "version": "0.0.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "0.0.0"
+        }
+      },
+      "integ-eks-stack1": {
+        "id": "integ-eks-stack1",
+        "path": "integ-eks-stack1",
+        "children": {
           "clusterAdminRole": {
             "id": "clusterAdminRole",
             "path": "integ-eks-stack1/clusterAdminRole",
@@ -967,9 +1051,9 @@
                       "s3Bucket": {
                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "s3Key": "b5925bba477fd1ac27c3a695a9f6ece293bd0ae6940bc65a5b99008ab54f60f7.zip"
+                      "s3Key": "bfbdea4d45250c8162c204fe0687cb775e24d61c895ad89e4ca6e9a7fc90b0f0.zip"
                     },
-                    "description": "/opt/kubectl/kubectl 1.29; /opt/helm/helm 3.14",
+                    "description": "/opt/kubectl/kubectl 1.30; /opt/helm/helm 3.15",
                     "licenseInfo": "Apache-2.0"
                   }
                 },
@@ -980,7 +1064,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/lambda-layer-kubectl-v29.KubectlV29Layer",
+              "fqn": "@aws-cdk/lambda-layer-kubectl-v30.KubectlV30Layer",
               "version": "2.0.0"
             }
           },
@@ -1219,7 +1303,7 @@
                           }
                         ],
                         "vpcId": {
-                          "Ref": "Vpc8378EB38"
+                          "Fn::ImportValue": "integ-eks-stack-vpc:ExportsOutputRefVpc8378EB38272D6E3A"
                         }
                       }
                     },
@@ -1594,10 +1678,10 @@
                         },
                         "subnets": [
                           {
-                            "Ref": "VpcPrivateSubnet1Subnet536B997A"
+                            "Fn::ImportValue": "integ-eks-stack-vpc:ExportsOutputRefVpcPrivateSubnet1Subnet536B997AFD4CC940"
                           },
                           {
-                            "Ref": "VpcPrivateSubnet2Subnet3788AAA1"
+                            "Fn::ImportValue": "integ-eks-stack-vpc:ExportsOutputRefVpcPrivateSubnet2Subnet3788AAA1380949A3"
                           }
                         ]
                       }
@@ -1872,7 +1956,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.Resource",
+              "fqn": "aws-cdk-lib.aws_eks.Cluster",
               "version": "0.0.0"
             }
           },
@@ -1933,6 +2017,14 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.lambda_layer_node_proxy_agent.NodeProxyAgentLayer",
+                  "version": "0.0.0"
+                }
+              },
+              "LatestNodeRuntimeMap": {
+                "id": "LatestNodeRuntimeMap",
+                "path": "integ-eks-stack1/@aws-cdk--aws-eks.ClusterResourceProvider/LatestNodeRuntimeMap",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnMapping",
                   "version": "0.0.0"
                 }
               },
@@ -2033,7 +2125,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "d5aa9bcabede842d76d7f8b4678fa5450fb041ff875e222f43b2aa2878f49db5.zip"
+                          "s3Key": "e360285e7bd78b792c3d120b19dff9840b2c1a235eba49ce3ab0105470358b6f.zip"
                         },
                         "description": "onEvent handler for EKS cluster resource provider",
                         "environment": {
@@ -2053,7 +2145,15 @@
                             "Arn"
                           ]
                         },
-                        "runtime": "nodejs18.x",
+                        "runtime": {
+                          "Fn::FindInMap": [
+                            "LatestNodeRuntimeMap",
+                            {
+                              "Ref": "AWS::Region"
+                            },
+                            "value"
+                          ]
+                        },
                         "timeout": 60
                       }
                     },
@@ -2165,7 +2265,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "d5aa9bcabede842d76d7f8b4678fa5450fb041ff875e222f43b2aa2878f49db5.zip"
+                          "s3Key": "e360285e7bd78b792c3d120b19dff9840b2c1a235eba49ce3ab0105470358b6f.zip"
                         },
                         "description": "isComplete handler for EKS cluster resource provider",
                         "environment": {
@@ -2185,7 +2285,15 @@
                             "Arn"
                           ]
                         },
-                        "runtime": "nodejs18.x",
+                        "runtime": {
+                          "Fn::FindInMap": [
+                            "LatestNodeRuntimeMap",
+                            {
+                              "Ref": "AWS::Region"
+                            },
+                            "value"
+                          ]
+                        },
                         "timeout": 60
                       }
                     },
@@ -2417,7 +2525,15 @@
                                 "Arn"
                               ]
                             },
-                            "runtime": "nodejs18.x",
+                            "runtime": {
+                              "Fn::FindInMap": [
+                                "LatestNodeRuntimeMap",
+                                {
+                                  "Ref": "AWS::Region"
+                                },
+                                "value"
+                              ]
+                            },
                             "timeout": 900
                           }
                         },
@@ -2635,7 +2751,15 @@
                                 "Arn"
                               ]
                             },
-                            "runtime": "nodejs18.x",
+                            "runtime": {
+                              "Fn::FindInMap": [
+                                "LatestNodeRuntimeMap",
+                                {
+                                  "Ref": "AWS::Region"
+                                },
+                                "value"
+                              ]
+                            },
                             "timeout": 900
                           }
                         },
@@ -2853,7 +2977,15 @@
                                 "Arn"
                               ]
                             },
-                            "runtime": "nodejs18.x",
+                            "runtime": {
+                              "Fn::FindInMap": [
+                                "LatestNodeRuntimeMap",
+                                {
+                                  "Ref": "AWS::Region"
+                                },
+                                "value"
+                              ]
+                            },
                             "timeout": 900
                           }
                         },
@@ -3172,7 +3304,7 @@
                           {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "/a05a4eee2fa52a66006926da5a43ccab49f2f18b8322814ec78f70caad8110d1.json"
+                          "/d6b7b46b100bc1e36a92b24e385b132767b86114219441dece2b10124ad6a9c0.json"
                         ]
                       ]
                     }
@@ -3254,10 +3386,10 @@
                         "vpcConfig": {
                           "subnetIds": [
                             {
-                              "Ref": "referencetointegeksstack1VpcPrivateSubnet1Subnet53D986C1Ref"
+                              "Fn::ImportValue": "integ-eks-stack-vpc:ExportsOutputRefVpcPrivateSubnet1Subnet536B997AFD4CC940"
                             },
                             {
-                              "Ref": "referencetointegeksstack1VpcPrivateSubnet2Subnet59B5D26ARef"
+                              "Fn::ImportValue": "integ-eks-stack-vpc:ExportsOutputRefVpcPrivateSubnet2Subnet3788AAA1380949A3"
                             }
                           ],
                           "securityGroupIds": [
@@ -3544,15 +3676,23 @@
                                 "Arn"
                               ]
                             },
-                            "runtime": "nodejs18.x",
+                            "runtime": {
+                              "Fn::FindInMap": [
+                                "LatestNodeRuntimeMap",
+                                {
+                                  "Ref": "AWS::Region"
+                                },
+                                "value"
+                              ]
+                            },
                             "timeout": 900,
                             "vpcConfig": {
                               "subnetIds": [
                                 {
-                                  "Ref": "referencetointegeksstack1VpcPrivateSubnet1Subnet53D986C1Ref"
+                                  "Fn::ImportValue": "integ-eks-stack-vpc:ExportsOutputRefVpcPrivateSubnet1Subnet536B997AFD4CC940"
                                 },
                                 {
-                                  "Ref": "referencetointegeksstack1VpcPrivateSubnet2Subnet59B5D26ARef"
+                                  "Fn::ImportValue": "integ-eks-stack-vpc:ExportsOutputRefVpcPrivateSubnet2Subnet3788AAA1380949A3"
                                 }
                               ],
                               "securityGroupIds": [
@@ -3580,6 +3720,14 @@
                   "version": "0.0.0"
                 }
               },
+              "LatestNodeRuntimeMap": {
+                "id": "LatestNodeRuntimeMap",
+                "path": "integ-eks-stack1/@aws-cdk--aws-eks.KubectlProvider/LatestNodeRuntimeMap",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnMapping",
+                  "version": "0.0.0"
+                }
+              },
               "reference-to-integeksstack1KubectlLayer4D7C5E59Ref": {
                 "id": "reference-to-integeksstack1KubectlLayer4D7C5E59Ref",
                 "path": "integ-eks-stack1/@aws-cdk--aws-eks.KubectlProvider/reference-to-integeksstack1KubectlLayer4D7C5E59Ref",
@@ -3591,22 +3739,6 @@
               "reference-to-integeksstack1ClusterKubectlHandlerRoleA7FAB880Arn": {
                 "id": "reference-to-integeksstack1ClusterKubectlHandlerRoleA7FAB880Arn",
                 "path": "integ-eks-stack1/@aws-cdk--aws-eks.KubectlProvider/reference-to-integeksstack1ClusterKubectlHandlerRoleA7FAB880Arn",
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.CfnParameter",
-                  "version": "0.0.0"
-                }
-              },
-              "reference-to-integeksstack1VpcPrivateSubnet1Subnet53D986C1Ref": {
-                "id": "reference-to-integeksstack1VpcPrivateSubnet1Subnet53D986C1Ref",
-                "path": "integ-eks-stack1/@aws-cdk--aws-eks.KubectlProvider/reference-to-integeksstack1VpcPrivateSubnet1Subnet53D986C1Ref",
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.CfnParameter",
-                  "version": "0.0.0"
-                }
-              },
-              "reference-to-integeksstack1VpcPrivateSubnet2Subnet59B5D26ARef": {
-                "id": "reference-to-integeksstack1VpcPrivateSubnet2Subnet59B5D26ARef",
-                "path": "integ-eks-stack1/@aws-cdk--aws-eks.KubectlProvider/reference-to-integeksstack1VpcPrivateSubnet2Subnet59B5D26ARef",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.CfnParameter",
                   "version": "0.0.0"
@@ -3646,12 +3778,6 @@
                           "Arn"
                         ]
                       },
-                      "referencetointegeksstack1VpcPrivateSubnet1Subnet53D986C1Ref": {
-                        "Ref": "VpcPrivateSubnet1Subnet536B997A"
-                      },
-                      "referencetointegeksstack1VpcPrivateSubnet2Subnet59B5D26ARef": {
-                        "Ref": "VpcPrivateSubnet2Subnet3788AAA1"
-                      },
                       "referencetointegeksstack1Cluster9000724EClusterSecurityGroupId": {
                         "Fn::GetAtt": [
                           "Cluster9EE0221C",
@@ -3675,7 +3801,7 @@
                           {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "/3a1cc7f847bd05d201a6407c17a8345c7f6fa2a427808462959f0810973c81a1.json"
+                          "/647a3697b8046097e31b9c50381f9e634b9c2cd95eb1b59581eaf6c2b1d76503.json"
                         ]
                       ]
                     }
@@ -3683,56 +3809,6 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.CfnStack",
-                  "version": "0.0.0"
-                }
-              }
-            },
-            "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.3.0"
-            }
-          },
-          "Exports": {
-            "id": "Exports",
-            "path": "integ-eks-stack1/Exports",
-            "children": {
-              "Output{\"Ref\":\"Vpc8378EB38\"}": {
-                "id": "Output{\"Ref\":\"Vpc8378EB38\"}",
-                "path": "integ-eks-stack1/Exports/Output{\"Ref\":\"Vpc8378EB38\"}",
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.CfnOutput",
-                  "version": "0.0.0"
-                }
-              },
-              "Output{\"Ref\":\"VpcPublicSubnet1Subnet5C2D37C4\"}": {
-                "id": "Output{\"Ref\":\"VpcPublicSubnet1Subnet5C2D37C4\"}",
-                "path": "integ-eks-stack1/Exports/Output{\"Ref\":\"VpcPublicSubnet1Subnet5C2D37C4\"}",
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.CfnOutput",
-                  "version": "0.0.0"
-                }
-              },
-              "Output{\"Ref\":\"VpcPublicSubnet2Subnet691E08A3\"}": {
-                "id": "Output{\"Ref\":\"VpcPublicSubnet2Subnet691E08A3\"}",
-                "path": "integ-eks-stack1/Exports/Output{\"Ref\":\"VpcPublicSubnet2Subnet691E08A3\"}",
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.CfnOutput",
-                  "version": "0.0.0"
-                }
-              },
-              "Output{\"Ref\":\"VpcPrivateSubnet1Subnet536B997A\"}": {
-                "id": "Output{\"Ref\":\"VpcPrivateSubnet1Subnet536B997A\"}",
-                "path": "integ-eks-stack1/Exports/Output{\"Ref\":\"VpcPrivateSubnet1Subnet536B997A\"}",
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.CfnOutput",
-                  "version": "0.0.0"
-                }
-              },
-              "Output{\"Ref\":\"VpcPrivateSubnet2Subnet3788AAA1\"}": {
-                "id": "Output{\"Ref\":\"VpcPrivateSubnet2Subnet3788AAA1\"}",
-                "path": "integ-eks-stack1/Exports/Output{\"Ref\":\"VpcPrivateSubnet2Subnet3788AAA1\"}",
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.CfnOutput",
                   "version": "0.0.0"
                 }
               }
@@ -4040,9 +4116,9 @@
                       "s3Bucket": {
                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "s3Key": "b5925bba477fd1ac27c3a695a9f6ece293bd0ae6940bc65a5b99008ab54f60f7.zip"
+                      "s3Key": "bfbdea4d45250c8162c204fe0687cb775e24d61c895ad89e4ca6e9a7fc90b0f0.zip"
                     },
-                    "description": "/opt/kubectl/kubectl 1.29; /opt/helm/helm 3.14",
+                    "description": "/opt/kubectl/kubectl 1.30; /opt/helm/helm 3.15",
                     "licenseInfo": "Apache-2.0"
                   }
                 },
@@ -4053,7 +4129,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/lambda-layer-kubectl-v29.KubectlV29Layer",
+              "fqn": "@aws-cdk/lambda-layer-kubectl-v30.KubectlV30Layer",
               "version": "2.0.0"
             }
           },
@@ -4292,7 +4368,7 @@
                           }
                         ],
                         "vpcId": {
-                          "Fn::ImportValue": "integ-eks-stack1:ExportsOutputRefVpc8378EB38272D6E3A"
+                          "Fn::ImportValue": "integ-eks-stack-vpc:ExportsOutputRefVpc8378EB38272D6E3A"
                         }
                       }
                     },
@@ -4667,10 +4743,10 @@
                         },
                         "subnets": [
                           {
-                            "Fn::ImportValue": "integ-eks-stack1:ExportsOutputRefVpcPrivateSubnet1Subnet536B997AFD4CC940"
+                            "Fn::ImportValue": "integ-eks-stack-vpc:ExportsOutputRefVpcPrivateSubnet1Subnet536B997AFD4CC940"
                           },
                           {
-                            "Fn::ImportValue": "integ-eks-stack1:ExportsOutputRefVpcPrivateSubnet2Subnet3788AAA1380949A3"
+                            "Fn::ImportValue": "integ-eks-stack-vpc:ExportsOutputRefVpcPrivateSubnet2Subnet3788AAA1380949A3"
                           }
                         ]
                       }
@@ -4983,7 +5059,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.Resource",
+              "fqn": "aws-cdk-lib.aws_eks.Cluster",
               "version": "0.0.0"
             }
           },
@@ -5044,6 +5120,14 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.lambda_layer_node_proxy_agent.NodeProxyAgentLayer",
+                  "version": "0.0.0"
+                }
+              },
+              "LatestNodeRuntimeMap": {
+                "id": "LatestNodeRuntimeMap",
+                "path": "integ-eks-stack2/@aws-cdk--aws-eks.ClusterResourceProvider/LatestNodeRuntimeMap",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnMapping",
                   "version": "0.0.0"
                 }
               },
@@ -5144,7 +5228,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "d5aa9bcabede842d76d7f8b4678fa5450fb041ff875e222f43b2aa2878f49db5.zip"
+                          "s3Key": "e360285e7bd78b792c3d120b19dff9840b2c1a235eba49ce3ab0105470358b6f.zip"
                         },
                         "description": "onEvent handler for EKS cluster resource provider",
                         "environment": {
@@ -5164,7 +5248,15 @@
                             "Arn"
                           ]
                         },
-                        "runtime": "nodejs18.x",
+                        "runtime": {
+                          "Fn::FindInMap": [
+                            "LatestNodeRuntimeMap",
+                            {
+                              "Ref": "AWS::Region"
+                            },
+                            "value"
+                          ]
+                        },
                         "timeout": 60
                       }
                     },
@@ -5276,7 +5368,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "d5aa9bcabede842d76d7f8b4678fa5450fb041ff875e222f43b2aa2878f49db5.zip"
+                          "s3Key": "e360285e7bd78b792c3d120b19dff9840b2c1a235eba49ce3ab0105470358b6f.zip"
                         },
                         "description": "isComplete handler for EKS cluster resource provider",
                         "environment": {
@@ -5296,7 +5388,15 @@
                             "Arn"
                           ]
                         },
-                        "runtime": "nodejs18.x",
+                        "runtime": {
+                          "Fn::FindInMap": [
+                            "LatestNodeRuntimeMap",
+                            {
+                              "Ref": "AWS::Region"
+                            },
+                            "value"
+                          ]
+                        },
                         "timeout": 60
                       }
                     },
@@ -5528,7 +5628,15 @@
                                 "Arn"
                               ]
                             },
-                            "runtime": "nodejs18.x",
+                            "runtime": {
+                              "Fn::FindInMap": [
+                                "LatestNodeRuntimeMap",
+                                {
+                                  "Ref": "AWS::Region"
+                                },
+                                "value"
+                              ]
+                            },
                             "timeout": 900
                           }
                         },
@@ -5746,7 +5854,15 @@
                                 "Arn"
                               ]
                             },
-                            "runtime": "nodejs18.x",
+                            "runtime": {
+                              "Fn::FindInMap": [
+                                "LatestNodeRuntimeMap",
+                                {
+                                  "Ref": "AWS::Region"
+                                },
+                                "value"
+                              ]
+                            },
                             "timeout": 900
                           }
                         },
@@ -5964,7 +6080,15 @@
                                 "Arn"
                               ]
                             },
-                            "runtime": "nodejs18.x",
+                            "runtime": {
+                              "Fn::FindInMap": [
+                                "LatestNodeRuntimeMap",
+                                {
+                                  "Ref": "AWS::Region"
+                                },
+                                "value"
+                              ]
+                            },
                             "timeout": 900
                           }
                         },
@@ -6283,7 +6407,7 @@
                           {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "/e9d62078238b96a554adf2e7e3d0388a20ef5ec3309bc0e6203e2506d4a34adc.json"
+                          "/e5e2a51e6102200862cd2277e6ebc87872b5603a7d4d1ebe31d22f4e470bd28a.json"
                         ]
                       ]
                     }
@@ -6365,10 +6489,10 @@
                         "vpcConfig": {
                           "subnetIds": [
                             {
-                              "Fn::ImportValue": "integ-eks-stack1:ExportsOutputRefVpcPrivateSubnet1Subnet536B997AFD4CC940"
+                              "Fn::ImportValue": "integ-eks-stack-vpc:ExportsOutputRefVpcPrivateSubnet1Subnet536B997AFD4CC940"
                             },
                             {
-                              "Fn::ImportValue": "integ-eks-stack1:ExportsOutputRefVpcPrivateSubnet2Subnet3788AAA1380949A3"
+                              "Fn::ImportValue": "integ-eks-stack-vpc:ExportsOutputRefVpcPrivateSubnet2Subnet3788AAA1380949A3"
                             }
                           ],
                           "securityGroupIds": [
@@ -6655,15 +6779,23 @@
                                 "Arn"
                               ]
                             },
-                            "runtime": "nodejs18.x",
+                            "runtime": {
+                              "Fn::FindInMap": [
+                                "LatestNodeRuntimeMap",
+                                {
+                                  "Ref": "AWS::Region"
+                                },
+                                "value"
+                              ]
+                            },
                             "timeout": 900,
                             "vpcConfig": {
                               "subnetIds": [
                                 {
-                                  "Fn::ImportValue": "integ-eks-stack1:ExportsOutputRefVpcPrivateSubnet1Subnet536B997AFD4CC940"
+                                  "Fn::ImportValue": "integ-eks-stack-vpc:ExportsOutputRefVpcPrivateSubnet1Subnet536B997AFD4CC940"
                                 },
                                 {
-                                  "Fn::ImportValue": "integ-eks-stack1:ExportsOutputRefVpcPrivateSubnet2Subnet3788AAA1380949A3"
+                                  "Fn::ImportValue": "integ-eks-stack-vpc:ExportsOutputRefVpcPrivateSubnet2Subnet3788AAA1380949A3"
                                 }
                               ],
                               "securityGroupIds": [
@@ -6688,6 +6820,14 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.custom_resources.Provider",
+                  "version": "0.0.0"
+                }
+              },
+              "LatestNodeRuntimeMap": {
+                "id": "LatestNodeRuntimeMap",
+                "path": "integ-eks-stack2/@aws-cdk--aws-eks.KubectlProvider/LatestNodeRuntimeMap",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnMapping",
                   "version": "0.0.0"
                 }
               },
@@ -6772,7 +6912,7 @@
                           {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "/61fc30fc0a913eed8bbdcc566e9337f1015db2b7fe1181736f5e16b989ef560d.json"
+                          "/f90b45cc32c658e7f16915992dd49d1c345f263bb92a5958df0142812c7ad5f2.json"
                         ]
                       ]
                     }
@@ -7087,9 +7227,9 @@
                       "s3Bucket": {
                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "s3Key": "b5925bba477fd1ac27c3a695a9f6ece293bd0ae6940bc65a5b99008ab54f60f7.zip"
+                      "s3Key": "bfbdea4d45250c8162c204fe0687cb775e24d61c895ad89e4ca6e9a7fc90b0f0.zip"
                     },
-                    "description": "/opt/kubectl/kubectl 1.29; /opt/helm/helm 3.14",
+                    "description": "/opt/kubectl/kubectl 1.30; /opt/helm/helm 3.15",
                     "licenseInfo": "Apache-2.0"
                   }
                 },
@@ -7100,7 +7240,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/lambda-layer-kubectl-v29.KubectlV29Layer",
+              "fqn": "@aws-cdk/lambda-layer-kubectl-v30.KubectlV30Layer",
               "version": "2.0.0"
             }
           },
@@ -7339,7 +7479,7 @@
                           }
                         ],
                         "vpcId": {
-                          "Fn::ImportValue": "integ-eks-stack1:ExportsOutputRefVpc8378EB38272D6E3A"
+                          "Fn::ImportValue": "integ-eks-stack-vpc:ExportsOutputRefVpc8378EB38272D6E3A"
                         }
                       }
                     },
@@ -7701,10 +7841,10 @@
                         },
                         "subnets": [
                           {
-                            "Fn::ImportValue": "integ-eks-stack1:ExportsOutputRefVpcPrivateSubnet1Subnet536B997AFD4CC940"
+                            "Fn::ImportValue": "integ-eks-stack-vpc:ExportsOutputRefVpcPrivateSubnet1Subnet536B997AFD4CC940"
                           },
                           {
-                            "Fn::ImportValue": "integ-eks-stack1:ExportsOutputRefVpcPrivateSubnet2Subnet3788AAA1380949A3"
+                            "Fn::ImportValue": "integ-eks-stack-vpc:ExportsOutputRefVpcPrivateSubnet2Subnet3788AAA1380949A3"
                           }
                         ]
                       }
@@ -7738,7 +7878,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.Resource",
+              "fqn": "aws-cdk-lib.aws_eks.Cluster",
               "version": "0.0.0"
             }
           },
@@ -7799,6 +7939,14 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.lambda_layer_node_proxy_agent.NodeProxyAgentLayer",
+                  "version": "0.0.0"
+                }
+              },
+              "LatestNodeRuntimeMap": {
+                "id": "LatestNodeRuntimeMap",
+                "path": "integ-eks-stack3/@aws-cdk--aws-eks.ClusterResourceProvider/LatestNodeRuntimeMap",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnMapping",
                   "version": "0.0.0"
                 }
               },
@@ -7899,7 +8047,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "d5aa9bcabede842d76d7f8b4678fa5450fb041ff875e222f43b2aa2878f49db5.zip"
+                          "s3Key": "e360285e7bd78b792c3d120b19dff9840b2c1a235eba49ce3ab0105470358b6f.zip"
                         },
                         "description": "onEvent handler for EKS cluster resource provider",
                         "environment": {
@@ -7919,7 +8067,15 @@
                             "Arn"
                           ]
                         },
-                        "runtime": "nodejs18.x",
+                        "runtime": {
+                          "Fn::FindInMap": [
+                            "LatestNodeRuntimeMap",
+                            {
+                              "Ref": "AWS::Region"
+                            },
+                            "value"
+                          ]
+                        },
                         "timeout": 60
                       }
                     },
@@ -8031,7 +8187,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "d5aa9bcabede842d76d7f8b4678fa5450fb041ff875e222f43b2aa2878f49db5.zip"
+                          "s3Key": "e360285e7bd78b792c3d120b19dff9840b2c1a235eba49ce3ab0105470358b6f.zip"
                         },
                         "description": "isComplete handler for EKS cluster resource provider",
                         "environment": {
@@ -8051,7 +8207,15 @@
                             "Arn"
                           ]
                         },
-                        "runtime": "nodejs18.x",
+                        "runtime": {
+                          "Fn::FindInMap": [
+                            "LatestNodeRuntimeMap",
+                            {
+                              "Ref": "AWS::Region"
+                            },
+                            "value"
+                          ]
+                        },
                         "timeout": 60
                       }
                     },
@@ -8283,7 +8447,15 @@
                                 "Arn"
                               ]
                             },
-                            "runtime": "nodejs18.x",
+                            "runtime": {
+                              "Fn::FindInMap": [
+                                "LatestNodeRuntimeMap",
+                                {
+                                  "Ref": "AWS::Region"
+                                },
+                                "value"
+                              ]
+                            },
                             "timeout": 900
                           }
                         },
@@ -8501,7 +8673,15 @@
                                 "Arn"
                               ]
                             },
-                            "runtime": "nodejs18.x",
+                            "runtime": {
+                              "Fn::FindInMap": [
+                                "LatestNodeRuntimeMap",
+                                {
+                                  "Ref": "AWS::Region"
+                                },
+                                "value"
+                              ]
+                            },
                             "timeout": 900
                           }
                         },
@@ -8719,7 +8899,15 @@
                                 "Arn"
                               ]
                             },
-                            "runtime": "nodejs18.x",
+                            "runtime": {
+                              "Fn::FindInMap": [
+                                "LatestNodeRuntimeMap",
+                                {
+                                  "Ref": "AWS::Region"
+                                },
+                                "value"
+                              ]
+                            },
                             "timeout": 900
                           }
                         },
@@ -9038,7 +9226,7 @@
                           {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "/f99f175e77e533bb25961e01f97ee6da3c51eb96847e8f922972f701a8b8bb50.json"
+                          "/d6d3f40e1e4e96d548c8eac71a7baff8e104ebcd9bc4287c0552130705e37762.json"
                         ]
                       ]
                     }
@@ -9120,10 +9308,10 @@
                         "vpcConfig": {
                           "subnetIds": [
                             {
-                              "Fn::ImportValue": "integ-eks-stack1:ExportsOutputRefVpcPrivateSubnet1Subnet536B997AFD4CC940"
+                              "Fn::ImportValue": "integ-eks-stack-vpc:ExportsOutputRefVpcPrivateSubnet1Subnet536B997AFD4CC940"
                             },
                             {
-                              "Fn::ImportValue": "integ-eks-stack1:ExportsOutputRefVpcPrivateSubnet2Subnet3788AAA1380949A3"
+                              "Fn::ImportValue": "integ-eks-stack-vpc:ExportsOutputRefVpcPrivateSubnet2Subnet3788AAA1380949A3"
                             }
                           ],
                           "securityGroupIds": [
@@ -9410,15 +9598,23 @@
                                 "Arn"
                               ]
                             },
-                            "runtime": "nodejs18.x",
+                            "runtime": {
+                              "Fn::FindInMap": [
+                                "LatestNodeRuntimeMap",
+                                {
+                                  "Ref": "AWS::Region"
+                                },
+                                "value"
+                              ]
+                            },
                             "timeout": 900,
                             "vpcConfig": {
                               "subnetIds": [
                                 {
-                                  "Fn::ImportValue": "integ-eks-stack1:ExportsOutputRefVpcPrivateSubnet1Subnet536B997AFD4CC940"
+                                  "Fn::ImportValue": "integ-eks-stack-vpc:ExportsOutputRefVpcPrivateSubnet1Subnet536B997AFD4CC940"
                                 },
                                 {
-                                  "Fn::ImportValue": "integ-eks-stack1:ExportsOutputRefVpcPrivateSubnet2Subnet3788AAA1380949A3"
+                                  "Fn::ImportValue": "integ-eks-stack-vpc:ExportsOutputRefVpcPrivateSubnet2Subnet3788AAA1380949A3"
                                 }
                               ],
                               "securityGroupIds": [
@@ -9443,6 +9639,14 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.custom_resources.Provider",
+                  "version": "0.0.0"
+                }
+              },
+              "LatestNodeRuntimeMap": {
+                "id": "LatestNodeRuntimeMap",
+                "path": "integ-eks-stack3/@aws-cdk--aws-eks.KubectlProvider/LatestNodeRuntimeMap",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnMapping",
                   "version": "0.0.0"
                 }
               },
@@ -9527,7 +9731,7 @@
                           {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "/805b6507dd2af75aabdb05c358a2709af21507f88b723bd90df6ff86867c3fe4.json"
+                          "/4b652fdc1b7571f3e97f1abacf7d90dab80de4cfdfc932840c3c4116ebccae2f.json"
                         ]
                       ]
                     }
@@ -9842,9 +10046,9 @@
                       "s3Bucket": {
                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "s3Key": "b5925bba477fd1ac27c3a695a9f6ece293bd0ae6940bc65a5b99008ab54f60f7.zip"
+                      "s3Key": "bfbdea4d45250c8162c204fe0687cb775e24d61c895ad89e4ca6e9a7fc90b0f0.zip"
                     },
-                    "description": "/opt/kubectl/kubectl 1.29; /opt/helm/helm 3.14",
+                    "description": "/opt/kubectl/kubectl 1.30; /opt/helm/helm 3.15",
                     "licenseInfo": "Apache-2.0"
                   }
                 },
@@ -9855,7 +10059,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "@aws-cdk/lambda-layer-kubectl-v29.KubectlV29Layer",
+              "fqn": "@aws-cdk/lambda-layer-kubectl-v30.KubectlV30Layer",
               "version": "2.0.0"
             }
           },
@@ -10094,7 +10298,7 @@
                           }
                         ],
                         "vpcId": {
-                          "Fn::ImportValue": "integ-eks-stack1:ExportsOutputRefVpc8378EB38272D6E3A"
+                          "Fn::ImportValue": "integ-eks-stack-vpc:ExportsOutputRefVpc8378EB38272D6E3A"
                         }
                       }
                     },
@@ -10456,10 +10660,10 @@
                         },
                         "subnets": [
                           {
-                            "Fn::ImportValue": "integ-eks-stack1:ExportsOutputRefVpcPrivateSubnet1Subnet536B997AFD4CC940"
+                            "Fn::ImportValue": "integ-eks-stack-vpc:ExportsOutputRefVpcPrivateSubnet1Subnet536B997AFD4CC940"
                           },
                           {
-                            "Fn::ImportValue": "integ-eks-stack1:ExportsOutputRefVpcPrivateSubnet2Subnet3788AAA1380949A3"
+                            "Fn::ImportValue": "integ-eks-stack-vpc:ExportsOutputRefVpcPrivateSubnet2Subnet3788AAA1380949A3"
                           }
                         ]
                       }
@@ -10493,7 +10697,7 @@
               }
             },
             "constructInfo": {
-              "fqn": "aws-cdk-lib.Resource",
+              "fqn": "aws-cdk-lib.aws_eks.Cluster",
               "version": "0.0.0"
             }
           },
@@ -10554,6 +10758,14 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.lambda_layer_node_proxy_agent.NodeProxyAgentLayer",
+                  "version": "0.0.0"
+                }
+              },
+              "LatestNodeRuntimeMap": {
+                "id": "LatestNodeRuntimeMap",
+                "path": "integ-eks-stack4/@aws-cdk--aws-eks.ClusterResourceProvider/LatestNodeRuntimeMap",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnMapping",
                   "version": "0.0.0"
                 }
               },
@@ -10654,7 +10866,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "d5aa9bcabede842d76d7f8b4678fa5450fb041ff875e222f43b2aa2878f49db5.zip"
+                          "s3Key": "e360285e7bd78b792c3d120b19dff9840b2c1a235eba49ce3ab0105470358b6f.zip"
                         },
                         "description": "onEvent handler for EKS cluster resource provider",
                         "environment": {
@@ -10674,7 +10886,15 @@
                             "Arn"
                           ]
                         },
-                        "runtime": "nodejs18.x",
+                        "runtime": {
+                          "Fn::FindInMap": [
+                            "LatestNodeRuntimeMap",
+                            {
+                              "Ref": "AWS::Region"
+                            },
+                            "value"
+                          ]
+                        },
                         "timeout": 60
                       }
                     },
@@ -10786,7 +11006,7 @@
                           "s3Bucket": {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "s3Key": "d5aa9bcabede842d76d7f8b4678fa5450fb041ff875e222f43b2aa2878f49db5.zip"
+                          "s3Key": "e360285e7bd78b792c3d120b19dff9840b2c1a235eba49ce3ab0105470358b6f.zip"
                         },
                         "description": "isComplete handler for EKS cluster resource provider",
                         "environment": {
@@ -10806,7 +11026,15 @@
                             "Arn"
                           ]
                         },
-                        "runtime": "nodejs18.x",
+                        "runtime": {
+                          "Fn::FindInMap": [
+                            "LatestNodeRuntimeMap",
+                            {
+                              "Ref": "AWS::Region"
+                            },
+                            "value"
+                          ]
+                        },
                         "timeout": 60
                       }
                     },
@@ -11038,7 +11266,15 @@
                                 "Arn"
                               ]
                             },
-                            "runtime": "nodejs18.x",
+                            "runtime": {
+                              "Fn::FindInMap": [
+                                "LatestNodeRuntimeMap",
+                                {
+                                  "Ref": "AWS::Region"
+                                },
+                                "value"
+                              ]
+                            },
                             "timeout": 900
                           }
                         },
@@ -11256,7 +11492,15 @@
                                 "Arn"
                               ]
                             },
-                            "runtime": "nodejs18.x",
+                            "runtime": {
+                              "Fn::FindInMap": [
+                                "LatestNodeRuntimeMap",
+                                {
+                                  "Ref": "AWS::Region"
+                                },
+                                "value"
+                              ]
+                            },
                             "timeout": 900
                           }
                         },
@@ -11474,7 +11718,15 @@
                                 "Arn"
                               ]
                             },
-                            "runtime": "nodejs18.x",
+                            "runtime": {
+                              "Fn::FindInMap": [
+                                "LatestNodeRuntimeMap",
+                                {
+                                  "Ref": "AWS::Region"
+                                },
+                                "value"
+                              ]
+                            },
                             "timeout": 900
                           }
                         },
@@ -11793,7 +12045,7 @@
                           {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "/df206724d54db1b377b343b693e6d3cbeb3e0db51bd7ef3032769df16781b6c2.json"
+                          "/3470d5013a143953fc8c1e9fb84c00c7510d412dd99e25e659850a6db48c7eeb.json"
                         ]
                       ]
                     }
@@ -11875,10 +12127,10 @@
                         "vpcConfig": {
                           "subnetIds": [
                             {
-                              "Fn::ImportValue": "integ-eks-stack1:ExportsOutputRefVpcPrivateSubnet1Subnet536B997AFD4CC940"
+                              "Fn::ImportValue": "integ-eks-stack-vpc:ExportsOutputRefVpcPrivateSubnet1Subnet536B997AFD4CC940"
                             },
                             {
-                              "Fn::ImportValue": "integ-eks-stack1:ExportsOutputRefVpcPrivateSubnet2Subnet3788AAA1380949A3"
+                              "Fn::ImportValue": "integ-eks-stack-vpc:ExportsOutputRefVpcPrivateSubnet2Subnet3788AAA1380949A3"
                             }
                           ],
                           "securityGroupIds": [
@@ -12165,15 +12417,23 @@
                                 "Arn"
                               ]
                             },
-                            "runtime": "nodejs18.x",
+                            "runtime": {
+                              "Fn::FindInMap": [
+                                "LatestNodeRuntimeMap",
+                                {
+                                  "Ref": "AWS::Region"
+                                },
+                                "value"
+                              ]
+                            },
                             "timeout": 900,
                             "vpcConfig": {
                               "subnetIds": [
                                 {
-                                  "Fn::ImportValue": "integ-eks-stack1:ExportsOutputRefVpcPrivateSubnet1Subnet536B997AFD4CC940"
+                                  "Fn::ImportValue": "integ-eks-stack-vpc:ExportsOutputRefVpcPrivateSubnet1Subnet536B997AFD4CC940"
                                 },
                                 {
-                                  "Fn::ImportValue": "integ-eks-stack1:ExportsOutputRefVpcPrivateSubnet2Subnet3788AAA1380949A3"
+                                  "Fn::ImportValue": "integ-eks-stack-vpc:ExportsOutputRefVpcPrivateSubnet2Subnet3788AAA1380949A3"
                                 }
                               ],
                               "securityGroupIds": [
@@ -12198,6 +12458,14 @@
                 },
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.custom_resources.Provider",
+                  "version": "0.0.0"
+                }
+              },
+              "LatestNodeRuntimeMap": {
+                "id": "LatestNodeRuntimeMap",
+                "path": "integ-eks-stack4/@aws-cdk--aws-eks.KubectlProvider/LatestNodeRuntimeMap",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnMapping",
                   "version": "0.0.0"
                 }
               },
@@ -12282,7 +12550,7 @@
                           {
                             "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                           },
-                          "/0dd02a74b352a99b291af57d22f6e733e233679f4ee9d8b5f229a81b963c13c6.json"
+                          "/30f6875a5255c3f7e38bae9b7945b0b46febe1fb1c3d8a3721aa65018da16f71.json"
                         ]
                       ]
                     }

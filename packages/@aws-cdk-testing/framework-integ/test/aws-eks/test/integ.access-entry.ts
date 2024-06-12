@@ -8,6 +8,19 @@ import { getClusterVersionConfig } from './integ-tests-kubernetes-version';
 import { Construct } from 'constructs';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
+/**
+ * A shared VPC for other EKS stacks
+ */
+export class SharedVpcStack extends Stack {
+  public readonly vpc: ec2.IVpc;
+
+  constructor(scope: Construct, id: string, props?: StackProps) {
+    super(scope, id, props);
+
+    this.vpc = new ec2.Vpc(this, 'Vpc', { natGateways: 1 });
+  }
+}
+
 export interface ClusterStackProps extends StackProps {
   readonly vpc?: ec2.IVpc;
   readonly mastersRole?: iam.IRole;
@@ -54,7 +67,7 @@ export class ClusterStack extends Stack {
     this.cluster = new eks.Cluster(this, 'Cluster', {
       vpc: this.vpc,
       mastersRole: props?.mastersRole ?? this.mastersRole,
-      ...getClusterVersionConfig(this, eks.KubernetesVersion.V1_29),
+      ...getClusterVersionConfig(this, eks.KubernetesVersion.V1_30),
       authenticationMode: props?.authenticationMode,
       defaultCapacity: props?.defaultCapacity,
     });
@@ -96,9 +109,12 @@ export class ClusterStack extends Stack {
 
 const app = new App();
 
+const vpcStack = new SharedVpcStack(app, 'integ-eks-stack-vpc');
+
 // create a cluster that supports API only
 const stack1 = new ClusterStack(app, 'integ-eks-stack1', {
   authenticationMode: eks.AuthenticationMode.API,
+  vpc: vpcStack.vpc,
 });
 
 stack1.assertGrantToOtherClusterAdminRole();
@@ -108,7 +124,7 @@ stack1.assertGrantToAllPoliciesRole();
 // create a cluster that supports API_AND_CONFIG_MAP
 const stack2 = new ClusterStack(app, 'integ-eks-stack2', {
   authenticationMode: eks.AuthenticationMode.API_AND_CONFIG_MAP,
-  vpc: stack1.vpc,
+  vpc: vpcStack.vpc,
 });
 
 stack2.assertGrantToOtherClusterAdminRole();
@@ -118,22 +134,22 @@ stack2.assertGrantToAllPoliciesRole();
 // create a cluster that supports CONFIG_MAP only
 const stack3 = new ClusterStack(app, 'integ-eks-stack3', {
   authenticationMode: eks.AuthenticationMode.CONFIG_MAP,
-  vpc: stack1.vpc,
+  vpc: vpcStack.vpc,
 });
 
 // create a cluster with authenticationMode undefined
 const stack4 = new ClusterStack(app, 'integ-eks-stack4', {
-  vpc: stack1.vpc,
+  vpc: vpcStack.vpc,
 });
 
 new IntegTest(app, 'access-entry-test', {
-  testCases: [stack1, stack2, stack3, stack4],
+  testCases: [vpcStack, stack1, stack2, stack3, stack4],
   cdkCommandOptions: {
     deploy: {
       args: {
         rollback: false,
         concurrency: 4,
-        stacks: ['integ-eks-stack1', 'integ-eks-stack2', 'integ-eks-stack3', 'integ-eks-stack4'],
+        stacks: ['integ-eks-stack-vpc', 'integ-eks-stack1', 'integ-eks-stack2', 'integ-eks-stack3', 'integ-eks-stack4'],
       },
     },
   },
