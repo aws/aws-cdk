@@ -24,7 +24,7 @@ export interface NetworkLoadBalancerEndpointProps {
    * Client IP address preservation is supported only in specific AWS Regions.
    * See the GlobalAccelerator Developer Guide for a list.
    *
-   * @default true if available
+   * @default false
    */
   readonly preserveClientIp?: boolean;
 }
