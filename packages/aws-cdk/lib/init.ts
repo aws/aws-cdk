@@ -153,10 +153,14 @@ export class InitTemplate {
 
   private async installProcessed(templatePath: string, toFile: string, language: string, project: ProjectInfo) {
     const template = await fs.readFile(templatePath, { encoding: 'utf-8' });
-    await fs.writeFile(toFile, this.expand(template, language, project));
+    let appCommandTool = 'npx';
+    if (toFile.includes('cdk.json') && await getCommand() === 'pnpm') {
+      appCommandTool = 'pnpx';
+    }
+    await fs.writeFile(toFile, this.expand(template, language, project, appCommandTool));
   }
 
-  private expand(template: string, language: string, project: ProjectInfo) {
+  private expand(template: string, language: string, project: ProjectInfo, appCommandTool: string = 'npx') {
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     const manifest = require(path.join(rootDir(), 'package.json'));
     const MATCH_VER_BUILD = /\+[a-f0-9]+$/; // Matches "+BUILD" in "x.y.z-beta+BUILD"
@@ -173,6 +177,8 @@ export class InitTemplate {
         break;
     }
     return template.replace(/%name%/g, project.name)
+      // the appcommand is only added to the cdk.json file when initializing a Typescript app.
+      .replace(/%appcommandtool%/g, appCommandTool)
       .replace(/%stackname%/, project.stackName ?? '%name.PascalCased%Stack')
       .replace(/%PascalNameSpace%/, project.stackName ? camelCase(project.stackName + 'Stack', { pascalCase: true }) : '%name.PascalCased%')
       .replace(/%PascalStackProps%/, project.stackName ? (camelCase(project.stackName, { pascalCase: true }) + 'StackProps') : 'StackProps')
@@ -344,8 +350,7 @@ async function postInstallJavascript(canUseNetwork: boolean, cwd: string) {
 }
 
 async function postInstallTypescript(canUseNetwork: boolean, cwd: string) {
-  const command = 'npm';
-
+  const command = await getCommand();
   if (!canUseNetwork) {
     warning(`Please run '${command} install'!`);
     return;
@@ -357,6 +362,16 @@ async function postInstallTypescript(canUseNetwork: boolean, cwd: string) {
   } catch (e: any) {
     warning(`${command} install failed: ` + e.message);
   }
+}
+
+async function getCommand(): Promise<string> {
+  print('Getting command...');
+  if (process.env.npm_execpath && process.env.npm_execpath.includes('pnpm')) {
+    print(`Got exec path ${chalk.green(`${process.env.npm_execpath}`)}...`);
+    print(`Got command ${chalk.green(`${'pnpm'}`)}...`);
+    return 'pnpm';
+  }
+  return 'npm';
 }
 
 async function postInstallJava(canUseNetwork: boolean, cwd: string) {
