@@ -401,7 +401,7 @@ describe('custom resource provider', () => {
     // WHEN
     const provider = CustomResourceProvider.getOrCreateProvider(stack, 'Custom:MyResourceType', {
       codeDirectory: TEST_HANDLER,
-      runtime: STANDARD_PROVIDER,
+      runtime: DEFAULT_PROVIDER_RUNTIME,
       policyStatements: [
         { statement1: 123 },
         { statement2: { foo: 111 } },
