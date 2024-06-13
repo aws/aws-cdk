@@ -38,6 +38,7 @@ const vpc = new vpc_v2.VpcV2(stack, 'VPCTest', {
       ipv4NetmaskLength: 20,
     }),
     vpc_v2.IpAddresses.amazonProvidedIpv6(),
+    // vpc_v2.IpAddresses.ipv4('192.168.0.0/16'), Test for invalid RFC range
   ],
   enableDnsHostnames: true,
   enableDnsSupport: true,

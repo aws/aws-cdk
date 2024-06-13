@@ -186,7 +186,7 @@ function pushIsolatedSubnet(vpc: IVpcV2, subnet: SubnetV2) {
  */
 
 function validateSupportIpv6(vpc: IVpcV2) {
-  if (vpc.cidrBlock.some((secondaryAddress) => secondaryAddress.amazonProvidedIpv6CidrBlock === true)) {
+  if (vpc.secondaryCidrBlock.some((secondaryAddress) => secondaryAddress.amazonProvidedIpv6CidrBlock === true)) {
     return true;
   } else {
     throw new Error('To use IPv6, the VPC must enable IPv6 support.');

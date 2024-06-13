@@ -201,7 +201,7 @@ export class VpcV2 extends VpcV2Base {
   /**
  * reference to all secondary blocks attached
  */
-  public readonly cidrBlock= new Array<CfnVPCCidrBlock>;
+  public readonly secondaryCidrBlock = new Array<CfnVPCCidrBlock>;
 
   /**
    * For validation to define IPv6 subnets
@@ -245,12 +245,15 @@ export class VpcV2 extends VpcV2Base {
         if (vpcOptions.amazonProvided === true) {
           this.useIpv6 = true;
         }
-        // validate CIDR ranges per RFC 1918
-        // if (vpcOptions.ipv4CidrBlock!) {
-        //   validateIpv4address(vpcoptions.ipv4CidrBlock);
-        // }
+        //validate CIDR ranges per RFC 1918
+        if (vpcOptions.ipv4CidrBlock!) {
+          const ret = validateIpv4address(vpcoptions.ipv4CidrBlock, this.resource.cidrBlock);
+          if (ret === false) {
+            throw new Error('CIDR block should be in the same RFC 1918 range in the VPC');
+          }
+        }
         //Create secondary blocks for Ipv4 and Ipv6
-        this.cidrBlock = [...this.cidrBlock, new CfnVPCCidrBlock(this, `SecondaryIp${ipCount}`, {
+        this.secondaryCidrBlock = [...this.secondaryCidrBlock, new CfnVPCCidrBlock(this, `SecondaryIp${ipCount}`, {
           vpcId: this.vpcId,
           cidrBlock: vpcoptions.ipv4CidrBlock,
           ipv4IpamPoolId: vpcoptions.ipv4IpamPoolId,
@@ -322,32 +325,41 @@ export class AmazonProvided implements IIpAddresses {
 
 }
 //Default Config
-// type IPaddressConfig = {
-//   octet1: number;
-//   octect2: number;
-// };
 
-// function validateIpv4address(cidr1?: string, cidr2?: string) : Boolean {
+interface IPaddressConfig {
+  octet1: number;
+  octet2: number;
+}
 
-//   if (cidr1! && cidr2!) {
-//     const octets1: number[] = cidr1?.split('.').map(octet => parseInt(octet, 10));
-//     const octets2: number[] = cidr2?.split('.').map(octet => parseInt(octet, 10));
+function validateIpv4address(cidr1?: string, cidr2?: string): boolean {
+  if (!cidr1 || !cidr2) {
+    return false; // Handle cases where CIDR ranges are not provided
+  }
 
-//     const ip1 : IPaddressConfig = {
-//       octet1: octets1[0],
-//       octect2: octets1[1],
-//     };
-//     const ip2 : IPaddressConfig = {
-//       octet1: octets2[0],
-//       octect2: octets2[1],
-//     };
-//     if (octets2?.length !== 4) {
-//       throw new Error(`Invalid IPv4 CIDR: ${cidr1}`);
-//     } else {
-//       if ( ip1.octet1 === ip2.octet1) {
-//         return true;
-//       }
-//     }
-//   }
-//   return false;
-// }
+  const octetsCidr1: number[] = cidr1.split('.').map(octet => parseInt(octet, 10));
+  const octetsCidr2: number[] = cidr2.split('.').map(octet => parseInt(octet, 10));
+
+  if (octetsCidr1.length !== 4 || octetsCidr2.length !== 4) {
+    return false; // Handle invalid CIDR ranges
+  }
+
+  const ip1: IPaddressConfig = {
+    octet1: octetsCidr1[0],
+    octet2: octetsCidr1[1],
+  };
+
+  const ip2: IPaddressConfig = {
+    octet1: octetsCidr2[0],
+    octet2: octetsCidr2[1],
+  };
+
+  if (
+    (ip1.octet1 === 10 && ip2.octet1 === 10) ||
+    (ip1.octet1 === 192 && ip1.octet2 === 168 && ip2.octet1 === 192 && ip2.octet2 === 168) ||
+    (ip1.octet1 === 172 && ip1.octet2 === 16 && ip2.octet1 === 172 && ip2.octet2 === 16)
+  ) {
+    return true; // CIDR ranges belong to same private IP address ranges
+  } else {
+    return false;
+  } // CIDR ranges do not belong to same private IP address ranges
+}

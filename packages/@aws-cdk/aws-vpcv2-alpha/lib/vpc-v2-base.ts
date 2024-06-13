@@ -9,7 +9,7 @@ import { IDependable, Dependable, IConstruct } from 'constructs';
  * will be added to original IVPC
  */
 export interface IVpcV2 extends IVpc {
-  readonly cidrBlock: CfnVPCCidrBlock[];
+  readonly secondaryCidrBlock: CfnVPCCidrBlock[];
 }
 
 export abstract class VpcV2Base extends Resource implements IVpcV2 {
@@ -59,7 +59,7 @@ export abstract class VpcV2Base extends Resource implements IVpcV2 {
      */
   public abstract readonly internetConnectivityEstablished: IDependable;
 
-  public abstract readonly cidrBlock: CfnVPCCidrBlock[];
+  public abstract readonly secondaryCidrBlock: CfnVPCCidrBlock[];
 
   /**
      * If this is set to true, don't error out on trying to select subnets
