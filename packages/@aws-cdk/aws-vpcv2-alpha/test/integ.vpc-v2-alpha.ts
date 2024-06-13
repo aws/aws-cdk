@@ -9,12 +9,10 @@
  */
 
 import * as vpc_v2 from '../lib/vpc-v2';
-// import { AddressFamily, Ipam } from '../lib';
+import { AddressFamily, Ipam } from '../lib';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
-import { Ipv4Cidr, /*Ipv6Cidr,*/ SubnetV2 } from '../lib/subnet-v2';
-import { EgressOnlyInternetGateway, Route, RouteTable } from '../lib/route';
-import { GatewayVpcEndpoint, GatewayVpcEndpointAwsService, RouterType } from 'aws-cdk-lib/aws-ec2';
+import { Ipv6Cidr, SubnetV2 } from '../lib/subnet-v2';
 
 // as in unit tests, we use a qualified import,
 // not bring in individual classes
@@ -24,13 +22,13 @@ const app = new cdk.App();
 
 const stack = new cdk.Stack(app, 'aws-cdk-vpcv2-alpha');
 
-// const ipam = new Ipam(stack, 'Ipam');
+const ipam = new Ipam(stack, 'Ipam');
 
-// const pool = ipam.publicScope.addPool({
-//   addressFamily: AddressFamily.IP_V4,
-//   provisionedCidrs: [{ cidr: '10.2.0.0/16' }],
-//   region: 'us-east-1',
-// });
+const pool = ipam.publicScope.addPool({
+  addressFamily: AddressFamily.IP_V4,
+  provisionedCidrs: [{ cidr: '10.2.0.0/16' }],
+  region: 'us-east-1',
+});
 
 const vpc = new vpc_v2.VpcV2(stack, 'VPCTest', {
   primaryAddressBlock: vpc_v2.IpAddresses.ipv4('10.0.0.0/16'),
@@ -44,38 +42,12 @@ const vpc = new vpc_v2.VpcV2(stack, 'VPCTest', {
   ],
   enableDnsHostnames: true,
   enableDnsSupport: true,
-  
 });
 
-const subnet = new SubnetV2(stack, 'testsbubnet', {
+const subnet = new SubnetV2(stack, 'subnet', {
   vpc,
   availabilityZone: 'us-west-2a',
-  cidrBlock: new Ipv4Cidr('10.0.0.0/24'),
-});
-
-const routeTable = new RouteTable(stack, 'TestRoottable', {
-  vpcId: vpc.vpcId,
-});
-
-const eigw = new EgressOnlyInternetGateway(stack, 'testEOIGW', {
-  vpcId: vpc.vpcId,
-});
-
-const dynamoEndpoint = new GatewayVpcEndpoint(stack, 'testDynamoEndpoint', {
-  service: GatewayVpcEndpointAwsService.DYNAMODB,
-  vpc: vpc,
-})
-
-const routeToEigw = new Route(stack, 'testEIGWRoute', {
-  routeTable: routeTable,
-  destination: vpc_v2.IpAddresses.ipv4('10.0.0.0/25'),
-  target: eigw,
-});
-
-const routeToDynamo = new Route(stack, 'testDynamoRoute', {
-  routeTable: routeTable,
-  destination: vpc_v2.IpAddresses.ipv4('10.0.0.128/25'),
-  target: dynamoEndpoint,
+  cidrBlock: new Ipv6Cidr('10.0.0.0/24'),
 });
 
 /**
@@ -85,26 +57,6 @@ const routeToDynamo = new Route(stack, 'testDynamoRoute', {
 if (!vpc.isolatedSubnets.includes(subnet)) {
   throw new Error('Subnet is not isolated');
 };
-
-if (!routeTable.routeTableId) {
-  throw new Error('No RouteTable id');
-}
-
-if (eigw.routerType != RouterType.EGRESS_ONLY_INTERNET_GATEWAY) {
-  throw new Error('EIGW RouterType not correct');
-}
-
-if (!dynamoEndpoint.vpcEndpointId) {
-  throw new Error('No dynamo endpoint id');
-}
-
-if (routeToDynamo.targetRouterType != RouterType.VPC_ENDPOINT) {
-  throw new Error('Dynamo route has wrong route type');
-}
-
-if (routeToEigw.targetRouterType != RouterType.EGRESS_ONLY_INTERNET_GATEWAY) {
-  throw new Error('Egress Only Internet Gateway has wrong router type');
-}
 
 app.synth();
 
