@@ -4,6 +4,8 @@ import * as iam from '../../../aws-iam';
 import * as cdk from '../../../core';
 import { Bucket, IBucket, EventType, NotificationKeyFilter } from '../bucket';
 import { BucketNotificationDestinationType, IBucketNotificationDestination } from '../destination';
+import { FeatureFlags } from 'aws-cdk-lib/core';
+import { S3_EXISTING_NOTIFICATIONS_DELETE_ENABLED } from 'aws-cdk-lib/cx-api';
 
 interface NotificationsProps {
   /**
@@ -133,6 +135,7 @@ export class BucketNotifications extends Construct {
           BucketName: this.bucket.bucketName,
           NotificationConfiguration: cdk.Lazy.any({ produce: () => this.renderNotificationConfiguration() }),
           Managed: managed,
+          S3NotificationsDeleteFeatureFlagEnabled: FeatureFlags.of(this).isEnabled(S3_EXISTING_NOTIFICATIONS_DELETE_ENABLED)
         },
       });
 
