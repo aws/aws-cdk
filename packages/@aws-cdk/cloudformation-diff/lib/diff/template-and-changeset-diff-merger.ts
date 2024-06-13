@@ -28,6 +28,120 @@ export interface TemplateAndChangeSetDiffMergerProps extends TemplateAndChangeSe
  */
 export class TemplateAndChangeSetDiffMerger {
 
+  public static replaceResourceTemplateWithChangeContext(
+    resources: { [key: string]: types.Resource | undefined },
+    logicalId: string,
+    resourceType: string | undefined,
+    changeContext: any,
+  ) {
+    // If the changeset includes a resource not in the template, then we have to add that resource
+    if (resources[logicalId] === undefined) {
+      resources[logicalId] = {
+        Type: resourceType ?? 'UNKNOWN_RESOURCE_TYPE',
+        ...changeContext,
+      };
+    }
+
+    const resource = resources[logicalId]!;
+
+    // This is an attempt at an aesthetic approvement for the diff. We want to replace the {{changeSet:KNOWN_AFTER_APPLY}}
+    // with the values that our `diffTemplate` method produced. But everything is okay if we fail.
+    const pathsToKnownAfterApply = TemplateAndChangeSetDiffMerger.getAllPathsToKnownAfterApply(changeContext.Properties);
+    for (const path of pathsToKnownAfterApply) {
+      const result = TemplateAndChangeSetDiffMerger.attemptToReplaceLeafWithOtherLeaf(
+        path, resource.Properties, changeContext.Properties,
+      );
+
+      if (result) {
+        changeContext.Properties = result;
+      }
+    }
+
+    resource.Properties = changeContext.Properties;
+  }
+
+  public static getAllPathsToKnownAfterApply(root: any): any[][] {
+    let paths: any[][] = [];
+
+    _findPaths(root, []);
+
+    // Defining the function in the scope of another function so paths can be added to the paths array.
+    function _findPaths(node: any, path: any[]) {
+      if (typeof node === 'object' && !Array.isArray(node)) {
+        // we are on a node that has children
+
+        const children = Object.keys(node ?? {});
+
+        for (const key of children) {
+          _findPaths(node[key], [...path, key]);
+        }
+
+      } else if (Array.isArray(node)) {
+        // TODO | consider just giving up if it's an array since that introduces indeterminancy in the path
+        // TODO | which could possibly lead to replacing '{{changeSet:KNOWN_AFTER_APPLY}}' with the incorrect node.
+
+        node.sort(); // sort the array so we always go in the same order.
+
+        for (let i = 0; i < node.length; i++) {
+          _findPaths(node[i], [...path, i]);
+        }
+
+      } else {
+        // We are on a leaf
+        if (typeof node === 'string' && node === '{{changeSet:KNOWN_AFTER_APPLY}}') {
+          // this is what we want to replace
+          path.pop();
+          paths.push(path);
+        }
+      }
+    }
+
+    return paths;
+  }
+
+  public static replaceBranch(obj: any, path: (string | number)[], newBranch: any): any {
+    if (path.length === 0) {
+      // If the path is empty, return the new branch
+      return newBranch;
+    }
+
+    const [currentKey, ...restPath] = path;
+
+    if (Array.isArray(obj)) {
+      // If the current object is an array
+      const index = typeof currentKey === 'number' ? currentKey : parseInt(currentKey, 10);
+      return [
+        ...obj.slice(0, index),
+        this.replaceBranch(obj[index], restPath, newBranch),
+        ...obj.slice(index + 1),
+      ];
+    } else if (typeof obj === 'object' && obj !== null) {
+      // If the current object is an object
+      return {
+        ...obj,
+        [currentKey]: this.replaceBranch(obj[currentKey], restPath, newBranch),
+      };
+    } else {
+      // Return the object as-is if it's neither an object nor an array
+      return obj;
+    }
+  }
+
+  public static attemptToReplaceLeafWithOtherLeaf(pathToLeaf: any[], pathWithNewLeaf: any, leafWillBeReplaced: any) {
+    try {
+      for (const node of pathToLeaf) {
+        pathWithNewLeaf = pathWithNewLeaf[node];
+      }
+
+      return this.replaceBranch(leafWillBeReplaced, pathToLeaf, pathWithNewLeaf);
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.log(`Failed to traverse path ${pathToLeaf}, path: ${pathWithNewLeaf}, otherPath: ${leafWillBeReplaced}`);
+      // eslint-disable-next-line no-console
+      console.log(`Error: ${e}`);
+    }
+  }
+
   public static determineChangeSetReplacementMode(propertyChange: ChangeSetResourceChangeDetail): types.ReplacementModes {
     if (propertyChange.Target?.RequiresRecreation === undefined) {
       // We can't determine if the resource will be replaced or not. That's what conditionally means.
@@ -82,10 +196,26 @@ export class TemplateAndChangeSetDiffMerger {
         resourceWasReplaced: resourceChange.ResourceChange.Replacement === 'True',
         resourceType: resourceChange.ResourceChange.ResourceType ?? TemplateAndChangeSetDiffMerger.UNKNOWN_RESOURCE_TYPE, // DescribeChangeSet doesn't promise to have the ResourceType...
         propertyReplacementModes: propertyReplacementModes,
+        beforeContext: _maybeJsonParse(resourceChange.ResourceChange.BeforeContext),
+        afterContext: _maybeJsonParse(resourceChange.ResourceChange.AfterContext),
       };
     }
 
     return changeSetResources;
+
+    /**
+     *  we will try to parse the BeforeContext and AfterContext so that downstream processing of the diff can access object properties.
+     *
+     *  This should always succeed. But CFN says they truncate the beforeValue and afterValue if they're too long, and since the afterValue and beforeValue
+     *  are a subset of the BeforeContext and AfterContext, it seems safer to assume that BeforeContext and AfterContext also may truncate.
+     */
+    function _maybeJsonParse(value: string | undefined): any | undefined {
+      try {
+        return JSON.parse(value ?? '');
+      } catch (e) {
+        return value;
+      }
+    }
   }
 
   /**
@@ -135,6 +265,25 @@ export class TemplateAndChangeSetDiffMerger {
     });
   }
 
+  public replaceTemplateResourcesWithChangeContext(
+    beforeOrAfterChanges: 'before' | 'after',
+    resources: { [key: string]: types.Resource | undefined },
+  ) {
+    for (const [logicalId, changeSetResource] of Object.entries(this.changeSetResources)) {
+      if (changeSetResource === undefined) { continue; } // shouldn't happen, but just to be safe.
+
+      if (beforeOrAfterChanges === 'before' && changeSetResource.beforeContext) {
+        TemplateAndChangeSetDiffMerger.replaceResourceTemplateWithChangeContext(
+          resources, logicalId, changeSetResource.resourceType, changeSetResource.beforeContext,
+        );
+      } else if (beforeOrAfterChanges === 'after' && changeSetResource.afterContext) {
+        TemplateAndChangeSetDiffMerger.replaceResourceTemplateWithChangeContext(
+          resources, logicalId, changeSetResource.resourceType, changeSetResource.afterContext,
+        );
+      }
+    }
+  }
+
   public addImportInformationFromChangeset(resourceDiffs: types.DifferenceCollection<types.Resource, types.ResourceDifference>) {
     const imports = this.findResourceImports();
     resourceDiffs.forEachDifference((logicalId: string, change: types.ResourceDifference) => {
@@ -155,3 +304,4 @@ export class TemplateAndChangeSetDiffMerger {
     return importedResourceLogicalIds;
   }
 }
+

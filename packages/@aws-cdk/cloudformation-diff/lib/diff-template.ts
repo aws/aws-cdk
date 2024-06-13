@@ -52,18 +52,25 @@ export function fullDiff(
   isImport?: boolean,
 ): types.TemplateDiff {
 
-  normalize(currentTemplate);
-  normalize(newTemplate);
-  const theDiff = diffTemplate(currentTemplate, newTemplate);
+  let theDiff: types.TemplateDiff;
+
   if (changeSet) {
     // These methods mutate the state of theDiff, using the changeSet.
     const changeSetDiff = new TemplateAndChangeSetDiffMerger({ changeSet });
+    changeSetDiff.replaceTemplateResourcesWithChangeContext('before', currentTemplate.Resources);
+    changeSetDiff.replaceTemplateResourcesWithChangeContext('after', newTemplate.Resources);
+
+    theDiff = diffTemplate(currentTemplate, newTemplate);
+
     theDiff.resources.forEachDifference((logicalId: string, change: types.ResourceDifference) =>
       changeSetDiff.overrideDiffResourceChangeImpactWithChangeSetChangeImpact(logicalId, change),
     );
     changeSetDiff.addImportInformationFromChangeset(theDiff.resources);
   } else if (isImport) {
+    theDiff = diffTemplate(currentTemplate, newTemplate);
     makeAllResourceChangesImports(theDiff);
+  } else {
+    theDiff = diffTemplate(currentTemplate, newTemplate);
   }
 
   return theDiff;
@@ -73,6 +80,8 @@ export function diffTemplate(
   currentTemplate: { [key: string]: any },
   newTemplate: { [key: string]: any },
 ): types.TemplateDiff {
+  normalize(currentTemplate);
+  normalize(newTemplate);
 
   // Base diff
   const theDiff = calculateTemplateDiff(currentTemplate, newTemplate);

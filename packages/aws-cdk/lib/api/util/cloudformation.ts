@@ -182,6 +182,41 @@ export class CloudFormationStack {
 }
 
 /**
+ * * As of now, describeChangeSet with IncludePropertyValues doesn't include the StatusReason for a ChangeSet with no changes. There is a fix that's in progress from CloudFormation.
+ * * As of now, the IncludePropertyValues feature is not available in all AWS partitions.
+ * * As of now, including a nextToken with IncludePropertyValues can acuse DescribeChangeSet to error.
+ *     * TODO: Once the above are fixed, we can remove this function and make all describeChangeSet requests with IncludePropertValues set to true.
+ */
+export async function maybeGetChangeSetChangeContext(
+  cfn: CloudFormation,
+  stackName: string,
+  changeSetName: string,
+): Promise<CloudFormation.DescribeChangeSetOutput | undefined> {
+  let changeContextIncludedInResponse = undefined;
+  try {
+    const changesWithPropertyValues = await cfn.describeChangeSet({
+      StackName: stackName,
+      ChangeSetName: changeSetName,
+      IncludePropertyValues: true,
+    }).promise();
+
+    changeContextIncludedInResponse = changesWithPropertyValues?.Changes?.find((change) =>
+      (change?.ResourceChange?.AfterContext !== undefined) || (change?.ResourceChange?.BeforeContext !== undefined),
+    );
+    if (changeContextIncludedInResponse) {
+      return changesWithPropertyValues;
+    }
+
+    // We don't want to assume that failure to use the new IncludePropertyValues field will result in an exception being thrown.
+    debug('describeChangeSet with IncludePropertyValues has no BeforeContext or AfterContext. Diff will not include property values from ChangeSet.');
+  } catch (e: any) {
+    debug('Failed to describeChangeSet with IncludePropertyValues. Diff will not include property values from ChangeSet. Error Message: %s', e?.message);
+  }
+
+  return undefined;
+}
+
+/**
  * Describe a changeset in CloudFormation, regardless of its current state.
  *
  * @param cfn           a CloudFormation client
@@ -198,6 +233,11 @@ async function describeChangeSet(
   { fetchAll }: { fetchAll: boolean },
 ): Promise<CloudFormation.DescribeChangeSetOutput> {
   const response = await cfn.describeChangeSet({ StackName: stackName, ChangeSetName: changeSetName }).promise();
+
+  const changeSetChangesWithContext = await maybeGetChangeSetChangeContext(cfn, stackName, changeSetName);
+  if (changeSetChangesWithContext) {
+    response.Changes = changeSetChangesWithContext.Changes;
+  }
 
   // If fetchAll is true, traverse all pages from the change set description.
   while (fetchAll && response.NextToken != null) {

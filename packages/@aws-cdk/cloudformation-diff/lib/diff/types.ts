@@ -21,6 +21,8 @@ export interface ChangeSetResource {
   resourceWasReplaced: boolean;
   resourceType: string | undefined;
   propertyReplacementModes: PropertyReplacementModeMap | undefined;
+  beforeContext: any | undefined;
+  afterContext: any | undefined;
 }
 
 export type PropertyReplacementModeMap = {
