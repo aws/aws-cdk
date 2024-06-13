@@ -214,7 +214,7 @@ export enum WorkerType {
 export enum ExecutionClass {
   /**
    * The flexible execution class is appropriate for time-insensitive jobs whose start and completion times may vary.
-   * Only jobs with AWS Glue version 3.0 and above and command type glueetl will be allowed to set ExecutionClass to FLEX.
+   * Only jobs with AWS Glue version 3.0 and above and command type `glueetl` will be allowed to set `ExecutionClass` to `FLEX`.
    * The flexible execution class is available for Spark jobs.
    */
   FLEX = 'FLEX',
