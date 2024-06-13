@@ -1,5 +1,5 @@
 import { HttpLambdaIntegration } from './../../lib/http/lambda';
-import { App, Stack } from '../../..';
+import { App, Duration, Stack } from '../../../core';
 import { Match, Template } from '../../../assertions';
 import { HttpApi, HttpRoute, HttpRouteKey, MappingValue, ParameterMapping, PayloadFormatVersion } from '../../../aws-apigatewayv2';
 import { Code, Function } from '../../../aws-lambda';
@@ -57,6 +57,22 @@ describe('LambdaProxyIntegration', () => {
         'append:header.header2': '$request.header.header1',
         'remove:header.header1': '',
       },
+    });
+  });
+
+  test('timeout selection', () => {
+    const stack = new Stack();
+    const api = new HttpApi(stack, 'HttpApi');
+    new HttpRoute(stack, 'LambdaProxyRoute', {
+      httpApi: api,
+      integration: new HttpLambdaIntegration('Integration', fooFunction(stack, 'Fn'), {
+        timeout: Duration.seconds(20),
+      }),
+      routeKey: HttpRouteKey.with('/pets'),
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::Integration', {
+      TimeoutInMillis: 20000,
     });
   });
 
