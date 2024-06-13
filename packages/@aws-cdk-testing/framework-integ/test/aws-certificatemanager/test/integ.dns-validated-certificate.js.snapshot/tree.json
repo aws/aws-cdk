@@ -202,15 +202,7 @@
                             "Arn"
                           ]
                         },
-                        "runtime": {
-                          "Fn::FindInMap": [
-                            "LatestNodeRuntimeMap",
-                            {
-                              "Ref": "AWS::Region"
-                            },
-                            "value"
-                          ]
-                        },
+                        "runtime": "nodejs18.x",
                         "timeout": 900
                       }
                     },
@@ -246,14 +238,6 @@
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_certificatemanager.DnsValidatedCertificate",
-              "version": "0.0.0"
-            }
-          },
-          "LatestNodeRuntimeMap": {
-            "id": "LatestNodeRuntimeMap",
-            "path": "integ-dns-validated-certificate/LatestNodeRuntimeMap",
-            "constructInfo": {
-              "fqn": "aws-cdk-lib.CfnMapping",
               "version": "0.0.0"
             }
           },
@@ -300,7 +284,7 @@
                 "path": "integ-test/DefaultTest/Default",
                 "constructInfo": {
                   "fqn": "constructs.Construct",
-                  "version": "10.3.0"
+                  "version": "10.2.70"
                 }
               },
               "DeployAssert": {
@@ -346,7 +330,7 @@
         "path": "Tree",
         "constructInfo": {
           "fqn": "constructs.Construct",
-          "version": "10.3.0"
+          "version": "10.2.70"
         }
       }
     },
