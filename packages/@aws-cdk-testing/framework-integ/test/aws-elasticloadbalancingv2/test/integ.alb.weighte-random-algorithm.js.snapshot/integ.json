@@ -1,0 +1,12 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "issue-24805/DefaultTest": {
+      "stacks": [
+        "alb-weight-rando-algorithm-test-stack"
+      ],
+      "assertionStack": "issue-24805/DefaultTest/DeployAssert",
+      "assertionStackName": "issue24805DefaultTestDeployAssert4F284C49"
+    }
+  }
+}

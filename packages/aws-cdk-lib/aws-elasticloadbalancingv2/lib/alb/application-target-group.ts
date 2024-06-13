@@ -95,6 +95,16 @@ export interface ApplicationTargetGroupProps extends BaseTargetGroupProps {
    * @default - No targets.
    */
   readonly targets?: IApplicationLoadBalancerTarget[];
+
+  /**
+   * Indicates whether anomaly mitigation is enabled.
+   * Only available when loadBalancingAlgorithmType is TargetGroupLoadBalancingAlgorithmType.WEIGHTED_RANDOM
+   *
+   * @default false
+   *
+   * @see https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-target-groups.html#automatic-target-weights
+   */
+  readonly enableAnomalyMitigation?: boolean;
 }
 
 /**
@@ -329,12 +339,19 @@ export class ApplicationTargetGroup extends TargetGroupBase implements IApplicat
     this.listeners = [];
 
     if (props) {
+      const isWeightedRandomAlgorithm = !Token.isUnresolved(props.loadBalancingAlgorithmType) &&
+        (props.loadBalancingAlgorithmType === TargetGroupLoadBalancingAlgorithmType.WEIGHTED_RANDOM);
+
       if (props.slowStart !== undefined) {
         // 0 is allowed and disables slow start
         if ((props.slowStart.toSeconds() < 30 && props.slowStart.toSeconds() !== 0) || props.slowStart.toSeconds() > 900) {
           throw new Error('Slow start duration value must be between 30 and 900 seconds, or 0 to disable slow start.');
         }
         this.setAttribute('slow_start.duration_seconds', props.slowStart.toSeconds().toString());
+
+        if (isWeightedRandomAlgorithm) {
+          throw new Error('The weighted random routing algorithm can not be used with slow start mode.');
+        }
       }
 
       if (props.stickinessCookieDuration) {
@@ -347,6 +364,21 @@ export class ApplicationTargetGroup extends TargetGroupBase implements IApplicat
         this.setAttribute('load_balancing.algorithm.type', props.loadBalancingAlgorithmType);
       }
       this.addTarget(...(props.targets || []));
+
+      if (!Token.isUnresolved(props.enableAnomalyMitigation) &&
+        (props.enableAnomalyMitigation !== undefined)) {
+
+        if (props.enableAnomalyMitigation) {
+          if (isWeightedRandomAlgorithm) {
+            this.setAttribute('load_balancing.algorithm.anomaly_mitigation', 'on');
+          } else {
+            throw new Error('Anomaly mitigation is only available when `loadBalancingAlgorithmType` is `TargetGroupLoadBalancingAlgorithmType.WEIGHTED_RANDOM`.');
+          }
+        } else {
+          this.setAttribute('load_balancing.algorithm.anomaly_mitigation', 'off');
+        }
+      }
+
     }
   }
 
