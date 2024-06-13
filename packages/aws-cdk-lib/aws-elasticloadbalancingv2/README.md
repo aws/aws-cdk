@@ -467,7 +467,7 @@ For more information, see [Routing algorithms](https://docs.aws.amazon.com/elast
 ```ts
 declare const vpc: ec2.Vpc;
 
-const tg = new elbv2.ApplicationTargetGroup(stack, 'TargetGroup', {
+const tg = new elbv2.ApplicationTargetGroup(this, 'TargetGroup', {
   loadBalancingAlgorithmType: elbv2.TargetGroupLoadBalancingAlgorithmType.WEIGHTED_RANDOM,
   vpc,
   enableAnomalyMitigation: true,
