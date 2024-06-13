@@ -4,7 +4,6 @@ import { Arn } from 'aws-cdk-lib/core';
 import { Construct, DependencyGroup, IDependable } from 'constructs';
 import { IpamIpv4, IpamIpv6 } from './ipam';
 import { VpcV2Base } from './vpc-v2-base';
-import { log } from 'console';
 
 export interface IIpIpamOptions{
   readonly ipv4IpamPoolId: any;
@@ -247,7 +246,6 @@ export class VpcV2 extends VpcV2Base {
           this.useIpv6 = true;
         }
         //validate CIDR ranges per RFC 1918
-        log(secondaryVpcOptions.ipv4CidrBlock);
         if (secondaryVpcOptions.ipv4CidrBlock!) {
           const ret = validateIpv4address(secondaryVpcOptions.ipv4CidrBlock, this.resource.cidrBlock);
           if (ret === false) {
