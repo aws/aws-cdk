@@ -395,7 +395,7 @@ class OsCommand {
  * Chain commands
  */
 function chain(commands: string[]): string {
-  const chainSign = this.osPlatform === 'win32' ? ' ; ' : ' && '
+  const chainSign = os.platform() === 'win32' ? ' ; ' : ' && ';
   return commands.filter(c => !!c).join(chainSign);
 }
 

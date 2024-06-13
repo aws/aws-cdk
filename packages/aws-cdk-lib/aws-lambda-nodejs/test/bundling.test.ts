@@ -1012,6 +1012,39 @@ test('Node 16 runtimes warn about sdk v2 upgrades', () => {
   );
 });
 
+test('esbuild uses windows chain sign', () => {
+  const osPlatformMock = jest.spyOn(os, 'platform').mockReturnValue('win32');
+  const packageLock = path.join(__dirname, '..', 'package-lock.json');
+
+  Bundling.bundle(stack, {
+    entry: __filename,
+    projectRoot: path.dirname(packageLock),
+    depsLockFilePath: packageLock,
+    runtime: STANDARD_RUNTIME,
+    architecture: Architecture.X86_64,
+    externalModules: ['abc'],
+    nodeModules: ['delay'],
+    forceDockerBundling: true,
+  });
+
+  // Correctly bundles with esbuild
+  expect(Code.fromAsset).toHaveBeenCalledWith(path.dirname(packageLock), {
+    assetHashType: AssetHashType.OUTPUT,
+    bundling: expect.objectContaining({
+      command: [
+        'bash', '-c',
+        [
+          `esbuild --bundle "/asset-input/test/bundling.test.ts" --target=${STANDARD_TARGET} --platform=node --outfile="/asset-output/index.js" --external:abc --external:delay`,
+          `echo \'{\"dependencies\":{\"delay\":\"${delayVersion}\"}}\' > "/asset-output/package.json"`,
+          'cp "/asset-input/package-lock.json" "/asset-output/package-lock.json"',
+          'cd "/asset-output"',
+          'npm ci',
+        ].join(' ; '),
+      ],
+    }),
+  });
+});
+
 function findParentTsConfigPath(dir: string, depth: number = 1, limit: number = 5): string {
   const target = path.join(dir, 'tsconfig.json');
   if (fs.existsSync(target)) {
