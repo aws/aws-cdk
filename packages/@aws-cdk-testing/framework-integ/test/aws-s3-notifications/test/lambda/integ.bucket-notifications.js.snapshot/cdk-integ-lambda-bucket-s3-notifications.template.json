@@ -2,73 +2,145 @@
  "Resources": {
   "MyBucketF68F3FF0": {
    "Type": "AWS::S3::Bucket",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "aws-cdk:auto-delete-objects",
+      "Value": "true"
+     }
+    ]
+   },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "MyBucketNotifications46AC0CD2": {
-   "Type": "Custom::S3BucketNotifications",
+  "MyBucketPolicyE7FBAC7B": {
+   "Type": "AWS::S3::BucketPolicy",
+   "Properties": {
+    "Bucket": {
+     "Ref": "MyBucketF68F3FF0"
+    },
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "s3:DeleteObject*",
+        "s3:GetBucket*",
+        "s3:List*",
+        "s3:PutBucketPolicy"
+       ],
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": {
+         "Fn::GetAtt": [
+          "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092",
+          "Arn"
+         ]
+        }
+       },
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "MyBucketF68F3FF0",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "MyBucketF68F3FF0",
+             "Arn"
+            ]
+           },
+           "/*"
+          ]
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "MyBucketAutoDeleteObjectsCustomResource2C28D565": {
+   "Type": "Custom::S3AutoDeleteObjects",
    "Properties": {
     "ServiceToken": {
      "Fn::GetAtt": [
-      "BucketNotificationsHandler050a0587b7544547bf325f094a3db8347ECC3691",
+      "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F",
       "Arn"
      ]
     },
     "BucketName": {
      "Ref": "MyBucketF68F3FF0"
-    },
-    "NotificationConfiguration": {
-     "LambdaFunctionConfigurations": [
+    }
+   },
+   "DependsOn": [
+    "MyBucketPolicyE7FBAC7B"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
       {
-       "Events": [
-        "s3:ObjectCreated:*"
-       ],
-       "Filter": {
-        "Key": {
-         "FilterRules": [
-          {
-           "Name": "suffix",
-           "Value": ".png"
-          }
-         ]
-        }
-       },
-       "LambdaFunctionArn": {
-        "Fn::GetAtt": [
-         "MyFunction3BAA72D1",
-         "Arn"
-        ]
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
        }
       }
      ]
     },
-    "Managed": true
-   },
-   "DependsOn": [
-    "MyBucketAllowBucketNotificationsTocdkinteglambdabucketnotificationsMyFunctionEA6057A1AF09DAA1"
-   ]
+    "ManagedPolicyArns": [
+     {
+      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+     }
+    ]
+   }
   },
-  "MyBucketAllowBucketNotificationsTocdkinteglambdabucketnotificationsMyFunctionEA6057A1AF09DAA1": {
-   "Type": "AWS::Lambda::Permission",
+  "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F": {
+   "Type": "AWS::Lambda::Function",
    "Properties": {
-    "Action": "lambda:InvokeFunction",
-    "FunctionName": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "2ec8ad9e91dcd6e7ad6a5c84ffc6c9c05c408aca3b26ceb2816d81043e6c4dc3.zip"
+    },
+    "Timeout": 900,
+    "MemorySize": 128,
+    "Handler": "index.handler",
+    "Role": {
      "Fn::GetAtt": [
-      "MyFunction3BAA72D1",
+      "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092",
       "Arn"
      ]
     },
-    "Principal": "s3.amazonaws.com",
-    "SourceAccount": {
-     "Ref": "AWS::AccountId"
-    },
-    "SourceArn": {
-     "Fn::GetAtt": [
-      "MyBucketF68F3FF0",
-      "Arn"
+    "Runtime": "nodejs18.x",
+    "Description": {
+     "Fn::Join": [
+      "",
+      [
+       "Lambda function for auto-deleting objects in ",
+       {
+        "Ref": "MyBucketF68F3FF0"
+       },
+       " S3 bucket."
+      ]
      ]
     }
-   }
+   },
+   "DependsOn": [
+    "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
+   ]
   },
   "MyFunctionServiceRole3C357FF2": {
    "Type": "AWS::IAM::Role",
@@ -155,10 +227,10 @@
     "Managed": true
    },
    "DependsOn": [
-    "YourBucketAllowBucketNotificationsTocdkinteglambdabucketnotificationsMyFunctionEA6057A165D77D83"
+    "YourBucketAllowBucketNotificationsTocdkinteglambdabuckets3notificationsMyFunction47013F39EAF10051"
    ]
   },
-  "YourBucketAllowBucketNotificationsTocdkinteglambdabucketnotificationsMyFunctionEA6057A165D77D83": {
+  "YourBucketAllowBucketNotificationsTocdkinteglambdabuckets3notificationsMyFunction47013F39EAF10051": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",
@@ -217,7 +289,10 @@
     "PolicyDocument": {
      "Statement": [
       {
-       "Action": "s3:PutBucketNotification",
+       "Action": [
+        "s3:GetBucketNotification",
+        "s3:PutBucketNotification"
+       ],
        "Effect": "Allow",
        "Resource": "*"
       }
@@ -253,6 +328,115 @@
     "BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleDefaultPolicy2CF63D36",
     "BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleB6FB88EC"
    ]
+  },
+  "Construct1IntegUnmanagedBucket1Notifications4A1599D7": {
+   "Type": "Custom::S3BucketNotifications",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "BucketNotificationsHandler050a0587b7544547bf325f094a3db8347ECC3691",
+      "Arn"
+     ]
+    },
+    "BucketName": {
+     "Ref": "MyBucketF68F3FF0"
+    },
+    "NotificationConfiguration": {
+     "LambdaFunctionConfigurations": [
+      {
+       "Events": [
+        "s3:ObjectCreated:*"
+       ],
+       "Filter": {
+        "Key": {
+         "FilterRules": [
+          {
+           "Name": "suffix",
+           "Value": ".png"
+          },
+          {
+           "Name": "prefix",
+           "Value": "TEST/"
+          }
+         ]
+        }
+       },
+       "LambdaFunctionArn": {
+        "Fn::GetAtt": [
+         "MyFunction3BAA72D1",
+         "Arn"
+        ]
+       }
+      },
+      {
+       "Events": [
+        "s3:ObjectCreated:*"
+       ],
+       "Filter": {
+        "Key": {
+         "FilterRules": [
+          {
+           "Name": "prefix",
+           "Value": "TEST1/"
+          }
+         ]
+        }
+       },
+       "LambdaFunctionArn": {
+        "Fn::GetAtt": [
+         "MyFunction3BAA72D1",
+         "Arn"
+        ]
+       }
+      }
+     ]
+    },
+    "Managed": false
+   },
+   "DependsOn": [
+    "Construct1IntegUnmanagedBucket1AllowBucketNotificationsTocdkinteglambdabuckets3notificationsMyFunction47013F393FAEEFAB"
+   ]
+  },
+  "Construct1IntegUnmanagedBucket1AllowBucketNotificationsTocdkinteglambdabuckets3notificationsMyFunction47013F393FAEEFAB": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "MyFunction3BAA72D1",
+      "Arn"
+     ]
+    },
+    "Principal": "s3.amazonaws.com",
+    "SourceAccount": {
+     "Ref": "AWS::AccountId"
+    },
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:",
+       {
+        "Ref": "AWS::Partition"
+       },
+       ":s3:::",
+       {
+        "Ref": "MyBucketF68F3FF0"
+       }
+      ]
+     ]
+    }
+   }
+  }
+ },
+ "Outputs": {
+  "ExportsOutputRefMyBucketF68F3FF0442F9925": {
+   "Value": {
+    "Ref": "MyBucketF68F3FF0"
+   },
+   "Export": {
+    "Name": "cdk-integ-lambda-bucket-s3-notifications:ExportsOutputRefMyBucketF68F3FF0442F9925"
+   }
   }
  },
  "Parameters": {

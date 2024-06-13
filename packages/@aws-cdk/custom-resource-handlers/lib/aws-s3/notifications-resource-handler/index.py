@@ -21,7 +21,7 @@ def handler(event: dict, context):
     if managed:
       config = handle_managed(event["RequestType"], notification_configuration)
     else:
-      config = handle_unmanaged(props["BucketName"], stack_id, event["RequestType"], notification_configuration, old)
+      config = handle_unmanaged(props["BucketName"], stack_id, event["RequestType"], notification_configuration, old, s3NotificationsDeleteFeatureFlagEnabled)
     s3.put_bucket_notification_configuration(Bucket=props["BucketName"], NotificationConfiguration=config)
   except Exception as e:
     logging.exception("Failed to put bucket notification configuration")
@@ -35,10 +35,10 @@ def handle_managed(request_type, notification_configuration):
     return {}
   return notification_configuration
 
-def handle_unmanaged(bucket, stack_id, request_type, notification_configuration, old):
+def handle_unmanaged(bucket, stack_id, request_type, notification_configuration, old, s3NotificationsDeleteFeatureFlagEnabled):
   def get_id(n):
     n['Id'] = ''
-    strToHash=json.dumps(n, sort_keys=True).replace("'Name:' 'prefix'", "'Name:' 'Prefix'").replace("'Name:' 'suffix'", "'Name:' 'Suffix'")
+    strToHash=json.dumps(n, sort_keys=True).replace('"Name": "prefix"', '"Name": "Prefix"').replace('"Name": "suffix"', '"Name": "Suffix"')
     return f"{stack_id}-{hash(strToHash)}"
   def with_id(n):
     if s3NotificationsDeleteFeatureFlagEnabled:
