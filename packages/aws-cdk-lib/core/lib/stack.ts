@@ -128,7 +128,7 @@ export interface StackProps {
   readonly tags?: { [key: string]: string };
 
   /**
-   * foofoo
+   * SNS Topic ARNs that will receive stack events.
    *
    * @default wowowowowo
    */
@@ -372,6 +372,13 @@ export class Stack extends Construct implements ITaggable {
   public readonly _crossRegionReferences: boolean;
 
   /**
+   * SNS Notification ARNs to receive stack events.
+   *
+   * @internal
+   */
+  public readonly _notificationArns: string[];
+
+  /**
    * Logical ID generation strategy
    */
   private readonly _logicalIds: LogicalIDs;
@@ -389,13 +396,6 @@ export class Stack extends Construct implements ITaggable {
   private readonly _missingContext: cxschema.MissingContext[];
 
   private readonly _stackName: string;
-
-  /**
-   * notification arns passed through stack props.
-   *
-   * @internal
-   */
-  public readonly _notificationArns: string[];
 
   /**
    * Enable this flag to suppress indentation in generated

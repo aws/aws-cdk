@@ -145,7 +145,7 @@ export class CloudFormationStack {
   }
 
   /**
-   * The stack's current notification ARNs.
+   * SNS Topic ARNs that will receive stack events.
    *
    * Empty list if the stack does not exist
    */

@@ -55,7 +55,7 @@ export class CloudFormationStackArtifact extends CloudArtifact {
   public readonly tags: { [id: string]: string };
 
   /**
-   * CloudFormation tags to pass to the stack.
+   * SNS Topics that will receive stack events.
    */
   public readonly notificationArns: string[];
 
