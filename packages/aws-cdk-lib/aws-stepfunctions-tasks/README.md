@@ -1142,7 +1142,7 @@ new tasks.GlueStartJobRun(this, 'Task', {
 });
 ```
 
-Also you can choose execution class by settint the `executionClass` property.
+You can choose the execution class by setting the `executionClass` property.
 
 ```ts
 new tasks.GlueStartJobRun(this, 'Task', {
