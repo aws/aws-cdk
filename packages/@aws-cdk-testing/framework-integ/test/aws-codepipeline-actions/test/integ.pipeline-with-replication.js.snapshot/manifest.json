@@ -1,5 +1,5 @@
 {
-  "version": "34.0.0",
+  "version": "36.0.0",
   "artifacts": {
     "integ-pipeline-producer-stack.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-us-east-1",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-us-east-1",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/e90c5ba3d34f9745734cd5f72660ff0586f369957f2ae5f3c23c68fb99d34557.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/9a1dcb50c14e0aac493a9e307cbb51885011791505b20ee5f54d1bceaf274387.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -120,7 +120,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-us-east-2",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-us-east-2",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-2/4d81dd8b43f65d9e709baf9a7945398d202cd4ad4cd3b92e963f36042e5fa61f.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-2/1dc889b3f825d740cbfa21dc3a190870985d90a79ec7852889eb3143f61e3f40.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -137,6 +137,12 @@
         "integ-pipeline-consumer-stack.assets"
       ],
       "metadata": {
+        "/integ-pipeline-consumer-stack/Pipeline": [
+          {
+            "type": "aws:cdk:warning",
+            "data": "V1 pipeline type is implicitly selected when `pipelineType` is not set. If you want to use V2 type, set `PipelineType.V2`. [ack: @aws-cdk/aws-codepipeline:unspecifiedPipelineType]"
+          }
+        ],
         "/integ-pipeline-consumer-stack/Pipeline/ArtifactsBucketEncryptionKey/Resource": [
           {
             "type": "aws:cdk:logicalId",

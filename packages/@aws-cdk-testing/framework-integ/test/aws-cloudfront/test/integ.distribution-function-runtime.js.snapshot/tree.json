@@ -21,10 +21,10 @@
                     "autoPublish": true,
                     "functionCode": "function handler(event) { return event.request }",
                     "functionConfig": {
-                      "comment": "eu-west-1integdistributionfunctionFunctionRequest8E65DEEB",
+                      "comment": "eu-west-1integ-distributinFunctionRequest8E65DEEB",
                       "runtime": "cloudfront-js-1.0"
                     },
-                    "name": "eu-west-1integdistributionfunctionFunctionRequest8E65DEEB"
+                    "name": "eu-west-1integ-distributinFunctionRequest8E65DEEB"
                   }
                 },
                 "constructInfo": {
@@ -51,10 +51,10 @@
                     "autoPublish": true,
                     "functionCode": "function handler(event) { return event.response }",
                     "functionConfig": {
-                      "comment": "eu-west-1integdistributionfunctionFunctionResponseDD4BADA1",
+                      "comment": "eu-west-1integ-distributiFunctionResponseDD4BADA1",
                       "runtime": "cloudfront-js-2.0"
                     },
-                    "name": "eu-west-1integdistributionfunctionFunctionResponseDD4BADA1"
+                    "name": "eu-west-1integ-distributiFunctionResponseDD4BADA1"
                   }
                 },
                 "constructInfo": {

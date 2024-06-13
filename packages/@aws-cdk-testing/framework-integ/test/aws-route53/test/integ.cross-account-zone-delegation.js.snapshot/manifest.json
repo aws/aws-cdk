@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-deploy-role-12345678-us-east-1",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-cfn-exec-role-12345678-us-east-1",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-12345678-us-east-1/56fdc835ae6a670f2f958a73f56b508710e57cbe667bc0c562ed7a04dadd5cc4.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-12345678-us-east-1/3f1315b27c99d1b75dccc6f588b8886eedd87e0ca51af42a9c519db49f6ba80f.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -38,6 +38,228 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "HostedZoneDB99F866"
+          }
+        ],
+        "/parent-stack/TheVPC/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TheVPC92636AB0"
+          }
+        ],
+        "/parent-stack/TheVPC/PublicSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TheVPCPublicSubnet1Subnet770D4FF2"
+          }
+        ],
+        "/parent-stack/TheVPC/PublicSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TheVPCPublicSubnet1RouteTable17DA183D"
+          }
+        ],
+        "/parent-stack/TheVPC/PublicSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TheVPCPublicSubnet1RouteTableAssociationE5186D77"
+          }
+        ],
+        "/parent-stack/TheVPC/PublicSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TheVPCPublicSubnet1DefaultRoute6D26543F"
+          }
+        ],
+        "/parent-stack/TheVPC/PublicSubnet1/EIP": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TheVPCPublicSubnet1EIP4412F690"
+          }
+        ],
+        "/parent-stack/TheVPC/PublicSubnet1/NATGateway": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TheVPCPublicSubnet1NATGatewayC61D892B"
+          }
+        ],
+        "/parent-stack/TheVPC/PublicSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TheVPCPublicSubnet2Subnet73F96DA9"
+          }
+        ],
+        "/parent-stack/TheVPC/PublicSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TheVPCPublicSubnet2RouteTable3609F42C"
+          }
+        ],
+        "/parent-stack/TheVPC/PublicSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TheVPCPublicSubnet2RouteTableAssociationB4B0A733"
+          }
+        ],
+        "/parent-stack/TheVPC/PublicSubnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TheVPCPublicSubnet2DefaultRouteFEB062B2"
+          }
+        ],
+        "/parent-stack/TheVPC/PublicSubnet2/EIP": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TheVPCPublicSubnet2EIP5AAFF9FA"
+          }
+        ],
+        "/parent-stack/TheVPC/PublicSubnet2/NATGateway": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TheVPCPublicSubnet2NATGatewayB437CFAF"
+          }
+        ],
+        "/parent-stack/TheVPC/PublicSubnet3/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TheVPCPublicSubnet3Subnet7C1E748F"
+          }
+        ],
+        "/parent-stack/TheVPC/PublicSubnet3/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TheVPCPublicSubnet3RouteTable679ADB47"
+          }
+        ],
+        "/parent-stack/TheVPC/PublicSubnet3/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TheVPCPublicSubnet3RouteTableAssociationACA3F606"
+          }
+        ],
+        "/parent-stack/TheVPC/PublicSubnet3/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TheVPCPublicSubnet3DefaultRoute326CE968"
+          }
+        ],
+        "/parent-stack/TheVPC/PublicSubnet3/EIP": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TheVPCPublicSubnet3EIPE3930834"
+          }
+        ],
+        "/parent-stack/TheVPC/PublicSubnet3/NATGateway": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TheVPCPublicSubnet3NATGateway3A4A718F"
+          }
+        ],
+        "/parent-stack/TheVPC/PrivateSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TheVPCPrivateSubnet1Subnet571D3690"
+          }
+        ],
+        "/parent-stack/TheVPC/PrivateSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TheVPCPrivateSubnet1RouteTableF6513BC2"
+          }
+        ],
+        "/parent-stack/TheVPC/PrivateSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TheVPCPrivateSubnet1RouteTableAssociation46F1FFFC"
+          }
+        ],
+        "/parent-stack/TheVPC/PrivateSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TheVPCPrivateSubnet1DefaultRouteD1B9E467"
+          }
+        ],
+        "/parent-stack/TheVPC/PrivateSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TheVPCPrivateSubnet2SubnetCC3D7013"
+          }
+        ],
+        "/parent-stack/TheVPC/PrivateSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TheVPCPrivateSubnet2RouteTable9AC81FAC"
+          }
+        ],
+        "/parent-stack/TheVPC/PrivateSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TheVPCPrivateSubnet2RouteTableAssociation336D47D1"
+          }
+        ],
+        "/parent-stack/TheVPC/PrivateSubnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TheVPCPrivateSubnet2DefaultRoute52A1F245"
+          }
+        ],
+        "/parent-stack/TheVPC/PrivateSubnet3/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TheVPCPrivateSubnet3Subnet69CC2C6F"
+          }
+        ],
+        "/parent-stack/TheVPC/PrivateSubnet3/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TheVPCPrivateSubnet3RouteTable1A0D1274"
+          }
+        ],
+        "/parent-stack/TheVPC/PrivateSubnet3/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TheVPCPrivateSubnet3RouteTableAssociation50EE5E34"
+          }
+        ],
+        "/parent-stack/TheVPC/PrivateSubnet3/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TheVPCPrivateSubnet3DefaultRoute990F9A2A"
+          }
+        ],
+        "/parent-stack/TheVPC/IGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TheVPCIGWFA25CC08"
+          }
+        ],
+        "/parent-stack/TheVPC/VPCGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TheVPCVPCGWC9B93E30"
+          }
+        ],
+        "/parent-stack/TheVPC/RestrictDefaultSecurityGroupCustomResource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TheVPCRestrictDefaultSecurityGroupCustomResourceAFA88FCE"
+          }
+        ],
+        "/parent-stack/Custom::VpcRestrictDefaultSGCustomResourceProvider/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomVpcRestrictDefaultSGCustomResourceProviderRole26592FE0"
+          }
+        ],
+        "/parent-stack/Custom::VpcRestrictDefaultSGCustomResourceProvider/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomVpcRestrictDefaultSGCustomResourceProviderHandlerDC833E5E"
+          }
+        ],
+        "/parent-stack/PrivateHostedZone/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PrivateHostedZone6354E1BB"
           }
         ],
         "/parent-stack/CrossAccountRole/Resource": [
@@ -84,7 +306,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::234567890123:role/cdk-hnb659fds-deploy-role-234567890123-us-east-1",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::234567890123:role/cdk-hnb659fds-cfn-exec-role-234567890123-us-east-1",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-234567890123-us-east-1/f02bd95575c8aeaef4d5919ad2a94da7b4ce45d20583703f649ceebbb3bcdc00.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-234567890123-us-east-1/fb6893ad14af11fa88e80580882b7e2eb673a9fec5790bd5836a9a10120f95a2.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -163,7 +385,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::234567890123:role/cdk-hnb659fds-deploy-role-234567890123-af-south-1",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::234567890123:role/cdk-hnb659fds-cfn-exec-role-234567890123-af-south-1",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-234567890123-af-south-1/c719cc5d5998bcf5d26560907356501af1176a31b4751b874e42e126024599e9.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-234567890123-af-south-1/ccc4c2cfc1a5e4ddfff948ef48f10dc649ce97f1a141949961a06713cbc28a5b.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -242,7 +464,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::234567890123:role/cdk-hnb659fds-deploy-role-234567890123-af-south-1",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::234567890123:role/cdk-hnb659fds-cfn-exec-role-234567890123-af-south-1",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-234567890123-af-south-1/6a1fa56f4cf82aefd4e776de912952086974138722025a2b07ccccd86e73fedf.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-234567890123-af-south-1/2f4e27ba20303f1dd8e588cbbc82f15c9cd8b1aa43aa6e82c3622d267de5da47.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [

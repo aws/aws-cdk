@@ -19,8 +19,8 @@ const topic = new sns.Topic(this, 'Topic', {
 });
 ```
 
-Add an SNS Topic to your stack with a specified signature version, which corresponds 
-to the hashing algorithm used while creating the signature of the notifications, 
+Add an SNS Topic to your stack with a specified signature version, which corresponds
+to the hashing algorithm used while creating the signature of the notifications,
 subscription confirmations, or unsubscribe confirmation messages sent by Amazon SNS.
 
 The default signature version is `1` (`SHA1`).
@@ -60,6 +60,16 @@ myTopic.addSubscription(new subscriptions.SqsSubscription(queue));
 
 Note that subscriptions of queues in different accounts need to be manually confirmed by
 reading the initial message from the queue and visiting the link found in it.
+
+ The `grantSubscribe` method adds a policy statement to the topic's resource policy, allowing the specified principal to perform the `sns:Subscribe` action.
+ It's useful when you want to allow entities, such as another AWS account or resources created later, to subscribe to the topic at their own pace, separating permission granting from the actual subscription process.
+
+```ts
+declare const accountPrincipal: iam.AccountPrincipal;
+const myTopic = new sns.Topic(this, 'MyTopic');
+
+myTopic.grantSubscribe(accountPrincipal);
+```
 
 ### Filter policy
 

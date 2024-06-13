@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/49dca8f6a4c9d4ca3232c941c9986dc87dbcc127db20f9002849d6834b8e6ebf.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f7e8414a4b1b9cfd698e066b60b5f125f760cb279a911e571a167135c295835e.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -56,6 +56,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "myuserpoolmyuserpoolclientDescribeCognitoUserPoolClientCustomResourcePolicyF83BED40"
+          }
+        ],
+        "/integ-user-pool-client-explicit-props/LatestNodeRuntimeMap": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LatestNodeRuntimeMap"
           }
         ],
         "/integ-user-pool-client-explicit-props/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole/Resource": [

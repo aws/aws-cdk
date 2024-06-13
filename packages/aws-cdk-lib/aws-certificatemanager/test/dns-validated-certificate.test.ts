@@ -35,7 +35,15 @@ testDeprecated('creates CloudFormation Custom Resource', () => {
   });
   Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
     Handler: 'index.certificateRequestHandler',
-    Runtime: 'nodejs18.x',
+    Runtime: {
+      'Fn::FindInMap': [
+        'LatestNodeRuntimeMap',
+        {
+          Ref: 'AWS::Region',
+        },
+        'value',
+      ],
+    },
     Timeout: 900,
   });
   Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {

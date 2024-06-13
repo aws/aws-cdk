@@ -125,6 +125,14 @@
               "version": "0.0.0"
             }
           },
+          "LatestNodeRuntimeMap": {
+            "id": "LatestNodeRuntimeMap",
+            "path": "aws-cdk-firehose-delivery-stream-s3-all-properties/LatestNodeRuntimeMap",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnMapping",
+              "version": "0.0.0"
+            }
+          },
           "Custom::S3AutoDeleteObjectsCustomResourceProvider": {
             "id": "Custom::S3AutoDeleteObjectsCustomResourceProvider",
             "path": "aws-cdk-firehose-delivery-stream-s3-all-properties/Custom::S3AutoDeleteObjectsCustomResourceProvider",
