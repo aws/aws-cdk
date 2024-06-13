@@ -1347,9 +1347,7 @@ class FakeCloudFormation extends Deployments {
         Object.entries(tags).map(([Key, Value]) => ({ Key, Value }))
           .sort((l, r) => l.Key.localeCompare(r.Key));
     }
-    if (expectedNotificationArns) {
-      this.expectedNotificationArns = expectedNotificationArns;
-    }
+    this.expectedNotificationArns = expectedNotificationArns ?? [];
   }
 
   public deployStack(options: DeployStackOptions): Promise<DeployStackResult> {
