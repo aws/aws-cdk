@@ -192,7 +192,7 @@ class UnmanagedCleanBucketTest(unittest.TestCase):
     @patch("index.submit_response")
     def test_delete_existing_s3_notifications(self, _, mock_s3: MagicMock):
         
-        event = make_event_s3_notification_delete_feature_enabled("Update", False)
+        event = make_event_s3_notification_delete_feature_enabled("Update", False, True)
 
         # simulate a previous create operation
         current_notifications = make_notification_configuration(f"{event['StackId']}-")
