@@ -4,6 +4,7 @@ import { Arn } from 'aws-cdk-lib/core';
 import { Construct, DependencyGroup, IDependable } from 'constructs';
 import { IpamIpv4, IpamIpv6 } from './ipam';
 import { VpcV2Base } from './vpc-v2-base';
+import { log } from 'console';
 
 export interface IIpIpamOptions{
   readonly ipv4IpamPoolId: any;
@@ -240,14 +241,15 @@ export class VpcV2 extends VpcV2Base {
       for (const secondaryAddressBlock of secondaryAddressBlocks) {
         //TODO: Add unique has for each secondary ip address
         ipCount+=1;
-        const vpcoptions: VpcV2Options = secondaryAddressBlock.allocateVpcCidr();
+        const secondaryVpcOptions: VpcV2Options = secondaryAddressBlock.allocateVpcCidr();
 
-        if (vpcOptions.amazonProvided === true) {
+        if (secondaryVpcOptions.amazonProvided === true) {
           this.useIpv6 = true;
         }
         //validate CIDR ranges per RFC 1918
-        if (vpcOptions.ipv4CidrBlock!) {
-          const ret = validateIpv4address(vpcoptions.ipv4CidrBlock, this.resource.cidrBlock);
+        log(secondaryVpcOptions.ipv4CidrBlock);
+        if (secondaryVpcOptions.ipv4CidrBlock!) {
+          const ret = validateIpv4address(secondaryVpcOptions.ipv4CidrBlock, this.resource.cidrBlock);
           if (ret === false) {
             throw new Error('CIDR block should be in the same RFC 1918 range in the VPC');
           }
@@ -255,15 +257,15 @@ export class VpcV2 extends VpcV2Base {
         //Create secondary blocks for Ipv4 and Ipv6
         this.secondaryCidrBlock = [...this.secondaryCidrBlock, new CfnVPCCidrBlock(this, `SecondaryIp${ipCount}`, {
           vpcId: this.vpcId,
-          cidrBlock: vpcoptions.ipv4CidrBlock,
-          ipv4IpamPoolId: vpcoptions.ipv4IpamPoolId,
-          ipv4NetmaskLength: vpcoptions.ipv4NetmaskLength,
+          cidrBlock: secondaryVpcOptions.ipv4CidrBlock,
+          ipv4IpamPoolId: secondaryVpcOptions.ipv4IpamPoolId,
+          ipv4NetmaskLength: secondaryVpcOptions.ipv4NetmaskLength,
           //IPv6 Options
-          ipv6CidrBlock: vpcoptions.ipv6CidrBlock,
-          ipv6Pool: vpcoptions.ipv6Pool,
-          ipv6NetmaskLength: vpcoptions.ipv6NetmaskLength,
-          ipv6IpamPoolId: vpcoptions.ipv6IpamPoolId,
-          amazonProvidedIpv6CidrBlock: vpcoptions.amazonProvided,
+          ipv6CidrBlock: secondaryVpcOptions.ipv6CidrBlock,
+          ipv6Pool: secondaryVpcOptions.ipv6Pool,
+          ipv6NetmaskLength: secondaryVpcOptions.ipv6NetmaskLength,
+          ipv6IpamPoolId: secondaryVpcOptions.ipv6IpamPoolId,
+          amazonProvidedIpv6CidrBlock: secondaryVpcOptions.amazonProvided,
         })];
       }
     }
