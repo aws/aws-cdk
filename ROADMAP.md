@@ -87,8 +87,9 @@ Listening and working with the open source community is really important to us. 
 
 To make the CDK more accessible and easier to understand, we publish educational content like blog posts, videos and workshops. Here are some from AWS.
 
-- [CDK Workshop Series on CDK Live!](https://youtube.com/playlist?list=PLp1wJE9SAACOLvdtKL2P2Kq_N_AiYIj8N&si=hH14gEVmM_35xivq)
-- [Learn how to build and publish AWS CDK Constructs](https://www.youtube.com/live/kUfSoFy4Mgg?si=aDMMacUT3lq6ZeKw)
+- [Blog] [How the PGA Tour speeds up development with the AWS CDK](https://aws.amazon.com/blogs/devops/driving-development-forward-how-the-pga-tour-speeds-up-development-with-the-aws-cdk/)
+- [Workshop/Livestream] [CDK Workshop Series on CDK Live!](https://youtube.com/playlist?list=PLp1wJE9SAACOLvdtKL2P2Kq_N_AiYIj8N&si=hH14gEVmM_35xivq)
+- [Livestream] [Learn how to build and publish AWS CDK Constructs](https://www.youtube.com/live/kUfSoFy4Mgg?si=aDMMacUT3lq6ZeKw)
 - [Workshop] [The AWS CDK Workshop](https://cdkworkshop.com/)
 - [Workshop] [Extended CDK Workshop](https://catalog.us-east-1.prod.workshops.aws/workshops/071bbc60-6c1f-47b6-8c66-e84f5dc96b3f/en-US)
 - [Workshop] [Automating your workload deployments in AWS Local Zones](https://catalog.workshops.aws/localzone-cdk/en-US)
