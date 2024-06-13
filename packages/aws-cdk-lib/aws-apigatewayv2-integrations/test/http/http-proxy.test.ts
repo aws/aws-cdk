@@ -1,7 +1,7 @@
 import { HttpUrlIntegration } from './../../lib/http/http-proxy';
-import { Duration, Stack } from '../../../core';
 import { Template } from '../../../assertions';
 import { HttpApi, HttpIntegration, HttpIntegrationType, HttpMethod, HttpRoute, HttpRouteKey, MappingValue, ParameterMapping, PayloadFormatVersion } from '../../../aws-apigatewayv2';
+import { Duration, Stack } from '../../../core';
 
 describe('HttpProxyIntegration', () => {
   test('default', () => {
