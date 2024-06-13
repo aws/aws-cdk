@@ -12,7 +12,7 @@ import * as vpc_v2 from '../lib/vpc-v2';
 import { AddressFamily, Ipam } from '../lib';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
-import { Ipv4Cidr, SubnetV2 } from '../lib/subnet-v2';
+import { Ipv6Cidr, SubnetV2 } from '../lib/subnet-v2';
 
 // as in unit tests, we use a qualified import,
 // not bring in individual classes
@@ -27,6 +27,7 @@ const ipam = new Ipam(stack, 'Ipam');
 const pool = ipam.publicScope.addPool({
   addressFamily: AddressFamily.IP_V4,
   provisionedCidrs: [{ cidr: '10.2.0.0/16' }],
+  region: 'us-east-1',
 });
 
 const vpc = new vpc_v2.VpcV2(stack, 'VPCTest', {
@@ -36,7 +37,7 @@ const vpc = new vpc_v2.VpcV2(stack, 'VPCTest', {
       ipv4IpamPoolId: pool.attrIpamPoolId,
       ipv4NetmaskLength: 20,
     }),
-    //vpc_v2.IpAddresses.amazonProvidedIpv6(),
+    vpc_v2.IpAddresses.amazonProvidedIpv6(),
   ],
   enableDnsHostnames: true,
   enableDnsSupport: true,
@@ -45,8 +46,12 @@ const vpc = new vpc_v2.VpcV2(stack, 'VPCTest', {
 const subnet = new SubnetV2(stack, 'subnet', {
   vpc,
   availabilityZone: 'us-west-2a',
-  cidrBlock: new Ipv4Cidr('10.0.0.0/24'),
+  cidrBlock: new Ipv6Cidr('10.0.0.0/24'),
 });
+
+/**
+ * Expected as should be true by default
+ */
 
 if (!vpc.isolatedSubnets.includes(subnet)) {
   throw new Error('Subnet is not isolated');

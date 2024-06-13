@@ -1,8 +1,9 @@
 /* eslint-disable @typescript-eslint/member-ordering */
 // /* eslint-disable @typescript-eslint/member-ordering */
 import { Resource, Names } from 'aws-cdk-lib';
-import { CfnRouteTable, CfnSubnet, CfnSubnetRouteTableAssociation, INetworkAcl, IRouteTable, ISubnet, IVpc, NetworkAcl, SubnetNetworkAclAssociation } from 'aws-cdk-lib/aws-ec2';
+import { CfnRouteTable, CfnSubnet, CfnSubnetRouteTableAssociation, INetworkAcl, IRouteTable, ISubnet, NetworkAcl, SubnetNetworkAclAssociation } from 'aws-cdk-lib/aws-ec2';
 import { Construct, DependencyGroup, IDependable } from 'constructs';
+import { IVpcV2 } from './vpc-v2-base';
 
 export interface ICidr {
   readonly cidr: string;
@@ -23,8 +24,8 @@ export class Ipv4Cidr implements ICidr {
 export class Ipv6Cidr implements ICidr {
 
   public readonly cidr: string;
-  constructor(props: cidrBlockProps ) {
-    this.cidr = props.cidrBlock;
+  constructor(props: string ) {
+    this.cidr = props;
   }
 }
 
@@ -32,7 +33,7 @@ export interface SubnetPropsV2 {
 /**
  * VPC Prop
  */
-  vpc: IVpc;
+  vpc: IVpcV2;
 
   /**
    * custom CIDR range
@@ -104,18 +105,21 @@ export class SubnetV2 extends Resource implements ISubnet {
   constructor(scope: Construct, id: string, props: SubnetPropsV2) {
     super(scope, id);
 
-    let ipv4cidr: string = '';
-    //let ipv6cidr: string = '';
+    let ipv4CidrBlock: string | undefined;
+    let ipv6CidrBlock: string| undefined;
+
     if (props.cidrBlock instanceof Ipv4Cidr) {
-      ipv4cidr = props.cidrBlock.cidr;
+      ipv4CidrBlock = props.cidrBlock.cidr;
+    } else if (props.cidrBlock instanceof Ipv6Cidr) {
+      if (validateSupportIpv6(props.vpc)) {
+        ipv6CidrBlock = props.cidrBlock.cidr;
+      }
+
     }
-    // } else if (props.cidrBlock instanceof Ipv6Cidr) {
-    //   ipv6cidr = props.cidrBlock.cidr;
-    // }
     const subnet = new CfnSubnet(this, 'Subnet', {
       vpcId: props.vpc.vpcId,
-      cidrBlock: ipv4cidr,
-      //ipv6CidrBlock: ipv6cidr,
+      cidrBlock: ipv4CidrBlock,
+      ipv6CidrBlock: ipv6CidrBlock,
       availabilityZone: props.availabilityZone,
     });
 
@@ -150,6 +154,7 @@ export class SubnetV2 extends Resource implements ISubnet {
       pushIsolatedSubnet(props.vpc, this);
     } //isolated by default
   }
+
   /**
    * Associate a Network ACL with this subnet
    *
@@ -172,6 +177,18 @@ export class SubnetV2 extends Resource implements ISubnet {
 
 }
 
-function pushIsolatedSubnet(vpc: IVpc, subnet: SubnetV2) {
+function pushIsolatedSubnet(vpc: IVpcV2, subnet: SubnetV2) {
   vpc.isolatedSubnets.push(subnet);
+}
+
+/**
+ * currently checking for amazon provided Ipv6 only which we plan to release
+ */
+
+function validateSupportIpv6(vpc: IVpcV2) {
+  if (vpc.cidrBlock.some((secondaryAddress) => secondaryAddress.amazonProvidedIpv6CidrBlock === true)) {
+    return true;
+  } else {
+    throw new Error('To use IPv6, the VPC must enable IPv6 support.');
+  }
 }

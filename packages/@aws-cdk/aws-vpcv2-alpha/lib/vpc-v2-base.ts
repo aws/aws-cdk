@@ -1,9 +1,18 @@
 import { Resource, Annotations } from 'aws-cdk-lib';
-import { IVpc, ISubnet, SubnetSelection, SelectedSubnets, EnableVpnGatewayOptions, VpnGateway, VpnConnectionType, CfnVPCGatewayAttachment, CfnVPNGatewayRoutePropagation, VpnConnectionOptions, VpnConnection, ClientVpnEndpointOptions, ClientVpnEndpoint, InterfaceVpcEndpointOptions, InterfaceVpcEndpoint, GatewayVpcEndpointOptions, GatewayVpcEndpoint, FlowLogOptions, FlowLog, FlowLogResourceType, SubnetType, SubnetFilter } from 'aws-cdk-lib/aws-ec2';
-import { allRouteTableIds, flatten, subnetGroupNameFromConstructId } from 'aws-cdk-lib/aws-ec2/lib/util';
+import { IVpc, ISubnet, SubnetSelection, SelectedSubnets, EnableVpnGatewayOptions, VpnGateway, VpnConnectionType, CfnVPCGatewayAttachment, CfnVPNGatewayRoutePropagation, VpnConnectionOptions, VpnConnection, ClientVpnEndpointOptions, ClientVpnEndpoint, InterfaceVpcEndpointOptions, InterfaceVpcEndpoint, GatewayVpcEndpointOptions, GatewayVpcEndpoint, FlowLogOptions, FlowLog, FlowLogResourceType, SubnetType, SubnetFilter, CfnVPCCidrBlock } from 'aws-cdk-lib/aws-ec2';
+// eslint-disable-next-line no-duplicate-imports
+import { allRouteTableIds, flatten, subnetGroupNameFromConstructId } from '../lib/util';
 import { IDependable, Dependable, IConstruct } from 'constructs';
 
-export abstract class VpcV2Base extends Resource implements IVpc {
+/**
+ * Placeholder to see what extra props we might need,
+ * will be added to original IVPC
+ */
+export interface IVpcV2 extends IVpc {
+  readonly cidrBlock: CfnVPCCidrBlock[];
+}
+
+export abstract class VpcV2Base extends Resource implements IVpcV2 {
 
   /**
      * Identifier for this VPC
@@ -49,6 +58,8 @@ export abstract class VpcV2Base extends Resource implements IVpc {
      * Dependable that can be depended upon to force internet connectivity established on the VPC
      */
   public abstract readonly internetConnectivityEstablished: IDependable;
+
+  public abstract readonly cidrBlock: CfnVPCCidrBlock[];
 
   /**
      * If this is set to true, don't error out on trying to select subnets

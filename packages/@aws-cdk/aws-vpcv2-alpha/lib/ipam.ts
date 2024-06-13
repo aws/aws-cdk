@@ -106,8 +106,8 @@ export class Ipam {
   public readonly ipamID: string;
   constructor(scope: Construct, id: string) {
     this._ipam = new CfnIPAM(scope, id);
-    this.publicScope = new IpamPublicScope(scope, 'DefaultPublic');
-    this.privateScope = new IpamPrivateScope(scope, 'DefaultPrivate');
+    this.publicScope = new IpamPublicScope(scope, this._ipam.attrPublicDefaultScopeId);
+    this.privateScope = new IpamPrivateScope(scope, this._ipam.attrPrivateDefaultScopeId);
     this.ipamID = this._ipam.attrIpamId;
   }
 }
@@ -179,28 +179,6 @@ export class IpamPrivateScope {
 //   addressFamily: AddressFamily.IP_V4,
 //   provisionedCidrs: [{ cidr: '10.0.0.0/24' }],
 // });
-
-// export class IpamPool extends Resource {
-
-//   static publicScope: any;
-
-//   publicScope = {
-//     addPool: (options: PoolOptions) => {
-//       const scope = new IpamScope(this, 'PublicScope', {
-//         scopeType: ScopeType.PUBLIC,
-//       });
-//       return new CfnIPAMPool(this, '', {
-//         addressFamily: options.addressFamily.toString(),
-//         provisionedCidrs: options.provisionedCidrs,
-//         ipamScopeId: scope.ipamScopeId;
-//     });
-//   },
-//   }
-//   constructor(stack: Construct, id: string) {
-//     super(stack, id);
-//   }
-
-// }
 
 export class IpamIpv6 implements IIpAddresses {
 
