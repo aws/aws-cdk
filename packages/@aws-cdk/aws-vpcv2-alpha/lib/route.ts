@@ -1,4 +1,4 @@
-import { CfnCarrierGateway, CfnEgressOnlyInternetGateway, CfnInternetGateway, CfnNatGateway, CfnNetworkInterface, CfnRoute, CfnRouteTable, CfnTransitGateway, CfnVPCEndpoint, CfnVPCPeeringConnection, CfnVPNGateway, IRouteTable, RouterType } from 'aws-cdk-lib/aws-ec2';
+import { CfnCarrierGateway, CfnEgressOnlyInternetGateway, CfnInternetGateway, CfnNatGateway, CfnNetworkInterface, CfnRoute, CfnRouteTable, CfnTransitGateway, CfnVPCPeeringConnection, CfnVPNGateway, IRouteTable, IVpcEndpoint, RouterType } from 'aws-cdk-lib/aws-ec2';
 import { IIpAddresses, IpAddresses } from './vpc-v2';
 import { Construct } from 'constructs';
 import { Resource } from 'aws-cdk-lib/core';
@@ -34,11 +34,6 @@ export interface NetworkInterfaceProps {
 
 export interface TransitGatewayProps {
 
-}
-
-export interface VpcEndpointProps {
-  readonly serviceName: string;
-  readonly vpcId: string;
 }
 
 export interface VpcPeeringConnectionProps {
@@ -175,26 +170,6 @@ export class TransitGateway extends Resource implements IRouter {
   }
 }
 
-export class VpcEndpoint extends Resource implements IRouter {
-  public readonly routerId: string;
-  public readonly routerType: RouterType;
-
-  public readonly resource: CfnVPCEndpoint;
-
-  constructor(scope: Construct, id: string, props: VpcEndpointProps) {
-    super(scope, id);
-
-    this.routerType = RouterType.VPC_ENDPOINT;
-
-    this.resource = new CfnVPCEndpoint(this, 'VPCEndpoint', {
-      serviceName: props.serviceName,
-      vpcId: props.vpcId,
-    });
-
-    this.routerId = this.resource.attrId;
-  }
-}
-
 export class VpcPeeringConnection extends Resource implements IRouter {
   public readonly routerId: string;
   public readonly routerType: RouterType;
@@ -218,18 +193,18 @@ export class VpcPeeringConnection extends Resource implements IRouter {
 export interface IRouteV2 {
   readonly routeTable: IRouteTable;
   readonly destination: IIpAddresses;
-  readonly target: IRouter;
+  readonly target: IRouter | IVpcEndpoint;
 }
 
 export interface RouteProps {
   readonly routeTable: IRouteTable;
   readonly destination: IIpAddresses;
-  readonly target: IRouter;
+  readonly target: IRouter | IVpcEndpoint;
 }
 
 export class Route extends Resource implements IRouteV2 {
   public readonly destination: IIpAddresses;
-  public readonly target: IRouter;
+  public readonly target: IRouter | IVpcEndpoint;
   // public readonly routeTableId: string;
   public readonly routeTable: IRouteTable;
 
@@ -245,13 +220,13 @@ export class Route extends Resource implements IRouteV2 {
     // this.routeTableId = props.routeTableId ?? '';
     this.routeTable = props.routeTable;
 
-    this.targetRouterType = this.target.routerType;
+    this.targetRouterType = 'routerType' in this.target ? this.target.routerType : RouterType.VPC_ENDPOINT;
 
     this.resource = new CfnRoute(this, 'Route', {
       routeTableId: this.routeTable.routeTableId,
       destinationCidrBlock: this.destination.allocateVpcCidr().ipv4CidrBlock,
       destinationIpv6CidrBlock: this.destination.allocateVpcCidr().ipv6CidrBlock,
-      [routerTypeToPropName(this.targetRouterType)]: this.target.routerId,
+      [routerTypeToPropName(this.targetRouterType)]: 'routerId' in this.target ? this.target.routerId : this.target.vpcEndpointId,
     });
 
     // this.routeTable.addRoute(this.resource.ref);
