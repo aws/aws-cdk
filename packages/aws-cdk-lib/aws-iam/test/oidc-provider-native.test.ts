@@ -5,13 +5,13 @@ import * as iam from '../lib';
 const arnOfProvider =
   'arn:aws:iam::1234567:oidc-provider/oidc.eks.us-east-1.amazonaws.com/id/someid';
 
-describe('OIDCProvider resource', () => {
+describe('OidcProvider resource', () => {
   test('"OIDCProviderArn" resolves to the ref', () => {
     // GIVEN
     const stack = new Stack();
 
     // WHEN
-    const provider = new iam.OIDCProvider(stack, 'MyProvider', {
+    const provider = new iam.OidcProvider(stack, 'MyProvider', {
       url: 'https://openid-endpoint',
       thumbprints: ['thumbprint'],
     });
@@ -27,7 +27,7 @@ describe('OIDCProvider resource', () => {
     const stack = new Stack();
 
     // WHEN
-    const provider = iam.OIDCProvider.fromOidcProviderArn(
+    const provider = iam.OidcProvider.fromOidcProviderArn(
       stack,
       'MyProvider',
       arnOfProvider,
@@ -44,7 +44,7 @@ describe('OIDCProvider resource', () => {
     const stack = new Stack();
 
     // WHEN
-    new iam.OIDCProvider(stack, 'MyProvider', {
+    new iam.OidcProvider(stack, 'MyProvider', {
       url: 'https://my-url',
       clientIds: ['client1', 'client2'],
       thumbprints: ['thumb1'],
@@ -65,7 +65,7 @@ describe('OIDC issuer', () => {
     const stack = new Stack();
 
     // WHEN
-    const provider = new iam.OIDCProvider(stack, 'MyProvider', {
+    const provider = new iam.OidcProvider(stack, 'MyProvider', {
       url: 'https://my-issuer',
       thumbprints: ['thumb1'],
     });
@@ -84,7 +84,7 @@ describe('OIDC issuer', () => {
     const stack = new Stack();
 
     // WHEN
-    const provider = iam.OIDCProvider.fromOidcProviderArn(
+    const provider = iam.OidcProvider.fromOidcProviderArn(
       stack,
       'MyProvider',
       arnOfProvider,
@@ -101,7 +101,7 @@ describe('OIDC issuer', () => {
     const stack = new Stack();
 
     // WHEN
-    const provider = iam.OIDCProvider.fromOidcProviderArn(
+    const provider = iam.OidcProvider.fromOidcProviderArn(
       stack,
       'MyProvider',
       Token.asString({ Ref: 'ARN' }),

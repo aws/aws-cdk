@@ -6,7 +6,7 @@ import { Arn, IResource, Resource, Token } from '../../core';
  * Represents an IAM OpenID Connect provider.
  *
  */
-export interface IOIDCProvider extends IResource {
+export interface IOidcProvider extends IResource {
   /**
    * The Amazon Resource Name (ARN) of the IAM OpenID Connect provider.
    *
@@ -25,7 +25,7 @@ export interface IOIDCProvider extends IResource {
 /**
  * Initialization properties for `OIDCProvider`.
  */
-export interface OIDCProviderProps {
+export interface OidcProviderProps {
   /**
    * The name of the OIDC Provider.
    *
@@ -101,7 +101,7 @@ export interface OIDCProviderProps {
  *
  * @resource AWS::IAM::OIDCProvider
  */
-export class OIDCProvider extends Resource implements IOIDCProvider {
+export class OidcProvider extends Resource implements IOidcProvider {
   /**
    * Imports an Open ID connect provider from an ARN.
    * @param scope The definition scope
@@ -112,13 +112,13 @@ export class OIDCProvider extends Resource implements IOIDCProvider {
     scope: Construct,
     id: string,
     oidcProviderArn: string,
-  ): IOIDCProvider {
+  ): IOidcProvider {
     const resourceName = Arn.extractResourceName(
       oidcProviderArn,
       'oidc-provider',
     );
 
-    class Import extends Resource implements IOIDCProvider {
+    class Import extends Resource implements IOidcProvider {
       public readonly oidcProviderArn = oidcProviderArn;
       public readonly oidcProviderIssuer = resourceName;
     }
@@ -156,7 +156,7 @@ export class OIDCProvider extends Resource implements IOIDCProvider {
   public constructor(
     scope: Construct,
     id: string,
-    props: OIDCProviderProps,
+    props: OidcProviderProps,
   ) {
     super(scope, id, {
       physicalName: props.oidcProviderName,
