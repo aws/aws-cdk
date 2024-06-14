@@ -150,6 +150,13 @@ export class SubnetV2 extends Resource implements ISubnet {
 
     this._networkAcl = NetworkAcl.fromNetworkAclId(this, 'Acl', subnet.attrNetworkAclAssociationId);
 
+    /**
+     * seems to be the main default one
+     */
+    const table = new CfnRouteTable(this, 'RouteTable', {
+      vpcId: props.vpc.vpcId,
+    });
+    this.routeTable = { routeTableId: table.ref };
     const routeAssoc = new CfnSubnetRouteTableAssociation(this, 'RouteTableAssociation', {
       subnetId: this.subnetId,
       routeTableId: table.ref,
@@ -159,23 +166,24 @@ export class SubnetV2 extends Resource implements ISubnet {
     this.internetConnectivityEstablished = this._internetConnectivityEstablished;
 
     this.subnetType = props.subnetType;
-    const selectedFunction = subnetTypeMap[props.subnetType];
-    if (selectedFunction) {
-      selectedFunction(props.vpc, this);
-    }
 
+    pushSubnet(props.vpc, this, props.subnetType);
+
+    /**
+     * custom route table
+     * can be moved to a function definition if we plan to change association 
+     * after subnet creation
+     */
     if (props.routeTable) {
       this.isIsolated = false;
-      if (props.subnetType === SubnetType.PRIVATE_ISOLATED) {
+      this.routeTable = props.routeTable;
+      if (props.subnetType === SubnetType.ISOLATED) {
         throw new Error('Cannot create a route for a private isolated subnet, change type to PRIVATE');
       }
       new CfnSubnetRouteTableAssociation(this, 'CustomRouteTableAssociation', {
         subnetId: this.subnetId,
         routeTableId: props.routeTable.routeTableId,
       });
-      this._internetConnectivityEstablished.add(routeAssoc);
-      this.internetConnectivityEstablished = this._internetConnectivityEstablished;
-      this.isIsolated = false;
     }
 
     /**optional name to be set to support filtering options */
@@ -204,25 +212,23 @@ export class SubnetV2 extends Resource implements ISubnet {
   }
 
 }
-function pushIsolatedSubnet(vpc: IVpcV2, subnet: SubnetV2) {
-  vpc.isolatedSubnets.push(subnet);
-}
 
-function pushPublicSubnet(vpc: IVpcV2, subnet: SubnetV2) {
-  vpc.publicSubnets.push(subnet);
-}
-
-function pushPrivateSubnet(vpc: IVpcV2, subnet: SubnetV2) {
-  vpc.privateSubnets.push(subnet);
+function pushSubnet(vpc: IVpcV2, subnet: SubnetV2, type: SubnetType) {
+  const findFunctionType = subnetTypeMap[type];
+  if (findFunctionType) {
+    findFunctionType(vpc, subnet);
+  } else {
+    throw new Error(`Unsupported subnet type: ${type}`);
+  }
 }
 
 const subnetTypeMap = {
-  [SubnetType.PRIVATE_ISOLATED]: pushIsolatedSubnet,
-  [SubnetType.PUBLIC]: pushPublicSubnet,
-  [SubnetType.PRIVATE_WITH_EGRESS]: pushPrivateSubnet,
-  [SubnetType.ISOLATED]: pushIsolatedSubnet,
-  [SubnetType.PRIVATE]: pushPrivateSubnet,
-  [SubnetType.PRIVATE_WITH_NAT]: pushPrivateSubnet,
+  [SubnetType.PRIVATE_ISOLATED]: (vpc: IVpcV2, subnet: SubnetV2) => vpc.isolatedSubnets.push(subnet),
+  [SubnetType.PUBLIC]: (vpc: IVpcV2, subnet: SubnetV2) => vpc.publicSubnets.push(subnet),
+  [SubnetType.PRIVATE_WITH_EGRESS]: (vpc: IVpcV2, subnet: SubnetV2) => vpc.privateSubnets.push(subnet),
+  [SubnetType.ISOLATED]: (vpc: IVpcV2, subnet: SubnetV2) => vpc.isolatedSubnets.push(subnet),
+  [SubnetType.PRIVATE]: (vpc: IVpcV2, subnet: SubnetV2) => vpc.privateSubnets.push(subnet),
+  [SubnetType.PRIVATE_WITH_NAT]: (vpc: IVpcV2, subnet: SubnetV2) => vpc.privateSubnets.push(subnet),
 };
 
 /**
