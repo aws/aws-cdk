@@ -146,10 +146,6 @@ export class SubnetV2 extends Resource implements ISubnet {
     this.ipv4CidrBlock = subnet.attrCidrBlock;
     this.ipv6CidrBlock = subnet.attrIpv6CidrBlocks;
     this.subnetId = subnet.ref;
-    const table = new CfnRouteTable(this, 'RouteTable', {
-      vpcId: props.vpc.vpcId,
-    });
-    this.routeTable = { routeTableId: table.ref };
     this.availabilityZone = props.availabilityZone;
 
     this._networkAcl = NetworkAcl.fromNetworkAclId(this, 'Acl', subnet.attrNetworkAclAssociationId);
@@ -177,6 +173,9 @@ export class SubnetV2 extends Resource implements ISubnet {
         subnetId: this.subnetId,
         routeTableId: props.routeTable.routeTableId,
       });
+      this._internetConnectivityEstablished.add(routeAssoc);
+      this.internetConnectivityEstablished = this._internetConnectivityEstablished;
+      this.isIsolated = false;
     }
 
     /**optional name to be set to support filtering options */
