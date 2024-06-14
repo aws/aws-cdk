@@ -366,17 +366,11 @@ export class ApplicationTargetGroup extends TargetGroupBase implements IApplicat
       }
       this.addTarget(...(props.targets || []));
 
-      if (!Token.isUnresolved(props.enableAnomalyMitigation) &&
-        (props.enableAnomalyMitigation !== undefined)) {
-
-        if (props.enableAnomalyMitigation) {
-          if (isWeightedRandomAlgorithm) {
-            this.setAttribute('load_balancing.algorithm.anomaly_mitigation', 'on');
-          } else {
-            throw new Error('Anomaly mitigation is only available when `loadBalancingAlgorithmType` is `TargetGroupLoadBalancingAlgorithmType.WEIGHTED_RANDOM`.');
-          }
-        } else {
-          this.setAttribute('load_balancing.algorithm.anomaly_mitigation', 'off');
+      if (props.enableAnomalyMitigation !== undefined) {
+        if (props.enableAnomalyMitigation && isWeightedRandomAlgorithm) {
+          throw new Error('Anomaly mitigation is only available when `loadBalancingAlgorithmType` is `TargetGroupLoadBalancingAlgorithmType.WEIGHTED_RANDOM`.');
+        }
+        this.setAttribute('load_balancing.algorithm.anomaly_mitigation', props.enableAnomalyMitigation ? 'on' : 'off');
         }
       }
 
