@@ -934,7 +934,8 @@ export interface AddApplicationTargetsProps extends AddRuleProps {
 
   /**
    * Indicates whether anomaly mitigation is enabled.
-   * Only available when loadBalancingAlgorithmType is TargetGroupLoadBalancingAlgorithmType.WEIGHTED_RANDOM
+   *
+   * Only available when `loadBalancingAlgorithmType` is `TargetGroupLoadBalancingAlgorithmType.WEIGHTED_RANDOM`
    *
    * @default false
    *
