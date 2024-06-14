@@ -1,4 +1,4 @@
-import { CfnCarrierGateway, CfnEgressOnlyInternetGateway, CfnInternetGateway, CfnNatGateway, CfnNetworkInterface, CfnRoute, CfnRouteTable, CfnTransitGateway, CfnVPCPeeringConnection, CfnVPNGateway, IRouteTable, IVpcEndpoint, RouterType } from 'aws-cdk-lib/aws-ec2';
+import { CfnCarrierGateway, CfnEgressOnlyInternetGateway, CfnInternetGateway, CfnNatGateway, CfnNetworkInterface, CfnRoute, CfnRouteTable, CfnTransitGateway, CfnVPCPeeringConnection, CfnVPNGateway, IRouteTable, ISubnet, IVpcEndpoint, RouterType } from 'aws-cdk-lib/aws-ec2';
 import { IIpAddresses, IpAddresses } from './vpc-v2';
 import { Construct } from 'constructs';
 import { Resource } from 'aws-cdk-lib/core';
@@ -25,7 +25,7 @@ export interface VirtualPrivateGatewayProps {
 }
 
 export interface NatGatewayProps {
-  readonly subnetId: string;
+  readonly subnet: ISubnet;
 }
 
 export interface NetworkInterfaceProps {
@@ -127,10 +127,11 @@ export class NatGateway extends Resource implements IRouter {
     this.routerType = RouterType.NAT_GATEWAY;
 
     this.resource = new CfnNatGateway(this, 'NATGateway', {
-      subnetId: props.subnetId,
+      subnetId: props.subnet.subnetId,
     });
 
     this.routerId = this.resource.attrNatGatewayId;
+    this.node.addDependency(props.subnet.internetConnectivityEstablished);
   }
 }
 

@@ -1,9 +1,10 @@
 /* eslint-disable @typescript-eslint/member-ordering */
 // /* eslint-disable @typescript-eslint/member-ordering */
 import { Resource, Names } from 'aws-cdk-lib';
-import { CfnRouteTable, CfnSubnet, CfnSubnetRouteTableAssociation, INetworkAcl, IRouteTable, ISubnet, NetworkAcl, SubnetNetworkAclAssociation } from 'aws-cdk-lib/aws-ec2';
+import { CfnRouteTable, CfnSubnet, CfnSubnetRouteTableAssociation, INetworkAcl, IRouteTable, ISubnet, NetworkAcl, SubnetNetworkAclAssociation, SubnetType } from 'aws-cdk-lib/aws-ec2';
 import { Construct, DependencyGroup, IDependable } from 'constructs';
 import { IVpcV2 } from './vpc-v2-base';
+import { defaultSubnetName } from './util';
 
 export interface ICidr {
   readonly cidr: string;
@@ -50,6 +51,22 @@ export interface SubnetPropsV2 {
    * Custom Route for subnet
    */
   routeTable?: IRouteTable;
+
+  /**
+   * Logical name for the subnet group.
+   *
+   * This name can be used when selecting VPC subnets to distinguish
+   * between different subnet groups of the same type.
+   */
+  name?: string;
+
+  /**
+   * The type of Subnet to configure.
+   *
+   * The Subnet type will control the ability to route and connect to the
+   * Internet.
+   */
+  subnetType: SubnetType;
 
 }
 
@@ -100,7 +117,11 @@ export class SubnetV2 extends Resource implements ISubnet {
    * Isolated subnet or not
    * @default true
    */
-  private isIsolated?: Boolean;
+  public isIsolated?: Boolean;
+
+  public name?: string;
+
+  public subnetType: SubnetType;
 
   constructor(scope: Construct, id: string, props: SubnetPropsV2) {
     super(scope, id);
@@ -114,7 +135,6 @@ export class SubnetV2 extends Resource implements ISubnet {
       if (validateSupportIpv6(props.vpc)) {
         ipv6CidrBlock = props.cidrBlock.cidr;
       }
-
     }
     const subnet = new CfnSubnet(this, 'Subnet', {
       vpcId: props.vpc.vpcId,
@@ -142,17 +162,26 @@ export class SubnetV2 extends Resource implements ISubnet {
 
     this.internetConnectivityEstablished = this._internetConnectivityEstablished;
 
+    this.subnetType = props.subnetType;
+    const selectedFunction = subnetTypeMap[props.subnetType];
+    if (selectedFunction) {
+      selectedFunction(props.vpc, this);
+    }
+
     if (props.routeTable) {
       this.isIsolated = false;
+      if (props.subnetType === SubnetType.PRIVATE_ISOLATED) {
+        throw new Error('Cannot create a route for a private isolated subnet, change type to PRIVATE');
+      }
       new CfnSubnetRouteTableAssociation(this, 'CustomRouteTableAssociation', {
         subnetId: this.subnetId,
         routeTableId: props.routeTable.routeTableId,
       });
     }
 
-    if (!this.isIsolated) {
-      pushIsolatedSubnet(props.vpc, this);
-    } //isolated by default
+    /**optional name to be set to support filtering options */
+    this.name = props.name ?? defaultSubnetName(props.subnetType);
+
   }
 
   /**
@@ -176,10 +205,26 @@ export class SubnetV2 extends Resource implements ISubnet {
   }
 
 }
-
 function pushIsolatedSubnet(vpc: IVpcV2, subnet: SubnetV2) {
   vpc.isolatedSubnets.push(subnet);
 }
+
+function pushPublicSubnet(vpc: IVpcV2, subnet: SubnetV2) {
+  vpc.publicSubnets.push(subnet);
+}
+
+function pushPrivateSubnet(vpc: IVpcV2, subnet: SubnetV2) {
+  vpc.privateSubnets.push(subnet);
+}
+
+const subnetTypeMap = {
+  [SubnetType.PRIVATE_ISOLATED]: pushIsolatedSubnet,
+  [SubnetType.PUBLIC]: pushPublicSubnet,
+  [SubnetType.PRIVATE_WITH_EGRESS]: pushPrivateSubnet,
+  [SubnetType.ISOLATED]: pushIsolatedSubnet,
+  [SubnetType.PRIVATE]: pushPrivateSubnet,
+  [SubnetType.PRIVATE_WITH_NAT]: pushPrivateSubnet,
+};
 
 /**
  * currently checking for amazon provided Ipv6 only which we plan to release

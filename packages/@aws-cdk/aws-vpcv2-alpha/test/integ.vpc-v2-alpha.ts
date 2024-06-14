@@ -1,12 +1,12 @@
-/*
- * Our integration tests act as snapshot tests to make sure the rendered template is stable.
- * If any changes to the result are required,
- * you need to perform an actual CloudFormation deployment of this application,
- * and, if it is successful, a new snapshot will be written out.
- *
- * For more information on CDK integ tests,
- * see the main CONTRIBUTING.md file.
- */
+// /*
+//  * Our integration tests act as snapshot tests to make sure the rendered template is stable.
+//  * If any changes to the result are required,
+//  * you need to perform an actual CloudFormation deployment of this application,
+//  * and, if it is successful, a new snapshot will be written out.
+//  *
+//  * For more information on CDK integ tests,
+//  * see the main CONTRIBUTING.md file.
+//  */
 
 import * as vpc_v2 from '../lib/vpc-v2';
 import { AddressFamily, Ipam } from '../lib';
@@ -14,7 +14,8 @@ import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
 import { Ipv4Cidr, /*Ipv6Cidr,*/ SubnetV2 } from '../lib/subnet-v2';
 import { EgressOnlyInternetGateway, Route, RouteTable } from '../lib/route';
-import { GatewayVpcEndpoint, GatewayVpcEndpointAwsService, RouterType } from 'aws-cdk-lib/aws-ec2';
+import { GatewayVpcEndpoint, GatewayVpcEndpointAwsService, RouterType, SubnetType } from 'aws-cdk-lib/aws-ec2';
+import { log } from 'console';
 
 // as in unit tests, we use a qualified import,
 // not bring in individual classes
@@ -46,10 +47,20 @@ const vpc = new vpc_v2.VpcV2(stack, 'VPCTest', {
   enableDnsSupport: true,
 });
 
-const subnet = new SubnetV2(stack, 'testsbubnet', {
+new SubnetV2(stack, 'testsbubnet', {
   vpc,
   availabilityZone: 'us-west-2a',
   cidrBlock: new Ipv4Cidr('10.0.0.0/24'),
+  subnetType: SubnetType.PRIVATE_WITH_EGRESS,
+});
+
+const selection = vpc.selectSubnets();
+log(selection);
+vpc.enableVpnGateway({
+  vpnRoutePropagation: [{
+    subnetType: SubnetType.PRIVATE_WITH_EGRESS, // optional, defaults to "PUBLIC"
+  }],
+  type: 'ipsec.1',
 });
 
 const routeTable = new RouteTable(stack, 'TestRoottable', {
@@ -81,9 +92,9 @@ const routeToDynamo = new Route(stack, 'testDynamoRoute', {
  * Expected as should be true by default
  */
 
-if (!vpc.isolatedSubnets.includes(subnet)) {
-  throw new Error('Subnet is not isolated');
-};
+// if (!vpc.isolatedSubnets.includes(subnet)) {
+//   throw new Error('Subnet is not isolated');
+// };
 
 if (!routeTable.routeTableId) {
   throw new Error('No RouteTable id');

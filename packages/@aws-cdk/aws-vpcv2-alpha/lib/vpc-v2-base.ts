@@ -59,6 +59,9 @@ export abstract class VpcV2Base extends Resource implements IVpcV2 {
      */
   public abstract readonly internetConnectivityEstablished: IDependable;
 
+  /**
+   * Newly added property for secondary CIDR blocks
+   */
   public abstract readonly secondaryCidrBlock: CfnVPCCidrBlock[];
 
   /**

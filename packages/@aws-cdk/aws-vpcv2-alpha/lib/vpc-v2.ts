@@ -93,31 +93,6 @@ export interface VpcV2Options {
   readonly amazonProvided?: boolean;
 }
 
-// export interface IVpcV2 {
-
-//   readonly vpcId: string;
-
-//   readonly vpcArn: string;
-
-//   readonly vpcCidrBlock: string;
-
-//   /**
-//    * List of public subnets in this VPC
-//    */
-//   readonly publicSubnets?: ISubnet[];
-
-//   /**
-//      * List of private subnets in this VPC
-//      */
-//   readonly privateSubnets?: ISubnet[];
-
-//   /**
-//      * List of isolated subnets in this VPC
-//      */
-//   readonly isolatedSubnets: ISubnet[];
-
-// }
-
 export interface IIpv6AddressesOptions {
   readonly ipv6CidrBlock?: string;
   readonly ipv6PoolId?: string;
