@@ -32,7 +32,7 @@ The `Service` construct allows you to create AWS App Runner services with `ECR P
 - `Source.fromEcr()` - To define the source repository from `ECR`.
 - `Source.fromEcrPublic()` - To define the source repository from `ECR Public`.
 - `Source.fromGitHub()` - To define the source repository from the `Github repository`.
-- `Source.fromAsset()` - To define the source from local asset directory. 
+- `Source.fromAsset()` - To define the source from local asset directory.
 
 
 The `Service` construct implements `IGrantable`.
@@ -180,10 +180,30 @@ new apprunner.Service(this, 'Service', {
 });
 ```
 
+## Dual Stack
+
+To use dual stack (IPv4 and IPv6) for your incoming public network configuration, set `ipAddressType` to `IpAddressType.DUAL_STACK`.
+
+```ts
+new apprunner.Service(this, 'Service', {
+  source: apprunner.Source.fromEcrPublic({
+    imageConfiguration: { port: 8000 },
+    imageIdentifier: 'public.ecr.aws/aws-containers/hello-app-runner:latest',
+  }),
+  ipAddressType: apprunner.IpAddressType.DUAL_STACK,
+});
+```
+
+**Note**: Currently, App Runner supports dual stack for only Public endpoint.
+Only IPv4 is supported for Private endpoint.
+If you update a service that's using dual-stack Public endpoint to a Private endpoint,
+your App Runner service will default to support only IPv4 for Private endpoint and fail
+to receive traffic originating from IPv6 endpoint.
+
 ## Secrets Manager
 
 To include environment variables integrated with AWS Secrets Manager, use the `environmentSecrets` attribute.
-You can use the `addSecret` method from the App Runner `Service` class to include secrets from outside the 
+You can use the `addSecret` method from the App Runner `Service` class to include secrets from outside the
 service definition.
 
 ```ts
@@ -214,6 +234,24 @@ const service = new apprunner.Service(stack, 'Service', {
 });
 
 service.addSecret('LATER_SECRET', apprunner.Secret.fromSecretsManager(secret, 'field'));
+```
+
+## Use a customer managed key
+
+To use a customer managed key for your source encryption, use the `kmsKey` attribute.
+
+```ts
+import * as kms from 'aws-cdk-lib/aws-kms';
+
+declare const kmsKey: kms.IKey;
+
+new apprunner.Service(this, 'Service', {
+  source: apprunner.Source.fromEcrPublic({
+    imageConfiguration: { port: 8000 },
+    imageIdentifier: 'public.ecr.aws/aws-containers/hello-app-runner:latest',
+  }),
+  kmsKey,
+});
 ```
 
 ## HealthCheck
