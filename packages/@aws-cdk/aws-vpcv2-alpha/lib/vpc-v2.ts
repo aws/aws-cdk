@@ -328,13 +328,7 @@ function validateIpv4address(cidr1?: string, cidr2?: string): boolean {
     octet2: octetsCidr2[1],
   };
 
-  if (
-    (ip1.octet1 === 10 && ip2.octet1 === 10) ||
+  return (ip1.octet1 === 10 && ip2.octet1 === 10) ||
     (ip1.octet1 === 192 && ip1.octet2 === 168 && ip2.octet1 === 192 && ip2.octet2 === 168) ||
-    (ip1.octet1 === 172 && ip1.octet2 === 16 && ip2.octet1 === 172 && ip2.octet2 === 16)
-  ) {
-    return true; // CIDR ranges belong to same private IP address ranges
-  } else {
-    return false;
-  } // CIDR ranges do not belong to same private IP address ranges
+    (ip1.octet1 === 172 && ip1.octet2 === 16 && ip2.octet1 === 172 && ip2.octet2 === 16); // CIDR ranges belong to same private IP address ranges
 }

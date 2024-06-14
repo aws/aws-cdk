@@ -15,7 +15,7 @@ import * as cdk from 'aws-cdk-lib';
 import { Ipv4Cidr, /*Ipv6Cidr,*/ SubnetV2 } from '../lib/subnet-v2';
 import { EgressOnlyInternetGateway, Route, RouteTable } from '../lib/route';
 import { GatewayVpcEndpoint, GatewayVpcEndpointAwsService, RouterType, SubnetType } from 'aws-cdk-lib/aws-ec2';
-import { log } from 'console';
+//import { log } from 'console';
 
 // as in unit tests, we use a qualified import,
 // not bring in individual classes
@@ -30,14 +30,14 @@ const ipam = new Ipam(stack, 'Ipam');
 const pool = ipam.publicScope.addPool({
   addressFamily: AddressFamily.IP_V4,
   provisionedCidrs: [{ cidr: '10.2.0.0/16' }],
-  region: 'us-east-1',
+  locale: 'us-east-1',
 });
 
 const vpc = new vpc_v2.VpcV2(stack, 'VPCTest', {
   primaryAddressBlock: vpc_v2.IpAddresses.ipv4('10.0.0.0/16'),
   secondaryAddressBlocks: [
     vpc_v2.IpAddresses.ipv4Ipam({
-      ipv4IpamPoolId: pool.attrIpamPoolId,
+      ipv4IpamPoolId: pool.ipamPoolId,
       ipv4NetmaskLength: 20,
     }),
     vpc_v2.IpAddresses.amazonProvidedIpv6(),
@@ -54,14 +54,14 @@ new SubnetV2(stack, 'testsbubnet', {
   subnetType: SubnetType.PRIVATE_WITH_EGRESS,
 });
 
-const selection = vpc.selectSubnets();
-log(selection);
-vpc.enableVpnGateway({
-  vpnRoutePropagation: [{
-    subnetType: SubnetType.PRIVATE_WITH_EGRESS, // optional, defaults to "PUBLIC"
-  }],
-  type: 'ipsec.1',
-});
+// const selection = vpc.selectSubnets();
+// log(selection);
+// vpc.enableVpnGateway({
+//   vpnRoutePropagation: [{
+//     subnetType: SubnetType.PRIVATE_WITH_EGRESS, // optional, defaults to "PUBLIC"
+//   }],
+//   type: 'ipsec.1',
+// });
 
 const routeTable = new RouteTable(stack, 'TestRoottable', {
   vpcId: vpc.vpcId,
@@ -115,8 +115,6 @@ if (routeToDynamo.targetRouterType != RouterType.VPC_ENDPOINT) {
 if (routeToEigw.targetRouterType != RouterType.EGRESS_ONLY_INTERNET_GATEWAY) {
   throw new Error('Egress Only Internet Gateway has wrong router type');
 }
-
-app.synth();
 
 new IntegTest(app, 'integtest-model', {
   testCases: [stack],

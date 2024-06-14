@@ -13,7 +13,6 @@ import { AddressFamily, Ipam } from '../lib';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
 import { Ipv4Cidr, /*Ipv6Cidr,*/ SubnetV2 } from '../lib/subnet-v2';
-import { log } from 'console';
 import { SubnetType } from 'aws-cdk-lib/aws-ec2';
 
 // as in unit tests, we use a qualified import,
@@ -26,17 +25,17 @@ const stack = new cdk.Stack(app, 'aws-cdk-vpcv2-alpha-new');
 
 const ipam = new Ipam(stack, 'Ipam');
 
-const pool = ipam.publicScope.addPool({
+const pool = ipam.privateScope.addPool({
   addressFamily: AddressFamily.IP_V4,
   provisionedCidrs: [{ cidr: '10.2.0.0/16' }],
-  region: 'us-east-1',
+  locale: 'us-west-2',
 });
 
 const vpc = new vpc_v2.VpcV2(stack, 'VPCTest', {
   primaryAddressBlock: vpc_v2.IpAddresses.ipv4('10.0.0.0/16'),
   secondaryAddressBlocks: [
     vpc_v2.IpAddresses.ipv4Ipam({
-      ipv4IpamPoolId: pool.attrIpamPoolId,
+      ipv4IpamPoolId: pool.ipamPoolId,
       ipv4NetmaskLength: 20,
     }),
     vpc_v2.IpAddresses.amazonProvidedIpv6(),
@@ -53,7 +52,7 @@ new SubnetV2(stack, 'testsbubnet', {
   subnetType: SubnetType.PRIVATE_ISOLATED,
 });
 
-const selection = vpc.selectSubnets();
+//const selection = vpc.selectSubnets();
 vpc.enableVpnGateway({
   vpnRoutePropagation: [{
     subnetType: SubnetType.PRIVATE_ISOLATED, // optional, defaults to "PUBLIC"
@@ -61,9 +60,7 @@ vpc.enableVpnGateway({
   type: 'ipsec.1',
 });
 
-log(selection);
-
-app.synth();
+//log(selection)
 
 new IntegTest(app, 'integtest-model', {
   testCases: [stack],

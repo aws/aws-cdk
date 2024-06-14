@@ -1,0 +1,169 @@
+{
+ "Resources": {
+  "Ipam": {
+   "Type": "AWS::EC2::IPAM"
+  },
+  "PrivatePool": {
+   "Type": "AWS::EC2::IPAMPool",
+   "Properties": {
+    "AddressFamily": "ipv4",
+    "IpamScopeId": {
+     "Fn::GetAtt": [
+      "Ipam",
+      "PrivateDefaultScopeId"
+     ]
+    },
+    "Locale": "us-west-2",
+    "ProvisionedCidrs": [
+     {
+      "Cidr": "10.2.0.0/16"
+     }
+    ]
+   }
+  },
+  "VPCTestFB735C86": {
+   "Type": "AWS::EC2::VPC",
+   "Properties": {
+    "CidrBlock": "10.0.0.0/16",
+    "EnableDnsHostnames": true,
+    "EnableDnsSupport": true
+   }
+  },
+  "VPCTestSecondaryIp1BB4FC62E": {
+   "Type": "AWS::EC2::VPCCidrBlock",
+   "Properties": {
+    "Ipv4IpamPoolId": {
+     "Fn::GetAtt": [
+      "PrivatePool",
+      "IpamPoolId"
+     ]
+    },
+    "Ipv4NetmaskLength": 20,
+    "VpcId": {
+     "Fn::GetAtt": [
+      "VPCTestFB735C86",
+      "VpcId"
+     ]
+    }
+   }
+  },
+  "VPCTestSecondaryIp24E984B36": {
+   "Type": "AWS::EC2::VPCCidrBlock",
+   "Properties": {
+    "AmazonProvidedIpv6CidrBlock": true,
+    "VpcId": {
+     "Fn::GetAtt": [
+      "VPCTestFB735C86",
+      "VpcId"
+     ]
+    }
+   }
+  },
+  "VPCTestVpnGateway51EEED38": {
+   "Type": "AWS::EC2::VPNGateway",
+   "Properties": {
+    "Type": "ipsec.1"
+   }
+  },
+  "VPCTestVPCVPNGW0A869280": {
+   "Type": "AWS::EC2::VPCGatewayAttachment",
+   "Properties": {
+    "VpcId": {
+     "Fn::GetAtt": [
+      "VPCTestFB735C86",
+      "VpcId"
+     ]
+    },
+    "VpnGatewayId": {
+     "Ref": "VPCTestVpnGateway51EEED38"
+    }
+   }
+  },
+  "VPCTestRoutePropagationFEA3011A": {
+   "Type": "AWS::EC2::VPNGatewayRoutePropagation",
+   "Properties": {
+    "RouteTableIds": [
+     {
+      "Ref": "testsbubnetRouteTableF40F025B"
+     }
+    ],
+    "VpnGatewayId": {
+     "Ref": "VPCTestVpnGateway51EEED38"
+    }
+   },
+   "DependsOn": [
+    "VPCTestVPCVPNGW0A869280"
+   ]
+  },
+  "testsbubnetSubnet77337845": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AvailabilityZone": "us-west-2a",
+    "CidrBlock": "10.0.0.0/24",
+    "Ipv6CidrBlock": "",
+    "VpcId": {
+     "Fn::GetAtt": [
+      "VPCTestFB735C86",
+      "VpcId"
+     ]
+    }
+   }
+  },
+  "testsbubnetRouteTableF40F025B": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "VpcId": {
+     "Fn::GetAtt": [
+      "VPCTestFB735C86",
+      "VpcId"
+     ]
+    }
+   }
+  },
+  "testsbubnetRouteTableAssociationD6D083FA": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "testsbubnetRouteTableF40F025B"
+    },
+    "SubnetId": {
+     "Ref": "testsbubnetSubnet77337845"
+    }
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

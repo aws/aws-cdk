@@ -19,14 +19,18 @@ function getAddressFamilyString(addressFamily: AddressFamily): string {
   }
 }
 
+export interface CfnPoolOptions extends PoolOptions {
+  readonly ipamScopeId: string;
+}
+
 export interface PoolOptions{
   readonly addressFamily: AddressFamily;
   readonly provisionedCidrs: CfnIPAMPool.ProvisionedCidrProperty[];
-  readonly region?: string;
+  readonly locale?: string;
 }
 
 export interface IpamScopeOptions {
-  readonly ipamID: string;
+  readonly ipamId: string;
 }
 
 export interface IpamOptions {
@@ -60,6 +64,21 @@ export interface IpamOptions {
   readonly ipv6IpamPoolId?: string;
 }
 
+export class IpamPool {
+
+  public readonly ipamPoolId: string;
+  constructor(scope: Construct, id: string, options: CfnPoolOptions) {
+
+    const CfnPool = new CfnIPAMPool(scope, id, {
+      addressFamily: getAddressFamilyString(options.addressFamily),
+      provisionedCidrs: options.provisionedCidrs,
+      locale: options.locale,
+      ipamScopeId: options.ipamScopeId,
+    });
+    this.ipamPoolId = CfnPool.attrIpamPoolId;
+  }
+}
+
 export class IpamIpv4 implements IIpAddresses {
 
   constructor(private readonly props: IpamOptions) {
@@ -85,7 +104,7 @@ export class IpamScope extends Resource {
   constructor(scope: Construct, id: string, props: IpamScopeOptions) {
     super(scope, id);
     this._ipamScope = new CfnIPAMScope(scope, 'IpamScope', {
-      ipamId: props.ipamID,
+      ipamId: props.ipamId,
     });
     this.ipamScopeId = this._ipamScope.attrIpamScopeId;
   }
@@ -103,19 +122,19 @@ export class Ipam {
   // Resource IPAM
   private readonly _ipam: CfnIPAM;
   // can be used later to add a custom private scope
-  public readonly ipamID: string;
+  public readonly ipamId: string;
   constructor(scope: Construct, id: string) {
     this._ipam = new CfnIPAM(scope, id);
     this.publicScope = new IpamPublicScope(scope, this._ipam.attrPublicDefaultScopeId);
     this.privateScope = new IpamPrivateScope(scope, this._ipam.attrPrivateDefaultScopeId);
-    this.ipamID = this._ipam.attrIpamId;
+    this.ipamId = this._ipam.attrIpamId;
   }
 }
 
 export class IpamPublicScope {
 
   public readonly defaultpublicScopeId: string;
-  private readonly scope: Construct;
+  public readonly scope: Construct;
 
   constructor(scope: Construct, id: string) {
     this.defaultpublicScopeId = id;
@@ -126,17 +145,17 @@ export class IpamPublicScope {
    * There can be multiple options supported under a scope
    * for pool like using amazon provided IPv6
    */
-  addPool(options: PoolOptions): CfnIPAMPool {
+  addPool(options: PoolOptions): IpamPool {
 
     /**
      * creates pool under default public scope (IPV4, IPV6)
      */
-    return new CfnIPAMPool(this.scope, 'TestPool', {
-      addressFamily: getAddressFamilyString(options.addressFamily),
+    return new IpamPool(this.scope, 'PublicPool', {
+      addressFamily: options.addressFamily,
       provisionedCidrs: options.provisionedCidrs,
       ipamScopeId: this.defaultpublicScopeId,
       //TODO: should be stack region or props input
-      locale: options.region,
+      locale: options.locale,
     });
   }
 }
@@ -147,7 +166,7 @@ export class IpamPublicScope {
 
 export class IpamPrivateScope {
   public readonly defaultprivateScopeId: string;
-  private readonly scope: Construct;
+  public readonly scope: Construct;
 
   constructor(scope: Construct, id: string) {
     this.defaultprivateScopeId = id;
@@ -158,27 +177,20 @@ export class IpamPrivateScope {
    * There can be multiple options supported under a scope
    * for pool like using amazon provided IPv6
    */
-  addPool(options: PoolOptions): CfnIPAMPool {
+  addPool(options: PoolOptions):IpamPool {
 
-    /**
-     * creates pool under default public scope (IPV4, IPV6)
-     */
-    return new CfnIPAMPool(this.scope, 'TestPool', {
-      addressFamily: getAddressFamilyString(options.addressFamily),
+    return new IpamPool(this.scope, 'PrivatePool', {
+      addressFamily: options.addressFamily,
       provisionedCidrs: options.provisionedCidrs,
       ipamScopeId: this.defaultprivateScopeId,
       //TODO: should be stack region or props input
-      locale: options.region,
+      locale: options.locale,
     });
+    /**
+     * creates pool under default public scope (IPV4, IPV6)
+     */
   }
 }
-
-//Customer Implementation Example
-// const ipam = new Ipam(this, 'Ipam');
-// ipam.publicScope.addPool({
-//   addressFamily: AddressFamily.IP_V4,
-//   provisionedCidrs: [{ cidr: '10.0.0.0/24' }],
-// });
 
 export class IpamIpv6 implements IIpAddresses {
 
@@ -192,3 +204,4 @@ export class IpamIpv6 implements IIpAddresses {
     };
   }
 }
+

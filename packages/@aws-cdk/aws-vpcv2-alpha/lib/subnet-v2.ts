@@ -126,9 +126,8 @@ export class SubnetV2 extends Resource implements ISubnet {
   constructor(scope: Construct, id: string, props: SubnetPropsV2) {
     super(scope, id);
 
-    let ipv4CidrBlock: string | undefined;
-    let ipv6CidrBlock: string| undefined;
-
+    let ipv4CidrBlock: string = '';
+    let ipv6CidrBlock: string = '';
     if (props.cidrBlock instanceof Ipv4Cidr) {
       ipv4CidrBlock = props.cidrBlock.cidr;
     } else if (props.cidrBlock instanceof Ipv6Cidr) {
