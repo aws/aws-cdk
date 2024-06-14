@@ -171,7 +171,7 @@ export class SubnetV2 extends Resource implements ISubnet {
 
     /**
      * custom route table
-     * can be moved to a function definition if we plan to change association 
+     * can be moved to a function definition if we plan to change association
      * after subnet creation
      */
     if (props.routeTable) {
