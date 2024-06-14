@@ -1244,7 +1244,7 @@ const stack = new Stack(app, 'StackName', {
 
 ### Receiving CloudFormation Stack Events
 
-You can add SNS Topic ARNs to any Stack:
+You can add one or more SNS Topic ARNs to any Stack:
 
 ```ts
 const stack = new Stack(app, 'StackName', {
