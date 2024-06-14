@@ -114,7 +114,6 @@ export class SubnetV2 extends Resource implements ISubnet {
       if (validateSupportIpv6(props.vpc)) {
         ipv6CidrBlock = props.cidrBlock.cidr;
       }
-
     }
     const subnet = new CfnSubnet(this, 'Subnet', {
       vpcId: props.vpc.vpcId,
@@ -126,33 +125,25 @@ export class SubnetV2 extends Resource implements ISubnet {
     this.ipv4CidrBlock = subnet.attrCidrBlock;
     this.ipv6CidrBlock = subnet.attrIpv6CidrBlocks;
     this.subnetId = subnet.ref;
-    const table = new CfnRouteTable(this, 'RouteTable', {
-      vpcId: props.vpc.vpcId,
-    });
-    this.routeTable = { routeTableId: table.ref };
     this.availabilityZone = props.availabilityZone;
 
     this._networkAcl = NetworkAcl.fromNetworkAclId(this, 'Acl', subnet.attrNetworkAclAssociationId);
 
-    const routeAssoc = new CfnSubnetRouteTableAssociation(this, 'RouteTableAssociation', {
-      subnetId: this.subnetId,
-      routeTableId: table.ref,
-    });
-    this._internetConnectivityEstablished.add(routeAssoc);
-
-    this.internetConnectivityEstablished = this._internetConnectivityEstablished;
-
     if (props.routeTable) {
-      this.isIsolated = false;
-      new CfnSubnetRouteTableAssociation(this, 'CustomRouteTableAssociation', {
+      // optional: check routeTable has same VPC id as this subnet
+      this.routeTable = props.routeTable;
+      const routeAssoc = new CfnSubnetRouteTableAssociation(this, 'RouteTableAssociation', {
         subnetId: this.subnetId,
         routeTableId: props.routeTable.routeTableId,
       });
+      this._internetConnectivityEstablished.add(routeAssoc);
+      this.internetConnectivityEstablished = this._internetConnectivityEstablished;
+      this.isIsolated = false;
     }
 
-    if (!this.isIsolated) {
-      pushIsolatedSubnet(props.vpc, this);
-    } //isolated by default
+    if (this.isIsolated) {
+      props.vpc.isolatedSubnets.push(this);
+    }
   }
 
   /**
@@ -175,10 +166,6 @@ export class SubnetV2 extends Resource implements ISubnet {
     return this._networkAcl;
   }
 
-}
-
-function pushIsolatedSubnet(vpc: IVpcV2, subnet: SubnetV2) {
-  vpc.isolatedSubnets.push(subnet);
 }
 
 /**
