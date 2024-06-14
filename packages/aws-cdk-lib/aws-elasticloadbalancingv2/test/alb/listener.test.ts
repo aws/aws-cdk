@@ -1826,7 +1826,7 @@ describe('tests', () => {
   });
 
   describe('weighted_random algorithm test', () => {
-    test('Can add targets with weight_random algorithm and anomaly mitigation is enabled', () => {
+    test('Can add targets with weight_random algorithm and anomaly mitigation enabled', () => {
       // GIVEN
       const app = new cdk.App();
       const stack = new cdk.Stack(app, 'Stack');
