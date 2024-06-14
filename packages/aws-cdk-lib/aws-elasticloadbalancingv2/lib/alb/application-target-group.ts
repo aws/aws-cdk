@@ -98,7 +98,8 @@ export interface ApplicationTargetGroupProps extends BaseTargetGroupProps {
 
   /**
    * Indicates whether anomaly mitigation is enabled.
-   * Only available when loadBalancingAlgorithmType is TargetGroupLoadBalancingAlgorithmType.WEIGHTED_RANDOM
+   *
+   * Only available when `loadBalancingAlgorithmType` is `TargetGroupLoadBalancingAlgorithmType.WEIGHTED_RANDOM`
    *
    * @default false
    *
