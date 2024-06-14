@@ -458,9 +458,11 @@ const tg = new elbv2.ApplicationTargetGroup(this, 'TG', {
 });
 ```
 
-### Weighted random routing algorithms and automatic target weights for Application Loaf balancer
-You can use weighted random routing algorithms by setting `loadBalancingAlgorithmType` to `TargetGroupLoadBalancingAlgorithmType.WEIGHTED_RANDOM`.
-When using this algorithm, Automatic Target Weights (ATW) anomaly mitigation can be used by setting `enableAnomalyMitigation` to true.
+### Weighted random routing algorithms and automatic target weights for your Application Load Balancer
+
+You can use the `weighted_random` routing algorithms by setting the `loadBalancingAlgorithmType` property.
+
+When using this algorithm, Automatic Target Weights (ATW) anomaly mitigation can be used by setting `enableAnomalyMitigation` to `true`.
 
 For more information, see [Routing algorithms](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-target-groups.html#modify-routing-algorithm) and [Automatic Target Weights (ATW)](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-target-groups.html#automatic-target-weights).
 
@@ -468,11 +470,10 @@ For more information, see [Routing algorithms](https://docs.aws.amazon.com/elast
 declare const vpc: ec2.Vpc;
 
 const tg = new elbv2.ApplicationTargetGroup(this, 'TargetGroup', {
-  loadBalancingAlgorithmType: elbv2.TargetGroupLoadBalancingAlgorithmType.WEIGHTED_RANDOM,
   vpc,
+  loadBalancingAlgorithmType: elbv2.TargetGroupLoadBalancingAlgorithmType.WEIGHTED_RANDOM,
   enableAnomalyMitigation: true,
 });
-```
 
 ## Using Lambda Targets
 
