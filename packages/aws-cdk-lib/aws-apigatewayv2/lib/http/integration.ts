@@ -220,15 +220,9 @@ export interface HttpIntegrationProps {
 
   /**
    * The maximum amount of time an integration will run before it returns without a response.
+   * Must be between 50 milliseconds and 29 seconds.
    *
-   * By default, the value must be between 50 milliseconds and 29 seconds.
-   * The upper bound can be increased for regional and private Rest APIs only,
-   * via a quota increase request for your acccount.
-   * This increase might require a reduction in your account-level throttle quota limit.
-   *
-   * See {@link https://docs.aws.amazon.com/apigateway/latest/developerguide/limits.html Amazon API Gateway quotas} for more details.
-   *
-   * @default Duration.seconds(29)
+   *  @default Duration.seconds(29)
    */
   readonly timeout?: Duration;
 
@@ -263,8 +257,8 @@ export class HttpIntegration extends Resource implements IHttpIntegration {
       throw new Error('Either `integrationSubtype` or `integrationUri` must be specified.');
     }
 
-    if (props.timeout && !props.timeout.isUnresolved() && props.timeout.toMilliseconds() < 50) {
-      throw new Error('Integration timeout must be greater than 50 milliseconds.');
+    if (props.timeout && !props.timeout.isUnresolved() && (props.timeout.toMilliseconds() < 50 || props.timeout.toMilliseconds() > 29000)) {
+      throw new Error('Integration timeout must be between 50 milliseconds and 29 seconds.');
     }
 
     const integ = new CfnIntegration(this, 'Resource', {
@@ -430,13 +424,7 @@ export interface HttpRouteIntegrationConfig {
 
   /**
    * The maximum amount of time an integration will run before it returns without a response.
-   *
-   * By default, the value must be between 50 milliseconds and 29 seconds.
-   * The upper bound can be increased for regional and private Rest APIs only,
-   * via a quota increase request for your acccount.
-   * This increase might require a reduction in your account-level throttle quota limit.
-   *
-   * See {@link https://docs.aws.amazon.com/apigateway/latest/developerguide/limits.html Amazon API Gateway quotas} for more details.
+   * Must be between 50 milliseconds and 29 seconds.
    *
    * @default Duration.seconds(29)
    */

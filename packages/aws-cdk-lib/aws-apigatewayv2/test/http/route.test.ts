@@ -227,7 +227,7 @@ describe('HttpRoute', () => {
         };
       }
     }
-    class ValidMaximumBoundIntegration extends HttpRouteIntegration {
+    class InvalidMaximumBoundIntegration extends HttpRouteIntegration {
       public bind(): HttpRouteIntegrationConfig {
         return {
           payloadFormatVersion: PayloadFormatVersion.VERSION_1_0,
@@ -242,13 +242,13 @@ describe('HttpRoute', () => {
       httpApi,
       integration: new InvalidMinimumBoundIntegration('InvalidMinimumBoundIntegration'),
       routeKey: HttpRouteKey.with('/books', HttpMethod.GET),
-    })).toThrow(/Integration timeout must be greater than 50 milliseconds./);
+    })).toThrow(/Integration timeout must be between 50 milliseconds and 29 seconds./);
 
     expect(() => new HttpRoute(stack, 'MaximumHttpRoute', {
       httpApi,
-      integration: new ValidMaximumBoundIntegration('ValidMaximumBoundIntegration'),
+      integration: new InvalidMaximumBoundIntegration('InvalidMaximumBoundIntegration'),
       routeKey: HttpRouteKey.with('/books', HttpMethod.GET),
-    })).not.toThrow();
+    })).toThrow(/Integration timeout must be between 50 milliseconds and 29 seconds./);
   });
 
   test('configures private integration correctly when parameter mappings are passed', () => {
