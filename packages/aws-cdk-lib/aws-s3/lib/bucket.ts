@@ -1889,10 +1889,6 @@ export class Bucket extends BucketBase {
   /**
    * Set the log group on the stack wide singleton AutoDeleteObjects provider lambda.
    *
-   * In the case of no buckets with `autoDeleteObjects: true` exist in the stack,
-   * this will throw an exception as no AutoDeleteObjects provider lambda will exist
-   * in the stack.
-   *
    * @param stack the stack with the singleton AutoDeleteObjects provider lambda.
    * @param logGroup the log group to use on the lambda.
    */
