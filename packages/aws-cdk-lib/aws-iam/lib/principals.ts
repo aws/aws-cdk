@@ -473,14 +473,16 @@ export class ArnPrincipal extends PrincipalBase {
 export class AccountPrincipal extends ArnPrincipal {
   public readonly principalAccount: string | undefined;
 
+  private accountIdRegExp = new RegExp('^[0-9]{12}$');
+
   /**
    *
    * @param accountId AWS account ID (i.e. '123456789012')
    */
   constructor(public readonly accountId: any) {
     super(new StackDependentToken(stack => `arn:${stack.partition}:iam::${accountId}:root`).toString());
-    if (!cdk.Token.isUnresolved(accountId) && typeof accountId !== 'string') {
-      throw new Error('accountId should be of type string');
+    if (!cdk.Token.isUnresolved(accountId) && typeof accountId !== 'string' && !this.accountIdRegExp.test(accountId)) {
+      throw new Error('accountId should be of type string and be composed of 12 digits');
     }
     this.principalAccount = accountId;
   }
