@@ -170,7 +170,17 @@ export class ServiceAccount extends Construct implements IPrincipal {
       principal = new ServicePrincipal('pods.eks.amazonaws.com');
     }
 
-    this.role = new Role(this, 'Role', { assumedBy: principal });
+    const role = new Role(this, 'Role', { assumedBy: principal });
+
+    // pod identities requires 'sts:TagSession' in its principal actions
+    if (props.identityType === IdentityType.POD_IDENTITY) {
+      role.assumeRolePolicy!.addStatements(new PolicyStatement({
+        actions: ['sts:TagSession'],
+        principals: [new ServicePrincipal('pods.eks.amazonaws.com')],
+      }));
+    };
+
+    this.role = role;
 
     this.assumeRoleAction = this.role.assumeRoleAction;
     this.grantPrincipal = this.role.grantPrincipal;
@@ -199,7 +209,6 @@ export class ServiceAccount extends Construct implements IPrincipal {
         },
       }],
     });
-
   }
 
   /**
