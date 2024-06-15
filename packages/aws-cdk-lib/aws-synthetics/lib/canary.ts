@@ -180,6 +180,20 @@ export interface CanaryProps {
   readonly test: Test;
 
   /**
+   * Specifies whether this canary is to use active AWS X-Ray tracing when it runs.
+   * Active tracing enables this canary run to be displayed in the ServiceLens and X-Ray service maps even if the
+   * canary does not hit an endpoint that has X-Ray tracing enabled. Using X-Ray tracing incurs charges.
+   *
+   * You can enable active tracing only for canaries that use version syn-nodejs-2.0 or later for their canary runtime.
+   *
+   * @default false
+   *
+   * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Canaries_tracing.html
+   */
+
+  readonly activeTracing?: boolean;
+
+  /**
    * Key-value pairs that the Synthetics caches and makes available for your canary scripts. Use environment variables
    * to apply configuration changes, such as test and production environment configurations, without changing your
    * Canary script source code.
@@ -187,6 +201,22 @@ export interface CanaryProps {
    * @default - No environment variables.
    */
   readonly environmentVariables?: { [key: string]: string };
+
+  /**
+   * The maximum amount of memory that the canary can use while running.
+   * This value must be a multiple of 64 Mib.
+   *
+   * @default Size.mebibytes(5)
+   */
+  readonly memory?: cdk.Size;
+
+  /**
+   * How long the canary is allowed to run before it must stop.
+   * You can't set this time to be longer than the frequency of the runs of this canary.
+   *
+   * @default - the frequency of the canary is used as this value, up to a maximum of 900 seconds.
+   */
+  readonly timeout?: cdk.Duration;
 
   /**
    * The VPC where this canary is run.
@@ -420,7 +450,7 @@ export class Canary extends cdk.Resource implements ec2.IConnectable {
           actions: ['s3:GetBucketLocation'],
         }),
         new iam.PolicyStatement({
-          resources: [this.artifactsBucket.arnForObjects(`${prefix ? prefix+'/*' : '*'}`)],
+          resources: [this.artifactsBucket.arnForObjects(`${prefix ? prefix + '/*' : '*'}`)],
           actions: ['s3:PutObject'],
         }),
         new iam.PolicyStatement({
@@ -513,11 +543,45 @@ export class Canary extends cdk.Resource implements ec2.IConnectable {
   }
 
   private createRunConfig(props: CanaryProps): CfnCanary.RunConfigProperty | undefined {
-    if (!props.environmentVariables) {
+    if (props.activeTracing === undefined &&
+      !props.environmentVariables &&
+      !props.memory &&
+      !props.timeout) {
       return undefined;
     }
+    const activeTracingNotSupportedRuntime = [
+      Runtime.SYNTHETICS_PYTHON_SELENIUM_2_1,
+      Runtime.SYNTHETICS_PYTHON_SELENIUM_3_0,
+    ];
+
+    if (props.activeTracing && activeTracingNotSupportedRuntime.includes(props.runtime)) {
+      throw new Error('You can enable active tracing only for canaries that use version syn-nodejs-2.0 or later for their canary runtime.');
+    }
+
+    let memoryInMb = undefined;
+    if (!cdk.Token.isUnresolved(props.memory) && props.memory) {
+      memoryInMb = props.memory.toMebibytes();
+      if (memoryInMb % 64 !== 0) {
+        throw new Error(`\`memory\` must be a multiple of 64 MiB, got ${memoryInMb} MiB.`);
+      }
+      if (memoryInMb < 960 || memoryInMb > 3008) {
+        throw new Error(`\`memory\` must be between 960 MiB and 3008 MiB, got ${memoryInMb} MiB.`);
+      }
+    }
+
+    let timeoutInSeconds = undefined;
+    if (!cdk.Token.isUnresolved(props.timeout) && props.timeout) {
+      timeoutInSeconds = props.timeout.toSeconds();
+      if (timeoutInSeconds < 3 || timeoutInSeconds > 840) {
+        throw new Error(`\`timeout\` must be between 3 seconds and 840 seconds, got ${timeoutInSeconds} seconds.`);
+      }
+    }
+
     return {
+      activeTracing: props.activeTracing,
       environmentVariables: props.environmentVariables,
+      memoryInMb,
+      timeoutInSeconds,
     };
   }
 
