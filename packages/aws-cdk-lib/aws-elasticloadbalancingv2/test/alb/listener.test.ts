@@ -1861,7 +1861,7 @@ describe('tests', () => {
       });
     });
 
-    test('Can add targets with weight_random algorithm and anomaly mitigation disabled, () => {
+    test('Can add targets with weight_random algorithm and anomaly mitigation disabled', () => {
       // GIVEN
       const app = new cdk.App();
       const stack = new cdk.Stack(app, 'Stack');

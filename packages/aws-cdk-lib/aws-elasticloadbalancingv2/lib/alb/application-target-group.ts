@@ -367,13 +367,11 @@ export class ApplicationTargetGroup extends TargetGroupBase implements IApplicat
       this.addTarget(...(props.targets || []));
 
       if (props.enableAnomalyMitigation !== undefined) {
-        if (props.enableAnomalyMitigation && isWeightedRandomAlgorithm) {
+        if (props.enableAnomalyMitigation && !isWeightedRandomAlgorithm) {
           throw new Error('Anomaly mitigation is only available when `loadBalancingAlgorithmType` is `TargetGroupLoadBalancingAlgorithmType.WEIGHTED_RANDOM`.');
         }
         this.setAttribute('load_balancing.algorithm.anomaly_mitigation', props.enableAnomalyMitigation ? 'on' : 'off');
-        }
       }
-
     }
   }
 

@@ -474,6 +474,7 @@ const tg = new elbv2.ApplicationTargetGroup(this, 'TargetGroup', {
   loadBalancingAlgorithmType: elbv2.TargetGroupLoadBalancingAlgorithmType.WEIGHTED_RANDOM,
   enableAnomalyMitigation: true,
 });
+```
 
 ## Using Lambda Targets
 

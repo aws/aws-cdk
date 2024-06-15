@@ -742,7 +742,7 @@ describe('tests', () => {
       });
     });
 
-    test('weight_random algorithm and anomaly mitigation is disabled, () => {
+    test('weight_random algorithm and anomaly mitigation is disabled', () => {
       // GIVEN
       const app = new cdk.App();
       const stack = new cdk.Stack(app, 'Stack');
