@@ -253,7 +253,7 @@ for (const gateway of provider.gatewayInstances) {
 [using NAT instances](test/integ.nat-instances.lit.ts) [Deprecated]
 
 The V1 `NatProvider.instance` construct will use the AWS official NAT instance AMI, which has already
-reached EOL on Dec 31, 2023. For more information, see the following blog post: 
+reached EOL on Dec 31, 2023. For more information, see the following blog post:
 [Amazon Linux AMI end of life](https://aws.amazon.com/blogs/aws/update-on-amazon-linux-ami-end-of-life/).
 
 ```ts
@@ -451,7 +451,7 @@ Here is a break down of IPv4 and IPv6 specifc `subnetConfiguration` properties i
 ```ts
 const vpc = new ec2.Vpc(this, 'TheVPC', {
   ipProtocol: ec2.IpProtocol.DUAL_STACK,
-  
+
   subnetConfiguration: [
     {
       // general properties
@@ -474,7 +474,7 @@ The property `mapPublicIpOnLaunch` controls if a public IPv4 address will be ass
 
 The `ipv6AssignAddressOnCreation` property controls the same behavior for the IPv6 address. It defaults to true.
 
-Using IPv6 specific properties in an IPv4 only VPC will result in errors. 
+Using IPv6 specific properties in an IPv4 only VPC will result in errors.
 
 ### Accessing the Internet Gateway
 
@@ -1521,7 +1521,7 @@ const host = new ec2.BastionHostLinux(this, 'BastionHost', {
 });
 ```
 
-### Placement Group 
+### Placement Group
 
 Specify `placementGroup` to enable the placement group support:
 
@@ -1912,6 +1912,70 @@ new ec2.Vpc(this, 'VPC', {
 ```
 
 **Note**: `CpuCredits.UNLIMITED` mode is not supported for T3 instances that are launched on a Dedicated Host.
+
+### Shutdown behavior
+
+You can specify the behavior of the instance when you initiate shutdown from the instance (using the operating system command for system shutdown).
+
+```ts
+declare const vpc: ec2.Vpc;
+
+new ec2.Instance(this, 'Instance', {
+  vpc,
+  instanceType: ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.NANO),
+  machineImage: new ec2.AmazonLinuxImage({ generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2 }),
+  instanceInitiatedShutdownBehavior: ec2.InstanceInitiatedShutdownBehavior.TERMINATE, // default is STOP
+});
+```
+
+### Enabling Nitro Enclaves
+
+You can enable [AWS Nitro Enclaves](https://docs.aws.amazon.com/enclaves/latest/user/nitro-enclave.html) for
+your EC2 instances by setting the `enclaveEnabled` property to `true`. Nitro Enclaves is a feature of
+AWS Nitro System that enables creating isolated and highly constrained CPU environments known as enclaves.
+
+```ts
+declare const vpc: ec2.Vpc;
+
+const instance = new ec2.Instance(this, 'Instance', {
+  instanceType: ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.XLARGE),
+  machineImage: new ec2.AmazonLinuxImage(),
+  vpc: vpc,
+  enclaveEnabled: true,
+});
+```
+
+> NOTE: You must use an instance type and operating system that support Nitro Enclaves.
+> For more information, see [Requirements](https://docs.aws.amazon.com/enclaves/latest/user/nitro-enclave.html#nitro-enclave-reqs).
+
+### Enabling Instance Hibernation
+
+You can enable [Instance Hibernation](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/Hibernate.html) for
+your EC2 instances by setting the `hibernationEnabled` property to `true`. Instance Hibernation saves the
+instance's in-memory (RAM) state when an instance is stopped, and restores that state when the instance is started.
+
+```ts
+declare const vpc: ec2.Vpc;
+
+const instance = new ec2.Instance(this, 'Instance', {
+  instanceType: ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.XLARGE),
+  machineImage: new ec2.AmazonLinuxImage(),
+  vpc: vpc,
+  hibernationEnabled: true,
+  blockDevices: [{
+    deviceName: '/dev/xvda',
+    volume: ec2.BlockDeviceVolume.ebs(30, {
+      volumeType: ec2.EbsDeviceVolumeType.GP3,
+      encrypted: true,
+      deleteOnTermination: true,
+    }),
+  }],
+});
+```
+
+> NOTE: You must use an instance and a volume that meet the requirements for hibernation.
+> For more information, see [Prerequisites for Amazon EC2 instance hibernation](https://docs.aws.amazon.com/enclaves/latest/user/nitro-enclave.html#nitro-enclave-reqs).
+
 
 ## VPC Flow Logs
 
