@@ -147,18 +147,17 @@ export class ServiceAccount extends Construct implements IPrincipal {
       throw RangeError('All namespace names must be valid RFC 1123 DNS labels.');
     }
 
-    /* Add conditions to the role to improve security. This prevents other pods in the same namespace to assume the role.
-    * See documentation: https://docs.aws.amazon.com/eks/latest/userguide/create-service-account-iam-policy-and-role.html
-    */
-    const conditions = new CfnJson(this, 'ConditionJson', {
-      value: {
-        [`${cluster.openIdConnectProvider.openIdConnectProviderIssuer}:aud`]: 'sts.amazonaws.com',
-        [`${cluster.openIdConnectProvider.openIdConnectProviderIssuer}:sub`]: `system:serviceaccount:${this.serviceAccountNamespace}:${this.serviceAccountName}`,
-      },
-    });
-
     let principal: IPrincipal;
     if (props.identityType !== IdentityType.POD_IDENTITY) {
+      /* Add conditions to the role to improve security. This prevents other pods in the same namespace to assume the role.
+      * See documentation: https://docs.aws.amazon.com/eks/latest/userguide/create-service-account-iam-policy-and-role.html
+      */
+      const conditions = new CfnJson(this, 'ConditionJson', {
+        value: {
+          [`${cluster.openIdConnectProvider.openIdConnectProviderIssuer}:aud`]: 'sts.amazonaws.com',
+          [`${cluster.openIdConnectProvider.openIdConnectProviderIssuer}:sub`]: `system:serviceaccount:${this.serviceAccountNamespace}:${this.serviceAccountName}`,
+        },
+      });
       principal = new OpenIdConnectPrincipal(cluster.openIdConnectProvider).withConditions({
         StringEquals: conditions,
       });
