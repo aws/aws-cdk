@@ -11,14 +11,14 @@ const stack = new cdk.Stack(app, 'aws-cdk-rds-instance-with-rds-parameter-group'
 const vpc = new ec2.Vpc(stack, 'VPC', { maxAzs: 2, restrictDefaultSecurityGroup: false });
 
 const parameterGroup = new rds.ParameterGroup(stack, 'ParameterGroup', {
-  engine: rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_16_2 }),
+  engine: rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_16_3 }),
   description: 'desc',
   removalPolicy: cdk.RemovalPolicy.DESTROY,
   name: 'name',
 });
 
 new rds.DatabaseInstance(stack, 'Instance', {
-  engine: rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_16_2 }),
+  engine: rds.DatabaseInstanceEngine.postgres({ version: rds.PostgresEngineVersion.VER_16_3 }),
   vpc,
   multiAz: false,
   publiclyAccessible: true,

@@ -4,6 +4,8 @@ import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as kinesis from 'aws-cdk-lib/aws-kinesis';
 import * as kms from 'aws-cdk-lib/aws-kms';
+import * as events from 'aws-cdk-lib/aws-events';
+import * as targets from 'aws-cdk-lib/aws-events-targets';
 import * as cdk from 'aws-cdk-lib';
 import { Construct, Node } from 'constructs';
 import * as firehose from '../lib';
@@ -55,6 +57,41 @@ describe('delivery stream', () => {
         BucketARN: bucketArn,
         RoleARN: roleArn,
       },
+    });
+  });
+
+  test('creates stream with events target V2 class', () => {
+    const stream = new firehose.DeliveryStream(stack, 'DeliveryStream', {
+      destinations: [mockS3Destination],
+    });
+
+    new events.Rule(stack, 'rule', {
+      eventPattern: {
+        source: ['aws.s3'],
+        detail: {
+          eventName: ['PutObject'],
+        },
+      },
+    }).addTarget(new targets.KinesisFirehoseStreamV2(firehose.DeliveryStream.fromDeliveryStreamArn(stack, 'firehose', stream.deliveryStreamArn)));
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
+      Targets: [
+        {
+          Arn: {
+            'Fn::GetAtt': [
+              'DeliveryStream58CF96DB',
+              'Arn',
+            ],
+          },
+          Id: 'Target0',
+          RoleArn: {
+            'Fn::GetAtt': [
+              'firehoseEventsRole71BC7157',
+              'Arn',
+            ],
+          },
+        },
+      ],
     });
   });
 
