@@ -1,12 +1,68 @@
 import { Construct } from 'constructs';
 import { ICluster } from './cluster';
 import { KubernetesManifest } from './k8s-manifest';
-import { AddToPrincipalPolicyResult, IPrincipal, IRole, OpenIdConnectPrincipal, PolicyStatement, PrincipalPolicyFragment, Role } from '../../aws-iam';
+import {
+  AddToPrincipalPolicyResult, IPrincipal, IRole, OpenIdConnectPrincipal, PolicyStatement, PrincipalPolicyFragment, Role,
+  ServicePrincipal,
+} from '../../aws-iam';
 import { CfnJson, Names } from '../../core';
 
 /**
  * Options for `ServiceAccount`
  */
+export enum IdentityType {
+  /**
+   * Use the IAM Roles for Service Accounts (IRSA) identity type.
+   * IRSA allows you to associate an IAM role with a Kubernetes service account.
+   */
+  IRSA = 'IRSA',
+
+  /**
+   * Use the Pod Identity identity type.
+   * Pod Identity allows you to associate an Azure Active Directory (Azure AD) identity with a Kubernetes pod.
+   */
+  POD_IDENTITY = 'POD_IDENTITY',
+}
+
+export interface ServiceAccountOptions {
+  /**
+   * The name of the service account.
+   *
+   * The name of a ServiceAccount object must be a valid DNS subdomain name.
+   * https://kubernetes.io/docs/tasks/configure-pod-container/configure-service-account/
+   * @default - If no name is given, it will use the id of the resource.
+   */
+  readonly name?: string;
+
+  /**
+   * The namespace of the service account.
+   *
+   * All namespace names must be valid RFC 1123 DNS labels.
+   * https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/#namespaces-and-dns
+   * @default "default"
+   */
+  readonly namespace?: string;
+
+  /**
+   * Additional annotations of the service account.
+   *
+   * @default - no additional annotations
+   */
+  readonly annotations?: { [key: string]: string };
+
+  /**
+   * Additional labels of the service account.
+   *
+   * @default - no additional labels
+   */
+  readonly labels?: { [key: string]: string };
+
+  /**
+   * The identity type to use for the service account.
+   * @default IdentityType.IRSA
+   */
+  readonly identityType?: IdentityType;
+}
 export interface ServiceAccountOptions {
   /**
    * The name of the service account.
@@ -100,9 +156,21 @@ export class ServiceAccount extends Construct implements IPrincipal {
         [`${cluster.openIdConnectProvider.openIdConnectProviderIssuer}:sub`]: `system:serviceaccount:${this.serviceAccountNamespace}:${this.serviceAccountName}`,
       },
     });
-    const principal = new OpenIdConnectPrincipal(cluster.openIdConnectProvider).withConditions({
-      StringEquals: conditions,
-    });
+
+    let principal: IPrincipal;
+    if (props.identityType !== IdentityType.POD_IDENTITY) {
+      principal = new OpenIdConnectPrincipal(cluster.openIdConnectProvider).withConditions({
+        StringEquals: conditions,
+      });
+    } else {
+      /**
+       * Identity type is POD_IDENTITY.
+       * Create a service principal with "Service": "pods.eks.amazonaws.com"
+       * See https://docs.aws.amazon.com/eks/latest/userguide/pod-identities.html
+       */
+      principal = new ServicePrincipal('pods.eks.amazonaws.com');
+    }
+
     this.role = new Role(this, 'Role', { assumedBy: principal });
 
     this.assumeRoleAction = this.role.assumeRoleAction;
