@@ -1,7 +1,7 @@
 /// !cdk-integ canary-one
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as cdk from 'aws-cdk-lib/core';
-import { Canary, Cleanup, Code, EncryptionMode, Runtime, Schedule, Test } from 'aws-cdk-lib/aws-synthetics';
+import { ArtifactsEncryptionMode, Canary, Cleanup, Code, Runtime, Schedule, Test } from 'aws-cdk-lib/aws-synthetics';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { RemovalPolicy } from 'aws-cdk-lib';
 import { Key } from 'aws-cdk-lib/aws-kms';
@@ -27,9 +27,7 @@ new Canary(stack, 'CanarySseS3', {
   artifactsBucketLocation: { bucket, prefix },
   runtime: Runtime.SYNTHETICS_NODEJS_PUPPETEER_7_0,
   cleanup: Cleanup.LAMBDA,
-  artifactS3Encryption: {
-    encryptionMode: EncryptionMode.S3_MANAGED,
-  },
+  artifactS3EncryptionMode: ArtifactsEncryptionMode.S3_MANAGED,
 });
 
 new Canary(stack, 'CanarySseKmsWithoutKeySetting', {
@@ -44,9 +42,7 @@ new Canary(stack, 'CanarySseKmsWithoutKeySetting', {
   artifactsBucketLocation: { bucket, prefix },
   runtime: Runtime.SYNTHETICS_NODEJS_PUPPETEER_7_0,
   cleanup: Cleanup.LAMBDA,
-  artifactS3Encryption: {
-    encryptionMode: EncryptionMode.KMS,
-  },
+  artifactS3EncryptionMode: ArtifactsEncryptionMode.KMS,
 });
 
 const encryptKey = new Key(stack, 'Key', { removalPolicy: RemovalPolicy.DESTROY });
@@ -63,10 +59,8 @@ new Canary(stack, 'CanarySseKmsWith', {
   artifactsBucketLocation: { bucket, prefix },
   runtime: Runtime.SYNTHETICS_NODEJS_PUPPETEER_7_0,
   cleanup: Cleanup.LAMBDA,
-  artifactS3Encryption: {
-    encryptionMode: EncryptionMode.KMS,
-    kmsKey: encryptKey,
-  },
+  artifactS3EncryptionMode: ArtifactsEncryptionMode.KMS,
+  kmsKey: encryptKey,
 });
 
 new IntegTest(app, 'IntegCanaryTest', {

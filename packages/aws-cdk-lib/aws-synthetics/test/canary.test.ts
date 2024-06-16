@@ -804,9 +804,7 @@ describe('artifact encryption test', () => {
           };`),
       }),
       runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_7_0,
-      artifactS3Encryption: {
-        encryptionMode: synthetics.EncryptionMode.S3_MANAGED,
-      },
+      artifactS3EncryptionMode: synthetics.ArtifactsEncryptionMode.S3_MANAGED,
     });
 
     // THEN
@@ -834,9 +832,7 @@ describe('artifact encryption test', () => {
           };`),
       }),
       runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_7_0,
-      artifactS3Encryption: {
-        encryptionMode: synthetics.EncryptionMode.KMS,
-      },
+      artifactS3EncryptionMode: synthetics.ArtifactsEncryptionMode.KMS,
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
@@ -869,10 +865,8 @@ describe('artifact encryption test', () => {
           };`),
       }),
       runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_7_0,
-      artifactS3Encryption: {
-        encryptionMode: synthetics.EncryptionMode.KMS,
-        kmsKey: key,
-      },
+      artifactS3EncryptionMode: synthetics.ArtifactsEncryptionMode.KMS,
+      kmsKey: key,
     });
 
     // THEN
@@ -897,10 +891,8 @@ describe('artifact encryption test', () => {
           code: synthetics.Code.fromAsset(path.join(__dirname, 'canaries')),
         }),
         runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_7_0,
-        artifactS3Encryption: {
-          encryptionMode: synthetics.EncryptionMode.S3_MANAGED,
-          kmsKey: key,
-        },
+        artifactS3EncryptionMode: synthetics.ArtifactsEncryptionMode.S3_MANAGED,
+        kmsKey: key,
       });
     }).toThrow('A customer-managed KMS key was provided, but the encryption mode is not set to SSE-KMS.');
   });
@@ -915,10 +907,8 @@ describe('artifact encryption test', () => {
           handler: 'index.handler',
           code: synthetics.Code.fromInline('# Synthetics handler code'),
         }),
-        artifactS3Encryption: {
-          encryptionMode: synthetics.EncryptionMode.S3_MANAGED,
-        },
+        artifactS3EncryptionMode: synthetics.ArtifactsEncryptionMode.S3_MANAGED,
       });
-    }).toThrow('Artifact encryption is only supported for Node.js runtime.');
+    }).toThrow('Artifact encryption is only supported for canaries that use Synthetics runtime version syn-nodejs-puppeteer-3.3 or later, got syn-python-selenium-3.0.');
   });
 });

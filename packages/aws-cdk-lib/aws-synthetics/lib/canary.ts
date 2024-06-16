@@ -232,30 +232,20 @@ export interface CanaryProps {
   readonly artifactsBucketLifecycleRules?: Array<s3.LifecycleRule>;
 
   /**
-   * Canary Artifacts in S3 encryption configuration.
-   * Artifact encryption is only supported for Node.js runtime.
+   * Canary Artifacts in S3 encryption mode.
+   * Artifact encryption is only supported for canaries that use Synthetics runtime
+   * version `syn-nodejs-puppeteer-3.3` or later.
    *
    * @default - Artifacts are encrypted at rest using an AWS managed key
    *
    * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_artifact_encryption.html
    */
-  readonly artifactS3Encryption?: ArtifactS3Encryption;
-}
-
-/**
- * Canary Artifacts in S3 encryption configuration.
- */
-export interface ArtifactS3Encryption {
-  /**
-    * Encryption mode.
-    * @default - Artifacts are encrypted at rest using an AWS managed key
-    */
-  readonly encryptionMode?: EncryptionMode;
+  readonly artifactS3EncryptionMode?: ArtifactsEncryptionMode;
 
   /**
    * The KMS key to be used to encrypt the data.
-   * @default - no kms key if mode = S3_MANAGED.
-   * A key will be created if one is not provided and mode = KMS.
+   *
+   * @default - no kms key if mode = S3_MANAGED. A key will be created if one is not provided and mode = KMS.
    */
   readonly kmsKey?: kms.IKey;
 }
@@ -263,16 +253,14 @@ export interface ArtifactS3Encryption {
 /**
  * Encryption mode for canary artifacts.
  */
-export enum EncryptionMode {
+export enum ArtifactsEncryptionMode {
   /**
    * Server-side encryption (SSE) with an Amazon S3-managed key.
-   *
    */
   S3_MANAGED = 'SSE_S3',
 
   /**
    * Server-side encryption (SSE) with an AWS KMS customer managed key.
-   *
    */
   KMS = 'SSE_KMS',
 }
@@ -347,29 +335,16 @@ export class Canary extends cdk.Resource implements ec2.IConnectable {
       this._connections = new ec2.Connections({});
     }
 
-    if (props.runtime.family !== RuntimeFamily.NODEJS && props.artifactS3Encryption) {
-      throw new Error('Artifact encryption is only supported for Node.js runtime.');
-    }
-
-    if (props.artifactS3Encryption?.encryptionMode !== EncryptionMode.KMS && props.artifactS3Encryption?.kmsKey) {
+    if (!cdk.Token.isUnresolved(props.artifactS3EncryptionMode) &&
+      props.artifactS3EncryptionMode !== ArtifactsEncryptionMode.KMS &&
+      !cdk.Token.isUnresolved(props.kmsKey) &&
+      props.kmsKey) {
       throw new Error('A customer-managed KMS key was provided, but the encryption mode is not set to SSE-KMS.');
     }
 
-    let encryptionKey;
-    if (props.artifactS3Encryption?.encryptionMode === EncryptionMode.KMS) {
-      encryptionKey = props.artifactS3Encryption?.kmsKey ?? new kms.Key(this, 'Key', { description: `Created by ${this.node.path}` });
-    }
-
-    encryptionKey?.grantEncryptDecrypt(this.role);
-
-    let artifactConfig;
-    if (props.artifactS3Encryption) {
-      artifactConfig = {
-        s3Encryption: {
-          encryptionMode: props.artifactS3Encryption.encryptionMode,
-          kmsKeyArn: encryptionKey?.keyArn ?? undefined,
-        },
-      };
+    if (props.artifactS3EncryptionMode === ArtifactsEncryptionMode.KMS) {
+      // Kms Key is set or generated for using `createArtifactConfig`
+      this.encryptionKey = props.kmsKey ?? new kms.Key(this, 'Key', { description: `Created by ${this.node.path}` });
     }
 
     const resource: CfnCanary = new CfnCanary(this, 'Resource', {
@@ -384,15 +359,13 @@ export class Canary extends cdk.Resource implements ec2.IConnectable {
       code: this.createCode(props),
       runConfig: this.createRunConfig(props),
       vpcConfig: this.createVpcConfig(props),
-      artifactConfig,
+      artifactConfig: this.createArticatConfig(props),
     });
     this._resource = resource;
 
     this.canaryId = resource.attrId;
     this.canaryState = resource.attrState;
     this.canaryName = this.getResourceNameAttribute(resource.ref);
-
-    this.encryptionKey = encryptionKey;
 
     if (props.cleanup === Cleanup.LAMBDA) {
       this.cleanupUnderlyingResources();
@@ -640,6 +613,29 @@ export class Canary extends cdk.Resource implements ec2.IConnectable {
       vpcId: props.vpc.vpcId,
       subnetIds,
       securityGroupIds: cdk.Lazy.list({ produce: () => this.connections.securityGroups.map(sg => sg.securityGroupId) }),
+    };
+  }
+
+  private createArticatConfig(props: CanaryProps): CfnCanary.ArtifactConfigProperty | undefined {
+    if (!props.artifactS3EncryptionMode) {
+      return undefined;
+    }
+
+    const isNodeRuntime = !cdk.Token.isUnresolved(props.runtime) && props.runtime.family === RuntimeFamily.NODEJS;
+    const isArtifactS3EncryptionModeDefined = !cdk.Token.isUnresolved(props.artifactS3EncryptionMode) && props.artifactS3EncryptionMode;
+
+    // Only check runtime family is nodejs because versions prior to syn-nodejs-puppeteer-3.3 are deprecated and can no longer be configured.
+    if (!isNodeRuntime && isArtifactS3EncryptionModeDefined) {
+      throw new Error(`Artifact encryption is only supported for canaries that use Synthetics runtime version syn-nodejs-puppeteer-3.3 or later, got ${props.runtime.name}.`);
+    }
+
+    this.encryptionKey?.grantEncryptDecrypt(this.role);
+
+    return {
+      s3Encryption: {
+        encryptionMode: props.artifactS3EncryptionMode,
+        kmsKeyArn: this.encryptionKey?.keyArn ?? undefined,
+      },
     };
   }
 
