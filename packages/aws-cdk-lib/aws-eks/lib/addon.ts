@@ -6,31 +6,33 @@ import { IResource, Resource, Stack, Aws } from '../../core';
 /**
  * Represents an Amazon EKS Add-On.
  */
-export interface IAddOn extends IResource {
+export interface IAddon extends IResource {
   /**
    * Name of the Add-On.
+   * @attribute
    */
-  readonly addOnName: string;
+  readonly addonName: string;
   /**
    * ARN of the Add-On.
+   * @attribute
    */
-  readonly addOnArn: string;
+  readonly addonArn: string;
 }
 
 /**
  * Properties for creating an Amazon EKS Add-On.
  */
-export interface AddOnProps {
+export interface AddonProps {
   /**
    * Name of the Add-On.
    */
-  readonly addOnName: string;
+  readonly addonName: string;
   /**
    * Version of the Add-On.
    *
    * @default the latest version.
    */
-  readonly addOnVersion?: string;
+  readonly addonVersion?: string;
   /**
    * The EKS cluster the Add-On is associated with.
    */
@@ -40,26 +42,25 @@ export interface AddOnProps {
 /**
  * Represents an Amazon EKS Add-On.
  */
-export class AddOn extends Resource implements IAddOn {
+export class Addon extends Resource implements IAddon {
   /**
-   * Creates an IAddOn instance from the given Add-On name.
+   * Creates an Iaddon instance from the given Add-On name.
    * @param scope The parent construct.
    * @param id The construct ID.
-   * @param addOnName The name of the Add-On.
-   * @returns An IAddOn instance.
+   * @param addonName The name of the Add-On.
+   * @returns An Iaddon instance.
    */
-  public static fromAddOnName(scope: Construct, id: string, addOnName: string): IAddOn {
-    class Import extends Resource implements IAddOn {
-      public readonly addOnName = addOnName;
-      public readonly addOnArn = `arn:${Aws.PARTITION}:addon:${Stack.of(scope).region}:${Stack.of(scope).account}:${addOnName}`;
+  public static fromAddonName(scope: Construct, id: string, addonName: string): IAddon {
+    class Import extends Resource implements IAddon {
+      public readonly addonName = addonName;
+      public readonly addonArn = `arn:${Aws.PARTITION}:addon:${Stack.of(scope).region}:${Stack.of(scope).account}:${addonName}`;
     }
     return new Import(scope, id);
   }
 
-  public readonly addOnName: string;
-  public readonly addOnArn: string;
+  public readonly addonName: string;
+  public readonly addonArn: string;
   private readonly clusterName: string;
-  private readonly addonName: string;
 
   /**
    * Creates a new Amazon EKS Add-On.
@@ -67,23 +68,23 @@ export class AddOn extends Resource implements IAddOn {
    * @param id The construct ID.
    * @param props The properties for the Add-On.
    */
-  constructor(scope: Construct, id: string, props: AddOnProps) {
+  constructor(scope: Construct, id: string, props: AddonProps) {
     super(scope, id, {
-      physicalName: props.addOnName,
+      physicalName: props.addonName,
     });
 
     this.clusterName = props.cluster.clusterName;
-    this.addonName = props.addOnName;
+    this.addonName = props.addonName;
 
     const resource = new CfnAddon(this, 'Resource', {
-      addonName: props.addOnName,
+      addonName: props.addonName,
       clusterName: this.clusterName,
     });
 
-    this.addOnName = this.getResourceNameAttribute(resource.ref);
-    this.addOnArn = 'dummy';
+    this.addonName = this.getResourceNameAttribute(resource.ref);
+    this.addonArn = 'dummy';
     // arn:aws:eks:us-east-1:903779448426:addon/Cluster9EE0221C-a380add2c2eb4144b5bdfa2b022815b9/eks-pod-identity-agent/2ac81096-e9e0-e60a-f5b9-946ae35b3e1e
-    this.addOnArn = this.getResourceArnAttribute(resource.attrArn, {
+    this.addonArn = this.getResourceArnAttribute(resource.attrArn, {
       service: 'eks',
       resource: 'addon',
       resourceName: `${this.clusterName}/${this.addonName}/`,
@@ -91,7 +92,7 @@ export class AddOn extends Resource implements IAddOn {
   }
 
   // private getResourceArnAttribute(): string {
-  //   // Implement the logic to get the ARN of the AddOn
-  //   return Lazy.stringValue({ produce: () => `arn:aws:addon:${Stack.of(this).region}:${Stack.of(this).account}:${this.addOnName}` });
+  //   // Implement the logic to get the ARN of the addon
+  //   return Lazy.stringValue({ produce: () => `arn:aws:addon:${Stack.of(this).region}:${Stack.of(this).account}:${this.addonName}` });
   // }
 }

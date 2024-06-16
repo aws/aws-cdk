@@ -4,7 +4,7 @@ import { Construct, Node } from 'constructs';
 import * as semver from 'semver';
 import * as YAML from 'yaml';
 import { IAccessPolicy, IAccessEntry, AccessEntry, AccessPolicy, AccessScopeType } from './access-entry';
-import { IAddOn, AddOn } from './add-on';
+import { IAddon, Addon } from './addon';
 import { AlbController, AlbControllerOptions } from './alb-controller';
 import { AwsAuth } from './aws-auth';
 import { ClusterResource, clusterArnComponents } from './cluster-resource';
@@ -101,7 +101,7 @@ export interface ICluster extends IResource, ec2.IConnectable {
    * Agent addon. If the addon has not been created yet, it will be created and
    * returned.
    */
-  readonly eksPodIdentityAgent?: IAddOn;
+  readonly eksPodIdentityAgent?: IAddon;
 
   /**
    * An IAM role that can perform kubectl operations against this cluster.
@@ -1460,7 +1460,7 @@ export class Cluster extends ClusterBase {
   /**
    * an EKS Pod Identity Agent instance
    */
-  private _eksPodIdentityAgent?: IAddOn;
+  private _eksPodIdentityAgent?: IAddon;
 
   /**
    * An AWS Lambda layer that includes `kubectl` and `helm`
@@ -2009,11 +2009,11 @@ export class Cluster extends ClusterBase {
    * associated service account.
    *
    */
-  public get eksPodIdentityAgent(): IAddOn | undefined {
+  public get eksPodIdentityAgent(): IAddon | undefined {
     if (!this._eksPodIdentityAgent) {
-      this._eksPodIdentityAgent = new AddOn(this, 'EksPodIdentityAgentAddOn', {
+      this._eksPodIdentityAgent = new Addon(this, 'EksPodIdentityAgentAddon', {
         cluster: this,
-        addOnName: 'eks-pod-identity-agent',
+        addonName: 'eks-pod-identity-agent',
       });
     }
 
