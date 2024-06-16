@@ -27,6 +27,8 @@ export interface AddOnProps {
   readonly addOnName: string;
   /**
    * Version of the Add-On.
+   *
+   * @default the latest version.
    */
   readonly addOnVersion?: string;
   /**
