@@ -418,6 +418,13 @@ export interface GlobalSecondaryIndexProps extends SecondaryIndexProps, SchemaOp
    * @default 5
    */
   readonly writeCapacity?: number;
+
+  /**
+   * Whether CloudWatch contributor insights is enabled for the specified global secondary index.
+   *
+   * @default false
+   */
+  readonly contributorInsightsEnabled?: boolean;
 }
 
 /**
@@ -1182,6 +1189,9 @@ export class Table extends TableBase {
     const gsiProjection = this.buildIndexProjection(props);
 
     this.globalSecondaryIndexes.push({
+      contributorInsightsSpecification: props.contributorInsightsEnabled === undefined
+        ? undefined
+        : { enabled: props.contributorInsightsEnabled ? true : false },
       indexName: props.indexName,
       keySchema: gsiKeySchema,
       projection: gsiProjection,

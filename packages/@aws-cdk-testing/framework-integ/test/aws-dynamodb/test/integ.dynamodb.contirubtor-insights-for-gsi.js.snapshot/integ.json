@@ -1,0 +1,12 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "aws-cdk-dynamodb-contributor-insights-for-gis-test/DefaultTest": {
+      "stacks": [
+        "aws-cdk-dynamodb-contributor-insights-for-gis"
+      ],
+      "assertionStack": "aws-cdk-dynamodb-contributor-insights-for-gis-test/DefaultTest/DeployAssert",
+      "assertionStackName": "awscdkdynamodbcontributorinsightsforgistestDefaultTestDeployAssert6C041B3E"
+    }
+  }
+}
