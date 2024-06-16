@@ -1,5 +1,6 @@
 import { Construct } from 'constructs';
 import { ICluster } from './cluster';
+import { CfnPodIdentityAssociation } from './index';
 import { KubernetesManifest } from './k8s-manifest';
 import {
   AddToPrincipalPolicyResult, IPrincipal, IRole, OpenIdConnectPrincipal, PolicyStatement, PrincipalPolicyFragment, Role,
@@ -198,6 +199,17 @@ export class ServiceAccount extends Construct implements IPrincipal {
         actions: ['sts:TagSession'],
         principals: [new ServicePrincipal('pods.eks.amazonaws.com')],
       }));
+
+      // ensure the pod identity agent
+      cluster.eksPodIdentityAgent;
+
+      // associate this service account with the pod role we just created for the cluster
+      new CfnPodIdentityAssociation(this, 'Association', {
+        clusterName: cluster.clusterName,
+        namespace: props.namespace ?? 'default',
+        roleArn: role.roleArn,
+        serviceAccount: this.serviceAccountName,
+      });
     };
 
     this.role = role;
