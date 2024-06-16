@@ -161,6 +161,11 @@ export class ServiceAccount extends Construct implements IPrincipal {
       principal = new OpenIdConnectPrincipal(cluster.openIdConnectProvider).withConditions({
         StringEquals: conditions,
       });
+
+      // Ensure that the EKS Pod Identity Agent addon is available for this cluster.
+      // If the addon has not been created yet, create it.
+      cluster.eksPodIdentityAgent;
+
     } else {
       /**
        * Identity type is POD_IDENTITY.
