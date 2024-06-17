@@ -1,4 +1,3 @@
-
 import * as cdk from 'aws-cdk-lib';
 import * as cloudfront from 'aws-cdk-lib/aws-cloudfront';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
