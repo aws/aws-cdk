@@ -101,7 +101,11 @@ export const LAMBDA_PERMISSION_LOGICAL_ID_FOR_LAMBDA_ACTION = '@aws-cdk/aws-clou
 export const CODEPIPELINE_CROSS_ACCOUNT_KEYS_DEFAULT_VALUE_TO_FALSE = '@aws-cdk/aws-codepipeline:crossAccountKeysDefaultValueToFalse';
 export const CODEPIPELINE_DEFAULT_PIPELINE_TYPE_TO_V2 = '@aws-cdk/aws-codepipeline:defaultPipelineTypeToV2';
 export const KMS_REDUCE_CROSS_ACCOUNT_REGION_POLICY_SCOPE = '@aws-cdk/aws-kms:reduceCrossAccountRegionPolicyScope';
-export const ALBV2_EXTERNALAPPLICATIONLISTENER_SWITCH_FROM_ADDTARGETGROUP_TO_ADDACTION = '@aws-cdk/aws-elasticloadbalancingv2:ExternalApplicationListener-noRuleSuffixForAddAction';
+export const PIPELINE_REDUCE_ASSET_ROLE_TRUST_SCOPE = '@aws-cdk/pipelines:reduceAssetRoleTrustScope';
+export const EKS_NODEGROUP_NAME = '@aws-cdk/aws-eks:nodegroupNameAttribute';
+export const EBS_DEFAULT_GP3 = '@aws-cdk/aws-ec2:ebsDefaultGp3Volume';
+export const ECS_REMOVE_DEFAULT_DEPLOYMENT_ALARM = '@aws-cdk/aws-ecs:removeDefaultDeploymentAlarm';
+export const LOG_API_RESPONSE_DATA_PROPERTY_TRUE_DEFAULT = '@aws-cdk/custom-resources:logApiResponseDataPropertyTrueDefault';
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
@@ -1037,23 +1041,70 @@ export const FLAGS: Record<string, FlagInfo> = {
   },
 
   //////////////////////////////////////////////////////////////////////
-  [ALBV2_EXTERNALAPPLICATIONLISTENER_SWITCH_FROM_ADDTARGETGROUP_TO_ADDACTION]: {
-    type: FlagType.VisibleContext,
-    summary: 'When enabled, you can switch from the \`addTargetGroups()\` method of declaring a \`ListenerRule\` to the \`addAction()\` method, without changing the logicalId and replacing your resource.',
+  [PIPELINE_REDUCE_ASSET_ROLE_TRUST_SCOPE]: {
+    type: FlagType.ApiDefault,
+    summary: 'Remove the root account principal from PipelineAssetsFileRole trust policy',
     detailsMd: `
-      When switching from a less complex to a more complex use of ALB,
-      you will eventually need features not available in the \`addTargetGroups()\` convenience method.
-      In this case you will want to use the \`addAction()\` method.
-      Before this feature is enabled, switching over to \`addAction()\` from using \`addTargetGroups()\` 
-      will add a \`Rule\` suffix to the logicalId of your \`ListenerRule\`,
-      causing CloudFormation to attempt to replace the resource.
-      Since \`ListenerRule\`s have a unique priority,
-      CloudFormation will always fail when generating the new \`ListenerRule\`.
-
-      Setting this feature flag will cause the \`addAction()\` method to not add the \`Rule\` suffix on the logicalId.
-      This allows you to switch from the \`addTargetGroups()\` method without having CloudFormation deadlock while attempting to replace the resource.
+      When this feature flag is enabled, the root account principal will not be added to the trust policy of asset role.
+      When this feature flag is disabled, it will keep the root account principal in the trust policy.
     `,
-    introducedIn: { v2: 'V2NEXT' },
+    introducedIn: { v2: '2.141.0' },
+    defaults: { v2: true },
+    recommendedValue: true,
+    compatibilityWithOldBehaviorMd: 'Disable the feature flag to add the root account principal back',
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [EKS_NODEGROUP_NAME]: {
+    type: FlagType.BugFix,
+    summary: 'When enabled, nodegroupName attribute of the provisioned EKS NodeGroup will not have the cluster name prefix.',
+    detailsMd: `
+      When this feature flag is enabled, the nodegroupName attribute will be exactly the name of the nodegroup without
+      any prefix.
+    `,
+    introducedIn: { v2: '2.139.0' },
+    recommendedValue: true,
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [EBS_DEFAULT_GP3]: {
+    type: FlagType.ApiDefault,
+    summary: 'When enabled, the default volume type of the EBS volume will be GP3',
+    detailsMd: `
+      When this featuer flag is enabled, the default volume type of the EBS volume will be \`EbsDeviceVolumeType.GENERAL_PURPOSE_SSD_GP3\`.
+    `,
+    introducedIn: { v2: '2.140.0' },
+    recommendedValue: true,
+    compatibilityWithOldBehaviorMd: 'Pass `volumeType: EbsDeviceVolumeType.GENERAL_PURPOSE_SSD` to `Volume` construct to restore the previous behavior.',
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [ECS_REMOVE_DEFAULT_DEPLOYMENT_ALARM]: {
+    type: FlagType.ApiDefault,
+    summary: 'When enabled, remove default deployment alarm settings',
+    detailsMd: `
+      When this featuer flag is enabled, remove the default deployment alarm settings when creating a AWS ECS service.
+    `,
+    introducedIn: { v2: '2.143.0' },
+    recommendedValue: true,
+    compatibilityWithOldBehaviorMd: 'Set AWS::ECS::Service \'DeploymentAlarms\' manually to restore the previous behavior.',
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [LOG_API_RESPONSE_DATA_PROPERTY_TRUE_DEFAULT]: {
+    type: FlagType.BugFix,
+    summary: 'When enabled, the custom resource used for `AwsCustomResource` will configure the `logApiResponseData` property as true by default',
+    detailsMd: `
+      This results in 'logApiResponseData' being passed as true to the custom resource provider. This will cause the custom resource handler to receive an 'Update' event. If you don't
+      have an SDK call configured for the 'Update' event and you're dependent on specific SDK call response data, you will see this error from CFN:
+
+      CustomResource attribute error: Vendor response doesn't contain <attribute-name> attribute in object. See https://github.com/aws/aws-cdk/issues/29949) for more details.
+
+      Unlike most feature flags, we don't recommend setting this feature flag to true. However, if you're using the 'AwsCustomResource' construct with 'logApiResponseData' as true in
+      the event object, then setting this feature flag will keep this behavior. Otherwise, setting this feature flag to false will trigger an 'Update' event by removing the 'logApiResponseData'
+      property from the event object.
+    `,
+    introducedIn: { v2: '2.145.0' },
     recommendedValue: false,
   },
 };

@@ -350,20 +350,6 @@ describe('cluster', () => {
     expect(() => cluster.addCdk8sChart('chart', someConstruct)).toThrow(/Invalid cdk8s chart. Must contain a \'toJson\' method, but found undefined/);
   });
 
-  test('throws when a core construct is added as cdk8s chart', () => {
-    const { stack } = testFixture();
-
-    const cluster = new eks.Cluster(stack, 'Cluster', {
-      version: CLUSTER_VERSION,
-      prune: false,
-    });
-
-    // create a plain construct, not a cdk8s chart
-    const someConstruct = new Construct(stack, 'SomeConstruct');
-
-    expect(() => cluster.addCdk8sChart('chart', someConstruct)).toThrow(/Invalid cdk8s chart. Must contain a \'toJson\' method, but found undefined/);
-  });
-
   test('cdk8s chart can be added to cluster', () => {
     const { stack } = testFixture();
 
@@ -3296,4 +3282,102 @@ describe('cluster', () => {
       },
     });
   });
+
+  describe('AccessConfig', () => {
+    test.each([
+      [eks.AuthenticationMode.API, 'API'],
+      [eks.AuthenticationMode.CONFIG_MAP, 'CONFIG_MAP'],
+      [eks.AuthenticationMode.API_AND_CONFIG_MAP, 'API_AND_CONFIG_MAP'],
+    ])(
+      'authenticationMode(%s) should work',
+      (a, b) => {
+        // GIVEN
+        const { stack } = testFixture();
+
+        // WHEN
+        new eks.Cluster(stack, 'Cluster', {
+          version: CLUSTER_VERSION,
+          authenticationMode: a,
+        });
+
+        // THEN
+        Template.fromStack(stack).hasResourceProperties('Custom::AWSCDK-EKS-Cluster', {
+          Config: {
+            accessConfig: {
+              authenticationMode: b,
+            },
+          },
+        });
+      },
+    );
+
+    // bootstrapClusterCreatorAdminPermissions can be explicitly enabled or disabled
+    test.each([
+      [true, true],
+      [false, false],
+    ])('bootstrapClusterCreatorAdminPermissions(%s) should work',
+      (a, b) => {
+        // GIVEN
+        const { stack } = testFixture();
+
+        // WHEN
+        new eks.Cluster(stack, 'Cluster', {
+          version: CLUSTER_VERSION,
+          authenticationMode: eks.AuthenticationMode.API,
+          bootstrapClusterCreatorAdminPermissions: a,
+        });
+
+        // THEN
+        Template.fromStack(stack).hasResourceProperties('Custom::AWSCDK-EKS-Cluster', {
+          Config: {
+            accessConfig: {
+              bootstrapClusterCreatorAdminPermissions: b,
+            },
+          },
+        });
+      },
+    );
+  });
+
+  describe('AccessEntry', () => {
+    // cluster can grantAccess();
+    test('cluster can grantAccess', () => {
+      // GIVEN
+      const { stack, vpc } = testFixture();
+      // WHEN
+      const mastersRole = new iam.Role(stack, 'role', { assumedBy: new iam.AccountRootPrincipal() });
+      const cluster = new eks.Cluster(stack, 'Cluster', {
+        vpc,
+        mastersRole,
+        version: CLUSTER_VERSION,
+      });
+      cluster.grantAccess('mastersAccess', mastersRole.roleArn, [
+        eks.AccessPolicy.fromAccessPolicyName('AmazonEKSClusterAdminPolicy', {
+          accessScopeType: eks.AccessScopeType.CLUSTER,
+        }),
+      ]);
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::EKS::AccessEntry', {
+        AccessPolicies: [
+          {
+            AccessScope: {
+              Type: 'cluster',
+            },
+            PolicyArn: {
+              'Fn::Join': [
+                '', [
+                  'arn:',
+                  { Ref: 'AWS::Partition' },
+                  ':eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy',
+                ],
+              ],
+            },
+          },
+        ],
+
+      });
+    });
+
+  });
+
 });

@@ -1226,4 +1226,64 @@ describe('User Pool Client', () => {
       });
     });
   });
+
+  test('enablePropagateAdditionalUserContextData in addClient', () => {
+    // GIVEN
+    const stack = new Stack();
+    const pool = new UserPool(stack, 'Pool');
+
+    // WHEN
+    pool.addClient('Client', {
+      generateSecret: true,
+      enablePropagateAdditionalUserContextData: true,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
+      EnablePropagateAdditionalUserContextData: true,
+    });
+  });
+
+  test('enablePropagateAdditionalUserContextData in UserPoolClient', () => {
+    // GIVEN
+    const stack = new Stack();
+    const pool = new UserPool(stack, 'Pool');
+
+    // WHEN
+    new UserPoolClient(stack, 'Client', {
+      userPool: pool,
+      generateSecret: true,
+      enablePropagateAdditionalUserContextData: true,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPoolClient', {
+      EnablePropagateAdditionalUserContextData: true,
+    });
+  });
+
+  test('enablePropagateAdditionalUserContextData in addClient without a client secret throw error', () => {
+    // GIVEN
+    const stack = new Stack();
+    const pool = new UserPool(stack, 'Pool');
+
+    // WHEN
+    expect(() => pool.addClient('Client', {
+      enablePropagateAdditionalUserContextData: true,
+    }),
+    ).toThrow('Cannot activate enablePropagateAdditionalUserContextData in an app client without a client secret.');
+  });
+
+  test('enablePropagateAdditionalUserContextData in UserPoolClient without a client secret throw error', () => {
+    // GIVEN
+    const stack = new Stack();
+    const pool = new UserPool(stack, 'Pool');
+
+    // WHEN
+    expect(() => new UserPoolClient(stack, 'Client', {
+      userPool: pool,
+      enablePropagateAdditionalUserContextData: true,
+    }),
+    ).toThrow('Cannot activate enablePropagateAdditionalUserContextData in an app client without a client secret.');
+  });
 });

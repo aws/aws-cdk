@@ -5,7 +5,7 @@ import { TestFunction } from './test-function';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { Construct } from 'constructs';
 
-const bucketName = 'cdk-test-bucket-event-source';
+const bucketName = 'cdk-integ-test-imported-bucket-name';
 class TestStack extends Stack {
   constructor(scope: Construct, id: string) {
     super(scope, id);
@@ -34,6 +34,6 @@ const app = new App();
 
 new IntegTest(app, 'issue-4324', {
   testCases: [
-    new TestStack(app, 'tester'),
+    new TestStack(app, 'TestStack'),
   ],
 });

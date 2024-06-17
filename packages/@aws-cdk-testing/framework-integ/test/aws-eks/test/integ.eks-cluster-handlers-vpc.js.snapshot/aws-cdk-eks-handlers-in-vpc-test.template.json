@@ -806,7 +806,8 @@
       ],
       "endpointPublicAccess": true,
       "endpointPrivateAccess": true
-     }
+     },
+     "accessConfig": {}
     },
     "AssumeRoleArn": {
      "Fn::GetAtt": [
@@ -814,7 +815,7 @@
       "Arn"
      ]
     },
-    "AttributesRevision": 2
+    "AttributesRevision": 3
    },
    "DependsOn": [
     "EksAllHandlersInVpcStackDefaultVpcIGW916D42F1",
@@ -1017,7 +1018,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/b77afa7d1d45b550cb544e46b2e32d001c2d390bcca2680bd102bab926fbf8b5.json"
+       "/a0be6f2f1698f2d4fc3a8a3a4c1b1fef1053b07ceb0ae0146a283ac5a37c1349.json"
       ]
      ]
     }
@@ -1073,7 +1074,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/09606d0b8367fe50638c8c8939e3d2b327e90867e7141165a7c5e1be86d601aa.json"
+       "/809d12c48a04399fb7046a2d4478b3b91ba5f04f66250790fdfe02b8280ada4d.json"
       ]
      ]
     }

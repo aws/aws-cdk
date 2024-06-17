@@ -669,6 +669,14 @@
               "version": "0.0.0"
             }
           },
+          "LatestNodeRuntimeMap": {
+            "id": "LatestNodeRuntimeMap",
+            "path": "cluster-data-api/LatestNodeRuntimeMap",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnMapping",
+              "version": "0.0.0"
+            }
+          },
           "Custom::VpcRestrictDefaultSGCustomResourceProvider": {
             "id": "Custom::VpcRestrictDefaultSGCustomResourceProvider",
             "path": "cluster-data-api/Custom::VpcRestrictDefaultSGCustomResourceProvider",
@@ -772,16 +780,6 @@
                               "Statement": [
                                 {
                                   "Action": [
-                                    "secretsmanager:DescribeSecret",
-                                    "secretsmanager:GetSecretValue"
-                                  ],
-                                  "Effect": "Allow",
-                                  "Resource": {
-                                    "Ref": "DatabaseSecretAttachmentE5D1B020"
-                                  }
-                                },
-                                {
-                                  "Action": [
                                     "rds-data:BatchExecuteStatement",
                                     "rds-data:BeginTransaction",
                                     "rds-data:CommitTransaction",
@@ -811,6 +809,16 @@
                                         }
                                       ]
                                     ]
+                                  }
+                                },
+                                {
+                                  "Action": [
+                                    "secretsmanager:DescribeSecret",
+                                    "secretsmanager:GetSecretValue"
+                                  ],
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Ref": "DatabaseSecretAttachmentE5D1B020"
                                   }
                                 }
                               ],

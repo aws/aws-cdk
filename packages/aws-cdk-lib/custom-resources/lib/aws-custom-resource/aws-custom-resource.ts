@@ -1,4 +1,5 @@
 import { Construct } from 'constructs';
+import { Logging } from './logging';
 import * as ec2 from '../../../aws-ec2';
 import * as iam from '../../../aws-iam';
 import * as logs from '../../../aws-logs';
@@ -188,6 +189,21 @@ export interface AwsSdkCall {
    * @default - run without assuming role
    */
   readonly assumedRoleArn?: string;
+
+  /**
+   * A property used to configure logging during lambda function execution.
+   *
+   * Note: The default Logging configuration is all. This configuration will enable logging on all logged data
+   * in the lambda handler. This includes:
+   *  - The event object that is received by the lambda handler
+   *  - The response received after making a API call
+   *  - The response object that the lambda handler will return
+   *  - SDK versioning information
+   *  - Caught and uncaught errors
+   *
+   * @default Logging.all()
+   */
+  readonly logging?: Logging;
 }
 
 /**
@@ -326,6 +342,13 @@ export interface AwsCustomResourceProps {
   readonly timeout?: cdk.Duration;
 
   /**
+   * The memory size for the singleton Lambda function implementing this custom resource.
+   *
+   * @default 512 mega in case if installLatestAwsSdk is false.
+   */
+  readonly memorySize?: number;
+
+  /**
    * The number of days log events of the singleton Lambda function implementing
    * this custom resource are kept in CloudWatch Logs.
    *
@@ -458,9 +481,16 @@ export class AwsCustomResource extends Construct implements iam.IGrantable {
 
     this.props = props;
 
+    let memorySize = props.memorySize;
+
+    if (props.installLatestAwsSdk) {
+      memorySize ??= 512;
+    }
+
     const provider = new AwsCustomResourceSingletonFunction(this, 'Provider', {
       uuid: AwsCustomResource.PROVIDER_FUNCTION_UUID,
       lambdaPurpose: 'AWS',
+      memorySize: memorySize,
       timeout: props.timeout || cdk.Duration.minutes(2),
       role: props.role,
       // props.logRetention is deprecated, make sure we only set it if it is actually provided
@@ -493,9 +523,9 @@ export class AwsCustomResource extends Construct implements iam.IGrantable {
       pascalCaseProperties: true,
       removalPolicy: props.removalPolicy,
       properties: {
-        create: create && this.encodeJson(create),
-        update: props.onUpdate && this.encodeJson(props.onUpdate),
-        delete: props.onDelete && this.encodeJson(props.onDelete),
+        create: create && this.formatSdkCall(create),
+        update: props.onUpdate && this.formatSdkCall(props.onUpdate),
+        delete: props.onDelete && this.formatSdkCall(props.onDelete),
         installLatestAwsSdk,
       },
     });
@@ -572,6 +602,15 @@ export class AwsCustomResource extends Construct implements iam.IGrantable {
   public getResponseField(dataPath: string): string {
     AwsCustomResource.breakIgnoreErrorsCircuit([this.props.onCreate, this.props.onUpdate], 'getDataString');
     return this.customResource.getAttString(dataPath);
+  }
+
+  private formatSdkCall(sdkCall: AwsSdkCall) {
+    const { logging, ...call } = sdkCall;
+    const renderedLogging = (logging ?? Logging.all())._render(this);
+    return this.encodeJson({
+      ...call,
+      ...renderedLogging,
+    });
   }
 
   private encodeJson(obj: any) {

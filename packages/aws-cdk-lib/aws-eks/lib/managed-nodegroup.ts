@@ -1,9 +1,10 @@
 import { Construct, Node } from 'constructs';
-import { Cluster, ICluster, IpFamily } from './cluster';
+import { Cluster, ICluster, IpFamily, AuthenticationMode } from './cluster';
 import { CfnNodegroup } from './eks.generated';
 import { InstanceType, ISecurityGroup, SubnetSelection, InstanceArchitecture, InstanceClass, InstanceSize } from '../../aws-ec2';
 import { IRole, ManagedPolicy, PolicyStatement, Role, ServicePrincipal } from '../../aws-iam';
-import { IResource, Resource, Annotations, withResolved } from '../../core';
+import { IResource, Resource, Annotations, withResolved, FeatureFlags } from '../../core';
+import * as cxapi from '../../cx-api';
 
 /**
  * NodeGroup interface
@@ -517,14 +518,17 @@ export class Nodegroup extends Resource implements INodegroup {
     // its state for consistency.
     if (this.cluster instanceof Cluster) {
       // see https://docs.aws.amazon.com/en_us/eks/latest/userguide/add-user-role.html
-      this.cluster.awsAuth.addRoleMapping(this.role, {
-        username: 'system:node:{{EC2PrivateDNSName}}',
-        groups: [
-          'system:bootstrappers',
-          'system:nodes',
-        ],
-      });
-
+      // only when ConfigMap is supported
+      const supportConfigMap = props.cluster.authenticationMode !== AuthenticationMode.API ? true : false;
+      if (supportConfigMap) {
+        this.cluster.awsAuth.addRoleMapping(this.role, {
+          username: 'system:node:{{EC2PrivateDNSName}}',
+          groups: [
+            'system:bootstrappers',
+            'system:nodes',
+          ],
+        });
+      }
       // the controller runs on the worker nodes so they cannot
       // be deleted before the controller.
       if (this.cluster.albController) {
@@ -537,7 +541,12 @@ export class Nodegroup extends Resource implements INodegroup {
       resource: 'nodegroup',
       resourceName: this.physicalName,
     });
-    this.nodegroupName = this.getResourceNameAttribute(resource.ref);
+
+    if (FeatureFlags.of(this).isEnabled(cxapi.EKS_NODEGROUP_NAME)) {
+      this.nodegroupName = this.getResourceNameAttribute(resource.attrNodegroupName);
+    } else {
+      this.nodegroupName = this.getResourceNameAttribute(resource.ref);
+    }
   }
 
   private validateUpdateConfig(maxUnavailable?: number, maxUnavailablePercentage?: number) {

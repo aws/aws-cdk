@@ -1,5 +1,5 @@
 import { Construct } from 'constructs';
-import { IAliasRecordTarget } from './alias-record-target';
+import { AliasRecordTargetConfig, IAliasRecordTarget } from './alias-record-target';
 import { GeoLocation } from './geo-location';
 import { IHostedZone } from './hosted-zone-ref';
 import { CfnRecordSet } from './route53.generated';
@@ -447,17 +447,63 @@ export interface ARecordProps extends RecordSetOptions {
 }
 
 /**
+ * Construction properties to import existing ARecord as target.
+ */
+export interface ARecordAttrs extends RecordSetOptions{
+  /**
+   * Existing A record DNS name to set RecordTarget
+   */
+  readonly targetDNS: string;
+}
+
+/**
  * A DNS A record
  *
  * @resource AWS::Route53::RecordSet
  */
 export class ARecord extends RecordSet {
+
+  /**
+   * Creates new A record of type alias with target set to an existing A Record DNS.
+   * Use when the target A record is created outside of CDK
+   * For records created as part of CDK use @aws-cdk-lib/aws-route53-targets/route53-record.ts
+   * @param scope the parent Construct for this Construct
+   * @param id Logical Id of the resource
+   * @param attrs the ARecordAttributes (Target Arecord DNS name and HostedZone)
+   * @returns AWS::Route53::RecordSet of type A with target alias set to existing A record
+   */
+  public static fromARecordAttributes(scope: Construct, id: string, attrs: ARecordAttrs): ARecord {
+    const aliasTarget = RecordTarget.fromAlias(new ARecordAsAliasTarget(attrs));
+    return new ARecord(scope, id, {
+      ...attrs,
+      target: aliasTarget,
+    });
+  }
+
   constructor(scope: Construct, id: string, props: ARecordProps) {
     super(scope, id, {
       ...props,
       recordType: RecordType.A,
       target: props.target,
     });
+  }
+}
+
+/**
+ * Converts the type of a given ARecord DNS name, created outside CDK, to an AliasRecordTarget
+ */
+class ARecordAsAliasTarget implements IAliasRecordTarget {
+  constructor(private readonly aRrecordAttrs: ARecordAttrs) {
+  }
+
+  public bind(_record: IRecordSet, _zone?: IHostedZone | undefined): AliasRecordTargetConfig {
+    if (!_zone) {
+      throw new Error('Cannot bind to record without a zone');
+    }
+    return {
+      dnsName: this.aRrecordAttrs.targetDNS,
+      hostedZoneId: this.aRrecordAttrs.zone.hostedZoneId,
+    };
   }
 }
 
@@ -881,6 +927,10 @@ export class CrossAccountZoneDelegationRecord extends Construct {
 
     if (props.parentHostedZoneName && props.parentHostedZoneId) {
       throw Error('Only one of parentHostedZoneName and parentHostedZoneId is supported');
+    }
+
+    if (!props.delegatedZone.hostedZoneNameServers) {
+      throw Error(`Not able to retrieve Name Servers for ${props.delegatedZone.zoneName} due to it being imported.`);
     }
 
     const provider = CrossAccountZoneDelegationProvider.getOrCreateProvider(this, CROSS_ACCOUNT_ZONE_DELEGATION_RESOURCE_TYPE);

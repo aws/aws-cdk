@@ -6,7 +6,6 @@ import { Metric } from '../../../aws-cloudwatch';
 import * as ec2 from '../../../aws-ec2';
 import * as cdk from '../../../core';
 import { SecretValue } from '../../../core';
-import * as cxapi from '../../../cx-api';
 import * as elbv2 from '../../lib';
 import { FakeSelfRegisteringTarget } from '../helpers';
 
@@ -1682,40 +1681,6 @@ describe('tests', () => {
     }).toThrow(/specify only one/);
   });
 
-  describe('ExternalApplicationListener logicalId support', () => {
-
-    test('compatibility mode for addAction', () => {
-      // GIVEN
-      const context = { [cxapi.ALBV2_EXTERNALAPPLICATIONLISTENER_SWITCH_FROM_ADDTARGETGROUP_TO_ADDACTION]: true };
-      const app = new cdk.App({ context });
-      const stack = new cdk.Stack(app, 'stack', {
-        env: {
-          account: '123456789012',
-          region: 'us-west-2',
-        },
-      });
-      const vpc = new ec2.Vpc(stack, 'Stack');
-      const targetGroup = new elbv2.ApplicationTargetGroup(stack, 'TargetGroup', { vpc, port: 80 });
-      const listener = elbv2.ApplicationListener.fromLookup(stack, 'a', {
-        loadBalancerTags: {
-          some: 'tag',
-        },
-      });
-      // WHEN
-      const identifierToken = 'SuperMagicToken';
-      listener.addAction(identifierToken, {
-        action: elbv2.ListenerAction.weightedForward([{ targetGroup, weight: 1 }]),
-        conditions: [elbv2.ListenerCondition.pathPatterns(['/fake'])],
-        priority: 42,
-      });
-
-      // THEN
-      const applicationListenerRule = listener.node.children.find((v)=> v.hasOwnProperty('conditions'));
-      expect(applicationListenerRule).toBeDefined();
-      expect(applicationListenerRule!.node.id).toBe(identifierToken); // Should not have `Rule` suffix
-    });
-  });
-
   test('not allowed to specify defaultTargetGroups and defaultAction together', () => {
     // GIVEN
     const stack = new cdk.Stack();
@@ -1731,6 +1696,47 @@ describe('tests', () => {
         defaultAction: elbv2.ListenerAction.fixedResponse(200),
       });
     }).toThrow(/Specify at most one/);
+  });
+
+  describe('Rule suffix for logicalId', () => {
+    const identifierToken = 'SuperMagicToken';
+    interface TestCase {
+      readonly removeSuffix?: boolean;
+      readonly expectedLogicalId: string;
+    };
+    const nonDefaultTestCases: TestCase[] = [
+      { removeSuffix: true, expectedLogicalId: identifierToken },
+      { removeSuffix: false, expectedLogicalId: identifierToken + 'Rule' },
+    ];
+    test.each<TestCase>([
+      // Default is consistent, which means it has the `Rule` suffix. This means no change from legacy behavior
+      { removeSuffix: undefined, expectedLogicalId: identifierToken + 'Rule' },
+      ...nonDefaultTestCases,
+    ])('addAction %s', ({ removeSuffix, expectedLogicalId }) => {
+      // GIVEN
+      const app = new cdk.App();
+      const stack = new cdk.Stack(app, 'TestStack', { env: { account: '123456789012', region: 'us-east-1' } });
+      const vpc = new ec2.Vpc(stack, 'Stack');
+      const targetGroup = new elbv2.ApplicationTargetGroup(stack, 'TargetGroup', { vpc, port: 80 });
+      const listener = elbv2.ApplicationListener.fromLookup(stack, 'a', {
+        loadBalancerTags: {
+          some: 'tag',
+        },
+      });
+
+      // WHEN
+      listener.addAction(identifierToken, {
+        action: elbv2.ListenerAction.weightedForward([{ targetGroup, weight: 1 }]),
+        conditions: [elbv2.ListenerCondition.pathPatterns(['/fake'])],
+        priority: 42,
+        removeSuffix,
+      });
+
+      // THEN
+      const applicationListenerRule = listener.node.children.find((v)=> v.hasOwnProperty('conditions'));
+      expect(applicationListenerRule).toBeDefined();
+      expect(applicationListenerRule!.node.id).toBe(expectedLogicalId);
+    });
   });
 
   describe('lookup', () => {

@@ -38,6 +38,9 @@
   "aws-applicationinsights": [
     "AWS::ApplicationInsights"
   ],
+  "aws-applicationsignals": [
+    "AWS::ApplicationSignals"
+  ],
   "aws-appmesh": [
     "AWS::AppMesh"
   ],
@@ -80,6 +83,12 @@
   "aws-batch": [
     "AWS::Batch"
   ],
+  "aws-bcmdataexports": [
+    "AWS::BCMDataExports"
+  ],
+  "aws-bedrock": [
+    "AWS::Bedrock"
+  ],
   "aws-billingconductor": [
     "AWS::BillingConductor"
   ],
@@ -100,6 +109,9 @@
   ],
   "aws-cleanrooms": [
     "AWS::CleanRooms"
+  ],
+  "aws-cleanroomsml": [
+    "AWS::CleanRoomsML"
   ],
   "aws-cloud9": [
     "AWS::Cloud9"
@@ -124,6 +136,9 @@
   ],
   "aws-codecommit": [
     "AWS::CodeCommit"
+  ],
+  "aws-codeconnections": [
+    "AWS::CodeConnections"
   ],
   "aws-codedeploy": [
     "AWS::CodeDeploy"
@@ -184,6 +199,9 @@
   ],
   "aws-dax": [
     "AWS::DAX"
+  ],
+  "aws-deadline": [
+    "AWS::Deadline"
   ],
   "aws-detective": [
     "AWS::Detective"
@@ -507,6 +525,9 @@
   "aws-panorama": [
     "AWS::Panorama"
   ],
+  "aws-paymentcryptography": [
+    "AWS::PaymentCryptography"
+  ],
   "aws-pcaconnectorad": [
     "AWS::PCAConnectorAD"
   ],
@@ -524,6 +545,9 @@
   ],
   "aws-proton": [
     "AWS::Proton"
+  ],
+  "aws-qbusiness": [
+    "AWS::QBusiness"
   ],
   "aws-qldb": [
     "AWS::QLDB"
@@ -566,6 +590,9 @@
   ],
   "aws-route53": [
     "AWS::Route53"
+  ],
+  "aws-route53profiles": [
+    "AWS::Route53Profiles"
   ],
   "aws-route53recoverycontrol": [
     "AWS::Route53RecoveryControl"
