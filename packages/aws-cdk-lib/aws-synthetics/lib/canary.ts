@@ -184,7 +184,7 @@ export interface CanaryProps {
    * Active tracing enables this canary run to be displayed in the ServiceLens and X-Ray service maps even if the
    * canary does not hit an endpoint that has X-Ray tracing enabled. Using X-Ray tracing incurs charges.
    *
-   * You can enable active tracing only for canaries that use version syn-nodejs-2.0 or later for their canary runtime.
+   * You can enable active tracing only for canaries that use version `syn-nodejs-2.0` or later for their canary runtime.
    *
    * @default false
    *
