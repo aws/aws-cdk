@@ -1,0 +1,12 @@
+{
+  "version": "36.0.0",
+  "testCases": {
+    "integ-cloudfront-with-webacl/DefaultTest": {
+      "stacks": [
+        "aws-cdk-cloudfront-with-webacl"
+      ],
+      "assertionStack": "integ-cloudfront-with-webacl/DefaultTest/DeployAssert",
+      "assertionStackName": "integcloudfrontwithwebaclDefaultTestDeployAssert166CAFCF"
+    }
+  }
+}
