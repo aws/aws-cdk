@@ -110,7 +110,7 @@
   "stability": "stable",
   "dependencies": {
     "jsonschema": "^1.4.1",
-    "semver": "^7.6.0"
+    "semver": "^7.6.2"
   },
   "awscdkio": {
     "announce": false

@@ -584,3 +584,74 @@ test('Scheduled Fargate Task - with unused properties', () => {
   Annotations.fromStack(stack).hasWarning('/Default/ScheduledFargateTask', Match.stringLikeRegexp('Property \'runtimePlatform\' is ignored.'));
 });
 
+test('Can create a scheduled Fargate Task - with customized container name', () => {
+  // GIVEN
+  const stack = new cdk.Stack();
+  const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 1 });
+  const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+
+  new ScheduledFargateTask(stack, 'ScheduledFargateTask', {
+    cluster,
+    scheduledFargateTaskImageOptions: {
+      image: ecs.ContainerImage.fromRegistry('henk'),
+      containerName: 'ScheduledContainer1',
+      memoryLimitMiB: 512,
+    },
+    schedule: events.Schedule.expression('rate(1 minute)'),
+  });
+
+  new ScheduledFargateTask(stack, 'ScheduledFargateTask2', {
+    cluster,
+    scheduledFargateTaskImageOptions: {
+      image: ecs.ContainerImage.fromRegistry('henk'),
+      containerName: 'ScheduledContainer2',
+      memoryLimitMiB: 512,
+    },
+    schedule: events.Schedule.expression('rate(1 minute)'),
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
+    ContainerDefinitions: [
+      {
+        Essential: true,
+        Image: 'henk',
+        LogConfiguration: {
+          LogDriver: 'awslogs',
+          Options: {
+            'awslogs-group': {
+              Ref: 'ScheduledFargateTaskScheduledTaskDefScheduledContainer1LogGroup8B9B3038',
+            },
+            'awslogs-stream-prefix': 'ScheduledFargateTask',
+            'awslogs-region': {
+              Ref: 'AWS::Region',
+            },
+          },
+        },
+        Name: 'ScheduledContainer1',
+      },
+    ],
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
+    ContainerDefinitions: [
+      {
+        Essential: true,
+        Image: 'henk',
+        LogConfiguration: {
+          LogDriver: 'awslogs',
+          Options: {
+            'awslogs-group': {
+              Ref: 'ScheduledFargateTask2ScheduledTaskDefScheduledContainer2LogGroupF8B295FB',
+            },
+            'awslogs-stream-prefix': 'ScheduledFargateTask2',
+            'awslogs-region': {
+              Ref: 'AWS::Region',
+            },
+          },
+        },
+        Name: 'ScheduledContainer2',
+      },
+    ],
+  });
+});

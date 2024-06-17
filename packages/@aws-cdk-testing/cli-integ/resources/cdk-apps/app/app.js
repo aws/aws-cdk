@@ -126,22 +126,6 @@ class SsoInstanceAccessControlConfig extends Stack {
   }
 }
 
-class DiffFromChangeSetStack extends Stack {
-  constructor(scope, id) {
-    super(scope, id);
-
-    const queueNameFromParameter = ssm.StringParameter.valueForStringParameter(this, 'for-queue-name-defined-by-ssm-param');
-    new sqs.Queue(this, "DiffFromChangeSetQueue", {
-      queueName: queueNameFromParameter,
-    })
-
-    new ssm.StringParameter(this, 'DiffFromChangeSetSSMParam', {
-      parameterName: 'DiffFromChangeSetSSMParamName',
-      stringValue: queueNameFromParameter,
-    });
-  }
-}
-
 class ListMultipleDependentStack extends Stack {
   constructor(scope, id) {
     super(scope, id);
@@ -700,8 +684,6 @@ switch (stackSet) {
     new SsoPermissionSetNoPolicy(app, `${stackPrefix}-sso-perm-set-without-managed-policy`);
 
     const failed = new FailedStack(app, `${stackPrefix}-failed`)
-
-    new DiffFromChangeSetStack(app, `${stackPrefix}-queue-name-defined-by-ssm-param`)
 
     // A stack that depends on the failed stack -- used to test that '-e' does not deploy the failing stack
     const dependsOnFailed = new OutputsStack(app, `${stackPrefix}-depends-on-failed`);

@@ -20,7 +20,7 @@
     "outputPaths": [
      "pipeline.name"
     ],
-    "salt": "1707043774596"
+    "salt": "1708619218938"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -59,6 +59,15 @@
          "Resource": [
           "*"
          ]
+        },
+        {
+         "Action": [
+          "codepipeline:GetPipeline"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
         }
        ]
       }
@@ -74,7 +83,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "3f0f15596be1e3fbbf4a0571522aa1e5312d44abff27360f8d043c1b0704bcf4.zip"
+     "S3Key": "310f432b946edeef3316f39f32b344b6bdc401a3b438433db42adadab1bf5e17.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
@@ -85,6 +94,31 @@
      ]
     }
    }
+  },
+  "AwsApiCallCodePipelinegetPipeline1c275ca65933c3cecd335e67fe9182e2": {
+   "Type": "Custom::DeployAssert@SdkCallCodePipelinegetPipeline",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "CodePipeline",
+    "api": "getPipeline",
+    "expected": "{\"$StringLike\":\"my-pipeline2\"}",
+    "actualPath": "pipeline.name",
+    "parameters": {
+     "name": "\"my-pipeline2\""
+    },
+    "flattenResponse": "true",
+    "outputPaths": [
+     "pipeline.name"
+    ],
+    "salt": "1708619218938"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   }
  },
  "Outputs": {
@@ -92,6 +126,14 @@
    "Value": {
     "Fn::GetAtt": [
      "AwsApiCallCodePipelinegetPipelinebf5ab22626ca0a34267efaac6a197759",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallCodePipelinegetPipeline1c275ca65933c3cecd335e67fe9182e2": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallCodePipelinegetPipeline1c275ca65933c3cecd335e67fe9182e2",
      "assertion"
     ]
    }
