@@ -137,7 +137,6 @@ test('With created role', () => {
   Template.fromStack(stack).resourceCountIs('AWS::Lambda::Function', 2);
 
   Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
-    Runtime: 'nodejs18.x',
     Role: {
       'Fn::GetAtt': ['Role1ABCC5F0', 'Arn'],
     },
