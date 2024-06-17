@@ -89,7 +89,7 @@ If you want the canary to run just once upon deployment, you can use `Schedule.o
 
 ### Active Tracing
 
-You can choose to enable active AWS X-Ray tracing on canaries that use the syn-nodejs-2.0 or later runtime by setting `activeTracing` to `true`.
+You can choose to enable active AWS X-Ray tracing on canaries that use the `syn-nodejs-2.0` or later runtime by setting `activeTracing` to `true`.
 
 With tracing enabled, traces are sent for all calls made by the canary that use the browser, the AWS SDK, or HTTP or HTTPS modules.
 
