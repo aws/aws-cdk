@@ -127,7 +127,7 @@ const canary = new synthetics.Canary(this, 'MyCanary', {
 
 ### Timeout
 
-You can set how long the canary is allowed to run before it must stop by setting `timeout`.
+You can set how long the canary is allowed to run before it must stop with the `timeout` property.
 
 ```ts
 import * as cdk from "aws-cdk-lib";
