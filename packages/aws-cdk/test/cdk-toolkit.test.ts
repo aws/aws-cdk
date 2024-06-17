@@ -497,8 +497,8 @@ describe('deploy', () => {
       beforeEach(() => {
         cloudExecutable = new MockCloudExecutable({
           stacks: [
-            MockStack.MOCK_STACK_A,
-            MockStack.MOCK_STACK_B,
+            MockStack.MOCK_STACK_E,
+            MockStack.MOCK_STACK_F,
             MockStack.MOCK_STACK_WITH_NOTIFICATION_ARNS,
             MockStack.MOCK_STACK_WITH_BAD_NOTIFICATION_ARNS,
           ],
@@ -516,14 +516,14 @@ describe('deploy', () => {
           configuration: cloudExecutable.configuration,
           sdkProvider: cloudExecutable.sdkProvider,
           deployments: new FakeCloudFormation({
-            'Test-Stack-A': { Foo: 'Bar' },
-            'Test-Stack-B': { Baz: 'Zinga!' },
+            'Test-Stack-E': { Foo: 'Bar' },
+            'Test-Stack-F': { Foo: 'Bar' },
           }, notificationArns),
         });
 
         // WHEN
         await toolkit.deploy({
-          selector: { patterns: ['Test-Stack-A', 'Test-Stack-B'] },
+          selector: { patterns: ['Test-Stack-E', 'Test-Stack-F'] },
           notificationArns,
           hotswap: HotswapMode.FULL_DEPLOYMENT,
         });
@@ -537,14 +537,14 @@ describe('deploy', () => {
           configuration: cloudExecutable.configuration,
           sdkProvider: cloudExecutable.sdkProvider,
           deployments: new FakeCloudFormation({
-            'Test-Stack-A': { Foo: 'Bar' },
+            'Test-Stack-E': { Foo: 'Bar' },
           }, notificationArns),
         });
 
         // WHEN
         await expect(() =>
           toolkit.deploy({
-            selector: { patterns: ['Test-Stack-A'] },
+            selector: { patterns: ['Test-Stack-E'] },
             notificationArns,
             hotswap: HotswapMode.FULL_DEPLOYMENT,
           }),
@@ -1274,7 +1274,40 @@ class MockStack {
       ],
     },
     depends: [MockStack.MOCK_STACK_C.stackName],
-  }
+  };
+  public static readonly MOCK_STACK_E: TestStackArtifact = {
+    stackName: 'Test-Stack-E',
+    template: { Resources: { TemplateName: 'Test-Stack-E' } },
+    env: 'aws://123456789012/bermuda-triangle-1',
+    metadata: {
+      '/Test-Stack-E': [
+        {
+          type: cxschema.ArtifactMetadataEntryType.STACK_TAGS,
+          data: [
+            { key: 'Foo', value: 'Bar' },
+          ],
+        },
+      ],
+    },
+    displayName: 'Test-Stack-E-Display-Name',
+  };
+
+  public static readonly MOCK_STACK_F: TestStackArtifact = {
+    stackName: 'Test-Stack-F',
+    template: { Resources: { TemplateName: 'Test-Stack-F' } },
+    env: 'aws://123456789012/bermuda-triangle-1',
+    metadata: {
+      '/Test-Stack-F': [
+        {
+          type: cxschema.ArtifactMetadataEntryType.STACK_TAGS,
+          data: [
+            { key: 'Foo', value: 'Bar' },
+          ],
+        },
+      ],
+    },
+    displayName: 'Test-Stack-F-Display-Name',
+  };
   public static readonly MOCK_STACK_WITH_ERROR: TestStackArtifact = {
     stackName: 'witherrors',
     env: 'aws://123456789012/bermuda-triangle-1',
@@ -1364,6 +1397,9 @@ class FakeCloudFormation extends Deployments {
       MockStack.MOCK_STACK_A.stackName,
       MockStack.MOCK_STACK_B.stackName,
       MockStack.MOCK_STACK_C.stackName,
+      // MockStack.MOCK_STACK_D deliberately omitted.
+      MockStack.MOCK_STACK_E.stackName,
+      MockStack.MOCK_STACK_F.stackName,
       MockStack.MOCK_STACK_WITH_ASSET.stackName,
       MockStack.MOCK_STACK_WITH_ERROR.stackName,
       MockStack.MOCK_STACK_WITH_NOTIFICATION_ARNS.stackName,
@@ -1395,6 +1431,10 @@ class FakeCloudFormation extends Deployments {
       case MockStack.MOCK_STACK_B.stackName:
         return Promise.resolve({});
       case MockStack.MOCK_STACK_C.stackName:
+        return Promise.resolve({});
+      case MockStack.MOCK_STACK_E.stackName:
+        return Promise.resolve({});
+      case MockStack.MOCK_STACK_F.stackName:
         return Promise.resolve({});
       case MockStack.MOCK_STACK_WITH_ASSET.stackName:
         return Promise.resolve({});
