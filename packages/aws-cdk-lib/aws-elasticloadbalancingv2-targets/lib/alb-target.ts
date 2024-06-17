@@ -37,7 +37,7 @@ export class AlbArnTarget implements elbv2.INetworkLoadBalancerTarget {
 
 /**
   * A single Application Load Balancer as the target for load balancing.
-  * @deprecated Use AlbListenerTarget instead. This target does not automatically
+  * @deprecated Use `AlbListenerTarget` instead. This target does not automatically
   * add a dependency between the ALB listener and resulting NLB target group, without
   * which may cause stack deployments to fail if the NLB target group is provisioned
   * before the listener has been fully created.
@@ -73,12 +73,12 @@ export class AlbListenerTarget extends AlbArnTarget {
   }
 
   /**
-   * Register this alb target with a load balancer
+   * Register this ALB target with a load balancer.
    *
    * Don't call this, it is called automatically when you add the target to a
    * load balancer.
    *
-   * This Adds Dependency on albLisner because creation of ALB Listner and NLB can vary during runtime.
+   * This adds dependency on albListener because creation of ALB listener and NLB can vary during runtime.
    * More Details on - https://github.com/aws/aws-cdk/issues/17208
    */
   public attachToNetworkTargetGroup(targetGroup: elbv2.INetworkTargetGroup): elbv2.LoadBalancerTargetProps {

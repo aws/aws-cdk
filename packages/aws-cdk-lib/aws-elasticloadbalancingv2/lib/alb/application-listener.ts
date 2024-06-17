@@ -173,7 +173,7 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
   public readonly loadBalancer: IApplicationLoadBalancer;
 
   /**
-   * public readonly port: number;
+   * The port of the listener.
   */
   public readonly port: number;
 
