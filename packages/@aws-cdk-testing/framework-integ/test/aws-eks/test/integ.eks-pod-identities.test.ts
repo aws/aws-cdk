@@ -46,7 +46,7 @@ class EksClusterStack extends Stack {
     });
 
     // deploy a sample pod
-    cluster.addManifest('demopod', {
+    const pod = cluster.addManifest('demopod', {
       apiVersion: 'v1',
       kind: 'Pod',
       metadata: { name: 'demo' },
@@ -61,12 +61,13 @@ class EksClusterStack extends Stack {
         ],
       },
     });
+    pod.node.addDependency(sa);
   }
 }
 
 const app = new App();
 
-const stack = new EksClusterStack(app, 'eks-pod-identities-test');
+const stack = new EksClusterStack(app, 'eks-pod-identities');
 
 new IntegTest(app, 'integ-eks-pod-identities', {
   testCases: [stack],
