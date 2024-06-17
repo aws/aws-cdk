@@ -558,7 +558,7 @@ export class Canary extends cdk.Resource implements ec2.IConnectable {
     ];
 
     if (props.activeTracing && activeTracingNotSupportedRuntime.includes(props.runtime)) {
-      throw new Error('You can enable active tracing only for canaries that use version syn-nodejs-2.0 or later for their canary runtime.');
+      throw new Error('You can enable active tracing only for canaries that use version `syn-nodejs-2.0` or later for their canary runtime.');
     }
 
     let memoryInMb = undefined;
