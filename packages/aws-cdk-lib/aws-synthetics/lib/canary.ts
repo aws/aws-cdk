@@ -204,6 +204,7 @@ export interface CanaryProps {
   /**
    * The maximum amount of memory that the canary can use while running.
    * This value must be a multiple of 64 Mib.
+   * The range is 960 MiB to 3008 MiB.
    *
    * @default Size.mebibytes(5)
    */
