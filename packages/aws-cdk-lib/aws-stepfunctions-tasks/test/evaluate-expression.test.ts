@@ -1,4 +1,5 @@
 import { Template } from '../../assertions';
+import * as iam from '../../aws-iam';
 import { Runtime, RuntimeFamily } from '../../aws-lambda';
 import * as sfn from '../../aws-stepfunctions';
 import { Stack } from '../../core';
@@ -110,4 +111,48 @@ test('With Node.js 20.x', () => {
   Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
     Runtime: 'nodejs20.x',
   });
+});
+
+test('With created role', () => {
+  // WHEN
+  const role = new iam.Role(stack, 'Role', {
+    assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+    roleName: 'role-for-test',
+  });
+
+  const taskWithoutRole = new tasks.EvaluateExpression(stack, 'TaskWithoutRole', {
+    expression: '$.a + $.b',
+  });
+
+  const taskWithRole = new tasks.EvaluateExpression(stack, 'TaskWithRole', {
+    expression: '$.a + $.b',
+    role,
+  });
+
+  new sfn.StateMachine(stack, 'SM', {
+    definitionBody: sfn.DefinitionBody.fromChainable(taskWithRole.next(taskWithoutRole)),
+  });
+
+  // THEN
+  Template.fromStack(stack).resourceCountIs('AWS::Lambda::Function', 2);
+
+  Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+    Runtime: 'nodejs18.x',
+    Role: {
+      'Fn::GetAtt': ['Role1ABCC5F0', 'Arn'],
+    },
+  });
+
+  Template.fromStack(stack).resourcePropertiesCountIs('AWS::IAM::Role', {
+    AssumeRolePolicyDocument: {
+      Statement: [
+        {
+          Principal: {
+            Service: 'lambda.amazonaws.com',
+          },
+        },
+      ],
+    },
+  },
+  2);
 });

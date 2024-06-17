@@ -127,9 +127,10 @@ new sfn.StateMachine(this, 'StateMachine', {
 });
 ```
 
-The `EvaluateExpression` supports a `runtime` prop to specify the Lambda
-runtime to use to evaluate the expression. Currently, only runtimes
-of the Node.js family are supported.
+The `EvaluateExpression` supports a `runtime` prop to specify the Lambda runtime to use to evaluate
+the expression. Currently, only runtimes of the Node.js family are supported.
+
+To bring your own custom execution role for the Lambda function use the `role` property.
 
 ## API Gateway
 

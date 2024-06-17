@@ -22,6 +22,13 @@ export interface EvaluateExpressionProps extends sfn.TaskStateBaseProps {
    * @default - the latest Lambda node runtime available in your region.
    */
   readonly runtime?: lambda.Runtime;
+
+  /**
+   * This is the role that will be assumed by the function upon execution.
+   *
+   * @default - a role will be automatically created
+   */
+  readonly role?: iam.IRole;
 }
 
 /**
@@ -58,7 +65,7 @@ export class EvaluateExpression extends sfn.TaskStateBase {
   constructor(scope: Construct, id: string, private readonly props: EvaluateExpressionProps) {
     super(scope, id, props);
 
-    this.evalFn = createEvalFn(this.props.runtime, this);
+    this.evalFn = createEvalFn(this.props, this);
 
     this.taskPolicies = [
       new iam.PolicyStatement({
@@ -96,7 +103,7 @@ export class EvaluateExpression extends sfn.TaskStateBase {
   }
 }
 
-function createEvalFn(runtime: lambda.Runtime | undefined, scope: Construct) {
+function createEvalFn(props: EvaluateExpressionProps, scope: Construct) {
   const NO_RUNTIME = Symbol.for('no-runtime');
   const lambdaPurpose = 'Eval';
 
@@ -112,14 +119,19 @@ function createEvalFn(runtime: lambda.Runtime | undefined, scope: Construct) {
     [NO_RUNTIME]: '41256dc5-4457-4273-8ed9-17bc818694e5',
   };
 
-  const uuid = nodeJsGuids[runtime?.name ?? NO_RUNTIME];
+  let uuid = nodeJsGuids[props.runtime?.name ?? NO_RUNTIME];
   if (!uuid) {
-    throw new Error(`The runtime ${runtime?.name} is currently not supported.`);
+    throw new Error(`The runtime ${props.runtime?.name} is currently not supported.`);
+  }
+
+  if (props.role) {
+    uuid += props.role.node.addr;
   }
 
   return new EvalNodejsSingletonFunction(scope, 'EvalFunction', {
     uuid,
     lambdaPurpose,
     runtime,
+    role: props.role,
   });
 }
