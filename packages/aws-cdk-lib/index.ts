@@ -15,6 +15,7 @@ export * as aws_appflow from './aws-appflow';
 export * as aws_appintegrations from './aws-appintegrations';
 export * as aws_applicationautoscaling from './aws-applicationautoscaling';
 export * as aws_applicationinsights from './aws-applicationinsights';
+export * as aws_applicationsignals from './aws-applicationsignals';
 export * as aws_appmesh from './aws-appmesh';
 export * as aws_apprunner from './aws-apprunner';
 export * as aws_appstream from './aws-appstream';

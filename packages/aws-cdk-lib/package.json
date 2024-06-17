@@ -135,7 +135,7 @@
     "mime-types": "^2.1.35"
   },
   "devDependencies": {
-    "@aws-cdk/aws-service-spec": "^0.1.6",
+    "@aws-cdk/aws-service-spec": "^0.1.7",
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/custom-resource-handlers": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
@@ -229,6 +229,7 @@
     "./aws-appintegrations": "./aws-appintegrations/index.js",
     "./aws-applicationautoscaling": "./aws-applicationautoscaling/index.js",
     "./aws-applicationinsights": "./aws-applicationinsights/index.js",
+    "./aws-applicationsignals": "./aws-applicationsignals/index.js",
     "./aws-appmesh": "./aws-appmesh/index.js",
     "./aws-apprunner": "./aws-apprunner/index.js",
     "./aws-appstream": "./aws-appstream/index.js",

@@ -38,6 +38,9 @@
   "aws-applicationinsights": [
     "AWS::ApplicationInsights"
   ],
+  "aws-applicationsignals": [
+    "AWS::ApplicationSignals"
+  ],
   "aws-appmesh": [
     "AWS::AppMesh"
   ],
