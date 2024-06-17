@@ -271,6 +271,6 @@ const canary = new synthetics.Canary(this, 'MyCanary', {
     expiration: Duration.days(30),
   }],
   artifactS3EncryptionMode: synthetics.ArtifactsEncryptionMode.KMS,
-  kmsKey: key,
+  artifactS3KmsKey: key,
 });
 ```

@@ -60,7 +60,7 @@ new Canary(stack, 'CanarySseKmsWith', {
   runtime: Runtime.SYNTHETICS_NODEJS_PUPPETEER_7_0,
   cleanup: Cleanup.LAMBDA,
   artifactS3EncryptionMode: ArtifactsEncryptionMode.KMS,
-  kmsKey: encryptKey,
+  artifactS3KmsKey: encryptKey,
 });
 
 new IntegTest(app, 'IntegCanaryTest', {

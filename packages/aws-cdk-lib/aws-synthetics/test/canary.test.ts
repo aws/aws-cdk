@@ -844,7 +844,12 @@ describe('artifact encryption test', () => {
       ArtifactConfig: {
         S3Encryption: {
           EncryptionMode: 'SSE_KMS',
-          KmsKeyArn: stack.resolve(canary.encryptionKey?.keyArn),
+          KmsKeyArn: {
+            'Fn::GetAtt': [
+              'CanaryKey36A631B4',
+              'Arn',
+            ],
+          },
         },
       },
     });
@@ -866,7 +871,7 @@ describe('artifact encryption test', () => {
       }),
       runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_7_0,
       artifactS3EncryptionMode: synthetics.ArtifactsEncryptionMode.KMS,
-      kmsKey: key,
+      artifactS3KmsKey: key,
     });
 
     // THEN
@@ -887,12 +892,12 @@ describe('artifact encryption test', () => {
     expect(() => {
       new synthetics.Canary(stack, 'Canary', {
         test: synthetics.Test.custom({
-          handler: 'index.functionName',
-          code: synthetics.Code.fromAsset(path.join(__dirname, 'canaries')),
+          handler: 'index.handler',
+          code: synthetics.Code.fromInline('/* Synthetics handler code */'),
         }),
         runtime: synthetics.Runtime.SYNTHETICS_NODEJS_PUPPETEER_7_0,
         artifactS3EncryptionMode: synthetics.ArtifactsEncryptionMode.S3_MANAGED,
-        kmsKey: key,
+        artifactS3KmsKey: key,
       });
     }).toThrow('A customer-managed KMS key was provided, but the encryption mode is not set to SSE-KMS.');
   });
@@ -909,6 +914,6 @@ describe('artifact encryption test', () => {
         }),
         artifactS3EncryptionMode: synthetics.ArtifactsEncryptionMode.S3_MANAGED,
       });
-    }).toThrow('Artifact encryption is only supported for canaries that use Synthetics runtime version syn-nodejs-puppeteer-3.3 or later, got syn-python-selenium-3.0.');
+    }).toThrow('Artifact encryption is only supported for canaries that use Synthetics runtime version `syn-nodejs-puppeteer-3.3` or later, got `syn-python-selenium-3.0`.');
   });
 });
