@@ -52,7 +52,8 @@ export interface EventBridgeSchedulerCreateScheduleTaskProps extends sfn.TaskSta
 
   /**
    * The date, in UTC, before which the schedule can invoke its target.
-   * Depending on the schedule's recurrence expression, invocations might stop on, or before, the EndDate you specify. EventBridge Scheduler ignores EndDate for one-time schedules.
+   * Depending on the schedule's recurrence expression, invocations might stop on, or before, the EndDate you specify.
+   * EventBridge Scheduler ignores EndDate for one-time schedules.
    *
    * @default - No end date
    */
