@@ -309,7 +309,6 @@ export class Distribution extends Resource implements IDistribution {
   private readonly errorResponses: ErrorResponse[];
   private readonly certificate?: acm.ICertificate;
   private readonly publishAdditionalMetrics?: boolean;
-  private webAclId?: string;
 
   constructor(scope: Construct, id: string, props: DistributionProps) {
     super(scope, id);
@@ -336,7 +335,6 @@ export class Distribution extends Resource implements IDistribution {
     this.certificate = props.certificate;
     this.errorResponses = props.errorResponses ?? [];
     this.publishAdditionalMetrics = props.publishAdditionalMetrics;
-    this.webAclId = props.webAclId;
 
     // Comments have an undocumented limit of 128 characters
     const trimmedComment =
@@ -362,7 +360,7 @@ export class Distribution extends Resource implements IDistribution {
         restrictions: this.renderRestrictions(props.geoRestriction),
         viewerCertificate: this.certificate ? this.renderViewerCertificate(this.certificate,
           props.minimumProtocolVersion, props.sslSupportMethod) : undefined,
-        webAclId: Lazy.string({ produce: () => this.webAclId }),
+        webAclId: props.webAclId,
       },
     });
 
@@ -598,18 +596,6 @@ export class Distribution extends Resource implements IDistribution {
    */
   public grantCreateInvalidation(identity: iam.IGrantable): iam.Grant {
     return this.grant(identity, 'cloudfront:CreateInvalidation');
-  }
-
-  /**
-   * Attach WAF WebACL to this CloudFront distribution
-   *
-   * @param webAclId The WAF WebACL to associate with this distribution
-   */
-  public attachWebAclId(webAclId: string) {
-    if (this.webAclId) {
-      throw new Error('A WebACL has already been attached to this distribution');
-    }
-    this.webAclId = webAclId;
   }
 
   private addOrigin(origin: IOrigin, isFailoverOrigin: boolean = false): string {

@@ -1,5 +1,6 @@
 # Amazon CloudFront Construct Library
 
+
 Amazon CloudFront is a web service that speeds up distribution of your static and dynamic web content, such as .html, .css, .js, and image files, to
 your users. CloudFront delivers your content through a worldwide network of data centers called edge locations. When a user requests content that
 you're serving with CloudFront, the user is routed to the edge location that provides the lowest latency, so that content is delivered with the best
@@ -210,44 +211,13 @@ new cloudfront.Distribution(this, 'myDist', {
 });
 ```
 
-### Attaching WAF Web Acls
-
-You can attach the AWS WAF web ACL to a CloudFront distribution.
-
-To specify a web ACL created using the latest version of AWS WAF, use the ACL ARN, for example
-`arn:aws:wafv2:us-east-1:123456789012:global/webacl/ExampleWebACL/473e64fd-f30b-4765-81a0-62ad96dd167a`.
-The web ACL must be in the `us-east-1` region.
-
-To specify a web ACL created using AWS WAF Classic, use the ACL ID, for example `473e64fd-f30b-4765-81a0-62ad96dd167a`.
-
-```ts
-declare const bucketOrigin: origins.S3Origin;
-declare const webAcl: wafv2.CfnWebACL;
-const distribution = new cloudfront.Distribution(stack, 'Distribution', {
-  defaultBehavior: { origin: bucketOrigin },
-  webAclId: webAcl.attrArn,
-});
-```
-
-You can also attach a web ACL to a distribution after creation.
-
-```ts
-declare const bucketOrigin: origins.S3Origin;
-declare const webAcl: wafv2.CfnWebACL;
-const distribution = new cloudfront.Distribution(stack, 'Distribution', {
-  defaultBehavior: { origin: bucketOrigin },
-});
-
-distribution.attachWebAclId(webAcl.attrArn);
-```
-
 ### Customizing Cache Keys and TTLs with Cache Policies
 
 You can use a cache policy to improve your cache hit ratio by controlling the values (URL query strings, HTTP headers, and cookies)
 that are included in the cache key, and/or adjusting how long items remain in the cache via the time-to-live (TTL) settings.
 CloudFront provides some predefined cache policies, known as managed policies, for common use cases. You can use these managed policies,
 or you can create your own cache policy that’s specific to your needs.
-See <https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/controlling-the-cache-key.html> for more details.
+See https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/controlling-the-cache-key.html for more details.
 
 ```ts
 // Using an existing cache policy for a Distribution
@@ -290,7 +260,7 @@ Other information from the viewer request, such as URL query strings, HTTP heade
 You can use an origin request policy to control the information that’s included in an origin request.
 CloudFront provides some predefined origin request policies, known as managed policies, for common use cases. You can use these managed policies,
 or you can create your own origin request policy that’s specific to your needs.
-See <https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/controlling-origin-requests.html> for more details.
+See https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/controlling-origin-requests.html for more details.
 
 ```ts
 // Using an existing origin request policy for a Distribution
@@ -326,7 +296,7 @@ new cloudfront.Distribution(this, 'myDistCustomPolicy', {
 
 You can configure CloudFront to add one or more HTTP headers to the responses that it sends to viewers (web browsers or other clients), without making any changes to the origin or writing any code.
 To specify the headers that CloudFront adds to HTTP responses, you use a response headers policy. CloudFront adds the headers regardless of whether it serves the object from the cache or has to retrieve the object from the origin. If the origin response includes one or more of the headers that’s in a response headers policy, the policy can specify whether CloudFront uses the header it received from the origin or overwrites it with the one in the policy.
-See <https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/adding-response-headers.html>
+See https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/adding-response-headers.html
 
 ```ts
 // Using an existing managed response headers policy
@@ -448,7 +418,7 @@ new cloudfront.Distribution(this, 'myDist', {
 > The `EdgeFunction` construct will automatically request a function in `us-east-1`, regardless of the region of the current stack.
 > `EdgeFunction` has the same interface as `Function` and can be created and used interchangeably.
 > Please note that using `EdgeFunction` requires that the `us-east-1` region has been bootstrapped.
-> See <https://docs.aws.amazon.com/cdk/latest/guide/bootstrapping.html> for more about bootstrapping regions.
+> See https://docs.aws.amazon.com/cdk/latest/guide/bootstrapping.html for more about bootstrapping regions.
 
 If the stack is in `us-east-1`, a "normal" `lambda.Function` can be used instead of an `EdgeFunction`.
 
@@ -588,7 +558,7 @@ To create an empty Key Value Store:
 const store = new cloudfront.KeyValueStore(this, 'KeyValueStore');
 ```
 
-To also include an initial set of values, the `source` property can be specified, either from a
+To also include an initial set of values, the `source` property can be specified, either from a 
 local file or an inline string. For the structure of this file, see [Creating a file of key value pairs](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/kvs-with-functions-create-s3-kvp.html).
 
 ```ts
@@ -1207,5 +1177,5 @@ new cloudfront.KeyGroup(this, 'MyKeyGroup', {
 
 See:
 
-- <https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/PrivateContent.html>
-- <https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-trusted-signers.html>
+* https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/PrivateContent.html
+* https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-trusted-signers.html
